@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Tuure ally scaled wounds and post-heal recovery
+
+- `tuure-companion-wounds-2026-10-26.json`: actual106134/106137/106253 final-damage/target-health protection retains native204237/Talk10/stun; positive heal pending consumed in existing locked lifecycle observes40pct after native application. Reset/re-wound invalidates pending; no forced health, credit, raw callback or SQL. Initial95pct block unchanged/open.
+- Native scaling98..110/ScriptNames/typed204237, pinned raw and isolated heal counterfactuals/current ASAN768/native DealHeal+ModifyHealth+health/multiplier/disabled lifecycle cases pass. Selected canonical factories/slots/40pct/core ordering plus preserved Lady/scene/pickup/capture and Scepter PE pass. Adapters/cancelled-sub40/failure limits explicit.
+- Canonical world B4DCF723430A227A5FF3EEB6DD21A5C57C4BD26B9CAC7457E6897E0FE9D4A964, map 732C8EFCB39BCBE2DCAEF4322D86E5CFCA8F5A577D99AF378C37BB2965117E3C; own12364 ready/shutdown0/exit0, no new diagnostics/protected changes/task server. Crashes0/DBErrors0/no archive or character edits. Commit containing audit follows7608b3f2.
+- NEXT: initial Boros95pct/50563 original eligible healer/quest attempt/post-heal transition, then full movement/evade/captain/contact sequence. Client combat/heal/aura/follow/re-entry and all36 remain OPEN. Older ally raw-guard/40pct notes superseded for this scope only.
+
 ## Latest repair: Tuure Calindris real scaled defeat and finite cleanup
 
 - `tuure-calindris-defeat-2026-10-26.json`:106318 actual final-damage hook/target health, native owner or unique eligible healer for three real allies in1489/1085/5/41993. Original50695/210715/2015 and3s death retained; weak generation/full killer GUID/actor-owned queue survives vanished killer and avoids borrowed AI. No nearest spectator progression, explicit completion or character edits.

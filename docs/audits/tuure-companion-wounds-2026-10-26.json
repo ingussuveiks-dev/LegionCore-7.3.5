@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "parent_commit": "7608b3f2",
+  "scope": "Combat wound protection and observed post-heal40pct recovery for106134/106137/106253 only. Initial Boros95pct, movement/quest transitions and full client route remain OPEN.",
+  "cause": [
+    "Both scripts used raw DamageTaken/template health before the native scaling division. The live three templates scale98..110, so a normalized lethal hit could kill the essential healer ally instead of applying its existing wound; large raw but nonlethal scaled hits could wound prematurely.",
+    "Native DealHeal calls HealReceived, then healer HealDone, then ModifyHealth. Original current40pct check ran before that application, requiring an extra heal even after crossing40. Their ordinary UpdateAI returns immediately while stunned, so recovery must use the existing native locked lifecycle hook."
+  ],
+  "repair": [
+    "Replace only the two actual final-damage overrides/target-relative GetHealth(attacker); preserve damage0, once wait_heal, native204237/Talk10/manual stun, nonlethal behavior and no forced HP or progression. A new wound clears stale pending recovery.",
+    "Positive incoming HealReceived while wounded marks an AI-owned pending bit. Actual UpdateLifecycle consumes it and rechecks live/nonpredelete/alive/current40pct before clearing wait_heal ahead of original stun/aura cleanup. No projected HP, timer/callback/raw pointer or artificial healing; Reset invalidates pending without rewriting stage flags.",
+    "Native Creature lifecycle already visits original disabled/primary AI under its lock before ordinary Unit update. No core change. Inherited target-health/multiplier/native health services remain unchanged; this is the matching local Silver Hand pattern, not a modern external donor.",
+    "Preserve full initial Boros pre-heal95pct block for a separate focused transition repair; no movement/evade/gossip/dialogue paths or other script changed. Correct earlier Calindris audit description of aura226 to periodic dummy; it was not healing reduction."
+  ],
+  "native_evidence": {
+    "world": "Read-only live ScriptNames bind only106134 npc_vindicator_boros and106137/106253 npc_tuure_small_events. All three scaling98..110/zero deltas; native1489 phase6374 spawns361419/361432/361433.106253 stores SmartAI alongside its explicit ScriptName, factory resolves explicit script.",
+    "db2": "Actual typed26972+read-only hotfix probe retains204237 Gravely Wounded infinite duration, periodic dummy226/500ms plus native effects125/63. No replacement aura/credit invented. Native1085 initial50563 and later stage criteria remain separate.",
+    "coverage": "Read entire two actors/initial-heal/follow/combat/evade/movement and Lady interaction; remaining unsafe movement callbacks/nearest recipients and initial95pct recorded for continuation, not claimed fixed."
+  },
+  "checks": {
+    "counterfactual": "Test-TuureAllyDamage -Baseline pinned7608b3f2 demonstrates raw guards losing scaled lethal and premature high-scale wound. -HealBaseline explicitly isolates pinned HealReceived/Reset with current final-damage guard; native40pct crossing still needs another heal. Both labelled counterfactuals pair with passing current ASAN.",
+    "native_asan": "768 actual production guard/heal/reset/lifecycle cases over two shared AIs x4 killer labels x4 scales x4 primary/disabled/null/alias modes x3 intensity x2 aura-result adapters. Actual native target GetHealth/multiplier, scaled Unit dispatch, DealHeal received/done/ModifyHealth prefix, full ModifyHealth and locked Creature lifecycle compiled. Native zero/cancelled/sub40 heal, intervening damage/death/unloaded/predelete/reset/re-wound/replacement/reentry cleanup cases pass. Recovery/latch precedes reentrant aura removal, no repeated cleanup.",
+    "limits": "Killer/healer labels, data-backed health stat services and aura/control endpoints are controlled adapters; no actual spell targeting/received-heal modifiers, aura render, movement, party/faction/pet-client or full quest proof. Boros initial flag is already healed in the wound fixture; no95pct verification claimed. A cancelled/zero request cannot unlock a sub40 actor; pending records positive pre-HealDone requests and checks the resulting observed threshold, not a post-HealDone amount or actual gain. Aura-presentation failure is modeled without claiming a live cause resolved.",
+    "release": "Original generated libs/no OutDir/staged final-link and actual both script factories: postA8/rawA0 base/healB0/lifecycle110/reset, native target health/wound/Talk10/Recover40/remove204237 and actual core HealReceived/HealDone/ModifyHealth/locked lifecycle slots verified. Preserved Calindris/capture/scene/pickup PE chain included. Final canonical PE and ScepterLogin -VerifyReleaseBinary pass.",
+    "startup": "Both names absent before/rechecked during promotion; protected config/key/cert hashes unchanged. Own12364 fresh ready/shutdown0/exit0/stderr empty/newDBErrors0; no unknown/user server stopped and no task server left.",
+    "development": "Initial PowerShell fixture used reserved Host variable and lacked criteria enum; renamed adapter variable/native enum supplied. These failed harness invocations are retained, not successful runs. Native conversion/unreferenced-parameter compiler warnings are visible, no runtime error suppressed."
+  },
+  "canonical_sha256": {
+    "bnetserver.exe": "E4F55C6AE75319FFCFE6DB4D8187878347FBAE29CA762E217463995391E103A3",
+    "worldserver.exe": "B4DCF723430A227A5FF3EEB6DD21A5C57C4BD26B9CAC7457E6897E0FE9D4A964",
+    "worldserver.map": "732C8EFCB39BCBE2DCAEF4322D86E5CFCA8F5A577D99AF378C37BB2965117E3C",
+    "bnetserver.map": "79D460ACBE57E18F4B83011481FDFC5ADBC58334B0A2D75DCA8FE703267207AB"
+  },
+  "diagnostics": "Before/after canonical+repo/fixture crash/log snapshots on all tests/build/probes/startup; no new/changed crash, DBErrors or appended server warning/error/assertion. No fixed archive or log truncation needed, SQL14/15 immutable/no new SQL/no character mutation.",
+  "next": [
+    "Boros initial HealReceived pre95pct/actual50563 recipient and native attempt/retry/MovePoint1 transition, then its borrowed movement/evade callbacks and nearest progression; Captain106107 and105697 LINK1 remain OPEN.",
+    "Actual combat/heal/aura/control/voice/follow/pet/group/faction/re-entry and all36 full chain/client verification remain pending."
+  ]
+}

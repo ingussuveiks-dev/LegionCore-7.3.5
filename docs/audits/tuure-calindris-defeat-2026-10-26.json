@@ -18,7 +18,7 @@
     "sources": "Matching local typed26972 DB2+read-only hotfix and World records, production Unit::DealDamage/owner/FunctionProcessor/EventMap/CreatureAI::Talk/HandleAuraStrangulate. No external donor/video required; no footage claimed watched.",
     "scenario": "1085 stage5/root47655/leaf47656/criteria29879/type92/50695; native1243 solo min1/max1, subsequent step6 staff/return distinct. Shared map1489 Hunter972 remains ineligible.",
     "actors": "Live106318 uses npc_lady_kalindria/faction2102.106134 npc_vindicator_boros and106137/106253 npc_tuure_small_events/faction1665. No spell_script_names or source13/17 conditions for selected Lady spells.106253 also stores SmartAI but actual explicit ScriptName factory applies.",
-    "spells": "210715 Holy Judgment6s, native trigger210718 at6s; original script kills after3s retained, no new timing invented.210703 infinite strangulate298;21080710s periodic20/2s;204237 infinite/500ms healing-reduction226 plus125/63.211185/211380 native combat payloads retained."
+    "spells": "210715 Holy Judgment6s, native trigger210718 at6s; original script kills after3s retained, no new timing invented.210703 infinite strangulate298;21080710s periodic20/2s;204237 infinite/500ms periodic-dummy226 plus125/63.211185/211380 native combat payloads retained."
   },
   "checks": {
     "counterfactual": "Test-TuureDefeat -Baseline pinned ce34ea6c shows actual scaled dispatch kills before50695, and original nearest spectator gets50695 while vanished pet prevents3s death. Labelled expected failing behavior; does not execute the unsafe freed-AI baseline callback.",

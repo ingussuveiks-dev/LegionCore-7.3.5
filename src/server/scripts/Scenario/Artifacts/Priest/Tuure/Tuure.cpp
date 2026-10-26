@@ -19,6 +19,20 @@ Position const tppos[2] =
     {58.69f, 1212.91f, -39.64f, 0.0f}
 };
 
+namespace TuureCompanion
+{
+    void Recover(Creature* actor, bool& pendingHeal, bool& waitHeal)
+    {
+        if (!pendingHeal) return;
+        pendingHeal = false;
+        if (!waitHeal || !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() || actor->GetHealthPct() < 40)
+            return;
+        waitHeal = false;
+        actor->ClearUnitState(UNIT_STATE_STUNNED);
+        actor->RemoveAura(204237);
+    }
+}
+
 // 106134
 class npc_vindicator_boros : public CreatureScript
 {
@@ -43,11 +57,13 @@ public:
         }
 
         EventMap events;
+        bool _pendingHealRecovery = false;
         bool _introDone, _introHealDone, firstfighting, wait_heal, firstwp, secondwp;
         FunctionProcessor _functions;
 
         void Reset() override
         {
+            _pendingHealRecovery = false;
             events.Reset();
         }
 
@@ -110,7 +126,7 @@ public:
             }
         }
 
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void HealReceived(Unit* who, uint32& addhealth) override
         {
             if (!_introHealDone)
                 if (me->GetHealthPct() >= 95)
@@ -124,24 +140,23 @@ public:
                         pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50563);
                 }
 
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(204237);
-                    wait_heal = false;
-                }
-            }
+            if (wait_heal && addhealth)
+                _pendingHealRecovery = true;
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        void UpdateLifecycle(uint32) override
         {
-            if (damage >= me->GetHealth())
+            TuureCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+        }
+
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
+        {
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
                 if (!wait_heal)
                 {
+                    _pendingHealRecovery = false;
                     wait_heal = true;
                     me->AddAura(204237, me);
                     Talk(10);
@@ -297,10 +312,12 @@ public:
         }
 
         EventMap events;
+        bool _pendingHealRecovery = false;
         bool wait_heal;
 
         void Reset() override
         {
+            _pendingHealRecovery = false;
             events.Reset();
         }
 
@@ -315,26 +332,25 @@ public:
         }
 
 
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void HealReceived(Unit* who, uint32& addhealth) override
         {
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(204237);
-                    wait_heal = false;
-                }
-            }
+            if (wait_heal && addhealth)
+                _pendingHealRecovery = true;
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        void UpdateLifecycle(uint32) override
         {
-            if (damage >= me->GetHealth())
+            TuureCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+        }
+
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
+        {
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
                 if (!wait_heal)
                 {
+                    _pendingHealRecovery = false;
                     wait_heal = true;
                     me->AddAura(204237, me);
                     Talk(10);

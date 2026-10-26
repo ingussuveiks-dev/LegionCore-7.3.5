@@ -2171,10 +2171,11 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Repair friendly106134/106137/106253 final-scaled wound guards and trace native pre-heal95/40 thresholds, then Boros movement/evade/captain/contact. Native Calindris owner/ally50695 and3s finite death separately verified; actual full client fight/aura/gravity/pet/re-entry and all36 remain OPEN.",
+      "next_action": "Repair initial Boros actual post-heal95pct/50563 native participant/attempt/MovePoint1, then movement/evade/captain/contact. Combat wound40pct and Calindris fixes have scoped native/release checks; actual full client heal/fight/follow/re-entry and all36 remain OPEN.",
       "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json",
       "native_pickup_audit": "docs/audits/tuure-native-pickup-2026-10-26.json",
-      "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json"
+      "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json",
+      "companion_wounds_audit": "docs/audits/tuure-companion-wounds-2026-10-26.json"
     },
     {
       "class_id": 5,
