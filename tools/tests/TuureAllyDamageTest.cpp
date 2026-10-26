@@ -6,6 +6,8 @@ struct EventMap {void Reset(){}};
 struct Companion:CreatureAI {
  Creature* me=nullptr;bool wait_heal=false,_pendingHealRecovery=false,_introHealDone=true;
  EventMap events;std::vector<uint32> speech;void Talk(uint32 id){speech.push_back(id);}
+ // The separately regressed full initial95pct sequence is outside this wound fixture.
+ void CancelIntroHeal(){}void CompleteIntroHeal(){}
 };
 struct Boros:Companion {
 #include "BorosDamage.inc"
@@ -31,6 +33,6 @@ int main(){
 #elif defined(TUURE_ALLY_HEAL_BASELINE)
  std::cout<<"Isolated pinned7608b3f2 HealReceived counterfactual with current final-damage guard: crossing40pct requires another heal.\n";
 #else
- std::cout<<"Final lethal wound once, recovery only after actual positive heal and observed40pct; zero/cancelled/subthreshold, intervening damage/dead/unloaded/predelete/reset/re-wound/replacement/reentrant/primary/disabled/alias cases pass. Labels/aura endpoints are adapters; initial Boros95pct sequence is preserved and still open. Client fight/heal/VFX pending.\n";
+ std::cout<<"Final lethal wound once, positive incoming heal pending and observed40pct after application; zero/cancelled/subthreshold, intervening damage/dead/unloaded/predelete/reset/re-wound/replacement/reentrant/primary/disabled/alias cases pass. Labels/aura endpoints are adapters; initial Boros95pct sequence has its separate full-handler test. Client fight/heal/VFX pending.\n";
 #endif
 }

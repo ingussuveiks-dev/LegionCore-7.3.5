@@ -33,6 +33,22 @@ namespace TuureCompanion
     }
 }
 
+namespace TuureIntroHeal
+{
+    bool Eligible(Player* player, Creature* actor)
+    {
+        if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->HasPendingTeleport() ||
+            player->getClass() != CLASS_PRIEST || !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() ||
+            actor->GetEntry() != 106134 || actor->GetMapId() != 1489 || !actor->GetMap() ||
+            player->GetMap() != actor->GetMap() || !player->InSamePhase(actor) ||
+            !player->IsWithinDistInMap(actor, 100.0f) || player->GetQuestRewardStatus(41993) ||
+            (player->GetQuestStatus(41993) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41993) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1085 && scenario->GetCurrentStep() == 0;
+    }
+}
+
 // 106134
 class npc_vindicator_boros : public CreatureScript
 {
@@ -58,12 +74,21 @@ public:
 
         EventMap events;
         bool _pendingHealRecovery = false;
+        ObjectGuid _introHealer;
+        std::weak_ptr<uint8> _introAttempt;
+
+        void CancelIntroHeal()
+        {
+            _introHealer.Clear();
+            _introAttempt.reset();
+        }
         bool _introDone, _introHealDone, firstfighting, wait_heal, firstwp, secondwp;
         FunctionProcessor _functions;
 
         void Reset() override
         {
             _pendingHealRecovery = false;
+            CancelIntroHeal();
             events.Reset();
         }
 
@@ -128,25 +153,45 @@ public:
 
         void HealReceived(Unit* who, uint32& addhealth) override
         {
-            if (!_introHealDone)
-                if (me->GetHealthPct() >= 95)
+            if (!_introHealDone && addhealth)
+            {
+                Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+                if (TuureIntroHeal::Eligible(player, me))
                 {
-                    _introHealDone = true;
-                    Talk(2);
-                    me->SetByteValue(UNIT_FIELD_BYTES_1, 0, 0);
-                    me->SetAnimKitId(0);
-                    me->GetMotionMaster()->MovePoint(1, -13.92f, 1175.70f, -66.31f);
-                    if (Player* pl = who->ToPlayer())
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50563);
+                    player->AddQuestDelayedEvent(41993, 0, []() { });
+                    if (QuestStatusData* status = player->getQuestStatus(41993))
+                    {
+                        _introHealer = player->GetGUID();
+                        _introAttempt = status->ScriptLifetime;
+                    }
                 }
+            }
 
             if (wait_heal && addhealth)
                 _pendingHealRecovery = true;
         }
 
+        void CompleteIntroHeal()
+        {
+            if (_introHealer.IsEmpty()) return;
+            Player* player = ObjectAccessor::GetPlayer(*me, _introHealer);
+            QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;
+            bool ready = !_introHealDone && !_introAttempt.expired() && status &&
+                status->ScriptLifetime == _introAttempt.lock() && TuureIntroHeal::Eligible(player, me) && me->GetHealthPct() >= 95;
+            CancelIntroHeal(); // consume original attempt before reentrant callbacks
+            if (!ready) return;
+            _introHealDone = true;
+            Talk(2);
+            me->SetByteValue(UNIT_FIELD_BYTES_1, 0, 0);
+            me->SetAnimKitId(0);
+            me->GetMotionMaster()->MovePoint(1, -13.92f, 1175.70f, -66.31f);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50563);
+        }
+
         void UpdateLifecycle(uint32) override
         {
             TuureCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            CompleteIntroHeal();
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override

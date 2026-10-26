@@ -2171,11 +2171,12 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Repair initial Boros actual post-heal95pct/50563 native participant/attempt/MovePoint1, then movement/evade/captain/contact. Combat wound40pct and Calindris fixes have scoped native/release checks; actual full client heal/fight/follow/re-entry and all36 remain OPEN.",
+      "next_action": "Repair Boros raw-this Unit-owned greeting/movement/release callback lifetime, then paused queue/evade50562/waypoint50831/captain50634/105697 LINK1; preserve scoped native initial95pct, wound40pct, Lady and pickup/exit fixes. Actual full client route and all36 remain OPEN.",
       "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json",
       "native_pickup_audit": "docs/audits/tuure-native-pickup-2026-10-26.json",
       "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json",
-      "companion_wounds_audit": "docs/audits/tuure-companion-wounds-2026-10-26.json"
+      "companion_wounds_audit": "docs/audits/tuure-companion-wounds-2026-10-26.json",
+      "intro_heal_audit": "docs/audits/tuure-intro-heal-2026-10-26.json"
     },
     {
       "class_id": 5,

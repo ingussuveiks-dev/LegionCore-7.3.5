@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Boros initial actual95pct and original heal attempt
+
+- `tuure-intro-heal-2026-10-26.json`: actual positive-heal signal/native owner in1489/1085/0/41993 binds full Player GUID+native quest lease. Locked lifecycle revalidates original/current lease and observed95pct after health application before native50563/original pose/MovePoint1. NPC/missing owner cannot consume latch; invalid/reset/stale attempts retain later-heal retry. No forced HP, nearest player, explicit completion or character edits.
+- Pinned full counterfactual/current ASAN24 valid variants/19 denials plus native owner/quest/FunctionProcessor/DealHeal/ModifyHealth/lifecycle and stale/freed/reentrant/retake cases pass. Wound768 still passes with actual combat tail and separately tested initial helper. Actual selected canonical owner/lease/95pct/credit/motion PE plus preserved wound/Lady/pickup/scene/capture/Scepter pass. Endpoint/positive-request/disabled-signal limits explicit.
+- Canonical world 2D1411CB698E90CEA3BDFCD4908AA6CE66FDB21E1D00F7F8C20B5C29F0BEF33C, map C5F33BE1B20209891FD9E73F9790A241F9CB95015C69F605CB22A2059FA8E043; own14684 ready/shutdown0/exit0, no new diagnostics/protected changes/task server. Crashes0/DBErrors0/no archive/SQL needed. Commit containing audit followsdf07f265.
+- NEXT: raw-this Unit-owned Boros4s greeting,2s+3s point1 and16s release; then paused AI queue/evade50562/waypoint50831/captain50634/105697 LINK1. Actual first motion/voice/heal/follow/re-entry and all36/client remain OPEN; older95pct OPEN notes superseded for this scope only.
+
 ## Latest repair: Tuure ally scaled wounds and post-heal recovery
 
 - `tuure-companion-wounds-2026-10-26.json`: actual106134/106137/106253 final-damage/target-health protection retains native204237/Talk10/stun; positive heal pending consumed in existing locked lifecycle observes40pct after native application. Reset/re-wound invalidates pending; no forced health, credit, raw callback or SQL. Initial95pct block unchanged/open.

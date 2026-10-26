@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "parent_commit": "df07f265",
+  "scope": "Boros106134 actual initial95pct heal -> native50563 and original pose/MovePoint1 request in1085 step0. Subsequent physical motion/doors/fights/waypoints/client route remain OPEN.",
+  "cause": [
+    "Native HealReceived precedes healer HealDone/ModifyHealth. Original pre-heal95pct test missed the heal that actually reached95, requiring another heal.",
+    "At95pct the original callback latched intro and moved before checking who->ToPlayer. An NPC/guardian heal could consume the transition without a Player50563 recipient, leaving later legitimate healing unable to recover. No live quest/scenario/owner/attempt validation."
+  ],
+  "repair": [
+    "Positive incoming initial heal records native player/pet/guardian/charmer owner only if live eligible Priest with actual incomplete/complete nonrewarded41993 in same1489/1085 step0/map/phase/original100yd, contactable/alive/no pending teleport; actual source106134 must be live/nonpredeleted. No nearest participant substitution.",
+    "Provision existing native quest ScriptLifetime via AddQuestDelayedEvent(41993,0,empty action), then store full Player GUID and weak lease on the AI. No delayed raw player/AI callback, character row edit or synthetic healing. Same-tick abandon/reaccept and same-GUID relog/replacement are rejected by exact current quest lease comparison even if the old lease remains externally held.",
+    "Existing locked UpdateLifecycle first performs native40pct wound recovery, then resolves original full GUID and revalidates actual quest lease/current context/observed95pct after native health application. Consume token and mark intro done before callbacks; preserve Talk2/pose/anim0/original MovePoint1(-13.92,1175.70,-66.31)/one native50563. No manual scenario completion or moved-actor arrival credit.",
+    "Invalid/sub95/stale completion clears only pending heal signal; later valid positive heal retries. NPC/missing owner never consumes the intro latch. Reset cancels pending original; earned intro flag remains native. No physical movement replay/health reset introduced."
+  ],
+  "native_evidence": {
+    "matching": "Reuse fresh typed26972 native1085 stage0/root47496/leaf47498/criteria29834/type92/50563 Heal Vindicator Boros; LFG1243 solo1..1. Live106134/spawn361419/map1489/phase6374/scaling98..110/native ScriptName. No SQL/client assets changed.",
+    "core": "Actual DealHeal calls received -> healer done -> ModifyHealth. Native locked Creature lifecycle visits disabled and primary AI before ordinary update. Actual owner resolution and AddQuestDelayedEvent weak lifetime reproduced from project source. No external donor/video needed or claimed watched."
+  },
+  "checks": {
+    "baseline": "Test-TuureIntroHeal -Baseline pinned df07f265 demonstrates native500->950 heal misses50563 until another heal and NPC heal at95 latches/moves without player credit, blocking later player. Labelled expected-failing counterfactual, paired current repaired ASAN.",
+    "native_asan": "Full actual Boros HealReceived/Reset/CancelIntroHeal/CompleteIntroHeal/UpdateLifecycle plus both native eligibility/recovery helpers, actual owner, AddQuestDelayedEvent/FunctionProcessor, DealHeal received/done/application prefix/full ModifyHealth and Creature lifecycle bridge.24 incomplete/complete x player/pet/guardian x primary/disabled/alias/null modes;19 post-heal denials; exact950 and subthreshold retry; zero/cancelled sub95, intervening damage, repeated NPC heals, missing owner/null healer, held-old-lease same-tick retake, Reset/retry/earned preservation, freed/replaced AI/healer, same-low-counter/same-GUID different session and reentrant exactly-once credit. ASAN passes/no reports.",
+    "wounds": "Test-TuureAllyDamage -AddressSanitizer still passes768. It now extracts the actual Boros combat heal tail and stubs the separately tested initial completion/cancel in its wound fixture; full initial handler is executed here. No claim that a shortened wound fixture proves initial quest behavior.",
+    "limits": "Health stat/scaling services, live registry, native motion/pose/packet endpoints and achievement delivery are controlled adapters; actual target-relative health/multiplier is separately regressed by wound fixture, not full live spell modifiers/arrival. Test proves native heal ordering and post-application observation, not every cast/ACK. A positive pre-HealDone request plus actual95pct is required, not a measured positive gain; original95pct overheal admission is retained. Healing during an already-suspended original AI receives the temporary AI callback natively; this repair does not change global heal dispatch. Disabled lifecycle cases receive valid signal before suspension.",
+    "release": "Original generated libs/no OutDir/staged selected PE/map checked. Actual factories/healB0/lifecycle110 plus owner/eligible/native quest lease, completion original accessor/current quest/native95pct constant/50563/motion and no pre-heal/nearest/forced health paths verified. Preserved wound/Lady/pickup/scene/capture PE included. Canonical selected PE and ScepterLogin -VerifyReleaseBinary pass.",
+    "runtime": "Both names absent before/rechecked during promotion, protected config/key/cert hashes unchanged. Own14684 fresh ready/shutdown0/exit0/stderr empty/newDBErrors0, no user/unknown process stopped or task server left."
+  },
+  "canonical_sha256": {
+    "bnetserver.map": "02A73ED154B9B1EB6709C6F37884640371BA31A5F37E6C4374E1130D4E5C4577",
+    "worldserver.exe": "2D1411CB698E90CEA3BDFCD4908AA6CE66FDB21E1D00F7F8C20B5C29F0BEF33C",
+    "bnetserver.exe": "EFB092034312563FCE0E48ADF8F273CF96CCD9666A3A89FC9301FB3144564C72",
+    "worldserver.map": "C5F33BE1B20209891FD9E73F9790A241F9CB95015C69F605CB22A2059FA8E043"
+  },
+  "diagnostics": "Every test/build/probe/startup uses mandatory before/after canonical+repo+fixture crash/log snapshots; no new/changed crash, appended DBErrors/server warning/error/assertion. No fixed archive/log truncation or character mutation required. Existing SQL14/15 unchanged.",
+  "remaining": [
+    "Next: Boros Unit-owned raw-this4s greeting/2s+3s movement/16s ally release callbacks can outlive AI; AI-owned paused _functions have separate Reset/recipient/finite progression review. Trace actual full movement/evade/first combat50562/waypoint50831 and Captain50634,105697 LINK1.",
+    "Actual initial heal/pose/voice/first motion/doors/follow/pet/guardian heal/party/faction/abandon-reentry/client completion and all36 remain pending. Existing later route defects are not hidden by this scoped heal repair."
+  ]
+}

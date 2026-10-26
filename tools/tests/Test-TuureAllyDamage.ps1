@@ -11,7 +11,14 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  foreach($pair in @(@('Boros','npc_vindicator_borosAI'),@('Allies','npc_tuure_small_eventsAI'))){
   $actor=Block $source "struct $($pair[1]) : ScriptedAI";$pinned=Block $old "struct $($pair[1]) : ScriptedAI"
   [IO.File]::WriteAllText("$out/$($pair[0])Damage.inc",$(if($Baseline){Block $pinned 'void DamageTaken('}else{Block $actor 'void DamageTakenAfterScaling('}))
-  [IO.File]::WriteAllText("$out/$($pair[0])Heal.inc",(Block $(if($Baseline -or $HealBaseline){$pinned}else{$actor}) 'void HealReceived('))
+  $healMethod=Block $(if($Baseline -or $HealBaseline){$pinned}else{$actor}) 'void HealReceived('
+  if($pair[0] -eq 'Boros' -and !$Baseline -and !$HealBaseline){
+   # The full initial-heal handler/lease has its own native regression. This
+   # wound harness executes its actual production combat tail only.
+   $combat=$healMethod.IndexOf('            if (wait_heal && addhealth)');if($combat -lt 0){throw 'Boros combat heal tail missing'}
+   $healMethod="void HealReceived(Unit*,uint32& addhealth) override {`n"+$healMethod.Substring($combat)
+  }
+  [IO.File]::WriteAllText("$out/$($pair[0])Heal.inc",$healMethod)
   [IO.File]::WriteAllText("$out/$($pair[0])Lifecycle.inc",$(if($Baseline -or $HealBaseline){''}else{Block $actor 'void UpdateLifecycle('}))
   [IO.File]::WriteAllText("$out/$($pair[0])Reset.inc",(Block $(if($Baseline -or $HealBaseline){$pinned}else{$actor}) 'void Reset('))
  }
