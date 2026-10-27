@@ -3266,10 +3266,11 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Native physical249814/211954 equip+scene/retry/accepted218172 return repaired and deployed; all three earned control leaves and cached loot/cast admission required. Continue106756 single-attempt initial chest creation/AI failure recovery; full stage5 three controls/earlier route, Bilaal death/Azuregos/gravity and actual client/all36 remain OPEN.",
+      "next_action": "Native106756 initial chest2s retry, Reset/no intro duplicate/existing world object guards repaired with RELEASED08. Continue real Mage1101 stage5 three-control callbacks and earlier route; shared Bilaal death/Azuregos/gravity, quest/LFG reentry, visuals and full client/all36 remain OPEN.",
       "bilaal_combat_audit": "docs/audits/bilaal-health-thresholds-2026-10-27.json",
       "shared_portal_preservation_audit": "docs/audits/lights-wrath-pickup-recovery-2026-10-27.json",
-      "pickup_recovery_audit": "docs/audits/aluneth-pickup-recovery-2026-10-27.json"
+      "pickup_recovery_audit": "docs/audits/aluneth-pickup-recovery-2026-10-27.json",
+      "initial_chest_retry_audit": "docs/audits/aluneth-initial-chest-retry-2026-10-27.json"
     },
     {
       "class_id": 8,

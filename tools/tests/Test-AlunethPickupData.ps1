@@ -8,6 +8,8 @@ function Section([string]$s,[string]$start,[string]$end){$a=$s.IndexOf($start);$
  $setup='';foreach($t in $filters.Keys){$setup+="CREATE TEMPORARY TABLE saved_$t LIKE $t;INSERT INTO saved_$t SELECT * FROM $t WHERE $($filters[$t]);CREATE TEMPORARY TABLE $t LIKE saved_$t;INSERT INTO $t SELECT * FROM saved_$t;`n"}
  function InsertRows($table,$fields,$rows){$values=@();foreach($row in $rows){$cell=@();foreach($field in $fields){$value=$row.$field;if($value -is [string]){$cell+="'"+$value.Replace("'","''")+"'"}elseif($null -eq $value){$cell+='NULL'}else{$cell+=[Convert]::ToString($value,[Globalization.CultureInfo]::InvariantCulture)}};$values+='('+($cell -join ',')+')'};'INSERT INTO '+$table+'('+($fields -join ',')+') VALUES'+($values -join ',')+';'}
  $setup+="UPDATE gameobject_template SET AIName='SmartGameObjectAI',ScriptName='go_artifact_acquisition' WHERE entry=249814;DELETE FROM smart_scripts WHERE(entryorguid=106756 AND source_type=0) OR(entryorguid=249814 AND source_type=1);DELETE FROM conditions WHERE(SourceTypeOrReferenceId=4 AND SourceGroup=249814) OR(SourceTypeOrReferenceId=17 AND SourceEntry=211954);DELETE FROM spell_script_names WHERE spell_id=211954 AND ScriptName IN('spell_lights_wrath_pickup_cast','spell_lights_wrath_pickup_scene');"+(InsertRows smart_scripts $native.fields $native.rows)
+ # Replay07 against its pinned actor conditions;08 later extends that graph.
+ $setup+='DELETE FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=106756;'+(InsertRows conditions $native.conditions_fields $native.conditions_rows)
  function Snapshot([string]$label,[switch]$Filtered){($filters.Keys|ForEach-Object {$where=if($Filtered){' WHERE '+$filters[$_]}else{''};"SELECT '$label-$_',a.* FROM $_ a$where;"}) -join "`n"}
  function Rows($rows,[string]$label){@($rows|Where-Object {$_ -like "$label`t*"}|ForEach-Object {$_.Substring($label.Length+1)}|Sort-Object -CaseSensitive)}
  function Signature($rows,[string]$label){(Rows $rows $label) -join "`n"}
@@ -27,9 +29,23 @@ function Section([string]$s,[string]$start,[string]$end){$a=$s.IndexOf($start);$
  }
  if($VerifyLive){
   $sha=[Security.Cryptography.SHA1]::Create();try{$hash=[BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(([IO.File]::ReadAllText((Resolve-Path $MigrationPath))).Replace("`r`n","`n")))).Replace('-','')}finally{$sha.Dispose()}
-  $live=Query "SET SESSION TRANSACTION READ ONLY;SELECT 'update',hash,state FROM updates WHERE name='2026_10_27_07_aluneth_pickup_recovery.sql';$(Snapshot 'live' -Filtered)"
+  $live=Query "SET SESSION TRANSACTION READ ONLY;SELECT 'update',hash,state FROM updates WHERE name='2026_10_27_07_aluneth_pickup_recovery.sql';SELECT 'chest-superseded',COUNT(*) FROM updates WHERE name='2026_10_27_08_aluneth_initial_chest_retry.sql' AND state='RELEASED';$(Snapshot 'live' -Filtered)"
   if($live -notcontains "update`t$hash`tRELEASED"){throw 'Live Aluneth updater/hash differs'}
-  foreach($t in $filters.Keys){if((Signature $rows "first-$t") -cne (Signature $live "live-$t")){throw "Live Aluneth differs: $t"}}
+  $superseded=$live -contains "chest-superseded`t1"
+  if($superseded){
+   $columns=$native.fields -join ',';$cf=$native.conditions_fields -join ','
+   $context=Query "SET SESSION TRANSACTION READ ONLY;SELECT 'graph',SHA2(GROUP_CONCAT(CONCAT_WS('|',$columns) ORDER BY id SEPARATOR '\\n'),256),COUNT(*) FROM smart_scripts WHERE entryorguid=106756 AND source_type=0;SELECT 'conditions',SHA2(GROUP_CONCAT(CONCAT_WS('|',$cf) ORDER BY SourceGroup,ElseGroup,ConditionTypeOrReference,ConditionValue1 SEPARATOR '\\n'),256),COUNT(*) FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=106756;"
+   if($context -notcontains "graph`td7873fc8e5ac0cdaff10e58d85b88f03c262bb20404f1f9302fc4d75ec3fdce7`t8" -or $context -notcontains "conditions`t170beeb2b544c367c3a33cf8b70b92738c322f32f60cdcb48db754e7e2a2f65f`t8"){throw 'Released08 context differs from its tested exact superseding graph'}
+  }
+  foreach($t in $filters.Keys){
+   $expected=Signature $rows "first-$t";$actual=Signature $live "live-$t"
+   if($superseded -and $t -in @('smart_scripts','conditions')){
+    $pattern=if($t -eq 'smart_scripts'){'^106756\t0\t'}else{'^22\t[0-9]+\t106756\t'}
+    $expected=(@($expected -split "`n"|Where-Object {$_ -notmatch $pattern})) -join "`n"
+    $actual=(@($actual -split "`n"|Where-Object {$_ -notmatch $pattern})) -join "`n"
+   }
+   if($expected -cne $actual){throw "Live Aluneth differs: $t"}
+  }
  }
  $s=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.cpp" -Raw
  $cases=(Section $s '        case CONDITION_ITEM:' '        case CONDITION_ITEM_EQUIPPED:')+(Section $s '        case CONDITION_CLASS:' '        case CONDITION_RACE:')+(Section $s '        case CONDITION_QUESTREWARDED:' '        case CONDITION_QUEST_NONE:')+(Section $s '        case CONDITION_MAPID:' '        case CONDITION_AREAID:')+(Section $s '        case CONDITION_SCENARION_STEP:' '        case CONDITION_REALM_ACHIEVEMENT:')+(Section $s '        case CONDITION_ALIVE:' '        case CONDITION_HP_VAL:')

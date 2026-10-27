@@ -22,7 +22,7 @@ int main(int argc,char** argv){
   std::cout<<"STEP\t"<<s->ScenarioID<<'\t'<<unsigned(s->OrderIndex)<<'\t'<<s->ID<<'\t'<<s->Criteriatreeid<<'\t'<<s->Title->Str[0]<<'\t'<<s->Description->Str[0]<<'\n';
   std::set<uint32> todo{uint32(s->Criteriatreeid)},seen;while(!todo.empty()){auto id=*todo.begin();todo.erase(id);if(!seen.insert(id).second)continue;if(auto t=trees.LookupEntry(id)){if(auto c=criteria.LookupEntry(t->CriteriaID))std::cout<<"CRITERION\t"<<s->ScenarioID<<'\t'<<unsigned(s->OrderIndex)<<'\t'<<t->ID<<'\t'<<c->ID<<'\t'<<unsigned(c->Type)<<'\t'<<c->Asset<<'\n';for(auto child:trees)if(child->Parent==id)todo.insert(child->ID);}}
  }
- std::set<uint32> chosen{207901,207949,207956,207996,208011,209863,209869,209874,211954,218172,225879};for(auto e:effects)if(e->EffectMiscValue[0]==248572)chosen.insert(e->SpellID);
+ std::set<uint32> chosen{207901,207949,207956,207996,208011,209863,209869,209874,211954,218172,225879};for(auto e:effects)if(e->EffectMiscValue[0]==248572||e->EffectMiscValue[0]==249814||e->EffectMiscValue[0]==248574){chosen.insert(e->SpellID);std::cout<<"GO_SOURCE\t"<<e->SpellID<<'\t'<<e->Effect<<'\t'<<e->EffectMiscValue[0]<<'\t'<<unsigned(e->ImplicitTarget[0])<<'\t'<<unsigned(e->ImplicitTarget[1])<<'\n';}
  for(auto s:spells)if((s->ID>=209860&&s->ID<=209880)||std::string(s->Name->Str[0])=="Force of Gravity")chosen.insert(s->ID);
  for(unsigned depth=0;depth<3;++depth)for(auto e:effects)if(chosen.count(e->SpellID)&&e->EffectTriggerSpell)chosen.insert(e->EffectTriggerSpell);
  for(auto e:effects)if((e->EffectTriggerSpell==207949||e->EffectTriggerSpell==207996)||e->EffectMiscValue[0]==104985)

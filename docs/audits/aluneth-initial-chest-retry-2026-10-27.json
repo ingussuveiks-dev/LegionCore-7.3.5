@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "3a69d7f34",
+  "scope": "Native Mage106756/370546 initial249814 chest creation after actual scenario1101 step6. Data-only retry, Reset and duplicate protection; pickup/presentation/accepted return remain in prior audit. No whole Aluneth/client certification.",
+  "cause": "Original106756 UPDATE1 -> LINK2 player teleport -> LINK3 single-attempt action50 creates249814, then LINK5/6 cleanup/speech. A null summon consumes the original root runOnce, so ordinary later polls never retry. Reset clears runOnce and replays native data/player teleport/speech, rather than retrying only the missing object. Actual native action50 retry2 exists but requires a phased nonrepeatable UPDATE; adding that bit to the LINK would be rejected by the real loader.",
+  "change": [
+    "Retain actual existing native phased action50 retry2 and map ownership4. Original root1 retains one-shot plus DONT_RESET256 (flags257); original LINK3 becomes phase1 arm, retaining its link5. Native data45/teleport62/unaura28/speech1 endpoints and all their fields remain unchanged, as do ambient phase5 speech and real actor source22 stage gates.",
+    "New UPDATE7 is phase-mask1/flags257, initial0/repeat2000, action50 entry249814/lifetime0/flags6 at original1117.78/1048.03/314.619/o2.09636. Only failed actual creation resets runOnce via existing core; successful creation remains consumed across Reset. New RESET8 restores internal phase1 only for actual1101 step6, using ConditionTarget1/base actor for the null invoker.",
+    "Native negative NEAR_GAMEOBJECT30 conditions on root1 and UPDATE7 reject an existing same-phase chest249814 or exit248574 within100yd. This custom bounded dedup range covers the stationary actor's actual chest3yd and exit58yd poses; no retail timing/geometry claim. Root1 also avoids introductory replay after a new AI sees already-existing world objects. Other entry/phase/map/range does not substitute an artifact fact.",
+    "Source106756 has native movement0/spawndist0 and one World spawn370546/map1583/phase6068. World has only this action50 creator; complete matching DB2/hotfix EffectMiscValue0 scan finds no spell source for249814/248574, and local C++ references are the explicit shared pickup table/route. Native nearby search uses same map and full phase before distance; it does not anchor credit to a nearby player.",
+    "Existing data45 targets113142; read-only full113142 graph is one native DATA_SET1/1 one-shot -> DIE37/self cleanup, SmartAI. This downstream cleanup is unchanged. New events7/8 contain only spawn/phase actions, not player credit/items/quests/health. Native existing intro actions are counted at controlled endpoints in the host, not claimed as actual client teleports or speech."
+  ],
+  "migration": {
+    "file": "sql/updates/world/2026_10_27_08_aluneth_initial_chest_retry.sql",
+    "updater_sha1": "9FA406EB51A166C28F40FD310B0F8DC130F69DAA",
+    "state": "RELEASED",
+    "original_smart_sha256": "1247b15914f72dfcb60c5e19e841c26521e239071c9e6375f91f139c37e75a38",
+    "original_conditions_sha256": "789ad91b47754f6bbf1afd8cea2a9d5d96ae11c583eaa738de2d4f106f1a45a2",
+    "new_smart_sha256": "d7873fc8e5ac0cdaff10e58d85b88f03c262bb20404f1f9302fc4d75ec3fdce7",
+    "new_conditions_sha256": "170beeb2b544c367c3a33cf8b70b92738c322f32f60cdcb48db754e7e2a2f65f",
+    "guards": "Complete31-field old/new source graphs and14-field condition graphs/counts, actual unique native source spawn/template, matching existing pickup/return bindings, no static object or unrelated DB producer. All mutations including INSERT SELECT obey the guard even if a client force-continues after SIGNAL. Pending file stayed outside updater until native/TEMP/existing canonical PE passed."
+  },
+  "checks": {
+    "counterfactuals": "Actual loaded original six rows/two conditions through extracted native UPDATE/LINK/Reset/action50: controlled Map rejection consumes a single attempt and ten polls do not retry; original Reset replays player teleport. Separate deliberately wrong reset ConditionTarget0 fails the actual native null-invoker wrapper and loses phase; target1 repaired case passes. These are identified counterfactuals, not successful ordinary gameplay or captured production crashes.",
+    "native_asan": "Actual OnReset, InitTimer/RecalcTimer/complete UpdateTimer, phase enum/SetPhase/IsInPhase, ProcessEventsFor, ProcessEvent admission and relevant UPDATE/LINK cases, full action50 and action22 cases, pre-action runOnce and copied LINK dispatch; actual source22 getter/wrapper/ElseGroups, scenario/near-GO predicates, native nearest check and grid searcher/WithinDistInMap. Loaded six/eight event and two/eight condition shapes from guarded TEMP migration. Failure plus2s strict-tick boundary and Reset retain one native intro; success/Reset do not respawn. New AI with existing chest/exit, wrong phase/range/entry,1101 versus1065/step7/no scenario, step5->6, null invoker and four actual retry-loader refusals pass. Controlled AI-enabled endpoint defers while disabled then resumes pending retry; no locked lifecycle or progress while disabled is claimed.",
+    "data": "Ten complete TEMP tables, migration twice, full normalization back to originals and ten old/applied custom refusals. Source0/2/5/6 every field unchanged, original1 changes only flags1->257, original3 only phase bridge fields, plus7/8 and six new source22 predicates. Priest templates/loot/source4/source17/spell/scene/native Dalaran target unchanged. Final filtered live readback matches every selected row/column and RELEASED LF SHA1.",
+    "shared": "Prior Mage07 native cached-slot/cast TEMP/live regression and Priest06 TEMP/live regression pass.07 reconstructs its historical actor conditions and verifies the exact superseding08 hashes/counts before comparing the rest; no historical applied SQL rewritten. Native creator/insertion/cleanup flag2+4 regression was already run/passed for this unchanged core and is referenced in the pickup audit. Matching native reader GO-source scan no matches/no new diagnostics.",
+    "release": "Existing canonical actual action50 switch reads retry bit2/position8, null-result branches restore runOnce99; actual flags3c bit256 skips timer and runOnce clearing before RESET25/condition dispatch. Creator4 x64 argument path remains checked by inherited PE. Near-GO actual predicate calls map/phase/range path. Same existing Release53B3434D unchanged, no C++ or EXE replacement needed.",
+    "corrected_attempts": "First TEMP snapshot accidentally reused the conditions label for native shape output; separated labels and full preservation passes. Initial adapter compile lacked unused native random-summon APIs; supplied explicit unreachable adapters and reran full native action50 with ASAN. Failed completion=False outputs remain local. No new server failure/crash was hidden.",
+    "limits": "Map insertion, nearby grid visitation/phase geometry endpoints, AI-enabled selection and unchanged dialogue/teleport/data/unaura side effects have controlled adapters. Actual native map insertion and owner cleanup are separately covered; client visibility, native full AI/charm lifecycle, full Mage three-control sequence, pet/group/faction/reentry and all36 client chains remain pending."
+  },
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256_unchanged": "53B3434DFC220632C8E4707FAA5C8620FE2522B3631C3E82FF69E98F0746187D",
+    "owned_pid": 9288,
+    "startup": "Native updater08 RELEASED, loader/ready, server shutdown0/exit0, empty stderr/newDBErrors; no new/changed canonical/test crashes or appended server warnings/errors/assertions; protected runtime hashes unchanged; no task-owned hidden server remains."
+  },
+  "archives": "No new runtime diagnostic report/log to archive or truncate. Failed fixture outputs retained in ignored local evidence. No credentials/configuration/logs/dumps/character data committed or edited.",
+  "next": [
+    "Trace the real Mage1101 stage5 three-control callbacks and earlier route, preserving the existing native roles.",
+    "Shared Bilaal real death/disabled-AI/native49810/Azuregos104546 retry and missing gravity209863 assets remain OPEN.",
+    "Trace actual completed-presentation quest reacquisition/LFG reentry, native portal route fidelity, all remaining36 server lifecycles and client visuals. Keep client tests with user and continue independent repairs."
+  ]
+}

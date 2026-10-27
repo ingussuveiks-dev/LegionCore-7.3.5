@@ -4,6 +4,14 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Aluneth initial chest native retry (2026-10-27)
+
+- `aluneth-initial-chest-retry-2026-10-27.json`:106756/370546 single LINK3 action50 consumed a failed initial249814 creation; Reset replayed data/player teleport/speech. Native phased UPDATE7/flags257/action50 flags6 now retries2s at exact original pose/lifetime0/map ownership. Original1 flags257 preserves one intro; LINK3 only arms phase1 then unchanged5/6. RESET8 uses actual1101/6/base actor target1 to restore pending phase without clearing accepted attempts.
+- Negative native near-GO predicates on intro/update reject existing same-phase249814/248574 within custom100yd bound; root and exit are3yd/58yd from stationary native source. No nearest-player credit or new progression action. Existing113142 data1 native DIE/self cleanup unchanged. Matching DB2/hotfix has no spell GO-source for249814/248574; World unique producer and local C++ route verified.
+- Full native phase/Reset/UPDATE/LINK/action50/pre-latch/copied-LINK/source22/scenario/phase-near search ASAN: original lost attempt/reset teleport and wrong target0 counterfactuals, repaired2s strict tick/Reset/duplicate/new-AI/existing object/phase/range/entry/scenario/null-invoker cases, four loader refusals pass. AI-disabled endpoint defers then resumes, not locked-progress proof. Ten full TEMP tables/twice/normalization/ten refusals/live RELEASED08 SHA1 pass;07 verifies exact08 supersession,06 and native GO source scan pass. Fixture label/unused adapter compile failures corrected and retained locally.
+- Data-only: existing canonical world53B3434DFC220632C8E4707FAA5C8620FE2522B3631C3E82FF69E98F0746187D unchanged. Actual core retry bit2/null-return runOnce99, creator4, DONT_RESET256/RESET25/condition and phase/range PE pass. Own9288 updater/ready/shutdown0/exit0/stderr+newDBErrors0/no new crashes or server errors/protected changes/task server. No archive/truncation/manual character mutation. Commit containing audit follows3a69d7f34.
+- NEXT real Mage1101 stage5 three-control callbacks/earlier route; shared Bilaal death/disabled-AI/49810/Azuregos104546 retry and unresolved gravity assets. Quest/LFG reentry, actual native route and all visual/client/all36 remain OPEN. Continue independent work; client tests stay with user.
+
 ## Latest repair: Aluneth physical pickup and accepted return (2026-10-27)
 
 - `aluneth-pickup-recovery-2026-10-27.json`: common Nexus pipeline now has separate native Mage1101/42011/249814/127857/211954/scene1269/source106756 and Priest1065 route data. Require actual three Mage control leaves47997/55130/55131. Full receipt/spell identity prevents cross-route reuse. Native211954 has the same9s structure; actual scene package1717/misc1269/flags21 retained. Both real equip/105109 and native scene completion precede retryable map-owned portal, then accepted native218172 precedes49875.
