@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "status": "Repair implemented and staged Release/native packet regressions passing; canonical promotion waits for user-owned servers to stop",
+  "status": "Implemented/pushed4ed3e0bd4 and deployed; canonical selected PE/owned startup clean, actual client animation retest pending",
   "report": "User reports every attacking battle pet plays one final attack animation on an already dead opponent. User explicitly clarified: animation only, no additional damage number.",
   "proven_defect": [
     "All three first/round/replacement sender loops wrote every variant of a union in sequence. After assigning StateValue, unused AbilityChange.CooldownRemaining=0 overwrote that same storage. Thus actual server Is_Dead=1 became wire Is_Dead=0. AuraAbilityID and remaining duration were similarly overwritten with zeros.",
@@ -27,7 +27,7 @@
   "staged_release": {
     "directory": ".codex/pet-round-release",
     "worldserver_sha256": "1759D05C0C8BF4738325F3AEC818908DB7A51868857E10E9D37DF4C85B8ED1D0",
-    "canonical": "Still503fd969b deployment/5063294C while user servers are active. No new SQL."
+    "canonical": "Promoted after explicit user shutdown confirmation and absent-process checks before every file; canonical1759D05C includes earlier Ikky/Stone/artifact fixes. No new SQL or character changes."
   },
   "diagnostics": {
     "final_checks": "No new/changed canonical/own-runtime crashes, appended DBErrors, server warnings/errors/assertions; normal test/build exits0. User-owned canonical servers were not stopped and their logs were not rotated.",
@@ -35,9 +35,22 @@
     "archives": "No new resolved crash reports or wholly reviewed log requiring archival/truncation; existing mixed history retained."
   },
   "remaining": [
-    "Await explicit user confirmation that both servers are stopped; recheck processes before each canonical file promotion, preserve/hash-verify old binaries and protected configuration/certificates, run owned startup/graceful shutdown and canonical selected PE checks.",
     "Packet corruption is proven. Whether repairing it removes the exact final attack animation requires the user's client retest; no client animation traversal or new-damage behavior claimed verified.",
     "User checks ordinary kill, multi-hit kill, aura/periodic kill, mechanical/undead revival, replacement/capture and PvP visuals. Fixtures test payload fidelity, not full ability/passive/battle lifecycle fidelity.",
     "Kingslayers return investigation remains unchanged: native215151 event precedes accepted teleport; GO251123 generic goober IN_USE activation occurs before spell admission and must be considered in any scoped receipt/retry design. No Kingslayers return code or migration exists; all36 chain work and Aluneth/Bilaal unresolved evidence retained."
-  ]
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "hashes": {
+      "bnetserver.exe": "74BD3DF8BCF96C3A854D16AB791029D0C13848FBFCF978810B949187D1E567A7",
+      "bnetserver.map": "8BAA72AAD24A2187A9C9589CEDF550691DAD1FB628DBEF3B780A7AD6BACB5006",
+      "worldserver.exe": "1759D05C0C8BF4738325F3AEC818908DB7A51868857E10E9D37DF4C85B8ED1D0",
+      "worldserver.map": "859A3FDC17DEDF52502DB4B37C2DE253C664CAFCF133168AE493BD76B1DDCBDC"
+    },
+    "private_backup": ".codex/release-before-pet-round-2026-10-27",
+    "private_manifest": ".codex/pet-round-deployment.json",
+    "checks": "All four previous EXE/map files backed up and SHA256 verified; copies match staged hashes and original final-link inputs. Configuration/certificate/key hashes unchanged.",
+    "startup": "Task-owned worldserver11324 reached fresh ready, graceful shutdown0/exit0, stderr/new DBErrors0. No task server left running; no user/unknown process stopped.",
+    "canonical_pe": "verify_pet_battle_round_release.py, verify_battle_pet_breed_release.py and verify_battle_stone_release.py passed against actual deployed1759D05C with original libraries/map. All post-test diagnostics clean."
+  }
 }

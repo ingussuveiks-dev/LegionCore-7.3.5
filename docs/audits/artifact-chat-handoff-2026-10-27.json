@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "Checkpoint after pet battle cosmetic final-strike report: proven round union payload corruption repaired and staged1759D05C, canonical still Ikky5063294C pending user shutdown. All36 artifact/Kingslayers/Bilaal/Aluneth evidence preserved.",
+  "reason": "Checkpoint after pet round payload4ed3e0bd4 deployed1759D05C following user shutdown. Native wire/ASAN/canonicalPE and owned11324 startup clean; client animation retest pending. All36 artifact continuation evidence retained.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -83,17 +83,17 @@
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "34E810855F9CFF3C902C5D190FCA66CC61B80E28CC9AD86A3B3BBCA4248BFB48",
-      "bnetserver.map": "2E810AEE7085B54B3FFE9D969BC660EBC952C47345EDAFD9CBAA458DAD504047",
-      "worldserver.exe": "5063294C1A65A33F8FA14D39403AAB769927937A01DCCA002328446BF6351A9A",
-      "worldserver.map": "F916F6466B7817D5C8E28A05C1108E955C8ED51D7FEEADCE9F3AB021E507AA47"
+      "bnetserver.exe": "74BD3DF8BCF96C3A854D16AB791029D0C13848FBFCF978810B949187D1E567A7",
+      "bnetserver.map": "8BAA72AAD24A2187A9C9589CEDF550691DAD1FB628DBEF3B780A7AD6BACB5006",
+      "worldserver.exe": "1759D05C0C8BF4738325F3AEC818908DB7A51868857E10E9D37DF4C85B8ED1D0",
+      "worldserver.map": "859A3FDC17DEDF52502DB4B37C2DE253C664CAFCF133168AE493BD76B1DDCBDC"
     },
-    "scope": "Combined5063294C includes earlierB7 Kingslayers/World14 and new breed RNG fix/World15 RELEASED. Actual canonical RNG/callers and shared Battle-Stone PE, native/ASAN/DB2/data checks pass. Own29200 ready/shutdown0/exit0; no task server remains. Client retests remain separate."
+    "scope": "Combined1759D05C includes prior Ikky503fd969b/World15, Stone66600a9ae and all earlier artifact fixes plus round payload4ed3e0bd4. Three selected canonicalPE checks pass; own11324 ready/shutdown0/exit0/no new diagnostics. No task server remains. Client checks separate."
   },
   "servers_last_seen": {
     "bnetserver": null,
     "worldserver": null,
-    "ownership": "User explicitly shut down both; absence checked at deployment/recovery. Own worldserver29200 gracefully stopped after fresh ready. Never stopped a user/unknown server; recheck live processes before later work."
+    "ownership": "User confirmed both stopped; absence checked before each promotion. Task-owned worldserver11324 gracefully stopped after fresh ready. No user/unknown server stopped; recheck before future deployment."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -240,13 +240,14 @@
     "client_pending": "Ikky stats/battle/level-up/healing/summon/display/relog; prior artifact client tests still pending."
   },
   "pet_battle_round_repair": {
-    "status": "Implemented/tested/staged; user servers active, explicit shutdown request pending; no deployment yet",
+    "status": "Committed/pushed4ed3e0bd4 and deployed1759D05C; native wire/ASAN/canonicalPE/startup passed; client animation retest pending",
     "audit": "docs/audits/pet-battle-round-payload-2026-10-27.json",
     "report": "User confirms final strike is animation only, no extra damage number.",
     "fix": "All three senders share tagged-union converter; native dead1 no longer overwritten0, aura payload retained, flags/turn unchanged instead of untagged isDead heuristic. No engine/progression/SQL edits.",
     "checks": "Native26972 state1 Flags8, pinned actual wire counterfactual, native Kill/SetPetState and actual three senders/real BattleRound::Write/ByteBuffer decode, ASAN extracted handlers, PvE/PvP9 packet fixtures, shared Stone regression, staged selectedPE all pass; no new crashes/DBErrors/server errors.",
     "stage": ".codex/pet-round-release",
     "world_sha256": "1759D05C0C8BF4738325F3AEC818908DB7A51868857E10E9D37DF4C85B8ED1D0",
-    "next": "After user confirms shutdown, recheck BOTH processes and promote with private backup/protected hashes; own startup/cleanup, canonical PE/diagnostics, update audit/handoff and commit/push deployment record. Client animation result still pending."
+    "next": "User verifies actual final attack animation/kill/revival/aura/capture/replacement/PvP presentation. Continue independent Kingslayers return/native215151 accepted-teleport investigation and unresolved Aluneth/Bilaal/all36 evidence; no return source WIP.",
+    "deployment": "Private previous Release .codex/release-before-pet-round-2026-10-27; hash/protected manifest .codex/pet-round-deployment.json. Own11324 ready/shutdown0/exit0/newDBErrors0/stderr0. No SQL/character edits or log truncation."
   }
 }
