@@ -7,6 +7,7 @@
 #include <set>
 #include <map>
 using uint32=uint32_t;using uint8=uint8_t;using int32=int32_t;
+#include "../../src/server/game/Movement/SkyholdDeparture.h"
 #define TC_LOG_DEBUG(...) ((void)0)
 enum {EFFECT_MOTION_TYPE,MMCF_UPDATE=1,MOTION_SLOT_CONTROLLED=2};using MovementSlot=int;
 using MovementGeneratorType=int;
@@ -33,6 +34,7 @@ struct Unit {
  Spline spline;Spline* movespline=&spline;uint32 damageCasts=0,speedCasts=0;bool talent=false;
  int launchResult=250;bool jumping=false;
  bool IsPlayer(){return true;}void AddUnitState(int){jumping=true;}void ClearUnitState(int){jumping=false;}
+ bool IsAlive() const{return true;}uint32 GetMapId() const{return 1220;}
  bool HasAura(int32 id){return id==202163&&talent;}
  void CastSpell(Unit*,uint32 id,bool){++damageCasts;if(id==52174&&!SkipCasterAura(this,202163))++speedCasts;}
  Creature* ToCreature(){return nullptr;}

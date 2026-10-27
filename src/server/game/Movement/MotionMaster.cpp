@@ -17,6 +17,7 @@
  */
 
 #include "MotionMaster.h"
+#include "SkyholdDeparture.h"
 #include "ConfusedMovementGenerator.h"
 #include "Creature.h"
 #include "CreatureAISelector.h"
@@ -547,7 +548,9 @@ void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, f
     if (spellEffectExtraData)
         init.SetSpellEffectExtraData(*spellEffectExtraData);
     int32 duration = init.Launch();
-    if (id == 94954 && arrivalCast && arrivalCast->SpellId == 52174 && duration <= 0)
+    bool skyholdDeparture = arrivalCast && SkyholdDeparture::Matches(id, arrivalCast->SpellId) &&
+        _owner->IsPlayer() && _owner->GetMapId() == 1479;
+    if (duration <= 0 && ((id == 94954 && arrivalCast && arrivalCast->SpellId == 52174) || skyholdDeparture))
     {
         _owner->ClearUnitState(UNIT_STATE_LONG_JUMP);
         return;

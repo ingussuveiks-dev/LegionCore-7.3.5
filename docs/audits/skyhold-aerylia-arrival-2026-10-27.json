@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-27",
+  "build": "Legion7.3.5.26972",
+  "status": "Focused null arrival-target repair deployed/automated-tested; client retest pending",
+  "user_report": "User selected first visible Aerylia96679 gossip option: I must retrieve an artifact from Tirisfal Glades, with active41105. Screenshot shows subsequent fall/death below Skyhold; later screenshot identifies actual menu option. No character recovery/reset/progress edit performed.",
+  "proven_cause": "Native SmartAI96679/menu18724 option1 invokes203921. Its effect42 has native arrival203920, but EffectJumpDest left JumpArrivalCastArgs.Target empty when TriggerSpell was nonzero. EffectMovementGenerator resolved that empty GUID to null; the actual local Unit::CastSpell(Unit*,ID,bool) immediately rejects a null victim. No203920 teleport request followed the jump to below-platform39.45.",
+  "matching_native_data": [
+    "Typed DB2/hotfix reader verifies eleven actual Aerylia native destination-jump/arrival pairs; Ulduar218015 is direct teleport and excluded.191473->191474,193334->193335,203921->203920,205813->205814,225115->225114,225163->225162,225220->225219,225233->225232,229808(effect2)->236618,236624->234642,241928->241931.",
+    "Gossip condition requires active41105 for option1; native action33/97377 then invoker203921 remains unchanged. Source DB position1479/1108.74/7222.54/39.45 is a native launch destination, not a bad final arrival to raise. Native203920 effect1 teleport227/self/DB1539/1966.66/2494.39/133.152/0.147302 retained; existing Warrior1037 map1539 routing unmodified.",
+    "Recursive native data still references missing224783 from203920 effect0. Native EffectTriggerSpell reports this at DEBUG and returns from that effect only; independent effect1 teleport remains. No invented replacement spell or data patch; full visual route remains client-pending."
+  ],
+  "repair": [
+    "Shared typed SkyholdDeparture pair selector supplies the actual caster full GUID only for Player/map1479/exact native jump-arrival pair. Native Unit null/cleanup checks are unchanged. No forced teleport/destination/credit or unrelated direct-trigger default was added.",
+    "Matching Skyhold player departure requires successful native spline launch, real EffectMovementGenerator Update completion, alive owner and still map1479. Interrupted/replaced/dead/map-changed movement cannot redirect the player. Existing Heroic94954/52174 actual-arrival gate retained; other NPC/mismatched/outside-map jumps retain prior behavior.",
+    "Native jump trajectory, existing coordinates, linked teleport spells, gossip/quest counters, native scenario admission and192085 upward return remain unchanged. This focused source fix does not certify missing downstream actors or all36 progression."
+  ],
+  "checks": [
+    "Test-SkyholdDeparture -AddressSanitizer: actual full EffectJumpDest/CalculateJumpSpeeds/GetSpellTriggerDelay, native Unit bool CastSpell guard, Position::Relocate, both native MoveJump overloads and actual EffectMovementGenerator Update/Finalize/MovementInform. Eleven DB2-derived pairs x7 states cover self arrival, zero launch, interruption, death, map change, cleanup and cast refusal; repeat completion/launch-mode/flight/missing destination and foreign NPC/map/metadata paths covered.",
+    "Pinned94438634a EffectJumpDest counterfactual with same native API and controlled endpoints rejects all eleven empty-target arrivals. Repaired variant accepts self request only after actual controlled spline completion. Spline services and final overload/cast endpoint controlled; native203920 teleport effects/client transfer/group/faction/relog are not modeled as verified.",
+    "Existing Test-SkyholdJumpDestination native25 map/height combinations and baseline still pass. Fixture API aligned with current int Launch, arrival state and unique_ptr ownership, retaining raw descriptor cleanup only for its old94697469 baseline. Test-HeroicLeapImpact ASAN actual controller/talent/single landing regression passes.",
+    "Original Release game/scripts libraries rebuilt and selected canonical PE proves actual self GUID copied into native arrival descriptor, pair IDs/map scope, native launch/arrival/Unit API consumers. Existing192085 destinationZ+20/MoveTo and inherited Stromkar/Talonclaw/quest-condition consumers pass. Old verifier now follows actual Spell destTarget field/register and original conditional skip/write instead of fixed RDI scheduling; strict20-yard/real vector assertions retained.",
+    "Canonical ScepterLogin -VerifyReleaseBinary and unchanged IntoFray selected map-command checks pass. Canonical startup4236 clean. All test/build/PE groups record before/after canonical/own crashes, logs/stdout/stderr/status; no new runtime crash/DBErrors/server warning/error/assertion."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "bnetserver.exe": "2BAC4D1ABA4752E6A0293F772053EBB0923EA3F4F129E421CE22784B5BD80079",
+      "bnetserver.map": "3341BF0660CD6FE18BCAA14B8D2633CDA7699E2615074F2DD764B204DBB0E521",
+      "worldserver.exe": "2112AE198F16346E29B4FE35D54FAAF64B4201E37B41C245BDB5B055FF77293A",
+      "worldserver.map": "48E3418E9AD4CB869660E8FCA85E7B8BB73552D40D991130E936C3045AEC4759"
+    },
+    "private_backup": ".codex/release-before-skyhold-aerylia-2026-10-27",
+    "private_manifest": ".codex/skyhold-aerylia-deployment.json",
+    "sequence": "Both server names absent before promotion and each file copy. Original generated library inputs/backup/copy/protected config and certificate hashes verified. Matching combined EXE first, then pending Kingslayers18 moved into updater. Own4236 fresh ready/shutdown0/exit0, stderr/newDBErrors0. No user/unknown server stopped; no task server remains."
+  },
+  "client_pending": "Retry the same first visible Tirisfal artifact option, observe native jump and actual map1539 Warrior arrival, scene/camera/pet and subsequent Sword of Kings stages. Failed/repeated/relog/group/faction client alternatives remain separate. User owns client testing; no manual character edits.",
+  "related_error": "SCRIPT_COMMAND_STOPSCENE46900 is a separate Order Formation193709/193711 source/target mismatch, repaired in the separate scene-recipient audit/commit. Do not confuse its log with the direct cause of the Aerylia fall.",
+  "diagnostics": "No active crash files or new DBErrors; no logs cleared. Existing historical46900 line retained for cause-specific archive after scene fix commit; informative mixed Server.log must remain. Compiler legacy conversion/C5055 warning retained, not hidden.",
+  "continuation": "All36 ongoing; preserve prior Hunter/Bilaal/Aluneth findings and original character backups. Broader non-Skyhold empty native destination-arrival target behavior is deliberately outside this scoped repair and remains a separate review."
+}

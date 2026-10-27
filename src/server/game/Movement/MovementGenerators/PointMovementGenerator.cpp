@@ -17,6 +17,7 @@
  */
 
 #include "PointMovementGenerator.h"
+#include "SkyholdDeparture.h"
 #include "Creature.h"
 #include "CreatureAI.h"
 #include "CreatureGroups.h"
@@ -171,7 +172,9 @@ void EffectMovementGenerator::MovementInform(Unit& owner)
 {
     // Finalize also runs when another movement replaces this generator.
     // Heroic Leap's damage and talent procs require actual spline completion.
-    if (_arrivalSpellId && (_pointId != 94954 || _arrivalSpellId != 52174 || _arrived))
+    bool skyholdDeparture = SkyholdDeparture::Matches(_pointId, _arrivalSpellId) && owner.IsPlayer();
+    if (_arrivalSpellId && (_pointId != 94954 || _arrivalSpellId != 52174 || _arrived) &&
+        (!skyholdDeparture || (_arrived && owner.IsAlive() && owner.GetMapId() == 1479)))
         owner.CastSpell(ObjectAccessor::GetUnit(owner, _arrivalSpellTargetGuid), _arrivalSpellId, true);
 
     if (Creature* creature = owner.ToCreature())

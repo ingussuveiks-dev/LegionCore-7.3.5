@@ -8,6 +8,8 @@
 #include <vector>
 using uint32=uint32_t;
 using uint8=uint8_t;
+using int32=int32_t;
+#include "../../src/server/game/Movement/SkyholdDeparture.h"
 using SpellEffIndex=uint32;
 #define TC_LOG_DEBUG(...) ((void)0)
 enum { SPELL_EFFECT_HANDLE_LAUNCH=1, TARGET_DEST_TARGET_BACK=55, UNIT_STATE_LONG_JUMP=1, MOTION_SLOT_CONTROLLED=1, EFFECT_MOTION_TYPE=3, EVENT_JUMP=0 };
@@ -47,7 +49,7 @@ struct MoveSplineInit {
     void SetVelocity(float) { }
     void SetFacing(float) { }
     void SetSpellEffectExtraData(SpellEffectExtraData const&) { }
-    void Launch();
+    int32 Launch();
 };
 }
 struct MotionMaster {
@@ -68,6 +70,7 @@ struct Unit {
     virtual Player* ToPlayer() { return nullptr; }
     virtual Creature* ToCreature() { return nullptr; }
     bool IsPlayer() { return ToPlayer()!=nullptr; }
+    bool IsAlive() const { return true; }
     bool isInFlight() const { return flying; }
     uint32 GetMapId() const { return map; }
     ObjectGuid GetGUID() const { return {99}; }
@@ -83,6 +86,7 @@ struct Unit {
     }
     void SetSplineTimer(uint32 value) { splineTimer=value; }
     void AddUnitState(uint32 value) { state|=value; }
+    void ClearUnitState(uint32 value) { state&=~value; }
     uint32 CastSpell(Unit* target,uint32 identity,bool triggered) {
         assert(target==this&&triggered);++casts;castSpell=identity;return failCast?1:0;
     }
@@ -104,6 +108,7 @@ struct ObjectAccessor { static Unit* GetUnit(Unit& owner,ObjectGuid identity) { 
 struct EffectMovementGenerator {
     uint32 _pointId,_arrivalSpellId;
     ObjectGuid _arrivalSpellTargetGuid;
+    bool _arrived=false;
     EffectMovementGenerator(uint32 point,uint32 spell,ObjectGuid target):_pointId(point),_arrivalSpellId(spell),_arrivalSpellTargetGuid(target) { }
     void Finalize(Unit&);
     void MovementInform(Unit&);
@@ -112,7 +117,7 @@ struct EffectMovementGenerator {
 void MotionMaster::Mutate(EffectMovementGenerator* movement,uint32 slot) { assert(slot==MOTION_SLOT_CONTROLLED);current.reset(movement); }
 void MotionMaster::Complete() { if(current){auto finished=std::move(current);finished->Finalize(*_owner);} }
 void Movement::MoveSplineInit::MoveTo(float positionX,float positionY,float positionZ,bool) { owner.destination.Relocate(positionX,positionY,positionZ); }
-void Movement::MoveSplineInit::Launch() { ++owner.jumps; }
+int32 Movement::MoveSplineInit::Launch() { ++owner.jumps; return 250; }
 #include "MoveJump.inc"
 struct SpellTriggerDelay { uint32 spell_trigger=0,targetaura=0,target=0,caster=0,effectMask=7;int aura=0; };
 struct SpellMgr {
@@ -156,7 +161,13 @@ struct Spell {
     ~Spell() { delete pending; }
     void EffectJumpDest(SpellEffIndex);
     void CalculateJumpSpeeds(uint8,float,float&,float&);
-    DelayCastEvent* GetSpellTriggerDelay(SpellEffIndex effect,uint32 triggered) { pending=NativeDelay(effect,triggered);return pending; }
+    DelayCastEvent* GetSpellTriggerDelay(SpellEffIndex effect,uint32 triggered) {
+        auto* result=NativeDelay(effect,triggered);
+#ifdef BASELINE
+        pending=result; // old pinned raw descriptor; current handler owns unique_ptr
+#endif
+        return result;
+    }
     DelayCastEvent* NativeDelay(SpellEffIndex,uint32);
 };
 #include "Delay.inc"
