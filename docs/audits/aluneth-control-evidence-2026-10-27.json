@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "6187e74d0",
+  "status": "UNRESOLVED research checkpoint; no production C++/SQL change, deployment or full-route certification",
+  "findings": [
+    "Three actual static objects136609/2542531,136611/2542530,136610/254253 at native map1583 phase6068 have immediate ACTIVATED2 -> Smart205/type92/54145,54146,54147. They are custom type10 aliases of Ancient Scroll of Meitre, lock43, five-minute autoClose; no source22 gates. A premature click can consume availability before the matching scenario step. Do not present a guard on this shortcut as restoration of native placement.",
+    "Matching native scenario1101 step5 Breaking and Binding has distinct trees47997/55130/55131. Native225023/225025/225026 are the real event61 producers54145/54146/54147, ordinary casting time5000ms. Their effect1 persists a dummy aura, effect2 REMOVE_AURA164 removes225020/225027/225028 (EffectTriggerSpell is an aura ID here, not a cast). Effect3 DUMMY uses destination46.",
+    "225020/225027/225028 are infinite OVERRIDE_SPELLS293 with native OverrideSpellData779/780/781; each has exactly its own placement spell, actionbar file629201/flags15. None has a native SpellXSpellVisual.225030 shares the crystals name but its visual60573/kit74348 has audio74181 only; it does not establish a dome model.",
+    "Placement RequiredAreasID4915 is an area group containing8094/8119/8141, not an area ID. RequiresSpellFocus=0. No spell_target_position found. Existing source13/group8 for225026 requires creature45396; its two map1583 spawns are far outside the vault. Native target46 must resolve a real destination before effects; no-source conditions can also use explicit target/focus/position fallbacks. Do not invent a new bunny or skip target validation.",
+    "Actual106756 addon211760/225015 and spellclick211759 retained.113142 addon225212 has periodic225221 and native225231 transformation; static20 actors are not evidence that all hazard behavior works. Native211759 includes nearby dummy and periodic211773 percent damage. None of these dummy effects has a discovered local handler for the three binding stations.",
+    "Matching AreaTrigger.db2 has no Continent1583 record; GameObjects.db2 has no selected map1583/Aegwynn/Meitre record. World map1583 has no eventobject spawns. Searches of selected content tables and areatrigger_actions found no producers for binding auras. This is scoped absence evidence, not proof of an exhaustive absence in all assets.",
+    "Typed visual parent records show225015 ->60565 ->74339 ->models1385685 (7fx_nightborn_arcanezone.m2)/877441 (ArcaneZone.m2), while225023/25/26 share60634 and normal cast/impact kits. These model names do not identify the three protective domes. No renderer/client validation performed."
+  ],
+  "sources": [
+    {
+      "url": "https://github.com/AshamaneProject/AshamaneCore/blob/b09c1c393cf2e01bc5e857ea6117680d2aaeadb0/src/server/scripts/BrokenIsles/Scenario/scenario_mage_art.cpp",
+      "review": "Full fetched newer source reviewed as a reference only. Different scenario/phasing API, no three-scroll mechanic, NextStep bypasses and stage6 has a function declaration rather than a SummonAluneth call. Not adopted."
+    },
+    {
+      "source": "C:/wamp64/www/TrinityCore",
+      "review": "Current and selected735 historical source/history searches found no matching control implementation. Local legacy SQL target-table scan and GitHub defaultbranch indexed searches were limited; no exhaustive-history claim."
+    },
+    {
+      "url": "https://www.wowhead.com/ptr/quest%3D42011/the-nexus-vault",
+      "review": "Legion first-person comments describe three domes and an extra action, with explicit beta and later-version comments distinguished. Text is supporting evidence, not unseen gameplay verification."
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Cr6_pknBSEY",
+      "review": "Partial sampled muted screenshots near21:14 and23:54..24:35 only. Different visible staging; no entire-video or entire relevant sequence review, no audio review."
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=U4M2aNtVDOQ",
+      "review": "Partial muted screen review spanning approximately11:49..14:47 with gaps while local queries ran. Saw Breaking and Binding, three protective domes, placement cast bars at multiple stations, pickup cinematic, final vault portal, later Dalaran. Did not review every frame or audio, and did not establish whether an intermediate Nexus return occurred. No full-sequence verification claim."
+    }
+  ],
+  "checks": {
+    "catalog-expanded": {
+      "diagnostics": ".codex/aluneth-control/catalog-expanded/diagnostics-after.json",
+      "completed": true,
+      "new_crashes": 0,
+      "new_DBErrors": 0,
+      "new_server_diagnostics": 0
+    },
+    "catalog-binding": {
+      "diagnostics": ".codex/aluneth-control/catalog-binding/diagnostics-after.json",
+      "completed": true,
+      "new_crashes": 0,
+      "new_DBErrors": 0,
+      "new_server_diagnostics": 0
+    },
+    "catalog-visual": {
+      "diagnostics": ".codex/aluneth-control/catalog-visual/diagnostics-after.json",
+      "completed": true,
+      "new_crashes": 0,
+      "new_DBErrors": 0,
+      "new_server_diagnostics": 0
+    },
+    "catalog-client-objects": {
+      "diagnostics": ".codex/aluneth-control/catalog-client-objects/diagnostics-after.json",
+      "completed": true,
+      "new_crashes": 0,
+      "new_DBErrors": 0,
+      "new_server_diagnostics": 0
+    }
+  },
+  "next": [
+    "Resolve actual station trigger geometry/visual producer, all three real cast destination paths, permission/quest-attempt admission, interrupt/retry/exactly-once/cleanup and overlap behavior before implementing a faithful control replacement.",
+    "Continue independent Bilaal true death/owner/pet/guardian/disabled-AI credit and failed Azuregos creation recovery. Preserve separate104546 earlier origin and actual native downstream teleport/path/conversation.",
+    "All36 chain lifecycle/visual/client checks remain open; user performs client traversal."
+  ],
+  "runtime": {
+    "production_changes": false,
+    "character_changes": false,
+    "servers_stopped": false,
+    "task_owned_server_left": false,
+    "archive_or_log_truncation": false
+  },
+  "evidence_sha256": {
+    "native-addons.tsv": "fc99c726c51002e0262afc168d2469ad7b7b9851adbc14cacdbdc63d995e52ac",
+    "native-binding.tsv": "eac650250402fb9ad2ee56837d9f2783046bd761c6c781615353f77da28feeb5",
+    "native-client-objects.tsv": "2b3d115a9b192637fc78fb957197bd8c936a3315df5d5863018ba43fd402a812",
+    "native-expanded.tsv": "31f2775c97c6cb5f53cc0b85c892dfc9a5993712ae65a0ce6f30f4e6956c34cb",
+    "native-requirements.tsv": "abfcc89e4f4b345cf68300956d1fcf7a1b515cf5e0dbd5b7a31db1bbf8b6f296",
+    "native-visual.tsv": "7b669998bf7d5d6fcf21944b3b3638553c767737a640186717e058b59be0b47e",
+    "native.tsv": "e347e25ea5fb7687bf1a487b6371cd1919d006623c1dfb20575c6aa7385b5cbf"
+  }
+}

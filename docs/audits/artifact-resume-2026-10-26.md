@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest research: Aluneth native three-scroll control remains OPEN (2026-10-27)
+
+- aluneth-control-evidence-2026-10-27.json: matching225023/25/26 ordinary5000ms events54145/46/47; override779/780/781 via225020/27/28. Existing three GO immediate205 callbacks bypass placement and permit premature use. Do not call a shortcut guard a complete native restoration.
+- Actual target46 must resolve a destination;225026 source13 currently requires distant45396, no native focus. AreaGroup4915=8094/8119/8141. Dome trigger/geometry/model producer unresolved;225030 is audio-only, and225015 arcane-zone visuals do not identify the three domes. No production change or character edit.
+- Local/Trinity/selected history/SQL/GitHub source limits and PARTIAL muted YouTube screenshot review documented explicitly. No whole relevant sequence/video/audio/client certification. Four expanded typed readers pass wrapped diagnostics, no new crashes/DBErrors/server errors, no task server/cleanup needed.
+- NEXT resolve real control sequence while continuing independent Bilaal true-death/disabled-AI/native49810 and retry104546 transition; preserve earlier104546 source and actual downstream path/teleport. Continue all36, do not stop at this research checkpoint.
+
 ## Latest repair: Aluneth initial chest native retry (2026-10-27)
 
 - `aluneth-initial-chest-retry-2026-10-27.json`:106756/370546 single LINK3 action50 consumed a failed initial249814 creation; Reset replayed data/player teleport/speech. Native phased UPDATE7/flags257/action50 flags6 now retries2s at exact original pose/lifetime0/map ownership. Original1 flags257 preserves one intro; LINK3 only arms phase1 then unchanged5/6. RESET8 uses actual1101/6/base actor target1 to restore pending phase without clearing accepted attempts.
