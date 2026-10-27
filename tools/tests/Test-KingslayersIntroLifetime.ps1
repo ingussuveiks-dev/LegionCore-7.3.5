@@ -28,10 +28,10 @@ try{
  $pinned=(& git -C $repo show "3eadb186:$path") -join "`n"
  if($LASTEXITCODE){throw 'Pinned Kingslayers baseline unavailable'}
  $marker='struct npc_garona_halforcenAI : ScriptedAI'
- $restored=$source.Replace((Block $source $marker),(Block $pinned $marker)).Replace('#include "ObjectAccessor.h"','')
- $merlis='struct npc_merlis_malaganAI : ScriptedAI'
- $restored=$restored.Replace((Block $source $merlis),(Block $pinned $merlis)) # Independently pinned by Test-KingslayersDeathCredit.
- if(($restored -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unreviewed change outside Garona introduction AI'}
+ # Pin the repaired introduction itself; Merlis/pickup now have separate suites.
+ $repaired=(& git -C $repo show "8cb3e9cb:$path") -join "`n"
+ if($LASTEXITCODE){throw 'Pinned repaired Garona introduction unavailable'}
+ if(((Block $source $marker) -replace '\s','') -cne ((Block $repaired $marker) -replace '\s','')){throw 'Unreviewed change in Garona introduction AI'}
  if($Baseline){$source=$pinned}
  [IO.File]::WriteAllText("$out/GaronaIntro.inc",(Block $source $marker)+';')
  $header=Get-Content "$repo/src/server/game/AI/EventMap.h" -Raw -Encoding UTF8

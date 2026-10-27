@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "status": "Focused native loot/equip/outro repair deployed and automated-tested; full client chain unconfirmed",
+  "problem": "251107 had Data1=0 despite native251107/128870 loot. Original callback ignored loot state and granted51616, explicit COMPLETE_SCENARIO1123 and three direct credits before checking AddItem success. Full bags could complete progression without a weapon; raw target/outro pointers were retained in7/13/27s actor callbacks. Source/native counterfactual finding, not a newly reported client failure.",
+  "repair": [
+    "Only native251107 Data1 link restored. Actual native storage and completed-loot release trigger the claim; activation grants nothing. Owned-inventory replay and bank-only refusal prevent duplicate weapons. Source4 rechecks cached loot eligibility. No C++ AddItem, direct quest credit or explicit scenario completion remains in the pickup.",
+    "Actual Rogue, active/unrewarded42504 or42627, map1620/instance/phase/visibility/LOS/range, native1123 stage8 and actual Merlis leaf48589 required. Existing completed9/48591 permits owned recovery only. Claim stores original full GUID/quest weak lifetime; cancellation/retake cannot rebind it.",
+    "Native215112 starts scene1325 and215114; its native2s periodic215113 equips existing128870 MAINHAND15/linked128869 OFFHAND16. Confirm real parent/child relationship/equipment, not accepted cast alone.15s native scene duration bounds failed equip; retained item/object permits retry. Native51616 is then requested and actual48591/current9 acceptance checked before outro. Rejected acceptance and earned actor creation have2s custom recovery; no fabricated progress.",
+    "Quest-owned GUID-only7/13s callbacks preserve Mathias108367 dialogue/motion, resolving original player/quest lease/map/phase/native9. The actual actor owns the27s GUID-only earned-world cleanup: fresh native map/instance/actual actor/source GUID/accepted48591 guard permits original251106 door/Garona108222 cleanup even after owner death/logout/quest removal. No player progress is awarded by world cleanup. Retired/missing/mismatched actor/map/scenario cannot reuse borrowed pointers. Failed initial108367 creation retries while actual GO/receipt remains live."
+  ],
+  "native_sequence": [
+    "Matching typed DB2/read-only hotfix:1123 stage7 tree48588/leaf48589 event51615; stage8 tree48590/leaf48591 event51616; stage9 tree48592/leaf48593 event51617. Quest criterion roots48528/48548 each use type152/Scenario1123, not monster credit48528/48548. Removing premature COMPLETE_SCENARIO preserves the real final stage.",
+    "Existing static251123/spawn134046/map1620 at-8427.8/212.465/155.347 is the final goober/Data10=215151. Native215151 effect0 sends51617 and effect1 is252 teleport, with existing target1220/-854.53/4597.28/748.81/orientation4.5759. No new portal, guessed endpoint or exit progression producer added.",
+    "Native215113 also references missing81040 and225882 effect81. Existing matching client data has no81040; this known shared artifact edge remains unresolved and was not replaced or silenced. Accepted casts/metadata do not certify scene/actionbar rendering or full child execution."
+  ],
+  "sql": {
+    "file": "sql/updates/world/2026_10_27_14_kingslayers_native_pickup.sql",
+    "sha1": "CDBB27EFE68C0F9AE14CECAB6E3EB33B7E875979",
+    "state": "RELEASED; actual updater hash/Data1/count/full-condition-hash readback passed",
+    "conditions": 196,
+    "condition_sha256": "633f0a074dc50580d8a4de86cbbf96f7b9082c8b7b188f44e0e7a28abdfc9aad",
+    "scope": "Source4 has28 rows: both actual quests/status variants/stage8/alive/unowned including bank. Source17 has56 rows each for215112/215113/215114: both quests/statuses/stages8..9/alive/inventory ownership. Exact original/applied condition graph, native lock/display/script/loot guarded; custom definitions refuse. Session aggregation limit raised temporarily/restored.",
+    "deployment_safety": "Stayed outside updater at sql/pending/world until matching EXE promotion after user confirmed both servers stopped. Earlier guarded deployment refusal changed nothing and stopped no server."
+  },
+  "checks": [
+    "Test-KingslayersPickup -Baseline executes pinned8cb3e9cb callback: full-bag activation produces51616/explicit1123/three direct credits before failed AddItem. Expected counterfactual, not successful gameplay.",
+    "Test-KingslayersPickup -AddressSanitizer -VerifyNativeCatalog: full production acquisition/helper/GO AI, actual native storage/loot consumption/release/SetLootState and original AddQuestDelayedEvent wrapper. Both quests,27 denials, full-bag/null-store/cast/equip failures and owned/bank retries, native acceptance retry, missing outro recovery after moving away, original quest identity, vanished actor/player and7/13/27s callback suppression. Engine storage/spell/criteria/session endpoints controlled; no actual client traversal or save/relog certification. Final cases also cover reentrant51616 callback, earned-world cleanup while original owner is dead/offline, and8 foreign/removed/invalid-world actor denials; original live-map earned state is not rebound to a new quest.",
+    "Test-KingslayersPickupData: four actual-schema TEMP tables, original/applied/repeat/full-field preservation,14 custom refusals and32-byte session aggregation limit restoration. Actual native Condition/ElseGroup/LootItem/cached-slot predicates execute990 both-quest/status/stage/ownership/class combinations; live SHA1/196 rows/complete condition hash pass. No character writes.",
+    "Original scripts.lib fully rebuilt Release/x64 after prior header change; final link uses original library inputs. Dedicated stage then canonicalB7B2A8CA. Selected actual script registration/GOAI vtable/CanTake/quest lifetime/native pair checks/51616 acceptance/2s recovery and two actual quest-owned compiled GUID dialogue callbacks and actor-owned world callback (including tail wrapper/inlined resolver) verified in PE. No AddItem or explicit scenario-reward call in pickup; final native Scepter Release regression passes.",
+    "Shared Test-KingslayersDeathCredit ASAN/native26972/selected canonical factory/death dispatch confirms unchanged player/pet/guardian/charmer ownership and actual leaf48589. Shared Garona introduction native EventMap/lookup/lifetime/selected canonical consumers pass. Their old whole-file immutable-source guards were scoped to their actual independently tested classes so this separate reviewed GO repair does not invalidate them."
+  ],
+  "limits": [
+    "This is not all36-chain completion. Actual client acquisition/full bags/retry/paired equip/scene/audio/model disappearance and full final portal/quest turn-in remain pending, including group/faction/relog/re-entry alternatives. Native player kill/group rules retained, no party credit fabricated.",
+    "Already accepted recovery belongs to actual live GO/receipt and actual spawned Mathias. World cleanup continues after owner departure without granting progress, but physical actor removal/unload before27s and recreated-controller/saved/new-instance presentation replay are not persisted. Missing door/other unrelated actors and full narrative recovery need separate review.",
+    "Native portal event51617 precedes teleport252 in existing spell. Actual rejected teleport/retry/admission and source-map credit ordering remain a separate next investigation; metadata and successful server startup do not prove client return. No explicit completion workaround was retained.",
+    "Aluneth native three-scroll cast/override evidence retained; dome producer/geometry/destination46 and separate Bilaal gravity209863 remain unresolved. No speculative changes to them."
+  ],
+  "diagnostics": {
+    "evidence": ".codex/kingslayers-pickup/{catalog*,build*,pe-stage*,deployment*,canonical,shared-2}/ and build-extractors/runtime-test/kingslayers-pickup*, kingslayers-death-credit, kingslayers-intro-lifetime",
+    "result": "Before/after every test/build/PE/startup: no new/changed crashes, appendedDBErrors or unexplained server warning/error/assertion. Expected failing baseline clearly separated. Build/fixture compiler warnings retained. No log cleared or crash archived; no maintenance necessary.",
+    "startup": "After explicit user shutdown and per-file absence checks: own23184 appliedSQL14/ready/shutdown0/exit0. Final refinement separates earned world cleanup from owner dialogue; own29112 final B7B2A8CA ready/shutdown0/exit0, stderr/newDBErrors0, protected hashes unchanged. No task-owned server left; no user process stopped.",
+    "development": "Fixture initially lacked QUEST_STATUS_NONE; added actual enum value. A contradictory rewarded+INCOMPLETE test assumption was corrected to native COMPLETE/history branch; production ConditionMgr unchanged. Initial local schema projections corrected via schema read, no mutation. Initial PE overload selector narrowed to native FindPlayer constGUID signature; PE2 passes. Prior shared tests rejected unrelated file-wide edits before scope correction; native Merlis/introduction bodies are unchanged and their regressions pass. Final PE3..4 adaptations identify no-unwind std::function tail wrapper and compiler-inlined WorldOutro resolver; PE5 and final canonical consumer pass. Final review separated essential world cleanup from optional owner dialogue and added death/logout/foreign-map regressions before handoff."
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "B7B2A8CA10932808595AC1357F5797071769C0523141DC351D86E674F87ED442",
+    "manifest": ".codex/kingslayers-pickup-final-deployment.json",
+    "backup": ".codex/release-before-kingslayers-pickup-final-2026-10-27 (earlier F8F4A6D7 preserved in initial backup)",
+    "configuration": "Four EXE/map copy/backup hashes verified; configs/certificates/keys preserved. No character progress edits."
+  },
+  "next": "Trace native251123/215151 accepted teleport/credit and retries, then remaining Kingslayers and all36 worklist. Keep client checks with user."
+}

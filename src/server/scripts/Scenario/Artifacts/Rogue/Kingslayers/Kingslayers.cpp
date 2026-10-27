@@ -8,6 +8,11 @@
 #include "Kingslayers.h"
 #include "GameObjectAI.h"
 #include "ObjectAccessor.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include "Item.h"
+#include "TemporarySummon.h"
+#include "MapManager.h"
 
 // 107979 108015
 class npc_garona_halforcen : public CreatureScript
@@ -830,64 +835,231 @@ public:
     };
 };
 
-// 251107
-class go_the_kingslayers : public GameObjectScript
+namespace KingslayersAcquisition
 {
-public:
-    go_the_kingslayers() : GameObjectScript("go_the_kingslayers") {}
-
-    void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
+    uint32 Quest(Player* player)
     {
-        if (target/* && state == GO_ACTIVATED*/)
+        if (player)
+            for (uint32 id : {42504u, 42627u})
+                if (!player->GetQuestRewardStatus(id) &&
+                    (player->GetQuestStatus(id) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(id) == QUEST_STATUS_COMPLETE))
+                    return id;
+        return 0;
+    }
+
+    bool Leaf(Scenario* scenario, uint32 id)
+    {
+        if (!scenario) return false;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto found = progress->find(id);
+        return found != progress->end() && found->second.Counter;
+    }
+
+    bool CanTake(Player* player, GameObject* object, bool atObject = true)
+    {
+        if (!player || !object || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->HasPendingTeleport() || player->getClass() != CLASS_ROGUE || !Quest(player) ||
+            !object->IsInWorld() || !object->isSpawned() || object->GetEntry() != 251107 || object->GetMapId() != 1620 ||
+            player->GetMap() != object->GetMap() || player->GetInstanceId() != object->GetInstanceId() ||
+            !player->InSamePhase(object) || (atObject && (!player->canSeeOrDetect(object) || !player->IsWithinLOSInMap(object) ||
+            !player->IsWithinDistInMap(object, object->GetInteractionDistance()))) ||
+            object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE)) return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(object->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1123 && Leaf(scenario, 48589) &&
+            (scenario->GetCurrentStep() == 8 || (scenario->GetCurrentStep() == 9 && Leaf(scenario, 48591) &&
+                player->HasItemCount(128870, 1, true)));
+    }
+
+    bool Equipped(Player* player)
+    {
+        Item* parent = player->GetItemByEntry(128870);
+        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+        return parent && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == parent &&
+            child && child->GetEntry() == 128869 && parent->GetChildItem() == child->GetGUID();
+    }
+
+    Creature* Outro(Player* player, ObjectGuid guid, uint32 instance, uint32 quest, std::weak_ptr<uint8> const& lifetime)
+    {
+        QuestStatusData* status = player ? player->getQuestStatus(quest) : nullptr;
+        if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->HasPendingTeleport() ||
+            player->getClass() != CLASS_ROGUE || Quest(player) != quest || lifetime.expired() || !status ||
+            status->ScriptLifetime != lifetime.lock() || player->GetMapId() != 1620 || player->GetInstanceId() != instance)
+            return nullptr;
+        Scenario* scenario = sScenarioMgr->GetScenario(instance);
+        if (!scenario || scenario->GetScenarioId() != 1123 || scenario->GetCurrentStep() != 9 || !Leaf(scenario, 48591))
+            return nullptr;
+        Creature* actor = ObjectAccessor::GetCreature(*player, guid);
+        return actor && actor->IsInWorld() && actor->IsAlive() && !actor->IsPreDelete() && actor->GetEntry() == 108367 &&
+            player->InSamePhase(actor) && actor->ToTempSummon() && actor->ToTempSummon()->GetSummonerGUID() == player->GetGUID() ? actor : nullptr;
+    }
+
+    Creature* WorldOutro(ObjectGuid owner, ObjectGuid guid, uint32 instance)
+    {
+        Map* map = sMapMgr->FindMap(1620, instance);
+        Scenario* scenario = map ? sScenarioMgr->GetScenario(instance) : nullptr;
+        if (!scenario || scenario->GetScenarioId() != 1123 || scenario->GetCurrentStep() != 9 || !Leaf(scenario, 48591))
+            return nullptr;
+        Creature* actor = map->GetCreature(guid);
+        return actor && actor->IsInWorld() && actor->IsAlive() && !actor->IsPreDelete() && actor->GetEntry() == 108367 &&
+            actor->ToTempSummon() && actor->ToTempSummon()->GetSummonerGUID() == owner ? actor : nullptr;
+    }
+
+    bool StartOutro(Player* player)
+    {
+        uint32 instance = player->GetInstanceId(), quest = Quest(player);
+        QuestStatusData* status = player->getQuestStatus(quest);
+        if (!status || !status->ScriptLifetime) return false;
+        std::weak_ptr<uint8> lifetime = status->ScriptLifetime;
+        Creature* actor = player->SummonCreature(108367, -8345.60f, 267.80f, 155.34f, 0.69f);
+        if (!actor) return false;
+        ObjectGuid owner = player->GetGUID(), guid = actor->GetGUID();
+        if (!Outro(player, guid, instance, quest, lifetime))
         {
-            if (target->GetTypeId() == TYPEID_PLAYER)
+            actor->DespawnOrUnsummon();
+            return false;
+        }
+        // Player/quest-owned callbacks keep only identities. Removal/replacement
+        // of the actor, logout or a new quest attempt cannot reuse raw pointers.
+        player->AddQuestDelayedEvent(quest, 7000, [owner, guid, instance, quest, lifetime]()
+        {
+            Player* player = ObjectAccessor::FindPlayer(owner);
+            if (Creature* actor = Outro(player, guid, instance, quest, lifetime))
             {
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51616);
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 1123, 1);
-                // if (Creature* trigger = go->FindNearestCreature(108325, 20.0f))
-                    // trigger->DespawnOrUnsummon();
-
-                target->ToPlayer()->KilledMonsterCredit(114508);
-                target->ToPlayer()->KilledMonsterCredit(48548);
-                target->ToPlayer()->KilledMonsterCredit(48528);
-                if (Creature* outro = target->SummonCreature(108367, -8345.60f, 267.80f, 155.34f, 0.69f))
+                actor->GetMotionMaster()->MovePoint(0, -8334.08f, 277.72f, 156.83f);
+                player->CreateConversation(2452);
+            }
+        });
+        player->AddQuestDelayedEvent(quest, 13000, [owner, guid, instance, quest, lifetime]()
+        {
+            Player* player = ObjectAccessor::FindPlayer(owner);
+            if (Outro(player, guid, instance, quest, lifetime)) player->CreateConversation(2453);
+        });
+        // Earned world cleanup does not depend on the player remaining online
+        // or alive. The actual actor owns this identity-only callback.
+        actor->AddDelayedEvent(27000, [owner, guid, instance]()
+        {
+            if (Creature* actor = WorldOutro(owner, guid, instance))
+            {
+                actor->GetMotionMaster()->MovePoint(0, -8332.05f, 274.51f, 156.83f);
+                if (GameObject* doors = actor->FindNearestGameObject(251106, 60.0f)) doors->SetPhaseMask(2, true);
+                if (Creature* garona = actor->FindNearestCreature(108222, 70.0f, true))
                 {
-                    outro->AddDelayedEvent(7000, [outro, target]() -> void
-                    {
-                        outro->GetMotionMaster()->MovePoint(0, -8334.08f, 277.72f, 156.83f);
-                        Conversation* conversation = new Conversation;
-                        if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2452, target, NULL, *target))
-                            delete conversation;
-                    });
-
-                    outro->AddDelayedEvent(13000, [outro, target]() -> void
-                    {
-                        Conversation* conversation = new Conversation;
-                        if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2453, target, NULL, *target))
-                            delete conversation;
-                    });
-
-                    outro->AddDelayedEvent(27000, [outro]() -> void
-                    {
-                        outro->GetMotionMaster()->MovePoint(0, -8332.05f, 274.51f, 156.83f);
-                        if (GameObject* doors = outro->FindNearestGameObject(251106, 60.0f))
-                            doors->SetPhaseMask(2, true); // hide
-
-                        if (Creature* garona = outro->FindNearestCreature(108222, 70.0f, true))
-                        {
-                            garona->GetMotionMaster()->MovePoint(0, -8426.63f, 213.47f, 155.34f);
-                            garona->DespawnOrUnsummon(15000);
-                        }
-                    });
-                }
-                
-                if (!target->ToPlayer()->HasItemCount(128870, 1))
-                {
-                    target->ToPlayer()->AddItem(128870, 1);
-                    target->CastSpell(target, 215112, true);  // on loot
+                    garona->GetMotionMaster()->MovePoint(0, -8426.63f, 213.47f, 155.34f);
+                    garona->DespawnOrUnsummon(15000);
                 }
             }
+        });
+        return true;
+    }
+}
+
+// 251107: native loot first, then215112/215114/215113 and linked equipment.
+class go_the_kingslayers : public GameObjectScript
+{
+    struct AI : GameObjectAI
+    {
+        explicit AI(GameObject* object) : GameObjectAI(object) { }
+        ObjectGuid claimant;
+        std::weak_ptr<uint8> lifetime;
+        uint32 quest = 0, elapsed = 0, retry = 0, creditRetry = 0;
+        bool finished = false, busy = false, warned = false, creditWarned = false;
+        void Cancel() { claimant.Clear(); lifetime.reset(); }
+        bool GossipHello(Player* player, bool) override
+        {
+            return finished || !claimant.IsEmpty() || !KingslayersAcquisition::CanTake(player, go);
         }
+        ObjectGuid GetGUID(int32 = 0) override { return claimant; }
+        uint32 GetData(uint32) override { return finished; }
+        void SetGUID(ObjectGuid const& guid, int32 = 0) override
+        {
+            if (finished || busy || !claimant.IsEmpty()) return;
+            Player* player = ObjectAccessor::GetPlayer(*go, guid);
+            if (!KingslayersAcquisition::CanTake(player, go) || !player->GetItemByEntry(128870)) return;
+            quest = KingslayersAcquisition::Quest(player);
+            QuestStatusData* status = player->getQuestStatus(quest);
+            if (!status) return;
+            if (!status->ScriptLifetime) status->ScriptLifetime = std::make_shared<uint8>();
+            claimant = guid; lifetime = status->ScriptLifetime; elapsed = creditRetry = 0;
+            SpellCastResult result = player->CastSpell(player, 215112, true);
+            if (result != SPELL_CAST_OK)
+            {
+                Cancel();
+                TC_LOG_WARN("scripts", "Kingslayers pickup: native215112 rejected (%u); retain item/object for retry", uint32(result));
+            }
+        }
+        void UpdateAI(uint32 diff) override
+        {
+            if (claimant.IsEmpty() || busy) return;
+            Player* player = ObjectAccessor::GetPlayer(*go, claimant);
+            QuestStatusData* status = player ? player->getQuestStatus(quest) : nullptr;
+            if (lifetime.expired() || !status || status->ScriptLifetime != lifetime.lock() ||
+                !KingslayersAcquisition::CanTake(player, go, !finished) || !player->GetItemByEntry(128870))
+            { Cancel(); return; }
+            busy = true;
+            struct Release { bool& flag; ~Release() { flag = false; } } release{busy};
+            if (!finished)
+            {
+                elapsed = std::min<uint32>(15000, elapsed + std::min<uint32>(diff, 15000));
+                if (!KingslayersAcquisition::Equipped(player))
+                {
+                    if (elapsed == 15000)
+                    {
+                        Cancel();
+                        TC_LOG_WARN("scripts", "Kingslayers pickup: native215113 did not equip linked items; retain retry");
+                    }
+                    return;
+                }
+                Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+                if (!KingslayersAcquisition::Leaf(scenario, 48591))
+                {
+                    if (creditRetry > diff) { creditRetry -= diff; return; }
+                    creditRetry = 2000;
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51616);
+                }
+                scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+                if (!scenario || scenario->GetCurrentStep() != 9 || !KingslayersAcquisition::Leaf(scenario, 48591))
+                {
+                    if (!creditWarned) TC_LOG_WARN("scripts", "Kingslayers pickup: native51616 not accepted; retain equipped claim");
+                    creditWarned = true;
+                    return;
+                }
+                finished = true; // native accepted pickup, never explicit scenario completion
+            }
+            status = player->getQuestStatus(quest);
+            if (lifetime.expired() || !status || status->ScriptLifetime != lifetime.lock() ||
+                !KingslayersAcquisition::CanTake(player, go, false)) { Cancel(); return; }
+            if (retry > diff) { retry -= diff; return; }
+            retry = 2000;
+            if (!KingslayersAcquisition::StartOutro(player))
+            {
+                if (!warned) TC_LOG_WARN("scripts", "Kingslayers pickup: earned outro108367 creation failed; retain retry");
+                warned = true;
+                return;
+            }
+            Cancel();
+            go->SetLootState(GO_JUST_DEACTIVATED);
+        }
+    };
+public:
+    go_the_kingslayers() : GameObjectScript("go_the_kingslayers") { }
+    GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
+    bool OnGossipHello(Player* player, GameObject* object) override
+    {
+        if (!KingslayersAcquisition::CanTake(player, object) || object->AI()->GetData(0) || !object->AI()->GetGUID(0).IsEmpty()) return true;
+        if (player->HasItemCount(128870, 1, true))
+        {
+            if (player->GetItemByEntry(128870)) object->SetLootState(GO_JUST_DEACTIVATED, player);
+            return true;
+        }
+        return false;
+    }
+    void OnLootStateChanged(GameObject* object, uint32 state, Unit* target) override
+    {
+        Player* player = target ? target->ToPlayer() : nullptr;
+        if (!object || state != GO_JUST_DEACTIVATED || object->getLootState() != GO_JUST_DEACTIVATED ||
+            !KingslayersAcquisition::CanTake(player, object) || !player->GetItemByEntry(128870)) return;
+        object->SetLootState(GO_READY); // hold summoned object across native equip/retry
+        object->AI()->SetGUID(player->GetGUID(), 0);
     }
 };
 
