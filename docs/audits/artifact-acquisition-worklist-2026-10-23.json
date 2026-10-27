@@ -12,6 +12,20 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/Conditions/ConditionMgr.cpp",
+      "handler": "Native source13 candidate container mask",
+      "problem": "Caster-only equipment/quest conditions incorrectly narrowed creature candidates to zero; scenario44 mask missing.",
+      "repair_audit": "docs/audits/stromkar-candidate-mask-2026-10-27.json",
+      "limit": "bc4373043 deployed4638D4E9/native/ASAN/PE pass; actual client target/jump/full finale still pending. Shared predicate evaluation unchanged."
+    },
+    {
+      "path": "src/server/game/Spells/SpellEffects.cpp",
+      "handler": "Execute206455 native self arrival206456/map1539",
+      "problem": "Native destination trigger kept empty target; actual Unit bool cast API rejects it.",
+      "repair_audit": "docs/audits/stromkar-execute-jump-2026-10-27.json",
+      "limit": "8056cdcce deployed4638D4E9; failure/cancel/self-target native ASAN and canonical PE pass; pose/sharedLINK2/client finale remain OPEN."
+    },
+    {
       "path": "src/server/game/Scripting/MapScripts.cpp",
       "handler": "Targetless scene command35/36 player source",
       "problem": "46900 command36 looked only at null target despite Player source; original client log preserved.",

@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "User Aerylia/Tirisfal fall and separate STOPSCENE46900 diagnosed/repaired, committed6195ae644/a8aa4a6d5 and deployed combined2112AE19. Kingslayers94438634a/World18 now coordinated/deployed. No character edits; user client retests pending. All36 work continues.",
+  "reason": "User Execute206455 no-target investigated with supplied video. Native candidate mask bc4373043 and actual self arrival8056cdcce committed/pushed and deployed4638D4E9. Existing103151/101430 LINK2 errors and downed pose remain OPEN. Preserve untested Bezzeredes WIP; all36 continue.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -93,22 +93,32 @@
       "commit": "a8aa4a6d5",
       "fix": "Targetless PLAYSCENE/STOPSCENE actual player-source fallback",
       "audit": "docs/audits/scripted-scene-recipient-2026-10-27.json"
+    },
+    {
+      "commit": "bc4373043",
+      "fix": "Candidate type mask ignores caster predicates and handles scenario44; native/ASAN/canonical PE pass; deployed",
+      "audit": "docs/audits/stromkar-candidate-mask-2026-10-27.json"
+    },
+    {
+      "commit": "8056cdcce",
+      "fix": "Execute206455->206456 actual player self arrival and failed/interrupted launch guards; deployed",
+      "audit": "docs/audits/stromkar-execute-jump-2026-10-27.json"
     }
   ],
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "2BAC4D1ABA4752E6A0293F772053EBB0923EA3F4F129E421CE22784B5BD80079",
-      "bnetserver.map": "3341BF0660CD6FE18BCAA14B8D2633CDA7699E2615074F2DD764B204DBB0E521",
-      "worldserver.exe": "2112AE198F16346E29B4FE35D54FAAF64B4201E37B41C245BDB5B055FF77293A",
-      "worldserver.map": "48E3418E9AD4CB869660E8FCA85E7B8BB73552D40D991130E936C3045AEC4759"
+      "bnetserver.exe": "9D0C0ADEE31074D68671E6A01B38238151D806891236AEB7113A9038357FDADE",
+      "bnetserver.map": "8E9CA03EC0CED9F8539B95F7CEB4CCA4267D1ECD0478E8B1108ADEC44F5C361A",
+      "worldserver.exe": "4638D4E99E30F476B60A675EC2EA85AF145E2E10CDC101DA99524C576F1B8CB9",
+      "worldserver.map": "3F8685CABB2F2403A47DB3630945A25D81788AB937BF9EFDA61290F5D58DF1FD"
     },
-    "scope": "Combined2112AE19 retains prior Malgalor/routes/pet/artifact repairs and adds scoped native Aerylia self-arrival/launch-completion guards, scene35/36 actual-player recipient, Kingslayers accepted return/World18. Actual canonical selected PE/Scepter/legacy20-yard lift/IntoFray and owned4236 startup pass; no whole-chain/client certification."
+    "scope": "Combined4638D4E9 retains previous2112AE19 code/SQL and adds native candidate/caster mask and scoped Execute self arrival. Game-only build; original scripts.lib unchanged so untested Bezzeredes WIP excluded. Canonical mask/jump/Skyhold PE, Execute target/landing Release/Scepter and owned23228 startup pass. Client full finale not certified."
   },
   "servers_last_seen": {
     "bnetserver": null,
     "worldserver": null,
-    "ownership": "User closed both; task never stopped them. Only owned4236 canonical validation started, gracefully shutdown0/exit0. Recheck before future promotion."
+    "ownership": "Both absent before promotion and owned startup. Task-owned23228 worldserver ready, graceful shutdown0/exit0, stderr/newDBErrors0. Never stopped user/unknown server. Recheck before future deployment."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -131,12 +141,13 @@
     "next": "Focused death repair complete/deployed; next inspect actual104546 waypoint/optional cast/portal retry. Do not confuse the still-open gravity/portal/client sequence with this death receipt."
   },
   "next_independent_work": [
+    "User retests current Execute button in actual1037/final stage; no progress reset. Investigate downed Zakajz pose and103151/101430 missingLINK2 intent without deleting diagnostics/guessing actions. Resume preserved Bezzeredes WIP, then all36/Aluneth/Bilaal remaining work. No pending EXE deployment.",
     "Azuregos104546 portal repaired/deployed938fc1225/World13; native retry/actual live graph and final startup verified. Client routes remain pending. Continue independent unresolved gravity and Aluneth control source work.",
     "Bilaal Gravity209863 remains OPEN: native period1000/trigger0, no reviewed native handler/AT6667..9 geometry/209864..6; do not invent wind geometry. Retain prior gravity audit4ea30199e.",
     "Aluneth three-scroll/native5000ms/override779..781 evidence committed a98b0fa69; current custom GO immediate205 shortcut remains UNRESOLVED. Real binding dome producer/geometry and dest46 need evidence;225030 same-name effect is audio-only. Partial YouTube only, not full traversal. Read docs/audits/aluneth-control-evidence-2026-10-27.json.",
     "Hunter additional-artifact SELECTION BACKEND IS ALREADY FIXED: ancestor802295a98, audit hunter-additional-artifact-choice-2026-10-26.json, actual249 conditions/flags3/World12-2026-10-26 RELEASED. Fresh512 native/TEMP/ASAN and canonical PE pass. Old resume and old ignored patch are stale historical artifacts; preserve them but do not reapply. Actual UI/third choice and full MM/Survival routes still pending."
   ],
-  "client_pending": "Krosus reach/combat and Demons Among Us PvP-off attack/counter, Heroic Leap landing/one combat hit/mitigation/talents, earlier Charge/bird camera/pet and all36 complete routes remain user-owned and unconfirmed. No runtime/native/model/PE check substitutes for client traversal. New Malgalor scene/finale/rescue/Skyhold client retest pending; screenshot confirms user reached correct933 Final Stage before this repair. New Aerylia first-visible Tirisfal departure/map1539 Warrior arrival, Order Formation scene/cancel and Kingslayers final return remain user client checks; no new character edits.",
+  "client_pending": "Execute206455 actual movement/permanent defeat/Thoradin/return pending user retest; downed pose/LINK2 OPEN. Krosus reach/combat and Demons Among Us PvP-off attack/counter, Heroic Leap landing/one combat hit/mitigation/talents, earlier Charge/bird camera/pet and all36 complete routes remain user-owned and unconfirmed. No runtime/native/model/PE check substitutes for client traversal. New Malgalor scene/finale/rescue/Skyhold client retest pending; screenshot confirms user reached correct933 Final Stage before this repair. New Aerylia first-visible Tirisfal departure/map1539 Warrior arrival, Order Formation scene/cancel and Kingslayers final return remain user client checks; no new character edits.",
   "local_tools": {
     "python": "C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
     "pe_pythonpath": ".codex/pe-review-deps",
@@ -210,13 +221,13 @@
     "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
   ],
   "current_continuation": {
-    "last_implementation_commit": "a8aa4a6d5",
+    "last_implementation_commit": "8056cdcce",
     "hunter_reconciliation": "Git/source and dedicated followup audit contradict stale unfinished text in the old resume. Commit802295a98 is an ancestor and actual runtime migration13005E8182CE54B5FFA4DEED6C9FA53272C39796 is RELEASED; 249 rows, flags3 on107317/107973 and current canonical selected consumers were independently rechecked. No repeated repair or character change.",
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
-    "diagnostics": "No new/changed crashes, appendedDBErrors or unexplained server warning/error/assertion after every test/build/startup group. ActiveDBErrors0/Crashes0 at last check; no log was truncated or crash archived during this continuation.",
-    "next": "User retests first visible Aerylia Tirisfal option after launching canonical Release. Continue separate full Warrior/Bezzeredes/Arms and all36 investigations, Aluneth native control/dome geometry and Bilaal gravity. No pending deployment, no repeated recovery or character mutation.",
-    "uncommitted_at_checkpoint": "All focused source fixes/audits/tests and World18 release-path move committed; ignored private failed evidence/archives/backups retained. No extra source WIP."
+    "diagnostics": "All final wrapped tests/build/PE/deploy/startup exit0; no new/changed crashes, appended DBErrors or server warnings/errors/assertions. Existing DBErrors870 bytes/six101430-or103151 LINK2 lines remain UNRESOLVED and unmodified. CanonicalCrashes empty. No archive/truncation, no character edit.",
+    "next": "User retests current Execute button in actual1037/final stage; no progress reset. Investigate downed Zakajz pose and103151/101430 missingLINK2 intent without deleting diagnostics/guessing actions. Resume preserved Bezzeredes WIP, then all36/Aluneth/Bilaal remaining work. No pending EXE deployment.",
+    "uncommitted_at_checkpoint": "Four preserved Bezzeredes files only: instance_broken_shore.cpp, malgalor_finale.h, wars_intro_scenario.cpp and NEW reinforcement_transition.h. Untested, not built into scripts.lib or canonical. Exact private backups/hash manifest .codex/bezzeredes-wip-2026-10-27/manifest.json. Do not accidentally rebuild/deploy this WIP before dedicated tests."
   },
   "azuregos_portal_wip": {
     "status": "Historical key: committed/pushed938fc1225, deployed with coordinated SQL13 RELEASED",
@@ -301,5 +312,33 @@
     "status": "Deployed; exact reviewed46900 line hash archived, active history retained",
     "audit": "docs/audits/scripted-scene-recipient-2026-10-27.json",
     "next": "Actual client formation/cancel/phase behavior still pending; do not mistake this separate error for the Aerylia fall cause."
+  },
+  "stromkar_execute_repair": {
+    "status": "Two focused core fixes committed/pushed/deployed4638D4E9; not full finale completion",
+    "video": "https://www.youtube.com/watch?v=-0ytc3talC4",
+    "review": "Muted sequential1fps frames16:30..18:29 and720p still from17:20 reviewed, not full19:43/continuous playback/audio. Two-stage slump/pickup/Execute/final collapse shown; exact death flag/1HP before jump not established.",
+    "tests": [
+      "Test-StromkarExecuteTarget -MaskBaseline (pinned equipment-first zero mask)",
+      "Test-StromkarExecuteTarget -AddressSanitizer and -VerifyReleaseBinary",
+      "Test-SkyholdDeparture -Stromkar -AddressSanitizer; ordinary11-pair Skyhold ASAN",
+      "Test-HeroicLeapImpact -AddressSanitizer",
+      "Test-StromkarExecuteLanding -VerifyReleaseBinary; linked finale/Thoradin presence/Zakajz component regressions",
+      "verify_condition_search_mask_release.py; verify_stromkar_execute_jump_release.py; verify_skyhold_departure_release.py canonical",
+      "Test-ScepterLogin -VerifyReleaseBinary; owned23228 startup ready/shutdown0/exit0"
+    ],
+    "unresolved": [
+      "103151 event1 link2 and101430 event1 link2 missing in actual source0 data; do not drop links merely to silence logs",
+      "Downed pose standing in user screenshot versus slumped in footage",
+      "Client actual jump/impact/permanent death/Thoradin/return, vanished boss during jump and full retry/group/faction traversal"
+    ],
+    "private_evidence": ".codex/stromkar-*; build-extractors/runtime-test/stromkar-*; private public media .codex/armament-sources/video--0ytc3talC4.mp4 and .codex/stromkar-video-review",
+    "backup": ".codex/release-before-stromkar-execution-2026-10-27",
+    "stage": ".codex/stromkar-execution-release (supersedes mask-only950B and previous2112/0393 stages)"
+  },
+  "bezzeredes_reinforcement_wip": {
+    "status": "UNTESTED source WIP; not in canonical or current scripts.lib",
+    "backup": ".codex/bezzeredes-wip-2026-10-27/manifest.json",
+    "intent": "Instance-owned real98257/spawn361151 death receipt/eligible Warrior quest lifetime, native46880/45773 ack and2s retry; actual92608/spawn361167 creation/AI marker retry; original771/197593/corpse1414 presentation after actual intro ack, no nearest-player/early synthetic credit.",
+    "next": "Review/compile native full lifecycle tests, one-hit/pet/guardian, repeated death/credit, actor/AI absence/retry/map removal, membership/abandon/reaccept/reentry/groups/factions/Paladin coexistence. Adapt old Malgalor fixture GetData and separate Bezzeredes scope before tests. Do not claim header compiles or is verified yet."
   }
 }

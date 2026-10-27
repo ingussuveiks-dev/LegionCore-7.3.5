@@ -79,7 +79,7 @@ $source=Get-Content "$repo/src/server/game/Spells/Spell.cpp" -Raw
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $define=if($MaskBaseline){'/DMASK_BASELINE'}else{''}
 if($AddressSanitizer){$define+=' /fsanitize=address /Zi'}
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $define /I`"$out`" `"$PSScriptRoot/StromkarExecuteTargetTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/rows.tsv`"`n")
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $define /I`"$out`" `"$PSScriptRoot/StromkarExecuteTargetTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/rows.tsv`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Execute target failed'}
 if($MaskBaseline){'PASS expected counterfactual: pinned old native mask excludes the valid creature candidate; no production data changed';return}
 $previous=$env:LEGION_DIALOGUE_CONFIG
@@ -94,5 +94,6 @@ if($VerifyReleaseBinary){
  $actual=@($live|Where-Object {$_ -like "row`t*"}|ForEach-Object {$_.Substring(4)});if(Compare-Object $nativeRows $actual){throw 'Live target differs from tested rows'}
  $previous=$env:PYTHONPATH
  try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_stromkar_execute_target_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical target consumer failed'}}finally{$env:PYTHONPATH=$previous}
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_condition_search_mask_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical candidate mask failed'}}finally{$env:PYTHONPATH=$previous}
 }
 'PASS: native Execute206455 destination requires living defeated104276/1539/1037/exact9 and an active living equipped Warrior41105 with native bar; guarded SQL/native selector/catalog checked. Landing event/actor departure/client VFX remain separate.'

@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-27",
+  "fixes": ["bc4373043 candidate-container masks", "8056cdcce Execute native self arrival"],
+  "runtime": "build-extractors/bin/Release",
+  "world_sha256": "4638D4E99E30F476B60A675EC2EA85AF145E2E10CDC101DA99524C576F1B8CB9",
+  "bnet_sha256": "9D0C0ADEE31074D68671E6A01B38238151D806891236AEB7113A9038357FDADE",
+  "promotion": "Both user/unknown servers absent; rechecked before each copy. Four EXE/map files promoted from .codex/stromkar-execution-release, backup .codex/release-before-stromkar-execution-2026-10-27 hash-verified. Configuration/certificates/keys unchanged. Original final-link game/scripts/common/shared paths retained, no global OutDir. Prior2112AE19 superseded, mask-only950B must not be promoted over combined4638.",
+  "startup": "Only task-owned canonical worldserver23228 started with redirected stdin/stdout/stderr and no visible window, ready then graceful server shutdown0/exit0. Stderr empty, appended DBErrors0, protected file hashes unchanged; no task process remains. No user/unknown server stopped.",
+  "canonical_checks": [
+    "Test-StromkarExecuteTarget -MaskBaseline paired pinned zero-mask counterfactual, repaired -AddressSanitizer -VerifyReleaseBinary with exact live22 rows, native mask/selector/predicate and canonical mask/consumer PE.",
+    "Test-StromkarExecuteLanding -VerifyReleaseBinary passes current16+known51 two-row Thoradin supersession; native actual self-target/completion fixture retained. Test-ScepterLogin -VerifyReleaseBinary passes actual canonical linked path.",
+    "verify_stromkar_execute_jump_release.py and verify_skyhold_departure_release.py pass canonical combined EXE; native11 Skyhold and one Execute pair ASAN, Heroic Leap impact/talents, linked finale, Thoradin presence and player/pet/guardian Zakajz component regressions passed before promotion."
+  ],
+  "diagnostics": "Every test/build/PE/deploy/startup group wrapped with before/after diagnostics. Final combined check includes canonical and actual component runtime directories/root. Final runs exit0/no new or changed crash reports/no appended DBErrors or server warnings/errors/assertions. CanonicalCrashes empty. Existing DBErrors870 bytes/six lines for101430/103151 event1->missingLINK2 remain unresolved and unchanged; no archives/truncation performed. Compiler's existing numeric conversions/sign comparisons remain visible in captured logs; not new server failures.",
+  "retained_work": "Four Bezzeredes WIP source files and exact private backup manifest hashes verified unchanged; untested and deliberately absent from unchanged scripts.lib and canonical EXE. Hunter choice reconciliation/Aluneth evidence retained in handoff. ASAN target fixture now directs its PDB to own runtime folder; first generated repository-root vc140.pdb moved into that private test evidence. No character/progress/quest/item/SQL mutation.",
+  "open": [
+    "User client actual Execute/jump/permanent defeat/Thoradin/return retest, downed standing-versus-slumped pose, actual vanished/replaced boss between launch/impact and full abandonment/reentry/group/faction traversal.",
+    "Shared103151 and101430 missingLINK2 action intent and errors remain OPEN. Native startup does not invoke them, so clean startup is not proof of their repair.",
+    "All36 acquisition backend work remains ongoing; no whole-chain or client certification. Next investigate pose/LINK and resume preserved Bezzeredes instance transition WIP with dedicated tests."
+  ]
+}
