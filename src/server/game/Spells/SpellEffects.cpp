@@ -1994,12 +1994,15 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
 
     // TC_LOG_DEBUG("spells", "EffectJumpDest start xyz %f %f %f o %f distance %f distance2d %f", x, y, z, o, distance, distance2d);
 
-    // Destination jumps have no unit target. Aerylia's native arrival spells
+    // Destination jumps have no unit target. These native arrival spells
     // are self casts; the local Unit::CastSpell API rejects a null target.
     JumpArrivalCastArgs arrivalCast;
     arrivalCast.SpellId = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
-    if (m_caster->IsPlayer() && m_caster->GetMapId() == 1479 &&
-        SkyholdDeparture::Matches(m_spellInfo->Id, arrivalCast.SpellId))
+    bool skyholdDeparture = m_caster->GetMapId() == 1479 &&
+        SkyholdDeparture::Matches(m_spellInfo->Id, arrivalCast.SpellId);
+    bool stromkarExecution = m_caster->GetMapId() == 1539 &&
+        m_spellInfo->Id == 206455 && arrivalCast.SpellId == 206456;
+    if (m_caster->IsPlayer() && (skyholdDeparture || stromkarExecution))
         arrivalCast.Target = m_caster->GetGUID();
     if (!arrivalCast.SpellId && delayCast)
     {

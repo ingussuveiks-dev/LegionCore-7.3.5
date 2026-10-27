@@ -550,7 +550,9 @@ void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, f
     int32 duration = init.Launch();
     bool skyholdDeparture = arrivalCast && SkyholdDeparture::Matches(id, arrivalCast->SpellId) &&
         _owner->IsPlayer() && _owner->GetMapId() == 1479;
-    if (duration <= 0 && ((id == 94954 && arrivalCast && arrivalCast->SpellId == 52174) || skyholdDeparture))
+    bool stromkarExecution = arrivalCast && id == 206455 && arrivalCast->SpellId == 206456 &&
+        _owner->IsPlayer() && _owner->GetMapId() == 1539;
+    if (duration <= 0 && ((id == 94954 && arrivalCast && arrivalCast->SpellId == 52174) || skyholdDeparture || stromkarExecution))
     {
         _owner->ClearUnitState(UNIT_STATE_LONG_JUMP);
         return;

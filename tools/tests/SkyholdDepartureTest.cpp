@@ -176,11 +176,11 @@ struct Spell {
 #include "Speeds.inc"
 
 int main(int argc,char**argv){
- assert(argc==2);std::ifstream input(argv[1]);uint32 id,arrival,index;uint32 cases=0;
+ assert(argc==2);std::ifstream input(argv[1]);uint32 id,arrival,index;uint32 cases=0,pairs=0;
  while(input>>id>>arrival>>index){
-  assert(SkyholdDeparture::Matches(id,arrival));
+  assert(SkyholdDeparture::Matches(id,arrival)||(id==206455&&arrival==206456));++pairs;
   for(uint32 state=0;state<7;++state){
-   Player player;player.map=1479;player.pose.m_positionZ=98;
+   Player player;player.map=id==206455?1539:1479;player.pose.m_positionZ=98;
    Spell spell(player);spell.info.Id=id;spell.info.effect.TriggerSpell=arrival;spell.info.effect.MiscValue=300;
    spell.location.Relocate(1108.74f,7222.54f,39.45f); // controlled native launch endpoint, not a new world destination
    if(state==1)player.launchResult=0;
@@ -201,15 +201,19 @@ int main(int argc,char**argv){
    ++cases;
   }
  }
- assert(cases==55);
+ assert(pairs>0&&cases==pairs*5);
+ for(uint32 map:{1479u,1539u}){Creature c;c.map=map;Spell spell(c);spell.info.Id=206455;spell.info.effect.TriggerSpell=206456;spell.EffectJumpDest(0);c.movement.Complete();assert(!c.casts);}
+ {Player p;p.map=1479;Spell spell(p);spell.info.Id=206455;spell.info.effect.TriggerSpell=206456;spell.EffectJumpDest(0);p.movement.Complete();assert(!p.casts);}
+ {Player p;p.map=1539;Spell spell(p);spell.info.Id=206455;spell.info.effect.TriggerSpell=123;spell.EffectJumpDest(0);p.movement.Complete();assert(!p.casts);}
+ {Player p;p.map=1539;Spell spell(p);spell.info.Id=123;spell.info.effect.TriggerSpell=206456;spell.EffectJumpDest(0);p.movement.Complete();assert(!p.casts);}
  for(uint32 variant=0;variant<3;++variant){Player p;p.map=1479;Spell spell(p);spell.info.Id=203921;spell.info.effect.TriggerSpell=203920;if(variant==0)spell.effectHandleMode=0;if(variant==1)p.flying=true;if(variant==2)spell.m_targets.destination=false;spell.EffectJumpDest(0);assert(!p.jumps&&!p.casts);}
  for(uint32 map:{1479u,1220u}){Creature c;c.map=map;Spell spell(c);spell.info.Id=203921;spell.info.effect.TriggerSpell=203920;spell.EffectJumpDest(0);c.movement.Complete();assert(!c.casts);}
  {Player p;p.map=1220;Spell spell(p);spell.info.Id=203921;spell.info.effect.TriggerSpell=203920;spell.EffectJumpDest(0);p.movement.Complete();assert(!p.casts);}
  {Player p;p.map=1479;Spell spell(p);spell.info.Id=203921;spell.info.effect.TriggerSpell=123;spell.EffectJumpDest(0);p.movement.Complete();assert(!p.casts);}
  {Player p;p.map=1479;Spell spell(p);spell.info.Id=123;spell.info.effect.TriggerSpell=203920;spell.EffectJumpDest(0);p.movement.Complete();assert(!p.casts);}
 #ifdef BASELINE
- std::cout<<"COUNTERFACTUAL pinned destination jump leaves native arrival target empty; actual Unit::CastSpell rejects all11 Aerylia routes.\n";
+ std::cout<<"COUNTERFACTUAL pinned destination jump leaves native arrival target empty; actual Unit::CastSpell rejects "<<pairs<<" tested native pairs.\n";
 #else
- std::cout<<"PASS actual Skyhold destination jump, native Unit null/cleanup guard, MoveJump and real arrival Update/Finalize:11 native pairs, successful self arrival, zero launch, interruption/death/map change/cleanup, failed cast, repeat completion, launch guards and unchanged foreign/NPC/metadata paths. Cast endpoint/spline lifecycle services controlled; actual client transfer remains separate.\n";
+ std::cout<<"PASS actual destination jump, native Unit null/cleanup guard, MoveJump and real arrival Update/Finalize:"<<pairs<<" native pairs, successful self arrival, zero launch, interruption/death/map change/cleanup, failed cast, repeat completion, launch guards and unchanged foreign/NPC/metadata paths. Cast endpoint/spline lifecycle services controlled; actual client effects remain separate.\n";
 #endif
 }

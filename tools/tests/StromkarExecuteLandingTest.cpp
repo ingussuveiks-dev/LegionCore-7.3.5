@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include "../../src/server/game/Movement/SkyholdDeparture.h"
 using uint32=uint32_t;
 using QuestStatus=uint32;
 using ObjectGuid=uint32;
@@ -25,6 +26,7 @@ struct Creature;
 struct Unit {
     virtual ~Unit()=default;
     virtual Player* ToPlayer() { return nullptr; }
+    bool IsPlayer() { return ToPlayer()!=nullptr; }
     Creature* ToCreature() { return nullptr; }
     uint32 map=1539,classMask=1,casts=0,effects=0;
     bool alive=true,aura=true;
@@ -104,7 +106,7 @@ struct Spell {
     }
 };
 SpellCastResult Unit::CastSpell(Unit* target,uint32 identity,bool triggered) {
-    assert(!target&&identity==206456&&triggered);++casts;
+    assert(target==this&&identity==206456&&triggered);++casts;
     Spell spell{this};last=spell.Check();
     if(last==SPELL_CAST_OK) {
         ++effects;
@@ -113,10 +115,11 @@ SpellCastResult Unit::CastSpell(Unit* target,uint32 identity,bool triggered) {
     }
     return last;
 }
-struct ObjectAccessor { static Unit* GetUnit(Unit&,ObjectGuid identity) { assert(identity==0);return nullptr; } };
+struct ObjectAccessor { static Unit* GetUnit(Unit& owner,ObjectGuid identity) { assert(identity==1);return &owner; } };
 struct EffectMovementGenerator {
     uint32 _arrivalSpellId=206456,_pointId=206455;
-    ObjectGuid _arrivalSpellTargetGuid=0;
+    ObjectGuid _arrivalSpellTargetGuid=1;
+    bool _arrived=true;
     void Finalize(Unit&);
     void MovementInform(Unit&);
 };
@@ -156,7 +159,9 @@ int main(int argc,char** argv) {
         if(invalid==10)world.instanced=false;
         if(invalid==11)instance.identity=43;
         arrival.Finalize(player);
-        assert(player.effects==0&&player.last==SPELL_FAILED_CASTER_AURASTATE);
+        bool beforeCast=invalid==0||invalid==5;
+        assert(player.effects==0&&player.casts==uint32(!beforeCast));
+        assert(player.last==(beforeCast?SPELL_CAST_OK:SPELL_FAILED_CASTER_AURASTATE));
     }
     Reset();Player retry;retry.equipped=false;arrival.Finalize(retry);assert(retry.effects==0&&retry.aura);
     retry.equipped=true;arrival.Finalize(retry);arrival.Finalize(retry);
@@ -164,5 +169,5 @@ int main(int argc,char** argv) {
     Reset();Unit pet;arrival.Finalize(pet);assert(pet.effects==0&&pet.last==SPELL_FAILED_CASTER_AURASTATE);
     assert(conditionManager.GetConditionsForNotGroupedEntry(17,206455).empty());
     assert(conditionManager.GetConditionsForNotGroupedEntry(18,206456).empty());
-    std::cout<<"PASS: native EffectMovementGenerator arrival uses triggered206456/null explicit target; actual source17 lookup/cast branch and16 native conditions reject changed quest/map/stage/class/equipment/life/bar. Retry and duplicate gating use a controlled stage/aura effect sink, not real scenario credit, movement or client proof.\n";
+    std::cout<<"PASS: native EffectMovementGenerator arrival uses triggered206456/self target; actual source17 lookup/cast branch and16 native conditions reject changed quest/map/stage/class/equipment/life/bar. Retry and duplicate gating use a controlled stage/aura effect sink, not real scenario credit, movement or client proof.\n";
 }

@@ -173,8 +173,10 @@ void EffectMovementGenerator::MovementInform(Unit& owner)
     // Finalize also runs when another movement replaces this generator.
     // Heroic Leap's damage and talent procs require actual spline completion.
     bool skyholdDeparture = SkyholdDeparture::Matches(_pointId, _arrivalSpellId) && owner.IsPlayer();
+    bool stromkarExecution = _pointId == 206455 && _arrivalSpellId == 206456 && owner.IsPlayer();
     if (_arrivalSpellId && (_pointId != 94954 || _arrivalSpellId != 52174 || _arrived) &&
-        (!skyholdDeparture || (_arrived && owner.IsAlive() && owner.GetMapId() == 1479)))
+        (!skyholdDeparture || (_arrived && owner.IsAlive() && owner.GetMapId() == 1479)) &&
+        (!stromkarExecution || (_arrived && owner.IsAlive() && owner.GetMapId() == 1539)))
         owner.CastSpell(ObjectAccessor::GetUnit(owner, _arrivalSpellTargetGuid), _arrivalSpellId, true);
 
     if (Creature* creature = owner.ToCreature())
