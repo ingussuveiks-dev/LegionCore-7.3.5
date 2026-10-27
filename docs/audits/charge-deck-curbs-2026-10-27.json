@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-27",
+  "status": "Backend repaired, canonical Release promoted, client first-click/curb retest pending",
+  "reports": [
+    "User must press Charge repeatedly on moving boost ship",
+    "Screenshot1: on raised trim, forward target dummy, No path available",
+    "Screenshot2: beside trim on deck, target dummy across a low cross-deck strip, No path available"
+  ],
+  "evidence_limits": "Screenshots identify behavior and geometry class. Native tests use matching ship34366 and scripted dummy destination; test coordinates are representative model reproductions, not recovered exact screenshot/player positions. No character changes or live client test by agent.",
+  "causes": [
+    "Native GameObjectModel::getHeight adds0.5 to ray origin; old height+1/length2 searched1.5 above but only0.5 below, inconsistent with the helper0.6 admission. A source0.55 above the real floor fails pinned c734844c and succeeds after compensation on both real models.",
+    "Both center-step and radius-floor checks used an absolute0.6 bound. The actual Horde model has supported downward trim transitions0.889465 and0.799225 yards, with upward samples only0.131378/0.118729. The former helper rejects both clear paths, including the neighboring floor/cross-strip case."
+  ],
+  "implementation": [
+    "Compensate native half-yard ray origin. Keep center upward steps and initial-source height error bounded0.6; later center steps can descend at most1.0 onto actual phase-visible supporting model surface.",
+    "Radius-offset floor probes search symmetrically +/-1.0 to permit straddling the measured low trim. Require finite support at all three corridor samples; retain body LOS, enabled collision and phases. Void edges and tall obstacles remain rejected.",
+    "Publish both sampled top and bottom of a descending curb in the native path instead of smoothing across it at four-yard spacing. Enforce pointLimit including extra corners, publishing no partial path on failure.",
+    "Retain native outer/core target-aware admission, root/range/LOS/water branches, contact shortening and MoveCharge/MovebyPath/Launch. No ignored pathfinding, forceDest, transport/target whitelist, added Rage/lesson credit or character edits."
+  ],
+  "verification": [
+    "Test-BoostCharge -Baseline identifies pinned terrain-only refusal counterfactual; -AddressSanitizer now also executes Test-TransportGroundPath.",
+    "Actual production ground helper with mocked model boundary: eight identical attempts at each source height0/.1/.49/.55/-.55; destination errors, +/-0.55 steps,0.9 down,0.8 side trim, preserved top/bottom corners and extra-point refusal. Gaps/walls/missing lateral support/wrong phase/disabled collision/0.7 upward/1.1 downward/1.1 side/invalid input rejected.",
+    "Native26972 ships34338/34366 + actual model/Transport transforms: pinned0.55 source-height failures paired with repaired success; both Horde trim paths at distances20.4648/18.0019 pass, including starting on actual crest and native ten-point Charge budget. Ordinary both-ship corridor, unsupported/airborne/radius/phase/collision/point-limit checks pass.",
+    "Shared Leap ASAN and native floor/placement/Leap regressions pass. Charge extracted fixture C4458 and pinned baseline C4101 warnings retained.",
+    "Original game.lib rebuilt PathGenerator.cpp, original scripts.lib rebuilt without pending Bilaal instance, original final-link dependencies used. Staged Charge and Leap selected PE checks pass; canonical Charge PE and Scepter login Release pass. PE explicitly checks actual ground helper compensated0.1 and bounded0.6/1.0 constants.",
+    "User servers21128/18592 were left running during independent tests/build. Both later absent before promotion; four EXE/map backups and hashes verified, configs/certificates unchanged. Owned20836 reached fresh ready, shutdown0/exit0, stderr/newDBErrors empty; no task-owned server left."
+  ],
+  "development_evidence": [
+    "Expected failing before-repair native source-height regression preserved under .codex/charge-deck-height/baseline-expected-failure; repaired pairs pass.",
+    "Incremental actual-model curb survey: height correction alone did not fix0.8..0.9 trim. Center down-step then lateral straddling fixes tested separately; raw survey results retained, no assertion every visible or supported point is reachable.",
+    "First synthetic curb spline assertion assumed fixed corner indexes despite native span count depending on3D distance. Fixture corrected to find ordered real top/bottom pair, then passes. No production assertion/crash introduced."
+  ],
+  "diagnostics": {
+    "location": ".codex/charge-deck-height/",
+    "result": "Before/after canonical and own-runtime snapshots for every test/build/PE/deploy/startup; no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Resolved fixture failure preserved. No log truncation/archive needed."
+  },
+  "deployment": {
+    "hashes": {
+      "bnetserver.exe": "B9074B66754E429D5083A1A0EA1B2BBC0D850869219AF441186E4311B73A62F5",
+      "bnetserver.map": "EA869196BB1CAF1DAC16D3CBF7B0BA6E93D7BF419AA2F58460FFCE4FA237A986",
+      "worldserver.exe": "F0907195C4E53E9778CB5B0134550DCF064430E1AFAB58A0EB88499B49B1F620",
+      "worldserver.map": "89AF37C61005F3614EE560F54555E0312B6BD931D3680E81C571A18628BF856A"
+    },
+    "backup": ".codex/release-before-charge-deck-height-2026-10-26/",
+    "scope": "HEAD59914e6fc plus Charge ground helper. Bilaal uncommitted instance source preserved byte-for-byte, excluded from this build; SQL09 remains outside updater."
+  },
+  "client_pending": [
+    "Repeated first-click Charge on ordinary deck",
+    "Charge standing on trim, beside trim and across its downward edge; range8..25 remains native",
+    "Actual movement/arrival/lesson counter, camera and pet; Heroic Leap landing/lesson and full boost remain user-owned"
+  ],
+  "open_work": "All36 artifact routes and Bilaal/Azuregos/gravity work remain incomplete; backend tests do not certify full client traversal."
+}

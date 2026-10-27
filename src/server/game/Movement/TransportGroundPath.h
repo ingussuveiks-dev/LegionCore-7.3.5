@@ -41,8 +41,12 @@ inline TransportGroundResult BuildTransportGroundPath(Transport const* transport
         float t = float(i) / float(samples);
         float x = start.GetPositionX() + (end.GetPositionX() - start.GetPositionX()) * t;
         float y = start.GetPositionY() + (end.GetPositionY() - start.GetPositionY()) * t;
-        float floor = transport->m_model->getHeight(x, y, height + 1.0f, 2.0f, transport->GetPhases(), false);
-        if (!std::isfinite(floor) || std::fabs(floor - height) > 0.6f ||
+        // getHeight already raises its ray origin by 0.5. Keep the 0.6
+        // upward step/start tolerance, but allow a supported one-yard step
+        // down off the ship's raised deck trim. This is not an airborne path.
+        float drop = i ? 1.0f : 0.6f;
+        float floor = transport->m_model->getHeight(x, y, height + 0.1f, 0.6f + drop, transport->GetPhases(), false);
+        if (!std::isfinite(floor) || floor - height > 0.6f || height - floor > drop ||
             (i == samples && std::fabs(floor - end.GetPositionZ()) > 0.6f))
             return TransportGroundResult::NoPath;
         G3D::Vector3 current(x, y, floor);
@@ -51,14 +55,24 @@ inline TransportGroundResult BuildTransportGroundPath(Transport const* transport
         {
             G3D::Vector3 offset = side * edge;
             float edgeFloor = transport->m_model->getHeight(x + offset.x, y + offset.y,
-                floor + 1.0f, 2.0f, transport->GetPhases(), false);
-            if (!std::isfinite(edgeFloor) || std::fabs(edgeFloor - floor) > 0.6f ||
+                floor + 0.5f, 2.0f, transport->GetPhases(), false);
+            if (!std::isfinite(edgeFloor) || std::fabs(edgeFloor - floor) > 1.0f ||
                 (i && !transport->m_model->isInLineOfSight(previous + offset + G3D::Vector3(0, 0, body),
                     current + offset + G3D::Vector3(0, 0, body), transport->GetPhases(), false)))
                 return TransportGroundResult::NoPath;
         }
-        if (i % 8 == 0)
+        // Keep a real curb's top/bottom in the native spline instead of
+        // smoothing a four-yard segment diagonally through its deck surface.
+        if (i && height - floor > 0.6f)
+        {
+            if (i > 1 && (i - 1) % 8 != 0)
+                path.push_back(previous);
             path.push_back(current);
+        }
+        else if (i % 8 == 0)
+            path.push_back(current);
+        if (path.size() > pointLimit)
+            return TransportGroundResult::TooLong;
         previous = current;
         height = floor;
     }

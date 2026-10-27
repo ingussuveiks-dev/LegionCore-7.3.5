@@ -14,6 +14,8 @@
 
 namespace PriorLeap { using Movement::computeFallElevation; using Movement::gravity; }
 #include "PriorTransportJumpPath.inc"
+namespace PriorCharge { using Movement::PointsArray; }
+#include "PriorTransportGroundPath.inc"
 
 #include "PreparePassengerPosition.inc"
 #include "Offset.inc"
@@ -124,6 +126,35 @@ int main(int argc, char** argv)
         if(pair.first==5219&&!edges)return 33;
         if(!PreparePassengerPosition(&transport,start,true)||!PreparePassengerPosition(&transport,finish,true))return 15;
         Movement::PointsArray charge;
+        if(pair.second==34366)for(auto offset:{std::make_pair(-8.0f,-8.0f),std::make_pair(-6.0f,0.0f)})
+        {
+            Position ledge=Offset(base,offset.first,offset.second,0,0);
+            if(!PreparePassengerPosition(&transport,ledge,true))return 36;
+            auto a=world(ledge),b=world(finish);
+            float previous=a.GetPositionZ(),up=0,down=0;
+            Position previousPoint=a,crest=a;
+            for(unsigned i=1;i<=100;++i){float t=float(i)/100;
+                float x=a.GetPositionX()+(b.GetPositionX()-a.GetPositionX())*t,y=a.GetPositionY()+(b.GetPositionY()-a.GetPositionY())*t;
+                float z=model->getHeight(x,y,previous+1.7f,5,{1},false);
+                if(!std::isfinite(z))return 37;
+                up=std::max(up,z-previous);
+                if(previous-z>down){down=previous-z;crest=previousPoint;}
+                previous=z;previousPoint=Position{x,y,z,0};
+            }
+            std::cout<<"CURB "<<pair.second<<' '<<offset.first<<','<<offset.second<<" up "<<up<<" down "<<down<<" crest distance "<<crest.GetExactDist(&b)<<'\n';
+            if(down<=.6f||down>1.0f||up>.6f)return 38;
+            if(PriorCharge::BuildTransportGroundPath(&transport,a,b,2,74,charge)!=PriorCharge::TransportGroundResult::NoPath)return 39;
+            if(Movement::BuildTransportGroundPath(&transport,a,b,2,74,charge)!=Movement::TransportGroundResult::Complete)return 40;
+            // Native 25-yard Charge allocates ten points after its range margin.
+            if(Movement::BuildTransportGroundPath(&transport,a,b,2,10,charge)!=Movement::TransportGroundResult::Complete)return 42;
+            // Standing on the actual raised trim, not only approaching it.
+            if(Movement::BuildTransportGroundPath(&transport,crest,b,2,74,charge)!=Movement::TransportGroundResult::Complete)return 41;
+        }
+        Position unsnapped=world(start);unsnapped.m_positionZ+=.55f;
+        auto priorGround=PriorCharge::BuildTransportGroundPath(&transport,unsnapped,world(finish),2,74,charge);
+        std::cout<<"CHARGE HEIGHT BASELINE "<<pair.second<<' '<<int(priorGround)<<'\n';
+        if(priorGround!=PriorCharge::TransportGroundResult::NoPath)return 34;
+        if(Movement::BuildTransportGroundPath(&transport,unsnapped,world(finish),2,74,charge)!=Movement::TransportGroundResult::Complete)return 35;
         if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,74,charge)!=Movement::TransportGroundResult::Complete||charge.size()<2)return 16;
         if(Movement::CheckTransportJumpPath(&transport,world(start),world(finish),2.0f,0.4f,2.5f)!=Movement::TransportJumpResult::Complete)return 23;
         if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,2,charge)!=Movement::TransportGroundResult::TooLong||!charge.empty())return 17;

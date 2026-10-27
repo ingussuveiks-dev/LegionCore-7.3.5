@@ -19,6 +19,13 @@ require('?CheckCast@Spell@@','?ShortenPathUntilDist@PathGenerator@@')
 require(target,geometry)
 require(geometry,'?getHeight@GameObjectModel@@')
 require(geometry,'?isInLineOfSight@GameObjectModel@@')
+constants=set()
+for ins in instructions(geometry):
+    for op in ins.operands:
+        if op.type==CS_OP_MEM and op.mem.base==X86_REG_RIP:
+            address=ins.address+ins.size+op.mem.disp
+            constants.add(n['binary'][n['offset'](address):n['offset'](address)+4])
+assert {struct.pack('<f',v) for v in (0.1,0.6,1.0)}<=constants, 'Missing compensated ray and bounded curb-step checks'
 require('?EffectCharge@Spell@@','?MoveCharge@MotionMaster@@')
 require('?MoveCharge@MotionMaster@@QEAAXAEBVPathGenerator@@','?MovebyPath@MoveSplineInit@Movement@@')
 require('?MoveCharge@MotionMaster@@QEAAXAEBVPathGenerator@@','?Launch@MoveSplineInit@Movement@@')

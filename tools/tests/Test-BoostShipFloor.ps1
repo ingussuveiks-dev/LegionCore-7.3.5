@@ -7,6 +7,10 @@ $prior=(& git -C $repo show '9bbbf5264:src/server/game/Movement/TransportJumpPat
 if($LASTEXITCODE){throw 'Pinned prior Leap landing implementation missing'}
 $prior=$prior.Replace('LEGION_TRANSPORT_JUMP_PATH_H','LEGION_PRIOR_TRANSPORT_JUMP_PATH_H').Replace('namespace Movement','namespace PriorLeap')
 [IO.File]::WriteAllText("$out/PriorTransportJumpPath.inc",$prior)
+$priorGround=(& git -C $repo show 'c734844c:src/server/game/Movement/TransportGroundPath.h') -join "`n"
+if($LASTEXITCODE){throw 'Pinned prior Charge ground implementation missing'}
+$priorGround=$priorGround.Replace('LEGION_TRANSPORT_GROUND_PATH_H','LEGION_PRIOR_TRANSPORT_GROUND_PATH_H').Replace('namespace Movement','namespace PriorCharge')
+[IO.File]::WriteAllText("$out/PriorTransportGroundPath.inc",$priorGround)
 $source=[IO.File]::ReadAllText("$repo/src/server/scripts/Scenario/BoostExperience/boost_experience.cpp")
 foreach($item in @(@('PreparePassengerPosition','bool PreparePassengerPosition('),@('Offset','Position Offset('))){
  $start=$source.IndexOf($item[1]);if($start -lt 0){throw "Missing native placement helper $($item[0])"}

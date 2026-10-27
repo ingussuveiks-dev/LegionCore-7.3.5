@@ -222,6 +222,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 - Both user servers absent at promotion; own22952 ready/shutdown0/exit0, stderr/newDBErrors0, protected hashes unchanged. No hidden server remains. Diagnostics in ignored `.codex/hunter-choice`; active Crashes0/DBErrors0. Recheck processes before further deployment.
 - Next concrete inherited finding: Outlaw Degauz102185 raw pre-hit Player-only90/60/30 surrender, scaled lethal and owner/pet paths. All36 remain in scope; client checks stay with user.
 
+## Newest update 2026-10-27: Charge deck/curb retest
+
+- User reported repeated Charge presses and supplied NoPath screenshots from raised trim and adjacent deck. Corrected native getHeight half-yard origin; keep source/up0.6, allow supported down-step1.0 and lateral trim straddling1.0, retaining all floor/phase/body/point guards. Publish actual curb top/bottom in native spline.
+- Both real ship height-error counterfactuals and actual Horde0.889465/0.799225 trim paths pass (including crest starts/native ten-point budget); ASAN repeated attempts, wall/gap/step/edge/phase/collision, shared Leap and canonical selected Charge/Scepter checks pass. Exact screenshot coordinates were not recovered; actual first-click/curb client traversal remains pending.
+- Main Release now world SHA256F0907195C4E53E9778CB5B0134550DCF064430E1AFAB58A0EB88499B49B1F620, includes previous Leap repair. Promoted only after user servers absent, own20836 ready/shutdown0/exit0; no new crashes/DBErrors/server errors, no task server left. Recheck processes. Audit docs/audits/charge-deck-curbs-2026-10-27.json.
+- Bilaal WIP preserved/excluded from this build; SQL09 stays outside updater. Its tests currently pass after native comparator/PowerShell stderr fixture fixes except final PE recheck still pending. All36 artifact work remains active and incomplete.
+
 ## Newer update 2026-10-27: uneven deck and supported-edge Heroic Leap
 
 - User retest still rejected many uneven/supported near-edge destinations. Removed four extra radius-floor requirements while retaining center support and radius body/head obstruction. Corrected native getHeight's implicit +0.5 ray origin: input +0.1/length1.2 now really searches +/-0.6.
