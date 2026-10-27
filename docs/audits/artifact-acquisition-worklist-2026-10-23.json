@@ -2477,7 +2477,8 @@
       "chest_lifetime_audit": "docs/audits/lights-wrath-chest-lifetime-2026-10-27.json",
       "takeover_audit": "docs/audits/lights-wrath-takeover-2026-10-27.json",
       "bilaal_combat_audit": "docs/audits/bilaal-health-thresholds-2026-10-27.json",
-      "pickup_recovery_audit": "docs/audits/lights-wrath-pickup-recovery-2026-10-27.json"
+      "pickup_recovery_audit": "docs/audits/lights-wrath-pickup-recovery-2026-10-27.json",
+      "shared_aluneth_pipeline_audit": "docs/audits/aluneth-pickup-recovery-2026-10-27.json"
     },
     {
       "class_id": 6,
@@ -3265,9 +3266,10 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace native42011/1101/211954 physical pickup and shared106756/248574 portal; unchanged Mage SmartAI precredits49875 before accepted218172, still OPEN. Preserve Priest1065 private exit and other218172 users. Bilaal shared threshold repair does not certify gravity/death/Azuregos/full chain.",
+      "next_action": "Native physical249814/211954 equip+scene/retry/accepted218172 return repaired and deployed; all three earned control leaves and cached loot/cast admission required. Continue106756 single-attempt initial chest creation/AI failure recovery; full stage5 three controls/earlier route, Bilaal death/Azuregos/gravity and actual client/all36 remain OPEN.",
       "bilaal_combat_audit": "docs/audits/bilaal-health-thresholds-2026-10-27.json",
-      "shared_portal_preservation_audit": "docs/audits/lights-wrath-pickup-recovery-2026-10-27.json"
+      "shared_portal_preservation_audit": "docs/audits/lights-wrath-pickup-recovery-2026-10-27.json",
+      "pickup_recovery_audit": "docs/audits/aluneth-pickup-recovery-2026-10-27.json"
     },
     {
       "class_id": 8,

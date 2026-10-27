@@ -131,6 +131,6 @@ int main(int argc,char** argv){
  }
  worldMap.instanced=true;instanceMap.id=42;scenarioManager={};Player p;assert(cache.Read(&p,&item));p.owned=true;assert(!cache.Read(&p,&item));p.owned=false;p.bank=true;assert(!cache.Read(&p,&item));
  LootItem unrelated;assert(unrelated.AllowedForPlayer(&p));
- std::cout<<"PASS "<<cases<<" actual source4 condition/ElseGroup/LootItem and cached-slot rechecks: native loot "<<expectedLoot<<", Priest scenario "<<expectedScenario<<"/6 active quest "<<expectedQuest<<", alive/unrewarded/unowned-including-bank and invalid instance/map/class/history boundaries. Live character state unchanged.\n";
+ std::cout<<"PASS "<<cases<<" actual source4 condition/ElseGroup/LootItem and cached-slot rechecks: native loot "<<expectedLoot<<", native scenario "<<expectedScenario<<"/6 active quest "<<expectedQuest<<", alive/unrewarded/unowned-including-bank and invalid instance/map/class/history boundaries. Live character state unchanged.\n";
  return 0;
 }

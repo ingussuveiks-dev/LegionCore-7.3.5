@@ -4,6 +4,14 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Aluneth physical pickup and accepted return (2026-10-27)
+
+- `aluneth-pickup-recovery-2026-10-27.json`: common Nexus pipeline now has separate native Mage1101/42011/249814/127857/211954/scene1269/source106756 and Priest1065 route data. Require actual three Mage control leaves47997/55130/55131. Full receipt/spell identity prevents cross-route reuse. Native211954 has the same9s structure; actual scene package1717/misc1269/flags21 retained. Both real equip/105109 and native scene completion precede retryable map-owned portal, then accepted native218172 precedes49875.
+- Mage106756 id3 now link5/NO_CREATOR4 preserves lifetime0 chest after actor retirement; premature id4 portal producer/root249814 SAI retired, id0/1/2/5/6 and two actor source22 gates unchanged. Source4 fourteen unowned native-stage6 rules and source17 twenty-eight owned stage6..7 rules protect cached slots/casts. Shared other218172 templates/destination/personal97377 and unrelated SmartAI remain unchanged.
+- Both complete production/native handler matrices ASAN, native26972 data, ten complete TEMP tables/twice/exact normalization/sixteen old-applied refusals,480 native cached-slot plus cast cases, native creator cleanup28 cases, staged+canonical actual factory/vtable/hooks/two selected exact route data objects and teleport order, shared helper/06 supersession and Scepter Release pass. Native endpoints/client limits explicit.
+- Canonical world53B3434DFC220632C8E4707FAA5C8620FE2522B3631C3E82FF69E98F0746187D/mapBFDC133A34380A0C074457EFCED398FD8CDD753BAE88DC273D3348B54C1C6330. Own16488 updater07 RELEASED/ready/shutdown0/exit0/stderr+newDBErrors0/no new crashes or errors/protected changes/task server. No archive/truncation/manual character changes. Commit containing audit followsc146759c4.
+- NEXT106756 initial chest action50 remains single attempt if creation fails; handle separately with native full lifecycle/AI/reset/creation retry while preserving original dialogue/player teleport. Full Mage stage5/earlier route and Bilaal death/Azuregos/gravity remain OPEN. Trace actual reacceptance/LFG lifecycle after completed presentation; current stale-receipt/escape tests do not prove all reacquisition paths. Continue all36; client tests stay with user.
+
 ## Latest repair: Discipline physical pickup and accepted return (2026-10-27)
 
 - `lights-wrath-pickup-recovery-2026-10-27.json`: real248572 completed storage/owned physical replay retained through native200ms208011 cast, actual force-equip128868+105109 and genuine9s/native SceneCompleted1244. Complete/Canceled packets preserve native semantics; early visual skip keeps remaining9s bound. Cast/equip/portal failures retry without a second item or early final grant; quest lease/fullGUID/map/AI stale receipts rejected. Earned exit survives offline/Reset. Source22 root28 retired into C++; source4/source17 remain.

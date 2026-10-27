@@ -42,12 +42,16 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  [IO.File]::WriteAllText("$out/SceneCompletePacket.inc",(Block $s 'void WorldSession::HandleScenePlaybackComplete('))
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  $asan=if($AddressSanitizer){'/fsanitize=address /Zi'}else{''}
- [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncd /d `"$out`"`ncl /nologo /EHsc /std:c++17 /W4 $asan /I`"$out`" `"$PSScriptRoot/LightsWrathPickupTest.cpp`" /Fe:test.exe /Fo:test.obj`nif errorlevel 1 exit /b 1`ntest.exe`nexit /b %errorlevel%`n")
- & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Lights Wrath pickup regression failed'}
+ foreach($route in @('priest','aluneth')){
+  $define=if($route -eq 'aluneth'){'/DALUNETH'}else{''}
+  [IO.File]::WriteAllText("$out/run-$route.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncd /d `"$out`"`ncl /nologo /EHsc /std:c++17 /W4 $asan $define /I`"$out`" `"$PSScriptRoot/LightsWrathPickupTest.cpp`" /Fe:$route.exe /Fo:$route.obj`nif errorlevel 1 exit /b 1`n$route.exe`nexit /b %errorlevel%`n")
+  & "$out/run-$route.cmd";if($LASTEXITCODE){throw "Native $route pickup regression failed"}
+ }
  if($VerifyNativeCatalog){
   $prior=$env:LEGION_DIALOGUE_CONFIG
   try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile LightsWrathCatalog.cpp -ProbeName LightsWrathCatalog -OutputFile "$out/native.tsv"}finally{$env:LEGION_DIALOGUE_CONFIG=$prior}
   $catalog=@(Get-Content "$out/native.tsv")
   foreach($row in @("DURATION`t208011`t9000`t9000","EFFECT`t208011`t0`t6`t430`t1244`t0`t1`t0","EFFECT`t208011`t2`t249`t0`t128868`t0`t1`t0","EFFECT`t208011`t3`t90`t0`t105109`t0`t1`t0","EFFECT`t218172`t1`t252`t0`t0`t0`t1`t17")){if($catalog -notcontains $row){throw 'Native pickup/scene/equip/return data contract differs'}}
+  foreach($row in @("DURATION`t211954`t9000`t9000","EFFECT`t211954`t0`t6`t430`t1269`t0`t1`t0","EFFECT`t211954`t2`t249`t0`t127857`t0`t1`t0","EFFECT`t211954`t3`t90`t0`t105109`t0`t1`t0","CRITERION`t1101`t6`t47999`t30099`t36`t127857","CRITERION`t1101`t6`t48000`t29682`t92`t49875","CRITERION`t1101`t5`t47997`t34397`t92`t54145","CRITERION`t1101`t5`t55130`t34398`t92`t54146","CRITERION`t1101`t5`t55131`t34399`t92`t54147")){if($catalog -notcontains $row){throw 'Native Aluneth control/pickup/scene/equip/return data contract differs'}}
  }
 }

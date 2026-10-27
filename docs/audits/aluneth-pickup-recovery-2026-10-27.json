@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "c146759c4",
+  "scope": "Mage42011/scenario1101 physical249814 pickup/native211954/accepted218172 departure. Generalize existing tested Priest pipeline with exact separate native route identities; initial106756 chest creation retry and full Aluneth chain remain separate OPEN work.",
+  "cause": [
+    "Mage249814 native completed-loot action85 queued211954 after200ms but consumed the chest regardless of later cast/equip/scene acceptance.106756 separately spawned248574 before physical pickup; shared portal SAI205 awarded49875 in gossip before a teleport succeeded.",
+    "106756 native action50 made249814 Unit-owned; removing the source could delete the chest. Its existing fixed-pose creation also has a single-attempt failure path, retained as explicitly OPEN next work."
+  ],
+  "native_data": {
+    "route": "Matching26972 LFG1241/scenario1101/map1583/difficulty12. Mage quest42011 objectives283354 kill106708 and283355 personal105109. Stage5 requires54145/tree47997,54146/tree55130,54147/tree55131; stage6 requires OWN_ITEM127857/tree47999 and event49875/tree48000. All three real control leaves required by the C++ pickup admission.",
+    "presentation": "211954 actual9000ms, effect0 ACTIVATE_SCENE430/misc1269; effect1 root26; effect2 FORCE_EQUIP249 existing127857; effect3 personal90/105109; effect4 SEND_EVENT49926; effect5 trigger225874. Actual World spell_scene package1717/misc1269/flags21/duration0. Native SceneCompleted/Complete+Canceled packet semantics retained, with remaining9s minimum after early visual skip.",
+    "source": "106756 static370546/map1583/phase6068. Original full eight-row source graph and two source22 actor conditions captured in AlunethPickupOriginal.json. Native249814 position1117.78/1048.03/314.619/o2.09636 retained, including its original floating Z. Portal native1152.58/1002.02/309.289/o2.21201 retained.",
+    "shared": "Priest1065/41631/128868/208011/scene1244/source104985/chest248572/control47119 remains distinct from Mage1101/42011/127857/211954/scene1269/source106756/chest249814/control47997+55130+55131. Existing script names retain their original LightsWrath naming for both route bindings; no duplicate pickup implementation.218172 other native templates244556/251677 and its original personal97377/Dalaran destination remain unchanged."
+  },
+  "implementation": [
+    "Shared immutable Route data selects by actual chest entry or portal summoner GO entry, then matches actual scenario/class/quest. Claims and departures carry original route plus original fullGUID/map/instance/quest lease; spell Check/Hit/AuraApply additionally require that route's actual presentation spell. Root/slot/cast admission rejects cross-route history and wrong-class context.",
+    "Reuse real storage/physical existing-inventory replay,200ms ordinary presentation,5s cast retry/30s finite presentation timeout, actual force-equip+105109 observation, native9s/scene completion, earned-offline world fact,2s portal retry, accepted native teleport then49875. No new item/quest/health grants or manual character changes.",
+    "Mage106756 id3 creates a lifetime0/map-owned chest using existing action50 NO_CREATOR4 and now links directly to unchanged id5/6; its premature id4 portal producer is retired. Native id0/1/2/5/6 dialogue/data/teleport/unaura and source22 phase gates remain byte-for-byte identical. New portal is made by the real completed chest presentation, so it survives source actor retirement.",
+    "Mage cached loot source4 requires unowned-including-bank, alive, unrewarded active42011/class mask128/map1583/native1101 stage6. Source17 allows actual inventory/bank ownership, active incomplete/complete42011 and stages6..7; C++ cast additionally requires physical original inventory receipt and all three earned control leaves.42 exact native condition rows; source22 chest rows are not invented.",
+    "Both genuine Nexus routes bypass original portal pre-credit, binding accepted departure instead. Unrelated contexts still delegate native SmartGameObjectAI. Historical06 TEMP fixture reconstructs its original Mage id4 row; live RELEASED07 explicitly requires that superseding row to be absent, without editing previously applied06 SQL."
+  ],
+  "migration": {
+    "file": "sql/updates/world/2026_10_27_07_aluneth_pickup_recovery.sql",
+    "updater_sha1": "1A3535D08C0F9BD4F5D247D413D7B82968CA96EA",
+    "state": "RELEASED",
+    "original_full_graph_sha256": "fbc87c9434b46cc78db75736124c61674bd2ce50525f5c9c8feb4bd8c21ef260",
+    "new_full_graph_sha256": "1247b15914f72dfcb60c5e19e841c26521e239071c9e6375f91f139c37e75a38",
+    "new42_conditions_sha256": "99cfb1ea1096c7416530f904261bd3312bc28ca72e5d70e6694f32d637fc87f0",
+    "guards": "Both exact old and applied graph hashes/counts, two complete source22 actor conditions, native templates/loot/source spawn/scene, existing Priest shared factories and untouched portal SAI hash, no static objects/unknown portal producer or spell binding. Every mutation guarded, including force-continued refusal cases. Pending SQL stayed outside updater until matching separate staged Release/PE/native/TEMP passed and safe offline promotion."
+  },
+  "checks": {
+    "native": "Same actual full pickup/return production header compiled twice with ASAN for1065 and1101. Each runs both quest statuses,23 physical/stale admission denials, stage bounds, real storage/full bags/bank/equip/swap rejection,9s/native scene Complete+Canceled/stale scene/mode bounds, cast and portal retry, offline earned exit,30s timeout, original lease/AI/fullGUID/crossMap/reentrant/Reset/retake, real accepted/rejected/wrong-destination/expired/ambiguous exit and completed/abandoned escape. Each relevant control leaf independently missing and foreign presentation spell rejected. Native core loot/equip/scene/deferred-teleport methods included; final native cast/effect/Map admission endpoints and unrelated SmartAI endpoint controlled.",
+    "data": "Ten complete TEMP tables, twice/exact normalized row-and-field preservation, sixteen old/applied custom refusals.480 actual native source4/LootItem/cached-slot cases plus full source17 stage/status/ownership/wrong Priest history matrix compiled with ASAN. Final filtered live readback matches every selected row/column and RELEASED SHA1. Shared06 TEMP/live regression passes with explicit07 supersession; no live character mutation.",
+    "creator_lifecycle": "Native action50 -> actual summon/Map insertion/owner list -> Unit cleanup ASAN regression28 cases passes: bit4 retains lifetime0/summoner/map ownership; ordinary/retry/unit/random modes and failed insertion cleanup unchanged. This does not repair the original single-attempt creation itself.",
+    "binary": "Original scripts project Release/x64/original final-link LIBs and matching EXE/map timestamps. Staged+canonical five registered factories/vtables/hooks and exact two immutable route data objects actually referenced by SourceRoute, retained native scene semantics and native teleport before49875 pass. Previous takeover/Tuure PE chain, shared ten-acquisition helper preservation and canonical Scepter login Release check pass.",
+    "limits": "No actual client traversal, scene/model/audio/skip timing/extra ability/pet/camera/route fidelity or full progression claimed. Generic helper preservation includes historical roots; the actual two deployed roots are proven separately by dual handlers/factories. Native fake cast, effect dispatch, loot notifications and Map endpoints remain controlled. Actual all36 client tests remain with user.",
+    "local_tooling": "Generator preflight/string quoting checks and one read-only schema query were corrected before use; no failed SQL was published or live character data changed. No new runtime error/crash arose in the checked runs."
+  },
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "bnetserver.exe": "1521860BCDAC63FB1F854E70196FBC6E7320A23B7C2D87E5D0E461236BF8CC29",
+      "worldserver.exe": "53B3434DFC220632C8E4707FAA5C8620FE2522B3631C3E82FF69E98F0746187D",
+      "bnetserver.map": "284F52AEDA62E961ACAFAEB69BF9C3D6716D690F5489A417F50CA66B7B9D179E",
+      "worldserver.map": "BFDC133A34380A0C074457EFCED398FD8CDD753BAE88DC273D3348B54C1C6330"
+    },
+    "owned_pid": 16488,
+    "result": "Fresh updater/ready, server shutdown0/exit0, empty stderr and newDBErrors; no new/changed canonical/test crashes or appended server warnings/errors/assertions; protected runtime hashes unchanged; no hidden/task-owned server remains."
+  },
+  "archives": "No new runtime report/log required archive or truncation. Preserve unrelated history; no credentials/config/logs/dumps/character data committed.",
+  "next": [
+    "Native106756 id3 fixed-position single-attempt chest creation failure/disabled-AI lifecycle: repair separately without replaying its player teleport/dialogue or granting progress.",
+    "Native Aluneth stage5 three-control sequence and earlier full route; shared Bilaal real death/accepted49810/Azuregos104546 retry and unresolved209863 gravity assets.",
+    "Post-presentation abandonment/quest reacceptance/reentry must be traced through actual quest offers/LFG instance lifecycle; current host proves stale-receipt rejection and completed/abandoned escape, not every same-instance quest reacquisition path.",
+    "Actual portal intermediate Nexus versus preserved native Dalaran route, all visual/client/group/faction/relog/remaining36 reviews remain OPEN. Continue work rather than stop at pickup repair."
+  ]
+}

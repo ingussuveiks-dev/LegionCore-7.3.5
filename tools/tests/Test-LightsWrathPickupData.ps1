@@ -9,6 +9,9 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
  function InsertRows($table,$fields,$rows){$values=@();foreach($row in $rows){$cell=@();foreach($field in $fields){$value=$row.$field;if($value -is [string]){$cell+="'"+$value.Replace("'","''")+"'"}elseif($null -eq $value){$cell+='NULL'}else{$cell+=[Convert]::ToString($value,[Globalization.CultureInfo]::InvariantCulture)}};$values+='('+($cell -join ',')+')'};'INSERT INTO '+$table+'('+($fields -join ',')+') VALUES'+($values -join ',')+';'}
  $restore=(InsertRows smart_scripts $native.fields $native.rows)+(InsertRows conditions $native.conditions_fields $native.conditions_rows)
  $setup+=$restore
+ # Migration07 later retires the shared Mage producer. Reconstruct its pinned
+ # historical row only in TEMP so06's original guard remains reproducible.
+ $setup+="DELETE FROM smart_scripts WHERE entryorguid=106756 AND source_type=0 AND id=4;"+(InsertRows smart_scripts $native.fields $native.shared_rows)
  function Snapshot([string]$label,[switch]$Filtered){($filters.Keys|ForEach-Object {$where=if($Filtered){' WHERE '+$filters[$_]}else{''};"SELECT '$label-$_',a.* FROM $_ a$where;"}) -join "`n"}
  function Signature($rows,[string]$label){(@($rows|Where-Object {$_ -like "$label`t*"}|ForEach-Object {$_.Substring($label.Length+1)}|Sort-Object -CaseSensitive)) -join "`n"}
  $db=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
@@ -22,9 +25,16 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
  foreach($change in $changes){$r=Query "$setup`n$change`n$(Snapshot 'before')`n$migration`n$(Snapshot 'after')" -Expected;foreach($t in $filters.Keys){if((Signature $r "before-$t") -cne (Signature $r "after-$t")){throw "Refused pickup changed $t"}}}
  if($VerifyLive){
   $sha=[Security.Cryptography.SHA1]::Create();try{$hash=[BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(([IO.File]::ReadAllText((Resolve-Path $MigrationPath))).Replace("`r`n","`n")))).Replace('-','')}finally{$sha.Dispose()}
-  $live=Query "SET SESSION TRANSACTION READ ONLY;SELECT 'update',hash,state FROM updates WHERE name='2026_10_27_06_lights_wrath_pickup_recovery.sql';$(Snapshot 'live' -Filtered)"
+  $live=Query "SET SESSION TRANSACTION READ ONLY;SELECT 'update',hash,state FROM updates WHERE name='2026_10_27_06_lights_wrath_pickup_recovery.sql';SELECT 'aluneth-superseded',COUNT(*) FROM updates WHERE name='2026_10_27_07_aluneth_pickup_recovery.sql' AND state='RELEASED';$(Snapshot 'live' -Filtered)"
   if($live -notcontains "update`t$hash`tRELEASED"){throw 'Live pickup updater/hash differs'}
-  foreach($t in $filters.Keys){if((Signature $rows "first-$t") -cne (Signature $live "live-$t")){[IO.File]::WriteAllText("$out/live-difference-$t.txt", "EXPECTED`n"+(Signature $rows "first-$t")+"`nACTUAL`n"+(Signature $live "live-$t"));throw "Live pickup differs: $t"}}
+  foreach($t in $filters.Keys){
+   $expected=Signature $rows "first-$t";$actual=Signature $live "live-$t"
+   if($t -eq 'smart_scripts' -and $live -contains "aluneth-superseded`t1"){
+    $expected=(@($expected -split "`n"|Where-Object {$_ -notmatch '^106756\t0\t4\t'})) -join "`n"
+    if($actual -match '(?m)^106756\t0\t4\t'){throw 'Released Aluneth migration still has retired portal producer'}
+   }
+   if($expected -cne $actual){[IO.File]::WriteAllText("$out/live-difference-$t.txt", "EXPECTED`n"+$expected+"`nACTUAL`n"+$actual);throw "Live pickup differs: $t"}
+  }
  }
- 'PASS seven complete TEMP tables, repeated migration, exact normalization and thirteen custom refusals; retained Mage106756/portal SAI, other218172 templates, scene1600/1244 and native target/source4/source17 rules. No character mutation.'
+ 'PASS seven complete TEMP tables, repeated migration, exact normalization and thirteen custom refusals; historical06 Mage producer/portal SAI unchanged in TEMP, later released07 producer retirement checked on live; other218172 templates, scene1600/1244 and native target/source4/source17 rules. No character mutation.'
 }

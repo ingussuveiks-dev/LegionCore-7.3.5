@@ -2,6 +2,30 @@
 
 namespace LightsWrathPickup
 {
+    // Both native Nexus pickups use the same effect sequence; identities and
+    // earned control leaves stay route-specific. No cross-class receipt reuse.
+    struct Route
+    {
+        uint32 scenario, quest, klass, item, chest, source, spell, scene, owned;
+        uint32 control[3];
+        float portalOrientation;
+    };
+    Route const priest{1065, 41631, CLASS_PRIEST, 128868, 248572, 104985, 208011, 1244, 47214, {47119, 0, 0}, 0.633369f};
+    Route const mage{1101, 42011, CLASS_MAGE, 127857, 249814, 106756, 211954, 1269, 47999, {47997, 55130, 55131}, 2.21201f};
+
+    Route const* ChestRoute(uint32 entry)
+    {
+        return entry == priest.chest ? &priest : entry == mage.chest ? &mage : nullptr;
+    }
+
+    Route const* SourceRoute(GameObject* source)
+    {
+        if (!source) return nullptr;
+        if (source->GetEntry() != 248574) return ChestRoute(source->GetEntry());
+        ObjectGuid guid = source->GetSummonerGUID();
+        return guid.IsGameObject() ? ChestRoute(guid.GetEntry()) : nullptr;
+    }
+
     enum class Phase { Waiting, Casting, Scene, Finishing, Portal, Cancelled, Done };
     struct Claim;
     bool Owns(GameObject* source, Claim const* claim);
@@ -9,7 +33,7 @@ namespace LightsWrathPickup
 
     bool Leaf(Scenario* scenario, uint32 tree)
     {
-        if (!scenario || scenario->GetScenarioId() != 1065) return false;
+        if (!scenario) return false;
         auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
         auto found = progress->find(tree);
         return found != progress->end() && found->second.Counter;
@@ -24,7 +48,7 @@ namespace LightsWrathPickup
     {
         if (!player || player->GetMapId() != 1583) return false;
         Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
-        return scenario && scenario->GetScenarioId() == 1065;
+        return scenario && (scenario->GetScenarioId() == priest.scenario || scenario->GetScenarioId() == mage.scenario);
     }
 
     bool Role(GameObject* object, uint32 entry)
@@ -32,24 +56,30 @@ namespace LightsWrathPickup
         if (!object || object->GetEntry() != entry || !object->IsInWorld() || object->IsPreDelete() ||
             !object->isSpawned() || !object->GetMap() || object->GetMapId() != 1583) return false;
         ObjectGuid source = object->GetSummonerGUID();
-        return entry != 248572 || (source.IsCreatureOrVehicle() && source.GetEntry() == 104985);
+        Route const* route = ChestRoute(entry);
+        return !route || (source.IsCreatureOrVehicle() && source.GetEntry() == route->source);
     }
 
     bool Eligible(Player* player, GameObject* source, bool acceptedDeparture = false)
     {
-        if (!player || !source || !player->IsInWorld() || !player->CanContact() || player->isGameMaster() ||
-            !player->IsAlive() || (!acceptedDeparture && player->HasPendingTeleport()) || player->getClass() != CLASS_PRIEST ||
+        Route const* route = SourceRoute(source);
+        if (!route || !player || !source || !player->IsInWorld() || !player->CanContact() || player->isGameMaster() ||
+            !player->IsAlive() || (!acceptedDeparture && player->HasPendingTeleport()) || player->getClass() != route->klass ||
             player->GetMap() != source->GetMap() || !player->InSamePhase(source) ||
-            player->GetQuestRewardStatus(41631) ||
-            (player->GetQuestStatus(41631) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41631) != QUEST_STATUS_COMPLETE)) return false;
+            player->GetQuestRewardStatus(route->quest) ||
+            (player->GetQuestStatus(route->quest) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(route->quest) != QUEST_STATUS_COMPLETE)) return false;
         Scenario* scenario = Progress(source);
-        return scenario && scenario->GetScenarioId() == 1065 && scenario->GetCurrentStep() >= 6 &&
-            scenario->GetCurrentStep() <= 7 && Leaf(scenario, 47119);
+        if (!scenario || scenario->GetScenarioId() != route->scenario || scenario->GetCurrentStep() < 6 ||
+            scenario->GetCurrentStep() > 7) return false;
+        for (uint32 tree : route->control)
+            if (tree && !Leaf(scenario, tree)) return false;
+        return true;
     }
 
     bool CanTake(Player* player, GameObject* source)
     {
-        return Role(source, 248572) && Eligible(player, source) &&
+        Route const* route = SourceRoute(source);
+        return route && Role(source, route->chest) && Eligible(player, source) &&
             !source->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) &&
             player->canSeeOrDetect(source) && player->IsWithinLOSInMap(source) && player->GetExactDist(source) <= 5.0f;
     }
@@ -62,9 +92,9 @@ namespace LightsWrathPickup
         return nullptr;
     }
 
-    bool Equipped(Player* player)
+    bool Equipped(Player* player, uint32 item)
     {
-        Item* staff = player ? player->GetItemByEntry(128868) : nullptr;
+        Item* staff = player ? player->GetItemByEntry(item) : nullptr;
         return staff && staff == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
     }
 
@@ -78,6 +108,7 @@ namespace LightsWrathPickup
 
     struct Claim : std::enable_shared_from_this<Claim>
     {
+        Route const* route = nullptr;
         ObjectGuid sourceGuid, playerGuid;
         Map* originMap = nullptr; // identity only; resolve actors for each operation
         uint32 instanceId = 0;
@@ -88,17 +119,17 @@ namespace LightsWrathPickup
 
         bool Current(Player* player, GameObject* source) const
         {
-            QuestStatusData* quest = player ? player->getQuestStatus(41631) : nullptr;
+            QuestStatusData* quest = route && player ? player->getQuestStatus(route->quest) : nullptr;
             return quest && !lifetime.expired() && quest->ScriptLifetime == lifetime.lock() &&
-                player->GetGUID() == playerGuid && Role(source, 248572) && source->GetGUID() == sourceGuid &&
+                player->GetGUID() == playerGuid && Role(source, route->chest) && source->GetGUID() == sourceGuid &&
                 source->GetMap() == originMap && source->GetInstanceId() == instanceId &&
-                Owns(source, this) && CanTake(player, source) && player->HasItemCount(128868, 1, true);
+                Owns(source, this) && CanTake(player, source) && player->HasItemCount(route->item, 1, true);
         }
 
         void Update(GameObject* source, uint32 diff)
         {
             if (phase == Phase::Cancelled || phase == Phase::Done) return;
-            if (!Role(source, 248572) || source->GetGUID() != sourceGuid || source->GetMap() != originMap ||
+            if (!route || !Role(source, route->chest) || source->GetGUID() != sourceGuid || source->GetMap() != originMap ||
                 source->GetInstanceId() != instanceId || !Owns(source, this)) { phase = Phase::Cancelled; return; }
             // Natural presentation completion is an earned world fact. A
             // subsequent disconnect or step transition cannot erase its exit.
@@ -114,30 +145,30 @@ namespace LightsWrathPickup
             if (elapsed >= 30000)
             {
                 phase = Phase::Cancelled;
-                TC_LOG_WARN("scripts", "Light's Wrath pickup: native presentation did not finish within30s; retain real item and chest for retry");
+                TC_LOG_WARN("scripts", "Nexus artifact pickup: native presentation did not finish within30s; retain real item and chest for retry");
                 return;
             }
             if (phase == Phase::Scene)
             {
-                if (!player->HasAura(208011, playerGuid)) phase = Phase::Cancelled;
+                if (!player->HasAura(route->spell, playerGuid)) phase = Phase::Cancelled;
                 return;
             }
             if (timer > diff) { timer -= diff; return; }
             if (phase == Phase::Casting)
             {
                 phase = Phase::Waiting;
-                if (!castWarning) TC_LOG_WARN("scripts", "Light's Wrath pickup: accepted cast supplied no native presentation; retry original receipt");
+                if (!castWarning) TC_LOG_WARN("scripts", "Nexus artifact pickup: accepted cast supplied no native presentation; retry original receipt");
                 castWarning = true;
             }
-            if (phase != Phase::Waiting || !player->GetItemByEntry(128868)) return;
+            if (phase != Phase::Waiting || !player->GetItemByEntry(route->item)) return;
             phase = Phase::Casting;
             timer = 5000;
             CastScope request(shared_from_this());
-            SpellCastResult result = player->CastSpell(player, 208011, false);
+            SpellCastResult result = player->CastSpell(player, route->spell, false);
             if (result != SPELL_CAST_OK && phase == Phase::Casting)
             {
                 phase = Phase::Waiting;
-                if (!castWarning) TC_LOG_WARN("scripts", "Light's Wrath pickup: ordinary208011 rejected; retain completed storage and5s retry");
+                if (!castWarning) TC_LOG_WARN("scripts", "Nexus artifact pickup: ordinary native presentation rejected; retain completed storage and5s retry");
                 castWarning = true;
             }
         }
@@ -155,18 +186,18 @@ namespace LightsWrathPickup
                     return;
                 }
             Map* map = source->GetMap();
-            GameObject* portal = source->SummonGameObject(248574, 1152.58f, 1002.02f, 309.289f, 0.633369f,
+            GameObject* portal = source->SummonGameObject(248574, 1152.58f, 1002.02f, 309.289f, route->portalOrientation,
                 0, 0, 0, 0, 0, ObjectGuid::Empty, nullptr, false);
             if (!Role(portal, 248574) || portal->GetMap() != originMap ||
                 portal->GetSummonerGUID() != sourceGuid || !portal->GetOwnerGUID().IsEmpty())
             {
-                if (!portalWarning) TC_LOG_WARN("scripts", "Light's Wrath pickup: completed native presentation retained after failed248574 creation; retry without consuming chest");
+                if (!portalWarning) TC_LOG_WARN("scripts", "Nexus artifact pickup: completed native presentation retained after failed248574 creation; retry without consuming chest");
                 portalWarning = true;
                 timer = 2000;
                 return;
             }
             if (GameObject* current = map->GetGameObject(sourceGuid))
-                if (Role(current, 248572) && Owns(current, this)) Finish(current);
+                if (Role(current, route->chest) && Owns(current, this)) Finish(current);
         }
 
         void Finish(GameObject* source)
@@ -198,25 +229,28 @@ struct go_lights_wrath_pickup : GameObjectAI
 
     std::shared_ptr<LightsWrathPickup::Claim> Begin(Player* player)
     {
-        if (resetting || claim || !LightsWrathPickup::CanTake(player, go) || !player->GetItemByEntry(128868)) return nullptr;
-        player->AddQuestDelayedEvent(41631, 0, [] { });
-        QuestStatusData* quest = player->getQuestStatus(41631);
+        auto route = LightsWrathPickup::SourceRoute(go);
+        if (!route || resetting || claim || !LightsWrathPickup::CanTake(player, go) || !player->GetItemByEntry(route->item)) return nullptr;
+        player->AddQuestDelayedEvent(route->quest, 0, [] { });
+        QuestStatusData* quest = player->getQuestStatus(route->quest);
         if (!quest || !quest->ScriptLifetime) return nullptr;
         auto current = std::make_shared<LightsWrathPickup::Claim>();
+        current->route = route;
         current->sourceGuid = go->GetGUID(); current->playerGuid = player->GetGUID();
         current->originMap = go->GetMap(); current->instanceId = go->GetInstanceId(); current->lifetime = quest->ScriptLifetime;
         claim = current;
         // Only a real physical pickup/replay reaches this native ownership event.
-        player->UpdateAchievementCriteria(CRITERIA_TYPE_OWN_ITEM, 128868, 1);
+        player->UpdateAchievementCriteria(CRITERIA_TYPE_OWN_ITEM, route->item, 1);
         return current;
     }
 
     bool GossipUse(Player* player) override
     {
         if (resetting || claim || go->getLootState() == GO_JUST_DEACTIVATED || !LightsWrathPickup::CanTake(player, go)) return true;
-        if (player->HasAura(208011, player->GetGUID())) return true;
-        if (player->GetItemByEntry(128868)) { Begin(player); return true; }
-        return player->HasItemCount(128868, 1, true); // bank-only ownership cannot supply native force-equip
+        auto route = LightsWrathPickup::SourceRoute(go);
+        if (player->HasAura(route->spell, player->GetGUID())) return true;
+        if (player->GetItemByEntry(route->item)) { Begin(player); return true; }
+        return player->HasItemCount(route->item, 1, true); // bank-only ownership cannot supply native force-equip
     }
 
     bool GossipHello(Player* player, bool) override { return GossipUse(player); }
@@ -224,14 +258,15 @@ struct go_lights_wrath_pickup : GameObjectAI
     void OnStateChanged(uint32 state, Unit* unit) override
     {
         Player* player = unit ? unit->ToPlayer() : nullptr;
-        if (state != GO_JUST_DEACTIVATED || claim || resetting ||
-            !LightsWrathPickup::CanTake(player, go) || !player->GetItemByEntry(128868)) return;
+        auto route = LightsWrathPickup::SourceRoute(go);
+        if (!route || state != GO_JUST_DEACTIVATED || claim || resetting ||
+            !LightsWrathPickup::CanTake(player, go) || !player->GetItemByEntry(route->item)) return;
         Map* map = go->GetMap();
         ObjectGuid guid = go->GetGUID();
         auto current = Begin(player);
         if (current)
             if (GameObject* source = map->GetGameObject(guid))
-                if (source->GetGUID() == guid && LightsWrathPickup::Role(source, 248572))
+                if (source->GetGUID() == guid && LightsWrathPickup::Role(source, current->route->chest))
                     if (auto* ai = dynamic_cast<go_lights_wrath_pickup*>(source->AI()))
                         if (!ai->claim || ai->claim->phase != LightsWrathPickup::Phase::Done)
                             source->SetLootState(GO_READY); // retain real storage even after a reentrant AI replacement
@@ -247,7 +282,7 @@ struct go_lights_wrath_pickup : GameObjectAI
             Map* map = go->GetMap();
             if (map == old->originMap)
                 if (Player* player = LightsWrathPickup::FindPlayer(map, old->playerGuid))
-                    if (Aura* aura = player->GetAura(208011, old->playerGuid)) aura->Remove();
+                    if (Aura* aura = player->GetAura(old->route->spell, old->playerGuid)) aura->Remove();
             return;
         }
         auto current = claim;
@@ -273,7 +308,11 @@ namespace LightsWrathPickup
     {
         if (!player || !player->IsInWorld() || !player->GetMap()) return nullptr;
         std::list<GameObject*> objects;
-        player->GetGameObjectListWithEntryInGrid(objects, 248572, 5.0f);
+        Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+        Route const* route = scenario && scenario->GetScenarioId() == priest.scenario ? &priest :
+            scenario && scenario->GetScenarioId() == mage.scenario ? &mage : nullptr;
+        if (!route) return nullptr;
+        player->GetGameObjectListWithEntryInGrid(objects, route->chest, 5.0f);
         std::shared_ptr<Claim> result;
         for (GameObject* source : objects)
             if (auto current = Get(source))
@@ -299,10 +338,12 @@ class spell_lights_wrath_pickup_cast : public SpellScript
 
     bool Validate(SpellInfo const* info) override
     {
-        return info->Id == 208011 && info->Effects[EFFECT_0] && info->Effects[EFFECT_1] && info->Effects[EFFECT_2] &&
-            info->Effects[EFFECT_0]->ApplyAuraName == SPELL_AURA_ACTIVATE_SCENE && info->Effects[EFFECT_0]->MiscValue == 1244 &&
+        auto route = info->Id == LightsWrathPickup::priest.spell ? &LightsWrathPickup::priest :
+            info->Id == LightsWrathPickup::mage.spell ? &LightsWrathPickup::mage : nullptr;
+        return route && info->Effects[EFFECT_0] && info->Effects[EFFECT_1] && info->Effects[EFFECT_2] &&
+            info->Effects[EFFECT_0]->ApplyAuraName == SPELL_AURA_ACTIVATE_SCENE && info->Effects[EFFECT_0]->MiscValue == route->scene &&
             info->Effects[EFFECT_1]->ApplyAuraName == SPELL_AURA_MOD_ROOT &&
-            info->Effects[EFFECT_2]->Effect == SPELL_EFFECT_FORCE_EQUIP_ITEM && info->Effects[EFFECT_2]->MiscValue == 128868 &&
+            info->Effects[EFFECT_2]->Effect == SPELL_EFFECT_FORCE_EQUIP_ITEM && info->Effects[EFFECT_2]->MiscValue == route->item &&
             info->GetDuration() == 9000;
     }
 
@@ -312,7 +353,7 @@ class spell_lights_wrath_pickup_cast : public SpellScript
         Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
         auto current = bound ? original.lock() : LightsWrathPickup::castRequest.lock();
         GameObject* source = current ? LightsWrathPickup::Resolve(player, current->sourceGuid) : nullptr;
-        if (!current || current->phase != LightsWrathPickup::Phase::Casting || !current->Current(player, source) ||
+        if (!current || current->route->spell != GetSpellInfo()->Id || current->phase != LightsWrathPickup::Phase::Casting || !current->Current(player, source) ||
             LightsWrathPickup::Find(player) != current) return SPELL_FAILED_BAD_TARGETS;
         original = current;
         bound = true;
@@ -329,7 +370,7 @@ class spell_lights_wrath_pickup_cast : public SpellScript
         auto current = original.lock();
         Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
         GameObject* source = current ? LightsWrathPickup::Resolve(player, current->sourceGuid) : nullptr;
-        if (!current || !current->Current(player, source) || LightsWrathPickup::Find(player) != current || GetHitUnit() != player ||
+        if (!current || current->route->spell != GetSpellInfo()->Id || !current->Current(player, source) || LightsWrathPickup::Find(player) != current || GetHitUnit() != player ||
             (current->phase != LightsWrathPickup::Phase::Casting && current->phase != LightsWrathPickup::Phase::Scene))
             PreventHitDefaultEffect(effect);
     }
@@ -341,7 +382,7 @@ class spell_lights_wrath_pickup_cast : public SpellScript
         Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
         GameObject* source = current ? LightsWrathPickup::Resolve(player, current->sourceGuid) : nullptr;
         if (current && current->phase == LightsWrathPickup::Phase::Scene && current->Current(player, source))
-            current->equipped = LightsWrathPickup::Equipped(player) && player->GetQuestObjectiveData(41631, 105109);
+            current->equipped = LightsWrathPickup::Equipped(player, current->route->item) && player->GetQuestObjectiveData(current->route->quest, 105109);
     }
 
     void Register() override
@@ -362,7 +403,7 @@ class spell_lights_wrath_pickup_scene : public AuraScript
     {
         Player* player = GetUnitOwner()->ToPlayer();
         auto current = LightsWrathPickup::Find(player);
-        if (!current || GetCasterGUID() != player->GetGUID() || current->phase != LightsWrathPickup::Phase::Casting)
+        if (!current || current->route->spell != GetSpellInfo()->Id || GetCasterGUID() != player->GetGUID() || current->phase != LightsWrathPickup::Phase::Casting)
         {
             Remove();
             return;
@@ -395,9 +436,9 @@ class spell_lights_wrath_pickup_scene : public AuraScript
         // Complete and Canceled packets use that native visual-completion path.
         // Keep the native9s presentation bound even after an early scene ACK.
         bool nativeSceneEnd = GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_DEFAULT &&
-            GetMaxDuration() == 9000 && player->HasSceneStatus(1244, SCENE_COMPLETE);
+            GetMaxDuration() == 9000 && player->HasSceneStatus(current->route->scene, SCENE_COMPLETE);
         if ((nativeExpiry || nativeSceneEnd) && current->Current(player, source) && current->equipped &&
-            player->GetQuestObjectiveData(41631, 105109))
+            player->GetQuestObjectiveData(current->route->quest, 105109))
         {
             current->phase = LightsWrathPickup::Phase::Finishing;
             current->timer = 9000 - std::min(uint32(std::max(0, GetAura()->GetAllDuration())), 9000u);
@@ -424,15 +465,15 @@ namespace LightsWrathPickup
         if (!portal || portal->GetMapId() != 1583) return false;
         Scenario* scenario = Progress(portal);
         ObjectGuid source = portal->GetSummonerGUID();
-        return (scenario && scenario->GetScenarioId() == 1065) ||
-            (source.IsGameObject() && source.GetEntry() == 248572);
+        return (scenario && (scenario->GetScenarioId() == priest.scenario || scenario->GetScenarioId() == mage.scenario)) ||
+            (source.IsGameObject() && ChestRoute(source.GetEntry()));
     }
 
     bool Portal(GameObject* portal)
     {
         if (!Role(portal, 248574) || !portal->GetOwnerGUID().IsEmpty()) return false;
         ObjectGuid source = portal->GetSummonerGUID();
-        return source.IsGameObject() && source.GetEntry() == 248572;
+        return source.IsGameObject() && ChestRoute(source.GetEntry());
     }
 
     bool PhysicalExit(Player* player, GameObject* portal)
@@ -447,13 +488,15 @@ namespace LightsWrathPickup
     {
         // No pending-teleport rejection here: ScopedTeleportDelay keeps the
         // accepted departure in this source scenario until its real credit.
-        return Portal(portal) && Eligible(player, portal, acceptedDeparture) && !player->isGameMaster() &&
-            Progress(portal)->GetCurrentStep() == 6 && Leaf(Progress(portal), 47214) && player->HasItemCount(128868, 1, true) &&
-            player->GetQuestObjectiveData(41631, 105109) && !player->HasAura(208011, player->GetGUID());
+        Route const* route = SourceRoute(portal);
+        return route && Portal(portal) && Eligible(player, portal, acceptedDeparture) && !player->isGameMaster() &&
+            Progress(portal)->GetCurrentStep() == 6 && Leaf(Progress(portal), route->owned) && player->HasItemCount(route->item, 1, true) &&
+            player->GetQuestObjectiveData(route->quest, 105109) && !player->HasAura(route->spell, player->GetGUID());
     }
 
     struct Exit
     {
+        Route const* route = nullptr;
         ObjectGuid sourceGuid, playerGuid;
         Map* originMap = nullptr;
         uint32 instanceId = 0;
@@ -462,7 +505,7 @@ namespace LightsWrathPickup
 
         bool SameAttempt(Player* player) const
         {
-            QuestStatusData* quest = player ? player->getQuestStatus(41631) : nullptr;
+            QuestStatusData* quest = route && player ? player->getQuestStatus(route->quest) : nullptr;
             return player && player->GetGUID() == playerGuid &&
                 (questBound ? quest && !lifetime.expired() && quest->ScriptLifetime == lifetime.lock() :
                     !quest || quest->Status == QUEST_STATUS_NONE);
@@ -497,11 +540,13 @@ struct go_lights_wrath_return : SmartGameObjectAI
         // Abandonment or an already completed scenario may still use the real
         // exit. They never receive a new final event from this escape path.
         if (receipt && receipt->Current(player, go)) { remaining = 5000; return false; }
-        player->AddQuestDelayedEvent(41631, 0, [] { });
+        auto route = LightsWrathPickup::SourceRoute(go);
+        player->AddQuestDelayedEvent(route->quest, 0, [] { });
         auto current = std::make_shared<LightsWrathPickup::Exit>();
+        current->route = route;
         current->sourceGuid = go->GetGUID(); current->playerGuid = player->GetGUID();
         current->originMap = go->GetMap(); current->instanceId = go->GetInstanceId();
-        if (QuestStatusData* quest = player->getQuestStatus(41631))
+        if (QuestStatusData* quest = player->getQuestStatus(route->quest))
             if (quest->Status != QUEST_STATUS_NONE && quest->ScriptLifetime)
             {
                 current->questBound = true;
@@ -539,7 +584,8 @@ class spell_lights_wrath_return : public SpellScript
         Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
         if (!player || player->GetMapId() != 1583) return true;
         Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
-        scoped = scenario && scenario->GetScenarioId() == 1065;
+        scoped = scenario && (scenario->GetScenarioId() == LightsWrathPickup::priest.scenario ||
+            scenario->GetScenarioId() == LightsWrathPickup::mage.scenario);
         std::list<GameObject*> portals;
         player->GetGameObjectListWithEntryInGrid(portals, 248574, 5.0f);
         for (GameObject* portal : portals)
@@ -591,14 +637,14 @@ class spell_lights_wrath_return : public SpellScript
         if (!delay.IsPending() || player->GetTeleportDest().GetMapId() != 1220 ||
             player->GetTeleportDest().GetExactDist(-828.61f, 4371.63f, 738.64f) > 0.1f || !current->SameAttempt(player))
         {
-            TC_LOG_WARN("scripts", "Light's Wrath return: original native218172 departure not accepted; no49875 grant");
+            TC_LOG_WARN("scripts", "Nexus artifact return: original native218172 departure not accepted; no49875 grant");
             return;
         }
         portal = LightsWrathPickup::Resolve(player, current->sourceGuid);
         if (award && current->Current(player, portal) && LightsWrathPickup::AwardState(player, portal, true))
             player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49875);
         else if (award)
-            TC_LOG_WARN("scripts", "Light's Wrath return: accepted departure lost its original eligible source/attempt; no49875 grant");
+            TC_LOG_WARN("scripts", "Nexus artifact return: accepted departure lost its original eligible source/attempt; no49875 grant");
     }
 
     void Register() override

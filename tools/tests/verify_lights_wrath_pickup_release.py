@@ -5,6 +5,8 @@ the actual registered objects dispatch those handlers and native consumers.
 """
 from pathlib import Path
 import runpy
+import re
+import struct
 from capstone import CS_OP_IMM, CS_OP_MEM
 
 p = runpy.run_path(str(Path(__file__).with_name('verify_lights_wrath_takeover_release.py')))
@@ -31,21 +33,35 @@ for script, kind, callbacks in (
         hook(register, '?' + callback + '@' + suffix)
 
 scope = 'Claim@LightsWrathPickup@@'
+# Follow the two actual data objects selected by SourceRoute. Merely finding
+# immediate IDs in an unused helper would not prove the shared dispatch.
+map_text = (n['args'].release / 'worldserver.map').read_text(errors='replace')
+for name, data in (
+    ('priest', (1065,41631,5,128868,248572,104985,208011,1244,47214,47119,0,0,0.633369)),
+    ('mage', (1101,42011,8,127857,249814,106756,211954,1269,47999,47997,55130,55131,2.21201))):
+    found = re.findall(r'\?'+name+r'@LightsWrathPickup@@3URoute@1@B\s+([0-9a-fA-F]{16})\s', map_text)
+    assert len(found) == 1
+    address = int(found[0], 16)
+    assert n['binary'][n['offset'](address):n['offset'](address)+52] == struct.pack('<12If', *data)
+    assert address in references('?SourceRoute@LightsWrathPickup@@')
 begin = '?Begin@go_lights_wrath_pickup@@'
 needs(begin, '?CanTake@LightsWrathPickup@@', '?AddQuestDelayedEvent@Player@@',
       '?getQuestStatus@Player@@', '?GetItemByEntry@Player@@', '?UpdateAchievementCriteria@Player@@')
-assert {36, 128868, 41631} <= values(begin)
+needs(begin, '?SourceRoute@LightsWrathPickup@@')
+assert 36 in values(begin)
 needs('?OnStateChanged@go_lights_wrath_pickup@@', begin, '?SetLootState@GameObject@@', '?GetGameObject@Map@@')
 needs('?UpdateAI@go_lights_wrath_pickup@@', '?Update@' + scope, '?GetAura@Unit@@')
 needs('?Current@' + scope, '?CanTake@LightsWrathPickup@@', '?getQuestStatus@Player@@')
-needs('?CanTake@LightsWrathPickup@@', '?Eligible@LightsWrathPickup@@', '?isSpawned@GameObject@@',
+needs('?CanTake@LightsWrathPickup@@', '?Eligible@LightsWrathPickup@@', '?Role@LightsWrathPickup@@',
       '?canSeeOrDetect@WorldObject@@', '?IsWithinLOSInMap@WorldObject@@')
-assert {248572, 104985, 1583} <= values('?CanTake@LightsWrathPickup@@')  # inlined Role
-assert {1065, 6, 7, 41631, 47119} <= values('?Eligible@LightsWrathPickup@@')
+needs('?Role@LightsWrathPickup@@', '?isSpawned@GameObject@@')
+assert 1583 in values('?Role@LightsWrathPickup@@')
+needs('?Eligible@LightsWrathPickup@@', '?SourceRoute@LightsWrathPickup@@', '?Leaf@LightsWrathPickup@@')
+assert {6, 7} <= values('?Eligible@LightsWrathPickup@@')
 update = '?Update@' + scope
 needs(update, '?SpawnPortal@' + scope, '?Current@' + scope,
       '?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@I_N')
-assert {208011, 5000, 30000} <= values(update)
+assert {5000, 30000} <= values(update)
 spawn = '?SpawnPortal@' + scope
 needs(spawn, '?GetGameObjectListWithEntryInGrid@WorldObject@@',
       '?SummonGameObject@WorldObject@@QEAAPEAVGameObject@@IM', '?SetLootState@GameObject@@')  # inlined Finish
@@ -58,7 +74,7 @@ removed = '?Removed@spell_lights_wrath_pickup_scene@@'
 needs(removed, '?GetUnitOwner@AuraScript@@', '?GetTargetApplication@AuraScript@@',
       '?GetDuration@AuraScript@@', '?GetMaxDuration@AuraScript@@', '?GetAura@AuraScript@@',
       '?HasSceneStatus@Player@@', '?Current@' + scope, '?GetQuestObjectiveData@Player@@QEBAHII')
-assert {9000, 1244, 3, 4, 105109, 41631} <= values(removed)
+assert {9000, 3, 4, 105109} <= values(removed)
 b = ins(removed)
 # Real elapsed-time field, signed expiry guard and remaining-time clamp; a
 # client Complete/Canceled ACK alone cannot create the exit before native9s.
@@ -72,12 +88,13 @@ for packet in ('Canceled', 'Complete'):
     needs('?HandleScenePlayback' + packet + '@WorldSession@@', '?SceneCompleted@Player@@')
 needs('?SceneCompleted@Player@@', '?HasSceneStatus@Player@@', '?RemoveAurasDueToSpell@Unit@@')
 
-# The shared Mage portal keeps its real SmartGameObjectAI lifecycle/gossip.
+# Unrelated contexts retain native SmartGameObjectAI lifecycle/gossip. Both
+# actual Nexus routes now use the private accepted-departure receipt.
 for method in ('Reset', 'GossipUse', 'GossipHello', 'UpdateAI'):
     needs('?' + method + '@go_lights_wrath_return@@', '?' + method + '@SmartGameObjectAI@@')
 needs('?SelectGameObjectAI@FactorySelector@@', '?GetGameObjectAI@ScriptMgr@@')
-needs('?GossipUse@go_lights_wrath_return@@', '?GetScenarioId@Scenario@@', '?PhysicalExit@LightsWrathPickup@@')
-assert {1065, 1583, 248572} <= values('?GossipUse@go_lights_wrath_return@@')  # inlined ScopedPortal
+needs('?GossipUse@go_lights_wrath_return@@', '?ScopedPortal@LightsWrathPickup@@', '?PhysicalExit@LightsWrathPickup@@')
+assert {1065, 1101, 1583, 248572, 249814} <= values('?ScopedPortal@LightsWrathPickup@@')
 needs('?Check@spell_lights_wrath_return@@', '?Ready@spell_lights_wrath_return@@')
 depart = '?Depart@spell_lights_wrath_return@@'
 needs(depart, '?Ready@spell_lights_wrath_return@@', '?AwardState@LightsWrathPickup@@',
@@ -89,8 +106,9 @@ def sites(method):
             and n['resolve'](x.operands[0].imm) == n['symbol'](method)]
 assert max(sites('?EffectTeleportUnits@Spell@@')) < min(sites('?UpdateAchievementCriteria@Player@@'))
 needs('?AwardState@LightsWrathPickup@@', '?Eligible@LightsWrathPickup@@')
-assert {6, 47214, 128868, 41631, 105109, 208011} <= values('?AwardState@LightsWrathPickup@@')
+needs('?AwardState@LightsWrathPickup@@', '?SourceRoute@LightsWrathPickup@@')
+assert {6, 105109} <= values('?AwardState@LightsWrathPickup@@')
 for method in (update, spawn, removed, depart, begin):
     for forbidden in ('?AddItem@Player@@', '?CompleteQuest@Player@@', '?KilledMonsterCredit@Player@@', '?SetHealth@Unit@@'):
         assert not {n['resolve'](a) for s, a in n['symbols'].items() if s.startswith(forbidden)} & n['calls'](method), (method, forbidden)
-print('PASS actual five registered factories/vtables/hooks, physical native storage/equip and original quest receipt,9s scene expiry/native Complete+Canceled semantics, retryable map portal, retained Mage SmartAI delegation, actual native teleport before eligible49875. No direct item/quest/health grants; failure/reentry/native catalog covered separately; client traversal/VFX pending.')
+print('PASS actual five registered factories/vtables/hooks and selected two exact native route data objects, physical storage/equip/original quest receipt,9s/native Complete+Canceled, retryable map portal, unrelated SmartAI delegation and both accepted native departures before eligible49875. No direct item/quest/health grants; dual native host/catalog/data coverage separate; client traversal/VFX pending.')
