@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-27",
+  "build": "Legion7.3.5.26972",
+  "status": "Recipient mismatch repaired in deployed combined2112AE19; native/ASAN/selected PE/startup pass, client pending",
+  "report": "User observed ERROR [scripts] SCRIPT_COMMAND_STOPSCENE event_scripts46900 source object is NULL. Original server log line2026-10-27_15:44:52 retained; no active crash reported. This error is independent of the native Skyhold arrival-target fall.",
+  "cause": "Native193711 E2 SendEvent61/46900 has no unit/object target. Actual EffectSendEvent supplies the Player as source and target=null. World46900 command36 stops scene misc1109, but Map::ScriptsProcess unconditionally looked up target, even labeling that target as source in its error. Therefore a real Player source was ignored.",
+  "local_evidence": [
+    "World scene1109/package1489/playback11 and empty-Event193711 callback; event_scripts46900/delay0/command36/scene1109 unchanged. Typed native193709 effect198 scene1109 and193711 teleport252 +remove193709 +targetless46900 verified.",
+    "Complete relevant native package1489 source read through typed SceneScriptText and linked scripts:13568 initialization,13569 Order Formation Main,13766 valkyr flight,13767 ghost arrival,13921 salute,13922 cheering and14755 sound track. Main ends through native camera reset/EndScene. This was source review, not new video/audio playback or client verification."
+  ],
+  "repair": "For only PLAYSCENE35/STOPSCENE36, retain an explicit target. If target is absent and source is actually a Player, use that source; otherwise native player validation and diagnostics remain. An explicit wrong/non-player target never silently falls back. No nearby-player selection, new quest/credit/item, scene skip, suppression of errors or guessed SQL row.",
+  "checks": [
+    "Test-ScriptedSceneRecipient -AddressSanitizer: original Map command block/_GetScriptPlayer, full native Player::SendSpellScene and full native EffectSendEvent. Pinned94438634a block reproduces46900 error with actual Player source/null target. Fixed block cancels both actual1109 instance IDs and retains unrelated1144.",
+    "Native ordinary quest-style NPC-source/Player-target play, explicit target precedence, idempotent repeated stop, wrong explicit target and null/non-player source diagnostics covered. Native event criteria side effects remain exactly the original dispatcher; recipient helper adds no progress. Packet/scheduler endpoints controlled, not client rendering.",
+    "Actual canonical Map::ScriptsProcess unique SendSpellScene command block contains absent-target/non-null-source/Player type gate and native recipient validator before delivery; command35-vs36 apply/cancel check retained. Shared IntoFray native map-command/legacy diagnostics and Scepter selected binary regressions pass.",
+    "Combined native Release2112AE19 and own4236 startup/ready/shutdown0/exit0 clean; no newly appended server errors/assertions, DBErrors or crashes after tests. No user/unknown server stopped or character edits."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "bnetserver.exe": "2BAC4D1ABA4752E6A0293F772053EBB0923EA3F4F129E421CE22784B5BD80079",
+      "bnetserver.map": "3341BF0660CD6FE18BCAA14B8D2633CDA7699E2615074F2DD764B204DBB0E521",
+      "worldserver.exe": "2112AE198F16346E29B4FE35D54FAAF64B4201E37B41C245BDB5B055FF77293A",
+      "worldserver.map": "48E3418E9AD4CB869660E8FCA85E7B8BB73552D40D991130E936C3045AEC4759"
+    },
+    "private_backup": ".codex/release-before-skyhold-aerylia-2026-10-27",
+    "private_manifest": ".codex/skyhold-aerylia-deployment.json",
+    "sequence": "Both server names absent before promotion and each file copy. Original generated library inputs/backup/copy/protected config and certificate hashes verified. Matching combined EXE first, then pending Kingslayers18 moved into updater. Own4236 fresh ready/shutdown0/exit0, stderr/newDBErrors0. No user/unknown server stopped; no task server remains."
+  },
+  "archive": {
+    "status": "Pending exact cause-line archive after focused fix commit; original mixed informative Server.log retained and must not be truncated. No unexplained crash moved."
+  },
+  "remaining": "Actual Order Formation completion/skip/stop/camera/phase and Aerylia travel client retest remain user-owned; automated source/API/PE evidence is separate. All36/Aluneth/Bilaal/Bezzeredes full sequences remain ongoing."
+}

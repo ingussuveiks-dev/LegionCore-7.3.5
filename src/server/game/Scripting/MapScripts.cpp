@@ -959,10 +959,21 @@ void Map::ScriptsProcess()
                 break;
             case SCRIPT_COMMAND_PLAYSCENE:
             case SCRIPT_COMMAND_STOPSCENE:
-                // For quest end or start event target is player.
-                if (Player* player = _GetScriptPlayer(target, true, step.script))
+            {
+                // Quest scripts put the player in target. Targetless spell
+                // events (e.g.193711/46900) put that player in source instead.
+                // An explicit invalid target remains an error, not a fallback.
+                Object* recipient = target;
+                bool isSource = false;
+                if (!recipient && source && source->IsPlayer())
+                {
+                    recipient = source;
+                    isSource = true;
+                }
+                if (Player* player = _GetScriptPlayer(recipient, isSource, step.script))
                     player->SendSpellScene(step.script->PlayScene.sceneID, nullptr, step.script->command == SCRIPT_COMMAND_PLAYSCENE, player);
                 break;
+            }
             case SCRIPT_COMMAND_SUMMON_CONVERSATION:
             {
                 if (Player* player = _GetScriptPlayer(target, true, step.script))
