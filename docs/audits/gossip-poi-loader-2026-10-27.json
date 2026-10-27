@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-27",
+  "status": "Backend repaired and promoted; actual client map/minimap rendering pending",
+  "report": "Orgrimmar guard Flight Master selection shows no map flag.",
+  "cause": "LoadGossipMenuItems unconditionally zeroed every nonzero ActionPoiID, including valid ordinary gossip options. Introduced by589dfc743. Correct database POI never reached native selection/send.458 current valid database links are affected.",
+  "repair": "Clear ActionPoiID only for invalid option types or missing POIs, retaining the original diagnostics, submenu handling and packet format. No SQL migration, character changes or bypass of NPC/quest admission.",
+  "local_evidence": [
+    "Guard3296/menu1951 option10 is ordinary OptionNpc0, ActionMenu1902 and ActionPoi177.177 is The Sky Tower, X1800.22/Y-4369.74, icon7/flags99/data0. Both Doras3310 spawns are within1yard. Readonly actual schema checked.",
+    "Matching local TrinityCore7.3.5 history4af15915bc8b780ef854c2e58d7ab5bb38f56758 confirms native GossipPOI14-bit flags/6-bit name length/XY/icon/importance/name and opcode0x27D8. Current modern POI fields are incompatible and were not copied.",
+    "Primary WowPacketParser V6 parser and absence of V7 override support inherited format; this is source review, not a new captured client packet. https://github.com/TrinityCore/WowPacketParser/blob/master/WowPacketParserModule.V6_0_2_19033/Parsers/NpcHandler.cs"
+  ],
+  "checks": [
+    "Test-GossipPoi -Baseline: pinned ac6b01671 counterfactual reproduces silent loss of valid177 while reply1902 survives. Separately retained baseline/repaired logs.",
+    "Test-GossipPoi: complete extracted production loader, actual native selection tail and SendPointOfInterest; actual linked GossipPOI::Write and real WorldPacket/ByteBuffer decode. Exactly one POI and submenu response, native14/6bit packet/XY/icon/name/no trailing bytes, localization, unknown POI/no send,500 reloads, invalid option/missing POI/empty query diagnostics. Host database/session endpoints controlled; not an in-client traversal.",
+    "Test-GossipPoiData: readonly actual guard/menu/POI and both Doras spawns;458 valid links. No persistent SQL or character writes.",
+    "Shared AdventureMapGossip and QuestDetailsDelivery pass; existing compiler narrowing/shadow warnings retained and are unrelated to this scoped loader edit.",
+    "Release game.lib rebuilt at original path; dedicated final link uses original libraries. Scripts library deliberately not rebuilt: contains completed Bilaal death but excludes unfinished Azuregos portal WIP. verify_gossip_poi_release verifies actual valid GetPointOfInterest success jumps over invalid-only zero store, native selection/send/packet consumers and no BilaalPortal symbols.",
+    "Both servers absent at promotion with per-file rechecks. Four EXE/map backup hashes verified, stage/canonical hashes match; configs/certificates unchanged. Canonical Scepter login native/PE regression passes. Own worldserver4236 fresh ready, graceful shutdown0/exit0, stderr/newDBErrors0; own process stopped."
+  ],
+  "development_notes": [
+    "Fixture include ordering/zero constructor/Host name ambiguities were corrected before passing native runs; logs retained.",
+    "An initial readonly query assumed points_of_interest.ID; actual schema uses entry. Corrected and reran successfully; no database mutation."
+  ],
+  "diagnostics": {
+    "evidence": ".codex/gossip-poi/ and build-extractors/runtime-test/gossip-poi/{baseline,repaired}, gossip-poi-data; .codex/gossip-poi-owned/stdout/stderr evidence",
+    "result": "Before/after tests, build, PE and owned startup: no new/changed crash, appended DBErrors or unexplained server error/assertion. No logs cleared or crashes moved; no archive cleanup necessary."
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "82773B55E9CDC1B3A0046C6669774A0210509AA74926736EC89CC6839FFA05E5",
+    "backup": ".codex/release-before-gossip-poi-2026-10-27",
+    "manifest": ".codex/gossip-poi-deployment.json"
+  },
+  "pending": [
+    "User selects Flight Master again from guard; verify The Sky Tower flag on map/minimap and normal text. Other guard destinations and locale rendering remain client checks.",
+    "All36 acquisition chains remain unfinished; preserved Azuregos portal WIP is excluded from this executable. Prior combat/talent/selection fixes retain their separate client-pending status."
+  ]
+}

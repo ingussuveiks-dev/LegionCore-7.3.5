@@ -126,11 +126,15 @@ void GossipDataStoreMgr::LoadGossipMenuItems()
         if (gMenuItem.ActionPoiID)
         {
             if (gMenuItem.OptionNpc != GossipOptionNpc::None)
+            {
                 TC_LOG_ERROR("sql.sql", "Table `gossip_menu_option` for menu %u, id %u can not use ActionPoiID for GossipOptionNpc different from GossipOptionNpc::None, ignoring", gMenuItem.MenuID, gMenuItem.OptionIndex);
+                gMenuItem.ActionPoiID = 0;
+            }
             else if (!sQuestDataStore->GetPointOfInterest(gMenuItem.ActionPoiID))
+            {
                 TC_LOG_ERROR("sql.sql", "Table `gossip_menu_option` for menu %u, id %u use non-existing ActionPoiID %u, ignoring", gMenuItem.MenuID, gMenuItem.OptionIndex, gMenuItem.ActionPoiID);
-
-            gMenuItem.ActionPoiID = 0;
+                gMenuItem.ActionPoiID = 0;
+            }
         }
 
         if (gMenuItem.OptionBroadcastTextID && !sBroadcastTextStore.LookupEntry(gMenuItem.OptionBroadcastTextID))
