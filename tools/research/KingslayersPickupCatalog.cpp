@@ -30,9 +30,9 @@ int main(int argc,char** argv){
  DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2",CriteriaTreeLoadInfo::Instance());
  DB2Storage<CriteriaEntry> criteria("Criteria.db2",CriteriaLoadInfo::Instance());
  if(!steps.Load(argv[1],0)||!trees.Load(argv[1],0)||!criteria.Load(argv[1],0))return 8;steps.LoadFromDB();trees.LoadFromDB();criteria.LoadFromDB();
- for(auto step:steps)if(step->ScenarioID==1123)std::cout<<"STEP\t"<<unsigned(step->OrderIndex)<<'\t'<<step->ID<<'\t'<<step->Criteriatreeid<<'\n';
+ for(auto step:steps)if(step->ScenarioID==1123){std::cout<<"STEP\t"<<unsigned(step->OrderIndex)<<'\t'<<step->ID<<'\t'<<step->Criteriatreeid<<'\n';std::cout<<"STEP_REWARD\t"<<unsigned(step->OrderIndex)<<'\t'<<step->RewardQuestID<<'\n';}
  for(auto t:trees)if(t->ID==48589||t->ID==48591||t->ID==48593||t->Parent==48528||t->Parent==48548||t->ID==48528||t->ID==48548){std::cout<<"TREE\t"<<t->ID<<'\t'<<t->Parent<<'\t'<<t->Amount;if(auto c=criteria.LookupEntry(t->CriteriaID))std::cout<<'\t'<<c->ID<<'\t'<<unsigned(c->Type)<<'\t'<<c->Asset;std::cout<<'\n';}
- std::set<uint32> selected{215112,215113};
+ std::set<uint32> selected{215112,215113,215151};
  for(auto effect:effects)if(effect->Effect==61&&effect->EffectMiscValue[0]==51617){selected.insert(effect->SpellID);std::cout<<"EXIT_SOURCE\t"<<effect->SpellID<<'\n';}
  for(int depth=0;depth<3;++depth)for(auto effect:effects)if(selected.count(effect->SpellID)&&effect->EffectTriggerSpell)selected.insert(effect->EffectTriggerSpell);
  for(auto id:selected)if(auto spell=spells.LookupEntry(id))std::cout<<"SPELL\t"<<id<<'\t'<<spell->Name->Str[0]<<'\n';else std::cout<<"MISSING_SPELL\t"<<id<<'\n';

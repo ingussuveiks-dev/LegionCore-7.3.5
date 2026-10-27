@@ -1063,6 +1063,8 @@ public:
     }
 };
 
+#include "kingslayers_return.h"
+
 void AddSC_Kingslayers()
 {
     new npc_garona_halforcen();
@@ -1074,4 +1076,6 @@ void AddSC_Kingslayers()
     new npc_merlis_malagan();
     new npc_garona_halforcen_outro();
     new go_the_kingslayers();
+    RegisterGameObjectAI(go_kingslayers_return);
+    RegisterSpellScript(spell_kingslayers_return);
 };

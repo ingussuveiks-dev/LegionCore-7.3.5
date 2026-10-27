@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-27",
+  "build": "Legion7.3.5.26972",
+  "status": "Implementation/native/ASAN/TEMP/DB2/selected Release checks complete; deployment deferred while user servers run. No client certification.",
+  "scope": "Kingslayers static Dalaran exit251123/spawn134046/map1620, native215151 and final51617. Focused follow-up to247c16cbd pickup; not all36 completion.",
+  "proven_source_cause": [
+    "Native215151 effect0 SendEvent61 targets0/0 executes targetless HIT before effect1 Teleport252 self/DB. Native EffectSendEvent immediately awards types73/92; a later refused teleport still leaves final event51617 accepted. Native goober sets IN_USE/ACTIVATED before casting and defaults to60s activation, impeding immediate retry.",
+    "Actual native goober/SendEvent/teleport extracted counterfactual reproduces event before rejected teleport and native60s IN_USE. Source/native counterfactual finding, not a reported client failure or newly captured production crash."
+  ],
+  "local_sources": [
+    "Typed26972 DB2 plus read-only Hotfix overlays:215151 E0=61/misc51617/targets0,0; E1=252/targets1,17; castTime1/launch0/speed0. Final leaf48593/type92/51617, native42504/42627 roots48528/48548/type152 scenario1123. Step9 RewardQuestID0.",
+    "World: only251123 uses Data10=215151 and only134046 static spawn on map1620/phaseMask1. Type10/display8111/flags32/native data retained. Native target position1220/-854.53/4597.28/748.81/4.5759 retained.",
+    "No existing215151 spell bindings,51617 event_scripts,134046 gameobject_scripts, source1 portal SmartAI or instance_kingslayers ProcessEvent override. Existing core goober activation and self-cast path reviewed. Native Player::ScopedTeleportDelay keeps accepted departure in source map while its genuine criteria consumers run."
+  ],
+  "implementation": [
+    "New scoped GOAI accepts actual physical viewer/map/phase/visibility/LOS/distance/alive/contact/native ready state; issues full-GUID/source-instance/original quest weak-lifetime receipt. Native GameObject::Use still performs goober interaction/activation/animation and native self-cast; no blanket IN_USE rejection during that receipt.",
+    "SpellScript binds that actual activated receipt. Targetless effect0 HIT and any effect0 target dispatch are prevented in scope. Native effect1 teleport is executed once under ScopedTeleportDelay, and original1220 destination/accepted pending flag/quest attempt are checked before types73/92 event51617.",
+    "Only eligible Rogue with active incomplete42504/42627, native1123 stage9/pickup48591 and real128870 ownership can earn final event. Final48593 duplicate denied. No AddItem, CompleteQuest, explicit scenario reward or pet/nearby-player fabricated credit.",
+    "Completed/abandoned/otherwise ineligible genuine portal escape remains possible without new progression. Reentrant/forged/stale/reset/source-replaced/quest-reaccepted casts cannot reuse receipt. Legitimate native Scenario::Reward still owns eligible group quest completion; fixture does not simulate full party reward.",
+    "Next AI update releases only this receipt's actual ACTIVATED/ACTIVE/IN_USE native activation, retaining static exit and other flags. If cast never reaches departure,5s receipt timeout permits retry. Foreign externally changed state is preserved rather than forced ready.",
+    "Exact source/migration guards refuse custom scripts, changed spell/flags/spawn/phase/native destination or additional handlers. No generic GameObject/Spell core behavior changed. All earlier pickup/death/introduction code retained."
+  ],
+  "checks": [
+    "Test-KingslayersReturn.ps1 -AddressSanitizer compiles entire new header and original Kingslayers quest/leaf helpers, actual AddQuestDelayedEvent, HasPendingTeleport and ScopedTeleportDelay, native far-teleport deferral, native goober case + pre-dispatch/spell dispatch, actual GameObject self-cast selection, entire SendEvent and generic native teleport route. Unrelated teleport spell-ID branches/post-effects are outside the extracted route; engine/map/criteria endpoints controlled.",
+    "Pinned native behavior counterfactual is paired with passing repaired both-quest accepted-before-credit, refused teleport then retry, failed cast5s retry,16 physical refusals,8 no-credit escape states, forged cast,8 stale/replaced receipts, duplicate/reentrant/group-escape, abandon/reaccept, absent scenario, flight/missing/wrong destination, post-teleport attempt/death change, previous delay retention and foreign flags/state preservation.",
+    "Test-KingslayersReturnData: seven actual-schema TEMP tables, twice/idempotent native bindings, complete native template/spawn retention,24 original/applied custom-handler/source/destination refusals, unchanged real target position. Native DB2 graph/effect/duration/pickup/quest-root/no-auto-reward checks pass. No character writes; live18 deliberately absent.",
+    "Release scripts rebuilt from original generated library paths; staged link preserves canonicalE82A0641. Actual PE factory/registrations/vtables/hooks, scoped source/quest receipt, native goober CastSpell, release and teleport-before-both-credit calls verified. Includes selected prior Malgalor/base scenario paths.",
+    "Shared Kingslayers Pickup ASAN and selected staged PE pass; native Merlis death owner/pet/guardian/charm and Garona intro EventMap/lifetime/catalog checks pass. No combat hook/kill ownership changes."
+  ],
+  "development_notes": "Initial fixture lacked native WorldLocation constructor/MAX_SPELL_EFFECTS/trap lookup stubs; corrected and rerun. PE guard adapted to Reset tail alias, inlined Source and conditional leaf jump. Replaced copied fixture type46 guess with actual extracted CriteriaTypes (native script event73), paired with actual PE73/92. TEMP SmartAI custom row needed required comment. One parallel native-reader invocation collided on its shared build-item.cmd; discarded that run and reran readers sequentially. Failed evidence retained; no production warning/error suppressed.",
+  "deployment": {
+    "canonical_unchanged": "E82A06415F93C5D1802AE7FF0AD9CBCB28F4F572117FE97AB8486C6A0D955EBD",
+    "stage": ".codex/kingslayers-return-release",
+    "hashes": {
+      "worldserver.exe": "039301BB51A15C65503FCD276A08D13C7D9F5DCE029F08A11F61EC03156667A8",
+      "worldserver.map": "2106379928751FD7A13CE414F0335D15415221802AF91919C954F019E8D9BCD2",
+      "bnetserver.exe": "1D24513A32D61F36BB35B70F01AFEB76B8AF599D9060905EDDB0F326F01C99FE",
+      "bnetserver.map": "335C90F290F59F4F7679514AECACFF5BD105FA6EDADCB14F21E42E09F3910E99"
+    },
+    "pending_migration": "sql/pending/world/2026_10_27_18_kingslayers_accepted_return.sql",
+    "pending_migration_sha1": "9552150df1f47b9d23488b418f2e0b8ad0744cf8",
+    "status": "Not promoted. User/unknown bnetserver22744/worldserver34144 run; none stopped. Actual updates_include contains only sql/updates/world and sql/old/world, so sql/pending/world is outside live updater."
+  },
+  "diagnostics": "Final tests/build/PE groups passed before/after canonical and fixture crash/log/exit/stdout/stderr checks; no new crashes, appended DBErrors or unexplained server warning/error/assertion. No logs truncated/archived, no task server started, no user/unknown process stopped, no character progress changed.",
+  "remaining": [
+    "User closes both servers, then recheck absence, back up/promote both EXE/map files, move18 to sql/updates/world, own canonical startup/updater/readback and graceful shutdown, Scepter Release and canonical selected PE, update audit/deployment commit/push. Do not apply18 with old EXE.",
+    "Actual client full pickup/outro/portal animation/failed retry/accepted Dalaran/quest completion/turn-in, both factions/groups/relog/reentry remain separate. Canonical startup is still pending and staged tests do not certify client traversal.",
+    "Continue separate Bezzeredes/full933 sequence, unresolved Aluneth controls/Bilaal gravity and all36 worklist. Prior Hunter choice repair and earlier pending client checks preserved."
+  ]
+}

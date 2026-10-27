@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/kingslayers_return.h",
+      "handler": "251123 native215151 accepted departure before final51617",
+      "problem": "Targetless native SendEvent preceded refused teleport; generic goober locked IN_USE for60s. Native counterfactual, not client crash.",
+      "repair_audit": "docs/audits/kingslayers-accepted-return-2026-10-27.json",
+      "limit": "Stage039301BB native/ASAN/TEMP24refusals/DB2/selectedPE complete; pending18 outside updater, user servers running so deployment/startup/client still pending."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp",
       "handler": "Native Kingslayers251107 actual loot/equip/51616 and safe Mathias outro",
       "problem": "Data1=0 and any-state callback granted final pickup/explicit scenario completion before AddItem outcome; raw delayed target/actor pointers.",
