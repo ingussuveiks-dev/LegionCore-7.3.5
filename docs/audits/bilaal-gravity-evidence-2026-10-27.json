@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "f8f183538",
+  "status": "OPEN: bounded investigation of missing Force of Gravity behavior. No gameplay implementation or full combat verification is claimed.",
+  "local_evidence": [
+    "Fresh typed native209863:15s self periodic aura23,1000ms period,trigger0; only base difficulty effect found. No209863 spell_script_names binding, C++ handler or104502/106708/209863 Smart dummy effect event66 producer found.",
+    "Native209864/209865/209866 are distinct CREATE_AREATRIGGER179 effects with6667/6668/6669, self destination18. Durations4s/4s/7s and speed20. All three live areatrigger_template/data/action entries are absent. Native AreaTrigger::CreateAreaTrigger returns false when its AreaTriggerDataStore record is missing. Casting these alone would not restore the mechanic.",
+    "Native209867 Crosswind has periodic209868, knockback98 and control auras;209868 has TELEPORT_L252 and DISABLE_MOVEMENT_FORCE459.209869 Gravity Bomb triggers227739->227738->209870;209870 creates6671 and209871 is damage+knockback. Live6671 exists but has no returned action/data row. These related IDs are evidence for further tracing, not authorization to invent their target, timing, geometry or force magnitude.",
+    "Native AuraEffect periodic fallback first asks ScriptMgr::OnDummyEffect and then SmartAI dummy handling;104502/106708 have empty ScriptName. The absence of a concrete handler remains unresolved. Native diagnostics have not been suppressed.",
+    "Actual26972 AreaTrigger.db2 ID6667 is a fixed map657 volume at-1000/395/643.5, unrelated to the spell template. Do not adapt this record's geometry to spell209864 by numeric ID alone.",
+    "Original local TDB735.00_2018_02_19 world archive has only area-trigger template6669: type0/flags4/radius5..5/VerifiedBuild22498, no action. This older735 capture is partial evidence, not an exact26972 complete force implementation. The local2020 LegionCore archive supplied no matching selected rows. No bulk import."
+  ],
+  "reference_review": [
+    {
+      "source": "C:/wamp64/www/TrinityCore",
+      "review": "Current source targeted search and all-ref git log -S209863 for scripts found no relevant implementation; newer core remains an incompatible reference unless validated. Local project history search also supplied no209863 implementation. Not an exhaustive private/remote branch review."
+    },
+    {
+      "source": "https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/tree/fed58f79c498521836612acd12009e9fa9e60e31",
+      "review": "GitHub code search209863 across this donor, zitengzela/LegionCore-7.3.5V2 and Titans-Project/LegionCore-Reforged returned unrelated gameobject loot migration matches. Ashamane search returned an unrelated Jade gameobject. Bounded search supplies no independent spell repair; one broader connector search failed internally."
+    },
+    {
+      "source": "https://www.wowhead.com/npc=106708/nexus-prince-bilaal",
+      "review": "Read returned first-person comments describing an outward force toward the platform edge and purple descending-orb circles. Comment evidence supports the missing movement mechanic but does not establish exact native force strength, geometry, pulse schedule or server implementation. No direct quote reproduced."
+    },
+    {
+      "source": "https://www.wowhead.com/ptr/quest=42011/the-nexus-vault",
+      "review": "Read returned historical comments describing force toward the platform edge, bridge shelter, pet final blow, and Azuregos/reentry failures. The page is currently a later PTR and comments are unverified historical observations; do not import current spell/schema behavior."
+    },
+    {
+      "source": "https://www.youtube.com/watch?v=H-IIB5pf-rs",
+      "review": "Only discovered as a linked Priest quest video in returned Wowhead text. No footage/audio was reviewed in this investigation. No claim to having watched the fight or verified transitions from video."
+    }
+  ],
+  "checks": "Fresh typed native reader runs wrapped by canonical/own/probe crash/log snapshots: no new/changed crashes, DBErrors or server warnings/errors/assertions. Research reads only; no production code, SQL updater, character state or canonical EXE change. Canonical remains the deployed f8f183538 implementation with owned startup33144 already shut down.",
+  "next": [
+    "Retain this full combat/mechanics issue as OPEN. Obtain full relevant gameplay sequence and compatible spell/area-trigger force evidence before implementing pulses, placement, cleanup and recovery.",
+    "Continue independent Discipline actual pickup208011/consumed chest/cast failure/portal recovery, then Bilaal true-death/disabled-AI/accepted49810 and original104546 creation retry. Whole36/client remains unfinished."
+  ]
+}
