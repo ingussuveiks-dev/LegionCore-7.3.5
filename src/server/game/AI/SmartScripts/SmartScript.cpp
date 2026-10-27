@@ -660,9 +660,13 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 return;
             }
 
+            bool const retryThreshold = (e.action.cast.flags & SMARTCAST_RETRY_HEALTH_THRESHOLD) != 0;
             ObjectList* targets = GetTargets(e, unit);
             if (!targets)
+            {
+                if (retryThreshold) { e.runOnce = false; RecalcTimer(e, 500, 500); return; }
                 break;
+            }
 
             bool failedSpellCast = false, successfulSpellCast = false;
 
@@ -691,7 +695,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 else if (go)
                     result = go->CastSpell(unit, e.action.cast.spell);
 
-                bool spellCastFailed = result != SPELL_CAST_OK && result != SPELL_FAILED_SPELL_IN_PROGRESS;
+                bool spellCastFailed = result != SPELL_CAST_OK && (retryThreshold || result != SPELL_FAILED_SPELL_IN_PROGRESS);
                 if (me && e.action.cast.flags & SMARTCAST_COMBAT_MOVE)
                 {
                     ENSURE_AI(SmartAI, me->AI())->SetCombatMove(spellCastFailed);
@@ -709,8 +713,9 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             delete targets;
 
             // If there is at least 1 failed cast and no successful casts at all, retry again on next loop
-            if (failedSpellCast && !successfulSpellCast)
+            if (!successfulSpellCast && (failedSpellCast || retryThreshold))
             {
+                if (retryThreshold) e.runOnce = false;
                 RecalcTimer(e, 500, 500);
                 return;
             }

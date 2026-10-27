@@ -2472,10 +2472,11 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Actual104502 player/pet/guardian real-death49810 and104546 transition/spawn retry; then208011 consumed-state/scene/equip/final event/portal retry. Actual channel combat/VFX and complete client/all36 remain OPEN.",
+      "next_action": "Bilaal threshold refresh repaired; fresh209863 periodic1000/trigger0 intended pulse remains unresolved. Then native death/disabled-AI/accepted49810 and104546 creation/transition retry;208011 consumed-state/scene/equip/final event/portal retry. Actual combat/channel/VFX/session/client/all36 remain OPEN.",
       "pickup_admission_audit": "docs/audits/lights-wrath-pickup-admission-2026-10-27.json",
       "chest_lifetime_audit": "docs/audits/lights-wrath-chest-lifetime-2026-10-27.json",
-      "takeover_audit": "docs/audits/lights-wrath-takeover-2026-10-27.json"
+      "takeover_audit": "docs/audits/lights-wrath-takeover-2026-10-27.json",
+      "bilaal_combat_audit": "docs/audits/bilaal-health-thresholds-2026-10-27.json"
     },
     {
       "class_id": 6,
@@ -3263,7 +3264,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing.",
+      "bilaal_combat_audit": "docs/audits/bilaal-health-thresholds-2026-10-27.json"
     },
     {
       "class_id": 8,

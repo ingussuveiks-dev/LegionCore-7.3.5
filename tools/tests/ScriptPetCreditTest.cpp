@@ -9,7 +9,8 @@
 #include <vector>
 using uint32=uint32_t;
 constexpr int SMART_ACTION_INVOKER_CAST=85, SMART_ACTION_CALL_KILLEDMONSTER=33, SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA=205;
-constexpr int SMART_TARGET_ACTION_INVOKER_PLAYER=130,SMART_ACTION_ADD_AURA=19,SMART_ACTION_CAST=11,SMART_ACTION_CAST_CUSTOM=75;
+constexpr int SMART_TARGET_ACTION_INVOKER_PLAYER=130,SMART_ACTION_ADD_AURA=75,SMART_ACTION_CAST=11,SMART_ACTION_CAST_CUSTOM=210;
+constexpr int SMART_EVENT_HEALTH_PCT=2,SMART_EVENT_FLAG_NOT_REPEATABLE=1,SMART_SCRIPT_TYPE_CREATURE=0,SMART_TARGET_VICTIM=2;
 constexpr int SPELL_EFFECT_KILL_CREDIT=90, SPELL_EFFECT_KILL_CREDIT2=134;
 using CriteriaTypes=int;
 #define TC_LOG_DEBUG(...) ((void)0)
@@ -101,7 +102,9 @@ void Unit::CastSpell(Unit* target,uint32 spell,bool triggered) {
 using ObjectList=std::list<WorldObject*>;
 struct SmartScriptHolder {
     int type=33,targetType=7;
+    int eventType=0,sourceType=0,link=0;struct{uint32 event_flags=0;}event;
     uint32 GetActionType()const{return type;}uint32 GetTargetType()const{return targetType;}
+    uint32 GetEventType()const{return eventType;}uint32 GetScriptType()const{return sourceType;}
     struct {struct{uint32 dist=50;}playerDistance;}target;
     struct {
         struct { uint32 spell=198287,flags=0; } cast;

@@ -1609,7 +1609,8 @@ enum SmartCastFlags
     CAST_FORCE_TARGET_SELF           = 0x10,                     //Forces the target to cast this spell on itself
     SMARTCAST_AURA_NOT_PRESENT       = 0x20,                     //Only casts the spell if the target does not have an aura from the spell
     SMARTCAST_COMBAT_MOVE            = 0x40,                     // Prevents combat movement if cast successful. Allows movement on range, OOM, LOS
-    SMARTCAST_INVOKER_PLAYER         = 0x80
+    SMARTCAST_INVOKER_PLAYER         = 0x80,
+    SMARTCAST_RETRY_HEALTH_THRESHOLD = 0x100                    // One-shot health/victim cast: retain on rejection or missing victim
 };
 
 // one line in DB is one event

@@ -1,0 +1,27 @@
+param([string]$MigrationPath="$PSScriptRoot/../../sql/updates/world/2026_10_27_05_bilaal_health_thresholds.sql",[switch]$VerifyLive)
+$ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..");$out="$repo/build-extractors/runtime-test/bilaal-combat-data"
+& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories $out -Test {
+ $migration=Get-Content $MigrationPath -Raw
+ $native=Get-Content "$PSScriptRoot/BilaalCombatOriginal.json" -Raw|ConvertFrom-Json
+ $setup='CREATE TEMPORARY TABLE saved_smart_scripts LIKE smart_scripts;INSERT INTO saved_smart_scripts SELECT * FROM smart_scripts;CREATE TEMPORARY TABLE smart_scripts LIKE saved_smart_scripts;INSERT INTO smart_scripts SELECT * FROM saved_smart_scripts;CREATE TEMPORARY TABLE saved_creature_template LIKE creature_template;INSERT INTO saved_creature_template SELECT * FROM creature_template WHERE entry IN(104502,106708);CREATE TEMPORARY TABLE creature_template LIKE saved_creature_template;INSERT INTO creature_template SELECT * FROM saved_creature_template;DELETE FROM smart_scripts WHERE entryorguid IN(104502,106708) AND source_type=0;'
+ $values=@();foreach($row in $native.rows){$cell=@();foreach($field in $native.fields){$value=$row.$field;if($value -is [string]){$cell+="'"+$value.Replace("'","''")+"'"}else{$cell+=[Convert]::ToString($value,[Globalization.CultureInfo]::InvariantCulture)}};$values+='('+($cell -join ',')+')'}
+ $setup+='INSERT INTO smart_scripts('+($native.fields -join ',')+') VALUES'+($values -join ',')+';'
+ $db=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
+ function Query([string]$sql,[switch]$Expected){$prior=$env:MYSQL_PWD;try{$env:MYSQL_PWD=$db[3];$rows=@($sql|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($db[0]) --port=$($db[1]) --user=$($db[2]) --database=$($db[4]) --batch --raw --skip-column-names --force 2> "$out/sql-stderr.txt");$code=$LASTEXITCODE}finally{$env:MYSQL_PWD=$prior};$err=Get-Content "$out/sql-stderr.txt" -Raw;if($Expected){if($err -notmatch '1644 \(45000\)' -or @($err -split "`n"|Where-Object {$_ -match '^ERROR '}).Count -ne 1){throw 'Expected Bilaal refusal missing'}}elseif($code -or $err){throw 'Bilaal TEMP/read-only query failed'};$rows}
+ # Hash every full row of both TEMP tables, including unrelated native callers.
+ function Snapshot([string]$label){"SELECT '$label-s',a.* FROM smart_scripts a;SELECT '$label-c',a.* FROM creature_template a;"}
+ function Signature($rows,[string]$label){(@($rows|Where-Object {$_ -like "$label`t*"}|ForEach-Object {$_.Substring($label.Length+1)}|Sort-Object -CaseSensitive)) -join "`n"}
+ $rows=Query "$setup`n$(Snapshot 'original')`n$migration`n$(Snapshot 'first')`n$migration`n$(Snapshot 'second')`nSELECT 'fixed',COUNT(*) FROM smart_scripts WHERE entryorguid IN(104502,106708) AND source_type=0 AND id IN(2,3,4) AND event_flags=1 AND action_param2=256;UPDATE smart_scripts SET event_flags=0,action_param2=0 WHERE entryorguid IN(104502,106708) AND source_type=0 AND id IN(2,3,4);$(Snapshot 'normalized')"
+ foreach($table in @('s','c')){if((Signature $rows "first-$table") -cne (Signature $rows "second-$table")){throw 'Bilaal migration not idempotent'};if((Signature $rows "original-$table") -cne (Signature $rows "normalized-$table")){throw 'Bilaal migration changed another native field/row'}}
+ if($rows -notcontains "fixed`t6"){throw 'Missing six threshold corrections'}
+ foreach($change in @("UPDATE creature_template SET ScriptName='custom' WHERE entry=104502;",'DELETE FROM creature_template WHERE entry=106708;','DELETE FROM smart_scripts WHERE entryorguid=104502 AND id=4 AND source_type=0;','UPDATE smart_scripts SET action_param1=1 WHERE entryorguid=104502 AND id=2 AND source_type=0;','UPDATE smart_scripts SET event_flags=2 WHERE entryorguid=106708 AND id=3 AND source_type=0;','UPDATE smart_scripts SET action_param2=256 WHERE entryorguid=106708 AND id=4 AND source_type=0;','UPDATE smart_scripts SET event_param2=81 WHERE entryorguid=104502 AND id=2 AND source_type=0;','UPDATE smart_scripts SET link=0 WHERE entryorguid=104502 AND id=5 AND source_type=0;',"INSERT INTO smart_scripts(entryorguid,source_type,id,event_type,action_type,action_param1,action_param2,comment) VALUES(104502,0,99,2,11,209863,256,'custom');")){
+  $r=Query "$setup`n$change`n$(Snapshot 'before')`n$migration`n$(Snapshot 'after')" -Expected
+  foreach($table in @('s','c')){if((Signature $r "before-$table") -cne (Signature $r "after-$table")){throw 'Refused Bilaal migration changed data'}}
+ }
+ if($VerifyLive){
+  $sha=[Security.Cryptography.SHA1]::Create();try{$hash=[BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(([IO.File]::ReadAllText((Resolve-Path $MigrationPath))).Replace("`r`n","`n")))).Replace('-','')}finally{$sha.Dispose()}
+  $r=Query "SET SESSION TRANSACTION READ ONLY;SELECT 'update',hash,state FROM updates WHERE name='2026_10_27_05_bilaal_health_thresholds.sql';SELECT 'fixed',COUNT(*) FROM smart_scripts WHERE entryorguid IN(104502,106708) AND source_type=0 AND id IN(2,3,4) AND event_flags=1 AND action_param2=256;"
+  if($r -notcontains "update`t$hash`tRELEASED" -or $r -notcontains "fixed`t6"){throw 'Bilaal live updater/hash/rows differ'}
+ }
+ 'PASS both native full31-field graphs; TEMP twice changes only six event_flags/action_param2 pairs; all other combat/death/summon/shared rows preserved; nine custom refusals leave both TEMP tables unchanged. No character mutation.'
+}

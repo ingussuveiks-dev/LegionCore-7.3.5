@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: native Bilaal health thresholds (2026-10-27)
+
+- `bilaal-health-thresholds-2026-10-27.json`:104502 Priest and106708 Mage had0..80/50/20 repeat0/flags0 repeatedly refreshing native15s self209863. Six exact rows now one-shot1 +opt-in ordinary cast256; rejection/in-progress/missing victim retains runOnce and native500ms retry. Loader only unlinked creature health/victim/exclusive flag; action75 aura and legacy callers preserved. Death/49810/104546 unchanged.
+- Full actual health gate/action11/OnReset/complete UpdateTimer/enums/loader ASAN, paired60-request baseline per actor/three accepted thresholds/reset/skipped observed bounds/failure/missing/busy/native strict-tick boundary, eight loader refusals pass. TEMP full31-field graphs/twice/six exact pairs/nine refusals and live SHA1 RELEASED pass. Actual action11 switch/native args/runOnce99/field5c/500ms/loader staged+canonical PE, shared pet credit and Scepter pass. Actual damage/aura/lethal/client limits explicit.
+- Canonical world6B36CD5C4BF134F79B12DB486668DC53B5926B0BD5BDF3E88B641CE224B437BC/mapD26C9C7A4AF80B8FCEB4F441679CD8BECBE093321AF5CFC6B2B051FB6FB41D58. Own33144 updater/ready/shutdown0/exit0/no new diagnostics/protected changes/task server. No archive/truncation/manual character edit. Commit containing audit follows303e292f.
+- NEXT fresh209863 all-difficulty scan has only effect0/period1000/trigger0; intended gravity pulse/targets and missing native handler unresolved, do not certify full combat. Then real Bilaal death/disabled-AI/lost owner/accepted49810 and104546 creation/transition retry. Shared205 already resolves pet/guardian/charmer owner;104546 also comes from earlier104902/106747 and Mage106708, separate origins. Then208011/final native events/portal/client/all36 remain OPEN.
+
 ## Latest repair: Discipline real native takeover (2026-10-27)
 
 - `lights-wrath-takeover-2026-10-27.json`: exact104985/370524/1583/1065 stage5+47117/41631 original owner+quest lease. Actual207949 natural30s expiry and own207956 response ->200ms ordinary207996/native49811/accepted47119 ->map-owned lifetime0 native248572. No timer/direct205 grant; failed cast/native acceptance5s and creation2s retry retains source; reset/reentrant/old lease/fullGUID/map identity protected. Earned6 world recovery has no new credit. Prior03 row superseded, general Smart50 flag4 retained.

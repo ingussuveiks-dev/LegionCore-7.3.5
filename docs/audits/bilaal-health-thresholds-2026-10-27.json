@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "303e292f",
+  "scope": "Both native Nexus-Prince Bilaal104502/Priest and106708/Mage health-triggered Force of Gravity209863. Death credit and Azuregos transition are unchanged and not certified by this repair.",
+  "cause": "Each native actor has three HEALTH_PCT2 events with ranges0..80/0..50/0..20, repeat0/0 and flags0. Native UpdateTimer->ProcessEvent->ordinary action11 requests209863 on every eligible update below each bound. Typed26972 identifies209863 as a15s self periodic aura, so repeated accepted requests continuously refresh it. Three intended individual threshold attempts are inferred from the three distinct native rows/comments and effect duration; no external/video/client timing claim. Simply setting one-shot flags also consumes rejected or missing-victim attempts because native ProcessAction latches runOnce before dispatch.",
+  "implementation": [
+    "Opt-in SMARTCAST_RETRY_HEALTH_THRESHOLD256 applies only to ordinary action11 unit casts. Failed/no accepted result, including native SPELL_IN_PROGRESS, or missing/empty/nonunit target list restores runOnce and uses native500ms retry. Existing unflagged cast/in-progress/failed-cast policies and unrelated actions remain unchanged.",
+    "Native loader requires an unlinked one-shot creature HEALTH_PCT event, victim target2, exclusive flag256 and ordinary action11. Unsupported invoker/custom/triggered/timed-list/position/general-update forms rejected with diagnostic. Actual action75 ADD_AURA param2 is an amount and bypasses cast-flag validation. No existing native11/85/210 caller used bit256 before opt-in.",
+    "Guarded full31-field fourteen-row native graph changes only event_flags0->1 and action_param2/cast flags0->256 on104502/106708 source0 IDs2/3/4. Both ordinary combat spells209874/209869, thresholds, chance, repeat values, native self aura/duration, death205/49810 and linked104546 summons remain unchanged. No health/scaling/damage/quest/item/character changes.",
+    "Native Reset clears the consumed threshold per combat, retaining later retry. A health drop across several bounds allows each previously unused threshold once; actual lethal deaths remain normal native combat. No artificial survival or scenario credit introduced."
+  ],
+  "native_evidence": {
+    "data": "Read-only original World104502/370522/1583/phase6140 and106708/370551/1583/phase6068, both SmartAI; full public native graphs in BilaalCombatOriginal.json. Fresh typed209863 Force of Gravity APPLY_AURA/periodic23/self1, duration15000;209869 Gravity Bomb native trigger227739 and209874 Void Consumption native3s debuff retained. Shared LFG1228/1065 and1241/1101 reviewed.",
+    "unresolved_periodic": "Fresh all-difficulty209863 effect scan finds only base effect0/period1000/trigger0. No209863 C++ handler or spell_script_names binding found. Native periodic fallback can use creature dummy hooks, but actual intended pulse/target/movement effect remains unresolved and requires local/Trinity/history evidence next. This repair only ends unbounded cast requests; it does not certify Force of Gravity mechanics or suppress native missing-trigger diagnostics.",
+    "pet_death": "Existing GetScriptCreditPlayer already resolves native pet/guardian/charmer to the owner for205 while retaining actual killer as invoker. Native Unit::Kill calls SmartAI::JustDied only with IsAIEnabled, then instance CreatureDies independently. Thus disabled-AI death/rejected criterion and single-attempt Azuregos creation remain separate OPEN paths, not presumed repaired."
+  },
+  "checks": {
+    "counterfactual": "Pinned original six threshold rows in actual extracted health gate/action11 produce60 accepted cast sink calls per actor over20 eligible below20pct updates. Controlled request/effect endpoints, not a measured live spell rate or captured crash.",
+    "asan": "Full actual native action11 case, health-event gate, OnReset, complete UpdateTimer and actual enums/loader block compile with ASAN. Both native actor shapes: three accepted threshold requests per combat; equality/above bounds; skipped observed thresholds; rejected/in-progress result; null/empty/nonunit victim;500ms boundary followed by next positive native tick; busy/no-combat/zero-health-maximum deferral; Reset; eight loader refusals; action75 amount/legacy callers preserved. Cast acceptance, health and target endpoints controlled. No actual lethal kill, periodic damage, aura refresh/rendering or complete instance/client execution claimed.",
+    "sql": "Full31-field fourteen-row normalized SHA25676c9aaf82ab0138dfd090653728b7418cfd7e098c5f97042c8c2511045b89668. Two complete TEMP tables/native graph, migration twice, six exact pairs only, full normalized original readback and nine custom refusals unchanged. Live updater LF-text SHA1 RELEASED and six rows verified. Migration stayed outside updater until staged PE and offline matching promotion.",
+    "shared": "Production shared SmartAI credit/criteria/invoker-cast tests pass for pet/guardian/charmer/missing owner/dedup/ordinary cast isolation; fixture native ADD_AURA75/CAST_CUSTOM210 IDs corrected. Native Unit owner resolver remains unchanged. Canonical PE retains resolver/caster bridge. Earlier Discipline takeover/ownership/admission and Tuure/capture PE suite passes.",
+    "release": "Original game and scripts Release libraries built with original final-link inputs, staged and canonical selected action11 compressed switch decoded, actual field5c flags256 shift/mask/native ordinary CastSpell/result and two runOnce99/500ms retry paths verified. Loader actual health/source/victim/one-shot/no-LINK/exclusive flag and action75 bypass plus native UpdateTimer/Reset dispatch checked. Scepter native+Release passes.",
+    "development": "Initial fixture lacked existing invoker validation fields; corrected. Replacing modeled timer with complete actual native UpdateTimer exposed strict timer<diff boundary and retained timer1 after busy deferral; final native-boundary fixture passes. Actual enums replace copied stale IDs. Compile/assert attempts retained as failures, without runtime crashes/new server errors. No diagnostics suppressed.",
+    "runtime": "Wrapped owned33144 updater/fresh ready/shutdown0/exit0, stderr/newDBErrors empty/protected runtime files unchanged. Both server names absent/rechecked on promotion; no user/unknown server stopped or hidden task server left. Canonical/own/probe diagnostics show no new/changed crash, appended DBErrors or server warning/error/assertion."
+  },
+  "canonical_sha256": {
+    "worldserver.exe": "6B36CD5C4BF134F79B12DB486668DC53B5926B0BD5BDF3E88B641CE224B437BC",
+    "bnetserver.exe": "02386A8D34790E66A7982000EB71016D5A07CEF153A3F479EF3F0AE245C1C8C7",
+    "bnetserver.map": "ED77E21FA911E718C31ABD54C8F6A48F4CBE489A02A6CA2A795DE83623150950",
+    "worldserver.map": "D26C9C7A4AF80B8FCEB4F441679CD8BECBE093321AF5CFC6B2B051FB6FB41D58"
+  },
+  "migration": {
+    "name": "2026_10_27_05_bilaal_health_thresholds.sql",
+    "native_updater_sha1": "274D042D0B72B292C47805AE182930D882FCE7B8",
+    "state": "RELEASED"
+  },
+  "archives": "No new runtime report/log to archive or truncate. Logs/dumps/configuration/credentials/character state excluded from Git.",
+  "next": [
+    "Resolve native209863 periodic1000/trigger0 intended force-of-gravity pulse/targets from local/Trinity/history before claiming full combat mechanics.",
+    "Bilaal real-death/disabled-AI/lost owner/native criterion acceptance and original Azuregos104546 retry, preserving shared Mage and earlier separate Azuregos actors.",
+    "Discipline pickup208011 consumed-state/equip/scene/final-event/portal recovery; all remaining36 lifecycle/faction/client reviews. Actual Force of Gravity/health transition/pet combat remains client-pending."
+  ]
+}
