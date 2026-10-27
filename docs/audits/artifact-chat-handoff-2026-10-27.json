@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "Kingslayers accepted-return native/ASAN/TEMP/DB2/Release039301BB checks complete; user servers running, promotion deferred. Canonical remains MalgalorE82A0641/World17. No character edits. All36 evidence preserved.",
+  "reason": "User Aerylia/Tirisfal fall and separate STOPSCENE46900 diagnosed/repaired, committed6195ae644/a8aa4a6d5 and deployed combined2112AE19. Kingslayers94438634a/World18 now coordinated/deployed. No character edits; user client retests pending. All36 work continues.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -78,22 +78,37 @@
       "commit": "247c16cbd",
       "fix": "Kingslayers native loot/equipped linked pair/accepted51616 and safe owner dialogue/earned world cleanup; SQL14 deployed",
       "audit": "docs/audits/kingslayers-native-pickup-2026-10-27.json"
+    },
+    {
+      "commit": "94438634a",
+      "fix": "Kingslayers accepted native return and retry; World18 deployed",
+      "audit": "docs/audits/kingslayers-accepted-return-2026-10-27.json"
+    },
+    {
+      "commit": "6195ae644",
+      "fix": "Aerylia eleven native Skyhold departures actual self arrival/completion",
+      "audit": "docs/audits/skyhold-aerylia-arrival-2026-10-27.json"
+    },
+    {
+      "commit": "a8aa4a6d5",
+      "fix": "Targetless PLAYSCENE/STOPSCENE actual player-source fallback",
+      "audit": "docs/audits/scripted-scene-recipient-2026-10-27.json"
     }
   ],
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "1979F497B5C3E814DC2B9A24597B13CB1DA28E13CC75AA08D156181EEBF79F34",
-      "bnetserver.map": "E0E0F906C8870EE7412A969AE206DA4714F809894B7D5D88F5EEF702AA270603",
-      "worldserver.exe": "E82A06415F93C5D1802AE7FF0AD9CBCB28F4F572117FE97AB8486C6A0D955EBD",
-      "worldserver.map": "1ADFD99624517E95C3ECD7F74A753CDBC8DEF3F14534B0F76AAAE08BD435FDAE"
+      "bnetserver.exe": "2BAC4D1ABA4752E6A0293F772053EBB0923EA3F4F129E421CE22784B5BD80079",
+      "bnetserver.map": "3341BF0660CD6FE18BCAA14B8D2633CDA7699E2615074F2DD764B204DBB0E521",
+      "worldserver.exe": "2112AE198F16346E29B4FE35D54FAAF64B4201E37B41C245BDB5B055FF77293A",
+      "worldserver.map": "48E3418E9AD4CB869660E8FCA85E7B8BB73552D40D991130E936C3045AEC4759"
     },
-    "scope": "CombinedE82A0641 includes prior repairs, b0 strict class/live-instance/resume guard and current Malgalor scene/finale/logout recovery. World16/17 RELEASED; actual selected PE, Scepter/Resume/native ASAN/TEMP/catalog/owned22716 startup pass; client pending."
+    "scope": "Combined2112AE19 retains prior Malgalor/routes/pet/artifact repairs and adds scoped native Aerylia self-arrival/launch-completion guards, scene35/36 actual-player recipient, Kingslayers accepted return/World18. Actual canonical selected PE/Scepter/legacy20-yard lift/IntoFray and owned4236 startup pass; no whole-chain/client certification."
   },
   "servers_last_seen": {
-    "bnetserver": 22744,
-    "worldserver": 34144,
-    "ownership": "User/unknown, not stopped. No task server started. Recheck before promotion."
+    "bnetserver": null,
+    "worldserver": null,
+    "ownership": "User closed both; task never stopped them. Only owned4236 canonical validation started, gracefully shutdown0/exit0. Recheck before future promotion."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -121,7 +136,7 @@
     "Aluneth three-scroll/native5000ms/override779..781 evidence committed a98b0fa69; current custom GO immediate205 shortcut remains UNRESOLVED. Real binding dome producer/geometry and dest46 need evidence;225030 same-name effect is audio-only. Partial YouTube only, not full traversal. Read docs/audits/aluneth-control-evidence-2026-10-27.json.",
     "Hunter additional-artifact SELECTION BACKEND IS ALREADY FIXED: ancestor802295a98, audit hunter-additional-artifact-choice-2026-10-26.json, actual249 conditions/flags3/World12-2026-10-26 RELEASED. Fresh512 native/TEMP/ASAN and canonical PE pass. Old resume and old ignored patch are stale historical artifacts; preserve them but do not reapply. Actual UI/third choice and full MM/Survival routes still pending."
   ],
-  "client_pending": "Krosus reach/combat and Demons Among Us PvP-off attack/counter, Heroic Leap landing/one combat hit/mitigation/talents, earlier Charge/bird camera/pet and all36 complete routes remain user-owned and unconfirmed. No runtime/native/model/PE check substitutes for client traversal. New Malgalor scene/finale/rescue/Skyhold client retest pending; screenshot confirms user reached correct933 Final Stage before this repair.",
+  "client_pending": "Krosus reach/combat and Demons Among Us PvP-off attack/counter, Heroic Leap landing/one combat hit/mitigation/talents, earlier Charge/bird camera/pet and all36 complete routes remain user-owned and unconfirmed. No runtime/native/model/PE check substitutes for client traversal. New Malgalor scene/finale/rescue/Skyhold client retest pending; screenshot confirms user reached correct933 Final Stage before this repair. New Aerylia first-visible Tirisfal departure/map1539 Warrior arrival, Order Formation scene/cancel and Kingslayers final return remain user client checks; no new character edits.",
   "local_tools": {
     "python": "C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
     "pe_pythonpath": ".codex/pe-review-deps",
@@ -195,13 +210,13 @@
     "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
   ],
   "current_continuation": {
-    "last_implementation_commit": "Kingslayers accepted-return focused commit follows82d2bebd1; see Git log.",
+    "last_implementation_commit": "a8aa4a6d5",
     "hunter_reconciliation": "Git/source and dedicated followup audit contradict stale unfinished text in the old resume. Commit802295a98 is an ancestor and actual runtime migration13005E8182CE54B5FFA4DEED6C9FA53272C39796 is RELEASED; 249 rows, flags3 on107317/107973 and current canonical selected consumers were independently rechecked. No repeated repair or character change.",
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
     "diagnostics": "No new/changed crashes, appendedDBErrors or unexplained server warning/error/assertion after every test/build/startup group. ActiveDBErrors0/Crashes0 at last check; no log was truncated or crash archived during this continuation.",
-    "next": "Coordinate Kingslayers stage039301BB/SQL18 promotion only after both user servers stop; meanwhile independent Bezzeredes/full933 or Aluneth/Bilaal evidence work. No character resets; client checks user-owned.",
-    "uncommitted_at_checkpoint": "Focused accepted-return source/tests/pending18/audit committed together; private failed test/build evidence retained. No character mutation."
+    "next": "User retests first visible Aerylia Tirisfal option after launching canonical Release. Continue separate full Warrior/Bezzeredes/Arms and all36 investigations, Aluneth native control/dome geometry and Bilaal gravity. No pending deployment, no repeated recovery or character mutation.",
+    "uncommitted_at_checkpoint": "All focused source fixes/audits/tests and World18 release-path move committed; ignored private failed evidence/archives/backups retained. No extra source WIP."
   },
   "azuregos_portal_wip": {
     "status": "Historical key: committed/pushed938fc1225, deployed with coordinated SQL13 RELEASED",
@@ -219,18 +234,19 @@
     "next": "User client retest: alreadyRare rejection retains all stones; lower-quality pet success consumes one and preserves level/XP. Actual735 notification payload/rendering and journal/relog pending; unexpected payload retains diagnostics."
   },
   "kingslayers_next": {
-    "status": "Accepted return implemented/tested in this focused commit after82d2bebd1; stage039301BB awaits coordinated promotion; pickup247c16cbd remains deployed.",
+    "status": "94438634a implementation now deployed within combined2112AE19, World18 RELEASED; no pending promotion.",
     "portal": "Existing251123/spawn134046/type10/display8111/Data10=215151, map1620. Native215151 effect0 SendEvent61/51617 targets0/0, effect1 Teleport252 targets1/17, targetDB1220/-854.53/4597.28/748.81/4.5759. Scenario1123 step9/leaf48593 uses51617; quest roots48528/48548 use type152/Scenario1123. Pickup no longer forces scenario completion.",
     "finding": "Native targetless event-before-refused-teleport/60s goober lock counterfactual reproduced and repaired. See accepted-return audit; actual staged receipt/accepted destination/ASAN/PE pass, not yet canonical.",
     "reference": "Local lights_wrath_pickup.h spell_lights_wrath_return uses actual portal receipt, original quest lifetime and Player::ScopedTeleportDelay, nativeEffectTeleportUnits and accepted destination before awarding. Adapt only after native Kingslayers source/portal/alternatives tests; preserve escape without new credit on abandonment/completion and shared native behavior outside scope.",
-    "followup": "No new source WIP after focused commit; SQL18 tracked outside updater in sql/pending/world. Close/recheck both servers before copying .codex/kingslayers-return-release, then move18/update/startup/verify. Do not deploy old standalone stages.",
+    "followup": "Actual client complete pickup/outro/accepted Dalaran return/quest completion/relog/group/faction remain pending. Historical039301BB stage must not overwrite newer combined Release. Original all36/Aluneth/Bilaal findings preserved.",
     "audit": "docs/audits/kingslayers-accepted-return-2026-10-27.json",
     "stage_hashes": {
       "worldserver.exe": "039301BB51A15C65503FCD276A08D13C7D9F5DCE029F08A11F61EC03156667A8",
       "worldserver.map": "2106379928751FD7A13CE414F0335D15415221802AF91919C954F019E8D9BCD2",
       "bnetserver.exe": "1D24513A32D61F36BB35B70F01AFEB76B8AF599D9060905EDDB0F326F01C99FE",
       "bnetserver.map": "335C90F290F59F4F7679514AECACFF5BD105FA6EDADCB14F21E42E09F3910E99"
-    }
+    },
+    "current_release": "2112AE198F16346E29B4FE35D54FAAF64B4201E37B41C245BDB5B055FF77293A"
   },
   "pet_battle_client_feedback": {
     "status": "User confirmed nearby Dung Beetle fight starts; no new repair/deployment or character edit",
@@ -273,5 +289,17 @@
     "audit": "docs/audits/warrior-malgalor-finale-2026-10-27.json",
     "character_changes": "None; old missed kill not backfilled",
     "next": "Actual user cinematic/defeat/rescue/Skyhold/relog retest; separate Bezzeredes/all36 follow-up remains."
+  },
+  "skyhold_aerylia_repair": {
+    "status": "Deployed2112AE19; actual native null-target counterfactual and repaired eleven-pair ASAN/selectedPE/startup pass",
+    "audit": "docs/audits/skyhold-aerylia-arrival-2026-10-27.json",
+    "user_evidence": "First visible option is Tirisfal/active41105, not Fury; native203921->203920 and map1539 unchanged",
+    "character_changes": "None; do not recover/reset again",
+    "next": "Actual client leap/transfer/camera/pet and Arms full sequence; broader unrelated empty-arrival-target behavior remains scoped-out follow-up."
+  },
+  "scripted_scene_recipient_repair": {
+    "status": "Deployed; exact reviewed46900 line hash archived, active history retained",
+    "audit": "docs/audits/scripted-scene-recipient-2026-10-27.json",
+    "next": "Actual client formation/cancel/phase behavior still pending; do not mistake this separate error for the Aerylia fall cause."
   }
 }

@@ -12,11 +12,25 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/Scripting/MapScripts.cpp",
+      "handler": "Targetless scene command35/36 player source",
+      "problem": "46900 command36 looked only at null target despite Player source; original client log preserved.",
+      "repair_audit": "docs/audits/scripted-scene-recipient-2026-10-27.json",
+      "limit": "Deployeda8aa4a6d5/2112AE19; native/ASAN/canonicalPE pass, reviewed line archived with hash, active history kept. Actual client scene/phase retest pending."
+    },
+    {
+      "path": "src/server/game/Movement/SkyholdDeparture.h",
+      "handler": "Aerylia eleven native Skyhold jump-arrival pairs",
+      "problem": "Nonzero native TriggerSpell kept target GUID empty, so native Unit::CastSpell refused the departure; user Tirisfal fall reproduced by native counterfactual.",
+      "repair_audit": "docs/audits/skyhold-aerylia-arrival-2026-10-27.json",
+      "limit": "Deployed6195ae644/2112AE19, native77 pair-state cases/ASAN/selectedPE/startup pass; client and full Arms chain remain pending."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/kingslayers_return.h",
       "handler": "251123 native215151 accepted departure before final51617",
       "problem": "Targetless native SendEvent preceded refused teleport; generic goober locked IN_USE for60s. Native counterfactual, not client crash.",
       "repair_audit": "docs/audits/kingslayers-accepted-return-2026-10-27.json",
-      "limit": "Stage039301BB native/ASAN/TEMP24refusals/DB2/selectedPE complete; pending18 outside updater, user servers running so deployment/startup/client still pending."
+      "limit": "94438634a deployed within combined2112AE19/World18 RELEASED; native/ASAN/TEMP24/DB2/canonical selectedPE/Scepter/startup clean. Full client/group/faction/re-entry remain pending."
     },
     {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp",

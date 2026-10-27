@@ -35,6 +35,7 @@
   },
   "client_pending": "Retry the same first visible Tirisfal artifact option, observe native jump and actual map1539 Warrior arrival, scene/camera/pet and subsequent Sword of Kings stages. Failed/repeated/relog/group/faction client alternatives remain separate. User owns client testing; no manual character edits.",
   "related_error": "SCRIPT_COMMAND_STOPSCENE46900 is a separate Order Formation193709/193711 source/target mismatch, repaired in the separate scene-recipient audit/commit. Do not confuse its log with the direct cause of the Aerylia fall.",
-  "diagnostics": "No active crash files or new DBErrors; no logs cleared. Existing historical46900 line retained for cause-specific archive after scene fix commit; informative mixed Server.log must remain. Compiler legacy conversion/C5055 warning retained, not hidden.",
-  "continuation": "All36 ongoing; preserve prior Hunter/Bilaal/Aluneth findings and original character backups. Broader non-Skyhold empty native destination-arrival target behavior is deliberately outside this scoped repair and remains a separate review."
+  "diagnostics": "Canonical/own Crashes empty, DBErrors0 and no new runtime failures during native/build/PE/startup checks. Scene46900 reviewed line archived separately after its fix commit; active mixed informative Server.log retained, no truncation. Legacy fixture/compiler/C5055 warnings retained.",
+  "continuation": "All36 ongoing; preserve prior Hunter/Bilaal/Aluneth findings and original character backups. Broader non-Skyhold empty native destination-arrival target behavior is deliberately outside this scoped repair and remains a separate review.",
+  "implementation_commit": "6195ae644"
 }

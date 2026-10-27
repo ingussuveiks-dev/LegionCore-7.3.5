@@ -1,7 +1,7 @@
 {
   "date": "2026-10-27",
   "build": "Legion7.3.5.26972",
-  "status": "Implementation/native/ASAN/TEMP/DB2/selected Release checks complete; deployment deferred while user servers run. No client certification.",
+  "status": "Deployed in combined2112AE19/World18 RELEASED; native/ASAN/TEMP/DB2/selected PE/real updater/startup checks pass. Client pending.",
   "scope": "Kingslayers static Dalaran exit251123/spawn134046/map1620, native215151 and final51617. Focused follow-up to247c16cbd pickup; not all36 completion.",
   "proven_source_cause": [
     "Native215151 effect0 SendEvent61 targets0/0 executes targetless HIT before effect1 Teleport252 self/DB. Native EffectSendEvent immediately awards types73/92; a later refused teleport still leaves final event51617 accepted. Native goober sets IN_USE/ACTIVATED before casting and defaults to60s activation, impeding immediate retry.",
@@ -29,7 +29,6 @@
   ],
   "development_notes": "Initial fixture lacked native WorldLocation constructor/MAX_SPELL_EFFECTS/trap lookup stubs; corrected and rerun. PE guard adapted to Reset tail alias, inlined Source and conditional leaf jump. Replaced copied fixture type46 guess with actual extracted CriteriaTypes (native script event73), paired with actual PE73/92. TEMP SmartAI custom row needed required comment. One parallel native-reader invocation collided on its shared build-item.cmd; discarded that run and reran readers sequentially. Failed evidence retained; no production warning/error suppressed.",
   "deployment": {
-    "canonical_unchanged": "E82A06415F93C5D1802AE7FF0AD9CBCB28F4F572117FE97AB8486C6A0D955EBD",
     "stage": ".codex/kingslayers-return-release",
     "hashes": {
       "worldserver.exe": "039301BB51A15C65503FCD276A08D13C7D9F5DCE029F08A11F61EC03156667A8",
@@ -37,13 +36,21 @@
       "bnetserver.exe": "1D24513A32D61F36BB35B70F01AFEB76B8AF599D9060905EDDB0F326F01C99FE",
       "bnetserver.map": "335C90F290F59F4F7679514AECACFF5BD105FA6EDADCB14F21E42E09F3910E99"
     },
-    "pending_migration": "sql/pending/world/2026_10_27_18_kingslayers_accepted_return.sql",
+    "pending_migration": "sql/updates/world/2026_10_27_18_kingslayers_accepted_return.sql",
     "pending_migration_sha1": "9552150df1f47b9d23488b418f2e0b8ad0744cf8",
-    "status": "Not promoted. User/unknown bnetserver22744/worldserver34144 run; none stopped. Actual updates_include contains only sql/updates/world and sql/old/world, so sql/pending/world is outside live updater."
+    "status": "Both user servers absent before coordinated promotion; own4236 applied18, ready/shutdown0/exit0 clean. Canonical selected Kingslayers and Scepter checks pass.",
+    "previous_canonical": "E82A06415F93C5D1802AE7FF0AD9CBCB28F4F572117FE97AB8486C6A0D955EBD",
+    "stage_status": "Historical039301BB stage superseded by combined Skyhold2112AE19 Release; no further standalone promotion.",
+    "current_hashes": {
+      "bnetserver.exe": "2BAC4D1ABA4752E6A0293F772053EBB0923EA3F4F129E421CE22784B5BD80079",
+      "bnetserver.map": "3341BF0660CD6FE18BCAA14B8D2633CDA7699E2615074F2DD764B204DBB0E521",
+      "worldserver.exe": "2112AE198F16346E29B4FE35D54FAAF64B4201E37B41C245BDB5B055FF77293A",
+      "worldserver.map": "48E3418E9AD4CB869660E8FCA85E7B8BB73552D40D991130E936C3045AEC4759"
+    }
   },
   "diagnostics": "Final tests/build/PE groups passed before/after canonical and fixture crash/log/exit/stdout/stderr checks; no new crashes, appended DBErrors or unexplained server warning/error/assertion. No logs truncated/archived, no task server started, no user/unknown process stopped, no character progress changed.",
   "remaining": [
-    "User closes both servers, then recheck absence, back up/promote both EXE/map files, move18 to sql/updates/world, own canonical startup/updater/readback and graceful shutdown, Scepter Release and canonical selected PE, update audit/deployment commit/push. Do not apply18 with old EXE.",
+    "Coordinated promotion/readback complete: World18 RELEASED with exact normalized SHA1 and both script bindings, seven TEMP tables/24 refusals pass after live deployment; native destination retained. No pending deployment.",
     "Actual client full pickup/outro/portal animation/failed retry/accepted Dalaran/quest completion/turn-in, both factions/groups/relog/reentry remain separate. Canonical startup is still pending and staged tests do not certify client traversal.",
     "Continue separate Bezzeredes/full933 sequence, unresolved Aluneth controls/Bilaal gravity and all36 worklist. Prior Hunter choice repair and earlier pending client checks preserved."
   ]

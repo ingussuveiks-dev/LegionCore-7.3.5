@@ -28,7 +28,12 @@
     "sequence": "Both server names absent before promotion and each file copy. Original generated library inputs/backup/copy/protected config and certificate hashes verified. Matching combined EXE first, then pending Kingslayers18 moved into updater. Own4236 fresh ready/shutdown0/exit0, stderr/newDBErrors0. No user/unknown server stopped; no task server remains."
   },
   "archive": {
-    "status": "Pending exact cause-line archive after focused fix commit; original mixed informative Server.log retained and must not be truncated. No unexplained crash moved."
+    "status": "Exact reviewed line copied byte-for-byte and SHA256 verified after repair deployed/native regression passed; active mixed Server.log retained unchanged",
+    "path": "build-extractors/bin/Release/fixed/skyhold-stopscene-2026-10-27/resolved-46900-server-line.log",
+    "sha256": "AE2A8C52EA4065390DF0D7A080A814812887DA20B847E11576E5CCFF80299C82",
+    "fix_commit": "a8aa4a6d5",
+    "bytes": 120
   },
-  "remaining": "Actual Order Formation completion/skip/stop/camera/phase and Aerylia travel client retest remain user-owned; automated source/API/PE evidence is separate. All36/Aluneth/Bilaal/Bezzeredes full sequences remain ongoing."
+  "remaining": "Actual Order Formation completion/skip/stop/camera/phase and Aerylia travel client retest remain user-owned; automated source/API/PE evidence is separate. All36/Aluneth/Bilaal/Bezzeredes full sequences remain ongoing.",
+  "implementation_commit": "a8aa4a6d5"
 }
