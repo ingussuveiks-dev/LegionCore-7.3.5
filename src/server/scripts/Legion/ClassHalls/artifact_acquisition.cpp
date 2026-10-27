@@ -1494,6 +1494,58 @@ struct npc_stromkar_zakajz : SmartAI
 {
     explicit npc_stromkar_zakajz(Creature* actor) : SmartAI(actor) { }
     ObjectGuid thoradin = {};
+    bool defeatPoseApplied = false;
+    bool executionStarted = false;
+    uint32 defeatPoseRetry = 0;
+    void ClearDefeatPose()
+    {
+        if (defeatPoseApplied)
+            me->RemoveAurasDueToSpell(130966, me->GetGUID());
+        defeatPoseApplied = false;
+    }
+    void Reset() override
+    {
+        ClearDefeatPose();
+        executionStarted = false;
+        defeatPoseRetry = 0;
+        SmartAI::Reset();
+    }
+    void UpdateAI(uint32 diff) override
+    {
+        SmartAI::UpdateAI(diff);
+        Scenario* scenario = me->IsInWorld() && me->GetMapId() == 1539 && me->GetEntry() == 104276
+            ? sScenarioMgr->GetScenario(me->GetInstanceId()) : nullptr;
+        if (!scenario || scenario->GetScenarioId() != 1037 || scenario->GetCurrentStep() != 9 ||
+            !me->IsAlive() || me->GetHealthPct() > 1.0f || executionStarted)
+        {
+            ClearDefeatPose();
+            defeatPoseRetry = 0;
+            return;
+        }
+        // The initial Zakajz103398 uses this same native permanent dead pose.
+        // It has stun/dummy effects, not a real death or a progression event.
+        if (!me->HasAura(130966))
+        {
+            if (defeatPoseRetry > diff)
+                defeatPoseRetry -= diff;
+            else
+            {
+                defeatPoseRetry = 2000;
+                if (me->AddAura(130966, me))
+                    defeatPoseApplied = true;
+            }
+        }
+    }
+    void SpellHit(Unit* caster, SpellInfo const* spell) override
+    {
+        // Restore the actor before its existing Dark Drain dissolve/list runs.
+        if (spell && spell->Id == 201904 && me->GetEntry() == 104276 && me->GetMapId() == 1539)
+        {
+            executionStarted = true;
+            ClearDefeatPose();
+        }
+        SmartAI::SpellHit(caster, spell);
+    }
     void JustSummoned(Creature* actor) override
     {
         SmartAI::JustSummoned(actor);

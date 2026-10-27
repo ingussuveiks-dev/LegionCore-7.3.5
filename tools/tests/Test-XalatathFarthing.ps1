@@ -1,4 +1,4 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$Stromkar)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$Stromkar,[switch]$AddressSanitizer,[switch]$PoseBaseline)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $route=if($Stromkar){'stromkar-zakajz'}else{'xalatath-farthing'}
@@ -9,6 +9,7 @@ $out="$repo/build-extractors/runtime-test/$route"
 New-Item -ItemType Directory -Force $out | Out-Null
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
+if($PoseBaseline){if(!$Stromkar -or $VerifyReleaseBinary -or $Baseline){throw 'Pose counterfactual requires only Stromkar'};$source=(git -C $repo show '5a6165442:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp') -join "`n"}
 $begin=if($Stromkar){'namespace StromkarZakajz'}else{'namespace XalatathFarthing'}
 $end=if($Stromkar){'namespace XalatathFarthing'}else{'namespace XalatathSoulAttack'}
 [IO.File]::WriteAllText("$out/Farthing.inc",(Section $source $begin $end))
@@ -115,7 +116,9 @@ foreach($name in $variants.Keys){if(Compare-Object (Snapshot "$name-before") (Sn
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $baselineFlag=if($Baseline){'/DBASELINE'}else{''}
 if($Stromkar){$baselineFlag+=' /DSTROMKAR_ZAKAJZ_TEST'}
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $baselineFlag /I`"$out`" `"$PSScriptRoot/XalatathFarthingTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
+if($AddressSanitizer){$baselineFlag+=' /fsanitize=address /Zi'}
+if($PoseBaseline){$baselineFlag+=' /DPOSE_BASELINE'}
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $baselineFlag /I`"$out`" `"$PSScriptRoot/XalatathFarthingTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Farthing damage regression failed'}
 if($VerifyReleaseBinary){
  $hash=(Get-FileHash "$repo/sql/updates/world/$migrationName" -Algorithm SHA1).Hash

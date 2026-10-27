@@ -92,7 +92,7 @@ int main(int argc, char** argv)
                 << unsigned(objective->StorageIndex) << '\t' << objective->ObjectID << '\t' << objective->Amount << '\t' << unsigned(objective->Flags) << '\t'
                 << objective->Description->Str[0] << '\n';
     std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 201905, 207454, 206455, 206456, 204394, 202014, 63048, 204093,
-        185674, 192084, 192085, 215997, 216016, 221509, 231348};
+        185674, 192084, 192085, 215997, 216016, 221509, 231348, 130966, 204641};
     for (uint32 identity : selected)
     {
         auto spell = spells.LookupEntry(identity);
@@ -106,6 +106,13 @@ int main(int argc, char** argv)
     if (!gazeVisuals.Load(argv[1], 0))
         return 28;
     gazeVisuals.LoadFromDB();
+    std::set<uint32> poseVisuals;
+    for (auto visual : gazeVisuals)
+        if (visual->SpellID == 130966 || visual->SpellID == 204641)
+        {
+            poseVisuals.insert(visual->SpellVisualID);
+            std::cout << "POSE_VISUAL\t" << visual->SpellID << '\t' << visual->SpellVisualID << '\n';
+        }
     for (auto visual : gazeVisuals)
         if (visual->SpellVisualID == 57404 || visual->SpellID == 57404 || visual->SpellID == 230829)
         {
@@ -223,6 +230,14 @@ int main(int argc, char** argv)
     if (!actorDisplays.Load(argv[1], 0) || !actorModels.Load(argv[1], 0))
         return 16;
     actorDisplays.LoadFromDB(); actorModels.LoadFromDB();
+    for (uint32 identity : {67454u, 68556u})
+    {
+        auto display = actorDisplays.LookupEntry(identity);
+        auto model = display ? actorModels.LookupEntry(display->ModelID) : nullptr;
+        if (!model)
+            return 29;
+        std::cout << "ZAKAJZ_MODEL\t" << identity << '\t' << display->ModelID << '\t' << model->FileDataID << '\n';
+    }
     auto thoradinDisplay = actorDisplays.LookupEntry(68038);
     auto thoradinModel = thoradinDisplay ? actorModels.LookupEntry(thoradinDisplay->ModelID) : nullptr;
     if (!thoradinModel || !thoradinModel->FileDataID)
@@ -241,6 +256,10 @@ int main(int argc, char** argv)
     if (sizeof(StromkarKitEffectRecord) != fullKitInfo.Meta->GetRecordSize() || !actorKits.Load(argv[1], 0) || !actorKitEffects.Load(argv[1], 0))
         return 18;
     actorKits.LoadFromDB();
+    DB2Storage<SpellVisualAnimEntry> poseAnimations("SpellVisualAnim.db2", SpellVisualAnimLoadInfo::Instance());
+    if (!poseAnimations.Load(argv[1], 0))
+        return 30;
+    poseAnimations.LoadFromDB();
     auto eventInfo = SpellVisualEventLoadInfo::Instance();
     std::vector<DB2FieldMeta> eventFields(eventInfo->Fields, eventInfo->Fields + eventInfo->FieldCount);
     eventFields.push_back({true, FT_INT, "SpellVisualID"});
@@ -248,7 +267,14 @@ int main(int argc, char** argv)
     DB2Storage<StromkarVisualEventRecord> gazeEvents("SpellVisualEvent.db2", &fullEventInfo);
     if (sizeof(StromkarVisualEventRecord) != fullEventInfo.Meta->GetRecordSize() || !gazeEvents.Load(argv[1], 0))
         return 29;
-    std::set<uint32> gazeKits;
+    std::set<uint32> gazeKits, poseKits;
+    for (auto event : gazeEvents)
+        if (poseVisuals.count(event->visual))
+        {
+            poseKits.insert(event->event.SpellVisualKitID);
+            std::cout << "POSE_EVENT\t" << event->visual << '\t' << event->event.StartEvent << '\t'
+                << event->event.EndEvent << '\t' << event->event.SpellVisualKitID << '\n';
+        }
     for (auto event : gazeEvents)
         if (event->visual == 57404)
         {
@@ -280,10 +306,18 @@ int main(int argc, char** argv)
         return 20;
     actorProcedures.LoadFromDB();
     for (auto effect : actorKitEffects)
-        if (effect->kit == thoradinKit->ID || gazeKits.count(effect->kit))
+        if (effect->kit == thoradinKit->ID || gazeKits.count(effect->kit) || poseKits.count(effect->kit))
         {
-            std::string tag = effect->kit == thoradinKit->ID ? "THORADIN" : "GAZE";
+            std::string tag = effect->kit == thoradinKit->ID ? "THORADIN" : poseKits.count(effect->kit) ? "POSE" : "GAZE";
             std::cout << tag << "_KIT_EFFECT\t" << effect->effect.ID << '\t' << effect->effect.EffectType << '\t' << effect->effect.Effect << '\n';
+            if (poseKits.count(effect->kit) && effect->effect.EffectType == 6)
+            {
+                auto animation = poseAnimations.LookupEntry(effect->effect.Effect);
+                if (!animation)
+                    return 31;
+                std::cout << "POSE_ANIMATION\t" << animation->ID << '\t' << animation->InitialAnimID << '\t'
+                    << animation->LoopAnimID << '\t' << animation->AnimKitID << '\n';
+            }
             if (effect->effect.EffectType == 2)
             {
                 auto attachment = actorAttachments.LookupEntry(effect->effect.Effect);

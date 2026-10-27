@@ -19,10 +19,13 @@ uint32 messages=0;
 #define TC_LOG_DEBUG(...) ((void)0)
 struct Unit;
 struct Creature;
+struct SpellInfo { uint32 Id=201904; };
 struct CreatureAI {
     virtual ~CreatureAI()=default;
     virtual void Reset() { }
     virtual void JustSummoned(Creature*) { }
+    virtual void UpdateAI(uint32) { }
+    virtual void SpellHit(Unit*,SpellInfo const*) { }
     virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType) { }
 };
 struct InstanceScript { void OnCreatureDamageTaken(Creature*,Unit*,uint32&) { } };
@@ -34,6 +37,8 @@ struct Creature {
     bool alive=true;
     bool combat=true;
     bool inWorld=true,phase=true;
+    bool poseAura=false,foreignPose=false,failAura=false;
+    uint32 auraAttempts=0,poseRemovals=0;
     ObjectGuid guid=1;
     CreatureAI* active=nullptr;
     CreatureAI* i_disabledAI=nullptr;
@@ -44,6 +49,9 @@ struct Creature {
     uint32 GetMapId() const { return map; }
     uint32 GetInstanceId() const { return instance; }
     ObjectGuid GetGUID() const { return guid; }
+    bool HasAura(uint32 id) const { assert(id==130966);return poseAura||foreignPose; }
+    void* AddAura(uint32 id,Creature* target) { assert(id==130966&&target==this);++auraAttempts;if(failAura)return nullptr;poseAura=true;return this; }
+    void RemoveAurasDueToSpell(uint32 id,ObjectGuid caster) { assert(id==130966&&caster==guid);poseAura=false;++poseRemovals; }
     bool IsInWorld() const { return inWorld; }
     bool InSamePhase(Creature const*) const { return phase; }
     uint64 GetHealth(Unit*) const { return targetHp; }
@@ -99,9 +107,13 @@ struct SmartAI : CreatureAI {
     uint32 mInvincibilityHpLevel=1;
     Script script;
     uint32 summonEvents=0;
+    uint32 updateCalls=0,hitCalls=0,resetCalls=0;
+    bool poseAtHit=false;
     explicit SmartAI(Creature* actor):me(actor) { }
     Script* GetScript() { return &script; }
-    void Reset() override { }
+    void Reset() override { ++resetCalls; }
+    void UpdateAI(uint32) override { ++updateCalls; }
+    void SpellHit(Unit*,SpellInfo const*) override { ++hitCalls;poseAtHit=me->poseAura; }
     void JustSummoned(Creature*) override { ++summonEvents; }
     void DamageTaken(Unit*,uint32&,DamageEffectType);
 };
@@ -156,6 +168,57 @@ struct HealthProbe {
 };
 int main() {
     _set_abort_behavior(0,_CALL_REPORTFAULT);
+#if defined(STROMKAR_ZAKAJZ_TEST) && !defined(BASELINE)
+    {
+        scenarioManager={};scenarioManager.scenario.step=9;
+        Creature boss;boss.hp=1;npc_stromkar_zakajz ai(&boss);
+        ai.UpdateAI(1);
+#ifdef POSE_BASELINE
+        assert(!boss.poseAura&&boss.auraAttempts==0&&ai.updateCalls==1);
+        std::cout<<"EXPECTED COUNTERFACTUAL: pinned defeated final-stage Zakajz never applies its native130966 dead pose\n";
+#else
+        assert(boss.poseAura&&boss.auraAttempts==1&&ai.updateCalls==1&&boss.alive&&boss.hp==1&&scenarioManager.scenario.step==9);
+        ai.UpdateAI(10000);assert(boss.auraAttempts==1&&ai.updateCalls==2);
+        SpellInfo ordinary;ordinary.Id=207048;Unit pet;pet.kind=1;
+        ai.SpellHit(&pet,&ordinary);assert(boss.poseAura&&ai.hitCalls==1&&ai.poseAtHit);
+        SpellInfo drain;ai.SpellHit(&pet,&drain);assert(!boss.poseAura&&ai.hitCalls==2&&!ai.poseAtHit);
+        ai.UpdateAI(10000);assert(!boss.poseAura&&boss.auraAttempts==1);
+        ai.SpellHit(&pet,&drain);assert(ai.hitCalls==3&&!boss.poseAura);
+        ai.Reset();assert(ai.resetCalls==1);ai.UpdateAI(1);assert(boss.poseAura&&boss.auraAttempts==2);
+        ai.Reset();assert(!boss.poseAura&&ai.resetCalls==2);
+        boss.failAura=true;ai.UpdateAI(1);assert(!boss.poseAura&&boss.auraAttempts==3);
+        boss.failAura=false;ai.UpdateAI(1999);assert(boss.auraAttempts==3);
+        ai.UpdateAI(1);assert(boss.poseAura&&boss.auraAttempts==4);
+        boss.poseAura=false;ai.UpdateAI(2000);assert(boss.poseAura&&boss.auraAttempts==5);
+        scenarioManager.scenario.step=10;ai.UpdateAI(1);assert(!boss.poseAura&&boss.alive&&boss.hp==1);
+        for(uint32 invalid=0;invalid<10;++invalid){
+            scenarioManager={};scenarioManager.scenario.step=9;
+            Creature actor;actor.hp=1;npc_stromkar_zakajz content(&actor);
+            if(invalid==0)actor.entry=103398;
+            if(invalid==1)actor.map=1479;
+            if(invalid==2)actor.instance=43;
+            if(invalid==3)scenarioManager.present=false;
+            if(invalid==4)scenarioManager.scenario.identity=991;
+            if(invalid==5)scenarioManager.scenario.identity=1092;
+            if(invalid==6)scenarioManager.scenario.step=8;
+            if(invalid==7)actor.hp=1001;
+            if(invalid==8)actor.alive=false;
+            if(invalid==9)actor.inWorld=false;
+            content.UpdateAI(1);assert(!actor.poseAura&&!actor.auraAttempts&&content.updateCalls==1);
+        }
+        scenarioManager={};scenarioManager.scenario.step=9;
+        Creature external;external.hp=1000;external.foreignPose=true;
+        npc_stromkar_zakajz independent(&external);independent.UpdateAI(1);independent.Reset();
+        assert(external.foreignPose&&!external.poseRemovals&&!external.auraAttempts);
+        for(uint32 kind:{0u,1u,2u}){
+            scenarioManager={};scenarioManager.scenario.step=9;
+            Creature actor;actor.hp=1;Unit killer;killer.kind=kind;npc_stromkar_zakajz content(&actor);
+            content.UpdateAI(1);content.SpellHit(&killer,&drain);assert(!actor.poseAura&&content.hitCalls==1&&!content.poseAtHit);
+        }
+        std::cout<<"PASS actual Zakajz UpdateAI/SpellHit/Reset: exact defeated final stage, native aura retry/duplicate/dispel, cleanup before original Dark Drain delegate, ordinary and pet/guardian hits, reset/retry, foreign aura retention, scope/life/HP guards; visual/aura application and SmartAI endpoints controlled\n";
+#endif
+    }
+#endif
 #if defined(STROMKAR_ZAKAJZ_TEST) && !defined(BASELINE)
     {
         Creature owner,ghost;ghost.entry=104307;ghost.guid=99;
