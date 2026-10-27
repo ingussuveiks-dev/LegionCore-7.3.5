@@ -10,7 +10,10 @@
 #include "TemporarySummon.h"
 #include "Group.h"
 #include "ObjectAccessor.h"
+#include "GameObject.h"
+#include "SmartScriptMgr.h"
 #include "bilaal_death.h"
+#include "bilaal_portal.h"
 
 //rogue dreadblades 1545
 struct instance_dreadblades : public InstanceScript
@@ -73,8 +76,17 @@ struct instance_priest_mage_nexus_art : public InstanceScript
     instance_priest_mage_nexus_art(InstanceMap* map) : InstanceScript(map) {}
 
     BilaalDeath::State bilaal;
+    BilaalPortal::State portal;
     void CreatureDies(Creature* creature, Unit* killer) override { bilaal.Death(instance, creature, killer); }
-    void Update(uint32 diff) override { bilaal.Update(instance, diff); }
+    void SetGuidData(uint32 type, ObjectGuid guid) override
+    {
+        if (type == 104546) portal.Arrived(instance, bilaal, guid);
+    }
+    void Update(uint32 diff) override
+    {
+        bilaal.Update(instance, diff);
+        portal.Update(instance, bilaal, diff);
+    }
 
     WorldLocation loc_res_pla;
 

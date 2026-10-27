@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-27",
+  "status": "Repair staged/tested; deployment and actual updater/runtime/client verification deferred while user servers run",
+  "problem": "Native104546 WP1/path104546 conversation3471 -> optional cast223908 -> GO248553 -> flags/moveZ cleanup. Failed ordinary cast returns before LINK. One-shot GO creation has no retry. Source review/native counterfactual, not a newly reported client failure.",
+  "repair": [
+    "Registered instance1583 SetGuidData104546 accepts only the earned completed Bilaal death receipt receiver: real104546 TempSummon, matching source GUID/captured phase, live actor, actual single native path endpoint within1yard and no movement. Native waypoint event40 sends SELF GUID independently of optional conversation/cast. Spawning/timers never invent arrival.",
+    "Map-owned state retries actual248553 creation every2s after certified arrival, retaining captured phase/summoner and exact native placement before insertion. Checks Create/AddToMap, cleans rejected objects, reentrant guard/exactly-once receipt; no borrowed actor or AI retained. Portal survives emitter removal. Invalid later stage cancels pending creation; map destruction owns cleanup.",
+    "Source0 id3 optional cast now terminates its own branch; id4 GO retired; new WP id7 action64/link5 preserves existing flags0 and MOVE_Z202/flymode1 cleanup. id1 invalid link2 removed: its destination was a WAYPOINT row, not LINK61. Timed list, transform207897, path, conversations3470/3471, model68826 and original spellclick teleport unchanged.",
+    "Earlier104902/106747 creator scripts and their104546 spellclick helper preserved. Those older helpers may still follow original stage5 presentation; only the actual death receiver can commit the new single portal. No progress/item/teleport grants added."
+  ],
+  "native_evidence": [
+    "Matching26972/hotfix:207897 self shapeshift,223908 self dummy aura/presentation,207901 native effect252/misc1281 targets1/17. No reviewed native spell producer248553; actual GO248553 type22/display8111/Data0=207901/Data3=1. Local data fully determine this repair; no unsupported geometry invented.",
+    "Actual SmartAI PointMovement callback runs after finalized spline; Unit spline arrival clears forward movement and updates position before native movement inform. Native SmartScript ProcessEventsFor loops distinct WP events even if one ProcessAction returns."
+  ],
+  "checks": [
+    "Test-BilaalPortal -AddressSanitizer: actual production header/Progress/Victory, both native routes/42 denial cases, valid endpoint boundary, create and insertion retries/rollback, no early timer spawn, phase-before-insertion, exactly once, emitter removal, reentrancy and stage cancellation. Upstream earned receipt/engine endpoints controlled.",
+    "Same test extracts native SmartScript complete event loop, event prefix and WP gate, ordinary cast, SELF targets, SET_INST_DATA64, NPC flags, MOVE_Z and LINK tail. Baseline failed223908 aborts old downstream; repaired event7 independently certifies arrival and flags/fly cleanup for success/rejection/busy. Point/path/conditions/repeat/null base/missing instance tested. Conversation and old GO attempt are controlled boundaries, not live rendering.",
+    "Test-BilaalPortalData with pending SQL: six actual-schema TEMP tables, full31-field exact graphs, repeat,32-byte original group_concat limit restored,20 custom refusals. Existing spellclick/list/path/earlier actor/death graphs/templates/conditions preserved. No persistent or character writes.",
+    "Test-BilaalDeath -AddressSanitizer -VerifyNativeCatalog passed during user interruption; process completed, diagnostics-after Completedtrue, native file retained. Both routes/50 denials/actual native damage/quest getters/player-pet-guardian-group/source-removal/disabled-AI/original quest/accepted49810 retain separate coverage.",
+    "Original scripts.lib rebuilt Release/x64 with final-link original paths; stage12F766E9, canonical82773B55 unchanged. PE7 verifies actual selected instance GUID and Update hooks, native SmartAI MovementInform/WP40/instance virtual slot, Context/Victory, concrete GameObject WorldObject vtable virtual Create/phase/cleanup, checked map insertion/2s retry. Earlier shared death/takeover PE paths passed in PE exploration."
+  ],
+  "development_notes": [
+    "SQL snapshot Powershell array wrapper normalized; initial readonly temporary-table query refused as intended. Subsequent TEMP suite uses isolated writable temporary tables only.",
+    "PE1..6 verifier adaptations retained: GameObject Create is virtual and compiler hoists slot0x180 into register; multiple inherited vtables require exact WorldObject-subobject table; MovepointReached is inlined in MovementInform. PE7 passes. No production error was hidden."
+  ],
+  "deployment": {
+    "stage": ".codex/azuregos-portal-release",
+    "world_sha256": "12F766E9135E1774E326CA0571DE8BC04A494C366F2111D5FD2C6C3234EAE54C",
+    "sql": "sql/pending/world/2026_10_27_13_bilaal_portal_arrival.sql",
+    "original_graph": "d013c5d9516aef3d3e4d5f6a82b82bdcee1ad231f5052c9f5a1b3dfb3499e0b5",
+    "new_graph": "83d195ce948f80d71ddbc824ab23a32b5c11fbb6ec7e476202e2701da1fcd571",
+    "safe_sql_scope": "Actual updates_include has only$/sql/old/world and$/sql/updates/world; sql/pending/world is outside both. Private .codex/pending copy preserved. Do not move into updater before matching executable promotion."
+  },
+  "diagnostics": {
+    "result": "Before/after all test/build/native/PE groups: no new/changed crashes or appended DBErrors/unexplained server warnings/errors/assertions; expected counterfactuals distinct. No logs cleared or crashes archived.",
+    "evidence": ".codex/azuregos-portal/, build-extractors/runtime-test/bilaal-portal*, bilaal-death; exact raw stdout/stderr/failed verifier evidence retained.",
+    "servers": "User/unknown bnet9788/world23748 remain running and untouched. No task-owned server launched."
+  },
+  "pending": [
+    "User shutdown of both servers requested only after concrete stage/regressions ready; no executable or live SQL changed. On safe promotion: Scepter/canonical PE, own updater startup/shutdown and exact live hash/graph checks; update this audit and move SQL only then.",
+    "User actual full Priest/Mage boss/arrival/portal visual/teleport/pet/group/reentry client tests. No native host or PE substitutes for client traversal.",
+    "Separate Bilaal gravity and Aluneth control assets unresolved; all36 chains remain incomplete. Battle-stone source defects documented separately."
+  ]
+}
