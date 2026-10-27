@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Tuure contact native personal credit (2026-10-27)
+
+- `tuure-contact-native-credit-2026-10-27.json`: remove exact redundant105697 event73/action33/danglingLINK1. Native209441 already owns personal90/105697 then123/taxi5626; unconditional SAI ran even after failed conditions/cast and incorrectly granted group credit. Native click/AI/spell/path unchanged; no invented continuation.
+- Full native click/SmartAI/personal/taxi/missing-LINK ASAN baseline/current, TEMP twice/six custom refusals, fresh typed nine-point5626/native1877->1877 and actual retained native PE+Tuure preservation pass. Native taxi rejection after successful effect90 remains explicitly unaltered/open; no flight/client success claimed.
+- Updater2026_10_27_01 RELEASED SHA1 BA82C659EA427FAFF2FDB7021A981AB066778E41. Canonical78496428 world C27434D7 unchanged. Own3408 wrapped ready/shutdown0/exit0/newDBErrors0/stderr empty/protected unchanged/no task server; native live source0=0 readback/retest pass. No new crash/error/archive or character edits. Commit containing audit follows78496428.
+- NEXT Holy admission/return/across-session recovery/taxi failures/dormant combat still OPEN; continue independent remaining36 lifecycle review (Discipline/shared pickup and Shadow recipient/replay). Actual client checks stay with user. All36 backend work is unfinished.
+
 ## Latest repair: Tuure captain death and second native route (2026-10-27)
 
 - `tuure-captain-route-2026-10-27.json`: actual106107/361436 death uses original eligible owner/native50634/accepted47909, fullGUID/41993 lease; no nearest spectator or missing-primary-AI loss. Instance native engagement retains base delegation/safe Boros assistance. Original1s point3/strict real arrival/2015/8s path9859003/native finalnode7 removal/Jace/4s Lady handoff now instance-owned. Earned cage actor recreation restores original flags/follow without credit.

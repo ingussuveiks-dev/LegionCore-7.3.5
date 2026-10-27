@@ -2071,7 +2071,7 @@
       "weapon": "T'uure, Beacon of the Naaru",
       "item": 128825,
       "start": 41957,
-      "status": "partial: pickup/equip/departure, Lady/companion wounds, initial heal/greeting/admission/queues, both real opening fights/first native route and genuine native cage opening50633/Boja-captain release repaired and backend-regressed/deployed. Captain50634/second route/contact/across-session recovery/full client remain open.",
+      "status": "partial: native pickup/equip/departure, all three real opening fights, original native routes, cage release and redundant contact credit repaired/backend-regressed/deployed. Admission/return, across-session recovery/native taxi failures/dormant combat fidelity and actual full client remain OPEN.",
       "quests": [
         {
           "id": 41957,
@@ -2140,15 +2140,8 @@
           "target1": 1,
           "target2": 0,
           "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json",
-          "next_action": "Contact105697 native209441/taxi5626 and redundant unconditional SAI33/dangling LINK1; then remaining quest admission/return and all36. Captain real death50634/47909/native second route independently verified; across-session recovery/dormant combat fidelity and full client remain OPEN.",
+          "next_action": "Holy admission/return, across-session recovery/native taxi failure and dormant combat fidelity remain OPEN. Continue independent remaining36 artifact lifecycle reviews; actual full fight/route/flight/visuals remain user client checks.",
           "captain_route_audit": "docs/audits/tuure-captain-route-2026-10-27.json"
-        }
-      ],
-      "broken_actor_links": [
-        {
-          "entry": 105697,
-          "event": 0,
-          "missing_link": 1
         }
       ],
       "video": {
@@ -2172,7 +2165,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Contact105697 native209441/taxi5626 and redundant unconditional SAI33/dangling LINK1; then remaining quest admission/return and all36. Captain real death50634/47909/native second route independently verified; across-session recovery/dormant combat fidelity and full client remain OPEN.",
+      "next_action": "Holy admission/return, across-session recovery/native taxi failure and dormant combat fidelity remain OPEN. Continue independent remaining36 artifact lifecycle reviews; actual full fight/route/flight/visuals remain user client checks.",
       "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json",
       "native_pickup_audit": "docs/audits/tuure-native-pickup-2026-10-26.json",
       "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json",
@@ -2184,7 +2177,17 @@
       "first_fight_audit": "docs/audits/tuure-first-fight-2026-10-27.json",
       "first_route_audit": "docs/audits/tuure-first-route-2026-10-27.json",
       "cage_opening_audit": "docs/audits/tuure-cage-opening-2026-10-27.json",
-      "captain_route_audit": "docs/audits/tuure-captain-route-2026-10-27.json"
+      "captain_route_audit": "docs/audits/tuure-captain-route-2026-10-27.json",
+      "contact_native_credit_audit": "docs/audits/tuure-contact-native-credit-2026-10-27.json",
+      "resolved_actor_links": [
+        {
+          "entry": 105697,
+          "event": 0,
+          "missing_link": 1,
+          "resolution": "Remove redundant unconditional SAI33; actual native209441 owns personal credit/taxi. Guarded updater2026_10_27_01 RELEASED."
+        }
+      ],
+      "broken_actor_links": []
     },
     {
       "class_id": 5,

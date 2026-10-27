@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "78496428",
+  "scope": "Remove only redundant unconditional105697 spellclick SAI credit/dangling LINK1; preserve native209441 effects and flight. Not whole Holy chain certification.",
+  "cause": "Unit::HandleSpellClick independently calls SmartAI::OnSpellClick even when native requirements/conditions skip the spell or an ordinary cast fails. Existing event73/action33 credited invoker and eligible group before any confirmed hit, duplicated native personal105697 effect90, then attempted nonexistent LINK1 and logged an error.",
+  "implementation": "Guarded idempotent migration removes the one exact original source0 row. Native SmartAI binding, spellclick209441/cast_flags1/user_type0/add_npc_flag1 and other actors remain unchanged. Custom event/action/target/timing/link graph or cast metadata refuses migration instead of overwriting it. No speculative despawn/LINK action, native spell gate or quest/item grant added.",
+  "native": {
+    "effects": "Actual typed26972 209441 effect0 aura4/self, effect1 personal90/105697/self, effect2 taxi123/5626/self; native60s aura as previously catalogued. Full actual HandleSpellClick and SmartAI callback, actual personal/taxi effect bodies and native missing-LINK branch extracted into fixture.",
+    "path": "TaxiPath5626 is native1877->1877/cost0 with nine distinct continuous-map1220 points, Dalaran(-843.812,4262.24,750.862) to Broken Shore(-849.165,3577.43,0.857298), no delays/events. Node1877 has native model creature105717 on both factions, condition0. Equal source/destination is native metadata, not a zero-length route. No native path modified.",
+    "world": "Actual105697 spawn366123/map1220/phase6231/(-824.753,4290.04,746.356), SmartAI/empty ScriptName/spellclick flag. Quest41967 has separate native105641/105649/105697 objectives, each1. No209441 script binding/actor addon/event override found. Failed exploratory schema queries were read-only; corrected with actual SHOW COLUMNS.",
+    "ordering_limit": "Native effect90 precedes native taxi123. If the taxi itself rejects after a successful spell hit (busy/root/control/path etc.), personal credit can still occur by native ordering. This repair does not claim a successful flight or alter native credit timing. Further native taxi/admission/full client review stays OPEN."
+  },
+  "checks": {
+    "counterfactual": "Explicit old event availability plus actual native click/AI/missing-LINK branch reproduces rejected-condition and rejected-cast group credit/error, and successful cast duplicate personal+group credit. Not an ordinary passing server run; no live character used.",
+    "asan": "Full actual native HandleSpellClick/SmartAI/effect90/effect123 with requirements/conditions/cast completion/taxi and group endpoints as adapters. Primary/missing AI, rejected requirements/conditions/cast, deferred real hit, personal-only recipient/unchanged peer, nonplayer effect exclusion and native taxi rejection ordering pass. No actual network cast or route traversal claimed.",
+    "sql": "TEMP shadow copies; original row re-seeded after live migration, migration twice removes only source0 and preserves native spellclick/SmartAI/unrelated actor. Six changed target/action-param/LINK/custom ScriptName/changed or missing spellclick refusals pass. Const-correct fixture method and actual add_npc_flag schema corrected before passing checks; failures retained.",
+    "release": "Existing canonical78496428 EXE unchanged: actual ordinary SpellInfo cast and native conditions, independent SmartAI73, native personal credit90 and taxi123 verified; prior Captain/cage/route/Tuure/capture PE preservation passes. Data-only repair requires no new registration or binary.",
+    "runtime": "Dedicated wrapped owned3408 native updater applied migration then fresh ready/shutdown0/exit0; stderr/newDBErrors empty, protected hashes unchanged. Live source0 rows0 and unchanged native spellclick read back, test rerun ASAN/live passes. No user/unknown server stopped or own process left. Before/after canonical and own probe/test runtime diagnostics have no new/changed crashes, appended DBErrors or server warnings/errors/assertions."
+  },
+  "migration": {
+    "name": "2026_10_27_01_tuure_contact_native_credit.sql",
+    "native_updater_sha1": "BA82C659EA427FAFF2FDB7021A981AB066778E41",
+    "state": "RELEASED"
+  },
+  "canonical_sha256": {
+    "worldserver.map": "4D7756DC406F84E60891208D27765FD0BAF025256672290C2E3779A03B562C20",
+    "bnetserver.exe": "69660CC520E8E2AE52B7E967552DA8461962CDBDE0A6FFB26B874442CF657D09",
+    "bnetserver.map": "AB39D42969566B181D22C45D2E8EF3E0A70F18CCAF4AC40FBA5596235E6A578F",
+    "worldserver.exe": "C27434D7F406FBA80399442B6EB5760F01BE425D747D5A065505042631B3039C"
+  },
+  "archives": "No new runtime crash/error to archive or truncate; runtime logs/dumps/credentials/character data excluded.",
+  "next": [
+    "Holy admission/return and across-session recovery/native taxi failures remain open; client route, voice, visibility, full Holy fight and actual flight left to user.",
+    "Continue remaining artifact lifecycle reviews, including Priest Discipline/shared acquisition and outstanding Shadow replay/recipient paths; all36 backend review is not complete."
+  ],
+  "character_progress": "No character database edits or manual quest/item/scenario grants."
+}
