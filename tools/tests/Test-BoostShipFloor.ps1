@@ -3,6 +3,10 @@ $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/boost-ship-arrival"
 New-Item -ItemType Directory -Force -Path $out | Out-Null
+$prior=(& git -C $repo show '9bbbf5264:src/server/game/Movement/TransportJumpPath.h') -join "`n"
+if($LASTEXITCODE){throw 'Pinned prior Leap landing implementation missing'}
+$prior=$prior.Replace('LEGION_TRANSPORT_JUMP_PATH_H','LEGION_PRIOR_TRANSPORT_JUMP_PATH_H').Replace('namespace Movement','namespace PriorLeap')
+[IO.File]::WriteAllText("$out/PriorTransportJumpPath.inc",$prior)
 $source=[IO.File]::ReadAllText("$repo/src/server/scripts/Scenario/BoostExperience/boost_experience.cpp")
 foreach($item in @(@('PreparePassengerPosition','bool PreparePassengerPosition('),@('Offset','Position Offset('))){
  $start=$source.IndexOf($item[1]);if($start -lt 0){throw "Missing native placement helper $($item[0])"}

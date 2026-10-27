@@ -10,6 +10,10 @@
 #include "TransportJumpPath.h"
 #include <cmath>
 #include <iostream>
+#include <limits>
+
+namespace PriorLeap { using Movement::computeFallElevation; using Movement::gravity; }
+#include "PriorTransportJumpPath.inc"
 
 #include "PreparePassengerPosition.inc"
 #include "Offset.inc"
@@ -81,6 +85,44 @@ int main(int argc, char** argv)
         auto world=[&](Position local){float x,y,z,o;local.GetPosition(x,y,z,o);transport.CalculatePassengerPosition(x,y,z,&o);return Position{x,y,z,o};};
         Position start=base,finish=Offset(base,12,0,0,0);
         if(!PreparePassengerPosition(&transport,start,true)||!PreparePassengerPosition(&transport,finish,true))return 15;
+        // Pair the reported uneven-deck rejection with the pinned old helper,
+        // using actual 26972 models rather than a flat mock.
+        Position regression=Offset(base,pair.first==5219?-4.0f:0.0f,pair.first==5219?0.0f:-8.0f,0,0);
+        if(!PreparePassengerPosition(&transport,regression,true))return 28;
+        if(PriorLeap::CheckTransportJumpPath(&transport,world(base),world(regression),2,.4f,2.5f)==PriorLeap::TransportJumpResult::Complete)return 29;
+        if(Movement::CheckTransportJumpPath(&transport,world(base),world(regression),2,.4f,2.5f)!=Movement::TransportJumpResult::Complete)return 30;
+        Position selected=world(finish); selected.m_positionZ+=0.3f;
+        if(PriorLeap::CheckTransportJumpPath(&transport,world(base),selected,2,.4f,2.5f)!=PriorLeap::TransportJumpResult::NotOnDeck)return 31;
+        if(Movement::CheckTransportJumpPath(&transport,world(base),selected,2,.4f,2.5f)!=Movement::TransportJumpResult::Complete)return 32;
+        unsigned supported=0,accepted=0;
+        for(float forward=-8;forward<=24;forward+=2)
+            for(float side=-12;side<=12;side+=1)
+            {
+                Position landing=Offset(base,forward,side,0,0);
+                if(!PreparePassengerPosition(&transport,landing,true))continue;
+                ++supported;
+                auto result=Movement::CheckTransportJumpPath(&transport,world(base),world(landing),2.0f,0.4f,2.5f);
+                if(result==Movement::TransportJumpResult::Complete)++accepted;
+            }
+        std::cout<<"SURVEY "<<pair.second<<" supported "<<supported<<" accepted "<<accepted<<'\n';
+        // Find genuine model edges: center supported, part of the actor radius
+        // over empty space, and the full body corridor still unobstructed.
+        unsigned edges=0;
+        for(float forward=0;forward<=24;forward+=2)
+            for(float side=-28;side<=28;side+=0.2f)
+            {
+                Position landing=Offset(base,forward,side,0,0);
+                if(!PreparePassengerPosition(&transport,landing,true))continue;
+                auto p=world(landing);
+                bool missing=false;
+                for(auto delta:{G3D::Vector3(.4f,0,0),G3D::Vector3(-.4f,0,0),G3D::Vector3(0,.4f,0),G3D::Vector3(0,-.4f,0)})
+                    if(!std::isfinite(model->getHeight(p.GetPositionX()+delta.x,p.GetPositionY()+delta.y,p.GetPositionZ()+.1f,1.2f,{1},false)))missing=true;
+                if(missing&&Movement::CheckTransportJumpPath(&transport,world(base),p,2,.4f,2.5f)==Movement::TransportJumpResult::Complete)++edges;
+            }
+        std::cout<<"SUPPORTED EDGES "<<pair.second<<' '<<edges<<'\n';
+        // Horde railings can obstruct the edge corridor; do not bypass them.
+        if(pair.first==5219&&!edges)return 33;
+        if(!PreparePassengerPosition(&transport,start,true)||!PreparePassengerPosition(&transport,finish,true))return 15;
         Movement::PointsArray charge;
         if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,74,charge)!=Movement::TransportGroundResult::Complete||charge.size()<2)return 16;
         if(Movement::CheckTransportJumpPath(&transport,world(start),world(finish),2.0f,0.4f,2.5f)!=Movement::TransportJumpResult::Complete)return 23;
@@ -89,7 +131,7 @@ int main(int argc, char** argv)
         if(Movement::BuildTransportGroundPath(&transport,world(start),world(voidEnd),2.0f,74,charge)!=Movement::TransportGroundResult::NoPath||!charge.empty())return 18;
         Position airborne=world(finish);airborne.m_positionZ+=5;
         if(Movement::CheckTransportJumpPath(&transport,world(start),airborne,2.0f,0.4f,2.5f)!=Movement::TransportJumpResult::NotOnDeck)return 24;
-        if(Movement::CheckTransportJumpPath(&transport,world(start),world(finish),2.0f,100.0f,2.5f)!=Movement::TransportJumpResult::NoPath)return 25;
+        if(Movement::CheckTransportJumpPath(&transport,world(start),world(finish),2.0f,std::numeric_limits<float>::quiet_NaN(),2.5f)!=Movement::TransportJumpResult::NoPath)return 25;
         if(Movement::BuildTransportGroundPath(&transport,world(start),airborne,2.0f,74,charge)!=Movement::TransportGroundResult::NoPath)return 19;
         if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,74,charge,100.0f)!=Movement::TransportGroundResult::NoPath)return 22;
         transport.SetPhaseId({2},false);

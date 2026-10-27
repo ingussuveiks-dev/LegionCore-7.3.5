@@ -222,6 +222,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 - Both user servers absent at promotion; own22952 ready/shutdown0/exit0, stderr/newDBErrors0, protected hashes unchanged. No hidden server remains. Diagnostics in ignored `.codex/hunter-choice`; active Crashes0/DBErrors0. Recheck processes before further deployment.
 - Next concrete inherited finding: Outlaw Degauz102185 raw pre-hit Player-only90/60/30 surrender, scaled lethal and owner/pet paths. All36 remain in scope; client checks stay with user.
 
+## Newer update 2026-10-27: uneven deck and supported-edge Heroic Leap
+
+- User retest still rejected many uneven/supported near-edge destinations. Removed four extra radius-floor requirements while retaining center support and radius body/head obstruction. Corrected native getHeight's implicit +0.5 ray origin: input +0.1/length1.2 now really searches +/-0.6.
+- Actual both-ship prior/repaired cases, ASAN, native catalog (both spells min8/max40), shared Charge/arrival/construct, staged and canonical PE/Scepter pass. Native survey acceptance364->409/417 and371->413/425; actual23 unobstructed Alliance overhang centers accepted. Client landing/lesson and full boost remain pending. The native8-yard minimum is retained.
+- Promoted HEAD a98b0fa69 plus Leap only while servers absent; own19372 ready/shutdown0/exit0, no new crashes/DBErrors/server errors. Canonical world SHA25688330BC7AF46C3F2753D9D881470C71ACFD7A563AA8022F5ABCA1FF5B792D3E4. No owned server remains; recheck actual processes.
+- Audit docs/audits/heroic-leap-deck-edges-2026-10-27.json. Bilaal WIP source preserved byte-for-byte and excluded from this build; pending SQL09 outside updater. Its original library must be rebuilt before Bilaal deployment. All36 artifact work remains incomplete and active.
+
 ## Latest update after this checkpoint: Heroic Leap
 
 - User showed the next Warrior1093 step8 **Jump Into The Fray**, Heroic Leap6544 still returning No path available on the ship. This supersedes the earlier immediate next task until the client retest is reported.

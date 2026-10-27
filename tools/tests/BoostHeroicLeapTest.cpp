@@ -22,8 +22,10 @@ using WorldLocation=Position;
 struct GameObjectModel {
     bool enabled=true,visible=true,gap=false,wall=false,roof=false,lowObstacle=false;
     bool isCollisionEnabled()const{return enabled;}
-    float getHeight(float x,float y,float,float,std::set<uint32>const&,bool)const {
+    float getHeight(float x,float y,float z,float distance,std::set<uint32>const&,bool)const {
         if(!visible||std::fabs(y)>2||x>15||(gap&&x>4&&x<8))return -std::numeric_limits<float>::infinity();
+        // Native GameObjectModel starts its downward ray half a yard higher.
+        if(z+.5f<0||z+.5f>distance)return -std::numeric_limits<float>::infinity();
         return 0;
     }
     bool isInLineOfSight(G3D::Vector3 const& a,G3D::Vector3 const& b,std::set<uint32>const&,bool)const {
@@ -88,7 +90,10 @@ int main() {
     model.roof=true;assert(check.CheckElevation()==SPELL_FAILED_NOPATH);model.roof=false;
     model.enabled=false;assert(check.CheckElevation()==SPELL_FAILED_NOPATH);model.enabled=true;
     model.visible=false;assert(check.CheckElevation()==SPELL_FAILED_NOPATH);model.visible=true; // old terrain fallback also refuses.
-    dest.y=2;assert(check.CheckElevation()==SPELL_FAILED_NOPATH);dest.y=0; // Feet need full landing support.
+    dest.y=2;assert(check.CheckElevation()==SPELL_FAILED_SUCCESS); // Center supported at the edge; radius may overhang.
+    dest.y=2.01f;assert(check.CheckElevation()==SPELL_FAILED_NOPATH);dest.y=0;
+    dest.z=.3f;assert(check.CheckElevation()==SPELL_FAILED_SUCCESS); // Native ray must search below the selected point too.
+    dest.z=-.3f;assert(check.CheckElevation()==SPELL_FAILED_SUCCESS);dest.z=0;
     dest.x=100;assert(check.CheckElevation()==SPELL_FAILED_NOPATH);dest.x=12;
     dest.z=5;assert(check.CheckElevation()==SPELL_FAILED_NOPATH);dest.z=0;
     dest.x=std::numeric_limits<float>::quiet_NaN();assert(check.CheckElevation()==SPELL_FAILED_NOPATH);dest.x=12;

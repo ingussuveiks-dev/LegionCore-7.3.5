@@ -18,6 +18,18 @@ require(check,'?CalculatePath@PathGenerator@@')
 require(geometry,'?getHeight@GameObjectModel@@')
 require(geometry,'?isInLineOfSight@GameObjectModel@@')
 require(geometry,'?computeFallElevation@Movement@@')
+height_targets={n['resolve'](address) for name,address in n['symbols'].items() if name.startswith('?getHeight@GameObjectModel@@')}
+geometry_body=instructions(geometry)
+height_calls=[ins for ins in geometry_body if ins.mnemonic=='call' and ins.operands
+              and ins.operands[0].type==CS_OP_IMM and n['resolve'](ins.operands[0].imm) in height_targets]
+assert len(height_calls)==1, 'Landing must check center support without a second radius-floor loop'
+constants=set()
+for ins in geometry_body:
+    for op in ins.operands:
+        if op.type==CS_OP_MEM and op.mem.base==X86_REG_RIP:
+            address=ins.address+ins.size+op.mem.disp
+            constants.add(n['binary'][n['offset'](address):n['offset'](address)+4])
+assert struct.pack('<f',0.1) in constants, 'Missing native getHeight half-yard origin compensation'
 require(cast,'?CastSpell@Unit@@')
 require('?EffectJumpDest@Spell@@','?MoveJump@MotionMaster@@')
 require('?MoveJump@MotionMaster@@QEAAXMMMM','?Launch@MoveSplineInit@Movement@@')

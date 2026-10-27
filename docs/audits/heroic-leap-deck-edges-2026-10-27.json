@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-27",
+  "status": "Backend repaired, Release promoted and startup checked; actual client retest pending",
+  "report": "User still sees frequent Leap rejection on uneven boost-ship deck and beside a supported edge, including green reticle / too-close reports.",
+  "causes": [
+    "The prior helper required four additional radius-offset floor hits; supported center positions near seams or edges were refused.",
+    "GameObjectModel::getHeight adds 0.5 to its ray origin. Prior input end.z+0.6 with length1.2 actually searched only0.1 below the requested destination, despite the intended symmetric0.6 tolerance."
+  ],
+  "repair": [
+    "Require actual enabled, phase-visible model support under the selected landing center. Actor radius still checks vertical/horizontal body and head obstruction along the real native94954 parabola, including landing.",
+    "Use end.z+0.1 before the native half-yard offset and1.2 ray length, retaining the bounded0.6 destination/floor comparison.",
+    "No destination rewrite, forced movement, changed native jump speeds, range bypass, spell data edits, lesson grants or character changes. Root/BG/water/falling/ordinary terrain fallback retained."
+  ],
+  "range_evidence": {
+    "source": "Typed matching26972 SpellMisc/SpellRange DB2 plus read-only Hotfix overlay; native Spell::CheckRange and Unit::GetSpellMinRangeForTarget inspected",
+    "6544_and_94954": "Range94: min8, max40 yards. This is caster-to-destination distance, independent of deck edge. Reticle appearance does not replace this server check; minimum preserved."
+  },
+  "checks": [
+    "ASAN extracted production Leap admission/cast and actual helper: supported edge accepted, center beyond edge refused, +0.3/-0.3 vertical selection error accepted, wall/roof/invalid data/phase/collision/root/BG/water/falling/ordinary terrain and native94954 retained.",
+    "Pinned a9da566d pre-transport counterfactual still reproduces terrain-path rejection. Separately compiled pinned9bbbf5264 helper on real ship models rejects both selected uneven-floor cases; repaired helper accepts both. Native real-model +0.3 selection error is paired with prior NotOnDeck and repaired Complete.",
+    "Native both-ship survey417 supported Alliance destinations: old364 versus new409 accepted; Horde425 supported: old371 versus new413 accepted. Center support alone is not sufficient for safe passage: body obstructions continue to reject remaining destinations. No claim every supported destination is reachable.",
+    "Native edge sweep found23 unobstructed supported Alliance centers with radius-offset missing floor, now accepted. Same sweep found0 accepted Horde overhangs; this is recorded, not forced to pass. Synthetic exact-edge and beyond-edge regression covers both semantics.",
+    "Shared Charge ASAN, ship arrival, construct lessons/native criteria/scaling checks passed. Fixture C4458/C4189 warnings retained; no new production diagnostic.",
+    "Original scripts.lib/game.lib/shared.lib/common.lib final-link paths used. Registered Leap PE check now requires exactly one center-height call and compiled0.1 compensation, plus real LOS/physics/native cast/transport transform. Staged Leap/Charge PE, canonical Leap and Scepter Release checks passed.",
+    "Owned canonical world19372 reached fresh ready, shutdown0/exit0, stderr and newly appended DBErrors empty; protected config/certificate hashes unchanged. No user/unknown process stopped."
+  ],
+  "development_failures": [
+    "First center-only native survey hit obsolete radius100/full-footprint assertion; replaced with finite-radius invalid-input regression because unsupported radius edges are deliberately admitted.",
+    "First strengthened native comparison used an ungrounded Horde finish, yielding fixture exit31; grounded finish before comparison and reran.",
+    "Next fixture incorrectly demanded an unobstructed overhang on both actual ship geometries; Horde sweep found none. Retain measured0, require real Alliance evidence23 and separate synthetic edge acceptance; both real-model regressions pass."
+  ],
+  "diagnostics": {
+    "directory": ".codex/heroic-leap-edge/",
+    "result": "Every test/build/PE/startup wrapped with before/after canonical and fixture crash/log snapshots; no new/changed crash, appended DBErrors or server warning/error/assertion. Failed development checks retained in their own evidence directories. No archive/truncation needed."
+  },
+  "deployment": {
+    "hashes": {
+      "bnetserver.exe": "C0BC959AACE8C400F74CFE6B8EAFC2B8E3307075F380CB008886A536E221AB08",
+      "bnetserver.map": "2FC0EC6AC4774FC9B22A3EDEE1218A438D735C8D8F5A574D20F06A7D286920C9",
+      "worldserver.exe": "88330BC7AF46C3F2753D9D881470C71ACFD7A563AA8022F5ABCA1FF5B792D3E4",
+      "worldserver.map": "4EA1A477D282960F6A4358CD89C2B5D9F51A990C9B2FF2D8436057E64B44C880"
+    },
+    "backup": ".codex/release-before-heroic-leap-edge-2026-10-26/",
+    "scope": "HEAD a98b0fa69 plus this Leap repair only. Uncommitted Bilaal instance source backed up, temporarily restored to HEAD for scripts compilation, then restored byte-for-byte. Pending Bilaal SQL09 stays outside updater. Rebuild scripts before later Bilaal promotion."
+  },
+  "pending_client": [
+    "Both-ship actual uneven-deck and near-edge targeting outside native8-yard minimum",
+    "Outer6544 targeting/94954 timing, landing, lesson1-of1, camera/pet and later full boost traversal"
+  ],
+  "other_work": "All36 artifact acquisition work remains active and incomplete. Bilaal WIP preserved separately; no claim of full chain verification."
+}

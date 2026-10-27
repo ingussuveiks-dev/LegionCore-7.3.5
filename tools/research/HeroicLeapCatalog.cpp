@@ -18,6 +18,16 @@ int main(int argc, char** argv)
     if (HotfixDatabase.Open() || !HotfixDatabase.PrepareStatements()) return 5;
     HotfixDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
     HotfixDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
+    DB2Storage<SpellMiscEntry> misc("SpellMisc.db2", SpellMiscLoadInfo::Instance());
+    DB2Storage<SpellRangeEntry> ranges("SpellRange.db2", SpellRangeLoadInfo::Instance());
+    if (!misc.Load(argv[1], 0) || !ranges.Load(argv[1], 0)) return 8;
+    misc.LoadFromDB(); ranges.LoadFromDB();
+    for (auto row : misc)
+        if (row && (row->SpellID == 6544 || row->SpellID == 94954))
+            if (auto range = ranges.LookupEntry(row->RangeIndex))
+                std::cout << "RANGE spell=" << row->SpellID << " difficulty=" << unsigned(row->DifficultyID)
+                    << " index=" << range->ID << " min=" << range->RangeMin[0] << ',' << range->RangeMin[1]
+                    << " max=" << range->RangeMax[0] << ',' << range->RangeMax[1] << '\n';
     auto readOnly = HotfixDatabase.Query("SELECT @@session.transaction_read_only");
     if (!readOnly || !readOnly->Fetch()[0].GetBool()) return 6;
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());

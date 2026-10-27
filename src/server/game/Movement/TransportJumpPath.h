@@ -27,17 +27,14 @@ inline TransportJumpResult CheckTransportJumpPath(Transport const* transport,
         return TransportJumpResult::NoPath;
     auto model = transport->m_model;
     auto const& phases = transport->GetPhases();
-    float floor = model->getHeight(end.GetPositionX(), end.GetPositionY(), end.GetPositionZ() + 0.6f, 1.2f, phases, false);
+    // GameObjectModel::getHeight adds 0.5 to the ray origin itself. Search
+    // evenly above AND below the selected point, including small deck seams.
+    float floor = model->getHeight(end.GetPositionX(), end.GetPositionY(), end.GetPositionZ() + 0.1f, 1.2f, phases, false);
     if (!std::isfinite(floor) || std::fabs(floor - end.GetPositionZ()) > 0.6f)
         return TransportJumpResult::NotOnDeck; // Preserve ordinary ship-to-world admission.
-    for (G3D::Vector3 const& edge : {G3D::Vector3(collisionRadius, 0, 0), G3D::Vector3(-collisionRadius, 0, 0),
-        G3D::Vector3(0, collisionRadius, 0), G3D::Vector3(0, -collisionRadius, 0)})
-    {
-        float support = model->getHeight(end.GetPositionX() + edge.x, end.GetPositionY() + edge.y,
-            floor + 0.6f, 1.2f, phases, false);
-        if (!std::isfinite(support) || std::fabs(support - floor) > 0.6f)
-            return TransportJumpResult::NoPath;
-    }
+    // The selected landing point needs support. The actor's collision radius
+    // checks obstacles below, not four additional floors: a supported point
+    // beside an edge or deck seam is still a valid landing.
     // Match the existing moving-deck corridor contact tolerance; tiny deck
     // curvature must not count as a wall through the actor body.
     float foot = std::min(0.5f, collisionHeight * 0.25f);
