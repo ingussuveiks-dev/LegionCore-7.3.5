@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp",
+      "handler": "Native Kingslayers251107 actual loot/equip/51616 and safe Mathias outro",
+      "problem": "Data1=0 and any-state callback granted final pickup/explicit scenario completion before AddItem outcome; raw delayed target/actor pointers.",
+      "repair_audit": "docs/audits/kingslayers-native-pickup-2026-10-27.json",
+      "limit": "Deployed247c16cbd/B7B2A8CA/SQL14 RELEASED; actual storage/equipped pair/native acceptance/quest identity/world cleanup,990 native predicates/TEMP/ASAN/final selected PE/startup pass. Full client/portal acceptance/native missing81040 and re-entry remain separate."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/bilaal_portal.h",
       "handler": "Azuregos104546 actual waypoint arrival/248553 portal",
       "problem": "Optional223908 cast failure gated portal/cleanup; original one-shot GO insertion had no retry.",
@@ -1765,7 +1772,7 @@
       "death_credit_review": "Merlis107831 resolves native player/charmer/owner before cleanup and uses that player for51615/2448; null/unowned killers retain original actor/add cleanup. Pinned pet-credit failure/current ASAN/native26972 stage7 and Garona intro pass. DEPLOYED canonical world3B4C44A1 after user servers were already absent; actual installed factory/death130 verified, owned PID4824 ready/shutdown0/exit0/no new diagnostics and stopped. Actual combat/group/faction/unowned companion/re-entry/later loot/VFX remain separate checks.",
       "item": 128870,
       "start": 42501,
-      "status": "partial Garona intro and Merlis owned-killer/null credit repairs tested/deployed in canonical Release; full chain/client visual traversal pending",
+      "status": "partial: deployed native loot/equipped linked pair/accepted pickup and safe owner dialogue/earned world cleanup247c16cbd; native/shared regressions and actual updater/startup pass. Actual full client and native return failure/credit remain pending.",
       "intro_lifetime_audit": "docs/audits/kingslayers-intro-lifetime-2026-10-26.json",
       "quests": [
         {
@@ -1837,7 +1844,7 @@
         {
           "entry": 251107,
           "type": 3,
-          "loot_link": 0,
+          "loot_link": 251107,
           "expected_loot_entries": [
             251107
           ],
@@ -1877,7 +1884,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Trace actual static251123/215151 final exit: native51617 non-target HIT precedes teleport252, while quest152 waits for complete1123. Verify rejected/accepted teleport, physical portal/quest-attempt admission and escape/retry, preserving real final stage9. Native missing81040, initial source creation/unload, narrative playback and full client remain open.",
+      "pickup_repair_audit": "docs/audits/kingslayers-native-pickup-2026-10-27.json"
     },
     {
       "class_id": 4,

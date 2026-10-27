@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "Checkpoint after deployed938fc1225 Azuregos arrival/SQL13 and66600a9ae Battle-Stone upgrade/display repairs; canonicalF8F4A6D7, client pending.",
+  "reason": "Checkpoint after Kingslayers native pickup247c16cbd deployed; final canonicalB7B2A8CA. Latest user pet-battle target complaint confirmed to be distance, not missing pet admission.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -73,22 +73,27 @@
       "commit": "66600a9ae",
       "fix": "Battle-Stone prelaunch admission/one unit/no level loss/native stats and typed owned display sync; deployed",
       "audit": "docs/audits/battle-stone-upgrade-2026-10-27.json"
+    },
+    {
+      "commit": "247c16cbd",
+      "fix": "Kingslayers native loot/equipped linked pair/accepted51616 and safe owner dialogue/earned world cleanup; SQL14 deployed",
+      "audit": "docs/audits/kingslayers-native-pickup-2026-10-27.json"
     }
   ],
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "29A7173A68C83CCF10B9F7C84BE0C39F11E8F8F41DD6744018960F716E8B51BF",
-      "bnetserver.map": "CD27A863648E343BCC2EAF8822D365F5ACCBC3ADC5B70263A26396E2550DC67B",
-      "worldserver.exe": "F8F4A6D7A91C60D78E5891D3A1E17C68EDB3CD9BE22E99FB62EB7C4CE28F8310",
-      "worldserver.map": "2F9F8A70C3E12F6EC5AF922DC92B3A516A3E3A5D6F1F6340881BD5D68BC5AC49"
+      "bnetserver.exe": "C060B99E71AC80D53BA56F15B9F4AB96A7115CCC465A691870E4888ABC99AF75",
+      "bnetserver.map": "95823EADDFA85A1EE4B3A65D0F06E3782BFC3FB1B47C202C459AD8C683CF23CA",
+      "worldserver.exe": "B7B2A8CA10932808595AC1357F5797071769C0523141DC351D86E674F87ED442",
+      "worldserver.map": "7DD50A0048EA4AAC9F35CB3BB97292C0DAD4E105BA568081D160EF81EF84CA74"
     },
-    "scope": "CombinedF8F4A6D7 includes earlier completed fixes, Azuregos portal938fc1225/World13 RELEASED and Battle-Stone66600a9ae. Actual selected PE/Scepter/native/owned34304 ready/shutdown0/exit0 pass. No server left; client/full36 unconfirmed."
+    "scope": "CombinedB7B2A8CA includes all earlier completed fixes and Kingslayers247c16cbd/SQL14 RELEASED. Native pickup/conditions/shared Merlis/Garona/selected finalPE/Scepter/own29112 ready/shutdown0/exit0 pass; actual full Kingslayers client pending. No task server remains."
   },
   "servers_last_seen": {
-    "bnetserver": null,
-    "worldserver": null,
-    "ownership": "No user server was stopped. Own22608/34304 ready/shutdown0/exit0 and cleanup complete. Recheck before further deployment."
+    "bnetserver": 19344,
+    "worldserver": 28740,
+    "ownership": "User/unknown canonical servers active during latest pet battle report. Never stopped. Own23184/29112 used earlier for Kingslayers startup and gracefully exited. Recheck before deployment."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -190,13 +195,13 @@
     "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
   ],
   "current_continuation": {
-    "last_implementation_commit": "66600a9ae",
+    "last_implementation_commit": "247c16cbd",
     "hunter_reconciliation": "Git/source and dedicated followup audit contradict stale unfinished text in the old resume. Commit802295a98 is an ancestor and actual runtime migration13005E8182CE54B5FFA4DEED6C9FA53272C39796 is RELEASED; 249 rows, flags3 on107317/107973 and current canonical selected consumers were independently rechecked. No repeated repair or character change.",
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
     "diagnostics": "No new/changed crashes, appendedDBErrors or unexplained server warning/error/assertion after every test/build/startup group. ActiveDBErrors0/Crashes0 at last check; no log was truncated or crash archived during this continuation.",
-    "next": "Resume all36 independent backend review. Azuregos portal now deployed; gravity209863 and Aluneth native control assets still open. Preserve actual client test limits. No uncommitted source remains after deployment documentation.",
-    "uncommitted_at_checkpoint": "Only SQL13 pending->updates rename and deployment audits before this checkpoint commit; implementation committed66600a9ae. Private recovery and old historical backups ignored."
+    "next": "Continue Kingslayers native return failure/accepted teleport credit from saved local source trace. Aluneth control geometry/destination46 and Bilaal gravity remain open. Latest pet-battle INVALID target was distance; user explicitly confirmed nearby fight starts, no progress/state edits.",
+    "uncommitted_at_checkpoint": "No source/SQL WIP after247c16cbd. This documentation update records current canonical hashes and next investigation. Private battle-stone refund backups preserved."
   },
   "azuregos_portal_wip": {
     "status": "Historical key: committed/pushed938fc1225, deployed with coordinated SQL13 RELEASED",
@@ -212,5 +217,16 @@
     "audit": "docs/audits/battle-stone-investigation-2026-10-27.json",
     "status": "Superseded by implemented/deployed66600a9ae; audit battle-stone-upgrade-2026-10-27.json. User corrected chronology: one stone used, five purchased afterward untouched. AlreadyRare rejection-consumption native baseline proven. One authorized refund applied offline with private backup; no pet/progress edits.",
     "next": "User client retest: alreadyRare rejection retains all stones; lower-quality pet success consumes one and preserves level/XP. Actual735 notification payload/rendering and journal/relog pending; unexpected payload retains diagnostics."
+  },
+  "kingslayers_next": {
+    "status": "Pickup completed/deployed247c16cbd; no return implementation WIP",
+    "portal": "Existing251123/spawn134046/type10/display8111/Data10=215151, map1620. Native215151 effect0 SendEvent61/51617 targets0/0, effect1 Teleport252 targets1/17, targetDB1220/-854.53/4597.28/748.81/4.5759. Scenario1123 step9/leaf48593 uses51617; quest roots48528/48548 use type152/Scenario1123. Pickup no longer forces scenario completion.",
+    "finding": "Native non-target HIT SendEvent runs before target teleport, potentially granting exit on refused teleport. Generic goober sets IN_USE/GO_ACTIVATED and default auto-close60s; failure/retry needs trace. No code orSQL15 created.",
+    "reference": "Local lights_wrath_pickup.h spell_lights_wrath_return uses actual portal receipt, original quest lifetime and Player::ScopedTeleportDelay, nativeEffectTeleportUnits and accepted destination before awarding. Adapt only after native Kingslayers source/portal/alternatives tests; preserve escape without new credit on abandonment/completion and shared native behavior outside scope."
+  },
+  "pet_battle_client_feedback": {
+    "status": "User confirmed nearby Dung Beetle fight starts; no new repair/deployment or character edit",
+    "cause": "CanPlayerEnterInPetBattle calls GetNPCIfCanInteractWith first; that generic helper rejects distance beyond INTERACTION_DISTANCE5. Returned PETBATTLE_REQUEST_TARGET_INVALID8 hides the later dedicated out-of-range9 check.",
+    "limits": "Screenshot/live data showed valid alive slot0 and wild62115 species467. User confirmation proves nearby battle initiation only, not full win/capture/quest credit/connection lifecycle. Misleading distance message remains a separate possible improvement; do not claim it was repaired."
   }
 }
