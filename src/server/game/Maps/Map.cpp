@@ -43,6 +43,7 @@
 #include "ObjectMgr.h"
 #include "OutdoorPvPMgr.h"
 #include "ScenarioMgr.h"
+#include "BrokenShoreClassRoute.h"
 #include "ScriptMgr.h"
 #include "StringFormat.h"
 #include "Totem.h"
@@ -3584,10 +3585,37 @@ bool InstanceMap::AddPlayerToMap(Player* player, bool initPlayer /*= true*/)
         {
             TC_LOG_DEBUG("maps", "InstanceMap::Add: creating Scenario map %d spawnmode %d instanceid %d", GetId(), GetSpawnMode(), GetInstanceId());
 
+            if (BrokenShoreClassRoute::Applies(GetId(), player->getClass()))
+                if (auto live = sScenarioMgr->GetScenario(GetInstanceId()))
+                    if (live->GetScenarioId() != BrokenShoreClassRoute::ScenarioId(player->getClass()))
+                    {
+                        TC_LOG_ERROR("maps", "Broken Shore class route rejected live scenario %u for class %u", live->GetScenarioId(), player->getClass());
+                        return false;
+                    }
+
             if(!sScenarioMgr->GetScenario(GetInstanceId()))
             {
                 bool find = false;
-                if (player->GetScenarioId())
+                if (BrokenShoreClassRoute::Applies(GetId(), player->getClass()))
+                {
+                    auto data = BrokenShoreClassRoute::Dungeon(player, GetDifficultyID());
+                    if (!data)
+                    {
+                        TC_LOG_ERROR("maps", "Broken Shore class route missing for class %u difficulty %u; refusing foreign scenario", player->getClass(), uint32(GetDifficultyID()));
+                        return false;
+                    }
+                    // A stale explicit selector must not override this class's
+                    // actual route (notably Warrior933 versus DH961).
+                    auto route = sObjectMgr->GetScenarioOnMap(GetId(), GetDifficultyID(), player->GetTeam(), player->getClass(), 0);
+                    if (player->GetScenarioId() && player->GetScenarioId() != route->ScenarioID)
+                    {
+                        TC_LOG_WARN("maps", "Broken Shore class route rejected scenario %u for class %u", player->GetScenarioId(), player->getClass());
+                        player->SetScenarioId(0);
+                    }
+                    find = sScenarioMgr->AddScenario(this, data, player) != nullptr;
+                    if (!find) return false;
+                }
+                if (!find && player->GetScenarioId())
                 {
                     if (lfg::LFGDungeonData const* data = sLFGMgr->GetLFGDungeon(player->GetScenarioId(), static_cast<uint16>(GetId())))
                     {

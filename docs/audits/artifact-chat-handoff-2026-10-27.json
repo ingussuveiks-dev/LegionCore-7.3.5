@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "Checkpoint after pet round payload4ed3e0bd4 deployed1759D05C following user shutdown. Native wire/ASAN/canonicalPE and owned11324 startup clean; client animation retest pending. All36 artifact continuation evidence retained.",
+  "reason": "Warrior map1500 route/World16 and explicit Dalaran reset verified/deployed75153976. Final strict live-instance guard stageD457 tested; user servers restarted, promotion request pending. Do not repeat character recovery; all36 evidence preserved.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -83,17 +83,17 @@
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "74BD3DF8BCF96C3A854D16AB791029D0C13848FBFCF978810B949187D1E567A7",
-      "bnetserver.map": "8BAA72AAD24A2187A9C9589CEDF550691DAD1FB628DBEF3B780A7AD6BACB5006",
-      "worldserver.exe": "1759D05C0C8BF4738325F3AEC818908DB7A51868857E10E9D37DF4C85B8ED1D0",
-      "worldserver.map": "859A3FDC17DEDF52502DB4B37C2DE253C664CAFCF133168AE493BD76B1DDCBDC"
+      "bnetserver.exe": "8E68A7D99DD690641E095F8A2A84BD6589AF21FF2D3C3A3D55754CBFD9F9B9E2",
+      "bnetserver.map": "BEB6A62D5626B569154CD163CB25B4E08BFE036C8A38105160E40A95B3CCEF22",
+      "worldserver.exe": "75153976E584D31F2AAB633C6307F18F521536D3C416C88C312C6E11647616A3",
+      "worldserver.map": "CA60E2C27A4E40C7D45BD73CC2E2CC69D56080AEF5D010C0240020E4444C285D"
     },
-    "scope": "Combined1759D05C includes prior Ikky503fd969b/World15, Stone66600a9ae and all earlier artifact fixes plus round payload4ed3e0bd4. Three selected canonicalPE checks pass; own11324 ready/shutdown0/exit0/no new diagnostics. No task server remains. Client checks separate."
+    "scope": "Combined75153976 includes all prior Ikky/pet-round/artifact repairs plus strict map1500 class-specific scenario/LFG admission and checkpoint routing/World16 RELEASED. Native288/ASAN/DB2/TEMP/live/selectedPE/Scepter+Resume Release/own16380 ready/shutdown0/exit0 clean. Client traversal separate."
   },
   "servers_last_seen": {
-    "bnetserver": null,
-    "worldserver": null,
-    "ownership": "User confirmed both stopped; absence checked before each promotion. Task-owned worldserver11324 gracefully stopped after fresh ready. No user/unknown server stopped; recheck before future deployment."
+    "bnetserver": 29112,
+    "worldserver": 6672,
+    "ownership": "User/unknown restarted after completed primary route/reset. Final deployment refused before any write; never stopped. Own16380 startup already gracefully exited. Await user shutdown confirmation then recheck."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -200,7 +200,7 @@
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
     "diagnostics": "No new/changed crashes, appendedDBErrors or unexplained server warning/error/assertion after every test/build/startup group. ActiveDBErrors0/Crashes0 at last check; no log was truncated or crash archived during this continuation.",
-    "next": "Continue Kingslayers native return failure/accepted teleport credit from saved local source trace. Aluneth control geometry/destination46 and Bilaal gravity remain open. Latest pet-battle INVALID target was distance; user explicitly confirmed nearby fight starts, no progress/state edits.",
+    "next": "Finish current Warrior933 full-sequence/Bezzeredes-Malgalor investigation while user retests fresh correct entry. Original all36/Kingslayers accepted return/Aluneth control/Bilaal gravity remain open. Do not mutate character progress beyond the now-completed explicit reset.",
     "uncommitted_at_checkpoint": "No source/SQL WIP after247c16cbd. This documentation update records current canonical hashes and next investigation. Private battle-stone refund backups preserved."
   },
   "azuregos_portal_wip": {
@@ -249,5 +249,16 @@
     "world_sha256": "1759D05C0C8BF4738325F3AEC818908DB7A51868857E10E9D37DF4C85B8ED1D0",
     "next": "User verifies actual final attack animation/kill/revival/aura/capture/replacement/PvP presentation. Continue independent Kingslayers return/native215151 accepted-teleport investigation and unresolved Aluneth/Bilaal/all36 evidence; no return source WIP.",
     "deployment": "Private previous Release .codex/release-before-pet-round-2026-10-27; hash/protected manifest .codex/pet-round-deployment.json. Own11324 ready/shutdown0/exit0/newDBErrors0/stderr0. No SQL/character edits or log truncation."
+  },
+  "warrior_intro_route_repair": {
+    "status": "Primary75153976/World16 deployed and explicit reset verified; final live-instance guard D457 staged/promotion pending user shutdown",
+    "audit": "docs/audits/broken-shore-class-route-2026-10-27.json",
+    "cause": "Unqualified map1500 route rows and first LFG row sent Warrior to DH961/foreign906; native Warrior1176 has ScenarioID0. Saved foreign checkpoint could re-enter through old exact native LFG lookup.",
+    "fix": "Shared strict class scenario/LFG resolver in map admission and resume; World16 class/difficulty/LFG binding of775/933/961. Native Warrior933/1176, Paladin775/906, DH961/1166. No actor/credit/reward shortcut.",
+    "recovery": "User explicitly authorized removal/reset/return to Dalaran. One active38904 and its two objectives removed, wrong checkpoint cleared and native NewDalaran1772 location restored. All other character/non-location/quest/reward/pet/inventory fields verified unchanged; earlier completed41052 retained. Full private hash-verified before/copy/after .codex/warrior-route. Never repeat recovery.",
+    "client_pending": "Accept38904 from High Overlord Saurfang93773 phase6815 in Legion Dalaran; expect Stage1 Another Battle, not Free Allari. Five-stage native progression through Malgalor, retry/relog/travel remain client checks.",
+    "open_encounter": "Earlier100-yard death callback hypothesis NOT proven: user killed Bezzeredes first then moved. Existing nearest-player credit, delayed callbacks and Malgalor activation/update/scaling need separate native full-sequence investigation; no actor change in this fix.",
+    "final_stage": ".codex/warrior-intro-release/worldserver.exe D457C14496D7C084683CEA9106A03BA44CC547D21605833546DF7D28C6A26F92; native288+9 live/12 refusal checks, legacy resume/Scepter and selected final-stagePE pass.",
+    "deployment_next": "After explicit user shutdown, recheck both processes, .codex/warrior-route/deploy.ps1 -Issue warrior-class-route-final; own startup/graceful cleanup/canonical selectedPE and audit commit/push. Never re-run recovery: user may already be playing fresh reset character."
   }
 }

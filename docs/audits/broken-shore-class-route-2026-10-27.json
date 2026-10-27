@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-27",
+  "status": "Primary class route/World16 deployed and authorized reset verified; final live-instance guard staged/tested, promotion deferred because user servers restarted",
+  "report": "Warrior sees Stage1 Picking Up the Pieces/Free Allari while Warrior actors have reached Bezzeredes/Malgalor dialogue. User clarified they killed Bezzeredes before moving away, then explicitly requested removal of this quest/run progress, relocation to Dalaran and a correct Warrior restart.",
+  "cause": [
+    "Map1500 scenario_data contained775/933/961, all with zero class/difficulty/LFG discriminators. Actual ObjectMgr selector's last wildcard row chose DH961 for Warrior; first map LFG lookup chose unrelated906. Native map-admission/constructor regression reproduces both wrong identities.",
+    "Native26972 LFG1176 Challenge of Valor intentionally has ScenarioID0, unlike Paladin906->775 and DH1166->961. A correct Warrior scenario and its LFG dungeon must be resolved together, rather than accepting whichever shared-map entry happens to be returned.",
+    "Saved checkpoint recorded the foreign961 route. The old exact native scenario/LFG resume lookup could accept that route before applying faction/class fallback admission. Removing only the quest would leave the wrong checkpoint available for relog."
+  ],
+  "matching_native_data": {
+    "build": "7.3.5.26972 DB2 with configured read-only hotfix overlays",
+    "routes": "Warrior class1 scenario933/LFG1176; Paladin class2 scenario775/LFG906; Demon Hunter class12 scenario961/LFG1166; MapDifficulty1500 native12",
+    "warrior_steps": [
+      "Stage1 Another Battle / root45768 / leaf45769 / native event46877",
+      "Stage2 A Desperate Charge / root45770 / leaf45771 / event46878",
+      "Stage3 The Val'kyr / root46911 / events49203 and49262",
+      "Stage4 Reinforcing the Warband / root45772 / leaf45773 / event46880 (Bezzeredes)",
+      "Stage5 Just A Pit Lord / root45776 / leaf45777 / event46881 (Malgalor)"
+    ],
+    "quest": "38904 Return to the Broken Shore is the correct Horde Warrior quest, not an accidentally accepted DH quest. Existing completed41052 A Desperate Plea is its real prerequisite and is preserved. Alliance variant42815 retains its42814 prerequisite. Native starter93773 High Overlord Saurfang/phase6815 is in Legion Dalaran; separate starter102924 Havi retained."
+  },
+  "implementation": [
+    "Scoped BrokenShoreClassRoute helper requires exact class scenario, actual class LFG, map1500, matching native difficulty, allowed faction and valid dungeon metadata. Missing/custom inconsistent route refuses foreign scenario with existing useful map diagnostics; unrelated maps/classes keep their original branches.",
+    "InstanceMap::AddPlayerToMap chooses this validated route before the generic shared-map/group/explicit-selector fallback. A stale foreign selector is rejected and cleared; actual Scenario constructor retains its native progression and criteria. Final refinement also refuses an already-live foreign class scenario rather than joining it; that refinement is staged until user shutdown.",
+    "PlayerScenario ResumeDungeon uses the same class route for map1500 supported classes and rejects a foreign saved scenario before the old direct native LFG lookup. Other scenario resume behavior is unchanged.",
+    "World16 assigns only the three exact original/applied map1500 rows to native class/difficulty/LFG identities, refuses custom/partially edited rows, is repeatable and preserves other routes. Kept outside live updater until matching EXE promotion. No actor/quest reward/credit/scenario-completion shortcuts added."
+  ],
+  "authorized_recovery": {
+    "scope": "Both servers absent and the character offline; user explicitly authorized reset/relocation. Removed only active38904 and its two objective records, cleared wrong entrance checkpoint, and restored native NewDalaran game_tele1772 location/map1220/zone7502. No new quest was granted or completed; native Saurfang offer is available for reacceptance.",
+    "verification": "Full private character/quest/objective/reward/group/bind/pet/inventory before snapshots copied and SHA256 verified before transaction. Exact after comparison allows only specified quest/objective removal and location/checkpoint fields. Completed prerequisite, every other quest/reward, non-location character fields, inventory and pets unchanged. No group or instance binding existed; none removed.",
+    "private_evidence": ".codex/warrior-route/recovery-before, recovery-before-copy, recovery-after, recovery-hashes.json and guarded one-time recover.ps1; never commit personal snapshots or rerun the recovery.",
+    "offer_evidence": "Native queststarter93773/38904, quest_template_addon38904 PrevQuest41052, static Dalaran actor93773 phase6815 and zone7502 definition5 conditions were read. After38904 removal and41052 reward retained, the existing phase branch admits Saurfang. Actual client visibility/window/travel not substituted by a forced quest grant."
+  },
+  "checks": [
+    "Test-BrokenShoreClassRoutes.ps1 -AddressSanitizer -VerifyNativeCatalog: actual ObjectMgr selector, Map admission and Scenario constructor selection plus actual ResumeDungeon/helper. Pinned c12cf6071 counterfactual reproduces Warrior->961/906.288 repaired cases cover all six record orders, both factions, all three classes, fresh/correct/foreign selectors and unrelated group dungeon;12 missing/custom metadata refusals, null/other-class/map scope. Engine endpoints controlled, not a client traversal. Nine additional existing-instance class/scenario combinations retain matching live scenarios and refuse foreign ones.",
+    "Typed WarriorIntroCatalog native Scenario/ScenarioStep/CriteriaTree/Criteria/LFGDungeons/MapDifficulty readers verify actual identities, stage/asset sequence and native1176 ScenarioID0 with read-only hotfix overlays.",
+    "Test-BrokenShoreRouteData.ps1 -VerifyLive: actual migration twice against complete TEMP-schema original fixtures, unrelated row preservation, expected custom-row refusal counterfactual; all three live routes and RELEASED updater SHA1 match.",
+    "Scepter login and global ScenarioResume extracted native handlers remain passing after fixture interfaces were aligned with native AddScenario return type and class-route metadata. Canonical -VerifyReleaseBinary checks pass; no alternate map admission bypass.",
+    "Original generated Release game.lib rebuilt, staged actual original library link retained, no OutDir override. Staged/canonical PE verifies actual InstanceMap admission and checkpoint ResumeDungeon select shared helper with actual native map/scenario/LFG constants.",
+    "Task-owned worldserver16380 applied World16, reached fresh ready, graceful shutdown0/exit0, stderr/new DBErrors0; protected configuration/certificate/key hashes unchanged. No task server remains, no user/unknown server stopped."
+  ],
+  "deployment": {
+    "canonical_directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "75153976E584D31F2AAB633C6307F18F521536D3C416C88C312C6E11647616A3",
+    "private_previous_release": ".codex/release-before-warrior-class-route-2026-10-27",
+    "private_manifest": ".codex/warrior-class-route-deployment.json",
+    "final_stage": {
+      "directory": ".codex/warrior-intro-release",
+      "worldserver_sha256": "D457C14496D7C084683CEA9106A03BA44CC547D21605833546DF7D28C6A26F92",
+      "status": "Final helper/live-instance refinement not yet canonical. Promotion script refused restarted user/unknown servers before any copy; nothing stopped. User shutdown request pending."
+    }
+  },
+  "diagnostics": "Every test/build/stage/deploy/owned-startup/recovery group checked canonical and own-runtime crash/log baselines and appended DBErrors/server severity. Final checks clean; active Crashes empty and DBErrors0. No history or mixed log truncated and no unexplained crash archived. Initial research LoadInfo casing and test uint16-selector overload mismatch corrected; failed runs retained locally, not counted as successes. Fixture signedness/legacy conversion warnings remain visible.",
+  "remaining": [
+    "User confirms both restarted servers stopped; promote final D457 stage with a separate verified backup, run owned startup/cleanup and canonical PE checks including live-instance marker. Do NOT repeat the completed character recovery.",
+    "User logs into Dalaran, sees Saurfang's38904 offer, reaccepts/travels and sees Warrior Stage1 Another Battle, then actual five-stage sequence/relog/retry. Neither native tests nor startup prove full quest traversal.",
+    "Earlier distance explanation was a hypothesis, not a proven cause: user killed Bezzeredes before moving. His existing nearest-player100 death credit and actor-owned delayed transitions, Malgalor activation/update range/scaling/one-shot handling still need full sequence investigation. This focused repair does not certify that separate encounter stall or change those actor scripts.",
+    "Kingslayers accepted return, Aluneth control geometry, Bilaal gravity and remaining all36 acquisition-chain work stay open; previous fixes and evidence preserved."
+  ]
+}

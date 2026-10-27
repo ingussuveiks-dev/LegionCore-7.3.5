@@ -39,7 +39,7 @@ struct ScenarioManager {
     int const* GetScenarioSteps(uint32){static int steps;return missingSteps?nullptr:&steps;}
 } scenarios;
 auto sScenarioMgr=&scenarios;
-namespace lfg {struct LFGDungeonData {float x=1,y=2,z=3,o=4;uint32 difficulty=12,id=908;};}
+namespace lfg {struct LFGDungeonData {struct Dbc{uint32 ScenarioID=777;}entry;Dbc*dbc=&entry;float x=1,y=2,z=3,o=4;uint32 difficulty=12,id=908,map=9000;};}
 struct LfgManager {
     lfg::LFGDungeonData data;
     bool missing=false,shared=false;
@@ -47,7 +47,7 @@ struct LfgManager {
     lfg::LFGDungeonData const* GetLFGDungeon(uint32 map,Difficulty,uint32){return missing||!shared||map!=9000?nullptr:&data;}
 } lfgManager;
 auto sLFGMgr=&lfgManager;
-struct ScenarioData {uint32 ScenarioID=777,Team=1,Class=1,DifficultyID=12,LfgDungeonID=908;};
+struct ScenarioData {uint32 ScenarioID=777,Team=1,Class=1,DifficultyID=12,LfgDungeonID=908,MapID=9000;};
 struct ObjectManager {ScenarioData data;bool missing=false;ScenarioData const* GetScenarioOnMap(uint32,uint32,uint32,uint32,uint32){return missing?nullptr:&data;}} objects;
 auto sObjectMgr=&objects;
 namespace GameTime {uint64 GetStartTime(){return 1000;}}
@@ -69,6 +69,7 @@ struct Player {
     void Relocate(float x,float y,float z,float o){pos.Relocate(x,y,z,o);relocated=true;}
     void PrepareScenarioLogin(uint32,uint32);bool CanResumeScenarioLogin(uint32)const;void RecordScenarioEntrance();
 };
+#include "../../src/server/game/Scenarios/BrokenShoreClassRoute.h"
 #include "Resume.inc"
 bool allowed(Player* player,uint32 mapid){
 #include "Access.inc"

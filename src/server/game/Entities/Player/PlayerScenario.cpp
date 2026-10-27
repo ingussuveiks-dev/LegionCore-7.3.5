@@ -6,6 +6,7 @@
 #include "ObjectMgr.h"
 #include "Creature.h"
 #include "SpellMgr.h"
+#include "BrokenShoreClassRoute.h"
 
 namespace
 {
@@ -19,6 +20,11 @@ bool Resumable(MapEntry const* entry, uint32 scenarioId)
 
 lfg::LFGDungeonData const* ResumeDungeon(Player const* player, uint32 scenarioId, uint32 mapId)
 {
+    if (BrokenShoreClassRoute::Applies(mapId, player->getClass()))
+    {
+        auto difficulty = sDB2Manager.GetDefaultMapDifficulty(mapId);
+        return difficulty ? BrokenShoreClassRoute::Dungeon(player, Difficulty(difficulty->DifficultyID), scenarioId) : nullptr;
+    }
     if (auto data = sLFGMgr->GetLFGDungeon(uint16(scenarioId),uint16(mapId)))
         return data;
 

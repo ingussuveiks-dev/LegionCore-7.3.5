@@ -8,9 +8,12 @@ constexpr int CLASS_WARLOCK=9, QUEST_STATUS_INCOMPLETE=3, ALLIANCE=0;
 constexpr int PLAYER_LOGIN_QUERY_LOADQUESTSTATUS=0;
 #define TC_LOG_INFO(...) ((void)0)
 #define TC_LOG_DEBUG(...) ((void)0)
+#define TC_LOG_ERROR(...) ((void)0)
+#define TC_LOG_WARN(...) ((void)0)
+using Difficulty=int;
 struct Player;
 struct InstanceMapFixture;
-namespace lfg {struct LFGDungeonData {int map=1630,id=0;};}
+namespace lfg {struct LFGDungeonData {struct Dbc{uint32 ScenarioID=1155;}entry;Dbc*dbc=&entry;int map=1630,id=0,difficulty=12;};}
 struct Group {lfg::LFGDungeonData const* m_dungeon=nullptr;};
 struct Scenario { int id; int step=0; int GetScenarioId(){return id;} void* GetMap(){return nullptr;} bool IsCompleted(bool){return false;} };
 struct Manager {
@@ -18,7 +21,7 @@ struct Manager {
     Scenario created{0};
     Scenario* GetScenario(uint32 id){auto i=scenarios.find(id);return i==scenarios.end()?nullptr:i->second;}
     bool HasScenarioStep(lfg::LFGDungeonData const*,Player*){return true;}
-    void AddScenario(InstanceMapFixture*,lfg::LFGDungeonData const*,Player*,bool=false);
+    Scenario* AddScenario(InstanceMapFixture*,lfg::LFGDungeonData const*,Player*,bool=false);
 } manager;
 auto sScenarioMgr=&manager;
 struct SpellTargetPosition {uint32 target_mapId=1630;float target_X=-854.89f,target_Y=1188.86f,target_Z=114.29f,target_Orientation=3.1683f;};
@@ -27,7 +30,7 @@ struct SpellManager {
     SpellTargetPosition const* GetSpellTargetPosition(int id){assert(id==218595);return missing?nullptr:&destination;}
 } spellManager;
 auto sSpellMgr=&spellManager;
-struct ScenarioData {int ScenarioID;};
+struct ScenarioData {int ScenarioID;uint32 MapID=1630,Class=9,Team=0,DifficultyID=12,LfgDungeonID=0;};
 struct ObjectManager {
     ScenarioData other{999};
     bool HasScenarioInMap(int){return false;}
@@ -46,7 +49,7 @@ struct Player {
     int map=1630,cls=9,status=0,selector=0,instance=17,loads=0;
     bool rewarded=false,relocated=false; float x=-400,y=-4500,z=170,o=0;
     struct Holder {int status=3;int GetPreparedResult(int){return status;}} holder;
-    int getClass(){return cls;} int GetTeam(){return 1;}
+    int getClass()const{return cls;} int GetTeam()const{return 1;}
     int GetQuestStatus(int id){return id==43153?status:0;}
     bool IsQuestRewarded(int id){assert(id==43153);return rewarded;}
     int GetScenarioId(){return selector;} void SetScenarioId(int id){selector=id;}
@@ -64,6 +67,7 @@ struct Player {
 #include "ScepterRestore.inc"
     }
 };
+#include "../../src/server/game/Scenarios/BrokenShoreClassRoute.h"
 bool allowed(Player* player,uint32 mapid){
 #include "Access.inc"
     return true;
@@ -81,12 +85,13 @@ struct InstanceMapFixture {
     int instance;
     int GetId(){return 1630;} int GetDifficultyID(){return 12;}
     int GetInstanceId(){return instance;} bool IsScenario(){return true;}
-    void add(Player* player){Group* group=nullptr;
+    bool add(Player* player){Group* group=nullptr;
 #include "AddScenario.inc"
+        return true;
     }
 };
-void Manager::AddScenario(InstanceMapFixture* map,lfg::LFGDungeonData const*,Player* player,bool find){
-    ConstructScenario construction(player,find);created={construction.scenarioId};scenarios[map->GetInstanceId()]=&created;
+Scenario* Manager::AddScenario(InstanceMapFixture* map,lfg::LFGDungeonData const*,Player* player,bool find){
+    ConstructScenario construction(player,find);created={construction.scenarioId};scenarios[map->GetInstanceId()]=&created;return &created;
 }
 void fresh(int savedInstance,int actualInstance){
     manager.scenarios.clear();Player p;p.instance=savedInstance;
