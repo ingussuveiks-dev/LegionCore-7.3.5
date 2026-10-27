@@ -47,12 +47,12 @@
     "final_stage": {
       "directory": ".codex/warrior-intro-release",
       "worldserver_sha256": "D457C14496D7C084683CEA9106A03BA44CC547D21605833546DF7D28C6A26F92",
-      "status": "Final helper/live-instance refinement not yet canonical. Promotion script refused restarted user/unknown servers before any copy; nothing stopped. User shutdown request pending."
+      "status": "HistoricalD457 now superseded/promoted within combinedE82A0641 Malgalor Release. See warrior-malgalor-finale-2026-10-27.json for actual backup/hash/startup and canonical checks; no pending promotion."
     }
   },
   "diagnostics": "Every test/build/stage/deploy/owned-startup/recovery group checked canonical and own-runtime crash/log baselines and appended DBErrors/server severity. Final checks clean; active Crashes empty and DBErrors0. No history or mixed log truncated and no unexplained crash archived. Initial research LoadInfo casing and test uint16-selector overload mismatch corrected; failed runs retained locally, not counted as successes. Fixture signedness/legacy conversion warnings remain visible.",
   "remaining": [
-    "User confirms both restarted servers stopped; promote final D457 stage with a separate verified backup, run owned startup/cleanup and canonical PE checks including live-instance marker. Do NOT repeat the completed character recovery.",
+    "Final strict live-instance guard promoted within combinedE82A0641/World17 and verified canonical PE/Scepter/Resume; prior one-time character reset must never be repeated.",
     "User logs into Dalaran, sees Saurfang's38904 offer, reaccepts/travels and sees Warrior Stage1 Another Battle, then actual five-stage sequence/relog/retry. Neither native tests nor startup prove full quest traversal.",
     "Earlier distance explanation was a hypothesis, not a proven cause: user killed Bezzeredes before moving. His existing nearest-player100 death credit and actor-owned delayed transitions, Malgalor activation/update range/scaling/one-shot handling still need full sequence investigation. This focused repair does not certify that separate encounter stall or change those actor scripts.",
     "Kingslayers accepted return, Aluneth control geometry, Bilaal gravity and remaining all36 acquisition-chain work stay open; previous fixes and evidence preserved."

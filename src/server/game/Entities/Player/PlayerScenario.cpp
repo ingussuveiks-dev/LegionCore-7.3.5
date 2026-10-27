@@ -131,6 +131,17 @@ void Player::RecordScenarioEntrance()
 
 bool Player::ExitCompletedBrokenShoreLogin()
 {
+    if (GetMapId() == 1500 && getClass() == CLASS_WARRIOR && (!m_scenarioLoginId || m_scenarioLoginId == 933))
+        for (uint32 quest : {38904u, 42815u})
+            if (GetQuestStatus(quest) == QUEST_STATUS_COMPLETE && GetQuestObjectiveData(quest, 103661))
+            {
+                // Real native victory was already saved; logout may only have
+                // cancelled the optional eight-second rescue presentation.
+                for (uint32 aura : {185627u, 185673u, 185674u}) RemoveAurasDueToSpell(aura, GetGUID());
+                if (!TeleportTo(1479, 1071.81f, 7224.32f, 97.891f, 3.15048f)) return false;
+                m_scenarioResume = {}; m_scenarioLoginId = m_scenarioLoginInstance = 0; SetScenarioId(0);
+                return true;
+            }
     uint32 const questId = GetTeam() == ALLIANCE ? 42740 : 40518;
     if (GetMapId() != 1460 ||
         (m_scenarioLoginId && m_scenarioLoginId != (GetTeam() == ALLIANCE ? 786 : 1189)) ||

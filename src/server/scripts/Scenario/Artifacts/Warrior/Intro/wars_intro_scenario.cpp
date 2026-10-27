@@ -6,6 +6,15 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include "ObjectAccessor.h"
+#include "MapManager.h"
+#include "TemporarySummon.h"
+#include "malgalor_scene.h"
+#include "malgalor_finale.h"
 
 
 // 97167
@@ -400,13 +409,23 @@ public:
         }
 
         EventMap events;
-        uint32 convers;
-        bool outro;
+        uint32 convers = 789;
+        bool introStarted = false, defeating = false, deathHandled = false, activeLease = false, wasActive = false;
+        uint32 introTimer = 0, defeatTimer = 0;
+        uint8 introStage = 0;
+        ObjectGuid primary;
+        std::vector<MalgalorFinale::Member> members;
 
         void Reset() override
         {
-            outro = false;
+            bool restartIntro = introStage != 0;
+            defeating = deathHandled = false;
+            defeatTimer = introTimer = introStage = 0;
+            members.clear(); primary.Clear(); convers = 789;
+            if (activeLease) me->setActive(wasActive);
+            activeLease = false;
             events.Reset();
+            if (restartIntro) { introStarted = false; DoAction(0); }
         }
 
         void EnterCombat(Unit* who) override
@@ -420,37 +439,74 @@ public:
 
         void DoAction(int32 const action) override
         {
-            me->AddDelayedEvent(24000, [this]() -> void
-            {
-                // me->SetWalk(true);
-                me->GetMotionMaster()->MovePoint(0, -2092.75f, -1180.69f, 31.00f);
-            });
-
-            me->AddDelayedEvent(30000, [this]() -> void
-            {
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                if (Creature* targ = me->FindNearestCreature(97166, 200.0f, true))
-                {
-                    AttackStart(targ);
-                    targ->AI()->AttackStart(me);
-                }
-            });
+            if (introStarted) return;
+            introStarted = true; introStage = 1; introTimer = 24000;
+            wasActive = me->isActiveObject(); activeLease = true; me->setActive(true);
         }
 
-        void DamageTaken(Unit* who, uint32 &damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
         {
-            if (!outro && me->HealthBelowPct(20))
+            Scenario* scenario = MalgalorFinale::Progress(me);
+            if (!scenario || !me->IsAlive()) return;
+            if (defeating) { damage = 0; return; }
+            if (!damage || scenario->GetCurrentStep() != 4 || MalgalorFinale::Victory(scenario)) return;
+            uint64 health = me->GetHealth(attacker);
+            uint64 threshold = std::max<uint64>(1, me->CountPctFromMaxHealth(20, attacker));
+            uint64 remaining = damage >= health ? 0 : health - damage;
+            if (remaining >= threshold && health > threshold) return;
+            members = MalgalorFinale::Capture(me);
+            if (members.empty()) return;
+            if (Player* owner = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr) primary = owner->GetGUID();
+            defeating = true; defeatTimer = 5500; events.Reset();
+            if (!activeLease) { wasActive = me->isActiveObject(); activeLease = true; }
+            me->setActive(true);
+            damage = health > threshold ? uint32(std::min<uint64>(damage, health - threshold)) : 0;
+            DoCast(186382);
+        }
+
+        void JustDied(Unit* killer) override
+        {
+            if (deathHandled || !MalgalorFinale::Progress(me)) return;
+            deathHandled = true;
+            if (!defeating)
             {
-                DoCast(186382);
-                events.RescheduleEvent(EVENT_5, 5500);
-                outro = true;
+                TC_LOG_WARN("scripts", "Malgalor finale: direct death bypassed scripted defeat; checking actual native death receipt");
+                members = MalgalorFinale::Capture(me);
+                if (Player* owner = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr) primary = owner->GetGUID();
             }
-            if (outro)
-                damage = 0;
+            MalgalorFinale::Death(me, members, primary);
+            if (activeLease) me->setActive(wasActive);
+            activeLease = false;
         }
 
         void UpdateAI(uint32 diff) override
         {
+            uint32 introDiff = diff;
+            while (introStage && introTimer <= introDiff)
+            {
+                introDiff -= introTimer;
+                if (introStage == 1)
+                {
+                    me->GetMotionMaster()->MovePoint(0, -2092.75f, -1180.69f, 31.00f);
+                    introStage = 2; introTimer = 6000;
+                }
+                else
+                {
+                    introStage = 0;
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                    if (Creature* ally = me->FindNearestCreature(97166, 200.0f, true))
+                    { AttackStart(ally); if (ally->IsAIEnabled) ally->AI()->AttackStart(me); }
+                }
+            }
+            if (introStage) introTimer -= introDiff;
+            if (defeating)
+            {
+                if (defeatTimer > diff) { defeatTimer -= diff; return; }
+                if (std::none_of(members.begin(), members.end(), [](MalgalorFinale::Member const& member) { return MalgalorFinale::Original(member) != nullptr; }))
+                { defeating = false; EnterEvadeMode(); return; }
+                me->Kill(me); // real death, then JustDied owns exactly-once credit
+                return;
+            }
             if (!UpdateVictim())
                 return;
 
@@ -486,29 +542,7 @@ public:
                         DoCast(197818);
                         events.RescheduleEvent(EVENT_4, 21000); // 197818
                         break;
-                    case EVENT_5:
-                        me->Kill(me);
-                        if (Player* targ = me->FindNearestPlayer(200.0f))
-                        {
-                            targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46881);
-                            targ->CastSpell(targ, 191979);
-                            targ->AddDelayedEvent(4000, [targ]() -> void
-                            {
-                                Conversation* conversation = new Conversation;
-                                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 826, targ, NULL, *targ))
-                                    delete conversation;
-                            });
 
-                            targ->AddDelayedEvent(8000, [targ]() -> void
-                            {
-                                if (Creature* add = targ->FindNearestCreature(93818, 50.0f, true))
-                                    add->CastSpell(targ, 185714);
-                                targ->KilledMonsterCredit(103661);
-                                targ->RemoveAura(191979);
-                                targ->TeleportTo(1479, 1071.81f, 7224.32f, 97.891f, 3.15048f);
-                            });
-                        }
-                        break;
                 }
             }
             DoMeleeAttackIfReady();
@@ -524,4 +558,5 @@ void AddSC_wars_intro_scenario()
     new npc_danica_the_reclaimer();
     new npc_bezzered();
     new npc_malgalor();
+    RegisterAuraScript(spell_warrior_malgalor_arrival);
 };

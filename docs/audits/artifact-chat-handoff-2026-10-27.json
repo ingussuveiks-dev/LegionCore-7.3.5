@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "Warrior map1500 route/World16 and explicit Dalaran reset verified/deployed75153976. Final strict live-instance guard stageD457 tested; user servers restarted, promotion request pending. Do not repeat character recovery; all36 evidence preserved.",
+  "reason": "Warrior Malgalor cinematic replacement and real-death credit/rescue repaired, combined ReleaseE82A0641/World17 verified/deployed. Also promotes prior strict live-instance guard. No character reset/progress edit; client retest pending; all36 evidence preserved.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -83,17 +83,17 @@
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "8E68A7D99DD690641E095F8A2A84BD6589AF21FF2D3C3A3D55754CBFD9F9B9E2",
-      "bnetserver.map": "BEB6A62D5626B569154CD163CB25B4E08BFE036C8A38105160E40A95B3CCEF22",
-      "worldserver.exe": "75153976E584D31F2AAB633C6307F18F521536D3C416C88C312C6E11647616A3",
-      "worldserver.map": "CA60E2C27A4E40C7D45BD73CC2E2CC69D56080AEF5D010C0240020E4444C285D"
+      "bnetserver.exe": "1979F497B5C3E814DC2B9A24597B13CB1DA28E13CC75AA08D156181EEBF79F34",
+      "bnetserver.map": "E0E0F906C8870EE7412A969AE206DA4714F809894B7D5D88F5EEF702AA270603",
+      "worldserver.exe": "E82A06415F93C5D1802AE7FF0AD9CBCB28F4F572117FE97AB8486C6A0D955EBD",
+      "worldserver.map": "1ADFD99624517E95C3ECD7F74A753CDBC8DEF3F14534B0F76AAAE08BD435FDAE"
     },
-    "scope": "Combined75153976 includes all prior Ikky/pet-round/artifact repairs plus strict map1500 class-specific scenario/LFG admission and checkpoint routing/World16 RELEASED. Native288/ASAN/DB2/TEMP/live/selectedPE/Scepter+Resume Release/own16380 ready/shutdown0/exit0 clean. Client traversal separate."
+    "scope": "CombinedE82A0641 includes prior repairs, b0 strict class/live-instance/resume guard and current Malgalor scene/finale/logout recovery. World16/17 RELEASED; actual selected PE, Scepter/Resume/native ASAN/TEMP/catalog/owned22716 startup pass; client pending."
   },
   "servers_last_seen": {
-    "bnetserver": 29112,
-    "worldserver": 6672,
-    "ownership": "User/unknown restarted after completed primary route/reset. Final deployment refused before any write; never stopped. Own16380 startup already gracefully exited. Await user shutdown confirmation then recheck."
+    "worldserver": null,
+    "bnetserver": null,
+    "ownership": "Both absent before promotion; only task-owned22716 canonical validation started, gracefully stopped/exit0. No user/unknown server stopped. Recheck before any further deployment."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -121,7 +121,7 @@
     "Aluneth three-scroll/native5000ms/override779..781 evidence committed a98b0fa69; current custom GO immediate205 shortcut remains UNRESOLVED. Real binding dome producer/geometry and dest46 need evidence;225030 same-name effect is audio-only. Partial YouTube only, not full traversal. Read docs/audits/aluneth-control-evidence-2026-10-27.json.",
     "Hunter additional-artifact SELECTION BACKEND IS ALREADY FIXED: ancestor802295a98, audit hunter-additional-artifact-choice-2026-10-26.json, actual249 conditions/flags3/World12-2026-10-26 RELEASED. Fresh512 native/TEMP/ASAN and canonical PE pass. Old resume and old ignored patch are stale historical artifacts; preserve them but do not reapply. Actual UI/third choice and full MM/Survival routes still pending."
   ],
-  "client_pending": "Krosus reach/combat and Demons Among Us PvP-off attack/counter, Heroic Leap landing/one combat hit/mitigation/talents, earlier Charge/bird camera/pet and all36 complete routes remain user-owned and unconfirmed. No runtime/native/model/PE check substitutes for client traversal.",
+  "client_pending": "Krosus reach/combat and Demons Among Us PvP-off attack/counter, Heroic Leap landing/one combat hit/mitigation/talents, earlier Charge/bird camera/pet and all36 complete routes remain user-owned and unconfirmed. No runtime/native/model/PE check substitutes for client traversal. New Malgalor scene/finale/rescue/Skyhold client retest pending; screenshot confirms user reached correct933 Final Stage before this repair.",
   "local_tools": {
     "python": "C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
     "pe_pythonpath": ".codex/pe-review-deps",
@@ -195,13 +195,13 @@
     "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
   ],
   "current_continuation": {
-    "last_implementation_commit": "247c16cbd",
+    "last_implementation_commit": "This focused Malgalor commit follows b0f7888a6; see Git log.",
     "hunter_reconciliation": "Git/source and dedicated followup audit contradict stale unfinished text in the old resume. Commit802295a98 is an ancestor and actual runtime migration13005E8182CE54B5FFA4DEED6C9FA53272C39796 is RELEASED; 249 rows, flags3 on107317/107973 and current canonical selected consumers were independently rechecked. No repeated repair or character change.",
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
     "diagnostics": "No new/changed crashes, appendedDBErrors or unexplained server warning/error/assertion after every test/build/startup group. ActiveDBErrors0/Crashes0 at last check; no log was truncated or crash archived during this continuation.",
-    "next": "Finish current Warrior933 full-sequence/Bezzeredes-Malgalor investigation while user retests fresh correct entry. Original all36/Kingslayers accepted return/Aluneth control/Bilaal gravity remain open. Do not mutate character progress beyond the now-completed explicit reset.",
-    "uncommitted_at_checkpoint": "No source/SQL WIP after247c16cbd. This documentation update records current canonical hashes and next investigation. Private battle-stone refund backups preserved."
+    "next": "Client Malgalor retest stays with user. Continue separate Bezzeredes/full933 sequence and original all36/Kingslayers accepted return/Aluneth control/Bilaal gravity evidence. Never repeat completed explicit character reset.",
+    "uncommitted_at_checkpoint": "Focused Malgalor source/World17/tests/audit committed together; no additional source WIP at checkpoint. Personal snapshots and historical work preserved."
   },
   "azuregos_portal_wip": {
     "status": "Historical key: committed/pushed938fc1225, deployed with coordinated SQL13 RELEASED",
@@ -251,14 +251,20 @@
     "deployment": "Private previous Release .codex/release-before-pet-round-2026-10-27; hash/protected manifest .codex/pet-round-deployment.json. Own11324 ready/shutdown0/exit0/newDBErrors0/stderr0. No SQL/character edits or log truncation."
   },
   "warrior_intro_route_repair": {
-    "status": "Primary75153976/World16 deployed and explicit reset verified; final live-instance guard D457 staged/promotion pending user shutdown",
+    "status": "Full b0 strict route/live-instance guard now promoted in combinedE82A0641 plus Malgalor/World17; no D457 promotion remains pending.",
     "audit": "docs/audits/broken-shore-class-route-2026-10-27.json",
     "cause": "Unqualified map1500 route rows and first LFG row sent Warrior to DH961/foreign906; native Warrior1176 has ScenarioID0. Saved foreign checkpoint could re-enter through old exact native LFG lookup.",
     "fix": "Shared strict class scenario/LFG resolver in map admission and resume; World16 class/difficulty/LFG binding of775/933/961. Native Warrior933/1176, Paladin775/906, DH961/1166. No actor/credit/reward shortcut.",
     "recovery": "User explicitly authorized removal/reset/return to Dalaran. One active38904 and its two objectives removed, wrong checkpoint cleared and native NewDalaran1772 location restored. All other character/non-location/quest/reward/pet/inventory fields verified unchanged; earlier completed41052 retained. Full private hash-verified before/copy/after .codex/warrior-route. Never repeat recovery.",
-    "client_pending": "Accept38904 from High Overlord Saurfang93773 phase6815 in Legion Dalaran; expect Stage1 Another Battle, not Free Allari. Five-stage native progression through Malgalor, retry/relog/travel remain client checks.",
-    "open_encounter": "Earlier100-yard death callback hypothesis NOT proven: user killed Bezzeredes first then moved. Existing nearest-player credit, delayed callbacks and Malgalor activation/update/scaling need separate native full-sequence investigation; no actor change in this fix.",
-    "final_stage": ".codex/warrior-intro-release/worldserver.exe D457C14496D7C084683CEA9106A03BA44CC547D21605833546DF7D28C6A26F92; native288+9 live/12 refusal checks, legacy resume/Scepter and selected final-stagePE pass.",
-    "deployment_next": "After explicit user shutdown, recheck both processes, .codex/warrior-route/deploy.ps1 -Issue warrior-class-route-final; own startup/graceful cleanup/canonical selectedPE and audit commit/push. Never re-run recovery: user may already be playing fresh reset character."
+    "client_pending": "User screenshot now confirms correct933 Final Stage Just A Pit Lord reached; after finale repair actual video/kill/rescue/Skyhold/retry/relog/turn-in remain client checks.",
+    "open_encounter": "Malgalor actual-death/post-scaling/victimless finale and scene replacement repaired; audit warrior-malgalor-finale-2026-10-27.json. Bezzeredes nearest-player/actor-delays remain separate; do not assert earlier distance hypothesis proven.",
+    "final_stage": "HistoricalD457 superseded by combinedE82A0641 .codex/malgalor-release; promoted with original input libraries and canonical selected checks.",
+    "deployment_next": "No pending route/finale deployment. Never re-run character recovery. User owns client retest; continue independent work."
+  },
+  "malgalor_finale_repair": {
+    "status": "Deployed ReleaseE82A0641/World17, native/PE/startup checks passed, client pending",
+    "audit": "docs/audits/warrior-malgalor-finale-2026-10-27.json",
+    "character_changes": "None; old missed kill not backfilled",
+    "next": "Actual user cinematic/defeat/rescue/Skyhold/relog retest; separate Bezzeredes/all36 follow-up remains."
   }
 }

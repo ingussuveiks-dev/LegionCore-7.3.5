@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-27",
+  "build": "Legion7.3.5.26972",
+  "scope": "Warrior933 map1500 final Malgalor92608/static361167 scene replacement, genuine death credit and native rescue. This focused repair does not certify all36 artifact chains.",
+  "user_evidence": [
+    "User cinematic screenshot shows two Malgalors during native arrival speech. Later screenshot shows actual Malgalor corpse, correct Warrior Final Stage Just A Pit Lord, objective0/1 and active Return to the Broken Shore. No post-fix client traversal yet.",
+    "Earlier claim about moving beyond Bezzeredes credit range was only a hypothesis; user killed him before moving. No retrospective character progress or another reset performed."
+  ],
+  "local_evidence": [
+    "Exactly one world creature92608 on map1500, static361167; template ScriptName npc_malgalor. Native scaling98..110 valid; unrelated111154/map1460 untouched.",
+    "Complete base SceneScriptText package1515 including linked framework read with typed DB2FileLoader. Text13699 creates exactly one SmoothPhaseSpawnActor92608 at native position; framework marks smoothPhase and waits up to5s for original unit destruction before replacement. Master13700 waits for smooth-phase completion, uses speech/camera/fades and EndScene. This is full source review, not video playback.",
+    "Native197593 effect0 aura430/misc1144, effect1 stun, duration30s. Original spell_scene package1515/misc1144/playback25/duration0 unchanged. Core smooth-phasing payload was disabled; no incompatible newer packet format copied.",
+    "Native933 step4 leaf45777/type92 asset46881, all stepRewardQuestIDs0. Quest variants38904/42815 use final103661. Native191979 forcecasts185627 fake-death30s and185673 controller;185674 summons93818/properties719.185714 is native rescue presentation.",
+    "Actual Unit::DealDamage normalizes damage before instance/AI DamageTakenAfterScaling; target-relative GetHealth/20pct getters are required. Native death dispatch always reaches instance CreatureDies even when AI is disabled."
+  ],
+  "proven_causes": [
+    "Arrival scene created its replacement without the original physical creature being hidden for its viewer, so both could render.",
+    "Old DamageTaken checked already-below20pct before the hit; a fresh lethal hit bypassed the whole finale and no JustDied handler existed to award46881/103661.",
+    "Even an armed old5500ms finale event was blocked behind UpdateVictim; losing its target stalled credit/rescue.",
+    "Old player/actor raw delayed pointers were not quest-attempt-bound; final objective was delayed8s and191979 was incorrectly removed as an aura although actual auras are185627/673/674."
+  ],
+  "repair": [
+    "Registered197593 AuraScript hides only actual361167/fullGUID from that Warrior933 stage4 viewer before native aura430 starts scene. Aura removal/cancel uses captured origin instance/fullGUID to release only its own hide; preexisting hide ownership retained. Original scene assets and other viewers remain native.",
+    "Use post-scaling target-relative predicted health and clamp lethal threshold hit to native20pct. Idempotent defeat timer runs before victim/casting checks and reaches real death after5500ms; native186382 presentation retained. Intro24/30s activation is actor-owned/idempotent and remains active while pending, with Reset retry.",
+    "Actual real death/AI-independent instance fallback checks exact entry/spawn/map/933/stage4/damage eligibility. Capture actual eligible Warrior participants with native quest weak lifetime, phase/contact/GM/teleport guards. Player/pet/guardian/allied killer receives eligible native player progression; duplicate dispatch grants once.",
+    "Native103661 objective and46881 event acknowledged at actual death, before optional presentation; no forced CompleteQuest/item/XP or pre-death credit. Weak original attempt and native consumer acknowledgement gate rescue.",
+    "Original191979,4s conversation826,8s own-valkyr185714 and Skyhold1479 destination retained. New self-caster fake-death/controller auras cleaned even after abandonment/map change; preexisting auras retained. Teleport refusal preserves victory and retries bounded5x2s.",
+    "Logout after earned persisted COMPLETE38904/42815 plus103661 can use native invalid-scenario-login recovery to Skyhold; no additional kill/event grant. Incomplete old goal0 cannot use this recovery.",
+    "Original shared Paladin CreatureDies switch retained byte-for-byte apart from the scoped helper call. No Bezzeredes/Ragnvald/Danica actor changes. Includes already-committed b0f7888a6 strict live-instance class guard previously stagedD457."
+  ],
+  "tests": [
+    "Test-MalgalorFinale.ps1 -AddressSanitizer: extracted full production AI, actual headers/scene hooks, instance helper, native AddQuestDelayedEvent, login exit and normalized damage dispatch. Pinned b0 counterfactuals reproduce fresh one-hit missing credit and victimless stalled timer.64 quest/target-health/player-pet-guardian-ally lethal paths pass with5500ms real death/exactly-once native credit/4s voice/8s rescue.",
+    "Same host: threshold/ordinary hits/final scaling, repeated hit/intro/reset, group/foreign-phase/class/GM/teleport/contact, abandonment/reaccept, missing AI/direct death/protected death, foreign spawn/scenario, failed presentation/teleport retry, preexisting auras/map-change cleanup, persisted victory login recovery and per-viewer hide/cleanup/preexisting hide. Endpoints controlled, not a live client.",
+    "Shared instance guard enforces one CreatureDies override, its actual helper call, and pinned original Paladin switch equality. Unrelated three Warrior intro actor class bodies pinned unchanged.",
+    "Test-MalgalorData.ps1 -VerifyNativeCatalog -VerifyLive: full TEMP-schema migration twice/unrelated retention/expected custom-binding refusal; actual single source, native spell_scene preserved, live script binding and RELEASED17 SHA1 match. Typed native metadata plus entire base-only scene1515 package read.",
+    "Original Release game/scripts libraries rebuilt and actual generated final-link inputs retained; stage and canonical PE verify selected AI vtable post-scale/death/update dispatch, instance factory fallback, native progress/departure/login calls, actual registered aura factory/hooks and viewer scope/visibility dispatch. No global OutDir/stale library copy.",
+    "Shared ScepterLogin and ScenarioResume native tests and canonical -VerifyReleaseBinary pass; verify_broken_shore_routes_release.py proves native class route plus final existing-instance guard in combined canonical EXE.",
+    "Owned canonical worldserver22716 applied17, reached fresh ready, graceful shutdown0/exit0, stderr/newDBErrors0, no new crashes or server warnings/errors/assertions; protected config/certificate/key hashes unchanged. No user/unknown server stopped and no task server remains."
+  ],
+  "development_failures": "First final Release exposed duplicate shared CreatureDies override; consolidated into one existing override calling scoped helper and added preservation guard. Rebuilt successfully. PE verifier was adapted to genuine leaf bounds, overloaded teleport, native FunctionProcessor event and inlined hide-list/virtual visibility dispatch; failed attempts retained privately and paired with passing final checks. Native fixture shadow/legacy unused/signedness/float-conversion warnings remain visible, not suppressed.",
+  "deployment": {
+    "canonical_directory": "build-extractors/bin/Release",
+    "hashes": {
+      "bnetserver.exe": "1979F497B5C3E814DC2B9A24597B13CB1DA28E13CC75AA08D156181EEBF79F34",
+      "bnetserver.map": "E0E0F906C8870EE7412A969AE206DA4714F809894B7D5D88F5EEF702AA270603",
+      "worldserver.exe": "E82A06415F93C5D1802AE7FF0AD9CBCB28F4F572117FE97AB8486C6A0D955EBD",
+      "worldserver.map": "1ADFD99624517E95C3ECD7F74A753CDBC8DEF3F14534B0F76AAAE08BD435FDAE"
+    },
+    "migration": "sql/updates/world/2026_10_27_17_malgalor_scene_replacement.sql",
+    "migration_sha1": "bfed0def7cd44190967a5157ab05b0dcd2bf2037",
+    "migration_state": "RELEASED, verified after real updater",
+    "private_backup": ".codex/release-before-malgalor-finale-2026-10-27",
+    "private_manifest": ".codex/malgalor-finale-deployment.json",
+    "sequence": "Both processes confirmed absent before promotion and before every EXE/map copy; verified backups and copy hashes. SQL17 outside updater until matching EXE promoted, then actual owned startup/readback. Supersedes pending standalone D457 promotion."
+  },
+  "diagnostics": "Final native/data/build/PE/canonical/startup wrapped before/after crash/log inspections clean. Active canonical Crashes empty, DBErrors0. No crash/log archive, rotation or truncation; informative Server.log history retained. Private compiler/failed-verifier evidence preserved under .codex/malgalor and runtime-test/malgalor-*; no credentials/dumps/raw logs/assets/character data committed.",
+  "remaining": [
+    "Actual client: one Malgalor in arrival cinematic, successful normal/one-hit/pet final defeat,1/1 completion, fake death/rescue/camera/Skyhold and legitimate quest turn-in. Native/PE checks do not prove those visuals.",
+    "Actual client retry/re-entry/relog and both factions/groups still separate. Current old missed death not backfilled; character may need native restart of its active scenario after server restart. Do not repeat prior reset or issue progression commands without explicit new user request.",
+    "Bezzeredes nearest-player100/actor-owned delayed transitions remain separate full-sequence work; do not claim the earlier stage1 report was fixed solely by this finale.",
+    "Continue all36 backend work, Kingslayers accepted portal return, Aluneth three-control geometry and Bilaal gravity; existing Hunter additional-choice and prior repairs preserved."
+  ]
+}

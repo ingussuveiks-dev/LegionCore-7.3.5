@@ -5,6 +5,11 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "broken_shore.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include "ObjectAccessor.h"
+#include "TemporarySummon.h"
+#include "../../Warrior/Intro/malgalor_finale.h"
 
 class instance_broken_shore : public InstanceMapScript
 {
@@ -24,6 +29,15 @@ public:
         GuidSet DoorGUIDconteiner;
         ObjectGuid tyrosusGUID;
         uint8 alliesFight;
+
+        void MalgalorDeath(Creature* creature, Unit* killer)
+        {
+            Scenario* scenario = MalgalorFinale::Progress(creature);
+            if (!scenario || scenario->GetCurrentStep() != 4 || MalgalorFinale::Victory(scenario)) return;
+            auto members = MalgalorFinale::Capture(creature);
+            Player* owner = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            MalgalorFinale::Death(creature, members, owner ? owner->GetGUID() : ObjectGuid::Empty);
+        }
 
         void Initialize() override
         {
@@ -174,8 +188,9 @@ public:
             }
         }
 
-        void CreatureDies(Creature* creature, Unit* /*killer*/) override
+        void CreatureDies(Creature* creature, Unit* killer) override
         {
+            MalgalorDeath(creature, killer);
             switch (creature->GetEntry())
             {
                 case NPC_BURNING_CRUSHER:
