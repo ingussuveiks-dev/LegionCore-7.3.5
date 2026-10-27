@@ -276,7 +276,11 @@ uint16 BattlePetDataStoreMgr::GetRandomBreedID(std::set<uint32> BreedIDs)
     for (auto itr : BreedIDs)
         sum += GetWeightForBreed(itr);
 
-    uint32 r = urand(0, sum);
+    if (!sum)
+        return 0;
+
+    // urand includes both endpoints; the weighted intervals below exclude sum.
+    uint32 r = urand(0, sum - 1);
     uint32 current_sum = 0;
 
     for (auto itr : BreedIDs)

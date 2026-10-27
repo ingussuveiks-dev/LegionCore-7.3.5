@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-27",
+  "status": "Repaired, deployed and offline authorized recovery verified; actual client retest pending",
+  "report": "User observed very low health on Ikky compared with a lower-level opponent, authorized repair and shut down both servers.",
+  "causes": [
+    "GetRandomBreedID selected urand(0,sum), whose inclusive upper endpoint falls outside every weighted interval and returns breed0. This affected journal creation and both wild-pet creation paths.",
+    "Ikky86447/species1532 battlepet_info.breadsMask512 selected native breed9 H/S instead of its single P/S breed8. A normal successful roll would therefore also assign the wrong breed."
+  ],
+  "repair": [
+    "Return0 without invoking RNG for empty/all-zero weights; otherwise draw urand(0,sum-1). Keep existing relative weights and ordinary selection, without granting or rerolling existing journal pets.",
+    "World15 changes only the exact original Ikky mask512 to256. Other NPCs/species, custom masks, quality, levels and abilities remain unchanged.",
+    "With both servers absent and the affected account offline, explicitly authorized one existing breed0 Ikky recovery to native P/S8 and derived statistics. Private full-collection before/copy/after snapshots hash-verified; exact comparison permits only breed and its five derived fields. Existing level, XP, quality, names, journal slots, identifiers and every other pet retained. No recovery SQL or personal journal rows committed."
+  ],
+  "evidence": {
+    "matching_client": "7.3.5.26972 native BattlePetBreedState/BattlePetSpeciesState/BattlePetBreedQuality with configured read-only hotfix overlays",
+    "native_breed8": "Power1780/Stamina1600/Speed1780/Gender1; species1532 modifiers Power+200/Stamina-100/Speed-100; Rare multiplier0.65",
+    "local_reference": "C:/wamp64/www/TrinityCore/src/server/game/BattlePets/BattlePetMgr.cpp reviewed only as newer-core reference; no incompatible schema/API copied",
+    "external_breed_reference": "https://worldofwarcraft.blizzard.com/en-us/worldsoul/us/armory/character/illidan/sonnenzorn/collections/pets — Ikky standard level25 health1319/power322/speed273; matching Legion native breed-state vector identifies P/S8",
+    "scope_limit": "This repair preserves the existing core integer/float truncation in both journal UpdateStats and battle AddPet. Their occasional one-point power/speed/half-health rounding differences from published retail values remain a separate unresolved calculation issue; no claim of complete pet-system fidelity or all template masks verified."
+  },
+  "checks": [
+    "Test-BattlePetBreed.ps1 -AddressSanitizer: pinned original cda9d021e counterfactual returns0 at singleton8 upper endpoint; repaired 122880 draws exhaust every bucket of all1023 valid breed subsets with exact original relative weights; empty/zero/mixed inputs covered.",
+    "Typed native26972 DB2/hotfix catalog and extracted production BattlePet::UpdateStats: breed0 low-stat reproduction, P/S8 derived stats at levels2/3/25 and repeat recomputation across all25 levels; XP/quality/gender retained. Engine endpoints are controlled, not a client battle.",
+    "Test-IkkyBreedData.ps1 -VerifyLive: actual SQL applied twice to TEMP full-schema fixtures, unrelated NPC/species/all other fields/custom mask preserved; live mask256 and native RELEASED updater SHA1 verified.",
+    "Test-BattleStone.ps1 -AddressSanitizer: shared stone/stat/display regression remains passing.",
+    "Original Release game.lib rebuilt; staged final link uses actual original generated libraries, canonical hashes unchanged during staging. Staged/canonical PE checks verify actual RNG sum-1 bound and real journal/both wild-pet callers; prior stone callback/prelaunch/one-item/display consumers retained.",
+    "Canonical owned worldserver PID29200 reached fresh ready, applied World15, graceful shutdown0/exit0; stderr empty, appended DBErrors0, configuration/certificate/key hashes unchanged; no task server left running. No user/unknown process stopped."
+  ],
+  "deployment": {
+    "worldserver_sha256": "5063294C1A65A33F8FA14D39403AAB769927937A01DCCA002328446BF6351A9A",
+    "directory": "build-extractors/bin/Release",
+    "private_previous_release": ".codex/release-before-pet-breed-2026-10-27",
+    "private_manifest": ".codex/pet-breed-deployment.json",
+    "private_recovery": ".codex/pet-breed/recovery-before.tsv and hash-verified copy; recovery-after.tsv",
+    "private_recovery_backup_sha256": "D02DB0D51BFDEFB8F0CBA3AA3A24865063383694272F5A0E3FCDFF9BF776E825"
+  },
+  "diagnostics": {
+    "result": "All final tests/build/PE/deployment/owned startup/recovery wrappers report no new/changed crashes, no appended DBErrors and no server warnings/errors/assertions. Existing mixed historical logs retained; no crash/log archive or truncation necessary.",
+    "test_development": "Harness failures retained locally: UTF8 BOM fixture parsing, expected native float truncation values, MariaDB TEMP alias restriction, positional PE CLI argument and actual wild-pet caller names corrected. These were failed test-development runs, not successful regressions; each checked for new crashes/log errors. Legacy C4244 conversion warnings from extracted production/baseline methods remain visible."
+  },
+  "client_pending": [
+    "User launches canonical servers, logs in and checks Ikky health/power/speed and P/S identity.",
+    "Actual wild battle, level-up, healing/damage, summon/display, logout/relogin persistence and Battle-Stone behavior remain user checks.",
+    "Unrelated pre-existing breed0 pets were not silently rerolled or modified; any further recovery requires separately established intended species breed and authorization."
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "Checkpoint after Kingslayers native pickup247c16cbd deployed; final canonicalB7B2A8CA. Latest user pet-battle target complaint confirmed to be distance, not missing pet admission.",
+  "reason": "Checkpoint after deployed Ikky breed/RNG repair and explicitly authorized offline recovery. Earlier Kingslayers, Bilaal/Aluneth and all36 artifact continuation evidence retained.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -83,17 +83,17 @@
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "C060B99E71AC80D53BA56F15B9F4AB96A7115CCC465A691870E4888ABC99AF75",
-      "bnetserver.map": "95823EADDFA85A1EE4B3A65D0F06E3782BFC3FB1B47C202C459AD8C683CF23CA",
-      "worldserver.exe": "B7B2A8CA10932808595AC1357F5797071769C0523141DC351D86E674F87ED442",
-      "worldserver.map": "7DD50A0048EA4AAC9F35CB3BB97292C0DAD4E105BA568081D160EF81EF84CA74"
+      "bnetserver.exe": "34E810855F9CFF3C902C5D190FCA66CC61B80E28CC9AD86A3B3BBCA4248BFB48",
+      "bnetserver.map": "2E810AEE7085B54B3FFE9D969BC660EBC952C47345EDAFD9CBAA458DAD504047",
+      "worldserver.exe": "5063294C1A65A33F8FA14D39403AAB769927937A01DCCA002328446BF6351A9A",
+      "worldserver.map": "F916F6466B7817D5C8E28A05C1108E955C8ED51D7FEEADCE9F3AB021E507AA47"
     },
-    "scope": "CombinedB7B2A8CA includes all earlier completed fixes and Kingslayers247c16cbd/SQL14 RELEASED. Native pickup/conditions/shared Merlis/Garona/selected finalPE/Scepter/own29112 ready/shutdown0/exit0 pass; actual full Kingslayers client pending. No task server remains."
+    "scope": "Combined5063294C includes earlierB7 Kingslayers/World14 and new breed RNG fix/World15 RELEASED. Actual canonical RNG/callers and shared Battle-Stone PE, native/ASAN/DB2/data checks pass. Own29200 ready/shutdown0/exit0; no task server remains. Client retests remain separate."
   },
   "servers_last_seen": {
-    "bnetserver": 19344,
-    "worldserver": 28740,
-    "ownership": "User/unknown canonical servers active during latest pet battle report. Never stopped. Own23184/29112 used earlier for Kingslayers startup and gracefully exited. Recheck before deployment."
+    "bnetserver": null,
+    "worldserver": null,
+    "ownership": "User explicitly shut down both; absence checked at deployment/recovery. Own worldserver29200 gracefully stopped after fresh ready. Never stopped a user/unknown server; recheck live processes before later work."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -228,5 +228,14 @@
     "status": "User confirmed nearby Dung Beetle fight starts; no new repair/deployment or character edit",
     "cause": "CanPlayerEnterInPetBattle calls GetNPCIfCanInteractWith first; that generic helper rejects distance beyond INTERACTION_DISTANCE5. Returned PETBATTLE_REQUEST_TARGET_INVALID8 hides the later dedicated out-of-range9 check.",
     "limits": "Screenshot/live data showed valid alive slot0 and wild62115 species467. User confirmation proves nearby battle initiation only, not full win/capture/quest credit/connection lifecycle. Misleading distance message remains a separate possible improvement; do not claim it was repaired."
+  },
+  "ikky_breed_repair": {
+    "status": "Deployed; audit/checks/recovery complete for breed defect, client pending",
+    "audit": "docs/audits/ikky-breed-selection-2026-10-27.json",
+    "cause": "Inclusive weighted RNG selected unassigned upper bucket -> breed0; native Ikky template also used H/S9 mask512 instead of P/S8 mask256.",
+    "recovery": "Explicit authorization, both servers absent/account offline, one affected Ikky breed0 and derived stats only. Full collection backup/hash/exact comparison private .codex/pet-breed. Never re-run recovery; guarded one-time script refuses existing backup.",
+    "checks": "122880 exhaustive weighted draws/all1023 subsets; native26972 DB2/hotfix and extracted stats/all25 levels; TEMP SQL twice/custom/unrelated retention and live RELEASED/hash; shared StoneASAN and canonicalPE; clean owned startup.",
+    "unresolved": "Existing shared journal/battle integer/float truncation can differ from published retail by one point; explicitly preserved/separate calculation issue. Other old breed0 journal pets not silently rerolled; no all-pet-system certification.",
+    "client_pending": "Ikky stats/battle/level-up/healing/summon/display/relog; prior artifact client tests still pending."
   }
 }
