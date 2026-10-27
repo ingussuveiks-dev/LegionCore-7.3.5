@@ -4,6 +4,14 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Discipline physical pickup and accepted return (2026-10-27)
+
+- `lights-wrath-pickup-recovery-2026-10-27.json`: real248572 completed storage/owned physical replay retained through native200ms208011 cast, actual force-equip128868+105109 and genuine9s/native SceneCompleted1244. Complete/Canceled packets preserve native semantics; early visual skip keeps remaining9s bound. Cast/equip/portal failures retry without a second item or early final grant; quest lease/fullGUID/map/AI stale receipts rejected. Earned exit survives offline/Reset. Source22 root28 retired into C++; source4/source17 remain.
+- Map-owned lifetime0/native-pose248574 appears after accepted presentation; Priest exit49875 only follows accepted native218172 exact Dalaran teleport with original eligibility. Native portal also belongs to Mage106756: derived SmartGameObjectAI delegates its shared behavior and retains its original SAI row; Mage pre-credit remains OPEN. Scene package1600/misc1244/flags21, not package1244. Existing Dalaran versus intermediate Nexus route fidelity still OPEN.
+- Full production/native ASAN/native26972 catalog, seven complete TEMP tables/twice/normalization/thirteen refusal cases/live RELEASED06 SHA1, staged+canonical five factories/vtables/hooks/shared Mage/native scene+teleport PE, shared acquisition and canonical Scepter pass. Corrected fixture/PE-inline/live-filter failed attempts retained locally and described in audit. Native endpoint adapters and actual client limits explicit.
+- Canonical world A09152629FD151A281E0478D52AD1F7FCEAC3355FB882E9C9025ABD8E3FC76E6/map06001F5C8F6D98947C411B4F9058609D1C332F058657C0AC3A205A0543577E86. Own8188 updater/ready/shutdown0/exit0/stderr+newDBErrors0/no new crashes or server errors/protected changes. No task-owned server remains; no archive/truncation/manual character edits. Commit containing audit follows4ea30199e.
+- NEXT Mage42011/1101/211954 pickup and shared native portal49875-before218172 acceptance; continue Bilaal death/disabled-AI/native49810/104546 recovery and unresolved gravity assets. Continue all36; do not stop at this focused fix. Client tests remain with user.
+
 ## Latest repair: native Bilaal health thresholds (2026-10-27)
 
 - `bilaal-health-thresholds-2026-10-27.json`:104502 Priest and106708 Mage had0..80/50/20 repeat0/flags0 repeatedly refreshing native15s self209863. Six exact rows now one-shot1 +opt-in ordinary cast256; rejection/in-progress/missing victim retains runOnce and native500ms retry. Loader only unlinked creature health/victim/exclusive flag; action75 aura and legacy callers preserved. Death/49810/104546 unchanged.

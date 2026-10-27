@@ -1843,9 +1843,15 @@ struct npc_stromkar_thoradin : SmartAI
 };
 
 #include "lights_wrath_takeover.h"
+#include "lights_wrath_pickup.h"
 
 void AddSC_artifact_acquisition()
 {
+    RegisterGameObjectAI(go_lights_wrath_pickup);
+    RegisterSpellScript(spell_lights_wrath_pickup_cast);
+    RegisterAuraScript(spell_lights_wrath_pickup_scene);
+    RegisterGameObjectAI(go_lights_wrath_return);
+    RegisterSpellScript(spell_lights_wrath_return);
     RegisterCreatureAI(npc_lights_wrath_takeover);
     RegisterSpellScript(spell_lights_wrath_control_request);
     RegisterAuraScript(spell_lights_wrath_control_channel);

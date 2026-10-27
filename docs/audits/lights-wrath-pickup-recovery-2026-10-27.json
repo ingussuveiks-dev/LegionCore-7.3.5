@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "4ea30199e",
+  "scope": "Discipline41631/scenario1065 physical248572 loot -> native208011 presentation -> recoverable248574 -> accepted native218172 departure/49875. Retain shared Mage1101 portal behavior; no whole-chain or client certification.",
+  "cause": [
+    "Native completed-loot SAI248572/0 queued208011 after200ms and immediately linked248574 creation, before cast/equip/scene acceptance. Native loot cleanup consumed the source even if that cast, equip or creation failed.",
+    "Shared248574 SAI awarded49875 in GossipUse before ordinary218172 teleport acceptance. This repair removes that pre-credit only for genuine Priest-origin portals; Mage106756 still uses the unchanged native SmartAI row, with that separate weakness OPEN."
+  ],
+  "native_evidence": {
+    "pickup": "Actual26972:208011 duration9000, effect0 aura430 ACTIVATE_SCENE/misc1244, effect1 root26, effect2 FORCE_EQUIP249 existing128868, effect3 personal90/105109, effect4 SEND_EVENT49926, effect5 trigger225879. Quest41631 has real105109 objective; final1065 stage6 requires OWN_ITEM128868/47214 and event49875/47172. 49926 alone is not the final event.",
+    "scene": "Actual spell_scene SceneScriptPackageID1600/MiscValue1244/PlaybackFlags21/CustomDuration0. Scene1244 is not package1244. Native SceneCompleted rejects older instances and recordsSCENE_COMPLETE3, removing the matching aura DEFAULT; both native Complete and Canceled packet handlers call it. Legitimate visual skip retained with a minimum native9s bound. Actual scene duration/camera fidelity remains client-pending.",
+    "return": "Actual218172 retains personal90/97377 and effect1 TELEPORT_L252/self+destination. Actual destination1220/-828.61/4371.63/738.64/o1.89368 retained. Other native type22 users244556/251677 and Mage106756 origin are preserved. Historical Nexus-intermediate versus existing Dalaran route fidelity remains OPEN; no route invented.",
+    "shared": "106756/source0/id4 creates the same248574 as a Unit-owned object. Priest sourceGO248572 creates map-owned lifetime0 at1152.58/1002.02/309.289/o0.633369. Derived return SmartGameObjectAI delegates Reset/Update/GossipUse/GossipHello for non-Priest scope; unchanged portal source1/id0 and complete Mage source rows preserved."
+  },
+  "implementation": [
+    "Only real completed inventory storage or physical existing-inventory replay begins an AI-owned weak quest-attempt receipt. No item grants. Actual source104985/full source and player GUIDs/map identity/instance/phase/native1065 stages6..7/earned47119/alive/contact/range/LOS/visibility and native source4/source17 rules retained. Bank-only cannot force-equip.",
+    "Retain GO_READY after native completed loot;200ms ordinary208011 binds its synchronous native preparation to the original receipt. Failed/no native presentation retries5s;30s timeout retains real inventory/chest for physical retry. Old casts cannot rebind after retake/AI replacement/cross-map/full-GUID changes.",
+    "Root-owned scene receipt observes actual native equip and105109, uses GetUnitOwner on update, accepts genuine9s natural expiry or native SceneCompleted DEFAULT/actual1244 status, retaining remaining9s minimum after early Complete/Canceled. Failed equip/cancel/dispel/death/forged expiry never creates exit. No direct scene/final objective grants.",
+    "Earned presentation completion survives offline owner and AI Reset as world fact. Map-owned lifetime0/native-pose portal creates only after that fact; failed creation retries2s without consuming chest. Successful creation/dedup consumes chest via native SetLootState.",
+    "Priest-origin private exit requires physical source and a5s original receipt. Exact native effect1 teleport runs inside native ScopedTeleportDelay; only accepted exact original Dalaran destination plus still-eligible original attempt awards49875 while still in source map. Completed/abandoned escape can teleport without new credit; shared native personal effect remains unchanged."
+  ],
+  "migration": {
+    "file": "sql/updates/world/2026_10_27_06_lights_wrath_pickup_recovery.sql",
+    "native_updater_sha1": "27CDC845361C06D0994C592E0CF3F8F62F30DE27",
+    "state": "RELEASED",
+    "guard": "Full31-field3-row graph SHA256ea75bb6cfcee936e08ce91949efcf4b547e8218e45d5f7600a13d3a2e17f77f2 and28 full14-field source22 rows SHA2564393eac1d796ecaf9d556ca8c46976f33846581f8f5ca1d88e0ac36bb7c3a1b2; exact shared producer/native scene/destination/no unknown bindings/producer/static spawn. Retire only two248572 SAI rows and28 now-orphaned source22 rows, replace two GO scripts and add three spell bindings. Native248574 SAI/Mage producer/source4/source17/other templates remain identical.",
+    "publication": "Pending SQL stayed outside updater until staged Release/factories/native/TEMP passed and offline matching EXE promotion."
+  },
+  "checks": {
+    "asan": "Actual full production header plus native StoreLootItem/consume/loot completion/SetLootState, ForceEquipItem/SendEvent, quest lease, aura duration/expiry, SceneCompleted/SendSpellScene/HasSceneStatus, both native Scene packet handlers and far-teleport deferral compiled/exercised with ASAN. Both active quest statuses,23 denial variants/stage bounds, bags/bank/storage/equip/swap failures, original9s/skip/stale scene instance, cast/portal retry,30s bound, offline earned exit, Reset/retake/AI replacement/reentrant callbacks/high GUID/crossMap, player versus pet loot, accepted/rejected/wrong-destination/stale/ambiguous/expired departure, completed/abandoned escape and shared Mage delegation pass. Native cast/effect/Map endpoints and SmartAI stand-in are controlled; no real client traversal claimed.",
+    "data": "Seven full TEMP tables, migration twice and exact normalization back to originals, thirteen custom refusals unchanged; final live filtered readback matches every selected row/column and RELEASED LF SHA1. Native typed reader confirms208011/218172/1065/1101 metadata. Prior admission ASAN/live passed before superseding source22; that historical test does not certify the new C++ root gate after06.",
+    "binary": "Original scripts Release/x64 project and original LIB final-link inputs; staged/canonical actual five factory/vtable/hook registrations, physical/equip/quest scope, actual9s/native scene semantics, Mage SmartAI delegation and native teleport before49875 pass. Shared ten-acquisition host, previous takeover/Tuure PE chain and canonical Scepter login Release check pass.",
+    "limits": "No forced characters/quests/inventory/auras; no full live combat/cast/scene invocation in startup. Tests model endpoints explicitly. Actual lock/loot window, scene/camera/skip timing, equipment/extra ability, departure rendering/route, pet, group/faction/abandon-reentry and full36 client traversals remain pending.",
+    "corrected_test_attempts": "Initial native fixture compile/earned-offline ordering failures were corrected and ASAN rerun. PE checks first assumed separate Role/Finish/Equipped/ScopedPortal symbols; actual disassembly showed MSVC inlining, and overloaded native getters required exact signatures. Initial live SQL comparator omitted the same row filters on live tables; fixed filtered readback passes without live data mutation. Failed outputs remain local with completion=False, not presented as passing runs."
+  },
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "bnetserver.map": "7FCAF01E095F34811F560C16954AD11A49538F32C4999F1A22191EA5C85C7526",
+      "worldserver.exe": "A09152629FD151A281E0478D52AD1F7FCEAC3355FB882E9C9025ABD8E3FC76E6",
+      "worldserver.map": "06001F5C8F6D98947C411B4F9058609D1C332F058657C0AC3A205A0543577E86",
+      "bnetserver.exe": "F1C1BC0639B3F4F11772FFF6C5A8DF047C9575F5ADBA5548C8EB76BA251C5B20"
+    },
+    "owned_pid": 8188,
+    "runtime": "Fresh updater/ready; server shutdown0/exit0, empty stderr/newDBErrors, no new/changed canonical/test crashes or warnings/errors/assertions; protected runtime hashes unchanged; no task-owned server remains."
+  },
+  "diagnostics": "Each native/TEMP/build/PE/runtime test captured before/after canonical+own crash/log inventories. Synthetic fixture warning branches are controlled host counters; no native runtime log suppression. No new unresolved runtime diagnostics. Existing failed fixture/PE/comparison outputs retained locally; no crash/log archive or truncation required.",
+  "next": [
+    "Shared Mage1101 portal still precredits49875 in unchanged native SmartAI; investigate Mage42011 actual pickup/211954/portal/source owner/accepted teleport separately.",
+    "Native Bilaal death/disabled AI/accepted49810 and Azuregos104546 failure/continuation; distinguish earlier separate Azuregos origins.",
+    "Force of Gravity209863/AT assets and route fidelity unresolved in bilaal-gravity-evidence audit. Continue remaining all36 executable/visual review; client traversal stays with user."
+  ]
+}
