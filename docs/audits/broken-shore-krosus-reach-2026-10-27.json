@@ -1,0 +1,45 @@
+{
+    "date":  "2026-10-27",
+    "status":  "Source and dedicated Release checked; deployment deferred while user servers run; client retest pending",
+    "report":  "Broken Shore stage8 Krosus shows Out of range to Warrior melee at shore",
+    "evidence":  [
+                     "Local 90544/map1460/sceneTrigger_part8/display71701 template scale1; creature_model_info radius22.2706/reach30. Native SetDisplayId copies reach to public UNIT_FIELD_COMBAT_REACH; native Spell::CheckRange invokes IsWithinMeleeRange.",
+                     "Matching native DB2 plus read-only hotfix: display71701/model8578/file1267971/scale1; horizontal bounds X[-19.0081,25.5332], Y[-34.4843,34.4019]. Finite envelope radius42.9081 exceeds old30. Native225098/225099 are aura395 animation kits8507/8508, not scale changes.",
+                     "Pinned source first position1494.573/1780.335/36.86848 and synthetic rounded shore fixture1445.5/1778.5/34.5 reproduce old ordinary melee rejection. Read-only location inspection supported this vicinity; no character identifiers or exact saved positions retained here. Geometry is not a packet capture of the screenshot.",
+                     "Local TrinityCore has no matching scripted repair; web exact-name/code searches returned no results. No video was reviewed."
+                 ],
+    "cause":  "Old spherical reach30 does not cover the native model horizontal envelope at the first shore combat position. Association with the exact client attempt remains inferred until client retest.",
+    "repair":  [
+                   "Only map1460/entry90544/display71701 Reset raises public combat reach to max(existing, scaled horizontal model envelope). Native object/display/model scales consumed; finite/missing guards and larger custom reach retained.",
+                   "No shared display SQL or generic range/LOS changes; native 3D/map/phase checks remain. The enclosing sphere also enlarges vertical extent, so explicit vertical rejection was checked beyond the resulting sphere.",
+                   "Native movement points, immunity removal on arrival, combat, death criterion44669 and both faction transitions retained. No quest/character/item/progression writes."
+               ],
+    "checks":  [
+                   "Test-KrosusReach.ps1 -AddressSanitizer: extracted full production Reset and native Unit melee/combat predicates; old failing counterfactual/current pass, both positions, repeated Reset, native reach preservation, missing model/display, other map/entry/display, null target, invalid scale/box, distant/vertical/phase/map rejection. Controlled service endpoints; not actual client combat.",
+                   "BrokenShoreKrosusCatalog typed actual DB2 + read-only hotfix and production helper pass.",
+                   "Original scripts Release build and dedicated final link .codex/krosus-release: native original library paths, canonical hashes unchanged. Prior C4805 int8/bool warning in unchanged faction helper remains. Bilaal source temporarily pinned to HEAD from exact backup and restored byte-for-byte in finally; SQL09 never moved.",
+                   "verify_krosus_reach_release.py staged PASS: actual selected factory/vtable/Reset, exact actor scope/native scales/model box/finite guards/public field write; no BilaalDeath symbols. Native shared LFG/Vigfus checks also pass.",
+                   "Test-ScepterLogin.ps1 -VerifyReleaseBinary PASS on canonical existing build; dedicated staged same recovery string also needs deployment readback if promoted."
+               ],
+    "development_failures":  [
+                                 "Temporary diagnostic script named inspect.py shadowed Python standard inspect module; renamed pe_dump.py, actual PE checks then passed. Failed stderr evidence preserved.",
+                                 "Attempted nonexistent verify_scepter_login_release.py after passing Krosus PE; reran actual Test-ScepterLogin.ps1 -VerifyReleaseBinary successfully. No server crash/log failure involved.",
+                                 "Two initial read-only schema queries used donor-style name/modelid1 fields; corrected to actual creature_template_wdb/Displayid1 schema. No writes."
+                             ],
+    "diagnostics":  {
+                        "evidence":  ".codex/krosus/ and build-extractors/runtime-test/krosus-reach",
+                        "result":  "Before/after every test/build/PE: no new/changed crashes, appended DBErrors or unexplained server errors/assertions. User servers and logs untouched; no resolved crash archive needed."
+                    },
+    "deployment":  {
+                       "canonical_sha256":  "9043195589414C5AF1F38607E1BA7D3A713EBBCE62380E5132C19C5E269510F2",
+                       "world_sha256":  "4EC9E6697649C845597648A6A70788C1FC9E50961E0A4DC7B076B631C8985DA8",
+                       "world_map_sha256":  "C895BF80C7E4F83ACA2F7C5EE8D03847BF8C05FB0F9592653B7E8C3ED05578AB",
+                       "stage":  ".codex/krosus-release",
+                       "blocked_by":  "User/unknown world12860 and bnet2772 remain running; never stopped. No EXE promotion or live updater change."
+                   },
+    "remaining":  [
+                      "User client melee/autoattack/ranged/pet approach at both Krosus positions, ordinary damage, threshold movements, kill and next stage for both factions; reentry/evade/retry and actual visual retest pending.",
+                      "Separate existing Krosus DamageTaken pre-hit template75/50/25 checks, uninitialized movePointer before SetData/initPos and raw attacker accesses/delayed AI captures deserve further review. This reach repair does not certify scaled one-hit choreography or null-killer lifecycle.",
+                      "All36 artifact routes remain in existing worklist; earlier Leap/Charge/bird client tests still unconfirmed. Bilaal WIP/SQL09, Hunter additional-choice patch and Aluneth evidence preserved."
+                  ]
+}

@@ -15,6 +15,7 @@ The Broken Islands Scenario
 #include "CreatureGroups.h"
 #include "MoveSpline.h"
 #include "Group.h"
+#include "KrosusReach.h"
 // #include "PrecompiledHeaders/ScriptPCH.h"
 
 namespace
@@ -2064,6 +2065,13 @@ public:
             if (!intro)
                 me->SetAnimKitId(1455);
             me->setFaction(2780);
+            // Do not change the shared display record or Nighthold's Krosus.
+            if (me->GetMapId() == 1460 && me->GetEntry() == 90544 && me->GetDisplayId() == 71701)
+                if (auto display = sCreatureDisplayInfoStore.LookupEntry(me->GetDisplayId()))
+                    if (auto model = sCreatureModelDataStore.LookupEntry(display->ModelID))
+                        me->SetFloatValue(UNIT_FIELD_COMBAT_REACH, BrokenShoreKrosus::CombatReach(
+                            me->GetCombatReach(), model->GeoBox,
+                            me->GetObjectScale() * display->CreatureModelScale * model->ModelScale));
             below_75 = false;
             below_50 = false;
             below_25 = false;
