@@ -1,0 +1,41 @@
+{
+    "date":  "2026-10-27",
+    "status":  "PvE faction repair applied; actual client attack/kill/turn-in retest pending",
+    "report":  "User Warrior cannot obtain attack sword/select an attack against revealed Shard of Hate/Felblade Assassin during Demons Among Us40607. User explicitly confirms client says PvP must be enabled before attacking.",
+    "cause":  "Both native kill-credit101105 templates101100/101104 used faction-template2780. Matching26972 DB2/read-only hotfix identifies Faction1786, Flags2081 containing FACTION_TEMPLATE_FLAG_PVP0x800. Production Creature::UpdateEntry calls SetPvP(true) from this flag, which sets the NPC public Unit PvP byte. This matches the reported client PvP prerequisite; phasing/targetability and the player PvP setting are not the repair target.",
+    "repair":  [
+                   "Only101100 Felblade Assassin and101104 Shard of Hate now use native2898: same Faction1786 and player/current-camp hostility, no PvP flag. No global2780/faction hotfix change and no player PvP toggles. All34 static occurrences are map1/phase7422; unrelated namesakes100993/101291/102543 and other2780 users remain unchanged.",
+                   "Preserve original32768 unit flags, AI/ScriptName, spell slots225207/182289, scaling/health/model,34 spawns/phases, native KillCredit1=101105 and quest12-kill objective. Existing Allari reveal, group/owner kill-credit rules and turn-in admission remain unchanged. No character progress edits.",
+                   "Guarded World12 requires exact original/applied factions, two ordinary native templates, native credit, all34 matching spawns and the12-kill objective; unexpected/custom definitions refuse rather than overwrite."
+               ],
+    "native_review":  [
+                          "Catalog uses actual26972 FactionTemplate/Faction/Spell/SpellEffect plus read-only hotfix overlays.2780/2881 are PvP;2898 is the available native non-PvP1786 variant. Faction1786 has no reputation index.",
+                          "All1416 native faction templates compared. Native2898 omits2780 explicit enemy-faction148 exception, so those11 out-of-camp template relationships differ; do not claim every world relationship is identical. Every faction used by the actual phase7422 camp, including mounts/boars/stalkers/guards/Allari/other demons, and ordinary Horde/Alliance player factions retains native friendship/hostility. Any future reuse outside the scoped camp needs its own review.",
+                          "Native225648 grants real Allari112731 credit;182254 starts hidden40658 and periodic tracking;225644 is scene1447. None was altered or used to grant combat progress. Existing phase repair331 and sequence332 are retained."
+                      ],
+    "checks":  [
+                   "Test-DemonsAmongUsPvp -AddressSanitizer: actual extracted Creature faction/PvP branch, Unit::SetPvP and Player::KilledMonster execute for each actor. Pinned old-data counterfactual sets NPC public PvP; repaired data clears it. Original creature and101105 credit mapping retained and player PvP untouched. Store/byte/credit endpoints controlled, not a live client attack.",
+                   "Native typed counterpart/relationship and spell review pass. Initial broad relationship assertion found the faction148 exception; investigation retained that explicit difference and narrowed the proof to actual supported camp/player relations.",
+                   "Test-DemonsAmongUsPvpData: five actual-schema TEMP tables, repeat application/full-field preservation and16 original/applied custom refusals; actual World12 SHA1/RELEASED, both2898 and both101105 credits/12-kill readbacks pass. No character writes.",
+                   "Shared LegionIntroSequence76 native quest/phase/admission checks and ScriptPetCredit ASAN pass. These are not a new actual client demon fight; player/pet/guardian/group kill and exactly-once per death remain native, with live confirmation pending.",
+                   "No C++ runtime change/rebuild required. Existing combined canonical BFCEECBD retained. Both user servers absent before controlled restart; own27676 applied World12, reached ready, graceful shutdown0/exit0, stderr/newDBErrors0 and protected hashes unchanged. No task-owned server remains."
+               ],
+    "development_notes":  [
+                              "Initial host fixture used a pointer for the native object-style DB2 store; corrected fixture boundary and reran ASAN/native successfully.",
+                              "Initial read-only schema projections used nonexistent donor fields; corrected to actual local schema. No database mutation occurred in those failed reads."
+                          ],
+    "diagnostics":  {
+                        "evidence":  ".codex/demons-among-us/ and build-extractors/runtime-test/demons-among-us-pvp*",
+                        "result":  "Before/after all tests/native probes/startup: no new/changed crash, appended DBErrors or unexplained server error/assertion. No active log/crash was cleared and no archive maintenance was needed."
+                    },
+    "deployment":  {
+                       "state":  "RELEASED",
+                       "world_sha256":  "BFCEECBD236FC9DBF58CA0C41E976C3794B043D59A161036C9F266F703038B20",
+                       "migration":  "2026_10_27_12_demons_among_us_pve_faction.sql",
+                       "sha1":  "7DCF759FE1A0E8178321037D45D78E9924325C92"
+                   },
+    "pending":  [
+                    "User retest attack sword and melee/spell initiation with PvP off, kill counter, pet/guardian final blows/group credit, repeated kills/relog/reentry and turn-in. No actual client success reported yet.",
+                    "All36 artifact chains and other documented visual/client checks remain unfinished. This focused repair concerns the two revealed Horde introduction demon types."
+                ]
+}
