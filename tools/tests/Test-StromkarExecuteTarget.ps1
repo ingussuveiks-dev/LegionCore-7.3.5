@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary)
+param([switch]$VerifyReleaseBinary,[switch]$MaskBaseline,[switch]$AddressSanitizer)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/stromkar-execute-target"
@@ -61,6 +61,12 @@ $nativeRows=Snapshot 'row'; if($nativeRows.Count -ne 22){throw 'Expected22 candi
 [IO.File]::WriteAllLines("$out/rows.tsv",[string[]]$nativeRows)
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.cpp" -Raw
+if($MaskBaseline){$maskSource=(git -C $repo show '335b36422:src/server/game/Conditions/ConditionMgr.cpp') -join "`n"}else{$maskSource=$source}
+[IO.File]::WriteAllText("$out/Mask.inc",(Section $maskSource 'uint32 Condition::GetSearcherTypeMaskForCondition()' 'bool ConditionMgr::IsObjectMeetingSmartEventConditions(')+(Section $maskSource 'uint32 ConditionMgr::GetSearcherTypeMaskForConditionList(' 'bool ConditionMgr::IsObjectMeetToConditionList('))
+$enumSources=@(@('src/server/game/Conditions/ConditionMgr.h','ConditionTypes'),@('src/server/game/Grids/GridDefines.h','GridMapTypeMask'),@('src/server/game/Entities/Object/ObjectGuid.h','TypeID'),@('src/server/game/Entities/Object/ObjectGuid.h','TypeMask'))
+$enumText=''
+foreach($pair in $enumSources){$header=Get-Content "$repo/$($pair[0])" -Raw;$match=[regex]::Match($header,"enum $($pair[1])\b[^}]+};");if(!$match.Success){throw "Missing enum $($pair[1])"};$enumText+=$match.Value+"`n"}
+[IO.File]::WriteAllText("$out/MaskEnums.inc",$enumText)
 $cases=(Section $source '        case CONDITION_MAPID:' '        case CONDITION_AREAID:')+(Section $source '        case CONDITION_OBJECT_ENTRY:' '        case CONDITION_TYPE_MASK:')+(Section $source '        case CONDITION_ALIVE:' '        case CONDITION_HP_VAL:')+(Section $source '        case CONDITION_HP_PCT:' '        case CONDITION_WORLD_STATE:')+(Section $source '        case CONDITION_SCENARION_STEP:' '        case CONDITION_REALM_ACHIEVEMENT:')
 $cases+=(Section $source '        case CONDITION_AURA:' '        case CONDITION_ITEM:')+(Section $source '        case CONDITION_ITEM_EQUIPPED:' '        case CONDITION_ZONEID:')+(Section $source '        case CONDITION_CLASS:' '        case CONDITION_RACE:')+(Section $source '        case CONDITION_QUESTREWARDED:' '        case CONDITION_QUEST_NONE:')
 [IO.File]::WriteAllText("$out/Conditions.inc",$cases)
@@ -68,10 +74,14 @@ $cases+=(Section $source '        case CONDITION_AURA:' '        case CONDITION_
 $first=$source.IndexOf("template <class T>`r`nbool CompareValues");if($first -lt 0){$first=$source.IndexOf("template <class T>`nbool CompareValues")};if($first -lt 0){throw 'Missing native comparisons'}
 [IO.File]::WriteAllText("$out/Compare.inc",$source.Substring($first))
 $source=Get-Content "$repo/src/server/game/Spells/Spell.cpp" -Raw
+[IO.File]::WriteAllText("$out/SpellMask.inc",(Section $source 'uint32 Spell::GetSearcherTypeMask(' 'template <typename Searcher>'))
 [IO.File]::WriteAllText("$out/NearbySelector.inc",(Section $source 'void Spell::SelectImplicitNearbyTargets(' 'void Spell::SelectImplicitTargetsFromThreadList('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/StromkarExecuteTargetTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/rows.tsv`"`n")
+$define=if($MaskBaseline){'/DMASK_BASELINE'}else{''}
+if($AddressSanitizer){$define+=' /fsanitize=address /Zi'}
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $define /I`"$out`" `"$PSScriptRoot/StromkarExecuteTargetTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/rows.tsv`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Execute target failed'}
+if($MaskBaseline){'PASS expected counterfactual: pinned old native mask excludes the valid creature candidate; no production data changed';return}
 $previous=$env:LEGION_DIALOGUE_CONFIG
 try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile StromkarPickupCatalog.cpp -ProbeName StromkarPickupCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$?){throw 'Native Execute catalog failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
 $native=Get-Content "$out/native.tsv" -Raw

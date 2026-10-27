@@ -662,7 +662,10 @@ uint32 Condition::GetSearcherTypeMaskForCondition()
 {
     // build mask of types for which condition can return true
     // this is used for speeding up gridsearches
-    if (NegativeCondition)
+    // Grid candidates are condition target 0. A predicate on the caster (or
+    // another context object) cannot narrow the candidate's object type.
+    // Its actual predicate is still evaluated for every candidate.
+    if (NegativeCondition || ConditionTarget != 0)
         return (GRID_MAP_TYPE_MASK_ALL);
     uint32 mask = 0;
     switch (ConditionType)
@@ -723,6 +726,7 @@ uint32 Condition::GetSearcherTypeMaskForCondition()
             mask |= GRID_MAP_TYPE_MASK_ALL;
             break;
         case CONDITION_MAPID:
+        case CONDITION_SCENARION_STEP:
             mask |= GRID_MAP_TYPE_MASK_ALL;
             break;
         case CONDITION_AREAID:
