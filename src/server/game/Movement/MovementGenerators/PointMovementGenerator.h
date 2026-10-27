@@ -79,6 +79,7 @@ class EffectMovementGenerator : public MovementGenerator
         uint32 _pointId;
         uint32 _arrivalSpellId;
         ObjectGuid _arrivalSpellTargetGuid;
+        bool _arrived = false;
 };
 
 #endif

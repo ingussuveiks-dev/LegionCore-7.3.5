@@ -158,7 +158,8 @@ void AssistanceMovementGenerator::Finalize(Unit& owner)
 
 bool EffectMovementGenerator::Update(Unit& owner, uint32)
 {
-    return !owner.movespline->Finalized();
+    _arrived = owner.movespline->Finalized();
+    return !_arrived;
 }
 
 void EffectMovementGenerator::Finalize(Unit& owner)
@@ -168,7 +169,9 @@ void EffectMovementGenerator::Finalize(Unit& owner)
 
 void EffectMovementGenerator::MovementInform(Unit& owner)
 {
-    if (_arrivalSpellId)
+    // Finalize also runs when another movement replaces this generator.
+    // Heroic Leap's damage and talent procs require actual spline completion.
+    if (_arrivalSpellId && (_pointId != 94954 || _arrivalSpellId != 52174 || _arrived))
         owner.CastSpell(ObjectAccessor::GetUnit(owner, _arrivalSpellTargetGuid), _arrivalSpellId, true);
 
     if (Creature* creature = owner.ToCreature())

@@ -546,7 +546,12 @@ void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, f
         init.SetFacing(o);
     if (spellEffectExtraData)
         init.SetSpellEffectExtraData(*spellEffectExtraData);
-    init.Launch();
+    int32 duration = init.Launch();
+    if (id == 94954 && arrivalCast && arrivalCast->SpellId == 52174 && duration <= 0)
+    {
+        _owner->ClearUnitState(UNIT_STATE_LONG_JUMP);
+        return;
+    }
 
     uint32 arrivalSpellId = 0;
     ObjectGuid arrivalSpellTargetGuid;

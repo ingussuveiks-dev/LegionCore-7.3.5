@@ -1,0 +1,50 @@
+{
+    "date":  "2026-10-27",
+    "status":  "Backend/data deployed; client damage, timing and talent effects still pending",
+    "request":  "User asks whether Heroic Leap deals its described landing damage, including selected talents",
+    "native_contract":  [
+                            "6544 tooltip references52174 effect0/radius. Native52174 physical school1, school damage2, base1 plus0.624 attack-power coefficient, radius14=8yd; ordinary critical/armor/absorb/immunity/PvP/aura modifiers remain in the native damage path. The cosmetic94954 description is stale weapon-damage text and is not the player6544 damage formula.",
+                            "Bounding Stride22627/202163: shared Warrior talent, native aura453/category1211/-15000; charge base45000ms/1. Native202164 is70pct run speed for3000ms. Existing52174 FINISH_CAST8 link requires aura202163.",
+                            "PvP Barbarian166/199148: native+2 max charges1211 and+200pct damage modifier with exact Warrior4/mask[0,536870912,0,0] matching52174. PvP Warpath178/199086: existing52174 BEFORE_HIT3 -\u003e199085/3000ms stun, gated by active199086. Native PvP activation/rules are retained; selecting a PvP talent does not authorize granting its aura everywhere.",
+                            "Existing glyph115942/228378, Weight of the Earth208177 radius/Colossus Smash208086, Tactical Advance209483-\u003e2094844000ms, and Protection23922 Taunt355 cooldown link are preserved unchanged."
+                        ],
+    "cause":  [
+                  "Preexisting6544 effect1 SMASH_DEST launches one native movement with existing spell_trigger_delay6544-\u003e52174. Its hit dummy then casts94954, whose effect1 launches another jump in the same controlled slot. Native MotionMaster::Mutate-\u003eDirectDelete-\u003eEffectMovementGenerator::Finalize unconditionally fired the first arrival on replacement, before landing.",
+                  "Native94954 effect2 additionally triggers52174 via its separate35-speed delayed missile. Thus source/data/native-controller counterfactual supplies an early and a later independent damage/linked-effect cast. The host executes the real replacement/finalization methods; missile dispatch and world spell services are controlled endpoints. No actual client combat log was captured."
+              ],
+    "repair":  [
+                   "6544 OnEffectLaunch suppresses its redundant outer SMASH_DEST; its existing dummy still casts native94954. Existing94954 parabola, transport conversion, summon/visual, checks and6544 cast criteria remain.",
+                   "New registered94954 script suppresses the independent effect2 missile. Guarded World11 adds its script binding and a94954 effect1-only native arrival descriptor52174; original6544 descriptor and all linked talent/glyph/PvP rows remain unchanged. Data stayed outside updater until matching EXE promotion.",
+                   "EffectMovementGenerator records natural spline completion in Update. Only94954/52174 requires that receipt before its arrival damage; cancellation/replacement is silent for this damage, while unrelated movement arrivals retain native behavior. Failed native MoveSplineInit::Launch does not attach a damage controller and clears that failed leap state.",
+                   "EffectJumpDest owns/deletes its unqueued DelayCastEvent descriptor after copying arrival arguments, instead of leaking that allocation. This is descriptor lifetime only; generic jump mechanics are retained.",
+                   "No direct damage values, fake target hits, forced destinations, talent/item/quest grants or character progress edits. Unit::Update runs UpdateSplineMovement/actual transport position before MotionMaster::UpdateMotion and therefore the native52174 self cast centers on the landing position."
+               ],
+    "checks":  [
+                   "Test-HeroicLeapImpact -AddressSanitizer -VerifyNativeCatalog: real production EffectMovementGenerator declaration/Update/Finalize/MovementInform, MotionMaster::MoveJump/Mutate/DirectDelete, both script suppression handlers, Player charge timers/max charges, AP coefficient block, Player::ApplySpellMod/IsAffectedBySpellmod and SpellInfo mask predicate; selected/absent/removed/mismatched modifier cases, failed launch, cancellation and unrelated arrival policy. Native full spell/target/armor/PvP activation services remain controlled or unexercised endpoints.",
+                   "Typed matching26972 DB2 and read-only hotfix: ordinary talent and two PvP talents, duration/radius/charge and exact damage-mask contract pass. At10000AP with no other modifier, extracted native raw base is6241; active Barbarian percentage modifier yields18723 before native mitigation/other modifiers.",
+                   "Test-HeroicLeapImpactData: actual-schema TEMP repeat/preservation and14 custom refusals; live script/94954-\u003e52174mask2, retained Bounding Stride/Warpath/Tactical Advance links and updater SHA1/RELEASED readback pass. No character writes.",
+                   "Previous Leap baseline/current ASAN, actual both-ship floor/curb/landing models, Charge ASAN, full construct/sparring native progression/scaling/owner and Warlock movement/spell regressions pass. No fake scenario progress added.",
+                   "Original game/scripts Release libraries and dedicated final link .codex/leap-impact-release. Canonical impact and admission PE verify actual selected registrations/factories, suppression bits, scoped natural-completion gate, successful launch gate and native arrival/charge/damage consumers. Canonical Krosus PE and Scepter Release also pass. BilaalDeath symbols absent.",
+                   "Promoted while both server names absent, rechecked per file. Own1284 reached ready, graceful shutdown0/exit0, stderr/newDBErrors0 and protected hashes unchanged; no task-owned server remains."
+               ],
+    "development_failures":  [
+                                 "Initial host fixture lacked class-style ObjectGuid::Empty, movement-generator type and debug-service endpoint; corrected fixture types, ASAN passes. Existing native MaxCharges conversion warnings retained.",
+                                 "PE inspector initially looked for a separate MovementInform symbol; compiler inlined it into Finalize. Hook check initially compared raw ICF thunks with resolved code and later expected an inlined Player mask helper as a standalone symbol. Verifier now resolves actual thunk identities and inspects actual Finalize/leafUpdate while host exercises full native mask predicates; final staged and canonical pass. Failed inspection outputs retained privately.",
+                                 "Production rebuild retained unrelated preexisting SpellEffects4288 deprecated enum/float multiplication warning; no compile error or new runtime failure."
+                             ],
+    "diagnostics":  {
+                        "evidence":  ".codex/leap-impact/ and build-extractors/runtime-test/heroic-leap-impact*",
+                        "result":  "Before/after every build/test/PE/startup: no new/changed crashes, appended DBErrors or unexplained server errors/assertions. No error log or active crash was cleared; no archive maintenance needed."
+                    },
+    "deployment":  {
+                       "scope":  "Contains Krosus and prior Leap/Charge/bird repairs. Excludes Bilaal WIP; SQL09 remains outside updater.",
+                       "backup":  ".codex/release-before-heroic-leap-impact-2026-10-27",
+                       "world_sha256":  "1B2224DB9999CB62C8E18A1DBF0ACF99B2FBF05B70CCA552EED0A0DDB8AACB14",
+                       "world_map_sha256":  "0CAA27ECD539A9BD7556E6BFD96C50822128341D6D2806326EE068D405206B10",
+                       "migration":  "2026_10_27_11_heroic_leap_landing.sql RELEASED"
+                   },
+    "pending":  [
+                    "Actual landing timing/one combat-log hit per target, current tooltip and mitigated damage, radius/immune targets, empty landing, talent equipped/removed and PvP activation/stun/charges, glyph/legendary/artifact combinations in the7.3.5 client.",
+                    "Actual both-faction boost sequence, Leap lesson, spar1/1-\u003etwo2/2-\u003e12 attackers-\u003ebird, camera/pet and all36 artifact chains remain user-owned client tests."
+                ]
+}

@@ -1929,7 +1929,8 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
 
     // Perform trigger spell at jumping.
     uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
-    DelayCastEvent* delayCast = GetSpellTriggerDelay(effIndex, triggered_spell_id);
+    // This descriptor supplies arrival arguments; it is not queued as an event.
+    std::unique_ptr<DelayCastEvent> delayCast(GetSpellTriggerDelay(effIndex, triggered_spell_id));
 
     // The New Blood: the native smash spells use a script-provided landing
     // destination. Without it TARGET_DEST_NEARBY_ENTRY resolves to the caster

@@ -994,10 +994,18 @@ class spell_warr_heroic_leap : public SpellScriptLoader
                         SPELL_WARRIOR_HEROIC_LEAP_JUMP, true);
             }
 
+            void HandleOuterJump(SpellEffIndex effIndex)
+            {
+                // The dummy launches the native 94954 jump. Starting 6544's
+                // second spline first makes its arrival fire when replaced.
+                PreventHitDefaultEffect(effIndex);
+            }
+
             void Register() override
             {
                 OnCheckCast += SpellCheckCastFn(spell_warr_heroic_leap_SpellScript::CheckElevation);
                 OnEffectHit += SpellEffectFn(spell_warr_heroic_leap_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectLaunch += SpellEffectFn(spell_warr_heroic_leap_SpellScript::HandleOuterJump, EFFECT_1, SPELL_EFFECT_SMASH_DEST);
             }
         };
 
@@ -1005,6 +1013,25 @@ class spell_warr_heroic_leap : public SpellScriptLoader
         {
             return new spell_warr_heroic_leap_SpellScript();
         }
+};
+
+// 94954 - the actual Heroic Leap spline. Its checked arrival owns 52174;
+// the old delayed missile was an independent second damage/linked-effect cast.
+class spell_warr_heroic_leap_jump : public SpellScriptLoader
+{
+public:
+    spell_warr_heroic_leap_jump() : SpellScriptLoader("spell_warr_heroic_leap_jump") { }
+    class Script : public SpellScript
+    {
+        PrepareSpellScript(Script);
+        bool Validate(SpellInfo const*) override { return ValidateSpellInfo({52174}); }
+        void HandleMissile(SpellEffIndex effIndex) { PreventHitDefaultEffect(effIndex); }
+        void Register() override
+        {
+            OnEffectHit += SpellEffectFn(Script::HandleMissile, EFFECT_2, SPELL_EFFECT_TRIGGER_MISSILE);
+        }
+    };
+    SpellScript* GetSpellScript() const override { return new Script(); }
 };
 
 // Charge - 100. The client spell's first effect is a dummy; it must launch
@@ -2007,6 +2034,7 @@ void AddSC_warrior_spell_scripts()
     RegisterAuraScript(spell_warr_corrupted_blood_of_zakajz);
     new spell_warr_shield_block();
     new spell_warr_heroic_leap();
+    new spell_warr_heroic_leap_jump();
     RegisterSpellScript(spell_warr_charge);
     RegisterSpellScript(spell_warr_charge_effect);
     new spell_war_intervene();
