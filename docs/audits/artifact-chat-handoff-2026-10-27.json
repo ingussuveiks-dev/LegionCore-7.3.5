@@ -1,0 +1,157 @@
+{
+  "date": "2026-10-27",
+  "reason": "User requested a new-chat checkpoint after finishing the current bird repair; do not start further work in this chat.",
+  "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
+  "repository": "C:/wamp64/www/LegionCore-7.3.5",
+  "branch": "main",
+  "origin": "https://github.com/ingussuveiks-dev/LegionCore-7.3.5",
+  "read_first": [
+    "AGENTS.md",
+    "docs/audits/artifact-resume-2026-10-26.md",
+    "docs/audits/artifact-chat-handoff-2026-10-27.json",
+    "docs/audits/artifact-acquisition-worklist-2026-10-23.json"
+  ],
+  "chat_size": {
+    "bytes": 68134126,
+    "MiB": 64.98,
+    "jsonl_lines": 13100,
+    "compacted_records": 8,
+    "limit": "Read-only metadata/current-session log inspection, not a UI/latency profile. Size does not prove a slowdown cause."
+  },
+  "completed_pushed": [
+    {
+      "commit": "59914e6fc",
+      "fix": "Heroic Leap supported edges and native half-yard model-height ray compensation; deployed",
+      "audit": "docs/audits/heroic-leap-deck-edges-2026-10-27.json"
+    },
+    {
+      "commit": "18a77098c",
+      "fix": "Charge first-admission height tolerance and measured Horde0.8/0.89 deck-curb drop/side-straddling/native corner preservation; deployed",
+      "audit": "docs/audits/charge-deck-curbs-2026-10-27.json"
+    },
+    {
+      "commit": "2d94aea25",
+      "fix": "Test log classifier distinguishes INFO TCP error0 metadata from actual severity, retaining complete original logs",
+      "audit": "docs/audits/runtime-log-severity-2026-10-27.json"
+    },
+    {
+      "commit": "bc4550ac5",
+      "fix": "Both boost departure birds native Flight1 World10 and post-boarding/pre-MovePoint flag rearm; deployed",
+      "audit": "docs/audits/boost-departure-flight-2026-10-27.json"
+    }
+  ],
+  "canonical_release": {
+    "directory": "build-extractors/bin/Release",
+    "hashes": {
+      "bnetserver.exe": "16F3D09DF23144BA09EC9D4CDF6E281259A20B93A50B7DE3056842C6C6B28C3C",
+      "bnetserver.map": "875E861AE0BA8162FD8D645716216FF5E4AD393375CB879BA2C92B47B070E4E3",
+      "worldserver.exe": "9043195589414C5AF1F38607E1BA7D3A713EBBCE62380E5132C19C5E269510F2",
+      "worldserver.map": "3D24F2A9B0B7B840C1DF88C92EE656D72C63D215BE11635C6082987896F7FDAC"
+    },
+    "scope": "Includes all three user boost repairs and previous HEAD functionality. EXCLUDES Bilaal WIP. World10 RELEASED/hash readback verified. Own17840 startup ready/shutdown0/exit0; stderr/newDBErrors empty, protected hashes unchanged. No task-owned server left."
+  },
+  "servers_last_seen": {
+    "bnetserver": 2772,
+    "worldserver": 12860,
+    "ownership": "User/unknown; started2026-10-27 around09:29 Europe/Riga. Never stop them. Recheck actual names/paths/logs before dependent operations. Continue independent work; no main EXE/log maintenance while running."
+  },
+  "bilaal_wip": {
+    "status": "Uncommitted source/tests preserved, native/TEMP/staged PE pass; NOT in canonical binary, SQL09 NOT in live updater. Do not discard/reset. Do not accidentally promote a new build containing this code without coordinated SQL09.",
+    "routes": "Map1583 actual DB370522/104502 Priest1065/41631/phase6140/tree47117 and370551/106708 Mage1101/42011/phase6068/tree47995.",
+    "implementation": "Instance CreatureDies independent of boss AI plus2s Update. Real dead/static/native damage-eligible actor, actual loot recipient or native owner/group, already earned native kill objective by ObjectID, original quest weak ScriptLifetime, exact map/class/phase/stage. Native accepted49810/type92/tree29656->step5/Victory before retryable map-owned104546. Captured phase/sourceGUID survives corpse removal. Native properties-null TempSummon sequence with checked insertion/cleanup; no raw delayed actor/player/AI; no direct quest/item grants.",
+    "tests_passed": [
+      "Test-BilaalDeath.ps1 -AddressSanitizer -VerifyNativeCatalog (production header/native quest counters, native damage getter, native AI/independent-instance death dispatch fragment; controlled criterion/factory endpoints, not full runtime)",
+      "Test-BilaalDeathData.ps1 -MigrationPath .codex/pending/2026_10_27_09_bilaal_instance_death.sql (six TEMP tables/full31-field graph/repeat/preservation/30 custom refusals)",
+      "Shared Test-ScriptPetCredit and Test-BilaalCombat ASAN",
+      "verify_bilaal_death_release.py staged, evidence .codex/bilaal-death/pe-staged-9: PASS native registered instance, exact routes/native damage field derived from Unit::Kill, owner/objective/phase/lease consumers and actual TempSummon construction/insertion/cleanup"
+    ],
+    "tested_bilaal_binary": "01ED68F3933B733ACC521550589F4461103578DFDE976F9CF3068F459E73B8B7 (PE9 output). That staged directory was subsequently overwritten by the deployed bird-only build. Rebuild/recheck a new dedicated stage including current bird fixes before Bilaal promotion.",
+    "migration": {
+      "path": ".codex/pending/2026_10_27_09_bilaal_instance_death.sql",
+      "old_graph": "a306ccf1aa3ff9a3e92fb2ea23df4f2d282a7a34a039e484947f041312171a57",
+      "new_graph": "c7162d84ebc8a7f4fd2cc65690dac77cb35518c5bf40981bac3a165a873c1c49",
+      "effect": "Retire only four boss SmartAI DEATH5/LINK6 rows after matching executable ready; retain native combat0..4 and all earlier Azuregos sources. Guard instance/template/exact source spawn/phase/no new producers/conditions/full graph. TEMP tests set group_concat_max_len1MB; check actual updater session or add explicit safe session setting before promotion."
+    },
+    "development_notes": "PE1..8 failures were verifier adaptation (leaf bounds/const overloads/native zero register/compiler-inlined CurrentReceipt) and are preserved; PE9 passes. Data fixture initial missing comment and later PowerShell expected-stderr termination fixed and rerun. INFO handshake false candidates in PE7 fully reviewed by committed classifier repair. No unexplained runtime crash/DBErrors discovered.",
+    "next": "Finish focused audit/worklist, fresh dedicated build with current deployed boost changes, data/native/PE checks, offline coordinated EXE+SQL09 promotion, owned startup/live updater/hash/Scepter checks if server absent, then focused commit/push. If user server remains running, retain pending deployment and continue another independent repair."
+  },
+  "next_independent_work": [
+    "Azuregos104546 downstream real source0 graph in .codex/bilaal-death/azuregos-downstream.tsv: waypoint1/path104546 -> optional conversation3471 ->223908 self-cast -> single GO248553 creation -> flags/fly cleanup. Optional failed cast can stop LINK and portal creation has no retry. Source9 native list keeps207897/path/conversation3470/model68826. Keep earlier104902/106747 Azuregos origin separate; no event54 found for104546. Investigate full route, not merely death receipt.",
+    "Bilaal Gravity209863 remains OPEN: native period1000/trigger0, no reviewed native handler/AT6667..9 geometry/209864..6; do not invent wind geometry. Retain prior gravity audit4ea30199e.",
+    "Aluneth three-scroll/native5000ms/override779..781 evidence committed a98b0fa69; current custom GO immediate205 shortcut remains UNRESOLVED. Real binding dome producer/geometry and dest46 need evidence;225030 same-name effect is audio-only. Partial YouTube only, not full traversal. Read docs/audits/aluneth-control-evidence-2026-10-27.json.",
+    "Hunter additional-artifact selection remains OPEN: ignored .codex/hunter-additional-choice-in-progress.patch is partial/untested/undeployed. Read dedicated hunter audit and old resume section; both Trueshot Emmarels/native choice240/198430/admission/finished-route filtering/stale response need implementation/tests. Never alter saved Hunter progress."
+  ],
+  "client_pending": "User has not yet confirmed final Leap/Charge/wing retests. All boost camera/pet/landing/lesson/full sequence and all36 route visual/traversal checks remain user-owned; compilation/native/PE/startup do not certify those.",
+  "local_tools": {
+    "python": "C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+    "pe_pythonpath": ".codex/pe-review-deps",
+    "world_readonly": ".codex/silver-hand-query.ps1",
+    "build": "Original build-extractors/src/server/scripts/scripts.vcxproj Release/x64 with original library paths; .codex/link-staged-release.ps1 -Stage dedicated .codex path",
+    "diagnostics": "tools/tests/Invoke-WithRuntimeDiagnostics.ps1 before/after EVERY test/build/runtime/PE",
+    "deployment": ".codex/deploy-active-grid-release.ps1 refuses either server name; .codex/silver-hand-presentation-startup.ps1 owns/gracefully stops its own fresh server only"
+  },
+  "backup": {
+    "directory": ".codex/handoff-2026-10-27",
+    "files": [
+      {
+        "path": "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp",
+        "bytes": 6124,
+        "sha256": "3c3ff503ba77ff2b1971047b39bca53b51f64f51c4ac6887f093316c3c647044"
+      },
+      {
+        "path": "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/bilaal_death.h",
+        "bytes": 10944,
+        "sha256": "2757e9c7c13bcdd6c791c0ee7457f9927e12463ae40e236cf7d1fe55fe0f6bbb"
+      },
+      {
+        "path": "tools/research/LightsWrathCatalog.cpp",
+        "bytes": 8466,
+        "sha256": "099a0accf9e7d91ee3c51c810f435b0c8de9c1ffc1bbe5e933a7c1cb1f747baa"
+      },
+      {
+        "path": "tools/tests/BilaalDeathOriginal.json",
+        "bytes": 12564,
+        "sha256": "c38248c2d9ef961ea0775d0a25ec39a52df3132dace9832058e31ddaf4841825"
+      },
+      {
+        "path": "tools/tests/BilaalDeathTest.cpp",
+        "bytes": 16589,
+        "sha256": "ab5c8c05488c4f6309b38e4bbe870df540d46d258e4027ad2782676a12195668"
+      },
+      {
+        "path": "tools/tests/Test-BilaalDeath.ps1",
+        "bytes": 3278,
+        "sha256": "832d2b2e23238ff3d7f342fc7082deee1cea7e36be9e5d67bb50106a1646837d"
+      },
+      {
+        "path": "tools/tests/Test-BilaalDeathData.ps1",
+        "bytes": 6775,
+        "sha256": "9d681c27fbd4edc2fdbe52bc8ea0f07a2d29bf347758efd08344e90a0fb9b1af"
+      },
+      {
+        "path": "tools/tests/verify_bilaal_death_release.py",
+        "bytes": 7130,
+        "sha256": "a2322a0f09db951a062b67f5f007d4642f342f31df19d8249941be0cdc76891b"
+      },
+      {
+        "path": ".codex/pending/2026_10_27_09_bilaal_instance_death.sql",
+        "bytes": 2646,
+        "sha256": "488d5b74f571063e5959c75a98b62511bd2113e8f1c8812c7fc1894b64cb6eac"
+      },
+      {
+        "path": ".codex/hunter-additional-choice-in-progress.patch",
+        "bytes": 2739,
+        "sha256": "3676e1b0cd31190d8929b7aa9c81d21f93ea9b70a9868dd9c5deb88887aea220"
+      }
+    ],
+    "result": "Exact source bytes copied and SHA256 verified; no character data, credentials, runtime logs or dumps included in this manifest/commit."
+  },
+  "standing_rules": [
+    "Do not stop user/unknown servers or rotate their logs. Promote only while both absent. Never change character progress; client checks left to user.",
+    "Before/after every test inspect canonical and own-runtime crashes/logs/exit/stdout/stderr/DBErrors; investigate new errors.",
+    "Keep code-coupled SQL outside updater until matching EXE ready. Never global OutDir that links stale original libs; Scepter Release check required.",
+    "Each completed focused fix: audit, staged diff review, commit/push origin current branch. No force push or credentials/runtime/character data commits.",
+    "No subagents authorized. No goal/automation created. This checkpoint is a handoff, not automatic background continuation.",
+    "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
+  ]
+}

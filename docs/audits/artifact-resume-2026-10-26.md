@@ -222,6 +222,12 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 - Both user servers absent at promotion; own22952 ready/shutdown0/exit0, stderr/newDBErrors0, protected hashes unchanged. No hidden server remains. Diagnostics in ignored `.codex/hunter-choice`; active Crashes0/DBErrors0. Recheck processes before further deployment.
 - Next concrete inherited finding: Outlaw Degauz102185 raw pre-hit Player-only90/60/30 surrender, scaled lethal and owner/pet paths. All36 remain in scope; client checks stay with user.
 
+## New-chat handoff after 2026-10-27 bird repair
+
+- Read docs/audits/artifact-chat-handoff-2026-10-27.json first after git status/log and AGENTS.md. It records all three deployed user boost fixes, canonical90431955 hash, remaining client checks and exact uncommitted Bilaal paths/test evidence/backup hashes.
+- Last user/unknown bnet2772/world12860 started around09:29 Riga; recheck, never stop them. No task-owned server remains. Bilaal is NOT deployed; SQL09 stays outside updater. Do not discard its working tree or accidentally build/promote it without matching migration. Exact local source backups under .codex/handoff-2026-10-27/.
+- User requested finishing the current repair and handing off because this chat log is about65MiB. No new background goal/automation created. Continue all36 only in the new authorized turn, preserving unfinished Hunter/Aluneth/Bilaal findings.
+
 ## Later update 2026-10-27: departure bird Fly animation
 
 - User reports Armored Wind Rider runs in air. Native per-tick creature flags reset the script's phase0 flags because both bird templates lacked Flight data; grounded boarding could clear them before Point spline launch.
