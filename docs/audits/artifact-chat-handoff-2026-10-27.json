@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "Active authorized continuation checkpoint after Krosus, Heroic Leap damage/talents, inherited Bilaal death and Demons Among Us PvE repairs. Original chat-size/backup sections remain historical.",
+  "reason": "Active authorized continuation checkpoint after combat/talent/Bilaal/PvE and guard POI repairs. Original chat-size/backup sections remain historical.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -58,17 +58,22 @@
       "commit": "c87f591fd",
       "fix": "Horde40607 revealed demons native non-PvP faction2898; World12 deployed",
       "audit": "docs/audits/demons-among-us-pve-faction-2026-10-27.json"
+    },
+    {
+      "commit": "d4dfc326f",
+      "fix": "Valid guard gossip POI links preserved during loading; deployed",
+      "audit": "docs/audits/gossip-poi-loader-2026-10-27.json"
     }
   ],
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "94A924B737BA9DB47CBDC94EF92AD199E10C6ECBC0BAF4158DC0E880BB432F8A",
-      "bnetserver.map": "FCACE8EB5A8E1F25008F1CE7DC2FCB262F57BF10F6608C0174AED5AEF5FBFFF1",
-      "worldserver.exe": "BFCEECBD236FC9DBF58CA0C41E976C3794B043D59A161036C9F266F703038B20",
-      "worldserver.map": "50C5801A815BD270AA7B41614DDE6E9190976EA936126F43F9E45611720FA75E"
+      "bnetserver.exe": "FAA13B8D5BE47C1244DB5ACB5C0710D38CD30FB60FE4F2259862B1671BD51021",
+      "bnetserver.map": "845D5639074F46EDA1442583BA141A2FF3AA4F4203A35F68E247C73527DAFB49",
+      "worldserver.exe": "82773B55E9CDC1B3A0046C6669774A0210509AA74926736EC89CC6839FFA05E5",
+      "worldserver.map": "5DD882E0F19FEE9E53B1E5D4D11A4DAEC0AAE8F5467BE1EB45B1BEC5DE5FC60D"
     },
-    "scope": "Combined BFCEECBD includes Krosus, Heroic Leap impact/talents, Bilaal death and earlier Charge/bird repairs. World09/11/12 actually RELEASED with hash readback. Own30044 and27676 fresh ready/shutdown0/exit0, no new diagnostics; all task-owned servers stopped. Character progress/PvP untouched."
+    "scope": "Combined82773B55 includes earlier Krosus/Leap/Charge/bird/Bilaal death plus guard POI loader repair. World09/11/12 remain RELEASED. Own4236 fresh ready/shutdown0/exit0, no new diagnostics, task server stopped. Azuregos portal WIP excluded; no character progress/PvP changes."
   },
   "servers_last_seen": {
     "bnetserver": null,
@@ -182,5 +187,16 @@
     "diagnostics": "No new/changed crashes, appendedDBErrors or unexplained server warning/error/assertion after every test/build/startup group. ActiveDBErrors0/Crashes0 at last check; no log was truncated or crash archived during this continuation.",
     "next": "Continue Azuregos104546 downstream source0 graph: optional223908 can block LINK to248553, creation has no retry. Existing native SmartSummonGameObject retry2/map-ownership4, eventDONT_RESET256 are available, but phased UPDATE loses phase on Reset. Counter-set77 exists only as an enum, with no implemented action/dispatcher in this core; do not invent native counter support. Investigate robust arrival/Reset/retry using actual callbacks before editing. Aluneth/gravity source gaps remain separate.",
     "uncommitted_at_checkpoint": "None before this documentation update; original Bilaal WIP preserved and completed in its focused commit. Ignored historical Hunter patch/old pendingSQL09 backups untouched."
+  },
+  "azuregos_portal_wip": {
+    "status": "Unfinished source only; not compiled into promoted scripts.lib/EXE; no new SQL migration created/applied",
+    "files": [
+      "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/bilaal_portal.h",
+      "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp",
+      "tools/research/LightsWrathCatalog.cpp"
+    ],
+    "evidence": ".codex/azuregos-portal/catalog and native.tsv; .codex/bilaal-death/azuregos-downstream.tsv",
+    "finding": "Native104546 waypoint arrival point1/path104546 starts conversation then optional223908 cast, which gates LINK portal/cleanup. One-shot action50 has no insertion retry. Proposed instance GUID receipt and map-owned retry must validate genuine completed Bilaal death and exact receiver/end point. Not tested or ready. Do not rebuild scripts for a different fix without isolating this WIP; preserve original pending work.",
+    "next": "Finish exact guarded native SQL graph migration outside updater, native production dispatch/receipt/factory retry/phase/cleanup tests, build/PE and coordinated promotion before migration activation."
   }
 }
