@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-27",
+  "cause": "The test diagnostics wrapper searched for ERROR/WARNING words anywhere in Server.log lines. Nine normal INFO WorldSocket handshake records containing TCP metadata 'error 0' were incorrectly reported as new server errors during a user restart/login. WorldSocket.cpp native TC_LOG_INFO producer was inspected; no production log message was suppressed or changed.",
+  "change": "Classify the actual timestamped/raw log severity while retaining assertion/abort recognition anywhere. Preserve every newly appended byte in the same evidence files, DBErrors checks and crash inventories unchanged.",
+  "checks": [
+    "Test-ServerDiagnosticLines.ps1: normal INFO/DEBUG message fields versus actual ERROR/WARN/WARNING/FATAL, raw ERROR, assertions and aborts pass under the diagnostic wrapper.",
+    "Replayed all nine candidates from .codex/bilaal-death/pe-staged-7/diagnostics-after.json: each is native INFO handshake/TCP error0, none is a server diagnostic. Original evidence retained. No appended DBErrors or changed crash in that run.",
+    "Both new checks have before/after canonical crash/log snapshots and no newly appended unexplained errors. No active log truncated or archived. No server stopped. Separate Bilaal PE comparator failure still requires its own passing regression."
+  ],
+  "scope": "Test diagnostics only; no server executable, network behavior, character or database changes. Full INFO logs remain available for investigation."
+}

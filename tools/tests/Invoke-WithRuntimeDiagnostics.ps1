@@ -1,5 +1,6 @@
 param([Parameter(Mandatory=$true)][string]$EvidenceDirectory,[string[]]$RuntimeDirectories=@(),[Parameter(Mandatory=$true)][scriptblock]$Test)
 $ErrorActionPreference='Stop'
+. "$PSScriptRoot/ServerDiagnosticLines.ps1"
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 New-Item -ItemType Directory -Force $EvidenceDirectory|Out-Null
 function Snapshot-Crashes {
@@ -33,7 +34,7 @@ finally{
   $tail=Read-Appended $path $beforeLogs[$path].Length
   [IO.File]::WriteAllText("$EvidenceDirectory/appended-$index-$([IO.Path]::GetFileName($path))",$tail);++$index
   if($path.EndsWith('/DBErrors.log') -and $tail.Length){$newDb+=@{Path=$path;Text=$tail}}
-  $serverDiagnostics+=@($tail -split "`n"|Where-Object {$_ -match '(?i)\b(ERROR|WARN(?:ING)?|FATAL)\b|ASSERTION FAILED|ABORTED'})
+  $serverDiagnostics+=@(Get-ServerDiagnosticLines $tail)
  }
  [IO.File]::WriteAllText("$EvidenceDirectory/diagnostics-after.json",(@{Completed=$completed;Crashes=$afterCrashes;ChangedCrashes=$changed;AppendedDBErrors=$newDb;ServerDiagnostics=$serverDiagnostics;Utc=[DateTime]::UtcNow.ToString('o');Servers=@(Get-Process worldserver,bnetserver -ErrorAction SilentlyContinue|Select-Object Id,ProcessName,StartTime)}|ConvertTo-Json -Depth 6))
  if($changed.Count -or $newDb.Count -or $serverDiagnostics.Count){throw "New runtime diagnostics require investigation: $EvidenceDirectory/diagnostics-after.json"}
