@@ -29,8 +29,10 @@ enum class HighGuid { GameObject };
 enum { GO_STATE_READY=1,MAX_GAMEOBJECT_SLOT=4,SPELL_ATTR0_DISABLED_WHILE_ACTIVE=1,SPELL_ATTR1_IS_FISHING=2 };
 struct Position {
     float positionX,positionY,positionZ,orientation;
+    Position():positionX(0),positionY(0),positionZ(0),orientation(0){}
     Position(float coordinateX,float coordinateY,float coordinateZ,float facing):positionX(coordinateX),positionY(coordinateY),positionZ(coordinateZ),orientation(facing){}
     float GetPositionX() const{return positionX;}float GetPositionY() const{return positionY;}float GetPositionZ() const{return positionZ;}
+    void SimplePosXYRelocationByAngle(Position&,float,float){assert(false);}
 };
 namespace G3D {struct Quat {Quat(float,float,float,float){}};}
 uint32 errors=0,fatals=0,created=0,destroyed=0,staticCreated=0,staticDestroyed=0,cleanups=0;
@@ -62,6 +64,10 @@ struct WorldObject {
     Map* GetMap() const{return map;}
     ObjectGuid GetGUID() const{return identity;}
     uint32 GetPhaseMask() const{return 4;}
+    float GetObjectSize()const{return 1;}
+    void GetPosition(float& x,float& y,float& z,float& o){x=1868.87f;y=2198.75f;z=37.3797f;o=0.141143f;}
+    void GetNearPoint2D(Position&,float,float){assert(false);}
+    Position GetFirstCollisionPosition(float,float){return {1868.87f,2198.75f,37.3797f,0.141143f};}
     std::set<uint32> const& GetPhases() const{return m_phaseId;}
     Transport* GetTransport() const{return transport;}
     void SetTratsport(Transport* value){if(value){transport=value;value->passengers.insert(this);}}
@@ -85,31 +91,33 @@ struct Unit:WorldObject {
     void SendCooldownEvent(SpellInfo const*){assert(false);}
     void AddGameObject(GameObject*);
     void RemoveGameObject(GameObject*,bool);
+    void RemoveAllGameObjects();
 };
 struct GameObjectTemplate {uint32 entry=247690;uint32 GetLinkedGameObjectEntry() const{return 0;}} objectTemplate;
 struct Generator {uint32 identity=100;uint32 Generate(){return ++identity;}} generator;
 struct ObjectMgr {
-    GameObjectTemplate const* GetGameObjectTemplate(uint32 entry){assert(entry==247690);return templateAvailable?&objectTemplate:nullptr;}
+    GameObjectTemplate const* GetGameObjectTemplate(uint32 entry){assert(entry==objectTemplate.entry);return templateAvailable?&objectTemplate:nullptr;}
     bool IsStaticTransport(uint32){return staticTemplate;}
     template<HighGuid> Generator* GetGenerator(){return &generator;}
 } objectManager;
 auto* sObjectMgr=&objectManager;
 struct GameObject:WorldObject {
     ObjectGuid owner,summoner;
-    uint32 lifetime=0;
-    bool defaultSpawn=true,m_uint32Values=false,admissionAttempted=false;
+    uint32 lifetime=0,m_respawnTime=0,m_respawnDelayTime=0;
+    bool m_spawnedByDefault=true,m_uint32Values=false,admissionAttempted=false,deleted=false;
     GameObject(){world=false;++created;allocations.insert(this);}
     ~GameObject() override {assert(!world&&owner.IsEmpty()&&!transport);if(admissionAttempted)assert(m_phaseId.empty()&&m_phaseBit.empty()&&_terrainSwaps.empty()&&_worldMapAreaSwaps.empty()&&_visibilityPlayerList.empty()&&_hideForGuid.empty());allocations.erase(this);++destroyed;}
     bool Create(uint32 low,uint32 entry,Map* target,uint32 phase,Position position,G3D::Quat,uint32 animation,uint32 state){
-        assert(entry==247690&&phase==4 || entry==247690&&phase==1);assert(animation==100&&state==GO_STATE_READY);
+        assert(entry==objectTemplate.entry&&(phase==4||phase==1));assert(animation==100&&state==GO_STATE_READY);
         assert(position.positionX==1868.87f&&position.positionY==2198.75f&&position.positionZ==37.3797f&&position.orientation==0.141143f);
         identity={low};map=target;m_uint32Values=creationAvailable;return creationAvailable;
     }
     bool InheritQuestObjectScope(WorldObject*){return scopeAvailable;}
     void SetPhaseId(std::set<uint32> const& phases,bool){m_phaseId=phases;}
     void SetSummonerGUID(ObjectGuid value){summoner=value;}
-    void SetRespawnTime(uint32 value){lifetime=value;}
-    void SetSpawnedByDefault(bool value){defaultSpawn=value;}
+    void SetRespawnTime(uint32 value){lifetime=m_respawnTime=m_respawnDelayTime=value;}
+    bool isSpawned()const;
+    void SetSpawnedByDefault(bool value){m_spawnedByDefault=value;}
     void AddPlayerInPersonnalVisibilityList(ObjectGuid viewer){_visibilityPlayerList.insert(viewer);}
     void AddPlayersInPersonnalVisibilityList(GuidUnorderedSet const& viewers){_visibilityPlayerList.insert(viewers.begin(),viewers.end());}
     ObjectGuid GetOwnerGUID() const{return owner;}
@@ -117,7 +125,7 @@ struct GameObject:WorldObject {
     uint32 GetSpellId() const{return 0;}
     uint32 GetGUIDLow() const{return uint32(identity.value);}
     GameObjectTemplate const* GetGOInfo() const{return &objectTemplate;}
-    void Delete(){assert(false);}
+    void Delete(){deleted=true;}
     void RemoveFromOwner();
     void CleanupsBeforeDelete(bool=true) override;
 };
@@ -168,7 +176,7 @@ int main(int argc,char** argv){
         bool owned=kind&&creator&&(kind==1||!lifetime);
         assert(map.attempts==1&&fatals==0&&errors==uint32(!admitted));
         assert(map.observedOwner==ObjectGuid{owned?unit.identity.value:0}&&map.observedViewers==3);
-        if(admitted){assert(result->world&&result->lifetime==lifetime&&result->summoner==source.identity);assert(result->owner==ObjectGuid{owned?unit.identity.value:0});assert(result->_visibilityPlayerList==GuidUnorderedSet({{77},{88},{99}}));assert(unit.m_gameObj.size()==uint32(owned));assert(result->defaultSpawn==owned);}
+        if(admitted){assert(result->world&&result->lifetime==lifetime&&result->summoner==source.identity);assert(result->owner==ObjectGuid{owned?unit.identity.value:0});assert(result->_visibilityPlayerList==GuidUnorderedSet({{77},{88},{99}}));assert(unit.m_gameObj.size()==uint32(owned));assert(result->m_spawnedByDefault==owned);}
         else assert(unit.m_gameObj.empty()&&allocations.empty());
         Dispose(result);assert(allocations.empty()&&unit.m_gameObj.empty()&&created==destroyed&&staticCreated==staticDestroyed);
         assert(transport.passengers==std::set<WorldObject*>{&sentinel});assert(transport.removed==uint32(attachment));assert(source.world&&source.m_phaseId==std::set<uint32>{5737});
@@ -184,7 +192,7 @@ int main(int argc,char** argv){
         Reset();Map map;map.admission=admitted;staticTemplate=special;GuidUnorderedSet viewers{{88}};
         auto* result=map.SummonGameObject(247690,1868.87f,2198.75f,37.3797f,0.141143f,0,0,0,0,3600,{77},&viewers,false);
         assert((result!=nullptr)==admitted&&errors==uint32(!admitted));
-        if(result)assert(result->world&&!result->defaultSpawn&&result->owner.IsEmpty()&&result->_visibilityPlayerList==GuidUnorderedSet({{77},{88}}));
+        if(result)assert(result->world&&!result->m_spawnedByDefault&&result->owner.IsEmpty()&&result->_visibilityPlayerList==GuidUnorderedSet({{77},{88}}));
         Dispose(result);assert(allocations.empty()&&created==destroyed&&staticCreated==staticDestroyed&&fatals==0);
     }
     for(bool admitted:{false,true}){
@@ -203,4 +211,5 @@ int main(int argc,char** argv){
     auto* result=Summon(source,true,3600,nullptr);assert(result&&result->world&&source.m_gameObj.size()==1);Dispose(result);
     assert(allocations.empty()&&source.m_gameObj.empty()&&created==destroyed&&fatals==0);
     std::cout<<"PASS: extracted WorldObject/Map summon overloads report controlled insertion failure as null and clean native owner/transport/phase references; success, personal visibility, static transports, owner policies and later retry remain intact. Actual grid admission/rendering are not simulated.\n";
+    return 0;
 }

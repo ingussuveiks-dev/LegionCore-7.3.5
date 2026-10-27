@@ -21,7 +21,20 @@ def tests_value(entry, value, displacement=None):
     return entry.mnemonic in {'cmp', 'test'} and any(operand.type == CS_OP_IMM and operand.imm == value for operand in entry.operands) and any(operand.type == CS_OP_MEM and (displacement is None or operand.mem.disp == displacement) for operand in entry.operands)
 
 
-flag_index = next(index for index in range(case_index, case_index + 12) if tests_value(action[index], 2, 0x60))
+flags = [index for index in range(case_index, case_index + 12) if tests_value(action[index], 2, 0x60)]
+if not flags:
+    # A second flag consumer can make MSVC load action_param3 once and test
+    # its low byte. Trace that actual load, not an unrelated nearby bit2.
+    low_byte = {'eax':'al','ebx':'bl','ecx':'cl','edx':'dl','esi':'sil','edi':'dil',
+                **{f'r{i}d':f'r{i}b' for i in range(8,16)}}
+    for index in range(case_index, case_index + 11):
+        load, test = action[index:index+2]
+        if load.mnemonic != 'mov' or len(load.operands) != 2 or load.operands[0].type != CS_OP_REG or load.operands[1].type != CS_OP_MEM or load.operands[1].mem.disp != 0x60:
+            continue
+        if test.mnemonic == 'test' and test.operands[0].type == CS_OP_REG and test.reg_name(test.operands[0].reg) == low_byte.get(load.reg_name(load.operands[0].reg)) and test.operands[1].type == CS_OP_IMM and test.operands[1].imm == 2:
+            flags.append(index+1)
+assert len(flags) == 1, 'Actual action50 does not test its loaded retry bit2'
+flag_index = flags[0]
 flag_branch = action[flag_index + 1]
 assert flag_branch.mnemonic in {'je', 'jz'}, 'Unflagged summons do not retain their legacy path'
 legacy_address = immediate_target(flag_branch)

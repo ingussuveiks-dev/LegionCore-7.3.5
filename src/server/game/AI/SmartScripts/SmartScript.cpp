@@ -1528,7 +1528,8 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         {
             if ((e.action.summonGO.flags & SMART_SUMMON_GAMEOBJECT_RETRY_ON_FAILURE) && e.GetTargetType() == SMART_TARGET_POSITION)
             {
-                if (!GetBaseObject() || !GetBaseObject()->SummonGameObject(e.action.summonGO.entry, e.target.x, e.target.y, e.target.z, e.target.o, 0, 0, 0, 0, e.action.summonGO.despawnTime))
+                if (!GetBaseObject() || !GetBaseObject()->SummonGameObject(e.action.summonGO.entry, e.target.x, e.target.y, e.target.z, e.target.o, 0, 0, 0, 0, e.action.summonGO.despawnTime,
+                    ObjectGuid::Empty, nullptr, !(e.action.summonGO.flags & SMART_SUMMON_GAMEOBJECT_NO_CREATOR)))
                 {
                     e.runOnce = false;
                     return;
@@ -1553,7 +1554,8 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     y += e.target.y;
                     z += e.target.z;
                     o += e.target.o;
-                    GetBaseObject()->SummonGameObject(e.action.summonGO.entry, x, y, z, o, 0, 0, 0, 0, e.action.summonGO.despawnTime);
+                    GetBaseObject()->SummonGameObject(e.action.summonGO.entry, x, y, z, o, 0, 0, 0, 0, e.action.summonGO.despawnTime,
+                        ObjectGuid::Empty, nullptr, !(e.action.summonGO.flags & SMART_SUMMON_GAMEOBJECT_NO_CREATOR));
                 }
 
                 delete targets;
@@ -1573,11 +1575,13 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 }
                 else
                     pos = me->GetFirstCollisionPosition(dist, angle);
-                GetBaseObject()->SummonGameObject(e.action.summonGO.entry, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), angle, 0, 0, 0, 0, e.action.summonGO.despawnTime);
+                GetBaseObject()->SummonGameObject(e.action.summonGO.entry, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), angle, 0, 0, 0, 0, e.action.summonGO.despawnTime,
+                    ObjectGuid::Empty, nullptr, !(e.action.summonGO.flags & SMART_SUMMON_GAMEOBJECT_NO_CREATOR));
             }
 
             if (e.GetTargetType() == SMART_TARGET_POSITION)
-                GetBaseObject()->SummonGameObject(e.action.summonGO.entry, e.target.x, e.target.y, e.target.z, e.target.o, 0, 0, 0, 0, e.action.summonGO.despawnTime);
+                GetBaseObject()->SummonGameObject(e.action.summonGO.entry, e.target.x, e.target.y, e.target.z, e.target.o, 0, 0, 0, 0, e.action.summonGO.despawnTime,
+                    ObjectGuid::Empty, nullptr, !(e.action.summonGO.flags & SMART_SUMMON_GAMEOBJECT_NO_CREATOR));
             break;
         }
         case SMART_ACTION_KILL_UNIT:

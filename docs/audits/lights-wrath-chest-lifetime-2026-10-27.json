@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "c282cdd2",
+  "scope": "Keep successfully summoned248572 chest after native104985 source despawn; preserve lifetime0, native phase/summoner and map cleanup. Timed takeover failure/progression and whole chain remain open.",
+  "cause": "Original104985 source9/id2 action50 summons248572 with lifetime0/default hasCreator=true, then id3 immediately despawns its summoning actor. WorldObject::SummonGameObject attaches lifetime0 creature objects through Unit::AddGameObject; native source RemoveFromWorld/CleanupsBeforeDelete calls RemoveAllGameObjects and GameObject::Delete. The chest is therefore marked for removal along with its source, even after successful map insertion.",
+  "implementation": [
+    "Opt-in Smart action50 NO_CREATOR flag4 passes the existing native WorldObject::SummonGameObject hasCreator=false argument in fixed-position, unit-relative, random-position and existing fixed retry branches. Native SetSummonerGUID/phase/quest-scope/transport/map insertion and false-insertion rollback remain intact. It only skips Unit creator-list attachment, leaving map lifecycle cleanup responsible for the object.",
+    "Guarded SQL changes only104985/source9/id2 action_param3 from0 to4. Original lifetime0, precise native pose1117.78/1048.03/310.663/2.09636, delayed casts, duplicate event, immediate source despawn and all other SmartAI rows remain byte-identical. No invented expiry/teleport/quest credit/item grant or character edit.",
+    "Before opting in, live native action50 data had205 flag0,18 flag1 and2 flag2 rows; none used bit4. Existing0/1/2 keep their behavior. After updater only the intended one uses4; flag0 count204. Code-coupled migration stayed outside updater until verified matching game/scripts Release promotion with both server names absent."
+  ],
+  "native_evidence": {
+    "cleanup": "Actual Creature::ForcedDespawn(0) sets death state then RemoveCorpse; Unit::RemoveFromWorld and final cleanup call RemoveAllGameObjects. Actual owner list deletion body and native WorldObject/Map allocation/insertion/cleanup methods are extracted for regression. GameObject::isSpawned returns true with respawnDelay0 even when not spawned by default: preserve lifetime0 rather than invent an arbitrary hour timeout.",
+    "adjacent_open": "Fresh typed207949 Controlling is30s root26 plus periodic-trigger23/207960.207956 Righteous Fury is native30s dummy aura4.207996 is2s screen260/1010 plus native61/49811. Existing list still queues207996 then explicitly emits49811 and despawns regardless of actual cast/creation success; these separate timing/credit/retry causes remain OPEN, not covered up by the chest lifetime fix."
+  },
+  "checks": {
+    "counterfactual": "Legacy flag0 success path in the actual extracted Smart action50/WorldObject summon creates an owned lifetime0 chest; actual native Unit::RemoveAllGameObjects calls its Delete sink on source cleanup. Paired repaired flag4 path survives the same cleanup. Explicit controlled counterfactual, not a newly captured production crash or client observation.",
+    "asan": "28 full native Smart50 ->WorldObject/API/owner/map insertion ->Unit cleanup cases cover unit/fixed/random targets, flags0/1/4/5, combined retry2/6, true/false map insertion, original lifetime0/summoner/phase and native isSpawned. Actual allocation/owner/transport/static-transport/phase/reference cleanup preservation matrix included. Placement, map admission and Delete scheduling are controlled endpoints; full visibility/rendering/despawn scheduling not simulated.",
+    "sql": "TEMP update twice differs from original only in the intended flag, retaining native actor/template/neighbor/full graph/lifetime/pose. Seven custom/missing graph/template/duration/flag/target/despawn refusals leave all three TEMP tables unchanged. Native live updater LF-text SHA1/state/one opted-in row and no other bit4 consumer verified.",
+    "shared": "Marksmanship bow reveal, fixed summon retry/full192 live parameter shapes, loader constraints including valid combined6 and invalid timed LINK retry, and Xalatath weapon summon retry native hosts pass. Existing legacy creator policy explicitly asserted in their API adapters; no creation success/retry/LINK/death semantics changed.",
+    "release": "Original game and scripts static projects plus original final-link dependencies staged and canonical. Actual ProcessAction four summon calls each derive hasCreator from real action_param3 field60 as(~(flags>>2))&1 and pass x64 stack68. Native AddGameObject and owner-list deletion/RemoveFromWorld calls retained. Earlier Discipline admission/Tuure/capture preserved. Canonical native map insertion rollback/virtual cleanup/source retry and dedicated Scepter native/Release checks pass.",
+    "development": "Added missing fixture GameObjectList/default Position constructor before passing compilation. Existing retry PE verifier assumed a direct memory bit test; MSVC now loads action_param3 into EBX then tests BL. Verifier traces that actual load and unchanged bit2/null-result/runOnce/no-LINK control flow. Failed compiler/PE attempts retained as failures; no runtime diagnostics suppressed.",
+    "runtime": "Dedicated wrapped own11680 native updater/fresh ready/shutdown0/exit0, stderr/newDBErrors empty/protected hashes unchanged, no task server left. Both server names absent/rechecked during each promotion; no user/unknown server stopped. Canonical and own test/runtime/probe directories have no new/changed crashes, appended DBErrors or server warnings/errors/assertions."
+  },
+  "canonical_sha256": {
+    "worldserver.map": "224DF1B71FB78D8FF20FECF9C666F70E41BFD92F462E45910EE081E1655C0D4C",
+    "bnetserver.exe": "248AD2C9135C24B22657D4A245CBE2BD2D46FE6CD52F77D738F57BCA09381220",
+    "worldserver.exe": "1B1BA67A3B50EC17BAA41443731123EED20DA02EC90F6B4C3C9B0CAB936CB53A",
+    "bnetserver.map": "23621E32610E2A066BBF002B8BCDFA1FB1FF451D63E00DB4CDD5412DC3719B0E"
+  },
+  "migration": {
+    "name": "2026_10_27_03_lights_wrath_chest_lifetime.sql",
+    "native_updater_sha1": "A5E19CB694D5906445959085CE4CB335ABD8684C",
+    "state": "RELEASED"
+  },
+  "archives": "No new runtime crash/error report to archive or truncate; logs/dumps/credentials/character state excluded from Git.",
+  "next": [
+    "Actual207949 channel/207956 response/30s natural completion,207996 real accepted49811 before chest, failed cast/creation/actor/AI/quest attempt/reset/retry and original recipient. Do not mark the full timed sequence fixed by this ownership repair.",
+    "Then104502 real owner/pet/guardian death/104546 transition, pickup208011 consumed-state/portal retries, original session/return/client and remaining36 lifecycle reviews."
+  ]
+}

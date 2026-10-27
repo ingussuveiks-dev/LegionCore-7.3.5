@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Discipline chest outlives its native source (2026-10-27)
+
+- `lights-wrath-chest-lifetime-2026-10-27.json`: original104985 source9/id2 creates owned248572/lifetime0 then id3 despawns source; actual Unit cleanup deletes owned chest. New opt-in Smart50 flag4 passes existing native hasCreator=false in all four target/retry paths, preserving actual summoner/phase/scope/lifetime0/map ownership. Only intended one SQL row opts in; original0/1/2 unchanged.
+- Native ASAN28 paired legacy-delete/repaired-survive cases +full allocation/owner/phase/static-transport rollback matrix/native isSpawned pass. TEMP twice/seven exact custom refusals/full graph unchanged except flag. Shared Marksmanship reveal/retry192/native loader combined6 and Xalatath retry pass. Staged/canonical real flags field60 ->bit4 ->stack68 creator arg for four calls, retained native owner cleanup, prior Discipline/Tuure/capture/insertion/retry PE and Scepter pass. No actual client proof.
+- Updater2026_10_27_03 RELEASED SHA1 A5E19CB694D5906445959085CE4CB335ABD8684C only after matching game/scripts EXE offline promotion. Canonical world1B1BA67A3B50EC17BAA41443731123EED20DA02EC90F6B4C3C9B0CAB936CB53A, map224DF1B71FB78D8FF20FECF9C666F70E41BFD92F462E45910EE081E1655C0D4C; own11680 wrapped ready/shutdown0/exit0/no new diagnostics/protected changes/task server. Native live only104985 opts in. No crash/error archive or character edit. Commit containing audit followsc282cdd2.
+- NEXT actual207949 Controlling30s root+periodic207960,207956 Fury30s,207996 native49811 versus unconditional timed-list duplicate/progression/despawn; failed creation still consumes source. Trace true channel/cast/owner/attempt/retry before replacing it. Then104502/104546 combat,208011 consumed-state/portal replay and all36/full client remain OPEN.
+
 ## Latest repair: Discipline native final-step pickup admission (2026-10-27)
 
 - `lights-wrath-pickup-admission-2026-10-27.json`: actual248572 now1583/1065/6..7 before loot/owned-bank replay. Native source4 exact6/current active41631/living Priest/unowned-including-bank protects cached slots; real root22/group1 and deferred208011 source17 require owned native final6..7. Original orphan ownership group3 removed; actual native loot/lock/two actions/spell/exit unchanged.

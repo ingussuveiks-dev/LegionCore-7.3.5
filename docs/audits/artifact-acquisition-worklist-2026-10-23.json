@@ -2320,7 +2320,7 @@
       "weapon": "Light's Wrath",
       "item": 128868,
       "start": 41625,
-      "status": "partial: native final-step physical/cached-loot/state/cast admission repaired/backend-regressed/deployed. Preceding takeover/combat, original attempt/retry, actual full pickup/scene/exit and complete client remain OPEN.",
+      "status": "partial: native final-stage physical/cached-loot/state/cast admission and persistent successful chest after source despawn repaired/backend-regressed/deployed. Actual takeover/cast/creation retry, preceding combat, original attempt, full pickup/scene/exit and complete client remain OPEN.",
       "quests": [
         {
           "id": 41625,
@@ -2472,8 +2472,9 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace104985 actual spellclick/207956/30s207996/49811/chest/despawn failed-cast/owner/attempt/retry, then104502 real pet/guardian death credit and104546 transition. Native208011 consumed-state/failed-cast/portal retry and full client remain OPEN; all36 unfinished.",
-      "pickup_admission_audit": "docs/audits/lights-wrath-pickup-admission-2026-10-27.json"
+      "next_action": "Actual207949/207956/30s natural completion ->207996 accepted49811 before chest, failed cast/creation/actor/AI/attempt/reset/retry. Successful chest lifetime now retained. Then104502 pet/guardian death and104546 transition; pickup208011 consumed-state/portal retries/full client and all36 OPEN.",
+      "pickup_admission_audit": "docs/audits/lights-wrath-pickup-admission-2026-10-27.json",
+      "chest_lifetime_audit": "docs/audits/lights-wrath-chest-lifetime-2026-10-27.json"
     },
     {
       "class_id": 6,

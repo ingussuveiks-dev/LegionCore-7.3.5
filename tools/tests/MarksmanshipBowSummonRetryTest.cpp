@@ -5,6 +5,7 @@
 constexpr unsigned CONDITION_ALIVE=36,SMART_ACTION_SET_EVENT_PHASE=22,SMART_EVENT_PHASE_COUNT=12;
 constexpr unsigned SMART_ACTION_SUMMON_GO=50,SMART_TARGET_POSITION=8,SMART_TARGET_RANDOM_POSITION=128;
 constexpr unsigned SMART_SUMMON_GAMEOBJECT_RETRY_ON_FAILURE=2;
+constexpr unsigned SMART_SUMMON_GAMEOBJECT_NO_CREATOR=4;
 constexpr unsigned SMART_EVENT_WAYPOINT_PAUSED=55,SMART_EVENT_WAYPOINT_RESUMED=56,SMART_EVENT_WAYPOINT_STOPPED=57,SMART_EVENT_WAYPOINT_ENDED=58;
 constexpr double M_PI=3.14159265358979323846;
 float rand_norm(){return 0;}
@@ -13,7 +14,8 @@ float rand_norm(){return 0;}
 #include "PhaseMethods.inc"
 bool SmartAI::StartPath(bool,unsigned,bool,Unit*){return false;}
 struct ExpectedSummon {uint32 entry=248419,lifetime=3600;float positionX=62.6788f,positionY=1215.55f,positionZ=-38.6585f,orientation=0.705752f;} expected;
-GameObject* WorldObject::SummonGameObject(uint32 entry,float positionX,float positionY,float positionZ,float orientation,float,float,float,float,uint32 lifetime){
+GameObject* WorldObject::SummonGameObject(uint32 entry,float positionX,float positionY,float positionZ,float orientation,float,float,float,float,uint32 lifetime,ObjectGuid,void*,bool creator){
+    assert(creator);
     assert(entry==expected.entry&&lifetime==expected.lifetime&&std::abs(positionX-expected.positionX)<0.001f&&std::abs(positionY-expected.positionY)<0.001f&&std::abs(positionZ-expected.positionZ)<0.001f&&std::abs(orientation-expected.orientation)<0.001f);
     ++summonAttempts;if(!summonAvailable)return nullptr;
     ++summons;static GameObject object;return &object;
@@ -48,6 +50,7 @@ int main(int argc,char** argv){
     assert(definitions[0].event_id==45&&definitions[0].link==50&&definitions[1].event_id==50&&definitions[1].actionType==22&&definitions[1].action.setEventPhase.phase==2);
     assert(definitions[2].event_id==62&&definitions[2].type==60&&definitions[2].event.event_phase_mask==2&&definitions[2].actionType==50&&!definitions[2].link);
     assert(definitions[2].action.summonGO.flags==2&&ValidateSummon(definitions[2]));
+    {auto row=definitions[2];row.action.summonGO.flags=6;assert(ValidateSummon(row));row.type=61;assert(!ValidateSummon(row));assert(loaderErrors==1);loaderErrors=0;}
     for(unsigned invalid=0;invalid<5;++invalid){auto row=definitions[2];switch(invalid){case 0:row.targetType=1;break;case 1:row.type=61;break;case 2:row.event.event_phase_mask=0;break;case 3:row.event.event_flags=0;break;case 4:validTemplate=false;break;}assert(!ValidateSummon(row));validTemplate=true;}
     assert(loaderErrors==4);
     {RetryFixture pending;pending.vereesa.summonAvailable=false;pending.Reach();assert(pending.script.mEventPhase==2&&pending.vereesa.speeches==1&&!pending.vereesa.summonAttempts);

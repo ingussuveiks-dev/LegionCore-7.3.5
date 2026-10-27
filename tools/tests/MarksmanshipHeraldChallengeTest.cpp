@@ -56,7 +56,7 @@ struct WorldObject {
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
     uint32 summons=0,summonAttempts=0;bool summonAvailable=true;
     void GetPosition(float& positionX,float& positionY,float& positionZ,float& orientation){positionX=positionY=positionZ=orientation=0;}
-    GameObject* SummonGameObject(uint32,float,float,float,float,float,float,float,float,uint32);
+    GameObject* SummonGameObject(uint32,float,float,float,float,float,float,float,float,uint32,ObjectGuid={},void* =nullptr,bool=true);
 #endif
 };
 struct Unit:WorldObject {ObjectGuid GetGUID(){return {this};}Unit* ToUnit()override{return this;}virtual bool IsAlive(){return true;}

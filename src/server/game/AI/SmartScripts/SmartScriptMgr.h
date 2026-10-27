@@ -610,7 +610,10 @@ enum SMART_ACTION
 
 enum SmartSummonGameObjectFlags
 {
-    SMART_SUMMON_GAMEOBJECT_RETRY_ON_FAILURE = 0x2
+    SMART_SUMMON_GAMEOBJECT_RETRY_ON_FAILURE = 0x2,
+    // Keep the native summoner/scope, but let map cleanup own the object so
+    // retiring the summoning actor does not also remove its persistent chest.
+    SMART_SUMMON_GAMEOBJECT_NO_CREATOR = 0x4
 };
 
 struct SmartAction

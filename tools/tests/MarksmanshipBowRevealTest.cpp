@@ -5,6 +5,7 @@
 constexpr unsigned CONDITION_ALIVE=36,SMART_ACTION_SET_EVENT_PHASE=22,SMART_EVENT_PHASE_COUNT=12;
 constexpr unsigned SMART_ACTION_SUMMON_GO=50,SMART_TARGET_POSITION=8,SMART_TARGET_RANDOM_POSITION=128;
 constexpr unsigned SMART_SUMMON_GAMEOBJECT_RETRY_ON_FAILURE=2;
+constexpr unsigned SMART_SUMMON_GAMEOBJECT_NO_CREATOR=4;
 constexpr unsigned SMART_EVENT_WAYPOINT_PAUSED=55,SMART_EVENT_WAYPOINT_RESUMED=56,SMART_EVENT_WAYPOINT_STOPPED=57,SMART_EVENT_WAYPOINT_ENDED=58;
 constexpr double M_PI=3.14159265358979323846;
 float rand_norm(){return 0;}
@@ -12,7 +13,8 @@ float rand_norm(){return 0;}
 #include "FindLink.inc"
 #include "PhaseMethods.inc"
 bool SmartAI::StartPath(bool,unsigned,bool,Unit*){return false;}
-GameObject* WorldObject::SummonGameObject(uint32 entry,float positionX,float positionY,float positionZ,float orientation,float,float,float,float,uint32 lifetime){
+GameObject* WorldObject::SummonGameObject(uint32 entry,float positionX,float positionY,float positionZ,float orientation,float,float,float,float,uint32 lifetime,ObjectGuid,void*,bool creator){
+    assert(creator);
     assert(entry==248419&&std::abs(positionX-62.6788f)<0.001f&&std::abs(positionY-1215.55f)<0.001f&&std::abs(positionZ+38.6585f)<0.001f&&std::abs(orientation-0.705752f)<0.001f&&lifetime==3600);
     if(!summonAvailable)return nullptr;
     ++summons;static GameObject object;return &object;
