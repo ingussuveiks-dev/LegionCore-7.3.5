@@ -268,7 +268,7 @@ void OpcodeTable::Initialize()
     DEFINE_HANDLER(CMSG_BATTLE_PET_SET_BATTLE_SLOT,                         STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleBattlePetSetSlot);
     DEFINE_HANDLER(CMSG_BATTLE_PET_SET_FLAGS,                               STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleBattlePetSetFlags);
     DEFINE_HANDLER(CMSG_BATTLE_PET_SUMMON,                                  STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleBattlePetSummon);
-    DEFINE_HANDLER(CMSG_BATTLE_PET_UPDATE_DISPLAY_NOTIFY,                   STATUS_UNHANDLED, PROCESS_INPLACE,      &WorldSession::Handle_NULL);
+    DEFINE_HANDLER(CMSG_BATTLE_PET_UPDATE_DISPLAY_NOTIFY,                   STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleBattlePetUpdateDisplayNotify);
     DEFINE_HANDLER(CMSG_BATTLE_PET_UPDATE_NOTIFY,                           STATUS_LOGGEDIN,  PROCESS_INPLACE,      &WorldSession::HandleBattlePetUpdateNotify);
     DEFINE_HANDLER(CMSG_BATTLEFIELD_LEAVE,                                  STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleLeaveBattlefield);
     DEFINE_HANDLER(CMSG_BATTLEFIELD_LIST,                                   STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleBattlefieldList);

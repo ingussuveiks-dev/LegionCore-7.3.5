@@ -404,6 +404,7 @@ class TC_GAME_API Spell
         void LinkedSpell(Unit* caster, Unit *target, SpellLinkedType type = SPELL_LINK_CAST, uint32 effectMask = 4294967295);
 
         SpellCastResult CheckCast(bool strict);
+        SpellCastResult CheckBattlePetUpgrade(SpellEffIndex effIndex);
         SpellCastResult CheckPetCast(Unit* target);
 
         void handle_immediate();

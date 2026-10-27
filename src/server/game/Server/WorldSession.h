@@ -1836,6 +1836,7 @@ class TC_GAME_API WorldSession
         void HandleBattlePetSetSlot(WorldPackets::BattlePet::SetBattleSlot& packet);
         void HandleBattlePetSummon(WorldPackets::BattlePet::BattlePetGuidRead& packet);
         void HandleBattlePetUpdateNotify(WorldPackets::BattlePet::BattlePetGuidRead& packet);
+        void HandleBattlePetUpdateDisplayNotify(WorldPackets::BattlePet::NullCmsg& packet);
         void HandlePetBattleRequestWild(WorldPackets::BattlePet::RequestWild& packet);
         void HandlePetBattleRequestUpdate(WorldPackets::BattlePet::RequestUpdate& packet);
         void HandlePetBattleInput(WorldPackets::BattlePet::PetBattleInput& packet);

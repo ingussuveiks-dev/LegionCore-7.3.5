@@ -8594,72 +8594,79 @@ void Spell::EffectGrantBattlePetLevel(SpellEffIndex effIndex)
     m_CastItem = nullptr;
 }
 
+static uint8 BattlePetUpgradeQuality(SpellEffectInfo const* effect)
+{
+    switch (RoundingFloatValue(effect->BasePoints))
+    {
+        case 75: return BATTLEPET_QUALITY_UNCOMMON;
+        case 85: return BATTLEPET_QUALITY_RARE;
+        default: return 0;
+    }
+}
+
+SpellCastResult Spell::CheckBattlePetUpgrade(SpellEffIndex effIndex)
+{
+    Player* player = m_caster->ToPlayer();
+    if (!player || !m_CastItem || !m_CastItem->IsInWorld() ||
+        m_CastItem->GetOwnerGUID() != player->GetGUID())
+        return SPELL_FAILED_CANT_UPGRADE_BATTLE_PET;
+
+    Creature* summon = player->GetSummonedBattlePet();
+    auto const& pet = player->GetBattlePet(player->GetGuidValue(PLAYER_FIELD_SUMMONED_BATTLE_PET_GUID));
+    if (!pet || !summon || !summon->IsInWorld() || !summon->IsAlive() ||
+        m_targets.GetUnitTarget() != summon || summon->GetOwnerGUID() != player->GetGUID() ||
+        summon->GetGuidValue(UNIT_FIELD_BATTLE_PET_COMPANION_GUID) != pet->JournalID || player->_petBattleId)
+        return SPELL_FAILED_BAD_TARGETS;
+
+    auto const* species = sBattlePetSpeciesStore.LookupEntry(pet->Species);
+    if (!species || species->PetTypeEnum >= 10 ||
+        !(m_spellInfo->GetEffect(effIndex)->MiscValue & (1u << species->PetTypeEnum)))
+        return SPELL_FAILED_WRONG_BATTLE_PET_TYPE;
+
+    uint8 quality = BattlePetUpgradeQuality(m_spellInfo->GetEffect(effIndex));
+    return quality && pet->Quality < quality ? SPELL_CAST_OK : SPELL_FAILED_CANT_UPGRADE_BATTLE_PET;
+}
+
 void Spell::EffectUpgradeBattlePet(SpellEffIndex effIndex)
 {
     if (effectHandleMode != SPELL_EFFECT_HANDLE_LAUNCH_TARGET)
         return;
 
-    if (!m_CastItem)
+    // Check before launch in CheckCast as well: late rejection alone would
+    // still let TakeCastItem consume an unusable stone after this effect.
+    SpellCastResult result = CheckBattlePetUpgrade(effIndex);
+    if (result != SPELL_CAST_OK)
+    {
+        SendCastResult(result);
+        if (m_CastItem)
+        {
+            m_CastItem->SetInUse(false);
+            if (m_targets.GetItemTarget() == m_CastItem)
+                m_targets.SetItemTarget(nullptr);
+            m_CastItem = nullptr;
+            m_castItemEntry = 0;
+            m_castItemGUID.Clear();
+        }
         return;
+    }
 
     Player* player = m_caster->ToPlayer();
-    if (!player)
-        return;
-
     auto const& battlePet = player->GetBattlePet(player->GetGuidValue(PLAYER_FIELD_SUMMONED_BATTLE_PET_GUID));
-    if (!battlePet)
-        return;
-
-    auto const& familyMask = 1 << sBattlePetSpeciesStore.AssertEntry(battlePet->Species)->PetTypeEnum;
-    if ((familyMask & m_spellInfo->GetEffect(effIndex)->MiscValue) == 0)
-    {
-        SendCastResult(SPELL_FAILED_WRONG_BATTLE_PET_TYPE);
-        return;
-    }
-
-    uint8 quality = 1;
-    switch (RoundingFloatValue(m_spellInfo->GetEffect(effIndex)->BasePoints))
-    {
-        case 75: // Uncommon
-            quality = BATTLEPET_QUALITY_UNCOMMON;
-            break;
-        case 85: // Rare
-            quality = BATTLEPET_QUALITY_RARE;
-            break;
-        case 98: // Epic
-        case 99: // Epic
-            quality = BATTLEPET_QUALITY_EPIC;
-            break;
-        default:
-            break;
-    }
-
-    if (quality >= BATTLEPET_QUALITY_EPIC)
-    {
-        SendCastResult(SPELL_FAILED_CANT_UPGRADE_BATTLE_PET);
-        return;
-    }
-
-    if (battlePet->Quality >= quality)
-    {
-        SendCastResult(SPELL_FAILED_CANT_UPGRADE_BATTLE_PET);
-        return;
-    }
-
-    battlePet->Quality = quality;
+    battlePet->Quality = BattlePetUpgradeQuality(m_spellInfo->GetEffect(effIndex));
     battlePet->needSave = true;
-
-    if (battlePet->Level >= 15)
-    {
-        battlePet->Level = battlePet->Level - 2;
-        m_targets.GetUnitTarget()->SetUInt32Value(UNIT_FIELD_WILD_BATTLE_PET_LEVEL, battlePet->Level);
-    }
+    battlePet->UpdateStats();
 
     m_CastItem->SetInUse(false);
-    player->GetSession()->SendBattlePetUpdates(nullptr, true);
-    player->DestroyItem(m_CastItem->GetBagSlot(), m_CastItem->GetSlot(), true);
-    player->SetUInt32Value(PLAYER_FIELD_CURRENT_BATTLE_PET_BREED_QUALITY, battlePet->Quality);
+    Item* item = m_CastItem;
+    if (m_targets.GetItemTarget() == item)
+        m_targets.SetItemTarget(nullptr);
     m_CastItem = nullptr;
+    m_castItemEntry = 0;
+    m_castItemGUID.Clear();
+    uint32 count = 1;
+    player->DestroyItemCount(item, count, true);
+    player->GetSession()->SendBattlePetUpdates(battlePet.get());
+    player->SetUInt32Value(PLAYER_FIELD_CURRENT_BATTLE_PET_BREED_QUALITY, battlePet->Quality);
 }
 
 void Spell::EffectUnlockPetBattles(SpellEffIndex /*effIndex*/)

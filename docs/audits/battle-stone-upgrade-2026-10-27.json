@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-27",
+  "status": "Native repair built/promoted; fresh own startup and actual client retest status recorded below",
+  "report": "User used one purchased Marked Flawless Battle-Stone on newly selected journal pet, then bought five more and used none of those. Client triggered unhandled CMSG_BATTLE_PET_UPDATE_DISPLAY_NOTIFY0x31D7. Earlier five-remaining inference did not establish whether the first stone was consumed; user corrected that chronology.",
+  "cause": [
+    "Native98715->134644/effect204/BasePoints85/mask1023/target90/charges-1. Original effect checked quality only during launch and sent failure, leaving cast item available to later native TakeCastItem. Thus alreadyRare rejection could still consume one stone.",
+    "Successful original upgrade deleted the entire Item stack, subtracted2 levels at15+ (obsolete pre6.1 behavior), and sent cached battle-pet statistics without UpdateStats.",
+    "Display notification was registered STATUS_UNHANDLED/Handle_NULL. Existing separate GUID UPDATE_NOTIFY handler is empty and was not used as a workaround."
+  ],
+  "repair": [
+    "CheckCast effect204 validates actual item owner, actual owned summoned journal companion/target identity, live summon, no active pet battle, safe native species/family and recognized75/85 quality before launch/consumption. Original slot/LOS/general cast checks remain. AlreadyRare/wrong family/no pet is rejected without consuming. Effect rechecks and releases the item reference on late invalidation.",
+    "Successful upgrade preserves Level and XP, invokes native BattlePet::UpdateStats, marks needSave, consumes exactly one via actual Player::DestroyItemCount(Item*), clears deleted cast/target references and sends the changed journal pet. No direct progression, levels or arbitrary quality grants.",
+    "Typed display-notification handler runs on world thread. Empty notification resolves actual own journal/summon GUID and authoritative creature model; updates changed model only and sends one journal update. Repeated unchanged notifications do not create an update feedback loop. Foreign/missing actors ignored, nonempty payload retains explicit error diagnostics."
+  ],
+  "protocol_evidence": {
+    "local": "Matching735 opcode0x31D7 confirmed in local WPP V7_3_5_25848 enum. Current local TrinityCore still leaves this opcode unhandled, providing no implementation. Later WPP V5_5_0_61735 parser treats this named notification as zero payload. That later build is only a reference, not direct proof of735 payload/behavior.",
+    "limit": "Actual735 payload capture/client notification/rendering remain pending. Handler accepts no client model/GUID or progression input, validates unexpected payload rather than silencing it. Source/native ownership and repeat tests pass; do not claim full protocol/client certification."
+  },
+  "native_checks": [
+    "Test-BattleStone -AddressSanitizer executes actual quality/check/effect, actual BattlePet::UpdateStats, actual pointer-based Player::DestroyItemCount and native TakeCastItem consumption fragment. Pinned b981afb7b old effect on alreadyRare returns failure then consumes single stone; repaired prelaunch refusal leaves it intact.",
+    "120 valid cases across all10 families/levels1,14,15,25/stacks1,5,20; unchanged XP, one-unit decrement, native recomputed fields serialized at controlled session boundary, needSave and no duplicate consumption.16 prelaunch/late denials, Uncommon75, exact own display sync,100 repeated notifications/no repeat update and malformed/foreign/missing cases pass. DB2/session/database endpoints controlled; not an actual client cast or persistence/relog test.",
+    "Typed matching26972 ItemSparse/ItemEffect/Spell/SpellEffect/BattlePetSpecies with readonly hotfix overlays: native max stack20, 98715->134644 and species1155->68659/Anubisath Idol. Existing world template defines initial qualityRare. No data repair required.",
+    "Original game.lib Release/x64 rebuilt, original final-link dependencies verified; final stage F8F4A6D7. Actual PE verifies effect204 dispatch table points to repaired handler, CheckCast calls real guard, native stat/one-unit consumers, typed registered opcode callback and native owned lookup. Whole-item DestroyItem call absent from upgraded effect.",
+    "Final native Scepter login/PE, canonical portal consumer/SQL13 verification and owned ready/shutdown diagnostics recorded in final evidence."
+  ],
+  "authorized_recovery": {
+    "basis": "User explicitly requested checking/restoring losses for retest; clarified one initial purchase/use followed by five untouched purchases. Selected species1155 startsRare/level1, so no level/quality rollback supported. Native baseline confirms erroneous rejection-consumption path. No historical packet/item transaction record exists (MariaDB binary/general logging off); exact cast not captured.",
+    "action": "While both servers absent and all account characters offline, returned exactly one stone to existing stack within native max20. No pet/quest/XP/quality/progress changes. Guarded transaction required exact original stack and offline state; repeat would refuse. Private before/copy backup hashes verified and full before/after snapshots differ only in count.",
+    "evidence": ".codex/battle-stone/recovery-before.tsv, recovery-before-copy.tsv, recovery-after.tsv and guarded refund.ps1; personal rows remain ignored/local only."
+  },
+  "diagnostics": {
+    "evidence": ".codex/battle-stone/{build,build-2,catalog-2,pe-stage,recovery,deployment,final-deployment}/ and build-extractors/runtime-test/battle-stone",
+    "result": "Before/after all native/build/PE/recovery/startup groups inspected. No new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions in completed groups. Original reported opcode line remains in mixed Server.log; no logs truncated or historical error hidden.",
+    "development": "Fixture initially used float return for native integer rounding helper; corrected. Native float-to-integer stats warning and existing full-build warnings retained. Original shell here-string refund script construction failed parsing before any execution; corrected file via patch and guarded refund passed."
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "F8F4A6D7A91C60D78E5891D3A1E17C68EDB3CD9BE22E99FB62EB7C4CE28F8310",
+    "manifest": ".codex/battle-stone-final-deployment.json",
+    "scope": "Includes prior completed changes and coordinated Azuregos portal938fc1225/SQL13. Both user servers absent at each promotion; no user process stopped. Configs/certificates preserved. Own22608 earlier stage shutdown0/exit0; final own34304 recorded separately."
+  },
+  "pending": [
+    "User client retest: Anubisath Idol is alreadyRare, so rejection should preserve every stone. Choose a genuinely lower-quality battle pet to exercise a successful upgrade; levels/XP preserved, one stone consumed and stats/display refreshed. No client success claimed yet.",
+    "Packet payload/rendering, journal/relog/account save and live dismissal/resummon remain client checks. All36 artifact chains, Aluneth control and Bilaal gravity remain separate unfinished work."
+  ]
+}

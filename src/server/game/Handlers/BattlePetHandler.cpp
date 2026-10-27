@@ -1424,3 +1424,27 @@ void WorldSession::HandleBattlePetUpdateNotify(WorldPackets::BattlePet::BattlePe
 {
 
 }
+
+void WorldSession::HandleBattlePetUpdateDisplayNotify(WorldPackets::BattlePet::NullCmsg& packet)
+{
+    if (packet.GetSize())
+    {
+        TC_LOG_ERROR("network.opcode", "Battle pet display notification has unexpected payload (%zu bytes)", packet.GetSize());
+        return;
+    }
+
+    // This notification carries no client-selected model or pet identity.
+    // Resolve both from this player's actual summoned journal companion.
+    auto const& pet = _player->GetBattlePet(_player->GetGuidValue(PLAYER_FIELD_SUMMONED_BATTLE_PET_GUID));
+    Creature* summon = _player->GetSummonedBattlePet();
+    if (!pet || !summon || !summon->IsInWorld() || summon->GetOwnerGUID() != _player->GetGUID() ||
+        summon->GetGuidValue(UNIT_FIELD_BATTLE_PET_COMPANION_GUID) != pet->JournalID)
+        return;
+
+    if (pet->DisplayModelID == summon->GetDisplayId())
+        return;
+
+    pet->DisplayModelID = summon->GetDisplayId();
+    pet->needSave = true;
+    SendBattlePetUpdates(pet.get());
+}
