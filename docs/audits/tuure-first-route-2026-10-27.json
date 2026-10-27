@@ -5,7 +5,7 @@
   "scope": "Tuure1085 real106221/361429 death and first native Boros route9859002 through accepted47883 AND47882. Later crate/captain/second route/full client remain open.",
   "cause": [
     "Old state-only OnUnitDeath dispatches nearest Boros AI DoAction1 without real kill/DB-spawn/quest recipient. Missing AI dereferences null; charmed/replaced AI can consume the action. Repeated state events duplicate queued paths.",
-    "AI Reset erases firstwp while native movement continues; waypoint50831 credits nearest player, so a GM/unrelated observer can consume the arrival. Missing player at that single callback loses retry."
+    "AI replacement/recreation erases firstwp while native movement can continue; waypoint50831 credits nearest player, so a GM/unrelated observer can consume the arrival. Missing player at that single callback loses retry. Correction: ordinary Reset itself retained firstwp; its generation increment applied to the separate presentation queue."
   ],
   "implementation": [
     "Record only real Unit::Kill CreatureDies106221/361429 in actual1085/stage2 with genuine first victory47519; native original player/owner or uniquely eligible unowned ally recipient, exact41993 lease/full GUIDs. State-only OnUnitDeath does nothing.",

@@ -2140,7 +2140,8 @@
           "target1": 1,
           "target2": 0,
           "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json",
-          "next_action": "Repair friendly106134/106137/106253 final-scaled wound guards and trace native pre-heal95/40 thresholds, then Boros movement/evade/captain/contact. Native Calindris owner/ally50695 and3s finite death separately verified; actual full client fight/aura/gravity/pet/re-entry and all36 remain OPEN."
+          "next_action": "Contact105697 native209441/taxi5626 and redundant unconditional SAI33/dangling LINK1; then remaining quest admission/return and all36. Captain real death50634/47909/native second route independently verified; across-session recovery/dormant combat fidelity and full client remain OPEN.",
+          "captain_route_audit": "docs/audits/tuure-captain-route-2026-10-27.json"
         }
       ],
       "broken_actor_links": [
@@ -2171,7 +2172,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Captain106107/361436 actual-killer50634/leaf and unsafe Boros attack/DoAction2, then native point3/8s9859003/waypoint7/4s Lady handoff. Preserve original native motion/combat/timing rather than force scenario completion. Then contact105697 native209441/taxi5626 and redundant early SAI credit/LINK; remaining quest admission/return and all36. Across-session scenario restart, client presentation and full route remain OPEN.",
+      "next_action": "Contact105697 native209441/taxi5626 and redundant unconditional SAI33/dangling LINK1; then remaining quest admission/return and all36. Captain real death50634/47909/native second route independently verified; across-session recovery/dormant combat fidelity and full client remain OPEN.",
       "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json",
       "native_pickup_audit": "docs/audits/tuure-native-pickup-2026-10-26.json",
       "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json",
@@ -2182,7 +2183,8 @@
       "native_criteria_admission_audit": "docs/audits/tuure-native-criteria-admission-2026-10-26.json",
       "first_fight_audit": "docs/audits/tuure-first-fight-2026-10-27.json",
       "first_route_audit": "docs/audits/tuure-first-route-2026-10-27.json",
-      "cage_opening_audit": "docs/audits/tuure-cage-opening-2026-10-27.json"
+      "cage_opening_audit": "docs/audits/tuure-cage-opening-2026-10-27.json",
+      "captain_route_audit": "docs/audits/tuure-captain-route-2026-10-27.json"
     },
     {
       "class_id": 5,

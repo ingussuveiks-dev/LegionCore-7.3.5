@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "23aacb79",
+  "scope": "Real Captain106107/361436 death50634/47909, native combat assist and second Boros route to Lady. Full chains/client remain open.",
+  "cause": [
+    "Old JustDied used the nearest player instead of the actual killer/owner and disappeared when primary AI was unavailable. Raw Boros AI EnterCombat/DoAction calls could dereference unavailable AI.",
+    "Old AI-owned1s/8s/4s queue and point3/waypoint7 callback depended on an intact enabled Boros AI. Native nonrepeating waypoint generator removes itself after its last arrival; merely polling an extant generator would strand the continuation.",
+    "After the consumed cage disappears, a recreated captain/Boja restores constructor locks. The accepted native cage fact must retain its original release without another credit."
+  ],
+  "implementation": [
+    "Scoped instance1085/stage4/real cage47561 handles actual CreatureDies with exact entry/spawn, native player/pet/guardian/charmer owner or unique eligible healer for three unowned native allies. Original fullGUID and weak native41993 quest lease retained; native dead owner allowed, GM/contact/phase/range/active quest gates retained.",
+    "Immediate original50634 goes through native Player criteria and actual accepted47909, with5s rejected-credit retry and no nearest spectator/direct completion. Native instance engagement hook delegates base behavior and safely retries original Boros assistance without relying on captain primary AI.",
+    "Preserve1s native MovePoint3, require finalized real spline and strict0.5yd endpoint without object-radius inflation, then original2015/8s/path9859003/Jace1. Native lastnode7 plus finalized actual final pose survives native generator removal. Original Jace2/4s and real live Lady361888 precede native Boros AttackStart. Missing actor/AI/path and interrupted native motion retain retry; original lease/identity guards prevent stale retake work.",
+    "Recover only earned captain original flag-mask/faction2102/defensive state and Boja immunity/follow. No speculative actor summon, teleport, forced health, item, quest/scenario completion or character-data edit. No SQL/new script registration."
+  ],
+  "native_evidence": {
+    "criteria": "Typed native26972 scan across all criteria/tree/step relationships finds exactly one script50634 or kill106107 use: scenario1085/order4/tree47909/criteria29864/type92/asset50634. Cage47561 and Lady47656 remain separate native facts; five shared map1489 scenarios scoped.",
+    "world": "Live actual Captain361436, Boros361419, Jace361432, Boja361433 and Lady361888; second path9859003 has8 nodes/no delays/actions, final192.805/1277.29/-58.7333. No Captain SAI/death producer. Template0x8000 is retained native UNK15, not one of the four original constructor attack locks.",
+    "combat_limit": "Original8s Fel Flame211480 retained. Dormant/commented old Trembling Stomp event branch is not repaired or certified. No external/video/client evidence claimed."
+  },
+  "checks": {
+    "baseline": "Pinned23aacb79 actual old JustDied invoked through extracted native Unit::Kill primary-AI dispatch reproduces nearest observer credit for pet killer; disabled primary AI loses real captain death. Explicit counterfactual, not an ordinary successful run.",
+    "native_asan": "Full actual instance/controller plus native owner, quest lease, Unit::Kill AI/instance bridges, Unit::SetInCombatState instance callback, PointMovementGenerator finalize and actual waypoint arrival/final-node removal.56 live/dead owner/status/primary-or-missing-AI/player-pet-guardian-charmer-three-ally variants;22 denials, duplicate/state-only/shared scenarios, strict short endpoint incl objectSize5, failed/rejected native credit/path, original delays, missing/replaced actors/AI, reset/quest retake/reentrant removals and earned cage reload pass. Prior28 first-fight and40+16 second-route cases preserved.",
+    "preservation": "Cage ASAN and Lady56 full production-handler ASAN pass after shared fixture changes. Actual canonical Scepter login regression/PE passes.",
+    "release": "Original scripts static project/final-link libraries built separately. Staged and canonical actual instance factory->outlined constructor->hooks, native combat slot0x58, death slot0x28, original counters/delays/path, real owner/lease and absence of direct grants verified alongside full earlier Tuure/capture Release checks. Retired Captain JustDied/Boros action override absent/native inherited action selected.",
+    "development": "Wrong GetVictim API corrected to native getVictim before successful build. Native braceless combat-hook extraction and final-node removal fixture corrected before passing regression; missing-path8s rearm fixed. Initial PE invocation used unsupported named argument; corrected positional. Larger instance caused MSVC to outline constructor; verifier now follows actual factory call before selected vtable instead of assuming inline construction. Failed attempts retained as failures. Initial startup had concurrent canonical-PE diagnostics and its own exit/stderr/DB checks; repeated with dedicated complete before/after wrapper.",
+    "limits": "Motion launch/grid/criteria/health/death/network endpoints remain controlled adapters. Native dispatch/finalize/arrival are extracted. Actual client route, geometry, combat/voice/visibility, pet and faction traversal remain user checks. Across-session scenario restart and later combat cancellation remain open.",
+    "runtime": "Own14716 and dedicated wrapped2892 fresh ready/shutdown0/exit0; stderr/newDBErrors empty, protected configuration/certificate hashes unchanged, no task server remains. Canonical and own test/probe directories checked before/after: no new/changed crashes, appended DBErrors or server warnings/errors/assertions. No unknown/user server stopped."
+  },
+  "canonical_sha256": {
+    "worldserver.map": "4D7756DC406F84E60891208D27765FD0BAF025256672290C2E3779A03B562C20",
+    "bnetserver.exe": "69660CC520E8E2AE52B7E967552DA8461962CDBDE0A6FFB26B874442CF657D09",
+    "bnetserver.map": "AB39D42969566B181D22C45D2E8EF3E0A70F18CCAF4AC40FBA5596235E6A578F",
+    "worldserver.exe": "C27434D7F406FBA80399442B6EB5760F01BE425D747D5A065505042631B3039C"
+  },
+  "archives": "No new crash/server error to archive or truncate. Logs/dumps/credentials/character data excluded.",
+  "next": [
+    "Contact105697 native209441/taxi5626 plus redundant unconditional SAI33 and dangling LINK1; trace actual native dispatch/failure/admission/route before changing data.",
+    "Remaining quest admission/return, across-session recovery, dormant combat branch and all36/client traversal remain OPEN."
+  ],
+  "historical_correction": "Prior first-route audit now states ordinary Boros Reset retained firstwp; AI reconstruction lost it. Reset invalidated a separate presentation queue. Current missing-AI/reset coverage unchanged."
+}

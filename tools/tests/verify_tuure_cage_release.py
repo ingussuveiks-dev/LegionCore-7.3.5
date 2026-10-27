@@ -14,6 +14,11 @@ def references(method):
         for op in x.operands:
             if op.type == CS_OP_MEM and op.mem.base == X86_REG_RIP:
                 yield x.address + x.size + op.mem.disp
+    if method == '?GetInstanceScript@instance_tuure@@':
+        constructor = '??0instance_tuure_InstanceMapScript@instance_tuure@@'
+        if any(s.startswith(constructor) for s in n['symbols']):
+            assert n['symbol'](constructor) in n['calls'](method)
+            yield from references(constructor)
 tables = []
 for address in references('?GetAI@go_tuure_crate@@'):
     table = struct.unpack_from('<24Q', n['binary'], n['offset'](address))

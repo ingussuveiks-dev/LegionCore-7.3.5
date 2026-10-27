@@ -10,6 +10,7 @@
 #include "Tuure.h"
 #include "WaypointMovementGenerator.h"
 #include "CreatureTextMgr.h"
+#include "MoveSpline.h"
 
 
 class instance_tuure : public InstanceMapScript
@@ -218,6 +219,297 @@ public:
             }
         }
 
+        enum class CaptainState { Waiting, Victory, PointWait, PointMove, Exposition, Path, AttackWait, Done };
+        CaptainState captainState = CaptainState::Waiting;
+        ObjectGuid captainOwner, captainDefeated, captainRouteActor, ladyGuid;
+        std::weak_ptr<uint8> captainAttempt;
+        float captainX = 0, captainY = 0, captainZ = 0, captainReach = 100.0f;
+        uint32 captainDelay = 1000, captainRetry = 0;
+        bool captainAssist = false, captainDelivering = false, captainSpoke = false, jaceStartSpoke = false, jaceEndSpoke = false;
+        bool captainCreditWarning = false, captainActorWarning = false, captainMoveWarning = false, captainPathWarning = false, captainLadyWarning = false;
+
+        void CancelCaptain()
+        {
+            captainState = CaptainState::Waiting;
+            captainAssist = false;
+            captainOwner.Clear();
+            captainDefeated.Clear();
+            captainRouteActor.Clear();
+            captainAttempt.reset();
+            captainDelay = 1000;
+            captainRetry = 0;
+            captainSpoke = jaceStartSpoke = jaceEndSpoke = false;
+            captainCreditWarning = captainActorWarning = captainMoveWarning = captainPathWarning = captainLadyWarning = false;
+        }
+
+        Creature* CaptainActor(uint32 entry, uint64 spawn)
+        {
+            Creature* actor = instance->GetCreature(entry == 106318 ? ladyGuid : GetGuidData(entry));
+            return actor && actor->IsInWorld() && !actor->IsPreDelete() && actor->IsAlive() && actor->GetMap() == instance &&
+                actor->GetEntry() == entry && actor->GetDBTableGUIDLow() == spawn ? actor : nullptr;
+        }
+
+        void UpdateEarnedCageActors()
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1085 || scenario->GetCurrentStep() < 4 ||
+                scenario->GetCurrentStep() > 5 || !HasRouteProgress(47561)) return;
+            // A new actor's constructor restores its template locks even when
+            // the already-consumed cage no longer has an AI to release it.
+            if (scenario->GetCurrentStep() == 4)
+                if (Creature* captain = CaptainActor(106107, 361436))
+                    if (!captain->isInCombat() && captain->GetCharmerGUID().IsEmpty() && captain->getFaction() == 35)
+                    {
+                        captain->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                        captain->SetReactState(REACT_DEFENSIVE);
+                        captain->setFaction(2102);
+                    }
+            Creature* boja = CaptainActor(106253, 361433);
+            Creature* boros = GetBoros();
+            if (boja && boros && !boja->isInCombat() && boja->GetCharmerGUID().IsEmpty() &&
+                boja->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC) && boja->InSamePhase(boros) && boja->IsWithinDistInMap(boros, 70.0f))
+            {
+                boja->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
+                boja->GetMotionMaster()->MoveFollow(boros, PET_FOLLOW_DIST, static_cast<float>(-PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+            }
+        }
+
+        Player* CaptainRecipient(Creature* actor, Unit* source)
+        {
+            if (!actor || !source) return nullptr;
+            if (Player* owner = source->GetCharmerOrOwnerPlayerOrPlayerItself())
+                return TuureFirstFight::Eligible(owner, actor, 4, 4) ? owner : nullptr;
+            if (source->GetCharmerOrOwnerGUID() || source->GetMap() != instance || !source->InSamePhase(actor) ||
+                (source->GetEntry() != 106134 && source->GetEntry() != 106137 && source->GetEntry() != 106253)) return nullptr;
+            Player* result = nullptr;
+            for (auto const& reference : instance->GetPlayers())
+                if (TuureFirstFight::Eligible(reference.getSource(), actor, 4, 4))
+                {
+                    if (result) return nullptr;
+                    result = reference.getSource();
+                }
+            return result;
+        }
+
+        bool BindCaptain(Player* player)
+        {
+            if (!player) return false;
+            player->AddQuestDelayedEvent(41993, 0, []() { });
+            QuestStatusData* status = player->getQuestStatus(41993);
+            if (!status || !status->ScriptLifetime) return false;
+            captainOwner = player->GetGUID();
+            captainAttempt = status->ScriptLifetime;
+            return true;
+        }
+
+        bool CaptainOwnerReady(Player* player, Unit* anchor)
+        {
+            return player && anchor && anchor->IsInWorld() && !anchor->IsPreDelete() && anchor->GetMap() == instance &&
+                player->IsInWorld() && player->CanContact() && !player->isGameMaster() && !player->HasPendingTeleport() &&
+                player->GetMap() == instance && player->getClass() == CLASS_PRIEST && player->InSamePhase(anchor) &&
+                !player->GetQuestRewardStatus(41993) &&
+                (player->GetQuestStatus(41993) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(41993) == QUEST_STATUS_COMPLETE);
+        }
+
+        void EnterCombatForScript(Creature* creature, Unit* enemy) override
+        {
+            if (!creature || creature->GetMap() != instance) return;
+            InstanceScript::EnterCombatForScript(creature, enemy);
+            if (captainState != CaptainState::Waiting || creature->GetEntry() != 106107 ||
+                creature->GetDBTableGUIDLow() != 361436 || !creature->IsAlive() || !HasRouteProgress(47561)) return;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1085 || scenario->GetCurrentStep() != 4) return;
+            if (BindCaptain(CaptainRecipient(creature, enemy))) captainAssist = true;
+        }
+
+        void DeliverCaptainVictory()
+        {
+            if (captainState != CaptainState::Victory || captainDelivering) return;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1085) return;
+            if (HasRouteProgress(47909))
+            {
+                if (scenario->GetCurrentStep() == 5) { captainState = CaptainState::PointWait; captainDelay = 1000; }
+                else if (scenario->GetCurrentStep() > 5) captainState = CaptainState::Done;
+                return;
+            }
+            if (scenario->GetCurrentStep() != 4 || !HasRouteProgress(47561)) return;
+            Player* player = TuureFirstFight::Find(instance, captainOwner);
+            QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;
+            if (captainAttempt.expired() || (player && (!status || status->ScriptLifetime != captainAttempt.lock()))) { CancelCaptain(); return; }
+            Creature* anchor = instance->GetCreature(captainDefeated);
+            if (anchor && (anchor->IsAlive() || anchor->GetEntry() != 106107 || anchor->GetDBTableGUIDLow() != 361436)) { CancelCaptain(); return; }
+            if (!anchor || !anchor->IsInWorld() || anchor->IsPreDelete()) anchor = GetBoros();
+            if (!CaptainOwnerReady(player, anchor) || !player->IsWithinDist3d(captainX, captainY, captainZ, captainReach)) return;
+            captainDelivering = true;
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50634);
+            captainDelivering = false;
+            if (captainState != CaptainState::Victory) return;
+            if (!HasRouteProgress(47909))
+            {
+                if (!captainCreditWarning) TC_LOG_WARN("scripts", "Tuure captain: real death50634 not accepted by native47909; retain original receipt");
+                captainCreditWarning = true;
+                captainRetry = 5000;
+                return;
+            }
+            scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (scenario && scenario->GetScenarioId() == 1085 && scenario->GetCurrentStep() == 5)
+            {
+                captainState = CaptainState::PointWait;
+                captainDelay = 1000;
+            }
+            else if (scenario && scenario->GetScenarioId() == 1085 && scenario->GetCurrentStep() > 5)
+                captainState = CaptainState::Done;
+        }
+
+        void RecordCaptainDeath(Creature* creature, Unit* killer)
+        {
+            if (creature->GetEntry() != 106107 || creature->GetDBTableGUIDLow() != 361436 || !HasRouteProgress(47561)) return;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1085 || scenario->GetCurrentStep() != 4) return;
+            if (captainState != CaptainState::Waiting)
+            {
+                Player* original = TuureFirstFight::Find(instance, captainOwner);
+                QuestStatusData* status = original ? original->getQuestStatus(41993) : nullptr;
+                if (captainState != CaptainState::Victory || (!captainAttempt.expired() && status && status->ScriptLifetime == captainAttempt.lock())) return;
+                CancelCaptain();
+            }
+            if (!BindCaptain(CaptainRecipient(creature, killer))) return;
+            captainDefeated = creature->GetGUID();
+            captainX = creature->GetPositionX(); captainY = creature->GetPositionY(); captainZ = creature->GetPositionZ();
+            captainReach = 100.0f + creature->GetObjectSize();
+            captainState = CaptainState::Victory;
+            captainAssist = false;
+            DeliverCaptainVictory(); // original immediate native credit; movement still waits its real1s
+        }
+
+        void CaptainJace(Creature* boros, uint8 text, float range, bool& spoken)
+        {
+            if (spoken) return;
+            if (Creature* jace = CaptainActor(106137, 361432))
+                if (jace->InSamePhase(boros) && jace->IsWithinDistInMap(boros, range))
+                {
+                    spoken = true;
+                    sCreatureTextMgr->SendChat(jace, text);
+                }
+        }
+
+        void UpdateCaptain(uint32 diff)
+        {
+            if (captainDelivering || (captainState == CaptainState::Waiting && !captainAssist) || captainState == CaptainState::Done) return;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1085) return;
+            if (scenario->GetCurrentStep() > 5) { captainState = CaptainState::Done; captainAssist = false; return; }
+            Player* player = TuureFirstFight::Find(instance, captainOwner);
+            QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;
+            if (captainAttempt.expired() || (player && (!status || status->ScriptLifetime != captainAttempt.lock()))) { CancelCaptain(); return; }
+            if (captainRetry > diff) { captainRetry -= diff; return; }
+            captainRetry = 0;
+            if (captainState == CaptainState::Victory) { DeliverCaptainVictory(); return; }
+            Creature* boros = GetBoros();
+            if (!boros && captainState != CaptainState::Waiting)
+            {
+                if (!captainActorWarning) TC_LOG_WARN("scripts", "Tuure captain: actual Boros361419 missing after accepted47909; retain route");
+                captainActorWarning = true;
+                return;
+            }
+            if (!CaptainOwnerReady(player, boros) || boros->HasUnitState(UNIT_STATE_STUNNED) || !boros->GetCharmerGUID().IsEmpty()) return;
+            if (captainState == CaptainState::Waiting)
+            {
+                Creature* captain = CaptainActor(106107, 361436);
+                if (scenario->GetCurrentStep() == 4 && captain && captain->isInCombat() && boros->InSamePhase(captain) &&
+                    boros->IsWithinDistInMap(captain, 100.0f) && boros->IsAIEnabled && boros->AI())
+                {
+                    captainAssist = false;
+                    if (!boros->getVictim() || boros->getVictim()->GetGUID() != captain->GetGUID()) boros->AI()->AttackStart(captain);
+                }
+                return;
+            }
+            if (scenario->GetCurrentStep() != 5 || !HasRouteProgress(47909)) return;
+            if (captainState == CaptainState::PointWait)
+            {
+                if (!boros->IsWithinDist3d(captainX, captainY, captainZ, captainReach + 20.0f)) return;
+                if (captainDelay > diff) { captainDelay -= diff; return; }
+                captainState = CaptainState::PointMove;
+                captainRouteActor = boros->GetGUID();
+                boros->GetMotionMaster()->MovePoint(3, 69.05f, 1220.01f, -39.70f);
+                return;
+            }
+            if (boros->GetGUID() != captainRouteActor)
+            {
+                captainState = CaptainState::PointWait; captainDelay = 1000; return;
+            }
+            if (captainState == CaptainState::PointMove)
+            {
+                if (boros->movespline && boros->movespline->Finalized() && boros->IsWithinDist3d(69.05f, 1220.01f, -39.70f, 0.5f, false))
+                {
+                    captainState = CaptainState::Exposition;
+                    captainDelay = 8000;
+                    if (!captainSpoke) { captainSpoke = true; boros->CreateConversation(2015); }
+                    return;
+                }
+                MovementGenerator* point = boros->GetMotionMaster()->GetMotionSlot(MOTION_SLOT_ACTIVE);
+                if (!point || point->GetMovementGeneratorType() != POINT_MOTION_TYPE)
+                {
+                    if (!captainMoveWarning) TC_LOG_WARN("scripts", "Tuure captain: native point3 ended short; await real arrival, retry native movement");
+                    captainMoveWarning = true;
+                    captainState = CaptainState::PointWait; captainDelay = 1000;
+                }
+                return;
+            }
+            if (captainState == CaptainState::Exposition)
+            {
+                if (captainDelay > diff) { captainDelay -= diff; return; }
+                captainDelay = 0;
+                auto const* path = sWaypointMgr->GetPathScript(9859003);
+                if (!path || path->size() != 8)
+                {
+                    if (!captainPathWarning) TC_LOG_WARN("scripts", "Tuure captain: native eight-point9859003 path missing; retain earned transition");
+                    captainPathWarning = true; captainRetry = 5000; return;
+                }
+                captainState = CaptainState::Path;
+                boros->UpdateWaypointID(uint32(-1));
+                boros->GetMotionMaster()->MovePath(9859003, false);
+                if (Creature* current = GetBoros()) CaptainJace(current, 1, 70.0f, jaceStartSpoke);
+                return;
+            }
+            if (captainState == CaptainState::Path)
+            {
+                MovementGenerator* movement = boros->GetMotionMaster()->GetMotionSlot(MOTION_SLOT_IDLE);
+                bool nativePath = movement && movement->GetMovementGeneratorType() == WAYPOINT_MOTION_TYPE &&
+                    static_cast<WaypointMovementGenerator<Creature>*>(movement)->GetPathId() == 9859003;
+                // OnArrived writes node7 before the nonrepeating generator is removed.
+                // The last-node case therefore also requires its real final pose/spline,
+                // not an extant generator or a timer/AI callback that may no longer exist.
+                bool finished = (!movement || movement->GetMovementGeneratorType() == IDLE_MOTION_TYPE || nativePath) &&
+                    boros->GetCurrentWaypointID() == 7 && boros->movespline && boros->movespline->Finalized() &&
+                    boros->IsWithinDist3d(192.805f, 1277.29f, -58.7333f, 0.5f, false);
+                if (!finished && !nativePath)
+                {
+                    captainState = CaptainState::PointWait; captainDelay = 1000; return;
+                }
+                CaptainJace(boros, 1, 70.0f, jaceStartSpoke);
+                if (!finished) return;
+                captainState = CaptainState::AttackWait;
+                captainDelay = 4000;
+                if (Creature* current = GetBoros()) CaptainJace(current, 2, 60.0f, jaceEndSpoke);
+                return;
+            }
+            if (captainState != CaptainState::AttackWait) return;
+            if (captainDelay > diff) { captainDelay -= diff; return; }
+            captainDelay = 0;
+            Creature* lady = CaptainActor(106318, 361888);
+            if (!lady)
+            {
+                if (!captainLadyWarning) TC_LOG_WARN("scripts", "Tuure captain: actual Lady361888 missing after native route; retain combat handoff");
+                captainLadyWarning = true; return;
+            }
+            if (!lady->InSamePhase(boros) || !player->InSamePhase(lady) || !player->IsWithinDistInMap(lady, 100.0f) ||
+                !boros->IsWithinDistInMap(lady, 100.0f) || !boros->IsAIEnabled || !boros->AI()) return;
+            captainState = CaptainState::Done;
+            if (!boros->getVictim() || boros->getVictim()->GetGUID() != lady->GetGUID()) boros->AI()->AttackStart(lady);
+        }
+
         void CancelFirstFight()
         {
             firstFight = FirstFight::Waiting;
@@ -277,7 +569,12 @@ public:
             else if (creature->GetEntry() == 106253 && creature->GetDBTableGUIDLow() == 361433)
                 bojaGuid = creature->GetGUID();
             else if (creature->GetEntry() == 106107 && creature->GetDBTableGUIDLow() == 361436)
+            {
                 captainGuid = creature->GetGUID();
+                if (creature->IsAlive() && captainState == CaptainState::Victory && !HasRouteProgress(47909)) CancelCaptain();
+            }
+            else if (creature->GetEntry() == 106318 && creature->GetDBTableGUIDLow() == 361888)
+                ladyGuid = creature->GetGUID();
             else if (creature->GetEntry() == 106201 && creature->GetDBTableGUIDLow() == 361428 &&
                 creature->IsAlive() && firstFight == FirstFight::Pending &&
                 !TuureFirstFight::HasVictory(sScenarioMgr->GetScenario(instance->GetInstanceId())))
@@ -287,6 +584,11 @@ public:
         void CreatureDies(Creature* creature, Unit* killer) override
         {
             if (!creature || creature->GetMap() != instance || creature->IsAlive()) return;
+            if (creature->GetEntry() == 106107)
+            {
+                RecordCaptainDeath(creature, killer);
+                return; // native credit callbacks may remove the defeated actor
+            }
             RecordRouteDeath(creature, killer);
             if (creature->GetEntry() != 106201 || creature->GetDBTableGUIDLow() != 361428) return;
             Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
@@ -329,6 +631,8 @@ public:
         void Update(uint32 diff) override
         {
             UpdateRoute(diff);
+            UpdateEarnedCageActors();
+            UpdateCaptain(diff);
             if (firstFight == FirstFight::Waiting || firstFight == FirstFight::Done) return;
             Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
             if (!scenario || scenario->GetScenarioId() != 1085 || delivering) return;

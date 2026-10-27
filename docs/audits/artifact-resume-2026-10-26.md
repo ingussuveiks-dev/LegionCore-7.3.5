@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Tuure captain death and second native route (2026-10-27)
+
+- `tuure-captain-route-2026-10-27.json`: actual106107/361436 death uses original eligible owner/native50634/accepted47909, fullGUID/41993 lease; no nearest spectator or missing-primary-AI loss. Instance native engagement retains base delegation/safe Boros assistance. Original1s point3/strict real arrival/2015/8s path9859003/native finalnode7 removal/Jace/4s Lady handoff now instance-owned. Earned cage actor recreation restores original flags/follow without credit.
+- Pinned actual old-AI dispatch counterfactual/current ASAN56 plus22 denials/retry/reset/retake/missing actors/native arrival and previous28/40+16/cage/Lady56 pass. Actual staged/canonical factory->outlined ctor/hooks/native combat0x58/death0x28/owner/lease/native counters/path and prior Tuure/capture PE/Scepter pass. No client traversal claimed.
+- Canonical world C27434D7F406FBA80399442B6EB5760F01BE425D747D5A065505042631B3039C, map4D7756DC406F84E60891208D27765FD0BAF025256672290C2E3779A03B562C20. Own14716/dedicated wrapped2892 ready/shutdown0/exit0/no new diagnostics/protected changes/task server. Crashes0/DBErrors0/no archive/SQL/character edits. Commit containing audit follows23aacb79.
+- NEXT contact105697 native209441/taxi5626 versus unconditional SAI33/dangling LINK1, remaining admission/return/all36. Across-session recovery/dormant captain combat branch and full client OPEN. First-route historical audit corrected: ordinary Reset retained firstwp; AI reconstruction lost it, Reset invalidated a separate presentation queue.
+
 ## Latest repair: Tuure native cage opening (2026-10-27)
 
 - `tuure-cage-opening-2026-10-27.json`: native GOOBER SendLoot/Use never reached old GossipHello(true). Narrow completed3365/1690/249693/134192 hit now dispatches after native lock check; direct/report-use cannot grant. Original41993 lease/1085/stage3/native47561, real fullGUID Boja/Boros/captain before native50633;5s retry/30s finite receipt. Native Use/210480/3s before deletion; accepted-world recovery has no new credit. Native requireLOS0/mounted1 retained. No SQL/manual character changes.

@@ -1,9 +1,10 @@
-param([switch]$Baseline,[switch]$AddressSanitizer,[switch]$VerifyNativeCatalog,[switch]$RouteBaseline,[switch]$Cage,[switch]$CageBaseline)
+param([switch]$Baseline,[switch]$AddressSanitizer,[switch]$VerifyNativeCatalog,[switch]$RouteBaseline,[switch]$Cage,[switch]$CageBaseline,[switch]$Captain,[switch]$CaptainBaseline)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..");$out="$repo/build-extractors/runtime-test/tuure-first-fight"
 if($CageBaseline){$Cage=$true};if($Cage){$out="$repo/build-extractors/runtime-test/tuure-cage";New-Item -ItemType Directory -Force $out|Out-Null}
+if($CaptainBaseline){$Captain=$true};if($Captain){$out="$repo/build-extractors/runtime-test/tuure-captain";New-Item -ItemType Directory -Force $out|Out-Null}
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 function Replace-Fixture([string]$value,[string]$old,[string]$new){if(!$value.Contains($old)){throw "Fixture boundary missing: $old"};$value.Replace($old,$new)}
-& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline -or $CageBaseline){'baseline'}elseif($RouteBaseline){'route-baseline'}else{'current'})" -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
+& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline -or $CageBaseline -or $CaptainBaseline){'baseline'}elseif($RouteBaseline){'route-baseline'}else{'current'})" -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  $path='src/server/scripts/Scenario/Artifacts/Priest/Tuure/Tuure.cpp';$source=Get-Content "$repo/$path" -Raw
  $instancePath='src/server/scripts/Scenario/Artifacts/Priest/Tuure/instance_tuure.cpp';$selected=$source;$instanceSource=Get-Content "$repo/$instancePath" -Raw
  if($Baseline){$selected=(& git -C $repo show "8c946eb5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight actor missing'};$instanceSource=(& git -C $repo show "8c946eb5:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight instance missing'}}
@@ -26,52 +27,55 @@ struct WorldLocation{void WorldRelocate(uint32,float,float,float){}};
 struct InstanceScript{
  InstanceMap* instance;uint32 creates=0;explicit InstanceScript(InstanceMap* map=nullptr):instance(map){}virtual ~InstanceScript()=default;
  virtual void OnCreatureCreate(Creature*){++creates;}virtual void CreatureDies(Creature*,Unit*){}virtual void CreatureDiesForScript(Creature*,Unit*){}virtual void OnUnitDeath(Unit*){}virtual void Update(uint32){}virtual WorldLocation* GetClosestGraveYard(float,float,float){return nullptr;}
- virtual ObjectGuid GetGuidData(uint32)const{return {};}
+ virtual ObjectGuid GetGuidData(uint32)const{return {};}virtual void EnterCombatForScript(Creature*,Unit*){++engagements;}uint32 engagements=0;
  bool CheckDamageManager()const{return false;}void UpdateDamageManager(ObjectGuid,int32,bool){};
 };
 '@
  $nativeFixture=Replace-Fixture $nativeFixture 'virtual void MoveInLineOfSight(Unit*){};' 'virtual void MoveInLineOfSight(Unit*){};virtual void EnterEvadeMode(){};virtual void DoAction(int32){};'
+ $nativeFixture=Replace-Fixture $nativeFixture 'virtual ~CreatureAI()=default;' 'virtual void AttackStart(Unit*){}virtual void JustDied(Unit*){}virtual ~CreatureAI()=default;'
+ $nativeFixture=Replace-Fixture $nativeFixture 'bool operator==(ObjectGuid v)const{return high==v.high&&low==v.low;}' 'bool operator==(ObjectGuid v)const{return high==v.high&&low==v.low;}bool operator!=(ObjectGuid v)const{return !(*this==v);}'
+ $nativeFixture=Replace-Fixture $nativeFixture 'struct Unit {' 'struct Transport{float GetOrientation()const{return 0;}void CalculatePassengerPosition(float&,float&,float&,float*){}};struct NativeSpline{bool done=true;bool Finalized()const{return done;}};struct Unit {float x=0,y=0,z=0,objectSize=0;bool combat=false;Unit* victim=nullptr;NativeSpline spline;NativeSpline* movespline=&spline;float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}float GetObjectSize()const{return objectSize;}float GetOrientation()const{return 0;}Transport* GetTransport(){return nullptr;}void SetHomePosition(float,float,float,float){}void SetTransportHomePosition(float,float,float,float){}bool IsWithinDist3d(float a,float b,float c,float r,bool size=true)const{float dx=x-a,dy=y-b,dz=z-c;if(size)r+=objectSize;return dx*dx+dy*dy+dz*dz<=r*r;}bool isInCombat()const{return combat;}Unit* getVictim()const{return victim;}void Engage(Unit*);'
  $nativeFixture=Replace-Fixture $nativeFixture 'InstanceScript* GetInstanceScript(){return nullptr;}' 'InstanceScript* GetInstanceScript(){return map?map->script:nullptr;}'
  $nativeFixture=Replace-Fixture $nativeFixture 'int32 DealHeal(Unit*,uint32);' 'int32 DealHeal(Unit*,uint32);void Kill(Creature*);Creature* FindNearestCreature(uint32,float,bool=true);'
  $nativeFixture=Replace-Fixture $nativeFixture 'Player* GetCharmerOrOwnerPlayerOrPlayerItself()const;' 'virtual bool IsPreDelete()const{return false;}virtual uint32 GetEntry()const{return 0;}virtual uint32 GetMapId()const{return 1489;}virtual uint32 GetInstanceId()const{return 7;}Player* GetCharmerOrOwnerPlayerOrPlayerItself()const;'
- $nativeFixture=Replace-Fixture $nativeFixture 'uint32 classId=5,credits=0;' 'uint32 classId=5,credits=0,firstCredits=0,healCredits=0,attempts=0;bool rejectCredit=false;'
+ $nativeFixture=Replace-Fixture $nativeFixture 'uint32 classId=5,credits=0;' 'uint32 classId=5,credits=0,firstCredits=0,healCredits=0,captainCredits=0,attempts=0;bool rejectCredit=false;'
  $nativeFixture=Replace-Fixture $nativeFixture 'void UpdateAchievementCriteria(uint32 type,uint32 asset){assert(type==92&&asset==50563);++credits;if(onCredit)onCredit();}' 'void UpdateAchievementCriteria(uint32 type,uint32 asset);'
  $nativeFixture=Replace-Fixture $nativeFixture 'bool preDelete=false,m_AI_locked=false;' 'uint64 dbGuid=0;uint32 states=0,flags=0x800f,flagRemovals=0,conversations=0,conversationAttempts=0;bool routeNear=true,failConversation=false;std::function<void()> onRemove;Player* nearest=nullptr;bool preDelete=false,m_AI_locked=false;'
- $nativeFixture=Replace-Fixture $nativeFixture 'Creature(){IsAIEnabled=true;}' 'Creature(){IsAIEnabled=true;}uint64 GetDBTableGUIDLow()const{return dbGuid;}bool HasUnitState(uint32 state)const{return (states&state)!=0;}Player* FindNearestPlayer(float distance){assert(distance==100);return nearest;}void CreateConversation(uint32 id){assert(id==2009);++conversationAttempts;if(!failConversation)++conversations;}void RemoveFlag(uint32 field,uint32 mask){assert(field==2&&mask==15);++flagRemovals;flags&=~mask;if(onRemove)onRemove();}'
- $nativeFixture=Replace-Fixture $nativeFixture 'assert(d==20);auto p=u?u->ToPlayer():nullptr;' 'if(d==40)return routeNear;assert(d==20);auto p=u?u->ToPlayer():nullptr;'
+ $nativeFixture=Replace-Fixture $nativeFixture 'Creature(){IsAIEnabled=true;}' 'Creature(){IsAIEnabled=true;}void KillAllDelayedCombats(){}uint64 GetDBTableGUIDLow()const{return dbGuid;}bool HasUnitState(uint32 state)const{return (states&state)!=0;}Player* FindNearestPlayer(float distance){assert(distance==100);return nearest;}void CreateConversation(uint32 id){assert(id==2009);++conversationAttempts;if(!failConversation)++conversations;}void RemoveFlag(uint32 field,uint32 mask){assert(field==2&&mask==15);++flagRemovals;flags&=~mask;if(onRemove)onRemove();}'
+ $nativeFixture=Replace-Fixture $nativeFixture 'assert(d==20);auto p=u?u->ToPlayer():nullptr;' 'if(d==40||d==60||d==70||d==100)return routeNear;assert(d==20);auto p=u?u->ToPlayer():nullptr;'
  $nativeFixture=Replace-Fixture $nativeFixture 'struct Scenario {uint32 id=1085,step=0;' 'struct Progress{uint64 Counter=0;};struct AchievementMgr{std::map<uint32,Progress> progress;auto const* GetCriteriaProgressMap()const{return &progress;}};struct Scenario {AchievementMgr achievement;AchievementMgr& GetAchievementMgr(){return achievement;}uint32 id=1085,step=0;'
  $nativeFixture=Replace-Fixture $nativeFixture 'struct Creature;struct Player;struct Unit;' @'
 struct Creature;struct Player;struct Unit;
-enum {CRITERIA_TYPE_KILL_CREATURE=0,MOTION_SLOT_IDLE=0,WAYPOINT_MOTION_TYPE=2,UNIT_STATE_ROAMING_MOVE=16};
+enum {CRITERIA_TYPE_KILL_CREATURE=0,MOTION_SLOT_IDLE=0,MOTION_SLOT_ACTIVE=1,WAYPOINT_MOTION_TYPE=2,POINT_MOTION_TYPE=8,IDLE_MOTION_TYPE=0,UNIT_STATE_ROAMING_MOVE=16,UNIT_STATE_ROAMING=32,REACT_DEFENSIVE=1};
 constexpr float PET_FOLLOW_DIST=1.0f,PET_FOLLOW_ANGLE=2.0f;
-struct WaypointData{uint32 delay_chance=0,delay=0,event_id=0,event_chance=0;};
+struct WaypointData{uint32 delay_chance=0,delay=0,event_id=0,event_chance=0;float x=0,y=0,z=0,orientation=0;};
 inline bool roll_chance_i(uint32){return false;}inline uint32 urand(uint32 a,uint32){return a;}inline int sWaypointScripts=0;
 #define TC_LOG_DEBUG(...) ((void)0)
 struct MovementGenerator{virtual ~MovementGenerator()=default;virtual uint32 GetMovementGeneratorType()const{return WAYPOINT_MOTION_TYPE;}};
-template<class T>struct WaypointMovementGenerator:MovementGenerator{uint32 _pathId=9859002,_currentNode=0;std::vector<WaypointData> nodes=std::vector<WaypointData>(13);std::vector<WaypointData>* _path=&nodes;struct Timer{void Reset(uint32){}} _nextMoveTime;
+struct NativePoint:MovementGenerator{uint32 _movementId=3;uint32 GetMovementGeneratorType()const override{return POINT_MOTION_TYPE;}void DoFinalize(Creature&);void MovementInform(Creature&);};
+template<class T>struct WaypointMovementGenerator:MovementGenerator{uint32 _pathId=9859002,_currentNode=0;bool _repeating=false;float _randomMoveX=0,_randomMoveY=0;std::vector<WaypointData> nodes=std::vector<WaypointData>(13);std::vector<WaypointData>* _path=&nodes;struct Timer{void Reset(uint32){}} _nextMoveTime;
 #include "PathId.inc"
- void MovementInform(Creature&);void OnArrived(Creature&);
+ void MovementInform(Creature&);void OnArrived(Creature&);bool NativeLast(Creature&);
 };
-struct WaypointMgr{bool missing=false;std::vector<int> path=std::vector<int>(13);auto const* GetPathScript(uint32 id){assert(id==9859002);return missing?nullptr:&path;}} waypointMgr;
+struct WaypointMgr{bool missing=false,missingSecond=false;std::vector<int> path=std::vector<int>(13),second=std::vector<int>(8);auto const* GetPathScript(uint32 id){assert(id==9859002||id==9859003);if(id==9859003)return missingSecond?nullptr:&second;return missing?nullptr:&path;}} waypointMgr;
 auto sWaypointMgr=&waypointMgr;
-struct TextMgr{uint32 calls=0;void SendChat(Creature*,uint8 id){assert(!id);++calls;}} textMgr;
+struct TextMgr{uint32 calls=0;std::map<uint32,uint32> groups;void SendChat(Creature*,uint8 id){assert(id<=2);++calls;++groups[id];}} textMgr;
 auto sCreatureTextMgr=&textMgr;
 '@
- $nativeFixture=Replace-Fixture $nativeFixture 'uint64 dbGuid=0;' 'uint32 waypoint=0,pathMoves=0,followMoves=0;bool motionPresent=false,failRoute=false;WaypointMovementGenerator<Creature> movement;std::function<void()> onConversation;uint64 dbGuid=0;'
- $nativeFixture=Replace-Fixture $nativeFixture 'assert(id==2009);++conversationAttempts;if(!failConversation)++conversations;' 'assert(id==2009||id==2007||id==2039);++conversationAttempts;if(!failConversation)++conversations;if(onConversation){auto callback=onConversation;callback();}'
- $nativeFixture=Replace-Fixture $nativeFixture 'Creature* GetMotionMaster(){return this;}' 'Creature* GetMotionMaster(){return this;}MovementGenerator* GetMotionSlot(uint32 slot){assert(!slot);return motionPresent?&movement:nullptr;}uint32 GetCurrentWaypointID()const{return waypoint;}void UpdateWaypointID(uint32 id){waypoint=id;}void MovePath(uint32 id,bool repeat){assert(id==9859002&&!repeat);++pathMoves;movement._pathId=id;motionPresent=!failRoute;}void MoveFollow(Creature*,float,float,uint32){++followMoves;}'
+ $nativeFixture=Replace-Fixture $nativeFixture 'uint64 dbGuid=0;' 'uint32 react=0,faction=35;void SetReactState(uint32 v){react=v;}void setFaction(uint32 v){faction=v;}uint32 getFaction()const{return faction;}bool HasFlag(uint32 field,uint32 mask){assert(field==2);return (flags&mask)!=0;}uint32 waypoint=0,pathMoves=0,followMoves=0,pointMoves=0;float targetX=0,targetY=0,targetZ=0;bool pointPresent=false;NativePoint point;bool motionPresent=false,failRoute=false;WaypointMovementGenerator<Creature> movement;std::function<void()> onConversation;uint64 dbGuid=0;'
+ $nativeFixture=Replace-Fixture $nativeFixture 'assert(field==2&&mask==15);' 'assert(field==2&&(mask==15||mask==4));'
+ $nativeFixture=Replace-Fixture $nativeFixture 'assert(id==2009);++conversationAttempts;if(!failConversation)++conversations;' 'assert(id==2009||id==2007||id==2039||id==2015);++conversationAttempts;if(!failConversation)++conversations;if(onConversation){auto callback=onConversation;callback();}'
+ $nativeFixture=Replace-Fixture $nativeFixture 'Creature* GetMotionMaster(){return this;}' 'Creature* GetMotionMaster(){return this;}MovementGenerator* GetMotionSlot(uint32 slot){if(slot==1)return pointPresent?&point:nullptr;assert(!slot);return motionPresent?&movement:nullptr;}uint32 GetCurrentWaypointID()const{return waypoint;}void UpdateWaypointID(uint32 id){waypoint=id;}void MovePath(uint32 id,bool repeat){assert((id==9859002||id==9859003)&&!repeat);++pathMoves;movement._pathId=id;movement.nodes.resize(id==9859003?8:13);motionPresent=!failRoute;movespline->done=false;}void MoveFollow(Creature*,float,float,uint32){++followMoves;}'
+ $nativeFixture=Replace-Fixture $nativeFixture 'assert(id==1&&x==-13.92f&&y==1175.70f&&z==-66.31f);++moves;' 'assert((id==1&&x==-13.92f&&y==1175.70f&&z==-66.31f)||(id==3&&x==69.05f&&y==1220.01f&&z==-39.70f));if(id==3)++pointMoves;++moves;targetX=x;targetY=y;targetZ=z;pointPresent=true;movespline->done=false;'
  $nativeFixture=Replace-Fixture $nativeFixture 'AchievementMgr achievement;AchievementMgr& GetAchievementMgr()' 'uint32 killDeliveries=0,routeDeliveries=0;bool rejectKill=false;AchievementMgr achievement;void UpdateAchievementCriteria(uint32,uint32,uint32,uint32,Unit*,Player*);AchievementMgr& GetAchievementMgr()'
  $nativeFixture=Replace-Fixture $nativeFixture 'virtual void DoAction(int32){};' 'virtual void DoAction(int32){};virtual void MovementInform(uint32,uint32){};virtual void LastWPReached(){};'
  $nativeFixture=Replace-Fixture $nativeFixture 'Creature* GetCreature(ObjectGuid const&);' 'Creature* GetCreature(ObjectGuid const&);template<class... Args>void ScriptsStart(Args...){}'
  if($Cage){
   $nativeFixture=Replace-Fixture $nativeFixture 'struct Creature;struct Player;struct Unit;' (Get-Content "$PSScriptRoot/TuureCagePrelude.h" -Raw)
   $nativeFixture=Replace-Fixture $nativeFixture 'bool IsWithinDistInMap(Unit*,float d)const{assert(d==100||d==20);' 'bool IsWithinDistInMap(Unit*,float d)const{assert(d==100||d==20||d==5||d==60);'
-  $nativeFixture=Replace-Fixture $nativeFixture 'if(d==40)return routeNear;' 'if(d==40||d==70)return routeNear;'
-  $nativeFixture=Replace-Fixture $nativeFixture 'assert(field==2&&mask==15);' 'assert(field==2&&(mask==15||mask==4));'
   $nativeFixture=Replace-Fixture $nativeFixture 'struct Player:Unit {' 'struct Player:Unit {uint32 goCredits=0;template<class T>void PrepareGossipMenu(T*,uint32){}template<class T>void SendPreparedGossip(T*){}Battleground* GetBattleground(){return nullptr;}void KillCreditGO(uint32,ObjectGuid){++goCredits;}uint32 GetSkillValue(int){return 0;}bool IsInArmyTraining(){return false;}struct Army{std::vector<int> currentUnits[1];}armyTrainingInfo;uint32 GetAuraCount(uint32){return 0;}'
   $nativeFixture=Replace-Fixture $nativeFixture 'virtual ~CreatureAI()=default;' 'void Talk(uint32){}virtual ~CreatureAI()=default;'
   $nativeFixture=Replace-Fixture $nativeFixture 'virtual ~Unit()=default;' 'bool IsPlayer(){return ToPlayer()!=nullptr;}bool HasAura(uint32){return false;}virtual ~Unit()=default;'
-  $nativeFixture=Replace-Fixture $nativeFixture 'uint32 waypoint=0,' 'uint32 react=0,faction=35;void SetReactState(uint32 v){react=v;}void setFaction(uint32 v){faction=v;}bool HasFlag(uint32 field,uint32 mask){assert(field==2);return (flags&mask)!=0;}uint32 waypoint=0,'
   $crate=$source;if($CageBaseline){$crate=(& git -C $repo show "ebdbfcd6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned cage baseline missing'}}
   [IO.File]::WriteAllText("$out/Cage.inc",(Block $crate 'struct go_tuure_crateAI :')+';')
   $spellEffects=Get-Content "$repo/src/server/game/Spells/SpellEffects.cpp" -Raw
@@ -88,11 +92,20 @@ auto sCreatureTextMgr=&textMgr;
  $nativeFixture+="`n#include `"NativeArrival.inc`"`n"
  $waypoint=Get-Content "$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.cpp" -Raw
  [IO.File]::WriteAllText("$out/NativeArrival.inc",((Block $waypoint 'void WaypointMovementGenerator<Creature>::MovementInform(')+(Block $waypoint 'void WaypointMovementGenerator<Creature>::OnArrived(')).Replace('void WaypointMovementGenerator<Creature>::','template<> void WaypointMovementGenerator<Creature>::'))
+ $lastNode=Block (Block $waypoint 'bool WaypointMovementGenerator<Creature>::StartMove(') 'if ((_currentNode == _path->size() - 1) && !_repeating)'
+ [IO.File]::AppendAllText("$out/NativeArrival.inc","`ntemplate<> bool WaypointMovementGenerator<Creature>::NativeLast(Creature& creature){bool transportPath=false;`n"+$lastNode+"`nreturn true;}`n")
+ $point=Get-Content "$repo/src/server/game/Movement/MovementGenerators/PointMovementGenerator.cpp" -Raw
+ [IO.File]::AppendAllText("$out/NativeArrival.inc",((Block $point 'void PointMovementGenerator<T>::DoFinalize(').Replace('void PointMovementGenerator<T>::DoFinalize(T& owner)','void NativePoint::DoFinalize(Creature& owner)'))+((Block $point 'void PointMovementGenerator<Creature>::MovementInform(').Replace('void PointMovementGenerator<Creature>::MovementInform(Creature& owner)','void NativePoint::MovementInform(Creature& owner)')))
  $oldInstance=(& git -C $repo show "426827bf:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Pinned route baseline missing'}
  [IO.File]::WriteAllText("$out/OldRouteDeath.inc",(Block $oldInstance 'void OnUnitDeath('))
  [IO.File]::WriteAllText("$out/PathId.inc",(Block (Get-Content "$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.h" -Raw) 'uint32 GetPathId() const'))
  [IO.File]::WriteAllText("$out/NativeHost.inc",$nativeFixture)
  $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
+ $combat=Block $core 'void Unit::SetInCombatState(';$first=$combat.IndexOf('if (m_zoneScript)');$last=$combat.IndexOf('m_zoneScript->EnterCombatForScript(creature, enemy);',$first)
+ if($first -lt 0 -or $last -lt $first){throw 'Native braceless zone engagement statement missing'}
+ [IO.File]::WriteAllText("$out/NativeEngagement.inc",$combat.Substring($first,$last+'m_zoneScript->EnterCombatForScript(creature, enemy);'.Length-$first))
+ [IO.File]::WriteAllText("$out/NativeAIKill.inc",(Block (Block $core 'void Unit::Kill(') 'if (creature->IsAIEnabled)'))
+ if($Captain){$old=(& git -C $repo show "23aacb79:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned captain baseline missing'};[IO.File]::WriteAllText("$out/OldCaptainDeath.inc",(Block (Block $old 'struct npc_capitan_naranotAI :') 'void JustDied('))}
  [IO.File]::WriteAllText("$out/NativeKillBridge.inc",(Block (Block $core 'void Unit::Kill(') 'if (InstanceScript* script = creature->GetInstanceScript())'))
  [IO.File]::WriteAllText("$out/Owner.inc",(Block $core 'Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const'))
  [IO.File]::WriteAllText("$out/OwnerGuid.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'ObjectGuid GetCharmerOrOwnerGUID() const'))
@@ -107,8 +120,8 @@ auto sCreatureTextMgr=&textMgr;
  $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
  [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
- $def=if($Baseline){'/DBASELINE'}elseif($RouteBaseline){'/DROUTE_BASELINE'}elseif($CageBaseline){'/DCAGE_BASELINE'}else{''};if($AddressSanitizer){$def+=' /fsanitize=address /Zi'}
- $testSource=if($Cage){'TuureCageTest.cpp'}else{'TuureFirstFightTest.cpp'}
+ $def=if($Baseline){'/DBASELINE'}elseif($RouteBaseline){'/DROUTE_BASELINE'}elseif($CageBaseline){'/DCAGE_BASELINE'}elseif($CaptainBaseline){'/DCAPTAIN_BASELINE'}else{''};if($AddressSanitizer){$def+=' /fsanitize=address /Zi'}
+ $testSource=if($Cage){'TuureCageTest.cpp'}elseif($Captain){'TuureCaptainTest.cpp'}else{'TuureFirstFightTest.cpp'}
  [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $def /I`"$out`" `"$PSScriptRoot/$testSource`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`ncd /d `"$out`"`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Tuure actual first-fight regression failed'}
  if($VerifyNativeCatalog){

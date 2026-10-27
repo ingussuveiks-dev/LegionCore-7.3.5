@@ -1,6 +1,7 @@
 """Follow the selected Tuure real second kill and native waypoint arrival route."""
 from pathlib import Path
 import runpy
+import struct
 from capstone import CS_OP_MEM, CS_OP_REG, CS_OP_IMM
 
 p = runpy.run_path(str(Path(__file__).with_name('verify_tuure_first_fight_release.py')))
@@ -29,7 +30,17 @@ rewards = [i for i, x in enumerate(body) if x.mnemonic == 'call' and x.operands[
 slots = [i for i, x in enumerate(body) if x.mnemonic == 'mov' and len(x.operands) == 2 and x.operands[0].type == CS_OP_REG and x.operands[1].type == CS_OP_MEM and x.operands[1].mem.disp == 0x28 and any(y.mnemonic == 'call' and y.operands[0].type == CS_OP_REG and y.operands[0].reg == x.operands[0].reg for y in body[i+1:i+5])]
 assert rewards and len(slots) == 1 and max(rewards) < slots[0]
 actor = 'npc_vindicator_borosAI@npc_vindicator_boros@@'
-assert not {9859002, 50831} & values('?DoAction@' + actor)
+legacy_action = '?DoAction@' + actor
+if any(name.startswith(legacy_action) for name in n['symbols']):
+    assert not {9859002, 50831} & values(legacy_action)
+else:
+    # The later captain repair retires action2 as well. The selected Boros
+    # factory must then inherit the native empty action, not an unused helper.
+    refs = p['references']('?GetAI@npc_vindicator_boros@@')
+    empty = n['symbol']('?DoAction@UnitAI@@UEAAXH@Z')
+    selected = [struct.unpack_from('<80Q', n['binary'], n['offset'](a)) for a in refs]
+    selected = [table for table in selected if table[0xa8//8] == n['symbol']('?DamageTakenAfterScaling@'+actor)]
+    assert len(selected) == 1 and selected[0][0x48//8] == empty
 assert 50831 not in values('?MovementInform@' + actor)
 assert n['symbol']('?UpdateAchievementCriteria@Player@@') not in n['calls']('?MovementInform@' + actor)
 # Follow the real arrival write and the matching field read in the controller.

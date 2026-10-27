@@ -120,7 +120,6 @@ public:
             _introDone = false;
             _introHealDone = false;
             wait_heal = false;
-            secondwp = false;
         }
 
         EventMap events;
@@ -133,8 +132,7 @@ public:
             _introHealer.Clear();
             _introAttempt.reset();
         }
-        bool _introDone, _introHealDone, wait_heal, secondwp;
-        FunctionProcessor _functions;
+        bool _introDone, _introHealDone, wait_heal;
         FunctionProcessor _entryFunctions;
         uint64 _entryGeneration = 0;
 
@@ -156,22 +154,6 @@ public:
         {
             // Evading is not a victory. The instance owns the real106201
             // death receipt, native criteria delivery and timed continuation.
-        }
-
-        void DoAction(int32 const action) override
-        {
-            switch (action)
-            {
-                case 2:
-                {
-                    // need to activate it ONLY if creature isn't stunned
-                    _functions.AddFunction([this]() -> void
-                    {
-                        me->GetMotionMaster()->MovePoint(3, 69.05f, 1220.01f, -39.70f);
-                    }, _functions.CalculateTime(1000));
-                    break;
-                }
-            }
         }
 
         void HealReceived(Unit* who, uint32& addhealth) override
@@ -237,23 +219,6 @@ public:
         void MovementInform(uint32 type, uint32 id) override
         {
             me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
-            if (type == WAYPOINT_MOTION_TYPE)
-            {
-                if (secondwp)
-                {
-                    if (id == 7)
-                    {
-                        if (Creature* jeims = me->FindNearestCreature(106137, 60.0f, true))
-                            jeims->AI()->Talk(2);
-                        // need to activate it ONLY if creature isn't stunned
-                        _functions.AddFunction([this]() -> void
-                        {
-                            if (Creature* targ = me->FindNearestCreature(106318, 100.0f, true))
-                                AttackStart(targ);
-                        }, _functions.CalculateTime(4000));
-                    }
-                }
-            }
             if (type == POINT_MOTION_TYPE)
             {
                 switch (id)
@@ -284,17 +249,7 @@ public:
                         if (Creature* targ = me->FindNearestCreature(106201, 60.0f, true))
                             AttackStart(targ);
                         break;
-                    case 3:
-                        me->CreateConversation(2015);
-                        // need to activate it ONLY if creature isn't stunned
-                        _functions.AddFunction([this]() -> void
-                        {
-                            secondwp = true;
-                            me->GetMotionMaster()->MovePath(9859003, false);
-                            if (Creature* jeims = me->FindNearestCreature(106137, 70.0f, true))
-                                jeims->AI()->Talk(1);
-                        }, _functions.CalculateTime(8000));
-                        break;
+
                 }
             }
         }
@@ -320,7 +275,6 @@ public:
             if (me->HasUnitState(UNIT_STATE_STUNNED)) // need for this
                 return;
 
-            _functions.Update(diff);
 
             if (!UpdateVictim())
                 return;
@@ -504,17 +458,8 @@ public:
             events.SetPhase(PHASE_COMBAT);
             events.RescheduleEvent(EVENT_1, 8000, 0, PHASE_COMBAT); // 211480
          //   events.RescheduleEvent(EVENT_2, 25000, 0, PHASE_COMBAT); // rephase 211186 + 211190    
-            if (Creature* targ = me->FindNearestCreature(106134, 100.0f, true))
-                targ->AI()->AttackStart(me);
         }
 
-        void JustDied(Unit* who) override
-        {
-            if (Creature* boros = me->FindNearestCreature(106134, 120.0f, true))
-                boros->AI()->DoAction(2);
-            if (Player* pl = me->FindNearestPlayer(100.0f))
-                pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50634);
-        }
         void UpdateAI(uint32 diff) override
         {
             if (!UpdateVictim())
@@ -741,7 +686,6 @@ public:
                 else target->AddUnitState(UNIT_STATE_STUNNED);
             }
         }
-
 
         void UpdateAI(uint32 diff) override
         {

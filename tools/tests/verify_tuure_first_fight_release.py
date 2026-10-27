@@ -14,6 +14,13 @@ def references(method):
         for op in x.operands:
             if op.type == CS_OP_MEM and op.mem.base == X86_REG_RIP:
                 yield x.address + x.size + op.mem.disp
+    # The enlarged controller can make MSVC outline construction. Follow the
+    # constructor actually called by the factory rather than a map-only vtable.
+    if method == '?GetInstanceScript@instance_tuure@@':
+        constructor = '??0instance_tuure_InstanceMapScript@instance_tuure@@'
+        if any(s.startswith(constructor) for s in n['symbols']):
+            assert n['symbol'](constructor) in n['calls'](method)
+            yield from references(constructor)
 scope = 'instance_tuure_InstanceMapScript@instance_tuure@@'
 methods = {name: '?' + name + '@' + scope for name in
            ('OnCreatureCreate', 'CreatureDies', 'OnUnitDeath', 'Update', 'GetBoros', 'BeginUnlock')}

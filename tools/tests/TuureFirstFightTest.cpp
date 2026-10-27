@@ -5,13 +5,13 @@ inline uint32 warnings=0;
 #define TC_LOG_WARN(...) (++warnings)
 Creature* Map::GetCreature(ObjectGuid const& guid){for(auto c:actors)if(c->guid==guid&&c->map==this)return c;return nullptr;}
 Creature* Unit::FindNearestCreature(uint32 entry,float range,bool living){
- assert(range==40||range==60||range==70||range==100);if(!map)return nullptr;
+ assert(range==40||range==60||range==70||range==100||range==120);if(!map)return nullptr;
  for(auto c:map->actors)if(c->entry==entry&&c->world&&c->alive==living&&InSamePhase(c))return c;return nullptr;
 }
 // Only the exact native GM/contact guard is used here. Criteria application and
 // step advance below are adapters, checked against the typed catalog separately.
 void Player::UpdateAchievementCriteria(uint32 type,uint32 asset){
- assert(type==92&&(asset==50562||asset==50563||asset==50831||asset==50633));++attempts;
+ assert(type==92&&(asset==50562||asset==50563||asset==50831||asset==50633||asset==50634));++attempts;
  struct Cache{Player* player;};Cache value{this};Cache* cachePtr=&value;
 #include "NativeCreditGate.inc"
  if(rejectCredit)return;
@@ -19,6 +19,7 @@ void Player::UpdateAchievementCriteria(uint32 type,uint32 asset){
  else if(asset==50563&&scenario.step==0){++healCredits;++credits;scenario.achievement.progress[47498].Counter++;scenario.step=1;}
  else if(asset==50831&&scenario.step==2){++scenario.routeDeliveries;++scenario.achievement.progress[47882].Counter;if(scenario.achievement.progress[47883].Counter)scenario.step=3;}
  else if(asset==50633&&scenario.step==3){++scenario.achievement.progress[47561].Counter;scenario.step=4;}
+ else if(asset==50634&&scenario.step==4){++captainCredits;++scenario.achievement.progress[47909].Counter;scenario.step=5;}
  if(onCredit)onCredit();
 }
 void Scenario::UpdateAchievementCriteria(uint32 type,uint32 entry,uint32 count,uint32 zero,Unit* victim,Player* player){
@@ -30,9 +31,15 @@ void Scenario::UpdateAchievementCriteria(uint32 type,uint32 entry,uint32 count,u
 }
 #include "Policy.inc"
 #include "Instance.inc"
+void Unit::Engage(Unit* enemy){Creature* creature=const_cast<Creature*>(ToCreature());if(!creature||combat)return;combat=true;if(!enemy)return;auto m_zoneScript=GetInstanceScript();
+#include "NativeEngagement.inc"
+}
 void Unit::Kill(Creature* creature){
  if(!creature||!creature->alive)return;
  creature->alive=false;creature->health=0;
+ if(creature->GetEntry()==106107){
+#include "NativeAIKill.inc"
+ }
  if(auto script=creature->GetInstanceScript())script->OnUnitDeath(creature);
  // Actual Unit::Kill -> instance dispatch, after the modeled death endpoint.
 #include "NativeKillBridge.inc"
