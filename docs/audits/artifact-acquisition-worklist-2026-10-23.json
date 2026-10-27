@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp",
+      "handler": "Zakajz native downed pose",
+      "problem": "Combat104276 never applied the initial actor103398 native130966 pose after actual defeat.",
+      "repair_audit": "docs/audits/stromkar-defeat-pose-2026-10-27.json",
+      "limit": "9186306d1 deployed9CAF5344; native/ASAN/catalog/selectedPE/startup pass; rendered pose/Execute/full chain pending. MissingLINK2 still OPEN."
+    },
+    {
       "path": "src/server/game/Conditions/ConditionMgr.cpp",
       "handler": "Native source13 candidate container mask",
       "problem": "Caster-only equipment/quest conditions incorrectly narrowed creature candidates to zero; scenario44 mask missing.",
