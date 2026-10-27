@@ -12,11 +12,18 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/bilaal_portal.h",
+      "handler": "Azuregos104546 actual waypoint arrival/248553 portal",
+      "problem": "Optional223908 cast failure gated portal/cleanup; original one-shot GO insertion had no retry.",
+      "repair_audit": "docs/audits/bilaal-portal-arrival-2026-10-27.json",
+      "limit": "DeployedF8F4A6D7/SQL13 RELEASED: actual receiver/earned death/native endpoint, map-owned phase-safe retry, native ASAN/dispatch/TEMP/selectedPE/live hash/graph/startup pass. Actual Priest/Mage client sequence and unrelated gravity/control remain open."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/bilaal_death.h",
       "handler": "Priest/Mage Nexus Bilaal actual-death receipt and Azuregos receiver",
       "problem": "Dying-AI/invoker-dependent native49810 and one-shot receiver creation could lose the transition for disabled AI/pet/failed creation. Source/native counterfactual, not a newly captured client crash.",
       "repair_audit": "docs/audits/bilaal-instance-death-2026-10-27.json",
-      "limit": "Deployed BFCEECBD with coordinated SQL09 RELEASED. Exact native owner/group/objective/attempt receipt, accepted scenario victory and checked map-owned receiver pass native/ASAN/TEMP/selected PE/startup. Actual client full routes remain pending; downstream104546 portal optional-cast/retry and209863 gravity remain OPEN."
+      "limit": "Death receipt deployed with SQL09; downstream Azuregos portal now separately repaired938fc1225/SQL13. Native owner/group/objective/attempt/ASAN/PE/startup verified; actual full client and209863 gravity remain pending."
     },
     {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp",

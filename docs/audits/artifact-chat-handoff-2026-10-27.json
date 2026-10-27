@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "Continuation checkpoint: Azuregos portal repair committed/staged938fc1225; user battle-stone inquiry investigated13e1cd953. Portal deployment pending, canonical82773B55 unchanged.",
+  "reason": "Checkpoint after deployed938fc1225 Azuregos arrival/SQL13 and66600a9ae Battle-Stone upgrade/display repairs; canonicalF8F4A6D7, client pending.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -63,22 +63,32 @@
       "commit": "d4dfc326f",
       "fix": "Valid guard gossip POI links preserved during loading; deployed",
       "audit": "docs/audits/gossip-poi-loader-2026-10-27.json"
+    },
+    {
+      "commit": "938fc1225",
+      "fix": "Azuregos true arrival, optional-cast independence and retryable map-owned portal; SQL13 now deployed",
+      "audit": "docs/audits/bilaal-portal-arrival-2026-10-27.json"
+    },
+    {
+      "commit": "66600a9ae",
+      "fix": "Battle-Stone prelaunch admission/one unit/no level loss/native stats and typed owned display sync; deployed",
+      "audit": "docs/audits/battle-stone-upgrade-2026-10-27.json"
     }
   ],
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "FAA13B8D5BE47C1244DB5ACB5C0710D38CD30FB60FE4F2259862B1671BD51021",
-      "bnetserver.map": "845D5639074F46EDA1442583BA141A2FF3AA4F4203A35F68E247C73527DAFB49",
-      "worldserver.exe": "82773B55E9CDC1B3A0046C6669774A0210509AA74926736EC89CC6839FFA05E5",
-      "worldserver.map": "5DD882E0F19FEE9E53B1E5D4D11A4DAEC0AAE8F5467BE1EB45B1BEC5DE5FC60D"
+      "bnetserver.exe": "29A7173A68C83CCF10B9F7C84BE0C39F11E8F8F41DD6744018960F716E8B51BF",
+      "bnetserver.map": "CD27A863648E343BCC2EAF8822D365F5ACCBC3ADC5B70263A26396E2550DC67B",
+      "worldserver.exe": "F8F4A6D7A91C60D78E5891D3A1E17C68EDB3CD9BE22E99FB62EB7C4CE28F8310",
+      "worldserver.map": "2F9F8A70C3E12F6EC5AF922DC92B3A516A3E3A5D6F1F6340881BD5D68BC5AC49"
     },
-    "scope": "Combined82773B55 includes earlier Krosus/Leap/Charge/bird/Bilaal death plus guard POI loader repair. World09/11/12 remain RELEASED. Own4236 fresh ready/shutdown0/exit0, no new diagnostics, task server stopped. Azuregos portal WIP excluded; no character progress/PvP changes."
+    "scope": "CombinedF8F4A6D7 includes earlier completed fixes, Azuregos portal938fc1225/World13 RELEASED and Battle-Stone66600a9ae. Actual selected PE/Scepter/native/owned34304 ready/shutdown0/exit0 pass. No server left; client/full36 unconfirmed."
   },
   "servers_last_seen": {
-    "bnetserver": 9788,
-    "worldserver": 23748,
-    "ownership": "User/unknown, never stopped. Both canonical; unchanged throughout independent tests. Recheck before any deployment. No task-owned server launched in this continuation."
+    "bnetserver": null,
+    "worldserver": null,
+    "ownership": "No user server was stopped. Own22608/34304 ready/shutdown0/exit0 and cleanup complete. Recheck before further deployment."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -101,7 +111,7 @@
     "next": "Focused death repair complete/deployed; next inspect actual104546 waypoint/optional cast/portal retry. Do not confuse the still-open gravity/portal/client sequence with this death receipt."
   },
   "next_independent_work": [
-    "Azuregos104546 downstream now staged/tested938fc1225. Read bilaal-portal-arrival-2026-10-27.json and pendingSQL13; native arrival/independent portal receipt retry complete in separate stage, actual runtime/updater/client unverified. Original library now includes portal; canonical does not.",
+    "Azuregos104546 portal repaired/deployed938fc1225/World13; native retry/actual live graph and final startup verified. Client routes remain pending. Continue independent unresolved gravity and Aluneth control source work.",
     "Bilaal Gravity209863 remains OPEN: native period1000/trigger0, no reviewed native handler/AT6667..9 geometry/209864..6; do not invent wind geometry. Retain prior gravity audit4ea30199e.",
     "Aluneth three-scroll/native5000ms/override779..781 evidence committed a98b0fa69; current custom GO immediate205 shortcut remains UNRESOLVED. Real binding dome producer/geometry and dest46 need evidence;225030 same-name effect is audio-only. Partial YouTube only, not full traversal. Read docs/audits/aluneth-control-evidence-2026-10-27.json.",
     "Hunter additional-artifact SELECTION BACKEND IS ALREADY FIXED: ancestor802295a98, audit hunter-additional-artifact-choice-2026-10-26.json, actual249 conditions/flags3/World12-2026-10-26 RELEASED. Fresh512 native/TEMP/ASAN and canonical PE pass. Old resume and old ignored patch are stale historical artifacts; preserve them but do not reapply. Actual UI/third choice and full MM/Survival routes still pending."
@@ -180,27 +190,27 @@
     "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
   ],
   "current_continuation": {
-    "last_implementation_commit": "938fc1225",
+    "last_implementation_commit": "66600a9ae",
     "hunter_reconciliation": "Git/source and dedicated followup audit contradict stale unfinished text in the old resume. Commit802295a98 is an ancestor and actual runtime migration13005E8182CE54B5FFA4DEED6C9FA53272C39796 is RELEASED; 249 rows, flags3 on107317/107973 and current canonical selected consumers were independently rechecked. No repeated repair or character change.",
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
     "diagnostics": "No new/changed crashes, appendedDBErrors or unexplained server warning/error/assertion after every test/build/startup group. ActiveDBErrors0/Crashes0 at last check; no log was truncated or crash archived during this continuation.",
-    "next": "Safe portal deployment only after both user servers absent. Continue independent work while awaiting reply. Separate documented battle-stone source defects; Aluneth native control/gravity source gaps and all36 routes remain open.",
-    "uncommitted_at_checkpoint": "None after focused staged portal commit and this documentation update. SQL13 remains outside updater; old Hunter patch/SQL09 historical backups untouched."
+    "next": "Resume all36 independent backend review. Azuregos portal now deployed; gravity209863 and Aluneth native control assets still open. Preserve actual client test limits. No uncommitted source remains after deployment documentation.",
+    "uncommitted_at_checkpoint": "Only SQL13 pending->updates rename and deployment audits before this checkpoint commit; implementation committed66600a9ae. Private recovery and old historical backups ignored."
   },
   "azuregos_portal_wip": {
-    "status": "Historical key name: repair committed/pushed938fc1225; native ASAN/TEMP/catalog/build/selected PE7 pass; not deployed",
+    "status": "Historical key: committed/pushed938fc1225, deployed with coordinated SQL13 RELEASED",
     "audit": "docs/audits/bilaal-portal-arrival-2026-10-27.json",
     "stage": ".codex/azuregos-portal-release",
-    "world_sha256": "12F766E9135E1774E326CA0571DE8BC04A494C366F2111D5FD2C6C3234EAE54C",
-    "migration": "sql/pending/world/2026_10_27_13_bilaal_portal_arrival.sql",
-    "scope": "Outside actual updater includes. Do not activate before matching executable promotion. Original scripts.lib now includes portal code: future stages link it; original canonical still excludes it.",
-    "next": "User shutdown requested asynchronously after concrete stage ready. Never stop user9788/23748. Recheck both absent, then promote exact stage, move pendingSQL13 to updates, native loader startup/own graceful shutdown, livehash/newgraph83d195ce readback, canonical Scepter/portal PE and audit/commit/push. No character writes."
+    "world_sha256": "F8F4A6D7A91C60D78E5891D3A1E17C68EDB3CD9BE22E99FB62EB7C4CE28F8310",
+    "migration": "sql/updates/world/2026_10_27_13_bilaal_portal_arrival.sql",
+    "scope": "Native actual arrival, safe create/insertion/retry and selected instance/SmartAI/GameObject consumers, actual updater graph/hash and startup verified; client pending.",
+    "next": "Actual Priest/Mage full client routes/portal visual/use/reentry remain pending. Continue native Aluneth control and separate Bilaal gravity source gaps; do not reapply old pending backup."
   },
   "battle_stone_investigation": {
     "commit": "13e1cd953",
     "audit": "docs/audits/battle-stone-investigation-2026-10-27.json",
-    "status": "User inquiry answered in commentary; no fix or actual item use yet. Matching native98715->134644/effect204/base85/mask1023/target90 confirms Rare/all10 families. Source incorrectly subtracts2 levels at15+, destroys entire itemstack, and sends stale cached stats without UpdateStats. No player/pet/item writes.",
-    "next": "If repairing, separate focused commit/native ownership/type/gates/one-unit consumption/no level loss/actual stat and journal/save lifecycle tests; client use stays user-owned."
+    "status": "Superseded by implemented/deployed66600a9ae; audit battle-stone-upgrade-2026-10-27.json. User corrected chronology: one stone used, five purchased afterward untouched. AlreadyRare rejection-consumption native baseline proven. One authorized refund applied offline with private backup; no pet/progress edits.",
+    "next": "User client retest: alreadyRare rejection retains all stones; lower-quality pet success consumes one and preserves level/XP. Actual735 notification payload/rendering and journal/relog pending; unexpected payload retains diagnostics."
   }
 }

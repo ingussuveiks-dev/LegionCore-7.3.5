@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "status": "Native repair built/promoted; fresh own startup and actual client retest status recorded below",
+  "status": "Committed66600a9ae and deployed; native/PE/owned startup passed, actual client use/notification retest pending",
   "report": "User used one purchased Marked Flawless Battle-Stone on newly selected journal pet, then bought five more and used none of those. Client triggered unhandled CMSG_BATTLE_PET_UPDATE_DISPLAY_NOTIFY0x31D7. Earlier five-remaining inference did not establish whether the first stone was consumed; user corrected that chronology.",
   "cause": [
     "Native98715->134644/effect204/BasePoints85/mask1023/target90/charges-1. Original effect checked quality only during launch and sent failure, leaving cast item available to later native TakeCastItem. Thus alreadyRare rejection could still consume one stone.",
@@ -30,7 +30,7 @@
   },
   "diagnostics": {
     "evidence": ".codex/battle-stone/{build,build-2,catalog-2,pe-stage,recovery,deployment,final-deployment}/ and build-extractors/runtime-test/battle-stone",
-    "result": "Before/after all native/build/PE/recovery/startup groups inspected. No new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions in completed groups. Original reported opcode line remains in mixed Server.log; no logs truncated or historical error hidden.",
+    "result": "Completed groups including final own34304 ready/shutdown0/exit0: no new/changed crashes, appended DBErrors or unexplained warning/error/assertion, stderr empty. Historical mixed Server.log retained; no clearing or archive cleanup.",
     "development": "Fixture initially used float return for native integer rounding helper; corrected. Native float-to-integer stats warning and existing full-build warnings retained. Original shell here-string refund script construction failed parsing before any execution; corrected file via patch and guarded refund passed."
   },
   "deployment": {
