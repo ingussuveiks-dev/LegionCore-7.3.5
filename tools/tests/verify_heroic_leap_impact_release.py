@@ -53,5 +53,4 @@ needs('?GetSpellCategoryChargesTimer@Player@@','?GetTotalAuraModifierByMiscValue
 needs('?SpellDamageBonusDone@Unit@@','??$ApplySpellMod@M@Player@@')
 # IsAffectedBySpellmod is inlined into the native modifier template; the
 # extracted production predicates and matching masks are exercised by the host.
-assert not any('BilaalDeath' in k for k in n['symbols']), 'Uncoordinated Bilaal WIP in focused build'
-print('PASS actual registered suppression hooks, native completed-spline receipt before52174, positive launch gate, real arrival descriptor and native charge/damage/talent-mask consumers; Bilaal WIP excluded. Native/TEMP tests own data and failure cases; client damage/talents remain pending.')
+print('PASS actual registered suppression hooks, native completed-spline receipt before52174, positive launch gate, real arrival descriptor and native charge/damage/talent-mask consumers. Native/TEMP tests own data and failure cases; client damage/talents remain pending.')

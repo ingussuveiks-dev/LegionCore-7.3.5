@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/bilaal_death.h",
+      "handler": "Priest/Mage Nexus Bilaal actual-death receipt and Azuregos receiver",
+      "problem": "Dying-AI/invoker-dependent native49810 and one-shot receiver creation could lose the transition for disabled AI/pet/failed creation. Source/native counterfactual, not a newly captured client crash.",
+      "repair_audit": "docs/audits/bilaal-instance-death-2026-10-27.json",
+      "limit": "Deployed BFCEECBD with coordinated SQL09 RELEASED. Exact native owner/group/objective/attempt receipt, accepted scenario victory and checked map-owned receiver pass native/ASAN/TEMP/selected PE/startup. Actual client full routes remain pending; downstream104546 portal optional-cast/retry and209863 gravity remain OPEN."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp",
       "handler": "Opening Akaari5s helper visual pointer lifetime",
       "problem": "Opening105536 scheduled an actor-owned5s callback capturing raw this AI and raw105540 helper. The actor queue can outlive an AI replacement or helper removal, leaving borrowed pointers. This is a source/native retired-helper counterfactual finding, not a newly captured production crash.",

@@ -1,0 +1,44 @@
+{
+    "date":  "2026-10-27",
+    "status":  "Backend/death transition deployed; downstream and full client chains remain separate/open",
+    "scope":  "True Bilaal death handoff for Priest104502/spawn370522/scenario1065/41631/phase6140 and Mage106708/spawn370551/scenario1101/42011/phase6068 on map1583",
+    "cause":  "Original SmartAI DEATH5 -\u003e LINK6 relied on dying actor AI, raw invoker event205/49810, and a single Azuregos104546 creation with no failure retry. Native Unit::Kill invokes victim AI only when enabled, while its independent InstanceScript::CreatureDies is always dispatched after native kill-owner/group rewards. These are source/native counterfactual findings, not a newly captured client crash.",
+    "implementation":  [
+                           "Instance-owned death receipt validates actual dead static actor, correct map/spawn/phase/scenario/stage, native damage eligibility and native quest objective ObjectID count already earned by the actual loot recipient or native player owner/eligible group member. Hidden Accept Quest spells may prefill objectives, so count alone is not provenance. No direct quest, item or kill grant.",
+                           "Original accepted quest ScriptLifetime/owner/source GUID and phase snapshot survive corpse removal while refusing abandoned/retaken attempts. Native49810 must actually yield step5 and the native victory leaf before any receiver creation. Criteria rejection and creation/insertion failures retain bounded two-second retries with useful diagnostics. Reentrant duplicate callbacks cannot emit duplicate receiver/credit.",
+                           "Receiver construction follows native properties-null TempSummon factory with actual Create/phase/summoner/home/InitStats/checked map insertion/rollback cleanup/InitSummon/manual lifetime. No delayed borrowed actor/player/AI pointer; earlier104902/106747 Azuregos origin remains separate.",
+                           "Guarded full31-field SQL09 retires only four boss DEATH5/LINK6 rows, preserving ten combat rows and all earlier Azuregos producers. Exact templates, instance, two static sources, no new producers/conditions and original/applied graph hashes are required. Migration now temporarily raises group_concat_max_len to at least1MB and restores caller setting; tests cover32-byte initial limit."
+                       ],
+    "checks":  [
+                   "Test-BilaalDeath -AddressSanitizer -VerifyNativeCatalog: extracted actual header, native Unit kill reward/independent instance death dispatcher, native quest objective counters and damage-eligibility accessor. Both routes, player/pet/guardian/actual loot owner/group, disabled AI,50 admission denials, removal, retry/insertion cleanup, quest retake/logout, original lease, phase, reentrancy and actual accepted state. Scenario/factory service endpoints controlled; not a full live encounter.",
+                   "Test-BilaalDeathData: six actual-schema TEMP tables, full31-field original/applied graph, repeated apply, caller aggregation-limit restoration, original combat/earlier Azuregos/template preservation and30 custom refusals. Actual updater SHA1/RELEASED,10 rows/new graph read back after deployment. No character writes.",
+                   "Shared ScriptPetCredit and BilaalCombat ASAN pass; native catalog confirms1065/tree47117 and1101/tree47995 criterion29656/type92/49810. Gravity thresholds retain previous accepted-cast retry fix.",
+                   "Fresh original scripts Release build after Heroic Leap impact3a7d01cab and dedicated .codex/bilaal-current-release final link use original native game/scripts/shared/common libraries. Staged and canonical selected native instance/factory/vtable/route objects/damage-owner-objective-lease/accepted criteria and complete receiver construction/checked rollback PE pass.",
+                   "Heroic Leap impact and Krosus PE still pass in the combined stage; Scepter canonical Release pass. Their reusable verifiers now accept later coordinated Bilaal inclusion, rather than permanently requiring that unrelated feature to be absent. The earlier focused builds were separately verified to exclude Bilaal before SQL09 promotion.",
+                   "Promoted only while both server names absent, per-file rechecked; exposed only matching SQL09 after EXE promotion. Own30044 applied SQL09, reached ready, graceful shutdown0/exit0, newDBErrors/stderr0 and protected hashes unchanged. No task-owned server remains."
+               ],
+    "development_notes":  [
+                              "Inherited PE1..8 verifier adaptation failures and eventual PE9 are preserved under .codex/bilaal-death, as recorded by the previous handoff. Fresh combined build/native/PE passes.",
+                              "After temporarily pinning the Bilaal source for the focused Krosus build, Copy-Item restored its old timestamp. A first separate build did not recompile that object; timestamp was refreshed and the actual implementation verified in fresh PE before promotion. Source bytes and backups retained.",
+                              "An initial build invocation had an unquoted PowerShell array path and was rejected before execution. Corrected invocation and all builds/diagnostics pass."
+                          ],
+    "diagnostics":  {
+                        "evidence":  ".codex/bilaal-death/ and build-extractors/runtime-test/bilaal-death*",
+                        "result":  "Before/after every test/build/PE/deployment/startup: no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Existing fixture shadow/unused warnings preserved. No runtime log/crash cleanup necessary."
+                    },
+    "deployment":  {
+                       "stage":  ".codex/bilaal-current-release",
+                       "world_map_sha256":  "50C5801A815BD270AA7B41614DDE6E9190976EA936126F43F9E45611720FA75E",
+                       "world_sha256":  "BFCEECBD236FC9DBF58CA0C41E976C3794B043D59A161036C9F266F703038B20",
+                       "state":  "RELEASED",
+                       "migration":  "2026_10_27_09_bilaal_instance_death.sql",
+                       "backup":  ".codex/release-before-bilaal-instance-death-2026-10-27",
+                       "scope":  "Includes Krosus, Heroic Leap impact/talents and earlier Charge/bird fixes. Original .codex/pending/SQL09 remains a historical backup; active SQL09 includes the tested aggregation-limit fix.",
+                       "migration_sha1":  "2E8F27D3B7ED09DEEFEA387C92D5AD81C979A204"
+                   },
+    "open":  [
+                 "Azuregos104546 downstream waypoint1 -\u003econversation3471 -\u003eoptional223908 -\u003eGO248553 still has essential portal creation behind a potentially failed cast and no creation retry. Next independent backend investigation; death receipt does not certify this downstream route.",
+                 "Force of Gravity209863 and missing AT6667..6669 geometry/forces remain OPEN in bilaal-gravity-evidence-2026-10-27.json. Do not invent wind geometry or claim full combat.",
+                 "Actual Priest/Mage pet/player combat, one-hit/scaling, scenario transition, receiver motion/conversations, portal/chest/loot/equip/return/reentry and full client sequences remain user-owned pending."
+             ]
+}

@@ -23,5 +23,4 @@ assert sum(x.mnemonic=='mulss' for x in body)>=3, 'Missing display/model/object 
 # The model pointer is advanced to native CreatureModelData::GeoBox (0x20),
 # then min/max X and Y (0/0xc,4/0x10) feed the horizontal envelope.
 assert any(x.mnemonic=='lea' and any(o.type==CS_OP_MEM and o.mem.disp==0x20 for o in x.operands) for x in body)
-assert not any('BilaalDeath' in k for k in n['symbols']), 'Uncoordinated Bilaal WIP entered this build'
-print('PASS selected Broken Shore factory/Reset: exact map/entry/display, native scaled horizontal box, finite guards and public reach write; Bilaal WIP excluded. Client reach/combat traversal remains pending.')
+print('PASS selected Broken Shore factory/Reset: exact map/entry/display, native scaled horizontal box, finite guards and public reach write. Client reach/combat traversal remains pending.')

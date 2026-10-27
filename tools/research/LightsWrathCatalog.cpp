@@ -28,6 +28,7 @@ int main(int argc,char** argv){
  for(auto e:effects)if(e->Effect==61&&e->EffectMiscValue[0]>=54145&&e->EffectMiscValue[0]<=54147){chosen.insert(e->SpellID);std::cout<<"CONTROL_SOURCE\t"<<e->SpellID<<'\t'<<e->EffectMiscValue[0]<<'\n';}
  for(auto e:effects)if((e->EffectTriggerSpell==207949||e->EffectTriggerSpell==207996)||e->EffectMiscValue[0]==104985)
   std::cout<<"SHARED_USE\t"<<e->SpellID<<'\t'<<e->Effect<<'\t'<<e->EffectMiscValue[0]<<'\t'<<e->EffectTriggerSpell<<'\n';
+ for(auto e:effects)if(e->EffectMiscValue[0]==104502||e->EffectMiscValue[0]==106708){chosen.insert(e->SpellID);std::cout<<"BILAAL_SOURCE\t"<<e->SpellID<<'\t'<<e->Effect<<'\t'<<e->EffectMiscValue[0]<<'\t'<<unsigned(e->DifficultyID)<<'\n';}
  for(auto id:chosen){if(auto s=spells.LookupEntry(id))std::cout<<"SPELL\t"<<id<<'\t'<<s->Name->Str[0]<<'\n';for(auto e:effects)if(e->SpellID==id&&!e->DifficultyID)std::cout<<"EFFECT\t"<<id<<'\t'<<unsigned(e->EffectIndex)<<'\t'<<e->Effect<<'\t'<<e->EffectAura<<'\t'<<e->EffectMiscValue[0]<<'\t'<<e->EffectTriggerSpell<<'\t'<<unsigned(e->ImplicitTarget[0])<<'\t'<<unsigned(e->ImplicitTarget[1])<<'\n';}
  for(auto e:effects)if(e->SpellID==209863||e->SpellID==209864||e->SpellID==214455)std::cout<<"PERIOD\t"<<e->SpellID<<'\t'<<e->DifficultyID<<'\t'<<e->EffectIndex<<'\t'<<e->EffectAuraPeriod<<'\t'<<e->EffectTriggerSpell<<'\n';
  DB2Storage<SpellMiscEntry> misc("SpellMisc.db2",SpellMiscLoadInfo::Instance());DB2Storage<SpellDurationEntry> duration("SpellDuration.db2",SpellDurationLoadInfo::Instance());

@@ -4,6 +4,13 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "Player.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include "TemporarySummon.h"
+#include "Group.h"
+#include "ObjectAccessor.h"
+#include "bilaal_death.h"
 
 //rogue dreadblades 1545
 struct instance_dreadblades : public InstanceScript
@@ -64,6 +71,10 @@ struct instance_violethold_mage : public InstanceScript
 struct instance_priest_mage_nexus_art : public InstanceScript
 {
     instance_priest_mage_nexus_art(InstanceMap* map) : InstanceScript(map) {}
+
+    BilaalDeath::State bilaal;
+    void CreatureDies(Creature* creature, Unit* killer) override { bilaal.Death(instance, creature, killer); }
+    void Update(uint32 diff) override { bilaal.Update(instance, diff); }
 
     WorldLocation loc_res_pla;
 
