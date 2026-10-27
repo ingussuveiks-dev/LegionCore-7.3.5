@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "User requested a new-chat checkpoint after finishing the current bird repair; do not start further work in this chat.",
+  "reason": "Active authorized continuation checkpoint after Krosus, Heroic Leap damage/talents, inherited Bilaal death and Demons Among Us PvE repairs. Original chat-size/backup sections remain historical.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -38,25 +38,45 @@
       "commit": "bc4550ac5",
       "fix": "Both boost departure birds native Flight1 World10 and post-boarding/pre-MovePoint flag rearm; deployed",
       "audit": "docs/audits/boost-departure-flight-2026-10-27.json"
+    },
+    {
+      "commit": "fc3302757",
+      "fix": "Krosus90544 scoped native model-envelope reach; deployed",
+      "audit": "docs/audits/broken-shore-krosus-reach-2026-10-27.json"
+    },
+    {
+      "commit": "3a7d01cab",
+      "fix": "Heroic Leap single genuine landing damage and native talent consumers; World11 deployed",
+      "audit": "docs/audits/heroic-leap-impact-talents-2026-10-27.json"
+    },
+    {
+      "commit": "b696f57be",
+      "fix": "Inherited Bilaal death receipt and receiver creation; matching World09 now deployed",
+      "audit": "docs/audits/bilaal-instance-death-2026-10-27.json"
+    },
+    {
+      "commit": "c87f591fd",
+      "fix": "Horde40607 revealed demons native non-PvP faction2898; World12 deployed",
+      "audit": "docs/audits/demons-among-us-pve-faction-2026-10-27.json"
     }
   ],
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "16F3D09DF23144BA09EC9D4CDF6E281259A20B93A50B7DE3056842C6C6B28C3C",
-      "bnetserver.map": "875E861AE0BA8162FD8D645716216FF5E4AD393375CB879BA2C92B47B070E4E3",
-      "worldserver.exe": "9043195589414C5AF1F38607E1BA7D3A713EBBCE62380E5132C19C5E269510F2",
-      "worldserver.map": "3D24F2A9B0B7B840C1DF88C92EE656D72C63D215BE11635C6082987896F7FDAC"
+      "bnetserver.exe": "94A924B737BA9DB47CBDC94EF92AD199E10C6ECBC0BAF4158DC0E880BB432F8A",
+      "bnetserver.map": "FCACE8EB5A8E1F25008F1CE7DC2FCB262F57BF10F6608C0174AED5AEF5FBFFF1",
+      "worldserver.exe": "BFCEECBD236FC9DBF58CA0C41E976C3794B043D59A161036C9F266F703038B20",
+      "worldserver.map": "50C5801A815BD270AA7B41614DDE6E9190976EA936126F43F9E45611720FA75E"
     },
-    "scope": "Includes all three user boost repairs and previous HEAD functionality. EXCLUDES Bilaal WIP. World10 RELEASED/hash readback verified. Own17840 startup ready/shutdown0/exit0; stderr/newDBErrors empty, protected hashes unchanged. No task-owned server left."
+    "scope": "Combined BFCEECBD includes Krosus, Heroic Leap impact/talents, Bilaal death and earlier Charge/bird repairs. World09/11/12 actually RELEASED with hash readback. Own30044 and27676 fresh ready/shutdown0/exit0, no new diagnostics; all task-owned servers stopped. Character progress/PvP untouched."
   },
   "servers_last_seen": {
-    "bnetserver": 2772,
-    "worldserver": 12860,
-    "ownership": "User/unknown; started2026-10-27 around09:29 Europe/Riga. Never stop them. Recheck actual names/paths/logs before dependent operations. Continue independent work; no main EXE/log maintenance while running."
+    "bnetserver": null,
+    "worldserver": null,
+    "ownership": "No server remained at final check after own27676 shutdown. User/unknown5244/15972 were observed during client report and had exited before maintenance; never stopped by the agent. Recheck current process names before further deployment."
   },
   "bilaal_wip": {
-    "status": "Uncommitted source/tests preserved, native/TEMP/staged PE pass; NOT in canonical binary, SQL09 NOT in live updater. Do not discard/reset. Do not accidentally promote a new build containing this code without coordinated SQL09.",
+    "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
     "routes": "Map1583 actual DB370522/104502 Priest1065/41631/phase6140/tree47117 and370551/106708 Mage1101/42011/phase6068/tree47995.",
     "implementation": "Instance CreatureDies independent of boss AI plus2s Update. Real dead/static/native damage-eligible actor, actual loot recipient or native owner/group, already earned native kill objective by ObjectID, original quest weak ScriptLifetime, exact map/class/phase/stage. Native accepted49810/type92/tree29656->step5/Victory before retryable map-owned104546. Captured phase/sourceGUID survives corpse removal. Native properties-null TempSummon sequence with checked insertion/cleanup; no raw delayed actor/player/AI; no direct quest/item grants.",
     "tests_passed": [
@@ -65,23 +85,23 @@
       "Shared Test-ScriptPetCredit and Test-BilaalCombat ASAN",
       "verify_bilaal_death_release.py staged, evidence .codex/bilaal-death/pe-staged-9: PASS native registered instance, exact routes/native damage field derived from Unit::Kill, owner/objective/phase/lease consumers and actual TempSummon construction/insertion/cleanup"
     ],
-    "tested_bilaal_binary": "01ED68F3933B733ACC521550589F4461103578DFDE976F9CF3068F459E73B8B7 (PE9 output). That staged directory was subsequently overwritten by the deployed bird-only build. Rebuild/recheck a new dedicated stage including current bird fixes before Bilaal promotion.",
+    "tested_bilaal_binary": "BFCEECBD236FC9DBF58CA0C41E976C3794B043D59A161036C9F266F703038B20",
     "migration": {
-      "path": ".codex/pending/2026_10_27_09_bilaal_instance_death.sql",
+      "path": "sql/updates/world/2026_10_27_09_bilaal_instance_death.sql",
       "old_graph": "a306ccf1aa3ff9a3e92fb2ea23df4f2d282a7a34a039e484947f041312171a57",
       "new_graph": "c7162d84ebc8a7f4fd2cc65690dac77cb35518c5bf40981bac3a165a873c1c49",
-      "effect": "Retire only four boss SmartAI DEATH5/LINK6 rows after matching executable ready; retain native combat0..4 and all earlier Azuregos sources. Guard instance/template/exact source spawn/phase/no new producers/conditions/full graph. TEMP tests set group_concat_max_len1MB; check actual updater session or add explicit safe session setting before promotion."
+      "effect": "Retires four DEATH5/LINK6 rows after instance death receipt is linked. Graphs/native combat preserved. Temporarily raises session aggregation limit to1MB and restores it;32-byte TEMP start tested. SHA1 2E8F27D3B7ED09DEEFEA387C92D5AD81C979A204 RELEASED. Old .codex/pending copy is only a historical backup."
     },
-    "development_notes": "PE1..8 failures were verifier adaptation (leaf bounds/const overloads/native zero register/compiler-inlined CurrentReceipt) and are preserved; PE9 passes. Data fixture initial missing comment and later PowerShell expected-stderr termination fixed and rerun. INFO handshake false candidates in PE7 fully reviewed by committed classifier repair. No unexplained runtime crash/DBErrors discovered.",
-    "next": "Finish focused audit/worklist, fresh dedicated build with current deployed boost changes, data/native/PE checks, offline coordinated EXE+SQL09 promotion, owned startup/live updater/hash/Scepter checks if server absent, then focused commit/push. If user server remains running, retain pending deployment and continue another independent repair."
+    "development_notes": "PE1..8 failures were verifier adaptation (leaf bounds/const overloads/native zero register/compiler-inlined CurrentReceipt) and are preserved; PE9 passes. Data fixture initial missing comment and later PowerShell expected-stderr termination fixed and rerun. INFO handshake false candidates in PE7 fully reviewed by committed classifier repair. No unexplained runtime crash/DBErrors discovered. Current continuation rebuilt after the new Heroic Leap changes and verified actual combined native PE and live updater before promotion. Audit docs/audits/bilaal-instance-death-2026-10-27.json.",
+    "next": "Focused death repair complete/deployed; next inspect actual104546 waypoint/optional cast/portal retry. Do not confuse the still-open gravity/portal/client sequence with this death receipt."
   },
   "next_independent_work": [
     "Azuregos104546 downstream real source0 graph in .codex/bilaal-death/azuregos-downstream.tsv: waypoint1/path104546 -> optional conversation3471 ->223908 self-cast -> single GO248553 creation -> flags/fly cleanup. Optional failed cast can stop LINK and portal creation has no retry. Source9 native list keeps207897/path/conversation3470/model68826. Keep earlier104902/106747 Azuregos origin separate; no event54 found for104546. Investigate full route, not merely death receipt.",
     "Bilaal Gravity209863 remains OPEN: native period1000/trigger0, no reviewed native handler/AT6667..9 geometry/209864..6; do not invent wind geometry. Retain prior gravity audit4ea30199e.",
     "Aluneth three-scroll/native5000ms/override779..781 evidence committed a98b0fa69; current custom GO immediate205 shortcut remains UNRESOLVED. Real binding dome producer/geometry and dest46 need evidence;225030 same-name effect is audio-only. Partial YouTube only, not full traversal. Read docs/audits/aluneth-control-evidence-2026-10-27.json.",
-    "Hunter additional-artifact selection remains OPEN: ignored .codex/hunter-additional-choice-in-progress.patch is partial/untested/undeployed. Read dedicated hunter audit and old resume section; both Trueshot Emmarels/native choice240/198430/admission/finished-route filtering/stale response need implementation/tests. Never alter saved Hunter progress."
+    "Hunter additional-artifact SELECTION BACKEND IS ALREADY FIXED: ancestor802295a98, audit hunter-additional-artifact-choice-2026-10-26.json, actual249 conditions/flags3/World12-2026-10-26 RELEASED. Fresh512 native/TEMP/ASAN and canonical PE pass. Old resume and old ignored patch are stale historical artifacts; preserve them but do not reapply. Actual UI/third choice and full MM/Survival routes still pending."
   ],
-  "client_pending": "User has not yet confirmed final Leap/Charge/wing retests. All boost camera/pet/landing/lesson/full sequence and all36 route visual/traversal checks remain user-owned; compilation/native/PE/startup do not certify those.",
+  "client_pending": "Krosus reach/combat and Demons Among Us PvP-off attack/counter, Heroic Leap landing/one combat hit/mitigation/talents, earlier Charge/bird camera/pet and all36 complete routes remain user-owned and unconfirmed. No runtime/native/model/PE check substitutes for client traversal.",
   "local_tools": {
     "python": "C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
     "pe_pythonpath": ".codex/pe-review-deps",
@@ -153,5 +173,14 @@
     "Each completed focused fix: audit, staged diff review, commit/push origin current branch. No force push or credentials/runtime/character data commits.",
     "No subagents authorized. No goal/automation created. This checkpoint is a handoff, not automatic background continuation.",
     "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
-  ]
+  ],
+  "current_continuation": {
+    "last_implementation_commit": "c87f591fd",
+    "hunter_reconciliation": "Git/source and dedicated followup audit contradict stale unfinished text in the old resume. Commit802295a98 is an ancestor and actual runtime migration13005E8182CE54B5FFA4DEED6C9FA53272C39796 is RELEASED; 249 rows, flags3 on107317/107973 and current canonical selected consumers were independently rechecked. No repeated repair or character change.",
+    "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
+    "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
+    "diagnostics": "No new/changed crashes, appendedDBErrors or unexplained server warning/error/assertion after every test/build/startup group. ActiveDBErrors0/Crashes0 at last check; no log was truncated or crash archived during this continuation.",
+    "next": "Continue Azuregos104546 downstream source0 graph: optional223908 can block LINK to248553, creation has no retry. Existing native SmartSummonGameObject retry2/map-ownership4, eventDONT_RESET256 are available, but phased UPDATE loses phase on Reset. Counter-set77 exists only as an enum, with no implemented action/dispatcher in this core; do not invent native counter support. Investigate robust arrival/Reset/retry using actual callbacks before editing. Aluneth/gravity source gaps remain separate.",
+    "uncommitted_at_checkpoint": "None before this documentation update; original Bilaal WIP preserved and completed in its focused commit. Ignored historical Hunter patch/old pendingSQL09 backups untouched."
+  }
 }
