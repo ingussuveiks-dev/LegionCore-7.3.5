@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "f7c55046",
+  "scope": "Discipline104985/370524 actual207949 channel ->207956 response ->207996 native49811 ->accepted47119 ->persistent248572 creation. Preceding combat, full presentation/return and client traversal remain open.",
+  "cause": "Original event73 starts a separate30s one-shot timed list regardless of the actual click cast result or cancellation. It queues207996 then directly invokes Smart205/49811 and despawns even after failed chest creation. Thus rejected/cancelled channels can progress and a successful native event is duplicated. Pinned full31-field seven-row native graph retained in LightsWrathTakeoverOriginal.json.",
+  "implementation": [
+    "Exact live104985/370524/map1583 role; actual1065 stage5 plus earned47117, active unrewarded Priest41631, living/contact/phase/visibility/LOS and original5yd click. Full128-bit actor/player GUIDs, origin Map identity+instance and native weak quest ScriptLifetime. NPC remains SmartAI-derived; only its seven original timer/click rows are retired after complete graph guard. Native root/periodic damage and ordinary click cast remain.",
+    "Actual owner207949 root/periodic aura real/reapply hooks bind the original receipt. Native lifecycle requests original actor207956; accepted cast and observed own aura required. Only real EXPIRE with zero remaining, native30s max and elapsed>=30s creates the earned channel result; cancel/dispel/death/forged expiry/old quest/AI resets remove owned effects without progress. No independent30s completion timer.",
+    "Original200ms ordering before ordinary native player207996; rejected cast or missing accepted47119 retries5s with diagnostic. Result script captures weak authorization during synchronous native CastSpell->prepare->CheckCast and rechecks bound receipt before every native effect; no direct205 or progress/item/health/teleport grant. Expired receipt cannot rebind after retry. Temporary thread-local weak context restored by RAII.",
+    "Accepted47119 is an instance world fact: exact1065/6 restores native lifetime0/pose/summoner/phase248572 with hasCreator=false even after owner disconnect/AI reconstruction, without new credit. Failed creation retains original source and retries2s; real existing map-owned same-phase source-entry chest deduplicates. Source retires only after actual success, or native completed7. Map-owned lifetime policy from f7c55046 preserved; original03 row is now superseded by this C++ call while general Smart50 flag4 remains supported.",
+    "Cleanup checks original actor/map/instance and fresh AI attempt before each removal, preserving reentrant new attempts. Destructor cancels data only; lifecycle copies State to survive AI retirement. Missing/disabled primary AI native locked lifecycle remains covered. No manual character/progression edits."
+  ],
+  "native_evidence": {
+    "catalog": "Fresh typed26972:207949 root26+periodic23/207960,30s;207956 native30s dummy4;207996 screen260/1010 and SEND_EVENT61/49811; actual1065 previous49810/tree47117 and control49811/tree47119; shared1583 Mage1101 distinct. Complete native spell-effect trigger/summon104985 scan has no other shared producer. Actual World click cast_flags1/user0/addflag1 and native faction2102/flags retained. No external/video evidence claimed.",
+    "dispatch": "Actual Unit::CastSpell prepares synchronously, prepare loads scripts then CheckCast; actual native CheckCast calls script prepare/handler/finish. Actual Aura duration block and Unit expired-aura removal select EXPIRE. Actual native SendEvent remains sole control-event delivery. Generic Smart92 removal mode omission deliberately not used or globally changed."
+  },
+  "checks": {
+    "counterfactual": "Explicit actual old Smart205 case credits after failed result cast, failed chest creation still consumes source; successful native207996 plus205 duplicates delivery. Controlled baseline, not a captured production crash or observed client run.",
+    "asan": "Full actual production header/request/aura/result/controller plus extracted native quest lease, duration/expiry, locked original/disabled AI lifecycle, SendEvent and old205. Six incomplete/complete xnormal/disabled/no-primary variants,23 initial denials/all stage bounds, actual30s+200ms, failed Fury/result/native criterion/creation,5s/2s retry, held lease same-tick retake/reset/freed AI/stale deferred effects/crossMap same fullGUID/no-map/reentrant new attempts/dedup/offline earned world recovery all pass. Actual damage/scene/criteria/map endpoints controlled, not full world/client simulation.",
+    "sql": "Full31-field original graph hash5cfa07807232eebfbba89962f598700960996a4df1bfca0d8acdc330a70ac8aa and exact native role/click/shared-use guard. Six TEMP tables, migration twice and12 custom refusals leave refusal data unchanged. Actual native updater LF-text SHA1 RELEASED/new template/three bindings/zero old rows verified. Old migrations immutable.",
+    "shared": "All ten shared acquisition hosts plus480 native/cached loot predicates, root/cast predicates and native200ms stale pickup queue pass. Earlier Discipline admission/Tuure chain/capture PE checks preserved. General Smart50 four native hasCreator flags branches and creator cleanup PE preserved.",
+    "release": "Scripts original Release library built, original final-link libraries verified, separate staged PE passed, both server names absent/rechecked during fourfile canonical promotion. Actual AddSC four loader registrations/factory vtables/hook callbacks/native synchronous script call/30s elapsed field/200ms/result criteria/native lifetime0 and hasCreator=false x64 arguments checked in staged and canonical PE. Scepter native+Release regression passes.",
+    "development": "Fixture compilation/counter assertions and PE inspection assumptions corrected before final passing regressions. Native Progress inlined; actual elapsed getter is inlined and CheckCast script handler loop is inlined. Correct native summon respawn stack50 versus float slot40 asserted. Failures retained in local evidence, no diagnostics hidden.",
+    "runtime": "Wrapped owned worldserver3516 fresh native updater/ready/shutdown0/exit0, stderr/new DBErrors empty/protected hashes unchanged. No task server remains; no user or unknown server stopped. Canonical plus own test/runtime/probe crash/log snapshots show no new/changed crash, appended DBErrors or server warning/error/assertion. No log truncation/archive required."
+  },
+  "canonical_sha256": {
+    "bnetserver.map": "354900F897BB941108A134FFB88529996E99635B94FF6A60D972A7E44980F767",
+    "worldserver.map": "FCE8009F3E16EECB55B631CCAB6192F6045E28489DA4D939A693B1211D23AA99",
+    "worldserver.exe": "BF674F55A1427F6A48F18F4BE1A160C7707845D53147BB962A00F3DC2A28C930",
+    "bnetserver.exe": "0CD07B58D702AAD44DD2CAE1142C56D4C1BDE63DAB020FD81914630FD8AE2352"
+  },
+  "migration": {
+    "name": "2026_10_27_04_lights_wrath_takeover.sql",
+    "native_updater_sha1": "AE8D6B173D089703478B6B6AE73956F86D68102E",
+    "state": "RELEASED"
+  },
+  "archives": "No new runtime error to archive. Runtime logs/dumps/configuration/passwords/character state excluded from Git.",
+  "next": [
+    "Actual104502 Bilaal player/pet/guardian final blow, exactly-once native49810 and104546 transition/spawn retry.",
+    "Actual208011/scene430/1244 consumed-state/equip/native49875+49926/final criterion and portal/return retry; full prior chain, session/reentry/faction/client and remaining36 remain OPEN."
+  ]
+}

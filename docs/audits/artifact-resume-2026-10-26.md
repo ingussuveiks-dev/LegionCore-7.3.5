@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Discipline real native takeover (2026-10-27)
+
+- `lights-wrath-takeover-2026-10-27.json`: exact104985/370524/1583/1065 stage5+47117/41631 original owner+quest lease. Actual207949 natural30s expiry and own207956 response ->200ms ordinary207996/native49811/accepted47119 ->map-owned lifetime0 native248572. No timer/direct205 grant; failed cast/native acceptance5s and creation2s retry retains source; reset/reentrant/old lease/fullGUID/map identity protected. Earned6 world recovery has no new credit. Prior03 row superseded, general Smart50 flag4 retained.
+- Pinned native205/failed creation counterfactual/current full actual handlers+native duration/expiry/quest/lifecycle/SendEvent ASAN6 accepted/23 denials/stage bounds/stale/freed/disabled/reentrant and TEMP six tables/twice/12 refusals pass. Fresh26972 typed/shared producer scan; selected actual four registrations/vtables/hooks/expiry/x64 native args staged+canonical PE, shared pickup480/200ms and Scepter pass. Endpoint/full world/client limits explicit.
+- Canonical world BF674F55A1427F6A48F18F4BE1A160C7707845D53147BB962A00F3DC2A28C930/map FCE8009F3E16EECB55B631CCAB6192F6045E28489DA4D939A693B1211D23AA99. Own3516 updater/ready/shutdown0/exit0/no new diagnostics/protected changes/task server. No archive/truncation/manual character edit. Commit containing audit follows f7c55046.
+- NEXT actual104502 pet/guardian true death49810 and104546 transition/failed summon; then208011 consumed-state/equip/scene/final events/portal return retries. Actual30s damage/presentation, prior combat, session and complete client/all36 remain OPEN.
+
 ## Latest repair: Discipline chest outlives its native source (2026-10-27)
 
 - `lights-wrath-chest-lifetime-2026-10-27.json`: original104985 source9/id2 creates owned248572/lifetime0 then id3 despawns source; actual Unit cleanup deletes owned chest. New opt-in Smart50 flag4 passes existing native hasCreator=false in all four target/retry paths, preserving actual summoner/phase/scope/lifetime0/map ownership. Only intended one SQL row opts in; original0/1/2 unchanged.

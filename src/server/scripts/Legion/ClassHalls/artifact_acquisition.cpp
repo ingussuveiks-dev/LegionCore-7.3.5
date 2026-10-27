@@ -7,6 +7,7 @@
 #include "SpellScript.h"
 #include "Spell.h"
 #include "SpellAuraEffects.h"
+#include "SpellAuras.h"
 #include "Creature.h"
 #include "TemporarySummon.h"
 #include "CreatureAI.h"
@@ -1841,8 +1842,14 @@ struct npc_stromkar_thoradin : SmartAI
     }
 };
 
+#include "lights_wrath_takeover.h"
+
 void AddSC_artifact_acquisition()
 {
+    RegisterCreatureAI(npc_lights_wrath_takeover);
+    RegisterSpellScript(spell_lights_wrath_control_request);
+    RegisterAuraScript(spell_lights_wrath_control_channel);
+    RegisterSpellScript(spell_lights_wrath_control_result);
     RegisterCreatureAI(npc_marksmanship_qormaladon);
     new condition_marksmanship_qormaladon_ready();
     RegisterCreatureAI(npc_talonclaw_dakarr);
