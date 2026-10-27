@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-27",
+  "status": "Investigation only; defects identified in source, no repair or character/item changes",
+  "report": "User asks what Varzok Marked Flawless Battle-Stone does and whether it works. No client use/failure reported.",
+  "native_data": {
+    "item": 98715,
+    "vendor": 63626,
+    "extended_cost": 4295,
+    "spell": 134644,
+    "effect": 204,
+    "base_points": 85,
+    "family_mask": 1023,
+    "target": 90,
+    "item_charges": -1,
+    "source": ".codex/battle-stone/Catalog.cpp and native.tsv: typed26972 ItemEffect/Spell/SpellEffect with readonly configured hotfix overlays"
+  },
+  "expected": "Consumable upgrades an owned battle pet below Rare to Rare quality. This concerns account-journal battle pets, not Hunter/Warlock combat pets. It does not grant level25. Level-loss penalty was removed before Legion. Summon intended journal pet, then use item; actual client cursor/selection remains unverified.",
+  "source_findings": [
+    "SpellEffects.cpp EffectUpgradeBattlePet is registered effect204; reads summoned journal GUID, validates family and current quality, writes Rare/needSave and sends journal update. Native marked item85 selects Rare and mask1023 admits all10 families.",
+    "Unconditionally subtracts2 levels at Level>=15: stale pre6.1 behavior. Native Legion item description has no level penalty.",
+    "Calls Player::DestroyItem(bag,slot,true), which deletes entire Item rather than decrementing one unit. A multi-item stack can therefore be lost. Need extracted/native regression before repair certification.",
+    "No BattlePet::UpdateStats call between Quality mutation and packet sending; SendBattlePetUpdates serializes cached InfoPower/InfoMaxHealth/InfoSpeed. Immediate stat refresh needs its own traced regression."
+  ],
+  "sources": [
+    "src/server/game/Spells/SpellEffects.cpp:8597",
+    "src/server/game/Entities/Player/Player.cpp:16302",
+    "src/server/game/Handlers/BattlePetHandler.cpp:1253",
+    "src/server/game/PetBattle/PetBattle.cpp:231",
+    "https://warcraft.wiki.gg/wiki/Marked_Flawless_Battle-Stone",
+    "https://www.wowhead.com/item=98715/marked-flawless-battle-stone"
+  ],
+  "diagnostics": "Native readonly catalog wrapped before/after canonical and own-runtime crashes/logs: exit0, no new/changed crashes, DBErrors or server warning/error/assertion. User9788/23748 untouched. No runtime test, actual stone use, item destruction or character/pet writes.",
+  "next": "Separate focused repair: native effect/type/owner gates, unchanged level/XP, one-unit consume, real stat recomputation and journal/summoned-pet presentation; rejection/null target/stack/invalid species/lifecycle/save/relog regressions. Preserve ongoing Azuregos portal staging and all36 artifact objective."
+}
