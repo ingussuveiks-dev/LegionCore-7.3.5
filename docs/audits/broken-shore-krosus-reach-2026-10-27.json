@@ -1,6 +1,6 @@
 {
     "date":  "2026-10-27",
-    "status":  "Source and dedicated Release checked; deployment deferred while user servers run; client retest pending",
+    "status":  "Backend deployed and canonical/startup checks pass; actual client reach/combat retest pending",
     "report":  "Broken Shore stage8 Krosus shows Out of range to Warrior melee at shore",
     "evidence":  [
                      "Local 90544/map1460/sceneTrigger_part8/display71701 template scale1; creature_model_info radius22.2706/reach30. Native SetDisplayId copies reach to public UNIT_FIELD_COMBAT_REACH; native Spell::CheckRange invokes IsWithinMeleeRange.",
@@ -19,7 +19,7 @@
                    "BrokenShoreKrosusCatalog typed actual DB2 + read-only hotfix and production helper pass.",
                    "Original scripts Release build and dedicated final link .codex/krosus-release: native original library paths, canonical hashes unchanged. Prior C4805 int8/bool warning in unchanged faction helper remains. Bilaal source temporarily pinned to HEAD from exact backup and restored byte-for-byte in finally; SQL09 never moved.",
                    "verify_krosus_reach_release.py staged PASS: actual selected factory/vtable/Reset, exact actor scope/native scales/model box/finite guards/public field write; no BilaalDeath symbols. Native shared LFG/Vigfus checks also pass.",
-                   "Test-ScepterLogin.ps1 -VerifyReleaseBinary PASS on canonical existing build; dedicated staged same recovery string also needs deployment readback if promoted."
+                   "Test-ScepterLogin.ps1 -VerifyReleaseBinary and actual selected Krosus PE pass on promoted canonical executable. Dedicated-stage/canonical hashes match."
                ],
     "development_failures":  [
                                  "Temporary diagnostic script named inspect.py shadowed Python standard inspect module; renamed pe_dump.py, actual PE checks then passed. Failed stderr evidence preserved.",
@@ -31,11 +31,14 @@
                         "result":  "Before/after every test/build/PE: no new/changed crashes, appended DBErrors or unexplained server errors/assertions. User servers and logs untouched; no resolved crash archive needed."
                     },
     "deployment":  {
-                       "canonical_sha256":  "9043195589414C5AF1F38607E1BA7D3A713EBBCE62380E5132C19C5E269510F2",
+                       "canonical_sha256":  "4EC9E6697649C845597648A6A70788C1FC9E50961E0A4DC7B076B631C8985DA8",
                        "world_sha256":  "4EC9E6697649C845597648A6A70788C1FC9E50961E0A4DC7B076B631C8985DA8",
                        "world_map_sha256":  "C895BF80C7E4F83ACA2F7C5EE8D03847BF8C05FB0F9592653B7E8C3ED05578AB",
                        "stage":  ".codex/krosus-release",
-                       "blocked_by":  "User/unknown world12860 and bnet2772 remain running; never stopped. No EXE promotion or live updater change."
+                       "blocked_by":  "None at promotion: both user servers absent and rechecked before each copy. No user server stopped.",
+                       "fix_commit":  "fc3302757",
+                       "startup":  "Own21196 fresh ready, graceful shutdown0/exit0; stderr/newDBErrors empty; no new crash/server errors; protected hashes unchanged; no task-owned server left",
+                       "backup":  ".codex/release-before-broken-shore-krosus-reach-2026-10-27"
                    },
     "remaining":  [
                       "User client melee/autoattack/ranged/pet approach at both Krosus positions, ordinary damage, threshold movements, kill and next stage for both factions; reentry/evade/retry and actual visual retest pending.",
