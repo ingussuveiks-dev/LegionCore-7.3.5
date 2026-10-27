@@ -14,6 +14,7 @@ uint32 expectedQuest = 41993, expectedMap = 1489, expectedScenario = 1085, first
 uint32 lastStage = 6, eventEntry = 248419, eventSource = 1;
 uint32 expectedClassMask = 16;
 bool playersOwnArtifactByDefault = false;
+uint32 expectedLoot = 249705;
 enum { GAMEOBJECT_TYPE_CHEST = 3, GAMEOBJECT_TYPE_FISHINGHOLE = 25,
     GAMEOBJECT_TYPE_GATHERING_NODE = 50, GAMEOBJECT_TYPE_CHALLENGE_MODE_REWARD = 51 };
 struct GameObjectTemplate {
@@ -114,7 +115,7 @@ int main(int argc,char** argv){
  assert(argc==2);std::ifstream input(argv[1]);assert(input);std::vector<Condition> rows(14);
  for(auto& c:rows){uint32 target;assert(input>>c.ElseGroup>>c.ConditionType>>target>>c.ConditionValue1>>c.ConditionValue2>>c.ConditionValue3>>c.NegativeCondition);assert(target==0);}
  LootItem item;for(auto& c:rows)item.conditions.push_back(&c);CachedLoot cache;
- GameObjectTemplate chest;assert(!chest.GetLootId());chest.chest.chestLoot=249705;assert(chest.GetLootId()==249705);
+ GameObjectTemplate chest;assert(!chest.GetLootId());chest.chest.chestLoot=expectedLoot;assert(chest.GetLootId()==expectedLoot);
  uint32 cases=0;
  for(uint32 stage=0;stage<8;++stage)for(uint32 status:{0u,1u,3u,5u,6u})for(uint32 cls:{1u,2u,4u,8u,16u,32u,64u,128u,256u,512u,1024u,2048u}){
   scenarioManager={};scenarioManager.scenario.step=stage;Player p;p.status=status;p.classMask=cls;
@@ -130,5 +131,6 @@ int main(int argc,char** argv){
  }
  worldMap.instanced=true;instanceMap.id=42;scenarioManager={};Player p;assert(cache.Read(&p,&item));p.owned=true;assert(!cache.Read(&p,&item));p.owned=false;p.bank=true;assert(!cache.Read(&p,&item));
  LootItem unrelated;assert(unrelated.AllowedForPlayer(&p));
- std::cout<<"PASS "<<cases<<" actual source4 condition/ElseGroup/LootItem and cached-slot rechecks: native249705 loot binding, Priest1085/6 active quest, alive/unrewarded/unowned-including-bank and invalid instance/map/class/history boundaries. Live character state unchanged.\n";
+ std::cout<<"PASS "<<cases<<" actual source4 condition/ElseGroup/LootItem and cached-slot rechecks: native loot "<<expectedLoot<<", Priest scenario "<<expectedScenario<<"/6 active quest "<<expectedQuest<<", alive/unrewarded/unowned-including-bank and invalid instance/map/class/history boundaries. Live character state unchanged.\n";
+ return 0;
 }

@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "151d1141",
+  "scope": "Discipline248572 physical, real cached loot, current native state70 and deferred208011 context admission. Whole pickup retry/controller and full chain remain open.",
+  "cause": "Shared ArtifactAcquisition::Use checked class/active41631/physical contact but omitted Discipline map/scenario/stage before ordinary opening or owned-bank replay. No native source4 or source17 guard existed; existing sole source22 ownership rule targeted nonexistent root id2/group3, not actual state70 id0/group1. Early/wrong shared scenario could therefore reach loot or scripted state/queued cast.",
+  "implementation": [
+    "Only248572 now requires actual1583/1065/steps6..7 through existing shared opening hook, before loot/owned replay. Native1065 final6 and completed7 are supported. Other nine pickups, class/quest/spatial admission and explicit bank/shop replay preference retained.",
+    "Guarded70-rule migration:14 native source4 rules admit real item only at1065/6 with living active nonrewarded41631 Priest and no inventory/bank copy; native LootItem/cached-slot recheck blocks stale windows.28 root22/group1/sourceId1 and28 source17/208011 rules recheck actual owned inventory-or-bank item and6..7 at state/cast execution. Move the unused old ownership condition into the real guarded root, preserving original SmartAI actions,208011,loot/lock and portal.",
+    "No new artifact/progression grant, forced equip, teleport, actor creation or character edit. Code-coupled SQL stayed ignored/outside updater until staged EXE checked and canonical offline promotion finished."
+  ],
+  "native_evidence": {
+    "shared_map": "Typed native LFG1228 ->1065/1583/difficulty12 (Discipline) and1241 ->1101/1583/12 (Arcane). Native final1065 order6 needs both script49875/tree47172 and OWN_ITEM128868/tree47214; previous order5 needs49811/tree47119. Native Scenario::UpdateCurrentStep increments completed final6 to7. World scenario_data has zero-map entries; actual100813 SAI id5 explicitly starts1065 for active41631 then211719, separate id3 starts1101 for42011. Instance1583 script is instance_priest_mage_nexus_art.",
+    "pickup": "Actual original104985 timed list9 casts207996 after30s, emits49811, summons248572 at native pose then despawns. Chest248572 native type3/lock1691/loot248572->128868/100percent and two SAI actions: state70/3 ->native208011 then originalLINK1 summons248574 exit. No static chest DB spawn or208011 custom binding.208011 native scene aura430/misc1244, root26, force-equip249/128868, personal90/105109, event61/49926 and trigger225879. No external/video/client proof claimed."
+  },
+  "checks": {
+    "baseline": "Pinned151d1141 full shared Use against new physical matrix returns failure at stage0/unowned: ordinary early loot is admitted. Explicit expected failing counterfactual exit1, no deliberate crash.",
+    "physical": "Full current shared handler/native SetLootState/SmartAI event bridge:54 Discipline status/stage/ownership variants plus missing scenario/wrong1101/instance/map denials; all ten pickup tuples/common class/quest/physical guards/ordinary full-loot predicate/owned bank/native once replay and existing Hunter bounds preserved.",
+    "data_native_asan": "Real-schema TEMP migration twice/native template-loot-SAI bytes unchanged/seven exact custom refusal cases, all four TEMP tables unchanged on refusal. Actual native Condition cases/ElseGroup/LootItem/cached-slot480 matrix plus denials;216 root/cast status/stage/ownership variants plus16 wrong shared/history/context denials. Actual native200ms action85 payload and source17 CheckCast lookup/branch tested separately with current conditions as a controlled decision; real effect/world endpoints not traversed.",
+    "preservation": "Tuure native source4/cached-slot480 and eleven TEMP refusals pass after parameterizing test expectedLoot for reuse; actual shared Hunter/Talonclaw and all previous Tuure/capture Release checks pass. Dedicated wrapped Scepter native/Release regression passes.",
+    "release": "Original scripts static project and original final-link libraries staged separately. Staged and canonical PE prove entry248572 branch, exact map1583/scenario1065/bounds6..7, missing-scenario consume return before loot/replay and native source4/slot, SmartEvent and CheckCast consumers. No unrelated pickup branch replaced.",
+    "runtime": "Own16616 wrapped fresh ready/shutdown0/exit0, stderr/newDBErrors empty/protected config/certificate hashes unchanged; native updater then live exact tested70 predicate rows/LF-text SHA1/RELEASED state verified, final ASAN/catalog/live rerun passes. No unknown/user server stopped or task process left. Canonical and own native/test/probe directories before/after: no new/changed crashes, appended DBErrors or server warnings/errors/assertions.",
+    "development": "A fixture combined INCOMPLETE status with rewarded=true, inconsistent with native GetQuestStatus; corrected to COMPLETE+rewarded to exercise native rewarded rejection. An empty post-migration TEMP condition snapshot exposed Compare-Object null binding; switched to exact sorted signatures, then live rerun passed. Initial staged verifier depended on an unrelated runtime layout at a different relative path; used actual PE helper without that fixture dependency. Exact native nonconst condition overload corrected. These failed attempts remain failures, not hidden ordinary passes."
+  },
+  "canonical_sha256": {
+    "worldserver.exe": "BC75F106332284CF541EBEF522278624B6851676C670993B96A9B57AA5E45CD5",
+    "worldserver.map": "7C8F9C172884680678C0DE5E6378EDA8E47A27C96D874E3AE8904A4FA16E3430",
+    "bnetserver.map": "69DD826DA8721689A7F50A0ADB686ED4E7D19AD281D470ED5D3052ABFCF2CCFC",
+    "bnetserver.exe": "D0C5DA1AAF651585A0384B947490F250A217983850E14A8B46A9311B957D932F"
+  },
+  "migration": {
+    "name": "2026_10_27_02_lights_wrath_pickup_admission.sql",
+    "native_updater_sha1": "FF78345FE600A8B078F5664EE47E73A797233EC9",
+    "state": "RELEASED"
+  },
+  "archives": "No new runtime crash/error report to archive or truncate. Runtime evidence and credentials/characters excluded from Git.",
+  "limits_next": [
+    "Actual full bag/loot/equip/scene/exit, bank/shop presentation, faction/pet/camera and whole Nexus client traversal left to user. This is current context admission, not original-attempt identity or successful scene/equip/retry certification.",
+    "Trace104985 actual spellclick ->207956 ->30s207996/49811/chest/despawn: failure/missing actor/owner/attempt/one-shot/group and retry. Inspect104502 native death credit with pet/guardian and original104546 transition. Pickup208011 failed cast/consumed state/portal retry and across-session entry also remain open.",
+    "Remaining36 backend lifecycle reviews are unfinished; preserve earlier Holy/Shadow open issues."
+  ]
+}

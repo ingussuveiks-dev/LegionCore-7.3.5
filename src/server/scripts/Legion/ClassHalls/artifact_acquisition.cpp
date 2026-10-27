@@ -775,6 +775,13 @@ bool Use(Player* p,GameObject* go)
                     return true;
                 return false;
             }
+            if (row.object == 248572)
+            {
+                Scenario* scenario = sScenarioMgr->GetScenario(p->GetInstanceId());
+                if (go->GetMapId() != 1583 || !scenario || scenario->GetScenarioId() != 1065 ||
+                    scenario->GetCurrentStep() < 6 || scenario->GetCurrentStep() > 7)
+                    return true;
+            }
             if (!p->HasItemCount(row.item,1,true)) return false;
             // A shop/bank copy satisfies ownership. Replay the same native
             // loot-completed AI event, without trying to loot another unique

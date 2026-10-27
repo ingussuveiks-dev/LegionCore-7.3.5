@@ -52,10 +52,26 @@ void PreparePickup(GameObject& object, uint32 entry)
  scenarioManager={};object.entry=entry;
  if(entry==248419){scenarioManager.scenario.id=972;scenarioManager.scenario.step=7;object.mapId=1489;}
  if(entry==249812){scenarioManager.scenario.id=1099;scenarioManager.scenario.step=4;object.mapId=1609;}
+ if(entry==248572){scenarioManager.scenario.id=1065;scenarioManager.scenario.step=6;object.mapId=1583;}
 }
 int main()
 {
  _set_abort_behavior(0,_CALL_REPORTFAULT);
+ for(uint32 status:{1u,3u})for(uint32 step=0;step<9;++step)for(uint32 ownership=0;ownership<3;++ownership){
+  Player priest;priest.cls=5;priest.quest=41631;priest.status=status;priest.owned=ownership==1;priest.bank=ownership==2;
+  GameObject staff;PreparePickup(staff,248572);scenarioManager.scenario.step=step;
+  bool allowed=step==6||step==7;bool handled=ArtifactAcquisition::Use(&priest,&staff);
+  if((!allowed&&!handled)||staff.ai.script.calls!=uint32(allowed&&ownership!=0)){
+   std::cerr<<"FAIL: Light's Wrath crossed1065 final-step boundary at "<<step<<" ownership "<<ownership<<'\n';return 1;
+  }
+  assert(priest.ownItemEvents==uint32(allowed&&ownership!=0));
+ }
+ for(uint32 wrong=0;wrong<4;++wrong){
+  Player priest;priest.cls=5;priest.quest=41631;priest.owned=true;GameObject staff;PreparePickup(staff,248572);
+  if(wrong==0)scenarioManager.present=false;if(wrong==1)scenarioManager.scenario.id=1101;if(wrong==2)priest.instance=43;if(wrong==3)staff.mapId=576;
+  assert(ArtifactAcquisition::Use(&priest,&staff)&&!staff.ai.script.calls&&!priest.ownItemEvents);
+ }
+ scenarioManager={};
  for(uint32 status:{uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)}){
   Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=40385;hunter.status=status;
   GameObject spear;spear.entry=248834;

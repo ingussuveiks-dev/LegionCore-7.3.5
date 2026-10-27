@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Discipline native final-step pickup admission (2026-10-27)
+
+- `lights-wrath-pickup-admission-2026-10-27.json`: actual248572 now1583/1065/6..7 before loot/owned-bank replay. Native source4 exact6/current active41631/living Priest/unowned-including-bank protects cached slots; real root22/group1 and deferred208011 source17 require owned native final6..7. Original orphan ownership group3 removed; actual native loot/lock/two actions/spell/exit unchanged.
+- Native26972 LFG1228/1065 versus1241/1101 shared1583; final6 both49875 andOWN_ITEM128868, completed7 native. Pinned physical stage0 counterfactual/current54+shared ten pickup/native480 cached-slot/216 root-cast predicates/200ms native cast/7 custom TEMP refusals pass; Tuure conditions, canonical exact branch/consumers/priorTuure-capture/Hunter and Scepter preservation pass. Endpoint/client limits explicit.
+- Updater2026_10_27_02 RELEASED SHA1 FF78345FE600A8B078F5664EE47E73A797233EC9, only after offline matching EXE promotion. Canonical world BC75F106332284CF541EBEF522278624B6851676C670993B96A9B57AA5E45CD5, map7C8F9C172884680678C0DE5E6378EDA8E47A27C96D874E3AE8904A4FA16E3430; own16616 ready/shutdown0/exit0/no new diagnostics/protected changes/task server. Exact live70 rules/hash +finalASAN/native catalog pass. No archive/character edits. Commit containing audit follows151d1141.
+- NEXT104985 actual spellclick207956/30s207996/49811/chest/despawn failure/owner/attempt/retry, then104502 real death/pet/guardian/104546 transition and pickup208011 consumed-state/portal retry. Original-attempt/across-session/full client and remaining36 are OPEN.
+
 ## Latest repair: Tuure contact native personal credit (2026-10-27)
 
 - `tuure-contact-native-credit-2026-10-27.json`: remove exact redundant105697 event73/action33/danglingLINK1. Native209441 already owns personal90/105697 then123/taxi5626; unconditional SAI ran even after failed conditions/cast and incorrectly granted group credit. Native click/AI/spell/path unchanged; no invented continuation.
