@@ -1289,6 +1289,11 @@ public:
                     player->GetName(), player->GetUnitBeingMoved()->GetGUID().ToString().c_str(),
                     player->GetVehicleBase()->GetGUID().ToString().c_str());
                 // CUSTOM short takeoff route, not an official sniffed spline.
+                // Boarding can span several creature updates on the deck,
+                // which correctly restore its grounded state. Rearm flight
+                // only now, so the native point spline starts with Fly too.
+                me->SetCanFly(true);
+                me->SetDisableGravity(true);
                 me->GetMotionMaster()->MovePoint(1, me->GetPositionX() + 60.0f,
                     me->GetPositionY() + 40.0f, me->GetPositionZ() + 45.0f, false);
                 phase = 2;

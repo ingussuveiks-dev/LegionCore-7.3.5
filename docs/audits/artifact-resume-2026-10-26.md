@@ -222,6 +222,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 - Both user servers absent at promotion; own22952 ready/shutdown0/exit0, stderr/newDBErrors0, protected hashes unchanged. No hidden server remains. Diagnostics in ignored `.codex/hunter-choice`; active Crashes0/DBErrors0. Recheck processes before further deployment.
 - Next concrete inherited finding: Outlaw Degauz102185 raw pre-hit Player-only90/60/30 surrender, scaled lethal and owner/pet paths. All36 remain in scope; client checks stay with user.
 
+## Later update 2026-10-27: departure bird Fly animation
+
+- User reports Armored Wind Rider runs in air. Native per-tick creature flags reset the script's phase0 flags because both bird templates lacked Flight data; grounded boarding could clear them before Point spline launch.
+- Guarded World10 now Flight1 for107543/112565 (only Flight changed), plus phase1 rearm after boarding/control and before MovePoint. Full production departure/native flag/tier/spline host ASAN, TEMP/data refusals/live hash, selected canonical PE, shared construct/scaling/native criteria, both-ship geometry and Warlock mover pass. Client wings/full boost/camera/pet still pending.
+- Main Release world SHA2569043195589414C5AF1F38607E1BA7D3A713EBBCE62380E5132C19C5E269510F2; includes Leap59914e6fc and Charge18a77098c. Promoted only while servers absent, own17840 ready/shutdown0/exit0, no new crashes/DBErrors/server errors, no task server left. Audit docs/audits/boost-departure-flight-2026-10-27.json.
+- Bilaal source remains preserved/excluded; pending SQL09 must stay outside updater until a matching final build is promoted. All36 artifact work remains incomplete. User requested a new-chat handoff after finishing this focused repair.
+
 ## Newest update 2026-10-27: Charge deck/curb retest
 
 - User reported repeated Charge presses and supplied NoPath screenshots from raised trim and adjacent deck. Corrected native getHeight half-yard origin; keep source/up0.6, allow supported down-step1.0 and lateral trim straddling1.0, retaining all floor/phase/body/point guards. Publish actual curb top/bottom in native spline.

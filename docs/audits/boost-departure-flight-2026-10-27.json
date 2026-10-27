@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "status": "Backend and data deployed; actual client wings/flight retest pending",
+  "report": "User reports the boost departure bird runs in the air rather than flying; screenshot identifies Horde Armored Wind Rider112565.",
+  "cause": "Neither112565 nor Alliance107543 had creature_template_movement rows. Native CreatureMovementData defaults Flight=None; Creature::UpdateMovementFlags runs every creature update and clears SetCanFly/SetDisableGravity, including Fly->Ground animation tier. Existing departure phase0 sets flags before a potentially long grounded boarding wait; native Point spline then inherits the cleared state at takeoff.",
+  "repair": [
+    "Scoped guarded World10 sets only Flight=1 (native DisableGravity) for the two existing npc_boost_exit templates. Ground/default fields remain unchanged, preserving perched ground behavior; automatic airborne updates now retain gravity-disabled/Fly state.",
+    "After actual completed boarding, existing camera/control handoff and before the sole native MovePoint, rearm CanFly and DisableGravity. Retain original actors, seat4933/16967, custom route, timers, spells/quests/action-bar setup, exit and fallback. No model/emote substitute or character progress changes."
+  ],
+  "checks": [
+    "Test-BoostDepartureFlight -AddressSanitizer compiles full production DepartureAI, actual Creature::UpdateMovementFlags, actual CreatureMovementData header/default constructor, actual MoveSplineInit constructor and the actual native SetDisableGravity animation-tier branch. Controlled model/map/packet/service endpoints. Old ground-only flags/tier are lost; repaired grounded waits remain grounded, takeoff spline Fly true, airborne updates retain Fly tier. Both teams, finalized boarding wait, duplicate selection, control restoration, original self219912, failed boarding timeout, vehicle-kit failure and fallback covered.",
+    "Test-BoostDepartureFlightData: actual-schema TEMP insertion/update/repeat, all other template/movement fields and unrelated actor preserved; six custom/missing-definition refusals. Read-only live update SHA1/state and both Flight1 readbacks pass after canonical startup.",
+    "Native both-ship floor/curb/Leap checks, full extracted construct/spar surrender/wave progression/one-hit scaling/native ScenarioStep/Criteria catalog and Warlock scripted mover regressions pass. Client full spar1/1->two2/2->12 attackers->bird traversal remains user-owned and unverified.",
+    "Original scripts/game/shared/common libraries/final-link paths retained. Staged and canonical actual departure factory/vtable/UpdateAI, both flight flag pairs, post-control/pre-MovePoint ordering, native template flag upkeep and Point spline constructor PE pass. Canonical Scepter login Release and selected construct PE pass.",
+    "Promoted four EXE/map files only while both server names absent. Migration stayed in sql/pending until matching EXE promotion. Owned17840 applied World10, reached fresh ready, shutdown0/exit0; stderr/newDBErrors empty, protected config/certificate hashes unchanged. No task-owned server remains."
+  ],
+  "development_failures": [
+    "Test host initially called fake generator NextId instead of native NewId: corrected the fixture; ASAN passes.",
+    "Initial TEMP fixture tried CREATE TABLE t LIKE t and MariaDB refused alias1066. Added separate temporary shape table; migration/data tests pass, failure preserved locally.",
+    "Construct -VerifyReleaseBinary found Windows Store python.exe alias. All native portions passed; identical selected construct PE check rerun explicitly with trusted Codex Python and passed. No server/runtime failure, no log suppression."
+  ],
+  "diagnostics": {
+    "location": ".codex/boost-departure-flight/ and fixture runtime directories",
+    "result": "Before/after every test/build/PE/deploy/startup: no new/changed crash, appended DBErrors or unexplained server error/assertion. Existing fixture compile warnings retained. No resolved runtime crash/archive cleanup required."
+  },
+  "deployment": {
+    "hashes": {
+      "bnetserver.exe": "16F3D09DF23144BA09EC9D4CDF6E281259A20B93A50B7DE3056842C6C6B28C3C",
+      "bnetserver.map": "875E861AE0BA8162FD8D645716216FF5E4AD393375CB879BA2C92B47B070E4E3",
+      "worldserver.exe": "9043195589414C5AF1F38607E1BA7D3A713EBBCE62380E5132C19C5E269510F2",
+      "worldserver.map": "3D24F2A9B0B7B840C1DF88C92EE656D72C63D215BE11635C6082987896F7FDAC"
+    },
+    "backup": ".codex/release-before-boost-departure-flight-2026-10-26/",
+    "migration": "2026_10_27_10_boost_departure_flight.sql, RELEASED, native hash readback checked",
+    "scope": "HEAD2d94aea25 plus this bird repair, includes Charge18a77098c and Leap59914e6fc. Uncommitted Bilaal excluded and preserved byte-for-byte."
+  },
+  "pending_client": [
+    "Actual wing animation of Horde112565 and Alliance107543, takeoff and sustained flight",
+    "Camera follow, departure/disembarkation and pet portrait after real map transfer",
+    "Full boost and all36 artifact routes are not certified complete"
+  ]
+}
