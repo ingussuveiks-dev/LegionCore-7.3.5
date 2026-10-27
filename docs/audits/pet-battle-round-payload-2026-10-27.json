@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-27",
+  "status": "Repair implemented and staged Release/native packet regressions passing; canonical promotion waits for user-owned servers to stop",
+  "report": "User reports every attacking battle pet plays one final attack animation on an already dead opponent. User explicitly clarified: animation only, no additional damage number.",
+  "proven_defect": [
+    "All three first/round/replacement sender loops wrote every variant of a union in sequence. After assigning StateValue, unused AbilityChange.CooldownRemaining=0 overwrote that same storage. Thus actual server Is_Dead=1 became wire Is_Dead=0. AuraAbilityID and remaining duration were similarly overwritten with zeros.",
+    "The ordinary-round sender also read update.State.ID without checking the union tag. A 1HP update or aura slot1 was misclassified as death; it cleared flags and event ordering. Genuine death and revival events also lost their native flags/turn regardless of state value.",
+    "Native26972/hotfix BattlePetState1 is Is_Dead with Flags8, so PetBattle::SetPetState emits the affected death update. Packet counterfactual uses pinned503fd969b sender and actual BattleRound::Write/ByteBuffer: IsDead1 becomes0 before repair."
+  ],
+  "implementation": [
+    "One BuildPetBattleRoundEffect converter writes only the active target variant selected by UpdateType. All three real senders use it.",
+    "Preserve original event flags, ability-effect ID, source aura, turn, caster, stack depth and event order; no heuristic death special case or animation suppression. Preserve zero ability-change payload because no internal producer supplies its fields; front-pet selection has no payload.",
+    "No combat-engine, ability, kill/death passive, quest credit, reward, capture, level, journal, SQL or character-data mutation. Native kill still clears the victim's pending ability and records its death; Cast's existing catch/kill early-return remains unchanged."
+  ],
+  "sources": {
+    "primary_local": "src/server/game/Handlers/BattlePetHandler.cpp, PetBattle/PetBattle.cpp and PetBattleAbilityEffect.cpp, Server/Packets/BattlePetPackets.h/.cpp, real shared ByteBuffer and native26972 BattlePetState DB2 with read-only configured hotfix overlays",
+    "local_history": "503fd969b baseline and b15d1ec3d parent inspected; the older handler already contains the union overwrite and heuristic. C:/wamp64/www/TrinityCore currently has collection BattlePets but no matching PetBattle round engine to adapt.",
+    "external_primary": "https://raw.githubusercontent.com/dufernst/LegionCore-7.3.5/master/src/server/game/Handlers/BattlePetHandler.cpp inspected as same-era implementation reference, not evidence of successful client behavior. No foreign schema/API or newer packet fields copied."
+  },
+  "validation": [
+    "Test-PetBattleRoundPackets.ps1 -AddressSanitizer -VerifyNativeCatalog: extracted actual native constructors/emitters, Kill/SetPetState, repaired converter, all three sender bodies and pinned old sender. Controlled endpoint teams/pets/state-store surround actual production handlers.",
+    "Actual linked 7.3.5 WorldPackets::BattlePet::BattleRound::Write and real ByteBuffer generate packets; real ByteBuffer decodes and checks their fields. Nine first/ordinary/replacement x PvE/duel/matchmaking fixtures preserve death1, revival0, complete aura242 including duration-1/turn3, signed state, 1HP metadata, trigger723, speed, emote, front-pet/ability-change payloads and PvP clock30. Death pipeline tests native ability cancellation, aura-expiry dispatch and exactly one emitted state event on repeat Kill. Mixed target event retains original metadata.",
+    "ASAN instruments the extracted test handlers. Existing Release packet/engine libraries are linked unchanged and are not ASAN instrumented; standard-container annotations disabled only to match their existing STL ABI.",
+    "Test-BattleStone.ps1 -AddressSanitizer remains passing after the shared handler change.",
+    "Release game.lib rebuilt through original generated project, no OutDir override. Separate staged link uses original final-link inputs and preserves canonical executables. Selected staged PE verifies all three real senders select converter and native packet Write, and native Kill selects SetPetState."
+  ],
+  "staged_release": {
+    "directory": ".codex/pet-round-release",
+    "worldserver_sha256": "1759D05C0C8BF4738325F3AEC818908DB7A51868857E10E9D37DF4C85B8ED1D0",
+    "canonical": "Still503fd969b deployment/5063294C while user servers are active. No new SQL."
+  },
+  "diagnostics": {
+    "final_checks": "No new/changed canonical/own-runtime crashes, appended DBErrors, server warnings/errors/assertions; normal test/build exits0. User-owned canonical servers were not stopped and their logs were not rotated.",
+    "development_failures": "Test header/PCH include dependencies, ASAN STL annotation mismatch against existing Release libraries and test expectation of source-aura9 for native Kill's actual source-aura0 were corrected. Failed builds/assertion run were checked and retained locally; not counted as passing regressions. No production checks/logs disabled.",
+    "archives": "No new resolved crash reports or wholly reviewed log requiring archival/truncation; existing mixed history retained."
+  },
+  "remaining": [
+    "Await explicit user confirmation that both servers are stopped; recheck processes before each canonical file promotion, preserve/hash-verify old binaries and protected configuration/certificates, run owned startup/graceful shutdown and canonical selected PE checks.",
+    "Packet corruption is proven. Whether repairing it removes the exact final attack animation requires the user's client retest; no client animation traversal or new-damage behavior claimed verified.",
+    "User checks ordinary kill, multi-hit kill, aura/periodic kill, mechanical/undead revival, replacement/capture and PvP visuals. Fixtures test payload fidelity, not full ability/passive/battle lifecycle fidelity.",
+    "Kingslayers return investigation remains unchanged: native215151 event precedes accepted teleport; GO251123 generic goober IN_USE activation occurs before spell admission and must be considered in any scoped receipt/retry design. No Kingslayers return code or migration exists; all36 chain work and Aluneth/Bilaal unresolved evidence retained."
+  ]
+}

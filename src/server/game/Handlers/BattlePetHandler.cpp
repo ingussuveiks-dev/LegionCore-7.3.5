@@ -940,6 +940,58 @@ void WorldSession::SendPetBattleInitialUpdate(PetBattle* petBattle)
     SendPacket(update.Write());
 }
 
+// The target payload is a tagged union. Writing all variants in succession
+// overwrites StateValue and aura data with the unused ability-change zeros.
+static WorldPackets::BattlePet::Effect BuildPetBattleRoundEffect(PetBattleEvent const& event)
+{
+    WorldPackets::BattlePet::Effect result;
+    result.AbilityEffectID = event.AbilityEffectID;
+    result.Flags = event.Flags;
+    result.SourceAuraInstanceID = event.BuffTurn;
+    result.TurnInstanceID = event.RoundTurn;
+    result.EffectType = event.EventType;
+    result.CasterPBOID = event.SourcePetID;
+    result.StackDepth = event.StackDepth;
+    for (auto const& update : event.Updates)
+    {
+        WorldPackets::BattlePet::PetBattleEffectTarget target{};
+        target.Type = update.UpdateType;
+        target.Petx = update.TargetPetID;
+        switch (update.UpdateType)
+        {
+            case PET_BATTLE_EFFECT_TARGET_EX_AURA:
+                target.Params.Aura.AuraInstanceID = update.Buff.ID;
+                target.Params.Aura.AuraAbilityID = update.Buff.AbilityID;
+                target.Params.Aura.RoundsRemaining = update.Buff.Duration;
+                target.Params.Aura.CurrentRound = update.Buff.Turn;
+                break;
+            case PET_BATTLE_EFFECT_TARGET_EX_STATE:
+                target.Params.State.StateID = update.State.ID;
+                target.Params.State.StateValue = update.State.Value;
+                break;
+            case PET_BATTLE_EFFECT_TARGET_EX_PET:
+                target.Params.Health = update.Health;
+                break;
+            case PET_BATTLE_EFFECT_TARGET_EX_STAT_CHANGE:
+                target.Params.NewStatValue = update.Speed;
+                break;
+            case PET_BATTLE_EFFECT_TARGET_EX_TRIGGER_ABILITY:
+                target.Params.TriggerAbilityID = update.TriggerAbilityId;
+                break;
+            case PET_BATTLE_EFFECT_TARGET_EX_NPC_EMOTE:
+                target.Params.BroadcastTextID = update.NpcEmote.BroadcastTextID;
+                break;
+            // Front-pet selection has no payload. No internal producer supplies
+            // ability-change data; preserve its existing zero payload.
+            case PET_BATTLE_EFFECT_TARGET_EX_FRONT_PET:
+            case PET_BATTLE_EFFECT_TARGET_EX_ABILITY_CHANGE:
+                break;
+        }
+        result.EffectTargetData.emplace_back(target);
+    }
+    return result;
+}
+
 void WorldSession::SendPetBattleFirstRound(PetBattle* petBattle)
 {
     // TC_LOG_DEBUG("battlepet", "SendPetBattleFirstRound");
@@ -980,42 +1032,8 @@ void WorldSession::SendPetBattleFirstRound(PetBattle* petBattle)
         }
     }
 
-    for (auto const& eventIntr : petBattle->RoundEvents)
-    {
-        WorldPackets::BattlePet::Effect effectUpdate;
-        effectUpdate.AbilityEffectID = eventIntr.AbilityEffectID;
-        effectUpdate.Flags = eventIntr.Flags;
-        effectUpdate.SourceAuraInstanceID = eventIntr.BuffTurn; ///< Can be swap down
-        effectUpdate.TurnInstanceID = eventIntr.RoundTurn; ///< Can be swap up
-        effectUpdate.EffectType = eventIntr.EventType;
-        effectUpdate.CasterPBOID = eventIntr.SourcePetID;
-        effectUpdate.StackDepth = eventIntr.StackDepth;
-
-        for (auto const& update : eventIntr.Updates)
-        {
-            WorldPackets::BattlePet::PetBattleEffectTarget effectTargetUpdate;
-            effectTargetUpdate.Type = update.UpdateType;
-            effectTargetUpdate.Petx = update.TargetPetID;
-
-            effectTargetUpdate.Params.Aura.AuraInstanceID = update.Buff.ID;
-            effectTargetUpdate.Params.Aura.AuraAbilityID = update.Buff.AbilityID;
-            effectTargetUpdate.Params.Aura.RoundsRemaining = update.Buff.Duration;
-            effectTargetUpdate.Params.Aura.CurrentRound = update.Buff.Turn;
-            effectTargetUpdate.Params.State.StateID = update.State.ID;
-            effectTargetUpdate.Params.State.StateValue = update.State.Value;
-            effectTargetUpdate.Params.Health = update.Health;
-            effectTargetUpdate.Params.NewStatValue = update.Speed;
-            effectTargetUpdate.Params.TriggerAbilityID = update.TriggerAbilityId;
-            effectTargetUpdate.Params.AbilityChange.ChangedAbilityID = 0;
-            effectTargetUpdate.Params.AbilityChange.CooldownRemaining = 0;
-            effectTargetUpdate.Params.AbilityChange.LockdownRemaining = 0;
-            effectTargetUpdate.Params.BroadcastTextID = update.NpcEmote.BroadcastTextID;
-
-            effectUpdate.EffectTargetData.emplace_back(effectTargetUpdate);
-        }
-
-        firstRound.MsgData.EffectData.emplace_back(effectUpdate);
-    }
+    for (auto const& event : petBattle->RoundEvents)
+        firstRound.MsgData.EffectData.emplace_back(BuildPetBattleRoundEffect(event));
 
     SendPacket(firstRound.Write());
 }
@@ -1060,43 +1078,8 @@ void WorldSession::SendPetBattleRoundResult(PetBattle* petBattle)
         }
     }
 
-    for (auto const& roundEvent : petBattle->RoundEvents)
-    {
-        WorldPackets::BattlePet::Effect effectUpdate;
-
-        bool isDead = false;
-        for (const auto & update : roundEvent.Updates)
-        {
-            isDead = update.State.ID == BATTLEPET_STATE_Is_Dead;
-            WorldPackets::BattlePet::PetBattleEffectTarget effectTargetUpdate;
-            effectTargetUpdate.Type = update.UpdateType;
-            effectTargetUpdate.Petx = update.TargetPetID;
-            effectTargetUpdate.Params.Aura.AuraInstanceID = update.Buff.ID;
-            effectTargetUpdate.Params.Aura.AuraAbilityID = isDead ? 0 : update.Buff.AbilityID;
-            effectTargetUpdate.Params.Aura.RoundsRemaining = update.Buff.Duration;
-            effectTargetUpdate.Params.Aura.CurrentRound = update.Buff.Turn;
-            effectTargetUpdate.Params.State.StateID = update.State.ID;
-            effectTargetUpdate.Params.State.StateValue = update.State.Value;
-            effectTargetUpdate.Params.Health = update.Health;
-            effectTargetUpdate.Params.NewStatValue = update.Speed;
-            effectTargetUpdate.Params.TriggerAbilityID = update.TriggerAbilityId;
-            effectTargetUpdate.Params.AbilityChange.ChangedAbilityID = 0;
-            effectTargetUpdate.Params.AbilityChange.CooldownRemaining = 0;
-            effectTargetUpdate.Params.AbilityChange.LockdownRemaining = 0;
-            effectTargetUpdate.Params.BroadcastTextID = update.NpcEmote.BroadcastTextID;
-            effectUpdate.EffectTargetData.emplace_back(effectTargetUpdate);
-        }
-
-        effectUpdate.AbilityEffectID = roundEvent.AbilityEffectID;
-        effectUpdate.Flags = isDead ? 0 : roundEvent.Flags;
-        effectUpdate.SourceAuraInstanceID = roundEvent.BuffTurn; ///< Can be swap down
-        effectUpdate.TurnInstanceID = isDead ? 0 : roundEvent.RoundTurn; ///< Can be swap up
-        effectUpdate.EffectType = roundEvent.EventType;
-        effectUpdate.CasterPBOID = roundEvent.SourcePetID;
-        effectUpdate.StackDepth = roundEvent.StackDepth;
-
-        roundResult.MsgData.EffectData.emplace_back(effectUpdate);
-    }
+    for (auto const& event : petBattle->RoundEvents)
+        roundResult.MsgData.EffectData.emplace_back(BuildPetBattleRoundEffect(event));
 
     SendPacket(roundResult.Write());
 }
@@ -1139,42 +1122,8 @@ void WorldSession::SendPetBattleReplacementMade(PetBattle* petBattle)
         }
     }
 
-    for (auto const& roundEvent : petBattle->RoundEvents)
-    {
-        WorldPackets::BattlePet::Effect effectUpdate;
-        effectUpdate.AbilityEffectID = roundEvent.AbilityEffectID;
-        effectUpdate.Flags = roundEvent.Flags;
-        effectUpdate.SourceAuraInstanceID = roundEvent.BuffTurn; ///< Can be swap down
-        effectUpdate.TurnInstanceID = roundEvent.RoundTurn; ///< Can be swap up
-        effectUpdate.EffectType = roundEvent.EventType;
-        effectUpdate.CasterPBOID = roundEvent.SourcePetID;
-        effectUpdate.StackDepth = roundEvent.StackDepth;
-
-        for (auto const& update : roundEvent.Updates)
-        {
-            WorldPackets::BattlePet::PetBattleEffectTarget effectTargetUpdate;
-            effectTargetUpdate.Type = update.UpdateType;
-            effectTargetUpdate.Petx = update.TargetPetID;
-
-            effectTargetUpdate.Params.Aura.AuraInstanceID = update.Buff.ID;
-            effectTargetUpdate.Params.Aura.AuraAbilityID = update.Buff.AbilityID;
-            effectTargetUpdate.Params.Aura.RoundsRemaining = update.Buff.Duration;
-            effectTargetUpdate.Params.Aura.CurrentRound = update.Buff.Turn;
-            effectTargetUpdate.Params.State.StateID = update.State.ID;
-            effectTargetUpdate.Params.State.StateValue = update.State.Value;
-            effectTargetUpdate.Params.Health = update.Health;
-            effectTargetUpdate.Params.NewStatValue = update.Speed;
-            effectTargetUpdate.Params.TriggerAbilityID = update.TriggerAbilityId;
-            effectTargetUpdate.Params.AbilityChange.ChangedAbilityID = 0;
-            effectTargetUpdate.Params.AbilityChange.CooldownRemaining = 0;
-            effectTargetUpdate.Params.AbilityChange.LockdownRemaining = 0;
-            effectTargetUpdate.Params.BroadcastTextID = update.NpcEmote.BroadcastTextID;
-
-            effectUpdate.EffectTargetData.emplace_back(effectTargetUpdate);
-        }
-
-        replacementMade.MsgData.EffectData.emplace_back(effectUpdate);
-    }
+    for (auto const& event : petBattle->RoundEvents)
+        replacementMade.MsgData.EffectData.emplace_back(BuildPetBattleRoundEffect(event));
 
     SendPacket(replacementMade.Write());
 }

@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "reason": "Checkpoint after deployed Ikky breed/RNG repair and explicitly authorized offline recovery. Earlier Kingslayers, Bilaal/Aluneth and all36 artifact continuation evidence retained.",
+  "reason": "Checkpoint after pet battle cosmetic final-strike report: proven round union payload corruption repaired and staged1759D05C, canonical still Ikky5063294C pending user shutdown. All36 artifact/Kingslayers/Bilaal/Aluneth evidence preserved.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -222,7 +222,8 @@
     "status": "Pickup completed/deployed247c16cbd; no return implementation WIP",
     "portal": "Existing251123/spawn134046/type10/display8111/Data10=215151, map1620. Native215151 effect0 SendEvent61/51617 targets0/0, effect1 Teleport252 targets1/17, targetDB1220/-854.53/4597.28/748.81/4.5759. Scenario1123 step9/leaf48593 uses51617; quest roots48528/48548 use type152/Scenario1123. Pickup no longer forces scenario completion.",
     "finding": "Native non-target HIT SendEvent runs before target teleport, potentially granting exit on refused teleport. Generic goober sets IN_USE/GO_ACTIVATED and default auto-close60s; failure/retry needs trace. No code orSQL15 created.",
-    "reference": "Local lights_wrath_pickup.h spell_lights_wrath_return uses actual portal receipt, original quest lifetime and Player::ScopedTeleportDelay, nativeEffectTeleportUnits and accepted destination before awarding. Adapt only after native Kingslayers source/portal/alternatives tests; preserve escape without new credit on abandonment/completion and shared native behavior outside scope."
+    "reference": "Local lights_wrath_pickup.h spell_lights_wrath_return uses actual portal receipt, original quest lifetime and Player::ScopedTeleportDelay, nativeEffectTeleportUnits and accepted destination before awarding. Adapt only after native Kingslayers source/portal/alternatives tests; preserve escape without new credit on abandonment/completion and shared native behavior outside scope.",
+    "followup": "Generic251123 goober marks IN_USE/GO_ACTIVATED before215151 CheckCast; its60s default autoclose/retry and actual native interaction/quest credit dispatch must be covered. Do not copy Nexus PhysicalExit flag rejection into this path unchanged. No implementation WIP; SQL15 now belongs to independent Ikky repair, use a later unused migration number."
   },
   "pet_battle_client_feedback": {
     "status": "User confirmed nearby Dung Beetle fight starts; no new repair/deployment or character edit",
@@ -237,5 +238,15 @@
     "checks": "122880 exhaustive weighted draws/all1023 subsets; native26972 DB2/hotfix and extracted stats/all25 levels; TEMP SQL twice/custom/unrelated retention and live RELEASED/hash; shared StoneASAN and canonicalPE; clean owned startup.",
     "unresolved": "Existing shared journal/battle integer/float truncation can differ from published retail by one point; explicitly preserved/separate calculation issue. Other old breed0 journal pets not silently rerolled; no all-pet-system certification.",
     "client_pending": "Ikky stats/battle/level-up/healing/summon/display/relog; prior artifact client tests still pending."
+  },
+  "pet_battle_round_repair": {
+    "status": "Implemented/tested/staged; user servers active, explicit shutdown request pending; no deployment yet",
+    "audit": "docs/audits/pet-battle-round-payload-2026-10-27.json",
+    "report": "User confirms final strike is animation only, no extra damage number.",
+    "fix": "All three senders share tagged-union converter; native dead1 no longer overwritten0, aura payload retained, flags/turn unchanged instead of untagged isDead heuristic. No engine/progression/SQL edits.",
+    "checks": "Native26972 state1 Flags8, pinned actual wire counterfactual, native Kill/SetPetState and actual three senders/real BattleRound::Write/ByteBuffer decode, ASAN extracted handlers, PvE/PvP9 packet fixtures, shared Stone regression, staged selectedPE all pass; no new crashes/DBErrors/server errors.",
+    "stage": ".codex/pet-round-release",
+    "world_sha256": "1759D05C0C8BF4738325F3AEC818908DB7A51868857E10E9D37DF4C85B8ED1D0",
+    "next": "After user confirms shutdown, recheck BOTH processes and promote with private backup/protected hashes; own startup/cleanup, canonical PE/diagnostics, update audit/handoff and commit/push deployment record. Client animation result still pending."
   }
 }
