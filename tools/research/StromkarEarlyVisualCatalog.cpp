@@ -16,6 +16,7 @@ struct EventRow { SpellVisualEventEntry value; int32 visual; };
 struct EffectRow { SpellVisualKitEffectEntry value; int32 kit; };
 struct AttachmentRow { SpellVisualKitModelAttachEntry value; int32 kit; };
 struct MissileRow { SpellVisualMissileEntry value; uint16 set; };
+struct NativeModelFileRow { uint8 flags; int32 id,resource; };
 struct NameRow { int32 id;float radius,speed,scale,minScale,maxScale,alpha;uint32 flags;int32 generic,texture;uint8 type;int32 model;uint32 ribbon;int32 dissolve; };
 #pragma pack(pop)
 int main(int argc,char**argv)
@@ -91,9 +92,15 @@ int main(int argc,char**argv)
     DB2Storage<ItemModifiedAppearanceEntry> modified("ItemModifiedAppearance.db2",ItemModifiedAppearanceLoadInfo::Instance());
     DB2Storage<ItemAppearanceEntry> appearances("ItemAppearance.db2",ItemAppearanceLoadInfo::Instance());
     DB2Storage<ItemDisplayInfoEntry> itemDisplays("ItemDisplayInfo.db2",ItemDisplayInfoLoadInfo::Instance());
-    DB2Storage<ModelFileDataEntry> files("ModelFileData.db2",ModelFileDataLoadInfo::Instance());
+    // Matching26972 metadata is bii/9bytes. The disabled production store's
+    // newer LodCount member/projection is incompatible; do not interpret its
+    // records through that10byte structure or claim absent assets from it.
+    DB2FieldMeta modelFields[]={{false,FT_BYTE,"Flags"},{true,FT_INT,"ID"},{true,FT_INT,"ModelResourcesID"}};
+    DB2LoadInfo modelInfo(modelFields,std::size(modelFields),ModelFileDataMeta::Instance(),HOTFIX_SEL_MODEL_FILE_DATA);
+    DB2Storage<NativeModelFileRow> files("ModelFileData.db2",&modelInfo);
+    if(sizeof(NativeModelFileRow)!=modelInfo.Meta->GetRecordSize())return 15;
     if(!modified.Load(argv[1],0)||!appearances.Load(argv[1],0)||!itemDisplays.Load(argv[1],0)||!files.Load(argv[1],0))return 13;
-    modified.LoadFromDB();appearances.LoadFromDB();itemDisplays.LoadFromDB();files.LoadFromDB();
-    for(auto a:modified)if(a->ItemID==128910){auto b=appearances.LookupEntry(a->ItemAppearanceID);auto d=b?itemDisplays.LookupEntry(b->ItemDisplayInfoID):nullptr;if(!d)return 14;std::cout<<"BLADE_APPEARANCE\t"<<unsigned(a->ItemAppearanceModifierID)<<'\t'<<a->ID<<'\t'<<b->ID<<'\t'<<d->ID<<'\t'<<d->ModelResourcesID[0]<<'\t'<<d->ModelResourcesID[1]<<'\n';for(auto f:files)for(int32 resource:d->ModelResourcesID)if(resource&&f->ModelResourcesID==resource)std::cout<<"BASE_BLADE_MODEL\t"<<a->ID<<'\t'<<b->ID<<'\t'<<d->ID<<'\t'<<resource<<'\t'<<f->ID<<'\n';}
+    modified.LoadFromDB();appearances.LoadFromDB();itemDisplays.LoadFromDB();
+    for(auto a:modified)if(a->ItemID==128910){auto b=appearances.LookupEntry(a->ItemAppearanceID);auto d=b?itemDisplays.LookupEntry(b->ItemDisplayInfoID):nullptr;if(!d)return 14;std::cout<<"BLADE_APPEARANCE\t"<<unsigned(a->ItemAppearanceModifierID)<<'\t'<<a->ID<<'\t'<<b->ID<<'\t'<<d->ID<<'\t'<<d->ModelResourcesID[0]<<'\t'<<d->ModelResourcesID[1]<<'\n';for(auto f:files)for(int32 resource:d->ModelResourcesID)if(resource&&f->resource==resource){std::cout<<"BASE_BLADE_MODEL\t"<<a->ID<<'\t'<<b->ID<<'\t'<<d->ID<<'\t'<<resource<<'\t'<<f->id<<'\n';if(a->ItemAppearanceModifierID==0){for(auto o:objects)if(o->FileDataID==f->id)std::cout<<"BLADE_GO_DISPLAY\t"<<o->ID<<'\t'<<f->id<<'\n';for(auto c:models)if(c->FileDataID==f->id)for(auto display:displays)if(display->ModelID==c->ID)std::cout<<"BLADE_CREATURE_DISPLAY\t"<<display->ID<<'\t'<<f->id<<'\n';}}}
     HotfixDatabase.Close();MySQL::Library_End();return 0;
 }

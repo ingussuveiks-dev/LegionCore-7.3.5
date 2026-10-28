@@ -435,7 +435,7 @@
     "rebirth": "4f34fb166; audit stromkar-rebirth-ack-2026-10-28.json",
     "ritual": "19b4d792c; audit stromkar-ritual-receiver-2026-10-28.json; SQL04 LF hash245020F9680D53EBB27EDDF13DCD12000E30962F RELEASED; old stage test exact-released normalization retained",
     "ground": "9ecad9cd7; audit stromkar-ground-burst-2026-10-28.json; explicit same native kit, actual client rendering remains pending, exact implicit-event failure not packet-captured",
-    "blade": "OPEN; docs/audits/stromkar-initial-blade-research-2026-10-28.json; no guessed scale/proxy or loosened final loot admission",
+    "blade": "OPEN; docs/audits/stromkar-initial-blade-research-2026-10-28.json; no guessed scale/proxy or loosened final loot admission Correct raw9byte resource join now identifies1257949 Sword_2H_ArtifactArathor_D_01,2.23951-unit model; native0.025*1.5 attachment gives~0.084 units. Evidence saved; independent click host/lifetime/pose still needs implementation. Disabled ModelFileData production store mismatch is a reader limitation, not a deployed-runtime fault.",
     "item_permission": "Awaiting async answer: may remove only previous test Stromkar128910 for clean native finale retest. No response is not authorization. No character/inventory edits performed.",
     "diagnostics": "Current DBErrors2175 bytes: user appended six shared LINK2 errors16:31..16:36; separate Server.log two rebirth warnings16:41 were reported. New work tests/builds/startups add no errors or crashes. Preserve mixed logs, no truncation."
   }
