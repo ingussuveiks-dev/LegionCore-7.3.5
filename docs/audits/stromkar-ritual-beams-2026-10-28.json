@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-28",
+  "scope": "Stromkar scenario1037 three Twilight Ritualist101875 beam admission; data-only focused repair",
+  "cause": "Smart event6 (source22 group7/base target1) required stage0 AND stage1 in the same ElseGroup0. Native ConditionMgr therefore rejected every stage, including Stage2 The Ghost King.",
+  "repair": "Guarded migration2026_10_28_01 changes only the stage0 condition ElseGroup to1. Native stage0 OR stage1 now admits the existing ordinary201032 cast toward Thoradin103144. Exact original event/actor/two-condition guards refuse customized data. Priest event0, shared actors, combat and death credits remain unchanged.",
+  "local_evidence": {
+    "actors": "Warrior phase5739 ritualists370936/370937/370943 and Thoradin370922 share map1539 and native50yd range. Four other ritualists in Priest phase5737 are retained.",
+    "native_spell": "Matching26972 DB2/hotfix201032 Shadow Channelling is infinite channeled aura23 periodic201031, with native visual48829/channel kit57703. SmartScript retains actual normal CastSpell(target), its existing native failure handling and interruption/reset semantics. No fabricated beam or credit spell was added.",
+    "tests": "Test-StromkarRitualStages.ps1 -AddressSanitizer -VerifyLiveData: extracted production Condition44/ElseGroup/source22 event+1 dispatch; original impossible-AND counterfactual; repaired scenario1037 steps0..11, wrong/missing instance/scenario/base, null/pet invoker. Actual-schema TEMP replay twice, unchanged other conditions/SmartAI and ten custom/missing-data refusals. Live RELEASED migration SHA1 and exact resulting rows verified.",
+    "limits": "Controlled native services verify admission, not actual casts/channel rendering, movement, interruption/re-entry or full client traversal. One harmless fixture C4459 shadow warning remains visible. This change does not repair pet/guardian death-credit paths or failed/missing target retry behavior.",
+    "deployment": "Both servers absent before startup. Task-owned canonical worldserver3616 applied updater, reached ready and gracefully exited0. Existing canonical EXE261E203113E723BA5997EC14E7561EEFE596663603FE421FFDE95C9F3BA2E648 unchanged; protected configs/certificates unchanged. No task server remains.",
+    "diagnostics": "Pre/post snapshots in ignored runtime-test/stromkar-ritual-stages and .codex/stromkar-ritual-deployment. No new/changed crashes, appended DBErrors, server warnings/errors/assertions or stderr. Six preexisting unresolved101430/103151 missing LINK2 reports (870 bytes) retained; no archival/truncation justified. No character changes."
+  },
+  "video": {
+    "source": "https://www.youtube.com/watch?v=-0ytc3talC4",
+    "review": "User supplied Stage2 screenshot at4:23 shows three purple channels. Downloaded360p footage reviewed as partial muted2-second contact sheets9:30..10:00,11:06..12:40 and12:50..13:52 for separate crypt findings; earlier finale partial review retained. Not a full uninterrupted video/audio review.",
+    "pending": "Central vortex lifecycle and exit-hole tentacles remain separate active repairs. Stage5 must lack the central vortex; Stage6 reveal precedes Soth'ozz spawn and clears for combat. Exit obstruction disappears on real Soth'ozz death. Native visual/model identification still under investigation."
+  },
+  "client_pending": "Confirm all three channels before combat and interruption/cleanup through native Stage2 completion; Priest shared behavior; retry/re-entry. User owns client tests. Full36 artifact chains remain open."
+}
