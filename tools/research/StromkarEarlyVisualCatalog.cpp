@@ -34,7 +34,7 @@ int main(int argc,char**argv)
     DB2Storage<GameObjectDisplayInfoEntry> objects("GameObjectDisplayInfo.db2",GameobjectDisplayInfoLoadInfo::Instance());
     if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0)||!visuals.Load(argv[1],0)||!animations.Load(argv[1],0)||!objects.Load(argv[1],0))return 4;
     spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();durations.LoadFromDB();visuals.LoadFromDB();animations.LoadFromDB();objects.LoadFromDB();
-    std::set<uint32> selected{201031,201032,34429,200984,204394,204356,202925,202981,202014,206895};
+    std::set<uint32> selected{201031,201032,34429,200984,204394,204356,202925,202981,202014,206895,204771,206357,206360,206361,206390};
     for(auto spell:spells){std::string name=spell->Name->Str[0];std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});if(name.find("tentacl")!=std::string::npos||name.find("tendril")!=std::string::npos||name.find("blocker")!=std::string::npos)selected.insert(spell->ID);}
     for(uint32 id:selected){auto row=spells.LookupEntry(id);if(!row)return 5;std::cout<<"SPELL\t"<<id<<'\t'<<row->Name->Str[0]<<'\n';}
     for(auto e:effects)if(!e->DifficultyID&&selected.count(e->SpellID))std::cout<<"EFFECT\t"<<e->SpellID<<'\t'<<e->EffectIndex<<'\t'<<e->Effect<<'\t'<<e->EffectAura<<'\t'<<e->EffectMiscValue[0]<<'\t'<<e->EffectTriggerSpell<<'\t'<<e->ImplicitTarget[0]<<'\t'<<e->ImplicitTarget[1]<<'\n';
@@ -58,7 +58,9 @@ int main(int argc,char**argv)
     DB2Storage<NameRow> names("SpellVisualEffectName.db2",&nameInfo);
     if(sizeof(NameRow)!=nameInfo.Meta->GetRecordSize()||!names.Load(argv[1],0))return 8;
     for(auto a:attachments)if(kits.count(a->kit)){auto name=names.LookupEntry(a->value.SpellVisualEffectNameID);std::cout<<"ATTACHMENT\t"<<a->kit<<'\t'<<a->value.ID<<'\t'<<a->value.SpellVisualEffectNameID<<'\t'<<a->value.AnimID<<'\t'<<a->value.AnimKitID<<'\t'<<(name?name->model:0)<<'\t'<<(name?uint32(name->type):0)<<'\n';}
-    for(auto a:attachments){auto n=names.LookupEntry(a->value.SpellVisualEffectNameID);if(!n||n->model!=1063325)continue;for(auto k:kitEffects)if(k->kit==a->kit && k->value.EffectType==2 && k->value.Effect==a->value.ID)for(auto e:events)if(e->value.SpellVisualKitID==a->kit)for(auto v:visuals)if(v->SpellVisualID==e->visual){auto spell=spells.LookupEntry(v->SpellID);std::cout<<"DOOR_REVERSE\t"<<n->id<<'\t'<<a->kit<<'\t'<<e->visual<<'\t'<<v->SpellID<<'\t'<<(spell?spell->Name->Str[0]:"")<<'\n';}}
+    std::set<int32> candidateFiles{196078,201538,201539,399046,405891,405892,406125,406354,407609,593963,593965,593967,635337,635342,635344,902209,902211,1119495,1063325};
+    for(auto o:objects)if(candidateFiles.count(o->FileDataID))std::cout<<"CANDIDATE_GO_MODEL\t"<<o->ID<<'\t'<<o->FileDataID<<'\n';
+    for(auto a:attachments){auto n=names.LookupEntry(a->value.SpellVisualEffectNameID);if(!n||!candidateFiles.count(n->model))continue;for(auto k:kitEffects)if(k->kit==a->kit && k->value.EffectType==2 && k->value.Effect==a->value.ID)for(auto e:events)if(e->value.SpellVisualKitID==a->kit)for(auto v:visuals)if(v->SpellVisualID==e->visual){auto spell=spells.LookupEntry(v->SpellID);std::cout<<"DOOR_REVERSE\t"<<n->model<<'\t'<<n->id<<'\t'<<a->kit<<'\t'<<e->visual<<'\t'<<v->SpellID<<'\t'<<(spell?spell->Name->Str[0]:"")<<'\n';}}
     for(uint32 id:{6391u,24101u}){auto o=objects.LookupEntry(id);if(!o)return 7;std::cout<<"BLOCKER_MODEL\t"<<o->ID<<'\t'<<o->FileDataID<<'\n';}
     DB2Storage<CreatureDisplayInfoEntry> displays("CreatureDisplayInfo.db2",CreatureDisplayInfoLoadInfo::Instance());
     DB2Storage<CreatureModelDataEntry> models("CreatureModelData.db2",CreatureModelDataLoadInfo::Instance());

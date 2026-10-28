@@ -1,6 +1,6 @@
 {
   "date": "2026-10-28",
-  "reason": "Two focused Stromkar visual-data repairs committed/pushed/deployed:9f16a9cb9 ritual beam stage alternatives;81632a3bd single crypt dome override. Native/ASAN/TEMP/live updater and own3616/2624 startups clean; canonical261E2031 unchanged. Exit-hole tentacles remain active source/asset research, no guessed replacement.",
+  "reason": "766fae12b Stromkar opening awakening repaired, committed/pushed/deployed3E71306E with coordinated SQL03; native/ASAN/linked PE/live data/owned startup and Scepter checks pass. Client sequence/reconstructed30yd landing remain pending. Earlier visual repairs and hole/source research retained.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -19,6 +19,11 @@
     "limit": "Read-only metadata/current-session log inspection, not a UI/latency profile. Size does not prove a slowdown cause."
   },
   "completed_pushed": [
+    {
+      "commit": "766fae12b",
+      "fix": "Stromkar initial pickup: real blast/recoil/arrival stun, immediate original-body rebirth rings, accepted child and native49101 acknowledgment before combat; deployed",
+      "audit": "docs/audits/stromkar-awakening-2026-10-28.json"
+    },
     {
       "commit": "9f16a9cb9",
       "fix": "Ritual101875 impossible stage0AND1 ->native0OR1; data-only deployed",
@@ -128,17 +133,17 @@
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "1C3F3E719CB3ECA7D97B430D450107D852FC08B742046EFC57CCCFF6CB4A4033",
-      "bnetserver.map": "019DDDFF40AF61C820E8A845296DADFEF212AB680FFC125064FD9AC9AB834214",
-      "worldserver.exe": "261E203113E723BA5997EC14E7561EEFE596663603FE421FFDE95C9F3BA2E648",
-      "worldserver.map": "77C64107C2802DFCF3412EE967AE81B40050C8AF60248345606F89387DBF9D3F"
+      "bnetserver.exe": "F11474E49631C415D8079422DA5EA61E336A19940AD9E9511BD24126B36C39B6",
+      "bnetserver.map": "C96687EE21FFC38685A4D0D5A3C333271406B2C7C3C47774E0ADFBAF1C2129DA",
+      "worldserver.exe": "3E71306E3C11DB7A633674ED36B70F6B1A6F6AEADAAC0495273AD4A213585EFE",
+      "worldserver.map": "44323B89402B9A1B458E859322D6CCD46A414D0F6901B7D2E2326893CBA7F1A6"
     },
-    "scope": "Combined261E2031 retains9CAF5344 Zakajz pose and previous mask/Execute/artifact fixes, includes completed4d85aa354 Bezzeredes instance transition. Original scripts build/final-link paths, native/ASAN/catalog/canonical instance/AI hooks, shared Malgalor/Paladin source retention, Zakajz PE and Scepter Release checks pass. Client traversal pending."
+    "scope": "Combined3E71306E includes766fae12b real Stromkar blast/recoil/arrival-stun/rebirth-channel/Stage9 acknowledgment, retaining previous261E2031 and artifact/Warrior repairs. Original generated final-link LIB paths; selected native/ASAN/live/PE/startup checks pass. Actual client traversal remains pending."
   },
   "servers_last_seen": {
     "bnetserver": null,
     "worldserver": null,
-    "ownership": "Both absent at promotion. Only task-owned29444 canonical validation started, ready then graceful shutdown0/exit0, stderr/newDBErrors0; no task server left. Never stopped user/unknown server; recheck every promotion."
+    "ownership": "Both absent at coordinated EXE/SQL promotion. Owned canonical worldserver2760 ready then graceful shutdown0/exit0; stderr/newDBErrors0. No task server left; never stopped user/unknown server. Recheck before any subsequent promotion."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -242,13 +247,13 @@
     "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
   ],
   "current_continuation": {
-    "last_implementation_commit": "81632a3bd",
+    "last_implementation_commit": "766fae12b",
     "hunter_reconciliation": "Git/source and dedicated followup audit contradict stale unfinished text in the old resume. Commit802295a98 is an ancestor and actual runtime migration13005E8182CE54B5FFA4DEED6C9FA53272C39796 is RELEASED; 249 rows, flags3 on107317/107973 and current canonical selected consumers were independently rechecked. No repeated repair or character change.",
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
-    "diagnostics": "New visual native/ASAN/TEMP/live/startup checks pass with no new/changed crashes, appended DBErrors or server errors. Existing1305-byte103151/101430 LINK2 remains unresolved/active. Own3616/2624 stopped gracefully; no character edit or user server stop.",
+    "diagnostics": "Final native/ASAN/TEMP/live/selected Release/Scepter and owned2760 startup pass, exit0, no new/changed crashes or error appends. Existing1305-byte shared LINK2 log retained. No task server remains.",
     "next": "Resolve original hole cluster/native pose/cleanup; continue sharedLINK2/Bilaal104546 route retry/Aluneth control and all36 independently. User owns actual visual and full sequence tests.",
-    "uncommitted_at_checkpoint": "No implementation WIP. New native visual reader/research/handoff committed with continuation checkpoint. Earlier Bilaal/Hunter/Aluneth evidence and historical backups retained; no old patch reapplied."
+    "uncommitted_at_checkpoint": "No production WIP after766fae12b. Broader native visual reverse lookup and research/handoff are saved in the continuation commit. Earlier Bilaal/Hunter/Aluneth evidence/backups preserved; do not reapply superseded patches."
   },
   "azuregos_portal_wip": {
     "status": "Historical key: committed/pushed938fc1225, deployed with coordinated SQL13 RELEASED",
@@ -389,10 +394,25 @@
     "beam_commit": "9f16a9cb9",
     "central_commit": "81632a3bd",
     "research_audit": "docs/audits/stromkar-exit-tentacles-research-2026-10-28.json",
-    "status": "Both data migrations RELEASED and actual resulting rows independently verified; selected canonical EXE unchanged261E2031. No character edits, user server stops, unresolved-log truncation or task server remains.",
+    "status": "Historical data-only9f16a9cb9/81632a3bd RELEASED and independently read back; now retained in awakening combined3E71306E. No tentacle production replacement, character edit, user server stop or unresolved-log truncation.",
     "tests": "Test-StromkarRitualStages -AddressSanitizer -VerifyLiveData; Test-StromkarCentralField -VerifyLiveData (ASAN native addon precedence); native26972 extended visual reader and read-only CASC model probes. All wrapped, no new diagnostics. Actual native casts/renderer/full chain separate.",
     "open": "Hole tentacle producer not established. GO251349 model200293 collision-only. Candidate248409/display24101/model1063325 VoidFXDoor exists but no native scenario spawn/pose; reverse visual maps later245254, not proof of Warrior use.103151/101430 missingLINK2 still1305 bytes active. Do not globally swap blockers or invent shared action2.",
     "video": "Same user -0ytc3talC4 downloaded360p; crypt contact sheets01..07 (muted2s samples starting9:30) now all reviewed, plus after01/02. Partial sampled footage, not uninterrupted/audio/full19:43 verification.",
     "next": "Resolve original hole cluster/native pose/cleanup; continue sharedLINK2/Bilaal104546 route retry/Aluneth control and all36 independently. User owns actual visual and full sequence tests."
+  },
+  "stromkar_awakening_repair": {
+    "commit": "766fae12b",
+    "audit": "docs/audits/stromkar-awakening-2026-10-28.json",
+    "status": "Deployed3E71306E/SQL03 RELEASED; native/TEMP/ASAN/linked PE/live/startup pass; actual client pending",
+    "landing": "Scoped30yd outward collision/floor fallback is a local reconstruction. Original destination106 server DB coordinates absent; do not claim exact Blizzard distance.",
+    "client": "Actual pickup channel/launch/stun/ground/rings cleanup/single body/Stage9, group/faction/retry/reentry/pet/camera, then later combat/downed pickup/Execute/full return. No manual character edits.",
+    "backup": ".codex/release-before-stromkar-awakening-2026-10-28",
+    "diagnostics": "Canonical crashes empty; no new errors. Existing1305-byte/nine103151/101430 LINK2 lines unresolved and retained."
+  },
+  "native_other_followup": {
+    "status": "OPEN evidence, separate from current Stromkar sequence",
+    "path": "206863 Guardian's Awakening ->206769 teleport effect64 ->missing81040 in matching26972 Spell data",
+    "evidence": ".codex/stromkar-awakening-catalog-1..9; tools/research/StromkarAwakeningCatalog.cpp prints OTHER_UNRESOLVED_TRIGGER for broad named root",
+    "next": "Trace actual class route/caller and existing81040 handlers before proposing a repair. Not a new runtime error from this test; no spell substitution."
   }
 }

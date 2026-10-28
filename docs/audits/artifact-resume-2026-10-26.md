@@ -4,6 +4,12 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest Stromkar awakening (2026-10-28)
+
+- `766fae12b` committed/pushed/deployed canonical `3E71306E`; coordinated SQL03 is RELEASED. Real initial pickup blast/recoil/arrival stun and original-body/accepted-boss rebirth channels precede native49101 acknowledgment and Stage9 combat. Native/TEMP/ASAN/selected PE/live/startup/Scepter pass; owned world2760 gracefully exited0, no new diagnostics. No character edits or user-server stops.
+- Read `docs/audits/stromkar-awakening-2026-10-28.json`. The scoped30yd collision/floor landing is reconstructed; original destination106 coordinates remain unknown. Actual client visual/timing/full sequence checks remain user-owned.
+- Exit-hole tentacle producer and shared103151/101430 LINK2 remain OPEN;1305-byte/nine-line error history retained. Native broad research additionally reaches206863->206769->missing81040, separate source finding. Preserve Bilaal/Aluneth/Hunter/all36 evidence and continue independent work.
+
 ## Latest Stromkar visual follow-up (2026-10-28)
 
 - `9f16a9cb9`: source22 group7/101875 required stage0 AND1, preventing native201032 beams. Guarded SQL01 makes alternative groups. Native Condition44/ElseGroup/source22 ASAN, actual-schema TEMP replay/refusals and live RELEASED hash/rows pass. Priest event0 and death credits unchanged.
