@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-28",
+  "status": "Focused backend correction deployed6065F78B/SQL04; user beam client retest still required",
+  "user_evidence": "Latest Stage2 screenshot confirms201032 caster animation but no connections to Thoradin after earlier source22 stage repair9f16a9cb9. Earlier audit certified admission only, not rendering.",
+  "cause": "Actual26972:201032 is an infinite self periodic aura23,5000ms trigger201031. Native periodic dispatch passes that aura owner as target.201031 dummy effect0 target106, with no spell_target_position, uses that explicit target/caster destination. The missing beam thus retains the ritualist as its endpoint instead of actual103144. Native visual52341 missile set386/row387 has model167229 Zig_Missile,flags516,source attachment255,destination34. Merely admitting201032 toward Thoradin does not preserve that later periodic endpoint.",
+  "repair": "SpellScript201031 loads only for native Warrior101875/spawns370936/370937/370943/map1539. Require actual live same-phase/LOS Thoradin103144/spawn370922 within native50yd, same instance scenario1037/step0or1, caster alive/OOC and its own real201032 aura/current channel. At native launch, set actual destination coordinates plus unit GUID before outbound SpellGo, preserving native visual/model/attachment. Missing/lost target rejects this tick; no target/player/item/progression fabricated. Priest four source actors and all foreign casters do not load this script.",
+  "retry": "Guarded SQL04 binds201031 only and converts exact native Warrior event6 to repeating OOC event1/flags0/repeat1000. Ordinary accepted infinite channel is not interrupted; native SPELL_IN_PROGRESS rejection remains. Receiver loading/failure can retry instead of consuming one-shot event. Health-threshold-specific flag256 was considered and rejected during local drafting because its native loader deliberately permits health/victim events only; it was never applied to the database. Priest event0, combat/death credit rows and native spell IDs remain unchanged.",
+  "checks": [
+    "ASAN actual new header: three actors/two stages, exact target coordinates/GUID including moved receiver;17 actor/scenario/channel/visibility/LOS/missing-target refusals, between-check/launch target loss, missing destination, Priest/player/pet/foreign isolation. Cast/search/packet services controlled; not a rendered beam test.",
+    "Actual-schema TEMP SQL twice/seven customized-data refusals and live RELEASED SHA1/result rows. Original stage admission regression normalizes only exact RELEASED04 OOC row back to native60 inside TEMP replay; its own impossible-AND counterfactual and actual Condition44/source22/ElseGroup ASAN remain passing.",
+    "Native reader follows actual visual delegates/missile parent set and exact matching CASC model; no client files modified. Existing larger source search was bounded again to avoid unrelated modern SQL numeric matches; no newer implementation imported.",
+    "Original scripts Release build/final link with original LIB inputs, selected registered Load/Receiver/Check/Launch and destination/GUID calls checked in actual canonical6065F78B. Inherited awakening/Execute/conditions and final Scepter Release checks passed.",
+    "Owned canonical30188 applied SQL only after matching EXE, ready then graceful shutdown0/exit0; no new crashes/error appends/stderr. Runtime configs/certificates unchanged, no user server stopped."
+  ],
+  "test_invocation_correction": "Initial live hash assertion compared raw CRLF file bytes to Windows updater text-mode LF SHA1. Data/result rows were correct. Confirmed UpdateFetcher::ReadSQLUpdate text stream and exact LF hash245020F9680D53EBB27EDDF13DCD12000E30962F. Tests now use same CRLF-to-LF normalization and rerun passes; no updater hash manually overwritten or guard bypassed.",
+  "deployment": {
+    "world_sha256": "6065F78B883C8387B814A89359A6DD42D0A470A4B871FB0582E7653CC32FC3A9",
+    "backup": ".codex/release-before-stromkar-ritual-receiver-2026-10-28",
+    "evidence": ".codex/stromkar-ritual-receiver-build, -release, -pe, -promotion, -startup, -final; runtime-test/stromkar-ritual-beam and stromkar-ritual-stages"
+  },
+  "diagnostics": "Existing DBErrors now2175 bytes after user16:31..16:36 LINK2 reports, plus separate Server.log rebirth warnings acknowledged in4f34fb166. Every new test/build/startup snapshots canonical/own logs/crashes; no new runtime errors. Mixed unresolved logs preserved, no truncation/false fixed archive.",
+  "client_pending": "All three visible beams, interruptions, combat, missing/re-entry receiver, phase/faction/group rendering; no full artifact-chain certification. Separate ground burst/sword interaction/tentacles/LINK2 still tracked."
+}

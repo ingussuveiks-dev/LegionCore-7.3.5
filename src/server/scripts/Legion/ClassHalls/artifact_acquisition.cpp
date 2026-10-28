@@ -1900,6 +1900,7 @@ struct npc_stromkar_thoradin : SmartAI
 #include "lights_wrath_pickup.h"
 
 #include "stromkar_awakening.h"
+#include "stromkar_ritual_beam.h"
 
 void AddSC_artifact_acquisition()
 {
@@ -1923,6 +1924,7 @@ void AddSC_artifact_acquisition()
     RegisterCreatureAI(npc_stromkar_zakajz);
     RegisterCreatureAI(npc_stromkar_awakening);
     RegisterSpellScript(spell_stromkar_opening_recoil);
+    RegisterSpellScript(spell_stromkar_ritual_beam);
     RegisterCreatureAI(npc_stromkar_thoradin);
     new condition_stromkar_thoradin_absence();
     RegisterCreatureAI(npc_xalatath_soul_attack);
