@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-28",
+  "status": "Explicit authored ground-kit delivery deployed B3355A35; actual client visibility, size and timing require retest",
+  "user_evidence": "Client confirms real recoil, stun, rotating rebirth and cleanup/combat transition; purple cracked ground absent. Reference screenshot is transient burst during initial failed pickup, separate from persistent green pool and rebirth rings.",
+  "native": "Actual26972 spell206357 ->visual53619, event6..13 ->kit64833. Kit attachments318746/name19679/model1135049 splash scale2 offsetZ-2, and319807/name24588/model1237510 GROUNDCRACK_Shadow_STATE_nonprojected scale1/origin. Read-only matching CASC confirms ground plane24 vertices XY+-14.7181/Z0.03457 and animations0/1667ms,158/167ms,159/1500ms. AreaSplash native2000ms. No model, texture, spell or kit invented/replaced.",
+  "repair": "Deliver native kit64833 once on the actual eligible206357 self-hit/burst receipt, via Unit::SendPlaySpellVisualKit(type0,duration2000). The earlier implementation relied only on the triggered force-cast SpellGo/event path, which user reports did not show the ground effect. Retain native spell itself, knockback, conversation and ring channel. Explicit owned2s cleanup plus abort cleanup prevents indefinite ground state. No kit on mere click/channel start, wrong scope, fake actor/player hit, repeated burst or progression-only event.",
+  "limit": "Exact client reason for missing implicit visual event has not been established by packet capture. This fixes the delivery dependency explicitly using the same authored kit; it does not prove the original implicit-event failure mechanism or actual rendering. Flat nonprojected geometry/terrain and asset scaling may require further client evidence. Do not claim the picture already matches.",
+  "verification": [
+    "Expanded ASAN actual controller fixture: no pre-blast kit; repeated burst still one play;1999+1ms stop exactly once; reset/retry/abort cleanup; no extra credit or item. Original native arrival/stun/eligibility/motion/condition/TEMP-live regressions pass. Visual send/cancel sink controlled, not client renderer.",
+    "Original scripts Release build plus original-LIB separate link; selected actual registered SpellHit has64833/2000 and native SendPlaySpellVisualKit call, Update/Abort native CancelSpellVisualKit calls in deployed B3355A35. Inherited ritual receiver/awakening/Execute/condition/Scepter selected consumers retained and verified.",
+    "Owned canonical world756 ready then graceful shutdown0/exit0, empty stderr/newDBErrors; no task server remains, no user server stopped, no config/certificate/character edits. All tests/builds/read-only asset probes/startup have pre/post own/canonical diagnostic snapshots."
+  ],
+  "deployment": {
+    "world_sha256": "B3355A358A586B7206605F6EE1F286C4A28364A85F1B318CFD3577A4A7ACCBD9",
+    "backup": ".codex/release-before-stromkar-ground-kit-2026-10-28",
+    "evidence": ".codex/stromkar-ground-kit-build, -release, -promotion, -startup, -final; .codex/stromkar-ritual-ground-assets; runtime-test/stromkar-awakening"
+  },
+  "diagnostics": "No new crashes/errors during repair checks. Existing2175-byte shared101430/103151 LINK2 history and earlier user rebirth warning lines retained; mixed logs not truncated or falsely marked all fixed.",
+  "remaining": [
+    "User client ground burst plus source visibility/actual terrain/cleanup; full retry/faction/group/pet/camera/finale remain separate.",
+    "Tiny embedded sword and interaction surface remain OPEN. Native embedded visual204641/kit64756 includes item128910 attachment318611 scale0.025, not a standalone clickable weapon. Final247877/display9806 is Clickable_Box/model353152. Initial NPC spellclick is native inherited behavior, not yet replaced.",
+    "Existing unique128910 from previous test is a separate test-state obstruction. Do not silently delete character data or bypass unique loot: user approval requested because prior instruction forbids character progress changes."
+  ]
+}

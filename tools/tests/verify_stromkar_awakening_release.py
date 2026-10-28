@@ -22,6 +22,10 @@ assert {204771,206357,5000} <= values(methods[1])
 # HasParticipant is inlined here: packed ObjectGuid16 plus three receipt bits.
 assert 19 in values(methods[1]) and any(x.mnemonic.startswith('j') and x.operands and x.operands[0].type==CS_OP_IMM and x.operands[0].imm<x.address for x in ins(methods[1]))
 assert 206357 in values(methods[2])
+assert {64833,2000} <= values(methods[1]),'Native transient ground kit receipt missing'
+calls_prefix(methods[1],'?SendPlaySpellVisualKit@Unit@@')
+calls_prefix(methods[0],'?CancelSpellVisualKit@Unit@@')
+calls_prefix('?Abort@'+ai,'?CancelSpellVisualKit@Unit@@')
 selected=[]
 for x in ins('?GetAI@?$GenericCreatureScript@Unpc_stromkar_awakening@@@@'):
     for op in x.operands:

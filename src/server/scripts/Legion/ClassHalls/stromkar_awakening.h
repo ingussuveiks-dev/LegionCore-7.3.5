@@ -28,7 +28,7 @@ struct npc_stromkar_awakening : SmartAI
     struct Participant { ObjectGuid guid; bool stunned = false, hit = false, recoilRetried = false; };
     std::vector<Participant> participants;
     ObjectGuid bossGuid;
-    uint32 spawnDelay = 0, retry = 0, creditRetry = 0, attemptTime = 0, sourceVisualRetry = 0;
+    uint32 spawnDelay = 0, retry = 0, creditRetry = 0, attemptTime = 0, sourceVisualRetry = 0, groundPulse = 0;
     bool burst = false, hidden = false, warned = false;
     bool sourcePoseRemoved = false, sourceWarned = false;
     bool sourceChannelPending = false, bossChannelPending = false;
@@ -80,6 +80,9 @@ struct npc_stromkar_awakening : SmartAI
 
     void Abort()
     {
+        if (groundPulse)
+            me->CancelSpellVisualKit(64833);
+        groundPulse = 0;
         ClearSourceChannel();
         RestoreSourcePose();
         if (Creature* boss = Boss())
@@ -129,6 +132,13 @@ struct npc_stromkar_awakening : SmartAI
             {
                 burst = true;
                 spawnDelay = 5000; // Existing native Smart timed-list delay.
+                // Native206357 visual53619/event6 uses this exact kit: area
+                // splash plus nonprojected shadow ground cracks. Its triggered
+                // force-cast path did not show that transient kit in the client.
+                // Deliver the authored kit once from the real burst receipt,
+                // independently of the subsequent7s stun/rebirth channel.
+                me->SendPlaySpellVisualKit(64833, 0, 2000);
+                groundPulse = 2000;
                 me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
             }
         }
@@ -147,6 +157,16 @@ struct npc_stromkar_awakening : SmartAI
     void UpdateAI(uint32 diff) override
     {
         SmartAI::UpdateAI(diff);
+        if (groundPulse)
+        {
+            if (groundPulse > diff)
+                groundPulse -= diff;
+            else
+            {
+                me->CancelSpellVisualKit(64833);
+                groundPulse = 0;
+            }
+        }
         if (!burst)
         {
             RestoreSourcePose();
