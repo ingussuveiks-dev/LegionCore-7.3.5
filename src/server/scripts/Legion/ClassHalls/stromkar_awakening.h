@@ -31,6 +31,7 @@ struct npc_stromkar_awakening : SmartAI
     uint32 spawnDelay = 0, retry = 0, creditRetry = 0, attemptTime = 0, sourceVisualRetry = 0;
     bool burst = false, hidden = false, warned = false;
     bool sourcePoseRemoved = false, sourceWarned = false;
+    bool sourceChannelPending = false, bossChannelPending = false;
     uint32 addedFlags = 0;
     ReactStates previousReact = REACT_AGGRESSIVE;
 
@@ -97,6 +98,7 @@ struct npc_stromkar_awakening : SmartAI
         spawnDelay = retry = creditRetry = attemptTime = sourceVisualRetry = 0;
         warned = false;
         sourceWarned = false;
+        sourceChannelPending = bossChannelPending = false;
         if (hidden)
             me->SetVisible(true);
         hidden = false;
@@ -207,6 +209,11 @@ struct npc_stromkar_awakening : SmartAI
             else
             {
                 sourceVisualRetry = 2000;
+                if (sourceChannelPending && !sourceWarned)
+                {
+                    TC_LOG_WARN("scripts.ai", "Stromkar awakening: initial rebirth cast accepted but aura not acknowledged after2s; retrying without progression");
+                    sourceWarned = true;
+                }
                 if (me->HasAura(130966, me->GetGUID()))
                 {
                     sourcePoseRemoved = true;
@@ -215,15 +222,21 @@ struct npc_stromkar_awakening : SmartAI
                 // Start the actual awakening on the original body immediately;
                 // the accepted native combat replacement follows after5s.
                 SpellCastResult result = me->CastSpell(me, 206390, false);
-                if ((result != SPELL_CAST_OK || !me->HasAura(206390, me->GetGUID())) && !sourceWarned)
+                sourceChannelPending = result == SPELL_CAST_OK && !me->HasAura(206390, me->GetGUID());
+                // Ordinary casts are scheduled by the native spell event.
+                // SPELL_CAST_OK is not synchronous aura application. Keep the
+                // real aura acknowledgement gate and diagnose only a failure
+                // or an accepted cast still missing its aura on the retry.
+                if (result != SPELL_CAST_OK && !sourceWarned)
                 {
-                    TC_LOG_WARN("scripts.ai", "Stromkar awakening: initial rebirth channel not applied; retrying this native effect without progression");
+                    TC_LOG_WARN("scripts.ai", "Stromkar awakening: initial rebirth cast failed (%u); retrying without progression", uint32(result));
                     sourceWarned = true;
                 }
             }
             if (!me->HasAura(206390, me->GetGUID()))
                 return;
         }
+        sourceChannelPending = false;
         if (spawnDelay > diff)
         {
             spawnDelay -= diff;
@@ -271,15 +284,24 @@ struct npc_stromkar_awakening : SmartAI
                     }
         if (!boss->HasAura(206390, boss->GetGUID()))
         {
+            if (bossChannelPending && !warned)
+            {
+                TC_LOG_WARN("scripts.ai", "Stromkar awakening: combat rebirth cast accepted but aura not acknowledged after2s; retrying without starting combat");
+                warned = true;
+            }
             SpellCastResult result = boss->CastSpell(boss, 206390, false);
+            bossChannelPending = result == SPELL_CAST_OK && !boss->HasAura(206390, boss->GetGUID());
             if (result != SPELL_CAST_OK || !boss->HasAura(206390, boss->GetGUID()))
             {
-                if (!warned)
-                    TC_LOG_WARN("scripts.ai", "Stromkar awakening: real rebirth channel not applied; retrying without starting combat");
-                warned = true;
+                if (result != SPELL_CAST_OK && !warned)
+                {
+                    TC_LOG_WARN("scripts.ai", "Stromkar awakening: combat rebirth cast failed (%u); retrying without starting combat", uint32(result));
+                    warned = true;
+                }
                 return;
             }
         }
+        bossChannelPending = false;
         if (!ready)
             return;
         // No pet or arbitrary nearby player receives progression. These are

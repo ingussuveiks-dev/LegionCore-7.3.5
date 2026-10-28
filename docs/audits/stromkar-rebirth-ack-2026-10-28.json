@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-28",
+  "status": "Focused backend repair deployed E8ABABD5; actual client cast/re-entry retest remains pending",
+  "cause": "Ordinary Unit::CastSpell acceptance schedules native execution; the controller wrongly required the aura synchronously and warned on accepted pending casts. User confirmed actual recoil/stun/rebirth cleanup/combat transition, with the two false early warnings at16:41:40/45.",
+  "repair": "Track accepted pending206390 separately for source and replacement. Keep the real own-aura gate; allow the existing2s retry window. Warn with actual result on rejection, or on accepted cast still lacking an aura after2s. Retry/60s abort, missing/foreign actors, native phase/eligibility and exactly-once49101 are retained. No aura manufactured, warning check disabled or progression skipped.",
+  "tests": [
+    "Test-StromkarAwakening -VerifyLiveData ordinary/ASAN production header and actual arrival/conditions/motion counterfactual pass. Added accepted-without-immediate-aura then acknowledged cases on both bodies: zero warnings, real aura still required; missing aura1999+1ms gives one explicit warning and no progression. Existing rejection/timeout tests retained.",
+    "Original scripts Release build and separate original-input LIB link; selected native factory/update/callback/core PE passed stageE8ABABD5 and exactly matching canonical copy. Task-owned canonical10504 reached ready then graceful shutdown0/exit0, no stderr/new DBErrors or new crash. Configuration/certificates preserved.",
+    "Final canonical Scepter check and combined final checks recorded in subsequent continuation. No client cast engine/rendering certification from controlled fixture."
+  ],
+  "deployment": {
+    "world_sha256": "E8ABABD51D43C6B8199BB0CFD13A06AEA89758C6EF6C560FC94551FB71A217DA",
+    "backup": ".codex/release-before-stromkar-rebirth-ack-2026-10-28",
+    "evidence": ".codex/stromkar-rebirth-ack-build, -release, -promotion, -startup; build-extractors/runtime-test/stromkar-awakening"
+  },
+  "diagnostics": "Pre/post checks clean for this work. User runtime appended additional missing LINK2 errors and the two warning entries before work; preserve active log bytes. Mixed unresolved history is not truncated or archived as wholly fixed. No user server stopped, no character edits.",
+  "remaining": [
+    "User reported missing ground crack burst, tiny sword/boss click surface, absent ritual beams and existing-item final-pickup retry. These are separate active tasks, not fixed by the asynchronous acknowledgment repair.",
+    "Shared103151/101430 dangling LINK2 and exit-hole tentacle source remain OPEN."
+  ]
+}
