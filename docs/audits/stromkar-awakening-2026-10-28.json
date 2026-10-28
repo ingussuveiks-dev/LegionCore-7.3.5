@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-28",
+  "status": "Focused backend repair deployed; automated/native/linked Release/data/startup checks passed. Actual client sequence and visual fidelity remain unverified.",
+  "report": "First attempted Strom'kar pickup should repel and briefly stun the player, show the purple ground burst and rotating awakening rings, then remove the rings and admit Stage9 combat. Preserve the later downed-boss/pickup/Execute finale as a separate sequence.",
+  "native_evidence": [
+    "Matching26972 DB2/hotfix:204771 Taking the Blade channels1000ms, periodic trigger206357.206357 effect0 force-casts206360 within native radius30; effect1 sends49543 (no local event handler); effect2 triggers206394/conversation1492.206360 effect0 jumps to destination106 with arrival206361.206361 is a7000ms stun.206390 is an infinite channeled rebirth state.",
+    "Actual initial103398/spawn370991/map1539/phase5739 at1882.18,2163.35,35.9247,2.00205 has native130966 Permanent Feign Death and204641 Embedded Artifact Visual. Native204771 click row is retained. Its former five-row Smart graph immediately granted49101 on raw click and independently replaced the body after5000ms with104276/TEMPSUMMON_DEAD_DESPAWN. Unit::HandleSpellClick calls AI even when the channel fails; raw click was not an arrival/stun acknowledgment.",
+    "Scenario1037 zero-based7 is Stage8/49101; zero-based8 is Stage9/49108. Native Smart action205 uses ignoreGroup=true in Player::UpdateAchievementCriteria; the controller preserves the exact native dispatch rather than directly setting a scenario step or quest.",
+    "Spell::InitExplicitTargets retains original target then clears redundant explicit unit for destination-only106. The recoil uses GetOriginalTarget. Native destination-jump arrival previously had no self target. A failed launch or interrupted EffectMovementGenerator must not emit the stun. LONG_JUMP is client-ACK-cleared; server spline Finalized() is the readiness authority.",
+    "Native visual53619 uses kits64833/models1135049 LegendaryRing AreaSplash and1237510 GROUNDCRACK_Shadow_STATE_nonprojected.206390 visual54131 uses65537/65538,1062848 ChannelDome_Shadow_State_Souls and1109549 FelMag_Empowered_AuraShadow. Read-only CASC confirms actual assets; no renderer was exercised."
+  ],
+  "implementation": [
+    "Scoped derived SmartAI on actual initial actor registers only successful204771 applications from eligible living Warriors with active41105 in the same map/phase. Actual206357 self hit starts the trap; actual hit participants alone can recoil or witness progression. Unrelated players/pets cannot claim this pickup event. Native104276 combat AI, post-scaling player/pet/guardian defeat and later finale are retained.",
+    "Original body removes only its own feign-death aura and casts real206390 immediately after the burst. Preserve the existing5000ms summon delay, require an accepted owned104276 and correct enabled AI, hide the original and channel206390 on the replacement. Only one body remains visible. Ordinary failed/missing-aura casts retry with diagnostics; no synthetic aura-success acknowledgment.",
+    "Require actual participant arrival206361, subsequent stun expiry and server spline completion. Then dispatch native49101 and wait for actual shared scenario step8. Remove own rebirth channel, restore only flags added by this attempt and prior reaction, attack an eligible actual participant, remove the original source. No direct item grant, quest completion or manual character mutation.",
+    "Spawn/channel/credit failures retry with bounded delays and60s attempt timeout. Lost accepted summon cannot create duplicates. Reset/abandon/death/no witness restores original pose/spellclick and cleans only owned actors/auras. Foreign flags/auras survive. Six source17 predicates reject late stun after wrong class/map/stage, death or abandonment. Native finite stun remains a fallback across map unloading.",
+    "Shared movement edits are limited to player206360->206361/map1539: supply self arrival GUID, reject zero/failed launch, and require actual living same-map arrival before casting. Existing Heroic Leap, Skyhold and Execute conditions remain."
+  ],
+  "reconstructed_landing": {
+    "limitation": "Destination106 expects server DB coordinates; no206360 spell_target_position or authoritative original landing was found in matching local data, local Trinity references or examined external sources. Do not claim an exact Blizzard landing.",
+    "fallback": "Scoped30yd outward reconstruction from actual body/player direction using native GetFirstCollisionPosition, floor and body LOS; reject unsupported/nonfinite/wrong-map/flight/too-short/over60yd destinations. Preserve an authored same-map native position if later supplied. No teleport or forced destination.",
+    "geometry": "StromkarRecoilGeometry.cpp reads actual1539 VMap assets. Eight of nine sampled straight endpoints support floor/body LOS; one obstructed endpoint requires native collision shortening or rejection. This establishes geometry availability, not actual client launch, camera or timing."
+  },
+  "source_review": {
+    "video": "https://www.youtube.com/watch?v=-0ytc3talC4",
+    "reviewed": "All three muted360p contact sheets at1fps beginning15:10, covering approach/sleeping blade, approximately15:26 burst, landing/ground fade, rings, disappearance and Stage9/combat through approximately15:57. Rings start on the original body before its delayed replacement. Samples show rings disappear/player movement before the Stage9 overlay; do not assert exact simultaneous overlay timing.",
+    "limit": "Sampled relevant sequence and user screenshots only; not continuous playback, audio review or the whole19:43 video. No actual local client traversal performed."
+  },
+  "checks": [
+    "Test-StromkarAwakening.ps1: actual-schema TEMP replay twice, original raw-click counterfactual, ten custom-data refusal variants, exact preserved204771 click/104276 graph, six native stun predicates; final -VerifyLiveData -VerifyReleaseBinary passed canonical RELEASED hash/rows.",
+    "ASAN actual production controller/recoil header: success, interruption, cancel, wrong scopes, stranger triggered launch, multiple participants, failed/accepted-without-aura channel, spawn/AI/credit acknowledgment retry, timeout, lost boss, foreign state, cleanup, original-target retention, actual server spline readiness despite stale LONG_JUMP. Controlled cast/aura/spline/collision services are explicitly separate from client rendering.",
+    "ASAN extracted production Finalize/MovementInform, native source17 lookup/CheckCast/ConditionMgr predicates; native Spell initial-target normalization; actual jump self-target and MotionMaster failed-launch blocks versus pinned f5378aad3 counterfactual. No arrival stun on interruption/death/map transfer/abandonment/late stage/pet.",
+    "Final scripts Release build6 and separate link with original generated game.lib/scripts.lib input paths; no OutDir override. Selected factory/vtable/SpellHit/SpellHitTarget/Update/Reset/recoil callbacks and three shared core consumers verified in actual deployed PE3E71306E. Linked inherited scenario/condition/Execute checks pass.",
+    "Shared Test-HeroicLeapImpact -AddressSanitizer -VerifyNativeCatalog, Test-StromkarExecuteLanding and Test-StromkarZakajz passed. Final canonical Test-ScepterLogin -VerifyReleaseBinary passed. Existing compiler enum/float and Scepter signedness warnings retained; no new runtime diagnostics.",
+    "Owned canonical worldserver PID2760 reached ready, gracefully server shutdown0/exit0, empty stderr/newDBErrors. No user server was stopped and no task server remains. Configuration/certificates unchanged; native updater installed SQL03 only after matching EXE promotion."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "3E71306E3C11DB7A633674ED36B70F6B1A6F6AEADAAC0495273AD4A213585EFE",
+    "bnetserver_sha256": "F11474E49631C415D8079422DA5EA61E336A19940AD9E9511BD24126B36C39B6",
+    "migration": "sql/updates/world/2026_10_28_03_stromkar_awakening.sql",
+    "backup": ".codex/release-before-stromkar-awakening-2026-10-28 (verified original bytes/hashes); .codex/stromkar-awakening-deployment.json",
+    "evidence": ".codex/stromkar-awakening-build-1..6, stromkar-awakening-release, stromkar-awakening-promotion, stromkar-awakening-startup, stromkar-awakening-shared-regressions, stromkar-awakening-scepter-final; build-extractors/runtime-test/stromkar-awakening; native/catalog/geometry/video files under ignored .codex",
+    "investigation_failures": "Initial fixture CRLF/block extraction errors corrected. Build4 caught protected CreatureAI::me access; replaced with native GetOriginalTarget and made fixture ownership protected too. Early PE locator assumptions about inlined HasParticipant, callback immediates and5000ms assignment corrected; final selected consumers pass. Earlier stage builds are superseded, not deployable alternatives."
+  },
+  "diagnostics": "All tests/builds/probes/startup wrapped with pre/post canonical and own runtime crash/log snapshots, inspected exits/stdout/stderr/new diagnostics. No new/changed crashes or appended server errors/DBErrors. Existing1305-byte/nine-line103151/101430 missing LINK2 remains unresolved and untouched. No resolved crash existed to archive; do not clear or archive unresolved mixed history.",
+  "remaining": [
+    "User client first pickup: actual native channel, outward launch/landing distance, stun/ground/rings timing and cleanup, single visible body, Stage9 start, pet/camera, both factions/group/retry/re-entry. Then actual combat/downed pickup/Execute/return sequence. Compilation, fixtures, geometry and startup do not certify these.",
+    "Exit-hole tentacle original producer/pose remains OPEN in separate research audit. Shared missing LINK2 is not hidden by this repair. Preserve Bilaal/Aluneth/Hunter and all36 worklist findings; no whole-chain certification.",
+    "Broad name-based native research also found206863 Guardian's Awakening ->206769 teleport ->missing81040. Recorded as separate unresolved evidence; no runtime error from this Stromkar scope, no invented substitution."
+  ]
+}

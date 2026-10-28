@@ -552,7 +552,9 @@ void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, f
         _owner->IsPlayer() && _owner->GetMapId() == 1479;
     bool stromkarExecution = arrivalCast && id == 206455 && arrivalCast->SpellId == 206456 &&
         _owner->IsPlayer() && _owner->GetMapId() == 1539;
-    if (duration <= 0 && ((id == 94954 && arrivalCast && arrivalCast->SpellId == 52174) || skyholdDeparture || stromkarExecution))
+    bool stromkarRecoil = arrivalCast && id == 206360 && arrivalCast->SpellId == 206361 &&
+        _owner->IsPlayer() && _owner->GetMapId() == 1539;
+    if (duration <= 0 && ((id == 94954 && arrivalCast && arrivalCast->SpellId == 52174) || skyholdDeparture || stromkarExecution || stromkarRecoil))
     {
         _owner->ClearUnitState(UNIT_STATE_LONG_JUMP);
         return;

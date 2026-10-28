@@ -2002,7 +2002,9 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
         SkyholdDeparture::Matches(m_spellInfo->Id, arrivalCast.SpellId);
     bool stromkarExecution = m_caster->GetMapId() == 1539 &&
         m_spellInfo->Id == 206455 && arrivalCast.SpellId == 206456;
-    if (m_caster->IsPlayer() && (skyholdDeparture || stromkarExecution))
+    bool stromkarRecoil = m_caster->GetMapId() == 1539 &&
+        m_spellInfo->Id == 206360 && arrivalCast.SpellId == 206361;
+    if (m_caster->IsPlayer() && (skyholdDeparture || stromkarExecution || stromkarRecoil))
         arrivalCast.Target = m_caster->GetGUID();
     if (!arrivalCast.SpellId && delayCast)
     {

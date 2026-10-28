@@ -6,6 +6,8 @@
 #include "ScenarioMgr.h"
 #include "SpellScript.h"
 #include "Spell.h"
+#include "SpellMgr.h"
+#include "MoveSpline.h"
 #include "SpellAuraEffects.h"
 #include "SpellAuras.h"
 #include "Creature.h"
@@ -1897,6 +1899,8 @@ struct npc_stromkar_thoradin : SmartAI
 #include "lights_wrath_takeover.h"
 #include "lights_wrath_pickup.h"
 
+#include "stromkar_awakening.h"
+
 void AddSC_artifact_acquisition()
 {
     RegisterGameObjectAI(go_lights_wrath_pickup);
@@ -1917,6 +1921,8 @@ void AddSC_artifact_acquisition()
     RegisterCreatureAI(npc_titanstrike_final_prustaga);
     RegisterCreatureAI(npc_xalatath_farthing);
     RegisterCreatureAI(npc_stromkar_zakajz);
+    RegisterCreatureAI(npc_stromkar_awakening);
+    RegisterSpellScript(spell_stromkar_opening_recoil);
     RegisterCreatureAI(npc_stromkar_thoradin);
     new condition_stromkar_thoradin_absence();
     RegisterCreatureAI(npc_xalatath_soul_attack);
