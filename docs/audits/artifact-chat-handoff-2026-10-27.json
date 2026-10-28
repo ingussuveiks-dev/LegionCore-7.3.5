@@ -1,6 +1,6 @@
 {
   "date": "2026-10-28",
-  "reason": "Finished inherited Bezzeredes transition4d85aa354, committed/pushed/deployed261E2031. Native/ASAN/catalog/canonical selected PE/Scepter/Zakajz and own29444 startup pass; no uncommitted source WIP remains. Continue next independent sharedLINK2/Bilaal/Aluneth/all36 work, not waiting for client.",
+  "reason": "Two focused Stromkar visual-data repairs committed/pushed/deployed:9f16a9cb9 ritual beam stage alternatives;81632a3bd single crypt dome override. Native/ASAN/TEMP/live updater and own3616/2624 startups clean; canonical261E2031 unchanged. Exit-hole tentacles remain active source/asset research, no guessed replacement.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -19,6 +19,16 @@
     "limit": "Read-only metadata/current-session log inspection, not a UI/latency profile. Size does not prove a slowdown cause."
   },
   "completed_pushed": [
+    {
+      "commit": "9f16a9cb9",
+      "fix": "Ritual101875 impossible stage0AND1 ->native0OR1; data-only deployed",
+      "audit": "docs/audits/stromkar-ritual-beams-2026-10-28.json"
+    },
+    {
+      "commit": "81632a3bd",
+      "fix": "Single369687 empty addon excludes inherited infinite200984; native Stage6 reveal retained; deployed",
+      "audit": "docs/audits/stromkar-central-field-2026-10-28.json"
+    },
     {
       "commit": "59914e6fc",
       "fix": "Heroic Leap supported edges and native half-yard model-height ray compensation; deployed",
@@ -151,6 +161,7 @@
     "next": "Focused death repair complete/deployed; next inspect actual104546 waypoint/optional cast/portal retry. Do not confuse the still-open gravity/portal/client sequence with this death receipt."
   },
   "next_independent_work": [
+    "Resolve original hole cluster/native pose/cleanup; continue sharedLINK2/Bilaal104546 route retry/Aluneth control and all36 independently. User owns actual visual and full sequence tests.",
     "Continue independent shared103151/101430 danglingLINK2 behavior/source investigation, Bilaal104546 actual route/optional cast/portal retry and Aluneth native binding/dome mechanism; no waiting for main runtime or client retest. User owns actual Warrior/Zakajz/Malgalor full sequence.",
     "Azuregos104546 portal repaired/deployed938fc1225/World13; native retry/actual live graph and final startup verified. Client routes remain pending. Continue independent unresolved gravity and Aluneth control source work.",
     "Bilaal Gravity209863 remains OPEN: native period1000/trigger0, no reviewed native handler/AT6667..9 geometry/209864..6; do not invent wind geometry. Retain prior gravity audit4ea30199e.",
@@ -231,13 +242,13 @@
     "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
   ],
   "current_continuation": {
-    "last_implementation_commit": "4d85aa354",
+    "last_implementation_commit": "81632a3bd",
     "hunter_reconciliation": "Git/source and dedicated followup audit contradict stale unfinished text in the old resume. Commit802295a98 is an ancestor and actual runtime migration13005E8182CE54B5FFA4DEED6C9FA53272C39796 is RELEASED; 249 rows, flags3 on107317/107973 and current canonical selected consumers were independently rechecked. No repeated repair or character change.",
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
-    "diagnostics": "Final wrapped native/catalog/build/PE/promotion/startup checks exit0/no new or changed crashes, appended DBErrors or server warnings/errors/assertions. Initial C2440 void-CreateConversation compilation mismatch corrected to actual native bool factory and tests fixed; failed evidence preserved. Existing870-byte103151/101430 LINK2 log unresolved/unchanged; no archive/truncation or character edit.",
-    "next": "Continue independent shared103151/101430 danglingLINK2 behavior/source investigation, Bilaal104546 actual route/optional cast/portal retry and Aluneth native binding/dome mechanism; no waiting for main runtime or client retest. User owns actual Warrior/Zakajz/Malgalor full sequence.",
-    "uncommitted_at_checkpoint": "No source WIP remains at4d85aa354. All six inherited Bezzeredes source/tests plus marker protocol/correct native conversation acceptance and expanded cases committed. Historical original WIP/test backups stay private; do not reapply them over the completed code."
+    "diagnostics": "New visual native/ASAN/TEMP/live/startup checks pass with no new/changed crashes, appended DBErrors or server errors. Existing1305-byte103151/101430 LINK2 remains unresolved/active. Own3616/2624 stopped gracefully; no character edit or user server stop.",
+    "next": "Resolve original hole cluster/native pose/cleanup; continue sharedLINK2/Bilaal104546 route retry/Aluneth control and all36 independently. User owns actual visual and full sequence tests.",
+    "uncommitted_at_checkpoint": "No implementation WIP. New native visual reader/research/handoff committed with continuation checkpoint. Earlier Bilaal/Hunter/Aluneth evidence and historical backups retained; no old patch reapplied."
   },
   "azuregos_portal_wip": {
     "status": "Historical key: committed/pushed938fc1225, deployed with coordinated SQL13 RELEASED",
@@ -372,5 +383,16 @@
     "canonical_checks": "Test-MalgalorFinale -VerifyReleaseBinary; Test-StromkarZakajz -VerifyReleaseBinary; Test-ScepterLogin -VerifyReleaseBinary",
     "diagnostics": ".codex/warrior-reinforcement-* and .codex/reinforcement-*; canonicalCrashes empty, unresolvedDBErrors870 bytes left untouched",
     "client": "Real fresh/retry/reentry Warrior stage3 through Malgalor/rescue/Skyhold/full class chain remains user-owned; no manual character mutation."
+  },
+  "stromkar_visual_followup": {
+    "diagnostic_correction": "Historical handoff870 bytes is stale. Actual before snapshots for every current test/deployment already contain1305 bytes/nine LINK2 lines, last appended2026-10-28_08:53:56 before this work; no new appends during current checks. Historical earlier audit values retained as historical.",
+    "beam_commit": "9f16a9cb9",
+    "central_commit": "81632a3bd",
+    "research_audit": "docs/audits/stromkar-exit-tentacles-research-2026-10-28.json",
+    "status": "Both data migrations RELEASED and actual resulting rows independently verified; selected canonical EXE unchanged261E2031. No character edits, user server stops, unresolved-log truncation or task server remains.",
+    "tests": "Test-StromkarRitualStages -AddressSanitizer -VerifyLiveData; Test-StromkarCentralField -VerifyLiveData (ASAN native addon precedence); native26972 extended visual reader and read-only CASC model probes. All wrapped, no new diagnostics. Actual native casts/renderer/full chain separate.",
+    "open": "Hole tentacle producer not established. GO251349 model200293 collision-only. Candidate248409/display24101/model1063325 VoidFXDoor exists but no native scenario spawn/pose; reverse visual maps later245254, not proof of Warrior use.103151/101430 missingLINK2 still1305 bytes active. Do not globally swap blockers or invent shared action2.",
+    "video": "Same user -0ytc3talC4 downloaded360p; crypt contact sheets01..07 (muted2s samples starting9:30) now all reviewed, plus after01/02. Partial sampled footage, not uninterrupted/audio/full19:43 verification.",
+    "next": "Resolve original hole cluster/native pose/cleanup; continue sharedLINK2/Bilaal104546 route retry/Aluneth control and all36 independently. User owns actual visual and full sequence tests."
   }
 }

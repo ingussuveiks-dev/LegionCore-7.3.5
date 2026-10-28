@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest Stromkar visual follow-up (2026-10-28)
+
+- `9f16a9cb9`: source22 group7/101875 required stage0 AND1, preventing native201032 beams. Guarded SQL01 makes alternative groups. Native Condition44/ElseGroup/source22 ASAN, actual-schema TEMP replay/refusals and live RELEASED hash/rows pass. Priest event0 and death credits unchanged.
+- `81632a3bd`: crypt369687 alone overrides inherited permanent200984 with an empty spawn aura list. Native Stage6 instant204394 and6000ms103226 remain. Native addon precedence ASAN/TEMP/refusals/live readback pass. Own3616/2624 canonical startups exited0, no new diagnostics; canonical261E2031 unchanged, no character changes/task servers.
+- Actual channels/reveal/client rendering pending. Exit-hole tentacles remain OPEN: existing251349 is collision-only; candidate248409/model1063325 VoidFXDoor not established as original cluster/pose. No guessed model/spell swap. Shared103151/101430 missingLINK2 remains1305 bytes active (nine preexisting lines, before snapshots verified). Read `stromkar-exit-tentacles-research-2026-10-28.json`; extended native visual reader committed.
+- All crypt contact sheets01..07 reviewed as muted360p2-second samples starting9:30, plus after01/02; not uninterrupted/full19:43/audio review. Continue hole source/cleanup, Bilaal104546 route recovery and Aluneth/native all36 work independently of user client tests. Preserve older Hunter/Bilaal/Aluneth evidence/backups; do not reapply historical WIP.
+
 ## Latest research: Aluneth native three-scroll control remains OPEN (2026-10-27)
 
 - aluneth-control-evidence-2026-10-27.json: matching225023/25/26 ordinary5000ms events54145/46/47; override779/780/781 via225020/27/28. Existing three GO immediate205 callbacks bypass placement and permit premature use. Do not call a shortcut guard a complete native restoration.

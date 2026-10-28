@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "sql/updates/world/2026_10_28_01_stromkar_ritual_beam_stages.sql;2026_10_28_02_stromkar_central_field.sql",
+      "handler": "Stromkar native ritual beams and inherited central dome",
+      "problem": "ImpossibleAND early-stage gates; shared Priest infinite dome inherited by Warrior crypt controller.",
+      "repair_audit": "docs/audits/stromkar-ritual-beams-2026-10-28.json;stromkar-central-field-2026-10-28.json",
+      "limit": "9f16a9cb9/81632a3bd deployed; native/ASAN/TEMP/live/startup pass, client rendering pending. Exit hole tentacles and sharedLINK2 remain OPEN in stromkar-exit-tentacles-research-2026-10-28.json."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Warrior/Intro/reinforcement_transition.h",
       "handler": "Bezzeredes actual death to acknowledged Malgalor intro",
       "problem": "Nearest-player-only corpse callback lost native46880/intro and retained raw delayed pointers.",
