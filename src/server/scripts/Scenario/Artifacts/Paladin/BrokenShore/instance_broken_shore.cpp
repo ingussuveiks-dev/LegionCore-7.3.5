@@ -9,7 +9,10 @@
 #include "ScenarioMgr.h"
 #include "ObjectAccessor.h"
 #include "TemporarySummon.h"
+#include "Conversation.h"
+#include "ObjectMgr.h"
 #include "../../Warrior/Intro/malgalor_finale.h"
+#include "../../Warrior/Intro/reinforcement_transition.h"
 
 class instance_broken_shore : public InstanceMapScript
 {
@@ -23,7 +26,9 @@ public:
 
     struct instance_broken_shore_InstanceMapScript : public InstanceScript
     {
-        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
+        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map), warriorTransition(map) {}
+
+        WarriorReinforcement::State warriorTransition;
 
         std::list<Creature*> trashGUIDconteiner;
         GuidSet DoorGUIDconteiner;
@@ -50,6 +55,7 @@ public:
 
         void OnCreatureCreate(Creature* creature) override
         {
+            warriorTransition.Observe(creature);
             switch (creature->GetEntry())
             {
                 case NPC_ARGENT_PHALANX_1:
@@ -190,6 +196,7 @@ public:
 
         void CreatureDies(Creature* creature, Unit* killer) override
         {
+            warriorTransition.Death(creature, killer);
             MalgalorDeath(creature, killer);
             switch (creature->GetEntry())
             {
@@ -227,7 +234,7 @@ public:
             }
         }
 
-        void Update(uint32 diff) override {}
+        void Update(uint32 diff) override { warriorTransition.Update(diff); }
     };
 };
 

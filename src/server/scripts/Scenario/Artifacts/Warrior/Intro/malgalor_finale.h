@@ -2,6 +2,8 @@
 
 namespace MalgalorFinale
 {
+    constexpr uint32 IntroStartedData = 93301;
+    constexpr uint32 IntroReady = 1, IntroStarted = 2;
     struct Member
     {
         ObjectGuid player;

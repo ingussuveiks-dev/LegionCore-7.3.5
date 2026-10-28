@@ -334,31 +334,8 @@ public:
             }
         }
 
-        void JustDied(Unit*) override
-        {
-            if (Player* targ = me->FindNearestPlayer(100.0f))
-            {
-                targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46880);
-                Conversation* conversation = new Conversation;
-                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 771, targ, NULL, *targ))
-                    delete conversation;
-
-                targ->AddDelayedEvent(8000, [targ]() -> void
-                {
-                    targ->CastSpell(targ, 197593, true);
-                });
-
-                me->AddDelayedEvent(24000, [this]() -> void
-                {
-                    Conversation* conversation = new Conversation;
-                    if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1414, me, NULL, *me))
-                        delete conversation;
-                });
-
-                if (Creature* boss = me->FindNearestCreature(92608, 300.0f, true))
-                    boss->AI()->DoAction(true);
-            }
-        }
+        // Actual death/46880 and its presentation are owned by the instance;
+        // corpse removal or a disabled/replaced combat AI must not lose them.
 
         void UpdateAI(uint32 diff) override
         {
@@ -415,6 +392,12 @@ public:
         uint8 introStage = 0;
         ObjectGuid primary;
         std::vector<MalgalorFinale::Member> members;
+
+        uint32 GetData(uint32 id) const override
+        {
+            return id == MalgalorFinale::IntroStartedData ?
+                (introStarted ? MalgalorFinale::IntroStarted : MalgalorFinale::IntroReady) : 0;
+        }
 
         void Reset() override
         {
