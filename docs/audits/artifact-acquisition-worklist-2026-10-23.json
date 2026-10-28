@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Warrior/Intro/reinforcement_transition.h",
+      "handler": "Bezzeredes actual death to acknowledged Malgalor intro",
+      "problem": "Nearest-player-only corpse callback lost native46880/intro and retained raw delayed pointers.",
+      "repair_audit": "docs/audits/warrior-reinforcement-2026-10-28.json",
+      "limit": "4d85aa354 deployed261E2031; native/ASAN/catalog/canonicalPE/startup pass, client full sequence pending. Shared Paladin dispatch preserved. No progress reset."
+    },
+    {
       "path": "src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp",
       "handler": "Zakajz native downed pose",
       "problem": "Combat104276 never applied the initial actor103398 native130966 pose after actual defeat.",

@@ -1,6 +1,6 @@
 {
-  "date": "2026-10-27",
-  "reason": "9186306d1 native Zakajz downed pose committed/pushed/deployed9CAF5344; canonical native/ASAN/PE/Scepter and owned28952 startup pass. First partial Bezzeredes native ASAN component tests now pass; four production plus two test WIP files remain uncommitted/not in EXE. Missing103151/101430 LINK2 still OPEN; all36 continue.",
+  "date": "2026-10-28",
+  "reason": "Finished inherited Bezzeredes transition4d85aa354, committed/pushed/deployed261E2031. Native/ASAN/catalog/canonical selected PE/Scepter/Zakajz and own29444 startup pass; no uncommitted source WIP remains. Continue next independent sharedLINK2/Bilaal/Aluneth/all36 work, not waiting for client.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -108,22 +108,27 @@
       "commit": "9186306d1",
       "fix": "Native130966 defeated Zakajz pose with own-caster cleanup before Dark Drain and2s retry; deployed",
       "audit": "docs/audits/stromkar-defeat-pose-2026-10-27.json"
+    },
+    {
+      "commit": "4d85aa354",
+      "fix": "Instance-owned actual Bezzeredes death receipt, native46880 acknowledgment, retry real Malgalor AI/accepted conversations/scene",
+      "audit": "docs/audits/warrior-reinforcement-2026-10-28.json"
     }
   ],
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "4AAB1D4FF6214463D35A4266AFA9BE629A12E0B82A05CEA7ACC5593F7395AEC0",
-      "bnetserver.map": "752C0E5332AD672A4AC017B26BBAF5A5AB46436A9FC3C623FCDC0DD5F9627431",
-      "worldserver.exe": "9CAF5344BE29F46ADC4E60DF8243BB97B097ABD9F73AE78A5CF189988CD95CF1",
-      "worldserver.map": "0528D830E4C187D289B753D8861A77AD812DC6A63F176E7832E112F64A93F118"
+      "bnetserver.exe": "1C3F3E719CB3ECA7D97B430D450107D852FC08B742046EFC57CCCFF6CB4A4033",
+      "bnetserver.map": "019DDDFF40AF61C820E8A845296DADFEF212AB680FFC125064FD9AC9AB834214",
+      "worldserver.exe": "261E203113E723BA5997EC14E7561EEFE596663603FE421FFDE95C9F3BA2E648",
+      "worldserver.map": "77C64107C2802DFCF3412EE967AE81B40050C8AF60248345606F89387DBF9D3F"
     },
-    "scope": "Combined9CAF5344 retains4638D4E9 mask/Execute and prior artifact fixes; adds scoped native downed Zakajz pose. Original scripts build temporarily excluded four-file Bezzeredes WIP, restored/hash-verified afterwards. Canonical pose/damage/cache/Execute/mask/Scepter PE/native/ASAN and owned28952 startup pass. Actual client sequence not certified."
+    "scope": "Combined261E2031 retains9CAF5344 Zakajz pose and previous mask/Execute/artifact fixes, includes completed4d85aa354 Bezzeredes instance transition. Original scripts build/final-link paths, native/ASAN/catalog/canonical instance/AI hooks, shared Malgalor/Paladin source retention, Zakajz PE and Scepter Release checks pass. Client traversal pending."
   },
   "servers_last_seen": {
     "bnetserver": null,
     "worldserver": null,
-    "ownership": "Both absent before promotion; only owned28952 canonical validation started, ready then graceful shutdown0/exit0; no hidden/task server remains. Recheck all future promotions."
+    "ownership": "Both absent at promotion. Only task-owned29444 canonical validation started, ready then graceful shutdown0/exit0, stderr/newDBErrors0; no task server left. Never stopped user/unknown server; recheck every promotion."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -146,8 +151,7 @@
     "next": "Focused death repair complete/deployed; next inspect actual104546 waypoint/optional cast/portal retry. Do not confuse the still-open gravity/portal/client sequence with this death receipt."
   },
   "next_independent_work": [
-    "Expand preserved Bezzeredes transition lifecycle/alternatives before Release build and commit; missingLINK2 action intent remains unresolved. User owns actual downed pose/Execute/permanent defeat/Thoradin/return test. Continue independent Aluneth/Bilaal/all36. No pending canonical promotion.",
-    "User retests current Execute button in actual1037/final stage; no progress reset. Investigate downed Zakajz pose and103151/101430 missingLINK2 intent without deleting diagnostics/guessing actions. Resume preserved Bezzeredes WIP, then all36/Aluneth/Bilaal remaining work. No pending EXE deployment.",
+    "Continue independent shared103151/101430 danglingLINK2 behavior/source investigation, Bilaal104546 actual route/optional cast/portal retry and Aluneth native binding/dome mechanism; no waiting for main runtime or client retest. User owns actual Warrior/Zakajz/Malgalor full sequence.",
     "Azuregos104546 portal repaired/deployed938fc1225/World13; native retry/actual live graph and final startup verified. Client routes remain pending. Continue independent unresolved gravity and Aluneth control source work.",
     "Bilaal Gravity209863 remains OPEN: native period1000/trigger0, no reviewed native handler/AT6667..9 geometry/209864..6; do not invent wind geometry. Retain prior gravity audit4ea30199e.",
     "Aluneth three-scroll/native5000ms/override779..781 evidence committed a98b0fa69; current custom GO immediate205 shortcut remains UNRESOLVED. Real binding dome producer/geometry and dest46 need evidence;225030 same-name effect is audio-only. Partial YouTube only, not full traversal. Read docs/audits/aluneth-control-evidence-2026-10-27.json.",
@@ -227,13 +231,13 @@
     "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
   ],
   "current_continuation": {
-    "last_implementation_commit": "9186306d1",
+    "last_implementation_commit": "4d85aa354",
     "hunter_reconciliation": "Git/source and dedicated followup audit contradict stale unfinished text in the old resume. Commit802295a98 is an ancestor and actual runtime migration13005E8182CE54B5FFA4DEED6C9FA53272C39796 is RELEASED; 249 rows, flags3 on107317/107973 and current canonical selected consumers were independently rechecked. No repeated repair or character change.",
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
-    "diagnostics": "Final wrapped native/catalog/build/PE/deploy/startup checks exit0; no new or changed crashes, appended DBErrors or server warnings/errors/assertions. Existing870-byte DBErrors/six101430-or103151 LINK2 lines remain unresolved/unchanged. No archival/truncation or character edits.",
-    "next": "Expand preserved Bezzeredes transition lifecycle/alternatives before Release build and commit; missingLINK2 action intent remains unresolved. User owns actual downed pose/Execute/permanent defeat/Thoradin/return test. Continue independent Aluneth/Bilaal/all36. No pending canonical promotion.",
-    "uncommitted_at_checkpoint": "Four original Bezzeredes production WIP files plus tools/tests/Test-MalgalorFinale.ps1 and MalgalorFinaleTest.cpp. First native ASAN transition and old Malgalor regressions pass; not full alternate-path review or Release build. Production backup .codex/bezzeredes-wip-2026-10-27/manifest.json still exact; new two-test backup .codex/bezzeredes-tests-wip-2026-10-27/manifest.json exact. No WIP compiled into canonical9CAF5344."
+    "diagnostics": "Final wrapped native/catalog/build/PE/promotion/startup checks exit0/no new or changed crashes, appended DBErrors or server warnings/errors/assertions. Initial C2440 void-CreateConversation compilation mismatch corrected to actual native bool factory and tests fixed; failed evidence preserved. Existing870-byte103151/101430 LINK2 log unresolved/unchanged; no archive/truncation or character edit.",
+    "next": "Continue independent shared103151/101430 danglingLINK2 behavior/source investigation, Bilaal104546 actual route/optional cast/portal retry and Aluneth native binding/dome mechanism; no waiting for main runtime or client retest. User owns actual Warrior/Zakajz/Malgalor full sequence.",
+    "uncommitted_at_checkpoint": "No source WIP remains at4d85aa354. All six inherited Bezzeredes source/tests plus marker protocol/correct native conversation acceptance and expanded cases committed. Historical original WIP/test backups stay private; do not reapply them over the completed code."
   },
   "azuregos_portal_wip": {
     "status": "Historical key: committed/pushed938fc1225, deployed with coordinated SQL13 RELEASED",
@@ -342,12 +346,12 @@
     "stage": ".codex/stromkar-execution-release (supersedes mask-only950B and previous2112/0393 stages)"
   },
   "bezzeredes_reinforcement_wip": {
-    "status": "PARTIAL native ASAN class/header tests pass; not full review, Release build or deployment. Four production and two test files uncommitted.",
+    "status": "COMPLETE focused backend repair4d85aa354, committed/pushed/deployed261E2031; not whole-chain/client certification",
     "backup": ".codex/bezzeredes-wip-2026-10-27/manifest.json",
     "intent": "Instance-owned real98257/spawn361151 death receipt/eligible Warrior quest lifetime, native46880/45773 ack and2s retry; actual92608/spawn361167 creation/AI marker retry; original771/197593/corpse1414 presentation after actual intro ack, no nearest-player/early synthetic credit.",
-    "next": "Review source-state lifecycle and expand missing/disabled/failing AI, failed/removed scene, group/phase/quest/abandon-reaccept/reentry/map unload, source corpse removal and Paladin coexistence tests. Conversation771 success is currently not checked before dialogue latch; investigate optional failure/retry rather than certifying it. No WIP promotion yet.",
+    "next": "Do not reapply private historical WIP or keep rebuilding old stages. Continue next independent all36 repair; retain client/rendering/native-runtime alternative limits in focused audit.",
     "tests_backup": ".codex/bezzeredes-tests-wip-2026-10-27/manifest.json",
-    "checks": "Test-MalgalorFinale -AddressSanitizer compiles actual reinforcement header/Malgalor AI and retains strict original Paladin switch/Ragnvald/Danica guards; only exact old Bezzeredes death body is removed from comparison. Real modeled death/ack/retry/owner-pet-guardian-ally/duplicates/missing boss/intro-relative8s scene/original-attempt expiry and inherited finale regressions pass. Matching MalgalorCatalog45773/46880 and45777/46881 and native tree-key map confirmed. Endpoints controlled; more alternatives required."
+    "checks": "Test-MalgalorFinale ASAN/catalog/canonical PE passes explicit real death/owner-pet-guardian-ally/22scope refusals/duplicate/retry/null-disabled-foreign-refused AI/accepted scene and conversation/quest lifetime/group/death-range-teleport/obsolete scene/unload/victory cases plus inherited64 Malgalor paths. Actual void helper mismatch resolved through native Conversation bool factory. Source Paladin/Ragnvald/Danica retained; actual full client path pending."
   },
   "stromkar_defeat_pose_repair": {
     "status": "9186306d1 committed/pushed/deployed9CAF5344; actual rendering/client retest pending",
@@ -357,5 +361,16 @@
     "backup": ".codex/release-before-stromkar-defeat-pose-2026-10-27",
     "stage": ".codex/stromkar-defeat-pose-release supersedes4638/950B/2112 stages",
     "open": "Client pose/Execute/final sequence; shared missingLINK2 remains870 bytes active. Exact deleted/replaced boss during jump and complete abandonment/reentry/group/faction paths not certified."
+  },
+  "warrior_reinforcement_deployment": {
+    "commit": "4d85aa354",
+    "audit": "docs/audits/warrior-reinforcement-2026-10-28.json",
+    "world_sha256": "261E203113E723BA5997EC14E7561EEFE596663603FE421FFDE95C9F3BA2E648",
+    "stage": ".codex/warrior-reinforcement-release (supersedes9CAF/4638/950B/2112)",
+    "backup": ".codex/release-before-warrior-reinforcement-2026-10-28",
+    "startup": "Owned29444 ready/shutdown0/exit0/stderr0/newDBErrors0/protected unchanged/no task server",
+    "canonical_checks": "Test-MalgalorFinale -VerifyReleaseBinary; Test-StromkarZakajz -VerifyReleaseBinary; Test-ScepterLogin -VerifyReleaseBinary",
+    "diagnostics": ".codex/warrior-reinforcement-* and .codex/reinforcement-*; canonicalCrashes empty, unresolvedDBErrors870 bytes left untouched",
+    "client": "Real fresh/retry/reentry Warrior stage3 through Malgalor/rescue/Skyhold/full class chain remains user-owned; no manual character mutation."
   }
 }
