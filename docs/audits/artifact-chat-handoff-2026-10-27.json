@@ -1,6 +1,6 @@
 {
   "date": "2026-10-28",
-  "reason": "766fae12b Stromkar opening awakening repaired, committed/pushed/deployed3E71306E with coordinated SQL03; native/ASAN/linked PE/live data/owned startup and Scepter checks pass. Client sequence/reconstructed30yd landing remain pending. Earlier visual repairs and hole/source research retained.",
+  "reason": "Three focused follow-ups committed/pushed/deployed B3355A35:4f34fb166 native delayed rebirth aura acknowledgment;19b4d792c actual ritual beam receiver and OOC retry/SQL04;9ecad9cd7 explicit authored transient ground kit. User confirmed earlier recoil/stun/rings/cleanup/combat, but new visuals need client retest. Initial blade and test-state permission remain OPEN.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
   "branch": "main",
@@ -19,6 +19,21 @@
     "limit": "Read-only metadata/current-session log inspection, not a UI/latency profile. Size does not prove a slowdown cause."
   },
   "completed_pushed": [
+    {
+      "commit": "9ecad9cd7",
+      "fix": "Exactly-once native ground kit64833/2000ms on real burst with bounded/abort cleanup",
+      "audit": "docs/audits/stromkar-ground-burst-2026-10-28.json"
+    },
+    {
+      "commit": "19b4d792c",
+      "fix": "Preserve actual Thoradin destination/GUID for three native Warrior periodic beams; OOC receiver retry; SQL04 RELEASED",
+      "audit": "docs/audits/stromkar-ritual-receiver-2026-10-28.json"
+    },
+    {
+      "commit": "4f34fb166",
+      "fix": "Wait for actual native scheduled rebirth aura, diagnose failure or2s missing ack rather than successful pending cast",
+      "audit": "docs/audits/stromkar-rebirth-ack-2026-10-28.json"
+    },
     {
       "commit": "766fae12b",
       "fix": "Stromkar initial pickup: real blast/recoil/arrival stun, immediate original-body rebirth rings, accepted child and native49101 acknowledgment before combat; deployed",
@@ -133,17 +148,17 @@
   "canonical_release": {
     "directory": "build-extractors/bin/Release",
     "hashes": {
-      "bnetserver.exe": "F11474E49631C415D8079422DA5EA61E336A19940AD9E9511BD24126B36C39B6",
-      "bnetserver.map": "C96687EE21FFC38685A4D0D5A3C333271406B2C7C3C47774E0ADFBAF1C2129DA",
-      "worldserver.exe": "3E71306E3C11DB7A633674ED36B70F6B1A6F6AEADAAC0495273AD4A213585EFE",
-      "worldserver.map": "44323B89402B9A1B458E859322D6CCD46A414D0F6901B7D2E2326893CBA7F1A6"
+      "bnetserver.exe": "F0E95DAD97577EB874F660CAAD7306D8F46C9E1DC85080D71443BBEA2FC6A59F",
+      "bnetserver.map": "959D6799005A8906997608ECE2B6BEBB8D262D04978470E030181BDC048F8431",
+      "worldserver.exe": "B3355A358A586B7206605F6EE1F286C4A28364A85F1B318CFD3577A4A7ACCBD9",
+      "worldserver.map": "F0D8E5B1F17AD538121ED0CF67596DD8D300922FD4F58BBCE19FCD251AA10587"
     },
-    "scope": "Combined3E71306E includes766fae12b real Stromkar blast/recoil/arrival-stun/rebirth-channel/Stage9 acknowledgment, retaining previous261E2031 and artifact/Warrior repairs. Original generated final-link LIB paths; selected native/ASAN/live/PE/startup checks pass. Actual client traversal remains pending."
+    "scope": "Combined B3355A35 retains766fae12b and earlier repairs, plus4f34fb166 acknowledgment,19b4d792c beam receiver/SQL04 and9ecad9cd7 native ground kit. Native/ASAN/TEMP/live/selected PE/Scepter/startup checks pass; no client rendering certification."
   },
   "servers_last_seen": {
     "bnetserver": null,
     "worldserver": null,
-    "ownership": "Both absent at coordinated EXE/SQL promotion. Owned canonical worldserver2760 ready then graceful shutdown0/exit0; stderr/newDBErrors0. No task server left; never stopped user/unknown server. Recheck before any subsequent promotion."
+    "ownership": "User36880/20432 observed running, untouched. User then explicitly shut both down. Rechecked absent before every promotion. Owned10504/30188/756 ready/graceful exit0, no task server remains. Recheck before future operations."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -166,6 +181,7 @@
     "next": "Focused death repair complete/deployed; next inspect actual104546 waypoint/optional cast/portal retry. Do not confuse the still-open gravity/portal/client sequence with this death receipt."
   },
   "next_independent_work": [
+    "Continue initial blade visual/independent click surface from native candidate kits; do not invent scale/proxy, bypass native unique loot or remove test item without pending approval. Continue sharedLINK2/hole/Bilaal/Aluneth/all36 independently.",
     "Resolve original hole cluster/native pose/cleanup; continue sharedLINK2/Bilaal104546 route retry/Aluneth control and all36 independently. User owns actual visual and full sequence tests.",
     "Continue independent shared103151/101430 danglingLINK2 behavior/source investigation, Bilaal104546 actual route/optional cast/portal retry and Aluneth native binding/dome mechanism; no waiting for main runtime or client retest. User owns actual Warrior/Zakajz/Malgalor full sequence.",
     "Azuregos104546 portal repaired/deployed938fc1225/World13; native retry/actual live graph and final startup verified. Client routes remain pending. Continue independent unresolved gravity and Aluneth control source work.",
@@ -247,13 +263,13 @@
     "Old resume Markdown has an invalid UTF8 byte: raw-byte ASCII anchor inserts only; JSON utf8-sig read/ensure_ascii=False write."
   ],
   "current_continuation": {
-    "last_implementation_commit": "766fae12b",
+    "last_implementation_commit": "9ecad9cd7",
     "hunter_reconciliation": "Git/source and dedicated followup audit contradict stale unfinished text in the old resume. Commit802295a98 is an ancestor and actual runtime migration13005E8182CE54B5FFA4DEED6C9FA53272C39796 is RELEASED; 249 rows, flags3 on107317/107973 and current canonical selected consumers were independently rechecked. No repeated repair or character change.",
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
-    "diagnostics": "Final native/ASAN/TEMP/live/selected Release/Scepter and owned2760 startup pass, exit0, no new/changed crashes or error appends. Existing1305-byte shared LINK2 log retained. No task server remains.",
-    "next": "Resolve original hole cluster/native pose/cleanup; continue sharedLINK2/Bilaal104546 route retry/Aluneth control and all36 independently. User owns actual visual and full sequence tests.",
-    "uncommitted_at_checkpoint": "No production WIP after766fae12b. Broader native visual reverse lookup and research/handoff are saved in the continuation commit. Earlier Bilaal/Hunter/Aluneth evidence/backups preserved; do not reapply superseded patches."
+    "diagnostics": "Current DBErrors2175 bytes: user appended six shared LINK2 errors16:31..16:36; separate Server.log two rebirth warnings16:41 were reported. New work tests/builds/startups add no errors or crashes. Preserve mixed logs, no truncation.",
+    "next": "Continue initial blade visual/independent click surface from native candidate kits; do not invent scale/proxy, bypass native unique loot or remove test item without pending approval. Continue sharedLINK2/hole/Bilaal/Aluneth/all36 independently.",
+    "uncommitted_at_checkpoint": "Production clean after three focused commits; extended native reader/research/handoff saved in checkpoint commit. Bilaal/Hunter/Aluneth historical evidence and backups retained. No pending live code-coupled SQL."
   },
   "azuregos_portal_wip": {
     "status": "Historical key: committed/pushed938fc1225, deployed with coordinated SQL13 RELEASED",
@@ -403,7 +419,7 @@
   "stromkar_awakening_repair": {
     "commit": "766fae12b",
     "audit": "docs/audits/stromkar-awakening-2026-10-28.json",
-    "status": "Deployed3E71306E/SQL03 RELEASED; native/TEMP/ASAN/linked PE/live/startup pass; actual client pending",
+    "status": "Earlier awakening retained in combinedB3355A35. User confirms actual recoil/stun/rebirth rings/cleanup/combat start; ground delivery and warning follow-ups now deployed, actual retest pending.",
     "landing": "Scoped30yd outward collision/floor fallback is a local reconstruction. Original destination106 server DB coordinates absent; do not claim exact Blizzard distance.",
     "client": "Actual pickup channel/launch/stun/ground/rings cleanup/single body/Stage9, group/faction/retry/reentry/pet/camera, then later combat/downed pickup/Execute/full return. No manual character edits.",
     "backup": ".codex/release-before-stromkar-awakening-2026-10-28",
@@ -414,5 +430,13 @@
     "path": "206863 Guardian's Awakening ->206769 teleport effect64 ->missing81040 in matching26972 Spell data",
     "evidence": ".codex/stromkar-awakening-catalog-1..9; tools/research/StromkarAwakeningCatalog.cpp prints OTHER_UNRESOLVED_TRIGGER for broad named root",
     "next": "Trace actual class route/caller and existing81040 handlers before proposing a repair. Not a new runtime error from this test; no spell substitution."
+  },
+  "stromkar_current_followups": {
+    "rebirth": "4f34fb166; audit stromkar-rebirth-ack-2026-10-28.json",
+    "ritual": "19b4d792c; audit stromkar-ritual-receiver-2026-10-28.json; SQL04 LF hash245020F9680D53EBB27EDDF13DCD12000E30962F RELEASED; old stage test exact-released normalization retained",
+    "ground": "9ecad9cd7; audit stromkar-ground-burst-2026-10-28.json; explicit same native kit, actual client rendering remains pending, exact implicit-event failure not packet-captured",
+    "blade": "OPEN; docs/audits/stromkar-initial-blade-research-2026-10-28.json; no guessed scale/proxy or loosened final loot admission",
+    "item_permission": "Awaiting async answer: may remove only previous test Stromkar128910 for clean native finale retest. No response is not authorization. No character/inventory edits performed.",
+    "diagnostics": "Current DBErrors2175 bytes: user appended six shared LINK2 errors16:31..16:36; separate Server.log two rebirth warnings16:41 were reported. New work tests/builds/startups add no errors or crashes. Preserve mixed logs, no truncation."
   }
 }

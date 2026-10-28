@@ -574,6 +574,27 @@
       "status": "OPEN source investigation, separate from Stromkar awakening; no new runtime test error",
       "evidence": "tools/research/StromkarAwakeningCatalog.cpp / ignored native catalog output",
       "limit": "Do not substitute a same-name spell or claim an entire artifact route repaired."
+    },
+    {
+      "path": "src/server/scripts/Legion/ClassHalls",
+      "problem": "Accepted ordinary rebirth cast checked synchronously before native aura application; pending ack now separated from real failure.",
+      "repair_commit": "4f34fb166",
+      "repair_audit": "docs/audits/stromkar-rebirth-ack-2026-10-28.json",
+      "limit": "Actual client retest pending; initial blade, sharedLINK2 and full artifact chains remain separate."
+    },
+    {
+      "path": "src/server/scripts/Legion/ClassHalls",
+      "problem": "Admitted channel self aura lost actual receiver in periodic destination106; scoped actual GUID/position and OOC retry now deployed.",
+      "repair_commit": "19b4d792c",
+      "repair_audit": "docs/audits/stromkar-ritual-receiver-2026-10-28.json",
+      "limit": "Actual client retest pending; initial blade, sharedLINK2 and full artifact chains remain separate."
+    },
+    {
+      "path": "src/server/scripts/Legion/ClassHalls",
+      "problem": "User confirms no native ground burst; same authored kit explicitly delivered once with2s/abort cleanup. Exact implicit event mechanism not established.",
+      "repair_commit": "9ecad9cd7",
+      "repair_audit": "docs/audits/stromkar-ground-burst-2026-10-28.json",
+      "limit": "Actual client retest pending; initial blade, sharedLINK2 and full artifact chains remain separate."
     }
   ],
   "routes": [

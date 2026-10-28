@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-28",
+  "status": "OPEN initial sword visual and independent click surface; no guessed proxy/scale deployed",
+  "user_evidence": "Initial Stage8 sword is tiny in green pool, cursor targets the boss instead of a separate weapon. Actual recoil/rings/stun/transition now client-confirmed; missing ground and ritual beams repaired separately but still need user render retest.",
+  "native_findings": [
+    "Initial103398/spawn370991 has native204641 Embedded Artifact Visual on Corpse, visual53568/kit64756. Item128910 attachment318611/name26999/type1/model0/GenericID128910/flags67108864,scale0.025,attachment255,offset0.1/0.25/0.45,yaw4.18879,pitch0.872665. Second318702 model240868 scale0.02. The blade is a visual attached to the boss; npc_spellclick_spells103398/native204771 is attached to that boss, not a separate sword.",
+    "Final247877 has native9806/model353152; matching CASC internal name Clickable_Box, not a sword mesh. It is summoned after combat defeat for genuine loot. Existing go_stromkar_pickup guards exact scenario1037/step9 across normal/open-lock/report-use; do not relax that guard for an arbitrary early247877 or duplicate loot.",
+    "Native reverse item128910 alternatives found: kit65550/name27013/attachment319823/scale1, no examined SpellXSpellVisual event producer;65551/name27014/319824/scale1 ties206429 The Warbreaker;65562/name27015/319841/scale1 ties206455 Execute. These establish authored item visuals, not a verified initial-stage world pose or correct replacement size. Do not blindly multiply by40 or use an Execute effect for initial pickup.",
+    "Native display68556(initial)/67454(combat) both use model250582,modelScale1/attachedEffectScale1/displayScale1.5. No proven global boss-scale defect. Candidate105626 Enhanced Stromkar has display61698/model117170 BloodElfMale, not a free weapon model; no existing spellclick/equipment/addon/spawn found. Excluded as an inferred world sword actor.",
+    "Native128910 base appearance0/73752 ->28028 ->display152886/modelResource36681; the current typed model-file join emitted no matched file. No missing client asset or root-cause conclusion follows. Preserve this as a reader/resource-join limitation. No client files modified."
+  ],
+  "diagnostics": "All final native/asset probes wrapped: no new crashes, errors or DBErrors appends. One read-only creature_equip_template.entry query failed; actual schema inspected and corrected to CreatureID, no mutation. Native files fully read with existing read-only CASC sharing helper. No new source actor, template, client asset, item removal or character change.",
+  "sources": {
+    "reader": "tools/research/StromkarEarlyVisualCatalog.cpp now follows actual visual delegates, raw missile parent sets, attachment poses/item reverse alternatives and native creature/item display chains. Raw helper visual tables are not hotfix/rendering certification.",
+    "evidence": ".codex/stromkar-hole-delegates.tsv; stromkar-ritual-missiles.tsv; stromkar-embedded-blade-pose.tsv; stromkar-native-boss-scale.tsv; stromkar-native-weapon-actor.tsv; stromkar-blade-model-native.tsv; stromkar-blade-kit-sources; stromkar-native-weapon-asset; earlier user screenshots/video review limits remain.",
+    "video": "Previously reviewed muted1fps15:10..15:57 awakening samples and user reference stills only; no new full/continuous/audio review claimed."
+  },
+  "test_state": "Old unique128910 retained. Async request asks permission to remove only that old test weapon for a clean native finale retest; no response yet. Earlier user prohibition on character changes remains binding. Do not implement synthetic loot/credit/replay merely to bypass uniqueness.",
+  "next": "Resolve the original initial weapon actor/pose/scale or explicitly review a scoped proxy design using authoritative native visuals. Keep failed-channel/recoil receipt and legitimate late-stage acquisition separate; remove early weapon only on actual burst/abort/cleanup. Continue hole/LINK2/Bilaal/Aluneth/all36 sources independently."
+}

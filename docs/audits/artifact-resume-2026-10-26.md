@@ -4,6 +4,12 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest Stromkar follow-ups (2026-10-28)
+
+- `4f34fb166` delayed native rebirth aura acknowledgment, `19b4d792c` real ritual beam receiver/SQL04, `9ecad9cd7` explicit native ground burst are committed/pushed/deployed in canonical `B3355A35`. Final native/ASAN/TEMP/live/PE/Scepter checks and owned756 startup exit0 are clean. Client new beam/ground visuals remain pending; user confirmed earlier recoil/stun/rings/cleanup/combat.
+- Initial tiny sword and separate click surface remain OPEN: read `stromkar-initial-blade-research-2026-10-28.json`. Native full-scale kits65550/65551/65562 are evidence, not permission to guess a40x scale or reuse an Execute scene. Old unique128910 was not removed; awaiting explicit answer because user forbids character edits. Continue independent work, not a duplicate-loot bypass.
+- Active DBErrors2175 bytes after user LINK2 reports; no new test errors. No task servers left. Earlier Bilaal/Hunter/Aluneth/all36 evidence preserved; no whole-chain completion claim.
+
 ## Latest Stromkar awakening (2026-10-28)
 
 - `766fae12b` committed/pushed/deployed canonical `3E71306E`; coordinated SQL03 is RELEASED. Real initial pickup blast/recoil/arrival stun and original-body/accepted-boss rebirth channels precede native49101 acknowledgment and Stage9 combat. Native/TEMP/ASAN/selected PE/live/startup/Scepter pass; owned world2760 gracefully exited0, no new diagnostics. No character edits or user-server stops.
