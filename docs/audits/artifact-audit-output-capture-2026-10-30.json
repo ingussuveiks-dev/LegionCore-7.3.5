@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-30",
+  "status": "Read-only artifact exporter output capture repaired; full fresh export/audits pass; all36 gameplay remains OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Export-ArtifactAudit collected native mysql stdout through a PowerShell pipeline. One real gameobject_queststarter export returned exit0 and931 rows, but its final row was only {. The later full JSON parser correctly rejected it. This matches the separately observed truncated speaker-test output; no World table rows were deleted. Internal PowerShell/stdio transport was not profiled, so this is a localized observed capture-path failure, not a claimed upstream root-cause diagnosis.",
+  "change": "Native queries now read saved UTF8 stdin and write separate stdout/stderr files through a hidden waited process. Check exact process exit and any stderr before reading/copying; validate JSON row boundaries and metadata column names, then publish native bytes. SET SESSION TRANSACTION READ ONLY retained explicitly; connection password only inherited via restored MYSQL_PWD, never written. No server or database data mutation.",
+  "validation": [
+    "Expected failed capture retained byte-for-byte. Repaired same table has931 complete objects, containing all930 valid original objects and a valid final row. test_artifact_audit_capture.py verifies all20 exported tables/465135 objects parse, every published file byte-matches its native stdout, and native stderr is empty.",
+    "Fresh full36 route and expanded25-map audits execute successfully against the complete repaired export.36 routes/149 pairs/0 automated loot-link-admission findings/3 bounded actor links,3 scene-only pickup candidates;25maps/1947owners/83timed/19 primary-link candidates/0 missing lists. These counts include the separately applied pending-commit Monk loot repair, not proof of whole-chain gameplay.",
+    "Every failed/repaired export/parser/audit check has pre/post canonical+own crash/log snapshots, inspected exits/stdout/stderr/new server diagnostics. No new crash, appended DBErrors or server warning/error/assertion. Native export error was visible and repaired, not suppressed."
+  ],
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\artifact-audit-output-capture-2026-10-30",
+    "result": "11 original/repaired export and diagnostic files copied with source/destination/source SHA256 verification; manifest retained. No active crash removed or mixed runtime log cleared."
+  },
+  "runtime": "No server launched/stopped for this exporter fix; EXEs unchanged7D382937/F20D25EE. Task-owned Monk updater8440 had already gracefully exited0; no task servers remain. Active Crashes empty;3915-byte shared101430/103151 unresolvedLINK2 DBErrors unchanged atUTC2026-10-29T13:29:05.1130661Z. No character/item/progress edits.",
+  "evidence": [
+    ".codex/artifact-post-monk-loot-2026-10-30/world/gameobject_queststarter.jsonl",
+    ".codex/artifact-post-monk-loot-diagnostics-2026-10-30",
+    ".codex/artifact-export-capture-repaired-2026-10-30",
+    ".codex/artifact-export-capture-regression-2026-10-30",
+    ".codex/artifact-post-monk-loot-final-2026-10-30"
+  ],
+  "next": "Finish separate World30/05 Monk real-loot implementation/audit/commit (already applied/native+live tested), then real scene-completion/equip wiring and remaining36 work. User owns all actual client tests; no reset authorization."
+}
