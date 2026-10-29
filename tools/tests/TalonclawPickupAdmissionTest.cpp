@@ -23,7 +23,7 @@ struct GameObjectTemplate {
 };
 #include "GetLootId.inc"
 enum { CONDITION_ITEM = 2, CONDITION_CLASS = 15, CONDITION_MAPID = 22, CONDITION_SCENARION_STEP = 44,
-    CONDITION_QUESTTAKEN = 9, CONDITION_QUEST_COMPLETE = 28, CONDITION_QUESTREWARDED = 8, CONDITION_ALIVE = 36,
+    CONDITION_QUESTTAKEN = 9, CONDITION_QUEST_COMPLETE = 28, CONDITION_QUESTREWARDED = 8, CONDITION_ALIVE = 36, CONDITION_SCENE_SEEN = 40,
     QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1, QUEST_STATUS_REWARDED = 6 };
 #define TC_LOG_DEBUG(...) ((void)0)
 #define ASSERT(value) assert(value)
@@ -51,12 +51,15 @@ struct Unit {
 struct Player : Unit {
     uint32 quest = expectedQuest, status = 3;
     bool rewarded = false, owned = playersOwnArtifactByDefault, bank = false;
+    bool sceneComplete = true;
+    bool HasSceneStatus(uint32 scene, uint32 requiredStatus) const { assert(scene == 1282 && requiredStatus == 3); return sceneComplete; }
     Player* ToPlayer() override { return this; }
     uint32 GetGUID() const { return 7; }
     QuestStatus GetQuestStatus(uint32 id) const { return quest == id ? status : 0; }
     bool GetQuestRewardStatus(uint32 id) const { return id == quest && rewarded; }
     bool HasItemCount(uint32 item, uint32 amount, bool includeBank) const { assert(item == expectedItem && amount == 1); return owned || (includeBank && bank); }
 };
+enum { SCENE_COMPLETE = 3 };
 struct Scenario { uint32 id = expectedScenario, step = firstStage; uint32 GetScenarioId() const { return id; } uint32 GetCurrentStep() const { return step; } };
 struct ScenarioManager { Scenario scenario; bool present = true; Scenario* GetScenario(uint32 id) { return present && id == 42 ? &scenario : nullptr; } } scenarioManager;
 auto* sScenarioMgr = &scenarioManager;
@@ -182,8 +185,9 @@ int main(int argc, char** argv) {
         if (stromkarRoot) { castAdmission = true; eventEntry = 247877; }
     }
     bool feral = argc == 4 && std::string(argv[2]).find("feral-") == 0;
+    bool feralCast = feral && std::string(argv[2]) == "feral-cast";
     bool guardian = feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
-    bool guardianRoot = guardian && std::string(argv[2]).find("-loot") == std::string::npos;
+    bool guardianRoot = guardian && !feralCast && std::string(argv[2]).find("-loot") == std::string::npos;
     bool guardianGossip = guardian && std::string(argv[2]).find("-gossip") != std::string::npos;
     if (guardian) {
         expectedQuest = 40647; expectedMap = 1536; expectedScenario = 990; firstStage = 7;
@@ -192,6 +196,7 @@ int main(int argc, char** argv) {
         if (feral) {
             expectedQuest = 42430; expectedMap = 1612; expectedScenario = 1108; firstStage = 6;
             lastStage = guardianRoot ? 7 : 6; expectedItem = 128860; eventEntry = 250386; scenarioManager = {};
+            if (feralCast) { playersOwnArtifactByDefault = true; lastStage = 7; }
         }
         castAdmission = guardianRoot;
         GameObjectTemplate chest;
@@ -208,7 +213,7 @@ int main(int argc, char** argv) {
     bool dialogueEvent = argc == 3 && std::string(argv[2]) == "marksmanship-dialogue";
     bool returnEvent = argc == 3 && (std::string(argv[2]) == "marksmanship-return" || dialogueEvent);
     if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = dialogueEvent ? 52 : 59; scenarioManager = {}; }
-    std::ifstream input(argv[1]); std::vector<Condition> rows(guardian ? (guardianRoot ? 28 : 14) : warswords ? 14 : stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
+    std::ifstream input(argv[1]); std::vector<Condition> rows(feralCast ? 33 : guardian ? (guardianRoot ? 28 : 14) : warswords ? 14 : stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
     for (Condition& condition : rows) {
         uint32 target = 0;
         assert(input >> condition.ElseGroup >> condition.ConditionType >> target >> condition.ConditionValue1 >> condition.ConditionValue2 >> condition.ConditionValue3 >> condition.NegativeCondition);
@@ -294,10 +299,11 @@ int main(int argc, char** argv) {
         if (invalid == 5) player.quest = 41542;
         if (invalid == 6) worldMap.instanced = false;
         if (invalid == 7) instanceMap.id = 43;
+        if (feralCast && invalid == 3) { assert(item.AllowedForPlayer(&player) && cache.Read(&player, &item)); continue; }
         assert(!item.AllowedForPlayer(&player) && !cache.Read(&player, &item));
     }
     worldMap.instanced = true; instanceMap.id = 42; scenarioManager = {};
-    if (warswords || (guardian && !guardianRoot)) {
+    if (warswords || (guardian && !guardianRoot && !feralCast)) {
         for (uint32 invalid = 0; invalid < 3; ++invalid) {
             Player player;
             player.alive = invalid != 0;
@@ -305,6 +311,17 @@ int main(int argc, char** argv) {
             player.bank = invalid == 2;
             assert(!item.AllowedForPlayer(&player) && !cache.Read(&player, &item));
         }
+    }
+    if (feralCast) {
+        Player player;
+        player.sceneComplete = false;
+        assert(!item.AllowedForPlayer(&player));
+        player.sceneComplete = true; player.alive = false;
+        assert(!item.AllowedForPlayer(&player));
+        player.alive = true; player.owned = false; player.bank = true;
+        assert(!item.AllowedForPlayer(&player));
+        player.bank = false; assert(!item.AllowedForPlayer(&player));
+        player.owned = true; assert(item.AllowedForPlayer(&player));
     }
     if (castAdmission) {
         Player dead; dead.alive = false;
@@ -350,7 +367,7 @@ int main(int argc, char** argv) {
         assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, nullptr, nullptr));
     }
     else {
-        player.rewarded = false; player.owned = false; player.bank = false; item.loot_restricted = false;
+        player.rewarded = false; player.owned = feralCast; player.bank = false; item.loot_restricted = false;
         assert(item.AllowedForPlayer(&player) && cache.Read(&player, &item));
     }
     std::cout << "PASS: actual SQL rows/native condition cases/ElseGroup evaluator and loot condition bridge reject early/wrong/abandoned/cached requests, retaining intended final/completed stages and incomplete/complete quests without changing other loot\n";

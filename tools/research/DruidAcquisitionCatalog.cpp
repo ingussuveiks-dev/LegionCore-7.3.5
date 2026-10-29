@@ -4,9 +4,25 @@
 #include "Config.h"
 #include "DatabaseEnv.h"
 #include "MySQLThreading.h"
+#include "DB2FileLoader.h"
+#include <cstdio>
+#include <filesystem>
 #include <cstdlib>
 #include <iostream>
 #include <set>
+
+struct DruidSceneFile : DB2FileSource
+{
+    std::string path;
+    FILE* file;
+    explicit DruidSceneFile(std::string name) : path(std::move(name)), file(std::fopen(path.c_str(), "rb")) { }
+    ~DruidSceneFile() override { if (file) std::fclose(file); }
+    bool IsOpen() const override { return file != nullptr; }
+    bool Read(void* data, std::size_t size) override { return std::fread(data, size, 1, file) == 1; }
+    std::size_t GetPosition() const override { return std::ftell(file); }
+    std::size_t GetFileSize() const override { return std::filesystem::file_size(path); }
+    char const* GetFileName() const override { return path.c_str(); }
+};
 
 // Matching client data and read-only hotfixes; no character/world writes.
 int main(int argc, char** argv)
@@ -31,7 +47,7 @@ int main(int argc, char** argv)
         !steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0)) return 4;
     spells.LoadFromDB(); effects.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
-    std::set<uint32> selected{199963,199960,208779,207560,207562,207582,214714,214715};
+    std::set<uint32> selected{199963,199960,208779,207560,207561,207562,207582,214714,214715};
     for (auto id : selected)
     {
         auto spell = spells.LookupEntry(id);
@@ -74,6 +90,49 @@ int main(int argc, char** argv)
                 for (auto child : trees) if (uint32(child->Parent) == id) pending.insert(child->ID);
             }
         }
+    DB2Storage<SceneScriptEntry> scripts("SceneScript.db2", SceneScriptLoadInfo::Instance());
+    DB2Storage<SceneScriptPackageMemberEntry> members("SceneScriptPackageMember.db2", SceneScriptPackageMemberLoadInfo::Instance());
+    DB2FileLoader texts;
+    DruidSceneFile file(std::string(argv[1]) + "SceneScriptText.db2");
+    if (!scripts.Load(argv[1], 0) || !members.Load(argv[1], 0) || !texts.Load(&file, SceneScriptTextLoadInfo::Instance())) return 8;
+    scripts.LoadFromDB(); members.LoadFromDB();
+    for (uint32 root : {1605u,1595u,1631u})
+    {
+        std::cout << "SCENE_PACKAGE\t" << root << '\n';
+        std::set<uint32> packages{root}, seenPackages, pending, seen;
+        while (!packages.empty())
+        {
+            uint32 id = *packages.begin(); packages.erase(packages.begin());
+            if (!seenPackages.insert(id).second) continue;
+            for (auto member : members)
+                if (member->SceneScriptPackageID == id)
+                {
+                    if (member->ChildSceneScriptPackageID) packages.insert(member->ChildSceneScriptPackageID);
+                    if (member->SceneScriptID) pending.insert(member->SceneScriptID);
+                }
+        }
+        while (!pending.empty())
+        {
+            uint32 id = *pending.begin(); pending.erase(pending.begin());
+            if (!seen.insert(id).second) continue;
+            auto script = scripts.LookupEntry(id);
+            if (!script) return 9;
+            bool found = false;
+            for (uint32 index = 0; index < texts.GetRecordCount(); ++index)
+            {
+                auto row = texts.GetRecord(index);
+                if (row && row.GetId() == id)
+                {
+                    std::cout << "SCENE_TEXT\t" << root << '\t' << id << '\t' << row.GetString("Name") << '\n'
+                        << row.GetString("Script") << '\n';
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return 10;
+            if (script->NextSceneScriptID) pending.insert(script->NextSceneScriptID);
+        }
+    }
     HotfixDatabase.Close();
     MySQL::Library_End();
 }

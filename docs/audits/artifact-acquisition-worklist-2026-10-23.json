@@ -4391,7 +4391,7 @@
       "weapon": "Fangs of Ashamane",
       "item": 128860,
       "start": 42428,
-      "status": "partial: native250386/128860 loot link and42430/1108 stage6 pickup admission repaired; stage6..7 owned presentation guarded. Native/ASAN/TEMP/updater/live checks recorded in feral-artifact-loot-2026-10-29.json. Native214714/scene1282 has no examined214715 equip callback; scene/equip/accepted departure/earlier combat/full client remain OPEN.",
+      "status": "partial: native250386/128860 loot link,42430/1108 stage6 admission and actual1282 complete->214715 native equip mapping repaired/deployed. Source17 real SceneComplete/owned final6..7 gate, native/ASAN/TEMP/refusal/updater/live/PE checks in feral-scene-equip-2026-10-29.json. Actual paired equip/denial retry, original immediate credit/outro, accepted departure/earlier combat/full client remain OPEN.",
       "quests": [
         {
           "id": 42428,
