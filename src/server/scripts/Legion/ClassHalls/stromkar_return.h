@@ -39,6 +39,7 @@ namespace StromkarReturn
         explicit ValkyrAI(Creature* actor) : ScriptedAI(actor) { }
         ObjectGuid area;
         uint32 retry = 0;
+        uint32 absent = 0;
         bool warned = false;
 
         void ClearArea()
@@ -53,17 +54,39 @@ namespace StromkarReturn
         {
             ClearArea();
             retry = 0;
+            absent = 0;
             me->SetReactState(REACT_PASSIVE);
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         }
 
         void UpdateAI(uint32 diff) override
         {
-            if (!Owner(me))
+            Creature* owner = Owner(me);
+            if (!owner)
             {
                 ClearArea();
                 me->DespawnOrUnsummon();
                 return;
+            }
+            bool witness = false;
+            for (auto const& reference : owner->GetMap()->GetPlayers())
+                if (Player* player = reference.getSource())
+                    if (Eligible(player) && player->InSamePhase(owner))
+                        witness = true;
+            if (witness)
+                absent = 0;
+            else
+            {
+                // Keep the exit while an eligible participant is still here,
+                // including AFK time. Bound orphan cleanup after departure,
+                // abandonment or reward; ordinary source-loss cleanup is immediate.
+                absent += std::min(diff, uint32(60000) - absent);
+                if (absent == 60000)
+                {
+                    ClearArea();
+                    me->DespawnOrUnsummon();
+                    return;
+                }
             }
             if (AreaTrigger* trigger = me->GetMap()->GetAreaTrigger(area))
                 if (trigger->IsInWorld() && trigger->GetCasterGUID() == me->GetGUID())
@@ -83,7 +106,7 @@ namespace StromkarReturn
                 }
                 return;
             }
-            trigger->SetDuration(600000);
+            trigger->SetDuration(-1); // Owned lifecycle above, not an AFK timeout.
             area = trigger->GetGUID();
         }
     };
@@ -119,7 +142,7 @@ namespace StromkarReturn
         // preserve the native93819 appearance rather than inventing a portal NPC.
         Position pos = actor->GetPosition();
         actor->MovePositionToFirstCollision(pos, 2.0f, 0.0f);
-        Creature* summon = actor->SummonCreature(93819, pos, TEMPSUMMON_TIMED_DESPAWN, 600000);
+        Creature* summon = actor->SummonCreature(93819, pos, TEMPSUMMON_MANUAL_DESPAWN, 0);
         if (summon && Owner(summon) == actor)
             state.valkyr = summon->GetGUID();
         else if (!state.warned)

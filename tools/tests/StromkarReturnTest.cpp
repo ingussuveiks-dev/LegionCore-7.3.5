@@ -7,9 +7,9 @@
 #include <cmath>
 #include <fstream>
 #include <string>
-using uint32=uint32_t;using uint8=uint8_t;
+using uint32=uint32_t;using uint8=uint8_t;using int32=int32_t;
 enum { CLASS_WARRIOR=1,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,REACT_PASSIVE=0,
- UNIT_FIELD_NPC_FLAGS=1,UNIT_NPC_FLAG_GOSSIP=1,TEMPSUMMON_TIMED_DESPAWN=1 };
+ UNIT_FIELD_NPC_FLAGS=1,UNIT_NPC_FLAG_GOSSIP=1,TEMPSUMMON_TIMED_DESPAWN=3,TEMPSUMMON_MANUAL_DESPAWN=8 };
 uint32 warnings=0,foreignResets=0,createdAreas=0;
 #define TC_LOG_WARN(...) (++warnings)
 #define ASSERT(value) assert(value)
@@ -56,7 +56,9 @@ struct Creature:Unit {
 };
 bool Player::InSamePhase(Creature*c){return c->phase;}
 bool Player::IsWithinDistInMap(Creature*c,float d){float dx=pos.x-c->pos.x;return c->GetMapId()==map&&std::fabs(dx)<=d;}
-struct TempSummon:Creature {Unit*owner=nullptr;TempSummon*ToTempSummon()override{return this;}Unit*GetSummoner(){return owner;}};
+struct TempSummon:Creature {Unit*owner=nullptr;uint32 m_type=8,m_timer=0;TempSummon*ToTempSummon()override{return this;}Unit*GetSummoner(){return owner;}void UnSummon(){DespawnOrUnsummon();}void TickLifetime(uint32 diff){switch(m_type){
+#include "SummonLifetime.inc"
+default:assert(false);}}};
 struct CreatureAI {virtual~CreatureAI()=default;virtual void Reset(){}virtual void UpdateAI(uint32){}};
 struct ScriptedAI:CreatureAI {Creature*me;explicit ScriptedAI(Creature*c):me(c){}};
 struct SmartAI:ScriptedAI {using ScriptedAI::ScriptedAI;void Reset()override{++foreignResets;}};
@@ -72,21 +74,24 @@ struct ConditionSourceInfo {Unit*mConditionTargets[2];Condition*mLastFailedCondi
 struct ConditionScript {explicit ConditionScript(char const*){}virtual~ConditionScript()=default;virtual bool OnConditionCheck(Condition*,ConditionSourceInfo&){return true;}};
 bool failArea=false;std::vector<std::unique_ptr<AreaTrigger>>areas;
 struct AreaTrigger {
- ObjectGuid guid,casterGuid;Creature*casterUnit=nullptr;Map*map=nullptr;bool inWorld=true,m_withoutCaster=false,_on_remove=false;Item*m_CastItem=nullptr;uint32 duration=0;Position pos;
+ ObjectGuid guid,casterGuid;Creature*casterUnit=nullptr;Map*map=nullptr;bool inWorld=true,m_withoutCaster=false,_on_remove=false,m_isUpdate=true,_on_despawn=false;Item*m_CastItem=nullptr;int32_t _duration=0;Position pos;
  bool CreateAreaTrigger(uint32 id,uint32 entry,Creature*c,void*,Position const&p,Position const&q,void*,ObjectGuid target,uint32 custom){
   assert(entry==0&&custom==11869&&target==ObjectGuid::Empty&&p.x==q.x);if(failArea)return false;
   guid={id};casterGuid=c->guid;casterUnit=c;map=c->worldMap;pos=p;map->areas[guid]=this;areas.emplace_back(this);++createdAreas;return true;
  }
- void SetDuration(uint32 d){assert(d==600000);duration=d;}ObjectGuid GetGUID(){return guid;}ObjectGuid GetCasterGUID(){return casterGuid;}bool IsInWorld(){return inWorld;}
- void Remove(){inWorld=false;map->areas.erase(guid);}void Despawn(){Remove();}
+ void SetDuration(int32_t d){assert(d==600000||d==-1);_duration=d;}int32_t GetDuration(){return _duration;}ObjectGuid GetGUID(){return guid;}ObjectGuid GetCasterGUID(){return casterGuid;}bool IsInWorld(){return inWorld;}
+ void Remove(bool=false){inWorld=false;map->areas.erase(guid);}void Despawn(){Remove();}
+ void TickLifetime(uint32 p_time){
+#include "AreaLifetime.inc"
+ }
  Unit*GetCaster(){return casterUnit;}uint32 GetEntry(){return 11869;}bool CheckActionConditions(struct AreaTriggerAction const&,Unit*);void Dispatch(struct AreaTriggerAction const&,Unit*);
  float GetPositionX(){return pos.x;}float GetPositionY(){return pos.y;}float GetPositionZ(){return pos.z;}
 };
-#include "../../src/server/scripts/Legion/ClassHalls/stromkar_return.h"
+#include "ReturnController.inc"
 std::vector<std::unique_ptr<TempSummon>>summons;
 Creature*Creature::SummonCreature(uint32 id,Position const&p,uint32 type,uint32 duration){
- assert(id==93819&&type==TEMPSUMMON_TIMED_DESPAWN&&duration==600000);++spawns;if(spawnFail)return nullptr;
- auto s=std::make_unique<TempSummon>();s->entry=id;s->pos=p;s->owner=this;s->worldMap=worldMap;s->map=map;s->phase=phase;s->instance=instance;
+ assert(id==93819&&((type==TEMPSUMMON_TIMED_DESPAWN&&duration==600000)||(type==TEMPSUMMON_MANUAL_DESPAWN&&duration==0)));++spawns;if(spawnFail)return nullptr;
+ auto s=std::make_unique<TempSummon>();s->m_type=type;s->m_timer=duration;s->entry=id;s->pos=p;s->owner=this;s->worldMap=worldMap;s->map=map;s->phase=phase;s->instance=instance;
  npc_stromkar_valkyr factory;s->ai.reset(factory.GetAI(s.get()));s->ai->Reset();registry[s->guid]=s.get();auto result=s.get();summons.push_back(std::move(s));return result;
 }
 void Creature::DespawnOrUnsummon(){inWorld=false;for(auto&a:areas)if(a->casterGuid==guid&&a->inWorld)a->Remove();}
@@ -123,7 +128,14 @@ int main(int argc,char**argv){
  scenarioState.step=10;StromkarReturn::Signal(&ghost,1,1,state);assert(!state.ready);StromkarReturn::Signal(&ghost,3,1,state);
  StromkarReturn::Update(&ghost,1,state);assert(ghost.spawns==1&&summons.size()==1&&!foreignResets&&ghost.nearCalls==1);
  auto*summonedValkyr=summons.back().get();auto*ai=dynamic_cast<StromkarReturn::ValkyrAI*>(summonedValkyr->ai.get());assert(ai&&!summonedValkyr->flags);
- ai->UpdateAI(1);assert(createdAreas==1&&areas.back()->pos.x==2&&areas.back()->duration==600000);
+ ai->UpdateAI(1);assert(createdAreas==1&&areas.back()->pos.x==2);
+#ifdef LIFETIME_BASELINE
+ assert(areas.back()->GetDuration()==600000&&summonedValkyr->m_type==TEMPSUMMON_TIMED_DESPAWN);
+ summonedValkyr->TickLifetime(600000);assert(!summonedValkyr->inWorld&&!areas.back()->inWorld);
+ std::cout<<"EXPECTED COUNTERFACTUAL: actual timed summon branch expires the exit at10min despite an eligible AFK participant. Source retry recovery is a separate path, not certified as absent.\n";
+ return 0;
+#else
+ assert(areas.back()->GetDuration()==-1&&summonedValkyr->m_type==TEMPSUMMON_MANUAL_DESPAWN);
  for(uint32 i=0;i<10;++i){StromkarReturn::Signal(&ghost,3,1,state);StromkarReturn::Update(&ghost,1000,state);ai->UpdateAI(1000);}assert(ghost.spawns==1&&createdAreas==1);
  ai->Reset();assert(!areas.back()->inWorld);ai->UpdateAI(1);assert(createdAreas==2);
  failArea=true;ai->ClearArea();ai->UpdateAI(1000);ai->UpdateAI(1000);assert(warnings==1&&createdAreas==2);failArea=false;ai->UpdateAI(1000);assert(createdAreas==3);
@@ -139,6 +151,20 @@ int main(int argc,char**argv){
  }
  ResetWorld();Creature source;Player p;world.players={{&p}};StromkarReturn::State s;s.ready=true;p.pos.x=61;StromkarReturn::Update(&source,1,s);assert(!source.spawns);p.pos.x=0;source.phase=false;StromkarReturn::Update(&source,1000,s);assert(!source.spawns);source.phase=true;StromkarReturn::Update(&source,1000,s);assert(source.spawns==1);
  auto*owned=summons.back().get();owned->worldMap=&otherWorld;owned->ai->UpdateAI(1);assert(!owned->inWorld);
+ {
+  ResetWorld();Creature farewell;Player afk,groupMember;world.players={{&afk},{&groupMember}};StromkarReturn::State exit;exit.ready=true;
+  StromkarReturn::Update(&farewell,1,exit);auto*helper=summons.back().get();helper->ai->UpdateAI(1);
+  // The owned helper remains usable without depending on another source-AI
+  // update to replace it after the arbitrary former ten-minute timer.
+  for(unsigned i=0;i<1800;++i){helper->TickLifetime(1000);helper->ai->UpdateAI(1000);areas.back()->TickLifetime(1000);}
+  assert(helper->inWorld&&areas.back()->inWorld&&farewell.spawns==1&&createdAreas==1);
+  afk.item=false;helper->ai->UpdateAI(60000);assert(helper->inWorld); // Other legitimate participant remains.
+  groupMember.status=0;helper->ai->UpdateAI(59000);assert(helper->inWorld);
+  groupMember.status=QUEST_STATUS_COMPLETE;helper->ai->UpdateAI(1);helper->ai->UpdateAI(60000);assert(helper->inWorld);
+  world.players.clear();helper->ai->UpdateAI(59999);assert(helper->inWorld);helper->ai->UpdateAI(1);assert(!helper->inWorld&&!areas.back()->inWorld);
+  afk.item=true;world.players={{&afk}};StromkarReturn::Update(&farewell,1000,exit);assert(farewell.spawns==2);helper=summons.back().get();helper->ai->UpdateAI(1);assert(areas.back()->inWorld);
+  scenarioState.step=9;helper->ai->UpdateAI(1);assert(!helper->inWorld&&!areas.back()->inWorld);
+ }
  if(argc==2){
   std::ifstream input(argv[1]);assert(input);std::vector<Condition>rules;Condition rule;uint32 negative;
   while(input>>rule.ElseGroup>>rule.ConditionType>>rule.ConditionTarget>>rule.ConditionValue1>>rule.ConditionValue2>>rule.ConditionValue3>>negative>>rule.script){rule.NegativeCondition=negative!=0;rules.push_back(rule);}assert(rules.size()==21);
@@ -154,5 +180,6 @@ int main(int argc,char**argv){
   valkyr.map=1220;Player shared;shared.klass=5;assert(trigger.CheckActionConditions(enter,&shared));
   std::cout<<"PASS actual21 SQL conditions/native ElseGroups and AreaTrigger two-target condition caller, native SELF-caster and cast/remove branches: stage/status matrix, class/life/item/reward/real credit/signed-negative/contact/missing instance/pet refusal and unconditional leave cleanup; shared outside-map admission preserved. Spell/aura endpoint controlled, not client button rendering.\n";
  }
- std::cout<<"PASS actual Stromkar return controller/factory: real final speech signal, native scoped owner/eligible witness, one finite Val'kyr/custom11869, default SmartAI isolation, retry/warning/reset/source-loss cleanup and missing/foreign player/scenario/phase rejection. Map/summon/area/collision are endpoints; native aura actions/conditions/arrival and client rendering remain separate.\n";
+ std::cout<<"PASS actual Stromkar return controller/factory: native scoped owner/eligible witness, one Val'kyr/custom11869 retained through30min AFK, native manual/infinite lifetime branches, last-participant grace cleanup/recovery, default SmartAI isolation and retry/reset/source-loss rejection. Map/summon/area/collision services are endpoints; actual client rendering/arrival remain separate.\n";
+#endif
 }

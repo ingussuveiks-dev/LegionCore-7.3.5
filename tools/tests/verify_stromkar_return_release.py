@@ -52,10 +52,12 @@ needs('?UpdateAI@npc_stromkar_thoradin@@','?UpdateAI@SmartAI@@')
 assert {3,1,9,10,104307,1539,1037} <= values(signal)
 for call in (source,owner,eligible,'?MovePositionToFirstCollision@WorldObject@@','?SummonCreature@WorldObject@@'):
     needs(update,call)
-assert {93819,600000,1000} <= values(update)
+assert {93819,8,1000} <= values(update)
 for call in (owner,clear,'?CreateAreaTrigger@AreaTrigger@@','?SetDuration@AreaTrigger@@'):
     needs(area_update,call)
-assert {11869,600000,1000} <= values(area_update)
+assert {11869,60000,1000} <= values(area_update)
+assert {-1,0xffffffff} & values(area_update), 'Owned area does not use native infinite duration'
+needs(area_update,eligible)
 needs(clear,'?Remove@AreaTrigger@@')
 needs(condition,eligible)
 # This64-byte tail-call leaf has no x64 unwind entry. Bound it by the next
@@ -70,4 +72,4 @@ assert {26,11869,41,1} <= {op.imm for x in leaf_code for op in x.operands if op.
 for method in (update,signal,area_update):
     for prefix in ('?KilledMonsterCredit@Player@@','?RewardPlayerAndGroupAtEvent@Player@@','?AddItem@Player@@','?TeleportTo@Player@@'):
         assert not any(n['resolve'](a) in n['calls'](method) for name,a in n['symbols'].items() if name.startswith(prefix)), (method,prefix)
-print('PASS actual registered Val kyr factory chooses owned AI/default SmartAI, real Thoradin SetData/Update bridges, completed1037 source/owned quest-item eligibility, collision-relative finite summon/custom11869 creation/cleanup and registered target1 condition callback. No direct item/credit/teleport calls; native area/actions/arrival and client rendering are separate checks.')
+print('PASS registered Val kyr factory/Thoradin bridges, completed1037 owner/quest-item eligibility, native manual summon/infinite area duration with60s missing-participant cleanup and registered condition. No direct item/credit/teleport calls; native lifetime/area actions/arrival and client rendering are separate checks.')
