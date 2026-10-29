@@ -1901,9 +1901,11 @@ struct npc_stromkar_thoradin : SmartAI
 
 #include "stromkar_awakening.h"
 #include "stromkar_ritual_beam.h"
+#include "monk_kite_travel.h"
 
 void AddSC_artifact_acquisition()
 {
+    RegisterSpellScript(spell_monk_kite_travel);
     RegisterGameObjectAI(go_lights_wrath_pickup);
     RegisterSpellScript(spell_lights_wrath_pickup_cast);
     RegisterAuraScript(spell_lights_wrath_pickup_scene);
