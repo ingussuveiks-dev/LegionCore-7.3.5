@@ -181,18 +181,23 @@ int main(int argc, char** argv) {
         assert(chest.GetLootId() == 247877);
         if (stromkarRoot) { castAdmission = true; eventEntry = 247877; }
     }
-    bool guardian = argc == 4 && std::string(argv[2]).find("guardian-") == 0;
-    bool guardianRoot = guardian && std::string(argv[2]) != "guardian-loot";
-    bool guardianGossip = guardian && std::string(argv[2]) == "guardian-gossip";
+    bool feral = argc == 4 && std::string(argv[2]).find("feral-") == 0;
+    bool guardian = feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
+    bool guardianRoot = guardian && std::string(argv[2]).find("-loot") == std::string::npos;
+    bool guardianGossip = guardian && std::string(argv[2]).find("-gossip") != std::string::npos;
     if (guardian) {
         expectedQuest = 40647; expectedMap = 1536; expectedScenario = 990; firstStage = 7;
         lastStage = guardianRoot ? 8 : 7; expectedItem = 128821; expectedClassMask = 1024;
         playersOwnArtifactByDefault = guardianRoot; eventEntry = 248853; scenarioManager = {};
+        if (feral) {
+            expectedQuest = 42430; expectedMap = 1612; expectedScenario = 1108; firstStage = 6;
+            lastStage = guardianRoot ? 7 : 6; expectedItem = 128860; eventEntry = 250386; scenarioManager = {};
+        }
         castAdmission = guardianRoot;
         GameObjectTemplate chest;
         assert(chest.GetLootId() == 0); // Counterfactual: the original Data1=0 cannot resolve loot.
         chest.chest.chestLoot = static_cast<uint32>(std::stoul(argv[3]));
-        assert(chest.GetLootId() == 248853);
+        assert(chest.GetLootId() == eventEntry);
     }
     bool ownedReplay = guardianRoot || xalatathRoot || stromkarRoot || (argc == 3 && std::string(argv[2]) != "marksmanship-loot" && std::string(argv[2]) != "titanstrike-loot");
     uint32 eventId = argc == 3 && std::string(argv[2]) == "marksmanship-root" ? 0 : 2;
@@ -240,10 +245,10 @@ int main(int argc, char** argv) {
     if (guardianRoot) {
         Player player;
         auto eventType = guardianGossip ? SMART_EVENT_GOSSIP_HELLO : SMART_EVENT_GO_STATE_CHANGED;
-        SmartScript script; script.base = &player; script.mEvents = {{248853, eventId, 1, eventType}};
-        scenarioManager.scenario.step = 6;
+        SmartScript script; script.base = &player; script.mEvents = {{eventEntry, eventId, 1, eventType}};
+        scenarioManager.scenario.step = firstStage - 1;
         script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 0);
-        scenarioManager.scenario.step = 7; player.owned = false;
+        scenarioManager.scenario.step = firstStage; player.owned = false;
         script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 0);
         player.owned = true;
         script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 1);

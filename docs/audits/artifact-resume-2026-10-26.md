@@ -4,6 +4,12 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest Feral loot and native test encoding (2026-10-29)
+
+- World02 restores250386/128860 native loot, living Druid42430/1612/1108/6 source4 and owned6..7 source22 root/gossip. Native/ASAN/full TEMP/13 refusals/updater/live/owner-credit checks retained. Own6600 ready/shutdown0/exit0, no new server diagnostics, character edits or main EXE replacement. CanonicalB3355A35 unchanged. Read feral-artifact-loot-2026-10-29.json.
+- Separate f2fca4079 repairs the actual UTF8 BOM test reader after a preserved55/39 assertion failure; pinned pre-fix exit3 and repaired identical BOM/no-BOM input pass. Reviewed diagnostics copied/hash-verified under ignored fixed/2026-10-29-artifact-force-equip-test-encoding; original live mixed logs untouched.
+- Feral full acquisition stays OPEN:214714/scene1282 lacks an examined214715 server callback; native parent/child128860/128859 mapping established, actual scene/equip/accepted departure and client not verified. Original immediate51156/107750 actions retained. Next independent Restoration248499 link/native1061/5/207560->207561, then all36; preserve earlier evidence and no character edits.
+
 ## Latest Guardian loot admission (2026-10-29)
 
 - Data-only World01 restores248853/128821 native loot, living Druid40647/1536/990/7 source4 and owned final7..8 source22 root/gossip. Native26972/ASAN/full TEMP/13 refusals/shared canonical PE and actual updater/live checks pass. Own21612 ready/shutdown0/exit0; no new diagnostics or character edits. CanonicalB3355A35 unchanged. Read guardian-artifact-loot-2026-10-29.json; full trials/combat/equip retries/return/client remain OPEN.

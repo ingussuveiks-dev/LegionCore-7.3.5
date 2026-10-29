@@ -23,12 +23,13 @@ int main(int argc, char** argv)
     DB2Storage<SpellEntry> spells("Spell.db2", SpellLoadInfo::Instance());
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
     DB2Storage<ItemSparseEntry> items("ItemSparse.db2", ItemSparseLoadInfo::Instance());
+    DB2Storage<ItemChildEquipmentEntry> children("ItemChildEquipment.db2", ItemChildEquipmentLoadInfo::Instance());
     DB2Storage<ScenarioStepEntry> steps("ScenarioStep.db2", ScenarioStepLoadInfo::Instance());
     DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2", CriteriaTreeLoadInfo::Instance());
     DB2Storage<CriteriaEntry> criteria("Criteria.db2", CriteriaLoadInfo::Instance());
-    if (!spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !items.Load(argv[1], 0) ||
+    if (!spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !items.Load(argv[1], 0) || !children.Load(argv[1], 0) ||
         !steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0)) return 4;
-    spells.LoadFromDB(); effects.LoadFromDB(); items.LoadFromDB();
+    spells.LoadFromDB(); effects.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
     std::set<uint32> selected{199963,199960,208779,207560,207562,207582,214714,214715};
     for (auto id : selected)
@@ -39,15 +40,23 @@ int main(int argc, char** argv)
     }
     for (auto effect : effects)
         if (selected.count(effect->SpellID))
+        {
             std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->DifficultyID << '\t' << effect->EffectIndex << '\t'
                 << effect->Effect << '\t' << effect->EffectMiscValue[0] << '\t' << effect->EffectTriggerSpell << '\t'
                 << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
+            if (effect->Effect == 6)
+                std::cout << "AURA\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t'
+                    << effect->EffectAura << '\t' << effect->EffectAuraPeriod << '\n';
+        }
     for (uint32 id : {128821u,128306u,128860u})
     {
         auto item = items.LookupEntry(id);
         if (!item) return 6;
         std::cout << "ITEM\t" << id << '\t' << item->MaxCount << '\t' << item->Stackable << '\t' << item->AllowableClass << '\n';
     }
+    for (auto child : children)
+        if (child->ItemID == 128821 || child->ItemID == 128306 || child->ItemID == 128860)
+            std::cout << "CHILD\t" << child->ItemID << '\t' << child->ChildItemID << '\t' << unsigned(child->ChildItemEquipSlot) << '\n';
     for (auto step : steps)
         if (step->ScenarioID == 990 || step->ScenarioID == 1014 || step->ScenarioID == 1061 || step->ScenarioID == 1108)
         {

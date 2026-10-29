@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-29",
+  "status": "Focused native loot-link/admission repair deployed; Feral scene/equip/departure and full chain remain OPEN",
+  "fix_commit": "Commit containing this audit, following Guardian1f6705089; final hash is in Git history",
+  "cause": "Feral GO250386 native type3/lock1691 had Data1=0 despite its existing100-percent128860 loot row. Native selector therefore resolved no artifact loot. Original state3 root was unguarded and owned gossip checked only the inventory item, allowing presentation/credit at unrelated quest stages. Native ItemSparse128860 has AllowableClass=-1, so item metadata alone did not restrict the chest to a Druid.",
+  "repair": [
+    "Data-only World02 restores only250386.Data1=250386, after full native template (normalizing only Data1), loot, five SAI rows and original/exactly-applied conditions pass fingerprints. Complete custom differences are explicitly refused before guarded mutation.",
+    "Source4 loot and cached-slot recheck require living Druid/classmask1024, map1612/scenario1108/stage6, active un-rewarded42430 in incomplete or complete state, no128860 including bank. Source22 actual completed-loot root/group1 and original gossip/group3 require inventory ownership and the same context at stage6 or subsequent native travel stage7. Stage7 is not described as full scenario completion.",
+    "Keep actual native214714 presentation, existing51156 and107750 credit,108115 reveal/214609 departure, original flags/poses/lock/loot quantity, all five links/actions and both other Druid routes exactly unchanged. No item grant, new ScriptName, native spell substitution, character edit or executable replacement."
+  ],
+  "native_sequence_and_scope": [
+    "Matching26972 native reader/read-only hotfixes:1108 stages0..5 discovery/withered/travel/combat/51413 spider finale; stage6 pickup51156;stage7 To the Grove51414. SQL42430 follows42440 and requires107729 plus107750; no prerequisite or saved objective changed.",
+    "Native108027 death event0 targets invoker7 for51413. Existing shared action205 already resolves player/charmer/pet/guardian owner and deduplicates; it is not the older player-only upstream implementation. Its original LINK1/2 summons108053/107385;3 creates250386 at2063.78,5403.75,-34.7747,0.7151/lifetime3600;4 signals108028. Actual null/unowned companion kill and source creation/cleanup/retry remain separate gameplay checks.",
+    "Actual GO0 state3 and GO2 gossip cast214714 then retained1/51156,3/107750 and4/108115. That exit actor has spellclick214609 and native51414/teleport action. No credit was moved to spawn, a pet or an unrelated nearby player. Full exactly-once ownership, failed optional casts and actual departure acceptance are not inferred from these SQL rows.",
+    "Expanded typed reader confirms native214714 aura26/430 (root plus scene1282), no periodic force-equip trigger; native214715 effect249 equips existing128860,167/61 native follow-ups and225866 trigger. Parent128860 has child128859/equipment slot16; Guardian128821 has128822/16. Existing EffectForceEquipItem checks actual owned item, parent/child equip admission and swaps through native inventory code; missing items are not created. The catalog does not execute the actual pair equip.",
+    "World spell_scene1282 uses package1631/flags21 and no custom ScriptName; examined spell_scene_event has zero1282 rows. No214714/214715 spell_script_names or linked_spell route was found. SelectArfiactSpellForSpec returns214715 but has no examined call site. This establishes an unresolved server callback path, not a claim to have inspected the client SceneScriptText or watched an unseen equip animation. Do not invent a scene trigger/event name or claim loot-link repair solves it."
+  ],
+  "checks": [
+    "Test-FeralArtifactLoot -AddressSanitizer, then actual updater and -AddressSanitizer -VerifyLiveData: full-schema session-local tables, old/applied normalization validated by the exact migration, two applications, complete template/loot/action/Guardian/Resto preservation and13 full custom refusals. Each expected SQL45000 counterfactual captured separately with stdout/stderr/exit and unchanged after-snapshots.",
+    "Actual generated14 loot/28 state-root/28 gossip rows run through extracted production GetLootId, condition cases, ElseGroup, SmartAI event-condition/root dispatch, loot eligibility and cached-slot check. Covers old zero-link versus repaired selector, stages0..14, five quest states, missing/foreign scenario or instance, wrong map/class/quest, alive/dead, missing item/bank-only item, pets/null, abandonment/reward and unrelated loot. Endpoints remain adapted, not an actual player/GO runtime traversal.",
+    "Guardian -AddressSanitizer -VerifyLiveData rerun after the shared fixture extension retains its earlier70-row migration and checks. Test-ScriptPetCredit -VerifyReleaseBinary validates native205 owner/guardian/charmer/missing-owner/dedup/caster behavior plus actual canonical PE bridges. No combat hook changed. Initial broader group failed in ArtifactForceEquip's UTF8 BOM reader, not the production handler; separate repairf2fca4079 retains original55/39 assertions and passes identical BOM/non-BOM native catalogs. Full failed-group/counterfactual/repaired evidence is hash-archived in its separate audit. Force-equip and paired-item catalog evidence are endpoint regressions, not proof that the missing Feral scene callback runs.",
+    "Expanded DruidAcquisitionCatalog passes native ItemChildEquipment/aura-period output; actual read-only world scene and event records traced. No external/modern core behavior copied because the present missing loot link resolves from matching local data.",
+    "Actual canonical updater ownPID6600 applied World02 hash008E8738D99F3F61F7C00524A44EDF57920323D4, ready, graceful shutdown0/exit0, no stderr/newDBErrors/protected-config changes. Live migration fingerprint/readback checks RELEASED hash, link250386 and70 exact rules."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256_unchanged": "B3355A358A586B7206605F6EE1F286C4A28364A85F1B318CFD3577A4A7ACCBD9",
+    "build": "Only native research/regression executables built in separate runtime-test directories; no production C++ or main EXE changed.",
+    "ownership": "No user/unknown server existed immediately before own startup. Only task-owned6600 launched and gracefully stopped. No task server remains.",
+    "characters": "No manual character, inventory, item, objective or quest changes. Client checks left to the user."
+  },
+  "diagnostics": "Pre/post canonical and own runtime crash/log evidence retained for final native/ASAN/updater/live/selected PE checks. No new/changed crashes or new DBErrors/server warnings/errors/assertions. Existing C4244 in the shared extracted SmartEventConditions fixture remains visible, with no production compiler change. Existing2175-byte15-line shared103151/101430 LINK2 log and mixed Server.log retained unresolved; no archive or truncation. No resolved Feral crash/error report exists to archive.",
+  "private_evidence": [
+    ".codex/feral-artifact-native-2026-10-29",
+    ".codex/druid-paired-catalog-2026-10-29",
+    ".codex/druid-acquisition-paired-native.tsv",
+    ".codex/feral-updater-diagnostics-2026-10-29",
+    ".codex/feral-updater-startup-2026-10-29",
+    ".codex/feral-final-native-2026-10-29",
+    ".codex/feral-repaired-final-native-2026-10-29",
+    "build-extractors/runtime-test/feral-artifact-loot"
+  ],
+  "remaining": [
+    "Resolve native214714/scene1282 to genuine214715 equipped parent/child acceptance, including failed/interrupted cast, early cancellation, full bags, equip denial, repeated event and missing/outro actors before certifying acquisition. Current51156/107750 are still original immediate SAI actions; do not infer native equip acknowledgment from them.",
+    "Actual108115 boarding/teleport/51414 acceptance and retry; earlier entire42428/42439/42438/42440/42430 chain, actual combat/scaled final blows, faction/group/abandon/re-entry, weapon visuals/audio, save/relog and full client remain OPEN.",
+    "Continue independent Restoration248499 Data1=0/native1061/5 and207560 presentation trace, then remaining all36. Preserve Guardian/Stromkar/Bilaal/Aluneth/Hunter evidence. User owns client checks and character progress."
+  ]
+}
