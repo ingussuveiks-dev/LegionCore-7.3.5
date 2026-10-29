@@ -1,5 +1,6 @@
 {
   "date": "2026-10-29",
+  "delivery_followup": "Scoped native continuation now implemented/deployed F8315186 and World08; see stromkar-shadowy-split-delivery-2026-10-29.json. Native source/geometry/ASAN/TEMP/PE/startup verified, actual client rendering/cadence remains pending. Historical OPEN findings below describe the pre-repair graph; other visual/LINK2 and shared failed creature insertion follow-ups remain OPEN.",
   "status": "OPEN: missing native split continuation identified; no incomplete combat replacement deployed",
   "local_graph": "Actual103339/spawn370996 map1539/phase5739 has SmartAI: aggro204595, once combat207244, periodic215690, death204743->49058. No207244 script or examined207249/207297 continuation. The dufernst2020 donor contains the same incomplete graph.103340/103341/104729 are sparse template variants, not evidence that they are the two native summons.104737 is the actual207299 summon identity.",
   "native26972": [

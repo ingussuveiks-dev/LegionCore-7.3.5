@@ -37,7 +37,7 @@ int main(int argc,char**argv)
     DB2Storage<GameObjectDisplayInfoEntry> objects("GameObjectDisplayInfo.db2",GameobjectDisplayInfoLoadInfo::Instance());
     if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0)||!visuals.Load(argv[1],0)||!animations.Load(argv[1],0)||!objects.Load(argv[1],0))return 4;
     spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();durations.LoadFromDB();visuals.LoadFromDB();animations.LoadFromDB();objects.LoadFromDB();
-    std::set<uint32> selected{201031,201032,34429,200984,204394,204356,202925,202981,202014,206895,204641,204771,206357,206360,206361,206390,203037,207244,207258,207275,204595,204743,215690,63048,201904,207454,202015,206429,206455,215997,230829,192085};
+    std::set<uint32> selected{201031,201032,34429,200984,204394,204356,202925,202981,202014,206895,204641,204771,206357,206360,206361,206390,203037,207244,207258,207274,207275,204595,204743,215690,63048,201904,207454,202015,206429,206455,215997,230829,192085};
     for(auto spell:spells){std::string name=spell->Name->Str[0];std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});if(name.find("tentacl")!=std::string::npos||name.find("tendril")!=std::string::npos||name.find("blocker")!=std::string::npos||name.find("shadow channel")!=std::string::npos||(spell->ID>=201000&&spell->ID<=201050))selected.insert(spell->ID);}
     for(auto spell:spells){std::string name=spell->Name->Str[0];std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});if(name.find("shadowy split")!=std::string::npos)selected.insert(spell->ID);}
     for(auto e:effects)if(!e->DifficultyID&&(e->Effect==28||e->EffectAura==56)&&
@@ -47,7 +47,11 @@ int main(int argc,char**argv)
     DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2",SpellCastTimesLoadInfo::Instance());
     if(!castTimes.Load(argv[1],0))return 23;castTimes.LoadFromDB();
     for(auto m:misc)if(!m->DifficultyID&&(m->SpellID==207244||m->SpellID==207249||m->SpellID==207297||m->SpellID==207299||m->SpellID==207258||m->SpellID==207275)){auto c=castTimes.LookupEntry(m->CastingTimeIndex);std::cout<<"SPLIT_CAST\t"<<m->SpellID<<'\t'<<(c?c->Base:0)<<'\n';}
-    for(auto e:effects)if(!e->DifficultyID&&(e->SpellID==207299||e->SpellID==207258||e->SpellID==207275))std::cout<<"SPLIT_EFFECT\t"<<e->SpellID<<'\t'<<e->EffectIndex<<'\t'<<e->EffectBasePoints<<'\t'<<e->EffectMiscValue[1]<<'\t'<<e->EffectRadiusIndex[0]<<'\t'<<e->EffectRadiusIndex[1]<<'\t'<<e->EffectAuraPeriod<<'\n';
+    for(auto e:effects)if(!e->DifficultyID&&(e->SpellID==207299||e->SpellID==207258||e->SpellID==207274||e->SpellID==207275))std::cout<<"SPLIT_EFFECT\t"<<e->SpellID<<'\t'<<e->EffectIndex<<'\t'<<e->EffectBasePoints<<'\t'<<e->EffectMiscValue[1]<<'\t'<<e->EffectRadiusIndex[0]<<'\t'<<e->EffectRadiusIndex[1]<<'\t'<<e->EffectAuraPeriod<<'\n';
+    DB2Storage<SummonPropertiesEntry> summonProperties("SummonProperties.db2",SummonPropertiesLoadInfo::Instance());
+    if(!summonProperties.Load(argv[1],0))return 24;summonProperties.LoadFromDB();
+    auto splitSummon=summonProperties.LookupEntry(64);if(!splitSummon)return 25;
+    std::cout<<"SPLIT_PROPERTIES\t"<<splitSummon->ID<<'\t'<<splitSummon->Control<<'\t'<<splitSummon->Title<<'\t'<<splitSummon->Slot<<'\t'<<splitSummon->Flags<<'\n';
     for(auto m:misc)if(!m->DifficultyID&&selected.count(m->SpellID)){auto d=durations.LookupEntry(m->DurationIndex);std::cout<<"MISC\t"<<m->SpellID<<'\t'<<(d?d->Duration:0);for(auto a:m->Attributes)std::cout<<'\t'<<uint32(a);std::cout<<'\n';}
     std::set<uint32> visualIds,kits;
     for(auto v:visuals)if(selected.count(v->SpellID)){visualIds.insert(v->SpellVisualID);std::cout<<"VISUAL\t"<<v->SpellID<<'\t'<<v->SpellVisualID<<'\t'<<v->CasterPlayerConditionID<<'\t'<<v->ViewerPlayerConditionID<<'\n';}
@@ -136,5 +140,14 @@ int main(int argc,char**argv)
     if(!modified.Load(argv[1],0)||!appearances.Load(argv[1],0)||!itemDisplays.Load(argv[1],0)||!files.Load(argv[1],0))return 13;
     modified.LoadFromDB();appearances.LoadFromDB();itemDisplays.LoadFromDB();
     for(auto a:modified)if(a->ItemID==128910){auto b=appearances.LookupEntry(a->ItemAppearanceID);auto d=b?itemDisplays.LookupEntry(b->ItemDisplayInfoID):nullptr;if(!d)return 14;std::cout<<"BLADE_APPEARANCE\t"<<unsigned(a->ItemAppearanceModifierID)<<'\t'<<a->ID<<'\t'<<b->ID<<'\t'<<d->ID<<'\t'<<d->ModelResourcesID[0]<<'\t'<<d->ModelResourcesID[1]<<'\n';for(auto f:files)for(int32 resource:d->ModelResourcesID)if(resource&&f->resource==resource){std::cout<<"BASE_BLADE_MODEL\t"<<a->ID<<'\t'<<b->ID<<'\t'<<d->ID<<'\t'<<resource<<'\t'<<f->id<<'\n';if(a->ItemAppearanceModifierID==0){for(auto o:objects)if(o->FileDataID==f->id)std::cout<<"BLADE_GO_DISPLAY\t"<<o->ID<<'\t'<<f->id<<'\n';for(auto c:models)if(c->FileDataID==f->id)for(auto display:displays)if(display->ModelID==c->ID)std::cout<<"BLADE_CREATURE_DISPLAY\t"<<display->ID<<'\t'<<f->id<<'\n';}}}
+    DB2Storage<ScenarioStepEntry> steps("ScenarioStep.db2",ScenarioStepLoadInfo::Instance());
+    DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2",CriteriaTreeLoadInfo::Instance());
+    DB2Storage<CriteriaEntry> criteria("Criteria.db2",CriteriaLoadInfo::Instance());
+    if(!steps.Load(argv[1],0)||!trees.Load(argv[1],0)||!criteria.Load(argv[1],0))return 26;
+    steps.LoadFromDB();trees.LoadFromDB();criteria.LoadFromDB();
+    uint32 root=0;for(auto s:steps)if(s->ScenarioID==1037&&s->OrderIndex==6){root=s->Criteriatreeid;std::cout<<"SPLIT_STEP\t"<<s->ID<<'\t'<<unsigned(s->OrderIndex)<<'\t'<<root<<'\n';}
+    if(!root)return 27;std::set<uint32> descendants{root};for(unsigned pass=0;pass<10;++pass)for(auto t:trees)if(descendants.count(t->Parent))descendants.insert(t->ID);
+    bool deathCriterion=false;for(auto t:trees)if(descendants.count(t->ID)&&t->CriteriaID){auto c=criteria.LookupEntry(t->CriteriaID);if(!c)return 28;std::cout<<"SPLIT_CRITERION\t"<<t->ID<<'\t'<<t->Amount<<'\t'<<c->ID<<'\t'<<unsigned(c->Type)<<'\t'<<c->Asset<<'\n';if(c->Type==92&&c->Asset==49058)deathCriterion=true;}
+    if(!deathCriterion)return 29;
     HotfixDatabase.Close();MySQL::Library_End();return 0;
 }

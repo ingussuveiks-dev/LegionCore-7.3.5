@@ -1930,9 +1930,12 @@ struct npc_stromkar_thoradin : SmartAI
 #include "stromkar_awakening.h"
 #include "stromkar_ritual_beam.h"
 #include "monk_kite_travel.h"
+#include "stromkar_split.h"
 
 void AddSC_artifact_acquisition()
 {
+    RegisterCreatureAI(npc_stromkar_illusionist);
+    RegisterSpellScript(spell_stromkar_split_transport);
     new npc_stromkar_valkyr();
     new condition_stromkar_return();
     RegisterSpellScript(spell_monk_kite_travel);
