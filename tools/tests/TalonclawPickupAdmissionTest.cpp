@@ -13,6 +13,7 @@ using QuestStatus = uint32;
 uint32 expectedQuest = 40385, expectedMap = 1511, expectedScenario = 973, firstStage = 12, expectedItem = 128808;
 uint32 lastStage = 13, eventEntry = 248419, eventSource = 1;
 uint32 expectedClassMask = 4;
+uint32 expectedScene = 1282;
 bool playersOwnArtifactByDefault = true;
 enum { GAMEOBJECT_TYPE_CHEST = 3, GAMEOBJECT_TYPE_FISHINGHOLE = 25,
     GAMEOBJECT_TYPE_GATHERING_NODE = 50, GAMEOBJECT_TYPE_CHALLENGE_MODE_REWARD = 51 };
@@ -52,7 +53,7 @@ struct Player : Unit {
     uint32 quest = expectedQuest, status = 3;
     bool rewarded = false, owned = playersOwnArtifactByDefault, bank = false;
     bool sceneComplete = true;
-    bool HasSceneStatus(uint32 scene, uint32 requiredStatus) const { assert(scene == 1282 && requiredStatus == 3); return sceneComplete; }
+    bool HasSceneStatus(uint32 scene, uint32 requiredStatus) const { assert(scene == expectedScene && requiredStatus == 3); return sceneComplete; }
     Player* ToPlayer() override { return this; }
     uint32 GetGUID() const { return 7; }
     QuestStatus GetQuestStatus(uint32 id) const { return quest == id ? status : 0; }
@@ -190,8 +191,10 @@ int main(int argc, char** argv) {
     bool twinblades = argc == 4 && std::string(argv[2]).find("twinblades-") == 0;
     bool brewmaster = argc == 4 && std::string(argv[2]).find("brewmaster-") == 0;
     bool windwalker = argc == 4 && std::string(argv[2]).find("windwalker-") == 0;
+    bool monkCast = (brewmaster || windwalker) && std::string(argv[2]).find("-cast") != std::string::npos;
+    bool sceneCast = feralCast || monkCast;
     bool guardian = brewmaster || windwalker || twinblades || restoration || feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
-    bool guardianRoot = guardian && !feralCast && std::string(argv[2]).find("-loot") == std::string::npos;
+    bool guardianRoot = guardian && !sceneCast && std::string(argv[2]).find("-loot") == std::string::npos;
     bool guardianGossip = guardian && std::string(argv[2]).find("-gossip") != std::string::npos;
     if (guardian) {
         expectedQuest = 40647; expectedMap = 1536; expectedScenario = 990; firstStage = 7;
@@ -217,6 +220,7 @@ int main(int argc, char** argv) {
             expectedScenario = brewmaster ? 1137 : 983; firstStage = brewmaster ? 7 : 6;
             lastStage = firstStage + (guardianRoot ? 1 : 0); expectedItem = brewmaster ? 128938 : 128940;
             expectedClassMask = 512; eventEntry = brewmaster ? 251605 : 248086; scenarioManager = {};
+            if (monkCast) { playersOwnArtifactByDefault = true; lastStage = firstStage + 1; expectedScene = brewmaster ? 1342 : 1160; }
         }
         castAdmission = guardianRoot;
         GameObjectTemplate chest;
@@ -233,7 +237,7 @@ int main(int argc, char** argv) {
     bool dialogueEvent = argc == 3 && std::string(argv[2]) == "marksmanship-dialogue";
     bool returnEvent = argc == 3 && (std::string(argv[2]) == "marksmanship-return" || dialogueEvent);
     if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = dialogueEvent ? 52 : 59; scenarioManager = {}; }
-    std::ifstream input(argv[1]); std::vector<Condition> rows(feralCast ? 33 : twinblades ? (guardianRoot ? 56 : 28) : guardian ? (guardianRoot ? 28 : 14) : warswords ? 14 : stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
+    std::ifstream input(argv[1]); std::vector<Condition> rows(sceneCast ? 33 : twinblades ? (guardianRoot ? 56 : 28) : guardian ? (guardianRoot ? 28 : 14) : warswords ? 14 : stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
     for (Condition& condition : rows) {
         uint32 target = 0;
         assert(input >> condition.ElseGroup >> condition.ConditionType >> target >> condition.ConditionValue1 >> condition.ConditionValue2 >> condition.ConditionValue3 >> condition.NegativeCondition);
@@ -319,11 +323,11 @@ int main(int argc, char** argv) {
         if (invalid == 5) player.quest = 41542;
         if (invalid == 6) worldMap.instanced = false;
         if (invalid == 7) instanceMap.id = 43;
-        if (feralCast && invalid == 3) { assert(item.AllowedForPlayer(&player) && cache.Read(&player, &item)); continue; }
+        if (sceneCast && invalid == 3) { assert(item.AllowedForPlayer(&player) && cache.Read(&player, &item)); continue; }
         assert(!item.AllowedForPlayer(&player) && !cache.Read(&player, &item));
     }
     worldMap.instanced = true; instanceMap.id = 42; scenarioManager = {};
-    if (warswords || (guardian && !guardianRoot && !feralCast)) {
+    if (warswords || (guardian && !guardianRoot && !sceneCast)) {
         for (uint32 invalid = 0; invalid < 3; ++invalid) {
             Player player;
             player.alive = invalid != 0;
@@ -332,7 +336,7 @@ int main(int argc, char** argv) {
             assert(!item.AllowedForPlayer(&player) && !cache.Read(&player, &item));
         }
     }
-    if (feralCast) {
+    if (sceneCast) {
         Player player;
         player.sceneComplete = false;
         assert(!item.AllowedForPlayer(&player));
@@ -387,7 +391,7 @@ int main(int argc, char** argv) {
         assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, nullptr, nullptr));
     }
     else {
-        player.rewarded = false; player.owned = feralCast; player.bank = false; item.loot_restricted = false;
+        player.rewarded = false; player.owned = sceneCast; player.bank = false; item.loot_restricted = false;
         assert(item.AllowedForPlayer(&player) && cache.Read(&player, &item));
     }
     std::cout << "PASS: actual SQL rows/native condition cases/ElseGroup evaluator and loot condition bridge reject early/wrong/abandoned/cached requests, retaining intended final/completed stages and incomplete/complete quests without changing other loot\n";

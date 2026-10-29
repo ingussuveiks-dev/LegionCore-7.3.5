@@ -40,14 +40,15 @@ int main(int argc, char** argv)
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
     DB2Storage<SpellMiscEntry> misc("SpellMisc.db2", SpellMiscLoadInfo::Instance());
     DB2Storage<SpellDurationEntry> durations("SpellDuration.db2", SpellDurationLoadInfo::Instance());
+    DB2Storage<SpellInterruptsEntry> interrupts("SpellInterrupts.db2", SpellInterruptsLoadInfo::Instance());
     DB2Storage<ItemSparseEntry> items("ItemSparse.db2", ItemSparseLoadInfo::Instance());
     DB2Storage<ItemChildEquipmentEntry> children("ItemChildEquipment.db2", ItemChildEquipmentLoadInfo::Instance());
     DB2Storage<ScenarioStepEntry> steps("ScenarioStep.db2", ScenarioStepLoadInfo::Instance());
     DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2", CriteriaTreeLoadInfo::Instance());
     DB2Storage<CriteriaEntry> criteria("Criteria.db2", CriteriaLoadInfo::Instance());
-    if (!spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !misc.Load(argv[1], 0) || !durations.Load(argv[1], 0) || !items.Load(argv[1], 0) || !children.Load(argv[1], 0) ||
+    if (!spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !misc.Load(argv[1], 0) || !durations.Load(argv[1], 0) || !interrupts.Load(argv[1], 0) || !items.Load(argv[1], 0) || !children.Load(argv[1], 0) ||
         !steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0)) return 4;
-    spells.LoadFromDB(); effects.LoadFromDB(); misc.LoadFromDB(); durations.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
+    spells.LoadFromDB(); effects.LoadFromDB(); misc.LoadFromDB(); durations.LoadFromDB(); interrupts.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
     std::set<uint32> selected{199502,199499,224657,217814,217813,217659,217667,218929};
     for (auto id : selected)
@@ -70,6 +71,9 @@ int main(int argc, char** argv)
         if (selected.count(row->SpellID))
             if (auto duration=durations.LookupEntry(row->DurationIndex))
                 std::cout << "DURATION\t" << row->SpellID << '\t' << duration->Duration << '\n';
+    for (auto row : interrupts)
+        if (row->SpellID==199502 || row->SpellID==217814)
+            std::cout << "INTERRUPTS\t" << row->SpellID << '\t' << uint32(row->AuraInterruptFlags[0]) << '\t' << uint32(row->AuraInterruptFlags[1]) << '\n';
     for (uint32 id : {128938u,128940u})
     {
         auto item = items.LookupEntry(id);
@@ -96,6 +100,20 @@ int main(int argc, char** argv)
                 for (auto child : trees) if (uint32(child->Parent) == id) pending.insert(child->ID);
             }
         }
+    for (auto criterion : criteria)
+        if (criterion->Type==92 && criterion->Asset==54076)
+            for (auto tree : trees)
+                if (tree->CriteriaID==criterion->ID)
+                    for (auto step : steps)
+                    {
+                        std::set<uint32> seen;uint32 id=tree->ID;
+                        while (id && seen.insert(id).second)
+                        {
+                            if (id==step->Criteriatreeid)
+                                std::cout << "ALTERNATE_EQUIP_EVENT\t54076\t" << step->ScenarioID << '\t' << unsigned(step->OrderIndex) << '\n';
+                            auto parent=trees.LookupEntry(id);if (!parent)break;id=parent->Parent;
+                        }
+                    }
     DB2Storage<SceneScriptEntry> scripts("SceneScript.db2", SceneScriptLoadInfo::Instance());
     DB2Storage<SceneScriptPackageMemberEntry> members("SceneScriptPackageMember.db2", SceneScriptPackageMemberLoadInfo::Instance());
     DB2FileLoader texts;

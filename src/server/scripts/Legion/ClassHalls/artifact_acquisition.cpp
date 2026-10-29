@@ -1767,6 +1767,56 @@ bool Complete(Player* player, SpellScene const* scene, std::string const& trigge
 }
 }
 
+namespace MonkArtifactScene
+{
+struct Pickup
+{
+    uint32 scene, package, map, scenario, firstStep, quest, item;
+};
+
+Pickup const Pickups[] = {
+    {1160, 1524, 1528, 983, 6, 40570, 128940},
+    {1342, 1668, 1625, 1137, 7, 42765, 128938}
+};
+
+// Scene-specific admission is independent of ordinary native equip-spell use.
+// In particular, a late completion after map change must not fall through to
+// the source17 branch that preserves those spells outside their quest maps.
+bool Denied(Player* player, SpellScene const* scene, std::string const& trigger)
+{
+    if (!scene)
+        return false;
+    Pickup const* pickup = nullptr;
+    for (Pickup const& row : Pickups)
+        if (uint32(scene->MiscValue) == row.scene)
+        {
+            pickup = &row;
+            break;
+        }
+    if (!pickup)
+        return false;
+    if (uint32(scene->SceneScriptPackageID) != pickup->package || trigger != "complete" || !player ||
+        !player->HasSceneStatus(pickup->scene, SCENE_COMPLETE) || !player->IsInWorld() ||
+        !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+        player->getClass() != CLASS_MONK || player->GetMapId() != pickup->map ||
+        !ArtifactAcquisition::Active(player, pickup->quest) || !player->HasItemCount(pickup->item, 1, false))
+        return true;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    return !scenario || scenario->GetScenarioId() != pickup->scenario ||
+        scenario->GetCurrentStep() < pickup->firstStep || scenario->GetCurrentStep() > pickup->firstStep + 1;
+}
+}
+
+class scene_monk_artifact_equipment : public SceneTriggerScript
+{
+public:
+    scene_monk_artifact_equipment() : SceneTriggerScript("scene_monk_artifact_equipment") { }
+    bool OnTrigger(Player* player, SpellScene const* scene, std::string trigger) override
+    {
+        return MonkArtifactScene::Denied(player, scene, trigger);
+    }
+};
+
 class scene_xalatath_pickup : public SceneTriggerScript
 {
 public:
@@ -1993,6 +2043,7 @@ void AddSC_artifact_acquisition()
     new player_talonclaw_return();
     new player_talonclaw_departure();
     new go_talonclaw_return_portal();
+    new scene_monk_artifact_equipment();
     new scene_xalatath_pickup();
     new scene_stromkar_pickup();
     new go_stromkar_pickup();

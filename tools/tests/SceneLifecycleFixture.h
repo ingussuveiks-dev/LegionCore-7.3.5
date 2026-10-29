@@ -110,8 +110,9 @@ using AuraEffectList = std::list<AuraEffect*>;
 struct PhaseManager { int updates = 0; void RemoveUpdateFlag(int flag) { assert(flag == 1); ++updates; } };
 struct SpellManager {
     SpellScene scene;
+    std::map<uint32, SpellScene> scenes;
     std::map<uint32, std::vector<SceneTriggerEvent>> events;
-    SpellScene const* GetSpellScene(uint32) { return &scene; }
+    SpellScene const* GetSpellScene(uint32 id) { auto found=scenes.find(id);return found==scenes.end()?&scene:&found->second; }
     std::vector<SceneTriggerEvent> const* GetSceneTriggerEvent(uint32 id) {
         auto found = events.find(id); return found == events.end() ? nullptr : &found->second;
     }
@@ -119,7 +120,9 @@ struct SpellManager {
 auto* sSpellMgr = &spellManager;
 struct ScriptManager {
     std::function<bool(Player*, std::string)> callback;
-    bool OnSceneTrigger(Player* player, SpellScene const*, std::string event) {
+    std::function<bool(Player*, SpellScene const*, std::string)> sceneCallback;
+    bool OnSceneTrigger(Player* player, SpellScene const* scene, std::string event) {
+        if (sceneCallback) return sceneCallback(player, scene, event);
         return callback ? callback(player, event) : false;
     }
 } scriptManager;
@@ -138,7 +141,7 @@ struct Player : Unit {
     std::function<void()> criteriaUpdate;
     std::vector<std::function<void()>> delayedInvokerCasts;
     bool world = true, alive = true, teleporting = false, rewarded = false, owned = true;
-    bool contact = true;
+    bool contact = true, bankOwned = false;
     bool CanContact() const { return contact; }
     bool gmMode = false;
     bool isGameMaster() const { return gmMode; }
@@ -277,7 +280,7 @@ struct Player : Unit {
     bool GetQuestRewardStatus(uint32 id) const { assert(id == expectedQuest); return rewarded; }
     uint32 GetQuestStatus(uint32 id) const { assert(id == expectedQuest); return quest; }
     bool HasItemCount(uint32 item, uint32 count, bool bank) const {
-        assert(item == expectedItem && count == 1 && bank); return owned;
+        assert(item == expectedItem && count == 1); return owned || (bank && bankOwned);
     }
     uint32 GetGUIDLow() const { return 123; }
 };

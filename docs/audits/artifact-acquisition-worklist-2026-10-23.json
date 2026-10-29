@@ -5135,5 +5135,12 @@
     "checks": "6 ASan native loot/root/gossip,18 TEMP refusals/live4tables/typed26972/shared10pickup actualPE/Monk native kite pass. Own8440 clean graceful0; sameEXEs,3915 unresolvedDBErrors. Initial path failure archived; independent exporter capture repaired/pushed0f4794e87.",
     "fresh_audit": "Complete fresh20tables/465135 objects;36/149/0 automated findings/3 boundedMonk,25maps/1947owners/83timed/19 candidates.3 scene-only grant candidates now247566 Blood,247386 Frost,247494 Fire. Monk real-equip callback still separately OPEN.",
     "next": "Wire real1160/1342 SceneComplete to199499/217813 with native guarded scope, preserve alternate224657 distinction/cancel/replay; then remaining36. Client full bags/equip/pair/return/full routes unverified; no reset authorization."
+  },
+  "monk_scene_equip": {
+    "audit": "docs/audits/monk-scene-equip-2026-10-30.json",
+    "status": "World30/06 RELEASED + canonicalF0BB199C/5F8730EE:1160/1342 real complete->199499/217813, scoped registered C++ gate +66 source17 rules; original native flags/loot/actions/alternate224657/outside-map ordinary spell use preserved.",
+    "checks": "ASan actual scene/packet/guard/conditions,30 invalid/130 matrices/forged-late-reentry-cancel-failed-cast cases;22 TEMP refusals/live4tables; original-LIB build/staged+canonical ctor/vtable/path/ABI PE,Scepter+retained scenes/pickups,own2852 clean graceful0. No task servers;3915 unresolvedDBErrors unchanged.",
+    "fresh_audit": "EOF/count exporter fixed c9fd59c07;20tables/465201 records fully valid.36/149/0 findings/3boundedMonk;25maps/1947owners/83timed/19 review edges;3 scene-only pickups247566Blood/247386Frost/247494Fire. Whole36/client and accepted actual equip/render still OPEN.",
+    "next": "Continue native review/fix of3 other scene-only pickups and remaining realLINK/visual/middle39427 content; preserve audits and consumed reset permissions."
   }
 }

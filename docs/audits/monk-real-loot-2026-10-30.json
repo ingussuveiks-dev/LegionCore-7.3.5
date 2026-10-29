@@ -44,5 +44,6 @@
     ".codex/monk-loot-live-2026-10-30",
     ".codex/artifact-post-monk-loot-final-2026-10-30"
   ],
-  "remaining": "Next: actual native1160/1342 SceneComplete->199499/217813 existing-item equip with proper scene/quest/map/stage/inventory guards and cancel/replay validation. Full bags/retry/cast denial/return actor lifetime/group/faction/reentry and actual client full routes remain OPEN. LiLi missingLINK7/8, later100438LINK10,3 other scene-only pickups,19 expandedLINK candidates/sharedLINK2/Stromkar visuals/middle39427/full36 unfinished."
+  "remaining": "Next: actual native1160/1342 SceneComplete->199499/217813 existing-item equip with proper scene/quest/map/stage/inventory guards and cancel/replay validation. Full bags/retry/cast denial/return actor lifetime/group/faction/reentry and actual client full routes remain OPEN. LiLi missingLINK7/8, later100438LINK10,3 other scene-only pickups,19 expandedLINK candidates/sharedLINK2/Stromkar visuals/middle39427/full36 unfinished.",
+  "followup_scene_equip": "World30/06/newF0BB199C now wires native1160/1342 completion to199499/217813 with registered context gate +66 predicates. Read monk-scene-equip-2026-10-30.json; earlier missing-callback statement is historical, full client/accepted equip/return/whole chains still OPEN."
 }

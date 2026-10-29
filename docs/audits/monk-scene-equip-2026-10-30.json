@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-30",
+  "status": "Monk scene-to-native real equipment callback and stale-context gate deployed; World06 RELEASED; complete Monk/client traversal remains OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Native scene1160/package1524 and1342/package1668 equip only visual clones. Neither had a completion event or C++ equipment producer, so real199499/217813 effect249 was disconnected even after World05 restores actual loot. Both have9000ms scene auras and no exported native SpellInterrupts row; a late packet after map/quest/item/context loss must not invoke the new callback. A source17 outside-map compatibility branch alone is not scene admission.",
+  "change": [
+    "World06 binds precisely the two native scene records to registered scene_monk_artifact_equipment, preserving packages/flags21/durations. Add native complete->199499 for Fists and complete->217813 for Fu Zan, MonsterCredit0. No item creation, quest/kill command, native scene override or new loot grant. Native224657 alternate Fists equip remains unchanged; it has different54076/phase/bar effects with no exported983 criterion mapping.",
+    "MonkArtifactScene::Denied is a synchronous read-only gate: actual known scene/package, complete status3, in-world/contact/alive/not-teleporting Player,class10, actual map, active un-rewarded quest, inventory-only master item and live matching scenario at exact pickup/next stage. Invalid/forged/late callbacks are handled before default SQL; valid ones use the core native event/cast pipeline. No delayed raw pointer, forced transfer or synthetic progression.",
+    "66 source17 predicates (33 per native equip spell) independently recheck owned item/Monk class/map/scenario/current-or-next stage/active incomplete-or-complete quest/unrewarded/alive/actual completed scene. Preserve ordinary native spell use outside each scenario map via explicit ElseGroup0; the new scene-specific C++ gate independently rejects stale outside-map callbacks. Original loot, ten SmartAI actions/return actors and native equipment/phase/conversation effects retained."
+  ],
+  "sequence": "Fists40570/1528/983: real100760 death47821 ->248086 loot128940/child133948 ->199502 scene1160/native100952+47977 ->completed1160 ->199499 existing-item equipment. Fu Zan42765/1625/1137: real109821 death52482 ->251605 loot128938 ->217814 scene1342/native109330/removal217659+217667 ->completed1342 ->217813 native equip/phase/52483/conversation2879/ability. Existing GO52483 and final109440/52751 return remain separate native events; no callback MonsterCredit or invented completion. Actual effect acceptance/render/swap/return remains client work.",
+  "validation": [
+    "Full4table original fixture/TEMP replay/idempotence, only two scene ScriptName fields plus exact2 mappings/66 predicates. Preserve full native packages/flags/durations/ready loot and alternate224657 scope.22 complete custom/partial refusal variants under --force leave all rows unchanged. Full live4table equality and updater RELEASED/LF-SHA1 pass.",
+    "MSVC ASan compiles actual guard/class, Active quest helper, Player scene lifecycle, complete/cancel/trigger packet handlers and real condition/ElseGroup cases. Original missing-callback counterfactual paired with real native cast requests. Unguarded late-map counterfactual paired with new handler rejection while ordinary source17 outside-map use stays admitted. Native flag21 cancel/complete exactly once, forged/stale/replaced/unknown/reentrant cases,30 late-invalid states and130 stage/status matrices, inventory/bank/item loss/quest reward/abandonment/map/context/life/contact/teleport gates, failed native cast then a genuinely new scene request. Cast/equip/world endpoints controlled; no full integrated client proof.",
+    "Source17 real predicates tested for both scenes at pickup and next stage, missing/foreign scenario/instance, wrong class/map/quest, dead, absent/bank-only item, incomplete/completed/rewarded status and missing SceneComplete. Actual source17 hook in core remains unchanged. Shared fixture now models per-scene templates/callback context and bank selection without changing old defaults.",
+    "Shared Feral scene/equip/loot ASan+live, SceneLifecycle and ten-pickup actual canonical PE regressions pass after fixture extension. New scripts Release built from original scripts.vcxproj/Release paths with BuildProjectReferences=false and no OutDir override; staged world/bnet link uses original scripts/game/shared/common LIB inputs. Production compile/link has no new warnings. Historical extracted-fixture C4244 and Scepter C4389/C4244 remain visible.",
+    "Staged PE before promotion and canonical PE after promotion verify actual AddSC constructor, installed vtable/OnTrigger->Denied, exact two7-field path records, real HasSceneStatus/GetQuestStatus/GetScenario/HasItemCount consumers and bank=false argument; gate itself has no cast/item/credit/teleport call. ScepterLogin -VerifyReleaseBinary and retained actual Talonclaw hooks pass on new canonicalF0BB199C. bnet .text hash429ED1BBEBE6C6932FB5EBC20E7CC705DB8150FF13746F037E40BFEEDEFE0D2A identical before/after relink.",
+    "Owned2852 canonical updater ready/graceful shutdown0/exit0, empty stderr/newDBErrors0, protected config/cert/DLL hashes unchanged. Fresh fully drained/count-validated20tables/465201 objects:36routes/149pairs/0 automated findings/3 bounded actor links;25maps/1947owners/83timed/19 primary review candidates/0 missing lists. Three scene-only grant candidates remain Blood247566/Frost247386/Fire247494; structural counts do not certify scenes or full chains."
+  ],
+  "development": [
+    "New data-test initially unrolled a single-row expected group0 tuple and threw Unexpected real Monk cast group199499/0; corrected explicit serialization, preserved failed/passing snapshots. No production SQL had been applied for that failure.",
+    "An initially contemplated SQL-only callback preserved source17 outside-map use but could accept a late callback there. Added and natively regressed the separate registered scene gate before promotion; code-coupled SQL stayed outside updater until the matching EXE was present.",
+    "Full audit later caught real redirected stdout truncation. That separate capture defect and its prototypes are documented/archived/pushed as c9fd59c07; final counted snapshot passes. No failed export presented as a successful audit."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_06_monk_scene_equip.sql",
+    "lf_sha1": "AC567C86795D8DB18C1966FBD4D960E721120B50",
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "F0BB199C6791157D7FD7ED8002952D3D4BC25BF905FEA45AF93146693B1DC4A5",
+      "bnetserver.exe": "5F8730EE573AD26E5A7C14705E65E1D3C5323A34410760BBADD8C33FF3D8FC47",
+      "worldserver.map": "9EC17F669EF5EB7CF03E14888E389F6DEA5E45FE007F4725EBD76EA5B3E29848",
+      "bnetserver.map": "61C7C9A903D29675754A8597814DF79FF5D8B937A6B475E7FA92D2119143AAEC"
+    },
+    "backup": ".codex/release-before-monk-scene-2026-10-30/manifest.json",
+    "stage": ".codex/monk-scene-release",
+    "owned_pid": 2852,
+    "result": "Fresh both-server absence checked before and between four exe/map backup+promotion copies; all backup/copy hashes verified. SQL06 moved only after matching actual factory/code PE passed. No user/unknown process stopped; only owned2852 started/closed. No character/item/progress reset."
+  },
+  "diagnostics": "All native/ASan/catalog/TEMP/shared/build/link/PE/promotion/Scepter/updater/live/audit runs have before/after canonical+own crash hashes/log lengths/timestamps and inspected exits/stdout/stderr/new diagnostics. Failed fixture/export attempts explicitly retained and repaired. No new/changed crash or server warning/error/assertion/DBErrors. Active Crashes empty;3915-byte shared101430/103151 unresolvedLINK2 history unchanged atUTC2026-10-29T13:29:05.1130661Z. No mixed runtime log cleared.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\monk-scene-condition-fixture-2026-10-30",
+    "result": "15 isolated condition-fixture failed/passing diagnostic files copied with source/destination/source SHA256 verification. No production crash claimed. Independent EOF archive/c9fd59c07 retains actual export failures."
+  },
+  "evidence": [
+    ".codex/monk-scene-native-2026-10-30",
+    ".codex/monk-scene-shared-2026-10-30",
+    ".codex/monk-scene-scripts-build-2026-10-30",
+    ".codex/monk-scene-staged-link-2026-10-30",
+    ".codex/monk-scene-staged-pe-2026-10-30",
+    ".codex/monk-scene-canonical-promotion-2026-10-30",
+    ".codex/monk-scene-updater-2026-10-30",
+    ".codex/monk-scene-live-2026-10-30",
+    ".codex/native-sql-publication-and-live-2026-10-30",
+    ".codex/artifact-post-monk-scene-counted-2026-10-30"
+  ],
+  "remaining": "Actual complete/cancel scene rendering, accepted main/offhand equip/ability bar, full bags/swap denial and retry through original once-per-GO events, return actor/turn-in/flight/group/faction/abandon/reentry/full Monk chain remain client/open cases. A new-scene callback retry was tested; unlimited retry from the original GO graph was not added or certified. LiLi missing7/8, later100438missing10,3 other scene-only pickups,19 expandedLINK candidates/sharedLINK2/Stromkar recoil+continuous beams/middle39427/full36 remain OPEN. No new reset authorization."
+}
