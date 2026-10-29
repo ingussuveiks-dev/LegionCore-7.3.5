@@ -17,6 +17,7 @@ struct EffectRow { SpellVisualKitEffectEntry value; int32 kit; };
 struct AttachmentRow { SpellVisualKitModelAttachEntry value; int32 kit; };
 struct MissileRow { SpellVisualMissileEntry value; uint16 set; };
 struct NativeModelFileRow { uint8 flags; int32 id,resource; };
+struct NativeBeamRow { int32 id,beam;float sourceMinDistance,fixedLength;int32 flags;int16 sourceOffset,destOffset,sourceAttach,destAttach,sourcePositioner,destPositioner; };
 struct NameRow { int32 id;float radius,speed,scale,minScale,maxScale,alpha;uint32 flags;int32 generic,texture;uint8 type;int32 model;uint32 ribbon;int32 dissolve; };
 #pragma pack(pop)
 int main(int argc,char**argv)
@@ -36,8 +37,8 @@ int main(int argc,char**argv)
     DB2Storage<GameObjectDisplayInfoEntry> objects("GameObjectDisplayInfo.db2",GameobjectDisplayInfoLoadInfo::Instance());
     if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0)||!visuals.Load(argv[1],0)||!animations.Load(argv[1],0)||!objects.Load(argv[1],0))return 4;
     spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();durations.LoadFromDB();visuals.LoadFromDB();animations.LoadFromDB();objects.LoadFromDB();
-    std::set<uint32> selected{201031,201032,34429,200984,204394,204356,202925,202981,202014,206895,204641,204771,206357,206360,206361,206390};
-    for(auto spell:spells){std::string name=spell->Name->Str[0];std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});if(name.find("tentacl")!=std::string::npos||name.find("tendril")!=std::string::npos||name.find("blocker")!=std::string::npos)selected.insert(spell->ID);}
+    std::set<uint32> selected{201031,201032,34429,200984,204394,204356,202925,202981,202014,206895,204641,204771,206357,206360,206361,206390,203037,207244,204595,204743,215690,63048,201904,207454,202015,206429,206455};
+    for(auto spell:spells){std::string name=spell->Name->Str[0];std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});if(name.find("tentacl")!=std::string::npos||name.find("tendril")!=std::string::npos||name.find("blocker")!=std::string::npos||name.find("shadow channel")!=std::string::npos||(spell->ID>=201000&&spell->ID<=201050))selected.insert(spell->ID);}
     for(uint32 id:selected){auto row=spells.LookupEntry(id);if(!row)return 5;std::cout<<"SPELL\t"<<id<<'\t'<<row->Name->Str[0]<<'\n';}
     for(auto e:effects)if(!e->DifficultyID&&selected.count(e->SpellID))std::cout<<"EFFECT\t"<<e->SpellID<<'\t'<<e->EffectIndex<<'\t'<<e->Effect<<'\t'<<e->EffectAura<<'\t'<<e->EffectMiscValue[0]<<'\t'<<e->EffectTriggerSpell<<'\t'<<e->ImplicitTarget[0]<<'\t'<<e->ImplicitTarget[1]<<'\n';
     for(auto m:misc)if(!m->DifficultyID&&selected.count(m->SpellID)){auto d=durations.LookupEntry(m->DurationIndex);std::cout<<"MISC\t"<<m->SpellID<<'\t'<<(d?d->Duration:0);for(auto a:m->Attributes)std::cout<<'\t'<<uint32(a);std::cout<<'\n';}
@@ -67,6 +68,18 @@ int main(int argc,char**argv)
     if(sizeof(EventRow)!=fullEvents.Meta->GetRecordSize()||sizeof(EffectRow)!=fullEffects.Meta->GetRecordSize()||sizeof(AttachmentRow)!=fullAttachments.Meta->GetRecordSize()||!events.Load(argv[1],0)||!kitEffects.Load(argv[1],0)||!attachments.Load(argv[1],0))return 6;
     for(auto e:events)if(visualIds.count(e->visual)){kits.insert(e->value.SpellVisualKitID);std::cout<<"EVENT\t"<<e->visual<<'\t'<<e->value.StartEvent<<'\t'<<e->value.EndEvent<<'\t'<<e->value.SpellVisualKitID<<'\n';}
     for(auto e:kitEffects)if(kits.count(e->kit)){std::cout<<"KIT\t"<<e->kit<<'\t'<<e->value.EffectType<<'\t'<<e->value.Effect<<'\n';if(e->value.EffectType==6){auto a=animations.LookupEntry(e->value.Effect);if(a)std::cout<<"ANIMATION\t"<<a->ID<<'\t'<<a->InitialAnimID<<'\t'<<a->LoopAnimID<<'\t'<<a->AnimKitID<<'\n';}}
+    // The disabled production store has newer int32 members where26972 uses
+    // six shorts. Read matching packed data rather than changing runtime data.
+    DB2FieldMeta beamFields[]={{true,FT_INT,"ID"},{true,FT_INT,"BeamID"},{false,FT_FLOAT,"SourceMinDistance"},{false,FT_FLOAT,"FixedLength"},{true,FT_INT,"Flags"},{true,FT_SHORT,"SourceOffset"},{true,FT_SHORT,"DestOffset"},{true,FT_SHORT,"SourceAttachID"},{true,FT_SHORT,"DestAttachID"},{true,FT_SHORT,"SourcePositionerID"},{true,FT_SHORT,"DestPositionerID"}};
+    DB2LoadInfo beamInfo(beamFields,std::size(beamFields),BeamEffectMeta::Instance(),HOTFIX_SEL_BEAM_EFFECT);
+    DB2Storage<NativeBeamRow> beams("BeamEffect.db2",&beamInfo);
+    if(sizeof(NativeBeamRow)!=beamInfo.Meta->GetRecordSize()||!beams.Load(argv[1],0))return 16;beams.LoadFromDB();
+    for(auto k:kitEffects)if(kits.count(k->kit)&&k->value.EffectType==13)if(auto b=beams.LookupEntry(k->value.Effect))
+        std::cout<<"BEAM_REFERENCE\t"<<k->kit<<'\t'<<k->value.EffectType<<'\t'<<b->id<<'\t'<<b->beam<<'\t'<<b->flags<<'\t'<<b->sourceAttach<<'\t'<<b->destAttach<<'\t'<<b->sourceMinDistance<<'\t'<<b->fixedLength<<'\n';
+    DB2Storage<DissolveEffectEntry> dissolves("DissolveEffect.db2",DissolveEffectLoadInfo::Instance());
+    if(!dissolves.Load(argv[1],0))return 17;dissolves.LoadFromDB();
+    for(auto k:kitEffects)if(kits.count(k->kit)&&k->value.EffectType==11)if(auto d=dissolves.LookupEntry(k->value.Effect))
+        std::cout<<"DISSOLVE\t"<<k->kit<<'\t'<<d->ID<<'\t'<<d->Ramp<<'\t'<<d->StartValue<<'\t'<<d->EndValue<<'\t'<<d->FadeInTime<<'\t'<<d->FadeOutTime<<'\t'<<d->Duration<<'\t'<<d->Scale<<'\t'<<d->CurveID<<'\n';
     DB2FieldMeta nameFields[]={{true,FT_INT,"ID"},{false,FT_FLOAT,"EffectRadius"},{false,FT_FLOAT,"BaseMissileSpeed"},{false,FT_FLOAT,"Scale"},{false,FT_FLOAT,"MinAllowedScale"},{false,FT_FLOAT,"MaxAllowedScale"},{false,FT_FLOAT,"Alpha"},{false,FT_INT,"Flags"},{true,FT_INT,"GenericID"},{true,FT_INT,"TextureFileDataID"},{false,FT_BYTE,"Type"},{true,FT_INT,"ModelFileDataID"},{false,FT_INT,"RibbonQualityID"},{true,FT_INT,"DissolveEffectID"}};
     DB2LoadInfo nameInfo(nameFields,std::size(nameFields),SpellVisualEffectNameMeta::Instance(),HOTFIX_SEL_SPELL_VISUAL_EFFECT_NAME);
     DB2Storage<NameRow> names("SpellVisualEffectName.db2",&nameInfo);
