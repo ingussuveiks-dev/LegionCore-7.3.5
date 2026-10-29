@@ -47,7 +47,7 @@ int main(int argc, char** argv)
         !steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0)) return 4;
     spells.LoadFromDB(); effects.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
-    std::set<uint32> selected{199963,199960,208779,207560,207561,207562,207582,214714,214715};
+    std::set<uint32> selected{199963,199960,208779,207560,207561,207562,207582,214714,214715,208720,208724};
     for (auto id : selected)
     {
         auto spell = spells.LookupEntry(id);

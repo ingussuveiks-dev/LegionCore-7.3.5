@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-29",
+  "status": "OPEN source-traced next independent Guardian repair; no production change or claim of corrected gameplay",
+  "observed_graph": "10174204 summons101403 and101390.101403 timed list eventually sends1/1 to101390; boss event0 TALK ->LINK1 starts route101390. WP2 event2 casts208720 ->LINK3 TALK1/5000ms ->LINK4 removes unit flags768 ->invalid LINK10. Event10 is UPDATE_IC0/nonrepeatable1, sends1/1 to closest105331 with native default100yd search (target range0).105331 DATA_SET1/1 despawns itself. TEXT_OVER1/101390 independently starts closest-player50 attack. Death7 emits48146, LINK8 summons105331 and LINK9 creates actual loot248853.",
+  "concrete_actors": "Static105331 spawn11296141/map1536/phase6202 at -12174.6,-13118.8,333.618. WP2 at -12177.7,-13118.2,329.959. Death105331 at same static visual pose; separate248853 chest Z329.647.105331 is Claws of Ursoc with no interaction npcflag and existing DATA_SET despawn, not the actual loot object. These are native actor/waypoint records, not client model/pose evidence.",
+  "native_catalog": "Extended existing DruidAcquisitionCatalog with208720/208724. Actual26972 typed DB2/read-only hotfix reader:208720 Bear Form, effect6/aura56 TRANSFORM/misc105326/self1.208724 Crushing Thrash has effect2 damage and effect6/aura3 periodic2000. Do not label208720 as an equip-item cast merely because the dialogue mentions claws.",
+  "why_not_blanket_link_conversion": "The invalid edge points to an independently executable IC event. Its current timing can remove the static visual on combat, while a LINK conversion would remove it after accepted transformation before the5000ms text timer. The complete intended reveal/cleanup, duplicate static/death copies and map/phase lifetime need evidence. Native SMART_ACTION_CAST also returns before LINK after a genuine rejected cast; RecalcTimer alone does not prove retry for WP_REACHED because UpdateTimer only directly dispatches timed event types. This is a source-traced failure hazard, not a reproduced live/client cast failure. No unconditional LINK conversion, extra item, early credit or global SmartAI change made.",
+  "checks": "Native extended reader compiled and executed separately under Invoke-WithRuntimeDiagnostics. Exit0; canonical and own crash hashes/log offsets before/after show no new/changed crash, DBErrors or warning/error/assertion. No server launched/stopped; canonical EXEs unchanged235348EE/45E7FC66. Existing3915-byte sharedLINK2 history unresolved/untouched. No character/item/progress edits.",
+  "evidence": {
+    "graph": ".codex/malithar-transition-graph.json",
+    "graph_sha256": "2e9065c474ff4cc1027a7fc7ffdbd997b9ac2cb9d5043c11cad58872c245f2c4",
+    "catalog": ".codex/malithar-transition-catalog.tsv",
+    "catalog_sha256": "058b7263ef12573ef8e8a54cfad77ec838a0628f64da253eb44d548a7dcfd533",
+    "diagnostics": ".codex/malithar-transition-catalog-2026-10-29",
+    "source_hashes": {
+      "src/server/game/AI/SmartScripts/SmartScript.cpp": "51259599e9768b883b8a603e90bdcc9d24cf54ef5529beb8272ff9d13bbb4287",
+      "tools/research/DruidAcquisitionCatalog.cpp": "a6edc7a35e268f23337018e166ea991085b261924fd29d162ae8d390a9319210"
+    }
+  },
+  "next": "Trace and regress actual path/WP2 transformation acknowledgement/failure/missing visual, native text-over attack, post-scaling player/pet/guardian death/group48146, exactly-once real chest/new visual, reset/abandon/re-entry and shared NPC paths before implementing the graph/lifecycle repair. Continue separate recoil/ritual/sharedLINK2 work; full Guardian/all36 client traversal remains OPEN."
+}
