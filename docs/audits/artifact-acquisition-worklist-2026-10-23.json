@@ -4676,7 +4676,7 @@
       "weapon": "G'Hanir, the Mother Tree",
       "item": 128306,
       "start": 40649,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "partial:248499/128306 native loot link and41689/1599/1061 stage5 admission repaired; owned root/gossip5..6 guarded. Full TEMP/17 refusals/native/ASAN checks,31 producer/GO actions retained. Native3600s chest already map-owned; no producer flag change. Original207560->207561/2000ms->207562 retained. See restoration-artifact-loot-2026-10-29.json; later combat/scene/equip/retry/client remain OPEN.",
       "quests": [
         {
           "id": 40649,
@@ -4737,7 +4737,7 @@
         {
           "entry": 248499,
           "type": 3,
-          "loot_link": 0,
+          "loot_link": 248499,
           "expected_loot_entries": [
             248499
           ],

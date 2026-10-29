@@ -186,7 +186,8 @@ int main(int argc, char** argv) {
     }
     bool feral = argc == 4 && std::string(argv[2]).find("feral-") == 0;
     bool feralCast = feral && std::string(argv[2]) == "feral-cast";
-    bool guardian = feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
+    bool restoration = argc == 4 && std::string(argv[2]).find("restoration-") == 0;
+    bool guardian = restoration || feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
     bool guardianRoot = guardian && !feralCast && std::string(argv[2]).find("-loot") == std::string::npos;
     bool guardianGossip = guardian && std::string(argv[2]).find("-gossip") != std::string::npos;
     if (guardian) {
@@ -197,6 +198,10 @@ int main(int argc, char** argv) {
             expectedQuest = 42430; expectedMap = 1612; expectedScenario = 1108; firstStage = 6;
             lastStage = guardianRoot ? 7 : 6; expectedItem = 128860; eventEntry = 250386; scenarioManager = {};
             if (feralCast) { playersOwnArtifactByDefault = true; lastStage = 7; }
+        }
+        if (restoration) {
+            expectedQuest = 41689; expectedMap = 1599; expectedScenario = 1061; firstStage = 5;
+            lastStage = guardianRoot ? 6 : 5; expectedItem = 128306; eventEntry = 248499; scenarioManager = {};
         }
         castAdmission = guardianRoot;
         GameObjectTemplate chest;
