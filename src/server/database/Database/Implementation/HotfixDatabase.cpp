@@ -2256,7 +2256,7 @@ void HotfixDatabaseConnection::DoPrepareStatements()
     // SpellVisualKitModelAttach.db2
     PrepareStatement(HOTFIX_SEL_SPELL_VISUAL_KIT_MODEL_ATTACH, "SELECT Offset1, Offset2, Offset3, OffsetVariation1, OffsetVariation2, "
         "OffsetVariation3, ID, SpellVisualEffectNameID, AttachmentID, Flags, PositionerID, Yaw, Pitch, Roll, YawVariation, PitchVariation, "
-        "RollVariation, Scale, ScaleVariation, StartAnimID, AnimID, EndAnimID, AnimKitID, LowDefModelAttachID, StartDelay"
+        "RollVariation, Scale, ScaleVariation, StartAnimID, AnimID, EndAnimID, AnimKitID, LowDefModelAttachID, StartDelay, SpellVisualKitID"
         " FROM spell_visual_kit_model_attach ORDER BY ID DESC", CONNECTION_SYNCH);
 
     // SpellVisualMissile.db2

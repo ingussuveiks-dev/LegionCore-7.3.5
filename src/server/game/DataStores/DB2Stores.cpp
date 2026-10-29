@@ -17,6 +17,7 @@
 
 #include <boost/regex.hpp>
 #include "DB2HotfixGenerator.h"
+#include "StromkarBladeVisual.h"
 #include "DB2Stores.h"
 #include "Common.h"
 #include "DB2LoadInfo.h"
@@ -541,7 +542,7 @@ DB2Storage<SpellVisualEventEntry>               sSpellVisualEventStore("SpellVis
 DB2Storage<SpellVisualKitEntry>                 sSpellVisualKitStore("SpellVisualKit.db2", SpellVisualKitLoadInfo::Instance());
 DB2Storage<SpellVisualKitAreaModelEntry>        sSpellVisualKitAreaModelStore("SpellVisualKitAreaModel.db2", SpellVisualKitAreaModelLoadInfo::Instance());
 DB2Storage<SpellVisualKitEffectEntry>           sSpellVisualKitEffectStore("SpellVisualKitEffect.db2", SpellVisualKitEffectLoadInfo::Instance());
-DB2Storage<SpellVisualKitModelAttachEntry>      sSpellVisualKitModelAttachStore("SpellVisualKitModelAttach.db2", SpellVisualKitModelAttachLoadInfo::Instance());
+DB2Storage<StromkarBladeVisual::Attachment>    sSpellVisualKitModelAttachStore("SpellVisualKitModelAttach.db2", StromkarBladeVisual::LoadInfo());
 DB2Storage<SpellVisualMissileEntry>             sSpellVisualMissileStore("SpellVisualMissile.db2", SpellVisualMissileLoadInfo::Instance());
 DB2Storage<SpellXDescriptionVariablesEntry>     sSpellXDescriptionVariablesStore("SpellXDescriptionVariables.db2", SpellXDescriptionVariablesLoadInfo::Instance());
 DB2Storage<SpellXSpellVisualEntry>              sSpellXSpellVisualStore("SpellXSpellVisual.db2", SpellXSpellVisualLoadInfo::Instance());
@@ -1483,7 +1484,7 @@ uint32 DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
     //LOAD_DB2(sSpellVisualKitStore);
     //LOAD_DB2(sSpellVisualKitAreaModelStore);
     //LOAD_DB2(sSpellVisualKitEffectStore);
-    //LOAD_DB2(sSpellVisualKitModelAttachStore);
+    LOAD_DB2(sSpellVisualKitModelAttachStore);
     //LOAD_DB2(sSpellVisualMissileStore);
     //LOAD_DB2(sSpellXDescriptionVariablesStore);
     LOAD_DB2(sSpellXSpellVisualStore);
@@ -2419,6 +2420,9 @@ void DB2Manager::LoadingExtraHotfixData()
             }, true);
         }
     }
+    // Append after existing generated notices to preserve their stable IDs.
+    if (!StromkarBladeVisual::Apply(sSpellVisualKitModelAttachStore))
+        TC_LOG_ERROR("sql.sql", "Stromkar embedded blade attachment318611 does not match native64756; scale correction not applied");
 }
 
 void DB2Manager::LoadHotfixData()
