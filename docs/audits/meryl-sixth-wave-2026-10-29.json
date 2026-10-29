@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-29",
+  "status": "Mage1122 sixth wave reference repaired, SQL18 RELEASED; actual client/scenario combat unverified",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "107691 source0 event1 action87 selects six IDs10809700/01/02/03/04/06.06 has no source9 rows; SetScript9 clears prior list and returns without a wave. Existing05 is an otherwise unselected single107744 Legion Jailer summon in the same wave family at its stored original position. NativeSetScript9 enables the first iterator even when event id4, so05 is valid; it is not an invalid index requiring four invented rows.",
+  "change": "Only107691 event1 action_param6 changes10809706->10809705. Six distinct choices/relative probabilities remain. Original23 summon rows across six wave variants, positions/type8/zero-duration, actors/AI,10s first/20s repeat,1122stage3 gate,1122stage4 visual chain and shared hub appearances retained. No guessed summon/list cloning or direct credit.",
+  "evidence": {
+    "local": "Live full caller/23 summon records, source22 stage gates, actor templates/AI, four static107691 spawns (hub0/phase6576 and1616/phase6696). Source22 requires actual instance1122/stage3 for wave, stage4 for VFX; other hub/shared1221 cannot pass. Read-only1121 local donor SQL scan finds179 selected rows in Titans05, including same06 typo and preserved05 payload. Local newer TrinityCore exact-ID search supplies modern database/text references, no compatible alternative imported.",
+    "inference": "Selecting existing unreferenced05 is a data-reference repair inferred from the six-member native local wave family and retained original Jailer row. It is not an externally verified original Blizzard wave probability/spawn recording. No new footage reviewed.",
+    "native26972": "1122 stage2 root48463 leaves48464/48465 events51384/51386; stage3 root48466 leaves48467/48468 events51389/51390; stage4 root48469 leaf48470 event51391.214699 arrival explosion->214701,214695 portal,214729 native conversation2406 remain unchanged.",
+    "related_core": "Requires bounded action87 RNG already canonical from c311371f5; this SQL does not replace that memory-safety fix."
+  },
+  "checks": [
+    "Full-schema TEMP four-table replay/idempotence and exact field-by-field diff: only sixth caller field changes, all six selected lists now exist;05 retains lone first rowid4/107744. Twelve original/applied custom-state refusals (choices/timer/VFX/list position/type/duration/custom06/stage/shared actor/JailerAI/scenario map/applied sixth). Actual updater RELEASED LF SHA1/full4table live equality pass.",
+    "MSVC ASan actual SetScript9 + production target8 summon branch + actual Condition44. Old06 empty counterfactual vs six repaired lists/23 original spawn requests; all first iterators,05id4 enabled, native >1 ALWAYS mode, repeated replacement, nested self overwrite rejection, clear0, null invoker/failed summon and original coords/type/duration. Actual1122/stage3 predicate excludes ordinary map/no instance/absent scenario/other scenario/stages. InitTimer/spawn endpoints are controlled: no timer-tick/client/full combat certification. Existing action87 extracted ASan192-case/linked guard coverage applies unchanged.",
+    "Matching26972 typed reader/hotfix read-only confirms stage metadata/native VFX and conversation. Initial Type byte printed as character in exploratory STEP_CRITERION metadata; corrected reader to unsigned, rerun produces92. This was a probe-format issue, not server failure.",
+    "Canonical ready/shutdown0/exit0/stderr0/newDBErrors0; fresh all36 audit36/149/0 automated findings/same3 bounded Monk edges. Expanded25-map audit now1947 owner contexts/83 timed contexts,29 primary review edges and zero missing lists (previous1). New525 nativeSmart includes reached Jailer; other counts133CPP/1289nonSmart unchanged."
+  ],
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_29_18_meryl_sixth_wave.sql",
+    "lf_sha1": "24172882a2bed8d84342af62f20dc6ae083c8db9",
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 11692,
+    "world_sha256": "E61B28BEE9EF3510508D1DE462B0684B884807E666FF58FD4EF0CF7BA47094E2",
+    "bnet_sha256": "ABAEC13B1C3D35D2582868AC0691534B776D21DE8188253B176EEFA82036174D",
+    "result": "Fresh absent-server check, current matching action87 code ready before SQL promotion; owned11692 ready/graceful0, no process left/protected config/cert unchanged. No user/unknown process stopped."
+  },
+  "diagnostics": "All TEMP/native/catalog/updater/live/audit pre/post canonical/own crash hashes/log offsets/times/exit/stdout/stderr inspected. No new/changed crash, appended server diagnostics or DBErrors. Existing3915-byte shared101430/103151 missingLINK2 mixed log retained; Crashes empty. No character/item/progress reset or runtime/credential/log commit. No newly resolved runtime crash/log to archive for this SQL; core counterfactual archive remains c311371f5.",
+  "fixture_counts": {
+    "smart_scripts": 51,
+    "conditions": 3,
+    "creature_template": 6,
+    "scenario_data": 2
+  },
+  "local_evidence": [
+    ".codex/meryl-wave-data-2026-10-29",
+    ".codex/meryl-wave-native-catalog-2026-10-29",
+    ".codex/meryl-wave-updater-2026-10-29",
+    ".codex/meryl-wave-live-2026-10-29",
+    ".codex/artifact-post-meryl-2026-10-29"
+  ],
+  "remaining": "Client actual sixth wave, presentation/pressure/timer scheduling, failed-spawn recovery, actor cleanup/reentry, pet/group combat and full Mage admission/acquisition are not certified by this bounded reference fix. Existing enemies native nearest-player attack AI and actual progression producers unchanged. Full36,29 broader primary review edges/known shared2/Monk3, ritual/recoil visuals remain OPEN."
+}

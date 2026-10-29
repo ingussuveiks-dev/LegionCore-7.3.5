@@ -5034,5 +5034,12 @@
     "scope": "25 static candidate maps +direct route actors;1946 owner contexts/82 timed owner contexts.29 primary edges/1 missinglist remain REVIEW candidates, not all proven bugs;524 nativeSmart/133 C++delegationreview/1289nonSmart contexts. Known bounded3 Monk edges retained; shared2 now visible.",
     "checks": "Native10-case LINK differential plus owner/GUID/recipient traversal fixture; no new diagnostics, no live mutation.",
     "next": "Trace107691 missing10809706 (existing10809705) and101539 invalid LINK35 before focused safe repair. Source9 links use recipient mEvents; do not change legitimate combat event to61 or delete unknown links to hide errors."
+  },
+  "meryl_sixth_wave": {
+    "audit": "docs/audits/meryl-sixth-wave-2026-10-29.json",
+    "status": "SQL18 RELEASED, only caller107691 event1 sixth06->existing05/LegionJailer. Native actualSetScript9 firstid4/summon branch/stage1122 guards,12 TEMP refusals/live4table/catalog/updater pass. No client certification.",
+    "diagnostics": "Owned11692 graceful0/no new crash/log diagnostics; mixedLINK2 still3915, no character edits, EXEsE61B28BE/ABAEC13B unchanged.",
+    "map_audit": "Fresh25map1947owner/83timed,29 primary review edges/zero missinglists. Earlier fe34297c7 inventory remains historical; new05 now reached. Bounded36/149/0 automated/3Monk unchanged.",
+    "next": "Continue29 primary edge intent review. Campfire97168/97436 event3 is independentUPDATE60 gated1038stage2/nearby boss: do not mechanically convert toLINK61 before tracing actor sendData/native stage transition. Baron101539 event35 independentTEXT_OVER12 can retain failed-WP retry; converting toLINK changes retry because parent34 runOnce consumed. Full sequence needed."
   }
 }
