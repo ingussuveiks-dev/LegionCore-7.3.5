@@ -172,5 +172,14 @@ int main(){
   NativeGuideRequest(&untouched);assert(!untouched.barrierGuideRequested&&!untouched.barrierGuideStarted);
   assert(actor.flags==0x400&&!object.flags);uint32 amount=200000;untouched.OnCreatureDamageTaken(&actor,&pet,amount);assert(amount==200000);
  }
- std::cout<<"PASS: complete production instance lifecycle; delayed Scenario construction, native GO Use admission, every stage/actor, scaled barrier/finale guards, native flags, removal/re-entry and shared-scenario isolation\n";
+ Scenario unholy;unholy.id=1026;manager.progress=&unholy;InstanceMap unholyMap;instance_dark_riders_artifact::Instance unholyScript(&unholyMap);
+ Unit summonedGuardian;
+ for(uint32 step:{4u,5u})for(Unit* attacker:{static_cast<Unit*>(&player),&pet,&summonedGuardian}){
+  unholy.step=step;Creature ariden{102532,0,7};unholyScript.OnCreatureCreate(&ariden);
+  uint32 amount=999;unholyScript.OnCreatureDamageTaken(&ariden,attacker,amount);assert(amount==999&&ariden.hp==100000);
+  amount=1000;unholyScript.OnCreatureDamageTaken(&ariden,attacker,amount);assert(!amount&&ariden.hp==1&&ariden.alive);
+  amount=200000;unholyScript.OnCreatureDamageTaken(&ariden,attacker,amount);assert(!amount&&ariden.hp==1);
+ }
+ for(uint32 step:{0u,1u,2u,3u,6u}){unholy.step=step;Creature ariden{102532,0,7};uint32 amount=2000;unholyScript.OnCreatureDamageTaken(&ariden,&pet,amount);assert(amount==2000&&ariden.hp==100000);}
+ std::cout<<"PASS: complete production instance lifecycle; delayed Scenario construction, native GO Use admission, every stage/actor, scaled barrier/finale guards, native flags, removal/re-entry/shared-scenario isolation and actual Apocalypse1026/4..5 final-damage callback for player/pet/guardian\n";
 }

@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-29",
+  "status": "Apocalypse final-damage hold repaired, compiled/promoted canonical Release; actual client/full encounter OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Native SmartAI::DamageTaken compares raw damage before Unit divides by victim GetHealthMultiplierForTarget. A raw2 hit below target-relative1000 health bypasses old1HP guard but scales to~2000 and passes native death check. Existing shared instance protects only Warlock988 actors100344/100850. Apocalypse102532 has the same required1pct dialogue/drop handoff but no final-scaled guard, so a scaled one-shot/absent AI can bypass native199756/199757/event48076/Laith102533/victory47989.",
+  "change": "Add ProtectUnholyFinale to actual instance OnCreatureDamageTaken after existing Warlock policy. Exact scenario1026, actor102532, steps4/5 only (native AGGRO47988 can advance4->5 before first blow). Actual nonzero final damage>=GetHealth(attacker) is cancelled, baseHealth held at1 once. No cast/criteria/group/item/quest completion or timer/teleport API; native SmartAI1pct and real Laith chain remain authoritative. Alive/null/zero/nonlethal/other actor/stage/scenario refuse; existing Warlock helper unchanged.",
+  "source_evidence": {
+    "native": "Matching26972 AridenDialogueCatalog/shared47988 stage4 and47989 stage5; actual phase41/entry7/5639 explicitly Unholy DK Scenario;102532 static369215/1533/5639. Other phases5719 Balance,5761 Affliction retain their scope. Current18-row Ariden graph includes1pct41062->199756 target101361->Talk5, DATA1/1Talk6->TEXT_OVER6/47989->LaithDATA2/2->nativeDIE.",
+    "drop": "199756 force-casts199757 SendEvent48076; existing event_scripts48076 command10 summons102533 for300000ms at original coordinates. Laith JUST_SUMMONED0/7000ms thenTEXT_OVER0 sendsDATA1/1 to102532; following native dialogue/GO246699 unchanged. No spell/event_script payload altered by this fix.",
+    "local": "Actual Unit::DealDamage cached target-relative health/death check and complete post-scaling instance/active+disabled-AI hook block, old SmartAI raw hook, shared instance/helper and previous Ulthalesh native regressions. Matching local data/code resolve this damage defect; no modern core/gameplay claim imported."
+  },
+  "checks": [
+    "Pinned9731fc183 old actual helper + actual native SmartAI and complete Unit post-scaling block reproduce controlled death-model counterfactual from raw2/~2000scaled; marked EXPECTED FAIL, no real server crash. Repaired MSVC ASan native same block: player/pet/guardian identities, stages4/5, multipliers0.001/0.01/1/100, raw200000 within uint32 conversion range, repeatedonehit, AI-disabled/missing, nonlethal, zero-damage/zero target-health boundary, other actor/scenario/stage/null/dead/no instance. Health/scale/AI services are controlled host endpoints; no progression service exists.",
+    "Actual full instance lifecycle regression verifies wired OnCreatureDamageTaken,999 nonlethal/1000 lethal boundary and repeated102532 holds for player/pet/guardian on4/5, earlier/later refusal, all prior Warlock stage/GO/guide/follower/arrival/native SQL/26972 regressions. Existing Ulthalesh raw/final-scaling guard tests pass.",
+    "Original-path scripts.lib rebuild and original final-link dependencies; staged/canonical PE-map timestamp match, real GetInstanceScript factory selects Instance vtable, native Unit callback slot0x120 reaches selected damage callback, which calls existing+new policy with actual scenario/currentstep. PE follows exact1026/102532/4..5/target-relativehealth/nonlethal refusal/zero-damage refusal/damage-pointer zero store/nativeSetHealth1 and absence of direct progression.",
+    "Final canonical Scepter/native linked recovery, action87 RNG, Valzuun and retained Stromkar terminal/AFKreturn/blade-hotfix/Monk kite PE pass. Final owned21208 ready/shutdown0/exit0/stderr0/newDBErrors0/protected configuration hashes unchanged. SQL18/19 already released; no new migration."
+  ],
+  "development": [
+    "First lifecycle fixture used guardian name already held by a Creature actor; compiler refused. Renamed new Unit to summonedGuardian and reran complete passing regression; failed evidence retained.",
+    "First PE checker assumed indirect call[slot], but MSVC loads slot0x120 into r10 then callr10. Corrected by following actual GetInstanceScript result/slot-loaded register.",
+    "Initial buildDD5050FC deployed/tested successfully. Added explicit nonzero-damage refusal for zero-hit/zero-target-health boundary and rebuilt finalCD41E846. Register allocation changed; checker still hardcoded old[r14]/esi zero-store and falsely failed. A sequential tool batch continued EXE promotion before that exit1 was inspected. No server started with final version until code inspection and pointer-flow checker correction produced canonicalPASS; then final ready/graceful0 verified. This ordering mistake is retained explicitly, not counted as an earlier passing check.",
+    "Native host rawAIoff test originally used unnecessarily large raw20million, which could exceed uint32 after0.001 scaling. Refined to200000 across all cases (at most200million final); reran passing host. Compiler PDB initially defaulted to repository root; moved owned file into ignored runtime and added explicit /Fd plus nonincremental linker, reran clean-output host. Existing native-excerpt unused/float-narrowing and legacy fixture/compiler warnings remain visible; no warning/log suppression."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "hashes": {
+      "bnetserver.exe": "F23563AB91F5B8F4DCB5F22FFBA902C37E11AA785B38D66CBD9147858B8A91A6",
+      "worldserver.exe": "CD41E846D57F9FE94A7036EA61AE0B08AF3AFA85A138E41BDC38C1265C45B99A",
+      "worldserver.map": "EEBB6EC9C59A84CA85D617C31D9D83009E970F8EDC04B821D64949DFDD97AC8A",
+      "bnetserver.map": "03358C368A12A1605040223C1D5961E70A4A046F5059795163A35E8B8F28C656"
+    },
+    "manifest": ".codex/apocalypse-finale-final-deployment.json",
+    "backup": ".codex/release-before-apocalypse-finale-final-2026-10-29",
+    "owned_intermediate_pid": 30428,
+    "owned_final_pid": 21208,
+    "result": "Both absent before each promotion; no user/unknown server stopped. Intermediate and final owned servers both graceful0; no process left. Original game/scripts/shared/common LIBs, only EXE/maps promoted with hash backups; configuration/certificates/keys/DLL/data preserved."
+  },
+  "diagnostics": {
+    "result": "Every native/TEMP/catalog/build/link/PE/deploy/startup before/after canonical+own crash hashes/log lengths/timestamps and exits/stdout/stderr inspected. Final no new/changed crash, appended warning/error/assertion/DBErrors. Canonical Crashes empty; mixed3915-byte shared101430/103151 missingLINK2 retained unmodified. No character/item/progress reset.",
+    "counterfactual_archive": "build-extractors/bin/Release/fixed/apocalypse-finale-2026-10-29",
+    "archive_sha256": {
+      "check-output.log": "34FF8EC58D7CEEEC990EBB08D29818F1A7EEFEEAF7E4C8FDA4F92D70A0872438",
+      "diagnostics-before.json": "949120B8BE2F32162273F9ECF52866E1E32C52EFD7FC9205F0EE6B7D1AFB4393",
+      "diagnostics-after.json": "1927A78BAEA521BAA8712AF254EE40CB123DA51AFCA852372A4CED1F64808ADD",
+      "ProtectFinale-pinned-9731fc183.inc": "7DEFA432A4DF7813C02B4FC2DBA76DEC9086A7EDD15B71F364956BD79667CC36"
+    },
+    "scope": "Only expected old death-model host diagnostic copied/hash-verified; no actual server crash produced or active/mixed log cleared."
+  },
+  "local_evidence": [
+    ".codex/apocalypse-finale-damage-regression-2026-10-29",
+    ".codex/apocalypse-finale-lifecycle-fixed-2026-10-29",
+    ".codex/apocalypse-finale-final-harness-2026-10-29",
+    ".codex/apocalypse-finale-canonical-final-verified-2026-10-29",
+    ".codex/apocalypse-finale-retained-pe-final-2026-10-29",
+    ".codex/apocalypse-finale-startup-final-2026-10-29"
+  ],
+  "all36": "C++-only damage repair, no structural row change. Latest SQL19 snapshot remains36 routes/149 pairs/0 automated loot/admission findings/3 bounded Monk edges; expanded25map1947owner/83timed contexts/28 primary review candidates/zero missinglists. Full36 and client tests remain OPEN.",
+  "remaining": "Actual scaled one-hit fight,1pct timing, Laith delivery/drop/pickup/exit, failed-cast/summon recovery, death/retry/reentry and legitimate player/pet/guardian/group progression require actual encounter/client traversal. Policy retains actor for native code and gives no synthetic progress. All unknown shared2/Monk3/ritual beams/recoil visuals and remaining maps still require work."
+}

@@ -37,6 +37,25 @@ void ProtectFinale(Creature* creature,Unit* attacker,uint32& damage,uint32 scena
         }
     }
 }
+void ProtectUnholyFinale(Creature* creature,Unit* attacker,uint32& damage,uint32 scenario,uint32 step)
+{
+    if (!creature || !attacker || !damage || scenario != 1026 || (step != 4 && step != 5) ||
+        creature->GetEntry() != 102532 || !creature->IsAlive())
+        return;
+
+    // AGGRO47988 moves stage4 to5; the1% SmartAI cast must still summon
+    // Laith through native199756/199757/event48076 before victory47989.
+    // This instance hook runs after damage scaling and also works without AI.
+    if (damage >= creature->GetHealth(attacker))
+    {
+        damage = 0;
+        if (creature->GetHealth() > 1)
+        {
+            creature->SetHealth(1);
+            TC_LOG_INFO("scripts.ai", "Apocalypse: protected Ariden's native finale from a scaled killing blow");
+        }
+    }
+}
 }
 namespace DarkRidersArrival
 {
@@ -371,6 +390,8 @@ public:
                 return;
             }
             DarkRidersArtifact::ProtectFinale(creature,attacker,damage,scenario?scenario->GetScenarioId():0);
+            DarkRidersArtifact::ProtectUnholyFinale(creature,attacker,damage,
+                scenario?scenario->GetScenarioId():0,scenario?scenario->GetCurrentStep():0);
         }
     };
     InstanceScript* GetInstanceScript(InstanceMap* map) const override {return new Instance(map);}
