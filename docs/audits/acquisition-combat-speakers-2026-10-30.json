@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-30",
+  "status": "Initial Varedis and Ritual Ruination Allaris combat speakers repaired; World03 RELEASED; full encounters/client remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Varedis94836 health rows4/5/10 and Allaris110556 aggro5/health6/death7 use TALK VICTIM2. Native TALK selects a Creature victim as speaker; pets/guardians have none of these actors text groups, so actual CreatureTextMgr rejects the request. This is the same proven speaker-selection cause as Farthing/Balaadur/Mist Warder, scoped here to their actual acquisition encounters.",
+  "change": "Exactly6 target_type fields ->SELF1; every other complete script/text/condition/template/loot field preserved. No new credit, stage, cast, delay, repeat flag, death action or loot change. Unknown GO251878/4->LINK5 retained.",
+  "scope": "94836 is the initial1498/scenario900 Varedis, whose native45717 death criterion is900/3/root44331/leaf44332 and original chest251878 contains127829 Twinblades. It is distinct from later110-campaign109109, intentionally untouched. Allaris110556 is the summoned opponent in outdoor1220/phase7027/quest43254/98 Ritual Ruination after43153, not a synthetic Scenario; ordinary110556 kill objective remains native.",
+  "trace": "Varedis original aggroTALK0->202817, health75/50/25 lines1/2/3 and original repeatable flags retained. Death205/45717->own text8 by actual closestPlayer21->109978 summon->251878 GO3600s unchanged. Allaris native SetData supplies nullptr, so original intro row0 INVOKER7 already falls back to110556 correctly; there was no demonstrated intro stall. Preserve0/5000ms->TEXT_OVER0,110556->data2 to110533, and later data3->faction14. New fix is only combat groups1/2/4. Original Guldan timers/listening110581/normal kill110556/post-duel personal image/actual252054 loot/altar/escape unchanged.",
+  "validation": [
+    "Full6table TEMP replay/idempotence/exact6-field differential, all texts/conditions/templates/loot/actions unchanged;21 complete custom-state refusal variants including intro/timers/casts/native credits/chest/summons/knownLINK/AI/loot leave every row unchanged under --force. Full live6table readback and real updater RELEASED/LF-SHA1 pass.",
+    "MSVC ASan compiles actual native event/HEALTH/DATA/TEXT_OVER/TALK/targets/CreatureTextMgr entry-group admission/timer/LINK. Original pet silence paired with own-speaker repair across player/pet/guardian/NPC/null victim. Varedis75/50/25 and repeated polls deliberately retain original repeatability; death four requests once. Allaris51/50 threshold, once health/death and one-hit without poll retained. Native null-invoker intro reaches real TEXT_OVER after5000+1ms and requests original data2/faction14. Cast/credit/summon/faction/data/chat packet endpoints controlled; no full native encounter or client proof.",
+    "Matching26972 nine BroadcastText payloads97083/97084/97085/97376/97107/117568/117582/117586/117588 and45717->900/3 confirmed. Existing native sounds unchanged.189916->scene1063/credit114515 plus201012 two-second periodic->201010 force-equip249/127829/225863 confirmed as next pickup research; effect249 equips an existing artifact, it is not proof of an item grant.",
+    "Retained Test-RitualRuination -VerifyReleaseBinary and Test-RitualRuinationData pass production six-step/recovery/direct-summon/loot/phase rules. Historical fixture C4244/C4458 warnings remain visible; no new production diagnostic. Owned13736 ready/graceful shutdown0/exit0/empty stderr/newDBErrors0/protected hashes unchanged."
+  ],
+  "development": "One new refusal variant initially tried SET251878.Data1=0, which was already0, so no custom state was created and the expected refusal was absent. Test threw Unexpected Acquisition combat speaker refusal at sql-18.stderr (empty). Corrected the fixture variant to the known252054 Data1 link; all21 then pass. The initial shared runtime-test data snapshots were overwritten on rerun; this audit retains that exact failure/cause/limitation, and final checks have unique outer snapshots. No production/server crash or error log resulted, no diagnostic suppressed. Treat the original Data1=0 finding separately, not a speaker fix.",
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_03_acquisition_combat_speakers.sql",
+    "lf_sha1": "ea99b099224a73a78dbe6a59ebcc4cb7dcff41fd",
+    "owned_pid": 13736,
+    "world_sha256": "7D382937DED53E107AA52237B9757508348945A85AEA2E52E1EE9B698C513451",
+    "bnet_sha256": "F20D25EEFE0BD1ACDF40CBFFB836E1D811425C8F6AD45195AEA414B78DC16167",
+    "result": "SQL only; EXEs unchanged. Fresh both-server absence before promotion/start; owned13736 launched/closed. No user/unknown server stopped, no character/item/quest reset."
+  },
+  "diagnostics": "All fixture/fingerprint/TEMP/native/catalog/shared/updater/live checks used before/after canonical+own crash/log snapshots; inspected exits/stdout/stderr/new server diagnostics. Final checks clean, no new/changed crash or appended DBErrors/server warning/error/assertion. Active Crashes empty. Mixed shared101430/103151 LINK2 DBErrors3915 bytes/UTC2026-10-29T13:29:05.1130661Z retained unchanged; no mixed log truncation or resolved runtime dump to archive.",
+  "evidence": [
+    ".codex/acquisition-combat-speakers-fixture-2026-10-30",
+    ".codex/acquisition-combat-speakers-fingerprints-2026-10-30",
+    ".codex/acquisition-combat-speakers-data-final-2026-10-30",
+    ".codex/acquisition-combat-speakers-native-2026-10-30",
+    ".codex/acquisition-combat-speakers-shared-2026-10-30",
+    ".codex/acquisition-combat-speakers-updater-2026-10-30",
+    ".codex/acquisition-combat-speakers-live-2026-10-30"
+  ],
+  "remaining": "Actual speech/voice/threshold timing/client combat/full quests/group/faction/reentry still OPEN. Original repeated Varedis health speech is preserved, not certified as retail cadence. Twinblades251878 Data1=0 and unknownLINK5 match earlier artifact-pickup-followup-2026-10-23.json and are next full pickup investigation; do not infer no item grant from Data1 alone. Remaining map candidates/sharedLINK2/Stromkar beam-recoil/middle39427/full36 unfinished."
+}

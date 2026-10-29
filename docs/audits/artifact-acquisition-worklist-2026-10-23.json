@@ -5115,5 +5115,11 @@
     "status": "World30/02 RELEASED;100207 health5/death4 TALK->SELF,pet/guardian speaker corrected. Original3355trap self-kill/death205/48069/50yd/link untouched.",
     "checks": "ASan native event/TALK/targets/chat admission/SmartAI JustDied+SpellHit+DIE,20 old/fixed cases plus onehit/repeats/invalid;15 TEMP refusals/live4tables/native26972/retained Wardstone live pass. Own14468 clean graceful0; sameEXEs,3915 mixedDBErrors retained.",
     "remaining": "Actual client/full36 unfinished. Catalog-fixture26->actual12 expectation failure archived with hashes under fixed/mist-warder-catalog-fixture-2026-10-30. Continue next proven artifact repair; no reset permission."
+  },
+  "acquisition_combat_speakers": {
+    "audit": "docs/audits/acquisition-combat-speakers-2026-10-30.json",
+    "status": "World30/03 RELEASED;94836 initialVaredis health4/5/10 +110556 Allaris combat5/6/7 TALK->SELF. Six fields only, native credits/intro/null-invoker/faction/loot unchanged. Later109109 not touched.",
+    "checks": "ASan actual event/TALK/chat/timer/links,5victim kinds/repeats/onehit/intro5000+1ms;21 TEMP refusals/live6tables/native26972/retained Ritual production+Release/data pass. Own13736 clean graceful0; sameEXEs and3915 mixedDBErrors.",
+    "next": "Investigate existing Twinblades251878 Data1=0 and189916->201012->201010 existing-item equip plus unknownLINK5; reuse artifact-pickup-followup-2026-10-23.json, no guessed grant. All36/client/otherLINKs unfinished, no reset authorization."
   }
 }
