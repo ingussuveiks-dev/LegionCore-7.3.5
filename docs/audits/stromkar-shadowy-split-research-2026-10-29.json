@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-29",
+  "status": "OPEN: missing native split continuation identified; no incomplete combat replacement deployed",
+  "local_graph": "Actual103339/spawn370996 map1539/phase5739 has SmartAI: aggro204595, once combat207244, periodic215690, death204743->49058. No207244 script or examined207249/207297 continuation. The dufernst2020 donor contains the same incomplete graph.103340/103341/104729 are sparse template variants, not evidence that they are the two native summons.104737 is the actual207299 summon identity.",
+  "native26972": [
+    "207244 Shadowy Split:1500ms cast,1000ms transform aura56 into104729; visual54410/65918/65919. It is not a two-summon spell by itself.",
+    "207249 Shadowy Split: native252 teleport, SELF plus explicit destination87. It requires a genuine destination; none established by current graph. No exact native destination/offset has been recovered.",
+    "207297 Shadowy Split: native missile32 at destination87 ->207299. Visual54417/missile6581/7450 uses model166432.207299 summons104737 using native properties64 with12000ms lifetime.",
+    "Native104737 model68678/HpMulti2.5 plus creature_template_spell207275. Original103339 model68678/HpMulti1.5 plus207258. Both207258/207275 Looming Decay last10000ms with periodic23/207274 every2000ms and visual54411/54421 ->native65920/65923; the clone has an extra channel-end visual65935. No custom clone AI/channel producer exists in examined live records. Exact207274 follow-up/target/radius and summon-properties behavior still need dedicated traversal before a combat patch."
+  ],
+  "video": {
+    "url": "https://www.youtube.com/watch?v=-0ytc3talC4",
+    "reviewed": "All five contact sheets, muted sequential1fps samples13:30..15:29, including overlapping14:15..14:19; not uninterrupted motion/audio or full19:43.",
+    "observed": "Prior opponent falls around13:51, Faceless combat starts around13:55. Around14:14..15 transformation/purple burst, two purple figures visible14:15..18, original normal-colored opponent visible at another nearby location14:19. Original later dies around14:38..40; loot/travel then Zakajz reveal and Stage8/pickup/recoil follow. Exact illusion expiry cannot be certified from the small rear/background frames. Final sheet additionally confirms wide burst15:26, cracks15:27 and rapid visual fade15:28..29, separate from later rebirth.",
+    "limits": "Only one combat example; no exact Blizzard split timer, triangle offset, interrupted/failed cast, repeated split, group/faction/pet or re-entry behavior established. Do not present a guessed coordinate/timer or replacement NPC as native fact."
+  },
+  "lifecycle_followups": "A complete producer must preserve original actor identity/native teleport, create exactly two owned104737 through207297->207299, initialize native clone207275, admit only actual1037/Stage7 combat, and handle rejected/missing/late summons, reset/death/evade/re-entry without duplicates or stray channels. Preserve real death49058 exactly once and native eligible player/owner/group behavior; current death invoker cast and nearest-player target require dedicated pet/guardian/unowned killer review. One-hit kills must not force a split or fabricate progress. Shared template uses must remain unaffected.",
+  "checks_and_diagnostics": "Extended native reader runs under canonical/own before/after snapshots and resolves all selected split identities/cast times/effects. Media extraction likewise wrapped. No new/changed crashes or appended server errors/DBErrors; existing mixed3045-byteLINK2 history unchanged. A read-only query incorrectly named nonexistent creature_spell, corrected to actual creature_template_spell after schema inspection, no data writes. No server launched/stopped, EXE replaced, new migration or character data changed.",
+  "private_evidence": ".codex/stromkar-split-{native,final-native,video,video-follow}-2026-10-29; split-full/models/scope TSVs; tools/research/StromkarEarlyVisualCatalog.cpp",
+  "next": "Implement and regress the entire native split/ownership/cleanup continuation with collision-supported destinations clearly distinguished from recovered native coordinates. Retain recoil rendering/tiny blade/ritual channels/sharedLINK2 and all36 work as unfinished; c30e90432 exit producer remains deployed20B1DD11 with client verification pending."
+}
