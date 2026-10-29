@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-29",
+  "status": "Shared SmartAI emote/phase pool memory safety repaired, compiled/promoted Release; not additional artifact-chain certification",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "After c311371f5 fixed action87, broader same-file scan finds identical inclusive urand(0,count) indexing in action10 RANDOM_EMOTE and30 RANDOM_PHASE. Any populated count can select an uninitialized slot; count6 reads beyond six-entry stack array, zero pool reads uninitialized slot. Native urand inclusive distribution confirmed. Pinned97be50dc3 actual action10/action30 independently reproduce stack-buffer-overflow with deterministic maximum6.",
+  "change": "Reject empty emote/phase pools with explicit sql.sql row diagnostic before selecting; emote also deletes its already allocated target list. Use count-1 native inclusive maximum. Preserve nonzero compaction/order/duplicate weights, independent per-Unit emote draws, nonunit skip, missing-target/base refusal, normal target debug logging and native SetPhase. Range selectors and existing action87 implementation unchanged. No SQL, quest/character/item/progression or global packet changes.",
+  "live_scope": {
+    "action10_rows": 232,
+    "action30_rows": 5,
+    "empty_pools_both": 0,
+    "direct_rows_in_current_1947_candidate_owner_contexts": 0,
+    "limit": "This completes the known same-family shared dispatcher memory hazard and is recorded as generic core safety. No current exported candidate owner directly references these two actions; indirect/installed/outside graph use not enumerated. Do not count it as a repaired artifact stage or claim client effects verified."
+  },
+  "checks": [
+    "Both pinned old emote and phase full extracted cases requesttemp[6] under real MSVC ASan, nonzero exit and stack-buffer-overflow/ProcessAction captured separately, EXPECTED FAIL counterfactuals. Corrected same native bodies:384 exhaustive63-mask/every compacted choice cases, sparse/single/six pools, duplicate weighting, independent draws per Unit/multiple mixed targets, empty visible error/no RNG/unchanged phase/no target-list leak, missing/empty/nonunit/no-base modes; logging arguments evaluated, exit0/stderr0.",
+    "Actual linked SmartScript dispatcher selected-code checks each distinct pool diagnostic reference and populated counter/guard, nonempty branch count-1 native urand, indexed load from the same compacted stack pool, empty branch exit and real HandleEmoteCommand/native phase member (derived from linked IncPhase). Original game.lib path rebuilt; staged/canonical/map match and original final-link libraries checked.",
+    "Retained action87 actualPE +192-case ASan, actual Apocalypse instance/vtable/policyPE, Scepter native and selected canonical recovery, Valzuun/Stromkar terminal/AFKreturn/clientbladehotfix/Monk kite PE pass. Owned13744 ready/shutdown0/exit0/stderr0/newDBErrors0/protected runtime hashes unchanged.",
+    "Source search now all three SmartScript temp[urand] pool indices usecount-1; value-range RNG actions are left inclusive as intended. This bounded check does not assert unrelated project/raid containers safe."
+  ],
+  "development": "First patch context expected a different log line; apply_patch refused before writing. Re-read actual source and preserved original target-owned debug logging unchanged. PE probe initially expected a linked SetPhase symbol and then a direct memory ADD in IncPhase; linker fully inlined SetPhase and emitted load/LEA/store for IncPhase. Inspected actual code and corrected checker to follow its unique member read/write before promotion. Failed staged evidence retained; final staged PASS inspected before deployment. No production diagnostic suppressed or runtime error hidden.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "hashes": {
+      "bnetserver.exe": "F20D25EEFE0BD1ACDF40CBFFB836E1D811425C8F6AD45195AEA414B78DC16167",
+      "worldserver.exe": "7D382937DED53E107AA52237B9757508348945A85AEA2E52E1EE9B698C513451",
+      "bnetserver.map": "05008A76CF2318478F06BCEFEB9C34B769415EC9D14DD9F6DB162F16AA59F102",
+      "worldserver.map": "52F75575C7FB538531C63B686889EDFF13192BC3E3573A703DB490A605586626"
+    },
+    "manifest": ".codex/random-smart-action-pools-deployment.json",
+    "backup": ".codex/release-before-random-smart-action-pools-2026-10-29",
+    "owned_pid": 13744,
+    "result": "Fresh servers absent before promotion/start; only owned13744 launched/gracefully closed. No user/unknown process stopped. Four EXE/maps hash-backed/promoted; original configurations/certificates/keys/DLL/data preserved. SQL20 remains latest applied."
+  },
+  "diagnostics": {
+    "result": "All ASan/native/build/link/PE/deploy/startup before/after canonical+own crash hashes/log lengths/times, exits/stdout/stderr reviewed. Final no new/changed runtime crash, appended warning/error/assertion or DBErrors. Existing3915-byte missingsharedLINK2 mixed log unchanged, canonical Crashes empty; no character reset.",
+    "archive": "build-extractors/bin/Release/fixed/random-smart-action-pools-2026-10-29",
+    "archive_sha256": {
+      "emote.stderr": "988E5BA45BFBF2C0E224D54E0AB91F382DD6FE307B83DADED908B6127F97EA8B",
+      "phase.stderr": "C12547DF082B97EF78DC1B78BF0C4C953B3E3BC4550051142F0BF2E7331BF7BF",
+      "emote.stdout": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "phase.stdout": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "emote.exit": "6B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B",
+      "phase.exit": "6B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B",
+      "RandomEmote.inc": "C06B0A3776FA2DE920E73626B4B6B73A9D0FD9A8453DFCA6018DCE1064A9C5FF",
+      "RandomPhase.inc": "A782819B1C2AA122FDEC40B882E3B1776B0BC20486920071229E6590EAABF807",
+      "build.log": "D8DD68C076CCCA6DEDC1553B5D96FA91FA912067CE4DE8A8DC11B12B223F4CD7",
+      "diagnostics-before.json": "A4BAEC87E6490B1C5BC5CEDC2EC96A0BDC78FD52B08433685778633AF2C1E6D7",
+      "diagnostics-after.json": "2A63C8283B762C759B81865D04A7E9E6866BA762E2B70864DF873356425E8A1F"
+    },
+    "scope": "Expected ASan probe stderr/source/exits copied and hash-verified after deployed regression; no actual server crash generated or mixed log cleared."
+  },
+  "local_evidence": [
+    ".codex/random-smart-action-pools-regression-2026-10-29",
+    ".codex/random-smart-action-pools-staged-pe-verified-2026-10-29",
+    ".codex/random-smart-action-pools-canonical-2026-10-29",
+    ".codex/random-smart-action-pools-retained-pe-2026-10-29",
+    ".codex/random-smart-action-pools-startup-2026-10-29"
+  ],
+  "all36": "No world record changed: bounded36/149/0 automated findings/3Monk and expanded27 primary candidates stay as SQL20 snapshot, including4knownlater campaign rows deferred in scope-classification audit. Guardian990 wave/death investigation continues; no client certification.",
+  "next_guardian": "Preserve guardian-artifact-loot-2026-10-29.json previous deployed248853/128821 pickup.105243->101742Lea summons101384/101388/101389; native990 waves2..5 use48106..48109. Five wrong immediate edges point to existing independent DEATH6 roots (1013886->7/7->8/8->9;1013890->1/1->2). Source22 guards require actor990/currentstep and no other living relevant enemies within100 of killer; descending stage criteria ordering prevents same kill advancing several waves. Do not convert those independent DEATH roots toLINK61: lower waves would never be admitted, and rejected208568 death cast must not suppress independent credit. Plan focused five-edge terminalization with full native29/44/AND/OR/kill/cast/criteria tests; retain101384 JUST_SUMMONED missing1 unknown separately.",
+  "remaining": "Shared101430/103151 missing2, Monk initial7/8 and laterPonshu10, Stromkar continuous beams/recoil visuals and whole36 native/client traversal remain OPEN."
+}
