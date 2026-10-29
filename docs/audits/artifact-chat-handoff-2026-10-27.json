@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "reason": "Three focused follow-ups committed/pushed/deployed B3355A35:4f34fb166 native delayed rebirth aura acknowledgment;19b4d792c actual ritual beam receiver and OOC retry/SQL04;9ecad9cd7 explicit authored transient ground kit. User confirmed earlier recoil/stun/rings/cleanup/combat, but new visuals need client retest. Initial blade and test-state permission remain OPEN.",
   "objective": "Continue authorized backend investigation/repairs for all36 Legion7.3.5 artifact acquisition chains; no whole-chain completion certification. User owns client tests. Preserve earlier worklist and route evidence.",
   "repository": "C:/wamp64/www/LegionCore-7.3.5",
@@ -158,7 +158,7 @@
   "servers_last_seen": {
     "bnetserver": null,
     "worldserver": null,
-    "ownership": "User36880/20432 observed running, untouched. User then explicitly shut both down. Rechecked absent before every promotion. Owned10504/30188/756 ready/graceful exit0, no task server remains. Recheck before future operations."
+    "ownership": "Both absent during2026-10-29 authorized offline single-item preparation. No server launched/stopped; recheck future operations."
   },
   "bilaal_wip": {
     "status": "Historical key name: source is now committed b696f57be and deployed with coordinated SQL09. No unfinished Bilaal death source remains. Separate gravity and downstream portal findings remain OPEN.",
@@ -268,7 +268,7 @@
     "heroic_leap": "Native52174 physical base1+0.624AP/radius8 with standard mitigation. Bounding Stride202163 reduces45->30seconds and speed20216470pct/3s. Native PvPBarbarian199148+2 charges/+200pct modifier andWarpath199086/1990853s stun retained only through native active-aura conditions. Redundant outer spline/missile damage replaced by one actual94954 landing; failure/cancel does not emit damage.",
     "demons_among_us": "User explicitly reported PvP-enabled prerequisite before sword/attack. Scoped101100/101104 faction2780 forcedPVP0x800 ->native2898nonPvP for same1786/player/camp relations; all34spawns/phase7422/nativecredit101105/amount12 unchanged. Native counterpart differs for11 out-of-camp faction148 templates; audit records limitation. World12 SHA1 7DCF759FE1A0E8178321037D45D78E9924325C92 RELEASED.",
     "diagnostics": "Current DBErrors2175 bytes: user appended six shared LINK2 errors16:31..16:36; separate Server.log two rebirth warnings16:41 were reported. New work tests/builds/startups add no errors or crashes. Preserve mixed logs, no truncation.",
-    "next": "Continue initial blade visual/independent click surface from native candidate kits; do not invent scale/proxy, bypass native unique loot or remove test item without pending approval. Continue sharedLINK2/hole/Bilaal/Aluneth/all36 independently.",
+    "next": "Continue initial blade visual/independent click surface and sharedLINK2/hole/Bilaal/Aluneth/all36. The approved old unique test weapon was removed2026-10-29; no pending removal permission, no repeat deletion of a newly obtained artifact. Actual finale remains user-owned client retest.",
     "uncommitted_at_checkpoint": "Production clean after three focused commits; extended native reader/research/handoff saved in checkpoint commit. Bilaal/Hunter/Aluneth historical evidence and backups retained. No pending live code-coupled SQL."
   },
   "azuregos_portal_wip": {
@@ -436,7 +436,13 @@
     "ritual": "19b4d792c; audit stromkar-ritual-receiver-2026-10-28.json; SQL04 LF hash245020F9680D53EBB27EDDF13DCD12000E30962F RELEASED; old stage test exact-released normalization retained",
     "ground": "9ecad9cd7; audit stromkar-ground-burst-2026-10-28.json; explicit same native kit, actual client rendering remains pending, exact implicit-event failure not packet-captured",
     "blade": "OPEN; docs/audits/stromkar-initial-blade-research-2026-10-28.json; no guessed scale/proxy or loosened final loot admission Correct raw9byte resource join now identifies1257949 Sword_2H_ArtifactArathor_D_01,2.23951-unit model; native0.025*1.5 attachment gives~0.084 units. Evidence saved; independent click host/lifetime/pose still needs implementation. Disabled ModelFileData production store mismatch is a reader limitation, not a deployed-runtime fault.",
-    "item_permission": "Awaiting async answer: may remove only previous test Stromkar128910 for clean native finale retest. No response is not authorization. No character/inventory edits performed.",
+    "item_permission": "User explicitly approved removal of only the old test Stromkar, then requested no additional backup because no upgrades were made. Completed2026-10-29 offline: exactly one128910 inventory/instance and only its own item-dependent rows removed; only main-hand equipment-cache triple cleared. Quest progress and all other inventory were not changed. Post-commit count/empty-slot readback and diagnostics passed. No duplicate-loot bypass. This single-item authorization is consumed; do not repeat on a newly acquired weapon.",
     "diagnostics": "Current DBErrors2175 bytes: user appended six shared LINK2 errors16:31..16:36; separate Server.log two rebirth warnings16:41 were reported. New work tests/builds/startups add no errors or crashes. Preserve mixed logs, no truncation."
+  },
+  "stromkar_item_retest_preparation": {
+    "date": "2026-10-29",
+    "status": "Completed authorized single-item removal; no new backup requested",
+    "verification": "Both servers absent before operation; exact offline owner/item/count/slot/cache transaction guards, exact1+1 deletion receipts and post-commit zero counts. No new crash/log errors. Character/item GUIDs, credentials and SQL payload remain uncommitted.",
+    "limit": "No client finale traversal performed. Earlier blade size/click-surface and other open artifact work remains unchanged."
   }
 }
