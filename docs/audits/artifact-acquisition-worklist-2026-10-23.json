@@ -4541,7 +4541,7 @@
       "weapon": "Claws of Ursoc",
       "item": 128821,
       "start": 41468,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "partial: native 248853/128821 loot link and Guardian 40647 final-stage admission repaired with native/ASAN/TEMP/refusal/updater checks; earlier trials, combat, presentation/equip retry, departure/re-entry and full client traversal remain OPEN. See guardian-artifact-loot-2026-10-29.json.",
       "quests": [
         {
           "id": 41468,
@@ -4620,7 +4620,7 @@
         {
           "entry": 248853,
           "type": 3,
-          "loot_link": 0,
+          "loot_link": 248853,
           "expected_loot_entries": [
             248853
           ],

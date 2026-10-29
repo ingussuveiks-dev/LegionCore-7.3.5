@@ -4,6 +4,11 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest Guardian loot admission (2026-10-29)
+
+- Data-only World01 restores248853/128821 native loot, living Druid40647/1536/990/7 source4 and owned final7..8 source22 root/gossip. Native26972/ASAN/full TEMP/13 refusals/shared canonical PE and actual updater/live checks pass. Own21612 ready/shutdown0/exit0; no new diagnostics or character edits. CanonicalB3355A35 unchanged. Read guardian-artifact-loot-2026-10-29.json; full trials/combat/equip retries/return/client remain OPEN.
+- Existing2175-byte shared LINK2 log retained, no archive/truncation. Continue independent Feral/Resto native loot and presentation, then remaining all36. Do not repeat consumed Stromkar item removal or character recovery; user owns client tests.
+
 ## Latest Stromkar follow-ups (2026-10-28)
 
 - `4f34fb166` delayed native rebirth aura acknowledgment, `19b4d792c` real ritual beam receiver/SQL04, `9ecad9cd7` explicit native ground burst are committed/pushed/deployed in canonical `B3355A35`. Final native/ASAN/TEMP/live/PE/Scepter checks and owned756 startup exit0 are clean. Client new beam/ground visuals remain pending; user confirmed earlier recoil/stun/rings/cleanup/combat.

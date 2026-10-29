@@ -181,15 +181,29 @@ int main(int argc, char** argv) {
         assert(chest.GetLootId() == 247877);
         if (stromkarRoot) { castAdmission = true; eventEntry = 247877; }
     }
-    bool ownedReplay = xalatathRoot || stromkarRoot || (argc == 3 && std::string(argv[2]) != "marksmanship-loot" && std::string(argv[2]) != "titanstrike-loot");
+    bool guardian = argc == 4 && std::string(argv[2]).find("guardian-") == 0;
+    bool guardianRoot = guardian && std::string(argv[2]) != "guardian-loot";
+    bool guardianGossip = guardian && std::string(argv[2]) == "guardian-gossip";
+    if (guardian) {
+        expectedQuest = 40647; expectedMap = 1536; expectedScenario = 990; firstStage = 7;
+        lastStage = guardianRoot ? 8 : 7; expectedItem = 128821; expectedClassMask = 1024;
+        playersOwnArtifactByDefault = guardianRoot; eventEntry = 248853; scenarioManager = {};
+        castAdmission = guardianRoot;
+        GameObjectTemplate chest;
+        assert(chest.GetLootId() == 0); // Counterfactual: the original Data1=0 cannot resolve loot.
+        chest.chest.chestLoot = static_cast<uint32>(std::stoul(argv[3]));
+        assert(chest.GetLootId() == 248853);
+    }
+    bool ownedReplay = guardianRoot || xalatathRoot || stromkarRoot || (argc == 3 && std::string(argv[2]) != "marksmanship-loot" && std::string(argv[2]) != "titanstrike-loot");
     uint32 eventId = argc == 3 && std::string(argv[2]) == "marksmanship-root" ? 0 : 2;
     if (titanstrike) eventId = 0;
     if (xalatathRoot) eventId = xalatathGossip ? 2 : 0;
     if (stromkarRoot) eventId = 0;
+    if (guardianRoot) eventId = guardianGossip ? 2 : 0;
     bool dialogueEvent = argc == 3 && std::string(argv[2]) == "marksmanship-dialogue";
     bool returnEvent = argc == 3 && (std::string(argv[2]) == "marksmanship-return" || dialogueEvent);
     if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = dialogueEvent ? 52 : 59; scenarioManager = {}; }
-    std::ifstream input(argv[1]); std::vector<Condition> rows(warswords ? 14 : stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
+    std::ifstream input(argv[1]); std::vector<Condition> rows(guardian ? (guardianRoot ? 28 : 14) : warswords ? 14 : stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
     for (Condition& condition : rows) {
         uint32 target = 0;
         assert(input >> condition.ElseGroup >> condition.ConditionType >> target >> condition.ConditionValue1 >> condition.ConditionValue2 >> condition.ConditionValue3 >> condition.NegativeCondition);
@@ -222,6 +236,17 @@ int main(int argc, char** argv) {
         script.ProcessEventsFor(SMART_EVENT_GO_STATE_CHANGED, &player, 3); assert(script.actions == 0);
         player.owned = true;
         script.ProcessEventsFor(SMART_EVENT_GO_STATE_CHANGED, &player, 3); assert(script.actions == 1);
+    }
+    if (guardianRoot) {
+        Player player;
+        auto eventType = guardianGossip ? SMART_EVENT_GOSSIP_HELLO : SMART_EVENT_GO_STATE_CHANGED;
+        SmartScript script; script.base = &player; script.mEvents = {{248853, eventId, 1, eventType}};
+        scenarioManager.scenario.step = 6;
+        script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 0);
+        scenarioManager.scenario.step = 7; player.owned = false;
+        script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 0);
+        player.owned = true;
+        script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 1);
     }
     if (returnEvent) {
         Player owner; scenarioManager.scenario.step = 7;
@@ -267,7 +292,7 @@ int main(int argc, char** argv) {
         assert(!item.AllowedForPlayer(&player) && !cache.Read(&player, &item));
     }
     worldMap.instanced = true; instanceMap.id = 42; scenarioManager = {};
-    if (warswords) {
+    if (warswords || (guardian && !guardianRoot)) {
         for (uint32 invalid = 0; invalid < 3; ++invalid) {
             Player player;
             player.alive = invalid != 0;
@@ -312,7 +337,7 @@ int main(int argc, char** argv) {
         player.rewarded = false; player.owned = false; player.bank = true; item.loot_restricted = false;
         Condition original; original.ConditionType = CONDITION_ITEM; original.ConditionValue1 = expectedItem; original.ConditionValue2 = 1;
         ConditionSourceInfo originalContext(&player); assert(!original.Meets(originalContext));
-        assert(item.AllowedForPlayer(&player) == !(xalatathRoot || stromkarRoot));
+        assert(item.AllowedForPlayer(&player) == !(guardianRoot || xalatathRoot || stromkarRoot));
         player.bank = false; assert(!item.AllowedForPlayer(&player));
         assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &player, &player));
         Unit pet;

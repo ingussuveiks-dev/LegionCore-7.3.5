@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-29",
+  "status": "Focused loot-link/admission repair deployed and backend-regressed; complete Guardian/client chain remains OPEN",
+  "fix_commit": "Commit containing this audit, following 0619c6568; use Git history for its final hash",
+  "cause": "Guardian chest 248853 has native type3/lock1691 but Data1=0. Its existing loot table contains exactly one 100-percent 128821. Native GameObjectTemplate::GetLootId returns zero for the old template, bypassing its actual artifact loot. ItemSparse AllowableClass=-1 makes explicit quest/class admission necessary. Original root had no conditions; original gossip only required an inventory copy, allowing unrelated stages to request the presentation.",
+  "repair": [
+    "Guarded data-only World01 sets only 248853.Data1=248853. Complete template fingerprint normalizes that single column; complete native loot and all four GO SmartScript rows must match. Original or exactly-applied complete condition lists are accepted; custom changes produce an explicit SIGNAL before guarded mutations.",
+    "Source4 actual loot and cached-slot recheck require a living Druid/classmask1024, map1536, native990/7, active un-rewarded40647 (incomplete or complete), and no128821 including bank. Existing owned unique copies are not replaced or deleted.",
+    "Source22 group1 completed-loot and group3 original owned gossip require that same quest/class/map/alive context at990/7 or completed8 and actual inventory ownership. Bank-only replay remains rejected, matching the original gossip restriction; withdraw the item for the native equip flow. No item, quest or scene grant added.",
+    "Original four SAI actions/links, native199963 scene/trigger/credit, 101742 data handoff, template flags/display/lock, loot probability/quantity and both other Druid templates/actions/conditions remain byte-for-byte equal in TEMP comparisons. No new ScriptName or binary dependency."
+  ],
+  "local_sequence_evidence": [
+    "Read AGENTS.md/current clean main and origin/main history plus current artifact resume/handoff/worklist, including consumed Stromkar single-item permission and all prior client limitations. Did not repeat historical character recovery or item removal.",
+    "Matching26972 native DB2 reader plus read-only hotfixes: Guardian990 steps0 entrance50266;1 light48095;2..5 waves48106..48109;6 Fallen48146;7 Claws50171. SQL40647 requires101390/101334/104543 and follows41792;41918 follows40647. This is data/code tracing, not actual passage through the trials.",
+    "Actual101390 death event7 uses native player-distance21 credit48146; link8 summons105331, link9 creates248853 at the existing original pose/lifetime3600. Original GO0 state3 casts199963;1 emits50171;3 signals101742. Original GO2 gossip reaches the same native links only with owned-item conditions. 101742 data1/1 retains speech, later gossip and208746 departure. No combat/death/pet/group/faction dispatch changed.",
+    "Native199963 effect0 triggers199960; effect1 personal90/101334; effect2 native event61/50171; effect4 activates scene1166. 199960 effect249 equips existing128821 and triggers225867. EffectSendEvent reaches both script-event criteria types for the player caster; no replacement spell or direct item creation added. Original separate SAI205/50171 is preserved, not certified as a failure-safe/equip-acknowledged pipeline.",
+    "Same reader confirms separate Resto1061 stage5/50389 and Feral1108 stage6/51156. Their Data1=0 findings remain separate pending repairs; no guessed model/scene or cross-route change. Matching local sources resolve the present loot defect, so no modern TrinityCore or external implementation was copied."
+  ],
+  "validation": [
+    "Read-LegionLegendaryCatalog DruidAcquisitionCatalog: native ItemSparse, Spell, SpellEffect, ScenarioStep, CriteriaTree, Criteria plus read-only hotfix loading; full scenario trees/equip routes exported privately. Exit0, wrapped diagnostics clean.",
+    "Test-GuardianArtifactLoot -AddressSanitizer, then again -AddressSanitizer -VerifyLiveData after real updater: original/applied normalization only in session-local full-schema tables; migration twice; complete template/loot/action/other-Druid comparisons;13 complete custom-template/display/script/link/loot-chance/reference/currency/item/SAI-link/handoff/extra-row/condition/extra-condition refusals. Expected SQL45000 counterfactuals each retained separately and verified to leave all four TEMP tables unchanged.",
+    "Three actual SQL rule sets (14 loot,28 completed-loot,28 gossip) compiled through extracted production native selector, condition cases, ElseGroup evaluator, SmartAI event-condition bridge/root dispatcher, loot condition and cached-slot read. Covers stages0..14, five quest states, absent/foreign scenario, absent/foreign instance, non-instance, wrong map/class/quest, dead player, missing item, bank-only ownership, null and pet invokers, abandonment/reward and unrelated loot. Old zero-link counterfactual is paired with repaired248853 native selector. Full storage/cast/equip/world endpoints are not simulated as proof.",
+    "Shared Test-TalonclawPickupAdmission -VerifyReleaseBinary: original native condition matrices, ten common pickup routes and selected actual canonical store-slot/item-condition/scene/equip/departure/native SmartAI paths pass after the shared fixture extension. Existing C4244 narrowing warning in the extracted SmartEventConditions fixture remains visible; no production compiler/server warning was introduced by this data-only repair.",
+    "Canonical startup ownPID21612: real updater applied2026_10_29_01 hash590CA94F4DE8FFC44BD5C1D1914A6DA408557DDB; ready, server shutdown0 and exit0, empty stderr/newDBErrors. Protected configurations/certificates unchanged. Full live readback confirms RELEASED hash, Data1=248853 and70 exact guarded rows via repeat fingerprint validation."
+  ],
+  "deployment": {
+    "canonical_directory": "build-extractors/bin/Release",
+    "worldserver_sha256_unchanged": "B3355A358A586B7206605F6EE1F286C4A28364A85F1B318CFD3577A4A7ACCBD9",
+    "binary_build": "No production C++ changed; native research/test executables built separately. No main EXE replacement was required or performed.",
+    "ownership": "No user/unknown worldserver or bnetserver existed at initial inspection or immediately before owned startup. Only task-owned21612 launched and gracefully stopped. No task server remains.",
+    "character_changes": "No manual character/item/objective/progression writes or client traversal. Native startup performs its ordinary server initialization only."
+  },
+  "post_test_diagnostics": "Every native/ASAN/shared/selected PE/updater/live check used pre/post canonical and own-runtime crash hashes and log lengths/timestamps; exit status/stdout/stderr/new DBErrors/server diagnostics inspected. No new/changed crashes, appended DBErrors, or server warnings/errors/assertions. Active canonical Crashes empty. Existing2175-byte15-line103151/101430 missingLINK2 history is unresolved and retained unchanged; mixed Server.log history also retained. No resolved Guardian crash/error log existed to archive or truncate.",
+  "private_evidence": [
+    ".codex/druid-acquisition-native.tsv",
+    ".codex/druid-acquisition-catalog-2026-10-29",
+    ".codex/guardian-artifact-native-2026-10-29",
+    ".codex/guardian-shared-native-2026-10-29",
+    ".codex/guardian-updater-diagnostics-2026-10-29",
+    ".codex/guardian-updater-startup-2026-10-29",
+    ".codex/guardian-live-native-2026-10-29",
+    "build-extractors/runtime-test/guardian-artifact-loot"
+  ],
+  "remaining": [
+    "Actual full bags/retry, scenario visible pose and loot window, native cast/aura/scene/equip and original205 sequencing, one-shot progression/handoff, departure/camera/pet, save/relog and abandonment/reacceptance remain client or additional production lifecycle checks. Do not equate admission matrices/startup with the full encounter.",
+    "Earlier trials/waves/Ursol spawns and retries, scaled one-hit101390 survival or genuine death, pet/guardian/group eligible kill recipients and full faction traversal were traced only at the unchanged immediate producer/death edge. They are not certified by this focused pickup repair.",
+    "Continue independent Feral/Resto missing loot links and their native acceptance/presentation stages, then other all36 worklist entries. Stromkar original blade/click surface, hole tentacles and shared missingLINK2 remain OPEN; preserve Bilaal/Aluneth/Hunter evidence. User owns client checks; never edit their progress."
+  ]
+}
