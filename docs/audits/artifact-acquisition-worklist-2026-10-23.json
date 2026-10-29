@@ -5041,5 +5041,12 @@
     "diagnostics": "Owned11692 graceful0/no new crash/log diagnostics; mixedLINK2 still3915, no character edits, EXEsE61B28BE/ABAEC13B unchanged.",
     "map_audit": "Fresh25map1947owner/83timed,29 primary review edges/zero missinglists. Earlier fe34297c7 inventory remains historical; new05 now reached. Bounded36/149/0 automated/3Monk unchanged.",
     "next": "Continue29 primary edge intent review. Campfire97168/97436 event3 is independentUPDATE60 gated1038stage2/nearby boss: do not mechanically convert toLINK61 before tracing actor sendData/native stage transition. Baron101539 event35 independentTEXT_OVER12 can retain failed-WP retry; converting toLINK changes retry because parent34 runOnce consumed. Full sequence needed."
+  },
+  "ariden_dialogue_speaker": {
+    "audit": "docs/audits/ariden-dialogue-speaker-2026-10-29.json",
+    "status": "SQL19 RELEASED: proven malformed immediate row2LINK1 removed while real TEXT_OVER0/5000ms retained; five TALK VICTIM targets->SELF preserves Ariden speaker with pet/guardian victim and restores native TEXT_OVER2->line3.18 actions/seven original texts/casts/HP/criteria/finale preserved.",
+    "checks": "ASan actual eventprefix/dispatcher/TALK/targets/timer/HEALTH/DATA/LINK, seven ordered speeches and baseline pet failure,14 TEMP refusals/live4tables/26972/shared988/1014/1026/commonLINK pass.",
+    "diagnostics": "Owned6436 graceful0/no new diagnostics; mixed3915LINK2 retained. EXEsE61B28BE/ABAEC13B unchanged. No character edits or client certification.",
+    "fresh_audit": "Bounded36/149/0 findings/3 Monk unchanged; expanded25map1947owner/83timed now28 primary review candidates/zero missinglists. Actual Ariden finale/native48076/onehit/petcredit remain separate full-flow review."
   }
 }

@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-29",
+  "status": "Ariden delayed dialogue and speaker repaired; SQL19 RELEASED; full shared encounters/client remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": {
+    "dispatch": "102532 AGGRO row0 TALK0/5000ms ->LINK2 criterion47988 ->badLINK1. Existing row1 is real TEXT_OVER52(0,102532)/TALK1/7000ms. It already fires after native timer and must remain independent: converting it toLINK erases the first speech delay. The immediate edge is malformed, not a missing speech action.",
+    "speaker": "Five TALK rows1/4/5/9/13 target VICTIM2. Native TALK chooses a creature target as talker; when combat victim is a pet/guardian/other creature, it selects that creature and its entry instead of Ariden. Native timer then emits TEXT_OVER with pet entry, so Ariden-matched row5 loses line3. Player/no-victim paths normally retain me as talker; explains why a player-only timeline can miss this failure."
+  },
+  "change": "Keep all18 actions. End only the proven malformed immediate call row2(link1->0), retaining real row1TEXT_OVER0 and5000/7000ms timers. Set only TALK rows1/4/5/9/13 toSELF1 so boss speaks while fighting any eligible victim. Preserve first line range-player18/$vars target, existing SELF group6, combat spell VICTIM targets, health thresholds/invincibility, original seven text records, casts/durations, summon/scenario/data/bunny/death consumers. No global TALK behavior change and no unknown shared101430/103151 missing2 edit.",
+  "source_order": "Matching native26972 DB2/runtime/live Ariden graph and actual SmartScript TALK/SELF/VICTIM/event prefix/dispatcher/text timer/LINK first. Existing Laith11/equivalent independentTEXT_OVER timing repair retained. Bounded1121 local SQL donor scan includes this actor in Titans05, old malformed edge/VICTIM rows unchanged. No external modern behavior or unreviewed video imported.",
+  "native26972": {
+    "criteria": "47988 belongs988/4/tree46423,1014/4/tree46649,1026/4/tree46728;47989 belongs corresponding stage5 roots46426/46651/46730. Shared actor/static369215/map1533/phase5639 remains unchanged; do not certify all variants from one actor fix.",
+    "speech": "Original BroadcastText103613/104764/106114/106126/106127/104766/104768 all present: persistent intruder/Apocalypse/rise/deathknight/souls/power/father. Preserve original payload, no invented translation/voice.",
+    "casts": "204882 summons103554 using properties3759/native destination73; two original casts retained.199756 UlthaleshDropped force-casts199757 SendEvent48076; native data preserved, not repurposed into synthetic victory."
+  },
+  "checks": [
+    "Full-schema TEMP four-table replay/idempotence: exactly six field changes (one link/five speaker targets), all18 actions/seven text rows/actor/emptyconditions otherwise exact. Fourteen custom-state refusals protect texts/delay/TEXT_OVER/criterion/casts/bunny/victory/add/missingrow/source22/AI/appliedspeaker/appliedcall. Actual updater RELEASED LF SHA1 and complete four-table live equality pass.",
+    "MSVC ASan extracted ProcessEventsFor, ProcessEvent and ProcessAction native prefixes, AGGRO/LINK/TEXT_OVER/DATA/HEALTH admission, FindLinkedEvent/LINKtail, complete TALK and timer, actual SELF+VICTIM target branches. Original immediate-link diagnostic and pet speaker/lostTEXT_OVER2->line3 reproduced as counterfactual. Fixed5000ms strict-boundary wait, seven ordered boss speech groups, player/pet/guardian/creature/no victim, repeatedaggro/once/health90/40/1, explicit externalDATA finale, foreigntext/actor/condition/expired/removedactor; naive61 conversion demonstrably starts second speech0ms.",
+    "Chat, range-player search, cast/criteria/data/death services and conditions are controlled endpoints; no actual objective awarded in probe. Full timer scheduler, actor scene and final damage/real credit not certified by these excerpts. Native shared scenarios/text/summon catalog and common10-case LINK differential pass.",
+    "Fresh bounded all36 audit:36 selections/149 native raceclasspairs/0 automated findings/same3 Monk edges. Expanded25map1947owner/83timed now28 primary review edges (previous29) and zero missinglists. Source22/difficulty/C++/dynamic closure/client limits preserved."
+  ],
+  "development": "Initial private generator expected ariden-columns.json while capture used ariden-dialogue-columns.json; stopped before SQL fingerprint preparation. Corrected path and reran wrapped TEMP/native/live tests successfully. No live write from failed preparation; failed diagnostic evidence retained.",
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_29_19_ariden_dialogue_speaker.sql",
+    "lf_sha1": "03d0eb3000c967bca57c121d60c5bec434644d90",
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 6436,
+    "world_sha256": "E61B28BEE9EF3510508D1DE462B0684B884807E666FF58FD4EF0CF7BA47094E2",
+    "bnet_sha256": "ABAEC13B1C3D35D2582868AC0691534B776D21DE8188253B176EEFA82036174D",
+    "result": "Fresh servers absent before SQL promotion; matching native dispatcher already canonical. Owned6436 ready, graceful shutdown0/exit0/stderr0/newDBErrors0, protected configuration/certificates unchanged. No task process left/no user process stopped."
+  },
+  "diagnostics": "All fixture/TEMP/native/catalog/updater/live/structural tests have before/after canonical+own crash hashes/log lengths/times, exit/stdout/stderr reviewed. No new/changed crashes, appended server warnings/errors/assertions or DBErrors. Existing3915-byte mixed missingsharedLINK2 log left intact; canonical Crashes empty. No character/item/progress edit or credential/runtime/dump commit; no newly resolved runtime crash/log to archive.",
+  "fixture_counts": {
+    "smart_scripts": 18,
+    "conditions": 0,
+    "creature_text": 7,
+    "creature_template": 1
+  },
+  "local_evidence": [
+    ".codex/ariden-dialogue-data-2026-10-29",
+    ".codex/ariden-dialogue-catalog-2026-10-29",
+    ".codex/ariden-dialogue-updater-2026-10-29",
+    ".codex/ariden-dialogue-live-2026-10-29",
+    ".codex/artifact-post-ariden-2026-10-29"
+  ],
+  "remaining": "Actual speech/audio/gender variables/overlap, client fight, one-hit scaling/surrender, pet/guardian/group final credit, native UlthaleshDropped/48076 external DATA producer, abandonment/evade/reentry and all three shared variants still require full encounter traversal. Existing cast/summon failure/credit paths unchanged. All36 remains OPEN,28 broader primary candidates/Monk3/shared2/ritual+recoil visuals retained."
+}
