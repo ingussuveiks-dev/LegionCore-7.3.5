@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-29",
+  "status": "Scope classification checkpoint, no production/backend/data change",
+  "purpose": "Keep25-map candidate inventory honest: class-specific scenario_data/maps also include later class campaigns. Do not equate every structural candidate with a broken artifact-acquisition route.",
+  "proof": {
+    "niskara": "Native Scenario1144/1145 Name The Invasion of Niskara; actors109108CariaFelsoul and109109VaredisFelsoul are direct objectives of42809/42920, both MinLevel110. Current base artifact starts40819Twinblades127829 and41803Aldrachi128832, different initial selections. Shared Allari109357 belongs this same later combat group. Live only1145/class12/map1489, phase7727 explicitly DH CH Quest Phase2 Step.",
+    "ponshu": "100438 row9 is QUEST_REWARDED45440 A Brewing Situation/110 (already preserved in Monk research); the same actor also serves initial40636/98 and other later offers. Keep row-level scope, not whole NPC/class labels.",
+    "important_counterexample": "100376Dakarr is NOT discarded merely because ScriptName is set: actual npc_talonclaw_ambush_dakarr derives SmartAI and delegates native events; native973/1511 is HunterTalonclaw, despite other class scenarios sharing that map. C++ delegation/actor existence still requires per-context trace."
+  },
+  "review": {
+    "total_expanded_primary_candidates": 27,
+    "known_later_campaign_edges": [
+      {
+        "source": 0,
+        "entry": 109108,
+        "event": 6,
+        "link": 7
+      },
+      {
+        "source": 0,
+        "entry": 109109,
+        "event": 6,
+        "link": 7
+      },
+      {
+        "source": 0,
+        "entry": 109357,
+        "event": 0,
+        "link": 1
+      },
+      {
+        "source": 0,
+        "entry": 100438,
+        "event": 9,
+        "link": 10
+      }
+    ],
+    "other_candidates": 23,
+    "limits": "Other23 are artifact-related OR still unclassified; not23 proven live bugs. Original bounded3Monk includes laterPonshu edge and remains historical, not silently recounted as2. All27 kept visible in full inventory; nothing hidden from logs."
+  },
+  "deferred_draft": {
+    "location": ".codex/deferred-niskara-2026-10-29",
+    "hashes": {
+      "sql/pending/world/2026_10_29_21_deceiver_combat_dispatch.sql": "39fd1d0adad96806906c2988861c0ed9c5805ed396cbf64a9c1a6e25eb7a1737",
+      "tools/research/DeceiverCombatCatalog.cpp": "69c7d4e114097d053b90297b111609a20283feb7e56cc0c1a82edae0845a2c3f",
+      "tools/tests/DeceiverCombatOriginal.json": "b2e4fa5590ac9aa1b2e2f7d9d2e50fdeacd9630b6175f758a4493bef2a1c2de3",
+      "tools/tests/DeceiverCombatTest.cpp": "7ecfd790d8a06a61dd9e77ab6d0daaf01ee2de1401122e194830e6b5faee3521",
+      "tools/tests/Test-DeceiverCombat.ps1": "7ecf830511266c119e9f89628aa93661459ac9397ba3b5e1acccdb527fa77966",
+      "tools/tests/Test-DeceiverCombatData.ps1": "c9388c68ea4e87562616c9dd68ec353018486898cbdffb754ef113d8718c91da"
+    },
+    "state": "Prepared/ASan and TEMP-reviewed three-call timer correction retained privately. Never promoted SQL21; full live oldlinks1091086->7/1091096->7/1093570->1 and no updates21 row verified. All six owned draft files moved/hash-verified out of source/updater dirs; private generators disabled to prevent accidental recreation. No completion/commit/push of this unrelated campaign fix."
+  },
+  "probe_evidence": "Actual IC InitTimer/RecalcTimer/UpdateTimer/dispatcher/TALK/DATA/WP/LINK excerpts verify original immediate-call diagnostics, preserved3..5s first/4..6s repeats/7s second, max/min bounds, pause/casting/rejection/player/pet/guardian/null/path retry; naive61 conversion erases repeats. Fifteen TEMP custom-state refusals pass. Initial C++ assert macro had an unparenthesized template comma; corrected and rerun passing, failed evidence retained. These are research results only, not deployed artifact fixes.",
+  "local_evidence": [
+    ".codex/deceiver-combat-data-2026-10-29",
+    ".codex/deceiver-combat-native-fixed-2026-10-29",
+    ".codex/deceiver-combat-native-catalog-2026-10-29"
+  ],
+  "diagnostics": "All probe/native/TEMP/catalog before/after canonical/own crash/log offsets/hashes/timestamps and exit/stdout/stderr reviewed; no new runtime crash or appended error. Canonical CD41E846/F23563AB with SQL20 unchanged;3915-byte mixedsharedLINK2 retained. No character/progress reset, server launched/stopped for this draft, or active error cleared.",
+  "next": "Use actual quest bindings/native stage/actor use before editing remaining map candidates. Next inspect101742LeaStonepaw summoned Guardian mobs101384/101388/101389 and their HELLO64-vs-LINK edges, preserving source ownership/phase and native combat behavior. Unknown shared101430/103151 LINK2 and Stromkar beam/recoil visuals remain OPEN."
+}
