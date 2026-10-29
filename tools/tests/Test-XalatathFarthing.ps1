@@ -36,10 +36,24 @@ if((Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.h" -Raw) -
 $migration=Get-Content "$repo/sql/updates/world/$migrationName" -Raw
 $normalization=if($Stromkar){''}else{(Get-Content "$PSScriptRoot/XalatathActorRetryBaseline.sql" -Raw)+"`n"+(Get-Content "$PSScriptRoot/XalatathFarthingFinaleBaseline.sql" -Raw)}
 if($Stromkar){
+ $bodyPath="$repo/sql/updates/world/2026_10_29_06_stromkar_terminal_body.sql"
+ if(Test-Path $bodyPath){
+  $bodyText=Get-Content $bodyPath -Raw
+  $bodyHash=(Get-FileHash $bodyPath -Algorithm SHA1).Hash
+  $fingerprint=($bodyText -split "`n"|Where-Object {$_ -like 'SET @stromkar_body_hash*'}).Replace('FROM smart_scripts','FROM saved_smart')
+  $normalization+="`nSET SESSION group_concat_max_len=1048576;`n$fingerprint`n"
+  $normalization+=@"
+SET @released_body := @stromkar_body_hash='9f8568398a6bafd39b014b8a9cd8185b68e64fa68cea76cfad7a5a5163cc3ac1'
+AND EXISTS(SELECT 1 FROM updates WHERE name='2026_10_29_06_stromkar_terminal_body.sql' AND hash='$bodyHash' AND state='RELEASED');
+UPDATE saved_smart SET action_param2=0 WHERE entryorguid=104276 AND source_type=9 AND id=0 AND @released_body;
+INSERT INTO saved_smart(entryorguid,source_type,id,event_chance,event_flags,action_type,target_type,comment)
+SELECT 104276,9,3,100,1,41,1,'TS - Despawn' WHERE @released_body;
+"@
+ }
  $followupPath="$repo/sql/updates/world/2026_10_24_51_stromkar_thoradin_presence.sql"
  if(Test-Path $followupPath){
   $followupHash=(Get-FileHash $followupPath -Algorithm SHA1).Hash
-  $normalization=@"
+  $normalization+=@"
 DELETE FROM saved_smart WHERE entryorguid=104276 AND source_type=0 AND id=9 AND link=0 AND event_type=60 AND event_phase_mask=0 AND event_chance=100 AND event_flags=0
 AND event_param1=0 AND event_param2=0 AND event_param3=500 AND event_param4=500 AND action_type=12 AND action_param1=104307 AND action_param2=8 AND action_param3=0
 AND action_param4=0 AND action_param5=0 AND action_param6=0 AND target_type=8 AND target_param1=0 AND target_param2=0 AND target_param3=0

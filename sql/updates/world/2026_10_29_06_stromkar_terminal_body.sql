@@ -1,0 +1,18 @@
+-- CODE-COUPLED: keep pending until the persistent downed-body AI is promoted.
+SET @stromkar_body_concat := @@SESSION.group_concat_max_len;
+SET SESSION group_concat_max_len=GREATEST(@@SESSION.group_concat_max_len,1048576);
+START TRANSACTION;
+SET @stromkar_body_hash := (SELECT SHA2(GROUP_CONCAT(CONCAT_WS('|',COALESCE(CAST(`entryorguid` AS CHAR),'NULL'),COALESCE(CAST(`source_type` AS CHAR),'NULL'),COALESCE(CAST(`id` AS CHAR),'NULL'),COALESCE(CAST(`link` AS CHAR),'NULL'),COALESCE(CAST(`Difficulties` AS CHAR),'NULL'),COALESCE(CAST(`event_type` AS CHAR),'NULL'),COALESCE(CAST(`event_phase_mask` AS CHAR),'NULL'),COALESCE(CAST(`event_chance` AS CHAR),'NULL'),COALESCE(CAST(`event_flags` AS CHAR),'NULL'),COALESCE(CAST(`event_param1` AS CHAR),'NULL'),COALESCE(CAST(`event_param2` AS CHAR),'NULL'),COALESCE(CAST(`event_param3` AS CHAR),'NULL'),COALESCE(CAST(`event_param4` AS CHAR),'NULL'),COALESCE(CAST(`event_param5` AS CHAR),'NULL'),COALESCE(CAST(`action_type` AS CHAR),'NULL'),COALESCE(CAST(`action_param1` AS CHAR),'NULL'),COALESCE(CAST(`action_param2` AS CHAR),'NULL'),COALESCE(CAST(`action_param3` AS CHAR),'NULL'),COALESCE(CAST(`action_param4` AS CHAR),'NULL'),COALESCE(CAST(`action_param5` AS CHAR),'NULL'),COALESCE(CAST(`action_param6` AS CHAR),'NULL'),COALESCE(CAST(`target_type` AS CHAR),'NULL'),COALESCE(CAST(`target_param1` AS CHAR),'NULL'),COALESCE(CAST(`target_param2` AS CHAR),'NULL'),COALESCE(CAST(`target_param3` AS CHAR),'NULL'),COALESCE(CAST(`target_param4` AS CHAR),'NULL'),COALESCE(CAST(`target_x` AS CHAR),'NULL'),COALESCE(CAST(`target_y` AS CHAR),'NULL'),COALESCE(CAST(`target_z` AS CHAR),'NULL'),COALESCE(CAST(`target_o` AS CHAR),'NULL'),COALESCE(CAST(`comment` AS CHAR),'NULL')) ORDER BY `entryorguid`,`source_type`,`id`,`link`,`Difficulties`,`event_type`,`event_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`event_param5`,`action_type`,`action_param1`,`action_param2`,`action_param3`,`action_param4`,`action_param5`,`action_param6`,`target_type`,`target_param1`,`target_param2`,`target_param3`,`target_param4`,`target_x`,`target_y`,`target_z`,`target_o`,`comment` SEPARATOR '\n'),256) FROM smart_scripts WHERE entryorguid=104276 AND source_type=9);
+SET @stromkar_body_safe := (SELECT COUNT(*) FROM creature_template WHERE entry=104276 AND AIName='SmartAI' AND ScriptName='npc_stromkar_zakajz')=1
+ AND ((SELECT COUNT(*) FROM smart_scripts WHERE entryorguid=104276 AND source_type=9)=4 AND @stromkar_body_hash='cb318b793ca39cc92d8d1e35bf5678d9fceae0f84b60157bfe480031407ba533'
+ OR (SELECT COUNT(*) FROM smart_scripts WHERE entryorguid=104276 AND source_type=9)=3 AND @stromkar_body_hash='9f8568398a6bafd39b014b8a9cd8185b68e64fa68cea76cfad7a5a5163cc3ac1');
+SET @stromkar_body_check := IF(COALESCE(@stromkar_body_safe,0),'DO 0','SIGNAL SQLSTATE ''45000'' SET MESSAGE_TEXT=''Stromkar terminal body AI/list differ; review before promotion''');
+PREPARE stromkar_body_check FROM @stromkar_body_check;EXECUTE stromkar_body_check;DEALLOCATE PREPARE stromkar_body_check;
+-- Native130966 includes a stun. Trigger the same cosmetic207454 while retaining
+-- its downed pose; do not stand the body to allow an ordinary cast.
+UPDATE smart_scripts SET action_param2=2 WHERE @stromkar_body_safe AND entryorguid=104276 AND source_type=9 AND id=0;
+-- Keep the authored seven-second effect and its final dark body. Existing
+-- Thoradin SetData and native49109 credit rows remain byte-for-byte unchanged.
+DELETE FROM smart_scripts WHERE @stromkar_body_safe AND entryorguid=104276 AND source_type=9 AND id=3;
+COMMIT;
+SET SESSION group_concat_max_len=@stromkar_body_concat;

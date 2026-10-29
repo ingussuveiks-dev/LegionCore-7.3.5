@@ -14,6 +14,7 @@ constexpr uint32 actorEntry=104276,scenarioIdentity=1037,firstStage=8,lastStage=
 constexpr uint32 actorEntry=101148,scenarioIdentity=991,firstStage=7,lastStage=8;
 #endif
 enum { SMART_EVENT_DAMAGED=32, SMART_EVENT_HEALTH_PCT=2, SMART_ACTION_DIE=37, SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT=0x020 };
+enum { UNIT_FIELD_FLAGS=0, UNIT_FLAG_NON_ATTACKABLE=1, UNIT_FLAG_IMMUNE_TO_PC=2, UNIT_FLAG_IMMUNE_TO_NPC=4, UNIT_FLAG_NOT_SELECTABLE=8, REACT_PASSIVE=0 };
 uint32 messages=0;
 #define TC_LOG_INFO(...) (++messages)
 #define TC_LOG_DEBUG(...) ((void)0)
@@ -29,7 +30,7 @@ struct CreatureAI {
     virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType) { }
 };
 struct InstanceScript { void OnCreatureDamageTaken(Creature*,Unit*,uint32&) { } };
-struct Unit { uint32 kind=0;uint32 Deal(Creature*,uint32); };
+struct Unit { uint32 kind=0;uint32 Deal(Creature*,uint32);Unit* ToPlayer(){return kind==0?this:nullptr;} };
 struct Creature {
     uint32 entry=actorEntry,map=1539,instance=42;
     uint64 hp=100000,targetHp=1000;
@@ -39,6 +40,12 @@ struct Creature {
     bool inWorld=true,phase=true;
     bool poseAura=false,foreignPose=false,failAura=false;
     uint32 auraAttempts=0,poseRemovals=0;
+    uint32 flags=0;
+    uint32 GetUInt32Value(uint32)const{return flags;}
+    void SetFlag(uint32,uint32 value){flags|=value;}
+    void RemoveFlag(uint32,uint32 value){flags&=~value;}
+    void SetReactState(uint32){}
+    void CombatStop(bool){combat=false;}
     ObjectGuid guid=1;
     CreatureAI* active=nullptr;
     CreatureAI* i_disabledAI=nullptr;
@@ -181,10 +188,15 @@ int main() {
         ai.UpdateAI(10000);assert(boss.auraAttempts==1&&ai.updateCalls==2);
         SpellInfo ordinary;ordinary.Id=207048;Unit pet;pet.kind=1;
         ai.SpellHit(&pet,&ordinary);assert(boss.poseAura&&ai.hitCalls==1&&ai.poseAtHit);
-        SpellInfo drain;ai.SpellHit(&pet,&drain);assert(!boss.poseAura&&ai.hitCalls==2&&!ai.poseAtHit);
-        ai.UpdateAI(10000);assert(!boss.poseAura&&boss.auraAttempts==1);
-        ai.SpellHit(&pet,&drain);assert(ai.hitCalls==3&&!boss.poseAura);
-        ai.Reset();assert(ai.resetCalls==1);ai.UpdateAI(1);assert(boss.poseAura&&boss.auraAttempts==2);
+        SpellInfo drain;ai.SpellHit(&pet,&drain);assert(boss.poseAura&&ai.hitCalls==1&&!ai.executionStarted);
+        Unit player;boss.flags=UNIT_FLAG_IMMUNE_TO_NPC;ai.SpellHit(&player,&drain);
+        assert(boss.poseAura&&ai.hitCalls==2&&ai.poseAtHit&&ai.executionStarted&&boss.flags==15&&!boss.combat);
+        ai.UpdateAI(10000);assert(boss.poseAura&&boss.auraAttempts==1);
+        scenarioManager.scenario.step=10;ai.UpdateAI(60000);assert(boss.poseAura&&boss.alive&&boss.hp==1);
+        uint32 postDamage=100;ai.DamageTakenAfterScaling(&pet,postDamage,0);assert(postDamage==0);
+        ai.SpellHit(&player,&drain);assert(ai.hitCalls==2&&boss.poseAura);
+        scenarioManager.scenario.step=9;
+        ai.Reset();assert(ai.resetCalls==1&&boss.flags==UNIT_FLAG_IMMUNE_TO_NPC);ai.UpdateAI(1);assert(boss.poseAura&&boss.auraAttempts==2);
         ai.Reset();assert(!boss.poseAura&&ai.resetCalls==2);
         boss.failAura=true;ai.UpdateAI(1);assert(!boss.poseAura&&boss.auraAttempts==3);
         boss.failAura=false;ai.UpdateAI(1999);assert(boss.auraAttempts==3);
@@ -213,9 +225,9 @@ int main() {
         for(uint32 kind:{0u,1u,2u}){
             scenarioManager={};scenarioManager.scenario.step=9;
             Creature actor;actor.hp=1;Unit killer;killer.kind=kind;npc_stromkar_zakajz content(&actor);
-            content.UpdateAI(1);content.SpellHit(&killer,&drain);assert(!actor.poseAura&&content.hitCalls==1&&!content.poseAtHit);
+            content.UpdateAI(1);content.SpellHit(&killer,&drain);assert(actor.poseAura&&content.executionStarted==(kind==0)&&content.hitCalls==(kind==0?1u:0u));
         }
-        std::cout<<"PASS actual Zakajz UpdateAI/SpellHit/Reset: exact defeated final stage, native aura retry/duplicate/dispel, cleanup before original Dark Drain delegate, ordinary and pet/guardian hits, reset/retry, foreign aura retention, scope/life/HP guards; visual/aura application and SmartAI endpoints controlled\n";
+        std::cout<<"PASS actual Zakajz UpdateAI/SpellHit/Reset: native downed pose persists through real Player Dark Drain and completed stage10; pet/guardian/duplicate hit refusal, terminal flags/damage suppression and own-bit reset. Native aura retry/dispel and scope/life/HP guards retained; visual/aura and SmartAI endpoints controlled\n";
 #endif
     }
 #endif

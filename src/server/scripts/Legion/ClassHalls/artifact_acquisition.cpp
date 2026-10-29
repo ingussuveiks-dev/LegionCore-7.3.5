@@ -1498,6 +1498,7 @@ struct npc_stromkar_zakajz : SmartAI
     ObjectGuid thoradin = {};
     bool defeatPoseApplied = false;
     bool executionStarted = false;
+    uint32 executionFlags = 0;
     uint32 defeatPoseRetry = 0;
     void ClearDefeatPose()
     {
@@ -1508,6 +1509,8 @@ struct npc_stromkar_zakajz : SmartAI
     void Reset() override
     {
         ClearDefeatPose();
+        me->RemoveFlag(UNIT_FIELD_FLAGS, executionFlags);
+        executionFlags = 0;
         executionStarted = false;
         defeatPoseRetry = 0;
         SmartAI::Reset();
@@ -1517,8 +1520,9 @@ struct npc_stromkar_zakajz : SmartAI
         SmartAI::UpdateAI(diff);
         Scenario* scenario = me->IsInWorld() && me->GetMapId() == 1539 && me->GetEntry() == 104276
             ? sScenarioMgr->GetScenario(me->GetInstanceId()) : nullptr;
-        if (!scenario || scenario->GetScenarioId() != 1037 || scenario->GetCurrentStep() != 9 ||
-            !me->IsAlive() || me->GetHealthPct() > 1.0f || executionStarted)
+        if (!scenario || scenario->GetScenarioId() != 1037 ||
+            (scenario->GetCurrentStep() != 9 && !(executionStarted && scenario->GetCurrentStep() == 10)) ||
+            !me->IsAlive() || me->GetHealthPct() > 1.0f)
         {
             ClearDefeatPose();
             defeatPoseRetry = 0;
@@ -1540,11 +1544,21 @@ struct npc_stromkar_zakajz : SmartAI
     }
     void SpellHit(Unit* caster, SpellInfo const* spell) override
     {
-        // Restore the actor before its existing Dark Drain dissolve/list runs.
+        // The actual post-arrival Dark Drain starts the native terminal visual.
+        // Keep the downed body throughout it; removing130966 made Zakajz stand.
         if (spell && spell->Id == 201904 && me->GetEntry() == 104276 && me->GetMapId() == 1539)
         {
+            Scenario* scenario = me->IsInWorld() ? sScenarioMgr->GetScenario(me->GetInstanceId()) : nullptr;
+            if (executionStarted || !caster || !caster->ToPlayer() || !me->IsAlive() || me->GetHealthPct() > 1.0f ||
+                !scenario || scenario->GetScenarioId() != 1037 ||
+                (scenario->GetCurrentStep() != 9 && scenario->GetCurrentStep() != 10))
+                return;
             executionStarted = true;
-            ClearDefeatPose();
+            uint32 flags = UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_SELECTABLE;
+            executionFlags = flags & ~me->GetUInt32Value(UNIT_FIELD_FLAGS);
+            me->SetFlag(UNIT_FIELD_FLAGS, flags);
+            me->SetReactState(REACT_PASSIVE);
+            me->CombatStop(true);
         }
         SmartAI::SpellHit(caster, spell);
     }
@@ -1562,6 +1576,11 @@ struct npc_stromkar_zakajz : SmartAI
     void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType type) override
     {
         SmartAI::DamageTakenAfterScaling(attacker, damage, type);
+        if (executionStarted)
+        {
+            damage = 0;
+            return;
+        }
         StromkarZakajz::Protect(me, attacker, damage);
     }
 };
