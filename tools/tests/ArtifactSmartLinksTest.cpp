@@ -48,5 +48,21 @@ int main()
             return 1;
         std::printf("%s\t%u\t%u\t%u\t%u\t%u\n",c.name,c.targetEvent,c.targetAction,c.link,unsigned(c.target),unsigned(invalid));
     }
+    Case timed[] = {
+        {"timed-owner-missing",61,33,1,false,true},
+        {"timed-owner-valid",61,33,1,true,false},
+        {"timed-owner-hello",64,80,1,true,true}
+    };
+    for (auto const& c : timed)
+    {
+        SmartScript script;
+        SmartScriptHolder timedRow{2,1,33,0};
+        if (c.target) script.mEvents.push_back({1,0,c.targetAction,c.targetEvent});
+        // The running source9 row is intentionally outside the owner's mEvents.
+        script.ProcessAction(timedRow);
+        if (bool(script.errors) != c.invalid || script.errors > 1 || script.executed != unsigned(!c.invalid))
+            return 1;
+        std::printf("%s\t%u\t%u\t%u\t%u\t%u\n",c.name,c.targetEvent,c.targetAction,c.link,unsigned(c.target),unsigned(c.invalid));
+    }
     return 0;
 }

@@ -5028,5 +5028,11 @@
       },
       "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
     }
-  ]
+  ],
+  "expanded_map_link_review": {
+    "audit": "docs/audits/artifact-map-owner-links-2026-10-29.json",
+    "scope": "25 static candidate maps +direct route actors;1946 owner contexts/82 timed owner contexts.29 primary edges/1 missinglist remain REVIEW candidates, not all proven bugs;524 nativeSmart/133 C++delegationreview/1289nonSmart contexts. Known bounded3 Monk edges retained; shared2 now visible.",
+    "checks": "Native10-case LINK differential plus owner/GUID/recipient traversal fixture; no new diagnostics, no live mutation.",
+    "next": "Trace107691 missing10809706 (existing10809705) and101539 invalid LINK35 before focused safe repair. Source9 links use recipient mEvents; do not change legitimate combat event to61 or delete unknown links to hide errors."
+  }
 }

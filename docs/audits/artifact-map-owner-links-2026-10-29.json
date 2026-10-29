@@ -1,0 +1,669 @@
+{
+  "date": "2026-10-29",
+  "build": "7.3.5.26972",
+  "scope_maps": [
+    1489,
+    1494,
+    1495,
+    1498,
+    1500,
+    1511,
+    1526,
+    1528,
+    1533,
+    1536,
+    1539,
+    1541,
+    1572,
+    1579,
+    1599,
+    1600,
+    1607,
+    1609,
+    1611,
+    1612,
+    1616,
+    1617,
+    1620,
+    1621,
+    1625
+  ],
+  "static_spawns": {
+    "0": 4585,
+    "1": 1461
+  },
+  "context_counts": {
+    "non_smart_or_missing_template": 1289,
+    "native_smart": 524,
+    "cpp_delegation_review": 133
+  },
+  "timed_owner_contexts": 82,
+  "review_findings": [
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 100438,
+      "owner_script_entry": 100438,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1514
+      ],
+      "entry": 100438,
+      "event": 9,
+      "link": 10,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 101539,
+      "owner_script_entry": 101539,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1489
+      ],
+      "entry": 101539,
+      "event": 34,
+      "link": 35,
+      "reason": "invalid_target_event",
+      "target_event_type": 52,
+      "target_action_type": 53
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 102532,
+      "owner_script_entry": 102532,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1533
+      ],
+      "entry": 102532,
+      "event": 2,
+      "link": 1,
+      "reason": "invalid_target_event",
+      "target_event_type": 52,
+      "target_action_type": 1
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 103151,
+      "owner_script_entry": 103151,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1539
+      ],
+      "entry": 103151,
+      "event": 1,
+      "link": 2,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "missing_timed_action_list",
+      "list_id": 10809706,
+      "recipient": [
+        0,
+        107691,
+        107691
+      ],
+      "execution": "native_smart",
+      "owner_source": 0,
+      "owner_entry": 107691,
+      "owner_script_entry": 107691,
+      "timed_list": null,
+      "event": 1,
+      "action": 87,
+      "target_type": 1
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 108168,
+      "owner_script_entry": 108168,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1616
+      ],
+      "entry": 108168,
+      "event": 7,
+      "link": 8,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 101430,
+      "owner_script_entry": 101430,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1539
+      ],
+      "entry": 101430,
+      "event": 1,
+      "link": 2,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 102693,
+      "owner_script_entry": 102693,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1539
+      ],
+      "entry": 102693,
+      "event": 6,
+      "link": 8,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 97168,
+      "owner_script_entry": 97168,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1572
+      ],
+      "entry": 97168,
+      "event": 2,
+      "link": 3,
+      "reason": "invalid_target_event",
+      "target_event_type": 60,
+      "target_action_type": 12
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 97436,
+      "owner_script_entry": 97436,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1572
+      ],
+      "entry": 97436,
+      "event": 2,
+      "link": 3,
+      "reason": "invalid_target_event",
+      "target_event_type": 60,
+      "target_action_type": 12
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 100475,
+      "owner_script_entry": 100475,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1514
+      ],
+      "entry": 100475,
+      "event": 1,
+      "link": 7,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 100475,
+      "owner_script_entry": 100475,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1514
+      ],
+      "entry": 100475,
+      "event": 6,
+      "link": 8,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 101325,
+      "owner_script_entry": 101325,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1511
+      ],
+      "entry": 101325,
+      "event": 3,
+      "link": 4,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 109357,
+      "owner_script_entry": 109357,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1489
+      ],
+      "entry": 109357,
+      "event": 0,
+      "link": 1,
+      "reason": "invalid_target_event",
+      "target_event_type": 0,
+      "target_action_type": 11
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 109108,
+      "owner_script_entry": 109108,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1489
+      ],
+      "entry": 109108,
+      "event": 6,
+      "link": 7,
+      "reason": "invalid_target_event",
+      "target_event_type": 0,
+      "target_action_type": 11
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 109109,
+      "owner_script_entry": 109109,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1489
+      ],
+      "entry": 109109,
+      "event": 6,
+      "link": 7,
+      "reason": "invalid_target_event",
+      "target_event_type": 0,
+      "target_action_type": 11
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 109704,
+      "owner_script_entry": 109704,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1489
+      ],
+      "entry": 109704,
+      "event": 5,
+      "link": 6,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 1,
+      "owner_entry": 244431,
+      "owner_script_entry": 244431,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1572
+      ],
+      "entry": 244431,
+      "event": 2,
+      "link": 3,
+      "reason": "invalid_target_event",
+      "target_event_type": 60,
+      "target_action_type": 12
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 1,
+      "owner_entry": 247566,
+      "owner_script_entry": 247566,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 247566,
+      "event": 0,
+      "link": 1,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 1,
+      "owner_entry": 251878,
+      "owner_script_entry": 251878,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 251878,
+      "event": 4,
+      "link": 5,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 104520,
+      "owner_script_entry": 104520,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 104520,
+      "event": 9,
+      "link": 10,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 100376,
+      "owner_script_entry": 100376,
+      "timed_list": null,
+      "execution": "cpp_delegation_review",
+      "maps": [],
+      "entry": 100376,
+      "event": 0,
+      "link": 10,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 106613,
+      "owner_script_entry": 106613,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 106613,
+      "event": 1,
+      "link": 2,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 106925,
+      "owner_script_entry": 106925,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 106925,
+      "event": 1,
+      "link": 2,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 101384,
+      "owner_script_entry": 101384,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 101384,
+      "event": 0,
+      "link": 1,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 101388,
+      "owner_script_entry": 101388,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 101388,
+      "event": 6,
+      "link": 7,
+      "reason": "invalid_target_event",
+      "target_event_type": 6,
+      "target_action_type": 205
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 101388,
+      "owner_script_entry": 101388,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 101388,
+      "event": 7,
+      "link": 8,
+      "reason": "invalid_target_event",
+      "target_event_type": 6,
+      "target_action_type": 205
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 101388,
+      "owner_script_entry": 101388,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 101388,
+      "event": 8,
+      "link": 9,
+      "reason": "invalid_target_event",
+      "target_event_type": 6,
+      "target_action_type": 205
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 101389,
+      "owner_script_entry": 101389,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 101389,
+      "event": 0,
+      "link": 1,
+      "reason": "invalid_target_event",
+      "target_event_type": 6,
+      "target_action_type": 205
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 101389,
+      "owner_script_entry": 101389,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [],
+      "entry": 101389,
+      "event": 1,
+      "link": 2,
+      "reason": "invalid_target_event",
+      "target_event_type": 6,
+      "target_action_type": 205
+    }
+  ],
+  "unresolved_recipients": [
+    {
+      "reason": "recipient_runtime_resolution_required",
+      "owner_source": 0,
+      "owner_entry": 92447,
+      "owner_script_entry": 92447,
+      "timed_list": null,
+      "event": 4,
+      "action": 87,
+      "target_type": 7
+    },
+    {
+      "reason": "recipient_runtime_resolution_required",
+      "owner_source": 0,
+      "owner_entry": 92450,
+      "owner_script_entry": 92450,
+      "timed_list": null,
+      "event": 5,
+      "action": 87,
+      "target_type": 7
+    },
+    {
+      "reason": "recipient_runtime_resolution_required",
+      "owner_source": 0,
+      "owner_entry": 92445,
+      "owner_script_entry": 92445,
+      "timed_list": null,
+      "event": 4,
+      "action": 87,
+      "target_type": 7
+    }
+  ],
+  "nested_timed_replacement_review": [
+    {
+      "reason": "native_SetScript9_rejects_self_replacement_during_timed_iteration",
+      "owner_source": 0,
+      "owner_entry": 54638,
+      "owner_script_entry": 54638,
+      "timed_list": 5463804,
+      "event": 0,
+      "action": 87,
+      "target_type": 1
+    },
+    {
+      "reason": "native_SetScript9_rejects_self_replacement_during_timed_iteration",
+      "owner_source": 0,
+      "owner_entry": 54638,
+      "owner_script_entry": 54638,
+      "timed_list": 5463805,
+      "event": 0,
+      "action": 87,
+      "target_type": 1
+    }
+  ],
+  "limits": [
+    "All36 selection scope plus25 maps is a candidate inventory, not36 complete chains.",
+    "SmartScript::FindLinkedEvent uses recipient mEvents for source9 too. Ten extracted native cases verify the link evaluator; recipient selection is a static candidate expansion.",
+    "Flags/difficulty/source22 conditions/phase/distance and runtime event reachability are not evaluated; flagged rows require native behavioral review before SQL edits.",
+    "C++ bindings may override/delegate SmartAI; dormant rows are labeled, not asserted executable.",
+    "Direct action12 summon and explicit entry recipient closure are included; DB2 spell summons, C++ summons/SetScript9 and script base overrides/stored runtime targets are not fully traversed.",
+    "No missing LINK deleted and no quest/character/live record modified."
+  ],
+  "status": "Broader review inventory, not completed chain certification; no live data mutation",
+  "fix_commit": "Audit-tooling commit containing this audit; resolve hash from Git history.",
+  "cause": "Earlier bounded route starters/enders/objectives excluded scenario-map NPCs and their timed action lists. Native source9 LINK searches recipient mEvents, so treating a timed list as its own owner gives false positives/negatives.",
+  "implementation": "Read-only static world export adds36 class-specific scenario rows and artifact InstanceMapScript constructors/bindings (Rogue1607/1620 absent in class rows),25 maps, direct route actors. Walk actual GUID override before template, source0/1, action12 summon and explicit timed recipients80/87/88; source9 LINK resolved in owner primary events. Clearly separate nativeSmart/C++review/nonSmart candidates, unavailable runtime recipients, nested self replacement rejected by native SetScript9 and range expansion limits.",
+  "checks": [
+    "Extracted actual native FindLinkedEvent and ProcessAction LINK tail MSVC ASan10-case differential: seven retained primary cases and three source9/owner-event counterexamples where same-list lookup always disagrees.",
+    "Exported4585 static creature/1461 staticGO rows,25 maps/384 directCreature/38 directGOentries; no character data. Traversal fixture validates GUID override, cross-owner and GO source9 links, direct summons, range/empty/random/clear/missing lists, visible unresolved runtime recipients and native timed self replacement refusal.",
+    "Retained bounded36/149/0 automated findings/3 Monk edges on same unchanged SQL17 world snapshot; broader review29 primary issues/1 missing list does not supersede bounded provenance or prove all findings actual failures.",
+    "Every test/export/read-only audit before/after crash/log/exit checks pass; no new crash/warning/error/assertion/DBErrors. Canonical ReleaseE61B28BE/ABAEC13B unchanged, no server/task ownership change; mixed3915-byte LINK2 retained."
+  ],
+  "local_evidence": [
+    ".codex/artifact-map-export-2026-10-29",
+    ".codex/artifact-map-traversal-regression-2026-10-29",
+    ".codex/artifact-map-bounded-retained-2026-10-29",
+    ".codex\\artifact-map-actors-2026-10-29\\links.json"
+  ],
+  "source_hashes": {
+    ".codex\\artifact-post-slaghammer-2026-10-29\\world\\smart_scripts.jsonl": "9b458a380014aa3877ed29a750a0f8d8588d0eef6bd913f9c11192a0eb24a7be",
+    ".codex\\artifact-post-slaghammer-2026-10-29\\world\\creature_template.jsonl": "791f4357f45ee5ffead104cc38d6090ff3a11da0d01facae8ac2c61a25392a9e",
+    ".codex\\artifact-post-slaghammer-2026-10-29\\world\\gameobject_template.jsonl": "94726d2df0b238b559e37114944e69554ac5796ab3779f91c4e4d168a27bb849",
+    ".codex\\artifact-map-actors-2026-10-29\\creature.jsonl": "4256aaa55d59e513bed681ff0d8b3fc35394733754adc8745a4c684faf4931b8",
+    ".codex\\artifact-map-actors-2026-10-29\\gameobject.jsonl": "59a66781db24102ea4d74c1325415e80efd29cadbd01a2c6718fd344f8d95c9e"
+  },
+  "report_sha256": "2552fda52d2b428609ee460a8e4251c599041829992d3c3ab478425edd595323",
+  "scope_sha256": "9ad24390904b39610d8f5c1ba7207213055c0ecf15e36b62fa60c42f1245f9f7",
+  "instance_sources": [
+    {
+      "Path": "src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/instance_temple_of_the_jade_serpent.cpp",
+      "MapExpression": "1625",
+      "BoundMaps": [
+        1625
+      ],
+      "SHA256": "7295D81ADC011CB6CAFE4DB0020EF0CD1ABD9D7211C5C353CDBA7DFF76073F5B",
+      "Script": "instance_temple_of_the_jade_serpent"
+    },
+    {
+      "Path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/instance_broken_shore.cpp",
+      "MapExpression": "1500",
+      "BoundMaps": [
+        1500
+      ],
+      "SHA256": "B16953BC63C2CDB57AC8FEC03A033935E5DF235BEFB5A38CE7A1FD602849DB92",
+      "Script": "instance_broken_shore"
+    },
+    {
+      "Path": "src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp",
+      "MapExpression": "1495",
+      "BoundMaps": [
+        1495
+      ],
+      "SHA256": "6B3893A48876BE0885395751BCB4511AC5322A89A7591E721CFD9AE7694B85A0",
+      "Script": "instance_shields_rest"
+    },
+    {
+      "Path": "src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp",
+      "MapExpression": "1539",
+      "BoundMaps": [
+        1539
+      ],
+      "SHA256": "F3CB6FB76C6CB129DB390B75AC63991903E33D14A527AD4387A6ECEFC69BE1AF",
+      "Script": "instance_silver_hand"
+    },
+    {
+      "Path": "src/server/scripts/Scenario/Artifacts/Priest/Tuure/instance_tuure.cpp",
+      "MapExpression": "1489",
+      "BoundMaps": [
+        1489
+      ],
+      "SHA256": "31BC4D82CB7F71E76F2747A9E0D7C3CB0DD15EBF442B6EB5509731049B8550DC",
+      "Script": "instance_tuure"
+    },
+    {
+      "Path": "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/instance_devourer.cpp",
+      "MapExpression": "1607",
+      "BoundMaps": [
+        1607
+      ],
+      "SHA256": "8C06B855D7DF39519D927C75CD4CA9D219AFACCB8159821BF7D98FC9A9BA1938",
+      "Script": "instance_devourer"
+    },
+    {
+      "Path": "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/instance_kingslayers.cpp",
+      "MapExpression": "1620",
+      "BoundMaps": [
+        1620
+      ],
+      "SHA256": "70AEECB8481F81898BDD8329F7CAB4CD161F0E187D168A71420D665F583ABA37",
+      "Script": "instance_kingslayers"
+    },
+    {
+      "Path": "src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp",
+      "MapExpression": "1600",
+      "BoundMaps": [
+        1600
+      ],
+      "SHA256": "843B548C6D4C5E855C0BEFF23DD08A6F3F94CDC2FBCBC73BF2201C2B60C5B56C",
+      "Script": "instance_sharasdal"
+    },
+    {
+      "Path": "src/server/scripts/Scenario/Artifacts/Warrior/Warswords/instance_warswords.cpp",
+      "MapExpression": "1511",
+      "BoundMaps": [
+        1511
+      ],
+      "SHA256": "57E78F005FD59BB2D94DA87C442161F49476CDAAAB52C668DC9D53890A370503",
+      "Script": "instance_warswords"
+    }
+  ],
+  "next": "Review each flagged full behavior before edits. Includes known shared101430/103151 missing2. New concrete candidate107691 action87 references absent10809706 while donor/list10809705 must be traced; do not silently drop choice. BaronSliver101539 row35 and other ordinary-event links need intent/repeat review; do not change combat events blindly.",
+  "research_limits": "Two exploratory read-only metadata queries assumed creature_template.name and nonexistent creature_template_locale; inspected actual creature_template_wdb.Name1/schema and corrected. No live records changed. Local source listing filter typo after successful bounded audit did not affect test result. Old full native/client evidence retained; no footage reviewed for this inventory."
+}

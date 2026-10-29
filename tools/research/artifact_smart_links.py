@@ -5,11 +5,13 @@ It proves neither that a source event fires nor what a missing action should do.
 """
 
 
-def invalid_links(group):
+def invalid_links(group, *, owner_events=None):
     # Native FindLinkedEvent returns the first matching event ID. Database rows
     # normally have unique IDs; preserve that behavior for malformed fixtures.
     targets = {}
-    for row in group:
+    # Timed-list rows execute on their recipient SmartScript. FindLinkedEvent
+    # searches that owner's mEvents, not mTimedActionList (source_type 9).
+    for row in group if owner_events is None else owner_events:
         targets.setdefault(row['id'], row)
     result = []
     for row in group:
