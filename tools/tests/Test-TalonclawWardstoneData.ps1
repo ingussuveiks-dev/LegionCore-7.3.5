@@ -70,7 +70,17 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_01_talonc
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_01_talonclaw_wardstone_admission.sql' AND hash='$hash' AND state='RELEASED';"
   if($live -notcontains '1'){throw 'Live Talonclaw Wardstone wave migration/hash differs'}
-  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Talonclaw Wardstone regression $table"}}
+  # World30/02 changes only the related Mist Warder's two TALK speakers.
+  # Accept that exact separately verified migration, without weakening the
+  # original Wardstone replay/guard or ignoring any other related field.
+  $followup="$repo/sql/updates/world/2026_10_30_02_mist_warder_speakers.sql";$speakersApplied=$false
+  if(Test-Path $followup){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes((Get-Content $followup -Raw).Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
+   $applied=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_02_mist_warder_speakers.sql' AND hash='$hash' AND state='RELEASED';";$speakersApplied=$applied -contains '1'
+  }
+  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){$expected=Signature $rows "first-$table"
+   if($table -eq 'smart_scripts' -and $speakersApplied){$expected=[string]::Join("`n",[string[]]@($expected.Split("`n")|ForEach-Object {$f=$_.Split("`t");if($f[0] -eq '100207' -and $f[1] -eq '0' -and [int]$f[2] -in @(4,5)){$f[21]='1'};$f -join "`t"}))}
+   if((Signature $fullLive "live-$table") -cne $expected){throw "Live differs from Talonclaw Wardstone regression $table"}
+  }
  }
  'PASS full-schema TEMP Wardstone admission:44 exact predicates (8 visible click,18 actual cast,18 independent hit); all scripts/templates/click metadata/native source13 target and death masks unchanged; repeat/live readback and22 custom/partial refusals'
 }

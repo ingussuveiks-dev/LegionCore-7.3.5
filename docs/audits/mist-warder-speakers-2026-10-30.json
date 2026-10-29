@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-30",
+  "status": "Mist Warder pet/guardian dialogue repaired; World02 RELEASED; full encounter/client remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "100207 row5 HEALTH0..50 TALK1 VICTIM2 and linked row4 death TALK2 INVOKER7 select pet/guardian Creature as speaker. Native CreatureTextMgr looks up that entry, which has no Warder text group. FreezingTrap3355 follows a distinct original DIE37 self-kill; that death invoker is the Warder itself and already speaks. Ordinary pet kills therefore differed from the native trap solution.",
+  "change": "Exactly two target_type values (100207/4 and5) ->SELF1. Retain original aggro0,health1 anddeath2 BroadcastText, health0..50 and nonrepeatable flags,200047 activation,199869 Banishment combat target,3355 SPELLHIT->DIE37, death205/48069 closestPlayer21/radius50 and LINK4. No spell, credit, group rule, threshold or quest state changed.",
+  "validation": [
+    "Full4table session-local TEMP baseline/replay/idempotence, exact2-field differential, all texts/conditions/template unchanged;15 custom-state refusal variants preserve every row under --force, then full live readback/RELEASED LF-SHA1 pass.",
+    "MSVC ASan extracts actual event/action/health/SpellHit/TALK/SELF-VICTIM/LINK/DIE handlers, CreatureTextMgr entry-group admission and SmartAI SpellHit/JustDied.20 original/repaired player/pet/guardian/NPC/null ordinary/trap combinations,51/50 threshold, repeated hit/death,one-hit without health poll, invalid/missing actor. Original missing pet speech counterfactual paired with repaired own text. Both paths request original205 exactly once. Kill/criteria/range/cast/chat packet endpoints controlled; no full server combat or actual client audio/render proof.",
+    "Matching26972 native BCT103865/135117/103866 and48069->973/2/tree46184/46185 confirmed. Original3355 effect0 applyAura6/stun12 plus effect1 aura308 remain unchanged. One new catalog expectation initially assumed26, failed visibly, and was corrected to actual12; production data was not altered. Failed/passing logs and snapshots archived with byte hashes.",
+    "Retained Test-TalonclawWardstoneData -VerifyLiveData passes its original early-hit replay and44 predicates; live comparison accepts precisely the two Warder fields only after separately checking World02 migration RELEASED/hash. No original baseline or migration guard weakened."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_02_mist_warder_speakers.sql",
+    "lf_sha1": "be36388da69a0cb1508589a2c8d3056e56ae3af5",
+    "owned_pid": 14468,
+    "world_sha256": "7D382937DED53E107AA52237B9757508348945A85AEA2E52E1EE9B698C513451",
+    "bnet_sha256": "F20D25EEFE0BD1ACDF40CBFFB836E1D811425C8F6AD45195AEA414B78DC16167",
+    "result": "SQL only; EXEs unchanged. Both servers absent before promotion/start; owned14468 ready/graceful shutdown0/exit0/empty stderr/newDBErrors0/protected hashes unchanged. No user/unknown server stopped, no character/item/quest reset."
+  },
+  "diagnostics": "Every fixture/fingerprint/TEMP/native/catalog/updater/live test has before/after canonical+own crashes and log lengths/timestamps with inspected exit/stdout/stderr/new server diagnostics. Catalog expectation failure explicitly retained as failed, paired with repaired pass; no new crash or runtime warning/error/assertion/DBErrors. Active Crashes empty, mixed shared101430/103151 LINK2 DBErrors3915 bytes/UTC2026-10-29T13:29:05.1130661Z retained unchanged. No mixed runtime log rotated or truncated.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\mist-warder-catalog-fixture-2026-10-30",
+    "cause": "Resolved isolated catalog-fixture assertion only; original source/archive SHA256 verified, no production dump or mixed runtime log cleared."
+  },
+  "evidence": [
+    ".codex/mist-warder-fixture-2026-10-30",
+    ".codex/mist-warder-fingerprints-2026-10-30",
+    ".codex/mist-warder-native-2026-10-30",
+    ".codex/mist-warder-native-final-2026-10-30",
+    ".codex/mist-warder-updater-2026-10-30",
+    ".codex/mist-warder-live-2026-10-30"
+  ],
+  "remaining": "Actual client speech/voice,combat/trap/full Talonclaw scenario/group/faction/reentry remain OPEN. Original Wardstone failed-visual/base retry and missingLINK4,middle39427,sharedLINK2,Stromkar recoil/continuous beams/full36 remain OPEN. Last fresh structural export from World01 has19 expanded link candidates/3 boundedMonk; this two-field speaker repair changes no link."
+}

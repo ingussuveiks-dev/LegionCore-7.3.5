@@ -5109,5 +5109,11 @@
     "status": "World30/01 RELEASED;44 source18/17/22 rules prevent early199728 consuming once event. Preserve stage-independent visible cursor and real973/3 OR4 cast/hit, native first1 then3 distinct stones. Original scripts/target masks/unknownLINK4 unchanged.",
     "checks": "ASan actual handlers/native scenario snapshot,81 matrices/late state/cast failure,22 TEMP refusals/live4tables/26972/shared actualPE/own27920 clean graceful0. EXEs same7D382937/F20D25EE;3915 unresolvedDBErrors retained.",
     "remaining": "Mist Warder pet dialogue next; visual/base cast-failure recovery and unknownLINK4 OPEN. Whole36/client/middle39427/Stromkar beam-recoil/sharedLINK2 unfinished; no resets authorized. Fresh36/149/0/3Monk and expanded19 candidates unchanged."
+  },
+  "mist_warder_speakers": {
+    "audit": "docs/audits/mist-warder-speakers-2026-10-30.json",
+    "status": "World30/02 RELEASED;100207 health5/death4 TALK->SELF,pet/guardian speaker corrected. Original3355trap self-kill/death205/48069/50yd/link untouched.",
+    "checks": "ASan native event/TALK/targets/chat admission/SmartAI JustDied+SpellHit+DIE,20 old/fixed cases plus onehit/repeats/invalid;15 TEMP refusals/live4tables/native26972/retained Wardstone live pass. Own14468 clean graceful0; sameEXEs,3915 mixedDBErrors retained.",
+    "remaining": "Actual client/full36 unfinished. Catalog-fixture26->actual12 expectation failure archived with hashes under fixed/mist-warder-catalog-fixture-2026-10-30. Continue next proven artifact repair; no reset permission."
   }
 }
