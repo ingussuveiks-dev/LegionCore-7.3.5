@@ -714,7 +714,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "With51/52 receiver,53 speech,192085 endpoint,54 slots/order and55 Gaze visual source repaired, establish actual finale Val'kyr/trigger creation/placement/admission; do not blindly reuse93819's Dalaran coordinates. Trace existing216016 arrival ->phase5997 Danica UPDATE103739 before adding credit. Prove201904 hit/list/channel/credit, kited-boss travel and AI replacement/re-entry; preserve link/priest201905 and sampled retained body/Thoradin. Continue chest-deletion-safe replay, completed10/ability/earlier sequence, query/cache display and full relevant video; actual client travel/VFX remain pending."
+      "next_action": "With51/52 receiver,53 speech,192085 endpoint,54 slots/order and55 Gaze visual source repaired, establish actual finale Val'kyr/trigger creation/placement/admission; do not blindly reuse93819's Dalaran coordinates. Trace existing216016 arrival ->phase5997 Danica UPDATE103739 before adding credit. Prove201904 hit/list/channel/credit, kited-boss travel and AI replacement/re-entry; preserve link/priest201905 and sampled retained body/Thoradin. Continue chest-deletion-safe replay, completed10/ability/earlier sequence, query/cache display and full relevant video; actual client travel/VFX remain pending.",
+      "terminal_regeneration_audit": "docs/audits/stromkar-terminal-regeneration-2026-10-29.json"
     },
     {
       "class_id": 1,

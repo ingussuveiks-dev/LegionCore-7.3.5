@@ -37,6 +37,18 @@ struct Creature {
     float multiplier=0.001f;
     bool alive=true;
     bool combat=true;
+    bool regeneration=true, threatReferences=true;
+    uint32 threatClears=0;
+    struct HostileReferences {bool present=true;uint32 clears=0;void deleteReferences(){present=false;++clears;}} hostileReferences;
+    HostileReferences& getHostileRefManager(){return hostileReferences;}
+    void DeleteThreatList(){threatReferences=false;++threatClears;}
+    bool isRegeneratingHealth(){return regeneration;}
+    void setRegeneratingHealth(bool value){regeneration=value;}
+    void RegenerateHealth();
+    uint32 GetCharmerOrOwnerGUID(){return 0;}
+    float GetTotalAuraMultiplier(uint32){return 1.0f;}
+    int32_t GetTotalAuraModifier(uint32){return 0;}
+    void ModifyHealth(uint64 value){hp=std::min(GetMaxHealth(),hp+value);}
     bool inWorld=true,phase=true;
     bool poseAura=false,foreignPose=false,failAura=false;
     uint32 auraAttempts=0,poseRemovals=0;
@@ -93,6 +105,12 @@ struct ConditionScript {
     virtual ~ConditionScript()=default;
     virtual bool OnConditionCheck(Condition*,ConditionSourceInfo&) { return true; }
 };
+#endif
+#ifdef STROMKAR_ZAKAJZ_TEST
+constexpr uint32 RATE_HEALTH=0,SPELL_AURA_MOD_HEALTH_REGEN_PERCENT=1,SPELL_AURA_MOD_REGEN=2,CREATURE_REGEN_INTERVAL=2000,IN_MILLISECONDS=1000;
+struct WorldRate {float getRate(uint32){return 1.0f;}} worldRate;
+auto* sWorld=&worldRate;
+#include "NativeRegeneration.inc"
 #endif
 struct Scenario {
     uint32 identity=scenarioIdentity,step=firstStage;
@@ -191,12 +209,22 @@ int main() {
         SpellInfo drain;ai.SpellHit(&pet,&drain);assert(boss.poseAura&&ai.hitCalls==1&&!ai.executionStarted);
         Unit player;boss.flags=UNIT_FLAG_IMMUNE_TO_NPC;ai.SpellHit(&player,&drain);
         assert(boss.poseAura&&ai.hitCalls==2&&ai.poseAtHit&&ai.executionStarted&&boss.flags==15&&!boss.combat);
+        boss.RegenerateHealth();
+#ifdef TERMINAL_BASELINE
+        assert(boss.hp>1&&boss.regeneration&&boss.threatReferences&&boss.hostileReferences.present);
+        ai.UpdateAI(2000);assert(!boss.poseAura);
+        std::cout<<"EXPECTED COUNTERFACTUAL: native out-of-combat regeneration heals the living final boss and the old HP guard removes its downed pose; both threat reference sets remain\n";
+        return 0;
+#else
+        assert(boss.hp==1&&!boss.regeneration&&!boss.threatReferences&&!boss.hostileReferences.present);
+        assert(boss.threatClears==1&&boss.hostileReferences.clears==1);
+#endif
         ai.UpdateAI(10000);assert(boss.poseAura&&boss.auraAttempts==1);
         scenarioManager.scenario.step=10;ai.UpdateAI(60000);assert(boss.poseAura&&boss.alive&&boss.hp==1);
         uint32 postDamage=100;ai.DamageTakenAfterScaling(&pet,postDamage,0);assert(postDamage==0);
         ai.SpellHit(&player,&drain);assert(ai.hitCalls==2&&boss.poseAura);
         scenarioManager.scenario.step=9;
-        ai.Reset();assert(ai.resetCalls==1&&boss.flags==UNIT_FLAG_IMMUNE_TO_NPC);ai.UpdateAI(1);assert(boss.poseAura&&boss.auraAttempts==2);
+        ai.Reset();assert(ai.resetCalls==1&&boss.flags==UNIT_FLAG_IMMUNE_TO_NPC&&boss.regeneration);ai.UpdateAI(1);assert(boss.poseAura&&boss.auraAttempts==2);
         ai.Reset();assert(!boss.poseAura&&ai.resetCalls==2);
         boss.failAura=true;ai.UpdateAI(1);assert(!boss.poseAura&&boss.auraAttempts==3);
         boss.failAura=false;ai.UpdateAI(1999);assert(boss.auraAttempts==3);
@@ -226,6 +254,18 @@ int main() {
             scenarioManager={};scenarioManager.scenario.step=9;
             Creature actor;actor.hp=1;Unit killer;killer.kind=kind;npc_stromkar_zakajz content(&actor);
             content.UpdateAI(1);content.SpellHit(&killer,&drain);assert(actor.poseAura&&content.executionStarted==(kind==0)&&content.hitCalls==(kind==0?1u:0u));
+        }
+        for(bool originalRegeneration:{false,true}) {
+            scenarioManager={};scenarioManager.scenario.step=9;
+            Creature actor;actor.hp=1;actor.regeneration=originalRegeneration;
+            npc_stromkar_zakajz content(&actor);Unit finisher;
+            content.UpdateAI(1);content.SpellHit(&finisher,&drain);
+            for(unsigned i=0;i<1000;++i){actor.RegenerateHealth();content.UpdateAI(2000);}
+            assert(actor.hp==1&&actor.poseAura&&!actor.regeneration&&!actor.combat);
+            assert(actor.threatClears==1&&actor.hostileReferences.clears==1);
+            scenarioManager.scenario.step=10;actor.hp=5000;content.UpdateAI(1);
+            assert(actor.poseAura&&!actor.regeneration); // Later health changes cannot resurrect an executed encounter.
+            content.Reset();assert(actor.regeneration==originalRegeneration&&!actor.poseAura);
         }
         std::cout<<"PASS actual Zakajz UpdateAI/SpellHit/Reset: native downed pose persists through real Player Dark Drain and completed stage10; pet/guardian/duplicate hit refusal, terminal flags/damage suppression and own-bit reset. Native aura retry/dispel and scope/life/HP guards retained; visual/aura and SmartAI endpoints controlled\n";
 #endif

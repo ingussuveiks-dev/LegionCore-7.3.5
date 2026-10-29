@@ -1,4 +1,4 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$Stromkar,[switch]$AddressSanitizer,[switch]$PoseBaseline)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$Stromkar,[switch]$AddressSanitizer,[switch]$PoseBaseline,[switch]$TerminalBaseline)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $route=if($Stromkar){'stromkar-zakajz'}else{'xalatath-farthing'}
@@ -10,6 +10,7 @@ New-Item -ItemType Directory -Force $out | Out-Null
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
 if($PoseBaseline){if(!$Stromkar -or $VerifyReleaseBinary -or $Baseline){throw 'Pose counterfactual requires only Stromkar'};$source=(git -C $repo show '5a6165442:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp') -join "`n"}
+if($TerminalBaseline){if(!$Stromkar -or $VerifyReleaseBinary -or $Baseline -or $PoseBaseline){throw 'Terminal counterfactual requires only Stromkar'};$source=(git -C $repo show '51b83ffc2:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp') -join "`n"}
 $begin=if($Stromkar){'namespace StromkarZakajz'}else{'namespace XalatathFarthing'}
 $end=if($Stromkar){'namespace XalatathFarthing'}else{'namespace XalatathSoulAttack'}
 [IO.File]::WriteAllText("$out/Farthing.inc",(Section $source $begin $end))
@@ -21,6 +22,7 @@ if($Stromkar){
  [IO.File]::WriteAllText("$out/StromkarConditionTail.inc",(Section $conditionsSource '    if (NegativeCondition)' 'uint32 Condition::GetSearcherTypeMaskForCondition()'))
 }
 $source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
+if($Stromkar){$creatureSource=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw;[IO.File]::WriteAllText("$out/NativeRegeneration.inc",(Section $creatureSource 'void Creature::RegenerateHealth()' 'uint32 Creature::GetRegenerateInterval()'))}
 $first=$source.IndexOf('uint32 Unit::DealDamage(');$scaled=$source.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);',$first)
 if($source.IndexOf('victim->GetAI()->DamageTaken(this, damage, damagetype);',$first) -ge $scaled){throw 'Native pre-scaling damage order changed'}
 $hook=$source.IndexOf('    if (Creature* creature = victim->ToCreature())',$scaled)
@@ -132,6 +134,7 @@ $baselineFlag=if($Baseline){'/DBASELINE'}else{''}
 if($Stromkar){$baselineFlag+=' /DSTROMKAR_ZAKAJZ_TEST'}
 if($AddressSanitizer){$baselineFlag+=' /fsanitize=address /Zi'}
 if($PoseBaseline){$baselineFlag+=' /DPOSE_BASELINE'}
+if($TerminalBaseline){$baselineFlag+=' /DTERMINAL_BASELINE'}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $baselineFlag /I`"$out`" `"$PSScriptRoot/XalatathFarthingTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Farthing damage regression failed'}
 if($VerifyReleaseBinary){

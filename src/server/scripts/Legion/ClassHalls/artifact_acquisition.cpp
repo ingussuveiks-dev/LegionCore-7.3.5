@@ -1498,6 +1498,8 @@ struct npc_stromkar_zakajz : SmartAI
     ObjectGuid thoradin = {};
     bool defeatPoseApplied = false;
     bool executionStarted = false;
+    bool regenerationHeld = false;
+    bool previousRegeneration = false;
     uint32 executionFlags = 0;
     uint32 defeatPoseRetry = 0;
     void ClearDefeatPose()
@@ -1505,6 +1507,9 @@ struct npc_stromkar_zakajz : SmartAI
         if (defeatPoseApplied)
             me->RemoveAurasDueToSpell(130966, me->GetGUID());
         defeatPoseApplied = false;
+        if (regenerationHeld)
+            me->setRegeneratingHealth(previousRegeneration);
+        regenerationHeld = false;
     }
     void Reset() override
     {
@@ -1522,7 +1527,7 @@ struct npc_stromkar_zakajz : SmartAI
             ? sScenarioMgr->GetScenario(me->GetInstanceId()) : nullptr;
         if (!scenario || scenario->GetScenarioId() != 1037 ||
             (scenario->GetCurrentStep() != 9 && !(executionStarted && scenario->GetCurrentStep() == 10)) ||
-            !me->IsAlive() || me->GetHealthPct() > 1.0f)
+            !me->IsAlive() || (!executionStarted && me->GetHealthPct() > 1.0f))
         {
             ClearDefeatPose();
             defeatPoseRetry = 0;
@@ -1554,11 +1559,23 @@ struct npc_stromkar_zakajz : SmartAI
                 (scenario->GetCurrentStep() != 9 && scenario->GetCurrentStep() != 10))
                 return;
             executionStarted = true;
+            // This remains a living, scripted corpse. Ordinary out-of-combat
+            // regeneration otherwise heals it on the next native tick, which
+            // used to clear the downed pose. Restore the original setting on
+            // a real reset rather than changing the shared creature template.
+            previousRegeneration = me->isRegeneratingHealth();
+            regenerationHeld = true;
+            me->setRegeneratingHealth(false);
             uint32 flags = UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_SELECTABLE;
             executionFlags = flags & ~me->GetUInt32Value(UNIT_FIELD_FLAGS);
             me->SetFlag(UNIT_FIELD_FLAGS, flags);
             me->SetReactState(REACT_PASSIVE);
             me->CombatStop(true);
+            // Match the native death path's bidirectional threat cleanup.
+            // CombatStop alone leaves hostile references on participants;
+            // do not clear a player's unrelated combat or manufacture death.
+            me->DeleteThreatList();
+            me->getHostileRefManager().deleteReferences();
         }
         SmartAI::SpellHit(caster, spell);
     }
