@@ -39,6 +39,7 @@ int main(int argc,char**argv)
     spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();durations.LoadFromDB();visuals.LoadFromDB();animations.LoadFromDB();objects.LoadFromDB();
     std::set<uint32> selected{201031,201032,34429,200984,204394,204356,202925,202981,202014,206895,204641,204771,206357,206360,206361,206390,203037,207244,207258,207274,207275,204595,204743,215690,63048,201904,207454,202015,206429,206455,215997,230829,192085};
     for(auto spell:spells){std::string name=spell->Name->Str[0];std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});if(name.find("tentacl")!=std::string::npos||name.find("tendril")!=std::string::npos||name.find("blocker")!=std::string::npos||name.find("shadow channel")!=std::string::npos||(spell->ID>=201000&&spell->ID<=201050))selected.insert(spell->ID);}
+    selected.insert(204093); // Actual Thoradin receiver's native Bound in Shadow aura.
     for(auto spell:spells){std::string name=spell->Name->Str[0];std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});if(name.find("shadowy split")!=std::string::npos)selected.insert(spell->ID);}
     for(auto e:effects)if(!e->DifficultyID&&(e->Effect==28||e->EffectAura==56)&&
         (e->EffectMiscValue[0]==103339||e->EffectMiscValue[0]==103340||e->EffectMiscValue[0]==103341||e->EffectMiscValue[0]==104729||e->EffectMiscValue[0]==104737))selected.insert(e->SpellID);
