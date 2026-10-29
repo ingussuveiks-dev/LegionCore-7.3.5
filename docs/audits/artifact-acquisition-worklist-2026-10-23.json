@@ -4055,7 +4055,8 @@
       },
       "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing.",
       "tak_tak_return_audit": "docs/audits/tak-tak-linked-return-2026-10-29.json",
-      "terminal_exit_promotion_audit": "docs/audits/stromkar-terminal-exit-promotion-2026-10-29.json"
+      "terminal_exit_promotion_audit": "docs/audits/stromkar-terminal-exit-promotion-2026-10-29.json",
+      "monk_shared_dialogue_research": "Matching nativeCrane198964/100972/properties3545 PERSONAL_SPAWN/destination142 and whole103s sampled video recorded, missing7/8/10 stillOPEN; kite travel fix retained. See monk-crane-dialogue-research-2026-10-29.json; no speculative production change."
     },
     {
       "class_id": 10,
@@ -4148,7 +4149,8 @@
       },
       "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing.",
       "tak_tak_return_audit": "docs/audits/tak-tak-linked-return-2026-10-29.json",
-      "terminal_exit_promotion_audit": "docs/audits/stromkar-terminal-exit-promotion-2026-10-29.json"
+      "terminal_exit_promotion_audit": "docs/audits/stromkar-terminal-exit-promotion-2026-10-29.json",
+      "monk_shared_dialogue_research": "Matching nativeCrane198964/100972/properties3545 PERSONAL_SPAWN/destination142 and whole103s sampled video recorded, missing7/8/10 stillOPEN; kite travel fix retained. See monk-crane-dialogue-research-2026-10-29.json; no speculative production change."
     },
     {
       "class_id": 10,
@@ -4266,7 +4268,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing.",
+      "monk_shared_dialogue_research": "Matching nativeCrane198964/100972/properties3545 PERSONAL_SPAWN/destination142 and whole103s sampled video recorded, missing7/8/10 stillOPEN; kite travel fix retained. See monk-crane-dialogue-research-2026-10-29.json; no speculative production change."
     },
     {
       "class_id": 11,

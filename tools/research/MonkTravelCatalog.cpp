@@ -21,9 +21,19 @@ int main(int argc,char** argv)
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2",SpellEffectLoadInfo::Instance());
     DB2Storage<SpellMiscEntry> misc("SpellMisc.db2",SpellMiscLoadInfo::Instance());
     DB2Storage<SpellDurationEntry> durations("SpellDuration.db2",SpellDurationLoadInfo::Instance());
-    if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0)) return 4;
-    spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();durations.LoadFromDB();
-    std::set<uint32> selected{198902,196500,202475,202481};
+    DB2Storage<SummonPropertiesEntry> properties("SummonProperties.db2",SummonPropertiesLoadInfo::Instance());
+    if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0)||!properties.Load(argv[1],0)) return 4;
+    spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();durations.LoadFromDB();properties.LoadFromDB();
+    std::set<uint32> selected{198902,196500,198964,199463,199464,202475,202478,202481};
+    for(auto effect:effects)
+        if(effect->Effect==28 && effect->EffectMiscValue[0]==100972)
+        {
+            selected.insert(effect->SpellID);
+            std::cout<<"CRANE_SUMMON\t"<<effect->SpellID<<'\t'<<effect->EffectMiscValue[0]<<'\t'<<effect->EffectMiscValue[1]<<'\t'
+                <<effect->ImplicitTarget[0]<<'\t'<<effect->ImplicitTarget[1]<<'\n';
+            if(auto p=properties.LookupEntry(effect->EffectMiscValue[1]))
+                std::cout<<"CRANE_PROPERTIES\t"<<p->ID<<'\t'<<p->Control<<'\t'<<p->Title<<'\t'<<p->Slot<<'\t'<<p->Flags<<'\n';
+        }
     for(auto spell:spells)
     {
         std::string name=spell->Name->Str[0];
