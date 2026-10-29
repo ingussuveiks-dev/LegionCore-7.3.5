@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-29",
+  "status": "Focused Desmond search cast/credit/LINK repair RELEASED; actual client presentation and full41919/36 chains OPEN",
+  "fix_commit": "Implementation commit containing this audit; Git history supplies final hash.",
+  "cause": "Desmond105332 SmartAI19470/0 performed immediate action33 group credit105332, then missingLINK1. It neither closed gossip nor cast the actual Searching spell. Matching26972 native Spell208755 Searching has1500ms cast time, rangeIndex1/self target1 and exactly one personal credit effect90/misc105332. Source quest objective283057/41919 requires that one contact. Native effect90 calls only target Player KilledMonsterCredit; it does not issue nearby group awards.",
+  "repair": "Guarded SQL15 retains root GOSSIP_SELECT19470/0 and LINK1, changes root to CLOSE_GOSSIP72 targeting the real invoker7, restores LINK1 as CAST11/spell208755/flags16/target7. Native CAST_FORCE_TARGET_SELF16 makes the actual Player cast normally on self; SMARTCAST_TRIGGERED2 and INTERRUPT_PREVIOUS1 are absent, retaining cast time/checks and existing cast. Six source22 guards require actual/live Player with INCOMPLETE41919 on both events. Preserve menu source15 admission, corpse template/spawn/flags, native objective and empty spell-script bindings. No new C++ registration or guessed text/item/quest award.",
+  "sequence": "Choose search -> native targeted close -> linked guarded normal self cast208755 -> native cast pipeline -> personal effect90 only on real HIT_TARGET -> existing KilledMonsterCredit quest logic. Rejected/cancelled cast with no hit cannot award: no action33/timer/group shortcut remains. Root/cast are repeatable; another eligible Player searches independently. Native CAST failure recalculation does not create a timed auto-credit action; retry requires another real gossip selection. Owner/pet/guardian combat final blow and damage scaling are unrelated to this corpse dialogue; non-Player event invokers and spell hit targets are rejected. Native Player.cpp checks active INCOMPLETE quest, eligible native raid rules, matching MONSTER/TALKTO objective and curCount<Amount before increment/completion; no new custom cap or faction restriction. Abandon before reinteraction denies the event; abandon before hit leaves no active objective to credit. A newly accepted quest uses ordinary native spell/quest semantics; no delayed script captures or custom quest lease introduced.",
+  "sources": {
+    "local": "Matching runtime26972 DB2 and hotfix overlays read through project typed DB2Storage/LoadFromDB, local SmartScript CAST/close/guards, SpellEffects personal credit and Player KilledMonsterCredit; read-only live quest/menu/template/conditions/binding records. Prior1121 local donor SQL scan and local TrinityCore/reference search did not recover missing rows. Native spell resolves actual behavior without copying modern implementations.",
+    "native_probe": "tools/research/SubtletyContactCatalog.cpp",
+    "gameplay": "https://www.youtube.com/watch?v=JYW23cL8fb8",
+    "review": "varenne, The Shadows Reveal WoW Subtlety Rogue Artifact Quest, uploaded2016-08-27. Entire360s video visually reviewed as180 frames sampled every2seconds/sheets00..14, muted; not uninterrupted playback/audio. Desmond selection/search cast/result at124..130s, departure136s; full remaining contact/turn-in sequence reviewed. No claim of exact sound/animation/error-message fidelity.",
+    "native_metadata": "208755 base1500ms, difficulty0, only effect90/misc105332/self1. Original spell attributes retained; no SpellInterrupts row was returned, so do not invent movement interruption flags. Normal explicit cancellation/no-hit semantics remain native. Probe also found208973 Handing Over1500ms/effect90/105434 plus169: later rune branch needs separate review."
+  },
+  "checks": [
+    "Full-schema TEMP migration replay/idempotence and exact root mutation/restored cast shape; six scoped event conditions, unchanged native objective/menu/source15/template/bindings. Twelve refusal cases cover changed option/credit/target/rootlink/chance/extra action/condition/menu/AI/objective/spell binding and an applied-triggered-cast customization. Actual updater RELEASED LF SHA1 and complete six-table live readback pass.",
+    "ASAN compiles actual native dispatcher, event/action prefixes, GOSSIP_SELECT/no-param/LINK, FindLinkedEvent/tail, full CAST and CLOSE_GOSSIP bodies,31/9/36 predicates/source22 binding, and Spell::EffectKillCreditPersonal. Old immediate-credit/missingLINK counterfactual, repaired normal actual-player self cast/close/no immediate credit, second player/retry, failed BAD_TARGETS/SPELL_IN_PROGRESS and retry, no hit/no credit, actual native personal HIT_TARGET/player-only guard, dead/null/pet/guardian/inactive/wrong-menu/expired/missing actor pass. Cast engine scheduling/cancellation and quest storage are controlled endpoints, not live spell-engine, client or group-cap proof; native cap was source-traced, not executed in this fixture.",
+    "Actual26972 catalog asserts sole208755 effect90/105332/self1 and1500ms. Seven common extracted-native LINK cases pass. Fresh read-only all36 audit:36 routes,149 native race/class pairs,0 automated findings,3 remaining bounded edges."
+  ],
+  "development": "Initial native fixture retained an unused IsSmart helper referring to removed dummy smart field; compile correctly failed. Removed unused fixture helper and reran successfully; failed evidence retained. Later standalone test wrapper also snapshots its nested native DB2 probe runtime. A read-only exploratory query used an absent spell_custom_attr table; corrected source discovery without live write/log suppression.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 26992,
+    "result": "Both servers absent before promotion; canonical updater applied15, ready, server shutdown0/exit0, stderr0/newDBErrors0; protected runtime hashes unchanged and owned process closed.",
+    "lf_sha1": "52a4b2105e0a4e3bdd5ee256c9f3ad934ebcf529",
+    "world_sha256": "235348EEF91B89605A6430B63FE9F57450EA62B516BE99A6EBF78359400484E1",
+    "bnet_sha256": "45E7FC66C4141DF770BAE52E47225BAA1CE9F79456768184CCDB6A7FB34CAA59",
+    "binary": "SQL only, existing canonical handlers; no EXE change."
+  },
+  "all36": {
+    "routes": 36,
+    "native_pairs": 149,
+    "automated_findings": 0,
+    "unresolved_edges": [
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100438,
+        "event": 9,
+        "link": 10,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128937,
+          128938,
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 1,
+        "link": 7,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 6,
+        "link": 8,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      }
+    ],
+    "full_report_sha256": "83b62f8ac8d5a91f92b1ac29c86a0edf843ab2a862f4ed7ed9ef924e1c8e0dc5",
+    "world_hashes": {
+      "quest_template": "27805c3679ba6624d5b27aa805ac423cfc8edc38d7058bdd36cd3a9c0eb36389",
+      "quest_template_addon": "f1c05d071e6e361800d4ab95e4a212d1ea4e0611af53a738d31ad4b8e5324ed2",
+      "quest_template_locale": "8d2df01920045475bc3b22d41ae88431c72b9e2e02a29c48762ae44dce17e1a9",
+      "quest_objectives": "0cd34046bfb5c77698f371c536386a4d5beaddc61755ac292ca765f17c8ba39f",
+      "creature_queststarter": "aa93f84846d67542dd85b8e3b48c02db66deab1f260fd39ac80affb17c6bbeb1",
+      "creature_questender": "a81428eee03179453a12707f962ee31bc9eb65ed562bc67bb880d2b9cfa7eee1",
+      "gameobject_queststarter": "2df34ae158f4df5e0bbf99f1041aaadf7badd0512f460fce6fe14aae9561c26a",
+      "gameobject_questender": "0e234ec77746b4aa2bdacfef865eb02b89349e1862ebe99ebe7460286b8076f8",
+      "battlepay_product_item": "b5e6f1b003969fad4aabfd54cc667f0f17caa9f8c37086f5d9173ac7eb6145b6",
+      "scenario_data": "97521d0bcf308b0b68892171753c25e77899f7fdbefe54b8c3433445d818c884",
+      "playerchoice_response": "c1d301e8dbd8a293a7b4b1554b519fbc37ceeed9f7edf07c967797db42a65cc6",
+      "playerchoice_response_reward": "4fd31367687e2bd222885689a7b51ed261345979dad2253128eab947408b8b68",
+      "creature_template": "69a8cd13a1615b578ccc3f8edc25687957adf9c7b047fe608a139e5ef1ffe6c1",
+      "gameobject_template": "94726d2df0b238b559e37114944e69554ac5796ab3779f91c4e4d168a27bb849",
+      "gameobject_loot_template": "bc1c302d59450f75e8ac3f08b120e676568db7d6b3ed28ef3fc959be1147e20d",
+      "smart_scripts": "e4aaba16ef2f312de4c7077feae7abbe2adedeadcbee1a34676ca444543a973b",
+      "conditions": "b00cdbcbe1e3b83046ddb19c9f2aa4b78243f666cd11fb077b91b4f16158c1e0"
+    }
+  },
+  "diagnostics": "Each TEMP/native/ASAN/catalog/common/updater/live/audit test has canonical and own runtime crash hashes/log lengths/timestamps before/after, stdout/stderr and exit inspection. Final exit0, no new/changed crashes or appended DBErrors/server warnings/errors/assertions. Existing3915-byte mixed shared101430/103151 missingLINK2 remains visible/untouched. No resolved Desmond crash/log exists to archive/truncate. No user/unknown server stopped, owned server left, character/item/progress edit or runtime credential committed.",
+  "evidence": ".codex/desmond-{fingerprints,data,native*,common-link,canonical-updater,live}-2026-10-29; .codex/desmond-search-2026-10-29-*; .codex/subtlety-contact-native-catalog-2026-10-29; .codex/artifact-post-desmond-2026-10-29; build-extractors/runtime-test/desmond-search{,-data}; native catalog runtime",
+  "remaining": "Actual client search cast bar/cancellation/result text/animation, objective/party isolation, relog/re-entry and full41919/128476 traversal unverified. Current3 bounded edges:1004389->10,1004751->7 and6->8. Valzuun fourth line/delayed credit/overlap, later41920 native Handing Over spell, shared101430/103151 missingLINK2, Stromkar recoil/cracked ground/continuous3 ritual beams and remaining36 full lifecycle/client tests OPEN."
+}
