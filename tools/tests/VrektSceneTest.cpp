@@ -7,6 +7,7 @@
 #include <set>
 #include <vector>
 using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;
+#include "../../src/server/game/Movement/SkyholdDeparture.h"
 #include "SceneEnums.inc"
 constexpr int UNIT_FIELD_FLAGS=0;
 constexpr uint32 UNIT_FLAG_NON_ATTACKABLE=2,UNIT_FLAG_NOT_SELECTABLE=0x2000000;
@@ -17,9 +18,9 @@ struct ObjectGuid{uint64 id=0;void Clear(){id=0;}explicit operator bool()const{r
 struct Position{float m_positionX=0,m_positionY=0,m_positionZ=0,o=0;Position()=default;Position(float x,float y,float z,float a):m_positionX(x),m_positionY(y),m_positionZ(z),o(a){}float GetPositionX()const{return m_positionX;}float GetPositionY()const{return m_positionY;}float GetPositionZ()const{return m_positionZ;}float GetOrientation()const{return o;}};
 struct Creature;struct TempSummon;struct CreatureAI;
 struct WorldObject{virtual ~WorldObject()=default;};
-struct Unit:WorldObject{virtual Creature* ToCreature(){return nullptr;}virtual uint32 GetEntry()const{return 0;}virtual void CastSpell(Unit*,uint32,bool){}};
+struct Unit:WorldObject{virtual Creature* ToCreature(){return nullptr;}virtual uint32 GetEntry()const{return 0;}virtual void CastSpell(Unit*,uint32,bool){}bool IsPlayer()const{return false;}bool IsAlive()const{return true;}uint32 GetMapId()const{return 1220;}};
 struct Move{bool smooth=false,fly=false,uncompressed=false,generate=true;float speed=0;int animation=-1;Position destination;};
-struct EffectMovementGenerator{explicit EffectMovementGenerator(uint32 id):_pointId(id){}uint32 _pointId,_arrivalSpellId=0;ObjectGuid _arrivalSpellTargetGuid;void MovementInform(Unit&);void Finalize(Unit&);};
+struct EffectMovementGenerator{explicit EffectMovementGenerator(uint32 id):_pointId(id){}uint32 _pointId,_arrivalSpellId=0,_arrivalMapId=uint32(-1);bool _arrived=false;ObjectGuid _arrivalSpellTargetGuid;void MovementInform(Unit&);void Finalize(Unit&);};
 struct MotionMaster{Unit* _owner;std::unique_ptr<EffectMovementGenerator> generator;explicit MotionMaster(Unit* u):_owner(u){}void Mutate(EffectMovementGenerator* p,MovementSlot){generator.reset(p);}void MoveTakeoff(uint32,float,float,float);void MoveSmoothFlyPath(uint32,Position const,float);};
 struct CreatureData{uint32 id=115846,mapid=1220,areaId=8362;float posX=1816.98f,posY=734.469f,posZ=85.5647f,orientation=1.18135f;};
 std::map<uint64,Creature*> registry;std::vector<std::unique_ptr<TempSummon>> summons;

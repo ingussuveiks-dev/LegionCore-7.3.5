@@ -34,6 +34,7 @@ struct Position {
 };
 struct JumpArrivalCastArgs { uint32 SpellId=0;ObjectGuid Target{}; };
 struct Unit;
+struct Spline { bool done=false;bool Finalized()const{return done;} };
 struct Player;
 struct Creature;
 struct EffectMovementGenerator;
@@ -63,14 +64,16 @@ struct MotionMaster {
 };
 struct Unit {
     uint32 map=1539,jumps=0,casts=0,castSpell=0,state=0,splineTimer=777;
-    bool flying=false,failCast=false;
+    bool flying=false,failCast=false,alive=true;
+    int32 launchResult=250;
+    Spline spline;Spline* movespline=&spline;
     Position pose,destination;
     MotionMaster movement{this};
     virtual ~Unit()=default;
     virtual Player* ToPlayer() { return nullptr; }
     virtual Creature* ToCreature() { return nullptr; }
     bool IsPlayer() { return ToPlayer()!=nullptr; }
-    bool IsAlive() const { return true; }
+    bool IsAlive() const { return alive; }
     bool isInFlight() const { return flying; }
     uint32 GetMapId() const { return map; }
     ObjectGuid GetGUID() const { return {99}; }
@@ -109,15 +112,17 @@ struct EffectMovementGenerator {
     uint32 _pointId,_arrivalSpellId;
     ObjectGuid _arrivalSpellTargetGuid;
     bool _arrived=false;
-    EffectMovementGenerator(uint32 point,uint32 spell,ObjectGuid target):_pointId(point),_arrivalSpellId(spell),_arrivalSpellTargetGuid(target) { }
+    uint32 _arrivalMapId;
+    EffectMovementGenerator(uint32 point,uint32 spell,ObjectGuid target,uint32 map=uint32(-1)):_pointId(point),_arrivalSpellId(spell),_arrivalSpellTargetGuid(target),_arrivalMapId(map) { }
+    bool Update(Unit&,uint32);
     void Finalize(Unit&);
     void MovementInform(Unit&);
 };
 #include "Arrival.inc"
 void MotionMaster::Mutate(EffectMovementGenerator* movement,uint32 slot) { assert(slot==MOTION_SLOT_CONTROLLED);current.reset(movement); }
-void MotionMaster::Complete() { if(current){auto finished=std::move(current);finished->Finalize(*_owner);} }
+void MotionMaster::Complete() { if(current){auto finished=std::move(current);_owner->spline.done=true;assert(!finished->Update(*_owner,1));finished->Finalize(*_owner);} }
 void Movement::MoveSplineInit::MoveTo(float positionX,float positionY,float positionZ,bool) { owner.destination.Relocate(positionX,positionY,positionZ); }
-int32 Movement::MoveSplineInit::Launch() { ++owner.jumps; return 250; }
+int32 Movement::MoveSplineInit::Launch() { ++owner.jumps;owner.spline.done=false;return owner.launchResult; }
 #include "MoveJump.inc"
 struct SpellTriggerDelay { uint32 spell_trigger=0,targetaura=0,target=0,caster=0,effectMask=7;int aura=0; };
 struct SpellMgr {
@@ -205,9 +210,40 @@ int main(int argc,char** argv) {
     Creature creature;Spell nonplayer(creature);nonplayer.EffectJumpDest(0);assert(creature.jumps==1&&!creature.casts);
     creature.movement.Complete();assert(creature.casts==1&&creature.castSpell==216016);
     Player failure;failure.failCast=true;Spell failed(failure);failed.EffectJumpDest(0);failure.movement.Complete();assert(failure.casts==1);
+    for(uint32 map:{0u,1539u,1466u,1428u,1220u,1479u})for(uint32 variant=0;variant<5;++variant){
+        Player player;player.map=map;Spell spell(player);
+        if(variant==0)player.launchResult=0;
+        spell.EffectJumpDest(0);
+        if(variant==0){
+#ifdef ARRIVAL_BASELINE
+            assert(player.movement.current);player.movement.Complete();assert(player.casts==1);
+#else
+            assert(!player.movement.current&&!player.casts);
+#endif
+            continue;
+        }
+        if(variant==1){auto replaced=std::move(player.movement.current);replaced->Finalize(player);
+#ifdef ARRIVAL_BASELINE
+            assert(player.casts==1);
+#else
+            assert(!player.casts);
+#endif
+            continue;
+        }
+        if(variant==2)player.alive=false;
+        if(variant==3)player.map=map==0?1539:0;
+        player.movement.Complete();player.movement.Complete();
+#ifdef ARRIVAL_BASELINE
+        assert(player.casts==1);
+#else
+        assert(player.casts==(variant==4?1u:0u));
+#endif
+    }
 #ifdef BASELINE
     std::cout<<"PASS: pinned native baseline computes Skyhold Z+20 for speeds/fall state but launches the original floor destination\n";
+#elif defined(ARRIVAL_BASELINE)
+    std::cout<<"EXPECTED COUNTERFACTUAL: pinned aecc4d2a0 MoveJump/Finalize sends216016 even after zero launch, replacement, death or map change on six maps. This is failing old behavior, not a successful ordinary return.\n";
 #else
-    std::cout<<"PASS: actual native jump/speed/Position/MotionMaster/arrival handlers pass Skyhold Z+20 into spline MoveTo, preserving XY/orientation, delay216016 and launch guards; other jump destinations stay unchanged. Spline transport and completion services are controlled, not client ascent/teleport or exactly-once controller proof\n";
+    std::cout<<"PASS: actual jump/speed/Position/MotionMaster/delay216016 and Update/Finalize handlers: native Z+20, actual arrival only, zero launch/interruption/death/map-change refusal on six maps including map0, repeat completion and foreign/NPC preservation. Spline/cast services controlled, not client ascent/teleport proof\n";
 #endif
 }

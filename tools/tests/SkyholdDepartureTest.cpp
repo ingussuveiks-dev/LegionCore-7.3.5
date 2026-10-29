@@ -115,7 +115,8 @@ struct EffectMovementGenerator {
     uint32 _pointId,_arrivalSpellId;
     ObjectGuid _arrivalSpellTargetGuid;
     bool _arrived=false;
-    EffectMovementGenerator(uint32 point,uint32 spell,ObjectGuid target):_pointId(point),_arrivalSpellId(spell),_arrivalSpellTargetGuid(target) { }
+    uint32 _arrivalMapId;
+    EffectMovementGenerator(uint32 point,uint32 spell,ObjectGuid target,uint32 map=uint32(-1)):_pointId(point),_arrivalSpellId(spell),_arrivalSpellTargetGuid(target),_arrivalMapId(map) { }
     bool Update(Unit&,uint32);
     void Finalize(Unit&);
     void MovementInform(Unit&);
