@@ -2158,14 +2158,6 @@
           "event": 0,
           "link": 1,
           "reason": "missing_target"
-        },
-        {
-          "entry": 105333,
-          "event": 0,
-          "link": 1,
-          "reason": "invalid_target_event",
-          "target_event_type": 64,
-          "target_action_type": 80
         }
       ],
       "video": {
@@ -2195,7 +2187,8 @@
       "capture_damage_audit": "docs/audits/devourer-capture-scaled-damage-2026-10-26.json",
       "capture_visual_lifetime_audit": "docs/audits/devourer-capture-visual-lifetime-2026-10-26.json",
       "capture_sequence_audit": "docs/audits/devourer-capture-sequence-2026-10-26.json",
-      "capture_sequence_review": "AI EventMap5s/10s; original owner/full-GUID/quest lease, same-tick reaccept cancellation, per-update and final admission, optional missing105540, native accepted transfer/destination and reset/own aura cleanup. Full actor/native ASAN, actual26972 metadata/selected canonical PE/clean owned startup pass; actual client capture/arrival ACK/instant leave-return/group/full chain pending."
+      "capture_sequence_review": "AI EventMap5s/10s; original owner/full-GUID/quest lease, same-tick reaccept cancellation, per-update and final admission, optional missing105540, native accepted transfer/destination and reset/own aura cleanup. Full actor/native ASAN, actual26972 metadata/selected canonical PE/clean owned startup pass; actual client capture/arrival ACK/instant leave-return/group/full chain pending.",
+      "valzuun_password_review": "SQL14 RELEASED: password triggers LINK1/native list, no HELLO/runOnce; five actual/live/active-player guards, last-objective credit safe; native ASAN/TEMP refusals/live pass. Delayed credit/fourth line/overlapping playback and actual client remain OPEN; see valzuun-password-dispatch-2026-10-29.json."
     },
     {
       "class_id": 5,
