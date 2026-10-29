@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-29",
+  "status": "Action87 memory safety repaired and deployed; full36/client remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Native urand uses inclusive std::uniform_int_distribution(min,max). Action87 compacted six parameters to count positive entries but selected temp[urand(0,count)]: initialized pool index count invalid for all sizes; count6 reads beyond stack array, count0 reads uninitialized temp[0]. Loader accepts action87 without a pool validation.",
+  "change": "Reject empty pool with explicit sql.sql diagnostic before RNG, select inclusive0..count-1. Keep duplicate weighting, order, original target-none diagnostic, SmartAI and SmartGameObjectAI recipient checks, original event and last invoker. No SQL/action88/link/progression change.",
+  "live_scope": {
+    "action87_rows": 79,
+    "empty_pools": 0,
+    "static_class_scenario_creature_matches": {
+      "1500": [
+        92445,
+        92447,
+        92450
+      ],
+      "1616": [
+        107691
+      ]
+    },
+    "limit": "Static placement establishes affected candidates, not a client occurrence or all dynamically spawned actors. Six positive entries occur in all four candidates. No historical server crash attributed without evidence."
+  },
+  "checks": [
+    "Pinned da42f12f5 full extracted action87 deterministically requests inclusive max6; actual MSVC ASan stack-buffer-overflow/ProcessAction captured with nonzero exit. EXPECTED failing counterfactual, not ordinary pass.",
+    "Repaired same production case under ASan: all63 nonempty bitmasks, every compacted choice192 cases, sparse holes/single/max6, duplicate weighting, empty log/no RNG, Creature+GO, nonSmart Creature/GO/unrelated, event+invoker passthrough, TARGET_NONE log, missing/empty targets. Exit0/stderr0.",
+    "Original generated game.lib path rebuilt, staged world/bnet final-link original game/scripts/shared/common libraries; canonical unchanged until fresh absent-process check/promotion. Canonical PE checks actual ProcessAction pool population, count guard and diagnostic/exit, decrement maximum, native urand and same pool indexed load; Scepter linked Release regression pass.",
+    "Retained canonical Valzuun/Stromkar terminal/return/blade/Monk kite PE checks; owned canonical startup ready/graceful shutdown0/exit0/stderr0/newDBErrors0, protected config/cert/key unchanged."
+  ],
+  "development": "Initial native probe could not load ASan runtime DLL because launch lacked vcvars PATH (exit -1073741515, empty stderr); not counted as regression. Corrected owned cmd invocation calls vcvars and captures real process exit/stdout/stderr; actual baseline and repaired regressions pass. Renamed adapter member to avoid shadow warning. Failed outer diagnostic evidence retained.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 31748,
+    "hashes": {
+      "worldserver.exe": "E61B28BEE9EF3510508D1DE462B0684B884807E666FF58FD4EF0CF7BA47094E2",
+      "bnetserver.exe": "ABAEC13B1C3D35D2582868AC0691534B776D21DE8188253B176EEFA82036174D",
+      "worldserver.map": "BE7CD2CF9148B7A2A46CA77D1751D6C86026CD7310DDCF94C74FB353A9B15005",
+      "bnetserver.map": "5733B9E15E7AA5594D1CC0638C02E11C422EDC07E5890CB0EAAE08CB9C99B4F0"
+    },
+    "manifest": ".codex/random-timed-action-list-deployment.json",
+    "status": "No user/unknown process stopped. Owned server exited; no servers left."
+  },
+  "diagnostics": {
+    "result": "All test/build/link/PE/deploy/startup pre/post crash hashes/log offsets/time/exit/stdout/stderr reviewed. No new/changed runtime crash or appended server warning/error/assertion/DBErrors. Canonical Crashes empty; mixed3915-byte unknown sharedLINK2 DBErrors retained without clearing.",
+    "resolved_counterfactual_archive": "build-extractors/bin/Release/fixed/random-timed-action-list-2026-10-29",
+    "archive_sha256": {
+      "stderr.log": "99374553DEDD9303CC0368F30AD61239139FB2BD2DB5A65324FED9D3566CD3E6",
+      "stdout.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "exit-code.txt": "6B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B",
+      "build.log": "52D2ACAF2078087AE1B79980B0E8EC25AD8AD29D02AA20BB043445AD318405A9",
+      "diagnostics-before.json": "056CE0B6E1A60A30E1DD85BA4F1F729A010795509B50EDC76609EF83FA6127EC",
+      "diagnostics-after.json": "915E7EE4986757C39D4AB43DE689C52AE03F1E25CAFD8CCF88226068111E996A"
+    },
+    "local_evidence": [
+      ".codex/random-timed-action-list-regression-fixed-2026-10-29",
+      ".codex/random-timed-action-list-build-2026-10-29",
+      ".codex/random-timed-action-list-staged-pe-2026-10-29",
+      ".codex/random-timed-action-list-canonical-pe-2026-10-29",
+      ".codex/random-timed-action-list-retained-pe-2026-10-29",
+      ".codex/random-timed-action-list-startup-2026-10-29"
+    ]
+  },
+  "limits": "No character/item/quest edits. Native handler/host recipient adapters prove memory bound/dispatch, not full server scenario/client traversal or VFX. Pet/group progression unchanged; no new progression API. Existing 3 bounded Monk edges, shared101430/103151 missingLINK2, continuous ritual beams/recoil and full36 unresolved. Expand static-map/dynamic-owner audit next."
+}
