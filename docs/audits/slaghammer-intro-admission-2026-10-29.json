@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-29",
+  "status": "Shared-map Priest intro admission repaired/RELEASED; missingLINK2 remains OPEN and unchanged",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "101430 source0 range event0 and LINK1 had no source22 admission. They could dispatch Priest event48121 and conversation1031 for an unrelated Player in shared1539, including Warrior1037/Paladin1092, when native LOS dispatch reaches this actor. Actual26972 criteria48121 belongs only to991/stage1/tree46441/leaf46442;48160 belongs991/stage2/tree46475/leaf46476. Existing101122 death producer already requires actor991/stage2. Current scenario_data maps991/class5,1037/class1,1092/class2 to1539. Root48121 can transition to stage2 before its conversation LINK. This is an executable admission defect, not proof that every historical LINK2 log came from a particular class or that the unknown LINK2 action is unnecessary.",
+  "repair": "Guarded SQL17 adds12 source22 conditions only: root group1 requires actual/live Player with INCOMPLETE40710 and actor991/stage1. Linked group2 has complete ANDed ElseGroups for the same Player/quest/life and actor991/stage1 OR stage2, retaining the post-credit transition. All12 original Slaghammer/cultist actions including rootLINK1, unresolved row1->LINK2, death DATA/waypoint/speech/barrier/personal companion path remain exact. Existing cultist actor-only gate stays intact for player/pet/guardian/null killer signals. Native conversation1031 actor/model/line timing and spell binding are unchanged. No C++/ScriptName/EXE or direct item/quest grants.",
+  "sequence": "Native dispatcher checks source22 before ProcessEvent. Actual event guards/LOS/range/friendly test run before ProcessAction sets runOnce; refused Warrior/Paladin/dead/unquested/pet/null/inactive candidates do not consume the Priest one-shot. Legitimate991/1 event still requests native48121, can advance to991/2, then admits200165 conversation1031. Later existing991/2 cultist death signal starts Slaghammer movement/dialogue. No claim of repair to failed native criteria acknowledgment, cast/playback retry, later shared actor phases or missingLINK2. Legitimate Priest still reaches the unchanged known missingLINK2 counter in the native fixture.",
+  "sources": {
+    "native": "SharedCryptLinkCatalog.cpp reads matching26972 DB2 plus read-only hotfix overlays:48121->991/1,48160->991/2,49041->1037/4;200165 effect219/conversation1031/destination18;201004 summons101899/properties3747;202014 infinite periodic23->202015 each1000ms;202925 Dampened and63048 loot-sparkle states. Conversation1031 has native lines2522/2523/2524 with cultist/Slaghammer/traitor exchange and existing actor models. WDB103151 is Effects Bunny;104583 is Void Tendril. These distinct producers must not receive a guessed common action2.",
+    "local": "Live source22/shared spawns/SAI/template/conversation records; actual ConditionMgr AND/OR and target binding, SmartScript dispatcher/LOS/repeat/LINK. Previous bounded1121 local SQL donor scan retains missing shared2 and recovers no action. Local newer TrinityCore/history and GitHub exact-ID/name search produced no complete matching735 implementation; a newer Trinity cosmetic actor row and external guide are references only. No modern code imported or new gameplay footage reviewed.",
+    "limits": "First read-only scenario_data query used map instead of actual MapID; actual schema inspected and corrected. This did not mutate data. Same-date full Valzuun/Monk source/video review limits remain unchanged."
+  },
+  "checks": [
+    "Test-SlaghammerIntroData: full-schema TEMP replay/idempotence, exact unchanged12 actions/old condition/two actor templates/3 conversation lines/2 actors/empty binding;12 additions only. Twelve original/applied custom-state refusals cover actor AI, rootcriterion, spell, unknownLINK2 deletion, cultist gate, conversation actor/timing, binding, custom condition/action and applied target/stage. Actual updater RELEASED LF SHA1 plus six-table full live readback pass.",
+    "ASAN compiles actual ConditionMgr AND/OR/reference-list evaluator, source22 initial binding, predicates31/9/36/44, SmartScript dispatcher/ProcessEvent/ProcessAction prefixes, real LOS/LINK/FindLinkedEvent/tail. Original wrong-Warrior criterion+conversation request counterfactual, corrected991/1 with synchronous post-credit991/2 or deferred1 state, repeat/no runOnce consumption on rejected1037/1092/933,14 quest/life/type/range/LOS/combat/expired/scenario refusals, null invoker and unchanged cultist player/pet/null actor gate pass. Criteria update and deferred conversation cast are controlled request endpoints; full scenario engine/packet/group/client not certified. Valid Priest intentionally still records expected known unknownLINK2, never mislabeled repaired.",
+    "Matching26972 native catalog checks exact criteria/tree/step and conversation effect. Owned canonical startup applied17, ready/shutdown0/exit0/stderr0/newDBErrors0/protected runtime hashes unchanged. Fresh bounded all36 audit:36 routes/149 native race-class pairs/0 automated findings/same3 Monk bounded actor edges; shared101430/103151 missing2 remain outside that bounded inventory and OPEN."
+  ],
+  "development": "Initial native fixture omitted default/null constructor arguments required by extracted ConditionSourceInfo overloads and contained an unused typo reference; compiler failed. Corrected fixture defaults/reference and renamed adapter target member to avoid native local-variable shadow warning; new wrapped ASAN/native run passes. Failed evidence retained; no production check/log suppressed.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 31860,
+    "result": "Both servers absent before SQL promotion/start; no process stopped. Existing handlers/EXEs unchanged. Owned31860 ready, shutdown0/exit0, no server left; config/certificate hashes unchanged.",
+    "lf_sha1": "1864cee99bd42e2fe95114a0be544cec1762fa6d",
+    "world_sha256": "CBB12D5FF581A34FFC6BF5C46E44182B187294235DDB0737A16A4EC11424B036",
+    "bnet_sha256": "FD1B6F208B3E8251122BA1F599F9CCCE5BD48667B9A34F15E9FF7C57614BEC70"
+  },
+  "diagnostics": "Every native/catalog/TEMP/ASAN/updater/live/audit run has canonical/own runtime crash hashes/log offsets/timestamps, stdout/stderr/exit inspected. Final exit0 and no new/changed crashes or appended server/DB diagnostics. Existing3915-byte mixed missing101430/103151 LINK2 log retained, not archived/truncated; no historical line is proven resolved merely by this scope fix. Canonical Crashes empty. No character/item/progress reset, credential/runtime log/dump commit, user/unknown process stop or task server left.",
+  "all36": {
+    "routes": 36,
+    "native_pairs": 149,
+    "automated_findings": 0,
+    "bounded_unresolved_edges": [
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100438,
+        "event": 9,
+        "link": 10,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128937,
+          128938,
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 1,
+        "link": 7,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 6,
+        "link": 8,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      }
+    ],
+    "full_report_sha256": "c33da0d007c68f001e488412652f21d4399134837ed841acbe8481924bf8fcd7",
+    "world_hashes": {
+      "quest_template": "27805c3679ba6624d5b27aa805ac423cfc8edc38d7058bdd36cd3a9c0eb36389",
+      "quest_template_addon": "f1c05d071e6e361800d4ab95e4a212d1ea4e0611af53a738d31ad4b8e5324ed2",
+      "quest_template_locale": "8d2df01920045475bc3b22d41ae88431c72b9e2e02a29c48762ae44dce17e1a9",
+      "quest_objectives": "0cd34046bfb5c77698f371c536386a4d5beaddc61755ac292ca765f17c8ba39f",
+      "creature_queststarter": "aa93f84846d67542dd85b8e3b48c02db66deab1f260fd39ac80affb17c6bbeb1",
+      "creature_questender": "a81428eee03179453a12707f962ee31bc9eb65ed562bc67bb880d2b9cfa7eee1",
+      "gameobject_queststarter": "2df34ae158f4df5e0bbf99f1041aaadf7badd0512f460fce6fe14aae9561c26a",
+      "gameobject_questender": "0e234ec77746b4aa2bdacfef865eb02b89349e1862ebe99ebe7460286b8076f8",
+      "battlepay_product_item": "b5e6f1b003969fad4aabfd54cc667f0f17caa9f8c37086f5d9173ac7eb6145b6",
+      "scenario_data": "97521d0bcf308b0b68892171753c25e77899f7fdbefe54b8c3433445d818c884",
+      "playerchoice_response": "c1d301e8dbd8a293a7b4b1554b519fbc37ceeed9f7edf07c967797db42a65cc6",
+      "playerchoice_response_reward": "4fd31367687e2bd222885689a7b51ed261345979dad2253128eab947408b8b68",
+      "creature_template": "791f4357f45ee5ffead104cc38d6090ff3a11da0d01facae8ac2c61a25392a9e",
+      "gameobject_template": "94726d2df0b238b559e37114944e69554ac5796ab3779f91c4e4d168a27bb849",
+      "gameobject_loot_template": "bc1c302d59450f75e8ac3f08b120e676568db7d6b3ed28ef3fc959be1147e20d",
+      "smart_scripts": "9b458a380014aa3877ed29a750a0f8d8588d0eef6bd913f9c11192a0eb24a7be",
+      "conditions": "9f41adea0b8e0dd99dcea5a7b31196d7be09f17cb4023d09c7e758dbcf14413c"
+    }
+  },
+  "evidence": ".codex/shared-crypt-{link-native,scenario-native}-2026-10-29 and TSVs; .codex/slaghammer-intro-{fingerprints,data,native*,canonical-updater,live}-2026-10-29; .codex/slaghammer-intro-2026-10-29-*; .codex/artifact-post-slaghammer-2026-10-29; build-extractors/runtime-test/slaghammer-intro{,-data}",
+  "remaining": "Unknown101430/103151 LINK2 intent/actions and full Priest intro/voice/waypoint/group/faction/client traversal remain OPEN. Three bounded Monk edges, Stromkar burst/cracked ground/continuous ritual beams,41920 native handover/turn-in and full36 lifecycles remain OPEN. Extend static scenario-map actor inventory because first-stage quest actor counting does not include all shared scenario scripts; never treat the bounded3 count as total outstanding behavior."
+}

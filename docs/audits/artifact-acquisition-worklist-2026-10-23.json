@@ -718,7 +718,8 @@
       "terminal_regeneration_audit": "docs/audits/stromkar-terminal-regeneration-2026-10-29.json",
       "return_lifetime_audit": "docs/audits/stromkar-exit-lifetime-2026-10-29.json",
       "terminal_exit_promotion_audit": "docs/audits/stromkar-terminal-exit-promotion-2026-10-29.json",
-      "embedded_blade_scale_audit": "docs/audits/stromkar-blade-client-hotfix-2026-10-29.json"
+      "embedded_blade_scale_audit": "docs/audits/stromkar-blade-client-hotfix-2026-10-29.json",
+      "shared_slaghammer_intro_review": "SQL17 separates Priest991/stage1 intro from shared Warrior1037/Paladin1092; keeps post-credit991/stage2 conversation and all actions, including unresolvedLINK2. Native ASAN/12 TEMP/live pass; actual whole scene/client unverified. See slaghammer-intro-admission-2026-10-29.json."
     },
     {
       "class_id": 1,
@@ -2432,7 +2433,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing.",
+      "shared_slaghammer_intro_review": "SQL17 separates Priest991/stage1 intro from shared Warrior1037/Paladin1092; keeps post-credit991/stage2 conversation and all actions, including unresolvedLINK2. Native ASAN/12 TEMP/live pass; actual whole scene/client unverified. See slaghammer-intro-admission-2026-10-29.json."
     },
     {
       "class_id": 5,
