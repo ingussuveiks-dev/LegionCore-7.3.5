@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-29",
+  "status": "Focused malformed-dispatch repair RELEASED and backend-regressed; shared scene and all36 client sequences remain OPEN",
+  "fix_commit": "Focused implementation commit containing this audit; use Git log for its final hash.",
+  "cause": "Modera90418 DATA_SET1/1 row0 rotates6.09605 but links to row2, which is independent DATA_SET3/3 rotating4.61951, not LINK61. Native dispatcher correctly rejects that premature call. Khadgar90417 gossip18558/5 starts existing9041700; its rows5/6/7 independently send1/1,2/2,3/3 with relative delays4000/0/2000ms. Therefore row2 must remain independent; converting it toLINK would turn Modera back before the intended delayed message and prevent the later DATA_SET3/3 dispatch.",
+  "repair": "Guarded SQL13 changes only90418/source0/id0 link2->0, retaining native LINK validation/logging. Preserve all24 original consumer/producer/caller rows, both orientations, DATA_SET3/3, emote17, all eight timed actions including item136723, caller option, native menu/admission condition and both NPC templates. This repairs the malformed call edge; the old rejected edge already left the eventual orientation timeline intact. Do not misreport this as an observed new visual timing change or replace unknown sharedLINK2 with guessed actions.",
+  "source": "Matching project SmartScript.cpp FindLinkedEvent/ProcessEventsFor/DATA_SET/LINK/SET_ORIENTATION/PLAY_EMOTE and live consumer/full producer/caller/menu/condition/template records resolve this case. Two90418 static uses on1220 phases7317/7318 retained. Native facing and callbacks are shared with later quests. The bounded artifact actor audit references90418 from the Fire route; this fix is not completion of the Fire acquisition chain. No modern code, character edit, video review or client traversal performed.",
+  "checks": [
+    "Test-ModeraFacingData: full-schema TEMP replay twice, exact single-field/single-row comparison across24 rows and unchanged menu/condition/two templates,12 original/applied-custom refusals including both angles, data message, emote, producer delay/signal, caller option, extra row, custom condition/menu/AI. Actual updater LF SHA1 RELEASED plus exact live four-table readback pass.",
+    "Test-ModeraFacing ASAN compiles actual native FindLinkedEvent, generic dispatcher, DATA_SET/LINK predicates, LINK tail and full facing/emote action bodies. Original invalid-LINK counterfactual, repaired first angle/emote/independent final angle/repeat, null/player/pet invokers, wrong data, denied/expired/missing actor pass. Naive row2->LINK counterfactual demonstrably turns back immediately. Source9 gap comes from unchanged SQL producer records; its scheduler/target search and actual gossip/player interaction are not emulated as runtime/client proof.",
+    "Common seven extracted-native/differential LINK cases pass. Fresh read-only world export and matching26972 all36 auditor after13:36 routes,149 native race/class pairs,0 automated loot/admission findings,5 unresolved actor edges. Full loot/lifecycle/rendering certification remains separate."
+  ],
+  "development": "Initial native fixture omitted ProcessAction default arguments used by the actual DATA_SET case. Corrected declaration, compiled and reran under a new evidence wrapper; failed compile evidence retained and not counted as a successful test. No production check/log suppressed.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 21240,
+    "result": "Both servers absent before promotion/startup; owned canonical updater applied13, ready, server shutdown0/exit0, stderr0/new DBErrors0, protected config/certificate hashes unchanged; no task server remains.",
+    "lf_sha1": "2397d81d6ab41712278e09adaa3f0d8850643a57",
+    "world_sha256": "235348EEF91B89605A6430B63FE9F57450EA62B516BE99A6EBF78359400484E1",
+    "bnet_sha256": "45E7FC66C4141DF770BAE52E47225BAA1CE9F79456768184CCDB6A7FB34CAA59",
+    "binary": "SQL-only change, using existing native handlers. Canonical executables unchanged; no new C++ ScriptName."
+  },
+  "all36": {
+    "routes": 36,
+    "native_pairs": 149,
+    "automated_findings": 0,
+    "unresolved_edges": [
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100438,
+        "event": 9,
+        "link": 10,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128937,
+          128938,
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 1,
+        "link": 7,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 6,
+        "link": 8,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 105332,
+        "event": 0,
+        "link": 1,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128476
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "invalid_actor_sai_link",
+        "entry": 105333,
+        "event": 0,
+        "link": 1,
+        "reason": "invalid_target_event",
+        "referenced_by_routes": [
+          128476
+        ],
+        "status": "intended action unknown; needs executable route review"
+      }
+    ],
+    "full_report_sha256": "dafd4bbeef107e5c823b71154dc4efc889f104f2f4912107d3b0478d71ab8d6b",
+    "world_hashes": {
+      "quest_template": "27805c3679ba6624d5b27aa805ac423cfc8edc38d7058bdd36cd3a9c0eb36389",
+      "quest_template_addon": "f1c05d071e6e361800d4ab95e4a212d1ea4e0611af53a738d31ad4b8e5324ed2",
+      "quest_template_locale": "8d2df01920045475bc3b22d41ae88431c72b9e2e02a29c48762ae44dce17e1a9",
+      "quest_objectives": "0cd34046bfb5c77698f371c536386a4d5beaddc61755ac292ca765f17c8ba39f",
+      "creature_queststarter": "aa93f84846d67542dd85b8e3b48c02db66deab1f260fd39ac80affb17c6bbeb1",
+      "creature_questender": "a81428eee03179453a12707f962ee31bc9eb65ed562bc67bb880d2b9cfa7eee1",
+      "gameobject_queststarter": "2df34ae158f4df5e0bbf99f1041aaadf7badd0512f460fce6fe14aae9561c26a",
+      "gameobject_questender": "0e234ec77746b4aa2bdacfef865eb02b89349e1862ebe99ebe7460286b8076f8",
+      "battlepay_product_item": "b5e6f1b003969fad4aabfd54cc667f0f17caa9f8c37086f5d9173ac7eb6145b6",
+      "scenario_data": "97521d0bcf308b0b68892171753c25e77899f7fdbefe54b8c3433445d818c884",
+      "playerchoice_response": "c1d301e8dbd8a293a7b4b1554b519fbc37ceeed9f7edf07c967797db42a65cc6",
+      "playerchoice_response_reward": "4fd31367687e2bd222885689a7b51ed261345979dad2253128eab947408b8b68",
+      "creature_template": "69a8cd13a1615b578ccc3f8edc25687957adf9c7b047fe608a139e5ef1ffe6c1",
+      "gameobject_template": "94726d2df0b238b559e37114944e69554ac5796ab3779f91c4e4d168a27bb849",
+      "gameobject_loot_template": "bc1c302d59450f75e8ac3f08b120e676568db7d6b3ed28ef3fc959be1147e20d",
+      "smart_scripts": "953c8ee039513e5772b51db453ddeae3beb0cc08199f844a086e153310b6abb0",
+      "conditions": "86f0aa7bbf8fc7d63d37d5a2c15c7da0dc62f56716af76444fb86259a29dbace"
+    }
+  },
+  "diagnostics": "All native/TEMP/ASAN/updater/live/audit checks have canonical and own-runtime crash hashes/log offsets before/after. Final exit0; no new/changed crashes, DBErrors appends or server warnings/errors/assertions. Existing3915-byte mixed shared101430/103151 LINK2 remains unresolved/untouched. No resolved Modera runtime report/log exists to archive or truncate. No user/unknown server stopped, character/item/quest progress changed or task process left running.",
+  "evidence": ".codex/modera-facing-{fingerprints,data,native*,prepromotion,canonical-updater}-2026-10-29; .codex/modera-facing-2026-10-29-{owned.txt,startup-stdout.log,startup-stderr.log,new-DBErrors.log}; .codex/artifact-post-modera-2026-10-29; build-extractors/runtime-test/modera-facing{,-data}",
+  "remaining": "Actual gossip item/admission, actor visibility, facing/emote/audio timing, repeat/re-entry/other shared quests and full Fire/client chains remain unverified. Current five remaining bounded edges:1004389->10,1004751->7,1004756->8,1053320->1,1053330->1. Separate shared101430/103151 missingLINK2, Stromkar recoil/cracks/continuous ritual beams and full36 lifecycle/client work remain OPEN. Existing Monk kite repair must not be reapplied while investigating LiLi missing7/8."
+}

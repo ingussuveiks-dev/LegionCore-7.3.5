@@ -3471,16 +3471,7 @@
           "target2": 0
         }
       ],
-      "broken_actor_links": [
-        {
-          "entry": 90418,
-          "event": 0,
-          "link": 2,
-          "reason": "invalid_target_event",
-          "target_event_type": 38,
-          "target_action_type": 66
-        }
-      ],
+      "broken_actor_links": [],
       "video": {
         "url": null,
         "reviewed_intervals": [],
@@ -3502,7 +3493,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing.",
+      "shared_modera_dispatch_review": "SQL13 RELEASED: separate DATA_SET1/1 and3/3 facing retained, malformed LINK removed with native ASAN/12 TEMP refusals/live readback. Shared Khadgar scene, not whole Fire chain certification; see modera-facing-dispatch-2026-10-29.json."
     },
     {
       "class_id": 8,
