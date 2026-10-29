@@ -8,7 +8,8 @@
     "routes": "docs/audits/artifact-routes-2026-10-23.json",
     "route_sha256": "b6214431a6d7e463d4ef9d22857af2b9db067da82527a6f411e70f711a10c17e",
     "equip_sha256": "7fba4ed7f34c557183420fdcc08a0aa9eea8009efa2235245a126c6717f0a8bb",
-    "donor_review": "docs/audits/legion-artifact-donor-review-2026-10-23.json"
+    "donor_review": "docs/audits/legion-artifact-donor-review-2026-10-23.json",
+    "smart_link_admission_followup": "docs/audits/artifact-smart-link-admission-2026-10-29.json"
   },
   "common_findings": [
     {
@@ -2151,7 +2152,16 @@
         {
           "entry": 105332,
           "event": 0,
-          "missing_link": 1
+          "link": 1,
+          "reason": "missing_target"
+        },
+        {
+          "entry": 105333,
+          "event": 0,
+          "link": 1,
+          "reason": "invalid_target_event",
+          "target_event_type": 64,
+          "target_action_type": 80
         }
       ],
       "video": {
@@ -2905,7 +2915,16 @@
           "target2": 0
         }
       ],
-      "broken_actor_links": [],
+      "broken_actor_links": [
+        {
+          "entry": 102459,
+          "event": 0,
+          "link": 1,
+          "reason": "invalid_target_event",
+          "target_event_type": 52,
+          "target_action_type": 1
+        }
+      ],
       "video": {
         "url": null,
         "reviewed_intervals": [],
@@ -3457,7 +3476,16 @@
           "target2": 0
         }
       ],
-      "broken_actor_links": [],
+      "broken_actor_links": [
+        {
+          "entry": 90418,
+          "event": 0,
+          "link": 2,
+          "reason": "invalid_target_event",
+          "target_event_type": 38,
+          "target_action_type": 66
+        }
+      ],
       "video": {
         "url": null,
         "reviewed_intervals": [],
@@ -4026,7 +4054,16 @@
         {
           "entry": 100438,
           "event": 9,
-          "missing_link": 10
+          "link": 10,
+          "reason": "missing_target"
+        },
+        {
+          "entry": 101880,
+          "event": 5,
+          "link": 6,
+          "reason": "invalid_target_event",
+          "target_event_type": 62,
+          "target_action_type": 33
         }
       ],
       "video": {
@@ -4116,7 +4153,16 @@
         {
           "entry": 100438,
           "event": 9,
-          "missing_link": 10
+          "link": 10,
+          "reason": "missing_target"
+        },
+        {
+          "entry": 101880,
+          "event": 5,
+          "link": 6,
+          "reason": "invalid_target_event",
+          "target_event_type": 62,
+          "target_action_type": 33
         }
       ],
       "video": {
@@ -4219,19 +4265,22 @@
       ],
       "broken_actor_links": [
         {
+          "entry": 100438,
+          "event": 9,
+          "link": 10,
+          "reason": "missing_target"
+        },
+        {
           "entry": 100475,
           "event": 1,
-          "missing_link": 7
+          "link": 7,
+          "reason": "missing_target"
         },
         {
           "entry": 100475,
           "event": 6,
-          "missing_link": 8
-        },
-        {
-          "entry": 100438,
-          "event": 9,
-          "missing_link": 10
+          "link": 8,
+          "reason": "missing_target"
         }
       ],
       "video": {
@@ -4649,7 +4698,16 @@
           "target2": 0
         }
       ],
-      "broken_actor_links": [],
+      "broken_actor_links": [
+        {
+          "entry": 101390,
+          "event": 4,
+          "link": 10,
+          "reason": "invalid_target_event",
+          "target_event_type": 0,
+          "target_action_type": 45
+        }
+      ],
       "video": {
         "url": null,
         "reviewed_intervals": [],

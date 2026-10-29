@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-29",
+  "status": "All36 structural audit defect repaired; newly exposed gameplay graphs remain individually OPEN",
+  "cause": "audit_artifact_routes.py tested only whether a LINK destination ID existed. Native SmartScript::ProcessAction additionally requires a nonzero destination action and event type61. Existing Gossip Hello, Gossip Select, Text Over, SetData and Update rows can have the referenced ID but cannot execute as LINK. The old audit missed five such route actor edges.",
+  "repair": "Shared artifact_smart_links.invalid_links mirrors native first-ID lookup and nonzero/nonself LINK-tail admission. Reports missing_target, invalid_target_event or empty_target_action, retaining actual target event/action details. Stable sorted actor traversal. Broken-link records now use link plus reason, replacing the misleading missing_link key; Build-ArtifactAcquisitionWorklist copies these records without depending on that field. Existing historical route audits remain immutable; accumulated worklist evidence is preserved while its36 broken_actor_links fields are refreshed.",
+  "checks": "Test-ArtifactSmartLinks compiles extracted native FindLinkedEvent and actual ProcessAction LINK tail under ASAN. Seven native outcomes cover valid61, absent ID, Gossip Hello64/action80, ordinary Gossip Select62, empty action, zero link and ignored self-link. Python audit matches all seven; old membership-only expression demonstrably misses the rejected Hello case. Native enum61 is independently checked. Fresh read-only world export plus matching26972 route reader enumerates36 selections/149 native race-class pairs, zero automated loot/admission findings and nine unresolved actor LINK edges. This is not a client traversal or a full loader/difficulty/condition certification.",
+  "new_findings": [
+    {"entry":90418,"event":0,"link":2,"target_event":38,"routes":[128820]},
+    {"entry":101390,"event":4,"link":10,"target_event":0,"routes":[128821]},
+    {"entry":101880,"event":5,"link":6,"target_event":62,"routes":[128937,128938]},
+    {"entry":102459,"event":0,"link":1,"target_event":52,"routes":[128403]},
+    {"entry":105333,"event":0,"link":1,"target_event":64,"routes":[128476]}
+  ],
+  "existing_findings": "1004389->10;1004751->7 and6->8;1053320->1 remain missing. Shared101430/103151 LINK2 are not magically resolved by this audit and are outside its bounded quest-actor set.",
+  "diagnostics": "Native ASAN/differential and fresh export/all36 audit pre/post checks: exit0, no new canonical/test crashes, DBErrors appends or server warning/error/assertion lines. Existing3045-byte sharedLINK2 log preserved. No executable/data/character changes or servers launched/stopped. Earlier read-only Name1 query on creature_template failed; inspected schema and corrected to creature_template_wdb, no mutation/server failure.",
+  "private_evidence": "build-extractors/runtime-test/artifact-smart-links; .codex/artifact-link-admission-refresh-2026-10-29; read-only actor/context TSVs. Native TDB735 bounded SmartAI search yielded zero selected rows, not evidence that these actions should be deleted. Full-scale blade-kit pose probe also retained privately:65550 has zero offset/rotation unlike embedded64756, so no blind visual substitution was deployed.",
+  "next": "Repair each actual graph from its complete native event and condition sequence, starting with Tak-Tak's duplicate Gossip Select row between two real credits and the existing Temple of Five Dawns transfer. Do not convert every non-LINK target to61: Text Over/Update/SetData/Hello may be legitimate independent events. Client tests stay user-owned; all36 remain unfinished."
+}

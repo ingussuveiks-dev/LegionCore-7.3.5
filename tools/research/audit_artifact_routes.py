@@ -12,6 +12,7 @@ import re
 import sys
 sys.dont_write_bytecode = True
 from audit_spell_mechanics import Data
+from artifact_smart_links import invalid_links
 
 CLASSES = dict(WARRIOR=1,PALADIN=2,HUNTER=3,ROGUE=4,PRIEST=5,DEATH_KNIGHT=6,
                SHAMAN=7,MAGE=8,WARLOCK=9,MONK=10,DRUID=11,DEMON_HUNTER=12)
@@ -115,10 +116,8 @@ def main():
             actors.update(o['ObjectID'] for o in objective[quest] if o['Type']==0)
         route['actors_with_cpp']=[dict(entry=a,script=ct[a]['ScriptName']) for a in sorted(actors) if a in ct and ct[a]['ScriptName']]
         broken=[]
-        for a in actors:
-            group=by_actor[(a,0)];ids={r['id'] for r in group}
-            for r in group:
-                if r['link'] and r['link'] not in ids:broken.append(dict(entry=a,event=r['id'],missing_link=r['link']))
+        for a in sorted(actors):
+            broken.extend(invalid_links(by_actor[(a,0)]))
         route['broken_actor_links']=broken
         scenario_actions=[]
         for a in scripts:
@@ -156,10 +155,11 @@ def main():
     review_links=collections.defaultdict(list)
     for route in routes:
         for broken in route['broken_actor_links']:
-            review_links[(broken['entry'],broken['event'],broken['missing_link'])].append(route['item'])
-    review_findings=[dict(kind='missing_actor_sai_link',entry=e,event=event,missing_link=link,
+            review_links[(broken['entry'],broken['event'],broken['link'],broken['reason'])].append(route['item'])
+    review_findings=[dict(kind='missing_actor_sai_link' if reason=='missing_target' else 'invalid_actor_sai_link',
+                          entry=e,event=event,link=link,reason=reason,
                           referenced_by_routes=sorted(set(items)),status='intended action unknown; needs executable route review')
-                     for (e,event,link),items in sorted(review_links.items())]
+                     for (e,event,link,reason),items in sorted(review_links.items())]
     result=dict(date=args.date,build='7.3.5.26972',routes=routes,findings=findings,review_findings=review_findings,
                 native_race_class_pairs=native_pairs,scenario_routing=scenario_rows,
                 native_artifact_related_scenarios=sorted({s['ScenarioID'] for s in steps if s['RewardQuestID'] in {q for r in routes for q in r['canonical_links']}}),
