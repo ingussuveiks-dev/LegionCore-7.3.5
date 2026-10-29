@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-30",
+  "status": "Native SQL capture and complete-export publication repaired; supersedes initial0f4794e87 capture method; whole36 gameplay remains OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "observed_cause": "Initial0f4794e87 Start-Process -Wait capture later returned exit0 with raw smart_scripts stdout ending inside row71481 of71485. The exporter boundary check stopped the audit; this was not a completed run or a World row deletion. Waiting for the process alone did not prove all query input/output had been consumed. The internal PowerShell/native transport was not profiled, so no upstream bug diagnosis is asserted.",
+  "change": [
+    "Invoke-NativeSqlFiles owns only an explicit mysql/mariadb client, starts hidden without shell execution, writes/flushes UTF8 stdin through its writer, drains stdout/stderr pipes concurrently to owned files, awaits both EOF tasks and native exit before disposing streams, and returns only the actual scalar native exit. Credentials remain inherited via restored MYSQL_PWD; no password in arguments/files/output.",
+    "Exporter now uses the matching MariaDB11.4.9 client against the existing runtime connection, with read-only consistent-snapshot transactions. Every data/metadata query appends a server COUNT trailer; publication checks exact count, final marker placement, row boundaries/column names and bytes before creating a final file. Preserve full original stdout; publish only its exact data prefix. Native stderr/nonzero exit still fails.",
+    "Existing Varedis/Allaris,Twinblades and Monk SQL regression queries use the same EOF helper. Predicate/custom-refusal assertions unchanged. New pending Monk scene test also uses it but belongs to the separate scene implementation commit."
+  ],
+  "validation": [
+    "Both MariaDB11.4.9 and MySQL8.4.9 clients: complete1MiB payload, expected1054 before payload, final row after expected1054, actual nonzero native failure and correct runtime database/column metadata. Exactly one expected error retained per counterfactual, no swallowed stderr or fake successful native exit.",
+    "Actual publisher accepts exact2-row data prefix and preserves original stdout; rejects missing count marker, valid-JSON-boundary truncation/count mismatch, bytes after marker and partial JSON before publishing a file.",
+    "Retained real failed raw result has71480 complete rows plus a partial71481. Repaired snapshot has71485 complete SmartAI rows, every valid original prefix object unchanged, exact native data match and server COUNT71485 trailer. Original931-row final-brace failure also remains paired with the repaired export.",
+    "All20 complete exports/465201 objects fully parse, match native byte prefixes and server counts with empty native stderr. Fresh36/149/0 automated findings/3 bounded actor links,3 scene-only pickup candidates;25maps/1947owners/83timed/19 primary review candidates/0 missing lists. This data includes separately deployed Monk scene World06 and does not certify client traversal.",
+    "Existing Varedis/Allaris,Twinblades,Monk loot and new Monk scene full TEMP/custom-refusal/live regressions pass through the EOF helper; expected SQL45000 refusal evidence preserved. All snapshots/exits/stdout/stderr inspected."
+  ],
+  "development": "First low-level prototype emitted three .NET VoidTaskResult objects with its exit, correctly rejected by the exporter; suppressed only those task return objects, preserving native exit/errors. A BaseStream-input prototype then produced an empty valid metadata result with the MySQL8 client; column validation stopped it. Replaced raw input bypass with explicit UTF8 writer write/flush, selected matching MariaDB exporter client, and verified both clients plus full counted snapshot. Failed prototype outputs/diagnostics retained; no partially exported dataset treated as complete.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\artifact-native-sql-eof-2026-10-30",
+    "result": "19 failed/passing audit files including original42MB raw stdout copied with before/destination/after SHA256 verification and manifest. No production dump claimed or active runtime log cleared."
+  },
+  "runtime": "No server launched/stopped for this capture repair. Current separately deployed Monk scene Release worldF0BB199C/bnet5F8730EE unchanged here; task-owned2852 already exited gracefully0. Active Crashes empty and3915-byte shared101430/103151 unresolvedLINK2 DBErrors unchanged atUTC2026-10-29T13:29:05.1130661Z. No character/item/progress edits.",
+  "evidence": [
+    ".codex/native-sql-eof-both-clients-2026-10-30",
+    ".codex/artifact-eof-count-export-2026-10-30",
+    ".codex/native-sql-publication-and-live-2026-10-30",
+    ".codex/artifact-post-monk-scene-counted-2026-10-30"
+  ],
+  "next": "Finish separate already-deployed World06 Monk scene context/equip audit/commit, then remaining3 scene-only pickup paths/LINKs/visuals/full36. User owns actual client tests; no reset permission."
+}

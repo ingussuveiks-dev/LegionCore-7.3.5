@@ -1,6 +1,6 @@
 {
   "date": "2026-10-30",
-  "status": "Read-only artifact exporter output capture repaired; full fresh export/audits pass; all36 gameplay remains OPEN",
+  "status": "Historical first capture hardening; later recurrence superseded by artifact-native-sql-eof-2026-10-30.json",
   "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
   "cause": "Export-ArtifactAudit collected native mysql stdout through a PowerShell pipeline. One real gameobject_queststarter export returned exit0 and931 rows, but its final row was only {. The later full JSON parser correctly rejected it. This matches the separately observed truncated speaker-test output; no World table rows were deleted. Internal PowerShell/stdio transport was not profiled, so this is a localized observed capture-path failure, not a claimed upstream root-cause diagnosis.",
   "change": "Native queries now read saved UTF8 stdin and write separate stdout/stderr files through a hidden waited process. Check exact process exit and any stderr before reading/copying; validate JSON row boundaries and metadata column names, then publish native bytes. SET SESSION TRANSACTION READ ONLY retained explicitly; connection password only inherited via restored MYSQL_PWD, never written. No server or database data mutation.",
@@ -21,5 +21,6 @@
     ".codex/artifact-export-capture-regression-2026-10-30",
     ".codex/artifact-post-monk-loot-final-2026-10-30"
   ],
-  "next": "Finish separate World30/05 Monk real-loot implementation/audit/commit (already applied/native+live tested), then real scene-completion/equip wiring and remaining36 work. User owns all actual client tests; no reset authorization."
+  "next": "Finish separate World30/05 Monk real-loot implementation/audit/commit (already applied/native+live tested), then real scene-completion/equip wiring and remaining36 work. User owns all actual client tests; no reset authorization.",
+  "followup": "Start-Process -Wait redirected capture later truncated SmartAI row71481 despite exit0. New EOF-aware writer/drains/server count publication and retained actual counterfactual/full465201-object snapshot repair that recurrence; initial passing evidence below remains historical."
 }

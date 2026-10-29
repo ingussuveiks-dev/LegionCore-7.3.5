@@ -7,25 +7,36 @@ $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Ob
 $old=$env:MYSQL_PWD
 function Read-AuditQuery([string]$query,[string]$label){
  $inputPath=Join-Path $out ".query-$label.sql";$stdoutPath=Join-Path $out ".query-$label.stdout";$stderrPath=Join-Path $out ".query-$label.stderr"
- [IO.File]::WriteAllText($inputPath,"SET SESSION TRANSACTION READ ONLY;`n$query;`n",[Text.UTF8Encoding]::new($false))
- # Native pipeline capture intermittently returned exit0 with a cut final row.
- # Wait for redirected native files before reading or publishing the snapshot.
- $process=Start-Process -FilePath C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe -ArgumentList @("--host=$($c[0])","--port=$($c[1])","--user=$($c[2])","--database=$($c[4])",'--default-character-set=utf8mb4','--batch','--raw','--skip-column-names') -RedirectStandardInput $inputPath -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -WindowStyle Hidden -Wait -PassThru
- try{$process.Refresh();$code=$process.ExitCode}finally{$process.Dispose()}
+ [IO.File]::WriteAllText($inputPath,"SET SESSION TRANSACTION READ ONLY;`nSTART TRANSACTION WITH CONSISTENT SNAPSHOT;`n$query;`nCOMMIT;`n",[Text.UTF8Encoding]::new($false))
+ # Await stdout/stderr EOF as well as process exit before publishing bytes.
+ $code=& "$PSScriptRoot/../tests/Invoke-NativeSqlFiles.ps1" -Executable C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe -Arguments @("--host=$($c[0])","--port=$($c[1])","--user=$($c[2])","--database=$($c[4])",'--default-character-set=utf8mb4','--batch','--raw','--skip-column-names') -InputFile $inputPath -OutputFile $stdoutPath -ErrorFile $stderrPath
  $errors=[IO.File]::ReadAllText($stderrPath,[Text.Encoding]::UTF8)
  if($code -ne 0 -or $errors){throw "Native audit query failed ($code): $stderrPath"}
  return $stdoutPath
 }
+function Publish-AuditRows([string]$source,[string]$destination,[switch]$Json){
+ $marker='__ARTIFACT_EXPORT_ROWS__';$count=0;$reported=$null;$trailer=$null
+ foreach($row in [IO.File]::ReadLines($source,[Text.Encoding]::UTF8)){
+  if($null -ne $reported){throw "Unexpected data after native row-count trailer: $source"}
+  if($row -match '^__ARTIFACT_EXPORT_ROWS__(\d+)$'){$reported=[long]$Matches[1];$trailer=$row;continue}
+  ++$count
+  if($Json){if(!$row.StartsWith('{') -or !$row.EndsWith('}')){throw "Incomplete audit JSON row $count in $source"}}
+  elseif($row -notmatch '^\w+$'){throw "Incomplete audit column name in $source"}
+ }
+ if($null -eq $reported -or $count -ne $reported){throw "Native audit row-count mismatch ($count versus $reported): $source"}
+ # Keep the full native stdout as evidence, publishing its exact data prefix.
+ $bytes=[IO.File]::ReadAllBytes($source);$eol=if($bytes.Length -ge 2 -and $bytes[-2] -eq 13 -and $bytes[-1] -eq 10){2}elseif($bytes[-1] -eq 10){1}else{throw 'Native row-count trailer lacks terminator'}
+ $length=[Text.Encoding]::UTF8.GetByteCount($trailer);$prefix=$bytes.Length-$length-$eol
+ if([Text.Encoding]::UTF8.GetString($bytes,$prefix,$length) -cne $trailer){throw 'Native trailer bytes differ'}
+ $file=[IO.File]::Open($destination,[IO.FileMode]::Create,[IO.FileAccess]::Write,[IO.FileShare]::Read)
+ try{$file.Write($bytes,0,$prefix)}finally{$file.Dispose()}
+ return $count
+}
 function Export-Table($table,$fields,$filter='1'){
  $pairs=($fields.Split(',') | ForEach-Object {"'$_',``$_``"}) -join ','
- $sql="SELECT JSON_OBJECT($pairs) FROM ``$table`` WHERE $filter"
+ $sql="SELECT JSON_OBJECT($pairs) FROM ``$table`` WHERE $filter;SELECT CONCAT('__ARTIFACT_EXPORT_ROWS__',COUNT(*)) FROM ``$table`` WHERE $filter"
  $stdoutPath=Read-AuditQuery $sql $table
- $count=0
- foreach($row in [IO.File]::ReadLines($stdoutPath,[Text.Encoding]::UTF8)){
-  ++$count
-  if(!$row.StartsWith('{') -or !$row.EndsWith('}')){throw "Incomplete audit JSON row $table/$count in $stdoutPath"}
- }
- Copy-Item -LiteralPath $stdoutPath -Destination (Join-Path $out ($table+'.jsonl')) -Force
+ $count=Publish-AuditRows $stdoutPath (Join-Path $out ($table+'.jsonl')) -Json
  "$table $count"
 }
 try {
@@ -44,7 +55,9 @@ try {
  Export-Table 'npc_spellclick_spells' 'npc_entry,spell_id,cast_flags,user_type'
  Export-Table 'battlepay_product_item' 'ID,ProductID,ItemID,Quantity'
  foreach($table in @('smart_scripts','conditions','playerchoice_response','playerchoice_response_reward')){
-  $columnsPath=Read-AuditQuery "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='$table' ORDER BY ORDINAL_POSITION" "columns-$table"
+  $columnsRaw=Read-AuditQuery "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='$table' ORDER BY ORDINAL_POSITION;SELECT CONCAT('__ARTIFACT_EXPORT_ROWS__',COUNT(*)) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='$table'" "columns-$table"
+  $columnsPath=Join-Path $out ".query-columns-$table.data"
+  $columnCount=Publish-AuditRows $columnsRaw $columnsPath
   $cols=@(Get-Content -LiteralPath $columnsPath -Encoding UTF8)
   if(!$cols.Count -or @($cols|Where-Object {$_ -notmatch '^\w+$'}).Count){throw "Incomplete audit column query: $table"}
   Export-Table $table ($cols -join ',')
