@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-30",
+  "status": "Fu Zan/Fists actual loot links/final-stage admission repaired; World05 RELEASED; scene-to-real-equip and whole Monk/client still OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "251605 Fu Zan and248086 Fists are native type3 chests with existing100-percent128938/128940 loot but Data1=0. Native GetLootId bypasses those rows. Scene auras217814/199502 do not create inventory items; matching package1668/1524 equips only a visual clone. Native real equip217813/199499 requires an existing item and is separately disconnected from completion callbacks. This commit repairs actual loot/admission only.",
+  "change": [
+    "Exactly two template Data1 values become their own entry. Original/applied complete template+condition pairs and unchanged full loot/all10 SmartAI rows are fingerprint-guarded, with SIGNAL plus per-mutation guard against partial/custom updates. No boss, text, cast, criterion, phase, actor pose/lifetime or return action changed.",
+    "Each pickup gets70 conditions (14 real loot,28 completed-loot root1,28 existing owned gossip root3),140 total. Living Monk/classmask512 with actual active un-rewarded40570/map1528/scenario983/6 for Fists or42765/map1625/scenario1137/7 for Fu Zan. Incomplete9 ORcomplete28 accepted. Loot denies existing inventory/bank copy; native presentation roots require inventory ownership and permit the immediate next stage7 or8 respectively. Bank-only replay remains rejected, preserving original semantics. No direct item/quest grant or character edit."
+  ],
+  "native_evidence": [
+    "Typed matching26972 ItemSparse: both master items max1/stack1/AllowableClass-1; Windwalker child133948 slot16.983/5 boss47821 ->6 pickup47977;1137/6 boss52482 ->7 pickup52483 ->8 return52751. Raw criteria amounts0 use native zero-to-one receipt policy already separately regressed; no requirement changed.",
+    "100760 original real death205/47821 to closestPlayer21/50yd ->104490 ->248086 GO3600s.109821 original death205/52482 ->own text ->109432 ->251605 GO3600s ->data1/1 to109820. Both native GO0/2 presentation roots and all linked criteria/returnNPC summons remain.101133 original gossip teleports1514;109440 actual gossip credit109440/52751 precedes1514 return. Player/pet/group boss credit policy unchanged, not certified end-to-end here.",
+    "1995029000ms root+scene1160/package1524/personal100952/event47977;2178149000ms root+scene1342/package1668/personal109330 and removes native217659/217667 aura428 companion controllers. Native scene init13778/14271 visibly equips only player clones, not real inventory. Native199499/217813 effect249 targets master items;217813 additionally updates phase, sends52483, triggersEndingConversation2879 through218929 and pushes native ability. All retained.",
+    "spell_scene_event1160/1342 has no row; no examined C++ producer wires these real equip spells. Native224657 is another Fists equip with different54076 event/phase/ability effects; do not substitute it merely because its item matches. Actual completion-to-equip is the next focused repair, not implied by new loot."
+  ],
+  "validation": [
+    "Full4table original fixture/TEMP replay/idempotence, exact two-field template differential,140 exact predicates, unchanged10 native actions/loot/return links;18 custom/partial refusal variants preserve all rows under --force. Full live4table equality and real updater RELEASED/LF-SHA1 pass.",
+    "Six MSVC ASan runs (loot/root/gossip for each real path) compile production GetLootId, condition cases/ElseGroups, cached-slot/loot admission and SmartAI root bridge. Stage/status, absent/foreign/non-instance context, class/map/quest/life, missing item, inventory/bank uniqueness, null/pet invoker, reward/abandonment/unrelated loot matrices pass. Original zero-link counterfactual paired with native actual selector. Actual full bags/store/UI/complete combat/group/faction/cast/equip/end-to-end are not exercised by these predicate fixtures.",
+    "Test-MonkAcquisitionCatalog validates typed26972 scenes/equip/pair/9000ms and both boss-pickup-next criteria. Native scene master/init/helper portions reviewed; full source exported privately, no scene renderer or complete video/client traversal used.",
+    "Shared Test-TalonclawPickupAdmission -VerifyReleaseBinary passes ten existing pickup/scene/return/departure paths/current canonical PE. Test-MonkKiteTravel -AddressSanitizer -VerifyNativeCatalog passes existing actual personal click/guard/deferred/lease/native cast entry; its extra VerifyReleaseBinary argument was unsupported/ignored and is not claimed as a Monk-specific PE check. EXEs unchanged; historical C4244 fixture warnings visible.",
+    "Monk and Twinblades SQL test capture uses waited native files, extending the already diagnosed stdout-tail repair without changing predicate assertions. Both live regressions pass. Fresh complete exporter/audits after0f4794e87:36/149/0 automated findings/3 bounded actor links;25maps/1947owners/83timed/19 primary review candidates/0 missing lists;3 scene-only candidates remain247566Blood/247386Frost/247494Fire. Scene-to-real-equip for the two now-lootable Monk chests remains explicit even though that structural category clears."
+  ],
+  "development": "Initial private generator produced2026_10_30_04_monk_loot_real_loot.sql while test expected2026_10_30_05_monk_real_loot.sql. Get-Content failed before SQL; corrected pending filename/generator, then all six native checks passed. Initial full36 export later failed on a truncated final JSON row; fixed independently in0f4794e87, archived counterfactual and complete465135-object replay. Those failed attempts are not ordinary passes and no production log was suppressed.",
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_05_monk_real_loot.sql",
+    "lf_sha1": "df2a4f0cd5daa137d295edf2d510d5b2da574be0",
+    "owned_pid": 8440,
+    "world_sha256": "7D382937DED53E107AA52237B9757508348945A85AEA2E52E1EE9B698C513451",
+    "bnet_sha256": "F20D25EEFE0BD1ACDF40CBFFB836E1D811425C8F6AD45195AEA414B78DC16167",
+    "result": "Data only, no EXE replacement/newScriptName. Both servers absent immediately before promotion/start. Owned8440 ready/graceful shutdown0/exit0/empty stderr/newDBErrors0/protected hashes unchanged; no task server remains. No user/unknown server stopped or character/item/quest reset."
+  },
+  "diagnostics": "Every fixture/fingerprint/TEMP/native/ASan/catalog/shared/PE/updater/live/audit check has before/after canonical+own crash/log evidence with exits/stdout/stderr/new diagnostics inspected. Initial missing-file/export capture failures retained and paired with fixes. No new/changed crash or runtime warning/error/assertion/DBErrors. Active Crashes empty; unresolved mixed shared101430/103151 LINK2 DBErrors3915 bytes/UTC2026-10-29T13:29:05.1130661Z unchanged; no mixed log cleared.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\monk-loot-fixture-path-2026-10-30",
+    "result": "9 isolated initial-path/passing test diagnostics copied with verified SHA256; separate exporter archive documented in artifact-audit-output-capture-2026-10-30.json. No production crash claimed or active runtime history removed."
+  },
+  "evidence": [
+    ".codex/monk-acquisition-catalog-scenes-2026-10-30",
+    ".codex/monk-acquisition-scenes-native.tsv",
+    ".codex/monk-loot-fixture-2026-10-30",
+    ".codex/monk-loot-native-correct-path-2026-10-30",
+    ".codex/monk-loot-shared-2026-10-30",
+    ".codex/monk-loot-updater-2026-10-30",
+    ".codex/monk-loot-live-2026-10-30",
+    ".codex/artifact-post-monk-loot-final-2026-10-30"
+  ],
+  "remaining": "Next: actual native1160/1342 SceneComplete->199499/217813 existing-item equip with proper scene/quest/map/stage/inventory guards and cancel/replay validation. Full bags/retry/cast denial/return actor lifetime/group/faction/reentry and actual client full routes remain OPEN. LiLi missingLINK7/8, later100438LINK10,3 other scene-only pickups,19 expandedLINK candidates/sharedLINK2/Stromkar visuals/middle39427/full36 unfinished."
+}

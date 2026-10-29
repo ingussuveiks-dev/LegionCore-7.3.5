@@ -10,8 +10,12 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_04_twinbl
   $old=$env:MYSQL_PWD;$errorFile="$out/sql-$script:queryIndex.stderr";++$script:queryIndex
   [IO.File]::WriteAllText("$out/sql-$($script:queryIndex-1).sql",$sql)
   $previousConsole=[Console]::OutputEncoding;$previousPipe=$OutputEncoding
-  try{$env:MYSQL_PWD=$c[3];[Console]::OutputEncoding=[Text.UTF8Encoding]::new($false);$OutputEncoding=[Text.UTF8Encoding]::new($false);$ErrorActionPreference='Continue';$rows=@($sql|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($c[0]) --port=$($c[1]) --user=$($c[2]) --database=$($c[4]) --default-character-set=utf8mb4 --batch --raw --skip-column-names --force 2>$errorFile);$code=$LASTEXITCODE;$ErrorActionPreference='Stop';$errors=[string](Get-Content $errorFile -Raw)
-   [IO.File]::WriteAllLines("$out/sql-$($script:queryIndex-1).stdout",[string[]]$rows)
+  try{$env:MYSQL_PWD=$c[3];$sqlFile="$out/sql-$($script:queryIndex-1).sql";$stdoutFile="$out/sql-$($script:queryIndex-1).stdout"
+   # Preserve complete native stdout/stderr bytes, including the tail after an
+   # expected --force error; a PowerShell native pipeline lost part of a row.
+   $process=Start-Process -FilePath C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe -ArgumentList @("--host=$($c[0])","--port=$($c[1])","--user=$($c[2])","--database=$($c[4])",'--default-character-set=utf8mb4','--batch','--raw','--skip-column-names','--force') -RedirectStandardInput $sqlFile -RedirectStandardOutput $stdoutFile -RedirectStandardError $errorFile -WindowStyle Hidden -Wait -PassThru
+   try{$process.Refresh();$code=$process.ExitCode}finally{$process.Dispose()}
+   $rows=@(Get-Content $stdoutFile -Encoding UTF8);$errors=[string](Get-Content $errorFile -Raw -Encoding UTF8)
    if($Refusal){if($errors -notmatch 'Twinblades native loot/actions/admission differ; review before applying' -or @([regex]::Matches($errors,'ERROR [0-9]+')).Count -ne 1){throw "Unexpected Twinblades loot refusal: $errorFile"}}
    elseif($code -ne 0 -or $errors){throw "Twinblades loot SQL failed: $errorFile"};return ,$rows
   }finally{$env:MYSQL_PWD=$old;[Console]::OutputEncoding=$previousConsole;$OutputEncoding=$previousPipe}

@@ -5128,5 +5128,12 @@
     "checks": "TEMP18 refusals/live4tables,6 ASan native modes/bothquests,shared10pickup actualPE/55native equip/39items,updated earlier speakers live6tables,own33124 clean graceful0. SameEXEs7D382937/F20D25EE,3915 unresolvedDBErrors; isolated draft/fixture failures archived with hashes.",
     "fresh_audit": "36/149/0 automated findings/3boundedMonk; expanded25maps/1947owners/83timed/19 candidates unchanged. Trigger-aware audit now detects old Twinblades missing link. Five scene-only pickup grant candidates explicit:247566 Blood,247386 Frost,247494 Fire,251605 Brewmaster,248086 Windwalker. These require fullnative/scene/callback review, not blanket Data1 edits.",
     "next": "Continue Monk pickups/fullflow first, then other scene-only entries/remainingLINKs/visuals/all36. No reset or full client certification; task servers closed."
+  },
+  "monk_real_loot": {
+    "audit": "docs/audits/monk-real-loot-2026-10-30.json",
+    "status": "World30/05 RELEASED:248086/251605 actual128940/128938 loot +70 guarded rules each, native983/6 or1137/7 and corresponding quest; owned next-stage replay preserves10 actions/return links.",
+    "checks": "6 ASan native loot/root/gossip,18 TEMP refusals/live4tables/typed26972/shared10pickup actualPE/Monk native kite pass. Own8440 clean graceful0; sameEXEs,3915 unresolvedDBErrors. Initial path failure archived; independent exporter capture repaired/pushed0f4794e87.",
+    "fresh_audit": "Complete fresh20tables/465135 objects;36/149/0 automated findings/3 boundedMonk,25maps/1947owners/83timed/19 candidates.3 scene-only grant candidates now247566 Blood,247386 Frost,247494 Fire. Monk real-equip callback still separately OPEN.",
+    "next": "Wire real1160/1342 SceneComplete to199499/217813 with native guarded scope, preserve alternate224657 distinction/cancel/replay; then remaining36. Client full bags/equip/pair/return/full routes unverified; no reset authorization."
   }
 }
