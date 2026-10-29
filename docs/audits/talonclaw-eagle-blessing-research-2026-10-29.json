@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-29",
+  "status": "OPEN: inherited missing Survival middle quest39427 investigated further; evidence only, no gameplay/database/EXE change",
+  "scope": "Continue the saved survival-artifact-sequence-review-2026-10-23.json and talonclaw-boarding-admission-2026-10-24.json findings. No restart from scratch, partial offer, tightened prerequisite or fake quest credit.",
+  "confirmed_current_gap": "Native questline220 still41542->39427->40385. Current world41542.NextQuestID40385 and40385.PrevQuestID41542 bypass39427, which has no starter; enders95400/95415 are Aylea, plus110821Apata whose server template is absent. Four SQL objectives are110936 arrival,110937 return,110685 Degar kill,110938 blessing, quantity1 each. No matching current39427 conditions/phase7088 definitions or100967 route; Degar/Highmountain Apata/Eagle actor variants and credit proxies have no restored server scripts/templates. Existing10096540385 admission/shortcut is retained, not certified as actual flight/boarding.",
+  "native26972": [
+    "Typed native QuestLine220 exact three order indices. DB2 QuestObjective probe produced no39427 OBJECTIVE rows; four current objective identities come from actual world SQL, not a fabricated native confirmation.",
+    "198941 FlytoSpiritwatch is pure summon100967/properties61/control1/title2/flags2/slot0, actual native vehicle4535/seat16201.218564 controller428/300000ms triggers198941; its effect1 triggers217343, native SummonApata100990/properties3292. Core428 apply casts trigger, removal removes only matching summon spell; no actual boarding or route is implemented by that handler.",
+    "220619 preload438/phase7088/300000ms; actual Phase7088 flags548. Core438 is HandleNULL, so accepting this aura alone cannot be presented as complete server phase/actor population.220621 native effect232 removes phase7088, effect203 removes220789, effect64 triggers226271; all exported without invoking.",
+    "220789 EagleSpiritBlessingEnabled native dummy aura, and220791 effect90 real110938 plus native event53251. These identify relevant producer candidates, not permission to cast progress early or a complete stage/receiver acknowledgment.",
+    "Apata110821/100990 nativeCreature display66135 and difficulty records faction35/levels98..110 are present. Degar110685 and the credit proxies are not in nativeCreature lookup; local client-cache WDB Degar has display71608/VerifiedBuild22566 but no authoritative matching server stats/AI. Do not conflate a cached model/name with a spawnable full actor.102772 SummonOhnahra202640 has existing Trueshot coordinates4630/5312/840 context, not demonstrated as the missing Spiritwatch eagle.",
+    "Native Degar BroadcastTexts119067/119071/119073 and sounds68166/68167/68168 match the reference speech identities. No new text/audio was invented, no playback heard.226319 is a separate Ohnahra transform candidate with native permanent duration; a similar Eagle name does not prove the blessing interaction or correct actor.",
+    "TaxiNodes/TaxiPath/TaxiPathNode read-only search forSpiritwatch/Talonclaw/Apata/Hunter and Dalaran source vicinity did not identify the original quest flight. It returns ordinaryDalaran1774/1849 and an unrelated7.2Hunter6052; do not repurpose either as an original39427 route."
+  ],
+  "source_order": [
+    "Reused matching local quest/script/DB2/core and preserved prior native/donor audits. Exact local newer Trinity script search found no39427/Spiritwatch implementation (numeric394279 and unrelated39427 spell excluded).",
+    "Six already downloaded native-era Titans/dufernst world dumps scanned table-scoped tuples for110685/110821/110936-8: only110821 questender; apparent creature matches are unrelated spawn GUIDs38914/39020/11682 and explicitly excluded, no NPC implementation imported. Bounded public exact code searches found no usable donor.",
+    "Primary gameplay discovery https://www.youtube.com/watch?v=6Br2B_IvRiQ (ZaFrostPet, uploaded2016-08-27,372s); current Wowhead quest39427 and NPC110685 pages used for discovery/corroboration, not authoritative modern schema/model/phase replacements. WoW-Pro dated Hunter route text independently lists the same three quests and four middle objectives, but native/local identities take precedence."
+  ],
+  "video_review": {
+    "source": "https://www.youtube.com/watch?v=6Br2B_IvRiQ",
+    "method": "All10 360p contact sheets actually viewed,186 frames sampled every2s from~0:00..6:10 across the entire6:12 reference. Additional original640x360 frames at~1:56,5:02,5:18,5:30,5:48,6:02 viewed. Silent format134, no audio or continuous playback; sub2s actions, exact timing and unseen final seconds not verified. Reference is2016 gameplay, exact client build not proved.",
+    "sequence": [
+      "~0:00..0:18 Dalaran Apata offer and hippogryph click; no immediate Stormheim scenario teleport.",
+      "~0:20..2:06 player rides with a separate Apata companion; near1:56 a companion-related green binding appears while the player continues to a landing/drop nearby. No exact route XYZ recovered from the footage.",
+      "~2:08..4:56 return on foot through hostile plant creatures to the BarteringCave. Wrong/outdated map UI labels in the source are not treated as authoritative server/map-coordinate evidence.",
+      "~4:58..5:20 actual Degar combat/death while a large white eagle is bound in a green sphere; bindings disappear after death, Apata survives and speaks. Player has a pet, but exact killing unit/group rules not established by samples.",
+      "~5:22..5:48 freed eagle exits cave and travels to a wooden platform, Apata/hero follow.",
+      "~5:50..6:06 actual eagle interaction/light-column blessing and Apata turn-in/nextquest UI; prerequisites/travel/combat/interaction precede completion. No direct grant or guessed timer deployed."
+    ],
+    "private_manifest": ".codex/eagle-blessing-reference/frames-manifest.json",
+    "video_sha256": "2445e7ad59e1d1e8dff570e99da977b8af69c4321c1539bfb5a3ecb6f986e8b2",
+    "sheet_hashes": [
+      "fdfd7640da3d8f95a1516eec7e7951b858c757aba36623af65bfd1e3b8ed99f5",
+      "4ac58e1644a9a1ce1640175a51ad331d9771fc42baa728b3c92842a613b52b50",
+      "1859fc21a768f4bc79408d52fea3e33615c0e3c2c5616b0e8f7c4dd8ff0f8861",
+      "1d544423540902d418cf20e22b338d14b08b1604e06deb38fcbb84ee0e15ee60",
+      "8589849e0d43d0e130feaa66556a20a997fe6fae98716349b0a0e54fdd31844d",
+      "768655efbd794eb256f64c03d964176608a990b55b3dc35bf0357c066ed9914d",
+      "fffcb1d694245d743afc87746f7ca3333f16dfca38d4a7b99512cd32f075fca7",
+      "be0078e7eed9c53b65a987ac9c50c41fc0dbd5225814a0e6ab616596b64d2a2c",
+      "1c616777542aa0fe60369894dc0bb7ff5966893df0c1f6b3913a6640844991bd",
+      "51cf24ecda69c2aa21fbb53f7d9813496c8ce65fefeb9218c1c46aa995b4bcbe"
+    ]
+  },
+  "checks": "Test-EagleBlessingCatalog compiles read-only native stores/overlays and verifies questline/phase/controller/summon/vehicle/real credit/cleanup/native speech identities. This is an asset regression only; output explicitly says it is NOT a passing live39427 quest. World capture/donor scan/metadata download/decoder/contact-sheet generation/final native probe all have pre/post canonical+own crash/log snapshots, inspected exits/stdout/stderr.",
+  "development": "First standaloneyt-dlp launcher lacked its isolated Python package path and exited1; retained traceback/snapshots, corrected by invoking the installed module through bundled Python with explicit temporary PYTHONPATH. No security boundary bypass. Metadata/download then exit0; visible missing-JS-runtime warning remains, format134 actually downloaded/decoded. YouTube web fetch failure is not claimed as viewed footage. No failing server or synthetic character reset.",
+  "diagnostics": "No new/changed crash or appended DBErrors/server warnings/errors/assertions. Current3915-byte sharedLINK2 log retained; Crashes empty; no server launched/stopped, no runtime/config/cert/EXE/data mutation. Same canonical7D382937/F20D25EE, latest gameplay commit4def5278d/World24.",
+  "snapshot_counts": {
+    "quest_template_addon": 3,
+    "quest_objectives": 4,
+    "creature_queststarter": 2,
+    "creature_questender": 5,
+    "creature_template": 3,
+    "npc_spellclick_spells": 1,
+    "smart_scripts": 2,
+    "conditions": 13,
+    "waypoints": 0,
+    "phase_definitions": 0
+  },
+  "private_evidence": [
+    ".codex/eagle-blessing-world-state.json",
+    ".codex/eagle-blessing-donor-rows.json",
+    ".codex/eagle-blessing-reference",
+    ".codex/eagle-blessing-reference-fetch-2026-10-29",
+    ".codex/eagle-blessing-reference-python-2026-10-29",
+    ".codex/eagle-blessing-reference-download-2026-10-29",
+    ".codex/eagle-blessing-reference-frames-2026-10-29",
+    "build-extractors/runtime-test/eagle-blessing-catalog"
+  ],
+  "next": [
+    "Recover/validate flight geometry, vehicle boarding/control and passenger/companion cleanup; preserve actual controller428 ownership, finite lifetime and primary pet. Native seating/boarding must precede arrival credit and no progress on spawn/cast attempt.",
+    "Restore personal Highmountain phase/actors, native trap/binding/plant/Degar fight/owner+eligible group kill receipt, exact eagle release/flight/click blessing and real turn-in. Verify native models/faction/stats/quest source and preserve source actor variants rather than copying unrelatedTrueshot Ohnahra.",
+    "Provide abandonment/death/retry/reentry, failed/missing actor/casts/boarding/last hit/pet/guardian/group/faction and existing already-active40385 compatibility before restoring41542->39427->40385 admission. Do not reset current characters or silently grant the missing quest.",
+    "Continue other independent all36 fixes while these reconstruction gaps remain; reported Stromkar recoil/beam/sharedLINK2 and19 broader link candidates remain open."
+  ]
+}
