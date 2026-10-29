@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-29",
+  "status": "Sliver independent departure dispatch repaired; SQL20 RELEASED; client/full940 encounter OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "101539 row33 DATA9/9 starts original TALK12/7000ms plus LINK31/native48686. When native TEXT_OVER(12,101539) fires, independent row34 sends Minerva102561 DATA3/3 but also incorrectly LINK-calls row35. Row35 is an existing independent TEXT_OVER52(12,101539) waypoint-start callback, not LINK61. Native tail properly refuses this immediate edge, then event dispatcher still runs real row35 and native path10153907. The path is not missing.",
+  "change": "Only row34 link35->0, retaining both real TEXT_OVER callbacks and all DATA/TALK/WP/flags/path fields. This repairs the malformed dispatch encoding; no logging/check bypass or guessed replacement. Crucially, native WP_START failure clears the actual independent row35 runOnce, so a subsequent real text-over notification can retry without replaying Minerva data. Converting row35 toLINK would run a copy and consume parent34 once, losing that failure retry. Unknown shared missing2 untouched.",
+  "full_local_trace": "Blood DK map1489/phase5955 actors static369096Baron/369095Minerva. Native48686 belongs940/stage5/tree46757. Speech12 finishes after7000ms, dispatch34Data3 and35original7-node running/self/nonrepeat/path10153907. MinervaDATA3 root12 starts group5/6000ms; TEXT_OVER5 sendsBaron10/10 and ownLINK14group6/4000ms. TEXT_OVER6 starts Minerva102561 route, later path10256100 node3 sendsBaron11/11; Baron36Talk13/LINK37native48707AntiMagicShell/LINK38path10153908. Every record/other script row retained. Native data10 has no matching current Baron root; this existing inert signal was not repurposed or claimed repaired. Full movement/criteria/client traversal remain unverified.",
+  "sources": "Matching live full schema/scripts/texts/conditions/actor templates/seven waypoints, actual SmartScript event/action prefix/dispatch/TALK/texttimer/DATA/WP/LINK, SmartAI StartPath combat-failure semantics and matching26972 typed reader. Prior1121 local donor scan included same original Baron records in Titans05. Project local behavior resolves this dispatch defect; no modern code or newly reviewed gameplay claimed.",
+  "native26972": "Criterion46584 belongs940stage0/tree45809,48683stage3/tree46753,48686stage5/tree46757. Sliver105301 male text/Sound60348; Minerva105325 and105182 have female Text1/Sound60331/60335 while male Text empty. Initial exploratory probe printed only male field, so refined this probe to record both native payloads/sound IDs; no text/voice replaced and no actual playback claimed.202807 native conversation1209/48707AntiMagicShell unchanged.",
+  "checks": [
+    "Five-table full-schema TEMP replay/idempotence: exactly one field across full Sliver42 primary/Minerva/shared timed rows. All29 text records, two templates, existing Minerva source22 gate,7 waypoint coordinates and every action otherwise unchanged. Fourteen original/applied custom-state refusals cover delay/event/path/recipient/Minerva reaction/point/missing/add/condition/text/AI/applied target. Actual updater RELEASED LF SHA1/full5table live equality pass.",
+    "MSVC ASan actual ProcessEventsFor/ProcessEvent+Action prefixes/TALK/timer/TEXT_OVER/DATA/WP_START/SELF/VICTIM/FindLinkedEvent/LINK: original expected malformed call yet same real successful departure, repaired identical requests/no diagnostic; exact7000ms strict timer boundary, Minerva3/3 once, correct10153907/quest0/despawn0/reaction0/escort-target ownership, player/pet/guardian/null/repeats and failed-start retry. NaiveLINK61 conversion demonstrably loses retry. Missing Minerva does not prevent independent path, source condition/expired/foreign/removed actor refuse. Chat/closest search/recipientAI/StartPath/criteria are controlled endpoints, not native path geometry/motion or actual Minerva dialogue traversal.",
+    "Typed26972 scenario/text/gender/sound metadata and common10-case native LINK differential pass. Fresh bounded audit36routes/149pairs/0 automated findings/same3 Monk edges; expanded25maps/1947owner/83timed contexts now27 primary review candidates (previous28)/zero missinglists.",
+    "Owned canonical updater7868 ready/shutdown0/exit0/stderr0/newDBErrors0; current CD41E846/F23563AB EXEs unchanged; protected runtime/config/certificate hashes unchanged."
+  ],
+  "development": "Private SQL generator initially duplicated word differ in diagnostic text; corrected before updater. An exploratory read-only query assumed waypoints.id rather than actual entry/pointid and failed; corrected by reading already captured fixture and known phase_definitions schema. No live write from exploratory failure. Native fixture/compiler/positive probes pass; no server diagnostic suppressed.",
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_29_20_sliver_departure_dispatch.sql",
+    "lf_sha1": "cc1f42ffcfdef335937cf4d2075b3d9191fa0ce1",
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 7868,
+    "world_sha256": "CD41E846D57F9FE94A7036EA61AE0B08AF3AFA85A138E41BDC38C1265C45B99A",
+    "bnet_sha256": "F23563AB91F5B8F4DCB5F22FFBA902C37E11AA785B38D66CBD9147858B8A91A6",
+    "result": "Fresh absent-server check before SQL20 promotion/start; owned7868 ready/graceful0, no task server left/no user process stopped. SQL-only/native dispatcher already canonical."
+  },
+  "diagnostics": "Every fixture/TEMP/native/catalog/updater/live/audit pre/post canonical+own crash hashes/log lengths/times/exit/stdout/stderr inspected. No new/changed crash or appended server/DBErrors diagnostics. Existing3915-byte shared101430/103151 LINK2 mixed log retained, Crashes empty. No historical Sliver error in that mixed log declared resolved; no log truncated/archive clearing. No character/item/progress edits or credential/runtime/log/dump commit.",
+  "fixture_counts": {
+    "smart_scripts": 87,
+    "conditions": 1,
+    "creature_text": 29,
+    "creature_template": 2,
+    "waypoints": 7
+  },
+  "local_evidence": [
+    ".codex/sliver-departure-data-2026-10-29",
+    ".codex/sliver-departure-native-catalog-2026-10-29",
+    ".codex/sliver-departure-updater-2026-10-29",
+    ".codex/sliver-departure-live-2026-10-29",
+    ".codex/artifact-post-sliver-2026-10-29"
+  ],
+  "remaining": "Actual route/Minerva following/voice/timers/fight, missing actor recovery, reentry, native stage prerequisites and full Blood/client remain pending. This changes no kill/owner/group progression service. Full36,27 broader primary candidates/Monk3/shared2/Stromkar beams/recoil still OPEN."
+}
