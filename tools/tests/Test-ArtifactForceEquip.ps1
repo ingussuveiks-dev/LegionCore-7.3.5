@@ -14,3 +14,13 @@ $command="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /
 [IO.File]::WriteAllText("$out/run.cmd",$command)
 & "$out/run.cmd"
 if($LASTEXITCODE){throw 'Production artifact force-equip regression failed'}
+if(!$Baseline){
+ $native=Get-Content "$out/native.tsv" -Raw
+ foreach($bom in @($false,$true)){
+  $fixture="$out/native-utf8-$bom.tsv"
+  [IO.File]::WriteAllText($fixture,$native,[Text.UTF8Encoding]::new($bom))
+  & "$out/test.exe" $fixture
+  if($LASTEXITCODE){throw "Production artifact force-equip UTF8/BOM=$bom failed"}
+ }
+ 'PASS: identical native force-equip catalog with and without UTF-8 BOM; all 55-record/39-item, inventory swap, pair, denial and missing-item checks retained'
+}

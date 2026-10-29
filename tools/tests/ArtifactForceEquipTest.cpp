@@ -69,7 +69,18 @@ int main(int argc, char** argv)
 {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
     assert(argc == 2);
-    std::ifstream catalog(argv[1]);
+    std::ifstream catalog(argv[1], std::ios::binary);
+    assert(catalog);
+    // Windows PowerShell's Set-Content -Encoding utf8 emits a BOM; formatted
+    // integer extraction cannot consume it. Accept both native export forms.
+    char prefix[3]{};
+    catalog.read(prefix, sizeof(prefix));
+    if (catalog.gcount() != 3 || static_cast<unsigned char>(prefix[0]) != 0xEF ||
+        static_cast<unsigned char>(prefix[1]) != 0xBB || static_cast<unsigned char>(prefix[2]) != 0xBF)
+    {
+        catalog.clear();
+        catalog.seekg(0);
+    }
     uint32 spellId, entry, targetOne, targetTwo, artifactId, count = 0;
     std::set<uint32> entries;
     while (catalog >> spellId >> entry >> targetOne >> targetTwo >> artifactId)
@@ -130,6 +141,6 @@ int main(int argc, char** argv)
         spell.EffectForceEquipItem(0);
         assert(player.swaps == 1 && player.childChecks == 1);
     }
-    assert(count == 55 && entries.size() == 39);
+    assert(catalog.eof() && count == 55 && entries.size() == 39);
     std::cout << "PASS: 55 native effect249 records; actual production spell handler, swap delegation, paired-item admission, errors and repeat/missing-item guards\n";
 }

@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-29",
+  "status": "Resolved test-input encoding defect; no production/equipment failure inferred",
+  "fix_commit": "Focused commit containing this audit; independent of pending Feral data repair",
+  "cause": "Test-ArtifactForceEquip exports native.tsv with Set-Content -Encoding utf8. Windows PowerShell emits EF BB BF; the old C++ formatted uint32 extraction stops before its first record. The actual catalog still has exactly55 records/39 item entries; changing those assertions would conceal the input defect.",
+  "repair": "Open the fixture as binary, consume only an actual optional UTF8 BOM and otherwise seek back to byte0. Require EOF plus the original55/39 cardinalities. All target, swap, parent/child admission, error, repeat, missing-item and no-grant checks remain. The script exercises both explicit UTF8 encodings as well as its ordinary native export.",
+  "evidence": [
+    "Original broader Feral validation failed at the final force-equip55/39 assertion, after Feral/Guardian native ASAN/live and ScriptPetCredit/native canonical PE passed. This was an ordinary failing run and is not recorded as a successful validation group: .codex/feral-final-native-2026-10-29 Completed=false.",
+    "Pinned HEAD1f6705089 pre-fix test compiled against the same current extracted production handler and explicit BOM fixture reproduces the exact assertion/exit3. Its stderr/stdout/status are captured. This intentional expected-failing counterfactual is paired with the repaired same-input pass, not treated as an ordinary passing run.",
+    "Repaired Test-ArtifactForceEquip passes all55 records/39 items for ordinary native.tsv, explicit UTF8 without BOM and explicit UTF8 with BOM. Exit0; no production C++ or canonical executable changed.",
+    "Wrapped final ordinary and counterfactual checks snapshot canonical plus artifact-force-equip and native catalog runtime crash/log state. No new/changed crash files, DBErrors, server warnings/errors/assertions. Initial failed broader group did not snapshot the nested catalog build directory; complete repaired ordinary rerun includes it. No native server error was suppressed."
+  ],
+  "archive": {
+    "directory": "build-extractors/bin/Release/fixed/2026-10-29-artifact-force-equip-test-encoding",
+    "verification": "12 reviewed failed-group/repaired-group/counterfactual diagnostics and original-format fixture/status files copied byte-for-byte; source hash immediately before and after copy and destination SHA256 match. Local ignored manifest.json records every hash and fix commit. Original test evidence retained.",
+    "canonical_logs": "Existing unresolved2175-byte shared LINK2 DBErrors and mixed Server.log untouched. No crash report was created and no active log was truncated. The archive contains reviewed test diagnostics, not unexplained live errors."
+  },
+  "scope": "Harness repair only. It proves native force-equip handler branches on supplied existing items, not that Feral scene1282 calls214715 or that any complete client artifact chain works. Feral callback/presentation remains OPEN in its separate audit. No character/progression writes or task server launch."
+}
