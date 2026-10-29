@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-30",
+  "status": "Early Wardstone cast/hit admission repaired; World01 RELEASED; full Talonclaw/client and missing LINK4 remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Unconditional 101325 SPELLHIT199728 consumes its nonrepeatable event even before scenario973 reaches a Wardstone stage. Native scenario criteria correctly reject48172 in earlier stages, but the same stone can no longer supply credit later. Its original lightning/invisibility/base chain also runs prematurely. Native source17 was absent, not just a hidden click flag.",
+  "change": "Add exactly44 predicates:8 source18 player/Hunter/active40385/map1511/alive plus actual living101325 target;18 source17 and18 independent source22 additionally allow only973/3 OR973/4 from the base actor. Keep source18 independent of stage so cached client flags do not stay hidden on stage change. Preserve every original SmartScript, click row, template and both source13 target masks, including unknown3->LINK4. No guessed missing action or character/progress change.",
+  "local_sequence": "Four real static stones; normal199728 cast4000ms/dummy/target25 UNIT_TARGET_ANY. Native source17 binds caster0 and actual object1.48172 maps to first973/3 root46483/leaf46484 rawAmount0 normalized to1, then973/4 root46186/leaf46187 amount3. Native Scenario snapshots the starting tree so one event cannot also advance the next stage. Retain199770->199823 lightning,187027 invisible transform and101360 base summon;199823 effect2 instant-kill remains source13 mask4 restricted to101325, not a player kill.",
+  "validation": [
+    "Full4table session-local TEMP baseline/replay/idempotence, exact44 rules and8/18/18 source groups, every original row unchanged,22 complete custom/partial refusal variants under --force without mutation. Live full4table equality and updater RELEASED LF SHA1 CDE1ACF9D15D208FA85EA0D772F80A39D147C044 pass.",
+    "MSVC ASan compiles actual source18 client visibility/HandleSpellClick, source17 binding, ConditionMgr predicates/ElseGroups/SmartEvent lookup, SmartScript event/once/LINK/CAST/205/owner dispatch, native Scenario snapshot/filter and amount0 normalization. Original early-hit consumed/stalled counterfactual paired with repaired early rejection, later legitimate first receipt then three distinct nodes, exactly once.81 stage/status/invalid matrices plus pet/null/late abandonment/death/stage change/expired actor and rejected visual cast. Actual criteria-manager completion and cast/summon endpoints controlled; this does not certify full native encounter or rendering.",
+    "Matching26972 catalog confirms199728 target25/dummy/4000ms;199770/199823 native chain and Wardstone-only instant-kill mask; native48069/48172 stages and amounts; Mist Warder3355/200047/199869 assets/texts retained. Shared Test-TalonclawBoarding -VerifyReleaseBinary passes existing actual Release admission/flight/pickup/return hooks. Historical extracted-fixture C4244 remains visible; no new production diagnostic.",
+    "Owned27920 canonical updater startup ready, graceful shutdown0/exit0, empty stderr/newDBErrors0/protected hashes unchanged. Fresh36 routes/149 race-class pairs/0 automated loot-link-admission findings/3 boundedMonk review edges;25maps/1947owners/83timed still19 primary-link candidates/0 missing lists. Map inventory tool embeds its original29 date; actual export/diagnostics and route audit are30, cached actor expansion is29. No LINK removed."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_01_talonclaw_wardstone_admission.sql",
+    "lf_sha1": "cde1acf9d15d208fa85ea0d772f80a39d147c044",
+    "owned_pid": 27920,
+    "world_sha256": "7D382937DED53E107AA52237B9757508348945A85AEA2E52E1EE9B698C513451",
+    "bnet_sha256": "F20D25EEFE0BD1ACDF40CBFFB836E1D811425C8F6AD45195AEA414B78DC16167",
+    "result": "SQL only; current EXEs unchanged. Both servers absent before promotion/start; only owned27920 launched and closed. No user/unknown server stopped, no character/item/quest reset."
+  },
+  "diagnostics": "All fixture/native/catalog/shared PE/updater/live/audit checks have before/after canonical and own crash/log snapshots and inspected exit/stdout/stderr/appended diagnostics. No new/changed crash, server warning/error/assertion or DBErrors. Active Crashes empty; unresolved mixed shared101430/103151 LINK2 DBErrors3915 bytes, UTC2026-10-29T13:29:05.1130661Z retained unchanged. No newly resolved runtime dump/log requiring archival; no mixed history cleared.",
+  "fixture_counts": {
+    "smart_scripts": 11,
+    "conditions": 2,
+    "creature_template": 3,
+    "npc_spellclick_spells": 1
+  },
+  "evidence": [
+    ".codex/talonclaw-wardstone-fixture-2026-10-30",
+    ".codex/talonclaw-wardstone-fingerprints-2026-10-30",
+    "build-extractors/runtime-test/talonclaw-wardstone",
+    "build-extractors/runtime-test/talonclaw-wardstone-data",
+    ".codex/talonclaw-wardstone-shared-2026-10-30",
+    ".codex/talonclaw-wardstone-updater-2026-10-30",
+    ".codex/talonclaw-wardstone-live-2026-10-30",
+    ".codex/artifact-post-wardstone-2026-10-30"
+  ],
+  "remaining": "Actual client cast/cursor/credit/lightning/base disappearance/three subsequent stones, group/faction/abandon/reentry/full traversal OPEN. Original failed199770 can block transform/base after accepted real credit; this visual/base retry is separately OPEN. Missing101325LINK4, MistWarder pet dialogue, middle quest39427, sharedLINK2, Stromkar recoil/continuous beams and whole36 verification remain OPEN."
+}

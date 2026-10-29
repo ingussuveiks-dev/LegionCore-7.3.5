@@ -5103,5 +5103,11 @@
     "status": "OPEN39427 entire middle quest; evidence expanded, no partial offer/prerequisite/quest progress change. Native220619phase7088,218564controller->198941/100967+217343/100990,220791real110938/event53251,220621cleanup and vehicle4535/seat16201 verified.",
     "reference": "All10 sheets/1862s-sampled360p frames span full6:12 reference and six detailed frames viewed, muted/notcontinuous; native/local identities take precedence. No actual client traversal.",
     "next": "Flight/boarding/private actor combat/free eagle/blessing/turn-in/retry/reentry must be restored together before prerequisite tightening. Keep existing40385/native100965 guards and user progress. Source/read-only checks clean; no server launched, sameEXEs/DBErrors3915."
+  },
+  "talonclaw_wardstone_admission": {
+    "audit": "docs/audits/talonclaw-wardstone-admission-2026-10-30.json",
+    "status": "World30/01 RELEASED;44 source18/17/22 rules prevent early199728 consuming once event. Preserve stage-independent visible cursor and real973/3 OR4 cast/hit, native first1 then3 distinct stones. Original scripts/target masks/unknownLINK4 unchanged.",
+    "checks": "ASan actual handlers/native scenario snapshot,81 matrices/late state/cast failure,22 TEMP refusals/live4tables/26972/shared actualPE/own27920 clean graceful0. EXEs same7D382937/F20D25EE;3915 unresolvedDBErrors retained.",
+    "remaining": "Mist Warder pet dialogue next; visual/base cast-failure recovery and unknownLINK4 OPEN. Whole36/client/middle39427/Stromkar beam-recoil/sharedLINK2 unfinished; no resets authorized. Fresh36/149/0/3Monk and expanded19 candidates unchanged."
   }
 }
