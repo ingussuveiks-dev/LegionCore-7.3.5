@@ -4060,14 +4060,6 @@
           "event": 9,
           "link": 10,
           "reason": "missing_target"
-        },
-        {
-          "entry": 101880,
-          "event": 5,
-          "link": 6,
-          "reason": "invalid_target_event",
-          "target_event_type": 62,
-          "target_action_type": 33
         }
       ],
       "video": {
@@ -4161,14 +4153,6 @@
           "event": 9,
           "link": 10,
           "reason": "missing_target"
-        },
-        {
-          "entry": 101880,
-          "event": 5,
-          "link": 6,
-          "reason": "invalid_target_event",
-          "target_event_type": 62,
-          "target_action_type": 33
         }
       ],
       "video": {

@@ -1,0 +1,444 @@
+{
+  "date": "2026-10-29",
+  "status": "Refreshed after released Tak-Tak World09; all36 client traversals remain OPEN",
+  "counts": {
+    "routes": 36,
+    "native_race_class_pairs": 149,
+    "automated_findings": 0,
+    "unresolved_actor_edges": 8
+  },
+  "change": "Tak-Tak101880 event5->6 now reaches native LINK61; removed only that resolved finding from both Monk route inventories. All accumulated status/checkpoint/source/client evidence preserved.",
+  "routes": [
+    {
+      "item": 128910,
+      "class_id": 1,
+      "specialization": "Arms",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128289,
+      "class_id": 1,
+      "specialization": "Protection",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128908,
+      "class_id": 1,
+      "specialization": "Fury",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128823,
+      "class_id": 2,
+      "specialization": "Holy",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128866,
+      "class_id": 2,
+      "specialization": "Protection",
+      "broken_actor_links": []
+    },
+    {
+      "item": 120978,
+      "class_id": 2,
+      "specialization": "Retribution",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128861,
+      "class_id": 3,
+      "specialization": "Beast Mastery",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128808,
+      "class_id": 3,
+      "specialization": "Survival",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128826,
+      "class_id": 3,
+      "specialization": "Marksmanship",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128870,
+      "class_id": 4,
+      "specialization": "Assassination",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128872,
+      "class_id": 4,
+      "specialization": "Outlaw",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128476,
+      "class_id": 4,
+      "specialization": "Subtlety",
+      "broken_actor_links": [
+        {
+          "entry": 105332,
+          "event": 0,
+          "link": 1,
+          "reason": "missing_target"
+        },
+        {
+          "entry": 105333,
+          "event": 0,
+          "link": 1,
+          "reason": "invalid_target_event",
+          "target_event_type": 64,
+          "target_action_type": 80
+        }
+      ]
+    },
+    {
+      "item": 128825,
+      "class_id": 5,
+      "specialization": "Holy",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128827,
+      "class_id": 5,
+      "specialization": "Shadow",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128868,
+      "class_id": 5,
+      "specialization": "Discipline",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128402,
+      "class_id": 6,
+      "specialization": "Blood",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128292,
+      "class_id": 6,
+      "specialization": "Frost",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128403,
+      "class_id": 6,
+      "specialization": "Unholy",
+      "broken_actor_links": [
+        {
+          "entry": 102459,
+          "event": 0,
+          "link": 1,
+          "reason": "invalid_target_event",
+          "target_event_type": 52,
+          "target_action_type": 1
+        }
+      ]
+    },
+    {
+      "item": 128819,
+      "class_id": 7,
+      "specialization": "Enhancement",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128935,
+      "class_id": 7,
+      "specialization": "Elemental",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128911,
+      "class_id": 7,
+      "specialization": "Restoration",
+      "broken_actor_links": []
+    },
+    {
+      "item": 127857,
+      "class_id": 8,
+      "specialization": "Arcane",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128820,
+      "class_id": 8,
+      "specialization": "Fire",
+      "broken_actor_links": [
+        {
+          "entry": 90418,
+          "event": 0,
+          "link": 2,
+          "reason": "invalid_target_event",
+          "target_event_type": 38,
+          "target_action_type": 66
+        }
+      ]
+    },
+    {
+      "item": 128862,
+      "class_id": 8,
+      "specialization": "Frost",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128942,
+      "class_id": 9,
+      "specialization": "Affliction",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128943,
+      "class_id": 9,
+      "specialization": "Demonology",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128941,
+      "class_id": 9,
+      "specialization": "Destruction",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128938,
+      "class_id": 10,
+      "specialization": "Brewmaster",
+      "broken_actor_links": [
+        {
+          "entry": 100438,
+          "event": 9,
+          "link": 10,
+          "reason": "missing_target"
+        }
+      ]
+    },
+    {
+      "item": 128937,
+      "class_id": 10,
+      "specialization": "Mistweaver",
+      "broken_actor_links": [
+        {
+          "entry": 100438,
+          "event": 9,
+          "link": 10,
+          "reason": "missing_target"
+        }
+      ]
+    },
+    {
+      "item": 128940,
+      "class_id": 10,
+      "specialization": "Windwalker",
+      "broken_actor_links": [
+        {
+          "entry": 100438,
+          "event": 9,
+          "link": 10,
+          "reason": "missing_target"
+        },
+        {
+          "entry": 100475,
+          "event": 1,
+          "link": 7,
+          "reason": "missing_target"
+        },
+        {
+          "entry": 100475,
+          "event": 6,
+          "link": 8,
+          "reason": "missing_target"
+        }
+      ]
+    },
+    {
+      "item": 128858,
+      "class_id": 11,
+      "specialization": "Balance",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128860,
+      "class_id": 11,
+      "specialization": "Feral",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128821,
+      "class_id": 11,
+      "specialization": "Guardian",
+      "broken_actor_links": [
+        {
+          "entry": 101390,
+          "event": 4,
+          "link": 10,
+          "reason": "invalid_target_event",
+          "target_event_type": 0,
+          "target_action_type": 45
+        }
+      ]
+    },
+    {
+      "item": 128306,
+      "class_id": 11,
+      "specialization": "Restoration",
+      "broken_actor_links": []
+    },
+    {
+      "item": 127829,
+      "class_id": 12,
+      "specialization": "Havoc",
+      "broken_actor_links": []
+    },
+    {
+      "item": 128832,
+      "class_id": 12,
+      "specialization": "Vengeance",
+      "broken_actor_links": []
+    }
+  ],
+  "unresolved_edges": [
+    {
+      "kind": "invalid_actor_sai_link",
+      "entry": 90418,
+      "event": 0,
+      "link": 2,
+      "reason": "invalid_target_event",
+      "referenced_by_routes": [
+        128820
+      ],
+      "status": "intended action unknown; needs executable route review"
+    },
+    {
+      "kind": "missing_actor_sai_link",
+      "entry": 100438,
+      "event": 9,
+      "link": 10,
+      "reason": "missing_target",
+      "referenced_by_routes": [
+        128937,
+        128938,
+        128940
+      ],
+      "status": "intended action unknown; needs executable route review"
+    },
+    {
+      "kind": "missing_actor_sai_link",
+      "entry": 100475,
+      "event": 1,
+      "link": 7,
+      "reason": "missing_target",
+      "referenced_by_routes": [
+        128940
+      ],
+      "status": "intended action unknown; needs executable route review"
+    },
+    {
+      "kind": "missing_actor_sai_link",
+      "entry": 100475,
+      "event": 6,
+      "link": 8,
+      "reason": "missing_target",
+      "referenced_by_routes": [
+        128940
+      ],
+      "status": "intended action unknown; needs executable route review"
+    },
+    {
+      "kind": "invalid_actor_sai_link",
+      "entry": 101390,
+      "event": 4,
+      "link": 10,
+      "reason": "invalid_target_event",
+      "referenced_by_routes": [
+        128821
+      ],
+      "status": "intended action unknown; needs executable route review"
+    },
+    {
+      "kind": "invalid_actor_sai_link",
+      "entry": 102459,
+      "event": 0,
+      "link": 1,
+      "reason": "invalid_target_event",
+      "referenced_by_routes": [
+        128403
+      ],
+      "status": "intended action unknown; needs executable route review"
+    },
+    {
+      "kind": "missing_actor_sai_link",
+      "entry": 105332,
+      "event": 0,
+      "link": 1,
+      "reason": "missing_target",
+      "referenced_by_routes": [
+        128476
+      ],
+      "status": "intended action unknown; needs executable route review"
+    },
+    {
+      "kind": "invalid_actor_sai_link",
+      "entry": 105333,
+      "event": 0,
+      "link": 1,
+      "reason": "invalid_target_event",
+      "referenced_by_routes": [
+        128476
+      ],
+      "status": "intended action unknown; needs executable route review"
+    }
+  ],
+  "shared_unresolved": "101430 event1->missing2 and103151 event1->missing2 are outside the bounded quest-actor set. Still OPEN; do not delete either edge to silence errors.",
+  "checks": "Fresh read-only world export and matching26972 all36 auditor; Test-TakTakRouteData -VerifyLiveData (full-schema TEMP/idempotence/12 refusals and actual RELEASED hash); Test-ArtifactSmartLinks extracted native ASAN/differential7 cases. All pass, exit0.",
+  "hashes": {
+    "world": {
+      "quest_template": "27805c3679ba6624d5b27aa805ac423cfc8edc38d7058bdd36cd3a9c0eb36389",
+      "quest_template_addon": "f1c05d071e6e361800d4ab95e4a212d1ea4e0611af53a738d31ad4b8e5324ed2",
+      "quest_template_locale": "8d2df01920045475bc3b22d41ae88431c72b9e2e02a29c48762ae44dce17e1a9",
+      "quest_objectives": "0cd34046bfb5c77698f371c536386a4d5beaddc61755ac292ca765f17c8ba39f",
+      "creature_queststarter": "aa93f84846d67542dd85b8e3b48c02db66deab1f260fd39ac80affb17c6bbeb1",
+      "creature_questender": "a81428eee03179453a12707f962ee31bc9eb65ed562bc67bb880d2b9cfa7eee1",
+      "gameobject_queststarter": "2df34ae158f4df5e0bbf99f1041aaadf7badd0512f460fce6fe14aae9561c26a",
+      "gameobject_questender": "0e234ec77746b4aa2bdacfef865eb02b89349e1862ebe99ebe7460286b8076f8",
+      "battlepay_product_item": "b5e6f1b003969fad4aabfd54cc667f0f17caa9f8c37086f5d9173ac7eb6145b6",
+      "scenario_data": "97521d0bcf308b0b68892171753c25e77899f7fdbefe54b8c3433445d818c884",
+      "playerchoice_response": "c1d301e8dbd8a293a7b4b1554b519fbc37ceeed9f7edf07c967797db42a65cc6",
+      "playerchoice_response_reward": "4fd31367687e2bd222885689a7b51ed261345979dad2253128eab947408b8b68",
+      "creature_template": "69a8cd13a1615b578ccc3f8edc25687957adf9c7b047fe608a139e5ef1ffe6c1",
+      "gameobject_template": "94726d2df0b238b559e37114944e69554ac5796ab3779f91c4e4d168a27bb849",
+      "gameobject_loot_template": "bc1c302d59450f75e8ac3f08b120e676568db7d6b3ed28ef3fc959be1147e20d",
+      "smart_scripts": "75c7fe2c24826a0959642aeb7f49e5cc73bccf6f3c7460097656782a0d8f4aba",
+      "conditions": "ff10f6f3014f1b4b84f20f9114851ece6a4f3f82e1f30639217d7726aa0649a1"
+    },
+    "native": {
+      "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+      "CharBaseInfo": "c43eae7da568b886ab080c318e34442e0075cd8bdf63e454f2c55c9196b1fad9",
+      "QuestLineXQuest": "c2d7266900a43fad156fd19c0d06f2278c48b327fbc9c7d00162b084c69ddbff",
+      "ScenarioStep": "4e422b1333a7b1be8427ccb511017a93c093fa243adb83dc74e255ad1702b94e",
+      "LfgDungeons": "eb05aa80f05f82048bbda5931c6f34b062984de64b992e7b195ea5d2b3700d42"
+    },
+    "items": "d0b5c0606b61d858ab705fcfe72a682c98de2e41b022ab70a09ec8dcc9cc36f0",
+    "item_sparse": "8eecbf592e1706e07c28409547eaecdc0c51c325ef3e952fb7028098dcdfec17",
+    "source": {
+      "src/server/scripts/Legion/ClassHalls/class_hall_artifact_onboarding.cpp": "a27994519dd914e3828ec40fab42f0dfdaf5e8e4f8ec04628945f5362f1b1e58",
+      "src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp": "0dd5c8d375957b9cc4284537ce40766a2e71bcffdf965ff833060f592c004cd1",
+      "src/server/scripts/Legion/ClassHalls/dark_riders_artifact.cpp": "ec12470a52af96b939039aae8c3c026bd58d4c49b27c0180c7db339d04dfb91f",
+      "tools/research/ArtifactCatalog.cpp": "fb51755c347765af09a809e5e5256097809c0ecabca4edce0f89b0ae91fcce05"
+    }
+  },
+  "full_report_sha256": "92c9a1a9df9452551257be84134a63fb4513d0228682f47f1d47399028ecd371",
+  "evidence": ".codex/artifact-post-taktak-2026-10-29/{world,routes.json,diagnostics-before.json,diagnostics-after.json}; .codex/artifact-post-taktak-checks-2026-10-29; runtime-test/{tak-tak-route-data,artifact-smart-links}",
+  "diagnostics": "No new/changed canonical or test crash reports, DBErrors appends or server warnings/errors/assertions. Existing3915-byte mixed sharedLINK2 log remains unresolved/untouched. No resolved crash/log was archived or truncated. No server launched/stopped or character/progress changed.",
+  "release": "Canonical hashes match supplied235348EEF91B89605A6430B63FE9F57450EA62B516BE99A6EBF78359400484E1 and45E7FC66C4141DF770BAE52E47225BAA1CE9F79456768184CCDB6A7FB34CAA59; unchanged.",
+  "limits": [
+    "Canonical Next/RewardNext links are not the complete execution graph. Native quest-line membership and OR prerequisites are recorded separately.",
+    "Race/class masks are structural admission checks; conditions, phasing, scripted callbacks, combat, abandonment, vehicles and visual playback require executable/client checks.",
+    "Missing object loot links exclude custom C++ handlers. Spell chain item grants, event callbacks and transient summoned actors still need review before changing a flagged row.",
+    "All 36 selections are enumerated; no route is certified end-to-end by this audit."
+  ]
+}
