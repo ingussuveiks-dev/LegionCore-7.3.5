@@ -1947,6 +1947,7 @@ struct npc_stromkar_thoradin : SmartAI
 #include "stromkar_awakening.h"
 #include "stromkar_ritual_beam.h"
 #include "monk_kite_travel.h"
+#include "valzuun_intel.h"
 #include "stromkar_split.h"
 
 void AddSC_artifact_acquisition()
@@ -1956,6 +1957,7 @@ void AddSC_artifact_acquisition()
     new npc_stromkar_valkyr();
     new condition_stromkar_return();
     RegisterSpellScript(spell_monk_kite_travel);
+    RegisterCreatureAI(npc_valzuun_intel);
     RegisterGameObjectAI(go_lights_wrath_pickup);
     RegisterSpellScript(spell_lights_wrath_pickup_cast);
     RegisterAuraScript(spell_lights_wrath_pickup_scene);

@@ -56,10 +56,19 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_29_14_valzuu
  foreach($name in $variants.Keys){$base=$setup+$baseline+$(if($name -like 'applied-*'){$migration}else{''});$result=Query ($base+$variants[$name]+(Snapshot 'before')+$migration+(Snapshot 'after')) -Refusal
   foreach($table in $filters.Keys){if((Signature $result "before-$table") -cne (Signature $result "after-$table")){throw "Custom state changed $name/$table"}}
  }
- if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
+ if($VerifyLiveData){
+  $superseded=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_29_16_valzuun_full_intel.sql' AND state='RELEASED';"
+  if($superseded -contains '1'){
+   # Keep SQL14's historical counterfactual, but verify its real successor
+   # rather than requiring the deliberately replaced actor-wide list live.
+   & "$PSScriptRoot/Test-ValzuunIntelData.ps1" -VerifyLiveData
+   'PASS historical SQL14 TEMP replay; actual live state independently checked through superseding SQL16 full-intel fixture/hash'
+  }else{
+  $sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT 'row',event_type,event_flags FROM smart_scripts WHERE entryorguid=105333 AND source_type=0 AND id=1;SELECT 'released',COUNT(*) FROM updates WHERE name='2026_10_29_14_valzuun_password_dispatch.sql' AND hash='$hash' AND state='RELEASED';"
   if($live -notcontains "released`t1" -or $live -notcontains "row`t61`t0"){throw 'Live Valzuun migration/hash differs'}
   $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from native regression $table"}}
+  }
  }
  'PASS full-schema TEMP Valzuun replay/idempotence: only HELLO64->LINK61/repeat flag plus five scoped conditions; seven actions, all menus/text/actor/native gossip gates retained; twelve custom-state refusals'
 }

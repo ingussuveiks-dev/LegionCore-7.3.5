@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-29",
+  "status": "Four-line intel and delayed native credit backend repair RELEASED; actual client speech/audio/overlap/full41919 remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "After e242dae1f fixed HELLO/LINK admission, source0 password19472/0 still credited105333 immediately before its three-line actor-wide10533300 list. The original gameplay shows four native text groups0..3 with credit after the closing line. Another player replaced the public actor list/invoker; moving its credit into that shared list would lose the first player credit. Existing native4th group108107 was unwired. Matching native ConversationLine reverse scan finds none of the four BroadcastTexts, so no guessed conversation template/line IDs were created.",
+  "repair": "Registered npc_valzuun_intel derives SmartAI and intercepts only actual password19472/0. Each eligible Player gets a full-GUID flow bound weakly to that exact41919 ScriptLifetime. Emit existing native SAY groups0/1/2/3 at minimum0/5/15/23s and call original RewardPlayerAndGroupAtEvent(105333,player) at25s, after removing completed flow state. Duplicate clicks do not restart an active flow; independent Players no longer overwrite progression timers. Keep original group eligibility and native objective caps. Delegate all other menus/options and ordinary AI updates/reset to SmartAI, preserving41920 root2/LINK3 credit105434/conversation1832 and generic/shared gossip. SQL16 removes only superseded root0/LINK1, unused3-row10533300 and their5 event conditions; source15/menu/text/template fields except AI binding remain exact. It refuses unexpected external callers to that retired list. No log/check bypass or direct CompleteQuest/item/teleport added.",
+  "lifecycle": "Actual/live/contactable/incomplete/unrewarded Player and live peaceful105333 actor, same map/phase, LOS, native interaction range on selection and configured native SAY hearing range while updating, pending-teleport and quest-object-scope checks. Recheck identity/quest lease on every actor tick and before native credit. Abandon/reaccept changes weak lease; observed death/logout/map/phase/LOS/range/contact/scope loss or missing native text aborts without progress and allows a new interaction. Reset clears pending flows; actor destruction owns state cleanup.90 seconds of actor updates bounds a flow. Large ticks emit at most one next line and retain each subsequent gap, never fast-forward all speech into credit. Actual map leave-and-return entirely between two actor updates is not separately serial-tracked; do not claim such a transient or client audio completion was certified.",
+  "group_and_shared": "Native RewardPlayerAndGroupAtEvent body is compiled into regression: own Player when solo, ordinary eligible nearby party members through native world/range/alive-or-not-released rules. Quest storage/caps remain native and were source-traced; regression storage is a capped endpoint adapter. No pet/guardian killer or damage path changes; this is a Player gossip interaction. Both known static actor uses on1220/1502 and faction/class admission remain unchanged; no invented class restriction. Speech remains normal public native SAY via CreatureAI::Talk/CreatureTextMgr, so overlapping independent speech can still be heard by nearby clients. Progress timers/credit are independent; actual public audio/bubble overlap needs user client review.",
+  "sources": {
+    "local": "Matching26972 live full actor/menu/source15/source22/text/list records; actual SmartAI callback, Player quest ScriptLifetime/native group credit, CreatureTextMgr native SAY range/text/BroadcastText delivery. Previous local TrinityCore/GitHub donor review supplies no complete original735 intel implementation. No later-core code copied.",
+    "gameplay": "https://www.youtube.com/watch?v=JYW23cL8fb8",
+    "review": "Prior entire360s source reviewed as180 samples every2s/muted/all15 contact sheets; current sheets09/10 re-reviewed. Valzuun selection~218, native four groups~220/226/234/242, credit244. Existing SAI relative delays0/5000/10000 retained; added8s closing gap and2s post-line gap fit sampled footage. These are bounded authored timings inferred from samples, not recovered exact Blizzard timers or continuous/audio playback verification.",
+    "native_metadata": "SubtletyContactCatalog adds separate DETAIL records and ConversationLine reverse reads without changing existing EFFECT fields. Native208973 Handing Over1500ms has personal90/105434 and169 destroying136603; not wired speculatively: current41920 item objective is mandatory and this core decrements it on item removal. Full native handover/turn-in semantics must be resolved before replacing that separate branch. Conversation4192 lines9550/9551 map to125564/125565; this is later Monk brew storyline, not a recovered missingLINK10 action."
+  },
+  "checks": [
+    "Test-ValzuunIntel ASAN includes entire production controller plus extracted actual Player::RewardPlayerAndGroupAtEvent. Exact four-line timeline/no early credit, last-objective completion, independent/duplicate/repeated invokers, reentrant credit state already erased, reset, finite expiry, lag/no fast-forward,16 continuing eligibility/lease losses, same-state abandon/reaccept, missing text at start/midflow with retry, null/distant selection, preserved other-menu delegation and native group world/range/released/inactive filtering pass. World/text endpoints and capped quest storage are adapters; actual packets/party objective storage/client not exercised.",
+    "Test-ValzuunIntelData full-schema TEMP replay twice: only retired actions/conditions and AIName/ScriptName change;41920 pair, menu gates, four text groups and every other actor field exact.14 original/applied custom-state refusals include external caller, final text, actor, menu, list/target/delay, later branch and applied customization. Live5-table state and actual updater RELEASED LF SHA1 pass. Historical SQL14 TEMP remains intact; its live verifier now explicitly checks superseding16 through the new fixture/hash instead of falsely requiring retired rows live.",
+    "Original-path Release scripts.lib rebuilt; separate staged world/bnet link confirms original game/shared/common/scripts LIB inputs, canonical hashes untouched until promotion. Staged and canonical PE follow actual registration/factory/vtable,3 callbacks, quest/life/text checks, minimum5/10/8/2 timers, native credit only in Update and SmartAI delegation/reset. Canonical Scepter native/-VerifyReleaseBinary passes. Retained canonical Stromkar terminal regen/threat, AFK return, blade attachment full26-field client hotfix/record path and registered Monk kite acceptance PE checks pass.",
+    "Owned canonical startup applied16 only after matching EXE promotion, reached ready, shutdown0/exit0, stderr0/newDBErrors0/protected runtime hashes unchanged. Fresh read-only all36 audit:36 routes,149 native race/class pairs,0 automated findings, same3 remaining bounded Monk edges."
+  ],
+  "development": "New data-test custom-caller INSERT initially omitted required comment; actual schema rejected that fixture before migration refusal. Added fixture comment and reran all14 cases under new evidence. Initial new native fixture shadowed a member named group; renamed adapter member, final ASAN compile is clean. Unchanged Scepter fixture retains its historical signed/conversion compiler warnings; no new production/runtime diagnostic. Earlier broad text search hit large mass-update lines; subsequent bounded reads used exact tables/native records. Failed evidence retained, no logging suppressed.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 26808,
+    "result": "Both servers absent before every promotion/start; no user/unknown process stopped. Four EXE/map backup hashes verified at .codex/release-before-valzuun-intel-2026-10-29, matched staged copy promoted, then SQL16 moved into live updater. Owned26808 ready/graceful shutdown0/exit0 and no task server left. Config/certs/keys/DLL/data preserved.",
+    "hashes": {
+      "worldserver.exe": "CBB12D5FF581A34FFC6BF5C46E44182B187294235DDB0737A16A4EC11424B036",
+      "bnetserver.exe": "FD1B6F208B3E8251122BA1F599F9CCCE5BD48667B9A34F15E9FF7C57614BEC70",
+      "worldserver.map": "C639583210898F3418C655BB3260F6F03167EB4DB9BCB41658FC21C0255165E2",
+      "bnetserver.map": "F0E6E1FD289F8FC17167C233A2741F2EFBBD45BBE4086404DBB2922FF5744E29"
+    },
+    "previous_hashes": {
+      "worldserver.exe": "235348EEF91B89605A6430B63FE9F57450EA62B516BE99A6EBF78359400484E1",
+      "bnetserver.exe": "45E7FC66C4141DF770BAE52E47225BAA1CE9F79456768184CCDB6A7FB34CAA59",
+      "worldserver.map": "84E0055F8D4441B783BDA53D82E899785A0B8BF27D3BDEC49E945971ED7C3BA9",
+      "bnetserver.map": "8F24749FA451CAB6BB025B4701F9972492985C4BA93BB014358E0E40B05B24E4"
+    },
+    "lf_sha1": "a9c8167a1016b6d69c5ceb60bf98e9088e9a8b98",
+    "source_sha256": "f541ba088fb61d001fa64316155b90454492533812d5290c6fe80fc59de0edeb"
+  },
+  "all36": {
+    "routes": 36,
+    "native_pairs": 149,
+    "automated_findings": 0,
+    "unresolved_edges": [
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100438,
+        "event": 9,
+        "link": 10,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128937,
+          128938,
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 1,
+        "link": 7,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 6,
+        "link": 8,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      }
+    ],
+    "full_report_sha256": "89608ec0cb8e5742eb4dc330bd5f1913f83a3a79266eb8867b198334cf6a1702",
+    "world_hashes": {
+      "quest_template": "27805c3679ba6624d5b27aa805ac423cfc8edc38d7058bdd36cd3a9c0eb36389",
+      "quest_template_addon": "f1c05d071e6e361800d4ab95e4a212d1ea4e0611af53a738d31ad4b8e5324ed2",
+      "quest_template_locale": "8d2df01920045475bc3b22d41ae88431c72b9e2e02a29c48762ae44dce17e1a9",
+      "quest_objectives": "0cd34046bfb5c77698f371c536386a4d5beaddc61755ac292ca765f17c8ba39f",
+      "creature_queststarter": "aa93f84846d67542dd85b8e3b48c02db66deab1f260fd39ac80affb17c6bbeb1",
+      "creature_questender": "a81428eee03179453a12707f962ee31bc9eb65ed562bc67bb880d2b9cfa7eee1",
+      "gameobject_queststarter": "2df34ae158f4df5e0bbf99f1041aaadf7badd0512f460fce6fe14aae9561c26a",
+      "gameobject_questender": "0e234ec77746b4aa2bdacfef865eb02b89349e1862ebe99ebe7460286b8076f8",
+      "battlepay_product_item": "b5e6f1b003969fad4aabfd54cc667f0f17caa9f8c37086f5d9173ac7eb6145b6",
+      "scenario_data": "97521d0bcf308b0b68892171753c25e77899f7fdbefe54b8c3433445d818c884",
+      "playerchoice_response": "c1d301e8dbd8a293a7b4b1554b519fbc37ceeed9f7edf07c967797db42a65cc6",
+      "playerchoice_response_reward": "4fd31367687e2bd222885689a7b51ed261345979dad2253128eab947408b8b68",
+      "creature_template": "791f4357f45ee5ffead104cc38d6090ff3a11da0d01facae8ac2c61a25392a9e",
+      "gameobject_template": "94726d2df0b238b559e37114944e69554ac5796ab3779f91c4e4d168a27bb849",
+      "gameobject_loot_template": "bc1c302d59450f75e8ac3f08b120e676568db7d6b3ed28ef3fc959be1147e20d",
+      "smart_scripts": "9b458a380014aa3877ed29a750a0f8d8588d0eef6bd913f9c11192a0eb24a7be",
+      "conditions": "a17e7ab4e50f3d200b96f659d82d8ab0a275066171c9fa733368bff3d5565e85"
+    }
+  },
+  "diagnostics": "All native/ASAN/TEMP/catalog/build/link/PE/Scepter/promotion/updater/live/audit runs snapshot canonical and own runtime crash hashes/log lengths/timestamps before/after and inspect exit/stdout/stderr. Final tests exit0; no new/changed crashes or appended server warnings/errors/assertions/DBErrors. Existing3915-byte mixed101430/103151 LINK2 log stays visible/unchanged, canonical Crashes empty. No resolved intel runtime report exists to archive/truncate. No character/item/quest-progress reset or personal data committed.",
+  "evidence": ".codex/valzuun-intel-{native*,fingerprints,data*,release-build*,staged-link,staged-pe,canonical-promotion,canonical-pe-scepter,canonical-updater,live-and-history,retained-release}-2026-10-29; .codex/valzuun-full-intel-2026-10-29-*; .codex/artifact-post-valzuun-intel-2026-10-29; .codex/valzuun-intel-deployment.json; separate staged/backup; build-extractors/runtime-test/valzuun-intel{,-data}",
+  "remaining": "Actual password/visibility/dialogue timing/audio/public overlap/party/faction/relog/full41919 and128476 traversal remain client-pending. Separate41920 missing native cast/item/turn-in semantics remain OPEN. Three bounded Monk1004389->10,1004751->7,6->8; shared101430/103151 missingLINK2, Stromkar recoil/cracks/continuous ritual beams and remaining36 full lifecycles OPEN. Do not certify these from structural counts or retained PE checks."
+}

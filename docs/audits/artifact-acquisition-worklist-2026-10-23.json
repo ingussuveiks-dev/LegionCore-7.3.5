@@ -2181,8 +2181,9 @@
       "capture_visual_lifetime_audit": "docs/audits/devourer-capture-visual-lifetime-2026-10-26.json",
       "capture_sequence_audit": "docs/audits/devourer-capture-sequence-2026-10-26.json",
       "capture_sequence_review": "AI EventMap5s/10s; original owner/full-GUID/quest lease, same-tick reaccept cancellation, per-update and final admission, optional missing105540, native accepted transfer/destination and reset/own aura cleanup. Full actor/native ASAN, actual26972 metadata/selected canonical PE/clean owned startup pass; actual client capture/arrival ACK/instant leave-return/group/full chain pending.",
-      "valzuun_password_review": "SQL14 RELEASED: password triggers LINK1/native list, no HELLO/runOnce; five actual/live/active-player guards, last-objective credit safe; native ASAN/TEMP refusals/live pass. Delayed credit/fourth line/overlapping playback and actual client remain OPEN; see valzuun-password-dispatch-2026-10-29.json.",
-      "desmond_search_review": "SQL15 RELEASED: missingLINK1 restored as native208755 Searching1500ms/personal90 credit105332 after actual cast hit; root closes gossip, no immediate group award; guards/native ASAN/26972/TEMP12refusals/live pass. Actual client cancellation/result/progress/group/full chain OPEN; see desmond-native-search-2026-10-29.json."
+      "valzuun_password_review": "e242dae1f/SQL14 fixed wrongHELLO/LINK. Superseded by SQL16 derived SmartAI full four-line/25s native-credit controller; historical fixture retained. See valzuun-full-intel-2026-10-29.json; client public speech/audio and separate41920 native handover still OPEN.",
+      "desmond_search_review": "SQL15 RELEASED: missingLINK1 restored as native208755 Searching1500ms/personal90 credit105332 after actual cast hit; root closes gossip, no immediate group award; guards/native ASAN/26972/TEMP12refusals/live pass. Actual client cancellation/result/progress/group/full chain OPEN; see desmond-native-search-2026-10-29.json.",
+      "valzuun_full_intel_review": "SQL16 RELEASED: own full-GUID/quest lease per invoker, four original SAY groups0/5/15/23s, native group credit25s; retry/cancel/expiry/reset/shared delegation/native ASAN/TEMP14refusals/live/actual canonical factory+callbacks PE pass. WorldCBB12D5F/BnetFD1B6F20. No full client certification."
     },
     {
       "class_id": 5,
