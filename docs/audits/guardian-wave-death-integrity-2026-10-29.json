@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-29",
+  "status": "Guardian990 wave completion integrity repaired; World22 RELEASED; full Guardian/client traversal remains OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": [
+    "101388 DEATH rows6/7/8 incorrectly LINK-call the next independent DEATH row;101389 DEATH0/1 likewise LINK-call independent DEATH1/2. Native LINK correctly rejects a non-LINK61 destination; independent dispatcher still executes these original criteria roots. They must remain independent, particularly after a failed208568 cast.",
+    "101388 criterion source22 groups7..10 omit a living101388 while testing the other wave enemies. Actual10174201/02/03 summon two/two/three Shadowstalkers respectively. With other species dead, killing the penultimate Shadowstalker advances990 prematurely. Stage2 native initial list has only one Shadowstalker; its corresponding guard is retained consistently without changing that ordinary sequence."
+  ],
+  "change": "Exactly five link fields->0, retaining independent event6 roots and descending48109/08/07/06 order; add four negative near-creature29 own-species101388 checks at the existing killer target0/100-yard radius/ElseGroup0. No existing stage44, enemy, target, helper, spell, spawn position or timing replaced. Unknown101384 JUST_SUMMONED missingLINK1 retained visibly unresolved; shared101430/103151 missing2 untouched.",
+  "full_local_trace": "105243 waypoint2 summons101742 Lea, then despawns. Lea original source9 initial101742 summons13 Sludges+1 Shadowstalker;10174201 six Sludges+2 Shadowstalkers;10174202 three Sludges+2 Shadowstalkers+1 Defender;10174203 three Shadowstalkers+4 Defenders. Existing source22 stage2..5 and last-living guards produce48106..09(amount1), then native990/6 Fallen101390, stage7 chest248853/128821 and final50171. Actual first Shadowstalker stage2 death retains Mylune101393 ->VerdantWarder101754 ->Spirit101362 DATA2/2. Separate loot World01 and Malithar World12 retained. This wave check does not certify all initial admission, Fallen combat or chest cast/scene/departure.",
+  "sources": "Matching26972 typed DB2/hotfix read-only DruidAcquisitionCatalog; full live four-table SQL20 original fixture; actual SmartScript/SmartAI/ConditionMgr/ScriptedCreature/Creature/GridNotifiers/Unit kill ordering. Existing local sources resolve this defect, no newer incompatible core or external gameplay used.",
+  "validation": [
+    "Full-schema session-local TEMP replay + repeat migration: exactly five fields and four condition inserts; original/applied complete paired fingerprints, all remaining smart rows/conditions/texts/templates unchanged. Twenty-one original/applied custom/partial-state refusals leave all four tables unchanged even with mysql --force. Live RELEASED LF SHA1 and full4table readback equal repaired fixture.",
+    "MSVC ASan compiles actual DEATH dispatcher/event/action guards/JustDied, source22 binding + AND/OR/reference evaluator + conditions29/44 + negation, actual nearest-player/creature predicates and nearest-player selection, native CAST11 retry return, position SUMMON12 branch, native205 owner resolution/dedup dispatch, native FindLinkedEvent/LINK and duplicate/reentrant Unit::Kill admission guard.137 distinct species kill sequences from original wave counts x3 killer types x2 cast outcomes x2 immediate/deferred stage transitions=1644 complete controlled runs. Exactly one expected criterion only at final death, no new malformed link, player/pet/guardian invoker retained. Original counterfactual reproduces early criterion with another Shadowstalker alive; native initial wave2 has only one but synthetic extra actor tests its guard.",
+    "Negative cases: null killer/no live nearby player/>50-yard player/wrong scenario/stage/instance/expired actor/living other species/missing scenario; native100-yard/map/phase enemy boundaries retained. Native helper summon success/failure branches keep both attempts and linked Spirit DATA endpoint. Rejected208568 does not stop independent Defender criteria; naiveLINK61 conversion loses them. Duplicate corpse and reentrant kills refused. Arena/grid visitation, spell outcome, actual summon/data receivers, damage application and scenario advancement are controlled endpoints; no full game/actual group/client claim.",
+    "Typed26972 exact CRITERION990 step2..5/type92/48106..09/amount1 pass. Existing Test-GuardianArtifactLoot -AddressSanitizer -VerifyLiveData still passes original loot/admission/13 refusal matrices. Its historical extracted bridge C4244 narrowing warning remains visible, no new compiler/server warning introduced.",
+    "Canonical updater own20340 ready/shutdown0/exit0/empty stderr/newDBErrors0, protected config/cert hashes unchanged. Fresh audit36 routes/149 race-class pairs/0 automated findings/3 bounded Monk edges; expanded25maps/1947owners/83timed now22 primary review candidates (previous27), zero missinglists. Four known later-campaign rows remain deferred, not counted as proven acquisition defects."
+  ],
+  "development": "Two initial test-fixture compile failures (assert macro commas, then one extra parenthesis from repair) retained privately under guardian-native-attempt1/2; corrected before updater, final native/ASan passes. These were test compiler errors, no runtime crash/log mutation. No server error hidden.",
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_29_22_guardian_wave_death_dispatch.sql",
+    "lf_sha1": "4a382360d292bf57241d72ef6b150f94178bc2ec",
+    "canonical": "build-extractors/bin/Release",
+    "owned_pid": 20340,
+    "world_sha256": "7D382937DED53E107AA52237B9757508348945A85AEA2E52E1EE9B698C513451",
+    "bnet_sha256": "F20D25EEFE0BD1ACDF40CBFFB836E1D811425C8F6AD45195AEA414B78DC16167",
+    "binary": "Data-only change; canonical EXEs/native dispatcher unchanged. Fresh absent-process check before migration move/startup; no user/unknown server stopped; own20340 closed, none left.",
+    "character_changes": "No character/weapon/quest reset or manual progression write; client checks user-owned."
+  },
+  "diagnostics": "Every TEMP/native/ASan/catalog/updater/live/loot/fresh audit has pre/post canonical and own crash hashes/log lengths/timestamps, inspected exit/stdout/stderr/appended server and DBErrors. No new/changed crash or unexplained diagnostic. Existing3915-byte shared missingLINK2 DBErrors retained unchanged; canonical Crashes empty. No Guardian runtime crash/error log was produced or newly resolved for archival, mixed histories not truncated. Compiler attempt evidence retained, no dumps/logs/credentials/character data committed.",
+  "fixture_counts": {
+    "smart_scripts": 109,
+    "conditions": 48,
+    "creature_text": 9,
+    "creature_template": 7
+  },
+  "evidence": [
+    "build-extractors/runtime-test/guardian-wave-death-data",
+    "build-extractors/runtime-test/guardian-wave-death",
+    ".codex/guardian-wave-integrity-fingerprints-2026-10-29",
+    ".codex/guardian-wave-updater-2026-10-29",
+    ".codex/guardian-wave-live-2026-10-29",
+    ".codex/artifact-post-guardian-waves-2026-10-29"
+  ],
+  "remaining": [
+    "Actual spawn/combat geometry/camera/voices, group/faction admission/recipient policy, failed or partial wave-spawn recovery, abandonment/retry/reentry and full Fallen/loot/equip/departure/client traversal remain OPEN. A null-killer/no nearby recipient remains blocked by existing conditions; no synthesized fallback credit added.",
+    "Unknown101384 missing1, shared101430/103151 missing2,22 expanded review candidates, boundedMonk and Stromkar recoil/continuous-beam client defects remain OPEN. No all36 certification."
+  ]
+}

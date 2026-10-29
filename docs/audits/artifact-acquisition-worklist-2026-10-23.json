@@ -4689,7 +4689,8 @@
         "complete_client_traversal": "pending"
       },
       "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing.",
-      "malithar_transition_review": "docs/audits/malithar-transform-cleanup-2026-10-29.json; native ASAN/16 TEMP refusals/live updater and readback pass. Actual client sequence not verified."
+      "malithar_transition_review": "docs/audits/malithar-transform-cleanup-2026-10-29.json; native ASAN/16 TEMP refusals/live updater and readback pass. Actual client sequence not verified.",
+      "guardian_wave_death_integrity": "World22 RELEASED/native ASan/1644 controlled runs/live/catalog pass; see guardian-wave-death-integrity-2026-10-29.json. Complete client/lifecycle/group/reentry pending."
     },
     {
       "class_id": 11,
@@ -5073,5 +5074,13 @@
     "status": "RELEASED7D382937/F20D25EE: action10/30 same inclusive-pool bug fixed after c311action87. Both oldASan overflows paired with384 fixed combinations/empty cleanup/actualPE/Scepter/startup/retainedPE. Generic core safety, no additional artifact-stage certification.",
     "diagnostics": "Owned13744 graceful0/no new diagnostics; mixed3915sharedLINK2 retained, no character edits. SQL20 unchanged; native27 review candidates including4deferredlater rows remain.",
     "next": "Guardian990 Lea101742 mobs: five DEATH-to-DEATH malformed immediate links; preserve native29/44 last-living/step guards, descending criteria and independent credit despite failed deathcast.101384missing1 remains unknown; do not guess."
+  },
+  "guardian_wave_death_integrity": {
+    "audit": "docs/audits/guardian-wave-death-integrity-2026-10-29.json",
+    "status": "World22 RELEASED:5 invalid immediate links->0 with independent DEATH roots retained;4 missing Shadowstalker own-species last-living checks added. Native waves2..5/48106..09 exactly-once, failed cast independence, helpers unchanged.",
+    "checks": "137 distinct species kill orders/1644 controlled ASan runs, native condition+target+cast+summon+owner/criterion dispatch, original premature-credit counterfactual,21 TEMP refusals/repeat/live4tables/26972/shared loot regression pass.",
+    "diagnostics": "Own20340 graceful0/no new diagnostic, canonical7D382937/F20D25EE unchanged, mixedDBErrors3915 retained, no progress reset/client certification.",
+    "fresh_audit": "36/149/0 automated findings/3Monk;25maps/1947owners/83timed now22 primary review candidates/0 missinglists.4 known later-campaign rows deferred; other18 artifact-or-unclassified.",
+    "next": "Continue next proven acquisition repair; preserve101384 unknown missing1/sharedmissing2/remaining actual visuals and full36 lifecycle work."
   }
 }
