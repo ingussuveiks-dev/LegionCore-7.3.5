@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-29",
+  "status": "Three Maelstrom1038 interaction-to-wave dispatch encodings repaired; World23 RELEASED; full Shaman/client traversal OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Screech97168 HP99..100 chain, FlameShock192344 hit on97436 campfire, and244431 MaelstromPillar gossip each end row2 with LINK3. Existing row3 is UPDATE60, not LINK61: original stage1038/2 and no living97386 within80 guards intentionally defer the seven actors until after earlier interaction objectives. Native tail rejects the malformed immediate call; independent UPDATE still provides the real wave. Converting row3 toLINK would lose later polling/retry after the stage changes.",
+  "change": "Only three row2.link fields3->0, preserving every independent UPDATE row3, native condition, seven-summon tail, cast/data/flags/GO exit-prop request and retry admission. This corrects dispatch encoding using existing complete independent producer, not guessed missing actions or a bypass of native LINK validation. No logging/check disabled; unknown missingLINKs untouched.",
+  "local_sequence": "Native1038/map1572/class7 stage1 has46556/46564/46568/46579; campfire native192344 gives46564, pillar192370->192362 gives46568. Original interactions signal Iain96757/Mylra96539, Torra97027, and Erunak96530/Rehgar96541; all receiver rows retained. Pillar row2 creates247612/3600s exit prop. Stage2 any of the three independent producers, absent nearby97386, summons5x97054 StormbornInfernal +97386Gethxun +94721Falthus at original positions. Native97054 death49264 belongs1038/2; Falthus187817->jump/list94721->49331 belongsstage3; original247612 ten-row travel/effect/list->46799 belongsstage4. Thrall96527 quest41335 The Elements Call... (native enUS98 quest text explicitly chooses Artifact) and actual205790 effect205 PlayerChoice266 connect this initial Shaman sequence to artifact selection, unlike later110 campaign Niskara. No quest/selection rewritten.",
+  "sources": "Saved full six-table live fixture, original surrounding scripts/texts/templates/waypoints, actual SmartScript prefixes/dispatch/timers/LINK and ConditionMgr bindings/29/44, actual near-creature predicate and position-summon/CAST branches; matching26972 native spell/criteria metadata. No modern core/external implementation needed or gameplay claimed.",
+  "checks": [
+    "Six-table full-schema session-local TEMP normalization: exactly3 link fields, migration repeated idempotently, unchanged conditions/texts/creature+GO templates/waypoints and all other scripts. Sixteen custom original/applied refusals cover UPDATE root, wave actor/position, fire spell/data/portal recipient, condition negation/radius/stage/target, exit timing/custom condition/AI/waypoint/missing/apply custom; all six tables unchanged on expected SIGNAL even with --force. Real updater RELEASED LF SHA1 and complete live6table readback pass.",
+    "MSVC ASan actual event+action prefixes/root dispatcher, HP/SpellHit/Gossip/UPDATE, RecalcTimer/UpdateTimer/initial OnUpdate event loop, source22 condition bindings/evaluator/predicates29+44+negation, near-creature predicate, CAST failure return, position-summon branch and FindLinkedEvent/LINK:75 old/fixed/boundary cases plus3 failed-spawn cases.48 interaction variants preserve exact old/new requests and only remove proven malformed-call diagnostic; four invoker labels (player/pet/guardian/null), fire cast OK/rejection, repeats and stage1->2.21 absent-condition/boss/expired/missing-base cases retry once available. NaiveLINK61 conversion demonstrates no later wave.",
+    "All6 native producer tick permutations use actual static map1572 positions97168(793.727,1054.61,48.4185),97436(865.354,1071.23,49.5026),244431(824.3,1094.42,49.3594) and actual summoned97386(835.474,1019.93,63.5284). Controlled3D range + actual predicate sees first live boss within80 of all3, so total7 spawn requests, not21. Actual grid/summon/spell/dialogue/prop/AI/scenario endpoints remain controlled; not proof of full client geometry or wave combat. Failed summon endpoint retains all original7 attempts and nonrepeatable behavior, partial-spawn recovery explicitly OPEN.",
+    "Matching26972 exact49264->1038/2/tree46930,49331->3/tree46938,46799->4/tree46946 plus205790 actualPlayerChoice266 pass. Native192344/192370 payload, Torra spear and retained exit spells exported read-only. Canonical20968 ready/shutdown0/exit0/stderr0/newDBErrors0/protected hashes unchanged. Fresh36routes/149pairs/0 automated findings/3boundedMonk; expanded25maps/1947owners/83timed now19 primary review candidates,0 missinglists.4 known later110 rows deferred."
+  ],
+  "development": "Two initial exploratory read-only SQL calls assumed nonexistent scenario_data.Step and quest_template_locale.Title; failed without live mutation and were corrected against known schema. Actual locale enUS LogTitle/objective payload confirmed41335. Native/TEMP/ASan probes passed, no runtime crash or new server diagnostic.",
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_29_23_maelstrom_wave_dispatch.sql",
+    "lf_sha1": "e2c768587818b0b80f95512f15d2c6ca152de838",
+    "canonical": "build-extractors/bin/Release",
+    "owned_pid": 20968,
+    "world_sha256": "7D382937DED53E107AA52237B9757508348945A85AEA2E52E1EE9B698C513451",
+    "bnet_sha256": "F20D25EEFE0BD1ACDF40CBFFB836E1D811425C8F6AD45195AEA414B78DC16167",
+    "result": "Data-only; canonical EXEs unchanged. Fresh absent-process check before promotion/start; only own20968 launched and gracefully stopped, no user/unknown server touched. No character/item/weapon/progress resets."
+  },
+  "diagnostics": "Before/after every native/TEMP/catalog/updater/live/audit, canonical+own crash hashes/log lengths/timestamps and exit/stdout/stderr/new DBErrors/server diagnostics inspected. No new/changed crash or unexplained warning/error/assertion. Existing shared101430/103151 missingLINK2 DBErrors3915 retained unchanged and canonical Crashes empty. No resolved runtime issue report produced by these probes to archive/truncate; mixed historical logs retained.",
+  "fixture_counts": {
+    "smart_scripts": 104,
+    "conditions": 20,
+    "creature_text": 37,
+    "creature_template": 12,
+    "gameobject_template": 2,
+    "waypoints": 14
+  },
+  "evidence": [
+    "build-extractors/runtime-test/maelstrom-wave-data",
+    "build-extractors/runtime-test/maelstrom-wave",
+    ".codex/maelstrom-wave-catalog-2026-10-29",
+    ".codex/maelstrom-wave-updater-2026-10-29",
+    ".codex/maelstrom-wave-live-2026-10-29",
+    ".codex/artifact-post-maelstrom-2026-10-29"
+  ],
+  "remaining": "No complete1038/Shaman/36 certification. Actual native stage1 progression, UI/interactions/voices, Torra/Gethxun combat/waypoints, infernal group/pet/death-range credit, failed/partial actor spawn recovery, Falthus jump/capture, exit ride/camera/effects/Thrall choice, abandonment/reentry/relog and actual client need remaining work/user checks. Scope includes shared initial artifact choice, not later campaigns. Unknown19 broader edges/shared2/Stromkar recoil/continuous beams remain OPEN."
+}
