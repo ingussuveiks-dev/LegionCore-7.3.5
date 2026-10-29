@@ -3,7 +3,7 @@ from pathlib import Path
 import runpy
 import struct
 from capstone import CS_OP_IMM, CS_OP_MEM
-from capstone.x86_const import X86_REG_RIP
+from capstone.x86_const import X86_REG_RIP, X86_REG_RSP, X86_REG_RDX
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_stromkar_execute_landing_release.py')))
 native = previous['native']
@@ -51,7 +51,20 @@ move_to = native['symbol']('?MoveTo@MoveSplineInit@Movement@@')
 launch = [index for index, entry in enumerate(motion) if entry.mnemonic == 'call' and
           entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == move_to]
 assert len(launch) == 1
-for expected in ('dword ptr [rsp + 0x48], xmm9', 'dword ptr [rsp + 0x4c], xmm10',
-                 'dword ptr [rsp + 0x50], xmm11', 'rdx, [rsp + 0x48]'):
-    assert any(entry.op_str == expected for entry in motion[launch[0] - 8:launch[0]]), 'Native MoveTo vector no longer contains destination XYZ'
+vector = motion[launch[0] - 8:launch[0]]
+addresses = [entry for entry in vector if entry.mnemonic == 'lea' and
+             entry.operands[0].reg == X86_REG_RDX and entry.operands[1].type == CS_OP_MEM and
+             entry.operands[1].mem.base == X86_REG_RSP and not entry.operands[1].mem.index]
+assert len(addresses) == 1, 'Native MoveTo destination vector address changed'
+vector_offset = addresses[0].operands[1].mem.disp
+for component, register in enumerate(('xmm9', 'xmm10', 'xmm11')):
+    stores = [entry for entry in vector if entry.mnemonic == 'movss' and
+              entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.base == X86_REG_RSP and
+              not entry.operands[0].mem.index and entry.operands[0].mem.disp == vector_offset + 4 * component]
+    assert len(stores) == 1 and stores[0].reg_name(stores[0].operands[1].reg) == register, 'Native MoveTo vector no longer contains destination XYZ'
+    assert stores[0].address < addresses[0].address, 'Destination vector initialized after its address'
+    assert not any(entry.operands and entry.operands[0].type == CS_OP_MEM and
+                   entry.operands[0].mem.base == X86_REG_RSP and
+                   entry.operands[0].mem.disp == vector_offset + 4 * component
+                   for entry in vector if entry.address > stores[0].address), 'Destination vector overwritten before MoveTo'
 print('PASS: canonical192085-only branch writes originalZ+20 into the actual destination before native MoveJump reloads it; its Z reaches native spline MoveTo vector. Other spells skip the write. Not client ascent, teleport or return-actor proof')

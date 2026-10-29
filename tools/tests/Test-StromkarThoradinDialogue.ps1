@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary)
+param([switch]$VerifyReleaseBinary,[string]$DialogueRows)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/stromkar-thoradin-dialogue"
@@ -6,6 +6,13 @@ New-Item -ItemType Directory -Force $out|Out-Null
 $migrationPath="$repo/sql/updates/world/2026_10_24_53_stromkar_thoradin_dialogue_order.sql"
 $hash=(Get-FileHash $migrationPath -Algorithm SHA1).Hash
 $migration=Get-Content $migrationPath -Raw
+$returnNormalization=''
+$returnPath="$repo/sql/updates/world/2026_10_29_07_stromkar_return_gaze.sql"
+if(Test-Path $returnPath){
+ $returnHash=(Get-FileHash $returnPath -Algorithm SHA1).Hash
+ $fingerprint=((Get-Content $returnPath -Raw) -split "`n"|Where-Object {$_ -like 'SET @stromkar_return_ghost*'}).Replace('FROM smart_scripts','FROM saved_smart')
+ $returnNormalization="SET SESSION group_concat_max_len=1048576;`n$fingerprint`nDELETE FROM saved_smart WHERE entryorguid=104307 AND source_type=0 AND id=6 AND @stromkar_return_ghost='efee1d4dafc6c843527159b1e17bf19af03870a5a826c2e6f5552119aaa45817' AND EXISTS(SELECT 1 FROM updates WHERE name='2026_10_29_07_stromkar_return_gaze.sql' AND hash='$returnHash' AND state='RELEASED');"
+}
 $ready="entryorguid=104307 AND source_type=0 AND id=5 AND link=0 AND event_type=52 AND event_phase_mask=0 AND event_chance=100 AND event_flags=1 AND event_param1=1 AND event_param2=104307 AND event_param3=0 AND event_param4=0 AND action_type=45 AND action_param1=2 AND action_param2=1 AND action_param3=0 AND action_param4=0 AND action_param5=0 AND action_param6=0 AND target_type=1 AND target_param1=0 AND target_param2=0 AND target_param3=0 AND target_x=0 AND target_y=0 AND target_z=0 AND target_o=0"
 $reset=@'
 DELETE FROM creature_template;INSERT INTO creature_template SELECT * FROM saved_actor;
@@ -16,6 +23,7 @@ $sql=@"
 CREATE TEMPORARY TABLE saved_actor LIKE creature_template;INSERT INTO saved_actor SELECT * FROM creature_template WHERE entry IN(104276,104307);
 CREATE TEMPORARY TABLE saved_smart LIKE smart_scripts;INSERT INTO saved_smart SELECT * FROM smart_scripts WHERE entryorguid IN(104276,104307,103151);
 CREATE TEMPORARY TABLE saved_conditions LIKE conditions;INSERT INTO saved_conditions SELECT * FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry IN(104276,104307);
+$returnNormalization
 UPDATE saved_actor SET ScriptName='' WHERE entry=104307 AND ScriptName='npc_stromkar_thoradin' AND EXISTS(SELECT 1 FROM updates WHERE name='2026_10_24_53_stromkar_thoradin_dialogue_order.sql' AND hash='$hash' AND state='RELEASED');
 DELETE FROM saved_smart WHERE $ready AND EXISTS(SELECT 1 FROM updates WHERE name='2026_10_24_53_stromkar_thoradin_dialogue_order.sql' AND hash='$hash' AND state='RELEASED');
 CREATE TEMPORARY TABLE creature_template LIKE saved_actor;CREATE TEMPORARY TABLE smart_scripts LIKE saved_smart;CREATE TEMPORARY TABLE conditions LIKE saved_conditions;
@@ -54,10 +62,13 @@ foreach($pair in @(@('first','second'),@('old-before','old-after'),@('conditions
 foreach($name in $variants.Keys){foreach($suffix in @('','-actor')){if((Signature "$name$suffix-before") -cne (Signature "$name$suffix-after")){throw "Custom dialogue overwritten: $name$suffix"}}}
 if($rows -notcontains "binding`tnpc_stromkar_thoradin" -or @(Snapshot 'row').Count -ne 6){throw 'Expected bound ghost and six exact dialogue rows'}
 [IO.File]::WriteAllLines("$out/rows.tsv",[string[]](Snapshot 'row'))
+if($DialogueRows){Copy-Item -LiteralPath $DialogueRows -Destination "$out/rows.tsv"}
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
 if(!$source.Contains('RegisterCreatureAI(npc_stromkar_thoradin);')){throw 'Missing ghost registration'}
-[IO.File]::WriteAllText("$out/Thoradin.inc",(Section $source 'struct npc_stromkar_thoradin : SmartAI' 'void AddSC_artifact_acquisition()'))
+$classStart=$source.IndexOf('struct npc_stromkar_thoradin : SmartAI');$classEnd=$source.IndexOf('{',$classStart)+1;$depth=1
+while($depth){if($source[$classEnd] -eq '{'){++$depth};if($source[$classEnd] -eq '}'){--$depth};++$classEnd}
+[IO.File]::WriteAllText("$out/Thoradin.inc",$source.Substring($classStart,$classEnd-$classStart)+';')
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
 [IO.File]::WriteAllText("$out/Summoned.inc",(Section $source 'void SmartAI::IsSummonedBy(' 'void SmartAI::DamageDealt('))
 [IO.File]::WriteAllText("$out/SetData.inc",(Section $source 'void SmartAI::SetData(' 'void SmartAI::SetGUID('))

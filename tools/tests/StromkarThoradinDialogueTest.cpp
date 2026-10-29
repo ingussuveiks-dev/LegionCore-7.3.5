@@ -29,6 +29,7 @@ struct CreatureAI {
     virtual ~CreatureAI()=default;
     virtual void IsSummonedBy(Unit*) { }
     virtual void SetData(uint32,uint32) { }
+    virtual void UpdateAI(uint32) { }
 };
 struct Creature : Unit {
     uint32 entry=104307,map=1539,instance=42;
@@ -130,12 +131,18 @@ struct SmartAI : CreatureAI {
     SmartScript* GetScript() { return &script; }
     void IsSummonedBy(Unit*) override;
     void SetData(uint32,uint32) override;
+    void UpdateAI(uint32) override { }
 };
 #include "Summoned.inc"
 #include "SetData.inc"
 #ifdef BASELINE
 struct npc_stromkar_thoradin : SmartAI { using SmartAI::SmartAI; };
 #else
+namespace StromkarReturn {
+struct State {uint32 signals=0;};
+void Signal(Creature*,uint32 id,uint32 value,State& state) {if(id==3&&value==1)++state.signals;}
+void Update(Creature*,uint32,State&) { }
+}
 #include "Thoradin.inc"
 #endif
 std::vector<SmartScriptHolder> ReadRows(char const* path) {
@@ -151,6 +158,7 @@ void Advance(SmartScript& script,uint32 ticks) { for(uint32 tick=0;tick<ticks;++
 int main(int argc,char** argv) {
     assert(argc==2);
     auto rows=ReadRows(argv[1]);
+    bool hasReturn=false;for(auto const&row:rows)if(row.event_id==6)hasReturn=true;
     {
         Creature actor;npc_stromkar_thoradin content(&actor);actor.brain=&content;content.script.mEvents=rows;
         content.IsSummonedBy(nullptr);assert(spoken==std::vector<uint32>{0}&&content.script.pathStarts==1);
@@ -177,9 +185,11 @@ int main(int argc,char** argv) {
             scenarioManager.scenario.step=10;
             Advance(content.script,60000);
             assert((spoken==std::vector<uint32>{0,1,2,3})&&content.script.pathStarts==1);
+            assert(content.returnState.signals==(hasReturn?1u:0u));
             content.script.OnReset();
             content.SetData(1,1);content.SetData(2,1);Advance(content.script,60000);
             assert((spoken==std::vector<uint32>{0,1,2,3}));
+            assert(content.returnState.signals==(hasReturn?1u:0u));
         }
     for(uint32 variant=0;variant<6;++variant) {
         scenarioManager={};spoken.clear();Creature actor;

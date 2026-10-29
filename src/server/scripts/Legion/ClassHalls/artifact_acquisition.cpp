@@ -1877,6 +1877,8 @@ public:
     }
 };
 
+#include "stromkar_return.h"
+
 struct npc_stromkar_thoradin : SmartAI
 {
     explicit npc_stromkar_thoradin(Creature* actor) : SmartAI(actor) { }
@@ -1885,6 +1887,7 @@ struct npc_stromkar_thoradin : SmartAI
     bool introFinished = false;
     bool finalePending = false;
     bool finaleDispatched = false;
+    StromkarReturn::State returnState;
     void IsSummonedBy(Unit* summoner) override
     {
         if (!initialized)
@@ -1898,6 +1901,7 @@ struct npc_stromkar_thoradin : SmartAI
     }
     void SetData(uint32 id, uint32 value) override
     {
+        StromkarReturn::Signal(me, id, value, returnState);
         if (!preserveIntro || value != 1 || (id != 1 && id != 2))
         {
             SmartAI::SetData(id, value);
@@ -1913,6 +1917,11 @@ struct npc_stromkar_thoradin : SmartAI
             SmartAI::SetData(1, 1);
         }
     }
+    void UpdateAI(uint32 diff) override
+    {
+        SmartAI::UpdateAI(diff);
+        StromkarReturn::Update(me, diff, returnState);
+    }
 };
 
 #include "lights_wrath_takeover.h"
@@ -1924,6 +1933,8 @@ struct npc_stromkar_thoradin : SmartAI
 
 void AddSC_artifact_acquisition()
 {
+    new npc_stromkar_valkyr();
+    new condition_stromkar_return();
     RegisterSpellScript(spell_monk_kite_travel);
     RegisterGameObjectAI(go_lights_wrath_pickup);
     RegisterSpellScript(spell_lights_wrath_pickup_cast);
