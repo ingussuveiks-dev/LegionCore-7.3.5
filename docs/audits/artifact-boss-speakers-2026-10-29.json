@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-29",
+  "status": "Farthing/Balaadur own-speaker dialogue repaired; World24 RELEASED; full encounters/client speech remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Native SMART_ACTION_TALK treats a selected Creature as the speaker, while a selected Player is only the text context. Farthing101148 row1 INVOKER7 on pet aggro and rows21/22/23 VICTIM2, plus Balaadur108168 rows0/6 VICTIM2, therefore select a pet/guardian as the speaker. Actual CreatureTextMgr uses GUID entry and rejects absent pet text groups silently at debug level. Farthing mTalkerEntry also becomes the pet entry, so its real TEXT_OVER2 requires101148 and never reaches3/4. This is more than a missing voice.",
+  "change": "Exactly6 target_type fields ->SELF1 (Farthing1/21/22/23, Balaadur0/6). No text, sound, health threshold, phase, delay, cast target, summon, criterion, final death or loot changed. Native last-player-invoker text context retained. Unknown Balaadur death7->missingLINK8 stays visible; no guessed continuation, deleted edge or suppressed log.",
+  "local_trace": "Farthing preserves native aggrogroup1; health70 row5 original203152 aura and15 linked102784 MindShadow requests ->row21 group2/5000ms ->realTEXT_OVER2,101148 group3/7000ms ->realTEXT_OVER3 group4/5000ms. Existing low1-percent soul creation102247/201899, native201791 conversation, real48421 acknowledgment, pending247690 weapon creation and death ordering unchanged. Balaadur preserves aggrogroup0, health0..50 group4, native202420/202290 combat casts, real death4->251049 GO3600s ->108202, independent death7/native51391 ->unresolved8. Mage1122 common acquisition context retained; no invented weapon or quest award.",
+  "validation": [
+    "Full6table session-local TEMP replay/idempotence, exactly6 speaker fields, unchanged original actions/conditions/texts/creature+GO templates/native loot. Seventeen complete custom/refusal cases cover TEXT_OVER/delay/speaker/casts/actual soul transition/real weapon ACK/Balaadur text+HP/unknownLINK8/condition/AI/BroadcastText/loot/missing/applied custom; --force refusal leaves all six tables unchanged. Real updater RELEASED LF SHA1 and full6table live equality pass.",
+    "MSVC ASan compiles actual event/action guards/root dispatcher/TALK, SELF/VICTIM targets, HEALTH/DATA/TEXT_OVER events, native text timer/LINK and actual CreatureTextMgr GUID-entry/group admission. Pinned original pet/guardian/NPC victim gives no owned text and stalls native Farthing timer; repaired actual own1/2/3/4 with strict4999+1+1ms and7000+1ms boundaries. Player/no-victim cases retain ordinary speaker. Repeated events/health100/blocked/expired/missing actor covered. Balaadur both own groups preserved for all five victim types, and its original death requests plus expected unresolvedLINK8 counter remain. Cast/summon/aura/progression endpoints controlled; no actual client/whole combat proof.",
+    "Matching26972 six native BroadcastText payloads: Farthing104575/105388/105390/105391 and Balaadur113373/113374. Native finale sounds63446/47/48,64209/64211 exported; existing sound metadata not overridden.48421->991/7/tree46620 and51391->1122/4/tree48469 retained.",
+    "Shared Test-XalatathFarthing -AddressSanitizer -VerifyReleaseBinary passes original player/pet/guardian/scaling/current+suspended AI guard and linked canonical factory. Historical C4100/C4244 native-fixture warnings remain visible; no new production diagnostic. Own32196 canonical ready/shutdown0/exit0/empty stderr/newDBErrors0/protected hashes unchanged.",
+    "Fresh36 routes/149 pairs/0 automated findings/3 boundedMonk;25maps/1947owners/83timed still19 primary review candidates/0 missinglists, intentionally unchanged because no LINK was deleted here. Private map inventory before fix found36 VICTIM2 TALK rows across20 native-or-delegated owners;5 such rows removed here leaves31/18owners, plus separately corrected INVOKER7. Inventory is candidate scope, not31 proven defects; source9/GUID/other invoker cases not certified."
+  ],
+  "development": "First private test edit used PowerShell interpolation incorrectly and produced a parser error before test execution; fixed with Python literal source editing. Two native test assertions were harness errors: assumed8 Balaadur rows instead of actual7 and factory return copied a self-pointer to a stack actor. Corrected to actual fixture count and C++17 guaranteed-elision construction with explicit actor-address assertion. Failed assertion outputs/diagnostic snapshots retained byte-for-byte and paired with passing native/shared checks; no server crash caused or hidden.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/artifact-boss-speaker-test-fixture-2026-10-29",
+    "purpose": "Resolved isolated test-fixture diagnostic reports only, not a claimed production crash fix. Original attempt1/2 logs+snapshots and passing native/shared log copied with before/after source+destination SHA256 validation and manifest. No mixed runtime log cleared."
+  },
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_29_24_artifact_boss_speakers.sql",
+    "lf_sha1": "330a73b7ebe36a28f96ff12ea1e4972b6986f23e",
+    "canonical": "build-extractors/bin/Release",
+    "owned_pid": 32196,
+    "world_sha256": "7D382937DED53E107AA52237B9757508348945A85AEA2E52E1EE9B698C513451",
+    "bnet_sha256": "F20D25EEFE0BD1ACDF40CBFFB836E1D811425C8F6AD45195AEA414B78DC16167",
+    "result": "SQL only, EXEs unchanged; absent-process check before promotion/start. Only owned32196 launched then gracefully closed, no user/unknown server stopped; no character/weapon/progress reset."
+  },
+  "diagnostics": "Every executed fixture/native/ASan/catalog/shared PE/updater/live/audit has before/after canonical+own crash hashes and log lengths/timestamps, inspected exit/stdout/stderr/appended server and DBErrors. Corrected assertion probes marked failed, not passing baselines; final passes clean. No new/changed canonical/test crash dump or new server warning/error/assertion/DBErrors. ActiveCrashes empty, mixed shared101430/103151 LINK2 DBErrors3915 bytes/UTC2026-10-29T13:29:05.1130661Z retained unchanged. No runtime log/dump/credential/character artifact committed.",
+  "fixture_counts": {
+    "smart_scripts": 51,
+    "conditions": 65,
+    "creature_text": 7,
+    "creature_template": 4,
+    "gameobject_template": 2,
+    "gameobject_loot_template": 2
+  },
+  "evidence": [
+    ".codex/artifact-boss-speakers-complete-data-2026-10-29",
+    ".codex/artifact-boss-speakers-native-final-2026-10-29",
+    ".codex/artifact-boss-speakers-catalog-2026-10-29",
+    ".codex/artifact-boss-speakers-updater-2026-10-29",
+    ".codex/artifact-boss-speakers-live-2026-10-29",
+    ".codex/artifact-post-speakers-2026-10-29"
+  ],
+  "remaining": "Actual voice/chat bubbles/facing/animation in client, real15 mind actors/failed cast/spawn/target loss, quest/group/faction criteria and complete Farthing/Mage quest traversal/reentry/retry remain OPEN. No new kill/owner/group progression rule. Balaadur missingLINK8, other19 structural candidates/sharedLINK2/Stromkar recoil+continuous beams/full36 remain OPEN."
+}

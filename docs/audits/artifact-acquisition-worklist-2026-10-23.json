@@ -5089,5 +5089,12 @@
     "checks": "75 native ASan cases +3 failedspawn, all6 static producer tick orders issue7 total actors,16 TEMP refusals/idempotence/live6tables/26972/updater pass. NaiveLINK61 conversion loses deferred wave. Actual client and partial-spawn recovery remain OPEN.",
     "diagnostics": "Own20968 graceful0/no new crashes/log diagnostics; canonical7D382937/F20D25EE unchanged; sharedLINK2 mixed3915 retained. No progress reset/client certification.",
     "fresh_audit": "36/149/0 findings/3boundedMonk; expanded25maps/1947owners/83timed now19 primary review candidates/0 missinglists.4 known later rows deferred;15 artifact-or-unclassified."
+  },
+  "artifact_boss_speakers": {
+    "audit": "docs/audits/artifact-boss-speakers-2026-10-29.json",
+    "status": "World24 RELEASED:Farthing1/21/22/23 andBalaadur0/6 TALK->SELF; pet speaker/no text/wrongTEXT_OVER2 corrected, original5/7s pauses/full script/loot retained.",
+    "checks": "Native ASan actualTALK/targets/timer/CreatureTextMgr admission, original pet failure,17 TEMP refusals/idempotence/live6tables/26972sixtexts/retained Farthing actualPE/updater pass.",
+    "diagnostics": "Own32196 graceful0/no new runtime diagnostic; same7D382937/F20D25EE EXEs,3915 sharedLINK2 retained; resolved fixture assertions archived with hashes under fixed/artifact-boss-speaker-test-fixture-2026-10-29. No progress resets/client certification.",
+    "fresh_audit": "Bounded36/149/0 findings/3Monk and expanded19 candidates unchanged; unknownBalaadurLINK8 retained. Private scope speaker inventory31 VICTIM2 rows/18owners remains review-only; not blanket-safe changes."
   }
 }
