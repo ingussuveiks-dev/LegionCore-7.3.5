@@ -4087,7 +4087,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing.",
+      "tak_tak_return_audit": "docs/audits/tak-tak-linked-return-2026-10-29.json"
     },
     {
       "class_id": 10,
@@ -4186,7 +4187,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing.",
+      "tak_tak_return_audit": "docs/audits/tak-tak-linked-return-2026-10-29.json"
     },
     {
       "class_id": 10,
