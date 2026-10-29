@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-29",
+  "status": "Focused malformed-dispatch repair committed with this audit and RELEASED through canonical updater; full Unholy/client chain remains OPEN",
+  "cause": "Laith Sha'ol102459 root0 JUST_SUMMONED/TALK0/3000ms had link1, but row1 is TEXT_OVER52(0,102459), not LINK61. Native LINK tail correctly rejects this immediate call and logs invalid LINK. The actual independent text timer subsequently runs row1/TALK1/3000ms and valid LINK2/attack closest player20. This is a malformed call edge, not a missing second speech action.",
+  "repair": "Migration11 changes only smart_scripts source0/102459/id0 link1->0. The real TEXT_OVER event, both3000ms durations, attack LINK2, all six actions, combat spells204933/204935, self death202333, two text rows and actor/conditions remain byte-equivalent in native SQL readback. No logging/check/loader suppression or replacement LINK is introduced. Shared101430/103151 missingLINK2 untouched.",
+  "sequence": "40933 objective281467 requires native102459 kill. Shallow Grave102473 SpellHit202413 chooses native lists10247300/01; list00 casts202319, matching26972 effect28 summons102459/properties64/target18.102459 first line -> native timer TEXT_OVER0 -> second line plus LINK2 attack. Death self-casts202333; native effect28 summons102522/properties3580/target46, separate self dummy aura.102522 retains three text groups, actual text-over1 -> LINK3/credit102411 and text-over2 despawn. No downstream data changed; actual corpse/destination, failed death-summon recovery and quest/group credit require separate traversal.",
+  "source_order": "Matching project DB2/runtime export/live graph, SmartScript.cpp TALK/TEXT_OVER/text timer/LINK implementation first. Local Trinity TDB735 smart_scripts extraction has no102459 row; no modern code or unreviewed external visual imported. No new video/client review claimed.",
+  "regression": [
+    "Test-LaithDialogueData: full-schema TEMP replay twice, exact one-field/six-row comparison, unchanged two text rows/actor/conditions; eleven wrong-text/delay/event/target/death/missing/extra/condition/speech/AI/applied-custom refusals. Exact live four-table result and updater LF SHA1 RELEASED readback pass.",
+    "Test-LaithDialogue: ASAN extracted native ProcessEventsFor, TALK state/dispatch, FindLinkedEvent/LINK tail, TEXT_OVER and actual text timer. Original counterfactual records one rejected LINK but same intended timeline; repaired emits no diagnostic and preserves first-line pause/second-line attack. Naive converting row1 toLINK demonstrably starts second line/attack at0ms. Player/pet/guardian/null invokers, wrong group/entry, condition/expired actor, absent attack target, removed actor, independent new summon and controlled death-cast failure covered. Chat/search/cast/attack endpoints and condition service controlled, not actual quest awards or client rendering.",
+    "Test-ArtifactSmartLinks seven extracted-native/differential cases pass. Fresh read-only all36 export/audit after applied11:36 selections,149 race/class pairs,0 automated findings,7 unresolved actor edges. No whole-chain certification."
+  ],
+  "test_repairs": "Initial read-only TEMP probe refused1792; switched to explicitly TEMP-capable session. Probe SpellName metadata assumption corrected to actual26972 Spell table. Two read-only schema-name errors corrected after inspecting actual columns. Initial captured Cyrillic fixture/CAST hash depended on client/connection charset: recaptured explicit UTF8, encoded fixture strings as UTF8 hex, made all migration CASTs explicit utf8mb4; eleven refusals retained. Native fixture missing uint8/event-flag-comment filter and live-snapshot missing WHERE were corrected and paired with final passing regressions. Failed wrappers remain private and are not counted as successful tests; no production diagnostic was hidden.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 1848,
+    "result": "Both servers absent before promotion; canonical updater applied11, ready, server shutdown0, exit0, stderr0, no task process remains. Protected config/certificate hashes unchanged. SQL-only repair; existing matching native dispatcher EXE reused.",
+    "migration": "sql/updates/world/2026_10_29_11_laith_dialogue_dispatch.sql",
+    "lf_sha1": "ca5a26d7c5bdd1f8797266e4638fbd86900e8e6b",
+    "world_sha256": "235348EEF91B89605A6430B63FE9F57450EA62B516BE99A6EBF78359400484E1",
+    "bnet_sha256": "45E7FC66C4141DF770BAE52E47225BAA1CE9F79456768184CCDB6A7FB34CAA59"
+  },
+  "all36": {
+    "routes": 36,
+    "native_pairs": 149,
+    "automated_findings": 0,
+    "unresolved_edges": [
+      {
+        "kind": "invalid_actor_sai_link",
+        "entry": 90418,
+        "event": 0,
+        "link": 2,
+        "reason": "invalid_target_event",
+        "referenced_by_routes": [
+          128820
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100438,
+        "event": 9,
+        "link": 10,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128937,
+          128938,
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 1,
+        "link": 7,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 6,
+        "link": 8,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "invalid_actor_sai_link",
+        "entry": 101390,
+        "event": 4,
+        "link": 10,
+        "reason": "invalid_target_event",
+        "referenced_by_routes": [
+          128821
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 105332,
+        "event": 0,
+        "link": 1,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128476
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "invalid_actor_sai_link",
+        "entry": 105333,
+        "event": 0,
+        "link": 1,
+        "reason": "invalid_target_event",
+        "referenced_by_routes": [
+          128476
+        ],
+        "status": "intended action unknown; needs executable route review"
+      }
+    ],
+    "full_report_sha256": "3abf6b63e24a8222ddb88c77bd970c0b1b11eb9935ae5cd7b6c67149c6471baa",
+    "world_hashes": {
+      "quest_template": "27805c3679ba6624d5b27aa805ac423cfc8edc38d7058bdd36cd3a9c0eb36389",
+      "quest_template_addon": "f1c05d071e6e361800d4ab95e4a212d1ea4e0611af53a738d31ad4b8e5324ed2",
+      "quest_template_locale": "8d2df01920045475bc3b22d41ae88431c72b9e2e02a29c48762ae44dce17e1a9",
+      "quest_objectives": "0cd34046bfb5c77698f371c536386a4d5beaddc61755ac292ca765f17c8ba39f",
+      "creature_queststarter": "aa93f84846d67542dd85b8e3b48c02db66deab1f260fd39ac80affb17c6bbeb1",
+      "creature_questender": "a81428eee03179453a12707f962ee31bc9eb65ed562bc67bb880d2b9cfa7eee1",
+      "gameobject_queststarter": "2df34ae158f4df5e0bbf99f1041aaadf7badd0512f460fce6fe14aae9561c26a",
+      "gameobject_questender": "0e234ec77746b4aa2bdacfef865eb02b89349e1862ebe99ebe7460286b8076f8",
+      "battlepay_product_item": "b5e6f1b003969fad4aabfd54cc667f0f17caa9f8c37086f5d9173ac7eb6145b6",
+      "scenario_data": "97521d0bcf308b0b68892171753c25e77899f7fdbefe54b8c3433445d818c884",
+      "playerchoice_response": "c1d301e8dbd8a293a7b4b1554b519fbc37ceeed9f7edf07c967797db42a65cc6",
+      "playerchoice_response_reward": "4fd31367687e2bd222885689a7b51ed261345979dad2253128eab947408b8b68",
+      "creature_template": "69a8cd13a1615b578ccc3f8edc25687957adf9c7b047fe608a139e5ef1ffe6c1",
+      "gameobject_template": "94726d2df0b238b559e37114944e69554ac5796ab3779f91c4e4d168a27bb849",
+      "gameobject_loot_template": "bc1c302d59450f75e8ac3f08b120e676568db7d6b3ed28ef3fc959be1147e20d",
+      "smart_scripts": "930eba89d1a9ce8a1b2cf58cd81cb03a3cd2d677b5226da3f654c7a9372c94c7",
+      "conditions": "ff10f6f3014f1b4b84f20f9114851ece6a4f3f82e1f30639217d7726aa0649a1"
+    }
+  },
+  "diagnostics": "All native/TEMP/ASAN/updater/live/final/audit tests have canonical and own crash hashes/log offsets before/after. Final exit0, no new/changed crash reports, new DBErrors or warnings/errors/assertions. Canonical Crashes empty; existing3915-byte mixed101430/103151 missingLINK2 log unresolved/unchanged. No resolved Laith crash/error report existed to archive; no mixed log truncation/fixed archive. No character, item, weapon or quest progress changed; no user/unknown process stopped.",
+  "evidence": ".codex/laith-{native-source*,fingerprints*,regression*,native*,canonical-updater,live-final}-2026-10-29; .codex/laith-dialogue-2026-10-29-{owned.txt,startup-stdout.log,startup-stderr.log,new-DBErrors.log}; .codex/artifact-post-laith-2026-10-29; build-extractors/runtime-test/laith-dialogue{,-data}",
+  "remaining": "Actual Laith speech/combat/death summon/credit/quest traversal, one-hit/group/faction/retry/re-entry, remaining Unholy chain and all36 client sequences remain user-owned and OPEN. Separate recoil burst/cracked floor/continuous ritual beams/shared101430/103151 intendedLINK2 still OPEN. Continue next independent backend repair without character reset."
+}

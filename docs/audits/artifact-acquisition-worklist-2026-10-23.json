@@ -2820,7 +2820,7 @@
       "weapon": "Apocalypse",
       "item": 128403,
       "start": 40930,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "partial: Laith102459 malformed immediate LINK to delayed TEXT_OVER corrected by scoped SQL11; native ASAN/TEMP11-refusal/actual updater/live readback pass. Existing dialogue/combat/death summon preserved. Full quest/combat/group/faction/retry/re-entry and client traversal remain OPEN; see laith-dialogue-dispatch-2026-10-29.json.",
       "quests": [
         {
           "id": 40930,
@@ -2919,16 +2919,7 @@
           "target2": 0
         }
       ],
-      "broken_actor_links": [
-        {
-          "entry": 102459,
-          "event": 0,
-          "link": 1,
-          "reason": "invalid_target_event",
-          "target_event_type": 52,
-          "target_action_type": 1
-        }
-      ],
+      "broken_actor_links": [],
       "video": {
         "url": null,
         "reviewed_intervals": [],
