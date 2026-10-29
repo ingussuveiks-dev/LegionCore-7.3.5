@@ -1,6 +1,6 @@
 {
   "date": "2026-10-29",
-  "status": "OPEN source-traced next independent Guardian repair; no production change or claim of corrected gameplay",
+  "status": "Historical source trace; focused transform/cleanup repaired in malithar-transform-cleanup-2026-10-29.json. Full Guardian/client remains OPEN.",
   "observed_graph": "10174204 summons101403 and101390.101403 timed list eventually sends1/1 to101390; boss event0 TALK ->LINK1 starts route101390. WP2 event2 casts208720 ->LINK3 TALK1/5000ms ->LINK4 removes unit flags768 ->invalid LINK10. Event10 is UPDATE_IC0/nonrepeatable1, sends1/1 to closest105331 with native default100yd search (target range0).105331 DATA_SET1/1 despawns itself. TEXT_OVER1/101390 independently starts closest-player50 attack. Death7 emits48146, LINK8 summons105331 and LINK9 creates actual loot248853.",
   "concrete_actors": "Static105331 spawn11296141/map1536/phase6202 at -12174.6,-13118.8,333.618. WP2 at -12177.7,-13118.2,329.959. Death105331 at same static visual pose; separate248853 chest Z329.647.105331 is Claws of Ursoc with no interaction npcflag and existing DATA_SET despawn, not the actual loot object. These are native actor/waypoint records, not client model/pose evidence.",
   "native_catalog": "Extended existing DruidAcquisitionCatalog with208720/208724. Actual26972 typed DB2/read-only hotfix reader:208720 Bear Form, effect6/aura56 TRANSFORM/misc105326/self1.208724 Crushing Thrash has effect2 damage and effect6/aura3 periodic2000. Do not label208720 as an equip-item cast merely because the dialogue mentions claws.",
@@ -17,5 +17,5 @@
       "tools/research/DruidAcquisitionCatalog.cpp": "a6edc7a35e268f23337018e166ea991085b261924fd29d162ae8d390a9319210"
     }
   },
-  "next": "Trace and regress actual path/WP2 transformation acknowledgement/failure/missing visual, native text-over attack, post-scaling player/pet/guardian death/group48146, exactly-once real chest/new visual, reset/abandon/re-entry and shared NPC paths before implementing the graph/lifecycle repair. Continue separate recoil/ritual/sharedLINK2 work; full Guardian/all36 client traversal remains OPEN."
+  "next": "Focused transform acknowledgement/retry and LINK10 now RELEASED in SQL12. Retain this original graph evidence; continue earlier motion/evade/re-entry and complete client checks from the new repair audit."
 }

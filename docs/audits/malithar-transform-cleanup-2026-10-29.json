@@ -1,0 +1,130 @@
+{
+  "date": "2026-10-29",
+  "status": "Focused Malithar transform/linked-cleanup repair RELEASED and backend-regressed; full Guardian/client chain remains OPEN",
+  "fix_commit": "The focused implementation commit containing this audit; use Git log for its final hash.",
+  "cause": [
+    "101390 waypoint2 cast208720 -> TALK1/5000 -> remove flags768 -> LINK10. Row10 was UPDATE_IC0 rather than LINK61, so native dispatcher logs invalid LINK and leaves the static105331 Claws visual until a later combat update. The same entry is summoned anew on real death, so independent IC cleanup also has an unsafe lifetime relative to that later reward visual.",
+    "Native normal CAST returns before LINK after a real rejection, marks the one-shot WP event consumed and only recalculates its timer. WP_REACHED is not a timed event dispatched by UpdateTimer, so this does not retry. Native SPELL_IN_PROGRESS is treated as a continuing cast without proving that Bear Form aura208720 exists. Both branches are reproduced from extracted production handlers."
+  ],
+  "repair": [
+    "WP2/id2 arms local SmartAI phase1 instead of immediately casting/linking. New id11 OOC/update500ms in phase1 retries original ordinary self208720 only while its aura effect0 is absent. No triggered/forced cast or health-threshold-only flag is used.",
+    "New id12 in phase1 requires the actual208720 aura effect0, then sets phase2 and invokes original LINK3. The unchanged TALK1/5000ms -> remove flags768 -> original SetData1/1 target105331 now reaches id10/LINK61. Accepted/deferred/in-progress casts cannot release the protected NPC or dialogue without actual aura acknowledgement. Positive and negative aura gates use real base actor1.",
+    "Eleven source22 conditions scope WP arm/cast/ack to alive actor/map1536/native990 step6; no nearest player determines scenario context. Timers and pending phase belong to the native AI. Native OnReset sets phase0 and disarms pending retries; another real WP2 is required to rearm. No external lambda or borrowed actor/AI pointer introduced.",
+    "All other original actions, helper105331 DATA_SET despawn, two speech rows, templates, waypoint path, five-second configured text timer, native48146 player-distance death credit and death105331/248853 summons remain unchanged. No item/quest grant, scaling/damage change, fake aura, scene/camera or character reset."
+  ],
+  "native_evidence": "Matching26972 typed DB2/read-only hotfixes:208720 Bear Form effect6/aura56/self/misc105326;208724 Crushing Thrash retained. Original two waypoints and static105331/spawn11296141/phase6202 versus death-summoned visual/chest pose traced in malithar-transition-open-2026-10-29.json. Matching local data and native dispatch establish this repair; no incompatible modern implementation imported.500ms retry follows native rejected-cast retry interval; actual-aura poll is a local scoped implementation, not a Blizzard packet/timing claim.",
+  "regressions": [
+    "Test-MalitharCleanupData: full-schema TEMP old/repaired fixtures, repeat migration, exact old-row comparison (only WP2 arm fields and id10 event type), exact two new rows/eleven conditions, unchanged speech/templates/helper/remaining native actions;16 original/applied-custom refusals. Live four-table exact readback and real updater LF SHA1 RELEASED receipt pass.",
+    "Test-MalitharCleanup ASAN: actual ProcessEventsFor/ProcessEvent guards and cases, ProcessAction preamble/CAST/TALK/SET_DATA/SET_EVENT_PHASE/LINK, InitTimer/RecalcTimer/UpdateTimer, text timer, phase methods and OnReset; actual aura/map/alive/scenario condition predicates and native initial source22 target binding consume the SQL-derived rows. Expected old invalid-LINK/delayed-IC, non-retrying rejection and premature SPELL_IN_PROGRESS counterfactuals are paired with repaired retry/actual-aura regressions.",
+    "Covers immediate/deferred effects, repeated failed and in-progress casts then success, already-present aura only after real WP2, native five-second text dispatch, missing prop/attack target services, duplicate WP/update events, player/pet/guardian/null callbacks, original death request/credit/chest/visual ordering and adversarial late updates preserving the new reward visual. Map/scenario/stage0..10, instance/manager/object/path/condition/expired-before-arm/alive boundaries and lost/restored stage context; pending reset/fresh WP and OOC combat deferral. Search/chat/cast effects/attack/world mutations and condition-list service are controlled; this is not a client traversal or actual quest/group award test.",
+    "Guardian native loot/ASAN/live regression passes all original13 custom refusals and source4/22/slot/root/gossip matrices, with inherited C4244 fixture narrowing warning retained. Common source22 fixture corrected separately in df70f4782; post12 native tests cover449 historical actor rows and all505 current player/base rows. Seven ArtifactSmartLinks native ASAN/differential cases pass.",
+    "Test-SmartEventPhase -VerifyReleaseBinary passes all4096 masks/native phase/reset boundaries and actual canonical action22/phase/timer PE paths. Original canonical EXE already implements the used native handlers; no production C++ rebuild or new ScriptName required."
+  ],
+  "development_evidence": "Initial cleanup-only candidate was independently checked, then extended after native rejection/in-progress counterfactuals demonstrated the acknowledgement gap; it was never deployed. Early fixture compile boundaries/missing constants were corrected and paired with passing bounded runs. Shared current-condition TEMP collision1062 was repaired/committed separately df70f4782, not bypassed or changed in live data. Failed wrappers remain visible in private evidence.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 32608,
+    "result": "Both servers absent immediately before promotion; owned canonical updater applied12, ready, server shutdown0/exit0, stderr0/new DBErrors0, protected configuration/certificate hashes unchanged; no task server remains.",
+    "lf_sha1": "ea3032358e95daa13a38eb1784e9048c1833e947",
+    "world_sha256": "235348EEF91B89605A6430B63FE9F57450EA62B516BE99A6EBF78359400484E1",
+    "bnet_sha256": "45E7FC66C4141DF770BAE52E47225BAA1CE9F79456768184CCDB6A7FB34CAA59"
+  },
+  "all36": {
+    "routes": 36,
+    "native_pairs": 149,
+    "automated_findings": 0,
+    "unresolved_edges": [
+      {
+        "kind": "invalid_actor_sai_link",
+        "entry": 90418,
+        "event": 0,
+        "link": 2,
+        "reason": "invalid_target_event",
+        "referenced_by_routes": [
+          128820
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100438,
+        "event": 9,
+        "link": 10,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128937,
+          128938,
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 1,
+        "link": 7,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 100475,
+        "event": 6,
+        "link": 8,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128940
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "missing_actor_sai_link",
+        "entry": 105332,
+        "event": 0,
+        "link": 1,
+        "reason": "missing_target",
+        "referenced_by_routes": [
+          128476
+        ],
+        "status": "intended action unknown; needs executable route review"
+      },
+      {
+        "kind": "invalid_actor_sai_link",
+        "entry": 105333,
+        "event": 0,
+        "link": 1,
+        "reason": "invalid_target_event",
+        "referenced_by_routes": [
+          128476
+        ],
+        "status": "intended action unknown; needs executable route review"
+      }
+    ],
+    "full_report_sha256": "e68140b5835048a50a8fdb9872d4905314d88e27f44c8ad004adcaad117516e6",
+    "world_hashes": {
+      "quest_template": "27805c3679ba6624d5b27aa805ac423cfc8edc38d7058bdd36cd3a9c0eb36389",
+      "quest_template_addon": "f1c05d071e6e361800d4ab95e4a212d1ea4e0611af53a738d31ad4b8e5324ed2",
+      "quest_template_locale": "8d2df01920045475bc3b22d41ae88431c72b9e2e02a29c48762ae44dce17e1a9",
+      "quest_objectives": "0cd34046bfb5c77698f371c536386a4d5beaddc61755ac292ca765f17c8ba39f",
+      "creature_queststarter": "aa93f84846d67542dd85b8e3b48c02db66deab1f260fd39ac80affb17c6bbeb1",
+      "creature_questender": "a81428eee03179453a12707f962ee31bc9eb65ed562bc67bb880d2b9cfa7eee1",
+      "gameobject_queststarter": "2df34ae158f4df5e0bbf99f1041aaadf7badd0512f460fce6fe14aae9561c26a",
+      "gameobject_questender": "0e234ec77746b4aa2bdacfef865eb02b89349e1862ebe99ebe7460286b8076f8",
+      "battlepay_product_item": "b5e6f1b003969fad4aabfd54cc667f0f17caa9f8c37086f5d9173ac7eb6145b6",
+      "scenario_data": "97521d0bcf308b0b68892171753c25e77899f7fdbefe54b8c3433445d818c884",
+      "playerchoice_response": "c1d301e8dbd8a293a7b4b1554b519fbc37ceeed9f7edf07c967797db42a65cc6",
+      "playerchoice_response_reward": "4fd31367687e2bd222885689a7b51ed261345979dad2253128eab947408b8b68",
+      "creature_template": "69a8cd13a1615b578ccc3f8edc25687957adf9c7b047fe608a139e5ef1ffe6c1",
+      "gameobject_template": "94726d2df0b238b559e37114944e69554ac5796ab3779f91c4e4d168a27bb849",
+      "gameobject_loot_template": "bc1c302d59450f75e8ac3f08b120e676568db7d6b3ed28ef3fc959be1147e20d",
+      "smart_scripts": "323cc7743cd3024b902d2f1624bcfef11662423146e2b2d6729a295222b1465f",
+      "conditions": "86f0aa7bbf8fc7d63d37d5a2c15c7da0dc62f56716af76444fb86259a29dbace"
+    }
+  },
+  "diagnostics": "Pre/post canonical and own crash hashes/log offsets for every automated/native/ASAN/PE/updater/live audit group. Final tests exit0, no new/changed crashes, DBErrors appends or server warning/error/assertion. Existing3915-byte mixed101430/103151 missingLINK2 history remains unresolved/unchanged; active Crashes empty. No resolved Malithar runtime crash/log exists to archive or truncate. No user/unknown server stopped or manual character/item/progress change.",
+  "evidence": ".codex/malithar-{cleanup*,transform-ack*,native-phase-release,prepromotion-checks,canonical-updater}-2026-10-29; .codex/malithar-transform-2026-10-29-{owned.txt,startup-stdout.log,startup-stderr.log,new-DBErrors.log}; .codex/artifact-post-malithar-2026-10-29; build-extractors/runtime-test/{malithar-cleanup,malithar-cleanup-data,guardian-artifact-loot,smart-scenario-actor}",
+  "remaining": "Actual transformation/model/prop visibility/speech/one-hit combat/group credit/real loot/equip/exit and full Guardian chain remain user-owned client checks. Original earlier route/start-path/motion recovery, post-combat evade/reset/re-entry and full live group/faction behavior are not certified by the extracted services. No exact-stage persistence is invented. Separate Stromkar recoil/cracks/continuous ritual beams/shared101430/103151 LINK2 and remaining36 work stay OPEN."
+}

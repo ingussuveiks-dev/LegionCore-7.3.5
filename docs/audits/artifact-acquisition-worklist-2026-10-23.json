@@ -4576,7 +4576,7 @@
       "weapon": "Claws of Ursoc",
       "item": 128821,
       "start": 41468,
-      "status": "partial: native 248853/128821 loot link and Guardian 40647 final-stage admission repaired with native/ASAN/TEMP/refusal/updater checks; earlier trials, combat, presentation/equip retry, departure/re-entry and full client traversal remain OPEN. See guardian-artifact-loot-2026-10-29.json.",
+      "status": "partial: native 248853/128821 loot link and Guardian 40647 final-stage admission repaired with native/ASAN/TEMP/refusal/updater checks; earlier trials, combat, presentation/equip retry, departure/re-entry and full client traversal remain OPEN. See guardian-artifact-loot-2026-10-29.json. Malithar WP2 native transform retry/actual-aura acknowledgement and linked prop cleanup now SQL12 RELEASED/backend-regressed; earlier route/recovery/full client remain OPEN.",
       "quests": [
         {
           "id": 41468,
@@ -4681,16 +4681,7 @@
           "target2": 0
         }
       ],
-      "broken_actor_links": [
-        {
-          "entry": 101390,
-          "event": 4,
-          "link": 10,
-          "reason": "invalid_target_event",
-          "target_event_type": 0,
-          "target_action_type": 45
-        }
-      ],
+      "broken_actor_links": [],
       "video": {
         "url": null,
         "reviewed_intervals": [],
@@ -4712,7 +4703,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing.",
+      "malithar_transition_review": "docs/audits/malithar-transform-cleanup-2026-10-29.json; native ASAN/16 TEMP refusals/live updater and readback pass. Actual client sequence not verified."
     },
     {
       "class_id": 11,
