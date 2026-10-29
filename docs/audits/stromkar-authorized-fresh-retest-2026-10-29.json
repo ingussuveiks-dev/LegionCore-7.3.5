@@ -1,5 +1,6 @@
 {
   "date": "2026-10-29",
+  "correction": "User client login exposed missing scenarioResume authorization: position-only reset was insufficient and fell back home. Initial next-login expectation below is withdrawn. Follow-up stromkar-retest-login-checkpoint-2026-10-29.json restores the actual version1 map1539/scenario1037 entrance receipt offline after user shutdown; native empty-checkpoint failure/repaired admission and exact character comparison pass. Do not repeat the old checkpoint-empty reset.",
   "status": "Completed user's newly authorized single-character Stromkar test reset; not a client traversal or a new quest implementation fix",
   "authorization": "User explicitly requested removing the weapon and completed-run progress to retest the installed improvements. This supersedes the earlier no-character-changes restriction only for this reset. Authorization is now consumed; do not repeat it on a newly earned weapon/run.",
   "reviewed_state": "Both worldserver/bnetserver absent and character offline. One128910 in main hand, active incomplete41105, five objective slots with acquisition/permanent-boss counters set;41105 not rewarded and subsequent39530/39192 neither active nor rewarded. Artifact purchased ranks/totalrank0. Current map1539, no transport or scenario checkpoint. No server stopped or launched.",

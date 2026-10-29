@@ -43,7 +43,7 @@ namespace lfg {struct LFGDungeonData {struct Dbc{uint32 ScenarioID=777;}entry;Db
 struct LfgManager {
     lfg::LFGDungeonData data;
     bool missing=false,shared=false;
-    lfg::LFGDungeonData const* GetLFGDungeon(uint16 scenario,uint16 map){return missing||shared||scenario!=777||map!=9000?nullptr:&data;}
+    lfg::LFGDungeonData const* GetLFGDungeon(uint16 scenario,uint16 map){return missing||shared||scenario!=data.dbc->ScenarioID||map!=data.map?nullptr:&data;}
     lfg::LFGDungeonData const* GetLFGDungeon(uint32 map,Difficulty,uint32){return missing||!shared||map!=9000?nullptr:&data;}
 } lfgManager;
 auto sLFGMgr=&lfgManager;
@@ -138,5 +138,22 @@ int main()
     objects.data.Team=objects.data.Class=objects.data.DifficultyID=objects.data.LfgDungeonID=0;
     p=Player{};p.m_scenarioResume=saved();p.PrepareScenarioLogin(9000,42);assert(p.m_scenarioLoginInstance==42);
     lfgManager.shared=false;objects.missing=true;p=Player{};p.m_scenarioResume=saved();p.PrepareScenarioLogin(9000,42);assert(p.selector==777);
-    std::cout<<"PASS: production checkpoint parsing, fresh restart, live rejoin, consumed selector, ID reuse/boot separation, completion, map/type/routing gates, shared faction/class/difficulty/dungeon admission and legacy entrance retention/exit cleanup\n";
+    // Real Stromkar reset receipt: saving only the entrance position leaves
+    // no login authorization. Preserve the native checkpoint through map
+    // construction, which consumes the transient selector before admission.
+    scenarios.entries.clear();objects.missing=false;lfgManager.shared=false;
+    lfgManager.data.entry.ScenarioID=1037;lfgManager.data.dbc=&lfgManager.data.entry;lfgManager.data.map=1539;
+    sMapStore.value.ID=1539;
+    p=Player{};p.map.entry.ID=1539;p.instance=7;
+    live={&p.map};live.id=1037;scenarios.entries[7]=&live;
+    p.PrepareScenarioLogin(1539,0);assert(!p.selector&&!allowed(&p,1539));
+    assert(p.m_scenarioResume.Read("1 1539 1037 0 0 1966.66 2494.39 133.152 0.147302"));
+    p.PrepareScenarioLogin(1539,0);
+    assert(p.selector==1037&&p.m_scenarioLoginId==1037&&p.relocated&&!p.m_scenarioLoginInstance);
+    assert(std::abs(p.pos.x-1966.66f)<0.001f&&std::abs(p.pos.z-133.152f)<0.001f);
+    p.selector=0;assert(allowed(&p,1539)&&p.CanResumeScenarioLogin(1037)&&!p.CanResumeScenarioLogin(991));
+    live.id=991;assert(!allowed(&p,1539));live.id=1037;
+    live.completed=true;assert(!allowed(&p,1539));live.completed=false;
+    p.RecordScenarioEntrance();assert(p.m_scenarioResume.scenario==1037&&p.m_scenarioResume.instance==7&&p.m_scenarioResume.boot==1000);
+    std::cout<<"PASS: production checkpoint parsing, fresh restart, live rejoin, consumed selector, ID reuse/boot separation, completion, map/type/routing gates, shared faction/class/difficulty/dungeon admission and legacy entrance retention/exit cleanup; actual Stromkar1539/1037 reset rejects empty checkpoint and admits the exact entrance receipt after selector consumption\n";
 }
