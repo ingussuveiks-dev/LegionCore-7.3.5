@@ -5121,5 +5121,12 @@
     "status": "World30/03 RELEASED;94836 initialVaredis health4/5/10 +110556 Allaris combat5/6/7 TALK->SELF. Six fields only, native credits/intro/null-invoker/faction/loot unchanged. Later109109 not touched.",
     "checks": "ASan actual event/TALK/chat/timer/links,5victim kinds/repeats/onehit/intro5000+1ms;21 TEMP refusals/live6tables/native26972/retained Ritual production+Release/data pass. Own13736 clean graceful0; sameEXEs and3915 mixedDBErrors.",
     "next": "Investigate existing Twinblades251878 Data1=0 and189916->201012->201010 existing-item equip plus unknownLINK5; reuse artifact-pickup-followup-2026-10-23.json, no guessed grant. All36/client/otherLINKs unfinished, no reset authorization."
+  },
+  "twinblades_real_loot": {
+    "audit": "docs/audits/twinblades-real-loot-2026-10-30.json",
+    "status": "World30/04 RELEASED;251878 real127829 loot+140 strict final900/4-or5 owned conditions for39247 OR41119. Native189916 scene1063/201012 periodic201010 existing-item equip/return actors and unknownLINK5 preserved.",
+    "checks": "TEMP18 refusals/live4tables,6 ASan native modes/bothquests,shared10pickup actualPE/55native equip/39items,updated earlier speakers live6tables,own33124 clean graceful0. SameEXEs7D382937/F20D25EE,3915 unresolvedDBErrors; isolated draft/fixture failures archived with hashes.",
+    "fresh_audit": "36/149/0 automated findings/3boundedMonk; expanded25maps/1947owners/83timed/19 candidates unchanged. Trigger-aware audit now detects old Twinblades missing link. Five scene-only pickup grant candidates explicit:247566 Blood,247386 Frost,247494 Fire,251605 Brewmaster,248086 Windwalker. These require fullnative/scene/callback review, not blanket Data1 edits.",
+    "next": "Continue Monk pickups/fullflow first, then other scene-only entries/remainingLINKs/visuals/all36. No reset or full client certification; task servers closed."
   }
 }

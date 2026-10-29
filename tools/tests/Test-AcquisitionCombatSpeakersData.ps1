@@ -10,8 +10,12 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_03_acquis
   $old=$env:MYSQL_PWD;$errorFile="$out/sql-$script:queryIndex.stderr";++$script:queryIndex
   [IO.File]::WriteAllText("$out/sql-$($script:queryIndex-1).sql",$sql)
   $previousConsole=[Console]::OutputEncoding;$previousPipe=$OutputEncoding
-  try{$env:MYSQL_PWD=$c[3];[Console]::OutputEncoding=[Text.UTF8Encoding]::new($false);$OutputEncoding=[Text.UTF8Encoding]::new($false);$ErrorActionPreference='Continue';$rows=@($sql|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($c[0]) --port=$($c[1]) --user=$($c[2]) --database=$($c[4]) --default-character-set=utf8mb4 --batch --raw --skip-column-names --force 2>$errorFile);$code=$LASTEXITCODE;$ErrorActionPreference='Stop';$errors=[string](Get-Content $errorFile -Raw)
-   [IO.File]::WriteAllLines("$out/sql-$($script:queryIndex-1).stdout",[string[]]$rows)
+  try{$env:MYSQL_PWD=$c[3];$sqlFile="$out/sql-$($script:queryIndex-1).sql";$stdoutFile="$out/sql-$($script:queryIndex-1).stdout"
+   # Preserve complete native stdout/stderr bytes, including the tail after an
+   # expected --force error; a PowerShell native pipeline lost part of a row.
+   $process=Start-Process -FilePath C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe -ArgumentList @("--host=$($c[0])","--port=$($c[1])","--user=$($c[2])","--database=$($c[4])",'--default-character-set=utf8mb4','--batch','--raw','--skip-column-names','--force') -RedirectStandardInput $sqlFile -RedirectStandardOutput $stdoutFile -RedirectStandardError $errorFile -WindowStyle Hidden -Wait -PassThru
+   try{$process.Refresh();$code=$process.ExitCode}finally{$process.Dispose()}
+   $rows=@(Get-Content $stdoutFile -Encoding UTF8);$errors=[string](Get-Content $errorFile -Raw -Encoding UTF8)
    if($Refusal){if($errors -notmatch 'Acquisition combat speech/sequence/loot differ; review before updating' -or @([regex]::Matches($errors,'ERROR [0-9]+')).Count -ne 1){throw "Unexpected Acquisition combat speaker refusal: $errorFile"}}
    elseif($code -ne 0 -or $errors){throw "Acquisition combat speaker SQL failed: $errorFile"};return ,$rows
   }finally{$env:MYSQL_PWD=$old;[Console]::OutputEncoding=$previousConsole;$OutputEncoding=$previousPipe}
@@ -67,7 +71,15 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_03_acquis
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_03_acquisition_combat_speakers.sql' AND hash='$hash' AND state='RELEASED';"
   if($live -notcontains '1'){throw 'Live Acquisition combat speaker wave migration/hash differs'}
-  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Acquisition combat speaker regression $table"}}
+  # A later focused pickup migration legitimately changes the related chest.
+  # Build the complete expected context by replaying that exact released SQL;
+  # retain the original speaker baseline and all other field comparisons.
+  $expectedRows=$rows;$expectedTag='first';$followup="$repo/sql/updates/world/2026_10_30_04_twinblades_real_loot.sql"
+  if(Test-Path $followup){$later=Get-Content $followup -Raw;$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($later.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
+   $applied=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_04_twinblades_real_loot.sql' AND hash='$hash' AND state='RELEASED';"
+   if($applied -contains '1'){$expectedRows=Query ($setup+$baseline+$migration+$later+(Snapshot 'known-followup'));$expectedTag='known-followup'}
+  }
+  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $expectedRows "$expectedTag-$table")){throw "Live differs from Acquisition combat speaker regression $table"}}
  }
  'PASS full-schema TEMP Varedis/Allaris combat speakers: exactly six TALK targets, unchanged intro/timers/combat/credit/loot/knownGO link; repeat/live equality and twenty-one custom refusals'
 }

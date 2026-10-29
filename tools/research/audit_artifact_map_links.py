@@ -18,6 +18,7 @@ def main():
     p.add_argument('--world', type=Path, required=True)
     p.add_argument('--actors', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--date', default='2026-10-29')
     a = p.parse_args()
     hashes = {}
 
@@ -135,7 +136,7 @@ def main():
                         queue.append((recipient,list_id))
     serial = [{**c,'maps':sorted(c['maps']),'reasons':sorted(c['reasons'])}
               for key,c in sorted(contexts.items())]
-    result = dict(date='2026-10-29',build='7.3.5.26972',scope_maps=scope['Maps'],
+    result = dict(date=a.date,build='7.3.5.26972',scope_maps=scope['Maps'],
                   static_spawns={str(k):len(v) for k,v in spawns.items()},
                   context_counts=dict(Counter(c['execution'] for c in serial)),
                   timed_owner_contexts=sum(t is not None for _,t in seen),

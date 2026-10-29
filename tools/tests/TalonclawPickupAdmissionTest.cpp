@@ -187,7 +187,8 @@ int main(int argc, char** argv) {
     bool feral = argc == 4 && std::string(argv[2]).find("feral-") == 0;
     bool feralCast = feral && std::string(argv[2]) == "feral-cast";
     bool restoration = argc == 4 && std::string(argv[2]).find("restoration-") == 0;
-    bool guardian = restoration || feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
+    bool twinblades = argc == 4 && std::string(argv[2]).find("twinblades-") == 0;
+    bool guardian = twinblades || restoration || feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
     bool guardianRoot = guardian && !feralCast && std::string(argv[2]).find("-loot") == std::string::npos;
     bool guardianGossip = guardian && std::string(argv[2]).find("-gossip") != std::string::npos;
     if (guardian) {
@@ -202,6 +203,12 @@ int main(int argc, char** argv) {
         if (restoration) {
             expectedQuest = 41689; expectedMap = 1599; expectedScenario = 1061; firstStage = 5;
             lastStage = guardianRoot ? 6 : 5; expectedItem = 128306; eventEntry = 248499; scenarioManager = {};
+        }
+        if (twinblades) {
+            expectedQuest = std::string(argv[2]).find("-alt-") != std::string::npos ? 41119 : 39247;
+            expectedMap = 1498; expectedScenario = 900; firstStage = 4;
+            lastStage = guardianRoot ? 5 : 4; expectedItem = 127829; expectedClassMask = 2048;
+            eventEntry = 251878; scenarioManager = {};
         }
         castAdmission = guardianRoot;
         GameObjectTemplate chest;
@@ -218,7 +225,7 @@ int main(int argc, char** argv) {
     bool dialogueEvent = argc == 3 && std::string(argv[2]) == "marksmanship-dialogue";
     bool returnEvent = argc == 3 && (std::string(argv[2]) == "marksmanship-return" || dialogueEvent);
     if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = dialogueEvent ? 52 : 59; scenarioManager = {}; }
-    std::ifstream input(argv[1]); std::vector<Condition> rows(feralCast ? 33 : guardian ? (guardianRoot ? 28 : 14) : warswords ? 14 : stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
+    std::ifstream input(argv[1]); std::vector<Condition> rows(feralCast ? 33 : twinblades ? (guardianRoot ? 56 : 28) : guardian ? (guardianRoot ? 28 : 14) : warswords ? 14 : stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
     for (Condition& condition : rows) {
         uint32 target = 0;
         assert(input >> condition.ElseGroup >> condition.ConditionType >> target >> condition.ConditionValue1 >> condition.ConditionValue2 >> condition.ConditionValue3 >> condition.NegativeCondition);

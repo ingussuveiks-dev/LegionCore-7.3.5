@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-30",
+  "status": "Twinblades actual loot link/final-stage admission repaired; World04 RELEASED; whole Havoc/client still OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "251878 is a native type3 chest with one100-percent127829 loot row but Data1=0. Native GetLootId returns0, bypassing it.189916 grants114515 credit/scene1063 and triggers201012, whose two-second periodic201010 is effect249: actual production handler only equips an existing item. Package1462 master equips clone127829/127830, not the real inventory. No spell_scene_event1063 or direct native chain item-creation effect found. Earlier direct-effect-only route audit missed the linked periodic equip and reported0 findings despite this known open pickup.",
+  "change": [
+    "Data-only sets251878.Data1=251878. Complete original/applied template+condition pairs and unchanged full loot/actions must match; partial/custom states SIGNAL and all mutations are separately guarded. Keep five original SmartAI rows and unknown4->LINK5, position/lifetime/lock/flags/text/scene/credit/return actors unchanged.",
+    "Exactly140 source4/22 predicates: living DH/classmask2048,map1498,scenario900/4, active un-rewarded39247 OR41119 in incomplete9 or complete28 state. Source4 denies an existing127829 including bank; original completed-loot/root1 and owned-gossip/root3 require actual inventory127829 and allow900/4 or completed5. Native line159 contains both The Hunt variants;41638 is an unrelated Leystone work order and was explicitly excluded. No direct item/quest grant, bank deletion, group-policy change or progress reset.",
+    "Audit now follows native EffectTriggerSpell fields breadth-first with visited-cycle guards, records exact item trigger paths and distinguishes existing-item equip from native creation. Old snapshot flags189916->201012->201010; repaired fresh snapshot clears that finding. Zero findings remains bounded: five scene-only no-loot/grant paths are explicit separate review candidates, not certified defects. Map audit accepts an explicit date, preserving historical default."
+  ],
+  "native_evidence": [
+    "Matching26972 typed DB2/read-only hotfix catalog: item127829 max1/stack1/AllowableClass-1; native child127830 equipSlot16.900 stages0..4 retain45563,45697,45761/45698/45760/45762 plus native wave assets,45717 death900/3,52805 pickup900/4. Existing Varedis94836 death creates251878 after real defeat, not on spawn.",
+    "189916 aura430/scene1063, native114515 credit and trigger201012;201012 aura23/period2000;201010 effect249/127829 then225863 ability-bar push. Spell_scene1063 maps package1462/flags17; no custom event row. Matching package texts exported privately, actual master13466 and acquisition helper13952/13954 reviewed: clone equips both blades, weapon-name/effect playback; generic framework event helper alone is not an inventory producer. No new client file/scene override introduced.",
+    "Native EffectTriggerSpell normal LAUNCH retains m_targets unit or actual caster as fallback; no empty-target movement workaround needed here. Full actual Spell::prepare/periodic delivery/render/accepted equip still require traversal; no whole-scene completion certification. Local sources resolve this link defect; no modern donor or external behavior copied."
+  ],
+  "validation": [
+    "Full4table original fixture/TEMP replay/idempotence, exact Data1-only template differential, unchanged five actions/loot/unknownLINK5 and140 exact source predicates;18 full custom/partial-state refusal variants leave rows unchanged under --force. Full live4table equality and RELEASED/LF-SHA1 pass.",
+    "Six MSVC ASan native runs (loot/root/gossip x39247/41119) compile actual GetLootId, condition cases, ElseGroup, cached-slot recheck, LootItem::AllowedForPlayer and SmartAI root dispatch. Pinned zero-link counterfactual paired with real251878 selection. Stage0..14/status matrices, absent/foreign/non-instance context, wrong class/map/quest, dead, missing item, inventory/bank uniqueness, null/pet invokers, reward/abandonment and unrelated loot covered. Inventory store/cast/scenario/client endpoints controlled; native bag/swap logic not changed or called a client full-bags test.",
+    "Retained Test-TalonclawPickupAdmission -VerifyReleaseBinary passes ten existing pickup/scene/return/departure hooks and real Release store/condition bridges. Test-ArtifactForceEquip checks55 native effect249 records/39items including missing-item/swap/pairs/denials/repeats and BOM/noBOM. Extended shared fixture only; production C++ unchanged. Historical C4244 extracted-condition warning visible.",
+    "Retained full Varedis/Allaris live6table test passes. It replays precisely the separately hash-verified RELEASED World04 onto its original TEMP expected context; original speaker baseline/strict field comparisons remain. Native mysql capture now redirects stdin/stdout/stderr to files and waits instead of losing the output tail through PowerShell.",
+    "Fresh actual36 routes/149 pairs/0 automated findings/3 boundedMonk edges;25maps/1947owners/83timed/19 primary candidates/0 missinglists. Earlier snapshot with new checker has1 expected Twinblades finding; Test-ArtifactTriggeredLootAudit checks exact native path/pair and preserved scene-only Monk candidates against typed26972 output. Five broader scene-only candidates retained separately."
+  ],
+  "development": [
+    "First pending SQL generator attached AND guard to SELECT comment expression rather than WHERE, causing MariaDB1292 in TEMP replay. Separated update/delete guards from SELECT WHERE, kept failed draft/sql/stdout/stderr/snapshots; never placed failed SQL in live updater. Repaired idempotence/refusal test passes.",
+    "Alternate ASan fixture was first launched outside vcvars and failed DLL loading; explicit counterfactual confirms STATUS_DLL_NOT_FOUND -1073741515, not a passing native run. Both quest variants now run inside the same vcvars command and pass. No Defender/security boundary involved.",
+    "Live shared speaker check exposed truncated native stdout (ended mid creature_text row, exit0/expected SIGNAL), falsely resembling deleted texts. Original incomplete bytes preserved; no actual table mutation. Changed that test query to native file redirection+wait, then full before/after and live expectations pass.",
+    "New audit test initially assumed exactly2 total scene-only pickups; actual expanded inventory has5. Corrected assertion to require the two scoped Monk entries without dropping the other3 from output; exact failed and passing diagnostics retained."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_04_twinblades_real_loot.sql",
+    "lf_sha1": "bc5299b17cf7f4f0e83916db94742c2292ad12c4",
+    "owned_pid": 33124,
+    "world_sha256": "7D382937DED53E107AA52237B9757508348945A85AEA2E52E1EE9B698C513451",
+    "bnet_sha256": "F20D25EEFE0BD1ACDF40CBFFB836E1D811425C8F6AD45195AEA414B78DC16167",
+    "result": "SQL only; EXEs unchanged. Both servers absent immediately before promotion/start. Own33124 ready/graceful shutdown0/exit0/empty stderr/newDBErrors0/protected hashes unchanged; no task servers left. No user/unknown server stopped, no character/item/quest reset."
+  },
+  "diagnostics": "Every executed TEMP/native/ASan/catalog/shared/PE/updater/live/audit/counterfactual check has before/after canonical+own crash hashes/log lengths/timestamps and inspected exits/stdout/stderr/new diagnostics. Failed new harness/draft attempts explicitly paired with final passes. No new/changed crash or runtime warning/error/assertion/DBErrors. Active Crashes empty; mixed shared101430/103151 LINK2 DBErrors3915 bytes/UTC2026-10-29T13:29:05.1130661Z retained unchanged. No mixed runtime history cleared.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\twinblades-validation-fixtures-2026-10-30",
+    "result": "33 isolated failed/passing test artifacts copied with rechecked source/destination SHA256; manifest retained. No production crash claimed, active files removed or mixed log truncated."
+  },
+  "scene_only_review_candidates": [
+    {
+      "kind": "scene_only_artifact_pickup_requires_review",
+      "entry": 247566,
+      "item": 128402,
+      "pickup_spells": [
+        200152
+      ],
+      "status": "No native trigger-field item grant identified; inspect complete scene/callback and SmartAI paths before changing data"
+    },
+    {
+      "kind": "scene_only_artifact_pickup_requires_review",
+      "entry": 247386,
+      "item": 128292,
+      "pickup_spells": [
+        190435
+      ],
+      "status": "No native trigger-field item grant identified; inspect complete scene/callback and SmartAI paths before changing data"
+    },
+    {
+      "kind": "scene_only_artifact_pickup_requires_review",
+      "entry": 247494,
+      "item": 128820,
+      "pickup_spells": [
+        196023
+      ],
+      "status": "No native trigger-field item grant identified; inspect complete scene/callback and SmartAI paths before changing data"
+    },
+    {
+      "kind": "scene_only_artifact_pickup_requires_review",
+      "entry": 251605,
+      "item": 128938,
+      "pickup_spells": [
+        217814
+      ],
+      "status": "No native trigger-field item grant identified; inspect complete scene/callback and SmartAI paths before changing data"
+    },
+    {
+      "kind": "scene_only_artifact_pickup_requires_review",
+      "entry": 248086,
+      "item": 128940,
+      "pickup_spells": [
+        199502
+      ],
+      "status": "No native trigger-field item grant identified; inspect complete scene/callback and SmartAI paths before changing data"
+    }
+  ],
+  "evidence": [
+    ".codex/twinblades-acquisition-catalog-2026-10-30",
+    ".codex/twinblades-acquisition-native.tsv",
+    ".codex/twinblades-loot-fixture-2026-10-30",
+    ".codex/twinblades-loot-native-final-2026-10-30",
+    ".codex/twinblades-loot-shared-2026-10-30",
+    ".codex/twinblades-loot-updater-2026-10-30",
+    ".codex/twinblades-loot-live-final-2026-10-30",
+    ".codex/artifact-post-twinblades-2026-10-30",
+    ".codex/twinblades-trigger-audit-final-2026-10-30"
+  ],
+  "remaining": "Actual loot UI/full bags/retry, native scene/accepted equip+offhand/ability bar, returnNPCs/turn-in/group/faction/reentry/full Havoc still OPEN. Missing251878LINK5 must be reconstructed from intended behavior, not deleted. Five scene-only pickup candidates including both Monks next; sharedLINK2/Stromkar recoil/continuous beams/middle39427/remaining19 map edges/full36 client unfinished."
+}

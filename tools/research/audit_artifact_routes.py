@@ -73,6 +73,7 @@ def main():
         if r.get('PrevQuestID'):previous[r['ID']].add(r['PrevQuestID'])
         if r.get('NextQuestID'):previous[abs(r['NextQuestID'])].add(r['ID'] if r['NextQuestID']>0 else -r['ID'])
     findings=[]
+    pickup_review_findings=[]
     for route in routes:
         title=q[route['chosen']].get('LogTitle','')
         def normalized(value):return re.sub(r'[^a-z0-9]','',value.lower().replace('the ','').replace('chosen','').replace('artifact','').strip())
@@ -145,11 +146,34 @@ def main():
             spells={a['action_param1'] for a in actions if a['action_type'] in (11,85,86)}
             equips=[s for s in spells if any(e['Effect']==249 and e['EffectMiscValue1']==item for e in effects[s])]
             grants=[s for s in spells if any(e['Effect'] in (24,157,206) and e['EffectItemType']==item for e in effects[s])]
+            # A pickup can start a scene/controller whose periodic trigger
+            # equips an existing item. That path still needs actual loot; a
+            # direct-effect-only check missed189916->201012->201010.
+            paths={s:[s] for s in sorted(spells)}
+            pending=collections.deque(sorted(spells))
+            while pending:
+                spell=pending.popleft()
+                for child in sorted({e['EffectTriggerSpell'] for e in effects[spell] if e['EffectTriggerSpell']}):
+                    if child not in paths:
+                        paths[child]=paths[spell]+[child]
+                        pending.append(child)
+            reachable_equips=sorted(s for s in paths if any(e['Effect']==249 and e['EffectMiscValue1']==item for e in effects[s]))
+            reachable_grants=sorted(s for s in paths if any(e['Effect'] in (24,157,206) and e['EffectItemType']==item for e in effects[s]))
+            reachable_scenes=sorted(s for s in paths if any(e['Effect']==6 and e['EffectAura']==430 for e in effects[s]))
             rec=dict(entry=entry,type=g['type'],loot_link=g['Data1'],expected_loot_entries=sorted(entries),script=g['ScriptName'],
-                     sai_spells=sorted(spells),native_equip_spells=equips,native_create_spells=grants)
+                     sai_spells=sorted(spells),native_equip_spells=equips,native_create_spells=grants,
+                     native_reachable_equip_spells=reachable_equips,native_reachable_create_spells=reachable_grants,
+                     native_reachable_scene_spells=reachable_scenes,
+                     native_item_trigger_paths=[dict(spell=s,path=paths[s]) for s in sorted(set(reachable_equips+reachable_grants))])
             pickups.append(rec)
-            if g['type']==3 and not g['Data1'] and not g['ScriptName'] and equips and not grants:
-                findings.append(dict(kind='missing_artifact_chest_loot_link',entry=entry,item=item,pickup_spells=equips))
+            if g['type']==3 and not g['Data1'] and not g['ScriptName'] and reachable_equips and not reachable_grants:
+                findings.append(dict(kind='missing_artifact_chest_loot_link',entry=entry,item=item,pickup_spells=reachable_equips,
+                                     trigger_paths=rec['native_item_trigger_paths'],
+                                     status='native trigger reachability; scene/callback and actual grant review required'))
+            elif g['type']==3 and not g['Data1'] and not g['ScriptName'] and reachable_scenes and not reachable_grants:
+                pickup_review_findings.append(dict(kind='scene_only_artifact_pickup_requires_review',entry=entry,item=item,
+                                                  pickup_spells=reachable_scenes,
+                                                  status='No native trigger-field item grant identified; inspect complete scene/callback and SmartAI paths before changing data'))
         route['pickup_objects']=pickups
         route['status']='structural audit; client traversal pending'
     review_links=collections.defaultdict(list)
@@ -160,7 +184,7 @@ def main():
                           entry=e,event=event,link=link,reason=reason,
                           referenced_by_routes=sorted(set(items)),status='intended action unknown; needs executable route review')
                      for (e,event,link,reason),items in sorted(review_links.items())]
-    result=dict(date=args.date,build='7.3.5.26972',routes=routes,findings=findings,review_findings=review_findings,
+    result=dict(date=args.date,build='7.3.5.26972',routes=routes,findings=findings,review_findings=review_findings,pickup_review_findings=pickup_review_findings,
                 native_race_class_pairs=native_pairs,scenario_routing=scenario_rows,
                 native_artifact_related_scenarios=sorted({s['ScenarioID'] for s in steps if s['RewardQuestID'] in {q for r in routes for q in r['canonical_links']}}),
                 native_lfg_scenarios=[dict(id=x['ID'],scenario=x['ScenarioID'],map=x['MapID'],difficulty=x['DifficultyID']) for x in lfg if x['ScenarioID']],
@@ -172,11 +196,12 @@ def main():
                         'tools/research/ArtifactCatalog.cpp')}),
                 limits=['Canonical Next/RewardNext links are not the complete execution graph. Native quest-line membership and OR prerequisites are recorded separately.',
                         'Race/class masks are structural admission checks; conditions, phasing, scripted callbacks, combat, abandonment, vehicles and visual playback require executable/client checks.',
-                        'Missing object loot links exclude custom C++ handlers. Spell chain item grants, event callbacks and transient summoned actors still need review before changing a flagged row.',
+                        'Missing object loot links exclude custom C++ handlers and follow native trigger fields with cycle guards. Reachability is a review candidate, not proof that a conditional/periodic effect executes; scene callbacks and transient actors still need review.',
                         'All 36 selections are enumerated; no route is certified end-to-end by this audit.'])
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
     print('Audited',len(routes),'artifact routes;',len(native_pairs),'native race/class pairs;',len(findings),'automated loot/link/admission findings;',len(review_findings),'actor links requiring review')
+    print('Scene-only artifact pickups requiring execution review:',len(pickup_review_findings))
     for x in findings:print(json.dumps(x))
 
 if __name__=='__main__':main()
