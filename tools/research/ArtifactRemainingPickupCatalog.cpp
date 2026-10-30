@@ -50,7 +50,7 @@ int main(int argc, char** argv)
         !steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0)) return 4;
     spells.LoadFromDB(); effects.LoadFromDB(); misc.LoadFromDB(); durations.LoadFromDB(); interrupts.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
-    std::set<uint32> selected{200152,190435,196023,200134,186209,196020,197092,205138,205152};
+    std::set<uint32> selected{200152,190435,196023,200134,186209,196020,197092,205138,205152,199868,186202};
     for (bool changed=true; changed;)
     {
         changed=false;
@@ -73,7 +73,12 @@ int main(int argc, char** argv)
             if (effect->Effect == 6)
                 std::cout << "AURA\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t'
                     << effect->EffectAura << '\t' << effect->EffectAuraPeriod << '\n';
+            if (effect->Effect == 24 || effect->Effect == 157)
+                std::cout << "CREATE_ITEM\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->EffectItemType << '\n';
         }
+    for (auto effect : effects)
+        if (effect->EffectTriggerSpell == 186202 || effect->EffectTriggerSpell == 197092 || effect->EffectTriggerSpell == 186209)
+            std::cout << "EQUIP_PRODUCER\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t' << effect->EffectTriggerSpell << '\n';
     for (auto row : misc)
         if (selected.count(row->SpellID))
             if (auto duration=durations.LookupEntry(row->DurationIndex))

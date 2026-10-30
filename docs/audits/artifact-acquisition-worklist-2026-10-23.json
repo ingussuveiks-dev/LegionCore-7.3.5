@@ -5176,5 +5176,12 @@
     "credit_correction": "Original205/root7 already resolves pet/guardian Player owners since099175d55; current native+canonicalPE verified. Earlier suspected missing credit was incorrect; no credit selector/nearest-player/group rule changed.",
     "fresh_audit": "Current structural-refresh-2026-10-30.json after09:20tables465276/36routes149pairs0automatedfindings/3boundedMonk;2scene-only Frost/Fire,19primaryLINKreviews.",
     "next": "Trace Frost247386 chestData27=199868 as well as190435/1071/1466/186209 and exact901/6 path before adding real loot. Fire actual scenario/loot/callback,19LINK/sharedLINK2/Stromkar visuals/middle39427/all36 remain OPEN."
+  },
+  "frost_real_loot_2026_10_30": {
+    "audit": "docs/audits/frost-real-loot-2026-10-30.json",
+    "status": "World10 RELEASED247386->128292;42 exact actual38990/1480/901/6 loot/owned6..7 predicates. Native/ASan/TEMP20 refusals/live4tables/typed26972/shared currentPE/real55-equip pair pass; own11636 clean closed. Same canonicalD43884C7/24ABA795; no character edits.",
+    "field_correction": "Actual199868 is Data26/chest.spell; Data27=0. Prior Data27 label was wrong.199868 only100813 credit;186202 ItemType0/current spell-loot empty and earlier45608 are not a final grant fix.",
+    "fresh_audit": "Current structural refresh after10:20tables465318/36routes149pairs0automatedfindings/3boundedMonk,1scene-only Fire247494;19expandedLINKreviews. Frost callback still OPEN despite structural category clearing.",
+    "next": "Guarded real1071/1466 complete->197092 (native94390 quest credit/49193/phase/conversation197001/equip249), not an incomplete equip-only callback. NativeData26 shared credit/coexistence and fullFrost remain OPEN; then Fire/19LINK/sharedLINK2/Stromkar visuals/middle39427/full36."
   }
 }

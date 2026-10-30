@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-30",
+  "status": "Blades actual loot link/final-stage admission deployed World10 RELEASED; scene-to-real197092 equipment/quest callback and complete Frost/client remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "247386 type3 has128292/100-percent loot but Data1=0, so native GetLootId bypasses it.190435/scene1071/package1466 and201217 aura4 do not create inventory; whole linked package visually equips only the clone128292/128293. Native249 requires an existing item. The independent chest spell field was traced before changing loot.",
+  "change": "Only247386.Data1->247386 plus42 exact predicates.14 source4 requires unique-inventory/bank, living DK/classmask32, actual active INCOMPLETE9 ORCOMPLETE28 un-rewarded38990, map1480 and live901/6.28 source22 root1 requires inventory-only128292 and901/6 or7 after original49193. Original two SmartAI actions190435->205/49193 LINK1 and complete chest/native26 spell199868 remain unchanged. Full original/applied template+conditions and unchanged loot/all actions fingerprinted; SIGNAL plus guarded mutations reject partial/custom states even under --force. No item/credit/reset command added.",
+  "native_research": [
+    "Actual schema is Data26=chest.spell199868, Data27=GiganticAOI0. Earlier handoff saying Data27=199868 was a field-label mistake, corrected here after explicit named-column SQL and source layout.199868 is only134/100813, not an inventory grant. Player::RemoveLoot casts it independently.100813 belongs to Dark Riders objectives; coexistence with active other acquisition quests/early empty close is an OPEN shared-credit review, not hidden or removed in this focused loot fix.",
+    "Extra186202 is an earlier crafting/context spell:157 but actual native EffectItemType0; current spell_loot_template186202 empty. EffectCreateItem2 uses ItemType or spell-ID loot, not Misc60768. Its native61/45608 belongs901/4 and aura186209; reverse trigger-field producers186203/186389 remain separate legacy context. No current SmartAI/scene-event/spellclick/quest-reward/selected spell_scripts producer for this path was found; no claim of exhaustive historical reachability. It is not invoked as final acquisition recovery.",
+    "Native901/5 purge45607 ->6 pickup49193 ->7 Death March45753.93963 original death205/45607 already uses closestPlayer70, root100577 spellclick205/45608 is separate earlier step. Both unchanged.190435 native9s scene1071+root26+201217 remains original.",
+    "Native197092 Blade Credit has134/94390,61/49193,phase167,trigger197001(conversation750) and249/128292.94390 matches actual38990 pickup objective. Real callback to this complete native spell is currently absent;249-only186209 would omit the quest/phase/conversation effects. Wire guarded1071 completion->197092 next, preserving original49193 link and ordinary use."
+  ],
+  "validation": [
+    "Typed matching26972 scene/effect/duration/item/pair/criteria reader, full linked package1466, extra199868 credit and186202 ItemType0/reverse triggers. Catalog regression now explicitly checks this legacy-only creation context instead of misclassifying it as a190435-root item grant.",
+    "Full4table original TEMP/idempotence; only Data1+42 exact predicates.20 custom/partial refusal variants preserve full4tables, including Data26/49193 mutation refusals; live complete equality and RELEASED/LF-SHA1 pass. Native query EOF receipt required.",
+    "MSVC ASan extracts actual native GetLootId, item/class/quest/map/scenario/alive predicates, ElseGroups, cached slot rechecks, SmartAI root condition bridge. Original0 selector counterfactual vs247386, two loot/owned-root modes, status/stage matrix, missing/wrong scenario/map/class/quest/instance, reward/abandon/death/bank-only/lost-item/non-Player/null reject; original completed stage7 owned replay retained. Endpoint world/inventory services controlled; actual full bags/client not certified.",
+    "Shared Blood scene ASan/TEMP22/live and ten-pickup native/actual canonicalPE pass after fixture gains Frost. Native real EffectForceEquipItem test covers all55 records/39 items including child128293, swap/denial/missing/repeat and UTF8 BOM/noBOM. No production C++/EXE change; extracted prior C4244 visible.",
+    "Owned11636 ready/graceful shutdown0/exit0/stderr empty/newDBErrors0/protected hashes unchanged. Fresh fully parsed/count-validated20tables465318 objects exactly match native prefixes/trailers/empty stderr:36routes149pairs0automatedfindings3boundedactorlinks;25maps1947owners83timed19primaryLINKreviews. Only Fire247494 remains in the scene-only structural category; Frost real delivery is separately OPEN until callback verified."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_10_frost_real_loot.sql",
+    "lf_sha1": "7854CE95AAA73DFE6171E4BCD1ACDC0C39057C0E",
+    "canonical_hashes": {
+      "worldserver.exe": "D43884C78BB50AEC80FD2236E4EBE9012D558F97DB602988F9FA8DBC35C4846E",
+      "bnetserver.exe": "24ABA79511DA5FFBBFAF3C5F24C8DA95F639DB9C256B6C36246143D53D025915"
+    },
+    "owned_pid": 11636,
+    "result": "Fresh both-server absence before migration/startup; only own11636 started/closed. No user server stop, EXE replacement or character/item/quest reset."
+  },
+  "diagnostics": "All read-only captures/native/TEMP/ASan/shared/equip/updater/live/export checks have before/after canonical+own crash hashes/log lengths/timestamps; exits/stdout/stderr inspected. All ordinary runs pass; original missing-selector counterfactual explicit. No new/changed crash, server warning/error/assertion or DBErrors. Active Crashes empty; mixed3915-byte sharedLINK2 unchanged atUTC2026-10-29T13:29:05.1130661Z. No unresolved log cleared; no new resolved crash/error archive needed for this fix.",
+  "evidence": [
+    ".codex/frost-chest-extra-fields-2026-10-30",
+    ".codex/frost-extra-item-native-2026-10-30",
+    ".codex/frost-extra-item-native.tsv",
+    ".codex/frost-create-producers-2026-10-30",
+    ".codex/frost-final-native-credit-context-2026-10-30",
+    ".codex/frost-loot-original-2026-10-30",
+    ".codex/frost-loot-native-2026-10-30",
+    ".codex/frost-loot-shared-2026-10-30",
+    ".codex/frost-equip-pair-regression-2026-10-30",
+    ".codex/frost-loot-updater-2026-10-30",
+    ".codex/frost-loot-live-2026-10-30",
+    ".codex/frost-loot-all36-refresh-2026-10-30",
+    ".codex/artifact-post-frost-loot-2026-10-30"
+  ],
+  "remaining": "Wire real1071/1466->197092 with actual completed-scene, living active38990/inventory/map1480/live901/6..7 and stale-callback guard. Native phase/conversation/quest credit acceptance, original GO retry, secondary199868/DarkRiders coexistence, full bags/equip pair/return/turnin/abandon/reentry/group/faction/client remain OPEN. Then Fire actual scenario/loot/callback,19LINK/sharedLINK2/Stromkar visuals/middle39427/all36. Client user-owned, no reset authorization."
+}

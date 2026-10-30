@@ -1,15 +1,15 @@
 {
   "date": "2026-10-30",
   "build": "7.3.5.26972",
-  "status": "Current structural review after World30/09; no full chain/client certification",
+  "status": "Current structural review after World30/10; no full chain/client certification",
   "capture": {
-    "world": ".codex/artifact-post-fleshripper-2026-10-30/world",
-    "routes": ".codex\\artifact-post-fleshripper-2026-10-30\\routes.json",
-    "routes_sha256": "A59AFAE6BB30E0363277A4A8B5CC513B0186D5C02FBF5260CCBCC6C7F3CC82BA",
-    "maps": ".codex\\artifact-post-fleshripper-2026-10-30\\map-links.json",
-    "maps_sha256": "B54F66EEBF869A186600DB97A9E353F4316CD2E6DAE73FFCA6C72EC06A69381D",
+    "world": ".codex/artifact-post-frost-loot-2026-10-30/world",
+    "routes": ".codex\\artifact-post-frost-loot-2026-10-30\\routes.json",
+    "routes_sha256": "DDC3AC6AA1F9431A5BD0052487E16860DF075A224A3EEAFCC9D7C02201D8CFC9",
+    "maps": ".codex\\artifact-post-frost-loot-2026-10-30\\map-links.json",
+    "maps_sha256": "E4C439E2D7A170AF99FE5FF480426FE826894CB10025BE0CB5A32FF4CD9F8AF8",
     "tables": 20,
-    "parsed_counted_objects": 465276,
+    "parsed_counted_objects": 465318,
     "static_actor_scope": "Retained2026-10-29 map-actor snapshot; current fresh world script/template/condition tables. No claim of fresh complete spawn traversal."
   },
   "routes": [
@@ -378,15 +378,6 @@
     }
   ],
   "scene_only_pickup_review": [
-    {
-      "kind": "scene_only_artifact_pickup_requires_review",
-      "entry": 247386,
-      "item": 128292,
-      "pickup_spells": [
-        190435
-      ],
-      "status": "No native trigger-field item grant identified; inspect complete scene/callback and SmartAI paths before changing data"
-    },
     {
       "kind": "scene_only_artifact_pickup_requires_review",
       "entry": 247494,

@@ -25,6 +25,8 @@ $out="$repo/build-extractors/runtime-test/remaining-artifact-pickup-catalog"
  foreach($line in @("CRITERION`t940`t8`t92`t48788`t1","CRITERION`t940`t9`t92`t48184`t1","CRITERION`t940`t10`t92`t48857`t1","CRITERION`t901`t6`t92`t49193`t0","CHILD`t128292`t128293`t16","CHILD`t128820`t133959`t16")){
   if($native -notmatch ('(?m)^'+[regex]::Escape($line)+'\r?$')){throw "Matching scenario/pair row differs: $line"}
  }
- if($native -match '(?m)^EFFECT\t\d+\t\d+\t\d+\t(?:24|157)\t'){throw 'Reachable native item creation needs review'}
- 'PASS matching26972 native scene auras/durations/existing-item249/unique items/paired children and complete linked clone-only packages; Blood940 boss/pickup/return and Frost901 pickup events. This does not certify Fire scenario selection or real scene equip delivery.'
+ $create=@($native -split "`n"|Where-Object {$_ -match '^EFFECT\t\d+\t\d+\t\d+\t(?:24|157)\t'})
+ if($create.Count -ne 1 -or $create[0].TrimEnd("`r") -cne "EFFECT`t186202`t0`t0`t157`t60768`t0`t1`t0" -or $native -notmatch '(?m)^CREATE_ITEM\t186202\t0\t0\r?$'){throw 'Legacy creation context or scene-root grants differ; review actual ItemType/loot producer'}
+ if($native -notmatch '(?m)^EFFECT\t199868\t0\t0\t134\t100813\t0\t1\t0\r?$'){throw 'Frost chest native secondary credit differs'}
+ 'PASS matching26972 native scenes/existing-item249/unique pairs/full linked clone-only packages; Blood940 and Frost901 events. Extra legacy186202 has ItemType0 and an earlier45608 event, outside190435 trigger closure;199868 only credits100813. Actual SQL loot/scene producers and Fire scenario selection remain separate checks.'
 }
