@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-30",
+  "scope": "Next independent bounded investigation after deployed Wardstone retry; missing101325LINK4 remains unresolved. No executable,SQL,character or server changes.",
+  "local": "Matching26972 native effect187027 is aura56/transform display17286 and explicitly castable while dead.199770 triggers199823;source13 confines its lethal effect to real Wardstone. Current native row3 summons101360 then references absentLINK4. Native FindLinkedEvent still logs the unknown tail; no row deleted or log hidden.",
+  "trinity_history": {
+    "checkout": "C:/wamp64/www/TrinityCore",
+    "refs": [
+      "7f2b7dc9c2165d2608742473a931f55b1c1a753a (TDB735.00)",
+      "c2d61e05cf3dc555608e6b2a06772c27d207548c (26972 update)",
+      "ccbe4404f1806f047c009d14ed1dea9806dd5736 (pre8.0 DB2 parent)"
+    ],
+    "method": "Targeted git grep for101325|187027|199770 in src/server/scripts,sql/updates/world,sql/old/7.3.5 at each exact ref. Actual exits1 with empty stderr and no matches. Modern master script search also supplied no executable Wardstone handler.",
+    "limit": "Not an exhaustive all-history/all-schema search and not a modern-to-Legion port."
+  },
+  "pinned_github": [
+    {
+      "source": "https://github.com/Titans-Project/LegionCore-Reforged/tree/76b195fed30e94da716688639c1c1b1d05d60f55/sql/base/world",
+      "finding": "GitHub connector returned actual tree blob identities/sizes. All5 cached SQL files byte-match those Git object hashes. Fresh parser of actual smart_scripts INSERT blocks finds exactly101325/source0/id0,1,2,3 with3->4 and no id4. This independent pinned database retains the same gap.",
+      "proof": [
+        {
+          "path": ".codex/armament-sources/titans-world_database_01.sql",
+          "github_git_blob": "ff6bf89f1a566a4c717f512fbe527e633154e47d",
+          "bytes": 50684537
+        },
+        {
+          "path": ".codex/armament-sources/titans-world_database_02.sql",
+          "github_git_blob": "71a9499c236f0a193508bb71828a738ef5518b61",
+          "bytes": 50951773
+        },
+        {
+          "path": ".codex/armament-sources/titans-world_database_03.sql",
+          "github_git_blob": "810133d020a5e085bd996a741b05a516e216c66a",
+          "bytes": 50912860
+        },
+        {
+          "path": ".codex/armament-sources/titans-world_database_04.sql",
+          "github_git_blob": "1db578b2d536bc7718a9766f974c7dae0f3b9e68",
+          "bytes": 51186773
+        },
+        {
+          "path": ".codex/armament-sources/titans-world_database_05.sql",
+          "github_git_blob": "cb6fa32432b3e043f4824ad9745f74bedc3cb88b",
+          "bytes": 48999553
+        }
+      ]
+    },
+    {
+      "source": "https://github.com/welder1976/MagicStorm/blob/e941af4df2f394e7d0e0753ca15c0677271698c1/sql/sql/world/2018_04_13_99_02_hunter_quest.sql",
+      "finding": "Fresh GitHub connector content is the26365 Survival WPP export:four actual101325 spawns,addon199769,template and spellclick199728. It contains no smart_scripts block supplying a missing tail action. Matching26972 behavior must still be checked locally.",
+      "blob": "b7d985d2c98c3ef5479cd244139616e03b76db73"
+    },
+    {
+      "source": "https://github.com/welder1976/MagicStorm/blob/e941af4df2f394e7d0e0753ca15c0677271698c1/sql/sql/world/2018_06_11_99_01_hunter.sql",
+      "finding": "Fresh second Hunter export is Marksmanship26124 and contains no101325; shared187027 on Ranger Orestes is not evidence of WardstoneLINK4.",
+      "blob": "1c63a2763a669dfc4b09a3dd9700b2953590a8f2"
+    }
+  ],
+  "capture_notes": "Initial apply_patch cache omitted one terminal LF in each fresh WPP file. Original normalized capture kept as research.json in first output directory. Restore exactly one LF only after computing and matching expected remote Git blob, then rerun into distinct review2 directory. Both final WPP files now match pinned remote bytes; no claim that the initial normalized files were identical.",
+  "search_limits": "Indexed GitHub queries yielded no relevant primary code hits; unrelated numeric search matches discarded. Web fetch could not retrieve directory pages, so preferred GitHub connector was used successfully. No YouTube footage/transcript was reviewed in this pass; no unseen gameplay claim. No reliable original payload forLINK4 established.",
+  "evidence": {
+    "directory": ".codex/wardstone-link4-review2-2026-10-30",
+    "research_sha256": "535c6d94ea8258a5924831f14d4f35af4bf828de34da0992e1b201991cfdb7e6",
+    "diagnostics": "Before/after canonical and research crash/log snapshots show no new/changed crash or appended DBErrors/server warnings/errors/assertions. No server launched; prior own11432 remains closed. Existing5365-byte mixedLINK2 and active Crashes unchanged. Unresolved research evidence kept outside fixed archives."
+  },
+  "result": "Keep LINK4 visibly unresolved. Do not infer despawn/credit/teleport/flag operations from a gap. Actual gameplay or another independent matching implementation/sniff is still needed. Continue other22 broad candidates/Survival39427 research while user owns actual client verification."
+}
