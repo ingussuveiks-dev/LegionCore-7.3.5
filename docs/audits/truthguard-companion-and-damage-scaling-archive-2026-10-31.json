@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-31",
+  "fix_commits": [
+    "a055e4d02",
+    "6a4cc0e8e"
+  ],
+  "archive": "build-extractors/bin/Release/fixed/truthguard-companion-and-damage-scaling-2026-10-31",
+  "files": 566,
+  "manifest_sha256": "bf330572f2b3386793478b320ba492a908c55385e773cde00a26f0f88dbbf684",
+  "verification": "Source/destination/source and final archive SHA256 verified. Nine identified failed fixture/inspector/range checks explicitly paired with passing repairs in manifest; original bytes retained.149 numeric baseline/209 repaired,2400 companion baseline/2408 repaired ASAN,23 retained native damage suites, typed26972/Hotfix/EOF World/new+retained canonical PE/shared admission490/Skyhold/Scepter/Warlock/Release/promotion/owned20168 ready-graceful0.",
+  "diagnostics": "No new/changed crash or appended server warning/error/assertion/DBErrors; active Crashes empty/no report removed. Mixed6090-byte sharedLINK2 log SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 and timestamp unchanged. No active log truncated, unknown reports/security quarantine or character data touched.",
+  "limits": "Closed numeric+companion issues only; unresolved Glow/Survival/Wardstone/sharedLINK2/client evidence remains outside prefix, not classified fixed. No full36/client certification."
+}
