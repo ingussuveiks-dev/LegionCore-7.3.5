@@ -5414,5 +5414,22 @@
   "data": "Native208257 ShadowExplosion self aura4,zero named/linked/dummy/aura hook rows; no native progress grant. DB path10993805 has19 points,last19=1957.08/2336.17/80.4548;1539 actual instance_silver_hand binding checked.",
   "next": "Inspect first-Travard earlier firstwp/WAYPOINT10 path10993804 actual50766 and subsequent Talk6/door/5s+9s/path10993805. It still selects unchecked nearest Player and lacks observed-arrival/eligible-recipient retry; tracing whole handoff is required before editing. Keep new first-fight state atAI+0x180 and its native2s epoch closure; old9-byte marker assumptions are obsolete.",
   "remaining": "Actual client fullHoly/all36/path/audio/visual/pet/group/faction/reentry remain OPEN. Destroyed/recreated AI does not restore an old same-instance route/receipt. Survival39427/unknownWardstoneLINK4/shared101430+103151LINK2/Stromkar client retests remain OPEN. User owns client tests; reset3 consumed,no new resets or unknown-server stops."
+},
+  "latest_silver_hand_first_path_repair_2026_10_30": {
+  "audit": "docs/audits/silver-hand-first-path-2026-10-30.json",
+  "fix_commit": "903bb3015",
+  "archive": "docs/audits/silver-hand-first-path-diagnostic-archive-2026-10-30.json",
+  "status": "FirstTravard106429 path04 waypoint10 now retains actual issued-path arrival until eligible42120 participant/native50766 real step2. Missing/invalid recipients and missing next path cannot consume room/dialogue. Guarded AI-owned5s/9s story/path05 retry; original stun/content-AI pause and large-tick timing. No SQL/character reset.",
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "CEBE1B80E314BFE94F1D12B33578568D889A1AB44A8AB4404E3C4C972EAD6B8E",
+    "bnet_sha256": "DED2AABB9A1C299FF8F8F6DE5D0C7233EEF4D898AC65E53ABA7B76561A76EC4D",
+    "world_map_sha256": "1EC367D517F24B5334C9B0B0653A1D89F8976AD4E1BD39F00F8FD634C83A9B55",
+    "build": "Original scripts/common Release libraries rebuilt, separately staged world/bnet final links use original final-link inputs without global OutDir. Offline four EXE/MAP backup/promotion/readback hashes match; backup .codex/release-before-silver-first-path-2026-10-30/manifest.json. Runtime configurations/certificates/DLLs unchanged; no SQL or characters changed.",
+    "ownership": "Fresh checks found no user/unknown server. Own hidden world PID17436 reached fresh ready, native shutdown0/exit0, stderr0/newDBErrors0 and is gone. No user server stopped, hidden server left, updater migration or reset."
+  },
+  "checks": "3 pinned expected-broken/48 repaired ASAN actual header/methods/UpdateAI prefix/native FunctionProcessor+lifecycle; matching26972/EOF World/native selected canonical path+first-fight PE; retained26entry/1536allies/54firstfight/41gossip/full Silver Hand PE,85Aberration,Scepter,Warlock,sparse DB2 pass.273closed diagnostic files SHA archived; activeCrashes empty,mixed6090LINK2 unchanged.",
+  "next": "Trace first-Travard POINT2 original185414/three106094 apparitions/4s Talk19/7s Talk20/MovePoint3 and real POINT3 native50872->1092/4 before101461 removal/251349 hiding. Its unchecked nearest Player can still lose the stage while consuming cleanup. Determine issued-point proof/eligible shared recipient/retry/duplicate/cleanup and native spell/actor evidence before a separate fix.",
+  "remaining": "Actual client path04/door/Talk/audio/path05/G'norz/ritual/fullHoly and all36, group/faction/pet/abandonment/full reentry remain OPEN. Destroyed/recreated AI does not reconstruct an old same-instance request/receipt/route; this change preserves pending state only in a living AI and cancels stale queued story by actual context. A server waypoint callback and accepted MovePath are not physical endpoint proof. VisualOpenDoor's actual nearby actors/GO rendering are controlled in the focused host. Survival39427 wholemiddle, unknownWardstoneLINK4/shared101430+103151LINK2 and Stromkar client checks remain OPEN. User owns client tests; reset3 consumed."
 }
 }

@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-30",
+  "fix_commit": "903bb3015",
+  "archive": "build-extractors/bin/Release/fixed/silver-hand-first-path-2026-10-30",
+  "files": 273,
+  "manifest_sha256": "9899e4a9eb751bea2d54662ab03e436421a89d3c05e08a9bb65fa42b6988e3ff",
+  "verification": "Closed original fixture/parser/inspection/PE failed iterations and paired passing baseline3/repaired48/native/EOF SQL/full Release/staged+canonical PE/promotion/startup/retained diagnostics copied with source/destination/source and final SHA256 readback. Includes own17436 stdout/ownership. Original evidence retained.",
+  "diagnostics": "Crashes empty, no report existed to remove. Mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 and timestamp unchanged before/after. Unknown101430/103151LINK2 remain unresolved. No active log truncated or unrelated history removed.",
+  "limits": "No live-server crash claimed from host/inspection contract failures. No executables/security blocks/credentials/characters or unknownLINK/client/full36 completion archived as fixed."
+}
