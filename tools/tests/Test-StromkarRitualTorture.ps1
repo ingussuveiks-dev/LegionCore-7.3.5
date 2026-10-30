@@ -1,3 +1,4 @@
+#requires -Version 7.0
 param([switch]$AddressSanitizer,[switch]$SkipSql,[switch]$VerifyLiveData,[switch]$VerifyNativeCatalog,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$MigrationPath='')
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
@@ -33,7 +34,7 @@ $out="$repo/build-extractors/runtime-test/stromkar-ritual-torture/run-$([DateTim
   $priorConfig=$env:LEGION_DIALOGUE_CONFIG
   try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile StromkarEarlyVisualCatalog.cpp -ProbeName StromkarEarlyVisualCatalog -OutputFile "$out/native.tsv";if(!$?){throw 'Native ritual visuals failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$priorConfig}
   $catalog=Get-Content "$out/native.tsv" -Raw
-  foreach($expected in @("EFFECT`t204125`t0`t6`t4`t0`t0`t38`t0","VISUAL`t204125`t53383`t0`t0","EVENT`t53383`t7`t8`t62962","PROCEDURAL`t62962`t9141`t26`t4511`t0`t0`t1","TORTURE_CHAIN`t4511`t68`t27`t0`t255`t255`t255`t255`t0.5`t0.5","EFFECT`t201032`t0`t6`t23`t0`t201031`t1`t0")){if(!$catalog.Contains($expected)){throw "Native ritual appearance differs: $expected"}}
+  foreach($expected in @("EFFECT`t204125`t0`t6`t4`t0`t0`t38`t0","TORTURE_RANGE`t4`t0`t0`t30`t30","VISUAL`t204125`t53383`t0`t0","EVENT`t53383`t7`t8`t62962","PROCEDURAL`t62962`t9141`t26`t4511`t0`t0`t1","TORTURE_CHAIN`t4511`t68`t27`t0`t255`t255`t255`t255`t0.5`t0.5","EFFECT`t201032`t0`t6`t23`t0`t201031`t1`t0")){if(!$catalog.Contains($expected)){throw "Native ritual appearance differs: $expected"}}
  }
  if($VerifyReleaseBinary){
   if(!$ReleaseDirectory){$ReleaseDirectory="$repo/build-extractors/bin/Release"}
@@ -65,6 +66,10 @@ $out="$repo/build-extractors/runtime-test/stromkar-ritual-torture/run-$([DateTim
     return ,@([IO.File]::ReadAllLines("$p.stdout"))
    }finally{$env:MYSQL_PWD=$prior}
   }
+  $rangeRows=Query "SELECT c.guid,SQRT(POW(c.position_x-t.position_x,2)+POW(c.position_y-t.position_y,2)+POW(c.position_z-t.position_z,2)) FROM creature c JOIN creature t ON t.guid=370922 WHERE c.guid IN(370936,370937,370943) ORDER BY c.guid;"
+  [IO.File]::WriteAllLines("$out/receiver-range.tsv",[string[]]$rangeRows)
+  if($rangeRows.Count -ne 3){throw 'Missing native ritualist placement'}
+  foreach($row in $rangeRows){$distance=[double]::Parse(($row -split "`t")[1],[Globalization.CultureInfo]::InvariantCulture);if($distance -gt 30){throw 'Actual ritualist is outside the native Shadow Torture search range'}}
   $setup=''
   foreach($table in @('conditions','spell_script_names','creature','creature_template','smart_scripts')){
    $filter=switch($table){conditions{'SourceTypeOrReferenceId IN(13,17) AND SourceEntry IN(204125,215997,201031)'}spell_script_names{"spell_id IN(201031,201032,204125) OR ScriptName IN('spell_stromkar_ritual_channel','spell_stromkar_ritual_torture')"}creature{'guid IN(370922,370936,370937,370943,370944)'}creature_template{'entry IN(101875,103144,101461)'}smart_scripts{'entryorguid=101875'}}

@@ -48,6 +48,9 @@ int main(int argc,char**argv)
     for(auto e:effects)if(!e->DifficultyID&&selected.count(e->SpellID))std::cout<<"EFFECT\t"<<e->SpellID<<'\t'<<e->EffectIndex<<'\t'<<e->Effect<<'\t'<<e->EffectAura<<'\t'<<e->EffectMiscValue[0]<<'\t'<<e->EffectTriggerSpell<<'\t'<<e->ImplicitTarget[0]<<'\t'<<e->ImplicitTarget[1]<<'\n';
     DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2",SpellCastTimesLoadInfo::Instance());
     if(!castTimes.Load(argv[1],0))return 23;castTimes.LoadFromDB();
+    DB2Storage<SpellRangeEntry> ranges("SpellRange.db2",SpellRangeLoadInfo::Instance());
+    if(!ranges.Load(argv[1],0))return 34;ranges.LoadFromDB();
+    for(auto m:misc)if(!m->DifficultyID&&m->SpellID==204125){auto r=ranges.LookupEntry(m->RangeIndex);if(!r)return 35;std::cout<<"TORTURE_RANGE\t"<<r->ID<<'\t'<<r->RangeMin[0]<<'\t'<<r->RangeMin[1]<<'\t'<<r->RangeMax[0]<<'\t'<<r->RangeMax[1]<<'\n';}
     for(auto m:misc)if(!m->DifficultyID&&(m->SpellID==207244||m->SpellID==207249||m->SpellID==207297||m->SpellID==207299||m->SpellID==207258||m->SpellID==207275)){auto c=castTimes.LookupEntry(m->CastingTimeIndex);std::cout<<"SPLIT_CAST\t"<<m->SpellID<<'\t'<<(c?c->Base:0)<<'\n';}
     for(auto e:effects)if(!e->DifficultyID&&(e->SpellID==207299||e->SpellID==207258||e->SpellID==207274||e->SpellID==207275))std::cout<<"SPLIT_EFFECT\t"<<e->SpellID<<'\t'<<e->EffectIndex<<'\t'<<e->EffectBasePoints<<'\t'<<e->EffectMiscValue[1]<<'\t'<<e->EffectRadiusIndex[0]<<'\t'<<e->EffectRadiusIndex[1]<<'\t'<<e->EffectAuraPeriod<<'\n';
     DB2Storage<SummonPropertiesEntry> summonProperties("SummonProperties.db2",SummonPropertiesLoadInfo::Instance());
