@@ -45,8 +45,23 @@ assert equipment[5].operands[0].imm == equipment[10].operands[0].imm, 'Empty/wro
 assert native['resolve'](equipment[14].operands[0].imm) == native['symbol'](retry_name), 'Verified equipment does not queue bounded retry'
 assert equipment[5].operands[0].imm > equipment[15].address, 'Equipment-failure branch can enter success callback'
 assert sum(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](retry_name) for entry in finish) == 1, 'Unexpected additional claim callback'
-for displacement, size in [(0x124, 4), (0x138, 4), (0x13c, 1), (0x99, 1)]:
-    assert any(operand.type == CS_OP_MEM and operand.size == size and operand.mem.disp == displacement for entry in retry for operand in entry.operands), 'Missing inlined text-timer/runOnce reader; reinspect layout'
+# Wardstone's owned retry containers precede the existing text state, moving
+# SmartScript fields by0x58. SmartScriptHolder::runOnce remains at0x99.
+# Check actual field/value comparisons and the native writer as well as reads.
+for displacement, size, expected in [(0x17c, 4, 22), (0x190, 4, 100397), (0x194, 1, 0)]:
+    matches = [entry for entry in retry if entry.mnemonic == 'cmp' and len(entry.operands) == 2 and
+               entry.operands[0].type == CS_OP_MEM and entry.operands[0].size == size and
+               entry.operands[0].mem.disp == displacement and entry.operands[1].type == CS_OP_IMM and
+               entry.operands[1].imm == expected]
+    assert len(matches) == 1, ('Missing exact inlined pending-text comparison; reinspect layout', displacement, expected)
+    assert any(operand.type == CS_OP_MEM and operand.size == size and operand.mem.disp == displacement
+               for entry in instructions('?OnUpdate@SmartScript@@') for operand in entry.operands), 'Pending text has no matching native timer consumer'
+    assert any(entry.mnemonic == 'mov' and entry.operands[0].type == CS_OP_MEM and
+               entry.operands[0].size == size and entry.operands[0].mem.disp == displacement
+               for entry in instructions('?ProcessAction@SmartScript@@')), 'Pending text has no matching native TALK producer'
+assert any(entry.mnemonic == 'cmp' and entry.operands[0].type == CS_OP_MEM and
+           entry.operands[0].size == 1 and entry.operands[0].mem.disp == 0x99
+           for entry in retry), 'Missing independent holder runOnce reader'
 assert native['symbol']('?GetConditionsForSmartEvent@ConditionMgr@@') in native['calls']('?ProcessEvent@SmartScript@@'), 'Native replay omits condition lookup'
 assert b'native Vereesa claim dialogue unavailable after 60000ms' in native['binary'], 'Retry diagnostic missing'
 assert b'was accepted but item 128826 is not equipped' in native['binary'], 'Accepted-but-unequipped diagnostic missing'

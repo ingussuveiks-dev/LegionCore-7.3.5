@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-30",
+  "scope": "Retained PE verification repair discovered during the next Halahk artifact regression. No production binary/data change.",
+  "cause": "Wardstone76ca986cd inserted owned linked-cast state before existing SmartScript fields. Old PE reader pinned text offsets124/138/13c from the prior layout; actual canonical Retry reads17c/190/194. SmartScriptHolder runOnce99 is unchanged. Initial Halak retained ASAN/native checks passed, but its actual PE dependency failed loudly; not counted as a complete pass.",
+  "repair": "Reinspected actual Retry and OnUpdate instructions against SmartScript.h IsTextPending/HasRunEvent and MarksmanshipClaim::Attempt. Check exact field/value comparisons17c=22,190=100397,194=0, plus native TALK producer writes and OnUpdate consumer reads at each same offset. Keep independent99 runOnce, original native equip result/actual mainhand/slot checks and all other PE paths.",
+  "checks": "Repaired verify_halak_presentation_release.py and entire inherited current canonical PE chain pass against world cbcd766380a2bd9bb8e6425c1a8a6afd9ab3adc4592dc8a7f8f92df5be566d05. No executable rebuilt/replaced.",
+  "evidence": [
+    ".codex/halak-retained-pe-attempt1-2026-10-30",
+    ".codex/halak-layout-inspection-2026-10-30",
+    ".codex/halak-retained-pe-repaired-2026-10-30"
+  ],
+  "diagnostics": "Before/after crash/log offsets/timestamps, native exit/stdout/stderr reviewed: no new/changed crash, appended DBErrors or server warnings/errors/assertions. Existing mixed5365-byte sharedLINK2 remains unresolved and untouched. No servers launched or stopped.",
+  "remaining": "Halahk separate one-field combat-link repair is still pending deployment. Actual client/full36 progression and all earlier unresolved findings remain open."
+}
