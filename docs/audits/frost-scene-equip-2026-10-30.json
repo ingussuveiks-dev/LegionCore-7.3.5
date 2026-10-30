@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-30",
+  "status": "Frost1071/1466 completion to complete native197092 pickup/quest/phase/equip deployed World11 RELEASED; actual client/full chain remains OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "190435/scene1071/package1466 equips only visual clone128292/128293. World10 supplies actual loot, but no real completion callback existed. Native197092 contains the actual94390 Blades pickup quest credit,49193 scenario event, delayed phase update,197001/conversation750 and249 equipment.249-only186209 would omit completion; legacy186202 has ItemType0/current spell-loot empty and earlier901/4 event45608, so is not substituted as final delivery.",
+  "change": [
+    "Register scene_frost_artifact_equipment and bind only native1071/1466, preserving flags21/9s. Read-only FrostArtifactScene::Denied admits only actual SceneComplete, live/contact/alive/nonteleporting DK6 on1480, active un-rewarded38990, actual inventory128292 and live901/6..7. Invalid/late/forged packets consumed before SQL. Native script itself grants/casts/transfers nothing.",
+    "World11 adds complete->197092/MonsterCredit0 and33 source17 predicates independently rechecking completed1071/item/class/quest/map/scenario/step/alive/unrewarded. Explicit outside-map branch preserves ordinary native spell use; C++ scene gate separately rejects stale outside-map callbacks. Alternate186209 and legacy186202 conditions untouched. Full original/applied scene/event/conditions plus readyGO247386, all38990 objectives and complete conversation750 data/actors protected by7table fingerprints; SIGNAL plus separately guarded mutations reject custom/partial states under --force."
+  ],
+  "sequence": "Native93963 real death45607 ->901/6,247386 real128292 loot/child128293 ->190435 root/1071+201217 and original205/49193 ->901/7; actual1071 completion/cancel21 once ->197092 native group94390 pickup credit +49193 +100ms phase +197001/750 +native249. Final49193 matches901/6;901/7 has45753, so original prior link is retained.750 native line1784/Broadcast97551/sound52466 asks the player to ascend to the throne, consistent with next stage. Quest38990 has five objectives; this callback supplies pickup94390, not the entire quest.",
+  "validation": [
+    "Matching26972 reader verifies all five197092 effect rows,197001/219/750, real unique128292/child128293slot16 and1071/1466 full linked clone-only text. Real conversation750 SQL line1784/actor99456/display64011/duration8100 and native1784->Broadcast97551/VisualKit0/AnimKit0/AdditionalDuration5000/sound52466 retained. Native spell/quest/object/outro records unchanged.",
+    "Full7table original TEMP/idempotence, only one ScriptName/one complete mapping/33 predicates.25 custom/partial refusals including quest objective/conversation line/actor mutations all preserve entire7table state. Live full7table equality and actual updater RELEASED/LF-SHA1 pass. Native stdout EOF receipt required before assertions.",
+    "MSVC ASan extracts actual registered guard, Player scene lifecycle/complete+cancel packet handlers and actual condition cases/ElseGroups. Missing-callback and unguarded late-map counterfactuals paired with real native cast dispatch. Exactly once complete/cancel21; forged/stale/replaced/unknown/reentrant;15 late-invalid/65 stage-status cases; bank-only/item loss/reward/abandon/map/class/life/contact/teleport/instance failures and failed-cast/new-scene retry pass. Cast/equip/world endpoints controlled; actual equipment/quest update packets/client not certified.",
+    "Separate MSVC ASan extracts actual EffectKillCredit, Player::RewardPlayerAndGroupAtEvent and IsAtGroupRewardDistance: correct94390/self source, same map+instance, native dungeon range semantics, alive/dead/unreleased/released, inactive controlled quest endpoint, offline/null/member gates. Actual EffectSendEvent validates targetless49193, zone/instance/map dispatch and both native73/92 criteria, correct mode/mask rejection. Actual EffectUpdatePlayerPhase retains queued100ms update. Quest storage/conversation/equip endpoints remain separate; no invented group rule.",
+    "Original-path scripts Release build/BuildProjectReferences=false/no OutDir; staged original-LIB world+bnet link, protected canonical unchanged until promotion. Actual stagedPE then canonicalPE verify factory constructor/vtable/OnTrigger->Denied, exact7-field native path, scene/quest/scenario/inventory-only consumers and bank=false ABI; no cast/item/credit/teleport call in gate. Retained Blood+Monk actualPE, ten pickup native/actualPE and ScepterLogin -VerifyReleaseBinary pass.",
+    "Shared Blood/Monk scene ASan/live and Frost loot ASan/live pass before promotion; afterward retained Blood/Monk full data refusal/live checks and new Frost full suite pass. Old C4244/C4389 fixture warnings remain visible, no new production build warning. bnet .text429ED1BBEBE6C6932FB5EBC20E7CC705DB8150FF13746F037E40BFEEDEFE0D2A unchanged.",
+    "Owned30752 ready/graceful shutdown0/exit0/stderr empty/newDBErrors0/protected config/cert/DLL hashes unchanged. Final20tables465351 parsed objects match exact native prefixes/server-count trailers/empty stderr;36/149/0 automated findings/3boundedactorlinks,25maps1947owners83timed19primaryLINKreviews; scene-only Fire247494 remains. Full36/client not certified."
+  ],
+  "development": "Private generator initially consumed its previous4table fingerprint cache after expanding protected context to7tables, causing KeyError conversation_data before SQL execution. Original4table cache retained, fresh7table fingerprints generated and private bootstrap made conditional on all required keys. Final25-refusal/native/live checks pass. Native effect fixture member was renamed currentGroup to avoid an artificial shadow warning without altering production snippets. No production crash/SQL error; initial generator traceback only appeared in tool transcript, not falsely described as a preserved original log.",
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_11_frost_scene_equip.sql",
+    "lf_sha1": "09EA643BB5ED35C923209F3E25DB1372402ED15D",
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "20A9F355694AC28C2BE280196373DA7BE848C11E4342538F50E38B443AC09971",
+      "bnetserver.exe": "CA1A9A198AABC3AA2F0EF4BDE4F9E2ADA01132C400DB145B8026B56D2EEA24DB",
+      "worldserver.map": "10F3470B2F55FEF3B0583F552E30F878C3D6C661D4B6083203A684DAF5EB037B",
+      "bnetserver.map": "7CB50F7C0829098FBF2F98F3248939A3FC9CB10425486043D2E75C8A52018B76"
+    },
+    "stage": ".codex/frost-scene-release",
+    "backup": ".codex/release-before-frost-scene-2026-10-30/manifest.json",
+    "owned_pid": 30752,
+    "result": "Fresh both-server absence before/between four exe/map copies and before SQL/startup; all backup/copy hashes verified. Matching nativePE passed before code-coupled SQL moved into updater. No user/unknown process stopped or character/item/quest reset."
+  },
+  "diagnostics": "Every capture/TEMP/native/ASan/catalog/build/link/PE/promotion/updater/live/export has before/after canonical+own crash hashes/log lengths/timestamps. Exits/stdout/stderr inspected; generator-only issue explicit above. No new/changed production crash, server warning/error/assertion or appended DBErrors. Active Crashes empty; mixed3915-byte101430/103151 unresolvedLINK2 unchanged atUTC2026-10-29T13:29:05.1130661Z. No mixed runtime log cleared.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\frost-scene-generator-context-2026-10-30",
+    "files": 14,
+    "result": "Original4table vs corrected7table cache and passing diagnostic evidence copied with source/destination/source SHA256 verification; no initial traceback file claimed. No active production report removed."
+  },
+  "evidence": [
+    ".codex/frost-final-native-credit-context-2026-10-30",
+    ".codex/frost-outro-data-context-2026-10-30",
+    ".codex/frost-scene-complete-native-2026-10-30",
+    ".codex/frost-scene-scripts-build-2026-10-30",
+    ".codex/frost-scene-staged-link-2026-10-30",
+    ".codex/frost-scene-staged-pe-2026-10-30",
+    ".codex/frost-scene-canonical-promotion-2026-10-30",
+    ".codex/frost-scene-updater-2026-10-30",
+    ".codex/frost-scene-live-2026-10-30",
+    ".codex/frost-scene-bnet-section-2026-10-30",
+    ".codex/frost-scene-all36-refresh-2026-10-30",
+    ".codex/artifact-post-frost-scene-2026-10-30"
+  ],
+  "remaining": "Actual scene/equipment pair/quest94390/phase/outro/throne/turn-in, full bags/swap denial/retry through original consumable GO, abandonment/logout/reentry/group/faction and whole Frost client route. New-scene retry was tested; original GO replay and persisted acquired-item recovery are not added/certified. Secondary Data26/199868 DarkRiders100813 coexistence/empty-close remains OPEN. Next Fire explicit scenario selection/travel/native47042 and loot/callback, then19LINK/sharedLINK2/Stromkar visuals/middle39427/full36. Client user-owned, no reset authorization."
+}

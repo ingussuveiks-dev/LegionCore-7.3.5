@@ -43,5 +43,6 @@
     ".codex/frost-loot-all36-refresh-2026-10-30",
     ".codex/artifact-post-frost-loot-2026-10-30"
   ],
-  "remaining": "Wire real1071/1466->197092 with actual completed-scene, living active38990/inventory/map1480/live901/6..7 and stale-callback guard. Native phase/conversation/quest credit acceptance, original GO retry, secondary199868/DarkRiders coexistence, full bags/equip pair/return/turnin/abandon/reentry/group/faction/client remain OPEN. Then Fire actual scenario/loot/callback,19LINK/sharedLINK2/Stromkar visuals/middle39427/all36. Client user-owned, no reset authorization."
+  "remaining": "Wire real1071/1466->197092 with actual completed-scene, living active38990/inventory/map1480/live901/6..7 and stale-callback guard. Native phase/conversation/quest credit acceptance, original GO retry, secondary199868/DarkRiders coexistence, full bags/equip pair/return/turnin/abandon/reentry/group/faction/client remain OPEN. Then Fire actual scenario/loot/callback,19LINK/sharedLINK2/Stromkar visuals/middle39427/all36. Client user-owned, no reset authorization.",
+  "scene_followup": "World11 guarded1071/1466->complete native197092 now deployed; see frost-scene-equip-2026-10-30.json. Full client, original GO replay/acquired-item recovery and secondary Data26 shared-credit review remain OPEN."
 }

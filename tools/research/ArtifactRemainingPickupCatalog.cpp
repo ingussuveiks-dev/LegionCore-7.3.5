@@ -112,6 +112,18 @@ int main(int argc, char** argv)
                 for (auto child : trees) if (uint32(child->Parent) == id) pending.insert(child->ID);
             }
         }
+    DB2Storage<ConversationLineEntry> lines("ConversationLine.db2", ConversationLineLoadInfo::Instance());
+    DB2Storage<BroadcastTextEntry> broadcasts("BroadcastText.db2", BroadcastTextLoadInfo::Instance());
+    if (!lines.Load(argv[1], 0) || !broadcasts.Load(argv[1], 0)) return 11;
+    lines.LoadFromDB(); broadcasts.LoadFromDB();
+    auto outro = lines.LookupEntry(1784);
+    if (!outro) return 12;
+    auto text = broadcasts.LookupEntry(outro->BroadcastTextID);
+    if (!text) return 13;
+    std::cout << "FROST_CONVERSATION_LINE\t750\t" << outro->ID << '\t' << outro->BroadcastTextID << '\t'
+        << outro->SpellVisualKitID << '\t' << outro->AnimKitID << '\t' << outro->AdditionalDuration << '\n';
+    std::cout << "FROST_OUTRO_TEXT\t" << text->ID << '\t' << text->Text->Str[0] << '\t'
+        << text->SoundEntriesID[0] << '\n';
     DB2Storage<SceneScriptEntry> scripts("SceneScript.db2", SceneScriptLoadInfo::Instance());
     DB2Storage<SceneScriptPackageMemberEntry> members("SceneScriptPackageMember.db2", SceneScriptPackageMemberLoadInfo::Instance());
     DB2FileLoader texts;

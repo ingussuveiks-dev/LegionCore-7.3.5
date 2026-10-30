@@ -5163,12 +5163,12 @@
   "current_canonical_release_2026_10_30": {
     "path": "build-extractors/bin/Release",
     "hashes": {
-      "worldserver.exe": "D43884C78BB50AEC80FD2236E4EBE9012D558F97DB602988F9FA8DBC35C4846E",
-      "bnetserver.exe": "24ABA79511DA5FFBBFAF3C5F24C8DA95F639DB9C256B6C36246143D53D025915",
-      "worldserver.map": "6C564BB197FBA53D80D1E5CFE98C0052FF90B04AD2DF4FC5578770A074F294CD",
-      "bnetserver.map": "8016C4097DF110237FEB88FA78265B63702162A7A446DBCCD1020AA0EFCFCBC4"
+      "worldserver.exe": "20A9F355694AC28C2BE280196373DA7BE848C11E4342538F50E38B443AC09971",
+      "bnetserver.exe": "CA1A9A198AABC3AA2F0EF4BDE4F9E2ADA01132C400DB145B8026B56D2EEA24DB",
+      "worldserver.map": "10F3470B2F55FEF3B0583F552E30F878C3D6C661D4B6083203A684DAF5EB037B",
+      "bnetserver.map": "7CB50F7C0829098FBF2F98F3248939A3FC9CB10425486043D2E75C8A52018B76"
     },
-    "audit": "docs/audits/blood-scene-equip-2026-10-30.json"
+    "audit": "docs/audits/frost-scene-equip-2026-10-30.json"
   },
   "fleshripper_speakers_2026_10_30": {
     "audit": "docs/audits/fleshripper-speakers-2026-10-30.json",
@@ -5183,5 +5183,11 @@
     "field_correction": "Actual199868 is Data26/chest.spell; Data27=0. Prior Data27 label was wrong.199868 only100813 credit;186202 ItemType0/current spell-loot empty and earlier45608 are not a final grant fix.",
     "fresh_audit": "Current structural refresh after10:20tables465318/36routes149pairs0automatedfindings/3boundedMonk,1scene-only Fire247494;19expandedLINKreviews. Frost callback still OPEN despite structural category clearing.",
     "next": "Guarded real1071/1466 complete->197092 (native94390 quest credit/49193/phase/conversation197001/equip249), not an incomplete equip-only callback. NativeData26 shared credit/coexistence and fullFrost remain OPEN; then Fire/19LINK/sharedLINK2/Stromkar visuals/middle39427/full36."
+  },
+  "frost_scene_equip_2026_10_30": {
+    "audit": "docs/audits/frost-scene-equip-2026-10-30.json",
+    "status": "World11 RELEASED real1071/1466 complete->197092 +33 source17 +registered stale-context gate; nativeASan/group/range/event/phase/typed26972/TEMP25 refusals/live7tables/actualPE/Scepter/retained Blood+Monk+Frostloot pass; own30752 clean closed. New canonical20A9F355, no characters changed.",
+    "fresh_audit": "Current structural refresh after11:20tables465351/36routes149pairs0automatedfindings/3boundedMonk,1scene-only Fire247494;19expandedLINKreviews.",
+    "next": "Trace Fire native47042 scenario plus actual entry/travel204 selector; map1480 fallback901 alone is insufficient evidence of wrong scenario because explicit SmartAI204 can override it. Then Fire loot/callback, secondary199868/100813 coexistence and acquired-item retry/reentry,19LINK/sharedLINK2/Stromkar visuals/middle39427/full36. All client checks user-owned."
   }
 }
