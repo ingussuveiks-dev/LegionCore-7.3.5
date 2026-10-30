@@ -5330,5 +5330,10 @@
     "audit": "docs/audits/nexus-azuregos-receiver-2026-10-30.json",
     "status": "World32 RELEASED: Mage1101/6068/106699 null-Unit SetData admission; exactly3 condition-target fields. Full18 context capture follows for independent Priest heal-root review. Corrected initial public class labels; original class dialogue IDs retained.",
     "checks": "15-table TEMP/live/native ASAN24 full kill-order contexts,20 refusals, actual typed26972/catalog/PE, pet/group/Scepter and clean owned startup; no full client proof."
+  },
+  "priest_azuregos_healing_2026_10_30": {
+    "audit": "docs/audits/priest-azuregos-healing-2026-10-30.json",
+    "status": "World33 RELEASED: Priest1065/6140/104832 null-Unit Scion admission, remove malformed DATA0->HP3 edge and require real47107 Scion progress/opening step before native99..100% healing finale. Preserve1HP/Regen0 and original1681 intro/8-entry list; Mage1101/6068/2140 preserved. Implementation098763452 pushed.",
+    "checks": "18-table TEMP/live exact deltas/idempotence/27 refusals, ASAN48 Priest and24 Mage complete controlled sequences, native26972 criterion leaves, actual PE and owned26960 clean startup/graceful0. No new diagnostics; canonical070384A7/D3335145 unchanged, mixed5365-byte sharedLINK2 retained.162 closed files hash archived. Actual client/group/faction/guide/re-entry/full36 remain separate checks."
   }
 }
