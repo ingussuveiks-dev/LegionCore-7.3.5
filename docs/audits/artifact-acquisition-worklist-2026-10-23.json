@@ -5345,5 +5345,11 @@
     "status": "World34 RELEASED original204345 Shadow Pool only103151/spawn369686 at native1907.55/2335.26/75.7038. Exact22594 WPP pose+addon corroborated by matching26972 aura/visual/actual CASC tendril files611390/655465. Original native Soth death removes it before202014; existing missingLINK2 kept visible.5124024bf, test snapshot repairb4f19b113 pushed.",
     "checks": "12 complete live tables/1 addon insertion/20 TEMP refusals, ASAN62 exit plus24 Mage+48 Priest, matching26972/actualPE, own31016 ready/graceful0, no new diagnostics.385 closed files hash archived; four canonical EXE/map hashes unchanged. ActiveCrashes empty; mixed5365-byte LINK2 retained.",
     "remaining": "Actual rendered hole cluster/size/disappearance and stage5->6 passage, re-entry and fullclient remain pending. Both101430/103151 LINK2 payloads unresolved; no unknown action inferred/deleted. Other Stromkar and Survival39427/full36 still OPEN. No reset or character mutation."
+  },
+  "wardstone_linked_cast_retry_2026_10_30": {
+    "audit": "docs/audits/wardstone-linked-cast-deployment-2026-10-30.json",
+    "status": "World35 RELEASED; original native48172 root once, ordinary199770/187027 LINK casts opt in512 bounded retry without replaying root. Actual corpse-only queue dispatch honors native187027 dead-cast attribute. Implementation76ca986cd and retained fixturesafcc847e6 pushed.",
+    "checks": "43 ASAN/native +11-table TEMP/live/20 refusals,original44 predicates/22 refusals and81 stage/status matrices/native26972,15 fresh-child shared regressions,actual canonical11call/loader/corpse-vtable PE,Scepter,owned11432 ready/shutdown0/exit0.561 closed evidence files hashed; no new diagnostics; mixed5365 LINK2 retained.",
+    "remaining": "UnknownWardstoneLINK4/client effects/subsequentstones,re-entry,Survival39427/sharedLINK2,Stromkar actual visual/equip/exit/singleton retest and whole36 remain OPEN. Fresh36/149/0narrow findings,3bounded route edges,28maps2168contexts97timed22 broadLINK candidates retained. No new character reset; no server left running."
   }
 }

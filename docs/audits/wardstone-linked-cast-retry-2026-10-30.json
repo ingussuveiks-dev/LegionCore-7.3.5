@@ -1,6 +1,6 @@
 {
   "date": "2026-10-30",
-  "status": "Implementation and staged Release verified; World35 stays pending until matching EXE promotion. Canonical startup/live deployment receipt follows separately.",
+  "status": "Implementation76ca986cd deployed with World35 RELEASED,actual canonical PE/live checks and owned11432 clean startup/graceful0. See wardstone-linked-cast-deployment-2026-10-30.json.",
   "problem": "Wardstone101325 root0 awards native48172 once, then LINK1 casts199770, LINK2 casts187027, LINK3 summons101360, LINK4 is unknown. A rejected ordinary LINK cast set a500ms timer only on its copied holder; LINK timers are excluded from UpdateTimer. Root credit was already consumed, permanently stranding transform/base after a rejected cast. In-progress also inherited the legacy accepted-tail shortcut.",
   "local_evidence": [
     "Matching26972 typed native reader: Taking199728 target25/dummy/4000ms; native source13 Wardstone-only damage/instant-kill mask and real48172 amount0->one receipt then3 retained.",

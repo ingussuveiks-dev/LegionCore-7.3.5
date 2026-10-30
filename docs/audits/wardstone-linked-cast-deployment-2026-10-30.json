@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-30",
+  "implementation": "76ca986cd",
+  "retained_fixture_repair": "afcc847e6",
+  "implementation_audit": "docs/audits/wardstone-linked-cast-retry-2026-10-30.json",
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_30_35_talonclaw_linked_cast_retry.sql",
+    "LF_SHA1": "a73a4ae4bcaaea09b9754bb9daeb7bbcf0c195ec",
+    "state": "RELEASED; updater hash and complete11 live tables verified by restricted reader",
+    "runtime": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "cbcd766380a2bd9bb8e6425c1a8a6afd9ab3adc4592dc8a7f8f92df5be566d05",
+      "worldserver.map": "f3a70231e84a33bb30f718b50a32228fca65da5ccf90520384034f50f760177d",
+      "bnetserver.exe": "ae5b9d8127b8f46f63ccbbb50c389e8392666d8703ea4dc812cbca5c59b50c68",
+      "bnetserver.map": "009161dfa21f0e5ddd1eea33a4384120f208449e2f0cb383e4bdc9654f59d9ef"
+    },
+    "backup": ".codex/release-before-wardstone-linked-cast-2026-10-30",
+    "order": "Fresh CIM absence, four original files copied/hash-verified; newEXE/maps promoted with protected conf/DLL/certificates unchanged; only then World35 moved from pending into updater. No user/unknown server stopped.",
+    "build_banner": "Reports cfb6a96ccf38+ from configured working-tree base. This is not implementation proof: actual new binary hash plus11 call paths,strict512 loader and corpse vtable slot66 were independently verified after promotion. Original final-link inputs and all rebuilt scripts checked."
+  },
+  "owned_runtime": {
+    "pid": 11432,
+    "owner": "Codex Wardstone linked-cast validation",
+    "ready": true,
+    "graceful_shutdown_command": "server shutdown 0",
+    "actual_exit": 0,
+    "stderr_bytes": 0,
+    "left_running": false,
+    "evidence": "build-extractors/runtime-test/wardstone-linked-cast-startup-2026-10-30"
+  },
+  "post_deploy_checks": [
+    "Test-SmartLinkedCastRetry.ps1 -VerifyLiveData -VerifyReleaseBinary:43 ASAN cases,11 exact context tables,twoflags,20 refused customized/partial cases,real PE queue/corpse/loader.",
+    "Test-TalonclawWardstoneData.ps1 -VerifyLiveData:44 original native admission predicates/22 refusals; independently validates successor11-table live context before comparing older data.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary:real extracted login regression and canonical selected implementation string retained.",
+    "Fresh15 isolated-child shared regressions and retained Fire/Bilaal ASAN,original Wardstone81/native26972 and Judgment passed before promotion; no production code changed after those passes."
+  ],
+  "all36_refresh": {
+    "capture": ".codex/artifact-post-linked-cast-2026-10-30",
+    "hashes": {
+      "routes": "288e0a44239254e81dd2ed9360f937abd34ccfeea7ec21aa55f04169ea66e2cd",
+      "map_links": "522723b8cb72a2d2fb7c43013e55bb8dc38fcf0d4be8ec5ac9391a2e21d9db4f",
+      "items": "3a0eebacd3cc5a65afdf6152661d2031b0a25c400a57cae15ed4f6b90d727812"
+    },
+    "routes": 36,
+    "native_race_class_pairs": 149,
+    "narrow_automated_findings": 0,
+    "bounded_route_review": 3,
+    "maps": 28,
+    "owner_contexts": 2168,
+    "timed_owner_contexts": 97,
+    "broad_primary_link_candidates": 22,
+    "unresolved_recipients": 3,
+    "nested_self_replacement_candidates": 2,
+    "limit": "Structural inventory is unchanged; no LINK candidate classified repaired or removed by this cast-retry fix. Zero narrow findings does not certify any whole chain."
+  },
+  "diagnostics": {
+    "result": "All final before/after snapshots, actual exits,stdout/stderr,canonical and own crash paths,appended server diagnostics and DBErrors inspected: no new/changed crash or appended unexplained warning/error/assertion/DBErrors.",
+    "active_crashes": [],
+    "existing_mixed_DBErrors": {
+      "bytes": 5365,
+      "sha256": "78362b1da17b8a5f5469d40e9f49453d9ce67ff8d7abde5677d1a6b24f2da9d3",
+      "status": "Existing101430/103151 missingLINK2 remains unresolved; unchanged and not cleared."
+    }
+  },
+  "closed_archive": {
+    "path": "build-extractors/bin/Release/fixed/wardstone-linked-cast-2026-10-30",
+    "manifest_sha256": "e58688230bc114a11a33c4cbdc3708a73a680ac8a3c36a0f18c55acdcdd479e1",
+    "verified_files": 561,
+    "verification": "Original source/destination/source SHA256; immediate recheck confirms mixed canonical DBErrors and empty Crashes unchanged. Only closed test/build/verifier iterations archived; no active file or log truncated.",
+    "empty_tails": 75685,
+    "limit": [
+      "Closure aggregate results are rejected; final fresh children supply actual exit evidence.",
+      "One early reused retained folder lost original failed compiler bytes before correction; only its later available bytes preserved.",
+      "UnknownLINK4/sharedLINK2/client visuals remain unresolved; this archive closes the repaired implementation and harness iterations only."
+    ]
+  },
+  "remaining": "Actual client Wardstone cursor/cast/lightning/4s presentation/transform/base and subsequent stones,group/faction/re-entry/abandon/fullscenario remain pending. Unknown101325LINK4,shared101430/103151LINK2,Survival39427 middle flight,all Stromkar reported render/equip/exit/singleton retests and whole36 traversal remain OPEN. Prior character reset3 authorization consumed; no new character/item/progress edits."
+}
