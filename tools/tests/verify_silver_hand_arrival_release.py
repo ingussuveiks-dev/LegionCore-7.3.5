@@ -34,10 +34,12 @@ assert any(entry.op_str == 'r8d, 0xc64d' for entry in body[credit - 8:credit])
 assert any(entry.op_str == 'rcx, r14' for entry in body[credit - 8:credit])
 assert body[credit + 1].op_str == 'byte ptr [rdi + 0x5a], 1'
 arrived = body[empty - 1].address
-point = next(index for index, entry in enumerate(body) if entry.op_str == 'ebx, 8' and entry.mnemonic == 'cmp')
+assert any(entry.mnemonic == 'mov' and entry.op_str == 'esi, edx' for entry in body[:20])
+assert any(entry.mnemonic == 'mov' and entry.op_str == 'ebx, r8d' for entry in body[:20])
+point = next(index for index, entry in enumerate(body) if entry.op_str == 'esi, 8' and entry.mnemonic == 'cmp')
 assert body[point + 1].mnemonic == 'jne' and not reaches(body, body[point + 1].operands[0].imm, arrived)
 dispatch = [index for index, entry in enumerate(body[:empty]) if entry.mnemonic == 'je' and entry.operands[0].imm == arrived]
-assert len(dispatch) == 1 and body[dispatch[0] - 1].op_str == 'r14d, 1'
+assert len(dispatch) == 1 and body[dispatch[0] - 1].op_str == 'ebx, 1'
 assert body[dispatch[0] - 1].mnemonic == 'sub'
 region = body[empty:]
 assert not sites(region, '?FindNearestPlayer@WorldObject@@')

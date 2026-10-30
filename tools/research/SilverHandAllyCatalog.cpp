@@ -49,8 +49,13 @@ int main(int argc, char** argv)
                 if (!tree)
                     return 6;
                 if (auto criterion = criteria.LookupEntry(tree->CriteriaID))
+                {
                     std::cout << "CRITERION\t" << unsigned(step->OrderIndex) << '\t' << criterion->ID << '\t'
                         << unsigned(criterion->Type) << '\t' << criterion->Asset << '\t' << tree->Amount << '\n';
+                    if (step->OrderIndex == 1)
+                        std::cout << "FIRST_PATH_META\t" << criterion->ID << '\t' << criterion->ModifierTreeId << '\t'
+                            << unsigned(criterion->Flags) << '\t' << tree->ID << '\t' << unsigned(tree->Operator) << '\t' << tree->Amount << '\n';
+                }
                 for (auto child : trees)
                     if (uint32(child->Parent) == identity)
                         pending.insert(child->ID);

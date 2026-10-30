@@ -12,7 +12,11 @@ $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
 $pinned=(& git -C $repo show "ee5d4b981:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight baseline unavailable'}
 $original=Block $pinned 'class npc_travar_first : public CreatureScript'
 $current=Block $source 'class npc_travar_first : public CreatureScript'
+$hostCurrent=$current
 if(!$Baseline){
+ & "$PSScriptRoot/Test-SilverHandFirstPath.ps1" -ScopeOnly
+ $pathPinned=(& git -C $repo show "956c72b97:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-path scope unavailable'}
+ $current=Block $pathPinned 'class npc_travar_first : public CreatureScript'
  $movement=Block $original 'void MovementInform('
  $actual=Block $current 'void MovementInform('
  $expected=@'
@@ -35,6 +39,7 @@ if (id == 18) { if (!_firstFight.Begin(me)) return; Talk(17); SpawnFirstFight();
  if(($instanceNormalized -replace '\s','') -cne ($instancePinned -replace '\s','')){throw 'Unrelated instance ritual/phase/arrival changed'}
 }
 if($ScopeOnly){'PASS exact first-fight-only class scope; entrance/admission/heal/reset/other route actions retained';return}
+$current=$hostCurrent
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/silver-hand-first-fight"}
 $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $actor=if($Baseline){$original}else{$current}

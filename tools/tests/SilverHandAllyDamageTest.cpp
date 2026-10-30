@@ -115,6 +115,7 @@ struct Companion : CreatureAI
 };
 struct First : Companion
 {
+    struct FirstPathClock {void Update(uint32){}} _firstPath; // Dedicated first-path regression owns this service.
     void CompleteFirstFight(uint32) {} // Dedicated first-fight regression owns this service.
 #include "FirstDamage.inc"
 #include "FirstHeal.inc"

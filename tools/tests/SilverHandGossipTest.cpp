@@ -152,6 +152,7 @@ template<class... Values>void Debug(Values const&...){++debugs;}
 #include "EntrancePolicy.inc"
 struct EntranceAI : CreatureAI
 {
+    struct PathRequest {bool requested=false;bool Request(Creature*){if(requested)return false;requested=true;return true;}} _firstPath; // Actual request policy is covered by FirstPath's native host.
     Creature* me=nullptr;
     bool firstwp=true;
     ObjectGuid _processionPlayerGuid;

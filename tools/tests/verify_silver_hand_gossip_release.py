@@ -38,7 +38,10 @@ for method in ('?CanArrive@SilverHandEntrance@@', '?HasFlag@Object@@', '?IsWithi
 has_flag, = sites(body, '?HasFlag@Object@@')
 for position in (has_flag, remove):
     assert any(entry.op_str == 'edx, 0x7d' for entry in body[position - 5:position])
-    assert any(entry.op_str == 'r8d, 1' for entry in body[position - 5:position])
+assert any(entry.op_str == 'r8d, 1' for entry in body[has_flag - 5:has_flag])
+assert any(entry.op_str == 'r8d, eax' for entry in body[remove - 5:remove])
+assert [(entry.mnemonic,entry.op_str) for entry in body[remove - 6:remove - 4]] == [('cmp','eax, 1'),('jne',body[remove-5].op_str)]
+assert body[remove-5].operands[0].imm > body[move].address
 distance, = sites(body, '?IsWithinDistInMap@WorldObject@@')
 loads = [entry for entry in body[distance - 7:distance] if entry.mnemonic == 'movss' and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP]
 assert len(loads) == 1
@@ -46,8 +49,10 @@ address = loads[0].address + loads[0].size + loads[0].operands[1].mem.disp
 assert struct.unpack_from('<f', native['binary'], native['offset'](address))[0] == 5.0
 item, = sites(body, '?GetItem@GossipMenu@@')
 assert any(entry.op_str == 'edx, edx' and entry.mnemonic == 'xor' for entry in body[item - 4:item])
-step, = sites(body, '?GetCurrentStep@Scenario@@')
-assert body[step + 1].op_str == 'eax, 1' and body[step + 2].mnemonic == 'jne'
+steps = sites(body, '?GetCurrentStep@Scenario@@')
+assert len(steps) == 2
+for step in steps:
+    assert body[step + 1].op_str == 'eax, 1' and body[step + 2].mnemonic == 'jne'
 def verify_script_path(decoded, path_id, consume):
     waypoints, = sites(decoded, '?instance@WaypointMgr@@')
     lookup, = sites(decoded, '?GetPathScript@WaypointMgr@@')

@@ -14,6 +14,7 @@
 #include "TemporarySummon.h"
 #include "WaypointManager.h"
 #include "silver_hand_first_fight.h"
+#include "silver_hand_first_path.h"
 
 
 namespace SilverHandCompanion
@@ -171,6 +172,7 @@ public:
         uint64 _entryGeneration = 0;
         bool _entryPending = false;
         SilverHandFirstFight::State _firstFight;
+        SilverHandFirstPath::State _firstPath;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -192,6 +194,8 @@ public:
                 TC_LOG_WARN("scripts", "Silver Hand entrance path 10993804 is unavailable; retaining Travard gossip for retry");
                 return;
             }
+            if (!_firstPath.Request(me))
+                return;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             player->PlayerTalkClass->ClearMenus();
             player->CLOSE_GOSSIP_MENU();
@@ -301,9 +305,47 @@ public:
                 _pendingHealRecovery = true;
         }
 
+        void CompleteFirstPath()
+        {
+            if (!me->IsAIEnabled || me->AI() != this)
+                return;
+            if (_firstPath.Complete(me))
+            {
+                firstwp = false;
+                secondwp = true;
+                Talk(6);
+                VisualOpenDoor();
+                _functions.AddFunction([this]() -> void
+                {
+                    if (_firstPath.CanContinue(me))
+                        Talk(7);
+                }, _functions.CalculateTime(5000));
+
+                _functions.AddFunction([this]() -> void
+                {
+                    if (_firstPath.CanContinue(me))
+                    {
+                        _firstPath.departureReady = true;
+                        DepartFirstPath();
+                    }
+                }, _functions.CalculateTime(9000));
+            }
+            DepartFirstPath();
+        }
+
+        void DepartFirstPath()
+        {
+            if (_firstPath.Depart(me))
+            {
+                Talk(8);
+                me->GetMotionMaster()->MovePath(10993805, false);
+            }
+        }
+
         void UpdateLifecycle(uint32 diff) override
         {
             SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            _firstPath.Update(diff);
             CompleteFirstFight(diff);
             _entryFunctions.Update(diff);
         }
@@ -336,22 +378,8 @@ public:
                         Talk(4);
                     if (id == 10)
                     {
-                        if (Player* pl = me->FindNearestPlayer(100.0f))
-                            pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50766);
-                        Talk(6);
-                        firstwp = false;
-                        VisualOpenDoor();
-                        secondwp = true;
-                        _functions.AddFunction([this]() -> void
-                        {
-                            Talk(7);
-                        }, _functions.CalculateTime(5000));
-
-                        _functions.AddFunction([this]() -> void
-                        {
-                            Talk(8);
-                            me->GetMotionMaster()->MovePath(10993805, false);
-                        }, _functions.CalculateTime(9000));
+                        _firstPath.Observe(me);
+                        CompleteFirstPath();
                     }
                 }
                 if (secondwp)
@@ -465,6 +493,7 @@ public:
                 return;
 
             _functions.Update(diff);
+            CompleteFirstPath();
 
             if (!UpdateVictim())
                 return;
