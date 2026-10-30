@@ -41,6 +41,7 @@ int main(int argc,char**argv)
     for(auto spell:spells){std::string name=spell->Name->Str[0];std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});if(name.find("tentacl")!=std::string::npos||name.find("tendril")!=std::string::npos||name.find("blocker")!=std::string::npos||name.find("shadow channel")!=std::string::npos||(spell->ID>=201000&&spell->ID<=201050))selected.insert(spell->ID);}
     selected.insert(204093); // Actual Thoradin receiver's native Bound in Shadow aura.
     for(auto spell:spells){std::string name=spell->Name->Str[0];std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});if(name.find("shadowy split")!=std::string::npos)selected.insert(spell->ID);}
+    for(auto spell:spells){std::string name=spell->Name->Str[0];std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});if(name.find("drain soul")!=std::string::npos||name.find("shadow beam")!=std::string::npos||name.find("void beam")!=std::string::npos||name.find("shadow lightning")!=std::string::npos||name.find("tortur")!=std::string::npos)selected.insert(spell->ID);}
     for(auto e:effects)if(!e->DifficultyID&&(e->Effect==28||e->EffectAura==56)&&
         (e->EffectMiscValue[0]==103339||e->EffectMiscValue[0]==103340||e->EffectMiscValue[0]==103341||e->EffectMiscValue[0]==104729||e->EffectMiscValue[0]==104737))selected.insert(e->SpellID);
     for(uint32 id:selected){auto row=spells.LookupEntry(id);if(!row)return 5;std::cout<<"SPELL\t"<<id<<'\t'<<row->Name->Str[0]<<'\n';}
@@ -81,6 +82,12 @@ int main(int argc,char**argv)
     for(auto e:events)if(visualIds.count(e->visual)){kits.insert(e->value.SpellVisualKitID);std::cout<<"EVENT\t"<<e->visual<<'\t'<<e->value.StartEvent<<'\t'<<e->value.EndEvent<<'\t'<<e->value.SpellVisualKitID<<'\n';if(e->visual==53619)std::cout<<"BURST_EVENT\t"<<e->value.ID<<'\t'<<e->value.TargetType<<'\t'<<e->value.StartMinOffsetMs<<'\t'<<e->value.StartMaxOffsetMs<<'\t'<<e->value.EndMinOffsetMs<<'\t'<<e->value.EndMaxOffsetMs<<'\n';}
     DB2Storage<SpellVisualKitEntry> kitData("SpellVisualKit.db2",SpellVisualKitLoadInfo::Instance());
     if(!kitData.Load(argv[1],0))return 18;kitData.LoadFromDB();
+    DB2Storage<SpellProceduralEffectEntry> procedures("SpellProceduralEffect.db2",SpellProceduralEffectLoadInfo::Instance());
+    if(!procedures.Load(argv[1],0))return 31;procedures.LoadFromDB();
+    DB2Storage<SpellChainEffectsEntry> chains("SpellChainEffects.db2",SpellChainEffectsLoadInfo::Instance());
+    if(sizeof(SpellChainEffectsEntry)!=SpellChainEffectsMeta::Instance()->GetRecordSize()||!chains.Load(argv[1],0))return 32;chains.LoadFromDB();
+    if(auto chain=chains.LookupEntry(4511))std::cout<<"TORTURE_CHAIN\t"<<chain->ID<<'\t'<<chain->Flags<<'\t'<<chain->JointCount<<'\t'<<chain->TextureParticleFileDataID<<'\t'<<unsigned(chain->Red)<<'\t'<<unsigned(chain->Green)<<'\t'<<unsigned(chain->Blue)<<'\t'<<unsigned(chain->Alpha)<<'\t'<<chain->StartWidth<<'\t'<<chain->EndWidth<<'\n';else return 33;
+    for(auto k:kitEffects)if(kits.count(k->kit)&&k->value.EffectType==1)if(auto p=procedures.LookupEntry(k->value.Effect)){std::cout<<"PROCEDURAL\t"<<k->kit<<'\t'<<p->ID<<'\t'<<unsigned(p->Type);for(float value:p->Value)std::cout<<'\t'<<value;std::cout<<'\n';}
     if(auto k=kitData.LookupEntry(64833))std::cout<<"BURST_KIT\t"<<k->ID<<'\t'<<k->Flags<<'\t'<<k->FallbackSpellVisualKitID<<'\t'<<k->DelayMin<<'\t'<<k->DelayMax<<'\n';else return 19;
     DB2Storage<PositionerEntry> positioners("Positioner.db2",PositionerLoadInfo::Instance());
     DB2Storage<PositionerStateEntry> positionStates("PositionerState.db2",PositionerStateLoadInfo::Instance());
@@ -99,8 +106,10 @@ int main(int argc,char**argv)
     DB2LoadInfo beamInfo(beamFields,std::size(beamFields),BeamEffectMeta::Instance(),HOTFIX_SEL_BEAM_EFFECT);
     DB2Storage<NativeBeamRow> beams("BeamEffect.db2",&beamInfo);
     if(sizeof(NativeBeamRow)!=beamInfo.Meta->GetRecordSize()||!beams.Load(argv[1],0))return 16;beams.LoadFromDB();
-    for(auto k:kitEffects)if(kits.count(k->kit)&&k->value.EffectType==13)if(auto b=beams.LookupEntry(k->value.Effect))
-        std::cout<<"BEAM_REFERENCE\t"<<k->kit<<'\t'<<k->value.EffectType<<'\t'<<b->id<<'\t'<<b->beam<<'\t'<<b->flags<<'\t'<<b->sourceAttach<<'\t'<<b->destAttach<<'\t'<<b->sourceMinDistance<<'\t'<<b->fixedLength<<'\n';
+    // Emit candidates for all effect types, then compare whole-table foreign
+    // key coverage below. A coincident integer alone does not identify a type.
+    for(auto k:kitEffects)if(kits.count(k->kit))if(auto b=beams.LookupEntry(k->value.Effect))
+        std::cout<<"BEAM_CANDIDATE\t"<<k->kit<<'\t'<<k->value.EffectType<<'\t'<<b->id<<'\t'<<b->beam<<'\t'<<b->flags<<'\t'<<b->sourceAttach<<'\t'<<b->destAttach<<'\t'<<b->sourceMinDistance<<'\t'<<b->fixedLength<<'\n';
     DB2Storage<DissolveEffectEntry> dissolves("DissolveEffect.db2",DissolveEffectLoadInfo::Instance());
     if(!dissolves.Load(argv[1],0))return 17;dissolves.LoadFromDB();
     for(auto k:kitEffects)if(kits.count(k->kit)&&k->value.EffectType==11)if(auto d=dissolves.LookupEntry(k->value.Effect))
@@ -109,6 +118,15 @@ int main(int argc,char**argv)
     DB2LoadInfo nameInfo(nameFields,std::size(nameFields),SpellVisualEffectNameMeta::Instance(),HOTFIX_SEL_SPELL_VISUAL_EFFECT_NAME);
     DB2Storage<NameRow> names("SpellVisualEffectName.db2",&nameInfo);
     if(sizeof(NameRow)!=nameInfo.Meta->GetRecordSize()||!names.Load(argv[1],0))return 8;
+    DB2Storage<DecalPropertiesEntry> decals("DecalProperties.db2",DecalPropertiesLoadInfo::Instance());
+    if(!decals.Load(argv[1],0))return 30;
+    decals.LoadFromDB();
+    for(int type:{1,13}){uint32 total=0,beamMatches=0,decalMatches=0;for(auto k:kitEffects)if(k->value.EffectType==type){++total;beamMatches+=bool(beams.LookupEntry(k->value.Effect));decalMatches+=bool(decals.LookupEntry(k->value.Effect));}std::cout<<"EFFECT_TYPE_COVERAGE\t"<<type<<'\t'<<total<<'\t'<<beamMatches<<'\t'<<decalMatches<<'\n';}
+    for(auto k:kitEffects)if(kits.count(k->kit)&&k->value.EffectType==1)if(auto b=beams.LookupEntry(k->value.Effect))if(auto n=names.LookupEntry(b->beam))std::cout<<"BEAM_NAME\t"<<k->kit<<'\t'<<b->id<<'\t'<<n->id<<'\t'<<n->type<<'\t'<<n->model<<'\t'<<n->texture<<'\t'<<n->generic<<'\n';
+    for(auto d:decals)if(d->FileDataID==797803||d->FileDataID==797909)
+        std::cout<<"SHADOW_CRACK_DECAL\t"<<d->ID<<'\t'<<d->FileDataID<<'\t'<<d->InnerRadius<<'\t'<<d->OuterRadius<<'\t'<<d->Rim<<'\t'<<d->Gain<<'\t'<<d->ModX<<'\t'<<d->Scale<<'\t'<<d->FadeIn<<'\t'<<d->FadeOut<<'\t'<<unsigned(d->Priority)<<'\t'<<unsigned(d->BlendMode)<<'\t'<<d->TopTextureBlendSetID<<'\t'<<d->BotTextureBlendSetID<<'\t'<<d->GameFlags<<'\t'<<d->Flags<<'\t'<<d->CasterDecalPropertiesID<<'\n';
+    for(auto n:names)if(n->texture==797803||n->texture==797909||n->model==1237510)
+        std::cout<<"SHADOW_CRACK_NAME\t"<<n->id<<'\t'<<unsigned(n->type)<<'\t'<<n->model<<'\t'<<n->texture<<'\t'<<n->generic<<'\t'<<n->scale<<'\t'<<n->flags<<'\n';
     auto missileInfo=SpellVisualMissileLoadInfo::Instance();std::vector<DB2FieldMeta> missileFields(missileInfo->Fields,missileInfo->Fields+missileInfo->FieldCount);missileFields.push_back({false,FT_SHORT,"SpellVisualMissileSetID"});
     DB2LoadInfo fullMissiles(missileFields.data(),missileFields.size(),SpellVisualMissileMeta::Instance(),HOTFIX_SEL_SPELL_VISUAL_MISSILE);
     DB2Storage<MissileRow> missiles("SpellVisualMissile.db2",&fullMissiles);

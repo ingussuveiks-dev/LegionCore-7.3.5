@@ -3997,7 +3997,8 @@ void SpellMgr::LoadSpellCustomAttr()
         200548, // Bane of Havoc (Honor Talent)
         197548, // Strength of Soul
         195403, // Gale Burst
-        122470  // Touch of Karma
+        122470, // Touch of Karma
+        204125  // Shadow Torture: the three ritualists retain independent chains
     }, [](SpellInfo* spellInfo)
     {
         spellInfo->GetMisc()->MiscData.Attributes[3] |= SPELL_ATTR3_STACK_FOR_DIFF_CASTERS;
