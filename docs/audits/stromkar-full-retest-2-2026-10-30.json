@@ -9,5 +9,11 @@
   "runtime": "No server/client launched or stopped for reset; canonical0D526201 world/AF145BD6 bnet and protected runtime files unchanged. Client tests remain user-owned. Recheck processes before any subsequent deployment; never stop user/unknown servers.",
   "private_evidence": ".codex/stromkar-full-retest-2-2026-10-30/backup/manifest.json; .codex/stromkar-full-retest-2-{preflight,preflight-pass,preflight-core,reset-checks,native-entry}-2026-10-30; private reset/verifier/run scripts. All dumps, character data and credentials stay ignored locally.",
   "remaining": "Actual fresh-client entrance and complete Stromkar run, new exit-aura retry, late-scene equip/facing, missing recoil/cracked ground, continuous ritual beams, oversized initial blade and sharedLINK2 remain OPEN. All36 work continues independently. No further reset authorization remains.",
-  "post_startup_readback": "After the separate owned Guardian updater startup and graceful shutdown, a fresh read-only full15-table reconciliation still passes: no blade, five active41105 counters0, native entry pose and version1/1037/instance0/boot0 checkpoint preserved. No reset repeated."
+  "post_startup_readback": "After the separate owned Guardian updater startup and graceful shutdown, a fresh read-only full15-table reconciliation still passes: no blade, five active41105 counters0, native entry pose and version1/1037/instance0/boot0 checkpoint preserved. No reset repeated.",
+  "resolved_validation_archive": {
+    "path": "build-extractors/bin/Release/fixed/stromkar-full-retest-2-validation-2026-10-30",
+    "fix_commit": "4f257104c",
+    "files": 44,
+    "verification": "Closed diagnostic-only files copied and verified source/destination/source SHA256 plus full readback; private character backups/state/SQL excluded. Correct PowerShell7 invocation, full15-table reconciliation and native entrance/PE pass. No mixed production log truncated or unresolved client evidence archived as fixed."
+  }
 }
