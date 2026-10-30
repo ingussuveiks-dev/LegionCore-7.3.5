@@ -617,14 +617,14 @@
     "next": "Repair101778 actual eligible owner/pet/guardian death credit and speakers, then Frost/Fire real pickups/scenes and remaining36. SharedLINK2/Stromkar visuals/middle39427/full client stay OPEN."
   },
   "current_canonical_release_2026_10_30": {
-    "path": "build-extractors/bin/Release",
+    "audit": "docs/audits/fire-return-recovery-2026-10-30.json",
     "hashes": {
-      "worldserver.exe": "20A9F355694AC28C2BE280196373DA7BE848C11E4342538F50E38B443AC09971",
-      "bnetserver.exe": "CA1A9A198AABC3AA2F0EF4BDE4F9E2ADA01132C400DB145B8026B56D2EEA24DB",
-      "worldserver.map": "10F3470B2F55FEF3B0583F552E30F878C3D6C661D4B6083203A684DAF5EB037B",
-      "bnetserver.map": "7CB50F7C0829098FBF2F98F3248939A3FC9CB10425486043D2E75C8A52018B76"
+      "worldserver.exe": "DB0526D1CBDE25EE6660968C52CD4ACD927060C3F5AF0D775C3BD6C975527C92",
+      "bnetserver.exe": "204B17EAEC111ACBAFFA87868FC8589E74795F3136BC30C4B63D99F437373E25",
+      "worldserver.map": "3223F0719D608436C76041E96DD342C27F808C8EA59BD118C9E9083B4A73A66E",
+      "bnetserver.map": "D558397CCE9F8C29ABFA6A411E5A10AE757D53532CE6C1BD2DB93CE836CDF196"
     },
-    "audit": "docs/audits/frost-scene-equip-2026-10-30.json"
+    "path": "build-extractors/bin/Release"
   },
   "fleshripper_speakers_2026_10_30": {
     "audit": "docs/audits/fleshripper-speakers-2026-10-30.json",
@@ -687,5 +687,11 @@
     "audit": "docs/audits/fire-aethas-intro-2026-10-30.json",
     "status": "World16 RELEASED two actor-target1 source22 predicates confine99763 battle intro to actual1480/957/3; native data3/path/portal unchanged. ASan/full5live/TEMP16/typed26972/prior15full6live pass; own32284 clean closed; same4989118F/314D1FC5 EXEs.",
     "remaining": "Next real one-hit missing99763 actor recovery with finite failed-spawn/missing-AI/re-entry handling and original data3/path/portal. Recover only after actual earned957/3 death leaf47380/tree45965 and current957/4..5; never grant quest/item/criterion/health/phase/teleport. Preserve unknown99615 missing22/32. Map1480 has no instance_template binding; adding one would change shared901 default behavior, so investigate a scoped PlayerScript rather than casual map binding. Detailed ignored design/facts: .codex/fire-return-recovery-plan-2026-10-30.json, not implemented/certified.23 expandedLINK candidates/shared missingLINK2/Stromkar recoil-floor-three-beams/Survival39427/originalGO recovery/full36/client remain OPEN. No reset permission; client user-owned."
+  },
+  "fire_return_recovery_2026_10_30": {
+    "audit": "docs/audits/fire-return-recovery-2026-10-30.json",
+    "remaining": "Actual client path/movement/portal click/return/rendering and full Fire traversal remain user-owned and unverified. Unknown99615/21->22 and31->32 are preserved.23 expanded LINK review candidates, shared101430/103151 missingLINK2, Stromkar recoil/cracked-floor/three continuous beams, Survival middle39427, original consumed-GO/cast denial/acquired-item recovery/full bags/group/faction/full36 remain OPEN. No reset authorization.",
+    "status": "World17 RELEASED; actual earned957/4..5+45965 recovers native Aethas data3/path/portal after one-hit, finite spawn/AI/path/portal retries. ASan/reentrant/failure/context/full6live/TEMP19/actualPE/Scepter pass, own11360 clean closed; canonicalDB0526D1/204B17EA. No progress edits.",
+    "fresh_audit": "20tables/465568;36/149/0 findings/3bounded;28maps2168contexts97timed23LINK reviews. Fullclient/full36 not certified."
   }
 }

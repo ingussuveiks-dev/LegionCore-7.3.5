@@ -75,6 +75,7 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_15_fire_b
   if($intro.Count){& "$PSScriptRoot/Test-FireAethasIntroData.ps1" -VerifyLiveData
    $fullLive=@($fullLive|Where-Object {$f=$_.Split("`t");!($f[0] -ceq 'live-conditions' -and $f[1] -eq '22' -and $f[3] -eq '99763' -and $f[4] -eq '0')})
   }
+  $fullLive=& "$PSScriptRoot/Convert-VerifiedFireAethasTemplate.ps1" -Rows $fullLive -Fixture $fixture
   foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $expectedRows "$expectedTag-$table")){throw "Live differs from Fire boss health regression $table"}}
  }
  'PASS Fire boss health full-schema TEMP: exactly2 event types0->2 and2 retry flags0->256, thresholds/once flags/native spell/other actor actions/LINKs/text/loot unchanged; idempotence/17 custom-partial refusals/live equality'

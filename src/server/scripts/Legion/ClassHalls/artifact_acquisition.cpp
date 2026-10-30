@@ -1767,6 +1767,8 @@ bool Complete(Player* player, SpellScene const* scene, std::string const& trigge
 }
 }
 
+#include "fire_return_recovery.h"
+
 namespace FireArtifactScene
 {
 struct Pickup
@@ -2191,6 +2193,8 @@ void AddSC_artifact_acquisition()
     new player_talonclaw_departure();
     new go_talonclaw_return_portal();
     new scene_fire_artifact_equipment();
+    new player_fire_artifact_return();
+    RegisterCreatureAI(npc_fire_artifact_aethas);
     new scene_frost_artifact_equipment();
     new scene_blood_artifact_equipment();
     new scene_monk_artifact_equipment();

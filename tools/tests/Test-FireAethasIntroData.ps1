@@ -65,7 +65,9 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_16_fire_a
  }
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_16_fire_aethas_intro.sql' AND hash='$hash' AND state='RELEASED';";if($live -notcontains '1'){throw 'Live Aethas intro migration/hash differs'}
-  $live=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Live Aethas intro/native return differs $table"}}
+  $live=Query (Snapshot 'live')
+  $live=& "$PSScriptRoot/Convert-VerifiedFireAethasTemplate.ps1" -Rows $live -Fixture $fixture
+  foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Live Aethas intro/native return differs $table"}}
  }
  'PASS full5table native Aethas intro: exactly2 source22 actor-target1 predicates for1480/957/3; original actor actions/data3/waypoint/portal/click unchanged, idempotence/16 custom-partial refusals/live equality'
 }

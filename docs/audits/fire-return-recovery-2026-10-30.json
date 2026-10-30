@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-30",
+  "status": "Fire one-hit missing return actor/retry recovery deployed World17 RELEASED; client/full36 remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Native99615 summons99763 only at TEXT_OVER6 after its half-health transition. One-hit death still requests blade103696,247494,47380 and data3 to99763, but there is no actor to receive that data. Native Aethas data3 can also consume its once event while WP_START fails before LINK6; native portal creation can fail after arrival. These paths leave no return99861.",
+  "change": "Registered scoped PlayerScript plus99763 derived SmartAI retain native source/data3/waypoint and real arrival event. Recover only actual1480/957 current4..5 with positive native45965 death progress; no quest/item prerequisite on the native user_type0 return. Native authored summon entry/type/lifetime/pose come from99615/23. Use actual nearby dead boss when present, otherwise eligible player after corpse expiry. Filter same-map/phase/quest scope before selecting actors. New AI keeps all SmartAI handlers; retry failed path through native StartPath, deliver only pending original TALK0 after acceptance; retry only original portal summon after actual waypoint event7, without duplicate speech/story. RTTI validates actual AI before derived call.500ms cadence/30s failed-recovery limit with visible warning, re-entry rearm/logout cleanup. No criteria/quest/item/health/phase/teleport/cast grants. Original map1480 instance binding remains absent, preserving shared901.",
+  "data": "Exactly99763.ScriptName empty ->npc_fire_artifact_aethas; retain AIName SmartAI. Full six protected tables include boss/actor/portal templates, both default Smart graphs (42rows), two World16 intro predicates, waypoint, spellclick and actual196604 destination. Original/applied/dependency hashes, idempotence,19 TEMP custom/partial refusals and full live/released LF-SHA1 pass. Older15/16 live regressions normalize only this approved field after independently verifying all six World17 tables/released hash.",
+  "native_checks": [
+    "MSVC ASan host includes actual production recovery header and extracted Smart condition/ElseGroup/outer+inner lookups, event/action prefix, FindLinkedEvent/LINK/data-set/update/waypoint, WP_START, position summon, SmartAI SetData/StartPath/MovementInform/MovepointReached. Actual SQL rows/path/conditions drive the host. Original one-hit graph lacks99763 and retains known missingLINK32 diagnostic; repaired recovery reaches native waypoint and portal.",
+    "Player world/contact/alive/teleport/map/instance/scenario/step/missing-or-zero death leaf/proximity guards; earned corpse/re-entry/group/scope/phase/new-instance paths; failed NPC/portal creation, AI unavailable or wrong actual type, failed path/missing point, combat interruption, AI reset, actor/portal removal,30s timeout/re-entry and logout cleanup. Native runOnce set before injected reentrant data3 callback prevents duplicate cleanup/TALK. Wrong movement type cannot synthesize arrival; duplicate actual point callback remains once. Custom boss/data mismatches visibly withhold recovery and are paired with corrected passing cases.",
+    "World creation, base Reset, movement completion, spell/chat effects and death counter storage are controlled endpoints. Owner/pet/guardian native205 credit is unchanged and separately regressed in prior work; this host does not claim actual client movement or runtime combat.",
+    "Original-LIB scripts Release rebuild and separate final link. Staged and canonical actual PE prove registered PlayerScript/factory/vtables/native Reset/SetData/Update/JustDied, runtime RTTI AI guard, actual957/4..5+45965 proof, native summon/path/runOnce/waypoint reads and finite cadence. Shared Frost/Fire/Blood/Monk scene PE and Scepter native/selected Release pass."
+  ],
+  "deployment": {
+    "canonical_hashes": {
+      "worldserver.exe": "DB0526D1CBDE25EE6660968C52CD4ACD927060C3F5AF0D775C3BD6C975527C92",
+      "bnetserver.exe": "204B17EAEC111ACBAFFA87868FC8589E74795F3136BC30C4B63D99F437373E25",
+      "worldserver.map": "3223F0719D608436C76041E96DD342C27F808C8EA59BD118C9E9083B4A73A66E",
+      "bnetserver.map": "D558397CCE9F8C29ABFA6A411E5A10AE757D53532CE6C1BD2DB93CE836CDF196"
+    },
+    "lf_sha1": "B3B15943C9DBC0507D7BAB39A333DFE92F20FB64",
+    "owned_pid": 11360,
+    "backup": ".codex/release-before-fire-return-2026-10-30/manifest.json",
+    "result": "Fresh both-server CIM absence before/per four-file promotion; source/canonical/backup hashes matched and protected config/DLL/certificates unchanged. Pending17 moved only after matched EXE promotion. Owned11360 fresh ready/graceful shutdown0/exit0/stderr empty/newDB0, closed. No user/unknown server stopped; no character/item/progress/client operation.",
+    "migration": "sql/updates/world/2026_10_30_17_fire_return_recovery.sql"
+  },
+  "diagnostics": "All build/native/ASan/TEMP/PE/promotion/updater/live/structural tests wrapped in before/after canonical+own crash hashes/log lengths/timestamps; exits/stdout/stderr reviewed. No new production crash/server error/assertion/DBErrors. Existing mixed3915-byte sharedLINK2 log retained atUTC2026-10-29T13:29:05.1130661Z. Crashes empty. Expected injected timeout/custom-data diagnostics explicitly counterfactual; known Fire LINK32 remains unresolved in baseline, never suppressed.",
+  "resolved_validation": {
+    "policy": "After implementation commit, copy original failed diagnostics/scripts byte-for-byte with source/destination/source SHA256 verification and manifest actual fix commit. No active production log truncated.",
+    "cause": "Private initial generator Python quoting SyntaxError and initial PE checks used ambiguous C++ overload prefixes, then the C++-only symbol reader for undecorated CRT import and assumed indirect import call. Generator corrected before SQL deployment; exact overloads and exact CRT public/import map records with actual call verification corrected. All repaired data/native/staged/canonical regressions pass. No production crash caused by these private validation errors.",
+    "archive": "build-extractors/bin/Release/fixed/fire-return-validation-2026-10-30/manifest.json"
+  },
+  "fresh_audit": {
+    "native_pairs": 149,
+    "objects": 465568,
+    "capture": ".codex/artifact-post-fire-return-2026-10-30",
+    "contexts": 2168,
+    "bounded_links": 3,
+    "tables": 20,
+    "limits": "Structural inventory only; changing99763 to delegated C++ moves one context from nativeSmart tocpp review. No unknown link deleted.",
+    "maps": 28,
+    "primary_links": 23,
+    "automated_findings": 0,
+    "routes": 36,
+    "timed": 97
+  },
+  "evidence": [
+    ".codex/fire-return-reentrant-final-native-2026-10-30",
+    ".codex/fire-return-rtti-final-build-2026-10-30",
+    ".codex/fire-return-rtti-stage-pe-final-2026-10-30",
+    ".codex/fire-return-promotion-2026-10-30",
+    ".codex/fire-return-updater-2026-10-30",
+    ".codex/fire-return-live-and-prior-2026-10-30",
+    ".codex/fire-return-all36-refresh-2026-10-30"
+  ],
+  "remaining": "Actual client path/movement/portal click/return/rendering and full Fire traversal remain user-owned and unverified. Unknown99615/21->22 and31->32 are preserved.23 expanded LINK review candidates, shared101430/103151 missingLINK2, Stromkar recoil/cracked-floor/three continuous beams, Survival middle39427, original consumed-GO/cast denial/acquired-item recovery/full bags/group/faction/full36 remain OPEN. No reset authorization."
+}
