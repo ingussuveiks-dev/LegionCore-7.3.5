@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-30",
+  "status": "Research/scope clarification only; no SQL/core/runtime/character mutation",
+  "scope": "Shared92445/92447/92450 occur in artifact map1500 and broad1220 map scope, but these individual Feed/journal/list actions are later campaign paths, not proved acquisition functions.",
+  "native": "Actual26972 effect136 is HEAL_PCT;137 is ENERGIZE_PCT.207715/207722 Feed contain137/power10/explicit122 plus90/104891,base10/5 and range100.207711 Bloodstone has346/bar365/start0/max100 plus23/1000ms/trigger0; existing spell_aura_trigger option12/power10/threshold99 invokes207726 native90/104732 then164/remove207711. Native PeriodicTick invokes AuraSpellTrigger before its default trigger handler. Thus trigger0 alone is not a missing-completion proof; existing DB trigger must remain.",
+  "campaign": {
+    "journal": "Native43490 Aponis Trail is MinLevel110,objective110961/8,source22 actual-invoker0 active43490 on deathstory rows. Journal220726 has self77+90. Each linked87 pool contains ALL SIX lists92447/9244700/01/02/03/04,each native206 conversation3047..3052. Native87 recipients accept actual Smart Creature/GO,not Player; rawtarget7 is a real later-campaign review candidate. Merely owner-caster flags would not fix the earlier pet-failing quest condition or recipient.",
+    "warrior": "110122 Empowered Leap belongs1146/Warrior CH phase5896,not established36 acquisition flow.217815 native293/override739->217798,self,infinite,removed by nativeEO157. Defer with later campaign scope.",
+    "feed": "Native39389 It Hungers for Blood is MinLevel103,39179->39389->39142; objective104732/1.207711 area7646,class256,active39389/status8,end67. None of three current Warlock route reports contains39389 in canonical or native questline sequence. Ownership issue candidate remains deferred to campaign scope; no Feed migration was authored."
+  },
+  "retention": "All3 unresolved9244x recipient candidates remain visible in fresh28map inventory; no findings/LINK removed or log suppressed.23 primary LINK candidates include broader/static/later campaign paths and are not23 certified acquisition blockers.",
+  "evidence": [
+    ".codex/bloodstone-feed-context-2026-10-30",
+    ".codex/bloodstone-feed-sequence-2026-10-30",
+    ".codex/bloodstone-completion-tables-2026-10-30",
+    ".codex/bloodstone-completion-data-2026-10-30",
+    ".codex/bloodstone-shared-lists-2026-10-30",
+    ".codex/bloodstone-feed-scope-final-2026-10-30",
+    ".codex/artifact-post-nexus-energy-2026-10-30/routes.json"
+  ],
+  "diagnostics": "All read/native scope checks have canonical+own before/after crash/log snapshots and explicit exit/stdout/stderr review. No new production diagnostics or crashes;3915-byte mixedLINK2 retained. No servers started for this scope review.",
+  "next": "Continue actual acquisition unresolved paths: Survival39427 middle flight/boarding/free eagle/blessing/retry, Stromkar visuals/sharedLINK2 and native pickup/reentry/full bags. User client traversal pending; no resets authorized."
+}
