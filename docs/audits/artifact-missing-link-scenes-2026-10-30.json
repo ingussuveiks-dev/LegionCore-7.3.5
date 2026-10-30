@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-30",
+  "status": "Read-only research; no missing SmartAI payload established or gameplay data changed.",
+  "reader": "ArtifactMissingLinkSceneCatalog.cpp uses repaired production DB2Storage<SceneScriptTextEntry>, linked to original rebuilt common.lib, to inspect all5969 records of matching26972 SceneScriptText. Full scripts of hits retained privately; no Lua execution. Native process exited0 and COMPLETE5969/5 received.",
+  "terms": "Wardstone/Talonclaw/Tideskorn/Dakarr/Apata/Wuho,101325/101360/199728/199770/199823/187027,101430/103151/200165/201004/48121/48160/48172; case-insensitive substrings of both name and script. Absence in client text does not establish absence of a server-side action.",
+  "results": [
+    "13670/13671 contain Apata100235, boss99480, minion100259, scene camera/minion paths, name-title effects and cleanup.13671's scene paths are client presentation, not native taxi routes or SmartAI LINK4.",
+    "13703/13704 contain Apata101053, boss99480, fog100401, cave camera/boss path, two speech requests, Despawn Fog scene trigger and cleanup. No Wardstone continuation was found.",
+    "13944 Boss Reveal Init contains Effects Bunny103151 and hidden Thoradin103144. This is already reviewed in StromkarPickupCatalog and stromkar-thoradin-singleton-2026-10-30.json; it is not new evidence of the missing shared LINK2. Do not infer a common action for all seven static bunnies from this separate client scene actor."
+  ],
+  "wardstone_counts": "Retained native scenario973 confirms stage3 tree46483/leaf46484 amount0 and stage4 tree46186/leaf46187 amount3, both criterion29350/event48172. Actual AchievementMgr::SetCriteriaProgress indexes progress by tree->ID, not CriteriaID; shared event alone is not evidence that the first receipt counts toward the later three. No counter or native data changed.",
+  "evidence": ".codex/artifact-missing-link-scenes-review2-2026-10-30/native.txt and before/after diagnostic snapshots. Initial run built/executed the probe but the outer nested shell incorrectly escaped LASTEXITCODE and then failed on a literal backslash. It is retained as an unsuccessful harness run in .codex/artifact-missing-link-scenes-2026-10-30; separate file-based rerun completed successfully.",
+  "diagnostics": "Both attempts recorded canonical+own crash/log baselines and tails. No new/changed crash or appended DBErrors/server warning/error/assertion. No worldserver/bnetserver running or launched. Existing mixed6090-byte sharedLINK2 log retained; no unresolved evidence archived as fixed, no logs truncated.",
+  "next": "UnknownWardstoneLINK4/shared101430+103151LINK2 and Survival39427 middle remain open. Continue independent acquisition combat/lifecycle work; no new character reset or client verification claimed."
+}
