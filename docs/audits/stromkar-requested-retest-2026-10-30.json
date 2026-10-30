@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-30",
+  "status": "New explicit one-use Stromkar retest request completed offline and verified; authorization consumed",
+  "authorization": "User explicitly requested removing the weapon and returning to the beginning to replay Stromkar. This superseded the previous no-reset boundary only for this one scoped retest; there is no continuing permission for further character/item/quest resets.",
+  "operation": "Fresh actual offline Warrior identity/state checked privately. One owned128910 and only its associated inventory/artifact/gem/modifier/relic/transmog/refund/trade rows removed. Active41105 retained; its five objective counters reset to0. Native203920 map1539 entrance pose used. Other character fields/quest/reward/aura rows preserved; no account-wide or other-character reset.",
+  "backup": "15 scoped mysqldump SQL files with hex-blob data and stable primary ordering; SHA256 manifest verified before mutation and again during reconciliation. Fixed original item GUID set retained in child-table snapshot filters so orphan rows cannot disappear from verification merely because the parent item was removed. Personal backups/private SQL remain ignored under .codex/stromkar-fresh-retest-2026-10-30/backup/manifest.json; no character records or credentials committed.",
+  "verification": "Single guarded transaction required offline identity/current map/cache,one exact mainhand item,active41105/exact five prior counters and no conflicting follow-up/rewarded quests. Receipts:one inventory row,one item row,two nonzero counters andone character row changed. A separate READ ONLY transaction verified all15 per-table count receipts and exact allowed all-field deltas. Unrelated quest/reward/aura dump bytes match before/after. Committed/verified one-use markers retained privately; reset was not repeated.",
+  "development": "Initial post-check assumed a header even when a table was entirely emptied by the intended deletion. Corrected read-only verifier accepts no-header empty results only when expected deletions leave zero rows and native count receipt is0; rejects new/missing/unexpected rows. Original transaction had already committed correctly; only read-only verification was rerun. Original failed diagnostics/source preserved for fixed archive,not hidden.",
+  "diagnostics": "Before/after canonical crash/log snapshots,Native SQL exits/stdout/stderr and dump hashes reviewed. No new server crash/warning/error/assertion or DBErrors from reset/reconciliation. Canonical Crashes empty and3915-byte mixed sharedLINK2 log retained. No server/client process stopped or started for this operation.",
+  "logout_exit": "User reported Log Out/Exit not working,then confirmed they worked again. Recent normal logout was present in server history. No root cause established and no server/UI/addon behavior changed merely to hide the intermittent report.",
+  "runtime": "Same canonical worldDB0526D1/bnet204B17EA. User may start/test their own servers; recheck CIM and never stop user/unknown processes. Client traversal remains user-owned.",
+  "evidence": [
+    ".codex/stromkar-retest-2026-10-30",
+    ".codex/stromkar-fresh-retest-2026-10-30",
+    ".codex/stromkar-retest-reset-checks-2026-10-30",
+    ".codex/stromkar-retest-postcheck-2026-10-30",
+    ".codex/stromkar-retest-postcheck-fixed-2026-10-30"
+  ],
+  "archive": "After audit commit, preserve resolved private verifier diagnostics/original source under build-extractors/bin/Release/fixed/stromkar-retest-verification-2026-10-30/manifest.json with source/destination/source SHA256 and actual audit commit. No active production report or mixed log cleared.",
+  "remaining": "Actual current-EXE Stromkar recoil/cracked-ground/three ritual beams/exit and full36 client checks remain unverified. Continue Fire Iceborn197760/786 lifetime+owner repair independently; pending World25 not released yet."
+}

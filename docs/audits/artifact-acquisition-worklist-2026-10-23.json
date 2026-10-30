@@ -5275,5 +5275,9 @@
     "next": "First repair98760/7 native197760/786 ordinary death conversation ownership/lifetime with existing128+130 guard,full native payload and context proof; preserve47022/block/geist paths. Then trace102304/5 native203481 destination/summoner/key interactions and102244/3 actual-invoker near-creature condition before changes. Keep independent acquisition work moving; client tests stay with user.",
     "audit": "docs/audits/artifact-owner-voice-2026-10-30.json",
     "status": "World24 RELEASED20 fields/10 TALKs on8 actual acquisition actors;full8table/live/TEMP20/ASan/native/catalog/PE pass;own20116 clean closed,same EXEs/mixed3915 LINK2 retained. Fresh full36/28map snapshot after24."
+  },
+  "requested_stromkar_retest_2026_10_30": {
+    "status": "NEW explicit one-use weapon/start replay reset completed offline once;15 backups/full field+count checks passed. No continuing reset permission. Logout/Exit user says working again; no speculative UI/core edit. User may now start client tests; never stop their servers.",
+    "audit": "docs/audits/stromkar-requested-retest-2026-10-30.json"
   }
 }
