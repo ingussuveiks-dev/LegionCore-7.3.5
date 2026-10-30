@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-30",
+  "status": "Ten acquisition own-voice Player-context targets repaired; World24 RELEASED; client/full36 OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Native TALK target2/7 selects a Creature victim/invoker as speaker,so pet/guardian/charm replaces the intended NPC and loses its text group. A Player path keeps source speaker and mTextGUID for name/class/whisper text context. Dark Rider104859 explicitly contains a class variable; replacing the target with SELF alone would not resolve pet owner for that context.",
+  "change": "Exactly20 fields on10 TALK rows for8 actors: target_type2/7->existing130,target_param1=70. Native130 resolves only the real Player/charmer/owner in world/map/phase/range/source scope. TALK keeps source NPC speaker and selects that Player mTextGUID while retaining raw event invoker. If no eligible Player resolves,the native source-speaker/broadcast fallback remains; this is not a new audience filter or a private-whisper guarantee. Existing event,chance,repeat,text duration/groups/types,cadence,credit and linked recipients unchanged.",
+  "scope": "98760/6 Fire;100937/1+100938/1 native Unholy5639/Balance5719/Affliction5761 Dark Riders plus original world0 uses;102244/0,102245/0+1,102304/0+1,102362/2 Blood DK1489/5955;109397/1 Brewmaster1625/6905. Actual7737 phase definition identifies5955 as Blood DK,not Marksmanship. Ten full templates include original99605 Frost Block/99600 released geists as Fire context. Exclude later109403/109419/7727 campaign and Mage Tower115638; shared maps alone do not certify acquisition.",
+  "validation": [
+    "Full8table schema fingerprints:43 Smart rows,4 conditions,19text variants,10templates+WDB,69poses,8phase definitions and native spell-script bindings. Exact20 fields,twice-idempotent/20 TEMP partial-custom refusals/native EOF receipt/full released live equality/LF-SHA1. Guard Fire threshold/block-proximity/geist/47022 credit;Blood prison data/203481 linked summon;Brew52443/109355 summon;class-variable text,phases,chance/duration/customAI/condition/partial site/range.",
+    "MSVC ASan actual event/root/action/TALK/owner resolver130/native SELF-victim-invoker selection/chat admission with both complete SQL fixtures. Ten actual AGGRO/DEATH lines on8actors:Player/pet/guardian/charm/NPC/NPC-owned/null,raw invoker,Player GUID,class/name context,range70 boundary,missing owner,map/phase/world/scope,expired/missing source,new owner,repeated original events and direct death paths. Native linked service call vectors and observed native criteria delta match before/after. Handler invocations are real; ordinary cast/summon/data receiver effects,actual RNG,timers,dynamic damage/scaling and full quest traversal are controlled or separate.",
+    "Typed native26972/Hotfix retains twelve combat/story/summon spells and17 source BroadcastText identities.197760 is219/786,destination18;203481 is28/102955/properties64/destination47,not a pure credit spell. Their requests are unchanged by this TALK-only migration and neither is claimed repaired here. Canonical actual130/loader/owner/world/map/phase/range/206+TALK SendChat PE passes; no C++production/EXE change.",
+    "Full Fire alternative trace:98760 health50 data2 to99605 plus native shatter text; blocks also have real PLAYER_RANGE10/10yd die,then actual death data1 to99600 which clears native auras/flags and attacks. Thus one-hit bypass of threshold alone does not prove an inescapable block; data preserved,actual path not played. Blood Sentry source22/3 target0 near-other-creature gate remains a separate runtime credit-admission candidate; no speculative condition edits.",
+    "Fresh both-server CIM absence and hash-verified pending24 promotion;owned20116 canonical ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged and closed. Full live ASan passes after updater. No user/unknown process stopped or character/item/quest reset. Same DB0526D1/204B17EA EXEs."
+  ],
+  "deployment": {
+    "world_sha256": "DB0526D1CBDE25EE6660968C52CD4ACD927060C3F5AF0D775C3BD6C975527C92",
+    "lf_sha1": "A037BB8AAD8120731AE156F4B1446268427C9289",
+    "migration": "sql/updates/world/2026_10_30_24_artifact_owner_voice.sql",
+    "bnet_sha256": "204B17EAEC111ACBAFFA87868FC8589E74795F3136BC30C4B63D99F437373E25",
+    "owned_pid": 20116
+  },
+  "diagnostics": "All read/TEMP/native/ASan/catalog/PE/updater/live/full36 have pre/post canonical+own crashes/logs,timestamps/exits/stdout/stderr reviewed. No new production crash/server warning/error/assertion/DBErrors. Crashes empty,mixed3915-byte sharedLINK2 retained UTC2026-10-29T13:29:05.1130661Z.",
+  "archive": {
+    "cause": "Initial private phase_definitions filter compared varchar phaseId numerically. Read selected same rows but strict TEMP INSERT SELECT rejected scanning empty strings with1292. Corrected exact quoted phase IDs,recaptured complete original fixture and hashes (same selected data),and repeated full TEMP/native/ASan/catalog/PE/live successfully. Production migration uses quoted string filter; no deployed failure or suppressed error.",
+    "path": "build-extractors/bin/Release/fixed/artifact-owner-voice-validation-2026-10-30/manifest.json",
+    "policy": "After commit preserve initial raw SQL/stdout/stderr,original fixture/test/migration and wrapper bytes with source/destination/source SHA256 and actual fix hash; no active production log cleared."
+  },
+  "structural": {
+    "capture": ".codex/artifact-post-owner-voice-2026-10-30",
+    "audit": "docs/audits/artifact-structural-refresh-2026-10-30.json",
+    "counts": "Fresh20tables465568 counted complete objects,36routes149pairs/0automatedfindings/3bounded/0scene-only;28maps7439static actor records,2168contexts97timed23primary LINK candidates,3unresolved recipients2nested replacements. No full-route/client certification."
+  },
+  "evidence": [
+    ".codex/artifact-next-own-voice-context-2026-10-30",
+    ".codex/artifact-owner-voice-original-fixed-2026-10-30",
+    ".codex/artifact-owner-voice-fingerprints-fixed-2026-10-30",
+    ".codex/artifact-owner-voice-full-staged-second-2026-10-30",
+    ".codex/artifact-owner-voice-updater-2026-10-30",
+    ".codex/artifact-owner-voice-final-live-2026-10-30",
+    ".codex/artifact-post-owner-voice-checks-2026-10-30"
+  ],
+  "next": "First repair98760/7 native197760/786 ordinary death conversation ownership/lifetime with existing128+130 guard,full native payload and context proof; preserve47022/block/geist paths. Then trace102304/5 native203481 destination/summoner/key interactions and102244/3 actual-invoker near-creature condition before changes. Keep independent acquisition work moving; client tests stay with user.",
+  "remaining": "Actual text substitution,bubbles/audio and whole8 actor encounters/client36 remain OPEN. Newly traced98760 LINK7 native197760 is ordinary219/conversation786/rawpet, requiring separate ownership/lifetime repair;102304 LINK5 native203481 is summon102955/properties64/dest47,not dedicated credit,so investigate before normalization. Shared101430/103151 missingLINK2,Stromkar visuals,Survival39427 and broader LINK/GO/fullbags/retry remain unfinished. No resets; client user-owned."
+}
