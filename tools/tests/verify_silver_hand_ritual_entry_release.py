@@ -8,6 +8,8 @@ from capstone.x86_const import X86_REG_RIP
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_silver_hand_procession_release.py')))
 native, instructions = previous['native'], previous['instructions']
+callback_slot = runpy.run_path(str(Path(__file__).with_name('pe_creature_ai_slots.py')))['callback_slot']
+los_slot = callback_slot(native, '?MoveInLineOfSight@SmartAI@@')
 sites, reaches = previous['sites'], previous['reaches']
 helper = '?CanEnter@SilverHandRitualEntry@@'
 body = instructions(helper)
@@ -140,7 +142,7 @@ selected = []
 for entry in instructions('?GetAI@npc_travar_third@@'):
     if entry.mnemonic == 'lea' and len(entry.operands) == 2 and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP:
         address = entry.address + entry.size + entry.operands[1].mem.disp
-        if struct.unpack_from('<Q', native['binary'], native['offset'](address) + 0x270)[0] == native['symbol'](los):
+        if struct.unpack_from('<Q', native['binary'], native['offset'](address) + los_slot * 8)[0] == native['symbol'](los):
             selected.append(address)
 assert len(selected) == 1
 slots = struct.unpack_from('<80Q', native['binary'], native['offset'](selected[0]))
@@ -180,4 +182,4 @@ assert creature[ticks[1] + 1].op_str == 'byte ptr [rsi + 0x3a9d], 0'
 assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c8]' for entry in creature[ticks[0] - 8:ticks[0]])
 assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c0]' for entry in creature[ticks[0]:ticks[1]])
 assert min(sites(creature, '?Update@Unit@@')) > ticks[1]
-print('PASS: selected third-Travard LOS0x270 owns its1s queue atAI+0xe0, captures full128-bit original GUID/64-bit generation and arms pending state. Selected locked lifecycle0x110 services it independently of stunned/combat AI; selected destructor destroys both queues. Pending-only Reset increments generation/reopens admission without replaying an accepted route or deferred KillAllFunctions eating a fresh retry. Actual closure rejects stale generation, consumes pending before native original lookup/live1092 steps5..8/20yd/path10993807 preflight and original Talk0/30yd followers. No Unit-owned AI callback, Player pointer, nearby substitute or direct credit. Other script timers/downstream rituals/client traversal remain separate.')
+print('PASS: selected third-Travard LOS at the resolved native slot owns its1s queue atAI+0xe0, captures full128-bit original GUID/64-bit generation and arms pending state. Selected locked lifecycle0x110 services it independently of stunned/combat AI; selected destructor destroys both queues. Pending-only Reset increments generation/reopens admission without replaying an accepted route or deferred KillAllFunctions eating a fresh retry. Actual closure rejects stale generation, consumes pending before native original lookup/live1092 steps5..8/20yd/path10993807 preflight and original Talk0/30yd followers. No Unit-owned AI callback, Player pointer, nearby substitute or direct credit. Other script timers/downstream rituals/client traversal remain separate.')

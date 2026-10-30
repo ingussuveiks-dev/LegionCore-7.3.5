@@ -7,6 +7,8 @@ from capstone.x86_const import X86_REG_RIP
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_warswords_final_credit_release.py')))
 native, instructions = previous['native'], previous['instructions']
+callback_slot = runpy.run_path(str(Path(__file__).with_name('pe_creature_ai_slots.py')))['callback_slot']
+los_slot = callback_slot(native, '?MoveInLineOfSight@SmartAI@@')
 
 
 def sites(body, prefix):
@@ -34,7 +36,7 @@ for entry in factory:
     if entry.mnemonic == 'lea' and len(entry.operands) == 2 and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP:
         address = entry.address + entry.size + entry.operands[1].mem.disp
         slots = struct.unpack_from('<80Q', native['binary'], native['offset'](address))
-        if slots[0x270 // 8] == native['symbol'](los_name):
+        if slots[los_slot] == native['symbol'](los_name):
             selected.append(slots)
 slots, = selected
 assert slots[0x110 // 8] == native['symbol'](lifecycle_name) and slots[0] == native['symbol'](destructor_name)
@@ -119,4 +121,4 @@ assert creature[ticks[1] + 1].op_str == 'byte ptr [rsi + 0x3a9d], 0'
 assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c8]' for entry in creature[ticks[0] - 8:ticks[0]])
 assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c0]' for entry in creature[ticks[0]:ticks[1]])
 assert min(sites(creature, '?Update@Unit@@')) > ticks[1]
-print('PASS: canonical last Travard factory selects LOS0x270, lifecycle0x110 and destructor0; actual LOS captures AI and queues5000ms at AI+0x48. Selected9-byte callable tail-dispatches lambda through actual outlined CanStartWave with live106777/map1539/nondeleted/alive/map/scenario1092/exact9 gates before sole SummonAdds(1); false result clears only intro38/criteria39 and retains diagnostic, no credit or self-requeue. Selected9-byte lifecycle drains same queue under primary/disabled lock; destructor releases it. Wave recovery/channel/quest epochs and client traversal remain separate.')
+print('PASS: canonical last Travard factory selects LOS at the resolved native slot, lifecycle0x110 and destructor0; actual LOS captures AI and queues5000ms at AI+0x48. Selected9-byte callable tail-dispatches lambda through actual outlined CanStartWave with live106777/map1539/nondeleted/alive/map/scenario1092/exact9 gates before sole SummonAdds(1); false result clears only intro38/criteria39 and retains diagnostic, no credit or self-requeue. Selected9-byte lifecycle drains same queue under primary/disabled lock; destructor releases it. Wave recovery/channel/quest epochs and client traversal remain separate.')

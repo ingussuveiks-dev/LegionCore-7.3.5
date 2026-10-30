@@ -7,6 +7,8 @@ from capstone.x86_const import X86_REG_RIP
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_silver_hand_collapse_release.py')))
 native, instructions = previous['native'], previous['instructions']
+callback_slot = runpy.run_path(str(Path(__file__).with_name('pe_creature_ai_slots.py')))['callback_slot']
+los_slot = callback_slot(native, '?MoveInLineOfSight@SmartAI@@')
 reaches, sites = previous['reaches'], previous['sites']
 helper = '?CanArrive@SilverHandEntrance@@'
 body = instructions(helper)
@@ -119,11 +121,11 @@ selected = []
 for entry in instructions('?GetAI@npc_travar_first@@'):
     if entry.mnemonic == 'lea' and len(entry.operands) == 2 and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP:
         address = entry.address + entry.size + entry.operands[1].mem.disp
-        if struct.unpack_from('<Q', native['binary'], native['offset'](address) + 0x270)[0] == native['symbol'](los):
+        if struct.unpack_from('<Q', native['binary'], native['offset'](address) + los_slot * 8)[0] == native['symbol'](los):
             selected.append(address)
-assert len(selected) == 1, 'Factory does not select checked LOS at native slot0x270'
+assert len(selected) == 1, 'Factory does not select checked native LOS slot'
 safe = instructions('?MoveInLineOfSight_Safe@CreatureAI@@')
-assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x270 for entry in safe)
+assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == los_slot * 8 for entry in safe)
 lookup_body = instructions(accessor)
 assert native['symbol']('?IsInWorld@Object@@') in native['calls'](accessor)
 assert native['symbol']('?IsPreDelete@Object@@') in native['calls'](accessor)
@@ -180,4 +182,4 @@ decoder.detail = True
 fight_body = list(decoder.disasm(native['binary'][native['offset'](fight_target):native['offset'](fight_target) + 9], fight_target))
 assert [(entry.mnemonic, entry.op_str) for entry in fight_body] == [
     ('mov', 'rax, qword ptr [rcx + 8]'), ('mov', 'byte ptr [rax + 0x5c], 1'), ('ret', '')]
-print('PASS: selected first LOS0x270 owns5s queue atAI+0xf0; original full128-bit GUID/64-bit Reset generation snapshot precedes immediate Talk0. Native locked primary/disabled lifecycle0x110 retains companion recovery then services entry; selected destructor drops both queues. Pending-only Reset invalidates stale entry without clearing accepted POINT1 token or replaying route. Closure consumes matching epoch before native original lookup/live1092/0..1/20yd, Talk1/full arrival token/MovePoint/106416. Actual MovementInform also queues original2s marker onAI+0xf0 and selects9-byte closure writing only firstfight+0x5c. Later story/native counters/client traversal remain separate.')
+print('PASS: selected first LOS at the resolved native slot owns5s queue atAI+0xf0; original full128-bit GUID/64-bit Reset generation snapshot precedes immediate Talk0. Native locked primary/disabled lifecycle0x110 retains companion recovery then services entry; selected destructor drops both queues. Pending-only Reset invalidates stale entry without clearing accepted POINT1 token or replaying route. Closure consumes matching epoch before native original lookup/live1092/0..1/20yd, Talk1/full arrival token/MovePoint/106416. Actual MovementInform also queues original2s marker onAI+0xf0 and selects9-byte closure writing only firstfight+0x5c. Later story/native counters/client traversal remain separate.')

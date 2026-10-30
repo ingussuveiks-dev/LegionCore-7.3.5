@@ -7,6 +7,8 @@ from capstone.x86_const import X86_REG_RIP
 
 previous=runpy.run_path(str(Path(__file__).with_name('verify_silver_hand_wave_deaths_release.py')))
 native,instructions,sites=previous['native'],previous['instructions'],previous['sites']
+callback_slot=runpy.run_path(str(Path(__file__).with_name('pe_creature_ai_slots.py')))['callback_slot']
+los_slot=callback_slot(native,'?MoveInLineOfSight@SmartAI@@')
 name='?UpdateAI@npc_travar_lastAI@npc_travar_last@@'
 body=instructions(name)
 predicate,=sites(body,'?CanStart@SilverHandFinalEntry@@')
@@ -42,7 +44,7 @@ for entry in instructions('?GetAI@npc_travar_last@@'):
     if entry.mnemonic!='lea' or len(entry.operands)!=2 or entry.operands[1].type!=CS_OP_MEM or entry.operands[1].mem.base!=X86_REG_RIP:
         continue
     slots=struct.unpack_from('<80Q',native['binary'],native['offset'](entry.address+entry.size+entry.operands[1].mem.disp))
-    if slots[0x270//8]==native['symbol']('?MoveInLineOfSight@npc_travar_lastAI@npc_travar_last@@'):
+    if slots[los_slot]==native['symbol']('?MoveInLineOfSight@npc_travar_lastAI@npc_travar_last@@'):
         tables.append(slots)
 assert len(tables)==1 and tables[0][0x18//8]==native['symbol'](name)
 assert any(entry.mnemonic=='call' and entry.operands[0].type==CS_OP_MEM and entry.operands[0].mem.disp==0x18
