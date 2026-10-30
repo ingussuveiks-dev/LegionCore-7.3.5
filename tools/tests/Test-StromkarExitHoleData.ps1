@@ -9,7 +9,9 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/stro
   $path="$repo/sql/updates/world/2026_10_30_34_stromkar_exit_hole.sql";if(!(Test-Path $path)){$path="$repo/sql/pending/world/2026_10_30_34_stromkar_exit_hole.sql"};$migration=Get-Content $path -Raw
   function Value($v){if($null -eq $v){return 'NULL'};if($v -is [string]){if(!$v.Length){return "''"};return 'CONVERT(0x'+[Convert]::ToHexString([Text.Encoding]::UTF8.GetBytes($v))+' USING utf8mb4)'};[Convert]::ToString($v,[Globalization.CultureInfo]::InvariantCulture)}
   $setup='';$baseline='';foreach($table in $context.filters.Keys){
-   $setup+="CREATE TEMPORARY TABLE saved_$table LIKE $table;INSERT INTO saved_$table SELECT * FROM $table WHERE $($context.filters[$table]);CREATE TEMPORARY TABLE $table LIKE saved_$table;`n"
+   # Later filters (creature_addon) reference earlier tables (creature).
+   # Populate each shadow immediately so saved live dependencies remain real.
+   $setup+="CREATE TEMPORARY TABLE saved_$table LIKE $table;INSERT INTO saved_$table SELECT * FROM $table WHERE $($context.filters[$table]);CREATE TEMPORARY TABLE $table LIKE saved_$table;INSERT INTO $table SELECT * FROM saved_$table;`n"
    $baseline+="DELETE FROM $table;`n";$cols=($context.columns[$table]|ForEach-Object{"``$_``"}) -join ','
    foreach($row in $fixture[$table]){$values=($context.columns[$table]|ForEach-Object{Value $row[$_]}) -join ',';$baseline+="INSERT INTO $table($cols) VALUES($values);`n"}
   }

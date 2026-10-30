@@ -12,7 +12,8 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/nexu
   if($WithPriestHealing){if(!(Test-Path $healingPath)){$healingPath="$repo/sql/pending/world/2026_10_30_33_priest_azuregos_healing.sql"};$preMigration=$migration;$migration=Get-Content $healingPath -Raw}
   function Value($v){if($null -eq $v){return 'NULL'};if($v -is [string]){if(!$v.Length){return "''"};return 'CONVERT(0x'+[Convert]::ToHexString([Text.Encoding]::UTF8.GetBytes($v))+' USING utf8mb4)'};[Convert]::ToString($v,[Globalization.CultureInfo]::InvariantCulture)}
   $setup='';$baseline='';foreach($table in $context.filters.Keys){
-   $setup+="CREATE TEMPORARY TABLE saved_$table LIKE $table;INSERT INTO saved_$table SELECT * FROM $table WHERE $($context.filters[$table]);CREATE TEMPORARY TABLE $table LIKE saved_$table;`n"
+   # Keep earlier live shadows populated for dependent addon/scaling filters.
+   $setup+="CREATE TEMPORARY TABLE saved_$table LIKE $table;INSERT INTO saved_$table SELECT * FROM $table WHERE $($context.filters[$table]);CREATE TEMPORARY TABLE $table LIKE saved_$table;INSERT INTO $table SELECT * FROM saved_$table;`n"
    $baseline+="DELETE FROM $table;`n"
    $cols=$context.columns[$table];$names=($cols|ForEach-Object{"``$_``"}) -join ','
    foreach($row in $fixture[$table]){$values=($cols|ForEach-Object{Value $row[$_]}) -join ',';$baseline+="INSERT INTO $table($names) VALUES($values);`n"}
