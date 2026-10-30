@@ -6,6 +6,7 @@
 #include "ScenarioMgr.h"
 #include "SpellScript.h"
 #include "Spell.h"
+#include "Vehicle.h"
 #include "SpellMgr.h"
 #include "MoveSpline.h"
 #include "SpellAuraEffects.h"
@@ -2229,6 +2230,7 @@ struct npc_stromkar_thoradin : SmartAI
 #include "stromkar_ritual_beam.h"
 #include "stromkar_ritual_torture.h"
 #include "monk_kite_travel.h"
+#include "talonclaw_boarded_departure.h"
 #include "valzuun_intel.h"
 #include "stromkar_split.h"
 
@@ -2239,6 +2241,10 @@ void AddSC_artifact_acquisition()
     new npc_stromkar_valkyr();
     new condition_stromkar_return();
     RegisterSpellScript(spell_monk_kite_travel);
+    RegisterCreatureAI(npc_talonclaw_boarding_source);
+    RegisterCreatureAI(npc_talonclaw_boarded_ride);
+    RegisterSpellScript(spell_talonclaw_boarding_summon);
+    RegisterSpellScript(spell_talonclaw_boarded_transfer);
     RegisterCreatureAI(npc_valzuun_intel);
     RegisterGameObjectAI(go_lights_wrath_pickup);
     RegisterSpellScript(spell_lights_wrath_pickup_cast);

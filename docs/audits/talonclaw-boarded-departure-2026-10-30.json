@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-30",
+  "scope": "Existing Survival40385 Dalaran departure through public Highmountain Hippogryph100965/spawn366115. Separate from the still missing39427 Spiritwatch middle and from client visual flight verification.",
+  "cause": "Unit::HandleSpellClick calls AI::OnSpellClick even when its native198941 cast fails. The original source event73 immediately granted100111 and linked198950, without any successful summon, boarding or accepted teleport. Native summoned100967 has forced-use seat16201 (Vehicle4535); it is not an ordinary freely enterable seat.",
+  "repair": [
+    "Keep native198941/properties61/5-minute summon, all21 original conditions, public source, native46598 forced boarding and198950 map1511 destination. Only actual summon AfterCast binds its full owner/source GUIDs and current quest lifetime.",
+    "Actual owner PassengerBoarded seat0 acknowledges the ride. Finish native exit and spline before dispatching original SmartAI action85 through its real200ms player-invoker queue. Revalidate admission before native effect227 and require actual accepted pending destination map1511 and original XYZ within0.1 before receipt.",
+    "Latch once before original action33/native eligible-group credit. No direct item, quest completion, owner/pet field or teleport API grants. Already credited owners do not re-dispatch group credit.",
+    "Finite30-second lifetime, at most three same-actor boarding requests and three transfer attempts; pending seats prevent duplicate requests. Missing actors, failed casts, stale quest attempts, abandonment/reaccept, death/map changes and foreign passengers cannot grant credit. Restore only this actor's mover/viewpoint. Retire orphaned unbound native summons when source/lease changes between Check and AfterCast.",
+    "World37 refuses all custom/mixed contexts atomically using nine full-schema fingerprints. Exactly ten Smart fields (including two comments), two ScriptNames and two spell registrations change; native source17/18/22 conditions, summon/vehicle/destination/quest data remain unchanged. Matching EXE promoted before migration entered live updater."
+  ],
+  "verification": [
+    "43 ASAN cases include entire production header plus actual FunctionProcessor, AddQuestDelayedEvent, EnterVehicle, SmartAI click, native action33/owner resolver and actual200ms invoker closure. Original early-credit counterfactual paired with repaired actual-board/native-exit/accepted-target regression. Controlled world/cast/seat/spline/teleport/group endpoints are not a full engine/client traversal.",
+    "Nine-table TEMP shadow comparison, repeat idempotence and25 original/applied custom/partial refusals; restricted SELECT/TEMP reader; native SQL stdout/stderr drained through EOF with completion receipt. Canonical live nine-table context and RELEASED normalized SHA1 readback pass.",
+    "Matching26972 typed DB2/hotfix probe verifies46598,198941,198950,properties61,Vehicle4535/seat16201 flags and actual native usability methods (free-entry false, forced-use true).",
+    "Shared Talonclaw boarding/return,208 pending joins, usable-seat admission, join failure, Warlock, pet lookup and Faronaar ASAN/native catalog pass. Actual child exit0 and stderr0 captured for each.",
+    "Original Release scripts.lib rebuilt; staged world/bnet final links use original libraries. Actual selected factories/vtables/spell hooks, native join/exit/control, quest lease, accepted destination, latch-before-DATA_SET38/100111/1 and absence of direct credit/item/teleport API verified in staged then canonical PE. ScepterLogin -VerifyReleaseBinary passes.",
+    "Owned canonical worldserver PID34340 reached fresh ready, applied World37 once, gracefully shutdown0/exit0, stderr0/newDBErrors0. Protected configs/certificates/DLL hashes unchanged. No server left running."
+  ],
+  "deployment": {
+    "worldserver_sha256": "88206FA62EC4C4B551B5121F0471B39E06537DC3437A6F0392871505F2595162",
+    "bnetserver_sha256": "7594808E7A2EA2E9161272B65542B552CB0A84251B99401C62563D1101A2708F",
+    "migration": "sql/updates/world/2026_10_30_37_talonclaw_boarded_departure.sql",
+    "migration_lf_sha1": "f1a33271fd8531c4aabe8ce2837b9f5ab52727b3",
+    "offline_backup": ".codex/release-before-talonclaw-boarded-departure-2026-10-30"
+  },
+  "evidence": [".codex/talonclaw-boarded-complete-native43-2026-10-30", ".codex/talonclaw-boarded-shared2-2026-10-30", ".codex/talonclaw-boarded-departure-build-final-2026-10-30", ".codex/talonclaw-boarded-stage-link-2026-10-30", ".codex/talonclaw-boarded-pe-final-2026-10-30", ".codex/talonclaw-boarded-promotion-2026-10-30", ".codex/talonclaw-boarded-canonical-startup-2026-10-30", ".codex/talonclaw-boarded-canonical-final-2026-10-30", ".codex/talonclaw-boarded-scepter-final-2026-10-30", ".codex/artifact-post-boarded-departure-2026-10-30"],
+  "development_failures": "Preserved first SQL fixture1364 (missing comment, corrected); native harness missing mutex/event constant; original GetSummonList pointer/Quest name compilation fixes; PE assumptions about inlined Awaiting/Eligible/SourceActor corrected using actual selected disassembly. None counted as passing tests. Retained Truthguard ordinal/diff verification repair is separate commit50a119c7e. No production failure suppressed.",
+  "diagnostics": "Every build/native/PE/startup check records before/after canonical and own crash/log state, actual exit and output. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion in these checks. Active Crashes empty. Existing mixed unresolved DBErrors is6090 bytes, including five103151 entries at19:39 predating this test series (earlier handoff5365-byte size was stale); retained without truncation. No character/item/quest/checkpoint resets.",
+  "fresh_all36": "36 chains/149 native race-class pairs; zero narrow automated loot/link/admission findings; three route actor reviews. Broad28-map inventory:2168 owner contexts,97 timed contexts,21 invalid-primary-LINK candidates,three unresolved recipients,two nested self-replacements. These are review findings, not36 verified full quest chains.",
+  "remaining": "Actual client click/boarding/exit/teleport/objective/group behavior, camera/pet portrait and full40385 traversal. Missing39427 remains unexposed; native5762/5763/5955/5765 candidates require complete behavior reconstruction. Wardstone missingLINK4 and actual visuals, shared101430/103151 LINK2, Stromkar visual/client checks and full36 client traversal remain unresolved."
+}
