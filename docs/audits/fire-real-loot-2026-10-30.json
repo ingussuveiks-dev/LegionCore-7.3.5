@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-30",
+  "status": "Felo melorn real loot/final-stage admission deployed World12 RELEASED; real scene equipment callback and full Fire/client still OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "247494 type3 has128820/100-percent loot but Data1=0, so native GetLootId bypasses actual item.196023/1125/package1500 plays a clone-only acquisition scene and personal100290+196264/47042 progression without creating inventory.196020 effect249 requires existing128820/child133959. No current1125 completion callback found.",
+  "change": "Exactly247494.Data1->247494 plus42 exact predicates.14 source4 uniqueness including bank, living Mage/classmask128, active INCOMPLETE9 ORCOMPLETE28 un-rewarded11997, map1480 and actual957/4.28 source22 root1 requires inventory-only128820 at957/4 or5. Preserve entire original196023 action, fields/flags/scene/quest credit/terminal event and producer actors. Complete original/applied template+conditions and unchanged loot/action fingerprints; SIGNAL plus guarded mutations reject custom/partial data under --force. No direct item/quest/reset command added.",
+  "sequence": [
+    "99415/11997 native TALK0/2000ms ->validLINK2 sets957 before TEXT_OVER ->TALK1/6000ms and99418 portal. Spellclick195549/user_type0/cast_flags1 is native travel; original99418 click despawn and195453 appearance unchanged. Actual travel acceptance/retry/camera still client/native follow-up.901 and957 both already map1480/class0; no selector/map data repair made.",
+    "Native957/3 requires47380 from99615 death ->blade103696/247494 and Aethas99763 continuation/99861 return. Original boss missingLINK22/32 now visible in expanded audit, preserved and OPEN.957/4 final47042 is emitted by196023->196264. Native last step RewardQuestID0, so no final auto-RewardQuest removal of11997 before scene completion; currentStep advances to5 and Scenario stays map-owned until ordinary cleanup.",
+    "Native1960239s root/scene1125/package1500 plus personal100290 matches11997 pickup objective; quest also requires99418 entry credit.196020249/128820 plus47042 is actual native Grasp spell; alternate205152 phase/ability variant left untouched. Full linked package1500 equips only clone128820/133959, with no active server trigger/inventory grant; wire guarded real completion next."
+  ],
+  "validation": [
+    "Typed matching26972 scene/duration/existing-item249/unique128820/paired133959slot16 and all linked package text. Explicit native957/3 boss47380,4 pickup47042, RewardQuestID0 and196023 personal100290 ->196264 event verified. Actual Class0 explicit selection precedence traced before loot repair.",
+    "Full4table original TEMP/idempotence, only Data1+42 exact predicates; unchanged original native single action/loot.20 full custom/partial refusal variants (including custom added205 credit and nonzero secondary-spell/link mutations) preserve all4tables under --force. Actual live full equality and RELEASED/LF-SHA1 pass. Native SQL EOF receipt mandatory before interpreting assertions.",
+    "MSVC ASan executes extracted actual GetLootId/condition kinds/ElseGroups/loot/cached-slot/SmartAI root admission for loot and owned-root modes. Original0 selector vs247494, status/stage matrix, wrong/missing map/scenario/class/quest/instance, death/reward/abandon/bank-only/item loss/null/non-Player rejection and completed terminal5 owned replay. World/inventory endpoints controlled; actual bag/loot window/quest/terminal client not certified.",
+    "Shared Frost scene ASan/TEMP25/live and ten pickup native/current actualPE pass. ScenarioLfgLifecycle native/catalog/actual ReleasePE passes after independent b4e4f934b corrects the WindowsApps Python alias launcher; initial failed ordinary shared run is retained in that separate audit/archive, not counted as pass. Existing C4244/C4390 warnings remain visible.",
+    "Owned9724 ready/graceful shutdown0/exit0/stderr empty/newDBErrors0/protected hashes unchanged. Full fresh20tables465393 JSON/native-prefix/server-count validation,36routes149pairs0automatedfindings3boundedactorlinks; scene-only structural category0. Fresh28map actor export4tables7439 native-count/byte-valid records ->2168owners97timed23primaryLINKreview candidates. Captured-data scope regression retains all19 older findings and four expanded ones. Structural0 is not actual acquisition/whole-chain certification."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_12_fire_real_loot.sql",
+    "lf_sha1": "1A34945F7D5CDD2AAA2636B967168B1A933D03D2",
+    "canonical_hashes": {
+      "worldserver.exe": "20A9F355694AC28C2BE280196373DA7BE848C11E4342538F50E38B443AC09971",
+      "bnetserver.exe": "CA1A9A198AABC3AA2F0EF4BDE4F9E2ADA01132C400DB145B8026B56D2EEA24DB"
+    },
+    "owned_pid": 9724,
+    "result": "Fresh both-server absence before migration/startup. Only own9724 started/closed; no user server stop, executable replacement or character/item/quest reset."
+  },
+  "diagnostics": "All captures/TEMP/native/ASan/shared/catalog/updater/live/export/scope checks have before/after canonical+own crash hashes/log lengths/timestamps; exits/stdout/stderr inspected. Independent Python launcher failure repaired/archived b4e4f934b. No new/changed production crash, server warning/error/assertion or DBErrors. Active Crashes empty; mixed3915-byte shared101430/103151 LINK2 unchanged atUTC2026-10-29T13:29:05.1130661Z. No mixed runtime log cleared; no new resolved production report to archive.",
+  "evidence": [
+    ".codex/fire-explicit-scenario-data-2026-10-30",
+    ".codex/fire-native-scenario-2026-10-30",
+    ".codex/fire-travel-and-terminal-context-2026-10-30",
+    ".codex/fire-travel-spellclick-context-2026-10-30",
+    ".codex/fire-terminal-reward-native-2026-10-30",
+    ".codex/fire-loot-original-2026-10-30",
+    ".codex/fire-loot-native-2026-10-30",
+    ".codex/fire-loot-shared-2026-10-30",
+    ".codex/scenario-lfg-real-python-2026-10-30",
+    ".codex/fire-loot-updater-2026-10-30",
+    ".codex/fire-loot-live-2026-10-30",
+    ".codex/fire-loot-all36-refresh-2026-10-30",
+    ".codex/fire-expanded-actor-capture-regression-2026-10-30",
+    ".codex/artifact-post-fire-loot-2026-10-30"
+  ],
+  "remaining": "Next real1125/1500 complete->196020 native equipment and stale-context guard; also source17 recheck for actual196023 ordinary cast after native action85 queues200ms, because source22 only checked scheduling time. Preserve ordinary native purposes after examining other uses. Full bags/cast denial/original consumable-GO retry/acquired-item recovery/return/turn-in/entry travel/group/faction/client remain OPEN.23LINK candidates including99615 missing22/32, sharedLINK2/Stromkar visuals/middle39427/full36 unfinished. No reset permission; client user-owned."
+}

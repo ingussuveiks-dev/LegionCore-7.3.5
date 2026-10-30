@@ -99,6 +99,7 @@ int main(int argc, char** argv)
         if (step->ScenarioID == 901 || step->ScenarioID == 940 || step->ScenarioID == 957)
         {
             std::cout << "STEP\t" << step->ScenarioID << '\t' << unsigned(step->OrderIndex) << '\t' << step->Title->Str[0] << '\n';
+            std::cout << "STEP_REWARD\t" << step->ScenarioID << '\t' << unsigned(step->OrderIndex) << '\t' << step->RewardQuestID << '\n';
             std::set<uint32> pending{uint32(step->Criteriatreeid)}, seen;
             while (!pending.empty())
             {

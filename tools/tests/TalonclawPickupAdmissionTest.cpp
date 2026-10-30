@@ -193,11 +193,12 @@ int main(int argc, char** argv) {
     bool windwalker = argc == 4 && std::string(argv[2]).find("windwalker-") == 0;
     bool blood = argc == 4 && std::string(argv[2]).find("blood-") == 0;
     bool frost = argc == 4 && std::string(argv[2]).find("frost-") == 0;
+    bool fire = argc == 4 && std::string(argv[2]).find("fire-") == 0;
     bool frostCast = frost && std::string(argv[2]) == "frost-cast";
     bool bloodCast = blood && std::string(argv[2]) == "blood-cast";
     bool monkCast = (brewmaster || windwalker) && std::string(argv[2]).find("-cast") != std::string::npos;
     bool sceneCast = feralCast || monkCast || bloodCast || frostCast;
-    bool guardian = frost || blood || brewmaster || windwalker || twinblades || restoration || feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
+    bool guardian = fire || frost || blood || brewmaster || windwalker || twinblades || restoration || feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
     bool guardianRoot = guardian && !sceneCast && std::string(argv[2]).find("-loot") == std::string::npos;
     bool guardianGossip = guardian && std::string(argv[2]).find("-gossip") != std::string::npos;
     if (guardian) {
@@ -237,6 +238,11 @@ int main(int argc, char** argv) {
             lastStage = guardianRoot ? 7 : 6; expectedItem = 128292; expectedClassMask = 32;
             eventEntry = 247386; scenarioManager = {};
             if (frostCast) { playersOwnArtifactByDefault = true; lastStage = 7; expectedScene = 1071; }
+        }
+        if (fire) {
+            expectedQuest = 11997; expectedMap = 1480; expectedScenario = 957; firstStage = 4;
+            lastStage = guardianRoot ? 5 : 4; expectedItem = 128820; expectedClassMask = 128;
+            eventEntry = 247494; scenarioManager = {};
         }
         castAdmission = guardianRoot;
         GameObjectTemplate chest;
