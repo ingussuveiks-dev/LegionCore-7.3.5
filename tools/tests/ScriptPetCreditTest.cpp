@@ -87,13 +87,15 @@ struct SpellInfo {
 struct SpellManager {
     SpellInfo personal{true,false},group{false,true},ordinary{},mixed{true,false,true},conversation{};
     SpellManager(){conversation.extra.Effect=219;}
-    SpellInfo const* GetSpellInfo(uint32 id) { if(id==198287)return &personal; if(id==900)return &group; if(id==123)return &ordinary; if(id==200832)return &conversation; if(id==901)return &mixed; return nullptr; }
+    SpellInfo const* GetSpellInfo(uint32 id) { if(id==198287)return &personal; if(id==900)return &group; if(id==123)return &ordinary; if(id==200832||id==204364)return &conversation; if(id==901)return &mixed; return nullptr; }
 } spellManager;
 auto sSpellMgr=&spellManager;
 void Unit::CastSpell(Unit* target,uint32 spell,bool triggered) {
     ++casts; lastSpell=spell; lastTarget=target;lastTriggered=triggered;
     if(!castWorks)return;
-    if(spell==200832&&ToPlayer())++stories;
+    // Count Player-owned presentations; this is not a claim that a pet caster
+    // cannot create a Conversation. Native creation/playback are tested apart.
+    if((spell==200832||spell==204364)&&ToPlayer())++stories;
     // Model the unchanged player-only/self-target requirement of198287.
     if(spell==198287) if(Player* player=ToPlayer()) player->KilledMonsterCredit(100732);
 }
@@ -188,15 +190,17 @@ int main(int argc,char** argv) {
     script.Run(action,&pet); assert(script.GetLastInvoker()==&pet); owner.Flush();
     {
         SmartScriptHolder story;story.type=85;story.targetType=130;story.action.cast={200832,SMARTCAST_INVOKER_PLAYER};
-        if(argc==2){std::ifstream input(argv[1]);assert(input>>story.type>>story.action.cast.spell>>story.action.cast.flags>>story.targetType>>story.target.playerDistance.dist);}
-        assert(story.type==85&&story.action.cast.spell==200832&&story.action.cast.flags==128&&story.targetType==130&&story.target.playerDistance.dist==50);
+        if(argc>=2){std::ifstream input(argv[1]);assert(input>>story.type>>story.action.cast.spell>>story.action.cast.flags>>story.targetType>>story.target.playerDistance.dist);}
+        assert(story.type==85&&story.action.cast.flags==128&&story.targetType==130&&((story.action.cast.spell==200832&&story.target.playerDistance.dist==50)||(story.action.cast.spell==204364&&story.target.playerDistance.dist==70)));
+        uint32 const storySpell=story.action.cast.spell,storyRange=story.target.playerDistance.dist;
         assert(ValidateCast(story));
         for(int target:{7,21}){story.targetType=target;assert(!ValidateCast(story));}story.targetType=130;
-        story.target.playerDistance.dist=0;assert(!ValidateCast(story));story.target.playerDistance.dist=50;
+        story.target.playerDistance.dist=0;assert(!ValidateCast(story));story.target.playerDistance.dist=storyRange;
         Creature source;script.me=&source;script.base=&source;
+        if(argc>=3){SmartScriptHolder raw;std::ifstream input(argv[2]);assert(input>>raw.type>>raw.action.cast.spell>>raw.action.cast.flags>>raw.targetType>>raw.target.playerDistance.dist);assert(raw.type==85&&raw.action.cast.spell==204364&&raw.action.cast.flags==0&&raw.targetType==7&&raw.target.playerDistance.dist==0&&ValidateCast(raw));script.selection={&pet};int before=owner.casts,petBefore=pet.casts;script.Run(raw,&pet);assert(pet.delayed.size()==1&&owner.delayed.empty());pet.Flush();assert(pet.casts==petBefore+1&&pet.lastSpell==204364&&pet.lastTarget==&pet&&owner.casts==before);std::cout<<"COUNTERFACTUAL raw SQL204364/flags0/target7 keeps pet caster; Player ownership/playback fix is tested below, native Conversation creation/lifetime separately\n";}
         for(Unit* killer:{static_cast<Unit*>(&owner),&pet,&guardian,&charmed}){
             int previous=owner.casts;script.Run(story,killer);assert(script.GetLastInvoker()==killer&&owner.delayed.size()==1&&owner.casts==previous);
-            owner.Flush();assert(owner.casts==previous+1&&owner.lastTarget==&owner&&owner.lastSpell==200832);
+            owner.Flush();assert(owner.casts==previous+1&&owner.lastTarget==&owner&&owner.lastSpell==storySpell);
         }
         int previous=owner.casts;
         script.Run(story,&pet);pet.available=false;pet.owner=&other;owner.Flush();assert(owner.casts==previous+1&&other.casts==0);pet.available=true;pet.owner=&owner;previous=owner.casts;
@@ -205,24 +209,24 @@ int main(int argc,char** argv) {
         for(int blocked=0;blocked<8;++blocked){
             owner.world=true;source.world=true;owner.map=&firstMap;source.map=&firstMap;owner.phase=true;owner.distance=1;source.scope=true;owner.available=true;
             script.Run(story,&pet);assert(owner.delayed.size()==1);
-            switch(blocked){case 0:source.available=false;break;case 1:owner.world=false;break;case 2:source.world=false;break;case 3:owner.map=&secondMap;break;case 4:owner.phase=false;break;case 5:owner.distance=50.01f;break;case 6:source.scope=false;break;case 7:owner.available=false;break;}
+            switch(blocked){case 0:source.available=false;break;case 1:owner.world=false;break;case 2:source.world=false;break;case 3:owner.map=&secondMap;break;case 4:owner.phase=false;break;case 5:owner.distance=float(storyRange)+0.01f;break;case 6:source.scope=false;break;case 7:owner.available=false;break;}
             previous=owner.casts;owner.Flush();assert(owner.casts==previous);source.available=true;
         }
-        owner.world=true;source.world=true;owner.map=&firstMap;owner.phase=true;owner.distance=50;source.scope=true;owner.available=true;
+        owner.world=true;source.world=true;owner.map=&firstMap;owner.phase=true;owner.distance=float(storyRange);source.scope=true;owner.available=true;
         previous=owner.casts;script.Run(story,&guardian);owner.Flush();assert(owner.casts==previous+1);
         for(int blocked=0;blocked<7;++blocked){
             owner.world=true;source.world=true;owner.map=&firstMap;owner.phase=true;owner.distance=1;source.scope=true;owner.available=true;
-            switch(blocked){case 0:owner.available=false;break;case 1:owner.world=false;break;case 2:source.world=false;break;case 3:owner.map=&secondMap;break;case 4:owner.phase=false;break;case 5:owner.distance=51;break;case 6:source.scope=false;break;}
+            switch(blocked){case 0:owner.available=false;break;case 1:owner.world=false;break;case 2:source.world=false;break;case 3:owner.map=&secondMap;break;case 4:owner.phase=false;break;case 5:owner.distance=float(storyRange)+1;break;case 6:source.scope=false;break;}
             previous=owner.casts;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous&&owner.delayed.empty());
         }
         owner.world=true;owner.map=&firstMap;owner.phase=true;owner.distance=1;source.scope=true;owner.available=true;source.world=true;
         story.targetType=21;previous=owner.casts;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous);
         story.targetType=130;story.target.playerDistance.dist=0;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous);
-        story.target.playerDistance.dist=50;script.base=nullptr;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous);
+        story.target.playerDistance.dist=storyRange;script.base=nullptr;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous);
         script.base=&source;story.action.cast.flags=128|SMARTCAST_AURA_NOT_PRESENT;owner.aura=true;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous);owner.aura=false;
         story.action.cast.flags=128|SMARTCAST_TRIGGERED|SMARTCAST_INTERRUPT_PREVIOUS;int interrupts=owner.interrupted;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous+1&&owner.lastTriggered&&owner.interrupted==interrupts+1);
         story.action.cast.flags=128;owner.castWorks=false;int presentations=owner.stories;previous=owner.casts;script.Run(story,&pet);owner.Flush();assert(owner.casts==previous+1&&owner.stories==presentations&&owner.delayed.empty());owner.castWorks=true;previous=owner.casts;
-        script.base=&source;story.action.cast.flags=0;script.Run(story,&pet);pet.Flush();assert(pet.lastSpell==200832&&owner.casts==previous);
+        script.base=&source;story.action.cast.flags=0;script.Run(story,&pet);pet.Flush();assert(pet.lastSpell==storySpell&&owner.casts==previous);
     }
     std::cout<<"PASS: production SmartAI credit/criteria/invoker-cast; opt-in bounded Player caster/target, loader validation, delayed source/owner revalidation, pets/guardians/charmers/missing owners, dedup, loot/vehicle/trigger source, ordinary spell isolation and raw invoker preservation\n";
 }

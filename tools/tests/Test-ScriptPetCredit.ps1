@@ -1,4 +1,4 @@
-param([string]$BaselineRevision,[switch]$VerifyReleaseBinary,[string]$InvokerCastRowsPath)
+param([string]$BaselineRevision,[switch]$VerifyReleaseBinary,[string]$InvokerCastRowsPath,[string]$BaselineInvokerCastRowsPath,[switch]$AddressSanitizer)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/script-pet-credit"
@@ -32,7 +32,10 @@ $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.h" -Raw
 Extract $s 'enum SmartCastFlags' '// one line in DB' 'CastFlags'
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $rowArgument=if($InvokerCastRowsPath){' "'+[IO.Path]::GetFullPath($InvokerCastRowsPath)+'"'}else{''}
-$cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/ScriptPetCreditTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`r`nif errorlevel 1 exit /b 1`r`n`"$out/test.exe`"$rowArgument`r`n"
+if($BaselineInvokerCastRowsPath){if(!$InvokerCastRowsPath){throw 'Baseline tuple requires a repaired tuple'};$rowArgument+=' "'+[IO.Path]::GetFullPath($BaselineInvokerCastRowsPath)+'"'}
+$compileOptions=if($AddressSanitizer){'/fsanitize=address /Zi /Fd"'+$out+'/test.pdb" '}else{''}
+$linkOptions=if($AddressSanitizer){' /link /INCREMENTAL:NO'}else{''}
+$cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 $compileOptions/I`"$out`" `"$PSScriptRoot/ScriptPetCreditTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"$linkOptions`r`nif errorlevel 1 exit /b 1`r`n`"$out/test.exe`"$rowArgument`r`nexit /b %errorlevel%`r`n"
 [IO.File]::WriteAllText("$out/run.cmd",$cmd);& "$out/run.cmd"
 if($LASTEXITCODE){throw 'Global SmartAI pet credit regression failed'}
 if($VerifyReleaseBinary){

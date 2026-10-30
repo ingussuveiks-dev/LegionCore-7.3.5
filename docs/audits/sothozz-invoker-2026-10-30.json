@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-30",
+  "status": "Sothozz native204364/1338 caster ownership and resulting playback expiry repaired; World21 RELEASED; client/full36 remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "103226/7 aggro action85 uses204364 ordinary219/conversation1338/destination caster18 with flags0/rawinvoker7. Native dedicated-credit normalization correctly leaves this ordinary spell caster unchanged. Pet/guardian casts therefore create1338 with pet caster GUID: native CreateConversation can succeed, but skips Player/group personal visibility. CanNeverSee2 only registers Player seers while Update searches casterGUID; a pet caster cannot acquire that playback key, so normal owner-observed expiry stalls. This is a demonstrated native ownership/lifetime mismatch, not proof the original was wholly invisible to every client.",
+  "change": "Exactly3 Smart fields on103226/source0/id7:flags0->128 SMARTCAST_INVOKER_PLAYER,target7->130,distance0->70. Reuse existing compiled opt-in owner-caster bridge; retain original spell/action/ordinary cast/200ms delay/once event. Resolve owner/charmer at queue time, preserve raw event invoker, then revalidate source GUID/Player self-target/world/map/phase/range/scope at delayed cast. No new C++ production behavior, global Conversation change, quest/item/phase/health/progress grant or reset.",
+  "sequence": "Original101461 source9 row1 summons103226 after6000ms at(1962.64,2336.55,80.3631,3.16063),type7/duration0; no matching nativeEffect28 producer found. Preserve204356 summoning cosmetic and206944/206922 combat. Real death49052 belongs1037/5/tree46868/46869 and remains original owner-safe205; then data1 to actual103151 GUID369686 and native door uses251349/GUID136767+136768. Entire source/receiver/door graphs unchanged, including unresolved103151 LINK2. These dependencies are full-schema guarded; their whole combat/rendering sequence is not executed by the caster host.",
+  "validation": [
+    "Full12table original/applied/context fingerprints: full actor/producer/receiver Smart source0+9 and251349 rows, source22+17+13 conditions, texts/templates/WDB/spawns,1338 data/actor/creature,door template/two poses and spell_script_names. Exactly3 fields, idempotence/23 TEMP custom-partial refusals under --force/native EOF receipt; full live equality and RELEASED LF-SHA1. Reject altered credit/producer delay+summon/receiver GUID/missingLINK/doors/actor duration/story/spell binding, partial flags/target and altered applied range.",
+    "MSVC ASan actual production action85/loader/owner/helper/target130/deferred source+target checks uses actual old85/204364/0/7/0 vs repaired85/204364/128/130/70 SQL tuples. Player/pet/guardian/charm/missing owner/NPC/duplicate target/ordinary-spell isolation/raw invoker/70 boundary/eight late context changes/source disappearance/owner change after queue/rejected cast cases pass. Host counts Player-owned presentation requests, not total Conversation creation; native creation is exercised separately.",
+    "Second MSVC ASan host compiles actual effect219, Player/group visibility branch, GenerateDynamicFieldData, native duration+5000 setup, CanNeverSee2 and Update against actual1338 actor51657/103144 and line3114. Old pet creation succeeds publicly, Player seer registers42 but pet7 never gets playback key and does not expire after15401ms. Correct Player has personal owner/group list and retained15400ms lifetime, expires only after normal owner-view registration and >deadline. Native group-first/owner-later scheduling, replay, missing actor/line/mode/zero entry and quest-scope cleanup retained. Map creation, scope inheritance, outer visibility delivery/packet rendering are controlled or separate.",
+    "Matching26972 native204364 is single219/1338/18, BCT3114->105927 There it is... atop the crypt! Prepare yourself!, native Sound60465 and original actor10400ms unchanged.49052 is1037/5. Canonical actual0x80/130 loader/caster/200ms source-GUID callback/world/map/phase/range/scope/self identity and native CastSpell PE pass. No client audio/visual traversal claimed.",
+    "Existing Torvis migration test passes with one opt-in before promotion and two after promotion. Only exact103226/0/7/85/204364/128/130/70 may increase its global count, after independently verifying all12 live World21 tables/released hash; unrelated extra opt-ins still rejected. Old full before/after action85 comparisons/custom guards remain. Its native SQL now uses existing EOF/unbuffered helper plus receipt rather than old pipeline. Default Torvis200832/50 native and canonical regressions remain intact.",
+    "Fresh both-server CIM absence; pending21 hash-verified promotion; owned27352 canonical ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged and closed. Same DB0526D1/204B17EA EXEs; no user/unknown process stopped or character/client operation."
+  ],
+  "deployment": {
+    "canonical_hashes": {
+      "worldserver.exe": "DB0526D1CBDE25EE6660968C52CD4ACD927060C3F5AF0D775C3BD6C975527C92",
+      "bnetserver.exe": "204B17EAEC111ACBAFFA87868FC8589E74795F3136BC30C4B63D99F437373E25"
+    },
+    "migration": "sql/updates/world/2026_10_30_21_sothozz_invoker.sql",
+    "owned_pid": 27352,
+    "lf_sha1": "C173919BE955D6AD0FD8686DD66643B1F1AECFE7"
+  },
+  "diagnostics": "All read/TEMP/ASan/native/catalog/PE/updater/live/prior tests have before/after canonical+own crash hashes/log lengths/timestamps, exits/stdout/stderr reviewed. No new production crash/server warning/error/assertion/DBErrors; Crashes empty. Native extracted Update retains harmless existing C4100 unused p_time warning, not suppressed. Mixed3915-byte sharedLINK2 DBErrors unchanged atUTC2026-10-29T13:29:05.1130661Z and retained.",
+  "archive": {
+    "policy": "After commit archive original failed diagnostics/extractor bytes with source/destination/source SHA256 and actual fix commit; no active production report/log cleared.",
+    "cause": "Initial private extractor assumed GenerateDynamicFieldData was followed by SetConversationLine; actual method is last in Conversation.cpp. Correct extraction retains that exact final function. Repaired native lifecycle/ASan/staged/live/legacy checks pass; no production C++/EXE error.",
+    "path": "build-extractors/bin/Release/fixed/sothozz-validation-2026-10-30/manifest.json"
+  },
+  "structural": "Latest complete structural snapshot remains World19 .codex/artifact-post-frost-souls-2026-10-30:36/149/0 automated findings/3bounded,28maps2168contexts97timed23 primaryLINK review candidates. No new full36/client certification from this three-field repair.",
+  "evidence": [
+    ".codex/artifact-invoker-actor-review-2026-10-30",
+    ".codex/artifact-invoker-native-catalog-2026-10-30",
+    ".codex/sothozz-producer-review-2026-10-30",
+    ".codex/sothozz-original-2026-10-30",
+    ".codex/sothozz-fingerprints-2026-10-30",
+    ".codex/sothozz-data-2026-10-30",
+    ".codex/sothozz-native-lifecycle-compile-2026-10-30",
+    ".codex/sothozz-full-staged-2026-10-30",
+    ".codex/sothozz-updater-2026-10-30",
+    ".codex/sothozz-final-live-2026-10-30"
+  ],
+  "next": "Trace actual explicit target92/122 selection and resource/quest gates for104627+106569 Fill Progress Bar152435, mixed Feed207715/207722 and Aponi220726 on92445/47/50, and110122 Empowered Leap217815. Native catalog shows these are not interchangeable pure credit spells:30/power10/target92,137+90/target122,77+90/self,293 override739/self.9244x220726 also has source22 active43490 on actual invoker0, so merely changing caster would not admit a pet. Do not normalize blindly.",
+  "remaining": "Actual1338 voice/client scheduling/position/whole Sothozz/Warrior traversal remain OPEN. Shared103151/1->missing2 and101430/1->missing2 still unresolved and preserved; this is not their continuation repair.23 expandedLINK candidates, Stromkar recoil/cracked-floor/three ritual beams, Survival39427, GO/retry/full bags/full36/client remain unfinished. No reset permission."
+}

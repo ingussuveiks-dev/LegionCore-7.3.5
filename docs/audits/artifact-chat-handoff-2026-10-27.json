@@ -711,5 +711,11 @@
     "audit": "docs/audits/artifact-combat-stories-2026-10-30.json",
     "next": "Trace remaining native acquisition invoker-cast candidates92445/92447/92450,103226/7,104627/1,106569/0 and110122/1 against native effects, actual map/quest/full graphs before using opt-in128/130. Dedicated credit normalization already works globally; ordinary conversation/scene/aura/summon semantics must not be changed blindly.",
     "remaining": "Actual conversations/voice/position/cast acceptance and full Warrior/Nexus/client sequences remain OPEN. Shared101430/103151 missingLINK2 and all23 expanded review candidates retained, including104832/0->3. Stromkar recoil/cracked-floor/three beams, Survival39427, originalGO/retry/full bags and full36 still unfinished. No progress reset permission; client checks user-owned."
+  },
+  "sothozz_invoker_2026_10_30": {
+    "next": "Trace actual explicit target92/122 selection and resource/quest gates for104627+106569 Fill Progress Bar152435, mixed Feed207715/207722 and Aponi220726 on92445/47/50, and110122 Empowered Leap217815. Native catalog shows these are not interchangeable pure credit spells:30/power10/target92,137+90/target122,77+90/self,293 override739/self.9244x220726 also has source22 active43490 on actual invoker0, so merely changing caster would not admit a pet. Do not normalize blindly.",
+    "audit": "docs/audits/sothozz-invoker-2026-10-30.json",
+    "status": "World21 RELEASED3 fields:103226/7 native204364/1338 uses existing128+130/70 owner bridge.12table live/TEMP23/two ASan native caster+actual219/playback/lifetime/native26972/actualPE/Torvis both1-before+2-after opt-ins pass; own27352 clean closed. SameDB0526D1/204B17EA EXEs/3915 mixedLINK2 retained.",
+    "remaining": "Actual1338 voice/client scheduling/position/whole Sothozz/Warrior traversal remain OPEN. Shared103151/1->missing2 and101430/1->missing2 still unresolved and preserved; this is not their continuation repair.23 expandedLINK candidates, Stromkar recoil/cracked-floor/three ritual beams, Survival39427, GO/retry/full bags/full36/client remain unfinished. No reset permission."
   }
 }

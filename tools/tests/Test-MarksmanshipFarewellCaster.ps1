@@ -40,11 +40,21 @@ $reset
 UPDATE smart_scripts SET action_param1=200848 WHERE entryorguid=100749 AND source_type=0 AND id=2;
 $migration
 SELECT 'custom-spell',action_param2 FROM smart_scripts WHERE entryorguid=100749 AND source_type=0 AND id=2;
+SELECT 'approved-owner-cast',entryorguid,source_type,id,action_type,action_param1,action_param2,target_type,target_param1 FROM smart_scripts WHERE action_type=85 AND (action_param2 & 128)<>0 AND NOT(entryorguid=100749 AND source_type=0 AND id=2) ORDER BY entryorguid,source_type,id;
+SELECT '__FAREWELL_CASTER_SQL_COMPLETE__';
 "@
 $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
 $previous=$env:MYSQL_PWD
-try{$env:MYSQL_PWD=$connection[3];$rows=@($sql | & C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Caster temporary SQL fixture failed'}}finally{$env:MYSQL_PWD=$previous}
-foreach($expected in @("row`t85`t200832`t128`t130`t50","opt-in`t1","custom-script`t0","custom-flags`t2","custom-range`t0","custom-spell`t0")){if($rows -notcontains $expected){throw "Caster migration mismatch: $expected"}}
+try{$env:MYSQL_PWD=$connection[3];[IO.File]::WriteAllText("$out/fixture.sql",$sql,[Text.UTF8Encoding]::new($false));$code=& "$PSScriptRoot/Invoke-NativeSqlFiles.ps1" -Executable C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe -Arguments @("--host=$($connection[0])","--port=$($connection[1])","--user=$($connection[2])","--database=$($connection[4])",'--default-character-set=utf8mb4','--batch','--raw','--skip-column-names') -InputFile "$out/fixture.sql" -OutputFile "$out/fixture.stdout" -ErrorFile "$out/fixture.stderr";if($code -ne 0 -or (Get-Item "$out/fixture.stderr").Length){throw 'Caster temporary SQL fixture failed'};$rows=@(Get-Content "$out/fixture.stdout" -Encoding UTF8);if(!$rows.Count -or $rows[-1] -cne '__FAREWELL_CASTER_SQL_COMPLETE__'){throw 'Incomplete native farewell caster fixture'};$rows=@($rows|Select-Object -SkipLast 1)}finally{$env:MYSQL_PWD=$previous}
+$expectedOptins=1;$approved=@($rows|Where-Object {$_ -like "approved-owner-cast`t*"})
+if($approved.Count){
+ if($approved.Count -ne 1 -or $approved[0] -cne "approved-owner-cast`t103226`t0`t7`t85`t204364`t128`t130`t70"){throw 'Unexpected additional ordinary Player-caster opt-in; review independently'}
+ # Validate the later site's entire producer/receiver/story/door context and
+ # released migration hash before admitting that one extra opt-in count.
+ & "$PSScriptRoot/Test-SothozzInvokerData.ps1" -VerifyLiveData
+ $expectedOptins=2
+}
+foreach($expected in @("row`t85`t200832`t128`t130`t50","opt-in`t$expectedOptins","custom-script`t0","custom-flags`t2","custom-range`t0","custom-spell`t0")){if($rows -notcontains $expected){throw "Caster migration mismatch: $expected"}}
 $before=@($rows | Where-Object {$_ -like "before`t*"} | ForEach-Object {$_.Substring(7)})
 $after=@($rows | Where-Object {$_ -like "after`t*"} | ForEach-Object {$_.Substring(6)})
 if(Compare-Object $before $after){throw 'Unrelated cast/death fields changed'}
