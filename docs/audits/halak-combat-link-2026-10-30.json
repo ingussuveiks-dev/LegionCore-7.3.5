@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-30",
+  "status": "World36 RELEASED in canonical runtime; retained native/ASAN/live/PE/startup checks pass. Actual Halahk/client combat remains open.",
+  "cause": "Halahk93949 native row5 casts Avenging Wrath195272 once after20s then requests immediateLINK3. Row3 exists but is UPDATE_IC0 Holy Shock79961, independently due after3s/repeating5s. Native FindLinkedEvent admits onlyLINK61, so this outgoing call is invalid and logs an error on accepted cast. Unknown missing payloads elsewhere are unrelated.",
+  "repair": "Change exactly row5.link3->0, preserving all6 actions, real row3 event/timer/target/repeat, row4 Holy Light10s/15s and row5 Avenging Wrath20s/nonrepeatable flags. A naive row3->LINK61 makes Holy Shock wait20s then never repeat; native counterfactual explicitly rejects that alternative. Existing World18 owner741/own speech retained. No unknown LINK payload deleted or diagnostic suppressed.",
+  "sources": "Matching local26972 typed HalakPresentationCatalog, full original nine-table HalakPresentationOriginal fixture, releasedWorld18, current live schema/data, SmartScript InitTimer/RecalcTimer/UpdateTimer/ProcessEvent/FindLinkedEvent/action tail, native text and owner dispatch. Local code fully establishes this defect; no newer core behavior or speculative external payload used.",
+  "checks": [
+    "Full-schema nine-table TEMP replay original+released18, exactly one link difference and six retained rows, idempotence and21 custom/partial-state refusals with complete native SQL EOF receipt; optional live36LF-SHA1/RELEASED and full nine-table equality pass.",
+    "20 MSVC ASAN timer/LINK cases use extracted actual InitTimer/RecalcTimer/UpdateTimer/event guards/action prefix/LINK finder/tail. Old accepted-self-cast invalid-link counterfactual paired with repaired identical cast request sequence; exact timer boundary,90s repeated combat,casting deferral,OOC pause,conditions/expired/missing actor,fresh reset and player/pet/guardian/null victims. CAST selection/acceptance/search/AI endpoints are controlled, not an in-client or whole native spell-engine test.",
+    "Matching26972 catalog confirms79961 actualdamage/target6,192648 effect136 heal-percent self/target1 and3000mscast,195272 self auras20s; separate real45608 scenario901 stage4 unchanged. No inferred healer target correction needed.",
+    "Retained Test-HalakPresentation -VerifyLiveData -VerifyNativeCatalog -VerifyReleaseBinary passes: native own speech741,real owner resolver/130 eligibility,one-hit death,failed creation/once flags and inherited canonical equip/slot/claim/arrival/loader/conversation/TALK paths. Retained data test independently replays exact released36 successor before full-context live comparison; original18 fixture and SQL remain immutable.",
+    "Fresh complete20-table export and native ArtifactCatalog:36routes,149race/class pairs,0 narrow automated findings,3bounded route reviews;28maps2168contexts97timed21broad primaryLINK reviews,3unresolved recipients,2nested replacements. Only93949/5->3 removed from prior22 broad set. No whole-chain or whole36 certification."
+  ],
+  "failed_iterations": [
+    "First refusal variant setlink0, which is a legitimate fully applied state; no error was expected by the migration. Corrected variant uses foreignlink4. Original output copied before repeat; final21 refusals pass.",
+    "First native assertion assumed a missing VICTIM prevented row5 link; row5 targetsSELF, so accepted Avenging Wrath still reaches the old invalid tail with no victim. Corrected host expectation; final20 cases pass. Original ASAN assertion output preserved; no production crash.",
+    "Retained PE failure was old SmartScript text offsets after76ca986cd. Repaired separately in e4f6c6aef with actual comparison/producer/consumer evidence; no production change.",
+    "Initial read-only exploratory SQL requested absent creature_template.name; corrected matching creature_template_wdb.Name1 query succeeds. Original SQL client error visible in tool transcript; not a server error or successful test."
+  ],
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_30_36_halak_combat_link.sql",
+    "lf_sha1": "5e97673cf144578d29df283de9bb560378e7ce68",
+    "sql_sha256": "29675320a3b84c9c1e1a904abbdc06e6ffa6563fb40d4c6b8c886b01d04f1c3d",
+    "runtime": "build-extractors/bin/Release",
+    "owned_pid": 16600,
+    "startup": "Fresh absent-server CIM check before hash-verified pending36 promotion. Owned16600 canonical ready/updater/graceful shutdown0/actualexit0/stderr0/newDBErrors0/protected configuration/certificates unchanged; no task server remains.",
+    "world_sha256": "cbcd766380a2bd9bb8e6425c1a8a6afd9ab3adc4592dc8a7f8f92df5be566d05",
+    "bnet_sha256": "ae5b9d8127b8f46f63ccbbb50c389e8392666d8703ea4dc812cbca5c59b50c68",
+    "binary": "Data-only correction uses existing compiled dispatcher; canonical binaries unchanged, no new build needed or claimed.",
+    "characters": "No character/item/quest/checkpoint changes; prior reset3 remains consumed."
+  },
+  "evidence": [
+    "build-extractors/runtime-test/halak-combat-link-data",
+    "build-extractors/runtime-test/halak-combat-link",
+    "build-extractors/runtime-test/halak-presentation-data",
+    "build-extractors/runtime-test/halak-presentation",
+    ".codex/halak-combat-data-attempt1-2026-10-30",
+    ".codex/halak-combat-native-attempt1-2026-10-30",
+    ".codex/halak-combat-updater-2026-10-30",
+    ".codex/artifact-post-halak-combat-2026-10-30"
+  ],
+  "diagnostics": "Every test/native/catalog/updater/live/PE/structure run before/after canonical+own crash/log snapshots and real exit/stdout/stderr reviewed. Final no new/changed crash, appended DBErrors/server warnings/errors/assertions. Canonical activeCrashes empty; existing mixed5365-byte shared101430/103151LINK2 SHA25678362b1da17b8a5f5469d40e9f49453d9ce67ff8d7abde5677d1a6b24f2da9d3 unchanged, unresolved, not rotated or archived as fixed.",
+  "remaining": "Actual Halahk spell acceptance/timing/rendering/voice/death/fullFrost route/group/faction/re-entry remain client checks. UnknownWardstone101325LINK4,shared101430/103151LINK2,Survival39427 middle,Stromkar reported visuals/equip/exit/Thoradin and full36 remain open. No automatic character reset or client traversal claimed.",
+  "structural_sha256": {
+    "routes.json": "5219330a0b4e9f01f45dfcc92c1f8fd334c7a1b9ebd907b3a38c2de6acaceb46",
+    "actors/map-links.json": "45eed79b0958c48a962a3be84c4b8d68bb9a93c751333c4bf95c3040f3c1d987"
+  }
+}

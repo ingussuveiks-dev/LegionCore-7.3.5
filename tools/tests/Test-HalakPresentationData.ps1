@@ -73,7 +73,13 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_18_halak_
  }
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_18_halak_presentation.sql' AND hash='$hash' AND state='RELEASED';";if($live -notcontains '1'){throw 'Live Halak migration/hash differs'}
-  $live=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Live native Halak context differs $table"}}
+  $expectedRows=$rows;$expectedTag='first'
+  $followup="$repo/sql/updates/world/2026_10_30_36_halak_combat_link.sql"
+  if(Test-Path $followup){$later=Get-Content $followup -Raw;$sha=[Security.Cryptography.SHA1]::Create();try{$laterHash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($later.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
+   $released=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_36_halak_combat_link.sql' AND hash='$laterHash' AND state='RELEASED';"
+   if($released -contains '1'){$expectedRows=Query ($setup+$baseline+$migration+$later+(Snapshot 'known-combat-followup'));$expectedTag='known-combat-followup'}
+  }
+  $live=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $expectedRows "$expectedTag-$table")){throw "Live native Halak context differs $table"}}
  }
  'PASS full9table Halak presentation: exactly4 target fields; native741 payload/combat/flags/delays/unknown5->3 unchanged, idempotence/20 partial-custom refusals; live checked only when requested'
 }
