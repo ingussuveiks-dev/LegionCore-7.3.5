@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-30",
+  "fix_commit": "bcdfb9463",
+  "archive": "build-extractors/bin/Release/fixed/silver-hand-first-room-2026-10-30",
+  "files": 165,
+  "manifest_sha256": "d43c904f27f3a8627ba2670583fdbe69aee0fdbae9a0562c3776d3119bed7117",
+  "verification": "Closed baseline3/repaired50/native/EOF World/Release/link/selected canonical+retained PE/promotion/owned29828 startup diagnostics source/destination/source and final SHA256 verified. Identified overload/register inspection failures paired with passing checks. Originals retained.",
+  "diagnostics": "Crashes empty/no report removed; mixed6090-byte sharedLINK2 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 and timestamp unchanged. No active log truncated or unrelated history removed.",
+  "limits": "Five unresolved Glow research folders (addons/glow-source/passives/template-spells*) deliberately excluded from resolved archive and kept in original ignored paths; OPEN source audit committed. No runtime crash/executable/security bypass/credentials/character or whole-client/full36 completion claimed."
+}
