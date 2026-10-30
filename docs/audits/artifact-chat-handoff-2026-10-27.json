@@ -800,5 +800,9 @@
     "audit": "docs/audits/priest-azuregos-healing-2026-10-30.json",
     "status": "World33 RELEASED: Priest1065/6140/104832 null-Unit Scion admission, remove malformed DATA0->HP3 edge and require real47107 Scion progress/opening step before native99..100% healing finale. Preserve1HP/Regen0 and original1681 intro/8-entry list; Mage1101/6068/2140 preserved. Implementation098763452 pushed.",
     "checks": "18-table TEMP/live exact deltas/idempotence/27 refusals, ASAN48 Priest and24 Mage complete controlled sequences, native26972 criterion leaves, actual PE and owned26960 clean startup/graceful0. No new diagnostics; canonical070384A7/D3335145 unchanged, mixed5365-byte sharedLINK2 retained.162 closed files hash archived. Actual client/group/faction/guide/re-entry/full36 remain separate checks."
+  },
+  "post_priest_structural_2026_10_30": {
+    "audit": "docs/audits/artifact-post-priest-healing-2026-10-30.json",
+    "status": "World33 fresh20-table/native36/149/0 automated findings,3 boundedMonk edges;28maps2168contexts97timed22 broadLINK candidates (Priest malformed edge actually repaired),3 unresolved recipients/2 nested self-replacement. Restricted remaining actor9table capture and DATA29 scope review retained; no further speculative change. No new diagnostics or character mutation; fullclient/all36 still OPEN."
   }
 }
