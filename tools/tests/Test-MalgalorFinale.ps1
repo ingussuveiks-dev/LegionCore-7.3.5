@@ -27,7 +27,7 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  $s=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
  [IO.File]::WriteAllText("$out/QuestDelay.inc",(Block $s 'void Player::AddQuestDelayedEvent('))
  [IO.File]::WriteAllText("$out/LoginExit.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/PlayerScenario.cpp" -Raw) 'bool Player::ExitCompletedBrokenShoreLogin('))
- $s=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw;$a=$s.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);');$b=$s.IndexOf('    // A player charmed by an NPC',$a)
+ $s=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw;$a=$s.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));');$b=$s.IndexOf('    // A player charmed by an NPC',$a)
  if($a -lt 0 -or $b -le $a){throw 'Native final-scaling callback path missing'}
  [IO.File]::WriteAllText("$out/PostScale.inc",$s.Substring($a,$b-$a))
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

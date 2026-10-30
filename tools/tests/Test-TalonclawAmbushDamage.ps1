@@ -13,7 +13,7 @@ foreach($needle in @('RegisterCreatureAI(npc_talonclaw_ambush_dakarr)','struct n
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
 [IO.File]::WriteAllText("$out/SmartDamage.inc",(Section $source 'void SmartAI::DamageTaken(' 'void SmartAI::HealReceived('))
 $source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
-$start=$source.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);')
+$start=$source.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));')
 $hook=$source.IndexOf('    if (Creature* creature = victim->ToCreature())',$start)
 $end=$source.IndexOf('{',$hook)+1;$depth=1
 while($depth){if($source[$end] -eq '{'){++$depth};if($source[$end] -eq '}'){--$depth};++$end}

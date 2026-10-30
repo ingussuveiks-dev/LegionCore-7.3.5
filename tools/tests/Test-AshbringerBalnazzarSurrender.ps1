@@ -22,10 +22,10 @@ if($Baseline){$source=$pinned;$handler=$old}else{
 $header=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.h" -Raw
 [IO.File]::WriteAllText("$out/Constants.inc",(Block $header 'enum Data')+';'+(Block $source 'enum eSpells')+';')
 $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
-$first=$core.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);')
+$first=$core.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));')
 $bridge=Block $core.Substring($first) '    if (Creature* creature = victim->ToCreature())'
 if($first -lt 0 -or $core.IndexOf('    if (health <= damage)',$first) -lt $first+$bridge.Length){throw 'Native final protection/death order changed'}
-[IO.File]::WriteAllText("$out/ScaledHook.inc",'    damage /= victim->GetHealthMultiplierForTarget(this);'+$bridge)
+[IO.File]::WriteAllText("$out/ScaledHook.inc",'    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));'+$bridge)
 [IO.File]::WriteAllText("$out/InstanceCredit.inc",(Block (Get-Content "$repo/src/server/game/Instances/InstanceScript.cpp" -Raw) 'void InstanceScript::DoUpdateAchievementCriteria(').Replace('CriteriaTypes type','uint32 type'))
 $eventHeader=Get-Content "$repo/src/server/game/AI/EventMap.h" -Raw
 $eventSource=Get-Content "$repo/src/server/game/AI/EventMap.cpp" -Raw
@@ -40,10 +40,13 @@ $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|W
 $previous=$env:MYSQL_PWD
 try{
  $env:MYSQL_PWD=$connection[3]
- $rows=@("SET SESSION TRANSACTION READ ONLY;SELECT 'binding',entry,ScriptName,AIName FROM creature_template WHERE ScriptName='npc_bs_balnazzar';SELECT 'spawn',guid,id,map,phaseId FROM creature WHERE id=90981;SELECT 'scaling',entry,LevelScalingMin,LevelScalingMax FROM creature_template_scaling WHERE entry=90981;SELECT 'scenario',ScenarioID,MapID,Class,Team FROM scenario_data WHERE MapID=1500;"|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names)
- if($LASTEXITCODE){throw 'Read-only Balnazzar query failed'}
+ [IO.File]::WriteAllText("$out/live-read.sql","SET SESSION TRANSACTION READ ONLY;SELECT 'binding',entry,ScriptName,AIName FROM creature_template WHERE ScriptName='npc_bs_balnazzar';SELECT 'spawn',guid,id,map,phaseId FROM creature WHERE id=90981;SELECT 'scaling',entry,LevelScalingMin,LevelScalingMax FROM creature_template_scaling WHERE entry=90981;SELECT 'scenario',ScenarioID,MapID,Class,Team FROM scenario_data WHERE MapID=1500;SELECT 'complete','balnazzar';")
+ $arguments=@("--host=$($connection[0])","--port=$($connection[1])","--user=$($connection[2])","--database=$($connection[4])",'--batch','--raw','--skip-column-names')
+ $code=& "$PSScriptRoot/Invoke-NativeSqlFiles.ps1" -Executable C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe -Arguments $arguments -InputFile "$out/live-read.sql" -OutputFile "$out/live.tsv" -ErrorFile "$out/live.stderr"
+ if($code -or (Get-Item "$out/live.stderr").Length){throw 'Full-EOF read-only Balnazzar query failed'}
+ $rows=@(Get-Content "$out/live.tsv")
 }finally{$env:MYSQL_PWD=$previous}
-if(Compare-Object @("binding`t90981`tnpc_bs_balnazzar`t","spawn`t366331`t90981`t1500`t5942","scaling`t90981`t98`t110","scenario`t775`t1500`t0`t0","scenario`t933`t1500`t0`t0","scenario`t961`t1500`t0`t0") $rows){throw 'Native Balnazzar/shared-map bindings changed'}
+if(Compare-Object @("binding`t90981`tnpc_bs_balnazzar`t","spawn`t366331`t90981`t1500`t5942","scaling`t90981`t98`t110","scenario`t775`t1500`t2`t0","scenario`t933`t1500`t1`t0","scenario`t961`t1500`t12`t0","complete`tbalnazzar") $rows){throw 'Native Balnazzar/shared-map bindings changed'}
 & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile AshbringerBalnazzarCatalog.cpp -ProbeName AshbringerBalnazzarCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log"
 if(!$? -or $LASTEXITCODE){throw 'Native Balnazzar catalog failed'}
 if(Compare-Object @("SPELL`t227853`tKill Credit","EFFECT`t227853`t0`t90`t0`t90981`t0`t18`t8","SPELL`t152821`tInvisible Man Transform","EFFECT`t152821`t0`t6`t56`t17286`t0`t1`t0","KIT`t61036`t1","STEP`t1853`t45269","CRITERION`t45270`t28902`t92`t46149") (Get-Content "$out/native.tsv")){throw 'Native775 finale/credit/morph/kit metadata changed'}

@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <limits>
 #include <cassert>
 #include <cmath>
 #include <cstdint>

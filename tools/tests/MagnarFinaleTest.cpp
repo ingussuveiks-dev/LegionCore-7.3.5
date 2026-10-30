@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <limits>
 #include "Harness.inc"
 struct Magnar : CreatureAI
 {

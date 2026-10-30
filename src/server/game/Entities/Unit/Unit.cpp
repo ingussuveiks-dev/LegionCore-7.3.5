@@ -1202,7 +1202,9 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     if (victim->IsPlayer())
         victim->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_HIGHEST_HIT_RECEIVED, damage);
 
-    damage /= victim->GetHealthMultiplierForTarget(this);
+    // Float division can round UINT32_MAX to 2^32, or exceed it when scaling
+    // down. Clamp before the integer conversion; retain ordinary float rounding.
+    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));
 
     // Encounter protection must see the final, level-scaled damage used by
     // the death check below, including changes made by creature AI.

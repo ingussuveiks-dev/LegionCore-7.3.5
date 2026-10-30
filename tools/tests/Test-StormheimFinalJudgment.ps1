@@ -74,7 +74,7 @@ $source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
 $a=$core.IndexOf('bool Player::TalkedToCreature(');$b=$core.IndexOf('void Player::MoneyChanged(',$a)
 [IO.File]::WriteAllText("$output/Talked.inc",$core.Substring($a,$b-$a))
 $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
-$a=$unit.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);');$b=$unit.IndexOf('    if (!victim->IsControlledByPlayer()',$a)
+$a=$unit.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));');$b=$unit.IndexOf('    // A player charmed by an NPC',$a)
 [IO.File]::WriteAllText("$output/NativeScaledHook.inc",$unit.Substring($a,$b-$a))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++20 /W4 /I`"$output`" `"$PSScriptRoot/StormheimFinalJudgmentTest.cpp`" /Fe`"$output/FinalJudgment.exe`" /Fo`"$output/FinalJudgment.obj`"`r`nif not %errorlevel%==0 exit /b %errorlevel%`r`n`"$output/FinalJudgment.exe`"`r`n"

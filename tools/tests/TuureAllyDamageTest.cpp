@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <limits>
 // Native core extraction/adapters and established cross-product boundary cases
 // come from the matching project's SilverHandAllyDamageTest harness.
 #include "NativeHost.inc"

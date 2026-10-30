@@ -42,11 +42,5 @@ for entry in instructions(factory):
 assert len(tables) == 1, 'Actual factory does not install the post-scaling override at virtual slot0xa8'
 assert struct.unpack_from('<Q', native['binary'], tables[0] + 0xa0)[0] == native['symbol']('?DamageTaken@SmartAI@@'), 'Wrapper replaces native pre-scaling SmartAI behavior'
 assert b'npc_titanstrike_final_prustaga' in native['binary'], 'Factory registration name absent'
-damage = instructions('?DealDamage@Unit@@')
-division = next(index for index, entry in enumerate(damage) if entry.mnemonic == 'divss' and entry.op_str == 'xmm1, xmm0')
-assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x180
-           for entry in damage[division - 8:division]), 'Native virtual health-multiplier call missing before final division'
-assert damage[division + 1].mnemonic == 'cvttss2si' and damage[division + 2].op_str == 'dword ptr [rsp + 0x60], ecx', 'Normalized damage is not stored before protection'
-assert sum(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0xa8
-           for entry in damage[division + 3:division + 70]) == 2, 'Current and suspended content AI do not both receive final damage'
+runpy.run_path(str(Path(__file__).with_name('damage_scaling_release_check.py')))['check'](native, instructions)
 print('PASS: deployed Prustaga post-scaling vtable wrapper reaches actual106730/1609/1099 scope, compares final damage with target-relative health and zeros only lethal damage before SetHealth(1); native scaling and registry name remain linked')

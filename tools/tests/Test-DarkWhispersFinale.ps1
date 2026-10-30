@@ -12,7 +12,7 @@ function Extract([string]$s,[string]$start,[string]$end){$a=$s.IndexOf($start);$
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/dark_whispers_artifact.cpp" -Raw
 [IO.File]::WriteAllText("$out/ProtectFinale.inc",(Extract $source 'namespace DarkWhispersArtifact' 'namespace DarkWhispersArrival'))
 $source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
-[IO.File]::WriteAllText("$out/NativeScaledHook.inc",(Extract $source '    damage /= victim->GetHealthMultiplierForTarget(this);' '    if (!victim->IsControlledByPlayer()'))
+[IO.File]::WriteAllText("$out/NativeScaledHook.inc",(Extract $source '    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));' '    // A player charmed by an NPC'))
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
 [IO.File]::WriteAllText("$out/SmartDamage.inc",(Extract $source 'void SmartAI::DamageTaken(' 'void SmartAI::HealReceived('))
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
@@ -20,7 +20,7 @@ $start=$source.IndexOf('void SmartScript::ProcessEvent(')
 [IO.File]::WriteAllText("$out/HealthEvent.inc",(Extract $source.Substring($start) '        case SMART_EVENT_UPDATE_IC:' '        case SMART_EVENT_TARGET_HEALTH_PCT:'))
 $enums=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.h" -Raw
 [IO.File]::WriteAllText("$out/EventFlags.inc",(Extract $enums 'enum SmartEventFlags' 'enum SmartCastFlags'))
-if(!$source.Contains('if (failedSpellCast && !successfulSpellCast)')){throw 'Review native cast failure semantics'}
+if(!$source.Contains('if (!successfulSpellCast && (failedSpellCast || retryThreshold))')){throw 'Review native cast failure/retry semantics'}
 $migration=Get-Content $MigrationFile -Raw
 $fixture=@"
 CREATE TEMPORARY TABLE saved_sai LIKE smart_scripts;

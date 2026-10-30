@@ -23,9 +23,9 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  [IO.File]::WriteAllText("$out/PlayerLookupMethod.inc",(Block (Get-Content "$repo/src/server/game/Globals/ObjectAccessor.cpp" -Raw) 'Player* ObjectAccessor::GetPlayer('))
  [IO.File]::WriteAllText("$out/ScenarioGate.inc",(Block (Get-Content "$repo/src/server/game/Scenarios/Scenario.cpp" -Raw) 'bool Scenario::CanUpdateCriteria('))
  $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
- $first=$core.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);');$bridge=Block $core.Substring($first) '    if (Creature* creature = victim->ToCreature())'
+ $first=$core.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));');$bridge=Block $core.Substring($first) '    if (Creature* creature = victim->ToCreature())'
  if($first -lt 0 -or $core.IndexOf('    if (health <= damage)',$first) -lt $first+$bridge.Length){throw 'Native post-scaling/death hook order changed'}
- [IO.File]::WriteAllText("$out/ScaledHook.inc",'    damage /= victim->GetHealthMultiplierForTarget(this);'+$bridge)
+ [IO.File]::WriteAllText("$out/ScaledHook.inc",'    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));'+$bridge)
  $eh=Get-Content "$repo/src/server/game/AI/EventMap.h" -Raw;$es=Get-Content "$repo/src/server/game/AI/EventMap.cpp" -Raw
  [IO.File]::WriteAllText("$out/EventMapClass.inc",(Block $eh 'enum c_events')+';'+(Block $eh 'class TC_GAME_API EventMap').Replace('TC_GAME_API ','')+';')
  [IO.File]::WriteAllText("$out/EventMapMethods.inc",((@('void EventMap::Reset(','void EventMap::ScheduleEvent(uint32 eventId, uint32 time','uint32 EventMap::ExecuteEvent(','void EventMap::CancelEvent(')|ForEach-Object {Block $es $_}) -join "`n"))

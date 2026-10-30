@@ -60,10 +60,5 @@ assert native['symbol']('?GetMaxHealth@Unit@@QEBA_KPEAV1@@') in native['calls'](
 zero_addresses={ins.address for ins in body if ins.mnemonic=='mov' and ins.op_str=='dword ptr [r12], esi'}
 assert any(ins.mnemonic=='cmp' and ins.op_str=='dword ptr [rcx + 0x60], esi' and body[i+1].mnemonic=='je' and body[i+1].operands[0].imm in zero_addresses for i,ins in enumerate(body[:owner_site])), 'Terminal damage-zero guard missing'
 # Prove the shared native death dispatcher reaches the actual post-scaling slot.
-deal=instructions('?DealDamage@Unit@@')
-division=next(i for i,ins in enumerate(deal) if ins.mnemonic=='divss' and ins.op_str=='xmm1, xmm0')
-assert any(ins.mnemonic=='call' and ins.operands[0].type==CS_OP_MEM and ins.operands[0].mem.disp==0x180 for ins in deal[division-8:division]), 'Native target scaling virtual call missing'
-assert deal[division+1].mnemonic=='cvttss2si'
-post_sites=[i for i,ins in enumerate(deal) if ins.mnemonic=='call' and ins.operands[0].type==CS_OP_MEM and ins.operands[0].mem.disp==0xa8]
-assert len(post_sites)>=2 and min(post_sites)>division, 'Primary/suspended post-scaling dispatch missing'
+runpy.run_path(str(Path(__file__).with_name('damage_scaling_release_check.py')))['check'](native, instructions)
 print('PASS selected Degauz factory uses final-damage A8 and empty raw A0; target-relative health/max, owner, stage0 admission, original retreat/summons/type92 event48449 and native primary/suspended dispatch retained. Semantic/reentry cases are native-host checks; no client proof.')

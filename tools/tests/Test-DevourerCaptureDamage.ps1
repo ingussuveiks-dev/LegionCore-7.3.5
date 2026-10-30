@@ -20,9 +20,9 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  [IO.File]::WriteAllText("$out/OwnerGuid.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'ObjectGuid GetCharmerOrOwnerGUID() const'))
  $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
  [IO.File]::WriteAllText("$out/OwnerPlayer.inc",(Block $unit 'Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const'))
- $first=$unit.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);');$bridge=Block $unit.Substring($first) '    if (Creature* creature = victim->ToCreature())'
+ $first=$unit.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));');$bridge=Block $unit.Substring($first) '    if (Creature* creature = victim->ToCreature())'
  if($first -lt 0 -or $unit.IndexOf('    if (health <= damage)',$first) -lt $first+$bridge.Length){throw 'Native final-damage/death hook order changed'}
- [IO.File]::WriteAllText("$out/ScaledHook.inc",'    damage /= victim->GetHealthMultiplierForTarget(this);'+$bridge)
+ [IO.File]::WriteAllText("$out/ScaledHook.inc",'    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));'+$bridge)
  $accessor=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
  [IO.File]::WriteAllText("$out/PlayerFind.inc",(Block $accessor 'static T* Find(ObjectGuid guid)'))
  [IO.File]::WriteAllText("$out/PlayerLookup.inc",(Block $accessor 'static Player* GetObjectInWorld(ObjectGuid guid, Player*')+(Block $accessor 'template<class T> static T* GetObjectInMap(')+'static Player* GetPlayer(WorldObject const&, ObjectGuid);')

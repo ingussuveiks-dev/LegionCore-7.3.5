@@ -1,6 +1,16 @@
+#include <algorithm>
+#include <limits>
 #include <mutex>
 constexpr int QUEST_SPECIAL_FLAGS_SPEAKTO=128;
+struct Player;
+struct Quest;
+namespace SkyholdArtifactReturn {bool CanCredit(Player*,Quest const*);}
 #include "FinalJudgmentFixture.inc"
+namespace SkyholdArtifactReturn {
+// The native return policy's default branch admits these unrelated Stormheim
+// quests. Its actual Warrior branches run in Test-SkyholdArtifactReturn.ps1.
+bool CanCredit(Player*,Quest const* quest){assert(quest->GetQuestId()!=39191&&quest->GetQuestId()!=40043&&quest->GetQuestId()!=41105);return true;}
+}
 using CreatureAI=SmartAI;
 #include "Talked.inc"
 struct Templates {

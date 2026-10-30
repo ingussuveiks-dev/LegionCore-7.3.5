@@ -34,7 +34,7 @@ $actor=$actor.Replace((Block $actor 'void JustDied('),'')
 [IO.File]::WriteAllText("$out/Actor.inc",$actor+';')
 $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 foreach($pair in @(@('Health','uint64 Unit::GetHealth(Unit* victim) const'),@('MaxHealth','uint64 Unit::GetMaxHealth(Unit* victim) const'))){[IO.File]::WriteAllText("$out/$($pair[0]).inc",(Block $core $pair[1]))}
-$first=$core.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);');$last=$core.IndexOf('    // A player charmed by an NPC',$first)
+$first=$core.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));');$last=$core.IndexOf('    // A player charmed by an NPC',$first)
 if($first -lt 0 -or $last -le $first){throw 'Native final damage bridge missing'}
 [IO.File]::WriteAllText("$out/ScaledHook.inc",$core.Substring($first,$last-$first))
 $creature=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw

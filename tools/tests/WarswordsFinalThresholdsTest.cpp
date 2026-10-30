@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <limits>
 #include <functional>
 #include "Harness.inc"
 struct FinalBoss : CreatureAI

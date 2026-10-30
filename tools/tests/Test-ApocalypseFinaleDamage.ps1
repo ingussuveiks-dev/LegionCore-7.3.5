@@ -12,7 +12,7 @@ $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
 $a=$s.IndexOf('void SmartAI::DamageTaken(');$b=$s.IndexOf('void SmartAI::HealReceived(',$a)
 [IO.File]::WriteAllText("$out/SmartDamage.inc",$s.Substring($a,$b-$a))
 $s=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
-$a=$s.IndexOf('uint32 Unit::DealDamage(');$b=$s.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);',$a)
+$a=$s.IndexOf('uint32 Unit::DealDamage(');$b=$s.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));',$a)
 if($s.IndexOf('victim->GetAI()->DamageTaken(this, damage, damagetype);',$a) -gt $b){throw 'Native damage order changed'}
 $hook=$s.IndexOf('    if (Creature* creature = victim->ToCreature())',$b)
 if($b -lt $a -or $hook -lt $b){throw 'Native scaled damage/creature hook missing'}

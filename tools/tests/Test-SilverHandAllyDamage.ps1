@@ -121,10 +121,10 @@ if($prefix.IndexOf('HealReceived(this, addhealth)') -gt $prefix.IndexOf('HealDon
 [IO.File]::WriteAllText("$out/DealHealPrefix.inc",$prefix)
 [IO.File]::WriteAllText("$out/ModifyHealth.inc",(Block $core 'int64 Unit::ModifyHealth('))
 [IO.File]::WriteAllText("$out/LifecycleBridge.inc",(Block (Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw) 'if (i_AI || i_disabledAI)'))
-$first=$core.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);')
+$first=$core.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));')
 $bridge=Block $core.Substring($first) '    if (Creature* creature = victim->ToCreature())'
 if($first -lt 0 -or $core.IndexOf('    if (health <= damage)',$first) -lt $first+$bridge.Length){throw 'Native scaling/protection/death order changed'}
-[IO.File]::WriteAllText("$out/ScaledHook.inc",'    damage /= victim->GetHealthMultiplierForTarget(this);'+$bridge)
+[IO.File]::WriteAllText("$out/ScaledHook.inc",'    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));'+$bridge)
 [IO.File]::WriteAllText("$out/Health.inc",(Block $core 'uint64 Unit::GetHealth(Unit* victim) const'))
 $kill=Block $core 'void Unit::Kill('
 if(!$kill.Contains('victim->setDeathState(JUST_DIED);') -or $kill.Contains('DamageTakenAfterScaling')){throw 'Direct scripted Kill no longer bypasses the ordinary damage guard'}

@@ -239,10 +239,6 @@ for entry in instructions('?GetAI@npc_magnar_icebreaker@@'):
 assert len(tables) == 1, 'Actual Magnar factory omits post-scaling policy'
 assert struct.unpack_from('<Q', native['binary'], tables[0] + 0xa0)[0] == native['symbol']('?DamageTaken@UnitAI@@'), 'Old pre-scaling override remains installed'
 assert any(entry.op_str == 'byte ptr [rbx + 0xd2], 0' for entry in instructions('?Reset' + suffix)), 'Reset does not clear scoped finale claim'
-damage = instructions('?DealDamage@Unit@@')
-division = next(index for index, entry in enumerate(damage) if entry.mnemonic == 'divss' and entry.op_str == 'xmm1, xmm0')
-assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x180 for entry in damage[division - 8:division])
-assert damage[division + 1].mnemonic == 'cvttss2si' and damage[division + 2].op_str == 'dword ptr [rsp + 0x60], ecx'
-assert sum(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0xa8 for entry in damage[division + 3:division + 70]) == 2
+runpy.run_path(str(Path(__file__).with_name('damage_scaling_release_check.py')))['check'](native, instructions)
 assert b'npc_magnar_icebreaker' in native['binary']
 print('PASS: canonical Magnar post-slot retains scaled/owner-first policy and acknowledged504; snapshots four-line handoff/recipient/instance without immediate credit/despawn. Surrender executes native passive/victim/delayed-cast/active-motion stop, then epoch-guarded idle/Penta-Strike removal; Reset restores defensive admission. Pending clock,45784/actual909/5/cancellable6000ms removal and scoped504 cleanup retained. Client speech/departure VFX remain separate.')

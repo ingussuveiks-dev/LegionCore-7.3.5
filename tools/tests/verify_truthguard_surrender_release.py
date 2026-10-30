@@ -59,11 +59,5 @@ raw_offset = native['offset'](raw)
 assert native['binary'][raw_offset] == 0xc3 or native['binary'][raw_offset:raw_offset + 3] == b'\xc2\x00\x00', 'Inherited raw callback is not the empty native hook'
 assert b'npc_sr_yrgrim_the_truthseeker' in native['binary'], 'Yrgrim registration missing'
 
-damage = instructions('?DealDamage@Unit@@')
-division = next(index for index, entry in enumerate(damage) if entry.mnemonic == 'divss' and entry.op_str == 'xmm1, xmm0')
-assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x180
-           for entry in damage[division - 8:division]), 'Native target scaling call missing'
-assert damage[division + 1].mnemonic == 'cvttss2si' and damage[division + 2].op_str == 'dword ptr [rsp + 0x60], ecx'
-assert sum(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0xa8
-           for entry in damage[division + 3:division + 70]) == 2, 'Primary/suspended AI final-damage dispatch missing'
+runpy.run_path(str(Path(__file__).with_name('damage_scaling_release_check.py')))['check'](native, instructions)
 print('PASS: deployed Yrgrim factory selects slot0xa8 after native scaling; attacker-relative health, zero-before-once-only claim, original heal/aura/home/Talk2/evade/flags/event1 in3000ms retained. No direct damage credit; not client traversal.')

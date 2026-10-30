@@ -26,7 +26,7 @@ $damageIndex=$spell.IndexOf('caster->DealSpellDamage(&damageInfo, true);');$comb
 if($damageIndex -lt 0 -or $combatIndex -lt 0 -or $damageIndex -gt $combatIndex){throw 'Review first spell damage/combat ordering'}
 if(!$unit.Contains('creature->AI()->EnterCombat(enemy);')){throw 'Review native combat-entry callback'}
 [IO.File]::WriteAllText("$out/NativeHealth.inc",(Extract $unit 'uint64 Unit::GetHealth(Unit*' 'uint32 Unit::GetArmor('))
-[IO.File]::WriteAllText("$out/NativeScaledHook.inc",(Extract $unit '    damage /= victim->GetHealthMultiplierForTarget(this);' '    if (!victim->IsControlledByPlayer()'))
+[IO.File]::WriteAllText("$out/NativeScaledHook.inc",(Extract $unit '    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));' '    // A player charmed by an NPC'))
 $creature=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
 [IO.File]::WriteAllText("$out/NativeMultiplier.inc",(Extract $creature 'float Creature::GetHealthMultiplierForTarget(' 'float Creature::GetBaseDamageForLevel('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

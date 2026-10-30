@@ -23,7 +23,7 @@ if($Stromkar){
 }
 $source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 if($Stromkar){$creatureSource=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw;[IO.File]::WriteAllText("$out/NativeRegeneration.inc",(Section $creatureSource 'void Creature::RegenerateHealth()' 'uint32 Creature::GetRegenerateInterval()'))}
-$first=$source.IndexOf('uint32 Unit::DealDamage(');$scaled=$source.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);',$first)
+$first=$source.IndexOf('uint32 Unit::DealDamage(');$scaled=$source.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));',$first)
 if($source.IndexOf('victim->GetAI()->DamageTaken(this, damage, damagetype);',$first) -ge $scaled){throw 'Native pre-scaling damage order changed'}
 $hook=$source.IndexOf('    if (Creature* creature = victim->ToCreature())',$scaled)
 if($first -lt 0 -or $scaled -lt $first -or $hook -lt $scaled){throw 'Native scaled hook missing'}

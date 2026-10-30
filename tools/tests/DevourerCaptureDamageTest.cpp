@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <limits>
 #include "OwnerHost.inc"
 using DamageEffectType=uint32;
 enum{CLASS_ROGUE=4,QUEST_STATUS_INCOMPLETE=3};

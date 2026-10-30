@@ -16,7 +16,7 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  $u=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
  [IO.File]::WriteAllText("$out/OwnerGuid.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'ObjectGuid GetCharmerOrOwnerGUID() const'))
  [IO.File]::WriteAllText("$out/OwnerPlayer.inc",(Block $u 'Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const'))
- $a=$u.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);');$b=$u.IndexOf('    // A player charmed by an NPC',$a)
+ $a=$u.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));');$b=$u.IndexOf('    // A player charmed by an NPC',$a)
  if($a -lt 0 -or $b -le $a){throw 'Native post-scaling dispatch missing'}
  [IO.File]::WriteAllText("$out/ScaledHook.inc",$u.Substring($a,$b-$a))
  $eh=Get-Content "$repo/src/server/game/AI/EventMap.h" -Raw;$es=Get-Content "$repo/src/server/game/AI/EventMap.cpp" -Raw

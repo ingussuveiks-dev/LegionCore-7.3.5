@@ -17,11 +17,11 @@ if(!$Baseline){
 $source=$source.Substring($source.IndexOf('    struct npc_sr_yrgrim_the_truthseekerAI'))
 [IO.File]::WriteAllText("$out/Surrender.inc",(Block $source $(if($Baseline){'void DamageTaken('}else{'void DamageTakenAfterScaling('})))
 $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
-$first=$core.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);')
+$first=$core.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));')
 if($first -lt 0){throw 'Native final scaling missing'}
 $bridge=Block $core.Substring($first) '    if (Creature* creature = victim->ToCreature())'
 if($core.IndexOf('    if (health <= damage)',$first) -lt $first+$bridge.Length){throw 'Native final protection/death order changed'}
-[IO.File]::WriteAllText("$out/ScaledHook.inc",'    damage /= victim->GetHealthMultiplierForTarget(this);'+$bridge)
+[IO.File]::WriteAllText("$out/ScaledHook.inc",'    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));'+$bridge)
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($Baseline){'/DBASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/TruthguardSurrenderTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")

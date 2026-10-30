@@ -19,7 +19,7 @@ $post=if($Baseline){''}else{Block $source 'void DamageTakenAfterScaling('}
 [IO.File]::WriteAllText("$out/AfterScaling.inc",$post)
 $source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 foreach($entry in @(@('OwnerPlayer','Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const'),@('Health','uint64 Unit::GetHealth(Unit* victim) const'),@('MaxHealth','uint64 Unit::GetMaxHealth(Unit* victim) const'),@('SetHealthScal','void Unit::SetHealthScal('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]))}
-$first=$source.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);',$source.IndexOf('uint32 Unit::DealDamage('))
+$first=$source.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));',$source.IndexOf('uint32 Unit::DealDamage('))
 $hook=$source.IndexOf('    if (Creature* creature = victim->ToCreature())',$first)
 $body=Block $source.Substring($hook) 'if (Creature* creature = victim->ToCreature())'
 [IO.File]::WriteAllText("$out/NativeScaledHook.inc",$source.Substring($first,$hook-$first)+$body)
