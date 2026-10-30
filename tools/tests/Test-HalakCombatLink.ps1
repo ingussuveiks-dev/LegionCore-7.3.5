@@ -47,4 +47,3 @@ $out="$repo/build-extractors/runtime-test/halak-combat-link"
   'PASS native26972 three retained spells and separate901 stage4 credit metadata'
  }
 }
-

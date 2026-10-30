@@ -141,4 +141,3 @@ int main(int argc,char** argv){
  SmartScript naive;Load(naive,argv[1],&player);Event(naive,3).type=SMART_EVENT_LINK;naive.Init();naive.actor.combat=true;naive.Update(3001);assert(!Spell(naive,79961));naive.Update(20001);assert(Spell(naive,79961)==1);naive.Update(60000);assert(Spell(naive,79961)==1); // Converting the timer to LINK removes ordinary repeats.
  std::printf("PASS %u native timer/LINK cases: pinned old invalid-link error paired with identical repaired cast requests,3s/5s Holy Shock,10s/15s Holy Light,20s once Avenging Wrath; exact timer boundary,casting deferral,combat pause,condition/expired/missing actor,reset and player/pet/guardian/null victims. Naive LINK conversion destroys repeats. CAST selection/acceptance endpoints controlled; actual combat/voice/client remain separate.\n",cases+1);
 }
-

@@ -44,5 +44,12 @@
   "structural_sha256": {
     "routes.json": "5219330a0b4e9f01f45dfcc92c1f8fd334c7a1b9ebd907b3a38c2de6acaceb46",
     "actors/map-links.json": "45eed79b0958c48a962a3be84c4b8d68bb9a93c751333c4bf95c3040f3c1d987"
+  },
+  "fix_commit": "9a9f541fc",
+  "resolved_validation_archive": {
+    "path": "build-extractors/bin/Release/fixed/halak-combat-validation-2026-10-30",
+    "files": 235,
+    "manifest_sha256": "ab7fe9c7ba5e1d324384638590fd0fb0e2436bc3d9499379ed5d135804bb96c7",
+    "verification": "Original source/destination/source SHA256 and final archive readback. Closed native/TEMP/assertion/PE/updater/live/structural diagnostic files only. Canonical activeCrashes empty; mixed production DBErrors unchanged/unresolved; no runtime log truncated."
   }
 }

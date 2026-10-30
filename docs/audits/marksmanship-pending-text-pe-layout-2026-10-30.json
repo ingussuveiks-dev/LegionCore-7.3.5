@@ -10,5 +10,12 @@
     ".codex/halak-retained-pe-repaired-2026-10-30"
   ],
   "diagnostics": "Before/after crash/log offsets/timestamps, native exit/stdout/stderr reviewed: no new/changed crash, appended DBErrors or server warnings/errors/assertions. Existing mixed5365-byte sharedLINK2 remains unresolved and untouched. No servers launched or stopped.",
-  "remaining": "Halahk separate one-field combat-link repair is still pending deployment. Actual client/full36 progression and all earlier unresolved findings remain open."
+  "remaining": "Separate Halahk correction9a9f541fc now deployed/World36RELEASED and native/live verified. Actual client/full36 and all earlier unknown payloads remain open.",
+  "fix_commit": "e4f6c6aef",
+  "resolved_validation_archive": {
+    "path": "build-extractors/bin/Release/fixed/halak-combat-validation-2026-10-30",
+    "files": 235,
+    "manifest_sha256": "ab7fe9c7ba5e1d324384638590fd0fb0e2436bc3d9499379ed5d135804bb96c7",
+    "verification": "Original source/destination/source SHA256 and final archive readback. Closed native/TEMP/assertion/PE/updater/live/structural diagnostic files only. Canonical activeCrashes empty; mixed production DBErrors unchanged/unresolved; no runtime log truncated."
+  }
 }

@@ -76,4 +76,3 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_36_halak_
  }
  'PASS full9table Halak combat: exactly one link field, all six actions/three cast timers/native741 owner speech unchanged; idempotence/21 custom-state refusals and optional live equality'
 }
-
