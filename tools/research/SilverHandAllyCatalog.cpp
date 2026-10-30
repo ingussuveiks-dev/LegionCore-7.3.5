@@ -62,7 +62,8 @@ int main(int argc, char** argv)
     effects.LoadFromDB();
     for (auto effect : effects)
         if (!effect->DifficultyID && (effect->SpellID == 210985 || effect->SpellID == 211698 || effect->SpellID == 211699 || effect->SpellID == 211838 ||
-            effect->SpellID == 211842 || effect->SpellID == 211862))
+            effect->SpellID == 211842 || effect->SpellID == 211862 || effect->SpellID == 169871 ||
+            effect->SpellID == 215797 || effect->SpellID == 215690))
             std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t'
                 << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t' << effect->EffectTriggerSpell << '\t'
                 << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';

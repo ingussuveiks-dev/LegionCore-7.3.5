@@ -14,6 +14,13 @@ $actor=Block $source 'struct npc_horrific_aberrationAI : ScriptedAI'
 [IO.File]::WriteAllText("$out/CreditPolicy.inc",$(if($Baseline){''}else{Block $source 'namespace SilverHandAberration'}))
 foreach($method in @('Reset','JustDied')){[IO.File]::WriteAllText("$out/$method.inc",(Block $actor "void $method(").Replace(' override',''))}
 if(!$Baseline){
+ & "$PSScriptRoot/Test-SilverHandAberrationTransition.ps1" -ScopeOnly
+ $transition=(& git -C $repo show "89231609d:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned transition scope missing'}
+ $beforeTransition=Block $transition 'struct npc_horrific_aberrationAI : ScriptedAI'
+ foreach($pair in @(@('void DamageTakenAfterScaling(','void DamageTaken('),@('void UpdateAI(','void UpdateAI('))){$actor=$actor.Replace((Block $actor $pair[0]),(Block $beforeTransition $pair[1]))}
+ $actor=$actor.Replace((Block $actor 'void UpdateLifecycle('),'')
+ foreach($field in @('uint32 _outroTimer = 0;','bool _outroFinished = false;','uint64 _outroGeneration = 0;')){$actor=$actor.Replace($field,'')}
+ $actor=$actor.Replace('bool outroDone = false;','bool outroDone;')
  $original=Block $pinned 'struct npc_horrific_aberrationAI : ScriptedAI'
  foreach($method in @('void Reset(','void JustDied(')){$original=$original.Replace((Block $original $method),'');$actor=$actor.Replace((Block $actor $method),'')}
  $actor=$actor.Replace('bool _deathCreditDone = false;','')

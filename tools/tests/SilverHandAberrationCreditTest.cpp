@@ -120,6 +120,9 @@ struct AberrationAI
     EventMap events;
     bool outroDone = false;
     bool _deathCreditDone = false;
+    uint32 _outroTimer = 0;
+    bool _outroFinished = false;
+    std::uint64_t _outroGeneration = 0;
 #include "Reset.inc"
 #include "JustDied.inc"
 };

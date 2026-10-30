@@ -934,14 +934,20 @@ public:
         npc_horrific_aberrationAI(Creature* creature) : ScriptedAI(creature) {}
 
         EventMap events;
-        bool outroDone;
+        bool outroDone = false;
         bool _deathCreditDone = false;
+        uint32 _outroTimer = 0;
+        bool _outroFinished = false;
+        uint64 _outroGeneration = 0;
 
         void Reset() override
         {
             events.Reset();
             outroDone = false;
             _deathCreditDone = false;
+            _outroTimer = 0;
+            _outroFinished = false;
+            ++_outroGeneration;
         }
 
         void EnterCombat(Unit* who) override
@@ -971,13 +977,79 @@ public:
             player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50896);
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
         {
-            if (me->HealthBelowPct(50) && !outroDone)
+            if (!damage || _outroFinished)
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1092 || scenario->GetCurrentStep() != 5)
+                return;
+
+            uint64 health = me->GetHealth(attacker);
+            uint64 maximum = me->GetMaxHealth(attacker);
+            uint64 remaining = damage >= health ? 0 : health - damage;
+            // Match the final damage/death coordinate system. A scaled one-hit
+            // kill must still perform the existing companion-loss transition.
+            if (!outroDone && maximum && remaining < maximum / 2 + maximum % 2)
             {
                 outroDone = true;
-                events.RescheduleEvent(EVENT_3, 1000);
+                _outroTimer = 1000;
             }
+            if (outroDone && damage >= health)
+                damage = health ? uint32(health - 1) : 0;
+        }
+
+        void UpdateLifecycle(uint32 diff) override
+        {
+            if (!_outroTimer || !me->IsAlive())
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1092 || scenario->GetCurrentStep() != 5)
+            {
+                _outroTimer = 0;
+                outroDone = false;
+                return;
+            }
+            if (diff < _outroTimer)
+            {
+                _outroTimer -= diff;
+                return;
+            }
+
+            // Preserve the ordinary cast's admission. The old EventMap also
+            // waited for stun/casting to end before attempting this visual.
+            if (me->HasUnitState(UNIT_STATE_STUNNED | UNIT_STATE_CASTING))
+            {
+                _outroTimer = 1;
+                return;
+            }
+
+            _outroTimer = 0;
+            // Service this even without a victim or while the content AI is
+            // suspended by charm. Claim before synchronous casts.
+            uint64 generation = _outroGeneration;
+            DoCast(169871);
+            if (generation != _outroGeneration)
+                return;
+            if (Creature* efrin = me->FindNearestCreature(106371, 30.0f, true))
+            {
+                me->Kill(efrin);
+                efrin->DespawnOrUnsummon(3000);
+            }
+            if (generation != _outroGeneration)
+                return;
+            if (Creature* duval = me->FindNearestCreature(106370, 30.0f, true))
+            {
+                me->Kill(duval);
+                duval->DespawnOrUnsummon(3000);
+            }
+            if (generation != _outroGeneration)
+                return;
+            if (Creature* travar = me->FindNearestCreature(106676, 30.0f, true))
+                if (travar->IsAIEnabled)
+                    travar->AI()->Talk(1);
+            if (generation == _outroGeneration)
+                _outroFinished = true;
         }
 
         void UpdateAI(uint32 diff) override
@@ -1005,22 +1077,6 @@ public:
                         DoCast(215690);
                         events.RescheduleEvent(EVENT_2, 2500); //  215690
                         break;
-                    case EVENT_3:
-                        DoCast(169871);
-                        if (Creature* efrin = me->FindNearestCreature(106371, 30.0f, true))
-                        {
-                            me->Kill(efrin);
-                            efrin->DespawnOrUnsummon(3000);
-                        }
-                        if (Creature* duval = me->FindNearestCreature(106370, 30.0f, true))
-                        {
-                            me->Kill(duval);
-                            duval->DespawnOrUnsummon(3000);
-                        }
-                        if (Creature* travar = me->FindNearestCreature(106676, 30.0f, true))
-                            travar->AI()->Talk(1);
-                        break;
-
                 }
             }
             DoMeleeAttackIfReady();

@@ -106,7 +106,8 @@ for entry in factory:
 assert len(tables) == 1
 reset = '?Reset@npc_horrific_aberrationAI@npc_horrific_aberration@@'
 assert tables[0][0x28 // 8] == native['symbol'](reset)
-assert any(entry.op_str == 'byte ptr [rsi + 0x59], bpl' for entry in factory)
+assert any(entry.mnemonic == 'xor' and entry.op_str == 'ebp, ebp' for entry in factory)
+assert any(entry.op_str == 'word ptr [rsi + 0x58], bp' for entry in factory)
 assert any(entry.op_str == 'word ptr [rbx + 0x58], 0' for entry in instructions(reset))
 assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x130
            for entry in instructions('?Kill@Unit@@'))
