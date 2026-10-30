@@ -85,9 +85,9 @@ struct SpellInfo {
     bool HasEffect(int effect) const { return (effect==134 && personal) || (effect==90 && group); }
 };
 struct SpellManager {
-    SpellInfo personal{true,false},group{false,true},ordinary{},mixed{true,false,true},conversation{};
-    SpellManager(){conversation.extra.Effect=219;}
-    SpellInfo const* GetSpellInfo(uint32 id) { if(id==198287)return &personal; if(id==900)return &group; if(id==123)return &ordinary; if(id==200832||id==204364)return &conversation; if(id==901)return &mixed; return nullptr; }
+    SpellInfo personal{true,false},group{false,true},ordinary{},mixed{true,false,true},conversation{},energy{};
+    SpellManager(){conversation.extra.Effect=219;energy.extra.Effect=30;}
+    SpellInfo const* GetSpellInfo(uint32 id) { if(id==198287)return &personal; if(id==900)return &group; if(id==123)return &ordinary; if(id==200832||id==204364)return &conversation; if(id==152435)return &energy; if(id==901)return &mixed; return nullptr; }
 } spellManager;
 auto sSpellMgr=&spellManager;
 void Unit::CastSpell(Unit* target,uint32 spell,bool triggered) {
@@ -191,13 +191,13 @@ int main(int argc,char** argv) {
     {
         SmartScriptHolder story;story.type=85;story.targetType=130;story.action.cast={200832,SMARTCAST_INVOKER_PLAYER};
         if(argc>=2){std::ifstream input(argv[1]);assert(input>>story.type>>story.action.cast.spell>>story.action.cast.flags>>story.targetType>>story.target.playerDistance.dist);}
-        assert(story.type==85&&story.action.cast.flags==128&&story.targetType==130&&((story.action.cast.spell==200832&&story.target.playerDistance.dist==50)||(story.action.cast.spell==204364&&story.target.playerDistance.dist==70)));
+        assert(story.type==85&&story.action.cast.flags==128&&story.targetType==130&&((story.action.cast.spell==200832&&story.target.playerDistance.dist==50)||(story.action.cast.spell==204364&&story.target.playerDistance.dist==70)||(story.action.cast.spell==152435&&story.target.playerDistance.dist==100)));
         uint32 const storySpell=story.action.cast.spell,storyRange=story.target.playerDistance.dist;
         assert(ValidateCast(story));
         for(int target:{7,21}){story.targetType=target;assert(!ValidateCast(story));}story.targetType=130;
         story.target.playerDistance.dist=0;assert(!ValidateCast(story));story.target.playerDistance.dist=storyRange;
         Creature source;script.me=&source;script.base=&source;
-        if(argc>=3){SmartScriptHolder raw;std::ifstream input(argv[2]);assert(input>>raw.type>>raw.action.cast.spell>>raw.action.cast.flags>>raw.targetType>>raw.target.playerDistance.dist);assert(raw.type==85&&raw.action.cast.spell==204364&&raw.action.cast.flags==0&&raw.targetType==7&&raw.target.playerDistance.dist==0&&ValidateCast(raw));script.selection={&pet};int before=owner.casts,petBefore=pet.casts;script.Run(raw,&pet);assert(pet.delayed.size()==1&&owner.delayed.empty());pet.Flush();assert(pet.casts==petBefore+1&&pet.lastSpell==204364&&pet.lastTarget==&pet&&owner.casts==before);std::cout<<"COUNTERFACTUAL raw SQL204364/flags0/target7 keeps pet caster; Player ownership/playback fix is tested below, native Conversation creation/lifetime separately\n";}
+        if(argc>=3){SmartScriptHolder raw;std::ifstream input(argv[2]);assert(input>>raw.type>>raw.action.cast.spell>>raw.action.cast.flags>>raw.targetType>>raw.target.playerDistance.dist);assert(raw.type==85&&raw.action.cast.spell==storySpell&&raw.action.cast.flags==0&&raw.targetType==7&&raw.target.playerDistance.dist==0&&ValidateCast(raw));script.selection={&pet};int before=owner.casts,petBefore=pet.casts;script.Run(raw,&pet);assert(pet.delayed.size()==1&&owner.delayed.empty());pet.Flush();assert(pet.casts==petBefore+1&&pet.lastSpell==storySpell&&pet.lastTarget==&pet&&owner.casts==before);std::cout<<"COUNTERFACTUAL raw SQL"<<storySpell<<"/flags0/target7 keeps pet caster and target; native payload semantics are tested separately\n";}
         for(Unit* killer:{static_cast<Unit*>(&owner),&pet,&guardian,&charmed}){
             int previous=owner.casts;script.Run(story,killer);assert(script.GetLastInvoker()==killer&&owner.delayed.size()==1&&owner.casts==previous);
             owner.Flush();assert(owner.casts==previous+1&&owner.lastTarget==&owner&&owner.lastSpell==storySpell);

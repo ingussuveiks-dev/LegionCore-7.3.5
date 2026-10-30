@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-30",
+  "status": "Nexus artifact pet/guardian kill alternate power repaired; World22 RELEASED; client/full36 remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "104627/1 and106569/0 DEATH action85/native152435 flags0,target7 retain raw killer as caster/target. Actual26972 effect30 grants10 alternate power to explicit unit92, not a modern summoner target. Actual EffectEnergize rejects targets with max alternate power0, so a pet without the player bar loses the owner resource. Generic dedicated-credit caster normalization correctly does not change this ordinary energize spell.",
+  "change": "Exactly6 fields on2 death rows: action_param2=128 SMARTCAST_INVOKER_PLAYER,target_type=130,target_param1=100. Existing compiled owner/charmer bridge retains raw invoker and 200ms ordinary cast, source GUID/Player-self/world/map/phase/scope checks.100 matches native152435 Range135/100 yards. No extra quest/group/item grants, nearest-player fallback, combat/death/scaling changes or progress reset.",
+  "sequence": "Retain104627 update credit104768/player-distance10 and106569 cast215999/update credit. Shared104627 spawns571/6392 and1583/6140;106569571+1583/6068 unchanged. Actual area4120 native207066 bar371 admits Priest/class16 active41629(status8),ends66;211691 bar376 admits Mage/class128 active42009,ends66. Both bars native346/start0/max100,periodic226/1000 and conditional203->207430/207437/207434.207430 retains native104786 credit. Both quests native objective104786/1 plus104789/99; predecessor41628/42008 and successor41630/42010 unchanged. Nearby alternative Breach106566 retains211692 spell-hit,source9 delay4000/native152435/despawn and raw Player caster. These full data paths are protected, not a claim of full live quest traversal.",
+  "validation": [
+    "Full11table snapshot/fingerprints including entire Smart actors+breach/source9,conditions,templates/WDB/all85 static actor+breach placements,spell scripts,spell_area,quest template/addon/enUS/objectives. Exactly6 fields,twice-idempotent/19 TEMP custom-partial refusals/native EOF receipts/live equality+RELEASED LF-SHA1. Reject changed death/credit/combat/breach delay/despawn,bar quest/class admission,prerequisite/objective,custom bindings/conditions,partial single-site/target and applied extra target/range.",
+    "MSVC ASan actual action85/loader/owner/130/delayed callback from actual old85/152435/0/7/0 and repaired85/152435/128/130/100 SQL tuples. Player/pet/guardian/charm/null/NPC/missing owner,raw invoker,100 boundary,map/phase/world/scope/source/owner changes,ordinary isolation,failed cast and once-per-dispatch checks pass. Existing death-event multiplicity is retained, not a new exactly-once progression grant.",
+    "Separate ASan host compiles entire actual EffectEnergize,actual explicit object target selector and HandleProgressBar. Old pet no bar receives0; owner explicit target receives10 and progresses0..100;overflow clamps,unrelated Player untouched,dead/null target,invalidmode/power,no active bar,remove/reapply and missing native bar handled. Resource storage/log packets,chain/script hooks and unexercised spell-specific branches are controlled; no synthetic quest completion,credit,health or item grants. Ten kills to fill is native100/10 arithmetic, not a complete live quest counter test.",
+    "Typed26972 with configured read-only Hotfix confirms152435 single30/power10/explicit92/base10/dies0/range135=100;bar371/376 start0/max100 and207066/211691 native346. Native SpellInfo target92 is TARGET_REFERENCE_TYPE_TARGET. Existing actual canonical0x80/130 loader/sourceGUID callback/self/world/map/phase/distance/scope/native CastSpell PE passes; no production C++/EXE change.",
+    "Existing Torvis test independently verifies complete released World21 and World22 contexts before allowing only exact Sothozz plus both resource opt-ins. Unrelated/partial opt-ins rejected. Prior one-site Torvis defaults200832/50, Sothozz204364/70 native lifetime/ASan and live12table regressions pass after adding152435/100 to shared test host. Before-promotion count2 and after-promotion count4 pass.",
+    "Fresh both-server CIM absence; hash-verified pending22 promotion; owned19812 canonical ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged and closed. No user/unknown server stopped. Canonical DB0526D1/204B17EA EXEs unchanged."
+  ],
+  "deployment": {
+    "canonical_hashes": {
+      "worldserver.exe": "DB0526D1CBDE25EE6660968C52CD4ACD927060C3F5AF0D775C3BD6C975527C92",
+      "bnetserver.exe": "204B17EAEC111ACBAFFA87868FC8589E74795F3136BC30C4B63D99F437373E25"
+    },
+    "lf_sha1": "6E9CB13CDACC953BB3C6561AEA9A509F43F6677F",
+    "migration": "sql/updates/world/2026_10_30_22_nexus_energy_owner.sql",
+    "owned_pid": 19812
+  },
+  "diagnostics": "Before/after canonical and own crash hashes/log lengths/timestamps/exits/stdout/stderr reviewed for reads,TEMP,ASan,native,PE,updater/live/prior/fresh36. No new production crash,server warning/error/assertion or DBErrors. Active Crashes empty; mixed3915-byte sharedLINK2 DBErrors unchanged UTC2026-10-29T13:29:05.1130661Z and retained. Extracted production numeric/signedness C4244/C4018/C4389 warnings and existing Sothozz C4100 remain visible in controlled test hosts; no sanitizer failure.",
+  "archive": {
+    "policy": "After commit preserve original failed wrapper/query/native output and original host source bytes with source/destination/sourceSHA256 and actual fix commit.",
+    "path": "build-extractors/bin/Release/fixed/artifact-resource-validation-2026-10-30/manifest.json",
+    "cause": "Two private exploratory queries guessed quest classes in base table and scenario_dbc table; corrected actual addon/scenario_data schema, successful complete native reads. Initial native test lacked GameObject forward declaration; added host type, full repaired ASan/native/PE/live/prior tests pass. No production data/query error or active log cleared."
+  },
+  "structural": {
+    "counts": "Fresh20tables465568 complete objects,36routes149 native race/class pairs,0automatedfindings,3bounded route reviews,0scene-only pickups.28maps7439static actor records,2168contexts/97timed/23primaryLINK candidates,3unresolved recipients,2nested replacement candidates. This inventory certifies no full route/client playthrough.",
+    "audit": "docs/audits/artifact-structural-refresh-2026-10-30.json",
+    "capture": ".codex/artifact-post-nexus-energy-2026-10-30"
+  },
+  "evidence": [
+    ".codex/artifact-resource-original-2026-10-30",
+    ".codex/artifact-resource-fingerprints-2026-10-30",
+    ".codex/artifact-resource-full-staged-2026-10-30",
+    ".codex/artifact-resource-updater-2026-10-30",
+    ".codex/artifact-resource-final-live-2026-10-30",
+    ".codex/artifact-post-nexus-energy-checks-2026-10-30"
+  ],
+  "next": "Trace shared92445/92447/92450 mixed207715/207722 explicit122 Feed,220726 self77+90 journal+active43490 actual-invoker condition,action87 recipient7 and both92447/9244700 conversation lists. Preserve real native quest/group admission; no blind global mixed-spell normalization or removedLINK.110122/217815 belongs Warrior CH1146/1489 rather than proved artifact acquisition: defer until scoped route evidence.",
+  "remaining": "Actual energy-bar UI,100-percent native207430/104786 credit,quest progress/turn-in,full Mage/Priest traversal and all36 client chains remain OPEN. Shared101430/103151 missingLINK2 and all23 expanded review candidates retained; Stromkar recoil/cracked ground/three ritual beams, Survival39427, GO/full bags/retry paths unfinished. No character/item/quest resets; client checks user-owned."
+}

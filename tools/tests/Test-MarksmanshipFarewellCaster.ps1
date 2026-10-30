@@ -48,11 +48,14 @@ $previous=$env:MYSQL_PWD
 try{$env:MYSQL_PWD=$connection[3];[IO.File]::WriteAllText("$out/fixture.sql",$sql,[Text.UTF8Encoding]::new($false));$code=& "$PSScriptRoot/Invoke-NativeSqlFiles.ps1" -Executable C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe -Arguments @("--host=$($connection[0])","--port=$($connection[1])","--user=$($connection[2])","--database=$($connection[4])",'--default-character-set=utf8mb4','--batch','--raw','--skip-column-names') -InputFile "$out/fixture.sql" -OutputFile "$out/fixture.stdout" -ErrorFile "$out/fixture.stderr";if($code -ne 0 -or (Get-Item "$out/fixture.stderr").Length){throw 'Caster temporary SQL fixture failed'};$rows=@(Get-Content "$out/fixture.stdout" -Encoding UTF8);if(!$rows.Count -or $rows[-1] -cne '__FAREWELL_CASTER_SQL_COMPLETE__'){throw 'Incomplete native farewell caster fixture'};$rows=@($rows|Select-Object -SkipLast 1)}finally{$env:MYSQL_PWD=$previous}
 $expectedOptins=1;$approved=@($rows|Where-Object {$_ -like "approved-owner-cast`t*"})
 if($approved.Count){
- if($approved.Count -ne 1 -or $approved[0] -cne "approved-owner-cast`t103226`t0`t7`t85`t204364`t128`t130`t70"){throw 'Unexpected additional ordinary Player-caster opt-in; review independently'}
- # Validate the later site's entire producer/receiver/story/door context and
- # released migration hash before admitting that one extra opt-in count.
- & "$PSScriptRoot/Test-SothozzInvokerData.ps1" -VerifyLiveData
- $expectedOptins=2
+ $sothozz=@($approved|Where-Object {$_ -ceq "approved-owner-cast`t103226`t0`t7`t85`t204364`t128`t130`t70"})
+ $energy=@($approved|Where-Object {$_ -ceq "approved-owner-cast`t104627`t0`t1`t85`t152435`t128`t130`t100" -or $_ -ceq "approved-owner-cast`t106569`t0`t0`t85`t152435`t128`t130`t100"})
+ if($sothozz.Count -gt 1 -or $energy.Count -notin @(0,2) -or $approved.Count -ne ($sothozz.Count+$energy.Count)){throw 'Unexpected/partial additional ordinary Player-caster opt-in; review independently'}
+ # Admit only the independently released full producer/receiver/story context
+ # or complete two-site resource/bar/quest context, never a count-only exception.
+ if($sothozz.Count){& "$PSScriptRoot/Test-SothozzInvokerData.ps1" -VerifyLiveData}
+ if($energy.Count){& "$PSScriptRoot/Test-ArtifactResourceData.ps1" -VerifyLiveData}
+ $expectedOptins=1+$approved.Count
 }
 foreach($expected in @("row`t85`t200832`t128`t130`t50","opt-in`t$expectedOptins","custom-script`t0","custom-flags`t2","custom-range`t0","custom-spell`t0")){if($rows -notcontains $expected){throw "Caster migration mismatch: $expected"}}
 $before=@($rows | Where-Object {$_ -like "before`t*"} | ForEach-Object {$_.Substring(7)})
