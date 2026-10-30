@@ -24,5 +24,11 @@
     "stage": ".codex/stromkar-recoil-facing-release-2026-10-30"
   },
   "evidence": ".codex/stromkar-recoil-facing-{counterfactual,baseline-native,native-pass,native-complete,shared-checks,build,pe-layout,pe-proof,pe-pass,promotion}-2026-10-30; build-extractors/runtime-test/stromkar-awakening",
-  "remaining": "Actual client facing/timing after new4C09ABB4 not yet confirmed. Recoil ground burst/cracks are NOT fixed by facing. Return button/Val kyr loss, initial blade too large, ritual missiles rather than beams, missingLINK2, original intermittent client initializer silence and all36 full traversal remain OPEN. No reset authorization; preserve Stage8 failed extraction and later genuine artifact acquisition/equip."
+  "remaining": "Actual client facing/timing after new4C09ABB4 not yet confirmed. Recoil ground burst/cracks are NOT fixed by facing. Return button/Val kyr loss, initial blade too large, ritual missiles rather than beams, missingLINK2, original intermittent client initializer silence and all36 full traversal remain OPEN. No reset authorization; preserve Stage8 failed extraction and later genuine artifact acquisition/equip.",
+  "resolved_validation_archive": {
+    "path": "build-extractors/bin/Release/fixed/stromkar-recoil-facing-validation-2026-10-30",
+    "fix_commit": "5c85b78b0",
+    "files": 34,
+    "verification": "Each closed original copied with source/destination/source SHA256 verification after repaired code was deployed and native/canonical checks passed. Both expected counterfactual and repaired checks remain separately identified. No current runtime log or unresolved client evidence archived as fixed; mixed4640-byte DBErrors retained, active canonical Crashes empty."
+  }
 }

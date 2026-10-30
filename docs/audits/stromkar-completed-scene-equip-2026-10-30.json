@@ -22,5 +22,11 @@
     "stage": ".codex/stromkar-equip-stage-release-2026-10-30"
   },
   "private_evidence": ".codex/stromkar-equip-stage-{baseline,counterfactual,repaired,build,pe-layout,pe-layout-pass,pe-layout-ready,pe,promote}-2026-10-30; build-extractors/runtime-test/stromkar-presentation",
-  "remaining": "Automatic equip in a real fresh acquisition is not yet client-confirmed. Do not reset the already acquired weapon or character to demonstrate it. Current user confirms tomb start/logout and downed post-Execute body on prior15F, but not all36. Return button/Val kyr disappearance, large embedded blade, moving ritual projectiles, recoil ground and facing, sharedLINK2 and original intermittent client silence remain OPEN. Continue independent repairs."
+  "remaining": "Automatic equip in a real fresh acquisition is not yet client-confirmed. Do not reset the already acquired weapon or character to demonstrate it. Current user confirms tomb start/logout and downed post-Execute body on prior15F, but not all36. Return button/Val kyr disappearance, large embedded blade, moving ritual projectiles, recoil ground and facing, sharedLINK2 and original intermittent client silence remain OPEN. Continue independent repairs.",
+  "resolved_validation_archive": {
+    "path": "build-extractors/bin/Release/fixed/stromkar-completed-scene-validation-2026-10-30",
+    "fix_commit": "e910406a6",
+    "files": 32,
+    "verification": "Each closed original copied with source/destination/source SHA256 verification after repaired code was deployed and native/canonical checks passed. Both expected counterfactual and repaired checks remain separately identified. No current runtime log or unresolved client evidence archived as fixed; mixed4640-byte DBErrors retained, active canonical Crashes empty."
+  }
 }
