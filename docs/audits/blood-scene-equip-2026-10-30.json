@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-30",
+  "status": "Maw native scene1168 completion to real existing-item200134 equipment deployed World08 RELEASED; actual client/full Blood chain still OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "World07 restores real128402 loot, but native200152/1168/package1532 only equips a visual clone, with no scene event or C++ producer for actual200134 effect249. Native scene9000ms/root/flags21 has no exported SpellInterrupts row. A source17 outside-map compatibility condition alone would admit a stale scene packet after leaving the scenario.",
+  "change": [
+    "Register scene_blood_artifact_equipment for only1168/1532. Read-only BloodArtifactScene::Denied checks actual completed scene, Player in-world/contact/alive/not teleporting, DK class6, map1489, active un-rewarded40740, inventory-only128402 and actual940/9..10. Invalid/late/forged callback is consumed before default SQL; valid callback uses original native scene/cast pipeline. No delayed pointers, item grants, credit command or teleport in the gate.",
+    "World08 binds actual registered ScriptName preserving package/flags21/duration; adds complete->200134 withMonsterCredit0 and33 source17 rules (actual completed scene plus item/class/quest/map/scenario/step/alive/unrewarded). Preserve ordinary native spell use outside map1489; independent C++ gate rejects stale callbacks there. Alternate205138 retains54072/phase/ability effects unchanged. Full original/applied scene/event/condition pairs and ready247566 template fingerprint guard partial/custom data with SIGNAL and separately guarded mutations."
+  ],
+  "sequence": "101778 native48788 ->940/9, actual247566 loot128402 ->200152 personal101478+48184 ->940/10, native1168 completion/cancel21 once ->200134 real existing-item equip. Original return48857/102561 and unknown GO0->LINK1 are untouched.101778 pet/guardian death credit and original intro/combat/return/full client remain separate open work.",
+  "validation": [
+    "Matching26972 full linked package1532 clone MainHand128402/OffHand0 reviewed, no active server trigger or inventory creation;200134249-only and alternate205138 verified in prior native catalog. Native940/8 boss48788,9 pickup48184,10 return48857 retained.",
+    "Full4table TEMP original fixture/idempotence, only one ScriptName +one event +33 predicates; native flags/duration/package/loot and alternate205138 untouched.22 complete custom/partial refusals preserve all4tables under --force. Live full4table equality and RELEASED/LF-SHA1 pass. Native query terminal receipt explicitly required.",
+    "MSVC ASan extracts actual Player scene lifecycle/packet complete+cancel handlers, actual registered gate and real condition cases/ElseGroups. Original missing callback and unguarded late-map counterfactuals paired with repaired native cast dispatch. Exactly-once complete/native cancel21, forged-before-completion, stale/replaced/unknown/reentrant,15 invalid late states and65 stage/status matrices, bank-only/item-loss/quest/reward/map/life/contact/teleport/instance guards and failed-cast/new-scene retry pass. Cast/equip/world endpoints controlled; real accepted equipment/full bags/original GO retry not certified.",
+    "Original scripts.vcxproj Release build uses actual original LIB path, BuildProjectReferences=false/no OutDir override; staged link uses original scripts/game/shared/common. Actual staged PE before promotion and canonical afterward verify factory->constructor->vtable->OnTrigger->Denied, exact7-field path record, actual scene/quest/scenario/HasItemCount consumers and bank=false ABI; no cast/item/credit/teleport in gate. Retained Monk actualPE, ten-pickup native/actualPE and ScepterLogin -VerifyReleaseBinary pass.",
+    "After promotion Blood loot ASan/TEMP18 refusals/live, Monk scene ASan/TEMP22 refusals/live pass. No new production compile warnings; prior extracted C4244/C4389 visible. bnet .text429ED1BBEBE6C6932FB5EBC20E7CC705DB8150FF13746F037E40BFEEDEFE0D2A identical before/after relink.",
+    "Final complete20tables/465276objects match parsed native prefix bytes/server counts/empty stderr;36routes149pairs0automated findings3boundedactorlinks;25maps1947contexts83timed19primaryLINKreviews. Two scene-only pickups remain Frost247386/Fire247494. See compact current structural refresh; these counts certify no full chain."
+  ],
+  "development": [
+    "Initial private generator kept Monk ScriptName in Blood SQL; native data assertion rejected that binding before deployment. Corrected Blood binding and full original/applied fingerprint before build/promotion. Initial SQL/hash bytes and failed/passing snapshots retained.",
+    "Refusal output initially lost its after-result despite native0/expected1644; separate50174e11c adds per-query flushing and80 paired-client regressions. Original raw loss is in that separate ignored archive. Blood query wrapper additionally requires final receipt before interpreting results.",
+    "Initial promotion safely backed up/hash-verified/copied all four exe/map files and preserved config/cert/DLL hashes, then stopped at a stale private06_monk pending filename. No SQL moved/server started. Resume rechecked all canonical/staged/backup hashes against manifest, promoted exact08 and ran only owned27420; clean shutdown0/exit0. No backup overwrite or unknown process stopped."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_08_blood_scene_equip.sql",
+    "lf_sha1": "4118685F83DC2CF23806A97A580FEBFF70426C02",
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "D43884C78BB50AEC80FD2236E4EBE9012D558F97DB602988F9FA8DBC35C4846E",
+      "bnetserver.exe": "24ABA79511DA5FFBBFAF3C5F24C8DA95F639DB9C256B6C36246143D53D025915",
+      "worldserver.map": "6C564BB197FBA53D80D1E5CFE98C0052FF90B04AD2DF4FC5578770A074F294CD",
+      "bnetserver.map": "8016C4097DF110237FEB88FA78265B63702162A7A446DBCCD1020AA0EFCFCBC4"
+    },
+    "stage": ".codex/blood-scene-release",
+    "backup": ".codex/release-before-blood-scene-2026-10-30/manifest.json",
+    "owned_pid": 27420,
+    "result": "Both-server absence checked before/between four copies and before SQL/startup; only owned27420 ready/graceful shutdown0/exit0/stderr empty/newDBErrors0. Protected config/cert/DLL hashes unchanged. No character/item/quest reset or user process stop."
+  },
+  "diagnostics": "Each capture/TEMP/native/ASan/build/link/PE/promotion/updater/live/export has before/after canonical+own crash hashes/log lengths/timestamps. Exits/stdout/stderr inspected; development failures explicitly retained and paired with passes. No new/changed production crash/warning/error/assertion/DBErrors. Active Crashes empty, mixed3915-byte shared101430/103151 unresolvedLINK2 unchanged atUTC2026-10-29T13:29:05.1130661Z. No mixed runtime log cleared.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\blood-scene-validation-2026-10-30",
+    "files": 19,
+    "result": "Isolated draft SQL/binding failure/promotion-path and repaired test evidence copied preserving bytes; source/destination/source SHA256 verified. Separate50174e11c archive retains raw truncated stdout and actual counterfactual/fixed streams. No active production report removed."
+  },
+  "evidence": [
+    ".codex/blood-scene-original-2026-10-30",
+    ".codex/blood-scene-flushed-native-2026-10-30",
+    ".codex/blood-scene-scripts-build-2026-10-30",
+    ".codex/blood-scene-staged-link-2026-10-30",
+    ".codex/blood-scene-staged-pe-2026-10-30",
+    ".codex/blood-scene-resume-promotion-updater-2026-10-30",
+    ".codex/blood-scene-live-2026-10-30",
+    ".codex/blood-scene-bnet-section-2026-10-30",
+    ".codex/artifact-post-blood-scene-audit-2026-10-30",
+    ".codex/artifact-post-blood-scene-2026-10-30"
+  ],
+  "remaining": "Actual scene/main-hand equip/ability/full-bag/swap denial/retry/return/turnin and full Blood client traversal. New-scene retry was tested; no unlimited original GO retry added/certified. Next101778 actual pet/guardian death credit/speaker guards, then Frost/Fire real loot/scenes,19LINK/sharedLINK2/Stromkar visuals/middle39427/all36. Client tests user-owned; no new reset permission."
+}

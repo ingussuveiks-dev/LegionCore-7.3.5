@@ -5153,5 +5153,21 @@
     "audit": "docs/audits/native-sql-client-flush-2026-10-30.json",
     "status": "Old buffered prepared-SIGNAL stdout loss reproduced1/20; mandatory native --unbuffered +existing EOF drains,80 both-client repaired repetitions/1MiB/Monk22 refusals/complete20tables465243 count+byte validations pass. Internal upstream cause unproven; retain count/EOF guards.",
     "next": "Blood scene C++/World08 staged native+actualPE pass but not promoted yet; complete protected canonical promotion/live, then remaining36. The36-route objective remains incomplete."
+  },
+  "blood_scene_equip_2026_10_30": {
+    "audit": "docs/audits/blood-scene-equip-2026-10-30.json",
+    "status": "World08 RELEASED1168/1532 complete->200134 +33 source17; registered real scene gate, native/ASan/TEMP22 refusals/live/actualPE/Scepter and retained Monk/Blood loot pass. CanonicalD43884C7, own27420 clean closed; no task server/reset.",
+    "structural_refresh": "docs/audits/artifact-structural-refresh-2026-10-30.json:36/149/0 automated findings/3boundedMonk;20tables465276;2scene-only Frost/Fire;19primaryLINK reviews.",
+    "next": "Repair101778 actual eligible owner/pet/guardian death credit and speakers, then Frost/Fire real pickups/scenes and remaining36. SharedLINK2/Stromkar visuals/middle39427/full client stay OPEN."
+  },
+  "current_canonical_release_2026_10_30": {
+    "path": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "D43884C78BB50AEC80FD2236E4EBE9012D558F97DB602988F9FA8DBC35C4846E",
+      "bnetserver.exe": "24ABA79511DA5FFBBFAF3C5F24C8DA95F639DB9C256B6C36246143D53D025915",
+      "worldserver.map": "6C564BB197FBA53D80D1E5CFE98C0052FF90B04AD2DF4FC5578770A074F294CD",
+      "bnetserver.map": "8016C4097DF110237FEB88FA78265B63702162A7A446DBCCD1020AA0EFCFCBC4"
+    },
+    "audit": "docs/audits/blood-scene-equip-2026-10-30.json"
   }
 }

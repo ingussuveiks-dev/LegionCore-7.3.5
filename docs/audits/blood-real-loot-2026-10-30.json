@@ -48,5 +48,6 @@
     ".codex/blood-loot-full-audit-2026-10-30",
     ".codex/artifact-post-blood-loot-2026-10-30"
   ],
-  "remaining": "Native1168 completion->200134 guarded existing equipment; real bag/cast/swap denial/retry and original unknownLINK1;101778 pet-safe death credit/speakers; Frost/Fire real loot/callback/scenario selection; original full Blood intro/combat/return/turnin/group/faction/abandon/reentry/client.19 LINK candidates/sharedLINK2/Stromkar recoil+continuous beams/middle39427/full36 stay OPEN. Client tests user-owned; no reset authorization."
+  "remaining": "Native1168 completion->200134 guarded existing equipment; real bag/cast/swap denial/retry and original unknownLINK1;101778 pet-safe death credit/speakers; Frost/Fire real loot/callback/scenario selection; original full Blood intro/combat/return/turnin/group/faction/abandon/reentry/client.19 LINK candidates/sharedLINK2/Stromkar recoil+continuous beams/middle39427/full36 stay OPEN. Client tests user-owned; no reset authorization.",
+  "scene_followup": "World08 now resolves1168/1532 completion->200134 with registered native gate/33 predicates. See blood-scene-equip-2026-10-30.json; whole Blood/client/101778 pet-credit/unknownLINK1 stay OPEN."
 }
