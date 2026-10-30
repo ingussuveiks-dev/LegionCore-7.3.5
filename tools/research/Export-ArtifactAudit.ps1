@@ -16,13 +16,14 @@ function Read-AuditQuery([string]$query,[string]$label){
 }
 function Publish-AuditRows([string]$source,[string]$destination,[switch]$Json){
  $marker='__ARTIFACT_EXPORT_ROWS__';$count=0;$reported=$null;$trailer=$null
- foreach($row in [IO.File]::ReadLines($source,[Text.Encoding]::UTF8)){
+ $reader=[IO.File]::OpenText($source)
+ try{while($null -ne ($row=$reader.ReadLine())){
   if($null -ne $reported){throw "Unexpected data after native row-count trailer: $source"}
   if($row -match '^__ARTIFACT_EXPORT_ROWS__(\d+)$'){$reported=[long]$Matches[1];$trailer=$row;continue}
   ++$count
   if($Json){if(!$row.StartsWith('{') -or !$row.EndsWith('}')){throw "Incomplete audit JSON row $count in $source"}}
   elseif($row -notmatch '^\w+$'){throw "Incomplete audit column name in $source"}
- }
+ }}finally{$reader.Dispose()}
  if($null -eq $reported -or $count -ne $reported){throw "Native audit row-count mismatch ($count versus $reported): $source"}
  # Keep the full native stdout as evidence, publishing its exact data prefix.
  $bytes=[IO.File]::ReadAllBytes($source);$eol=if($bytes.Length -ge 2 -and $bytes[-2] -eq 13 -and $bytes[-1] -eq 10){2}elseif($bytes[-1] -eq 10){1}else{throw 'Native row-count trailer lacks terminator'}

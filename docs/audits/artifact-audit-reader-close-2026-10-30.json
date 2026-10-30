@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-30",
+  "status": "Main artifact publisher rejection paths now release their input reader; pinned actual-source counterfactual and fixed ordinary/full-export checks pass",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Main world-audit publisher used the same lazy File.ReadLines exception path as the newly repaired actor publisher. Pinned f629d7ed8 actual function reproduces immediate exclusive-access failure after rejecting post-marker bytes and partial JSON. Explicit StreamReader try/finally closes both accepted and rejected inputs, preserving validation and byte content.",
+  "change": "Replace lazy foreach File.ReadLines with explicit OpenText/ReadLine in try/finally. Preserve row-count/JSON/column/trailer validation and exact native prefix publication. Test now probes exclusive ReadWrite/FileShare.None access after every accepted/rejected case. Portable -BaselineReader extracts actual pinned f629d7ed8 source and identifies expected locks; ordinary mode requires none. No data/core/server/character change.",
+  "validation": [
+    "Pinned baseline reproduces after-tail and partial-json locks, labeled expected counterfactuals; valid complete case and unchanged original raw bytes still checked. Distinct baseline runtime directory avoids locked-input test interference.",
+    "Fixed actual function accepts complete2, refuses missing trailer/valid-row-boundary count loss/post-trailer bytes/malformed JSON without publication, immediately allows exclusive reuse of all inputs. Original stdout bytes unchanged.",
+    "Fresh full20table465351-object native export parses, matches exact native prefixes/server-count trailers/empty stderr and retained original931-row truncation counterfactual. Per-query client flushing and both pipe EOF drains remain."
+  ],
+  "diagnostics": "Before/after canonical+own crash hashes/log lengths/timestamps for baseline/fixed/full native export. No new/changed crash, server warning/error/assertion or DBErrors. Active Crashes empty, mixed3915-byte sharedLINK2 untouched. No game server started/stopped, canonical20A9F355/CA1A9A19 unchanged, no character edits.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\artifact-audit-reader-close-2026-10-30",
+    "files": 53,
+    "result": "Pinned-counterfactual inputs/prior publications and fixed/full-export diagnostics copied preserving bytes with source/destination/source SHA256 verification. No active production report removed."
+  },
+  "evidence": [
+    ".codex/audit-publisher-reader-baseline-2026-10-30",
+    ".codex/audit-publisher-reader-fixed-2026-10-30",
+    ".codex/audit-publisher-reader-full-export-2026-10-30",
+    ".codex/artifact-after-publisher-reader-2026-10-30"
+  ],
+  "remaining": "Continue Fire actual loot/callback at11997/1480/957/4; expanded28map/23LINK structural review, sharedLINK2/Stromkar visuals/middle39427/recovery/full36 remain OPEN. Client user-owned, no reset permission."
+}
