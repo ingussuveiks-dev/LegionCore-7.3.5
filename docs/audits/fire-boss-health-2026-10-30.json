@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-30",
+  "status": "Fire99615 Phoenix Reborn health thresholds and failed-cast retry deployed World15 RELEASED; one-hit return/unknown links/full Fire/client/all36 remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "99615 rows15/16 are authored On80/20pct HP with0..80/0..20 ranges, native196327 and one-shot flags, but stored event_type0 UPDATE_IC interprets those as initial millisecond timers. Both fire within100ms at full health. After restoring HealthPct, old cast flags0 also consumed each once latch on rejected/missing-victim casts; existing scoped flag256 already solves this natively.",
+  "change": "Exactly two rows, four fields: event_type0->2 and action_param2 flags0->256. Preserve native196327 Phoenix Reborn/1500ms ordinary cast, thresholds0..80/0..20, targetVICTIM2, original one-shot event flags, all half-health/death/credit/actor/timed lists/text/loot/LINKs. Reuse current canonical SMARTCAST_RETRY_HEALTH_THRESHOLD:500ms retry on no victim/no accepted cast, retain once after success. No C++/EXE change, no new item/quest/criterion grant.",
+  "native_context": "Matching26972 native196327 damage effect2 targets53/16, duration0, cast1500; full trigger closure of native Awaken/root/Displacement/Spellbind/ArcaneBacklash/Fire boss conversation spells and actual47380/scenario957/3 verified. Entire99615 half-health root17..21, TEXT_OVER6/7000ms->99763,98686 death data4->boss24..26, death27..31 and99763 intro/data2/data3/waypoint/99861/native196520 traced. Existing missing links21->22 and31->32 are explicitly observed and remain unresolved, not deleted.",
+  "validation": [
+    "Six full-schema protected tables: all Smart rows for99615/98686/99763/103696/99861 including real source9 lists plus247494, source22/loot conditions, full creature templates/texts and native ready GO/loot. Exact four fields only; original/applied full fingerprints, idempotence,17 custom-partial refusal variants under --force, mandatory nativeEOF receipt, full live equality and RELEASED/LF-SHA1. Custom thresholds/spell/once flags/half-health/LINK/death criterion/Aethas return/timed list/AI/text/loot/partial/retry edits all refuse without mutation.",
+    "MSVC ASan executes actual InitTimer/RecalcTimer/UpdateTimer/ProcessEvent/health/once/TALK/TEXT_OVER/target/LINK against original and repaired full SQL records. Original two casts at100pct reproduced. Repaired80/20 boundaries, skipped thresholds, casting deferral, combat/repeats/fresh-instance and full normal/death/one-hit request sequences checked for player/pet/guardian/NPC/null invokers. Native text equality requires next positive tick; corrected test retains actual native timing. Cast/spawn/motion/credit endpoints controlled.",
+    "Second ASan host executes actual CAST handler/health/timer/Reset and actual native loader validation using actual repaired two rows. Once after acceptance,500ms failed BAD_TARGETS/IN_PROGRESS, missing/null/nonunit target retries; combat/zero-max/busy/fresh reset and8 invalid flag combinations. Old flags0 failure-loss counterfactual reproduced. Actual shared canonical action11 switch and loader PE verifies256/500ms/reset/runOnce branches; no rebuild required. Existing nested sharedPE checks also pass. Fixture C4100 unused-parameter warnings retained.",
+    "Fresh both-server CIM absence; SQL promoted only after native/cast/actualPE checks. Owned8680 canonical ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged; full live6table equality. No user/unknown process stopped, no EXE or character/item/quest reset."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_15_fire_boss_health.sql",
+    "lf_sha1": "C70C61419EC7CEAA6D361C05EEF67C605CC8C80D",
+    "canonical_hashes": {
+      "worldserver.exe": "4989118FB5D9ACFDB9ABF2CA349BB074986B6AE24354F5FBCF6B7B09A30E9B65",
+      "bnetserver.exe": "314D1FC56602316B639511F1D98951E802D8B7E5214AD08BE266F20FFE1C2CF1"
+    },
+    "owned_pid": 8680
+  },
+  "diagnostics": "Every capture/TEMP/native/ASan/catalog/PE/owned updater/live/structural check has before/after canonical+own crash hashes/log sizes/timestamps and reviewed exit/stdout/stderr. No new production crash/server warning/error/assertion or DBErrors. Crashes empty; unchanged mixed3915-byte shared101430/103151 LINK2 retained. Native request fixture prints UNRESOLVED known Fire missing22/32 and one-hit return absence; does not label whole Fire successful. Initial TEXT_OVER boundary assertion corrected and archived with verified hashes; no failed ordinary run counted as pass.",
+  "fixed_archive": "build-extractors\\bin\\Release\\fixed\\fire-boss-health-validation-2026-10-30\\manifest.json",
+  "evidence": [
+    ".codex/fire-boss-native-context-2026-10-30",
+    ".codex/fire-boss-full-data-context-2026-10-30",
+    ".codex/fire-boss-health-original-2026-10-30",
+    ".codex/fire-boss-health-retry-fingerprint-2026-10-30",
+    ".codex/fire-boss-health-native-repaired-2026-10-30",
+    ".codex/fire-boss-health-casts-2026-10-30",
+    ".codex/fire-boss-health-combined-2026-10-30",
+    ".codex/fire-boss-health-updater-2026-10-30",
+    ".codex/fire-boss-health-live-2026-10-30",
+    ".codex/fire-boss-health-all36-refresh-2026-10-30"
+  ],
+  "remaining": "Next Fire one-hit before50pct: native death requests blade103696, data3to99763,247494 and47380, but only TEXT_OVER6 after50pct spawns99763. Thus missing Aethas means no native waypoint->99861 return/outro. Also fresh recovered99763 must not replay UPDATE60 battle-intro12980/196561/196347 after death/data3; native source22 scenario957/3 can scope that intro. Investigate finite failed-spawn/re-entry recovery and original actor lifetime, preserve unknown22/32 and all credits.23 expandedLINK reviews/shared missingLINK2/Stromkar recoil-floor-beams/Survival39427/full36/client remain OPEN. No reset permission; client user-owned."
+}

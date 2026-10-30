@@ -5211,5 +5211,10 @@
     "audit": "docs/audits/artifact-scene-start-2026-10-30.json",
     "status": "World14 RELEASED140 exact source17 conditions for five native200ms delayed starts. Full4live/TEMP16/ASan actual85->CheckCast->native conditions/canonicalPE/native matching26972 pass; own22356 clean closed; EXEs unchanged4989118F/314D1FC5.",
     "remaining": "23 primaryLINK review candidates, unknown shared101430/103151 LINK2 continuation, Stromkar recoil/cracked-floor/three continuous beams, Survival middle39427, acquired-item/originalGO retry/re-entry/full bags/cast acceptance/return/turnin/group/faction/full36/client. Expanded Fire boss99615 also has rows15/16 authored On80/20%HP but stored event0 timers with0..80/0..20ms; investigate true native196327 and full half-health/death/Aethas path before repairing. No reset permission; client user-owned."
+  },
+  "fire_boss_health_2026_10_30": {
+    "audit": "docs/audits/fire-boss-health-2026-10-30.json",
+    "status": "World15 RELEASED99615/15,16 native196327 actual80/20 health + existing scoped256 failed-cast500ms retry. Native ASan2hosts/TEMP17/full6live/typed26972/actualcanonicalPE pass; own8680 clean closed; same4989118F/314D1FC5 EXEs.",
+    "remaining": "Next Fire one-hit before50pct: native death requests blade103696, data3to99763,247494 and47380, but only TEXT_OVER6 after50pct spawns99763. Thus missing Aethas means no native waypoint->99861 return/outro. Also fresh recovered99763 must not replay UPDATE60 battle-intro12980/196561/196347 after death/data3; native source22 scenario957/3 can scope that intro. Investigate finite failed-spawn/re-entry recovery and original actor lifetime, preserve unknown22/32 and all credits.23 expandedLINK reviews/shared missingLINK2/Stromkar recoil-floor-beams/Survival39427/full36/client remain OPEN. No reset permission; client user-owned."
   }
 }

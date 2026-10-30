@@ -1,13 +1,13 @@
 {
   "date": "2026-10-30",
   "build": "7.3.5.26972",
-  "status": "Current structural review after World30/14; complete explicit-selector maps; no full chain/client certification",
+  "status": "Current structural review after World30/15; complete explicit-selector maps; no full chain/client certification",
   "capture": {
-    "world": ".codex\\artifact-post-scene-start-2026-10-30\\world",
-    "routes": ".codex\\artifact-post-scene-start-2026-10-30\\routes.json",
-    "routes_sha256": "9FD79560FE2DAA36CB4FC615E9522B4BABDC5E47D6E0914219E83730624CF0BD",
-    "maps": ".codex\\artifact-post-scene-start-2026-10-30\\actors\\map-links.json",
-    "maps_sha256": "0F449C0431C69F5281294F0B2DBFE7000EE864375CCA650BE6C9E5E74BFF918B",
+    "world": ".codex\\artifact-post-fire-boss-health-2026-10-30\\world",
+    "routes": ".codex\\artifact-post-fire-boss-health-2026-10-30\\routes.json",
+    "routes_sha256": "7FC1EB21CF7F2B7DC5E768C7E8057D21C7EF2F3D4E6346509EEA37E5B2E022A2",
+    "maps": ".codex\\artifact-post-fire-boss-health-2026-10-30\\actors\\map-links.json",
+    "maps_sha256": "57FBECB9E37577F77826488EC8035D50A683AD5CD73DCCCA2431755FD7B0739D",
     "tables": 20,
     "parsed_counted_objects": 465566,
     "static_actor_scope": "Fresh2026-10-30 complete28map/class0 explicit-selector/C++ union plus384directNPC/38GO entries;4tables7439 native count/byte validated objects. Still static candidates."
