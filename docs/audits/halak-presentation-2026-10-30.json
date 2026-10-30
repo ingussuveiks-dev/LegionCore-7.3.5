@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-30",
+  "status": "Halak player/pet/guardian presentation repaired and World18 RELEASED; native/client distinction retained",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "93949 Halahk the Deathbringer has native aggro206/741 targetVICTIM2. Native SUMMON_CONVERSATION only creates for selected Players, so a pet/guardian/charmed NPC starting combat gets no story. Aggro TALK0/VICTIM2 and death TALK1/INVOKER7 instead choose a pet Creature as the talker; actual CreatureTextMgr rejects that foreign entry/group. No credit dispatch change is necessary.",
+  "change": "Exactly4 Smart fields:93949/0 target2->130 with bounded70yd owner range (target_param1 0->70),93949/1,2 TALK targets2/7->SELF1. Native opt-in130 resolves actual invoker player/owner/charmer with source/owner world/map/phase/range and quest-object scope filtering; never chooses nearest unrelated player. Native SmartAI::EnterCombat supplies real enemy invoker. Existing741 payload/flags/event/link/spells/timers/own0+1 text are unchanged; no additional scenario/quest/item/kill credit.",
+  "validation": [
+    "Full9table original/appplied/context hashes: six Smart rows, source22 conditions, creature_text/template/WDB/spawn, conversation_data/creature/actor741. Exactly4 field changes, idempotence,20 TEMP custom/partial refusals under --force, full native EOF receipt. Live nine-table equality and RELEASED LF-SHA1 pass. No character/item/quest data in fixtures.",
+    "MSVC ASan compiles actual Smart root/event/action guards, TALK, SELF/VICTIM/INVOKER targets, native Unit owner method and credit-player helper, actual130 resolver/target/scope tail, conversation206, CreatureTextMgr entry/group admission, LINK and ordinary event cases. Original pet loses741 and both own lines; repaired Player/pet/guardian/charm/ownerless/NPC/null/repeat/one-hit death/world/map/phase/range70 boundary/unavailable owner/scope/missing actor cases pass. Conversation creation/world/chat/cast endpoints controlled; native once-on-attempt remains after failed story creation, no retry success claimed.",
+    "All three original combat cast requests79961/192648/195272 and original repeated flags remain. Unresolved5->3 is exercised and counted, not hidden or replaced. Native timing values are unchanged by full-schema proof; the presentation host controls event-active/timer scheduling and does not certify actual combat cast timing.",
+    "Matching26972 catalog confirms Holy Shock79961, Holy Light192648, Avenging Wrath195272, existing death Broadcast96953 and real741 line1769/Broadcast97442 Lich King commentary. No inferred translation/sound replacement. Original45608 belongs901/4 and is not newly awarded.",
+    "Actual canonical PE proves distinct130 vs7 switches, native positive-distance loader, inlined player owner/map/phase/world/range operations, action206 CreateConversation/native payload and TALK SendChat bridges. Other existing dependency PE checks pass. No C++ or EXE change for World18."
+  ],
+  "deployment": {
+    "result": "Fresh both-server CIM absence; hash-verified pending18 promotion; owned20368 canonical ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged. No unknown/user server stopped; no character reset or client operation.",
+    "lf_sha1": "168764B7897FEEF6E67299CC24CB24C7D1258BC0",
+    "migration": "sql/updates/world/2026_10_30_18_halak_presentation.sql",
+    "canonical_hashes": {
+      "worldserver.exe": "DB0526D1CBDE25EE6660968C52CD4ACD927060C3F5AF0D775C3BD6C975527C92",
+      "bnetserver.exe": "204B17EAEC111ACBAFFA87868FC8589E74795F3136BC30C4B63D99F437373E25"
+    },
+    "owned_pid": 20368
+  },
+  "diagnostics": "All read/native/TEMP/catalog/PE/updater/live checks wrapped with before/after canonical+own crash/log lengths/timestamps; exit/stdout/stderr reviewed. No new/changed production crash or new warning/error/assertion/DBErrors. Canonical Crashes empty; mixed3915-byte sharedLINK2 DBErrors retained unchanged atUTC2026-10-29T13:29:05.1130661Z.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/halak-validation-2026-10-30/manifest.json",
+    "policy": "After implementation commit archive original failed diagnostics/queries/extractor, source/destination/source SHA256 manifest with actual fix commit. Mixed active DBErrors never cleared.",
+    "cause": "Initial private read used nonexistent creature_template.name; corrected real schema/WDB Name1 and successful exact actor query. Initial native extraction incorrectly named next conversation switch case; corrected actual SUMMON_ADD_PLR_PERSONNAL_VISIBILE delimiter. Repaired full checks pass; no production mutation/crash from failed attempts."
+  },
+  "structural": "Latest full36 structural snapshot remains .codex/artifact-post-fire-return-2026-10-30 (World17):20tables465568 objects,36routes149pairs0 automated loot/admission findings/3bounded actor reviews;28maps2168contexts97timed23 primaryLINK candidates. This focused four-field native+live regression does not refresh or recertify all36.",
+  "independent_sequence_review": "Read-only follow-up checked native five scene-start producers: main roots are event70/state3, not pre-lootGossip64 (Monks also have additional gossip roots). Normal nonpersonal non-mining chest release calls SetLootState(JUST_DEACTIVATED,Player) after actual loot; SmartGameObjectAI::OnStateChanged forwards70/state3. Thus a hypothesized missing generic first-loot callback is not established and no speculative new API/helper was added. Personal/container/full-bag/original consumed-GO retry still need complete native/client sequence coverage.",
+  "evidence": [
+    ".codex/halak-original-capture-2026-10-30",
+    ".codex/halak-data-2026-10-30",
+    ".codex/halak-native-compile-2026-10-30",
+    ".codex/halak-native-catalog-and-pe-2026-10-30",
+    ".codex/halak-updater-2026-10-30",
+    ".codex/halak-final-live-native-2026-10-30"
+  ],
+  "remaining": "Actual Halak741 client conversation/chat/audio, combat cast acceptance and full Frost route remain OPEN. Preserve93949/5->3 invalid non-LINK target;79961 is independently repeating combat spell and must not be converted blindly toLINK61. All23 expanded candidates/shared101430+103151 missingLINK2, Stromkar recoil/cracked-ground/three beams, Survival39427 and full36/client/retry cases remain unfinished. No further reset permission; client is user-owned."
+}
