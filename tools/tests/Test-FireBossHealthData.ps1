@@ -67,7 +67,15 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_15_fire_b
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_15_fire_boss_health.sql' AND hash='$hash' AND state='RELEASED';"
   if($live -notcontains '1'){throw 'Live Fire boss health wave migration/hash differs'}
   $expectedRows=$rows;$expectedTag='first'
-  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $expectedRows "$expectedTag-$table")){throw "Live differs from Fire boss health regression $table"}}
+  $fullLive=Query (Snapshot 'live')
+  # The later focused intro repair intentionally adds two99763 predicates.
+  # Validate its complete protected scope and released hash before excluding
+  # only that separately checked actor's source22 rows from this older baseline.
+  $intro=@($fullLive|Where-Object {$f=$_.Split("`t");$f[0] -ceq 'live-conditions' -and $f[1] -eq '22' -and $f[3] -eq '99763' -and $f[4] -eq '0'})
+  if($intro.Count){& "$PSScriptRoot/Test-FireAethasIntroData.ps1" -VerifyLiveData
+   $fullLive=@($fullLive|Where-Object {$f=$_.Split("`t");!($f[0] -ceq 'live-conditions' -and $f[1] -eq '22' -and $f[3] -eq '99763' -and $f[4] -eq '0')})
+  }
+  foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $expectedRows "$expectedTag-$table")){throw "Live differs from Fire boss health regression $table"}}
  }
  'PASS Fire boss health full-schema TEMP: exactly2 event types0->2 and2 retry flags0->256, thresholds/once flags/native spell/other actor actions/LINKs/text/loot unchanged; idempotence/17 custom-partial refusals/live equality'
 }

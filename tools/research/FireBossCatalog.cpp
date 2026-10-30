@@ -25,7 +25,10 @@ int main(int argc,char** argv)
     DB2Storage<CriteriaEntry> criteria("Criteria.db2",CriteriaLoadInfo::Instance());
     if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0)||!times.Load(argv[1],0)||!steps.Load(argv[1],0)||!trees.Load(argv[1],0)||!criteria.Load(argv[1],0))return 4;
     spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();durations.LoadFromDB();times.LoadFromDB();steps.LoadFromDB();trees.LoadFromDB();criteria.LoadFromDB();
-    std::set<uint32> pending{196327,196262,195739,196381,196347,196561,196520,198623,101381,196244},seen;
+    uint32 aethasSummons=0;
+    for(auto e:effects)if(e->Effect==28&&e->EffectMiscValue[0]==99763){++aethasSummons;std::cout<<"AETHAS_SUMMON_PRODUCER\t"<<e->SpellID<<'\t'<<e->EffectIndex<<'\n';}
+    std::cout<<"AETHAS_SUMMON_PRODUCER_COUNT\t"<<aethasSummons<<'\n';
+    std::set<uint32> pending{196327,196262,195739,196381,196347,196561,196520,198623,101381,196244,223908,196604},seen;
     while(!pending.empty()){
         uint32 id=*pending.begin();pending.erase(pending.begin());if(!seen.insert(id).second)continue;if(seen.size()>80)return 5;
         auto s=spells.LookupEntry(id);if(!s){std::cout<<"MISSING\t"<<id<<'\n';continue;}

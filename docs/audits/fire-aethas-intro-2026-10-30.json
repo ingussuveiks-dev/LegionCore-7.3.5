@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-30",
+  "status": "Aethas late first-update battle-intro race repaired and deployed World16 RELEASED; missing one-hit return actor/full Fire/client/all36 remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "99763 is summoned by99615 TEXT_OVER6 near half-health. If boss dies before new Aethas first UPDATE60, death data3 already clears auras and starts native return waypoint/TALK. Its pending unguarded UPDATE0 then casts12980/196561 battle conversation728/196347 Spellbind after that outro started. The same race would affect a future one-hit actor recovery. Original intro had no source22 scope.",
+  "change": "Exactly two source22 predicates on99763 event0/root SourceGroup1/SourceId0: MAPID1480 and actualSCENARIO957/3. Both target1 (actual actor); outer SmartEvent source0 is a nullable invoker. Preserve all11 original Smart rows including intro flags/link/casts, data3 cleanup/waypoint/TALK, waypoint point1/portal99861 and196520 conversation727, templates and native portal spellclick196604. No C++/EXE/progress/character change.",
+  "scope_evidence": "Read-only full Smart producers find only99615/23 summon99763; no static99763 placements and matching26972 reverse nativeEffect28 count0. Actual99763/99861 templates immune, NPCs have no custom ScriptNames. Native waypoint99763/1=(4628.53,2771.8,361.166).99861 spellclick196604 flags1/user_type0, native252 self/destination17 and actual target1220(-828.61,4371.63,738.64,1.89368). Existing return cast and destination remain unchanged; no client teleport performed.",
+  "validation": [
+    "Full-schema five protected tables conditions/Smart rows/99763+99861 templates/waypoint/spellclick. Exactly two actor predicates, all native data unchanged, original/applied/dependency fingerprints, idempotence/16 custom-partial refusal variants under --force, nativeEOF receipt; full live equality and RELEASED/LF-SHA1. Refuse custom intro/link/death cleanup/outro/portal/path/click/AI, partial rules, wrong target/map/scenario/stage/root/missing predicate.",
+    "MSVC ASan executes actual SmartEvent outer+inner condition dispatch/lookups, native map/scenario cases/ElseGroups, native ProcessEvent/ProcessAction prefix/FindLinkedEvent/LINK/data-set/update cases against real SQL rows. Original data3 then UPDATE counterfactual requests late battle casts; repaired stage0..6 matrix and shared901/wrongmap/missingScenario/noninstance/wronginstance/missingactor deny. Correct target1 admits actual957/3 with null invoker; deliberate target0 counterfactual blocks that valid intro. Native intro->outro retained; repeated UPDATE/data3 stay once; actual data3 cleanup/path/TALK requests still admitted at4/5. World/cast/movement endpoints controlled.",
+    "Matching26972 producer/scene conversation distinction and native spells catalog pass. Earlier World15 full6table live check now validates the complete separate World16 regression and released hash before excluding only its approved99763 source22 rows from the older baseline. All other old conditions stay exact; TEMP15 mutation/refusal scope remains pinned. Both actual live tests pass together.",
+    "Fresh both-server CIM absence before SQL promotion; owned32284 canonical ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged. EXEs unchanged4989118F/314D1FC5. No unknown/user process stopped; no character/item/quest reset or client operation."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_16_fire_aethas_intro.sql",
+    "lf_sha1": "EBCF856AFA307104FAB1C9C5C9D093EFE2BEE0C2",
+    "canonical_hashes": {
+      "worldserver.exe": "4989118FB5D9ACFDB9ABF2CA349BB074986B6AE24354F5FBCF6B7B09A30E9B65",
+      "bnetserver.exe": "314D1FC56602316B639511F1D98951E802D8B7E5214AD08BE266F20FFE1C2CF1"
+    },
+    "owned_pid": 32284
+  },
+  "diagnostics": "All producer/data/TEMP/native/ASan/catalog/owned updater/live/old-regression/structural checks wrapped with before/after canonical+own crash hashes/log sizes/timestamps; exits/stdout/stderr reviewed. No new production crash/server warning/error/assertion or DBErrors; Crashes empty. Mixed3915-byte shared101430/103151 missingLINK2 unchanged atUTC2026-10-29T13:29:05.1130661Z and retained. No new failed validation or resolved production report for archival in this focused fix.",
+  "evidence": [
+    ".codex/fire-aethas-intro-producers-2026-10-30",
+    ".codex/fire-aethas-native-producers-2026-10-30",
+    ".codex/fire-aethas-intro-original-2026-10-30",
+    ".codex/fire-aethas-intro-data-2026-10-30",
+    ".codex/fire-aethas-intro-native-2026-10-30",
+    ".codex/fire-aethas-intro-updater-2026-10-30",
+    ".codex/fire-aethas-intro-live-2026-10-30",
+    ".codex/fire-aethas-intro-final-native-2026-10-30",
+    ".codex/fire-aethas-intro-portable-final-2026-10-30",
+    ".codex/fire-return-native-destination-2026-10-30",
+    ".codex/fire-aethas-intro-all36-refresh-2026-10-30"
+  ],
+  "remaining": "Next real one-hit missing99763 actor recovery with finite failed-spawn/missing-AI/re-entry handling and original data3/path/portal. Recover only after actual earned957/3 death leaf47380/tree45965 and current957/4..5; never grant quest/item/criterion/health/phase/teleport. Preserve unknown99615 missing22/32. Map1480 has no instance_template binding; adding one would change shared901 default behavior, so investigate a scoped PlayerScript rather than casual map binding. Detailed ignored design/facts: .codex/fire-return-recovery-plan-2026-10-30.json, not implemented/certified.23 expandedLINK candidates/shared missingLINK2/Stromkar recoil-floor-three-beams/Survival39427/originalGO recovery/full36/client remain OPEN. No reset permission; client user-owned."
+}

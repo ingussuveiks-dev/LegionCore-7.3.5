@@ -5216,5 +5216,10 @@
     "audit": "docs/audits/fire-boss-health-2026-10-30.json",
     "status": "World15 RELEASED99615/15,16 native196327 actual80/20 health + existing scoped256 failed-cast500ms retry. Native ASan2hosts/TEMP17/full6live/typed26972/actualcanonicalPE pass; own8680 clean closed; same4989118F/314D1FC5 EXEs.",
     "remaining": "Next Fire one-hit before50pct: native death requests blade103696, data3to99763,247494 and47380, but only TEXT_OVER6 after50pct spawns99763. Thus missing Aethas means no native waypoint->99861 return/outro. Also fresh recovered99763 must not replay UPDATE60 battle-intro12980/196561/196347 after death/data3; native source22 scenario957/3 can scope that intro. Investigate finite failed-spawn/re-entry recovery and original actor lifetime, preserve unknown22/32 and all credits.23 expandedLINK reviews/shared missingLINK2/Stromkar recoil-floor-beams/Survival39427/full36/client remain OPEN. No reset permission; client user-owned."
+  },
+  "fire_aethas_intro_2026_10_30": {
+    "audit": "docs/audits/fire-aethas-intro-2026-10-30.json",
+    "status": "World16 RELEASED two actor-target1 source22 predicates confine99763 battle intro to actual1480/957/3; native data3/path/portal unchanged. ASan/full5live/TEMP16/typed26972/prior15full6live pass; own32284 clean closed; same4989118F/314D1FC5 EXEs.",
+    "remaining": "Next real one-hit missing99763 actor recovery with finite failed-spawn/missing-AI/re-entry handling and original data3/path/portal. Recover only after actual earned957/3 death leaf47380/tree45965 and current957/4..5; never grant quest/item/criterion/health/phase/teleport. Preserve unknown99615 missing22/32. Map1480 has no instance_template binding; adding one would change shared901 default behavior, so investigate a scoped PlayerScript rather than casual map binding. Detailed ignored design/facts: .codex/fire-return-recovery-plan-2026-10-30.json, not implemented/certified.23 expandedLINK candidates/shared missingLINK2/Stromkar recoil-floor-three-beams/Survival39427/originalGO recovery/full36/client remain OPEN. No reset permission; client user-owned."
   }
 }
