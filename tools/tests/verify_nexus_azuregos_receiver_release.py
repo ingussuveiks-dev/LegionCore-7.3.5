@@ -20,4 +20,4 @@ a=n['symbol']('?SetData@SmartAI@@');i=bisect.bisect_right(n['starts'],a-n['base'
 body=list(d.disasm(n['binary'][n['offset'](a):n['offset'](a)+n['base']+e-a],a))
 # ProcessEventsFor(this RCX, event EDX, unit R8, var0 R9, ...).
 assert any(x.mnemonic=='xor' and len(x.operands)==2 and all(o.type==CS_OP_REG and o.reg==X86_REG_R8D for o in x.operands) for x in body),'SetData no longer passes actual null Unit'
-print('PASS actual Release SmartAI null-Unit SetData, root precheck, native condition-target/nearest-creature and native timed-list initialization/update dispatch. SQL shapes and scoped ASAN host verify Priest data; actual client handoff remains separate.')
+print('PASS actual Release SmartAI null-Unit SetData, root precheck, native condition-target/nearest-creature and native timed-list initialization/update dispatch. SQL shapes and scoped ASAN host verify Mage1101 receiver data; actual client handoff remains separate.')

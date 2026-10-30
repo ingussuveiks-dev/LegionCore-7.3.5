@@ -1,5 +1,6 @@
--- Priest Light's Wrath: DATA_SET has no Unit invoker. Anchor the three living-Scion guards on Azuregos.
--- Preserve Mage counterpart, all original death/data/timed/credit/summon behavior.
+-- Historical filename retained:106699 is Mage Aluneth1101/6068, not Priest1065/6140.
+-- DATA_SET has no Unit invoker. Anchor the three living-Scion guards on the actual Azuregos106699.
+-- Preserve Priest counterpart and all original death/data/timed/credit/summon behavior.
 SET @nexus_saved_concat=@@SESSION.group_concat_max_len;
 SET SESSION group_concat_max_len=GREATEST(@@SESSION.group_concat_max_len,1048576);
 START TRANSACTION;
