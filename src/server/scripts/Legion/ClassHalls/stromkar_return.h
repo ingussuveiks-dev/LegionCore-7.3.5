@@ -14,13 +14,18 @@ namespace StromkarReturn
         return scenario && scenario->GetScenarioId() == 1037 && scenario->GetCurrentStep() == 10;
     }
 
-    bool Eligible(Player* player)
+    bool Participant(Player* player)
     {
-        return player && player->IsInWorld() && player->CanContact() && player->IsAlive() &&
+        return player && player->IsInWorld() && player->IsAlive() &&
             player->getClass() == CLASS_WARRIOR && player->GetMapId() == 1539 &&
             !player->GetQuestRewardStatus(41105) &&
             (player->GetQuestStatus(41105) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(41105) == QUEST_STATUS_COMPLETE) &&
             player->GetQuestObjectiveData(41105, 103114) > 0 && player->HasItemCount(128910, 1, true);
+    }
+
+    bool Eligible(Player* player)
+    {
+        return Participant(player) && player->CanContact();
     }
 
     Creature* Owner(Creature* actor)
@@ -64,6 +69,7 @@ namespace StromkarReturn
             Creature* owner = Owner(me);
             if (!owner)
             {
+                TC_LOG_INFO("scripts.ai", "Stromkar return: removing owned exit in instance %u; final Thoradin/context unavailable", me->GetInstanceId());
                 ClearArea();
                 me->DespawnOrUnsummon();
                 return;
@@ -71,7 +77,7 @@ namespace StromkarReturn
             bool witness = false;
             for (auto const& reference : owner->GetMap()->GetPlayers())
                 if (Player* player = reference.getSource())
-                    if (Eligible(player) && player->InSamePhase(owner))
+                    if (Participant(player) && player->InSamePhase(owner))
                         witness = true;
             if (witness)
                 absent = 0;
@@ -83,6 +89,7 @@ namespace StromkarReturn
                 absent += std::min(diff, uint32(60000) - absent);
                 if (absent == 60000)
                 {
+                    TC_LOG_INFO("scripts.ai", "Stromkar return: removing owned exit in instance %u after 60s without a living quest/item participant", me->GetInstanceId());
                     ClearArea();
                     me->DespawnOrUnsummon();
                     return;
@@ -90,7 +97,22 @@ namespace StromkarReturn
             }
             if (AreaTrigger* trigger = me->GetMap()->GetAreaTrigger(area))
                 if (trigger->IsInWorld() && trigger->GetCasterGUID() == me->GetGUID())
+                {
+                    // Native entry tracking precedes DoAction and its cast:
+                    // a temporarily uncontactable player, failed cast or later
+                    // override removal otherwise stays inside without a button.
+                    // Replay the real enter action only for a tracked participant
+                    // still in this exact area; retain all native action/cast gates.
+                    if (retry > diff) { retry -= diff; return; }
+                    retry = 1000;
+                    for (auto const& reference : owner->GetMap()->GetPlayers())
+                        if (Player* player = reference.getSource())
+                            if (Eligible(player) && player->InSamePhase(me) &&
+                                trigger->IsUnitAffected(player->GetGUID()) && trigger->IsInArea(player) &&
+                                !player->HasAura(215997))
+                                trigger->AffectUnit(player, AT_ACTION_MOMENT_ENTER);
                     return;
+                }
             if (retry > diff) { retry -= diff; return; }
             retry = 1000;
             Position pos = me->GetPosition();

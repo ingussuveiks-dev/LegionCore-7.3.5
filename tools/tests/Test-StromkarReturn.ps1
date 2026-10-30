@@ -1,4 +1,4 @@
-param([switch]$AddressSanitizer,[string]$RulesFile,[switch]$LifetimeBaseline)
+param([switch]$AddressSanitizer,[string]$RulesFile,[switch]$LifetimeBaseline,[switch]$AdmissionBaseline)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/stromkar-return"
@@ -12,6 +12,7 @@ $out="$repo/build-extractors/runtime-test/stromkar-return"
  [IO.File]::WriteAllText("$out/ElseGroups.inc",(Block $s 'bool ConditionMgr::IsObjectMeetToConditionList('))
  $s=Get-Content "$repo/src/server/game/Entities/AreaTrigger/AreaTrigger.cpp" -Raw
  [IO.File]::WriteAllText("$out/AreaConditions.inc",(Block $s 'bool AreaTrigger::CheckActionConditions('))
+ [IO.File]::WriteAllText("$out/AreaTracking.inc",(Block $s 'void AreaTrigger::UpdateAffectedList('))
  [IO.File]::WriteAllText("$out/AreaLifetime.inc",(Section $s '    if (GetDuration() != -1)' '    if (_activationDelay)'))
  [IO.File]::WriteAllText("$out/AreaCast.inc",(Section $s '        case AT_ACTION_TYPE_CAST_SPELL:' '        case AT_ACTION_TYPE_ADD_STACK:'))
  [IO.File]::WriteAllText("$out/AreaSelfCaster.inc",(Section $s '        if ((spellInfo->Effects[EFFECT_0]->TargetA.GetTarget()' '    if (action.action->targetFlags & AT_TARGET_FLAG_CASTER_AURA_TARGET)'))
@@ -20,6 +21,7 @@ $out="$repo/build-extractors/runtime-test/stromkar-return"
  [IO.File]::WriteAllText("$out/SummonLifetime.inc",(Section $summonSource '        case TEMPSUMMON_MANUAL_DESPAWN:' '        case TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT:'))
  $controller=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/stromkar_return.h" -Raw
  if($LifetimeBaseline){$controller=(git -C $repo show 'f43bcaef3:src/server/scripts/Legion/ClassHalls/stromkar_return.h') -join "`n"}
+ if($AdmissionBaseline){$controller=(git -C $repo show 'a9052c9a7:src/server/scripts/Legion/ClassHalls/stromkar_return.h') -join "`n"}
  [IO.File]::WriteAllText("$out/ReturnController.inc",$controller)
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  $asan=if($AddressSanitizer){'/fsanitize=address /Zi'}else{''}

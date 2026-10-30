@@ -7,14 +7,18 @@
 #include <cmath>
 #include <fstream>
 #include <string>
+#include <list>
 using uint32=uint32_t;using uint8=uint8_t;using int32=int32_t;
 enum { CLASS_WARRIOR=1,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,REACT_PASSIVE=0,
  UNIT_FIELD_NPC_FLAGS=1,UNIT_NPC_FLAG_GOSSIP=1,TEMPSUMMON_TIMED_DESPAWN=3,TEMPSUMMON_MANUAL_DESPAWN=8 };
 uint32 warnings=0,foreignResets=0,createdAreas=0;
 #define TC_LOG_WARN(...) (++warnings)
+#define TC_LOG_INFO(...) ((void)0)
 #define ASSERT(value) assert(value)
 struct ObjectGuid { uint32 id=0;static ObjectGuid const Empty;void Clear(){id=0;}bool operator==(ObjectGuid b)const{return id==b.id;}bool operator!=(ObjectGuid b)const{return id!=b.id;}bool operator<(ObjectGuid b)const{return id<b.id;} };
 ObjectGuid const ObjectGuid::Empty{};uint32 nextGuid=1;
+using GuidList=std::list<ObjectGuid>;
+enum AreaTriggerActionMoment {AT_ACTION_MOMENT_ENTER=1,AT_ACTION_MOMENT_LEAVE=2,AT_ACTION_MOMENT_REMOVE=32,AT_ACTION_MOMENT_LEAVE_ALL=4096};
 struct Position {float x=0,y=0,z=0;};
 struct Player;struct Creature;struct AreaTrigger;struct TempSummon;struct CreatureAI;
 struct Map;
@@ -25,7 +29,8 @@ struct Unit {virtual ~Unit()=default;virtual Creature*ToCreature(){return nullpt
  virtual uint32 GetMapId(){return 0;}virtual uint32 GetEntry(){return 0;}virtual bool IsAlive(){return true;}virtual uint32 getClassMask(){return 0;}
  virtual Map*GetMap();bool InInstance(){return true;}Unit*ToUnit(){return this;}bool IsCreature(){return ToCreature()!=nullptr;}bool isPet(){return false;}Unit*GetOwner(){return nullptr;}
  struct Threat{Unit*getHostilTarget(){return nullptr;}}threat;Threat&getThreatManager(){return threat;}uint32 GetTypeId(){return ToPlayer()?4u:ToCreature()?3u:0u;}
- bool gaze=false;uint32 casts=0;void CastSpell(Unit*target,uint32 id,TriggerCastFlags,Item*){assert(target==this&&ToPlayer()&&id==215997);gaze=true;++casts;}
+ ObjectGuid unitGuid{nextGuid++};bool gaze=false,castFails=false;uint32 casts=0;ObjectGuid GetGUID(){return unitGuid;}bool HasAura(uint32 id){assert(id==215997);return gaze;}
+ void CastSpell(Unit*target,uint32 id,TriggerCastFlags,Item*){assert(target==this&&ToPlayer()&&id==215997);gaze=!castFails;++casts;}
  void CastSpell(float,float,float,uint32,TriggerCastFlags,Item*){assert(false);}void RemoveAura(uint32 id){assert(id==215997);gaze=false;}
 };
 struct Ref {Player* p;Player*getSource()const{return p;}};
@@ -63,7 +68,7 @@ struct CreatureAI {virtual~CreatureAI()=default;virtual void Reset(){}virtual vo
 struct ScriptedAI:CreatureAI {Creature*me;explicit ScriptedAI(Creature*c):me(c){}};
 struct SmartAI:ScriptedAI {using ScriptedAI::ScriptedAI;void Reset()override{++foreignResets;}};
 struct CreatureScript {explicit CreatureScript(char const*){}virtual~CreatureScript()=default;virtual CreatureAI*GetAI(Creature*)const=0;};
-struct ObjectAccessor {static Creature*GetCreature(Creature&,ObjectGuid id){auto i=registry.find(id);return i==registry.end()?nullptr:i->second;}};
+struct ObjectAccessor {static Creature*GetCreature(Creature&,ObjectGuid id){auto i=registry.find(id);return i==registry.end()?nullptr:i->second;}static Unit*GetUnit(AreaTrigger&,ObjectGuid id){for(auto const&ref:world.players)if(ref.p&&ref.p->GetGUID()==id)return ref.p;return nullptr;}};
 enum class HighGuid {AreaTrigger};struct Generator{uint32 Generate(){return nextGuid++;}}generator;
 struct ObjectMgr {template<HighGuid>Generator*GetGenerator(){return &generator;}}objectMgr;auto*sObjectMgr=&objectMgr;
 using QuestStatus=uint32;
@@ -74,6 +79,9 @@ struct ConditionSourceInfo {Unit*mConditionTargets[2];Condition*mLastFailedCondi
 struct ConditionScript {explicit ConditionScript(char const*){}virtual~ConditionScript()=default;virtual bool OnConditionCheck(Condition*,ConditionSourceInfo&){return true;}};
 bool failArea=false;std::vector<std::unique_ptr<AreaTrigger>>areas;
 struct AreaTrigger {
+ struct TrackingInfo{std::vector<int>actions{1,2};uint32 maxActiveTargets=0;bool AliveOnly=true;}atInfo;
+ struct TrackingAI{bool CreateUnitList(std::list<Unit*>&){return false;}void OnUnitExit(Unit*){}void OnUnitEnter(Unit*){}void BeforeRemove(Unit*){}}trackingAI;TrackingAI*_ai=&trackingAI;
+ GuidList affectedPlayers;
  ObjectGuid guid,casterGuid;Creature*casterUnit=nullptr;Map*map=nullptr;bool inWorld=true,m_withoutCaster=false,_on_remove=false,m_isUpdate=true,_on_despawn=false;Item*m_CastItem=nullptr;int32_t _duration=0;Position pos;
  bool CreateAreaTrigger(uint32 id,uint32 entry,Creature*c,void*,Position const&p,Position const&q,void*,ObjectGuid target,uint32 custom){
   assert(entry==0&&custom==11869&&target==ObjectGuid::Empty&&p.x==q.x);if(failArea)return false;
@@ -85,6 +93,12 @@ struct AreaTrigger {
 #include "AreaLifetime.inc"
  }
  Unit*GetCaster(){return casterUnit;}uint32 GetEntry(){return 11869;}bool CheckActionConditions(struct AreaTriggerAction const&,Unit*);void Dispatch(struct AreaTriggerAction const&,Unit*);
+ bool IsUnitAffected(ObjectGuid id){for(auto affected:affectedPlayers)if(affected==id)return true;return false;}
+ bool IsInArea(Unit*unit){auto*p=unit?unit->ToPlayer():nullptr;return p&&p->map==casterUnit->map&&p->InSamePhase(casterUnit)&&std::hypot(p->pos.x-pos.x,p->pos.y-pos.y)<=5;}
+ void GetAttackableUnitListInRange(std::list<Unit*>&units,float,bool){for(auto const&ref:map->players)if(ref.p)units.push_back(ref.p);}
+ float GetRadius(){return 5;}bool CheckValidateTargets(Unit*unit,AreaTriggerActionMoment){return unit&&unit->ToPlayer();}
+ void AffectUnit(Unit*,AreaTriggerActionMoment);void AffectUnitLeave(AreaTriggerActionMoment){}void AffectOwner(AreaTriggerActionMoment){}
+ void UpdateAffectedList(uint32,AreaTriggerActionMoment);
  float GetPositionX(){return pos.x;}float GetPositionY(){return pos.y;}float GetPositionZ(){return pos.z;}
 };
 #include "ReturnController.inc"
@@ -109,6 +123,8 @@ struct ConditionMgr{ConditionList rules;ConditionReferenceContainer ConditionRef
 #include "ElseGroups.inc"
 struct AreaTriggerAction{uint32 id=0,actionType=0,targetFlags=8,spellId=215997;};
 #include "AreaConditions.inc"
+#include "AreaTracking.inc"
+void AreaTrigger::AffectUnit(Unit*unit,AreaTriggerActionMoment moment){AreaTriggerAction action;if(moment==AT_ACTION_MOMENT_ENTER)Dispatch(action,unit);else if(moment==AT_ACTION_MOMENT_LEAVE||moment==AT_ACTION_MOMENT_REMOVE){action.id=1;action.actionType=1;Dispatch(action,unit);}}
 void AreaTrigger::Dispatch(AreaTriggerAction const&data,Unit*unit){if(!unit||!unit->ToPlayer()||!CheckActionConditions(data,unit))return;Unit*caster=GetCaster();
  struct{AreaTriggerAction const*action;}action{&data};bool CallScriptAreaTriggerCast=false;
  struct Target{uint32 GetTarget(){return TARGET_UNIT_CASTER;}};
@@ -178,6 +194,33 @@ int main(int argc,char**argv){
   Player candidate;trigger.Dispatch(enter,&candidate);assert(candidate.gaze&&candidate.casts==1);trigger.Dispatch(leave,&candidate);assert(!candidate.gaze);
   Unit pet;trigger.Dispatch(enter,&pet);assert(!pet.casts);
   valkyr.map=1220;Player shared;shared.klass=5;assert(trigger.CheckActionConditions(enter,&shared));
+  // Exercise native entry tracking BEFORE action admission, unlike the older
+  // direct Dispatch tests. No client movement is needed to retry inside.
+  for(uint32 failure=0;failure<3;++failure){
+   ResetWorld();Creature farewell;Player participant;world.players={{&participant}};StromkarReturn::State exit;exit.ready=true;
+   StromkarReturn::Update(&farewell,1,exit);auto*helper=summons.back().get();helper->ai->UpdateAI(1);auto*area=areas.back().get();
+   participant.pos=area->pos;
+   if(failure==0)participant.contact=false;
+   if(failure==1)participant.castFails=true;
+   area->UpdateAffectedList(1,AT_ACTION_MOMENT_ENTER);
+   assert(area->IsUnitAffected(participant.GetGUID()));
+   if(failure==2)participant.gaze=false; // e.g. a later native override replaced it.
+   assert(!participant.gaze);
+   participant.contact=true;participant.castFails=false;
+   // Actual native entry tracking does not replay the failed/replaced aura.
+   area->UpdateAffectedList(1,AT_ACTION_MOMENT_ENTER);assert(!participant.gaze);
+   helper->ai->UpdateAI(1000);assert(participant.gaze);
+   uint32 successfulCasts=participant.casts;helper->ai->UpdateAI(1000);assert(participant.casts==successfulCasts);
+   participant.gaze=false;helper->ai->UpdateAI(500);assert(!participant.gaze);helper->ai->UpdateAI(500);assert(participant.gaze);
+   participant.gaze=false;participant.pos.x+=6;helper->ai->UpdateAI(1000);assert(!participant.gaze);
+   participant.pos=area->pos;participant.contact=false;helper->ai->UpdateAI(60000);assert(helper->inWorld&&!participant.gaze);
+   participant.contact=true;helper->ai->UpdateAI(1000);assert(participant.gaze);
+   participant.pos.x+=6;area->UpdateAffectedList(1,AT_ACTION_MOMENT_ENTER);assert(!participant.gaze&&!area->IsUnitAffected(participant.GetGUID()));
+   participant.pos=area->pos;helper->ai->UpdateAI(1000);assert(!participant.gaze); // No invented entry or GM bypass.
+   area->UpdateAffectedList(1,AT_ACTION_MOMENT_ENTER);assert(participant.gaze);
+   participant.gaze=false;participant.rewarded=true;helper->ai->UpdateAI(1000);assert(!participant.gaze);
+  }
+  std::cout<<"PASS native UpdateAffectedList entry-before-action regression: contact/cast/removed-override recovery without re-entry, 1s retry, no refresh of existing aura, exact area/tracked/quest gates, transient contact retention and native leave/re-entry. Cast/geometry endpoints remain controlled.\n";
   std::cout<<"PASS actual21 SQL conditions/native ElseGroups and AreaTrigger two-target condition caller, native SELF-caster and cast/remove branches: stage/status matrix, class/life/item/reward/real credit/signed-negative/contact/missing instance/pet refusal and unconditional leave cleanup; shared outside-map admission preserved. Spell/aura endpoint controlled, not client button rendering.\n";
  }
  std::cout<<"PASS actual Stromkar return controller/factory: native scoped owner/eligible witness, one Val'kyr/custom11869 retained through30min AFK, native manual/infinite lifetime branches, last-participant grace cleanup/recovery, default SmartAI isolation and retry/reset/source-loss rejection. Map/summon/area/collision services are endpoints; actual client rendering/arrival remain separate.\n";

@@ -32,14 +32,17 @@ selected=[t for t in tables(factory) if all(n['symbol']('?'+method+'@ValkyrAI@St
 assert selected, 'Owned AI is not installed by actual factory'
 source='?Source@StromkarReturn@@'
 eligible='?Eligible@StromkarReturn@@'
+participant='?Participant@StromkarReturn@@'
 owner='?Owner@StromkarReturn@@'
 update='?Update@StromkarReturn@@'
 signal='?SetData@npc_stromkar_thoradin@@' # Signal is fully inlined here.
 area_update='?UpdateAI@ValkyrAI@StromkarReturn@@'
 clear='?ClearArea@ValkyrAI@StromkarReturn@@'
 assert {104307,1539,1037,10} <= values(source)
-assert {41105,103114,128910,1539,1} <= values(eligible)
-needs(eligible,'?GetQuestObjectiveData@Player@@QEBAHII@Z')
+assert {41105,103114,128910,1539,1} <= values(participant)
+needs(participant,'?GetQuestObjectiveData@Player@@QEBAHII@Z')
+needs(eligible,participant)
+needs(eligible,'?CanContact@Player@@')
 # Source's small scope predicate is inlined in Owner by this Release build.
 assert {93819,104307,1539,1037,10} <= values(owner)
 needs(owner,'?GetSummoner@TempSummon@@')
@@ -50,14 +53,19 @@ assert any(x.mnemonic == 'mov' and x.operands[0].type == CS_OP_MEM and x.operand
 needs('?UpdateAI@npc_stromkar_thoradin@@',update)
 needs('?UpdateAI@npc_stromkar_thoradin@@','?UpdateAI@SmartAI@@')
 assert {3,1,9,10,104307,1539,1037} <= values(signal)
-for call in (source,owner,eligible,'?MovePositionToFirstCollision@WorldObject@@','?SummonCreature@WorldObject@@'):
+for call in (source,owner,participant,'?CanContact@Player@@','?MovePositionToFirstCollision@WorldObject@@','?SummonCreature@WorldObject@@'):
     needs(update,call)
 assert {93819,8,1000} <= values(update)
 for call in (owner,clear,'?CreateAreaTrigger@AreaTrigger@@','?SetDuration@AreaTrigger@@'):
     needs(area_update,call)
 assert {11869,60000,1000} <= values(area_update)
 assert {-1,0xffffffff} & values(area_update), 'Owned area does not use native infinite duration'
-needs(area_update,eligible)
+needs(area_update,'?CanContact@Player@@') # Small Eligible wrapper is inlined here and in Update.
+needs(area_update,participant)
+for call in ('?IsUnitAffected@AreaTrigger@@','?IsInArea@AreaTrigger@@','?AffectUnit@AreaTrigger@@'):
+    needs(area_update,call)
+needs(area_update,'?HasAura@Unit@@')
+assert {215997,1} <= values(area_update), 'Missing real enter-action retry/aura gate'
 needs(clear,'?Remove@AreaTrigger@@')
 needs(condition,eligible)
 # This64-byte tail-call leaf has no x64 unwind entry. Bound it by the next
@@ -72,4 +80,4 @@ assert {26,11869,41,1} <= {op.imm for x in leaf_code for op in x.operands if op.
 for method in (update,signal,area_update):
     for prefix in ('?KilledMonsterCredit@Player@@','?RewardPlayerAndGroupAtEvent@Player@@','?AddItem@Player@@','?TeleportTo@Player@@'):
         assert not any(n['resolve'](a) in n['calls'](method) for name,a in n['symbols'].items() if name.startswith(prefix)), (method,prefix)
-print('PASS registered Val kyr factory/Thoradin bridges, completed1037 owner/quest-item eligibility, native manual summon/infinite area duration with60s missing-participant cleanup and registered condition. No direct item/credit/teleport calls; native lifetime/area actions/arrival and client rendering are separate checks.')
+print('PASS registered Val kyr factory/Thoradin bridges, completed1037 quest/item participant versus contact-ready admission, native tracked/exact-area enter retry for missing215997, manual/infinite lifetime and60s absent-participant cleanup. No direct item/credit/teleport calls; native lifetime/area actions/arrival and client rendering are separate checks.')
