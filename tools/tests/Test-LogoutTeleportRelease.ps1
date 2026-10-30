@@ -13,9 +13,11 @@ foreach($name in @('SaveToDB@Player','LogoutPlayer@WorldSession')){
  if($LASTEXITCODE){throw "Canonical disassembly failed: $name"}
  $listing | Set-Content "$out/$($name.Replace('@','-')).txt"
 }
-$run=(Get-Content "$repo/build-extractors/runtime-test/trial-helya-control-native/latest-run.txt").Trim()
-$abiRows=@(Get-Content "$run/native-lines.txt" | Where-Object {$_ -match '^LOGOUT_ABI '} | Select-Object -Unique)
-if($abiRows.Count -ne 1){throw 'Run the current native logout fixture before Release verification'}
+# Compile the current headers. A saved full-native fixture can remain from a
+# preceding class layout and must not supply stale offsets to a new Release.
+& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile LogoutAbiCatalog.cpp -ProbeName LogoutAbiCatalog -OutputFile "$out/native-abi.txt"
+$abiRows=@(Get-Content "$out/native-abi.txt" | Where-Object {$_ -match '^LOGOUT_ABI '} | Select-Object -Unique)
+if($abiRows.Count -ne 1){throw 'Missing current compiler logout ABI receipt'}
 $abi=[regex]::Match($abiRows[0],'^LOGOUT_ABI far=(\d+) session=(\d+) logout=(\d+)$')
 if(!$abi.Success){throw 'Native logout ABI evidence changed'}
 $far=([int]$abi.Groups[1].Value).ToString('X');$session=([int]$abi.Groups[2].Value).ToString('X');$logout=([int]$abi.Groups[3].Value).ToString('X')

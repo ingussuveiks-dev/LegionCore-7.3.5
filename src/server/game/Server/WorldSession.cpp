@@ -453,7 +453,10 @@ bool WorldSession::Update(uint32 diff, Map* map)
 
         time_t currTime = GameTime::GetGameTime();
         ///- If necessary, log the player out
-        if (ShouldLogOut(currTime) && m_playerLoading.IsEmpty())
+        // An admitted Player can request logout before its final loading
+        // notification. Keep an unfinished login without a Player protected,
+        // while allowing the map thread to detach an existing Player normally.
+        if (ShouldLogOut(currTime) && (m_playerLoading.IsEmpty() || GetPlayer()))
         {
             if (Player* player = GetPlayer())
                 player->SetRemoveFromMap(true);

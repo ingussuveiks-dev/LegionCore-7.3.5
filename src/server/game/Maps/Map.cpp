@@ -1082,7 +1082,7 @@ void Map::Update(const uint32 t_diff)
 
             WorldSession* session = player->GetSession();
             m_currentSession = session;
-            if (!session || session->PlayerLoading() || session->PlayerLogout()) // Prevent update if player not in map fulling
+            if (!session || session->PlayerLogout())
                 continue;
 
             if (player->IsChangeMap() || player->GetMap() != this || session->GetMap() != this)
@@ -1090,8 +1090,10 @@ void Map::Update(const uint32 t_diff)
 
             try
             {
-                // Can be not in world after WorldSession::Update
-                if (player->IsInWorld())
+                // Loading still defers gameplay updates, but must not defer
+                // an accepted logout's map removal. A missing final loading
+                // notification must not trap an already admitted Player.
+                if (!session->PlayerLoading() && player->IsInWorld())
                 {
                     uint32 _ss = getMSTime();
                     player->Update(t_diff);
