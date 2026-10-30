@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-30",
+  "status": "New matching26972 native19-point flight candidate recovered; Survival39427 remains OPEN. Research only, no gameplay/SQL/EXE/character changes.",
+  "prior_evidence": [
+    "docs/audits/talonclaw-eagle-blessing-research-2026-10-29.json",
+    "docs/audits/eagle-blessing-donor-review-2026-10-30.json"
+  ],
+  "new_method": "Previous native discovery followed TaxiNodes names/IDs and ordinary connected TaxiPath endpoints. New read-only typed DB2Storage probe groups EVERY TaxiPathNode byPathID, sorts NodeIndex, inspects geometric first/last points even if names/end nodes are absent. Uses broad map1220 Dalaran X(-1800,200)/Y(3300,5200) and Highmountain X(1900,4400)/Y(2300,4800) discovery boxes; never authored route points or gameplay gates.883 TaxiNodes/4261 nonempty path groups/73104 points inspected; one endpoint-geometry candidate5762.",
+  "candidate": {
+    "path_id": 5762,
+    "nodes": 19,
+    "node_indices": "0..18 consecutive, all map1220",
+    "start": [
+      -854.225708,
+      4280.11377,
+      751.018616
+    ],
+    "end": [
+      3119.38623,
+      3400.25708,
+      824.693359
+    ],
+    "world_context": "Fresh read-only source100965HighmountainHippogryph spawn366115 at-859.443/4282.79/746.366 on1220; no static100967 spawn.100967 template retainsVehicle4535 and empty AIName/ScriptName. Existing100965 root73 awards100111 and LINK1 InvokerCast198950; no change applied.",
+    "precision": "Final point export uses float max_digits10, preserving native single-precision round-trip coordinates. Earlier six-significant-digit exploratory output is retained separately and not presented as exact final geometry.",
+    "meaning": "Start is near the actual Dalaran hippogryph; end is near the sniffed Spiritwatch encounter area. Strong geometric candidate, not proved to be assigned to100967/39427; no new video comparison, timed traversal or flight launched."
+  },
+  "native_references": {
+    "TaxiPath5762": "Entry exists with FromTaxiNode0/ToTaxiNode0. Both names absent because native TaxiNodes0 is absent; do not misstate this as a missing TaxiPath entry.",
+    "SpellEffect_reverse_scan": "One raw MiscValue match:201652RelentlessStorm effect179/misc5762. Actual SpellEffects handler179 is CREATE_AREATRIGGER; this number is an AreaTrigger ID in that effect, not a SEND_TAXI123 relation. Do not cast it to launch a flight.",
+    "ordinary_taxi_limit": "Actual Player::ActivateTaxiPathTo(uint32) forwards5762 endpoints0/0 to the vector overload. The latter rejects missing source TaxiNodes0 with ERR_TAXINOSUCHPATH before setting the route. Ordinary taxi lookup cannot launch this candidate unmodified. Do not invent public taxi nodes/network links or bypass the validity check.",
+    "potential_next": "Verify that the native summoned personal100967/vehicle4535 is intended to follow this map-local path using real boarding/movement completion, preserving controller428/properties61/5min ownership and separate Apata217343/properties3292. Native metadata alone does not prove exact boarding, speed, timing or landing."
+  },
+  "checks": "Test-EagleFlightPathCatalog compiles native DB2 readers with actualHotfix overlays and verifies SELECTsession read-only. Output EOF/count receipt,19ordered map1220 points,zero-node absence,actual0/0 path definition and exact unrelated179 reference confirmed. Earlier and refined probes pass. This is a read-only asset inventory, not a passing live39427 quest.",
+  "development_limits": [
+    "First probe labels <no TaxiPath source/destination> meant missing TaxiNodes endpoints, not path-definition absence; refined receipt proves the path entry exists0/0.",
+    "An exploratory read incorrectly queried SQL taxi_path; actual world has no such table (ERROR1146), and no persistent change occurred. Correct source is the native DB2 stores used by the new passing probe. Earlier SQL1054 name query during Halahk exploration is recorded separately. No failed read counted as a test pass.",
+    "No donor/GitHub/YouTube re-search needed for this newly found local geometry. Earlier video review remains silent sampled frames, not full continuous playback; no new unseen footage/audio claim. Prior SceneScriptText bulk-materialization failure is unrelated and remains unresolved in its original audit."
+  ],
+  "evidence": ".codex/eagle-flight-native-paths-verified-2026-10-30",
+  "source_context_evidence": ".codex/eagle-flight-source-context-2026-10-30",
+  "hashes": {
+    ".codex/eagle-flight-native-paths-verified-2026-10-30/native.tsv": "514cfdd747758e46afbc28852c8f8a5efab0a6b40702f6a6f96f610a9f1d3a92",
+    "tools/research/EagleFlightPathCatalog.cpp": "14e16e3fcd9e51c2fa50ecbf383fa13910ab27959d7e6f41598c4fd23b466a4a",
+    "tools/tests/Test-EagleFlightPathCatalog.ps1": "ea012f7bb5803382e3f897aa69f27b61243249638ef319ef20b6b766868cad5c",
+    "build-extractors/bin/Release/dbc/enUS/TaxiNodes.db2": "edc353d2eac653d3902be494ab8ea6fec23513320cf76820c0dccb55415f51ea",
+    "build-extractors/bin/Release/dbc/enUS/TaxiPath.db2": "9ff4bb57661020abd6566e2db75e071a124bad4937f49178298c9f5b231d9e3b",
+    "build-extractors/bin/Release/dbc/enUS/TaxiPathNode.db2": "1c03eb540d9472f076cb5043a5dbf84cbf05d46add56725b0d45beed917a0425",
+    "build-extractors/bin/Release/dbc/enUS/SpellEffect.db2": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db"
+  },
+  "diagnostics": "Every native/asset/source-context probe before/after canonical+own crash/log lengths/timestamps and exit/stdout/stderr reviewed: no new/changed crash or appended DBErrors/server warnings/errors/assertions. No server launched/stopped, live SQL/character/item/quest/checkpoint change or active log maintenance. Canonical remainsCBCD7663/AE5B9D81; mixed5365-byte sharedLINK2 unresolved and retained. Research is not placed in fixed archives.",
+  "next": "Use recovered exact native geometry to resolve100967 boarding, actual passenger arrival, failed cast/spawn/boarding, control/camera/pet lifecycle,companion capture/drop,abandon/retry/re-entry and cleanup. Then restore owned phase7088/Apata-Degar-eagle release/platform blessing and real turn-in before exposing39427 or tightening41542->39427->40385. No progress resets; all36 and user-owned client checks remain open."
+}
