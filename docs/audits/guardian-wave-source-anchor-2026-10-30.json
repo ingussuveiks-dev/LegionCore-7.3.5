@@ -19,8 +19,17 @@
     "canonical": "build-extractors/bin/Release",
     "world_sha256": "0D526201937562B5A80B1449473D043DCA7C93402F79193C40CEF1536D7D669C",
     "bnet_sha256": "AF145BD6D102FA93757AB88ED7A487455D6504117A46B2532D850DCDAE5FD7F3",
-    "character_changes": "None from this Guardian repair. Separately authorized Stromkar one-use retest reset is documented in stromkar-full-retest-2-2026-10-30.json and was not repeated."
+    "character_changes": "None from this Guardian repair. Separately authorized Stromkar one-use retest reset is documented in stromkar-full-retest-2-2026-10-30.json and was not repeated.",
+    "lf_sha1": "12e921a44ed73a820680080bb70c32a3a85c19b5"
   },
   "evidence": ".codex/guardian-source-anchor-{hashes,data,native,shared,updater,live,structural,final}-2026-10-30; build-extractors/runtime-test/guardian-wave-source-anchor[-data]; .codex/artifact-post-guardian-source-anchor-2026-10-30",
-  "remaining": "Actual Guardian combat/positions/voices, native credit UI, group/faction eligibility, despawn/partial-spawn/retry/reentry and full Fallen/loot/equip/departure remain client checks. Original100yd last-living scope is retained, not a globally tracked wave; enemies separated by more than100yd from the final dying actor still require separate review. Null-killer/no nearby recipient remains blocked by native retained admission. Unknown101384 summonedLINK1, shared101430/103151 LINK2, remaining broaderLINK candidates, Stromkar exit client disappearance/visuals and Survival39427 remain OPEN. All36 unfinished."
+  "remaining": "Actual Guardian combat/positions/voices, native credit UI, group/faction eligibility, despawn/partial-spawn/retry/reentry and full Fallen/loot/equip/departure remain client checks. Original100yd last-living scope is retained, not a globally tracked wave; enemies separated by more than100yd from the final dying actor still require separate review. Null-killer/no nearby recipient remains blocked by native retained admission. Unknown101384 summonedLINK1, shared101430/103151 LINK2, remaining broaderLINK candidates, Stromkar exit client disappearance/visuals and Survival39427 remain OPEN. All36 unfinished.",
+  "fix_commit": "7dd467bf0",
+  "structural_routes_sha256": "7ceb9283879619b310c103765f538b0af93520a50f4189233d9d3d784d5cb6be",
+  "resolved_validation_archive": {
+    "path": "build-extractors/bin/Release/fixed/guardian-wave-source-anchor-validation-2026-10-30",
+    "fix_commit": "7dd467bf0",
+    "files": 92,
+    "verification": "Closed native/TEMP/ASAN/expected counterfactual/updater/live/structure diagnostic evidence copied with source/destination/source SHA256 and full final readback after actual RELEASED27 verification. Canonical Crashes empty; no mixed production log or unresolved client/LINK evidence moved or truncated."
+  }
 }
