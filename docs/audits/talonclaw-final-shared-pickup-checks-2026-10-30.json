@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-30",
+  "fix_commit": "0613361f7",
+  "canonical_worldserver_sha256": "88206FA62EC4C4B551B5121F0471B39E06537DC3437A6F0392871505F2595162",
+  "checks": [
+    "Test-ArtifactAcquisition.ps1 -VerifyReleaseBinary passes ten native pickup admissions and selected canonical Hunter42185/40385/40419 tuples with shared owned-state/visibility/location guards.",
+    "Test-ArtifactForceEquip.ps1 -VerifyReleaseBinary passes all55 native effect249 records/39 items, swap/pair/missing-item/denial paths and identical BOM/non-BOM catalog interpretation.",
+    "Test-ArtifactOnboarding.ps1 against fresh artifact-post-boarded-departure routes passes all36 production choices,900 native race/class/owned-unowned cases and2431 quest mask admission cases.",
+    "Test-ArtifactSmartLinks.ps1 passes ten extracted native LINK outcomes and differential comparison, including source9/owner-event counterexamples."
+  ],
+  "diagnostics": "Each additional check records canonical+own before/after crash/log state and inspected actual exit/stdout/stderr. No new/changed crash, appended DBErrors or server warning/error/assertion. No server started; active Crashes empty and mixed6090-byte sharedLINK2 log unchanged.",
+  "archive": "build-extractors/bin/Release/fixed/talonclaw-boarded-departure-2026-10-30/additional-pickup-checks",
+  "archive_files": 44,
+  "archive_manifest_sha256": "44024ce34f2c310871ee7970cf5b9a3edcb529c0c65465816faab3152b65aee4",
+  "archive_verification": "Original bytes and source/destination/source SHA256 verified; no active log removed or truncated.",
+  "limits": "These checks verify shared acquisition/equip/admission/LINK behavior, not full36 quest traversal or client visuals. Survival39427 middle and unknown WardstoneLINK4/sharedLINK2 payloads remain unresolved; client camera/pet/group/whole-chain checks remain user-owned. See current handoff and separate four-flight-segment/scope checkpoint audits."
+}
