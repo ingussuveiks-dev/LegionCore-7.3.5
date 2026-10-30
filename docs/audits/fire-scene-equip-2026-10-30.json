@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-30",
+  "status": "Fire1125 native real equipment completion deployed World13 RELEASED; whole Fire/all36/client remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Native196023/scene1125/package1500 plays acquisition on a visual clone.247494 now supplies actual128820, but scene had no completion callback to equip it.196020 native249 consumes existing inventory128820 (paired133959), plus61/47042. No synthetic item/quest grant is needed.",
+  "change": "Registered scene_fire_artifact_equipment / FireArtifactScene path1125,1500,1480,957,4,11997,128820 / CLASS_MAGE. Actual completed status, world/contact/living/nonteleport, active incomplete-or-complete un-rewarded quest, inventory-only item and same instance actual957/4..5 are required before native SQL callback. Invalid known scenes handled before generic callback, including late map change; foreign scenes remain untouched. One complete mapping1125->196020/MonsterCredit0;33 exact source17 predicates preserve ordinary196020 outside-map use independently of strict scene gate. No new cast/item/credit/teleport in gate.",
+  "native_context": "Matching26972 native1960239s root/1125 flags21, personal100290 plus196264/47042 preserved. Full linked1500 equips clone128820/133959 only.957 final step4 RewardQuestID0 advances to5 without removing active11997 or map-owned Scenario.196020249 and47042 retained rather than alternate205152 phase/225873 variant. Actual spell cast/equip denial, original GO retry/recovery and return traversal remain open.",
+  "validation": [
+    "Five full protected tables: original/applied spell_scene/event/conditions and unchanged ready247494 plus quest_objectives11997. Idempotence and23 full TEMP custom/partial refusals under --force, actual native EOF receipt; full live equality and RELEASED/LF-SHA1 pass. Alternate205152 and native packages/flags/quest objectives untouched.",
+    "MSVC ASan executes actual conditions/ElseGroups plus actual Player scene lifecycle/packet handlers and registered production guard. Original missing callback and unguarded late-map counterfactuals, flag21 cancel/complete exactly once, forged/unknown/stale/replaced/reentrant callbacks,15 late invalid contexts,65 stage/status cases, bank-only denial, failed cast then actual new-scene request. Engine cast/inventory/world endpoints controlled; no original-GO retry or equipment acceptance claim.",
+    "Original scripts.lib rebuilt without OutDir override; staged link reads original libraries, canonical unchanged during validation. Actual linked PE verifies Fire/Frost/Blood/Monk constructors/vtables/OnTrigger/native path records, HasSceneStatus/quest/Scenario and bank=false item ABI; shared10 scenario lifecycle call paths pass. Frost/Blood/Monk native ASan/full TEMP/live regressions and Scepter actual canonical binary pass. Existing C4244/C4389 warnings retained.",
+    "Fresh both-server CIM absence before four-file hash-verified promotion with verified original backup and protected configs/DLL/certificates. Owned8380 canonical ready, graceful shutdown0/exit0, stderr empty/newDB0/protected hashes unchanged. No unknown/user process stopped; no character/item/quest reset."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_13_fire_scene_equip.sql",
+    "lf_sha1": "57DFEDF9E48B795B8BDE6C42127A665156F4B442",
+    "canonical_hashes": {
+      "worldserver.exe": "4989118FB5D9ACFDB9ABF2CA349BB074986B6AE24354F5FBCF6B7B09A30E9B65",
+      "bnetserver.exe": "314D1FC56602316B639511F1D98951E802D8B7E5214AD08BE266F20FFE1C2CF1",
+      "worldserver.map": "D93ED668CD696F1C28FD3E7D4738317F243FD4F95ABA13A0995E66BE8FDAA60B",
+      "bnetserver.map": "925C82E1305F51F014ECA503772F2212C2878A07D463CBBBC53E9E73E599B47F"
+    },
+    "backup": ".codex/release-before-fire-scene-2026-10-30/manifest.json",
+    "owned_pid": 8380
+  },
+  "diagnostics": "All native/TEMP/build/PE/shared/promotion/Scepter/owned startup/live/fresh audit checks wrapped before/after canonical+own crash hashes/log sizes/timestamps; exits/stdout/stderr reviewed. No new production crash/warning/error/assertion/DBErrors. Active Crashes empty; unchanged mixed3915-byte shared101430/103151 LINK2 remains unresolved and was not cleared. Corrected initial private validation failures retained in hash-verified ignored fixed archive; they are not passing ordinary runs.",
+  "fixed_archive": "build-extractors\\bin\\Release\\fixed\\fire-scene-validation-2026-10-30\\manifest.json",
+  "evidence": [
+    ".codex/fire-scene-original-2026-10-30",
+    ".codex/fire-scene-generate-2026-10-30",
+    ".codex/fire-scene-native-repaired-2026-10-30",
+    ".codex/fire-scene-build-2026-10-30",
+    ".codex/fire-scene-stage-pe-2026-10-30",
+    ".codex/fire-scene-shared-2026-10-30",
+    ".codex/fire-scene-promotion-2026-10-30",
+    ".codex/fire-scene-updater-2026-10-30",
+    ".codex/fire-scene-live-2026-10-30",
+    ".codex/fire-scene-all36-refresh-2026-10-30"
+  ],
+  "remaining": "Next source17 delayed-start revalidation for actual196023 and related190435/200152/199502/217814, whose nativeSmart action85 queues200ms after source22 checked. Read-only current producer search identifies only the five intended GO producers (Monks have additional gossip root). Full bags/swap denial/original consumedGO retry/acquired-item recovery/entry travel/return/turnin/factions/group/fullclient remain OPEN.23LINK review candidates/shared missingLINK2/Stromkar recoil-floor-beams/middle39427/all36 remain open. Client user-owned; no reset permission."
+}
