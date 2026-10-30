@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-30",
+  "status": "Read-only native evidence; Survival39427 middle still unresolved and unexposed.",
+  "native_routes": [
+    {"path": 5762, "points": 19, "from": [-854.225708,4280.11377,751.018616], "to": [3119.38623,3400.25708,824.693359], "candidate": "Dalaran to Spiritwatch vicinity"},
+    {"path": 5763, "points": 10, "from": [3122.10498,3401.70044,824.690002], "to": [3590.85669,3552.30737,837.156738], "candidate": "Subsequent elevated flight beyond encounter vicinity"},
+    {"path": 5955, "points": 10, "from": [3127.34033,3525.198,779.022949], "to": [3154.5,3380.82007,774.185974], "candidate": "Sniffed bound-eagle cave to nearby wooden blessing platform"},
+    {"path": 5765, "points": 12, "from": [3154.14673,3386.96094,778.992981], "to": [3370.78223,1915.63538,2.2470119], "candidate": "Platform vicinity toward Stormheim/Talonclaw entry vicinity"}
+  ],
+  "route_limits": "All51 ordered map1220 points exported with native record ID, flags, delay and arrival/departure events at float max_digits10. All flags/delay/events are zero, all four TaxiPath definitions have0/0 endpoints. Geometry suggests these roles but proves neither assignment to100967/eagle nor flight speed, capture timing, dismount, scene/presentation or quest receipt. No invented taxi nodes or movement implementation.",
+  "scene_scan": "Native DB2FileLoader named-string reader scans all17037 record positions/5969 existing SceneScriptText records for Spiritwatch, blessing phrase, actor100967/110821/110901/110685 and four path numbers. Only five numeric matches:1206 contains creature65763;10408/10412 use5762/5763/5765 as client scene path IDs in Pandaria Cho/Varian/throne scenes;11505 contains coordinate5765.72;13326 contains BroadcastText95762/95763. These are different namespaces/content and cannot supply the Survival flight speed or binding. No relevant scene text recovered. No Lua executed or bulk SceneScriptText materialization retried; its earlier unresolved loader failure remains separately visible.",
+  "video_limit": "Earlier cached video/contact-sheet review remains sampled silent frames. This research does not claim new full video/audio review or infer exact speeds from sampled timing.",
+  "checks": "Test-EagleFlightPathCatalog passes complete883-node/4261-path/73104-point inventory receipt, exact four counts/map/order/0-endpoints and existing unrelated179 AreaTrigger reference checks. Scene catalog native exit0/EOF receipt reviewed; five matches inspected in full source context. Before/after canonical/own crash/log snapshots: no new/changed crash or appended server/DBErrors diagnostics; no server started or live SQL/character change.",
+  "evidence": [".codex/eagle-flight-four-segments-2026-10-30", ".codex/eagle-flight-scene-scan-2026-10-30"],
+  "next": "Resolve full owned flight/capture/drop, cave bindings/Degar defeat/eagle liberation/platform blessing and real quest turn-in using actual matching assets and full behavior evidence before restoring39427 admission or tightening41542->39427->40385. Existing40385 departure repair0613361f7 is independently deployed; it does not implement this middle quest."
+}

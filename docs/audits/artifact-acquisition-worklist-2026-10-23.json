@@ -5370,5 +5370,17 @@
   "new_evidence": "Native26972 all73104 TaxiPathNode records/4261ordered groups,not just namedTaxiNodes:5762 has19points from actualDalaran hippogryph vicinity toSpiritwatch vicinity. Exact float coordinates retained. Actual TaxiPath5762 is0/0,TaxiNodes0 absent; normal taxi activation rejects it.201652 effect179 is unrelatedAT5762,notflight.",
   "status": "Local read-only/native probe passes; no flight/quest/SQL/core change.39427 remainsOPEN,not exposed; no character reset/client certification.",
   "next": "Trace actual personal100967/properties61/controller428/vehicle4535 boarding and native19-point path launch/arrival/cleanup,then full owned39427 actors/prerequisites. No invented public taxi nodes or progress on spawn/cast."
+},
+  "latest_boarded_departure_continuation_2026_10_30": {
+  "date": "2026-10-30",
+  "implemented_commit": "0613361f7",
+  "archive_commit": "df92152cc",
+  "audit": "docs/audits/talonclaw-boarded-departure-2026-10-30.json",
+  "status": "World37 RELEASED,actual-board/native-exit/accepted1511 receipt,43ASAN+25TEMP+8shared+native26972+selectedcanonicalPE+Scepter+owned34340graceful0. Canonical world88206FA62EC4C4B551B5121F0471B39E06537DC3437A6F0392871505F2595162,bnet7594808E7A2EA2E9161272B65542B552CB0A84251B99401C62563D1101A2708F.571closed diagnostics hasharchived; no server running.",
+  "native_research": "docs/audits/eagle-flight-four-segments-2026-10-30.json:four actual native paths5762/5763/5955/5765,51points/0events/0endpoints; fullSceneScriptText keywordscan found only five unrelated numeric matches. No39427 exposure or flight implementation.",
+  "scope": "docs/audits/artifact-review-scope-checkpoint-2026-10-30.json:do not redraft four known later campaign edges; duplicate Niskara draft privately deferred again. Current native205 already resolves pet/guardian owner,so raw7 alone is not a missing player credit bug.",
+  "fresh_inventory": ".codex/artifact-post-boarded-departure-2026-10-30:36/149/0narrow/3bounded;28maps2168owners97timed21broadLINKs3recipients2nested. No full36/client claim.",
+  "diagnostics": "ActiveCrashes empty,mixedsharedLINK2 DBErrors6090bytes/8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0.6090 predates tests,earlier5365 handoff stale; no log truncation.",
+  "remaining": "39427 wholemiddle,unknownWardstoneLINK4/shared101430+103151 LINK2/Stromkarclient visuals/full36 progression/reentry/group/GO/cast/fullbags. Userownsclientchecks,no additional reset authorization."
 }
 }

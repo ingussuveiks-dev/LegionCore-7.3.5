@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <limits>
 #include <map>
+#include <set>
 #include <vector>
 #include <cmath>
 
@@ -37,11 +38,17 @@ int main(int argc,char** argv)
     for(auto p:points){++pointCount;grouped[p->PathID].push_back(p);}
     auto dalaran=[](TaxiPathNodeEntry const* p){return p->ContinentID==1220&&p->Loc.X>-1800&&p->Loc.X<200&&p->Loc.Y>3300&&p->Loc.Y<5200;};
     auto highmountain=[](TaxiPathNodeEntry const* p){return p->ContinentID==1220&&p->Loc.X>1900&&p->Loc.X<4400&&p->Loc.Y>2300&&p->Loc.Y<4800;};
+    std::set<uint32> selected{5762,5763,5955,5765};
     for(auto& entry:grouped){auto& route=entry.second;std::sort(route.begin(),route.end(),[](auto a,auto b){return a->NodeIndex<b->NodeIndex;});
         auto a=route.front(),b=route.back();bool candidate=(dalaran(a)&&highmountain(b))||(highmountain(a)&&dalaran(b));
         auto path=paths.LookupEntry(entry.first);auto from=path?nodes.LookupEntry(path->FromTaxiNode):nullptr;auto to=path?nodes.LookupEntry(path->ToTaxiNode):nullptr;
         ++pathCount;
         std::cout<<"PATH\t"<<entry.first<<'\t'<<route.size()<<'\t'<<a->ContinentID<<'\t'<<a->Loc.X<<'\t'<<a->Loc.Y<<'\t'<<a->Loc.Z<<'\t'<<b->ContinentID<<'\t'<<b->Loc.X<<'\t'<<b->Loc.Y<<'\t'<<b->Loc.Z<<'\t'<<(from?from->Name->Str[0]:"<no TaxiPath source>")<<'\t'<<(to?to->Name->Str[0]:"<no TaxiPath destination>")<<'\n';
+        if(selected.count(entry.first)){
+            if(!path)return 7;
+            std::cout<<"ROUTE_DEFINITION\t"<<entry.first<<'\t'<<path->FromTaxiNode<<'\t'<<path->ToTaxiNode<<'\n';
+            for(auto p:route)std::cout<<"ROUTE_POINT\t"<<p->PathID<<'\t'<<unsigned(p->NodeIndex)<<'\t'<<p->ContinentID<<'\t'<<p->Loc.X<<'\t'<<p->Loc.Y<<'\t'<<p->Loc.Z<<'\t'<<p->ID<<'\t'<<unsigned(p->Flags)<<'\t'<<p->Delay<<'\t'<<p->ArrivalEventID<<'\t'<<p->DepartureEventID<<'\n';
+        }
         if(candidate){++candidates;std::cout<<"CANDIDATE\t"<<entry.first<<'\n';for(auto p:route)
             std::cout<<"POINT\t"<<p->PathID<<'\t'<<unsigned(p->NodeIndex)<<'\t'<<p->ContinentID<<'\t'<<p->Loc.X<<'\t'<<p->Loc.Y<<'\t'<<p->Loc.Z<<'\t'<<p->Delay<<'\t'<<p->ArrivalEventID<<'\t'<<p->DepartureEventID<<'\n';}
     }
