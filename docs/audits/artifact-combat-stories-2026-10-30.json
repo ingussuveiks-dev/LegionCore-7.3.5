@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-30",
+  "status": "Three acquisition combat actors retain conversations on pet/guardian aggro/death; World20 RELEASED; full encounters/client/all36 remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Native206 SUMMON_CONVERSATION accepts selected Players only. Faceless Oppressor101114 LINK2/aggro1331 and death1336 use rawINVOKER7;105799+106700 Scion of Fire aggro1667 likewise target7. Actual pet/guardian invokers are Creatures and receive no story. Existing205 already resolves eligible owner for49022; no new credit fix needed.",
+  "change": "Exactly8 fields on4 rows: target7->native130 and target_param1 0->70. Preserve1331/1336/1667 payloads/timing/once flags,101114 root0->LINK2 and actual49022, native206944 casts, Scion209854/209855 and removal209811, death data1 to distinct104832/106699 and original repeat flags. No nearest-player fallback, new group/quest/item/phase/health/teleport grant or core behavior.",
+  "scope": "Actual101114 two static1539/5739 placements; Scion105799 map1583/6140 and106700 map1583/6068. Five nativeSmart templates including both Azuregos receivers and their source9 lists protected. Later109109/109417 map1489/7727 campaign actors excluded; sharing an artifact map alone does not establish acquisition use.",
+  "validation": [
+    "Full9table fingerprints:39 Smart rows (three source actors plus two receivers/source9),8 source22 conditions,4 texts,5 templates+WDB,6 spawns,6 conversation_data/3 actors and empty native conversation_creature. Exactly8 field edits/idempotence/22 TEMP custom-partial refusals under --force/native EOF receipt/full live equality and RELEASED LF-SHA1. Explicitly reject changes to49022, validLINK2, receiver unknownLINK/health/list, Scion recipient/cast/aura and conversation payload.",
+    "MSVC ASan executes actual Smart root/event/action/linked dispatch, native Unit owner/helper,130 resolver/selector/scope,206 and205 (not a criteria spy action). Real SQL old raw pet loses stories; fixed player/pet/guardian/charm/ownerless/NPC/null/world/map/phase/range70/unavailable owner/scope/missing actor/one-hit death/repeated events/mixed group killer cases pass. Native205 still invokes49022 once for original aggro owner and preserves actual pet invoker; death does not invent that aggro credit. Different eligible final killer receives native death story without duplicate aggro credit.",
+    "Original controlled combat casts/209811 removal and distinct Scion data1 recipients/repeated death flag retained. Receiver graphs are full-schema protected, not fully executed in this host. Criteria storage/world creation/chat/spell/actual timer scheduling remain controlled endpoints. Existing failed conversation creation consumes its original once event; no new failure retry or full client proof claimed.",
+    "Matching26972 confirms206944->206948/104605,209811 infinite cosmetic Arcane Shield State, Fireball209854/Blaze209855;49022 belongs1037/3/tree46862/46863. Six original native lines3095/105891,3110/105923 and3588/107350->3589/107351->3590/107352->3591/107353 retained. No fabricated speech/visual/action IDs.",
+    "Canonical actual130/loader/owner/map/phase/world/range/206 conversation/TALK PE and global ScriptPetCredit native+selected Release bridge pass. Shared Halak and three Frost soul ASan/full9live/TEMP regressions pass with the extended shared native205 host. No production C++/EXE change.",
+    "Fresh both-server CIM absence before hash-verified pending20 promotion. Owned22052 canonical ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged, closed. No user/unknown server stopped, character reset or client operation."
+  ],
+  "deployment": {
+    "lf_sha1": "B012671902ACDA71A959E693C1DA82D6B5EC0D8E",
+    "canonical_hashes": {
+      "worldserver.exe": "DB0526D1CBDE25EE6660968C52CD4ACD927060C3F5AF0D775C3BD6C975527C92",
+      "bnetserver.exe": "204B17EAEC111ACBAFFA87868FC8589E74795F3136BC30C4B63D99F437373E25"
+    },
+    "owned_pid": 22052,
+    "migration": "sql/updates/world/2026_10_30_20_artifact_combat_stories.sql"
+  },
+  "diagnostics": "All research/TEMP/native/ASan/catalog/PE/updater/live/shared tests wrapped before/after canonical+own crash hashes/log lengths/timestamps, exits/stdout/stderr inspected. No new production crash/server warning/error/assertion/DBErrors. ActiveCrashes empty; mixed3915-byte shared101430/103151 LINK2 log unchanged atUTC2026-10-29T13:29:05.1130661Z and retained. No failed ordinary validation or resolved crash/log requiring new fixed archive in this focus; expected22 refusal counterfactuals remain in original test evidence.",
+  "structural": "Latest full36 structural inventory is World19 .codex/artifact-post-frost-souls-2026-10-30:20tables465568 objects/36routes149pairs0automatedfindings3bounded/28maps2168contexts97timed23 primaryLINK candidates. World20 changes only eight conversation target fields and does not claim another full snapshot or all36 certification.",
+  "evidence": [
+    ".codex/artifact-next-owner-conversations-2026-10-30",
+    ".codex/artifact-combat-stories-original-2026-10-30",
+    ".codex/artifact-combat-stories-data-2026-10-30",
+    ".codex/artifact-combat-stories-native-2026-10-30",
+    ".codex/artifact-combat-stories-catalog-2026-10-30",
+    ".codex/artifact-combat-stories-updater-2026-10-30",
+    ".codex/artifact-combat-stories-final-live-2026-10-30"
+  ],
+  "next": "Trace remaining native acquisition invoker-cast candidates92445/92447/92450,103226/7,104627/1,106569/0 and110122/1 against native effects, actual map/quest/full graphs before using opt-in128/130. Dedicated credit normalization already works globally; ordinary conversation/scene/aura/summon semantics must not be changed blindly.",
+  "remaining": "Actual conversations/voice/position/cast acceptance and full Warrior/Nexus/client sequences remain OPEN. Shared101430/103151 missingLINK2 and all23 expanded review candidates retained, including104832/0->3. Stromkar recoil/cracked-floor/three beams, Survival39427, originalGO/retry/full bags and full36 still unfinished. No progress reset permission; client checks user-owned."
+}

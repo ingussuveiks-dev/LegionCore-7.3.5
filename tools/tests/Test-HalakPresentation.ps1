@@ -11,6 +11,7 @@ $out="$repo/build-extractors/runtime-test/halak-presentation"
  'PlayerTarget'=@('        case SMART_TARGET_ACTION_INVOKER_PLAYER:','        case SMART_TARGET_POSITION:')
  'InvokerTarget'=@('        case SMART_TARGET_NONE:','        case SMART_TARGET_ACTION_INVOKER_VEHICLE:')
  'ConversationAction'=@('        case SMART_ACTION_SUMMON_CONVERSATION:','        case SMART_ACTION_SUMMON_ADD_PLR_PERSONNAL_VISIBILE:')
+ 'CriteriaAction'=@('        case SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA:','        case SMART_ACTION_SUMMON_CONVERSATION:')
  'UpdateEvent'=@('        //called from Update tick','        case SMART_EVENT_HEALTH_PCT:')
  'FindLinkedEvent'=@('SmartScriptHolder SmartScript::FindLinkedEvent(','void SmartScript::OnUpdate(')
  'LinkTail'=@('    if (e.link && e.link != e.event_id)','void SmartScript::InstallTemplate(')
@@ -39,7 +40,7 @@ $out="$repo/build-extractors/runtime-test/halak-presentation"
  $enum=@($constants|ForEach-Object {$m=[regex]::Match($header,"\b$_\s*=\s*(\d+)\s*,");if(!$m.Success){throw "Missing native event enum $_"};"$_=$($m.Groups[1].Value)"}) -join ','
  $flags=@([regex]::Matches($all,'\bSMART_EVENT_FLAG_[A-Z_]+\b')|ForEach-Object {$_.Value}|Sort-Object -Unique)
  $extra='';foreach($flag in $flags){$m=[regex]::Match($header,"\b$flag\s*=\s*([^,`r`n]+)");if(!$m.Success){throw "Missing flag $flag"};$extra+="constexpr uint32 $flag=$($m.Groups[1].Value -replace '//.*','');`n"}
- foreach($name in @('SMART_TARGET_SELF','SMART_TARGET_VICTIM','SMART_TARGET_NONE','SMART_TARGET_ACTION_INVOKER','SMART_TARGET_ACTION_INVOKER_PLAYER','SMART_ACTION_SUMMON_CONVERSATION')){$match=[regex]::Match($header,"\b$name\s*=\s*(\d+)\s*,");if(!$match.Success){throw "Missing native constant $name"};$extra+="constexpr uint32 $name=$($match.Groups[1].Value);"}
+ foreach($name in @('SMART_TARGET_SELF','SMART_TARGET_VICTIM','SMART_TARGET_NONE','SMART_TARGET_ACTION_INVOKER','SMART_TARGET_ACTION_INVOKER_PLAYER','SMART_ACTION_SUMMON_CONVERSATION','SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA')){$match=[regex]::Match($header,"\b$name\s*=\s*(\d+)\s*,");if(!$match.Success){throw "Missing native constant $name"};$extra+="constexpr uint32 $name=$($match.Groups[1].Value);"}
  $action=[regex]::Match($header,'SMART_ACTION_TALK\s*=\s*(\d+)\s*,').Groups[1].Value
  [IO.File]::WriteAllText("$out/EventConstants.inc","enum SMART_EVENT {$enum}; constexpr uint32 SMART_ACTION_TALK=$action; $extra")
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

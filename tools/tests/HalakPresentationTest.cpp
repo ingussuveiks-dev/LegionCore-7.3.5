@@ -11,7 +11,9 @@
 #include <memory>
 #include <cstdlib>
 #include <vector>
+#include <set>
 using uint64=uint64_t;using uint32=uint32_t;using uint8=uint8_t;
+using CriteriaTypes=int;
 #include "EventConstants.inc"
 struct Unit;struct Creature;struct Player;
 struct ObjectGuid {Unit* unit=nullptr;static ObjectGuid const Empty;uint32 GetEntry()const;bool IsPlayer()const;};ObjectGuid const ObjectGuid::Empty{};
@@ -23,7 +25,7 @@ struct Unit {bool player=false,creature=false,world=true,phase=true,available=tr
  bool IsInWorld()const{return world;}Map* GetMap()const{return map;}bool InSamePhase(Unit*)const{return phase;}bool IsWithinDistInMap(Unit*,float maximum)const{return distance<=maximum;}
  bool HasQuestObjectScope()const{return scope;}bool CanTargetQuestObject(Unit*)const{return scopeAllows;}Position GetPosition()const{return {1,2,3};}
 };using WorldObject=Unit;
-struct Player:Unit {Player(){player=true;}};
+struct Player:Unit {uint32 criteria=0,lastAsset=0;Unit* criteriaInvoker=nullptr;Player(){player=true;}void UpdateAchievementCriteria(CriteriaTypes type,uint32 asset,uint32,uint32,Unit* invoker,bool){assert(type==92);++criteria;lastAsset=asset;criteriaInvoker=invoker;}};
 struct Creature:Unit {uint32 entry=102532;bool combat=true,expired=false;float health=100;Unit* victim=nullptr;
  Creature(){creature=true;}uint32 GetEntry()const{return entry;}bool isInCombat()const{return combat;}bool IsQuestObjectExpired()const{return expired;}bool IsInWorld()const{return world;}
  uint32 GetMaxHealth()const{return 100;}float GetHealthPct()const{return health;}Unit* getVictim(){return victim;}
@@ -51,7 +53,7 @@ struct SmartScriptHolder {
   struct {uint32 id=0,value=0,cooldownMin=0,cooldownMax=0;} dataSet;
   struct {uint32 min=0,max=0,repeatMin=0,repeatMax=0;} minMaxRepeat;
  } event;
- struct {struct {uint32 textGroupID=0,duration=0;} talk;struct{uint32 id=0,targetX=0,targetY=0,targetZ=0;}conversation;} action;
+ struct {struct {uint32 textGroupID=0,duration=0;} talk;struct{uint32 id=0,targetX=0,targetY=0,targetZ=0;}conversation;struct{uint32 type=0,misc1=0,misc2=0,misc3=0;}achievementCriteria;} action;
  struct{struct{uint32 dist=0;}playerDistance;}target;
  uint32 GetEventType()const{return type;}uint32 GetActionType()const{return actionType;}uint32 GetScriptType()const{return source_type;}uint32 GetTargetType()const{return targetType;}
 };
@@ -107,9 +109,10 @@ struct SmartScript {
  calls.push_back({now,e.actionType,e.parameter});
  switch(e.GetActionType()){
 #include "TalkAction.inc"
+#include "CriteriaAction.inc"
 #include "ConversationAction.inc"
  // Unchanged native services are observed as requests, not granted progression.
- case 2:case 11:case 205:case 45:case 37:case 42:case 75:case 12:case 22:case 50:case 80:break;
+ case 2:case 11:case 45:case 37:case 42:case 75:case 12:case 22:case 50:case 80:break;
  }
 #include "LinkTail.inc"
 void SmartScript::Update(uint32 diff){now+=diff;
@@ -118,7 +121,7 @@ static std::vector<SmartScriptHolder> Read(char const* path,uint32 entry){std::i
  std::stringstream ss(line);std::vector<std::string> fields;std::string cell;while(std::getline(ss,cell,'\t'))fields.push_back(cell);assert(fields.size()==31);
  auto n=[&](size_t i){return uint32(std::stoul(fields[i]));};if(n(0)!=entry||n(1)!=0)continue;SmartScriptHolder e;e.entryOrGuid=n(0);e.event_id=n(2);e.link=n(3);e.type=n(5);e.event.event_phase_mask=n(6);e.event.event_chance=n(7);e.event.event_flags=n(8);
  e.event.textOver={n(9),n(10)};e.event.dataSet={n(9),n(10),n(11),n(12)};e.event.minMaxRepeat={n(9),n(10),n(11),n(12)};
- e.actionType=n(14);e.parameter=n(15);e.second=n(16);e.action.talk={n(15),n(16)};e.targetType=n(21);e.target.playerDistance.dist=n(22);e.action.conversation={n(15),n(16),n(17),n(18)};rows.push_back(e);
+ e.actionType=n(14);e.parameter=n(15);e.second=n(16);e.action.talk={n(15),n(16)};e.targetType=n(21);e.target.playerDistance.dist=n(22);e.action.conversation={n(15),n(16),n(17),n(18)};e.action.achievementCriteria={n(15),n(16),n(17),n(18)};rows.push_back(e);
  }return rows;}
 static void Texts(char const* path){std::ifstream f(path);std::string line;while(std::getline(f,line)){std::stringstream ss(line);std::string entry,group;std::getline(ss,entry,'\t');std::getline(ss,group,'\t');chat.groups[uint32(std::stoul(entry))][uint8(std::stoul(group))]=1;}chat.Prepare();}
 static SmartScript Script(std::vector<SmartScriptHolder> const& rows,uint32 entry,Unit* victim){return SmartScript(rows,entry,victim);}
