@@ -8,7 +8,7 @@
     "source": "tools/research/SurvivalArtifactCatalog.cpp",
     "check": "tools/tests/Test-SurvivalArtifactCatalog.ps1 passes",
     "method": "Uses production DB2Storage for typed quest/scenario/criteria/effect/package data and production DB2FileLoader/DB2Record named-field access for sparse SceneScriptText. No guessed packed string offsets, external overlays or Lua execution.",
-    "reader_limit": "The initial research attempt to bulk-materialize SceneScriptText through DB2Storage raised ACCESS_VIOLATION. Its exact internal materialization failure is unresolved. The probe now reads the same native table through DB2FileLoader::GetRecord/GetString, which succeeds and validates the expected scene definitions. No runtime/core loader change is claimed.",
+    "reader_limit": "Historical limitation, resolved by223a2a56e; see docs/audits/db2-sparse-scene-strings-2026-10-30.json. The same typed SceneScriptText load now reproduces the sparse alias-pool overflow under ASAN and passes complete5969-record/raw-string differential after repair. Original old crash stack/bytes were unavailable for exact comparison. The independent DB2FileLoader named-field reader remains an oracle; no Lua execution or client traversal implied.",
     "questline_sha256": "C2D7266900A43FAD156FD19C0D06F2278C48B327FBC9C7D00162B084C69DDBFF",
     "scenario_steps_sha256": "4E422B1333A7B1BE8427CCB511017A93C093FA243ADB83DC74E255AD1702B94E",
     "scene_text_sha256": "75C0E4C7C5FE7D753E1823A40683D9B7ED1C458952B28B08D103903CB09A19A4"

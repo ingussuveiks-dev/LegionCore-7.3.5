@@ -5382,5 +5382,14 @@
   "fresh_inventory": ".codex/artifact-post-boarded-departure-2026-10-30:36/149/0narrow/3bounded;28maps2168owners97timed21broadLINKs3recipients2nested. No full36/client claim.",
   "diagnostics": "ActiveCrashes empty,mixedsharedLINK2 DBErrors6090bytes/8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0.6090 predates tests,earlier5365 handoff stale; no log truncation.",
   "remaining": "39427 wholemiddle,unknownWardstoneLINK4/shared101430+103151 LINK2/Stromkarclient visuals/full36 progression/reentry/group/GO/cast/fullbags. Userownsclientchecks,no additional reset authorization."
+},
+  "latest_db2_sparse_reader_repair_2026_10_30": {
+  "audit": "docs/audits/db2-sparse-scene-strings-2026-10-30.json",
+  "fix_commit": "223a2a56e",
+  "archive": "docs/audits/db2-sparse-diagnostic-archive-2026-10-30.json",
+  "status": "Native SceneScriptText typed materialization crash reproduced with ASAN and fixed:162 catalog aliases caused physical-span pool to be92727 bytes too small for actual string copies; mixed/plain string pointers and base-locale holes also repaired. All5969 full names/scripts match independent raw reader before/after reload,15578 NameGen+2874 NamesReserved controls pass. Three pinned native failing counterfactuals paired with repaired generated schemas/ASAN.",
+  "runtime": "Canonical world07C3ED055D08D46C391867728F36CD56C0556DA645904F1CE0AF062A9BD8BDA5,bnetC3B9055443E88589D88624BDF1B63961AFE42862863F719B0AC31656B04E3A5C. Original common.lib rebuilt and actual link inputs used; actual selected sparse vtable/allocator/S switch PE verified. Owned30820ready/graceful0,no hidden server remains; no SQL/assets/characters changed.",
+  "checks": "Canonical newASAN/native/PE,120regular decoder/PE,Scepter,43Talonclaw+25TEMP/liveWorld37/PE,Survival13stages/nativeScene checks pass.353closed diagnostics archived with source/destination/source/final SHA256. Crashes empty,mixed6090-byte sharedLINK2 retained,not cleared.",
+  "remaining": "Continue actual missing39427/unknownWardstoneLINK4/sharedLINK2 and full36 progression/visual/reentry cases. Avoid already deferred shared campaign actors9244x/Niskara109xxx; source44 null-invoker cases must distinguish ProcessEventsFor from ProcessEvent native base fallback. User owns client checks; reset3 consumed, no further resets."
 }
 }

@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-30",
+  "fix_commit": "223a2a56e",
+  "archive": "build-extractors/bin/Release/fixed/db2-sparse-strings-2026-10-30",
+  "files": 353,
+  "manifest_sha256": "8aa9163b7e63ca5c3795e3164be8169ebad3be04251138d5195f3fe5c79de1e2",
+  "verification": "Resolved native counterfactual/repaired ASAN/loader/build/PE/startup diagnostics and pinned baseline source preserved byte-for-byte. Source/destination/source SHA256 and final archive readback verified after fix deployment/regression. Original evidence remains available.",
+  "active_state": "No crash report removed; active Crashes empty. Mixed unresolved sharedLINK2 DBErrors6090 bytes SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 rechecked unchanged immediately before/after archive. No canonical log truncated, executable/security block bypassed, credentials or character data archived. No server running.",
+  "limits": "This closes the reproduced native sparse string faults and test development failures only. Original2026-10-23 crash bytes were unavailable and are not claimed archived. Unknown LINK payloads,39427 reconstruction,Stromkar/client/all36 findings remain open."
+}
