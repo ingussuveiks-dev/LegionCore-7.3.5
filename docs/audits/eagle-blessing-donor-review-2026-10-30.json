@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-30",
+  "status": "OPEN Survival39427 middle; new pinned reference evidence, no gameplay/database/EXE change",
+  "scope": "Continue talonclaw-eagle-blessing-research-2026-10-29.json and survival-artifact-sequence-review-2026-10-23.json. Keep native41542->39427->40385 evidence and the existing live bypass visible until the whole middle is implemented and checked. Do not silently tighten admission or grant missing objectives.",
+  "sniff": {
+    "source": "https://github.com/welder1976/MagicStorm/blob/e941af4df2f394e7d0e0753ca15c0677271698c1/sql/sql/world/2018_04_13_99_02_hunter_quest.sql",
+    "sha256": "7DB8B73D1F28AA6DF393CE11A27BAC837B77B9C34FDE3D8207A81ACF63EBD8FD",
+    "private_copy": ".codex/magicstorm-hunter-26365-e941af4.sql",
+    "provenance": "Header identifies WowPacketParser,7.3.5_26365 zhCN Survival artifact sniff,parsed2018-04-13. Earlier7.3.5 build,not matching26972. SQL reviewed as source data only; none executed or copied into an updater.",
+    "anchors": [
+      "Apata110821 map1220/zone7503/area8335 at3128.523,3516.045,772.408,o0.5400566; aura220554; equip34058.",
+      "Degar110685 same map/zone/area at3139.728,3530.74,771.4049,o2.75995;aura172325;equip72846. Sniff template98..110,faction16,unitclass2,flags32768/2048. Values are references requiring26972/current-schema validation,not new server rows.",
+      "Ohn'ahra110901 at3125.575,3532.092,773.0883,o0;aura220557,addonbytes2=50331648;sniff HoverHeight4.5 and flags33280/4212736/1. Placement is a cave-bound initial actor,not a verified blessing-platform destination or flight endpoint.",
+      "Plant110825/110827/110830 and110841 WeirdGrowth placements provide encounter-area candidates. No100967 movement route or waypoint-data INSERT found in this inspected SQL. Random-movement hints on plant rows are not the hippogryph flight.",
+      "Native text identities100990 BCT114943/119043;110821119324/119326/119328;110986119330;Degar119073/sound68168. Chinese source strings are not imported over matching local language data.",
+      "Spellclick rows100965/218564 and110901/220791 have cast_flags0/user_type0 in WPP output. This does not prove server caster/target semantics; matching220791 is self-target real110938 credit. Reconcile actual Player caster and native spell effects before adopting click flags."
+    ]
+  },
+  "bfa_reference": {
+    "source": "https://github.com/HavenWoW/BFA-HavenCore/blob/403d04827b341ec18afcb878e371151de850b2e9/src/server/scripts/BrokenIsles/ClassHalls/class_hall_hunter.cpp",
+    "sha256": "D2291ECD7151D7C7055B16EB032945A542B9DA6A0F5D9267D2B8B0D0FCB97E2A",
+    "private_copy": ".codex/haven-hunter-reference-403d048.cpp",
+    "review": "Full fetched file available locally; relevant Survival definitions and complete AddSC registration tail reviewed. Other class-hall implementations are not certified. Modern BFA APIs and logic are references,not compatible Legion code.",
+    "registration_correction": "The prior Blood guard next-step note and handoff incorrectly described the Survival structs as unregistered after a displayed excerpt stopped partway through AddSC. Full tail DOES register104382/100967/100990/110821/110685. This corrects that reading error; registration does not make the shortcut behavior authentic.",
+    "rejected_shortcuts": [
+      "Acceptance raw-summons100967 and100990 at Dalaran-861.094/4276.1/746.284,without the native198941/properties61 and217343/properties3292 lifecycle proof.",
+      "Bird click grants110936 before boarding and schedules a14000ms teleport to3486.392/3533.4429/821.548,o3.4357. This is not the roughly two-minute reference flight and is not an authoritative native landing point.",
+      "Companion Reset selects nearestPlayer for conversations2674/2676/2677 and despawns after30s; private owner/group/re-entry and flight lifetime are not preserved.",
+      "Degar death schedules220791 for all nearest players25yd after6s instead of waiting for the real freed-eagle/platform interaction. No killer-owner/quest/group gate or pet-safe credit evidence. Do not import timed completion.",
+      "Nearby player ForceCompleteQuest41542 and40385 two-second teleport bypass the native preparation/middle/departure sequence. Do not import these grants/transfers."
+    ]
+  },
+  "native26972_crosscheck": [
+    "Extended existing EagleBlessingCatalog with donor candidate9739,223019,220554,220557 and native receiver/property lookups; configured Hotfix sessions read-only.9739 Wrath is effect2/hostile6,cast2000ms; existence does not prove its original Degar cadence or use.",
+    "220554 Druid Root-Ground and220557 Druid Root-FlyingTarget are effect6/aura4/self1,duration-1. Their original WPP attachment toApata/eagle is a useful binding-state reference,not complete server actors/ownership/phase behavior.",
+    "223019 CallWeirdGrowth is native effect28/summon111982/properties2972/target73,cast1500ms/duration30000. Properties2972 control0/title0/flags8/slot0. It does not summon the sniff's110841 proxy; both110841 and111982 are missing from this Creature.db2 lookup. Reconcile server templates,scope and intended actor before importing the BFA spell by name.",
+    "Previously verified native218564 controller428 triggers198941/properties61 and217343/3292;4535/seat16201;220619 preload438/7088 is HandleNULL,not a server population implementation;220791 self90/110938 plus53251. Existing native flight-name/taxi scans provide no demonstrated matching100967 route. No unrelated Trueshot/Odan/return path substituted."
+  ],
+  "bounded_search": "Additional public GitHub queries100967 MoveSmoothPath,Spiritwatch PassengerBoarded,FlytoSpiritwatch MovePath and198941 PassengerBoarded returned no matches.100967 OnSpellClick returned the same BFA-style family;110901 MovePoint hits include unrelated earlier sections,not proof of freed-eagle movement. No new authoritative flight path found. Absence in these bounded searches is not a claim that none exists anywhere.",
+  "video_limit": "The earlier2016 six-minute reference review remains186 silent sampled frames/10 contact sheets,not continuous playback or audio. No new video review performed here and no exact route coordinates inferred from unseen movement. Earlier observed travel/combat/free-eagle/platform-interaction ordering is retained.",
+  "diagnostics": "Native candidate and receiver probes wrapped with canonical+own before/after crashes/log lengths/timestamps and exit/stdout/stderr review; no new crash,error,assertion or DBErrors. Mixed3915-byte sharedLINK2 retained. No server/client started or stopped,SQL applied,character/item/quest progress changed or active log cleared for this review. Same canonical15F02B26/F58A8FC2.",
+  "evidence": [
+    ".codex/eagle-blessing-donor-native-2026-10-30",
+    ".codex/eagle-blessing-donor-native-2026-10-30.tsv",
+    ".codex/eagle-blessing-donor-receiver-native-2026-10-30",
+    ".codex/eagle-blessing-donor-receiver-native-2026-10-30.tsv"
+  ],
+  "next": "Find/derive a justified full100967 boarding/flight/landing route and exact owned phase/Apata-Degar-Ohnahra movement+interaction lifecycle before exposing39427 or enforcing its prerequisite. Retain failed spawn/cast,pet/guardian kill/group/faction,abandon/retry/re-entry/cleanup requirements. Continue other artifact fixes independently; no permission to reset progress."
+}
