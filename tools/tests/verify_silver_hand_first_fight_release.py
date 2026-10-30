@@ -58,8 +58,8 @@ body=ins(life)
 need,=sites(body,'?NeedsSpawn@State@SilverHandFirstFight@@');complete,=sites(body,'?Complete@State@SilverHandFirstFight@@');credit,=sites(body,'?UpdateAchievementCriteria@Player@@')
 assert need<complete<credit
 clock=locate(body,'qword ptr [rbx + 0x198], rax','add')
-assert clock<need and [(x.mnemonic,x.op_str) for x in body[clock-3:clock]]==[
- ('mov','eax, esi'),('lea','rcx, [rbx + 0x180]'),('add','qword ptr [rbx + 0x1b8], rax')]
+assert clock<need and [(x.mnemonic,x.op_str) for x in body[clock-4:clock]]==[
+ ('mov','eax, esi'),('lea','rcx, [rbx + 0x180]'),('add','qword ptr [rbx + 0x1b8], rax'),('add','qword ptr [rbx + 0x1d8], rax')]
 assert body[complete+2].op_str=='rax, rax' and body[complete+3].mnemonic=='je' and body[complete+3].operands[0].imm>body[credit].address
 assert any(x.op_str=='r8d, 0xc6a2' for x in body[credit-7:credit]) and any(x.op_str=='edx, 0x5c' for x in body[credit-7:credit])
 assert not sites(body,'?FindNearestPlayer@WorldObject@@')

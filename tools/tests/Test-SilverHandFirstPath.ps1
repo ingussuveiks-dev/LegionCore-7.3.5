@@ -8,7 +8,11 @@ $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
 $pinned=(& git -C $repo show "956c72b97:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-path baseline unavailable'}
 $original=Block $pinned 'class npc_travar_first : public CreatureScript'
 $current=Block $source 'class npc_travar_first : public CreatureScript'
+$hostCurrent=$current
 if(!$Baseline){
+ & "$PSScriptRoot/Test-SilverHandFirstRoom.ps1" -ScopeOnly
+ $source=(& git -C $repo show "29f03cc0b:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-room scope unavailable'}
+ $current=Block $source 'class npc_travar_first : public CreatureScript'
  $movement=Block $original 'void MovementInform('
  $movement=$movement.Replace((Block $movement 'if (id == 10)'), 'if (id == 10) { _firstPath.Observe(me); CompleteFirstPath(); }')
  if(($movement -replace '\s','') -cne ((Block $current 'void MovementInform(') -replace '\s','')){throw 'Unrelated first path movement changed'}
@@ -28,6 +32,7 @@ if(!$Baseline){
  if(($whole -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unrelated Silver Hand script changed'}
 }
 if($ScopeOnly){'PASS exact first-path-only scope; all other first-Travard and Silver Hand code retained';return}
+$current=$hostCurrent
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/silver-hand-first-path"}
 $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $actor=if($Baseline){$original}else{$current}

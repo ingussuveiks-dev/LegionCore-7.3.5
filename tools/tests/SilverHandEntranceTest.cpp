@@ -162,6 +162,7 @@ struct EntranceAI : CreatureAI
     bool _entryPending=false;
     struct FightEpoch {uint64 Generation() const{return 1;}bool Active() const{return true;}} _firstFight;
     struct FirstPathClock {void Update(uint32){}} _firstPath; // Dedicated first-path native host owns this service.
+    struct RoomClock {void Update(uint32){}} _firstRoom; // Dedicated first-room policy regression.
     void CompleteFirstFight(uint32) {} // Admission/death/retry is tested in its dedicated native host.
     EventMap events;
     std::vector<uint32> talks;

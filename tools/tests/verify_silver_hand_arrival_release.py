@@ -22,7 +22,9 @@ assert body[empty + 1].op_str == 'al, al' and body[empty + 2].mnemonic == 'jne'
 assert not reaches(body, body[empty + 2].operands[0].imm, body[flag].address)
 assert any(entry.op_str == 'xmm0, xmmword ptr [rdi + 0xe0]' for entry in body[empty:lookup])
 assert body[clear - 1].op_str == 'rcx, [rdi + 0xe0]'
-assert body[valid - 1].op_str == 'rcx, r14' and body[lookup + 1].op_str == 'r14, rax'
+assert body[lookup + 1].mnemonic == 'mov' and body[lookup + 1].op_str.endswith(', rax')
+recipient = body[lookup + 1].op_str.split(',')[0]
+assert body[valid - 1].op_str == f'rcx, {recipient}'
 assert body[valid + 1].op_str == 'al, al' and body[valid + 2].mnemonic == 'jne'
 assert body[valid + 3].op_str == 'byte ptr [rdi + 0x58], al'
 assert not reaches(body, body[valid + 3].address, body[flag].address)
@@ -31,7 +33,7 @@ assert any(entry.op_str == 'edx, 0x7d' for entry in body[flag - 5:flag])
 assert any(entry.op_str == 'r8d, 1' for entry in body[flag - 5:flag])
 assert any(entry.op_str == 'edx, 0x5c' for entry in body[credit - 8:credit])
 assert any(entry.op_str == 'r8d, 0xc64d' for entry in body[credit - 8:credit])
-assert any(entry.op_str == 'rcx, r14' for entry in body[credit - 8:credit])
+assert any(entry.op_str == f'rcx, {recipient}' for entry in body[credit - 8:credit])
 assert body[credit + 1].op_str == 'byte ptr [rdi + 0x5a], 1'
 arrived = body[empty - 1].address
 assert any(entry.mnemonic == 'mov' and entry.op_str == 'esi, edx' for entry in body[:20])

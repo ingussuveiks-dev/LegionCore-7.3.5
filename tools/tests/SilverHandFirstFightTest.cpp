@@ -108,6 +108,7 @@ struct ScriptedAI : CreatureAI {
 namespace SilverHandCompanion {void Recover(Creature*,bool&,bool&) {}}
 struct Fight : ScriptedAI {
  struct FirstPathClock {void Update(uint32){}} _firstPath; // Actual first-path service has its own native host.
+ struct RoomClock {void Update(uint32){}} _firstRoom; // Dedicated first-room policy regression.
  explicit Fight(Creature* c):ScriptedAI(c){}
  FunctionProcessor _functions,_entryFunctions;bool firstfight=false,wait_heal=false,_pendingHealRecovery=false,_entryPending=false,_introDone=false;
  uint64 _entryGeneration=0;struct Events {void Reset(){}}events;

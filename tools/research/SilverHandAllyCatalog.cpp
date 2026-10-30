@@ -55,6 +55,9 @@ int main(int argc, char** argv)
                     if (step->OrderIndex == 1)
                         std::cout << "FIRST_PATH_META\t" << criterion->ID << '\t' << criterion->ModifierTreeId << '\t'
                             << unsigned(criterion->Flags) << '\t' << tree->ID << '\t' << unsigned(tree->Operator) << '\t' << tree->Amount << '\n';
+                    if (step->OrderIndex == 3)
+                        std::cout << "FIRST_ROOM_META\t" << criterion->ID << '\t' << criterion->ModifierTreeId << '\t'
+                            << unsigned(criterion->Flags) << '\t' << tree->ID << '\t' << unsigned(tree->Operator) << '\t' << tree->Amount << '\n';
                 }
                 for (auto child : trees)
                     if (uint32(child->Parent) == identity)
@@ -68,7 +71,8 @@ int main(int argc, char** argv)
     for (auto effect : effects)
         if (!effect->DifficultyID && (effect->SpellID == 210985 || effect->SpellID == 211698 || effect->SpellID == 211699 || effect->SpellID == 211838 ||
             effect->SpellID == 211842 || effect->SpellID == 211862 || effect->SpellID == 169871 ||
-            effect->SpellID == 215797 || effect->SpellID == 215690 || effect->SpellID == 208257))
+            effect->SpellID == 215797 || effect->SpellID == 215690 || effect->SpellID == 208257 ||
+            effect->SpellID == 185414 || effect->SpellID == 211502))
             std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t'
                 << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t' << effect->EffectTriggerSpell << '\t'
                 << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
@@ -80,6 +84,11 @@ int main(int argc, char** argv)
         std::cout << "FIRST_FIGHT_SPELL\t" << spell->ID << '\t' << spell->Name->Str[0] << '\n';
     else
         return 9;
+    for (uint32 id : {185414u, 211502u})
+        if (auto spell = spells.LookupEntry(id))
+            std::cout << "FIRST_ROOM_SPELL\t" << id << '\t' << spell->Name->Str[0] << '\n';
+        else
+            return 10;
     HotfixDatabase.Close();
     MySQL::Library_End();
 }

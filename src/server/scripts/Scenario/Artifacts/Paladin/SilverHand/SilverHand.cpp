@@ -15,6 +15,7 @@
 #include "WaypointManager.h"
 #include "silver_hand_first_fight.h"
 #include "silver_hand_first_path.h"
+#include "silver_hand_first_room.h"
 
 
 namespace SilverHandCompanion
@@ -173,6 +174,7 @@ public:
         bool _entryPending = false;
         SilverHandFirstFight::State _firstFight;
         SilverHandFirstPath::State _firstPath;
+        SilverHandFirstRoom::State _firstRoom;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -346,6 +348,7 @@ public:
         {
             SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
             _firstPath.Update(diff);
+            _firstRoom.Update(diff);
             CompleteFirstFight(diff);
             _entryFunctions.Update(diff);
         }
@@ -402,6 +405,8 @@ public:
                         break;
                     case 2:
                     {
+                        if (!_firstRoom.Begin(me, _firstFight.completed))
+                            break;
                         DoCast(185414);
                         std::list<Creature*> adds;
                         GetCreatureListWithEntryInGrid(adds, me, 106094, 30.0f);
@@ -435,6 +440,8 @@ public:
 
                         _functions.AddFunction([this]() -> void
                         {
+                            if (!_firstRoom.Issue(me))
+                                return;
                             Talk(20);
                             me->GetMotionMaster()->MovePoint(3, 1919.26f, 2335.29f, 75.49f);
                         }, _functions.CalculateTime(7000));
@@ -442,20 +449,26 @@ public:
                     break;
                     case 3:
                     {
-                        if (Player* pl = me->FindNearestPlayer(100.0f))
-                            pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50872);
-                        if (Creature* cr = me->FindNearestCreature(101461, 20.0f, true))
-                            cr->DespawnOrUnsummon();
-
-                        std::list<GameObject*> gob;
-                        GetGameObjectListWithEntryInGrid(gob, me, 251349, 12.0f);
-                        if (!gob.empty())
-                            for (std::list<GameObject*>::iterator itr = gob.begin(); itr != gob.end(); ++itr)
-                                (*itr)->SetPhaseMask(2, true); // hide   
+                        _firstRoom.Observe(me);
+                        CompleteFirstRoom();
                     }
                     break;
                 }
             }
+        }
+
+        void CompleteFirstRoom()
+        {
+            if (!me->IsAIEnabled || me->AI() != this || !_firstRoom.Complete(me))
+                return;
+            if (Creature* cr = me->FindNearestCreature(101461, 20.0f, true))
+                cr->DespawnOrUnsummon();
+
+            std::list<GameObject*> gob;
+            GetGameObjectListWithEntryInGrid(gob, me, 251349, 12.0f);
+            if (!gob.empty())
+                for (std::list<GameObject*>::iterator itr = gob.begin(); itr != gob.end(); ++itr)
+                    (*itr)->SetPhaseMask(2, true); // hide
         }
 
         void MoveInLineOfSight(Unit* who) override
@@ -494,6 +507,7 @@ public:
 
             _functions.Update(diff);
             CompleteFirstPath();
+            CompleteFirstRoom();
 
             if (!UpdateVictim())
                 return;

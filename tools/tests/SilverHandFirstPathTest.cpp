@@ -68,6 +68,7 @@ struct Path : AI {
  void Talk(uint32 id){assert(id==6||id==7||id==8);speech.push_back(id);if(onTalk)onTalk();}
  void VisualOpenDoor(){++doors;if(onDoor)onDoor();}
  void CompleteFirstFight(uint32){} // Separately tested native fight policy.
+ struct RoomClock {void Update(uint32){}} _firstRoom;void CompleteFirstRoom(){} // Dedicated first-room policy regression.
 #ifndef BASELINE
  SilverHandFirstPath::State _firstPath;
 #include "Methods.inc"
