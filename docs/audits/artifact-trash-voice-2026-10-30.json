@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-30",
+  "status": "Five acquisition trash own-speaker targets repaired; World23 RELEASED; whole encounters/client/full36 OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Native TALK chooses an actual selected Creature as speaker.95433/0 Anguished Soul and95434/0 Phantom Swordsman aggro target victim2;97993/2 Veteran Enforcer,97994/1 Elder Runecarver,98892/1 Necromantic Mystic death target rawinvoker7. A pet/guardian/charmed Creature therefore replaces the intended NPC speaker and lacks its text group. Player path had ordinary source fallback; NPC-victim path was likewise wrong.",
+  "change": "Exactly5 target_type fields2/7->SELF1; no other Smart field/core behavior.13 native text rows/11 distinct BroadcastText IDs and SAY12 presentation retained. Preserve original aggro once flags1,three repeatable death flags0,all5 combat spells/timers/native template kill credit/phase/spawn/quest/context. Own speech has no Player requirement or nearest-player substitution.",
+  "scope": "10 nativeSmart rows,5 templates+WDB,46 static poses:95433 map1480 phase5425+5426,95434 map1480/5425;97993+97994 map1511 phase5599+7003,98892 map1511/7003. Phantom three native random text variants retained. Actors have no new quest/criteria/conversation/item/teleport grants; ordinary core death/group/scaling paths unchanged.",
+  "validation": [
+    "Full7table full-schema fingerprints/native EOF receipts; exactly5 targets/twice-idempotent/15 TEMP partial-custom refusals and complete released live equality/LF-SHA1. Reject modified event,once/death repeat,text group,cast/cadence,customAI/condition/spell binding,phase,text/volume/template killcredit,partial site and extra target parameter.",
+    "MSVC ASan actual event admission/root/action/TALK/SELF-victim-invoker selection/ChatAdmission/linked/timer code with actual old and repaired SQL rows. Player/pet/guardian/charm/NPC/NPC-owned/null original counterfactual vs repaired own NPC group0; repeated aggro/death original flags,new attempt,source condition failure,expired/missing/not-in-world actor and direct one-hit death without an aggro all pass. Raw invoker retained, no synthetic progression. Unchanged combat requests200663/195577/195575/187207/195584 observed; actual timing,damage/scaling and default creature death/quest/group distribution are not reimplemented or altered.",
+    "Native26972 read-only Hotfix stores retain five native combat spells and eleven BroadcastTexts96950/96977/96976/139429/100363/100360/100361/100359/100358/100362/100648 including actual voice IDs. Native own Say broadcast service is exercised as an admitted request; no client voice/rendering claimed. Canonical actual TALK SendChat/selection and retained target130 bridge PE pass; same DB0526D1/204B17EA EXEs.",
+    "Fresh both-server CIM absence before hash-verified pending23 promotion; owned20940 canonical ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged and closed. Full post-updater live/native ASan passes. No user/unknown process stopped or character operation."
+  ],
+  "deployment": {
+    "world_sha256": "DB0526D1CBDE25EE6660968C52CD4ACD927060C3F5AF0D775C3BD6C975527C92",
+    "lf_sha1": "DB425CB990FA92A6ACD7BA2DC3AAB0E03433C8FF",
+    "owned_pid": 20940,
+    "migration": "sql/updates/world/2026_10_30_23_artifact_trash_voice.sql",
+    "bnet_sha256": "204B17EAEC111ACBAFFA87868FC8589E74795F3136BC30C4B63D99F437373E25"
+  },
+  "diagnostics": "Before/after canonical+own crash/log snapshots,exits/stdout/stderr for captures/TEMP/native/catalog/PE/updater/live reviewed. No new production crashes/server warnings/errors/assertions/DBErrors; Crashes empty,mixed3915-byte sharedLINK2 log retained UTC2026-10-29T13:29:05.1130661Z. Initial private test assumed a missing actor prevents action dispatch; actual native dispatch can consume action while having no TALK source/packet. Corrected assertion distinguishes expired/condition-rejected from missing actor and verifies no chat; no production behavior changed to satisfy test.",
+  "archive": {
+    "policy": "After commit preserve original failed wrapper output/assertion and original test source with source/destination/source SHA256 and actual fix hash. No active production logs/reports removed.",
+    "path": "build-extractors/bin/Release/fixed/artifact-trash-voice-validation-2026-10-30/manifest.json"
+  },
+  "structural": "Latest fresh full36/28maps is after World22,0 automated loot/admission findings,3 bounded route reviews,2168contexts97timed23 primary LINK candidates. This five-field speech-only change does not claim a new whole-map snapshot or client certification.",
+  "evidence": [
+    ".codex/acquisition-remaining-speakers-2026-10-30",
+    ".codex/artifact-trash-voice-original-2026-10-30",
+    ".codex/artifact-trash-voice-fingerprints-2026-10-30",
+    ".codex/artifact-trash-voice-full-staged-2026-10-30",
+    ".codex/artifact-trash-voice-updater-2026-10-30",
+    ".codex/artifact-trash-voice-final-live-2026-10-30"
+  ],
+  "next": "Remaining fresh scope TALK candidates include98760/6 Iceborn Conjurer and other actual acquisition variants; trace each native text type/actor use before modifying target. Iceborn health50 releases99605 blocks, but block native player-proximity10 also releases them, so a one-hit alone does not prove a blocked stage; retain this alternative. Survival new26365 sniff positions/native bindings and BFA reference need separate documented review; BFA fourteen-second teleport/timed blessing is not a correct original flight.",
+  "remaining": "Actual bubbles/audio and full Frost/Fire/Talonclaw client traversal remain OPEN. Shared101430/103151 missingLINK2,23 broader/static LINK candidates,Stromkar recoil/cracked ground/three ritual beams,Survival39427 whole middle,originalGO/full bags/retry remain unfinished. No resets authorized; client user-owned."
+}
