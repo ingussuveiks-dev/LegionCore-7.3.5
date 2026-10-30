@@ -5206,5 +5206,10 @@
     "audit": "docs/audits/fire-scene-equip-2026-10-30.json",
     "status": "World13 RELEASED registered1125/1500 real complete->196020 native249/47042; strict late scene scope and33 cast rules. NativeASan/TEMP23/full5live/4 actual scenePE/shared/Scepter/own8380 clean closed. Canonical4989118F/314D1FC5.",
     "remaining": "Next source17 delayed-start revalidation for actual196023 and related190435/200152/199502/217814, whose nativeSmart action85 queues200ms after source22 checked. Read-only current producer search identifies only the five intended GO producers (Monks have additional gossip root). Full bags/swap denial/original consumedGO retry/acquired-item recovery/entry travel/return/turnin/factions/group/fullclient remain OPEN.23LINK review candidates/shared missingLINK2/Stromkar recoil-floor-beams/middle39427/all36 remain open. Client user-owned; no reset permission."
+  },
+  "artifact_scene_start_2026_10_30": {
+    "audit": "docs/audits/artifact-scene-start-2026-10-30.json",
+    "status": "World14 RELEASED140 exact source17 conditions for five native200ms delayed starts. Full4live/TEMP16/ASan actual85->CheckCast->native conditions/canonicalPE/native matching26972 pass; own22356 clean closed; EXEs unchanged4989118F/314D1FC5.",
+    "remaining": "23 primaryLINK review candidates, unknown shared101430/103151 LINK2 continuation, Stromkar recoil/cracked-floor/three continuous beams, Survival middle39427, acquired-item/originalGO retry/re-entry/full bags/cast acceptance/return/turnin/group/faction/full36/client. Expanded Fire boss99615 also has rows15/16 authored On80/20%HP but stored event0 timers with0..80/0..20ms; investigate true native196327 and full half-health/death/Aethas path before repairing. No reset permission; client user-owned."
   }
 }

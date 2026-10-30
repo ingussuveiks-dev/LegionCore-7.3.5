@@ -79,6 +79,17 @@ int main(int argc, char** argv)
     for (auto effect : effects)
         if (effect->EffectTriggerSpell == 186202 || effect->EffectTriggerSpell == 197092 || effect->EffectTriggerSpell == 186209)
             std::cout << "EQUIP_PRODUCER\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t' << effect->EffectTriggerSpell << '\n';
+    for (uint32 start : {190435u,196023u,200152u,199502u,217814u})
+    {
+        uint32 count = 0;
+        for (auto effect : effects)
+            if (effect->EffectTriggerSpell == start)
+            {
+                ++count;
+                std::cout << "SCENE_START_PRODUCER\t" << start << '\t' << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\n';
+            }
+        std::cout << "SCENE_START_PRODUCER_COUNT\t" << start << '\t' << count << '\n';
+    }
     for (auto row : misc)
         if (selected.count(row->SpellID))
             if (auto duration=durations.LookupEntry(row->DurationIndex))

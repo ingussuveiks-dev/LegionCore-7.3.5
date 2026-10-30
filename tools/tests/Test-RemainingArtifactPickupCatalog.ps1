@@ -32,5 +32,8 @@ $out="$repo/build-extractors/runtime-test/remaining-artifact-pickup-catalog"
  foreach($line in @("CRITERION`t957`t3`t92`t47380`t0","CRITERION`t957`t4`t92`t47042`t0","STEP_REWARD`t957`t4`t0","EFFECT`t196023`t0`t2`t90`t100290`t0`t1`t0","EFFECT`t196023`t0`t3`t64`t0`t196264`t1`t0","EFFECT`t196264`t0`t0`t61`t47042`t0`t0`t0")){
   if($native -notmatch ('(?m)^'+[regex]::Escape($line)+'\r?$')){throw "Matching native Fire path differs: $line"}
  }
- 'PASS matching26972 native scenes/existing-item249/unique pairs/full linked clone-only packages; Blood940 and Frost901 events. Extra legacy186202 has ItemType0 and an earlier45608 event, outside190435 trigger closure;199868 only credits100813. Actual SQL loot/scene producers and Fire scenario selection remain separate checks.'
+ foreach($spell in @(190435,196023,200152,199502,217814)){
+  if($native -notmatch "(?m)^SCENE_START_PRODUCER_COUNT\t$spell\t0\r?$"){throw "Unexpected native trigger producer for artifact scene start $spell"}
+ }
+ 'PASS matching26972 native scenes/existing-item249/unique pairs/full linked clone-only packages and no other native trigger producers for five scoped scene starts; Blood940/Frost901/Fire957 events. Extra legacy186202 has ItemType0 and an earlier45608 event, outside190435 trigger closure;199868 only credits100813. SQL producers and actual traversal are separate checks.'
 }

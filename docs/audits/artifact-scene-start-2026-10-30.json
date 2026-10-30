@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-30",
+  "status": "Five artifact scene delayed-start admission repairs deployed World14 RELEASED; full acquisitions/client/all36 remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Native SmartAI action85 schedules an ordinary CastSpell after200ms. Source22 validates when scheduling, so map/quest/inventory/Scenario may change before the callback. Original scene starts had no source17 conditions. Late scene completion guards protect the later equipment callback but do not prevent initial native scene/quest/criterion effects in a stale start context.",
+  "change": "140 exact source17 predicates,28 each for190435 Frost/38990/128292/32/1480/901/6..7;196023 Fire/11997/128820/128/1480/957/4..5;200152 Blood/40740/128402/32/1489/940/9..10;199502 Windwalker/40570/128940/512/1528/983/6..7;217814 Brewmaster/42765/128938/512/1625/1137/7..8. Actual cast requires living proper class, inventory-only real item, native map/Scenario/current step and active incomplete-or-complete un-rewarded quest. No completed-scene prerequisite for starting first scene, and no outside-map alternative for these specialized start spells. All existing source22/GO/SmartAI flags/actions/links/scenes preserved; no engine or executable change.",
+  "scope_evidence": "Full current SmartScript/conditions export identifies exactly seven intended action85 flags0 GO roots for five starts (two Monk gossip roots in addition to state roots). No examined spell_script_names/spell_scene_event/npc_spellclick uses. Matching26972 all SpellEffects reverse-trigger scan reports0 other native trigger producers per five starts; local script search finds no extra use. Specialized start scope verified, distinct from ordinary249 equipment-spell outside-map compatibility. Indirect script/effect endpoints and full client still not universally certified.",
+  "validation": [
+    "Full-schema four protected tables: conditions original/applied fingerprints, unchanged entire nativeSmart rows/GO templates/registered scene records. Existing source22 rows byte-equivalent; only140 exact new source17 rules. Idempotence/16 TEMP custom-partial refusal cases under --force, full nativeEOF receipt; full live equality and RELEASED/LF-SHA1 pass. Reject changed source22/loot/action/trigger flags/link/package/script, missing/bank/class/quest/stage/outside/partial/source-group predicates.",
+    "MSVC ASan executes actual action85 delayed200ms callback, actual Spell::CheckCast source17 bridge, actual seven ConditionMgr kinds and ElseGroup evaluator against actual TEMP SQL rows. Missing-rule baseline reproduces stale quest/map acceptance; repaired375 late stage/status matrices and65 changed-context cases pass. Native cast failure preserves denial; a later new eligible request works. Raw nonPlayer rejected; unrelated spell remains ordinary. Time/object lookup/world/cast acceptance/owner resolver are controlled endpoints; Test-ScriptPetCredit native+actualPE substeps execute original real owner/guardian/charmer helpers separately. No claim that the consumed originalGO is always available for retry.",
+    "Actual unchanged canonical PE checks source17 lookup/caster-target evaluator, MSVC R8D source17 argument with hidden returned-list pointerRDX and10 shared scenario completion/exit/relog paths. Native matching26972 reverse-producer probe and existing Blood/Frost/Fire catalog pass. No Release rebuild/replacement required.",
+    "Both-server CIM absence before SQL promotion/owned startup. Canonical hashes remain4989118F/314D1FC5. Owned22356 ready/graceful shutdown0/exit0/stderr empty/newDBErrors0/protected configs unchanged. No user/unknown process stopped, no character/item/quest reset."
+  ],
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_14_artifact_scene_start.sql",
+    "lf_sha1": "25E131DF0BD2D3CEF1B644C07835FE1FAF8EB3D8",
+    "canonical_hashes": {
+      "worldserver.exe": "4989118FB5D9ACFDB9ABF2CA349BB074986B6AE24354F5FBCF6B7B09A30E9B65",
+      "bnetserver.exe": "314D1FC56602316B639511F1D98951E802D8B7E5214AD08BE266F20FFE1C2CF1"
+    },
+    "owned_pid": 22356
+  },
+  "diagnostics": "Before/after canonical+own crash hashes and log sizes/timestamps, exit/stdout/stderr inspected for all tests/captures/owned runtime. No new production crash/server warning/error/assertion or DBErrors. Crashes empty; unresolved shared101430/103151 mixed3915-byte LINK2 log unchanged and retained. Initial validation host/compiler/PE mistakes are repaired and preserved with verified archive hashes; not passing ordinary runs.",
+  "fixed_archive": "build-extractors\\bin\\Release\\fixed\\artifact-scene-start-validation-2026-10-30\\manifest.json",
+  "evidence": [
+    ".codex/artifact-scene-start-producers-repaired-2026-10-30",
+    ".codex/artifact-scene-start-native-2026-10-30",
+    ".codex/artifact-scene-start-original-2026-10-30",
+    ".codex/artifact-scene-start-data-2026-10-30",
+    ".codex/artifact-scene-start-asan-final-2026-10-30",
+    ".codex/artifact-scene-start-canonical-bridge-repaired-2026-10-30",
+    ".codex/artifact-scene-start-final-combined-2026-10-30",
+    ".codex/artifact-scene-start-updater-2026-10-30",
+    ".codex/artifact-scene-start-live-2026-10-30",
+    ".codex/artifact-scene-start-all36-refresh-2026-10-30"
+  ],
+  "remaining": "23 primaryLINK review candidates, unknown shared101430/103151 LINK2 continuation, Stromkar recoil/cracked-floor/three continuous beams, Survival middle39427, acquired-item/originalGO retry/re-entry/full bags/cast acceptance/return/turnin/group/faction/full36/client. Expanded Fire boss99615 also has rows15/16 authored On80/20%HP but stored event0 timers with0..80/0..20ms; investigate true native196327 and full half-health/death/Aethas path before repairing. No reset permission; client user-owned."
+}
