@@ -2,9 +2,14 @@
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
+#include <list>
 using uint32=uint32_t;
 using uint64=uint64_t;
+#ifdef STROMKAR_ZAKAJZ_TEST
+struct ObjectGuid {uint32 value=0;ObjectGuid(uint32 id=0):value(id){}operator uint32()const{return value;}uint32 GetEntry()const{return 104276;}uint64 GetCounter()const{return value;}};
+#else
 using ObjectGuid=uint32;
+#endif
 using DamageEffectType=int;
 #ifdef STROMKAR_ZAKAJZ_TEST
 constexpr uint32 actorEntry=104276,scenarioIdentity=1037,firstStage=8,lastStage=9;
@@ -20,6 +25,9 @@ uint32 messages=0;
 #define TC_LOG_DEBUG(...) ((void)0)
 struct Unit;
 struct Creature;
+#ifdef STROMKAR_ZAKAJZ_TEST
+struct TempSummon {ObjectGuid owner=1;ObjectGuid GetSummonerGUID()const{return owner;}};
+#endif
 struct SpellInfo { uint32 Id=201904; };
 struct CreatureAI {
     virtual ~CreatureAI()=default;
@@ -59,6 +67,14 @@ struct Creature {
     void SetReactState(uint32){}
     void CombatStop(bool){combat=false;}
     ObjectGuid guid=1;
+#ifdef STROMKAR_ZAKAJZ_TEST
+    TempSummon summon;
+    TempSummon* ToTempSummon(){return entry==104307?&summon:nullptr;}
+    uint64 GetGUIDLow()const{return guid.value;}
+    uint64 GetMap()const{return uint64(map)*1000000+instance;}
+    bool IsPreDelete()const{return false;}
+    void DespawnOrUnsummon(){assert(false);}
+#endif
     CreatureAI* active=nullptr;
     CreatureAI* i_disabledAI=nullptr;
     Creature* ToCreature() { return this; }
@@ -92,6 +108,7 @@ struct ObjectAccessor {
     }
 };
 Creature* ObjectAccessor::tracked=nullptr;
+void GetCreatureListWithEntryInGrid(std::list<Creature*>&out,Creature*source,uint32 entry,float range){assert(entry==104307&&range==100);if(ObjectAccessor::tracked&&ObjectAccessor::tracked->GetMap()==source->GetMap())out.push_back(ObjectAccessor::tracked);}
 constexpr uint32 CONDITION_SOURCE_TYPE_SMART_EVENT=22,CONDITION_NEAR_CREATURE=29;
 struct ConditionSourceInfo;
 struct Condition {
@@ -273,6 +290,7 @@ int main() {
 #endif
 #if defined(STROMKAR_ZAKAJZ_TEST) && !defined(BASELINE)
     {
+        scenarioManager={};scenarioManager.scenario.step=9;
         Creature owner,ghost;ghost.entry=104307;ghost.guid=99;
         npc_stromkar_zakajz content(&owner);owner.active=&content;
         Condition condition;ConditionSourceInfo source;source.mConditionTargets[1]=&owner;

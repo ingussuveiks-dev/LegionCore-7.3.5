@@ -1581,14 +1581,62 @@ struct npc_stromkar_zakajz : SmartAI
     }
     void JustSummoned(Creature* actor) override
     {
+        // Claim before SmartAI dispatch, which can itself re-enter scripts.
+        if (!ClaimThoradin(actor))
+            return;
         SmartAI::JustSummoned(actor);
-        if (actor && actor->GetEntry() == 104307 && me->GetEntry() == 104276 && me->GetMapId() == 1539)
-            thoradin = actor->GetGUID();
+    }
+    bool IsFinalThoradin(Creature* actor) const
+    {
+        TempSummon* summon = actor ? actor->ToTempSummon() : nullptr;
+        return summon && actor->GetEntry() == 104307 && actor->IsInWorld() && !actor->IsPreDelete() &&
+            actor->IsAlive() && actor->GetMap() == me->GetMap() && actor->InSamePhase(me) &&
+            summon->GetSummonerGUID().GetEntry() == 104276;
+    }
+    bool ClaimThoradin(Creature* actor)
+    {
+        if (!actor || actor->GetEntry() != 104307 || me->GetEntry() != 104276 || me->GetMapId() != 1539)
+            return true;
+        Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1037 ||
+            (scenario->GetCurrentStep() != 9 && scenario->GetCurrentStep() != 10))
+            return true;
+        if (actor->IsPreDelete())
+            return false;
+        TempSummon* summon = actor->ToTempSummon();
+        if (!summon || summon->GetSummonerGUID() != me->GetGUID() || !IsFinalThoradin(actor))
+            return true;
+
+        Creature* selected = ObjectAccessor::GetCreature(*me, thoradin);
+        if (!IsFinalThoradin(selected))
+        {
+            selected = actor;
+            // Recover the existing native actor if the boss AI was recreated
+            // or its owner callback was skipped. Inspect only the finale room;
+            // retain the cached actor at any distance once it is known.
+            std::list<Creature*> nearby;
+            GetCreatureListWithEntryInGrid(nearby, actor, 104307, 100.0f);
+            for (Creature* candidate : nearby)
+                if (IsFinalThoradin(candidate) && candidate->GetGUID().GetCounter() < selected->GetGUID().GetCounter())
+                    selected = candidate;
+        }
+        bool changed = thoradin != selected->GetGUID();
+        thoradin = selected->GetGUID();
+        if (selected != actor)
+        {
+            TC_LOG_INFO("scripts.ai", "Stromkar: rejected duplicate final Thoradin in instance %u; retained " UI64FMTD ", removed " UI64FMTD,
+                me->GetInstanceId(), uint64(selected->GetGUID().GetCounter()), uint64(actor->GetGUID().GetCounter()));
+            actor->DespawnOrUnsummon();
+            return false;
+        }
+        if (changed)
+            TC_LOG_INFO("scripts.ai", "Stromkar: claimed final Thoradin " UI64FMTD " for boss " UI64FMTD " in instance %u",
+                uint64(actor->GetGUID().GetCounter()), uint64(me->GetGUID().GetCounter()), me->GetInstanceId());
+        return true;
     }
     bool HasThoradin() const
     {
-        Creature* actor = ObjectAccessor::GetCreature(*me, thoradin);
-        return actor && actor->IsInWorld() && actor->IsAlive() && actor->GetEntry() == 104307 && actor->InSamePhase(me);
+        return IsFinalThoradin(ObjectAccessor::GetCreature(*me, thoradin));
     }
     void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType type) override
     {
@@ -2131,9 +2179,17 @@ struct npc_stromkar_thoradin : SmartAI
     StromkarReturn::State returnState;
     void IsSummonedBy(Unit* summoner) override
     {
-        if (!initialized)
+        if (initialized || me->IsPreDelete())
+            return;
+        initialized = true;
+        // TempSummon invokes this even when the owner's AI callback is skipped.
+        // A rejected actor must never start the native intro or return sequence.
+        Creature* owner = summoner ? summoner->ToCreature() : nullptr;
+        if (owner && owner->GetEntry() == 104276 && owner->GetMapId() == 1539)
+            if (auto* content = dynamic_cast<npc_stromkar_zakajz*>(owner->AI()))
+                if (!content->ClaimThoradin(me))
+                    return;
         {
-            initialized = true;
             Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
             preserveIntro = me->GetEntry() == 104307 && me->GetMapId() == 1539 && scenario &&
                 scenario->GetScenarioId() == 1037 && scenario->GetCurrentStep() == 9;

@@ -42,6 +42,7 @@ struct Creature : Unit {
     uint32 GetInstanceId() const { return instance; }
     bool isInCombat() const { return false; }
     bool IsQuestObjectExpired() const { return expired; }
+    bool IsPreDelete() const { return false; }
 };
 struct Player : Unit { Player* ToPlayer() override { return this; } };
 struct GameObject : Unit {
@@ -143,6 +144,9 @@ struct State {uint32 signals=0;};
 void Signal(Creature*,uint32 id,uint32 value,State& state) {if(id==3&&value==1)++state.signals;}
 void Update(Creature*,uint32,State&) { }
 }
+// Summon ownership is exercised by the separate native singleton/InitSummon
+// fixture. This host retains the full native text/data/SmartAI dispatcher.
+struct npc_stromkar_zakajz : CreatureAI {bool ClaimThoradin(Creature*){assert(false);return false;}};
 #include "Thoradin.inc"
 #endif
 std::vector<SmartScriptHolder> ReadRows(char const* path) {

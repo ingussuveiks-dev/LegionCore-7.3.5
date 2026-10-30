@@ -388,7 +388,7 @@ int main(int argc, char** argv)
                 return 15;
             std::cout << "EXECUTE_RANGE\t" << range->RangeMin[0] << '\t' << range->RangeMax[0] << '\t' << range->RangeMin[1] << '\t' << range->RangeMax[1] << '\n';
         }
-    std::set<uint32> pendingPackages{1590}, seenPackages, pendingScripts, seenScripts;
+    std::set<uint32> pendingPackages{1590}, seenPackages, pendingScripts{13944,13945}, seenScripts;
     while (!pendingPackages.empty())
     {
         uint32 package = *pendingPackages.begin();
