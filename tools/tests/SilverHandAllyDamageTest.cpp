@@ -125,6 +125,7 @@ struct First : Companion
 };
 struct Second : Companion
 {
+    struct ProcessionClock {void Update(uint32){}} _processionState;void CompleteProcession(){} // Dedicated recovery host owns progression.
 #include "SecondDamage.inc"
 #include "SecondHeal.inc"
 #include "SecondLifecycle.inc"

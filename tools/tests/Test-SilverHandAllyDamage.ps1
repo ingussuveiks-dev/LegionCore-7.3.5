@@ -20,6 +20,11 @@ if([regex]::Matches($pinned,[regex]::Escape($old)).Count -ne 4){throw 'Pinned fo
 foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','npc_efrin_and_duval')){
  if(!$Baseline -and !$HealBaseline){
   $actual=(Block $source "class $script : public CreatureScript").Replace("`r",'')
+  if($script -eq 'npc_travar_second'){
+   & "$PSScriptRoot/Test-SilverHandProcessionRecovery.ps1" -ScopeOnly
+   $recoveryPinned=(& git -C $repo show "b06f63842:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned procession recovery scope missing'}
+   $actual=Block $recoveryPinned "class $script : public CreatureScript"
+  }
   if($script -eq 'npc_travar_first'){
    & "$PSScriptRoot/Test-SilverHandFirstFight.ps1" -ScopeOnly
    $fightPinned=(& git -C $repo show "ee5d4b981:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight scope missing'}

@@ -16,6 +16,7 @@
 #include "silver_hand_first_fight.h"
 #include "silver_hand_first_path.h"
 #include "silver_hand_first_room.h"
+#include "silver_hand_procession.h"
 
 
 namespace SilverHandCompanion
@@ -576,6 +577,7 @@ public:
         bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
         ObjectGuid _processionPlayerGuid;
+        SilverHandProcessionRecovery::State _processionState;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -593,6 +595,8 @@ public:
                 TC_LOG_WARN("scripts", "Silver Hand procession path 10993806 is unavailable; retaining Travard gossip for retry");
                 return;
             }
+            if (!_processionPlayerGuid.IsEmpty() || _processionState.completed)
+                return;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             player->PlayerTalkClass->ClearMenus();
             player->CLOSE_GOSSIP_MENU();
@@ -607,14 +611,54 @@ public:
 
         void CompleteProcession()
         {
-            if (_processionPlayerGuid.IsEmpty())
+            if (_processionState.busy || _processionState.Finish(me, _processionPlayerGuid))
+                return;
+            if (!_processionState.Ready(me, _processionPlayerGuid) || !me->IsAIEnabled || me->AI() != this ||
+                me->HasUnitState(UNIT_STATE_STUNNED))
                 return;
             Player* player = ObjectAccessor::GetPlayer(*me, _processionPlayerGuid);
-            _processionPlayerGuid.Clear();
-            if (!SilverHandProcession::CanArrive(player, me))
+            if (!SilverHandProcession::CanArrive(player, me) || player->isGameMaster())
+            {
+                if (!_processionState.recipientWarning)
+                {
+                    _processionState.recipientWarning = true;
+                    TC_LOG_WARN("scripts", "Silver Hand procession: observed waypoint14 has no eligible original participant; retaining GUID/arrival");
+                }
                 return;
-            Talk(5);
+            }
+            _processionState.busy = true;
+            // The native step5 phase can hide this actor. Keep the original
+            // speech-before-event ordering, but never replay it on a retry.
+            if (!_processionState.spoken)
+            {
+                _processionState.spoken = true;
+                Talk(5);
+            }
+            if (_processionState.Finish(me, _processionPlayerGuid))
+            {
+                _processionState.busy = false;
+                return;
+            }
+            Scenario* scenario = SilverHandProcessionRecovery::Context(me);
+            if (!scenario || scenario->GetCurrentStep() != 4 || !me->IsAIEnabled || me->AI() != this ||
+                me->HasUnitState(UNIT_STATE_STUNNED))
+            {
+                _processionState.busy = false;
+                return;
+            }
+            player = ObjectAccessor::GetPlayer(*me, _processionPlayerGuid);
+            if (!SilverHandProcession::CanArrive(player, me) || player->isGameMaster())
+            {
+                _processionState.busy = false;
+                return;
+            }
+            ++_processionState.attempts;
+            _processionState.retryDue = _processionState.time + 1000;
             player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50897);
+            _processionState.busy = false;
+            if (!_processionState.Finish(me, _processionPlayerGuid) &&
+                (_processionState.attempts == 1 || _processionState.attempts == 30))
+                TC_LOG_WARN("scripts", "Silver Hand procession: 50897 has no verified stage5 receipt, attempt %u/30; retaining original GUID/arrival", _processionState.attempts);
         }
 
         void Reset() override
@@ -635,9 +679,11 @@ public:
                 _pendingHealRecovery = true;
         }
 
-        void UpdateLifecycle(uint32) override
+        void UpdateLifecycle(uint32 diff) override
         {
             SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            _processionState.Update(diff);
+            CompleteProcession();
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -670,7 +716,10 @@ public:
                     Talk(4);
                 }
                 if (id == 14)
+                {
+                    _processionState.Observe(me, _processionPlayerGuid);
                     CompleteProcession();
+                }
             }
         }
 

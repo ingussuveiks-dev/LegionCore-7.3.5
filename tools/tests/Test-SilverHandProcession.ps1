@@ -13,6 +13,7 @@ $actor=Block $source 'struct npc_travar_secondAI : ScriptedAI'
 [IO.File]::WriteAllText("$out/ProcessionGossip.inc",(Block $actor 'void sGossipSelect(').Replace(' override',''))
 [IO.File]::WriteAllText("$out/ProcessionArrival.inc",$(if($Baseline){''}else{Block $actor 'void CompleteProcession('}))
 [IO.File]::WriteAllText("$out/ProcessionMovement.inc",(Block $actor 'void MovementInform(').Replace(' override',''))
+foreach($name in @('Scenario.h','ScenarioMgr.h')){[IO.File]::WriteAllText("$out/$name",'// Controlled world services precede the production recovery policy in the host.')}
 $guid=Get-Content "$repo/src/server/game/Entities/Object/ObjectGuid.cpp" -Raw
 [IO.File]::WriteAllText("$out/GuidLifecycle.inc",((@('ObjectGuid::ObjectGuid()','void ObjectGuid::Clear()','bool ObjectGuid::IsEmpty() const')|ForEach-Object{Block $guid $_}) -join "`n"))
 $header=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
@@ -21,7 +22,7 @@ $header=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
 [IO.File]::WriteAllText("$out/AccessorPlayer.inc",(Block (Get-Content "$repo/src/server/game/Globals/ObjectAccessor.cpp" -Raw) 'Player* ObjectAccessor::GetPlayer('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $definition=if($Baseline){'/DBASELINE'}else{''}
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/SilverHandProcessionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" /I`"$repo/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand`" `"$PSScriptRoot/SilverHandProcessionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native procession recipient regression failed'}
 if($Baseline){return}
 & "$PSScriptRoot/Test-SilverHandGossip.ps1" -Second -VerifyReleaseBinary:$VerifyReleaseBinary

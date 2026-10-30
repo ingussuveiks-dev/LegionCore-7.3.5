@@ -58,6 +58,9 @@ int main(int argc, char** argv)
                     if (step->OrderIndex == 3)
                         std::cout << "FIRST_ROOM_META\t" << criterion->ID << '\t' << criterion->ModifierTreeId << '\t'
                             << unsigned(criterion->Flags) << '\t' << tree->ID << '\t' << unsigned(tree->Operator) << '\t' << tree->Amount << '\n';
+                    if (step->OrderIndex == 4)
+                        std::cout << "PROCESSION_META\t" << criterion->ID << '\t' << criterion->ModifierTreeId << '\t'
+                            << unsigned(criterion->Flags) << '\t' << tree->ID << '\t' << unsigned(tree->Operator) << '\t' << tree->Amount << '\n';
                 }
                 for (auto child : trees)
                     if (uint32(child->Parent) == identity)

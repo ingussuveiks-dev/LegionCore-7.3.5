@@ -49,6 +49,7 @@ struct PlayerMenu
 struct ObjectGuid
 {
     uint32 kind=1,counter=ExpectedEntry;
+    bool IsEmpty() const {return !kind && !counter;}
     bool IsCreatureOrVehicle() const {return kind==1;}
     bool IsGameObject() const {return kind==2;}
     std::string ToString() const {return "controlled-guid";}
@@ -155,7 +156,8 @@ struct EntranceAI : CreatureAI
     struct PathRequest {bool requested=false;bool Request(Creature*){if(requested)return false;requested=true;return true;}} _firstPath; // Actual request policy is covered by FirstPath's native host.
     Creature* me=nullptr;
     bool firstwp=true;
-    ObjectGuid _processionPlayerGuid;
+    ObjectGuid _processionPlayerGuid{0,0};
+    struct ProcessionClaim {bool completed=false;} _processionState; // Real recovery policy is compiled in its dedicated host.
 #include "GossipSelect.inc"
 };
 struct CreatureScript

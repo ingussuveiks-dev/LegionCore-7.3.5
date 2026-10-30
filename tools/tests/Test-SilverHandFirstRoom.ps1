@@ -9,6 +9,9 @@ $pinned=(& git -C $repo show "29f03cc0b:$path") -join "`n";if($LASTEXITCODE){thr
 $original=Block $pinned 'class npc_travar_first : public CreatureScript'
 $current=Block $source 'class npc_travar_first : public CreatureScript'
 if(!$Baseline){
+ & "$PSScriptRoot/Test-SilverHandProcessionRecovery.ps1" -ScopeOnly
+ $source=(& git -C $repo show "b06f63842:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned procession recovery scope unavailable'}
+ $current=Block $source 'class npc_travar_first : public CreatureScript'
  $movement=Block $original 'void MovementInform('
  $point2=Block $movement 'case 2:'
  $changed=$point2.Replace('DoCast(185414);','if (!_firstRoom.Begin(me, _firstFight.completed)) break; DoCast(185414);').Replace('Talk(20);','if (!_firstRoom.Issue(me)) return; Talk(20);')
