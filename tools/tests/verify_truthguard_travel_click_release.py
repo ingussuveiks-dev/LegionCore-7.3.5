@@ -157,7 +157,11 @@ for entry in instructions('?GetAI@npc_sr_argent_hippogryph@@'):
             slots = struct.unpack_from('<80Q', native['binary'], table)
             if native['symbol'](callback) in slots:
                 tables.append(slots)
-assert len(tables) == 1 and tables[0][0x218 // 8] == native['symbol'](callback), 'Factory does not select the repaired OnSpellClick'
+# CreatureAI's corpse hook changed later virtual offsets. Obtain the real
+# OnSpellClick slot from the linked base, then verify both factory and caller.
+callback_slot = runpy.run_path(str(Path(__file__).with_name('pe_creature_ai_slots.py')))['callback_slot']
+click_slot = callback_slot(native, '?OnSpellClick@SmartAI@@')
+assert len(tables) == 1 and native['resolve'](tables[0][click_slot]) == native['symbol'](callback), 'Factory does not select the repaired OnSpellClick'
 poll_name = '?UpdateBoardingRequests' + suffix
 poll = instructions(poll_name)
 def find(operand, mnemonic=None):
@@ -235,7 +239,7 @@ update = instructions('?UpdateAI' + suffix)
 assert tables[0][0x18 // 8] == native['symbol']('?UpdateAI' + suffix)
 assert native['symbol'](poll_name) in native['calls']('?UpdateAI' + suffix), 'Selected update does not poll native boarding'
 dispatch = instructions('?HandleSpellClick@Unit@@')
-ai_call = next(entry for entry in dispatch if entry.mnemonic == 'call' and entry.op_str == 'qword ptr [rax + 0x218]')
+ai_call = next(entry for entry in dispatch if entry.mnemonic == 'call' and entry.op_str == f'qword ptr [rax + {click_slot * 8:#x}]')
 empty = next(index for index, entry in enumerate(dispatch) if entry.op_str == 'rbx, qword ptr [rsp + 0xc8]' and entry.mnemonic == 'cmp')
 assert dispatch[empty + 1].mnemonic == 'je'
 assert dispatch[empty + 1].operands[0].imm < ai_call.address

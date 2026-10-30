@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-30",
+  "scope": "Retained Release verifiers only; no gameplay or data change.",
+  "cause": "The earlier Wardstone CreatureAI UpdateCorpseAI hook shifted later callbacks: PassengerBoarded is now slot67 and OnSpellClick slot68. Truthguard verifiers retained old ordinals. Creature::Update also now saves diff in r14d instead of r15d, while retaining its native deferred-diff accumulation.",
+  "repair": "Resolve callback ordinals from the linked SmartAI base table, then verify both factory-selected derived slots and actual native dispatch. Follow saved diff through control flow, admitting only the exact native pending-diff addition; reject any other overwrite on a path reaching UpdateAI. Keep existing admission, rider, endpoint, retry and native event assertions.",
+  "checks": ["Test-VehiclePendingJoins.ps1 -VerifyReleaseBinary: 208 native cases and complete retained Truthguard/vehicle PE chain pass against canonical worldserver SHA256 CBCD766380A2BD9BB8E6425C1A8A6AFD9AB3ADC4592DC8A7F8F92DF5BE566D05."],
+  "evidence": [".codex/talonclaw-boarded-shared-2026-10-30/vehicle-pending", ".codex/talonclaw-vehicle-retained-slots-repaired1-2026-10-30", ".codex/talonclaw-vehicle-retained-slots-repaired2-2026-10-30", ".codex/talonclaw-vehicle-retained-slots-repaired3-2026-10-30", ".codex/talonclaw-vehicle-retained-slots-repaired4-2026-10-30", ".codex/talonclaw-creature-diff-writes2-2026-10-30"],
+  "diagnostics": "Before/after canonical and test crash/log snapshots checked. Actual failing and repaired exits/stdout/stderr preserved. No new/changed crash, appended DBErrors or server warnings/errors/assertions. Existing unresolved mixed LINK2 log untouched. No client traversal claimed."
+}

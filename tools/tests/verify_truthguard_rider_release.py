@@ -64,10 +64,11 @@ for entry in instructions('?GetAI@npc_sr_argent_hippogryph@@'):
             slots = struct.unpack_from('<80Q', native['binary'], native['offset'](entry.address + entry.size + operand.mem.disp))
             if native['symbol'](boarded) in slots:
                 tables.append(slots)
-assert len(tables) == 1 and tables[0][0x210 // 8] == native['symbol'](boarded) and tables[0][0x1a8 // 8] == native['symbol'](arrived)
+board_slot = previous['callback_slot'](native, '?PassengerBoarded@SmartAI@@')
+assert len(tables) == 1 and native['resolve'](tables[0][board_slot]) == native['symbol'](boarded) and tables[0][0x1a8 // 8] == native['symbol'](arrived)
 join = instructions('?Execute@VehicleJoinEvent@@')
 store = find(join, 'qword ptr [rcx + 0x30d8], rax', 'mov')
-callback = next(index for index, entry in enumerate(join) if entry.mnemonic == 'call' and entry.op_str == 'qword ptr [rax + 0x210]')
+callback = next(index for index, entry in enumerate(join) if entry.mnemonic == 'call' and entry.op_str == f'qword ptr [rax + {board_slot * 8:#x}]')
 assert store < callback and join[store - 2].op_str == 'rcx, qword ptr [rdi + 0x50]' and join[store - 1].op_str == 'rax, qword ptr [rdi + 0x40]'
 assert join[callback - 1].op_str == 'rdx, qword ptr [rdi + 0x50]'
 leaf_address = native['symbol']('?GetVehicleBase@Unit@@')
