@@ -115,7 +115,20 @@ if($VerifyReleaseBinary){
  foreach($expected in @("release`t$hash`tRELEASED","scenario`t1037`t1")){if($live -notcontains $expected){throw "Live Stromkar mismatch: $expected"}}
  $binding="binding`t3`t1691`t247877`t23645`tSmartGameObjectAI`t"
  if($live -notcontains $binding -and $live -notcontains "${binding}go_stromkar_pickup"){throw 'Live Stromkar native/guarded binding mismatch'}
- foreach($kind in @('loot','root','scene','bar')){$current=@($live|Where-Object {$_ -like "row-$kind`t*"}|ForEach-Object {$_.Substring(5+$kind.Length)});if(Compare-Object (Snapshot "row-$kind") $current){throw "Live $kind admission differs"}}
+ $continuation=@(Query "SELECT hash,state FROM updates WHERE name='2026_10_30_29_stromkar_delayed_scene_stage.sql';")
+ if($continuation.Count){
+  $continuationHash=(Get-FileHash "$repo/sql/updates/world/2026_10_30_29_stromkar_delayed_scene_stage.sql" -Algorithm SHA1).Hash
+  if($continuation.Count -ne 1 -or $continuation[0] -ne "$continuationHash`tRELEASED"){throw 'Unexpected scene continuation migration'}
+  & "$PSScriptRoot/Test-StromkarDelayedScene.ps1" -VerifyLiveData *> "$out/delayed-scene.log"
+  if(!$?){throw 'Full live delayed-scene admission failed'}
+ }
+ foreach($kind in @('loot','root','scene','bar')){
+  $current=@($live|Where-Object {$_ -like "row-$kind`t*"}|ForEach-Object {$_.Substring(5+$kind.Length)})
+  # The new fixture above validates ALL28 live rows before comparing this
+  # historical migration's original14 stage9 rows; no current gate is omitted.
+  if($kind -eq 'scene' -and $continuation.Count){$current=@($current|Where-Object {[int]$_.Split("`t")[0] -lt 2})}
+  if(Compare-Object (Snapshot "row-$kind") $current){throw "Live $kind admission differs"}
+ }
  $previousPython=$env:PYTHONPATH
  try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previousPython";foreach($script in @('verify_xalatath_real_loot_release.py','verify_xalatath_progression_admission_release.py','verify_titanstrike_pickup_cast_release.py')){& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/$script" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw "Canonical shared consumer failed: $script"}}}finally{$env:PYTHONPATH=$previousPython}
 }
