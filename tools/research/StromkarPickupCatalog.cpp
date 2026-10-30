@@ -93,6 +93,23 @@ int main(int argc, char** argv)
                 << objective->Description->Str[0] << '\n';
     std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 201905, 207454, 206455, 206456, 204394, 202014, 63048, 204093,
         185674, 192084, 192085, 215997, 216016, 221509, 231348, 130966, 204641};
+    DB2Storage<SpellCastingRequirementsEntry> castingRequirements("SpellCastingRequirements.db2", SpellCastingRequirementsLoadInfo::Instance());
+    DB2Storage<SpellEquippedItemsEntry> equippedItems("SpellEquippedItems.db2", SpellEquippedItemsLoadInfo::Instance());
+    if (!castingRequirements.Load(argv[1], 0) || !equippedItems.Load(argv[1], 0))
+        return 30;
+    castingRequirements.LoadFromDB(); equippedItems.LoadFromDB();
+    for (auto row : castingRequirements)
+        if (selected.count(row->SpellID))
+            std::cout << "CASTING_REQUIREMENTS\t" << row->SpellID << '\t' << row->RequiredAreasID << '\t' << row->RequiresSpellFocus << '\t' << row->MinFactionID << '\t' << unsigned(row->MinReputation) << '\n';
+    for (auto row : equippedItems)
+        if (selected.count(row->SpellID))
+            std::cout << "EQUIPMENT_REQUIREMENTS\t" << row->SpellID << '\t' << unsigned(row->EquippedItemClass) << '\t' << row->EquippedItemSubclass << '\t' << row->EquippedItemInvTypes << '\n';
+    DB2Storage<SpellTargetRestrictionsEntry> targets("SpellTargetRestrictions.db2", SpellTargetRestrictionsLoadInfo::Instance());
+    if (!targets.Load(argv[1], 0)) return 31;
+    targets.LoadFromDB();
+    for (auto row : targets)
+        if (!row->DifficultyID && selected.count(row->SpellID))
+            std::cout << "TARGET_REQUIREMENTS\t" << row->SpellID << '\t' << row->Targets << '\t' << unsigned(row->MaxTargets) << '\n';
     for (uint32 identity : selected)
     {
         auto spell = spells.LookupEntry(identity);
@@ -194,6 +211,8 @@ int main(int argc, char** argv)
     auto skyhold = overrides.LookupEntry(730);
     if (!skyhold)
         return 26;
+    std::cout << "OVERRIDE_META\t684\t" << unsigned(execution->Flags) << '\t' << execution->PlayerActionBarFileDataID << '\n';
+    std::cout << "OVERRIDE_META\t730\t" << unsigned(skyhold->Flags) << '\t' << skyhold->PlayerActionBarFileDataID << '\n';
     for (uint32 slot = 0; slot < 10; ++slot)
         if (skyhold->Spells[slot])
             std::cout << "SKYHOLD_OVERRIDE\t730\t" << slot << '\t' << skyhold->Spells[slot] << '\n';
