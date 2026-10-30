@@ -73,7 +73,19 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_24_artifa
  }
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_24_artifact_owner_voice.sql' AND hash='$hash' AND state='RELEASED';";if($live -notcontains '1'){throw 'Live Artifact owner voice migration/hash differs'}
-  $live=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Live native Artifact owner voice context differs $table"}}
+  $live=Query (Snapshot 'live')
+  # World25 changes this independently reviewed ordinary conversation, not a
+  # World24 TALK. Admit only its complete released ten-table proof, then undo
+  # those three exact fields in this local comparison; never mutate live SQL.
+  $iceborn=@($live|Where-Object {$_ -like "live-smart_scripts`t98760`t0`t7`t*"})
+  if($iceborn.Count -ne 1){throw 'Missing live Iceborn comparison context'}
+  $f=$iceborn[0].Split("`t")
+  if($f[15] -eq '85' -and $f[16] -eq '197760' -and $f[17] -eq '128' -and $f[22] -eq '130' -and $f[23] -eq '70'){
+   & "$PSScriptRoot/Test-FireIcebornStoryData.ps1" -VerifyLiveData
+   $f[17]='0';$f[22]='7';$f[23]='0';$normalized=$f -join "`t"
+   $live=@($live|ForEach-Object {if($_ -ceq $iceborn[0]){$normalized}else{$_}})
+  }
+  foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Live native Artifact owner voice context differs $table"}}
  }
  'PASS full8table artifact owner voice: exactly20 fields/10 TALKs on8 actors; native speaker/player text context,Fire block+geist alternatives,prison/Brew credit+recipients,phases unchanged; twice-idempotent/20 partial-custom refusals/live when requested'
 }

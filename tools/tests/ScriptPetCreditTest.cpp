@@ -87,7 +87,7 @@ struct SpellInfo {
 struct SpellManager {
     SpellInfo personal{true,false},group{false,true},ordinary{},mixed{true,false,true},conversation{},energy{};
     SpellManager(){conversation.extra.Effect=219;energy.extra.Effect=30;}
-    SpellInfo const* GetSpellInfo(uint32 id) { if(id==198287)return &personal; if(id==900)return &group; if(id==123)return &ordinary; if(id==200832||id==204364)return &conversation; if(id==152435)return &energy; if(id==901)return &mixed; return nullptr; }
+    SpellInfo const* GetSpellInfo(uint32 id) { if(id==198287)return &personal; if(id==900)return &group; if(id==123)return &ordinary; if(id==200832||id==204364||id==197760)return &conversation; if(id==152435)return &energy; if(id==901)return &mixed; return nullptr; }
 } spellManager;
 auto sSpellMgr=&spellManager;
 void Unit::CastSpell(Unit* target,uint32 spell,bool triggered) {
@@ -95,7 +95,7 @@ void Unit::CastSpell(Unit* target,uint32 spell,bool triggered) {
     if(!castWorks)return;
     // Count Player-owned presentations; this is not a claim that a pet caster
     // cannot create a Conversation. Native creation/playback are tested apart.
-    if((spell==200832||spell==204364)&&ToPlayer())++stories;
+    if((spell==200832||spell==204364||spell==197760)&&ToPlayer())++stories;
     // Model the unchanged player-only/self-target requirement of198287.
     if(spell==198287) if(Player* player=ToPlayer()) player->KilledMonsterCredit(100732);
 }
@@ -191,7 +191,7 @@ int main(int argc,char** argv) {
     {
         SmartScriptHolder story;story.type=85;story.targetType=130;story.action.cast={200832,SMARTCAST_INVOKER_PLAYER};
         if(argc>=2){std::ifstream input(argv[1]);assert(input>>story.type>>story.action.cast.spell>>story.action.cast.flags>>story.targetType>>story.target.playerDistance.dist);}
-        assert(story.type==85&&story.action.cast.flags==128&&story.targetType==130&&((story.action.cast.spell==200832&&story.target.playerDistance.dist==50)||(story.action.cast.spell==204364&&story.target.playerDistance.dist==70)||(story.action.cast.spell==152435&&story.target.playerDistance.dist==100)));
+        assert(story.type==85&&story.action.cast.flags==128&&story.targetType==130&&((story.action.cast.spell==200832&&story.target.playerDistance.dist==50)||((story.action.cast.spell==204364||story.action.cast.spell==197760)&&story.target.playerDistance.dist==70)||(story.action.cast.spell==152435&&story.target.playerDistance.dist==100)));
         uint32 const storySpell=story.action.cast.spell,storyRange=story.target.playerDistance.dist;
         assert(ValidateCast(story));
         for(int target:{7,21}){story.targetType=target;assert(!ValidateCast(story));}story.targetType=130;

@@ -50,11 +50,13 @@ $expectedOptins=1;$approved=@($rows|Where-Object {$_ -like "approved-owner-cast`
 if($approved.Count){
  $sothozz=@($approved|Where-Object {$_ -ceq "approved-owner-cast`t103226`t0`t7`t85`t204364`t128`t130`t70"})
  $energy=@($approved|Where-Object {$_ -ceq "approved-owner-cast`t104627`t0`t1`t85`t152435`t128`t130`t100" -or $_ -ceq "approved-owner-cast`t106569`t0`t0`t85`t152435`t128`t130`t100"})
- if($sothozz.Count -gt 1 -or $energy.Count -notin @(0,2) -or $approved.Count -ne ($sothozz.Count+$energy.Count)){throw 'Unexpected/partial additional ordinary Player-caster opt-in; review independently'}
+ $iceborn=@($approved|Where-Object {$_ -ceq "approved-owner-cast`t98760`t0`t7`t85`t197760`t128`t130`t70"})
+ if($sothozz.Count -gt 1 -or $energy.Count -notin @(0,2) -or $iceborn.Count -gt 1 -or $approved.Count -ne ($sothozz.Count+$energy.Count+$iceborn.Count)){throw 'Unexpected/partial additional ordinary Player-caster opt-in; review independently'}
  # Admit only the independently released full producer/receiver/story context
  # or complete two-site resource/bar/quest context, never a count-only exception.
  if($sothozz.Count){& "$PSScriptRoot/Test-SothozzInvokerData.ps1" -VerifyLiveData}
  if($energy.Count){& "$PSScriptRoot/Test-ArtifactResourceData.ps1" -VerifyLiveData}
+ if($iceborn.Count){& "$PSScriptRoot/Test-FireIcebornStoryData.ps1" -VerifyLiveData}
  $expectedOptins=1+$approved.Count
 }
 foreach($expected in @("row`t85`t200832`t128`t130`t50","opt-in`t$expectedOptins","custom-script`t0","custom-flags`t2","custom-range`t0","custom-spell`t0")){if($rows -notcontains $expected){throw "Caster migration mismatch: $expected"}}

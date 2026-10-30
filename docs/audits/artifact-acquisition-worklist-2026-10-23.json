@@ -5284,5 +5284,11 @@
     "status": "Actual client rejected position-only reset; NEW authorized correction completed once offline with exact1539/1037 entrance receipt, full-character/reference equality and existing native regression. Next client login unverified. No further reset permission.",
     "logout": "User /logout no visible effect; Connection.log shows response0 then LogoutComplete after /reload and normal ClientDestroy. Cause of delay OPEN; no speculative addon/core edit.",
     "audit": "docs/audits/stromkar-entry-receipt-correction-2026-10-30.json"
+  },
+  "fire_iceborn_story_2026_10_30": {
+    "status": "World25 RELEASED exactly4 fields:98760/7 ordinary197760/786 owner128+130/70 plus actor duration48827/native lifetime53827. Full10/TEMP21/twoASan/typed26972/fourfullaudio payload decode/PE/live/prior24+Torvis5/fresh36 pass; own5932 clean closed,same EXEs. Client/full36 OPEN.",
+    "remaining": "Actual786 dialogue position/audio/client scheduling,whole Fire traversal and full36 remain OPEN. Original line offsets are preserved; the conservative lifetime does not certify absence of overlapping client audio. Shared101430/103151 missingLINK2,Stromkar recoil/cracked ground/three ritual beams,Survival39427,originalGO/fullbags/retry remain unresolved. Newly authorized Stromkar checkpoint-only correction cde9f3975 completed once; next client login pending and logout delay OPEN. No further reset permission.",
+    "next": "Investigate actual Blood DK102304 LINK5 ordinary203481 summon102955/properties64/dest47 (TARGET_DEST_CASTER_FRONT,not target/corpse destination) before any normalization. Existing85 caster is raw invoker,SELF target is dying source; no correct-location/ownership fix proved. Trace102244/3 source22 actual-invoker0 negative-near102244 condition,full remaining guards/stages/101539 recipients. Survival26365 sniff+BFA shortcut reference need separate documented provenance; no teleport/blessing shortcuts. Continue unknownLINK2/Stromkar visuals and user-owned fresh client test.",
+    "audit": "docs/audits/fire-iceborn-story-2026-10-30.json"
   }
 }

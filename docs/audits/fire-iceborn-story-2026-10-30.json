@@ -1,0 +1,137 @@
+{
+  "date": "2026-10-30",
+  "status": "Fire Iceborn ordinary conversation owner and truncating lifetime repaired; World25 RELEASED; client/full36 OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "98760 Iceborn Conjurer death205/47022 links7 to ordinary85/197760. Typed26972 spell is219/conversation786/destination18 caster,not dedicated credit. Generic credit normalization correctly leaves it unchanged. Raw pet/guardian casts can create a public Conversation, but native Player/group personal visibility is absent and CanNeverSee2 never registers a pet caster playback key,so owner-keyed expiry cannot start. Independently, original786 actor duration6000 plus native5000=11000ms expires before the first actual14.223s voice completes and before the last two original line offsets.",
+  "change": "Atomic exactly4 SQL fields:98760/7 action_param2=128 SMARTCAST_INVOKER_PLAYER,target_type=130,target_param1=70;786/0 actor duration6000->48827. Existing compiled bridge resolves the actual eligible Player/charmer/owner, retains raw invoker and native200ms ordinary cast, and revalidates sourceGUID/world/map/phase/range/scope/Player-self before casting. Native Conversation adds5000ms for53827ms lifetime. No generic Conversation/core change,nearest-player caster,quest/item grants,synthetic completion or changed four line offsets.",
+  "native_audio": {
+    "provenance": "Matching client .build.info26972; actual four local CASC payloads fully read through read-only shared handles and fully decoded with ffmpeg. All32 client data-index SHA256 values unchanged before/after extraction. No files in client modified; cached exact hashed local payloads used for the committed regression. Audio was decoded,not listened to; no actual client playback verified.",
+    "actor": "786/0 native50151/creature99615/display66283; four original line ids1870..1873 and offsets0/6250/12350/17750 retained.",
+    "voice_chain": "BCT101308/101513/101537/101514,Next1871/1872/1873/0,AdditionalDuration500 each; female SoundKit53955..53958,FileData1267583/85/87/89. Male text/kit empty,actual Lyandra female text valid.",
+    "report": {
+      "Build": "7.3.5.26972",
+      "Conversation": 786,
+      "OriginalLifetimeMs": 11000,
+      "AbsoluteLineEndMs": 29564,
+      "SequentialLineEndMs": 48827,
+      "RepairedLifetimeMs": 53827,
+      "Payloads": [
+        {
+          "FileDataID": 1267583,
+          "Bytes": 91570,
+          "SHA256": "5C1D387D35441FCA5E610D67352067365F57DD7CE4608507611D8D3EC604A8BB",
+          "VoiceMs": 14223
+        },
+        {
+          "FileDataID": 1267585,
+          "Bytes": 79601,
+          "SHA256": "5E6D9D38E5C0D7E08FF11195B607B10181771D929B7580AC608D04D9D2A8DAC1",
+          "VoiceMs": 12233
+        },
+        {
+          "FileDataID": 1267587,
+          "Bytes": 59342,
+          "SHA256": "A66232B8F7572F9CA8E160A4DA655FB02AA17AF5F6CEA60781C55873984D6324",
+          "VoiceMs": 9057
+        },
+        {
+          "FileDataID": 1267589,
+          "Bytes": 74120,
+          "SHA256": "A6C55C3D9522D0F96F37B1A576B8F6A45A4C45522EC4F20D54CB6FFFF4DF2FBA",
+          "VoiceMs": 11314
+        }
+      ],
+      "Lines": [
+        {
+          "Line": 1870,
+          "OffsetMs": 0,
+          "VoiceMs": 14223,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 14723,
+          "SequentialEndMs": 14723
+        },
+        {
+          "Line": 1871,
+          "OffsetMs": 6250,
+          "VoiceMs": 12233,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 18983,
+          "SequentialEndMs": 27456
+        },
+        {
+          "Line": 1872,
+          "OffsetMs": 12350,
+          "VoiceMs": 9057,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 21907,
+          "SequentialEndMs": 37013
+        },
+        {
+          "Line": 1873,
+          "OffsetMs": 17750,
+          "VoiceMs": 11314,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 29564,
+          "SequentialEndMs": 48827
+        }
+      ],
+      "ClientPlaybackVerified": false,
+      "SchedulingLimitation": "Original offsets retained; conservative lifetime covers absolute offsets and sequential voice scheduling, without claiming exact client timing or absence of overlap."
+    },
+    "duration_derivation": "Maximum absolute offset+voice+additional=29564ms; conservative sequential voice+additional sum48827ms. Choose max48827 as actor duration,then preserve native5000 padding. This covers either lifetime budget,without claiming exact authored/client scheduling or retiming original lines."
+  },
+  "validation": [
+    "Full10table schema fingerprints and original fixture with full Fire actors98760/99605/99600/99615,source0+9,source22+13/17 conditions,texts,templates/WDB/poses,all786line/actor/creature definitions and197760 script bindings. Exactly4 fields,twice-idempotent/native EOF receipts/21 partial-custom refusal cases/full released live equality+LF-SHA1. Reject owner-only or duration-only partial repairs,changed47022/deathLINK/voice24/block/geist/unknown finalbossLINK21->22/customAI/pose/actor/display/line offset/chain/condition/script/target/range/duration.",
+    "MSVC ASan actual SmartScript owner/credit/action85/loader/target130/delayed callback using SQL old85/197760/0/7/0 and repaired85/197760/128/130/70. Player/pet/guardian/charm/NPC/null/missing owner,raw invoker,range70 boundary,map/phase/world/scope,missing/moved source/owner changes/failed cast/ordinary spell isolation retained. The shared host counts Player-owned story requests; a separate host tests real219 payload and lifecycle rather than falsely claiming pets cannot create conversations.",
+    "Separate ASan host compiles actual EffectSummonConversation,GenerateDynamicFieldData,Player/group personal registration,CanNeverSee2,lifetime calculation and Update. Old pet public conversation cannot start caster-keyed expiry; old Player removed at11001ms while native first voice end14723 and last offsets12350/17750 remain. New Player/group personal list retains actual actor+4lines,alive through48827 and exact53827 deadline,removes strictly after;missing definitions/mode/Misc0/quest-scope expiry/replay covered. Group-first still waits native caster visibility before expiry,not fixed globally. Map creation,source-scope inheritance,outbound delivery,client timing/rendering and full encounter remain controlled/separate.",
+    "Committed audio regression rehashes the four actual Ogg payloads,ffprobes and fully decodes each anew,checks fresh typed native line/BCT/kit/file mappings and original old/new SQL fixture offsets,then derives29564/48827ms and verifies original11000ms counterfactual versus repaired53827ms. No cached duration-summary assertion substitutes for payload decode.",
+    "World24 live-context comparison admits exact98760/7 later tuple only after independent full released World25 ten-table proof; normalizes only those three fields in local comparison. Legacy Torvis test admits exactly one additional98760/0/7/85/197760/128/130/70 opt-in only after same full proof,keeps Sothozz plus complete Nexus pair validation and rejects unknown/partial opt-ins. Approved count4 before and5 after; prior24 full8/Sothozz full12/Nexus full11 and default Torvis handlers pass.",
+    "Fresh both-server CIM absence; pending25 hash-verified promotion; owned canonical5932 fresh ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged and closed. Full native/live/audio/actual canonical owner bridge PE pass. Same DB0526D1/204B17EA EXEs,no C++production or executable change. Later user8664/9360 process start observed,never stopped by agent."
+  ],
+  "preserved_sequence": "Fire actual47022 native957/order0/tree45956/leaf45957 unchanged; health50 releases99605blocks and SELF shatter voice,independent block PLAYER_RANGE10 die then native death data1 releases99600geists retained. World24 own-speech target130 row6 retained. All99615 health/recovery/death/finalblade/portal data including unknownLINK22/32 preserved. No new creature damage,scaling,pet/group credit,quest,faction,retry or progression behavior claimed.",
+  "full_fixture_counts": {
+    "smart_scripts": 50,
+    "conditions": 0,
+    "creature_text": 12,
+    "creature_template": 4,
+    "creature_template_wdb": 4,
+    "creature": 40,
+    "conversation_data": 4,
+    "conversation_creature": 0,
+    "conversation_actor": 1,
+    "spell_script_names": 0
+  },
+  "deployment": {
+    "owned_pid": 5932,
+    "canonical_hashes": {
+      "worldserver.exe": "DB0526D1CBDE25EE6660968C52CD4ACD927060C3F5AF0D775C3BD6C975527C92",
+      "bnetserver.exe": "204B17EAEC111ACBAFFA87868FC8589E74795F3136BC30C4B63D99F437373E25"
+    },
+    "migration": "sql/updates/world/2026_10_30_25_fire_iceborn_story.sql",
+    "lf_sha1": "FA35E04ADA4FAF253D7D4158FB68A642EA02692A"
+  },
+  "diagnostics": "All read/TEMP/native/ASan/audio/PE/updater/live/prior/fresh36 have canonical+own pre/post crash hashes/log lengths/timestamps,exits/stdout/stderr reviewed. No new crash/server warning/error/assertion/DBErrors during those tests. Full final live suite ended06:55:52UTC,before separate user rejected login at06:56:00UTC. The manual-reset login error and delayed logout are explicitly tracked in stromkar-entry-receipt-correction-2026-10-30.json,not attributed to or hidden by this conversation repair. Mixed3915-byte sharedLINK2 DBErrors retained; no active production/client logs cleared. Native extracted Update C4100 unused p_time warning retained,ASan passes.",
+  "archive": {
+    "cause": "Initial private audio report measured EndMs on ordered dictionaries and left absolute maximum null; sequential48827 was correct. Converted to PSCustomObject and reran full payload research. Initial committed audio-check draft guessed actor fixture duration index10 instead of actual9; failed before any game mutation,corrected explicit10-column schema/index9 and paired repaired native/audio tests. Initial outer shell omitted quotes on runtime directory and was corrected. Original failed sources/report/diagnostics retained; no game errors suppressed.",
+    "policy": "After focused commit verify source/destination/source hashes and actual fix hash. Preserve backups/client evidence separately; archive only resolved development diagnostics.",
+    "path": "build-extractors/bin/Release/fixed/fire-iceborn-story-validation-2026-10-30/manifest.json"
+  },
+  "structural": {
+    "counts": "Fresh20tables465568 complete objects;36routes149raceclasspairs/0automatedfindings/3bounded/0scene-only;28maps7439actorrecords/2168contexts97timed23primaryLINK candidates,3unresolved recipients2nested replacements. Inventory,not client or fullchain certification.",
+    "capture": ".codex/artifact-post-iceborn-2026-10-30",
+    "native_items": "Unchanged matching native ItemSparse catalog reused from after24 with verified copy hash; SQL data and actor inventories freshly recaptured after25.",
+    "audit": "docs/audits/artifact-structural-refresh-2026-10-30.json"
+  },
+  "evidence": [
+    ".codex/fire-iceborn-story-original-2026-10-30",
+    ".codex/fire-iceborn-story-fingerprints-2026-10-30",
+    ".codex/fire-iceborn-story-full-staged-initial-2026-10-30",
+    ".codex/fire-iceborn-audio-research-fixed-2026-10-30",
+    ".codex/fire-iceborn-audio-regression-fixed-2026-10-30",
+    ".codex/fire-iceborn-story-updater-2026-10-30",
+    ".codex/fire-iceborn-story-final-live-2026-10-30",
+    ".codex/artifact-post-iceborn-checks-2026-10-30"
+  ],
+  "next": "Investigate actual Blood DK102304 LINK5 ordinary203481 summon102955/properties64/dest47 (TARGET_DEST_CASTER_FRONT,not target/corpse destination) before any normalization. Existing85 caster is raw invoker,SELF target is dying source; no correct-location/ownership fix proved. Trace102244/3 source22 actual-invoker0 negative-near102244 condition,full remaining guards/stages/101539 recipients. Survival26365 sniff+BFA shortcut reference need separate documented provenance; no teleport/blessing shortcuts. Continue unknownLINK2/Stromkar visuals and user-owned fresh client test.",
+  "remaining": "Actual786 dialogue position/audio/client scheduling,whole Fire traversal and full36 remain OPEN. Original line offsets are preserved; the conservative lifetime does not certify absence of overlapping client audio. Shared101430/103151 missingLINK2,Stromkar recoil/cracked ground/three ritual beams,Survival39427,originalGO/fullbags/retry remain unresolved. Newly authorized Stromkar checkpoint-only correction cde9f3975 completed once; next client login pending and logout delay OPEN. No further reset permission."
+}
