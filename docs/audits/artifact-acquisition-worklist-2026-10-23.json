@@ -5279,5 +5279,10 @@
   "requested_stromkar_retest_2026_10_30": {
     "status": "NEW explicit one-use weapon/start replay reset completed offline once;15 backups/full field+count checks passed. No continuing reset permission. Logout/Exit user says working again; no speculative UI/core edit. User may now start client tests; never stop their servers.",
     "audit": "docs/audits/stromkar-requested-retest-2026-10-30.json"
+  },
+  "stromkar_entry_receipt_correction_2026_10_30": {
+    "status": "Actual client rejected position-only reset; NEW authorized correction completed once offline with exact1539/1037 entrance receipt, full-character/reference equality and existing native regression. Next client login unverified. No further reset permission.",
+    "logout": "User /logout no visible effect; Connection.log shows response0 then LogoutComplete after /reload and normal ClientDestroy. Cause of delay OPEN; no speculative addon/core edit.",
+    "audit": "docs/audits/stromkar-entry-receipt-correction-2026-10-30.json"
   }
 }

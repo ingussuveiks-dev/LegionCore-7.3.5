@@ -1,6 +1,6 @@
 {
   "date": "2026-10-30",
-  "status": "New explicit one-use Stromkar retest request completed offline and verified; authorization consumed",
+  "status": "One-use weapon/objective reset completed, but position-only entrance was incomplete; subsequent checkpoint correction required",
   "authorization": "User explicitly requested removing the weapon and returning to the beginning to replay Stromkar. This superseded the previous no-reset boundary only for this one scoped retest; there is no continuing permission for further character/item/quest resets.",
   "operation": "Fresh actual offline Warrior identity/state checked privately. One owned128910 and only its associated inventory/artifact/gem/modifier/relic/transmog/refund/trade rows removed. Active41105 retained; its five objective counters reset to0. Native203920 map1539 entrance pose used. Other character fields/quest/reward/aura rows preserved; no account-wide or other-character reset.",
   "backup": "15 scoped mysqldump SQL files with hex-blob data and stable primary ordering; SHA256 manifest verified before mutation and again during reconciliation. Fixed original item GUID set retained in child-table snapshot filters so orphan rows cannot disappear from verification merely because the parent item was removed. Personal backups/private SQL remain ignored under .codex/stromkar-fresh-retest-2026-10-30/backup/manifest.json; no character records or credentials committed.",
@@ -17,5 +17,6 @@
     ".codex/stromkar-retest-postcheck-fixed-2026-10-30"
   ],
   "archive": "After audit commit, preserve resolved private verifier diagnostics/original source under build-extractors/bin/Release/fixed/stromkar-retest-verification-2026-10-30/manifest.json with source/destination/source SHA256 and actual audit commit. No active production report or mixed log cleared.",
-  "remaining": "Actual current-EXE Stromkar recoil/cracked-ground/three ritual beams/exit and full36 client checks remain unverified. Continue Fire Iceborn197760/786 lifetime+owner repair independently; pending World25 not released yet."
+  "remaining": "Actual current-EXE Stromkar recoil/cracked-ground/three ritual beams/exit and full36 client checks remain unverified. Continue Fire Iceborn197760/786 lifetime+owner repair independently; pending World25 not released yet.",
+  "correction": "Actual next login rejected map1539 because this reset omitted scenarioResume, repeating the already documented909426fa6 defect. Prior ready-for-client assertion withdrawn. Newly authorized offline position/checkpoint-only correction is documented in stromkar-entry-receipt-correction-2026-10-30.json; weapons/objectives not reset again. Logout delay remains OPEN."
 }
