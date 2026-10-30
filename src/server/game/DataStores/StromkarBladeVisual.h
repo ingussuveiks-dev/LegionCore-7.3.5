@@ -42,14 +42,16 @@ inline bool Supported(Attachment const* row)
         std::fabs(v.Offset[0] - 0.1f) < 0.000001f && std::fabs(v.Offset[1] - 0.25f) < 0.000001f &&
         std::fabs(v.Offset[2] - 0.45f) < 0.000001f &&
         std::fabs(v.Yaw - 4.18879f) < 0.00001f && std::fabs(v.Pitch - 0.872665f) < 0.00001f &&
-        v.Roll == 0.0f && (v.Scale == 0.025f || v.Scale == 1.0f);
+        v.Roll == 0.0f && (v.Scale == 0.025f || v.Scale == 1.0f || v.Scale == 0.25f);
 }
 
 inline void Fix(Attachment* row)
 {
-    // Full item scale is authored by the native Strom'kar item kits65550/65551.
-    // Preserve this embedded kit's original position, tilt, model and lifetime.
-    row->value.Scale = 1.0f;
+    // This world attachment has a different host/positioner from the full-size
+    // player item kits. Quarter the oversized1.0 presentation while keeping a
+    // visible blade above the original0.025 presentation. This is custom visual
+    // tuning, not a recovered Blizzard replacement value.
+    row->value.Scale = 0.25f;
 }
 
 inline bool Apply(DB2Storage<Attachment>& store)

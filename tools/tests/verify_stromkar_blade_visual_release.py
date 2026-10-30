@@ -30,7 +30,7 @@ needs(extra,apply)
 assert {318611,64756,26999,255,19} <= values(apply), 'Scoped native record/kit/item attachment/positioner guards missing'
 assert any(x.mnemonic=='mov' and x.operands[0].type==CS_OP_MEM and x.operands[0].size==4
            and x.operands[0].mem.disp==scale and x.operands[1].type==CS_OP_IMM
-           and x.operands[1].imm==0x3f800000 for x in ins(apply)), 'Actual native scale field is not set to1'
+           and x.operands[1].imm==0x3e800000 for x in ins(apply)), 'Actual native scale field is not set to0.25'
 needs(apply,'?AddClientHotfix@DB2HotfixGeneratorBase@@')
 needs('?AddClientHotfix@DB2HotfixGeneratorBase@@','?InsertNewHotfix@DB2Manager@@')
 for method in ('?HandleHotfixRequest@WorldSession@@','?HandleDBQueryBulk@WorldSession@@'):
@@ -38,4 +38,4 @@ for method in ('?HandleHotfixRequest@WorldSession@@','?HandleDBQueryBulk@WorldSe
     needs(method,'?WriteRecord@DB2StorageBase@@')
 needs('?SendHotfixList@WorldSession@@','?GetHotfixData@DB2Manager@@')
 assert b'LowDefModelAttachID, StartDelay, SpellVisualKitID FROM spell_visual_kit_model_attach' in n['binary'], 'Prepared native parent-field projection missing'
-print(f'PASS selected full26-field store loaded in DB2 lifecycle, scoped318611/64756 scale1 at native offset{scale}, generated client notice and both actual hotfix record serializers; table hash{table}. Rendering/client cache acceptance remain separate.')
+print(f'PASS selected full26-field store loaded in DB2 lifecycle, scoped318611/64756 custom scale0.25 at native offset{scale}, generated client notice and both actual hotfix record serializers; table hash{table}. Rendering/client cache acceptance remain separate.')

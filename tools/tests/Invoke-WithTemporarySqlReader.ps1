@@ -1,8 +1,9 @@
-param([Parameter(Mandatory=$true)][string]$EvidenceDirectory,[Parameter(Mandatory=$true)][scriptblock]$Test)
+param([Parameter(Mandatory=$true)][string]$EvidenceDirectory,[ValidateSet('World','Hotfix')][string]$Database='World',[Parameter(Mandatory=$true)][scriptblock]$Test)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 New-Item -ItemType Directory -Force $EvidenceDirectory|Out-Null
-$c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
+$key="${Database}DatabaseInfo"
+$c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match "^$key\s*="}).Split('"')[1].Split(';')
 if($c.Count -ne 5 -or $c[4] -notmatch '^\w+$'){throw 'Unexpected world database configuration'}
 $mysql='C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe'
 $reader='codex_reader_'+[guid]::NewGuid().ToString('N').Substring(0,16)
@@ -21,7 +22,8 @@ try{
  $env:MYSQL_PWD=$secret
  # Controlled denied-write probe: even a failed TEMP setup cannot fall through
  # to production DML. WHERE0 additionally prevents data changes if grants regress.
- "DELETE FROM ``$($c[4])``.conditions WHERE 1=0;"|& $mysql --host=$($c[0]) --port=$($c[1]) --user=$reader --database=$($c[4]) --batch --raw 1> "$EvidenceDirectory/denied.stdout" 2> "$EvidenceDirectory/denied.stderr"
+ $canary=if($Database -eq 'Hotfix'){'hotfix_data'}else{'conditions'}
+ "DELETE FROM ``$($c[4])``.$canary WHERE 1=0;"|& $mysql --host=$($c[0]) --port=$($c[1]) --user=$reader --database=$($c[4]) --batch --raw 1> "$EvidenceDirectory/denied.stdout" 2> "$EvidenceDirectory/denied.stderr"
  if(!$LASTEXITCODE -or [IO.File]::ReadAllText("$EvidenceDirectory/denied.stderr") -notmatch 'ERROR 1142 .*DELETE command denied'){throw 'Persistent DELETE privilege was not denied'}
  $env:CODEX_SQL_READER_USER=$reader;$env:CODEX_SQL_READER_PASSWORD=$secret
  & $Test

@@ -78,6 +78,9 @@ int main(int argc, char** argv)
     assert(original.size() > 10000);
     assert(original.at(318611).size() == sizeof(Row));
     Row source = *before;
+    Row oversized=source;oversized.value.Scale=1.0f;
+    assert(StromkarBladeVisual::Supported(&oversized));
+    StromkarBladeVisual::Fix(&oversized);assert(oversized.value.Scale==0.25f);
     assert(!StromkarBladeVisual::Supported(nullptr));
     for (unsigned variant=0; variant<11; ++variant)
     {
@@ -98,7 +101,7 @@ int main(int argc, char** argv)
     auto count = sDB2Manager.GetHotfixData().size();
     assert(StromkarBladeVisual::Apply(store));
     auto row = store.LookupEntry(318611);
-    assert(row->value.Scale == full->value.Scale && StromkarBladeVisual::Supported(row));
+    assert(row->value.Scale == 0.25f && row->value.Scale == full->value.Scale/4.0f && StromkarBladeVisual::Supported(row));
     auto payload = bytes(318611);
     constexpr size_t scale = offsetof(Row,value) + offsetof(SpellVisualKitModelAttachEntry,Scale);
     std::cout<<"ROW_LAYOUT\t"<<sizeof(Row)<<'\t'<<scale<<'\t'<<store.GetTableHash()<<'\t'<<info->FieldCount<<'\n';
@@ -125,5 +128,5 @@ int main(int argc, char** argv)
         assert(std::search(packet->contents(),packet->contents()+packet->size(),payload.begin(),payload.end()) != packet->contents()+packet->size());
     }
     assert(notified);
-    std::cout<<"PASS native26972 full parent record, "<<original.size()<<" serialized rows preserved except318611 scale0.025->authored1;11 custom refusals, idempotent value fix, actual client hotfix notice/table hash and HotfixResponse payload. Client rendering remains separate.\n";
+    std::cout<<"PASS native26972 full parent record, "<<original.size()<<" serialized rows preserved except318611 custom scale0.25; previous oversized1 quartered,11 custom refusals, idempotent value fix, actual client hotfix notice/table hash and HotfixResponse payload. Client rendering remains separate.\n";
 }
