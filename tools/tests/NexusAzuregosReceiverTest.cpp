@@ -23,6 +23,9 @@ struct Map{uint32 id=1;bool instance=true;Map*ToInstanceMap(){return instance?th
 #ifdef NEXUS_HEALING_TEST
 #include "NexusHealingServices.inc"
 #endif
+#ifdef NEXUS_EXIT_TEST
+#include "StromkarExitServices.inc"
+#endif
 std::vector<Unit*> grid;uint32 clockTime=0;bool failCast=false;
 struct Receipt{uint32 time,action,payload;};std::vector<Receipt> receipts;
 struct Aura{void ModStackAmount(int32){assert(false);}};
@@ -33,18 +36,46 @@ struct Unit {
  bool IsAlive()const{return alive;}bool IsInWorld()const{return inWorld;}uint32 GetEntry()const{return entry;}Unit*GetGUID(){return this;}bool IsQuestObjectExpired(){return expired;}
  Map*GetMap(){return map;}bool isInCombat(){return false;}bool HasUnitState(uint32){return casting;}SmartAI*AI(){return &ai;}
  float GetDistance(Unit const*u)const{return std::fabs(x-u->x);}bool IsWithinDistInMap(Unit const*u,float distance)const{return map==u->map&&phase==u->phase&&inWorld&&u->inWorld&&GetDistance(u)<=distance;}
- Unit*FindNearestCreature(uint32,float,bool);void RemoveAllAuras(){++auraRemovals;}Aura*GetAura(uint32){return nullptr;}void RemoveAurasDueToSpell(uint32){assert(false);}
- bool IsUnit(){return true;}bool HasAura(uint32){return false;}void InterruptNonMeleeSpells(bool){}
+ Unit*FindNearestCreature(uint32,float,bool);void RemoveAllAuras(){++auraRemovals;
+#ifdef NEXUS_EXIT_TEST
+ auras.clear();
+#endif
+ }Aura*GetAura(uint32){return nullptr;}void RemoveAurasDueToSpell(uint32){assert(false);}
+ bool IsUnit(){return true;}bool HasAura(uint32 id){
+#ifdef NEXUS_EXIT_TEST
+ return std::find(auras.begin(),auras.end(),id)!=auras.end();
+#else
+ (void)id;return false;
+#endif
+ }void InterruptNonMeleeSpells(bool){}
  void GetPosition(float&a,float&b,float&c){a=x;b=c=0;}
- SpellCastResult CastSpell(Unit*target,uint32 spell,bool triggered){assert(target==this&&!triggered&&spell==207752);receipts.push_back({clockTime,11,spell});return failCast?SPELL_FAILED_BAD_TARGETS:SPELL_CAST_OK;}
+ SpellCastResult CastSpell(Unit*target,uint32 spell,bool triggered){assert(target==this&&!triggered);
+#ifdef NEXUS_EXIT_TEST
+ assert(spell==202014||spell==63048);if(!failCast)auras.push_back(spell);
+#else
+ assert(spell==207752);
+#endif
+ receipts.push_back({clockTime,11,spell});return failCast?SPELL_FAILED_BAD_TARGETS:SPELL_CAST_OK;}
  void CastSpell(float,float,float,uint32,bool){assert(false);}
 #ifdef NEXUS_HEALING_TEST
  uint32 health=1,maxHealth=100;float GetHealthPct(){return 100.0f*health/maxHealth;}uint32 GetMaxHealth(){return maxHealth;}
  bool InInstance(){return map&&map->instance;}uint32 GetInstanceId(){return map?map->id:0;}HealingAchievement*GetAchievementMgr(){return &healingScenario.achievement;}
 #endif
+#ifdef NEXUS_EXIT_TEST
+ uint32 m_DBTableGuid=0,m_path_id=0;std::vector<uint32>auras;mutable ExitTemplate exitTemplate;
+ ExitTemplate const*GetCreatureTemplate()const{exitTemplate.Entry=entry;return &exitTemplate;}
+ CreatureAddon const*GetCreatureAddon()const;bool LoadCreaturesAddon(bool=false);
+ uint32 GetGUIDLow()const{return m_DBTableGuid;}
+ void AddAura(uint32 id,Unit*target){assert(target==this);auras.push_back(id);}
+ void Mount(uint32){}void setStandStateValue(uint32){}void SetByteValue(uint32,uint32,uint32){}void SetStandVisValue(uint32){}void SetMiscStandValue(uint32){}bool CanHover(){return false;}void SetHover(bool){assert(false);}void SetUInt32Value(uint32,uint32){}
+ template<class F>void AddDelayedEvent(uint32,F){assert(false);}void CastSpell(Unit*,SpellInfo const*,bool){assert(false);}
+#endif
 };
 bool IsCreature(Unit*u){return u&&!u->player;}bool IsGameObject(Unit*){return false;}bool IsUnit(Unit*u){return u!=nullptr;}
-struct SmartGameObjectAI;struct GameObject{SmartGameObjectAI*AI(){return nullptr;}SpellCastResult CastSpell(Unit*,uint32){return SPELL_FAILED_BAD_TARGETS;}};struct SpellInfo{};
+struct SmartGameObjectAI;struct GameObject{SmartGameObjectAI*AI(){return nullptr;}SpellCastResult CastSpell(Unit*,uint32){return SPELL_FAILED_BAD_TARGETS;}};
+#ifndef NEXUS_EXIT_TEST
+struct SpellInfo{};
+#endif
 #define TC_LOG_DEBUG(...) ((void)0)
 uint32 scriptErrors=0;
 #define TC_LOG_ERROR(...) (++scriptErrors)
@@ -94,7 +125,11 @@ using ObjectList=std::list<Unit*>;
 struct SmartScript {
  Unit*me=nullptr;GameObject*go=nullptr;Unit*mLastInvoker=nullptr;SmartAIEventList mEvents,mTimedActionList;bool isProcessingTimedActionList=false;uint32 listStarts=0;
  Unit*GetBaseObject(){return me;}Unit*GetLastInvoker(){return mLastInvoker;}bool IsInPhase(uint32){return true;}bool IsSmart(Unit*u){return u&&u->ai.script;}bool IsSmartGO(GameObject*){return false;}
- ObjectList*GetTargets(SmartScriptHolder const&e,Unit*){auto*l=new ObjectList;if(e.targetType==1)l->push_back(me);else if(e.targetType==19){for(auto u:grid)if(!u->player&&u->alive&&u->entry==e.payload&&me->IsWithinDistInMap(u,50)){l->push_back(u);break;}}else assert(false);if(l->empty()){delete l;return nullptr;}return l;}
+ ObjectList*GetTargets(SmartScriptHolder const&e,Unit*){auto*l=new ObjectList;if(e.targetType==1)l->push_back(me);else if(e.targetType==19){for(auto u:grid)if(!u->player&&u->alive&&u->entry==e.payload&&me->IsWithinDistInMap(u,50)){l->push_back(u);break;}}
+#ifdef NEXUS_EXIT_TEST
+ else if(e.targetType==10){for(auto u:grid)if(u->m_DBTableGuid==e.payload&&u->map==me->map&&u->phase==me->phase&&u->inWorld){l->push_back(u);break;}}
+#endif
+ else assert(false);if(l->empty()){delete l;return nullptr;}return l;}
  void ProcessEventsFor(SMART_EVENT,Unit* =nullptr,uint32=0,uint32=0,bool=false,SpellInfo const* =nullptr,GameObject* =nullptr);
  void ProcessEvent(SmartScriptHolder&,Unit* =nullptr,uint32=0,uint32=0,bool=false,SpellInfo const* =nullptr,GameObject* =nullptr);
  void ProcessAction(SmartScriptHolder&,Unit* =nullptr,uint32=0,uint32=0,bool=false,SpellInfo const* =nullptr,GameObject* =nullptr);
@@ -126,6 +161,9 @@ struct SmartGameObjectAI {void SetScript9(SmartScriptHolder&,uint32,Unit*){asser
  // Retain actual payload and native timed ordering; endpoint services only.
  case 12:receipts.push_back({clockTime,12,e.payload});break;
  case 41:receipts.push_back({clockTime,41,0});break;
+#ifdef NEXUS_EXIT_TEST
+ case 9:receipts.push_back({clockTime,9,e.event_id});break; // Controlled native-door endpoint; SQL exact GUIDs remain asserted.
+#endif
  case 205:case 206:receipts.push_back({clockTime,e.actionType,e.payload});
 #ifdef NEXUS_HEALING_TEST
  if(e.actionType==205&&acceptCriteria){if(e.payload==49864)healingScenario.achievement.scions=true;if(e.payload==50369)healingScenario.healed=true;}

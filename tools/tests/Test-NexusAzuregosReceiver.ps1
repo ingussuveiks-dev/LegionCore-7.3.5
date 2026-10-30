@@ -1,10 +1,11 @@
 #requires -Version 7.0
-param([switch]$VerifyLiveData,[switch]$VerifyNativeCatalog,[switch]$VerifyReleaseBinary,[switch]$WithPriestHealing)
+param([switch]$VerifyLiveData,[switch]$VerifyNativeCatalog,[switch]$VerifyReleaseBinary,[switch]$WithPriestHealing,[switch]$WithExitHole)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/nexus-azuregos-receiver/run-$([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fffffff'))"
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories @("$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  if($VerifyLiveData -and (Test-Path "$repo/sql/updates/world/2026_10_30_33_priest_azuregos_healing.sql")){$WithPriestHealing=$true}
  & "$PSScriptRoot/Test-NexusAzuregosData.ps1" -OutputDirectory $out -VerifyLiveData:$VerifyLiveData -WithPriestHealing:$WithPriestHealing
+ if($WithExitHole){& "$PSScriptRoot/Test-StromkarExitHoleData.ps1" -OutputDirectory "$out/exit" -VerifyLiveData:$VerifyLiveData}
  function Block($s,$a){$i=$s.IndexOf($a);if($i -lt 0){throw "Missing $a"};$j=$s.IndexOf('{',$i)+1;$depth=1;while($depth -and $j -lt $s.Length){if($s[$j] -eq '{'){++$depth};if($s[$j] -eq '}'){--$depth};++$j};if($depth){throw "Unclosed $a"};$s.Substring($i,$j-$i)}
  function Section($s,$a,$b){$i=$s.IndexOf($a);$j=$s.IndexOf($b,[Math]::Max($i,0));if($i -lt 0 -or $j -le $i){throw "Missing $a/$b"};$s.Substring($i,$j-$i)}
  $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
@@ -38,6 +39,7 @@ $out="$repo/build-extractors/runtime-test/nexus-azuregos-receiver/run-$([DateTim
  $parts['GetConditions.inc']=Block $c 'ConditionList ConditionMgr::GetConditionsForSmartEvent('
  $parts['EventConditions.inc']=Block $c 'bool ConditionMgr::IsObjectMeetingSmartEventConditions('
  if($WithPriestHealing){$parts['CriteriaCondition.inc']=Block $c '        case CONDITION_CRITERIA_TREE:';$parts['ScenarioCondition.inc']=Block $c '        case CONDITION_SCENARION_STEP:';$parts['HealthEvent.inc']=Block $s '        case SMART_EVENT_HEALTH_PCT:'}
+ if($WithExitHole){$creature=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw;$parts['ExitAddonSelector.inc']=Block $creature 'CreatureAddon const* Creature::GetCreatureAddon() const';$parts['ExitAddonLoader.inc']=Block $creature 'bool Creature::LoadCreaturesAddon('}
  $g=Get-Content "$repo/src/server/game/Grids/Notifiers/GridNotifiers.cpp" -Raw;$h=Get-Content "$repo/src/server/game/Grids/Notifiers/GridNotifiers.h" -Raw
  $parts['NearClass.inc']=Section $h '    class NearestCreatureEntryWithLiveStateInObjectRangeCheck' '    class TC_GAME_API AnyPlayerInObjectRangeCheck'
  $parts['NearBody.inc']=Section $g 'NearestCreatureEntryWithLiveStateInObjectRangeCheck::NearestCreatureEntryWithLiveStateInObjectRangeCheck' 'AnyPlayerInObjectRangeCheck::'
@@ -53,5 +55,11 @@ $out="$repo/build-extractors/runtime-test/nexus-azuregos-receiver/run-$([DateTim
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Actual native Azuregos receiver regression failed'}
  if($WithPriestHealing){[IO.File]::WriteAllText("$out/healing.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/NexusAzuregosHealingTest.cpp`" /Fe`"$out/healing.exe`" /Fo`"$out/healing.obj`" /Fd`"$out/healing.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/healing.exe`" `"$out/priest-baseline-events.tsv`" `"$out/priest-events.tsv`" `"$out/priest-baseline-conditions.tsv`" `"$out/priest-conditions.tsv`" `"$out/priest-source-health.tsv`"`n");& "$out/healing.cmd";if($LASTEXITCODE){throw 'Actual native Priest healing regression failed'}}
  if($VerifyNativeCatalog){$prior=$env:LEGION_DIALOGUE_CONFIG;try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile NexusAzuregosCatalog.cpp -ProbeName NexusAzuregosCatalog -OutputFile "$out/native.tsv"}finally{$env:LEGION_DIALOGUE_CONFIG=$prior}}
- if($VerifyReleaseBinary){$prior=$env:PYTHONPATH;try{$env:PYTHONPATH="$repo/.codex/pe-review-deps";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_nexus_azuregos_receiver_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Actual native Azuregos receiver PE failed'}}finally{$env:PYTHONPATH=$prior}}
+ if($WithExitHole){
+  [IO.File]::WriteAllText("$out/exit.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/StromkarExitHoleTest.cpp`" /Fe`"$out/exit.exe`" /Fo`"$out/exit.obj`" /Fd`"$out/exit.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/exit.exe`" `"$out/exit/baseline-addons.tsv`" `"$out/exit/addons.tsv`" `"$out/exit/events.tsv`" `"$out/exit/spawns.tsv`"`n")
+  & "$out/exit.cmd";if($LASTEXITCODE){throw 'Native Stromkar exit addon/cleanup failed'}
+  if($VerifyNativeCatalog){$prior=$env:LEGION_DIALOGUE_CONFIG;try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile StromkarEarlyVisualCatalog.cpp -ProbeName StromkarEarlyVisualCatalog -OutputFile "$out/exit/native.tsv"}finally{$env:LEGION_DIALOGUE_CONFIG=$prior}}
+  if($VerifyNativeCatalog){$native=[IO.File]::ReadAllLines("$out/exit/native.tsv");foreach($line in @("SPELL`t204345`tShadow Pool","EFFECT`t204345`t0`t6`t4`t0`t0`t1`t0","VISUAL`t204345`t53462`t0`t0","EVENT`t53462`t7`t8`t64595","KIT`t64595`t2`t318377","KIT`t64595`t2`t318379","ATTACHMENT`t64595`t318377`t20234`t158`t0`t611390`t0","ATTACHMENT`t64595`t318379`t20235`t0`t0`t655465`t0")){if($native -cnotcontains $line){throw 'Actual26972 exit aura/visual/attachment differs'}};if(@($native|Where-Object{$_ -like "MISC`t204345`t-1`t*"}).Count -ne 1){throw 'Expected native infinite exit aura'}}
+ }
+ if($VerifyReleaseBinary){$prior=$env:PYTHONPATH;try{$env:PYTHONPATH="$repo/.codex/pe-review-deps";$verifier=if($WithExitHole){'verify_stromkar_exit_hole_release.py'}else{'verify_nexus_azuregos_receiver_release.py'};& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/$verifier" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Actual native Azuregos/optional exit-hole PE failed'}}finally{$env:PYTHONPATH=$prior}}
 }
