@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-31",
+  "scope": "Truthguard105911 Orik/105912 Cato lethal-hit protection after real target scaling. No new acquisition route, summon/criteria rewrite or full1082/client certification.",
+  "cause": "The bound shared companion script used raw DamageTaken and base GetHealth. With native98..110 scaling, raw damage below template HP can become lethal to the actual target-relative health; a large-scale ordinary hit can instead be blocked early. The raw hook is also not the suspended original content policy. Losing Orik can remove the existing tome/50500 guide path; Cato owns existing heal/combat helpers.",
+  "native_context": "Fresh readonly World: exactly105911/105912 bind npc_sr_orik_cato_script, both scaling98..110,no static spawns,no entry SmartAI rows. Shared1495 routes909/class1,1068/class3,1082/class2 preserved. Typed26972 DB2+readonly Hotfix:210036/210043 self aura428 controllers ->209945/209953; those native effect28 summon105911/105912 with target142. Actual step1=2391/root47435/Into the Tomb, criterion29808/type92/50500. Orik original1000ms location poll ->book/move/7000ms dialogue/actual stage1 criterion; Cato original owner-heals and combat timers, both farewell6000ms/hearth/despawn unchanged.",
+  "sources": [
+    {
+      "source": "Local matching data/runtime binding/whole actor+instance+header/native Unit damage/getters/Creature current+suspended dispatch",
+      "review": "Read full shared companion class and instance create/death/data/controller branches, real target health and final-damage/death order. No class/faction/group/owner grant added."
+    },
+    {
+      "source": "C:/wamp64/www/TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "review": "Bounded historical scripts search for this exact actor/constant returned no implementation; not exhaustive all-history or a modern import."
+    },
+    {
+      "source": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.cpp",
+      "review": "Full relevant companion class read; same old raw/base-health guard. Fresh donor search also returns dufernst9222216e0dda0708ae53e6e6f6b07db7d65ba46f and Titans6ff03c46b5a1ff0d5bc916bbe3b39ea9c8c03ffe with raw hook. No external fix imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No new footage/transcript/audio/client traversal reviewed. No inferred retail timing, pose or new presentation."
+    }
+  ],
+  "implementation": "Move only this existing lethal policy to DamageTakenAfterScaling and compare with me->GetHealth(attacker), matching the actual native final-damage/death units. Retain zero damage and original attacker threat -90 percent; a null attacker skips only its dereference. No wound/heal/new immunity, owner redirect, pet/guardian progression or group broadcast. Whole remaining Shield Rest source exactly matches a148a34b5 after reversing only this method change and terminal newline normalization.",
+  "validation": {
+    "baseline": "2400 pinned a148a34b5 ASAN contexts reproduce768 lethal bypasses and96 ordinary-hit overblocks in controlled native target-health/multiplier dispatch. Expected-broken outcomes, not client incidents.",
+    "repaired": "2408 ASAN actual method/getters/full native scaling+instance/current/suspended hook contexts: both binding labels, player/pet/guardian/NPC attacker labels, four scales, three health fractions, five damage intensities/five primary+suspended+alias+disabled modes, repeated lethal hits, ordinary/non-scaled/missing-stat/null direct callbacks, absent content AI and UINT32_MAX. No owner policy/credit service exists in this host; worlds/labels/death decision controlled.",
+    "coupled_numeric": "The initial UINT32_MAX assertion exposed shared out-of-range float narrowing before this callback. Native damage-scaling bound fixed separately; see damage-scaling-bounds-2026-10-31.json. No failed assertion dropped.",
+    "native": "Fresh typed26972+readonly Hotfix/controller/summon/stage metadata and full-EOF live binding/scaling/shared-map readback with terminal marker and stderr/exit checks. No SQL update.",
+    "pe": "Actual selected factory installs new0xa8 and empty inherited raw0xa0. Incoming attacker preserved into native GetHealth(Unit*); final lethal compare before zero, then null check and original attacker ThreatManager/-90. Only two calls in actual method; native numeric clamp and current/suspended hooks independently proven.",
+    "retained": "23 shared damage/lifecycle suites and full retained staged Silver Hand chain pass; additional canonical shared-admission490/Skyhold/Scepter/Warlock/selected PE results recorded after completion.",
+    "canonical": "PASS canonical209 numeric/2408 companion ASAN+typed26972/readonlyHotfix/full-EOF World+selected new PE; shared1082 admission490 and actual Skyhold return policy+native DB2/PE; mandatory ScepterRelease/Warlock+mover; all five changed encounter PE consumers, first-room/path/fight PE and sparseDB2 PE. Exact staged full retained Silver Hand chain also passes; promotion hashes match. Owned20168 ready/graceful0/gone, diagnostics unchanged. Actual client traversal remains separate."
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "C462D90F0259F7D6CE5096CF72B2091F1C6EB01EFA6721A623CF18D454009E69",
+      "worldserver.map": "D2B0DD7760FE922FF56819BD92EEF3392C06BC7B3770206D311DA3DF7237B077",
+      "bnetserver.exe": "EBEFCCB8CF892D4E65E96F96A04270EDDE18ACC2C57598A2191A8CE072A946C8",
+      "bnetserver.map": "C2658BB7D3AD256A6408616E8074199E220EFB0C5833D84B0A1A5783E0C91715"
+    },
+    "build": "Original scripts/game/common Release libraries rebuilt and both final links staged without global OutDir. Staged selected numeric+companion and full retained Silver Hand PE pass before offline four-file EXE/MAP promotion. Backup manifest and protected configuration/certificate/DLL hashes verified. Combined deployment contains two separately audited implementation fixes; no SQL/character/configuration/asset mutation.",
+    "runtime": "No user/unknown world or bnet at fresh promotion/startup checks. Only owned hidden world20168 reached fresh ready, own shutdown0/exit0/newDBErrors0/stderr0, then gone. No unknown server stopped or hidden server left."
+  },
+  "diagnostics": {
+    "runtime": "Before/after crash/log snapshots and completion/output captured for numeric/companion/broad/native/build/link/PE/promotion/owned startup checks. No new/changed crash, appended server warning/error/assertion or DBErrors. Active Crashes empty/no report removed; mixed6090-byte sharedLINK2 log unchanged SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0. No active log truncated or unrelated history removed.",
+    "limits": "Failed host assertions, stale fixtures and inspector assumptions remain preserved and paired with passing repaired checks; not called successful ordinary runs. Security quarantine untouched. Closed issue diagnostic archive follows the two focused commits; unknown Glow/Survival/Wardstone/sharedLINK2/client evidence remains outside fixed classification."
+  },
+  "remaining": "Actual controller summon/follow/combat/healing, threat behavior, Orik tome route/50500, puzzle/winds/door, companion logout/re-entry/death-aura refresh/farewell, player/pet/guardian/party/faction and whole1082 client traversal remain OPEN. Direct scripted Kill/despawn intentionally bypasses ordinary damage protection. No retry/reset/aura policy invented, no full36 claim or user character mutation."
+}
