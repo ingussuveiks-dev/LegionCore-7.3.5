@@ -54,8 +54,12 @@ struct Pickup {
 };
 int main() {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
-    for (uint32 status : {1u, 3u}) for (bool cancel : {false, true}) {
+    // The actual GO first sends49110, and206436 sends it again while starting
+    // the scene. If Execute supplies49109 before the authenticated completion
+    // packet arrives, both final criteria are satisfied and1037 is already10.
+    for (uint32 stage : {9u, 10u}) for (uint32 status : {1u, 3u}) for (bool cancel : {false, true}) {
         Pickup pickup; pickup.player.quest = status;
+        scenarioManager.scenario.step = stage;
         pickup.player.TrigerScene(pickup.instance, "Smooth Phase Complete");
         pickup.player.TrigerScene(pickup.instance, "complete");
         assert(pickup.player.swaps == 0 && pickup.player.casts.empty());
@@ -67,7 +71,7 @@ int main() {
     for (uint32 invalid = 0; invalid < 17; ++invalid) {
         Pickup pickup;
         if (invalid == 0) scenarioManager.scenario.step = 8;
-        if (invalid == 1) scenarioManager.scenario.step = 10;
+        if (invalid == 1) scenarioManager.scenario.step = 11;
         if (invalid == 2) scenarioManager.scenario.id = 1092;
         if (invalid == 3) scenarioManager.present = false;
         if (invalid == 4) pickup.player.runtimeInstance = 43;

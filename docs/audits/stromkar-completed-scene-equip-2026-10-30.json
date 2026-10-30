@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-30",
+  "status": "Focused late scene callback fixed, tested and promoted; actual client automatic equip remains pending",
+  "user_intent": "User clarified to preserve red Stage8 failed extraction/knockback, Stage9 combat, then real later acquisition and automatic equip. Core uses zero-based7/8/9 respectively, completed10. No premature artefact grant is requested.",
+  "cause_and_repair": "Focused existing-item scene callback now accepts1037 final9 or completed10. Native final tree needs BOTH49109 Execute and49110 claim; completion may precede a delayed authenticated scene packet. Earlier exact9 rejection stranded this legitimate late callback. Native1225/1590 scene status, Warrior/map1539/active41105/nonbank-owned128910, actual206439 inventory validation/swap and warnings remain. No early-stage item grant, character mutation, quest/objective reset, new source17 admission or SQL change.",
+  "native_ordering": "Saved typed26972 StromkarPickupCatalog confirms stage9 final criteria29552/49109 AND29553/49110. GO247877 sends49110 then queues206436/206448.206436 itself sends49110. Scenario::UpdateCurrentStep advances a completed final tree to10. A current authenticated1225/1590 completion/cancel must not reject an already completed scenario. Root/loot and deferred source17 gates remain exact9; in particular do not re-enable Execute206448 after permanent execution. Full queued-cast timing alternatives remain a separate review.",
+  "checks": [
+    "Pinned b83af8b29 production callback with new stage10 regression fails the expected existing-item swap assertion; expected counterfactual, not an ordinary passing run. Repaired native scene/packet lifecycle and actual EffectForceEquipItem pass stage9/10 x incomplete/complete quest x finish/cancel. Forged trigger, stale/duplicate/replaced scene, removal, invalid map/scenario/class/status/life/ownership/bank, stages8/11, missing instance and cast/equip/blocked-swap failures retain native behavior. Inventory allocation and full206439 send-event/trigger pipeline remain controlled endpoints, not a full runtime/client traversal.",
+    "Actual linked PE follows GetCurrentStep9->equip, otherwise10->equip, every other value->rejection; registered wrapper, scene/item/equipped-slot calls and real native effect249 CanEquipItem/CanEquipChildItem/SendEquipError/SwapItem checked. Shared Xalatath/Talonclaw/scene/lfg paths retained.",
+    "Original scripts/Release/scripts.lib rebuilt and original response-file inputs linked separately. Offline four-file hash-verified backup/promotion only after fresh repeated absence checks. Canonical presentation VerifyReleaseBinary and ScepterLogin VerifyReleaseBinary pass. Owned worldserver PID504 ready, graceful shutdown0/exit0, stderr0/newDBErrors0, protected configuration and certificates unchanged; no owned server remains."
+  ],
+  "diagnostics": "Pre/post canonical and own crash/log snapshots for counterfactual, repaired native/catalog/TEMP, build/link, PE and controlled startup. No new/changed crashes, server warnings/errors/assertions or appendedDBErrors. Existing mixed4640-byte LINK2 log retained unresolved. Initial test extraction included a subsequently added return header and failed to compile; corrected section boundary. First staged PE invocation used the wrong fixture-relative layout, then a separate invocation omitted capstone PYTHONPATH; bounded final staged/canonical PE passes. Unique failure evidence remains visible, unrelated client timeout evidence is not archived as resolved.",
+  "release": {
+    "path": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "6F8E504AB021B0C82711CF5AE3B9694013B49ACFC45107C7071FFE1662164C53",
+      "bnetserver.exe": "5788663B7BFDC311DD51F6FBD846A7F1B1FC4960746C717683D297F092E4E8B4",
+      "worldserver.map": "9EA6CC74AF51D13FDDC0039E1469F149DE71C47604ACEF1A20C619CC4E39AB64",
+      "bnetserver.map": "04EFCDA8DC2C73A1249128918BB90063151031E9B74E4C67622DC5E5473C1A4F"
+    },
+    "backup": ".codex/release-before-stromkar-equip-stage-2026-10-30/manifest.json",
+    "stage": ".codex/stromkar-equip-stage-release-2026-10-30"
+  },
+  "private_evidence": ".codex/stromkar-equip-stage-{baseline,counterfactual,repaired,build,pe-layout,pe-layout-pass,pe-layout-ready,pe,promote}-2026-10-30; build-extractors/runtime-test/stromkar-presentation",
+  "remaining": "Automatic equip in a real fresh acquisition is not yet client-confirmed. Do not reset the already acquired weapon or character to demonstrate it. Current user confirms tomb start/logout and downed post-Execute body on prior15F, but not all36. Return button/Val kyr disappearance, large embedded blade, moving ritual projectiles, recoil ground and facing, sharedLINK2 and original intermittent client silence remain OPEN. Continue independent repairs."
+}

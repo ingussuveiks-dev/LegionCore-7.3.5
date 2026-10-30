@@ -1,12 +1,13 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$CompletedStageBaseline)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Baseline cannot certify fixed Release'}
+if(($Baseline -or $CompletedStageBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot certify fixed Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/stromkar-presentation"
 New-Item -ItemType Directory -Force $out | Out-Null
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing native section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
-$presentation=Section $source 'namespace StromkarPresentation' 'struct npc_stromkar_thoradin : SmartAI'
+if($CompletedStageBaseline){$source=(git -C $repo show 'b83af8b29:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp') -join "`n"}
+$presentation=Section $source 'namespace StromkarPresentation' '#include "stromkar_return.h"'
 if($Baseline){$presentation=$presentation.Replace('return StromkarPresentation::Complete(player, scene, trigger);','return false;')}
 [IO.File]::WriteAllText("$out/Presentation.inc",$presentation)
 [IO.File]::WriteAllText("$out/Active.inc",(Section $source 'bool Active(Player*' 'bool Use(Player*'))
@@ -63,4 +64,4 @@ if($VerifyReleaseBinary){
  $previous=$env:PYTHONPATH
  try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_stromkar_presentation_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical Stromkar presentation missing'}}finally{$env:PYTHONPATH=$previous}
 }
-'PASS: scoped Stromkar1225/1590 completion invokes native206439 for actual owned128910; native lifecycle/force-equip and guarded TEMP binding checked. Full spell effects, ability bar/save and client scene remain separate.'
+'PASS: scoped Stromkar1225/1590 completion at native stage9 or completed10 invokes206439 for actual owned128910; native lifecycle/force-equip and guarded TEMP binding checked. Full spell effects, ability bar/save and client scene remain separate.'

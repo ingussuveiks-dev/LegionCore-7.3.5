@@ -13,6 +13,16 @@ for dependency in ('?HasSceneStatus@Player@@', '?GetItemByEntry@Player@@', '?Get
     assert native['symbol'](dependency) in native['calls'](handler), f'Missing checked scene/equip consumer {dependency}'
 assert native['symbol'](handler) in native['calls']('?OnTrigger@scene_stromkar_pickup@@'), 'Registered wrapper misses helper'
 decoded = instructions(handler)
-assert any(compare.mnemonic == 'cmp' and len(compare.operands) == 2 and compare.operands[1].type == CS_OP_IMM and compare.operands[1].imm == 9 and branch.mnemonic == 'jne' for compare, branch in zip(decoded, decoded[1:])), 'Missing exact final-stage rejection'
+gates = {}
+for index, (compare, branch) in enumerate(zip(decoded, decoded[1:])):
+    if compare.mnemonic != 'cmp' or len(compare.operands) != 2 or compare.operands[1].type != CS_OP_IMM:
+        continue
+    stage = compare.operands[1].imm
+    if stage in (9, 10) and branch.mnemonic == {9: 'je', 10: 'jne'}[stage]:
+        assert decoded[index-1].mnemonic == 'call' and decoded[index-1].operands[0].imm == native['symbol']('?GetCurrentStep@Scenario@@'), 'Stage comparison is not current scenario state'
+        gates[stage] = (index, branch.operands[0].imm)
+assert gates.keys() == {9, 10}, 'Missing bounded final or completed-stage admission'
+assert gates[9][0] < gates[10][0] and gates[9][1] == decoded[gates[10][0]+2].address, 'Stage9 must skip only the stage10 rejection'
+assert gates[10][1] != gates[9][1], 'Other stages must reject instead of reaching equip'
 assert b'scene_stromkar_pickup' in native['binary']
-print('PASS: canonical1225/1590 completion checks actual status/quest/map/scenario1037/exact9/owned128910, casts206439 and inspects real equipped blade; no inventory grant')
+print('PASS: linked1225/1590 completion checks actual status/quest/map/scenario1037/stage9-or-completed10/owned128910, casts206439 and inspects real equipped blade; no inventory grant')

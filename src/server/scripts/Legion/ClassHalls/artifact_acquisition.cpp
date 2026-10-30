@@ -2068,7 +2068,11 @@ bool Complete(Player* player, SpellScene const* scene, std::string const& trigge
         !ArtifactAcquisition::Active(player, 41105) || !player->GetItemByEntry(128910))
         return true;
     Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
-    if (!scenario || scenario->GetScenarioId() != 1037 || scenario->GetCurrentStep() != 9)
+    // GO247877 and the native scene spell206436 send49110 before playback
+    // finishes. Once Execute also supplies49109 the final tree advances9 to10;
+    // the authenticated current scene must still equip the blade already owned.
+    if (!scenario || scenario->GetScenarioId() != 1037 ||
+        (scenario->GetCurrentStep() != 9 && scenario->GetCurrentStep() != 10))
         return true;
     SpellCastResult result = player->CastSpell(player, 206439, true);
     if (result != SPELL_CAST_OK)
