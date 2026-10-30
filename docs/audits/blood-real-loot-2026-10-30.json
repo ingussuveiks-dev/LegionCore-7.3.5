@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-30",
+  "status": "Maw actual loot link and pickup admission deployed World07 RELEASED; real scene equipment callback and complete Blood/client route remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "247566 type3 chest has128402/100-percent loot but Data1=0, so native GetLootId returns0. Native200152 is9000ms scene1168/package1532 plus root26, personal101478 and48184; examined reachable spells do not create the item. Entire linked package visually equips only the clone. Existing-item200134/205138 force-equip249 does not create an artifact; real completion callback remains separate.",
+  "change": [
+    "Only247566.Data1 becomes247566.42 exact predicates:14 source4 inventory/bank uniqueness+living DK/classmask32, active INCOMPLETE9 ORCOMPLETE28 quest40740, not rewarded, map1489, actual scenario940/9;28 source22 root1 require inventory-only real128402 and permit940/9 or10 after native48184. No new actor/spawn/credit/quest completion/equipment grant.",
+    "Full original/applied template+condition fingerprints and unchanged complete loot/SmartAI fingerprints, explicit SIGNAL plus independently guarded mutations reject partial/custom states even with --force. Original one state-change200152 action and unknown0->LINK1 are unchanged. No original chain edge deleted to suppress diagnostics."
+  ],
+  "sequence": [
+    "Local26972 actual940/8 Fleshripper event48788 ->940/9 Maw48184 ->940/10 return48857. Native101778 death summons103795 and247566, original48788/root7 is not Player-safe for pet/guardian kills and is a separate repair candidate; not certified by this loot fix.",
+    "Native200152 immediate personal101478 satisfies40740 objective then48184 advances the pickup stage. A real item is now required before that original scene action. Package1532 full linked texts reviewed: clone MainHand128402, OffHand0, cinematic local triggers; no active TriggerServerEvent producer or real inventory grant. Scene1168 currently has no event/ScriptName.200134249-only and alternate205138(54072/phase/ability) remain unchanged; wire guarded real scene completion next."
+  ],
+  "validation": [
+    "Matching26972 typed reader loads hotfixes read-only: all three remaining scene auras/durations/effect249/unique items/pairs and complete linked scene text; Blood exact940/8,9,10 and Frost901/6 verified. Fire scenario mapping deliberately remains unproven; no guessed stage predicate added.",
+    "Actual full-schema TEMP fixture/idempotence; only Data1+42 predicates; unchanged loot and complete SmartAI row including unknownLINK1.18 custom/partial refusal cases all preserve full4table state, including --force. Live full4table equality and RELEASED/LF-SHA1 pass.",
+    "MSVC ASan extracts actual native GetLootId, item/class/quest/map/scenario/alive predicates, ElseGroups, real loot/cached-slot recheck and SmartAI condition dispatch. Original0 selector counterfactual vs repaired247566. Two modes loot and owned state root; status/stage matrix, missing/wrong scenario/class/map/quest/instance, death, reward/abandonment, bank-only/lost-item and non-Player/null invoker gates pass. Inventory endpoints are controlled; no actual loot-window/full-bag/client certification.",
+    "Shared ten-pickup native and actual canonical PE hooks pass; retained Monk scene native/ASan/TEMP22 refusals/live pass after shared fixture gains Blood mode. Existing fixture C4244 remains visible; no new production compile was required.",
+    "Fresh EOF/server-count validated20tables/465243 objects:36routes/149pairs/0 automated findings/3 bounded actor links,2 scene-only candidates Frost247386 and Fire247494. Expanded25maps/1947owners/83timed/19 primary LINK review candidates/0 missing lists. Structural counts do not certify actual equipment/whole scenarios."
+  ],
+  "development": "Read-only exploratory queries used nonexistent SpellID/PhaseGroup columns; corrected to actual MiscValue/id,map. A private TEMP hash replay initially inherited READ ONLY and MariaDB rejected CREATE TEMP with1792; small explicit counterfactual now retains that error and ordinary TEMP-only repaired replay passes. A single nested PowerShell path tuple unrolled; corrected unary-comma array. No production crash or DB error was caused. Original failed hash stdout/stderr was reused by corrected replay; original failure snapshots retained and separate labeled1792 reproduction retained, not claimed to be original bytes.",
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_07_blood_real_loot.sql",
+    "lf_sha1": "987A4B040B317792FB0EE81A2110D0D4029353AD",
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "F0BB199C6791157D7FD7ED8002952D3D4BC25BF905FEA45AF93146693B1DC4A5",
+      "bnetserver.exe": "5F8730EE573AD26E5A7C14705E65E1D3C5323A34410760BBADD8C33FF3D8FC47"
+    },
+    "owned_pid": 14376,
+    "result": "Fresh CIM absence before migration/startup. Only own14376 ran, ready/graceful shutdown0/exit0/stderr empty/newDBErrors0/protected hashes unchanged. No executable replacement, user process stop or character/item/quest reset."
+  },
+  "diagnostics": "Every capture/TEMP/native/ASan/shared/updater/live/export run has before/after canonical+own crash hashes/log lengths/timestamps; exits/stdout/stderr inspected. Development failures above explicitly retained/corrected. No new/changed production crash, warning/error/assertion or DBErrors. Active Crashes empty; mixed3915-byte shared101430/103151 unresolvedLINK2 unchanged atUTC2026-10-29T13:29:05.1130661Z. No runtime log cleared.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\blood-loot-validation-fixtures-2026-10-30",
+    "files": 33,
+    "result": "Isolated failed/passing fixtures and retained SQL-client errors copied preserving bytes; source/archive/source SHA256 verified. No active production crash was removed."
+  },
+  "evidence": [
+    ".codex/remaining-pickup-scenes-native-2026-10-30",
+    ".codex/remaining-pickup-scenes-native.tsv",
+    ".codex/blood-loot-original-2026-10-30",
+    ".codex/blood-loot-temp-fixed-array-2026-10-30",
+    ".codex/blood-loot-native-2026-10-30",
+    ".codex/blood-loot-shared-2026-10-30",
+    ".codex/blood-loot-updater-2026-10-30",
+    ".codex/blood-loot-live-2026-10-30",
+    ".codex/blood-loot-full-audit-2026-10-30",
+    ".codex/artifact-post-blood-loot-2026-10-30"
+  ],
+  "remaining": "Native1168 completion->200134 guarded existing equipment; real bag/cast/swap denial/retry and original unknownLINK1;101778 pet-safe death credit/speakers; Frost/Fire real loot/callback/scenario selection; original full Blood intro/combat/return/turnin/group/faction/abandon/reentry/client.19 LINK candidates/sharedLINK2/Stromkar recoil+continuous beams/middle39427/full36 stay OPEN. Client tests user-owned; no reset authorization."
+}

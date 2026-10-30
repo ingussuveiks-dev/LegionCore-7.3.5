@@ -1,0 +1,30 @@
+param()
+$ErrorActionPreference='Stop'
+$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+$out="$repo/build-extractors/runtime-test/remaining-artifact-pickup-catalog"
+& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories @("$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
+ $previous=$env:LEGION_DIALOGUE_CONFIG
+ try {
+  $env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf"
+  & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ArtifactRemainingPickupCatalog.cpp -ProbeName ArtifactRemainingPickupCatalog -OutputFile "$out/native.tsv"
+ } finally {$env:LEGION_DIALOGUE_CONFIG=$previous}
+ $native=Get-Content "$out/native.tsv" -Raw -Encoding UTF8
+ foreach($path in @(@(200152,1168,1532,200134,128402),@(190435,1071,1466,186209,128292),@(196023,1125,1500,196020,128820))){
+  $spell=$path[0];$scene=$path[1];$package=$path[2];$equip=$path[3];$item=$path[4]
+  foreach($line in @("EFFECT`t$spell`t0`t0`t6`t$scene`t0`t1`t0","AURA`t$spell`t0`t430`t0","DURATION`t$spell`t9000","EFFECT`t$equip`t0`t0`t249`t$item`t0`t1`t0","ITEM`t$item`t1`t1`t-1","SCENE_PACKAGE`t$package")){
+   if($native -notmatch ('(?m)^'+[regex]::Escape($line)+'\r?$')){throw "Matching native acquisition row differs: $line"}
+  }
+  $a=$native.IndexOf("SCENE_PACKAGE`t$package");$b=$native.IndexOf('SCENE_PACKAGE', $a+1)
+  $text=if($b -lt 0){$native.Substring($a)}else{$native.Substring($a,$b-$a)}
+  if($text -notmatch "clone:EquipWeapon\(WeaponSlot.MainHand, $item\)"){throw "Actual native visual clone equip differs: $package"}
+  # A local cinematic trigger is not a server inventory grant. Preserve the
+  # whole linked package in the probe output for review, including framework.
+  $active=($text -split "`n"|Where-Object {$_ -notmatch '^\s*--'}) -join "`n"
+  if($active -match 'scene:TriggerServerEvent\s*\('){throw "Native package now has a server callback; review $package"}
+ }
+ foreach($line in @("CRITERION`t940`t8`t92`t48788`t1","CRITERION`t940`t9`t92`t48184`t1","CRITERION`t940`t10`t92`t48857`t1","CRITERION`t901`t6`t92`t49193`t0","CHILD`t128292`t128293`t16","CHILD`t128820`t133959`t16")){
+  if($native -notmatch ('(?m)^'+[regex]::Escape($line)+'\r?$')){throw "Matching scenario/pair row differs: $line"}
+ }
+ if($native -match '(?m)^EFFECT\t\d+\t\d+\t\d+\t(?:24|157)\t'){throw 'Reachable native item creation needs review'}
+ 'PASS matching26972 native scene auras/durations/existing-item249/unique items/paired children and complete linked clone-only packages; Blood940 boss/pickup/return and Frost901 pickup events. This does not certify Fire scenario selection or real scene equip delivery.'
+}

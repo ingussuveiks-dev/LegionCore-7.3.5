@@ -598,5 +598,11 @@
     "checks": "ASan actual scene/packet/guard/conditions,30 invalid/130 matrices/forged-late-reentry-cancel-failed-cast cases;22 TEMP refusals/live4tables; original-LIB build/staged+canonical ctor/vtable/path/ABI PE,Scepter+retained scenes/pickups,own2852 clean graceful0. No task servers;3915 unresolvedDBErrors unchanged.",
     "fresh_audit": "EOF/count exporter fixed c9fd59c07;20tables/465201 records fully valid.36/149/0 findings/3boundedMonk;25maps/1947owners/83timed/19 review edges;3 scene-only pickups247566Blood/247386Frost/247494Fire. Whole36/client and accepted actual equip/render still OPEN.",
     "next": "Continue native review/fix of3 other scene-only pickups and remaining realLINK/visual/middle39427 content; preserve audits and consumed reset permissions."
+  },
+  "blood_real_loot_2026_10_30": {
+    "audit": "docs/audits/blood-real-loot-2026-10-30.json",
+    "status": "World07 RELEASED247566->128402;42 exact940/9 loot/owned9..10 predicates; original200152+unknownLINK1 intact. Native/ASan/TEMP18 refusals/shared actualPE/live pass; own14376 clean closed; no binaries/characters changed.",
+    "fresh_audit": ".codex/artifact-post-blood-loot-2026-10-30:20tables465243 objects;36/149/0 automated findings/3boundedMonk;2scene-only Frost247386/Fire247494;25maps1947owners83timed19LINK reviews.",
+    "next": "Wire guarded real Blood1168/1532 completion->native200134;101778 pet/guardian death credit also OPEN. Then Frost/Fire and all36. Do not equate structural0 with client/full-chain completion."
   }
 }
