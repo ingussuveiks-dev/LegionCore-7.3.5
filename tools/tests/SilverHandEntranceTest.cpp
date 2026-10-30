@@ -160,6 +160,8 @@ struct EntranceAI : CreatureAI
     FunctionProcessor _entryFunctions;
     uint64 _entryGeneration=0;
     bool _entryPending=false;
+    struct FightEpoch {uint64 Generation() const{return 1;}bool Active() const{return true;}} _firstFight;
+    void CompleteFirstFight(uint32) {} // Admission/death/retry is tested in its dedicated native host.
     EventMap events;
     std::vector<uint32> talks;
     std::function<void(uint32)> onTalk;

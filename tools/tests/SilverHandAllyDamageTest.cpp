@@ -115,6 +115,7 @@ struct Companion : CreatureAI
 };
 struct First : Companion
 {
+    void CompleteFirstFight(uint32) {} // Dedicated first-fight regression owns this service.
 #include "FirstDamage.inc"
 #include "FirstHeal.inc"
 #include "FirstLifecycle.inc"

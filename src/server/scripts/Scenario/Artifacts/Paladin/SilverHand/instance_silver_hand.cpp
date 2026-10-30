@@ -6,6 +6,7 @@
 #include "ScriptedCreature.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include "silver_hand_first_fight.h"
 
 
 class instance_silver_hand : public InstanceMapScript
@@ -34,6 +35,11 @@ public:
         }
 
         WorldLocation loc_res_pla;
+
+        void CreatureDies(Creature* creature, Unit* /*killer*/) override
+        {
+            SilverHandFirstFight::DeliverDeath(creature);
+        }
 
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override
         {

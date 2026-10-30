@@ -1118,6 +1118,7 @@ class TC_GAME_API Unit : public WorldObject
         uint32 GetSize() override;
 
         UnitAI* GetAI() { return i_AI; }
+        UnitAI* GetDisabledAI() const { return i_disabledAI; }
         void SetAI(UnitAI* newAI) { i_AI = newAI; }
         void SetDisabledCurrentAI() { i_disabledAI = i_AI; i_AI = nullptr; }
 

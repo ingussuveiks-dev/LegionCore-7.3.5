@@ -24,7 +24,9 @@ $creature=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Ra
 [IO.File]::WriteAllText("$out/DestroyAI.inc",(Block $creature 'bool Creature::AIM_Destroy()'))
 $movement=Block $actor 'void MovementInform('
 $fightPrefix=if($Baseline -or $ArrivalBaseline -or $LifetimeBaseline){'me->AddDelayedEvent(2000,'}else{'_entryFunctions.AddDelayedEvent(2000,'}
-[IO.File]::WriteAllText("$out/EntranceFight.inc",'void ArmFirstFight(){'+(Block $movement $fightPrefix)+');}')
+$fightSource=if(!$Baseline -and !$ArrivalBaseline -and !$LifetimeBaseline){Block $actor 'void SpawnFirstFight('}else{$movement}
+$fightGeneration=if(!$Baseline -and !$ArrivalBaseline -and !$LifetimeBaseline){'uint64 generation = _firstFight.Generation();'}else{''}
+[IO.File]::WriteAllText("$out/EntranceFight.inc",'void ArmFirstFight(){'+$fightGeneration+(Block $fightSource $fightPrefix)+');}')
 if(!$Baseline -and !$ArrivalBaseline -and !$LifetimeBaseline -and $actor.Contains('me->AddDelayedEvent(')){throw 'First Travard still queues a raw-AI timer on Unit'}
 $first=$movement.IndexOf('case 1:');$last=$movement.IndexOf('case 2:',$first)
 if($first -lt 0 -or $last -le $first){throw 'POINT1 arrival dispatch missing'}

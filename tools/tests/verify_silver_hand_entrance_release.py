@@ -168,18 +168,23 @@ assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c8]' for entry in creature[
 assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c0]' for entry in creature[ticks[0]:ticks[1]])
 assert min(sites(creature, '?Update@Unit@@')) > ticks[1]
 motion = instructions('?MovementInform@npc_travar_firstAI@')
-fight_arm, = sites(motion, '?AddDelayedEvent@FunctionProcessor@@')
-assert any(entry.op_str == 'edx, 0x7d0' for entry in motion[fight_arm - 3:fight_arm])
-assert any(entry.op_str == 'rcx, [rdi + 0xf0]' for entry in motion[fight_arm - 10:fight_arm])
-fight_tables = [entry.address + entry.size + entry.operands[1].mem.disp for entry in motion[fight_arm - 10:fight_arm]
+fight_spawn = '?SpawnFirstFight@npc_travar_firstAI@'
+assert sites(motion, fight_spawn)
+fight = instructions(fight_spawn)
+fight_arm, = sites(fight, '?AddDelayedEvent@FunctionProcessor@@')
+assert any(entry.op_str == 'edx, 0x7d0' for entry in fight[fight_arm - 3:fight_arm])
+assert any(entry.op_str == 'rcx, [rbx + 0xf0]' for entry in fight[fight_arm - 10:fight_arm])
+fight_tables = [entry.address + entry.size + entry.operands[1].mem.disp for entry in fight[fight_arm - 10:fight_arm]
                if entry.mnemonic == 'lea' and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP]
 assert len(fight_tables) == 1
 fight_target = struct.unpack_from('<Q', native['binary'], native['offset'](fight_tables[0]) + 0x10)[0]
-assert any(name.startswith('?_Do_call@') and 'MovementInform@npc_travar_firstAI' in name
+assert any(name.startswith('?_Do_call@') and 'SpawnFirstFight@npc_travar_firstAI' in name
            and address == fight_target for name, address in native['symbols'].items())
 decoder = Cs(CS_ARCH_X86, CS_MODE_64)
 decoder.detail = True
-fight_body = list(decoder.disasm(native['binary'][native['offset'](fight_target):native['offset'](fight_target) + 9], fight_target))
-assert [(entry.mnemonic, entry.op_str) for entry in fight_body] == [
-    ('mov', 'rax, qword ptr [rcx + 8]'), ('mov', 'byte ptr [rax + 0x5c], 1'), ('ret', '')]
-print('PASS: selected first LOS at the resolved native slot owns5s queue atAI+0xf0; original full128-bit GUID/64-bit Reset generation snapshot precedes immediate Talk0. Native locked primary/disabled lifecycle0x110 retains companion recovery then services entry; selected destructor drops both queues. Pending-only Reset invalidates stale entry without clearing accepted POINT1 token or replaying route. Closure consumes matching epoch before native original lookup/live1092/0..1/20yd, Talk1/full arrival token/MovePoint/106416. Actual MovementInform also queues original2s marker onAI+0xf0 and selects9-byte closure writing only firstfight+0x5c. Later story/native counters/client traversal remain separate.')
+fight_body = list(decoder.disasm(native['binary'][native['offset'](fight_target):native['offset'](fight_target) + 40], fight_target))
+epoch = next(i for i, entry in enumerate(fight_body) if entry.op_str == 'rax, qword ptr [rdx + 0x190]')
+assert fight_body[epoch + 1].op_str == 'qword ptr [rcx + 0x10], rax' and fight_body[epoch + 2].mnemonic == 'jne'
+ready = next(i for i, entry in enumerate(fight_body) if entry.op_str == 'byte ptr [rdx + 0x5c], 1')
+assert all(entry.operands[0].imm > fight_body[ready].address for entry in fight_body[:ready] if entry.mnemonic in ('je', 'jne'))
+print('PASS: selected first LOS at the resolved native slot owns5s queue atAI+0xf0; original full128-bit GUID/64-bit Reset generation snapshot precedes immediate Talk0. Native locked primary/disabled lifecycle0x110 retains companion recovery then services entry; selected destructor drops both queues. Pending-only Reset invalidates stale entry without clearing accepted POINT1 token or replaying route. Closure consumes matching epoch before native original lookup/live1092/0..1/20yd, Talk1/full arrival token/MovePoint/106416. Actual MovementInform calls the owned-fight spawn helper, which queues the original2s marker onAI+0xf0; its selected closure checks the active fight epoch before writing firstfight+0x5c. Later story/native counters/client traversal remain separate.')

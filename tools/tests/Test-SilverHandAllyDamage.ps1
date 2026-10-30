@@ -21,6 +21,9 @@ foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','
  if(!$Baseline -and !$HealBaseline){
   $actual=(Block $source "class $script : public CreatureScript").Replace("`r",'')
   if($script -eq 'npc_travar_first'){
+   & "$PSScriptRoot/Test-SilverHandFirstFight.ps1" -ScopeOnly
+   $fightPinned=(& git -C $repo show "ee5d4b981:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight scope missing'}
+   $actual=Block $fightPinned "class $script : public CreatureScript"
    $beforeEntrance=Block $entrancePinned "class $script : public CreatureScript"
    $entranceNormalized=$actual
    foreach($method in @('void Reset(','void UpdateLifecycle(','void MoveInLineOfSight(')){$entranceNormalized=$entranceNormalized.Replace((Block $entranceNormalized $method),(Block $beforeEntrance $method))}

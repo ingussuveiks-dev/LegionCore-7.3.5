@@ -13,6 +13,7 @@
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 #include "WaypointManager.h"
+#include "silver_hand_first_fight.h"
 
 
 namespace SilverHandCompanion
@@ -169,6 +170,7 @@ public:
         FunctionProcessor _entryFunctions;
         uint64 _entryGeneration = 0;
         bool _entryPending = false;
+        SilverHandFirstFight::State _firstFight;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -237,18 +239,60 @@ public:
 
         void EnterEvadeMode() override
         {
-            // need to activate it ONLY if creature isn't stunned
-            _functions.AddFunction([this]() -> void
+            // Leaving combat is not evidence that the summoned opponent died.
+            // Keep the existing companion wound policy; lifecycle owns the
+            // observed-death transition rather than a generic evade callback.
+        }
+
+        void JustSummoned(Creature* summon) override
+        {
+            _firstFight.Register(me, summon);
+        }
+
+        void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
+        {
+            _firstFight.ObserveDeath(me, summon);
+        }
+
+        void SetGUID(ObjectGuid const& guid, int32 id) override
+        {
+            if (id == SilverHandFirstFight::DeathReceipt && me->GetMap())
+                _firstFight.ObserveDeath(me, me->GetMap()->GetCreature(guid));
+        }
+
+        void SpawnFirstFight()
+        {
+            Creature* gnorc = me->SummonCreature(106624, 1919.57f, 2334.55f, 75.41f, 0.0f);
+            if (!_firstFight.Spawned(me, gnorc))
+                return;
+            firstfight = false;
+            uint64 generation = _firstFight.Generation();
+            _entryFunctions.AddDelayedEvent(2000, [this, generation]() -> void
             {
-                if (firstfight)
-                {
-                    firstfight = false;
-                    Talk(18);
-                    me->GetMotionMaster()->MovePoint(2, 1962.02f, 2336.25f, 80.52f);
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50850);
-                }
-            }, _functions.CalculateTime(1000));
+                if (_firstFight.Active() && generation == _firstFight.Generation())
+                    firstfight = true;
+            });
+            if (gnorc->IsAlive())
+            {
+                gnorc->CastSpell(gnorc, 208257);
+                AttackStart(gnorc);
+                if (gnorc->IsAIEnabled)
+                    gnorc->AI()->AttackStart(me);
+            }
+        }
+
+        void CompleteFirstFight(uint32 diff)
+        {
+            _firstFight.Update(diff);
+            if (_firstFight.NeedsSpawn(me))
+                SpawnFirstFight();
+            if (Player* player = _firstFight.Complete(me, firstfight))
+            {
+                firstfight = false;
+                Talk(18);
+                me->GetMotionMaster()->MovePoint(2, 1962.02f, 2336.25f, 80.52f);
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50850);
+            }
         }
 
         void HealReceived(Unit*, uint32& addhealth) override
@@ -260,6 +304,7 @@ public:
         void UpdateLifecycle(uint32 diff) override
         {
             SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            CompleteFirstFight(diff);
             _entryFunctions.Update(diff);
         }
 
@@ -313,17 +358,10 @@ public:
                 {
                     if (id == 18)
                     {
+                        if (!_firstFight.Begin(me))
+                            return;
                         Talk(17);
-                        if (Creature* gnorc = me->SummonCreature(106624, 1919.57f, 2334.55f, 75.41f, 0.0f))
-                        {
-                            gnorc->CastSpell(gnorc, 208257);
-                            AttackStart(gnorc);
-                            gnorc->AI()->AttackStart(me);
-                        }
-                        _entryFunctions.AddDelayedEvent(2000, [this]() -> void
-                        {
-                            firstfight = true;
-                        });
+                        SpawnFirstFight();
                     }
                 }
             }

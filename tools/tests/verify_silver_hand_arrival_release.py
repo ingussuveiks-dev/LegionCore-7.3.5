@@ -45,7 +45,11 @@ assert len(sites(region, '?MoveFollow@MotionMaster@@')) == 2
 for identity in ('edx, 0x19f83', 'edx, 0x19f82'):
     assert any(entry.op_str == identity for entry in region)
 factory = instructions('?GetAI@npc_travar_first@@')
-constructor, = sites(factory, '??0ObjectGuid@@QEAA@XZ')
+constructors = sites(factory, '??0ObjectGuid@@QEAA@XZ')
+constructor, = [i for i in constructors if factory[i - 1].op_str == 'rcx, [rsi + 0xe0]']
+assert len(constructors) == 2
+boss, = [i for i in constructors if i != constructor]
+assert [entry.op_str for entry in factory[boss - 2:boss]] == ['rbx, [rsi + 0x180]', 'rcx, rbx']
 assert factory[constructor - 1].op_str == 'rcx, [rsi + 0xe0]'
 delayed = previous['previous']['delayed']
 move, = sites(delayed, '?MovePoint@MotionMaster@@')
