@@ -24,5 +24,16 @@
   },
   "diagnostics": "Before/after canonical and each own runtime crash/log snapshots, actual exits/stdout/stderr and appended errors reviewed for native/build/link/PE/promotion/startup/retained checks. No new/changed crash or appended DBErrors/server warning/error/assertion. Active Crashes empty. Unresolved mixed6090-byte101430/103151LINK2 log SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 retained; no mixed log cleared. Resolved closed diagnostic archive follows the implementation commit.",
   "evidence": ".codex/silver-aberration-baseline2-2026-10-30; native85-final/retained/native catalog/release-build3/staged-link3/staged-final2-pe/canonical-promotion/canonical-startup/canonical-transition/canonical-credit/canonical-scepter/canonical-sparse-reader directories, plus identified failed iterations. No dumps/logs/configuration/credentials/characters/media committed.",
-  "next": "Continue independent actual progression repairs. First-Travard firstfight/EnterEvade50850 still has a separate unowned and2s marker race; do not claim it repaired here. Survival39427/unknownWardstoneLINK4/sharedLINK2/client visuals and all36 traversal remain open. Client testing remains with user; reset3 already consumed."
+  "next": "Continue independent actual progression repairs. First-Travard firstfight/EnterEvade50850 still has a separate unowned and2s marker race; do not claim it repaired here. Survival39427/unknownWardstoneLINK4/sharedLINK2/client visuals and all36 traversal remain open. Client testing remains with user; reset3 already consumed.",
+  "resolved_archive": {
+  "date": "2026-10-30",
+  "fix_commit": "8374b1f77",
+  "retained_verifier_commit": "32bd08223",
+  "archive": "build-extractors/bin/Release/fixed/silver-hand-aberration-2026-10-30",
+  "files": 287,
+  "manifest_sha256": "b6c7a262c74fec0bab394e380ea140d6a6ee7dfd4e176bbb9418abe28d126385",
+  "verification": "Original bytes copied with source/destination/source and final full SHA256 readback. Includes identified failed extraction/compiler/verifier attempts and passing repaired regressions, closed owned32908 stdout/ownership, native/ASAN/build/link/PE/promotion/startup/retained/Scepter/sparse-reader diagnostics. Original evidence retained.",
+  "diagnostics": "Canonical Crashes empty; no active crash existed to remove. Mixed6090-byte DBErrors with unknown101430/103151LINK2 unchanged8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0, including timestamp before/after archive. No active log truncated, unrelated history removed, unknown report classified fixed or credentials/characters/executables/security block archived.",
+  "limits": "This archive closes the aberration killing-blow repair and stale LOS PE test ordinals. Client choreography/full36/unresolvedLINKs/39427 are not fixed by archival. Initial parser-only private-driver failure has tool transcript but no separately saved bytes/pre-snapshot; none claimed archived."
+}
 }

@@ -46,5 +46,6 @@
     "Old pre-hit HealthBelowPct50 check and1s event can be skipped by a scaled one-hit death or another lethal hit before the timer. This unit repairs only the death event recipient; it does NOT certify the later companion deaths, fallen rescue2+2 or full ritual. No guessed lethal clamp, new threshold, timing, mandatory corpse creation or fabricated rescue credit. Review full source/video sequence before that separate repair.",
     "No eligible participant at death intentionally means no50896 and no delayed arbitrary replacement. Automatic replay/recovery after empty-instance death, abandonment/re-entry, accepted-but-interrupted motion, reset generations and later Travard neighborhood50877/50912/50915/DoAction still require separate lifecycle review. Actual NPC attack, group propagation, corpse/ghost phase and party/faction acceptance remain client checks, not fixture labels.",
     "Full chain/outro/real Dalaran return, genuine loot/equip/save/relog, late scene/rejected cast recovery, phase/door/audio/attachment/animation/VFX and all36 artifact chains remain unfinished. Client tests remain with the user. No character data or weapons granted."
-  ]
+  ],
+  "half_health_followup_2026_10_30": "Historical pre-hit/one-hit gap separately repaired8374b1f77; see silver-hand-aberration-transition-2026-10-30.json. Native/ASAN/actual canonical PE pass,client/fullHoly/all36 still OPEN. Original death-policy scope and historical findings retained."
 }
