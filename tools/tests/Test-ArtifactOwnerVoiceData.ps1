@@ -85,6 +85,12 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_24_artifa
    $f[17]='0';$f[22]='7';$f[23]='0';$normalized=$f -join "`t"
    $live=@($live|ForEach-Object {if($_ -ceq $iceborn[0]){$normalized}else{$_}})
   }
+  # World26 anchors the separate negative-near guard condition on its source.
+  # Verify its entire released encounter before locally comparing with24.
+  $guard=@($live|Where-Object {$_ -like "live-conditions`t22`t4`t102244`t0`t0`t29`t1`t102244`t100`t0`t1`t*"})
+  if($guard.Count){if($guard.Count -ne 1){throw 'Ambiguous native Blood guard anchor'};& "$PSScriptRoot/Test-BloodPrisonGuardData.ps1" -VerifyLiveData
+   $f=$guard[0].Split("`t");$f[7]='0';$normalizedGuard=$f -join "`t";$live=@($live|ForEach-Object {if($_ -ceq $guard[0]){$normalizedGuard}else{$_}})
+  }
   foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Live native Artifact owner voice context differs $table"}}
  }
  'PASS full8table artifact owner voice: exactly20 fields/10 TALKs on8 actors; native speaker/player text context,Fire block+geist alternatives,prison/Brew credit+recipients,phases unchanged; twice-idempotent/20 partial-custom refusals/live when requested'

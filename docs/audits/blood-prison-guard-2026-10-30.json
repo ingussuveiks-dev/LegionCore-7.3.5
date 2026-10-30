@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-30",
+  "status": "Blood prison guard-clear spatial anchor repaired; World26 RELEASED; full encounter/client remains OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "102244 Felguard Sentry DEATH row3 sends data5/5 to101539 Baron Sliver only when source22 group4 has no living102244 within100 and actual source scenario940/3. The negative-near condition used ConditionTarget0,the raw killer. Both root and ProcessEvent condition dispatch preserve the actual event object; generic credit/caster owner normalization does not change that condition. A killer displaced from the dying guard can omit a real remaining guard or find an unrelated same-entry neighbour outside the cleared source encounter,causing premature or blocked guide continuation.",
+  "change": "Exactly one field: source22/group4/entry102244/sourceId0/ElseGroup0/type29/entry102244/radius100/negative1 ConditionTarget0->1 (actual source guard). Retain native alive-neighbour predicate,negative flag,radius,ANDed940/3 source condition,all event/repeat/action/recipient/data/credit/path fields. No removed checks,pet owner substituted into conditions,extra progress,global condition/core change or nearest-player fallback. A Player,pet,guardian,NPC or environment final blow now uses the same source-centred population test; native guide and scenario rules still control any later Player/group progress.",
+  "sequence": [
+    "Map1489/zone7737/phase5955 is Blood acquisition,not Marksmanship; native class6 scenario940 and other shared1489 class routes unchanged. Sentry rows1/2/3 retain data2,4,5 toBaron101539/30yd; row2 keeps its independent940/3 gate. Actual static guards include269.99/1783.14/-26.7927 and294.391/1716.91/-47.7207; Baron route10153902 ends271.588/1782.66/-27.3227 and10153903 ends294.93/1718.96/-46.9822. These are native encounter anchors,not a claim that every dynamic escort state has the receiver within30yd.",
+    "Last eligible guard data5 invokes once-only Baron row21/START_WP10153904; waypoint5/group7 and waypoint7/group8 speech remain. TEXT_OVER8 sends data1 toMinerva102561,an allied actor (not a boss). Her original TEXT_OVER0 sends data6 back toBaron,whose once-only row25 awards native48683/PlayerDistance30. Typed940 stage3/tree46753/leaf46754/type92 asset48683 retained; condition repair itself grants no criterion or quest credit.",
+    "Baron later text9 starts10153905; Inquisitior Zalinor102304 death/TALK/LINK5 still requests ordinary85/203481 with raw caster and SELF target. Typed203481=effect28/summon102955/properties64/control0/title0/flags0/destination47 TARGET_DEST_CASTER_FRONT,not a corpse-target destination or pure credit. No unproved caster/location change. Key102955 click203480/cast_flags1/user_type0 and Smart73/source9 delay4000->native48684->data7 toBaron->self die retained.203480 nativeeffect3/explicit25; full native quest/client channel success is not inferred from this data trace.",
+    "All later Minerva interaction,speech,data,spells202024/202025/202595 and native940/5 gate remain. Her later escort routes,full spell acceptance and remote/missing actor recovery are separate reviews;57 protected waypoint rows belong to the captured Baron/Sentry paths and do not certify every later route. Own-voice World24 targets,doors246565/246478/245854 and one48707 script binding unchanged."
+  ],
+  "validation": [
+    "Full13table schema fingerprints/original fixture:110Smart rows,4conditions,40text variants,7templates+WDB,15actor poses,57waypoints,2click rows,3GO templates+8placements,1spell binding,5scenario routes,3phase definitions. Exact one-field delta,twice-idempotent/native EOF receipts/20 custom refusal cases/live full equality+RELEASED LF-SHA1. Protect neighbour/radius/negative/stage/otherMinervaStage,event/data/recipient,guide credit,key summon/click/delay,path,door/spawn/customAI/phase/classroute/custom condition/applied target2.",
+    "MSVC ASan actual Condition::Meets target selection,29 near,44 scenario,negative/script tail,ConditionSourceInfo constructor,ElseGroup AND/OR evaluator,GetClosestCreature helper and actual nearest-alive predicate. Original/repaired condition rows are emitted by actual TEMP SQL fixtures. Original0 premature/blocking counterfactual paired with repaired1 source anchor,dead-self exclusion,exact100 boundary,wrong entry,map,wrong/missing scenario/step,script veto,null invoker/invalid target cases. Actual object geometry and grid enumeration are controlled services; no artificial criterion,quest,item,health or native cast grant. This is condition-layer coverage,not actual pet combat or full Smart death->guide traversal.",
+    "Typed26972+read-only Hotfix probe retains all11 actual940 steps/type92 assets and actual203481/203480/64 semantics. Actual canonical PE retains root/event source22 lookup,ElseGroup->Meets,dynamic source-target array,nearest creature and real scenario lookup. It also rechecks the deployed loading/logout path and existing10 scenario completion/persistence calls. No production C++/EXE change for26.",
+    "Legacy World24 live full-context checker accepts this exact later condition only after independent entire released13table World26 proof; locally normalizes only target1->0 for its historical comparison. Unknown/custom conditions still fail. Prior World25 full10 live caster/voice context and World24 full8 live contexts pass after promotion; no circular test dependency.",
+    "Fresh both-server CIM absence,hash-verified pending26 move,owned canonical31100 ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged and closed. Full live native/ASan/catalog/PE and fresh all36/28map audit pass. No user/unknown server stopped,character/item/quest reset,configuration or EXE changed."
+  ],
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_30_26_blood_prison_guard.sql",
+    "lf_sha1": "9280AC94DA7C02DFC7006C08200C4420FC415A4A",
+    "canonical_hashes": {
+      "worldserver.exe": "15F02B2660FE47CF4B7025C01810345C1980B5D4640DDA28CEAB6624EECE6D4D",
+      "bnetserver.exe": "F58A8FC2872989A9190B56EF45CCA2DF3E1286EAD76A4E80E36AF4F04792AF28"
+    },
+    "owned_pid": 31100
+  },
+  "diagnostics": "All read/capture/hash/TEMP/ASan/native/PE/updater/live/prior/fresh36 checks have pre/post canonical+own crashes/log lengths/timestamps,exits/stdout/stderr reviewed. No new crash/server warning/error/assertion/DBErrors. Active Crashes empty; mixed3915-byte shared101430/103151 missingLINK2 retained. Initial native probe printed uint8 criteria type92 as a character; corrected unsigned projection and repeated typed probe before assertions. Initial standalone capture message copied an incorrect10-table label;13 actual native row receipts/JSON tables were present,metadata/count report corrected and recaptured. Initial extracted one-line include retained CR before WriteAllLines and produced C4335; normalized generated line ending,final ASan build clean. No failed production/test assertion or suppressed runtime error from these report corrections.",
+  "archive": "No new runtime error/crash report was resolved by this SQL-only guard fix; active production logs remain intact. Original exploratory projections and passing evidence remain ignored under .codex. No mixed log or client evidence cleared.",
+  "structural": {
+    "capture": ".codex/artifact-post-blood-guard-2026-10-30",
+    "audit": "docs/audits/artifact-structural-refresh-2026-10-30.json",
+    "counts": "Fresh20tables465568 complete objects,36routes149raceclasspairs/0automatedfindings/3bounded/0scene-only.28maps7439actorrecords/2168contexts97timed23primaryLINK candidates,3unresolved recipients2nested replacements. Inventory is not full-chain/client certification.",
+    "native_items": "After25 matching native catalog reused with verified copy SHA; all SQL/actor context freshly exported after26."
+  },
+  "evidence": [
+    ".codex/blood-prison-owner-context-2026-10-30",
+    ".codex/blood-prison-paths-2026-10-30",
+    ".codex/blood-prison-native-catalog-typed-2026-10-30",
+    ".codex/blood-prison-guard-original-metadata-2026-10-30",
+    ".codex/blood-prison-guard-fingerprints-2026-10-30",
+    ".codex/blood-prison-guard-full-staged-2026-10-30",
+    ".codex/blood-prison-guard-updater-2026-10-30",
+    ".codex/blood-prison-guard-final-live-2026-10-30",
+    ".codex/artifact-post-blood-guard-checks-2026-10-30"
+  ],
+  "next": "Trace actual guide/ranged-death receiver distance and missing/re-entry delivery before proposing recovery.203481/raw-caster destination47 alone is not proof of a broken keystone; inspect real TempSummon ownership/scope/click admission first. Continue SharedLINK2/Stromkar visuals/Survival39427. Document already found26365 Survival sniff plus unregistered BFA14s teleport/timed-blessing shortcuts as references,not a flight implementation.",
+  "remaining": "Full Blood prison client traversal,actual guard/guide distance and dynamic grid/phase/geometry,missing receiver/ranged one-hit escort timing,keystone cast/click/channel acceptance,re-entry/retry/group/factions remain OPEN. No full36 certification. Shared missingLINK2,Stromkar recoil/cracked floor/three beams,Survival39427 and originalGO/fullbags/retry remain unresolved. User new15F02B26 entrance/logout test still pending; no further reset permission."
+}
