@@ -7,21 +7,43 @@ $route=Get-Content -LiteralPath $RouteReport -Raw|ConvertFrom-Json
 if(@($route.routes).Count -ne 36){throw 'Expected a fresh all36 route report'}
 $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}|Select-Object -First 1).Split('"')[1].Split(';')
 $old=$env:MYSQL_PWD
+. "$PSScriptRoot/ArtifactMapScope.ps1"
 function Export-Table([string]$table,[string]$fields,[string]$filter='1'){
  $pairs=($fields.Split(',')|ForEach-Object {"'$_',``$_``"}) -join ','
- $rows=@(& C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe --host=$($c[0]) --port=$($c[1]) --user=$($c[2]) --database=$($c[4]) --default-character-set=utf8mb4 --batch --raw --skip-column-names --execute="SELECT JSON_OBJECT($pairs) FROM ``$table`` WHERE $filter")
- if($LASTEXITCODE){throw "Read-only export failed: $table"}
- [IO.File]::WriteAllLines("$out/$table.jsonl",[string[]]$rows,[Text.UTF8Encoding]::new($false))
- "$table $($rows.Count)"
+ $inputPath="$out/.query-$table.sql";$stdoutPath="$out/.query-$table.stdout";$stderrPath="$out/.query-$table.stderr"
+ [IO.File]::WriteAllText($inputPath,"SET SESSION TRANSACTION READ ONLY;START TRANSACTION WITH CONSISTENT SNAPSHOT;SELECT JSON_OBJECT($pairs) FROM ``$table`` WHERE $filter;SELECT CONCAT('__ARTIFACT_EXPORT_ROWS__',COUNT(*)) FROM ``$table`` WHERE $filter;COMMIT;",[Text.UTF8Encoding]::new($false))
+ $code=& "$PSScriptRoot/../tests/Invoke-NativeSqlFiles.ps1" -Executable C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe -Arguments @("--host=$($c[0])","--port=$($c[1])","--user=$($c[2])","--database=$($c[4])",'--default-character-set=utf8mb4','--batch','--raw','--skip-column-names') -InputFile $inputPath -OutputFile $stdoutPath -ErrorFile $stderrPath
+ if($code -ne 0 -or (Get-Item -LiteralPath $stderrPath).Length){throw "Read-only native actor export failed: $stderrPath"}
+ $count=Publish-ArtifactActorRows $stdoutPath "$out/$table.jsonl"
+ "$table $count"
+}
+function Publish-ArtifactActorRows([string]$stdoutPath,[string]$destinationPath){
+ $count=0;$reported=$null;$trailer=$null
+ $reader=[IO.File]::OpenText($stdoutPath)
+ try{while($null -ne ($line=$reader.ReadLine())){
+  if($null -ne $reported){throw "Native actor bytes after row count: $stdoutPath"}
+  if($line -match '^__ARTIFACT_EXPORT_ROWS__(\d+)$'){$reported=[long]$Matches[1];$trailer=$line;continue}
+  $data=$line|ConvertFrom-Json
+  if($data -isnot [pscustomobject]){throw "Invalid native actor JSON: $stdoutPath"};++$count
+ }}finally{$reader.Dispose()}
+ if($null -eq $reported -or $count -ne $reported){throw "Native actor row count differs: $stdoutPath"}
+ $bytes=[IO.File]::ReadAllBytes($stdoutPath);$eol=if($bytes.Length -ge 2 -and $bytes[-2] -eq 13 -and $bytes[-1] -eq 10){2}elseif($bytes[-1] -eq 10){1}else{throw 'Native actor trailer lacks terminator'}
+ $size=[Text.Encoding]::UTF8.GetByteCount($trailer);$prefix=$bytes.Length-$size-$eol
+ if([Text.Encoding]::UTF8.GetString($bytes,$prefix,$size) -cne $trailer){throw 'Native actor trailer bytes differ'}
+ $file=[IO.File]::Open($destinationPath,[IO.FileMode]::Create,[IO.FileAccess]::Write,[IO.FileShare]::Read)
+ try{$file.Write($bytes,0,$prefix)}finally{$file.Dispose()}
+ return $count
 }
 try{
  $env:MYSQL_PWD=$c[3]
- Export-Table 'scenario_data' 'ScenarioID,MapID,DifficultyID,Team,Class,LfgDungeonID' 'Class>0'
+ Export-Table 'scenario_data' 'ScenarioID,MapID,DifficultyID,Team,Class,LfgDungeonID'
  Export-Table 'instance_template' 'map,parent,script,allowMount,bonusChance'
  $scenarios=@(Get-Content "$out/scenario_data.jsonl"|ForEach-Object {$_|ConvertFrom-Json})
  $instances=@(Get-Content "$out/instance_template.jsonl"|ForEach-Object {$_|ConvertFrom-Json})
  $maps=[Collections.Generic.HashSet[int]]::new()
- foreach($row in $scenarios){[void]$maps.Add([int]$row.MapID)}
+ foreach($row in $scenarios){if([int]$row.Class -gt 0 -and [int]$row.MapID -gt 0){[void]$maps.Add([int]$row.MapID)}}
+ $explicit=Get-ArtifactExplicitScenarioScope $route $scenarios
+ foreach($map in $explicit.Maps){[void]$maps.Add([int]$map)}
  $sources=@()
  foreach($file in @(Get-ChildItem "$repo/src/server/scripts/Scenario/Artifacts" -Recurse -File -Filter '*.cpp')){
   $text=[IO.File]::ReadAllText($file.FullName)
@@ -52,7 +74,7 @@ try{
  Export-Table 'gameobject' 'guid,id,map,PhaseId,phaseMask,spawnMask' "map IN($mapList) OR id IN($objectList)"
  $hashes=@{}
  foreach($file in Get-ChildItem -LiteralPath $out -Filter '*.jsonl'){$hashes[$file.Name]=(Get-FileHash -LiteralPath $file.FullName).Hash}
- $manifest=[ordered]@{Utc=[DateTime]::UtcNow.ToString('o');RouteSHA256=(Get-FileHash -LiteralPath $RouteReport).Hash;Maps=@($maps|Sort-Object);DirectCreatureEntries=@($creatures|Sort-Object);DirectGameObjectEntries=@($objects|Sort-Object);InstanceSources=$sources;Hashes=$hashes;Limits='Static world candidates from class-specific scenario_data plus artifact InstanceMapScript constructors/bindings and direct route actors. Shared maps include unrelated actors. Dynamic summons, phasing, runtime loader difficulty/conditions, C++ callbacks and client traversal require separate review. Read-only SELECT exports; no character data.'}
+ $manifest=[ordered]@{Utc=[DateTime]::UtcNow.ToString('o');RouteSHA256=(Get-FileHash -LiteralPath $RouteReport).Hash;Maps=@($maps|Sort-Object);ExplicitScenarioSources=$explicit.Sources;UnmappedScenarioSources=$explicit.Unmapped;DirectCreatureEntries=@($creatures|Sort-Object);DirectGameObjectEntries=@($objects|Sort-Object);InstanceSources=$sources;Hashes=$hashes;Limits='Static candidates from class-specific scenario_data, route-specific explicit SmartAI204 selectors matched to all scenario_data/native LFG maps, artifact InstanceMapScript bindings and direct route actors. Positive map IDs only; unmatched selectors retained. Shared maps include unrelated actors; listed maps do not prove traversal. Native SQL fully drained/per-query flushed/server-count checked with exact stdout-prefix publication. Dynamic summons, phases/conditions/difficulty/C++ callbacks and client traversal require separate review. Read-only SELECT exports; no character data.'}
  [IO.File]::WriteAllText("$out/scope.json",($manifest|ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
  "Exported static candidate actors on $($maps.Count) maps plus $($creatures.Count) creature/$($objects.Count) object route entries; no live data changed"
 }finally{$env:MYSQL_PWD=$old}

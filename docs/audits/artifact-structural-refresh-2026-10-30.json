@@ -1,16 +1,16 @@
 {
   "date": "2026-10-30",
   "build": "7.3.5.26972",
-  "status": "Current structural review after World30/11; no full chain/client certification",
+  "status": "Current structural review after explicit204 scope repair; World30/11, no full chain/client certification",
   "capture": {
     "world": ".codex/artifact-post-frost-scene-2026-10-30/world",
     "routes": ".codex\\artifact-post-frost-scene-2026-10-30\\routes.json",
     "routes_sha256": "19DC123B55954C146E2FD6F7E1EA276FD402799977CA44DA6B3DB7AFE0878168",
-    "maps": ".codex\\artifact-post-frost-scene-2026-10-30\\map-links.json",
-    "maps_sha256": "7A911275F0552C9B7C0A504F1B997B84FE7083E739150289C27EFBC458F307F3",
+    "maps": ".codex\\artifact-explicit-map-actors-final-2026-10-30\\map-links.json",
+    "maps_sha256": "D22BA078E279E95E9DC31DC0872BF0B39E556765A1F6ED903C2F64C1A5D7A47E",
     "tables": 20,
     "parsed_counted_objects": 465351,
-    "static_actor_scope": "Retained2026-10-29 map-actor snapshot; current fresh world script/template/condition tables. No claim of fresh complete spawn traversal."
+    "static_actor_scope": "Fresh2026-10-30 complete28map/class0 explicit-selector/C++ union plus384directNPC/38GO entries;4tables7439 native count/byte validated objects. Still a static candidate inventory."
   },
   "routes": [
     {
@@ -389,12 +389,14 @@
     }
   ],
   "map_scope": [
+    1480,
     1489,
     1494,
     1495,
     1498,
     1500,
     1511,
+    1522,
     1526,
     1528,
     1533,
@@ -403,6 +405,7 @@
     1541,
     1572,
     1579,
+    1583,
     1599,
     1600,
     1607,
@@ -416,11 +419,11 @@
     1625
   ],
   "owner_context_counts": {
-    "non_smart_or_missing_template": 1289,
-    "native_smart": 525,
-    "cpp_delegation_review": 133
+    "non_smart_or_missing_template": 1415,
+    "native_smart": 607,
+    "cpp_delegation_review": 146
   },
-  "timed_owner_contexts": 83,
+  "timed_owner_contexts": 97,
   "primary_link_review": [
     {
       "kind": "invalid_primary_link",
@@ -466,6 +469,70 @@
       "event": 7,
       "link": 8,
       "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 93949,
+      "owner_script_entry": 93949,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1480
+      ],
+      "entry": 93949,
+      "event": 5,
+      "link": 3,
+      "reason": "invalid_target_event",
+      "target_event_type": 0,
+      "target_action_type": 11
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 99615,
+      "owner_script_entry": 99615,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1480
+      ],
+      "entry": 99615,
+      "event": 21,
+      "link": 22,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 99615,
+      "owner_script_entry": 99615,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1480
+      ],
+      "entry": 99615,
+      "event": 31,
+      "link": 32,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 104832,
+      "owner_script_entry": 104832,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1583
+      ],
+      "entry": 104832,
+      "event": 0,
+      "link": 3,
+      "reason": "invalid_target_event",
+      "target_event_type": 2,
+      "target_action_type": 205
     },
     {
       "kind": "invalid_primary_link",
@@ -733,11 +800,12 @@
     }
   ],
   "limits": [
-    "All36 selection scope plus25 maps is a candidate inventory, not36 complete chains.",
+    "All36 selection scope plus28 maps is a candidate inventory, not36 complete chains.",
     "SmartScript::FindLinkedEvent uses recipient mEvents for source9 too. Ten extracted native cases verify the link evaluator; recipient selection is a static candidate expansion.",
     "Flags/difficulty/source22 conditions/phase/distance and runtime event reachability are not evaluated; flagged rows require native behavioral review before SQL edits.",
     "C++ bindings may override/delegate SmartAI; dormant rows are labeled, not asserted executable.",
     "Direct action12 summon and explicit entry recipient closure are included; DB2 spell summons, C++ summons/SetScript9 and script base overrides/stored runtime targets are not fully traversed.",
     "No missing LINK deleted and no quest/character/live record modified."
-  ]
+  ],
+  "scope_repair_audit": "docs/audits/artifact-explicit-map-scope-2026-10-30.json"
 }

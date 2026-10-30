@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-30",
+  "status": "All36 structural actor scope now includes explicit class0 scenario selectors;28maps/23 primary LINK review candidates, not whole-chain verification",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Export-ArtifactMapActors selected Class>0 scenario_data plus C++ Artifact InstanceMapScript bindings and direct route actors. Explicit SmartAI204 class0 scenarios were not promoted to whole-map scope. Thus direct Frost GO247386 could appear while other1480 actors (Fire99615/Frost93949) were omitted. Maps1522 and1583 had the same coverage gap. Prior25map/19candidate reports were accurately counted for that bounded scope, but incomplete for all selected scenario entry paths.",
+  "change": [
+    "New pure Get-ArtifactExplicitScenarioScope reads actual per-route scenario_entry_actions, joins all scenario_data rows and matching native LFG maps, deduplicates positive map IDs and retains unmatched selectors. Keep class-specific/C++ constructor/direct actor union. No guess from artifact name, blanket entire continent export or changes to runtime scenario selection.",
+    "Actor exporter uses current native SQL helper with per-query flush/fully drained pipes, consistent read-only transaction and exact server-count trailer for all4tables. Parse every JSON row/count before publishing its exact native stdout prefix; retain raw stdout/stderr and reject missing/truncated/post-marker/unterminated data without overwriting prior publication. Dynamic audit limit text now uses the actual map count instead of hardcoded25."
+  ],
+  "fire_entry_evidence": "99415 accepting11997 runs native TALK0/2000ms and validLINK2 ->204/957 before TEXT_OVER0/99415 ->TALK1/6000ms and summon99418. Both scenario901 and957 map1480/class0 rows already exist. Actual Scenario constructor consumes explicit player selector before fallback. Native957:0=47022,1=47027x4,2=47464x3,3=47380 boss,4=47042 final pickup. No missing Fire scenario mapping established; no runtime selector/map row modified.",
+  "validation": [
+    "Portable standalone test executes actual scope function on class0/direct selector, native-only fallback, duplicate maps, zero map exclusion and unmatched selector preservation. Class-only counterfactual misses the relevant maps. Actual publisher definition extracted from production file accepts complete2 and rejects five incomplete inputs while retaining original bytes/prior output and releasing reader handles.",
+    "Real current all36 report -> full4table read-only native export7439 objects (327 scenario_data,210 instance_template,5183 creature,1719 gameobject), all JSON parse, actual server counts and exact native prefix SHA256 match/empty stderr. Exact input route SHA256 checked. Fresh scope28 contains all old25 plus1480/1522/1583; no unresolved current explicit selector mappings.",
+    "Fresh owner audit2168 contexts (1415 nonSmart/missing,607 nativeSmart,146 CPPdelegation),97 timed contexts/0 missing lists,23 primaryLINK review candidates. Compare pinned old/new: all19 prior finding keys retained, exactly four new candidates below. Runtime flags/phases/reachability still unproven; no edge converted/deleted."
+  ],
+  "new_review_candidates": [
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 93949,
+      "owner_script_entry": 93949,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1480
+      ],
+      "entry": 93949,
+      "event": 5,
+      "link": 3,
+      "reason": "invalid_target_event",
+      "target_event_type": 0,
+      "target_action_type": 11
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 99615,
+      "owner_script_entry": 99615,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1480
+      ],
+      "entry": 99615,
+      "event": 21,
+      "link": 22,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 99615,
+      "owner_script_entry": 99615,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1480
+      ],
+      "entry": 99615,
+      "event": 31,
+      "link": 32,
+      "reason": "missing_target"
+    },
+    {
+      "kind": "invalid_primary_link",
+      "owner_source": 0,
+      "owner_entry": 104832,
+      "owner_script_entry": 104832,
+      "timed_list": null,
+      "execution": "native_smart",
+      "maps": [
+        1583
+      ],
+      "entry": 104832,
+      "event": 0,
+      "link": 3,
+      "reason": "invalid_target_event",
+      "target_event_type": 2,
+      "target_action_type": 205
+    }
+  ],
+  "development": "New actor publisher initially used File.ReadLines enumeration; deliberate post-marker invalid-input throw retained an open reader until process cleanup and blocked immediate reuse of the input path. Actual publisher now explicitly disposes StreamReader in finally on all rejection paths. Failed input/prior publication/original function and failed/passing diagnostic snapshots retained. No production crash or DB error.",
+  "diagnostics": "All captures/scope/publication/full-record regressions have canonical+own crash hashes/log lengths/timestamps before/after. Deliberate invalid inputs are identified counterfactuals; one new development reader-lock failure corrected above. No new/changed production crash, server warning/error/assertion or DBErrors. Active Crashes empty, mixed3915-byte sharedLINK2 untouched. No game server started/stopped, executable/data/character/quest change in this read-only audit fix; canonical20A9F355/CA1A9A19 unchanged.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\artifact-actor-publisher-reader-2026-10-30",
+    "files": 15,
+    "result": "Original rejected input/function/prior publication and failed/passing diagnostics byte-preserved with source/destination/source SHA256 verification. No active production report removed."
+  },
+  "evidence": [
+    ".codex/fire-explicit-scenario-data-2026-10-30",
+    ".codex/fire-native-scenario-2026-10-30",
+    ".codex/fire-travel-and-terminal-context-2026-10-30",
+    ".codex/artifact-explicit-map-final-capture-2026-10-30",
+    ".codex/artifact-explicit-scope-portable-2026-10-30",
+    ".codex/artifact-explicit-scope-captured-2026-10-30",
+    ".codex/artifact-explicit-map-actors-final-2026-10-30"
+  ],
+  "remaining": "Next Fire actual loot247494/128820 at957/4 and native196023/1125/1500->196020 completion, actual entry/travel/terminal full chain. Four newly visible LINK candidates93949/5->3,99615/21->22,99615/31->32,104832/0->3 require native behavioral review. Existing19/sharedLINK2, acquired-item replay/reentry, Data26/100813 coexistence, Stromkar visuals/middle39427/all36/client remain OPEN; no reset permission."
+}

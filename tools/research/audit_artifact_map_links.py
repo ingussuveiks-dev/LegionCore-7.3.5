@@ -142,7 +142,7 @@ def main():
                   timed_owner_contexts=sum(t is not None for _,t in seen),
                   contexts=serial,review_findings=findings,
                   unresolved_recipients=unresolved,nested_timed_replacement_review=nested,hashes=hashes,
-                  limits=['All36 selection scope plus25 maps is a candidate inventory, not36 complete chains.',
+                  limits=[f'All36 selection scope plus{len(scope["Maps"])} maps is a candidate inventory, not36 complete chains.',
                           'SmartScript::FindLinkedEvent uses recipient mEvents for source9 too. Ten extracted native cases verify the link evaluator; recipient selection is a static candidate expansion.',
                           'Flags/difficulty/source22 conditions/phase/distance and runtime event reachability are not evaluated; flagged rows require native behavioral review before SQL edits.',
                           'C++ bindings may override/delegate SmartAI; dormant rows are labeled, not asserted executable.',

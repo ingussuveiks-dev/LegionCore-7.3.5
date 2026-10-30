@@ -96,7 +96,7 @@ int main(int argc, char** argv)
         if (child->ItemID == 128402 || child->ItemID == 128292 || child->ItemID == 128820)
             std::cout << "CHILD\t" << child->ItemID << '\t' << child->ChildItemID << '\t' << unsigned(child->ChildItemEquipSlot) << '\n';
     for (auto step : steps)
-        if (step->ScenarioID == 901 || step->ScenarioID == 940 || step->ScenarioID == 750)
+        if (step->ScenarioID == 901 || step->ScenarioID == 940 || step->ScenarioID == 957)
         {
             std::cout << "STEP\t" << step->ScenarioID << '\t' << unsigned(step->OrderIndex) << '\t' << step->Title->Str[0] << '\n';
             std::set<uint32> pending{uint32(step->Criteriatreeid)}, seen;
