@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-30",
+  "fix_commit": "0613361f7",
+  "retained_verifier_fix_commit": "50a119c7e",
+  "archive": "build-extractors/bin/Release/fixed/talonclaw-boarded-departure-2026-10-30",
+  "manifest_sha256": "caed695e5226f3358c22c19b1cee7993aeef745bdfa3a0adab4e741070f42b84",
+  "files": 571,
+  "verification": "Closed implementation/build/native/SQL/PE/startup diagnostics preserved byte-for-byte and source/destination/source SHA256 verified after canonical regression. Includes failed development iterations paired with passing repaired cases. Source files remain available.",
+  "active_state": "Crashes empty; no crash report was removed. Mixed unresolved DBErrors6090 bytes SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged. Canonical logs, research/full36 findings and character data were neither moved nor truncated. No server running.",
+  "limits": "Archive closes the tested departure fix and retained verifier repairs only.39427,unknown LINK payloads,other all36 findings and actual client travel/visual/group/camera/pet checks remain open."
+}
