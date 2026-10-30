@@ -1101,7 +1101,7 @@ uint32 DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
     LOAD_DB2(sCurveStore);
     LOAD_DB2(sCurvePointStore);
     //LOAD_DB2(sDeathThudLookupsStore);
-    //LOAD_DB2(sDecalPropertiesStore);
+    LOAD_DB2(sDecalPropertiesStore);
     //LOAD_DB2(sDeclinedWordStore);
     //LOAD_DB2(sDeclinedWordCasesStore);
     LOAD_DB2(sDestructibleModelDataStore);
@@ -1501,7 +1501,7 @@ uint32 DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
     //LOAD_DB2(sTerrainMaterialStore);
     //LOAD_DB2(sTerrainTypeStore);
     //LOAD_DB2(sTerrainTypeSoundsStore);
-    //LOAD_DB2(sTextureBlendSetStore);
+    LOAD_DB2(sTextureBlendSetStore);
     //LOAD_DB2(sTextureFileDataStore);
     LOAD_DB2(sTotemCategoryStore);
     LOAD_DB2(sToyStore);

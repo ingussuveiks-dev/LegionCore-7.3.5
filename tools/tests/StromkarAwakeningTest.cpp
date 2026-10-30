@@ -66,6 +66,13 @@ struct SpellScript{Unit*caster=nullptr,*target=nullptr,*original=nullptr;WorldLo
 #define PrepareSpellScript(...) public:
 #define SpellCheckCastFn(...) 0
 #define SpellEffectFn(...) 0
+// Projection has its own production-header fixture. This retained fixture
+// exercises the complete awakening/recoil controller with a controlled sink.
+namespace StromkarGroundCracks {
+struct State { ObjectGuid area; };
+void Clear(Creature*, State& state) { state.area.Clear(); }
+void Update(Creature*, uint32, uint32, State&) { }
+}
 #ifdef STROMKAR_FACING_BASELINE
 #include "FacingBaseline.h"
 #else

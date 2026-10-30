@@ -2224,6 +2224,7 @@ struct npc_stromkar_thoradin : SmartAI
 #include "lights_wrath_takeover.h"
 #include "lights_wrath_pickup.h"
 
+#include "stromkar_ground_cracks.h"
 #include "stromkar_awakening.h"
 #include "stromkar_ritual_beam.h"
 #include "stromkar_ritual_torture.h"
@@ -2258,6 +2259,7 @@ void AddSC_artifact_acquisition()
     RegisterCreatureAI(npc_xalatath_farthing);
     RegisterCreatureAI(npc_stromkar_zakajz);
     RegisterCreatureAI(npc_stromkar_awakening);
+    RegisterAreaTriggerAI(at_stromkar_ground_cracks);
     RegisterSpellScript(spell_stromkar_opening_recoil);
     RegisterSpellScript(spell_stromkar_ritual_beam);
     RegisterAuraScript(spell_stromkar_ritual_channel);

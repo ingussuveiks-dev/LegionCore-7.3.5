@@ -28,6 +28,7 @@ struct npc_stromkar_awakening : SmartAI
     struct Participant { ObjectGuid guid; bool stunned = false, hit = false, recoilRetried = false; };
     std::vector<Participant> participants;
     ObjectGuid bossGuid;
+    StromkarGroundCracks::State groundCracks;
     uint32 spawnDelay = 0, retry = 0, creditRetry = 0, attemptTime = 0, sourceVisualRetry = 0, groundPulse = 0;
     bool burst = false, hidden = false, warned = false;
     bool sourcePoseRemoved = false, sourceWarned = false;
@@ -83,6 +84,7 @@ struct npc_stromkar_awakening : SmartAI
         if (groundPulse)
             me->CancelSpellVisualKit(64833);
         groundPulse = 0;
+        StromkarGroundCracks::Clear(me, groundCracks);
         ClearSourceChannel();
         RestoreSourcePose();
         if (Creature* boss = Boss())
@@ -139,6 +141,7 @@ struct npc_stromkar_awakening : SmartAI
                 // independently of the subsequent7s stun/rebirth channel.
                 me->SendPlaySpellVisualKit(64833, 0, 2000);
                 groundPulse = 2000;
+                StromkarGroundCracks::Update(me, 0, groundPulse, groundCracks);
                 me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
             }
         }
@@ -160,11 +163,15 @@ struct npc_stromkar_awakening : SmartAI
         if (groundPulse)
         {
             if (groundPulse > diff)
+            {
                 groundPulse -= diff;
+                StromkarGroundCracks::Update(me, diff, groundPulse, groundCracks);
+            }
             else
             {
                 me->CancelSpellVisualKit(64833);
                 groundPulse = 0;
+                StromkarGroundCracks::Clear(me, groundCracks);
             }
         }
         if (!burst)

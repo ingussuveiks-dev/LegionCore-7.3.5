@@ -11,6 +11,8 @@
 #include <vector>
 #include <algorithm>
 #include <cctype>
+#include <map>
+#include <array>
 #pragma pack(push,1)
 struct EventRow { SpellVisualEventEntry value; int32 visual; };
 struct EffectRow { SpellVisualKitEffectEntry value; int32 kit; };
@@ -124,7 +126,19 @@ int main(int argc,char**argv)
     DB2Storage<DecalPropertiesEntry> decals("DecalProperties.db2",DecalPropertiesLoadInfo::Instance());
     if(!decals.Load(argv[1],0))return 30;
     decals.LoadFromDB();
+    for(uint32 id:{1u,2u,3u,11u,13u,17u,24u})if(auto d=decals.LookupEntry(id))std::cout<<"PROJECTOR_TEMPLATE\t"<<d->ID<<'\t'<<d->FileDataID<<'\t'<<d->InnerRadius<<'\t'<<d->OuterRadius<<'\t'<<d->Rim<<'\t'<<d->Gain<<'\t'<<d->ModX<<'\t'<<d->Scale<<'\t'<<d->FadeIn<<'\t'<<d->FadeOut<<'\t'<<unsigned(d->Priority)<<'\t'<<unsigned(d->BlendMode)<<'\t'<<d->TopTextureBlendSetID<<'\t'<<d->BotTextureBlendSetID<<'\t'<<d->GameFlags<<'\t'<<d->Flags<<'\t'<<d->CasterDecalPropertiesID<<'\n';
+    DB2Storage<TextureBlendSetEntry> textureBlends("TextureBlendSet.db2",TextureBlendSetLoadInfo::Instance());
+    if(sizeof(TextureBlendSetEntry)!=TextureBlendSetMeta::Instance()->GetRecordSize()||!textureBlends.Load(argv[1],0))return 36;textureBlends.LoadFromDB();
+    std::cout<<"PROJECTOR_STORES\t"<<decals.GetTableHash()<<'\t'<<sizeof(DecalPropertiesEntry)<<'\t'<<decals.GetNumRows()<<'\t'<<textureBlends.GetTableHash()<<'\t'<<sizeof(TextureBlendSetEntry)<<'\t'<<textureBlends.GetNumRows()<<'\n';
+    for(uint32 id:{21u,25u,29u,30u,33u,34u})if(auto t=textureBlends.LookupEntry(id)){std::cout<<"PROJECTOR_BLEND\t"<<t->ID;for(auto v:t->TextureFileDataID)std::cout<<'\t'<<v;for(auto v:t->TextureScrollRateU)std::cout<<'\t'<<v;for(auto v:t->TextureScrollRateV)std::cout<<'\t'<<v;for(auto v:t->TextureScaleU)std::cout<<'\t'<<v;for(auto v:t->TextureScaleV)std::cout<<'\t'<<v;for(auto v:t->ModX)std::cout<<'\t'<<v;std::cout<<'\t'<<unsigned(t->SwizzleRed)<<'\t'<<unsigned(t->SwizzleGreen)<<'\t'<<unsigned(t->SwizzleBlue)<<'\t'<<unsigned(t->SwizzleAlpha)<<'\n';}
+    for(auto t:textureBlends)for(int32 texture:t->TextureFileDataID)if(texture==797803||texture==797909){std::cout<<"SHADOW_PROJECTED_BLEND\t"<<t->ID<<'\t'<<texture<<'\n';for(auto d:decals)if(d->TopTextureBlendSetID==t->ID||d->BotTextureBlendSetID==t->ID)std::cout<<"SHADOW_PROJECTOR\t"<<d->ID<<'\t'<<d->TopTextureBlendSetID<<'\t'<<d->BotTextureBlendSetID<<'\n';}
     for(int type:{1,13}){uint32 total=0,beamMatches=0,decalMatches=0;for(auto k:kitEffects)if(k->value.EffectType==type){++total;beamMatches+=bool(beams.LookupEntry(k->value.Effect));decalMatches+=bool(decals.LookupEntry(k->value.Effect));}std::cout<<"EFFECT_TYPE_COVERAGE\t"<<type<<'\t'<<total<<'\t'<<beamMatches<<'\t'<<decalMatches<<'\n';}
+    std::map<int,std::array<uint32,3>> decalTypes;
+    for(auto k:kitEffects){auto&count=decalTypes[k->value.EffectType];++count[0];count[1]+=bool(decals.LookupEntry(k->value.Effect));}
+    for(auto const&row:decalTypes)std::cout<<"DECAL_EFFECT_COVERAGE\t"<<row.first<<'\t'<<row.second[0]<<'\t'<<row.second[1]<<'\n';
+    decalTypes.clear();
+    for(auto n:names){auto&count=decalTypes[n->type];++count[0];count[1]+=n->generic&&bool(decals.LookupEntry(n->generic));if(n->generic&&decals.LookupEntry(n->generic)&&count[2]++<6)std::cout<<"DECAL_NAME_CANDIDATE\t"<<n->id<<'\t'<<unsigned(n->type)<<'\t'<<n->generic<<'\t'<<n->texture<<'\t'<<n->model<<'\n';}
+    for(auto const&row:decalTypes)std::cout<<"DECAL_NAME_COVERAGE\t"<<row.first<<'\t'<<row.second[0]<<'\t'<<row.second[1]<<'\n';
     for(auto k:kitEffects)if(kits.count(k->kit)&&k->value.EffectType==1)if(auto b=beams.LookupEntry(k->value.Effect))if(auto n=names.LookupEntry(b->beam))std::cout<<"BEAM_NAME\t"<<k->kit<<'\t'<<b->id<<'\t'<<n->id<<'\t'<<n->type<<'\t'<<n->model<<'\t'<<n->texture<<'\t'<<n->generic<<'\n';
     for(auto d:decals)if(d->FileDataID==797803||d->FileDataID==797909)
         std::cout<<"SHADOW_CRACK_DECAL\t"<<d->ID<<'\t'<<d->FileDataID<<'\t'<<d->InnerRadius<<'\t'<<d->OuterRadius<<'\t'<<d->Rim<<'\t'<<d->Gain<<'\t'<<d->ModX<<'\t'<<d->Scale<<'\t'<<d->FadeIn<<'\t'<<d->FadeOut<<'\t'<<unsigned(d->Priority)<<'\t'<<unsigned(d->BlendMode)<<'\t'<<d->TopTextureBlendSetID<<'\t'<<d->BotTextureBlendSetID<<'\t'<<d->GameFlags<<'\t'<<d->Flags<<'\t'<<d->CasterDecalPropertiesID<<'\n';

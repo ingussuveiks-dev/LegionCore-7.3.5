@@ -25,6 +25,9 @@
 
 #include <boost/regex_fwd.hpp>
 
+TC_GAME_API extern DB2Storage<DecalPropertiesEntry> sDecalPropertiesStore;
+TC_GAME_API extern DB2Storage<TextureBlendSetEntry> sTextureBlendSetStore;
+
 TC_GAME_API extern DB2Storage<AchievementEntry>                         sAchievementStore;
 TC_GAME_API extern DB2Storage<AdventureMapPOIEntry>                     sAdventureMapPOIStore;
 TC_GAME_API extern DB2Storage<AdventureJournalEntry>                    sAdventureJournalStore;
