@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-31",
+  "fix_commit": "d23e416d6",
+  "archive": "build-extractors/bin/Release/fixed/silver-hand-procession-recovery-2026-10-31",
+  "files": 199,
+  "manifest_sha256": "483f36e13aad2616fb2f1710b2dfe30d65ef7c2ca9bb503839be1df144989545",
+  "verification": "Closed expected-broken3/repaired42+28/native/EOF World/original Release+staged final links/selected canonical+full retained PE/promotion/owned21172 startup diagnostics copied source/destination/source and final SHA256 verified. Failed readonly schema/PE inspection assumptions paired with passing repaired checks. Original bytes retained.",
+  "diagnostics": "No new/changed crash or appended server warnings/errors/assertions/DBErrors. Active Crashes empty/no report removed. Mixed6090-byte sharedLINK2 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 and timestamp unchanged; no active log truncated or unrelated file removed.",
+  "limits": "Only this closed recovery issue diagnostics; unresolved Glow, unknown shared LINK2 and Wardstone LINK4 evidence remains outside this prefix and is not classified fixed. Security quarantine untouched. No credentials/character data/binaries committed or whole client/all36 certification."
+}

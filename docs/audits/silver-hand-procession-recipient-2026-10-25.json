@@ -51,5 +51,6 @@
     "An invalid/missing original at actual endpoint consumes the attempt without progress or reopening gossip. There is no new recovery for absent completion, interrupted/stuck accepted path, original returning after rejected endpoint, Reset/evade or cold re-entry; automatically replaying the entire route from its endpoint is not invented as a fix. Rapid same-instance abandon/reaccept before any observed rejection still needs quest-generation/re-entry review. This fixes recipient ownership/once-only admission, not every path recovery branch.",
     "Other first waypoint/evade50766/50850/50872 and third LOS/1s delayed path plus50877/50912/50915 recipients remain OPEN. Initial flags/phase presentation, door aura/model effects, actual route movement, party sharing and both factions need client/source follow-up.",
     "Companion heal/reset/failed210985 and ritual/pet/guardian combat, genuine loot/equip/save/relog, late1267/equip recovery, completed-instance outro/portal/actual Dalaran arrival and full36 acquisition/VFX/audio/camera/pet traversal remain unfinished. Monday client tests remain with user."
-  ]
+  ],
+  "followup_2026_10_31": "Historical clear-before-validation/no replay policy superseded by d23e416d6. Retain original identity and real endpoint until native5; see silver-hand-procession-recovery-2026-10-31.json. Old baseline/source/installed evidence remains historical, not proof of current receipt recovery or client motion."
 }
