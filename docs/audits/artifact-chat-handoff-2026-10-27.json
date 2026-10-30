@@ -786,5 +786,9 @@
   "stromkar_full_retest_2_2026_10_30": {
     "audit": "docs/audits/stromkar-full-retest-2-2026-10-30.json",
     "status": "NEW user-requested one-use reset completed offline: one128910 removed, five41105 counters0, native1539 entrance AND version1 scenario1037/instance0/boot0 checkpoint set together;15 backups/full-field/native count verification and actual ScenarioResume/PE pass. Canonical0D526201 unchanged, servers absent. No remaining reset authorization. Client traversal user-owned."
+  },
+  "guardian_wave_source_anchor_2026_10_30": {
+    "audit": "docs/audits/guardian-wave-source-anchor-2026-10-30.json",
+    "status": "World27 RELEASED:23 last-living near-condition targets now actual dying actor1;9 real-Unit invoker guards retain null-killer refusal. Full4table/TEMP21/ASAN54 paired counterfactuals+1644 repaired wave runs/native26972/sharedloot/live/original22 regression and owned20704 clean startup pass; EXEs0D526201/AF145BD6 unchanged. Fresh36/149/0 automated findings,3 boundedMonk review edges; client/full36 OPEN."
   }
 }

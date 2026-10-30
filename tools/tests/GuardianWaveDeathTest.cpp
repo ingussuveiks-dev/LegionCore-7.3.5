@@ -18,7 +18,7 @@ using uint32=uint32_t;
 #include "Constants.inc"
 using TempSummonType=uint32;using CriteriaTypes=uint32;using SpellCastResult=uint32;
 constexpr uint32 SPELL_CAST_OK=0,SPELL_FAILED_BAD_TARGETS=1,SPELL_FAILED_SPELL_IN_PROGRESS=2;
-constexpr uint32 CONDITION_NEAR_CREATURE=29,CONDITION_SCENARION_STEP=44;
+constexpr uint32 CONDITION_NEAR_CREATURE=29,CONDITION_TYPE_MASK=32,CONDITION_SCENARION_STEP=44;
 struct Scenario {uint32 id=990,step=2;uint32 GetScenarioId()const{return id;}uint32 GetCurrentStep()const{return step;}} scenario;
 struct Map {bool instance=true;uint32 id=1;Map* ToInstanceMap(){return instance?this:nullptr;}uint32 GetInstanceId()const{return id;}} origin,other;
 using InstanceMap=Map;
@@ -32,6 +32,7 @@ struct Unit {
  void GetPosition(float& a,float& b){a=x;b=0;}float GetPositionZ(){return 0;}
  Unit* ToPlayer(){return player?this:nullptr;}Unit* ToUnit(){return this;}Unit* GetCharmerOrOwnerPlayerOrPlayerItself(){return player?this:owner&&owner->player?owner:nullptr;}
  Unit* GetGUID(){return this;}bool IsUnit()const{return true;}bool IsAlive()const{return alive;}bool isDead(bool)const{return !alive;}bool IsQuestObjectExpired()const{return expired;}bool isInCombat()const{return false;}
+ bool isType(uint32 mask)const{return (mask & (player?0x19u:0x9u))!=0;}
  bool InInstance()const{return map->instance;}Map* GetMap(){return map;}uint32 GetEntry()const{return entry;}
  bool IsWithinDistInMap(Unit const* u,float range)const{return u&&world&&u->world&&u->map==map&&u->phase==phase&&GetDistance(u)<=range;}
  float GetDistance(Unit const* u)const{return std::fabs(x-u->x);}FakeAI* AI(){return &ai;}
@@ -61,6 +62,7 @@ struct Rule {
  bool isLoaded()const{return ConditionType>0;}
  bool Meets(ConditionSourceInfo& info)const{Unit* object=info.targets[targetIndex];if(!object)return false;bool condMeets=false;switch(ConditionType){
 #include "NearCondition.inc"
+#include "TypeMaskCondition.inc"
 #include "ScenarioCondition.inc"
  default:assert(false);
  }
@@ -173,4 +175,5 @@ int main(int argc,char** argv){
  Reset(4);conditionMgr.rules=fixedRules;failCast=true;a.alive=true;arena={&p,&a};auto naive=Script(old,a);for(auto& e:naive.mEvents)if(e.event_id==1||e.event_id==2)e.type=SMART_EVENT_LINK;Kill(&a,&p,naive);assert(!criterionCalls&&naive.retries==1);
  Reset(3);conditionMgr.rules=fixedRules;a.entry=101388;a.alive=true;a.m_IsInKillingProcess=true;arena={&p,&a};auto reentrant=Script(fixed,a);Kill(&a,&p,reentrant);assert(a.alive&&!criterionCalls);Kill(nullptr,&p,reentrant);assert(!criterionCalls);
  std::printf("PASS native Guardian DEATH/LINK/condition29+44/nearest predicates/CAST/criteria owner dispatch: %u complete distinct-species wave kill orders x player/pet/guardian/cast-result/stage timing; original premature-credit counterfactual; exactly once, invalid actors/recipients/range/map/phase, helper links and failed cast independence. Arena/summon/data/scenario endpoints controlled; actual client traversal remains separate.\n",runs);
+ return 0;
 }

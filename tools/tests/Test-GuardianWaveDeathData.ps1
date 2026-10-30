@@ -71,7 +71,23 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_29_22_guardi
  if($VerifyLiveData){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($migration.Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
   $live=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_29_22_guardian_wave_death_dispatch.sql' AND hash='$hash' AND state='RELEASED';"
   if($live -notcontains '1'){throw 'Live Guardian wave migration/hash differs'}
-  $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Guardian regression $table"}}
+  $anchorFile="$repo/sql/updates/world/2026_10_30_27_guardian_wave_source_anchor.sql"
+  $normalize=''
+  if(Test-Path $anchorFile){
+   $anchorBytes=[Text.Encoding]::UTF8.GetBytes((Get-Content $anchorFile -Raw).Replace("`r`n","`n"));$anchorSha=[Security.Cryptography.SHA1]::Create()
+   try{$anchorHash=([BitConverter]::ToString($anchorSha.ComputeHash($anchorBytes))).Replace('-','')}finally{$anchorSha.Dispose()}
+   $anchorApplied=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_27_guardian_wave_source_anchor.sql' AND hash='$anchorHash' AND state='RELEASED';"
+   if($anchorApplied -contains '1'){
+    # Validate the complete successor state before reconstructing this older
+    # regression's exact released baseline, in session-local TEMP tables only.
+    & "$PSScriptRoot/Test-GuardianWaveSourceAnchorData.ps1" -VerifyLiveData
+    if(!$?){throw 'Successor Guardian anchor data differs'}
+    $normalize=$setup
+    foreach($table in $filters.Keys){$normalize+="INSERT INTO $table SELECT * FROM saved_$table;"}
+    $normalize+="UPDATE conditions SET ConditionTarget=0 WHERE ConditionTypeOrReference=29 AND ConditionTarget=1 AND SourceEntry IN(101384,101388,101389);DELETE FROM conditions WHERE ConditionTypeOrReference=32 AND ConditionTarget=0 AND ConditionValue1=24 AND Comment='Guardian wave: retain real Unit death invoker admission';"
+   }
+  }
+  $fullLive=Query ($normalize+(Snapshot 'live'));foreach($table in $filters.Keys){if((Signature $fullLive "live-$table") -cne (Signature $rows "first-$table")){throw "Live differs from Guardian regression $table"}}
  }
  'PASS full-schema TEMP Guardian wave death replay/idempotence: five malformed calls and four missing own-species guards only; independent DEATH roots/descending criteria/last-living and990 stage guards, all waves/spells/helpers/finale/unknown sludge link retained; twenty-one custom/partial-state refusals'
 }

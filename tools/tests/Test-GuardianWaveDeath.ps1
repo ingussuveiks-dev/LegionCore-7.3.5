@@ -21,7 +21,7 @@ $out="$repo/build-extractors/runtime-test/guardian-wave-death"
  $summon=Section $s '        case SMART_ACTION_SUMMON_CREATURE:' '        case SMART_ACTION_SUMMON_GO:'
  [IO.File]::WriteAllText("$out/PositionSummon.inc",(Section $summon '            if (e.GetTargetType() == SMART_TARGET_POSITION)' '            break;'))
  $cs=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.cpp" -Raw
- $predicates=[ordered]@{'NearCondition'=@('        case CONDITION_NEAR_CREATURE:','        case CONDITION_NEAR_GAMEOBJECT:');'ScenarioCondition'=@('        case CONDITION_SCENARION_STEP:','        case CONDITION_REALM_ACHIEVEMENT:');'ConditionGroups'=@('bool ConditionMgr::IsObjectMeetToConditionList(','bool ConditionMgr::CanHaveSourceGroupSet(')}
+ $predicates=[ordered]@{'NearCondition'=@('        case CONDITION_NEAR_CREATURE:','        case CONDITION_NEAR_GAMEOBJECT:');'TypeMaskCondition'=@('        case CONDITION_TYPE_MASK:','        case CONDITION_RELATION_TO:');'ScenarioCondition'=@('        case CONDITION_SCENARION_STEP:','        case CONDITION_REALM_ACHIEVEMENT:');'ConditionGroups'=@('bool ConditionMgr::IsObjectMeetToConditionList(','bool ConditionMgr::CanHaveSourceGroupSet(')}
  foreach($name in $predicates.Keys){[IO.File]::WriteAllText("$out/$name.inc",(Section $cs $predicates[$name][0] $predicates[$name][1]))}
  foreach($pair in @(@('SmartTargetBinding','ConditionSourceInfo sourceInfo\(unit, baseObject\);'),@('Negation','if \(NegativeCondition\)\s+condMeets = !condMeets;'))){$m=[regex]::Match($cs,$pair[1]);if(!$m.Success){throw "Native condition binding changed $($pair[0])"};[IO.File]::WriteAllText("$out/$($pair[0]).inc",$m.Value)}
  $grid=Get-Content "$repo/src/server/game/Grids/Notifiers/GridNotifiers.cpp" -Raw
