@@ -5,6 +5,12 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+if(!$Baseline -and $source.Contains('namespace SharasdalCompanion')){
+ & "$PSScriptRoot/Test-SharasdalCompanionHealing.ps1" -ScopeOnly
+ # The healing host compiles the new pending-clear write in the real damage
+ # methods. This retained matrix isolates their unchanged wound policy.
+ $source=(& git -C $repo show "c3c3ce355:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-heal wound policy missing'}
+}
 $pinned=(& git -C $repo show "32bfe713f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Sharasdal source missing'}
 $pairs=@(@('Erunak','npc_erunak_stonespeaker'),@('Grash','npc_grash'),@('Adel','npc_adel_waterspeaker'))
 $normalized=$source;$handlers=@{}

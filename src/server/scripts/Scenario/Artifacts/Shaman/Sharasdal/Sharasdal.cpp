@@ -7,6 +7,21 @@
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
 
+namespace SharasdalCompanion
+{
+    void Recover(Creature* actor, bool& pendingHeal, bool& waitHeal)
+    {
+        if (!pendingHeal)
+            return;
+        pendingHeal = false;
+        if (!waitHeal || !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() || actor->GetHealthPct() < 40)
+            return;
+        waitHeal = false;
+        actor->ClearUnitState(UNIT_STATE_STUNNED);
+        actor->RemoveAura(208093);
+    }
+}
+
 Position const sumpos[3] =
 {
     {-44.86f, 802.57f, 797.15f, 0.0f},
@@ -37,10 +52,12 @@ public:
 
         EventMap events;
         bool _introDone, wait_heal, firstbattle;
+        bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
 
         void Reset() override
         {
+            _pendingHealRecovery = false;
             events.Reset();
         }
 
@@ -70,17 +87,15 @@ public:
             }, _functions.CalculateTime(1000));
         }
 
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void HealReceived(Unit* /*who*/, uint32& addhealth) override
         {
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(208093);
-                    wait_heal = false;
-                }
-            }
+            if (wait_heal && addhealth)
+                _pendingHealRecovery = true;
+        }
+
+        void UpdateLifecycle(uint32) override
+        {
+            SharasdalCompanion::Recover(me, _pendingHealRecovery, wait_heal);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
@@ -90,6 +105,7 @@ public:
                 damage = 0;
                 if (!wait_heal)
                 {
+                    _pendingHealRecovery = false;
                     wait_heal = true;
                     me->AddAura(208093, me);
                     Talk(7);
@@ -308,10 +324,12 @@ public:
 
         EventMap events;
         bool _introDone, _introDone1, wait_heal;
+        bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
 
         void Reset() override
         {
+            _pendingHealRecovery = false;
             events.Reset();
         }
 
@@ -369,7 +387,7 @@ public:
             }
         }
 
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void HealReceived(Unit* who, uint32& addhealth) override
         {
             if (!_introDone && me->GetPositionZ() <= 795.0f)
             {
@@ -399,15 +417,13 @@ public:
                 }
             }
 
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(208093);
-                    wait_heal = false;
-                }
-            }
+            if (wait_heal && addhealth)
+                _pendingHealRecovery = true;
+        }
+
+        void UpdateLifecycle(uint32) override
+        {
+            SharasdalCompanion::Recover(me, _pendingHealRecovery, wait_heal);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
@@ -417,6 +433,7 @@ public:
                 damage = 0;
                 if (!wait_heal)
                 {
+                    _pendingHealRecovery = false;
                     wait_heal = true;
                     me->AddAura(208093, me);
                     Talk(1);
@@ -521,10 +538,12 @@ public:
 
         EventMap events;
         bool _introDone, wait_heal;
+        bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
 
         void Reset() override
         {
+            _pendingHealRecovery = false;
             events.Reset();
         }
 
@@ -535,17 +554,15 @@ public:
         }
 
 
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void HealReceived(Unit* /*who*/, uint32& addhealth) override
         {
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(208093);
-                    wait_heal = false;
-                }
-            }
+            if (wait_heal && addhealth)
+                _pendingHealRecovery = true;
+        }
+
+        void UpdateLifecycle(uint32) override
+        {
+            SharasdalCompanion::Recover(me, _pendingHealRecovery, wait_heal);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
@@ -555,6 +572,7 @@ public:
                 damage = 0;
                 if (!wait_heal)
                 {
+                    _pendingHealRecovery = false;
                     wait_heal = true;
                     me->AddAura(208093, me);
                     Talk(2);
