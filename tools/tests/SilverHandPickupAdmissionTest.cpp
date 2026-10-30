@@ -4,10 +4,11 @@
 #include <iostream>
 #include <set>
 #include <vector>
+using uint16=std::uint16_t;
 using uint32 = uint32_t;
 using LootState = uint32;
 using SpellCastResult = uint32;
-using ItemPosCountVec = std::vector<uint32>;
+struct ItemPosCountVec:std::vector<uint32>{void emplace_back(std::uint16_t,uint32){assert(false);}};
 #include "CriteriaTypes.inc"
 enum { CLASS_PALADIN=2, QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1, TYPEID_PLAYER=4,
     GO_READY=1, GO_ACTIVATED=2, GO_JUST_DEACTIVATED=3, GAMEOBJECT_FIELD_FLAGS=17, GO_FLAG_NOT_SELECTABLE=16,
@@ -16,6 +17,8 @@ enum { CLASS_PALADIN=2, QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1, TYPE
 uint32 warnings=0;
 #define TC_LOG_WARN(...) (++warnings)
 enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_INVENTORY_FULL };
+constexpr InventoryResult EQUIP_ERR_INV_FULL=EQUIP_ERR_INVENTORY_FULL;
+
 struct Map { } liveMap, otherMap;
 struct Item { };
 struct LootItem
@@ -30,7 +33,7 @@ struct LootItem
     std::set<uint32> GetAllowedLooters() const {return {};}
 };
 struct Loot
-{
+{uint32 objGuid=0;
     LootItem item;
     uint32 gold=0,unlootedCount=1;
 #ifdef CURRENT_LOOT
@@ -70,6 +73,12 @@ struct Unit
     }
     void AddDelayedEvent(uint32 delay,std::function<void()> callback) { assert(delay==12000);pending.push_back(std::move(callback)); }
 };
+struct GameObject;struct Unit;
+struct ScriptManager
+{ template<class... Args> bool CanAutoEquipLoot(Args&&...){return false;}
+    void OnGameObjectLootStateChanged(GameObject* object,uint32 state,Unit* target);
+} scriptManager;
+auto* sScriptMgr=&scriptManager;
 struct Player : Unit
 {
     bool world=true,contact=true,alive=true,teleport=false,rewarded=false,owned=false,bankOnly=false,room=true,storeWorks=true,equipped=false;
@@ -108,8 +117,7 @@ struct Player : Unit
         if(!room)return EQUIP_ERR_INVENTORY_FULL;
         destination.push_back(1);return EQUIP_ERR_OK;
     }
-    Item* StoreNewItem(ItemPosCountVec const&,uint32 item,bool,uint32,std::set<uint32> const&,std::vector<uint32> const&,uint32)
-    {
+    Item* StoreNewItem(ItemPosCountVec const&,uint32 item,bool,uint32,std::set<uint32> const&,std::vector<uint32> const&,uint32,bool refund=false,bool autoEquip=false) {assert(!refund&&!autoEquip);
         assert(item==128823);if(!storeWorks)return nullptr;owned=true;return &artifact;
     }
     void SendEquipError(InventoryResult result,void*,void*,uint32 item){assert(result==EQUIP_ERR_INVENTORY_FULL && item==128823);++inventoryErrors;}
@@ -170,11 +178,7 @@ struct GameObjectScript
 };
 #include "Admission.inc"
 #include "Callback.inc"
-struct ScriptManager
-{
-    void OnGameObjectLootStateChanged(GameObject* object,uint32 state,Unit* target) { assert(currentScript);currentScript->OnLootStateChanged(object,state,target); }
-} scriptManager;
-auto* sScriptMgr=&scriptManager;
+void ScriptManager::OnGameObjectLootStateChanged(GameObject* object,uint32 state,Unit* target){ assert(currentScript);currentScript->OnLootStateChanged(object,state,target); }
 GameObjectAI* GameObject::AI() const { static GameObjectAI passive(nullptr);return &passive; }
 #include "SetLootState.inc"
 #ifdef CURRENT_LOOT

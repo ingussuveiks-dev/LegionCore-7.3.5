@@ -738,6 +738,10 @@ class TC_GAME_API PlayerScript : public ScriptObject
         //After looting item
         virtual void OnLootItem(Player* player, Item* item, uint32 count) { }
 
+        // An authorized loot slot failed only ordinary inventory capacity.
+        // This requests native artifact equipment; all equip/unique checks remain.
+        virtual bool CanAutoEquipLoot(Player* /*player*/, ObjectGuid const& /*source*/, uint32 /*item*/, uint32 /*count*/) { return false; }
+
         //After creating item (eg profession item creation)
         virtual void OnCreateItem(Player* player, Item* item, uint32 count) { }
 
@@ -1056,6 +1060,7 @@ class TC_GAME_API ScriptMgr
         void OnPlayerQuestReward(Player* player, Quest const* quest);
         void OnPlayerEnterCombat(Player* player, Unit* target);
         void OnLootItem(Player* player, Item* item, uint32 count);
+        bool CanAutoEquipLoot(Player* player, ObjectGuid const& source, uint32 item, uint32 count);
         void OnCreateItem(Player* player, Item* item, uint32 count);
         void OnQuestRewardItem(Player* player, Item* item, uint32 count);
         void OnPlayerChoiceResponse(Player* player, uint32 choiceId, uint32 responseId);

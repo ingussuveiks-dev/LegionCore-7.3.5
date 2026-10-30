@@ -19,6 +19,8 @@ struct Position { int GetPosition() const { return 0; } };
 #ifdef MARKSMANSHIP_PRESENTATION_TEST
 enum { INVENTORY_SLOT_BAG_0 = 255, EQUIPMENT_SLOT_MAINHAND = 15, EQUIPMENT_SLOT_OFFHAND = 16, NULL_SLOT = 255, SPELL_EFFECT_HANDLE_HIT_TARGET = 1 };
 enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_CANT_EQUIP, EQUIP_ERR_BAG_FULL };
+enum { INVTYPE_2HWEAPON = 17 };
+struct ItemTemplate { uint32 GetArtifactID() const { return 1; } uint32 GetInventoryType() const { return 13; } };
 using SpellEffIndex = uint32;
 using uint16 = uint16_t;
 struct ChildGuid { uint32 value = 0; bool IsEmpty() const { return value == 0; } bool operator!=(ChildGuid const& other) const { return value != other.value; } };
@@ -39,6 +41,7 @@ struct Item {
     uint16 position = 0xFF20;
     uint32 identity = 0;
     uint32 GetEntry() const { return entry; }
+    ItemTemplate const* GetTemplate() const { static ItemTemplate proto; return &proto; }
     uint16 GetPos() const { return position; }
     bool IsEquipped() const { return position ==
 #ifdef EARTHWARDER_PRESENTATION_TEST
@@ -173,7 +176,8 @@ struct Player : Unit {
 #endif
         assert(slot == EQUIPMENT_SLOT_MAINHAND); return mainhand;
     }
-    InventoryResult CanEquipItem(uint32 slot, uint16& destination, Item* item, bool swap) {
+    InventoryResult CanEquipItem(uint32 slot, uint16& destination, Item* item, bool swap, bool notLoading = true, bool mailOffhand = false) {
+        assert(notLoading && !mailOffhand);
         assert(slot == NULL_SLOT && item == &artifact && swap); destination =
 #ifdef EARTHWARDER_PRESENTATION_TEST
             0xFF10;
@@ -190,7 +194,8 @@ struct Player : Unit {
 #endif
     }
     void SendEquipError(InventoryResult result, Item* item) { assert(result != EQUIP_ERR_OK && item == &artifact); ++equipErrors; }
-    void SwapItem(uint16 source, uint16 destination) {
+    void SwapItem(uint16 source, uint16 destination, bool mailOffhand = false) {
+        assert(!mailOffhand);
 #ifdef EARTHWARDER_PRESENTATION_TEST
         assert(source == artifact.position && destination == 0xFF10); ++swaps;
         if (swapBlocked) return;

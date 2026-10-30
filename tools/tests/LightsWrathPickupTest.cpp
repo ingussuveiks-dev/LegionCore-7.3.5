@@ -18,7 +18,7 @@ constexpr float TestOrientation=2.21201f;
 constexpr uint32 TestScenario=1065,TestQuest=41631,TestClass=5,TestOtherClass=8,TestOtherScenario=1101,TestItem=128868,TestChest=248572,TestSource=104985,TestSpell=208011,TestScene=1244,TestPackage=1600,TestOwned=47214,TestControl=47119,TestControl2=0,TestControl3=0,TestFinal=47172;
 constexpr float TestOrientation=0.633369f;
 #endif
-using LootState=uint32;using SpellEffIndex=uint32;using ItemPosCountVec=std::vector<uint32>;
+using LootState=uint32;using SpellEffIndex=uint32;struct ItemPosCountVec:std::vector<uint32>{void emplace_back(std::uint16_t,uint32){assert(false);}};
 #include "NativeEnums.inc"
 constexpr uint32 CLASS_MAGE=8,CLASS_PRIEST=5,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1;
 constexpr uint32 EFFECT_0=0,EFFECT_1=1,EFFECT_2=2,EFFECT_ALL=255,SPELL_EFFECT_ANY=0,SPELL_AURA_MOD_ROOT=26,SPELL_AURA_ACTIVATE_SCENE=430;
@@ -29,6 +29,8 @@ constexpr uint32 SPELL_EFFECT_HANDLE_HIT_TARGET=1,SPELL_EFFECT_HANDLE_HIT=2,TARG
 using CriteriaTypes=uint32;constexpr uint32 CRITERIA_TYPE_OWN_ITEM=36,CRITERIA_TYPE_SCRIPT_EVENT=46,CRITERIA_TYPE_SCRIPT_EVENT_2=92;
 enum SpellCastResult{SPELL_CAST_OK,SPELL_FAILED_BAD_TARGETS,SPELL_FAILED_SPELL_IN_PROGRESS};
 enum InventoryResult{EQUIP_ERR_OK,EQUIP_ERR_INVENTORY_FULL};
+constexpr InventoryResult EQUIP_ERR_INV_FULL=EQUIP_ERR_INVENTORY_FULL;
+
 uint32 warnings=0;
 #define TC_LOG_WARN(...) (++warnings)
 #define TC_LOG_DEBUG(...) ((void)0)
@@ -61,7 +63,9 @@ struct WorldObject:Position{Map* map=nullptr;ObjectGuid guid;uint32 entry=0,phas
 struct Unit:WorldObject{std::map<std::pair<uint32,ObjectGuid>,std::shared_ptr<AuraRecord>>auras;bool alive=true;virtual ~Unit()=default;
  bool IsAlive()const{return alive;}bool HasAura(uint32,ObjectGuid=ObjectGuid::Empty)const;AuraRecord* GetAura(uint32,ObjectGuid=ObjectGuid::Empty);void RemoveAurasDueToSpell(uint32,ObjectGuid=ObjectGuid::Empty);
  virtual SpellCastResult CastSpell(Unit*,uint32,bool){assert(false);return SPELL_FAILED_BAD_TARGETS;}ZoneScript* GetZoneScript(){return nullptr;}InstanceScript* GetInstanceScript(){return nullptr;}};
-struct Item{uint32 entry=TestItem;uint16 pos=0xFF20;ObjectGuid child=ObjectGuid::Empty;bool IsEquipped()const{return pos==0xFF0F;}uint16 GetPos()const{return pos;}ObjectGuid GetChildItem()const{return child;}};
+struct ItemTemplate{uint32 GetArtifactID()const{return 1;}uint32 GetInventoryType()const{return 13;}};
+constexpr uint32 INVTYPE_2HWEAPON=17;
+struct Item{ItemTemplate const*GetTemplate()const{static ItemTemplate t;return &t;}uint32 entry=TestItem;uint16 pos=0xFF20;ObjectGuid child=ObjectGuid::Empty;bool IsEquipped()const{return pos==0xFF0F;}uint16 GetPos()const{return pos;}ObjectGuid GetChildItem()const{return child;}};
 struct QuestStatusData{uint32 Status=3;std::shared_ptr<uint8>ScriptLifetime;};
 struct ProgressCounter{uint64 Counter=0;};
 struct Scenario{uint32 id=TestScenario,step=6;std::map<uint32,ProgressCounter>counters{{TestControl,{1}},{TestControl2,{1}},{TestControl3,{1}}};uint32 GetScenarioId()const{return id;}uint32 GetCurrentStep()const{return step;}
@@ -72,9 +76,11 @@ struct SpellManager{SpellScene scene;bool present=true;SpellScene const* GetSpel
 namespace WorldPackets{namespace Scene{struct PlayScene{uint32 SceneID=0,PlaybackFlags=0,SceneInstanceID=0,SceneScriptPackageID=0;Position Pos;void* Write(){return nullptr;}};struct CancelScene{explicit CancelScene(uint32){}void* Write(){return nullptr;}};struct SceneInstance{uint32 SceneInstanceID;};}}
 struct PhaseMgr{void RemoveUpdateFlag(uint32){}};
 struct LootItem{struct{uint32 ItemID=TestItem,RandomPropertiesID=0;struct{std::vector<uint32>BonusListIDs;uint32 Context=0;}ItemBonus;}item;uint32 count=1;bool freeforall=false,is_looted=false;std::set<uint32>GetAllowedLooters(){return {};}};
-struct Loot{LootItem item;uint32 gold=0,unlootedCount=1;
+struct Loot{uint32 objGuid=0;LootItem item;uint32 gold=0,unlootedCount=1;
 #include "IsLooted.inc"
 };
+struct GameObject;struct Unit;
+struct ScriptMgr{ template<class... Args> bool CanAutoEquipLoot(Args&&...){return false;}void OnGameObjectLootStateChanged(GameObject*,uint32,Unit*);}scripts;auto sScriptMgr=&scripts;
 struct Player:Unit{
  uint32 klass=TestClass,status=3,questCredit=0,ownEvents=0,finalEvents=0,other97377=0,pickupCasts=0,returnCasts=0,nativeEvents=0,errors=0,teleports=0,sceneInstanceID=0,legacyPortalEvents=0;
  bool contact=true,gm=false,teleport=false,m_bHasDelayedTeleport=false,canDelay=false,rewarded=false,owned=false,bank=false,record=true,visible=true,los=true,room=true,storage=true,equipRoom=true,swapBlocked=false,failCast=false,deferCast=false,rejectTeleport=false;
@@ -91,10 +97,10 @@ struct Player:Unit{
  void AddDelayedEvent(uint64,std::function<void()>&&f){functions.push_back(std::move(f));}void AddQuestDelayedEvent(uint32,uint64,std::function<void()>&&);
  void UpdateAchievementCriteria(uint32 type,uint32 asset,uint32=0){if(type==CRITERIA_TYPE_OWN_ITEM){assert(asset==TestItem);++ownEvents;manager.scenario.counters[TestOwned].Counter=1;}else if(type==CRITERIA_TYPE_SCRIPT_EVENT_2&&asset==49875){++finalEvents;assert(map&&map->mapId==1583&&m_bHasDelayedTeleport);manager.scenario.counters[TestFinal].Counter=1;if(manager.scenario.counters[TestOwned].Counter)manager.scenario.step=7;}else if(type==CRITERIA_TYPE_SCRIPT_EVENT_2&&asset==49926)++nativeEvents;if(onCredit){auto f=onCredit;f();}}
  InventoryResult CanStoreNewItem(uint32,uint32,ItemPosCountVec&dest,uint32 id,uint32 count,void*,bool){assert(id==TestItem&&count==1);if(!room)return EQUIP_ERR_INVENTORY_FULL;dest.push_back(1);return EQUIP_ERR_OK;}
- Item* StoreNewItem(ItemPosCountVec const&,uint32,bool,uint32,std::set<uint32>const&,std::vector<uint32>const&,uint32){if(!storage)return nullptr;owned=true;return &staff;}
+ Item* StoreNewItem(ItemPosCountVec const&,uint32,bool,uint32,std::set<uint32>const&,std::vector<uint32>const&,uint32,bool refund=false,bool autoEquip=false) {assert(!refund&&!autoEquip);if(!storage)return nullptr;owned=true;return &staff;}
  void SendEquipError(InventoryResult,void*,void*,uint32){++errors;}void SendEquipError(InventoryResult,Item*){++errors;}
- InventoryResult CanEquipItem(uint32,uint16&dest,Item*,bool){dest=0xFF0F;return equipRoom?EQUIP_ERR_OK:EQUIP_ERR_INVENTORY_FULL;}InventoryResult CanEquipChildItem(Item*){return EQUIP_ERR_OK;}
- void SwapItem(uint16 source,uint16 dest){if(!swapBlocked){old.pos=source;staff.pos=dest;mainhand=&staff;}if(onEquip){auto f=onEquip;f();}}
+ InventoryResult CanEquipItem(uint32,uint16&dest,Item*,bool,bool notLoading,bool mailOffhand){assert(notLoading&&!mailOffhand);dest=0xFF0F;return equipRoom?EQUIP_ERR_OK:EQUIP_ERR_INVENTORY_FULL;}InventoryResult CanEquipChildItem(Item*){return EQUIP_ERR_OK;}
+ void SwapItem(uint16 source,uint16 dest,bool mailOffhand){assert(!mailOffhand);if(!swapBlocked){old.pos=source;staff.pos=dest;mainhand=&staff;}if(onEquip){auto f=onEquip;f();}}
  void StoreLootItem(Loot*loot){LootItem*item=&loot->item;void*qitem=nullptr;
 #include "StoreInventory.inc"
 #include "ConsumeLoot.inc"
@@ -121,7 +127,7 @@ struct GameObject:WorldObject{GameObjectAI*ai=nullptr;ObjectGuid summoner{1,10,T
 };
 GameObject*Map::GetGameObject(ObjectGuid const&guid){for(auto o:objects)if(o&&o->world&&o->map==this&&(lowLookup?o->guid.low==guid.low:o->guid==guid))return o.get();return nullptr;}
 void WorldObject::GetGameObjectListWithEntryInGrid(std::list<GameObject*>&out,uint32 id,float radius){if(map)for(auto o:map->objects)if(o&&o->world&&o->entry==id&&GetExactDist(o.get())<=radius)out.push_back(o.get());}
-struct ScriptMgr{void OnGameObjectLootStateChanged(GameObject*,uint32,Unit*){}}scripts;auto sScriptMgr=&scripts;
+void ScriptMgr::OnGameObjectLootStateChanged(GameObject*,uint32,Unit*){}
 #include "SetLootState.inc"
 struct EffectInfo{uint32 Effect=0,ApplyAuraName=0,MiscValue=0,TriggerSpell=0;uint32 GetProvidedTargetMask()const{return 1;}};
 struct SpellInfo{uint32 Id;EffectInfo data[6];EffectInfo*Effects[6]={data,data+1,data+2,data+3,data+4,data+5};explicit SpellInfo(uint32 id=TestSpell):Id(id){if(id==TestSpell){data[0]={6,430,TestScene,0};data[1]={6,26,0,0};data[2]={249,0,TestItem,0};data[3]={90,0,105109,0};data[4]={61,0,49926,0};data[5]={64,0,0,225879};}else{data[0]={90,0,97377,0};data[1]={252,0,0,0};}}int32 GetDuration()const{return 9000;}EffectInfo*GetEffect(uint32 i,uint32){return &data[i];}};

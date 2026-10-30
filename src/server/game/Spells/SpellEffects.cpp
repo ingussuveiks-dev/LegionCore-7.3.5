@@ -9309,7 +9309,9 @@ void Spell::EffectForceEquipItem(SpellEffIndex effIndex)
         return;
 
     uint16 destination;
-    InventoryResult result = player->CanEquipItem(NULL_SLOT, destination, item, true);
+    ItemTemplate const* proto = item->GetTemplate();
+    bool mailOffhand = proto && proto->GetArtifactID() && proto->GetInventoryType() == INVTYPE_2HWEAPON && item->GetChildItem().IsEmpty();
+    InventoryResult result = player->CanEquipItem(NULL_SLOT, destination, item, true, true, mailOffhand);
     if (result == EQUIP_ERR_OK && !item->GetChildItem().IsEmpty())
         result = player->CanEquipChildItem(item);
     if (result != EQUIP_ERR_OK)
@@ -9319,7 +9321,7 @@ void Spell::EffectForceEquipItem(SpellEffIndex effIndex)
     }
 
     if (destination != item->GetPos())
-        player->SwapItem(item->GetPos(), destination);
+        player->SwapItem(item->GetPos(), destination, mailOffhand);
 }
 
 void Spell::EffectGiveArtifactPower(SpellEffIndex effIndex)

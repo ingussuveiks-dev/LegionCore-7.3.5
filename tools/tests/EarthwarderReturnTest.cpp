@@ -4,6 +4,7 @@
 #include <iostream>
 #include <set>
 #include <vector>
+using uint16=std::uint16_t;
 using uint32 = uint32_t;
 using uint8 = uint8_t;
 using LootState = uint32;
@@ -11,8 +12,11 @@ using LootState = uint32;
 enum { CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1, TYPEID_PLAYER = 4,
     GO_ACTIVATED = 2, GO_JUST_DEACTIVATED = 3, GAMEOBJECT_FIELD_FLAGS = 17, GO_FLAG_NOT_SELECTABLE = 16,
     NULL_BAG = 255, NULL_SLOT = 255, GAMEOBJECT_TYPE_CHEST = 3, GAMEOBJECT_TYPE_FISHINGNODE = 17 };
-using ItemPosCountVec = std::vector<uint32>;
+struct ItemPosCountVec:std::vector<uint32>{void emplace_back(std::uint16_t,uint32){assert(false);}};
 enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_INVENTORY_FULL };
+constexpr uint32 INVENTORY_SLOT_BAG_0=255,EQUIPMENT_SLOT_MAINHAND=15;
+constexpr InventoryResult EQUIP_ERR_INV_FULL=EQUIP_ERR_INVENTORY_FULL;
+
 struct Item { };
 struct LootItem
 {
@@ -26,7 +30,7 @@ struct LootItem
     std::set<uint32> GetAllowedLooters() const { return {}; }
 };
 struct Loot
-{
+{uint32 objGuid=0;
     LootItem item;
     uint32 gold = 0, unlootedCount = 1;
 #include "NativeIsLooted.inc"
@@ -73,6 +77,12 @@ struct Unit
     }
     void Flush() { auto events = std::move(pending); pending.clear(); for (auto& event : events) event(); }
 };
+struct GameObject;struct Unit;
+struct ScriptMgr
+{ template<class... Args> bool CanAutoEquipLoot(Args&&...){return false;}
+    void OnGameObjectLootStateChanged(GameObject* object, uint32 state, Unit* player);
+} scriptManager;
+auto* sScriptMgr = &scriptManager;
 struct Player : Unit
 {
     bool world = true, contact = true, alive = true, teleporting = false, rewarded = false, ownsWeapon = false, storeWorks = true;
@@ -109,8 +119,7 @@ struct Player : Unit
         destination.push_back(1);
         return EQUIP_ERR_OK;
     }
-    Item* StoreNewItem(ItemPosCountVec const&, uint32 identity, bool, uint32, std::set<uint32> const&, std::vector<uint32> const&, uint32)
-    {
+    Item* StoreNewItem(ItemPosCountVec const&, uint32 identity, bool, uint32, std::set<uint32> const&, std::vector<uint32> const&, uint32,bool refund=false,bool autoEquip=false) {assert(!refund&&!autoEquip);
         assert(identity == 128289);
         if (!storeWorks) return nullptr;
         ownsWeapon = true;
@@ -173,11 +182,7 @@ struct GameObjectScript
 #include "Policy.inc"
 #include "PickupPolicy.inc"
 #include "Callback.inc"
-struct ScriptMgr
-{
-    void OnGameObjectLootStateChanged(GameObject* object, uint32 state, Unit* player) { assert(currentScript); currentScript->OnLootStateChanged(object, state, player); }
-} scriptManager;
-auto* sScriptMgr = &scriptManager;
+void ScriptMgr::OnGameObjectLootStateChanged(GameObject* object, uint32 state, Unit* player){ assert(currentScript); currentScript->OnLootStateChanged(object, state, player); }
 GameObjectAI* GameObject::AI() const { static GameObjectAI defaultAI(nullptr); return &defaultAI; }
 #include "NativeSetLootState.inc"
 bool CompletedLoot(Loot* loot, GameObject* go)

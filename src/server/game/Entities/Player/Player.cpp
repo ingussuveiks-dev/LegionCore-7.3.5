@@ -14564,7 +14564,7 @@ InventoryResult Player::CanEquipNewItem(uint8 slot, uint16 &dest, uint32 item, b
     return EQUIP_ERR_ITEM_NOT_FOUND;
 }
 
-InventoryResult Player::CanEquipItem(uint8 slot, uint16 &dest, Item* pItem, bool swap, bool not_loading) const
+InventoryResult Player::CanEquipItem(uint8 slot, uint16 &dest, Item* pItem, bool swap, bool not_loading, bool mailOffhand) const
 {
     dest = 0;
     if (pItem)
@@ -14690,7 +14690,7 @@ InventoryResult Player::CanEquipItem(uint8 slot, uint16 &dest, Item* pItem, bool
                     ItemPosCountVec off_dest;
                     if (offItem && (!not_loading ||
                         CanUnequipItem(uint16(INVENTORY_SLOT_BAG_0) << 8 | EQUIPMENT_SLOT_OFFHAND, false) != EQUIP_ERR_OK ||
-                        CanStoreItem(NULL_BAG, NULL_SLOT, off_dest, offItem, false) != EQUIP_ERR_OK))
+                        (!mailOffhand && CanStoreItem(NULL_BAG, NULL_SLOT, off_dest, offItem, false) != EQUIP_ERR_OK)))
                         return swap ? EQUIP_ERR_CANT_SWAP : EQUIP_ERR_INV_FULL;
                 }
             }
@@ -15472,8 +15472,28 @@ bool Player::CheckGemForSpec(ItemTemplate const* proto, uint32 playerSpecID) con
 }
 
 // Return stored item (if stored to stack, it can diff. from pItem). And pItem ca be deleted in this case.
-Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 itemID, bool update, ItemRandomEnchantmentId const& randomPropertyId /*= {}*/, GuidSet const& allowedLooters /*= GuidSet()*/, std::vector<uint32> const& bonusListIDs /*= std::vector<uint32>()*/, uint32 context/* = 0*/, bool isRefunde)
+Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 itemID, bool update, ItemRandomEnchantmentId const& randomPropertyId /*= {}*/, GuidSet const& allowedLooters /*= GuidSet()*/, std::vector<uint32> const& bonusListIDs /*= std::vector<uint32>()*/, uint32 context/* = 0*/, bool isRefunde, bool equipFromLoot)
 {
+    auto initializeArtifact = [this](Item* item)
+    {
+        if (!item->GetTemplate()->GetArtifactID())
+            return;
+        auto artifactDataItr = GlobalArtifactData.find(item->GetEntry());
+        if (artifactDataItr != GlobalArtifactData.end())
+            item->LoadArtifactData(this, artifactDataItr->second);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_ITEM_INSTANCE_ARTIFACT_XP);
+        stmt->setUInt64(0, GetGUIDLow());
+        stmt->setUInt32(1, item->GetEntry());
+        if (PreparedQueryResult artifactsResult = CharacterDatabase.Query(stmt))
+            item->SetUInt64Value(ITEM_FIELD_ARTIFACT_XP, artifactsResult->Fetch()[0].GetUInt64());
+        ObjectGuid itemGUID = item->GetGUID();
+        AddDelayedEvent(3000, [this, itemGUID]() -> void
+        {
+            if (Item* item = GetItemByGuid(itemGUID))
+                UnLockThirdSocketIfNeed(item);
+        });
+    };
+    CharacterDatabaseTransaction equipTransaction;
     uint32 count = 0;
     for (auto itr = dest.cbegin(); itr != dest.cend(); ++itr)
         count += itr->count;
@@ -15497,7 +15517,57 @@ Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 itemID, bool upda
 
     item->SetFixedLevel(getLevel()); // Need use after bonus add
 
-    item = StoreItem(dest, item, update);
+    if (equipFromLoot)
+    {
+        uint16 equipmentPos = 0;
+        InventoryResult result = CanEquipItem(EQUIPMENT_SLOT_MAINHAND, equipmentPos, item, true, true, true);
+        if (result == EQUIP_ERR_OK && (count != 1 || dest.size() != 1 || dest.front().count != 1 ||
+            dest.front().pos != equipmentPos || !item->GetTemplate()->GetArtifactID() ||
+            item->GetTemplate()->GetInventoryType() != INVTYPE_2HWEAPON || sDB2Manager.GetItemChildEquipment(itemID)))
+            result = EQUIP_ERR_CANT_SWAP;
+        Item* previous[] = { GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND),
+            CanTitanGrip() ? nullptr : GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND) };
+        for (Item* old : previous)
+            if (old && result == EQUIP_ERR_OK)
+            {
+                result = CanUnequipItem(old->GetPos(), false);
+                // Paired artifacts require their native parent/child swap path;
+                // retain the original loot-capacity refusal for those layouts.
+                if (result == EQUIP_ERR_OK && (!old->GetChildItem().IsEmpty() || old->HasFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_CHILD)))
+                    result = EQUIP_ERR_CANT_SWAP;
+            }
+        if (result != EQUIP_ERR_OK)
+        {
+            SendEquipError(result, item);
+            delete item;
+            return nullptr;
+        }
+        // Initialize all artifact powers/64-bit XP before applying equipment
+        // mods. Native post-storage metadata/hooks below are shared unchanged.
+        initializeArtifact(item);
+        equipTransaction = CharacterDatabase.BeginTransaction();
+        for (Item* old : previous)
+            if (old)
+            {
+                ItemPosCountVec storage;
+                if (CanStoreItem(NULL_BAG, NULL_SLOT, storage, old, false) == EQUIP_ERR_OK)
+                {
+                    RemoveItem(old->GetBagSlot(), old->GetSlot(), update);
+                    StoreItem(storage, old, update);
+                }
+                else
+                {
+                    MoveItemFromInventory(old, update);
+                    old->DeleteFromInventoryDB(equipTransaction);
+                    old->SaveToDB(equipTransaction);
+                    MailDraft(GetSession()->GetTrinityString(LANG_NOT_EQUIPPED_ITEM), "Your previous equipment was returned because your bags were full.")
+                        .AddItem(old).SendMailTo(equipTransaction, this, MailSender(this, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED);
+                }
+            }
+        item = EquipItem(equipmentPos, item, update);
+    }
+    else
+        item = StoreItem(dest, item, update);
     if (!item)
         return nullptr;
 
@@ -15533,7 +15603,10 @@ Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 itemID, bool upda
         CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_ITEM_BOP_TRADE);
         stmt->setUInt64(0, item->GetGUIDLow());
         stmt->setString(1, ss.str());
-        CharacterDatabase.Execute(stmt);
+        if (equipTransaction)
+            equipTransaction->Append(stmt);
+        else
+            CharacterDatabase.Execute(stmt);
     }
 
     if (ItemChildEquipmentEntry const* childItemEntry = sDB2Manager.GetItemChildEquipment(itemID))
@@ -15551,24 +15624,12 @@ Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 itemID, bool upda
         }
     }
 
-    if (item->GetTemplate()->GetArtifactID())
+    if (!equipFromLoot)
+        initializeArtifact(item);
+    if (equipTransaction)
     {
-        auto artifactDataItr = GlobalArtifactData.find(item->GetEntry());
-        if (artifactDataItr != GlobalArtifactData.end())
-            item->LoadArtifactData(this, artifactDataItr->second);
-
-        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_ITEM_INSTANCE_ARTIFACT_XP);
-        stmt->setUInt64(0, GetGUIDLow());
-        stmt->setUInt32(1, item->GetEntry());
-        if (PreparedQueryResult artifactsResult = CharacterDatabase.Query(stmt))
-            item->SetUInt64Value(ITEM_FIELD_ARTIFACT_XP, artifactsResult->Fetch()[0].GetUInt64());
-
-        ObjectGuid itemGUID = item->GetGUID();
-        AddDelayedEvent(3000, [this, itemGUID]() -> void
-        {
-            if (Item* item = GetItemByGuid(itemGUID))
-                UnLockThirdSocketIfNeed(item);
-        });
+        SaveInventoryAndGoldToDB(equipTransaction);
+        CharacterDatabase.CommitTransaction(equipTransaction);
     }
 
     return item;
@@ -16853,7 +16914,7 @@ void Player::SplitItem(uint16 src, uint16 dst, uint32 count)
     }
 }
 
-void Player::SwapItem(uint16 src, uint16 dst)
+void Player::SwapItem(uint16 src, uint16 dst, bool mailOffhand)
 {
     if (!IsInWorld())
         return;
@@ -16869,6 +16930,16 @@ void Player::SwapItem(uint16 src, uint16 dst)
 
     if (!pSrcItem || !pSrcItem->IsInWorld() || (pDstItem && !pDstItem->IsInWorld()))
         return;
+
+    Item* offhand = GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+    // Only the native artifact force-equip may defer offhand capacity until
+    // after the swap frees the source slot. Ordinary manual swaps keep their
+    // existing admission checks; parent/child layouts use their native path.
+    mailOffhand = mailOffhand && IsInventoryPos(src) && dstbag == INVENTORY_SLOT_BAG_0 && dstslot == EQUIPMENT_SLOT_MAINHAND &&
+        pSrcItem->GetTemplate()->GetArtifactID() && pSrcItem->GetTemplate()->GetInventoryType() == INVTYPE_2HWEAPON &&
+        pSrcItem->GetChildItem().IsEmpty() && !pSrcItem->HasFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_CHILD) &&
+        (!pDstItem || (pDstItem->GetChildItem().IsEmpty() && !pDstItem->HasFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_CHILD))) &&
+        (!offhand || (offhand->GetChildItem().IsEmpty() && !offhand->HasFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_CHILD)));
 
     if (pSrcItem->GetCount() > pSrcItem->GetTemplate()->GetMaxStackSize()) // Prevent dupe item, don`t swap this item
     {
@@ -17040,7 +17111,7 @@ void Player::SwapItem(uint16 src, uint16 dst)
         else if (IsEquipmentPos(dst))
         {
             uint16 dest;
-            InventoryResult msg = CanEquipItem(dstslot, dest, pSrcItem, false);
+            InventoryResult msg = CanEquipItem(dstslot, dest, pSrcItem, false, true, mailOffhand);
             if (msg != EQUIP_ERR_OK)
             {
                 SendEquipError(msg, pSrcItem);
@@ -17074,7 +17145,7 @@ void Player::SwapItem(uint16 src, uint16 dst)
         else if (IsBankPos(dst))
             msg = CanBankItem(dstbag, dstslot, sDest, pSrcItem, false);
         else if (IsEquipmentPos(dst))
-            msg = CanEquipItem(dstslot, eDest, pSrcItem, false);
+            msg = CanEquipItem(dstslot, eDest, pSrcItem, false, true, mailOffhand);
         else
             return;
 
@@ -17132,7 +17203,7 @@ void Player::SwapItem(uint16 src, uint16 dst)
         msg = CanBankReagentItem(dstbag, dstslot, sDest, pSrcItem, true);
     else if (IsEquipmentPos(dst))
     {
-        msg = CanEquipItem(dstslot, eDest, pSrcItem, true);
+        msg = CanEquipItem(dstslot, eDest, pSrcItem, true, true, mailOffhand);
         if (msg == EQUIP_ERR_OK)
             msg = CanUnequipItem(eDest, true);
     }
@@ -33528,13 +33599,19 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
 
     ItemPosCountVec dest;
     InventoryResult msg = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, item->item.ItemID, item->count, NULL, bool(qitem));
-    if (msg != EQUIP_ERR_OK)
+    bool equipFromLoot = msg == EQUIP_ERR_INV_FULL && sScriptMgr->CanAutoEquipLoot(this, loot->objGuid, item->item.ItemID, item->count);
+    if (msg != EQUIP_ERR_OK && !equipFromLoot)
     {
         SendEquipError(msg, NULL, NULL, item->item.ItemID);
         return;
     }
 
-    Item* newitem = StoreNewItem(dest, item->item.ItemID, true, item->item.RandomPropertiesID, item->GetAllowedLooters(), item->item.ItemBonus.BonusListIDs, item->item.ItemBonus.Context);
+    if (equipFromLoot)
+    {
+        dest.clear();
+        dest.emplace_back(uint16(uint16(INVENTORY_SLOT_BAG_0) << 8 | EQUIPMENT_SLOT_MAINHAND), 1);
+    }
+    Item* newitem = StoreNewItem(dest, item->item.ItemID, true, item->item.RandomPropertiesID, item->GetAllowedLooters(), item->item.ItemBonus.BonusListIDs, item->item.ItemBonus.Context, false, equipFromLoot);
     if (!newitem)
         return;
 

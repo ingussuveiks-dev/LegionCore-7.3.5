@@ -2558,6 +2558,14 @@ void ScriptMgr::OnLootItem(Player* player, Item* item, uint32 count)
     FOREACH_SCRIPT(PlayerScript)->OnLootItem(player, item, count);
 }
 
+bool ScriptMgr::CanAutoEquipLoot(Player* player, ObjectGuid const& source, uint32 item, uint32 count)
+{
+    FOR_SCRIPTS(PlayerScript, itr, end)
+        if (itr->second->CanAutoEquipLoot(player, source, item, count))
+            return true;
+    return false;
+}
+
 void ScriptMgr::OnCreateItem(Player* player, Item* item, uint32 count)
 {
     FOREACH_SCRIPT(PlayerScript)->OnCreateItem(player, item, count);

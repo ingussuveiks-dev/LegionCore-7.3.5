@@ -12,7 +12,7 @@
 #include <tuple>
 #include <vector>
 using uint8=uint8_t;using uint16=uint16_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;
-using LootState=uint32;using SpellCastResult=uint32;using SpellEffIndex=uint32;using ItemPosCountVec=std::vector<uint32>;
+using LootState=uint32;using SpellCastResult=uint32;using SpellEffIndex=uint32;struct ItemPosCountVec:std::vector<uint32>{void emplace_back(std::uint16_t,uint32){assert(false);}};
 enum {CLASS_PRIEST=5,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,GO_READY=1,GO_ACTIVATED=2,GO_JUST_DEACTIVATED=3,
  GAMEOBJECT_FIELD_FLAGS=17,GO_FLAG_NOT_SELECTABLE=16,INVENTORY_SLOT_BAG_0=255,EQUIPMENT_SLOT_MAINHAND=15,
  SPELL_CAST_OK=0,SPELL_FAILED_BAD_TARGETS=1,TYPEID_PLAYER=4,NULL_BAG=255,NULL_SLOT=255,GAMEOBJECT_TYPE_FISHINGNODE=17,
@@ -31,18 +31,24 @@ struct Map{void ScriptsStart(uint32,uint32,Unit*,WorldObject*){}} liveMap,otherM
 struct Unit:WorldObject{ObjectGuid guid{1};FunctionProcessor functions;virtual Player* ToPlayer(){return nullptr;}virtual uint32 GetTypeId(){return 3;}
  ObjectGuid GetGUID()const{return guid;}virtual Map* GetMap(){return &liveMap;}ZoneScript* GetZoneScript(){return nullptr;}InstanceScript* GetInstanceScript(){return nullptr;}
  SpellCastResult CastSpell(Unit*,uint32,bool=false);void AddDelayedEvent(uint64 delay,std::function<void()>&& fn){functions.AddDelayedEvent(delay,std::move(fn));}};
-struct Item{uint32 entry=128825;ObjectGuid guid{21},child;uint16 position=0xFF20;uint32 GetEntry()const{return entry;}ObjectGuid GetChildItem()const{return child;}ObjectGuid GetGUID()const{return guid;}bool IsEquipped()const{return position==0xFF0F;}uint16 GetPos()const{return position;}};
+struct ItemTemplate{uint32 GetArtifactID()const{return 1;}uint32 GetInventoryType()const{return 13;}};
+constexpr uint32 INVTYPE_2HWEAPON=17;
+struct Item{ItemTemplate const*GetTemplate()const{static ItemTemplate t;return &t;}uint32 entry=128825;ObjectGuid guid{21},child;uint16 position=0xFF20;uint32 GetEntry()const{return entry;}ObjectGuid GetChildItem()const{return child;}ObjectGuid GetGUID()const{return guid;}bool IsEquipped()const{return position==0xFF0F;}uint16 GetPos()const{return position;}};
 struct Progress{uint32 Counter=0;};
 struct Scenario{uint32 id=1085,step=6;std::map<uint32,Progress> progress{{47656,{1}}};uint32 GetScenarioId(){return id;}uint32 GetCurrentStep(){return step;}
  Scenario& GetAchievementMgr(){return *this;}auto const* GetCriteriaProgressMap(){return &progress;}};
 struct Manager{Scenario scenario;bool present=true;Scenario* GetScenario(uint32 id){return present&&id==42?&scenario:nullptr;}} manager;auto sScenarioMgr=&manager;
 enum InventoryResult{EQUIP_ERR_OK,EQUIP_ERR_INVENTORY_FULL};
+constexpr InventoryResult EQUIP_ERR_INV_FULL=EQUIP_ERR_INVENTORY_FULL;
+
 struct LootItem{struct{uint32 ItemID=128825,RandomPropertiesID=0;struct{std::vector<uint32> BonusListIDs;uint32 Context=0;}ItemBonus;}item;uint32 count=1;bool freeforall=false,is_looted=false;std::set<uint32> GetAllowedLooters(){return {};}};
-struct Loot{LootItem item;uint32 gold=0,unlootedCount=1;
+struct Loot{uint32 objGuid=0;LootItem item;uint32 gold=0,unlootedCount=1;
 #include "IsLooted.inc"
 };
 struct QuestStatusData{uint32 Status=3;std::shared_ptr<uint8> ScriptLifetime;};
 struct WorldLocation{WorldLocation(uint32 m,float a,float b,float c,float d):map(m),x(a),y(b),z(c),o(d){} uint32 map;float x,y,z,o;uint32 GetMapId()const{return map;}float GetExactDist(float a,float b,float c)const{return std::sqrt((x-a)*(x-a)+(y-b)*(y-b)+(z-c)*(z-c));}};
+struct GameObject;struct Unit;
+struct ScriptManager{ template<class... Args> bool CanAutoEquipLoot(Args&&...){return false;}void OnGameObjectLootStateChanged(GameObject* go,uint32 state,Unit* player);} scripts;auto sScriptMgr=&scripts;
 struct Player:Unit{
  bool world=true,contact=true,alive=true,teleport=false,rewarded=false,owned=false,bank=false,room=true,storage=true,phase=true,visible=true,los=true,equipRoom=true,swapBlocked=false,gm=false;
  bool synchronous=false,canDelay=false,m_bHasDelayedTeleport=false,scene=false,launched=false,record=true,hideSource=false;uint32 klass=5,status=3,instance=42,mapId=1489,casts=0,castResult=0,acquisitions=0,departures=0,explicitRewards=0,grants=0,errors=0,swaps=0,teleports=0,aborts=0;
@@ -61,10 +67,10 @@ struct Player:Unit{
  void UpdateAchievementCriteria(uint32 type,uint32 asset,uint32=0){if(type==CRITERIA_TYPE_SCRIPT_EVENT)return;if(type==CRITERIA_TYPE_COMPLETE_SCENARIO){++explicitRewards;return;}
   assert(type==CRITERIA_TYPE_SCRIPT_EVENT_2);if(asset==50679){++acquisitions;manager.scenario.progress[47679].Counter=1;}else if(asset==50702){assert(world&&map==&liveMap);++departures;manager.scenario.progress[47680].Counter=1;if(manager.scenario.progress[47679].Counter)manager.scenario.step=7;if(onCredit)onCredit();}else otherEvents.push_back(asset);}
  InventoryResult CanStoreNewItem(uint32,uint32,ItemPosCountVec& dest,uint32 id,uint32 count,void*,bool){assert(id==128825&&count==1);if(!room)return EQUIP_ERR_INVENTORY_FULL;dest.push_back(1);return EQUIP_ERR_OK;}
- Item* StoreNewItem(ItemPosCountVec const&,uint32,bool,uint32,std::set<uint32> const&,std::vector<uint32> const&,uint32){if(!storage)return nullptr;owned=true;return &parent;}
+ Item* StoreNewItem(ItemPosCountVec const&,uint32,bool,uint32,std::set<uint32> const&,std::vector<uint32> const&,uint32,bool refund=false,bool autoEquip=false) {assert(!refund&&!autoEquip);if(!storage)return nullptr;owned=true;return &parent;}
  void SendEquipError(InventoryResult,void*,void*,uint32){++errors;}void SendEquipError(InventoryResult,Item*){++errors;}
- InventoryResult CanEquipItem(uint32,uint16& dest,Item*,bool){dest=0xFF0F;return equipRoom?EQUIP_ERR_OK:EQUIP_ERR_INVENTORY_FULL;}InventoryResult CanEquipChildItem(Item*){assert(false);return EQUIP_ERR_OK;}
- void SwapItem(uint16 source,uint16 dest){++swaps;if(swapBlocked)return;old.position=source;parent.position=dest;mainhand=&parent;}
+ InventoryResult CanEquipItem(uint32,uint16& dest,Item*,bool,bool notLoading,bool mailOffhand){assert(notLoading&&!mailOffhand);dest=0xFF0F;return equipRoom?EQUIP_ERR_OK:EQUIP_ERR_INVENTORY_FULL;}InventoryResult CanEquipChildItem(Item*){assert(false);return EQUIP_ERR_OK;}
+ void SwapItem(uint16 source,uint16 dest,bool mailOffhand){assert(!mailOffhand);++swaps;if(swapBlocked)return;old.position=source;parent.position=dest;mainhand=&parent;}
  void StoreLootItem(Loot* loot){LootItem* item=&loot->item;void* qitem=nullptr;
 #include "StoreInventory.inc"
 #include "ConsumeLoot.inc"
@@ -92,7 +98,7 @@ struct GameObjectAI{GameObject* go;explicit GameObjectAI(GameObject* object):go(
  virtual ObjectGuid GetGUID(int32){return {};}virtual void SetGUID(ObjectGuid const&,int32){}virtual uint32 GetData(uint32){return 0;}virtual void SetData(uint32,uint32){}virtual void UpdateAI(uint32){};};
 struct GameObjectScript{explicit GameObjectScript(char const*){}virtual ~GameObjectScript()=default;virtual GameObjectAI* GetAI(GameObject* go)const{return new GameObjectAI(go);}virtual bool OnGossipHello(Player*,GameObject*){return false;}virtual void OnLootStateChanged(GameObject*,uint32,Unit*){}};
 GameObjectScript* currentScript;
-struct ScriptManager{void OnGameObjectLootStateChanged(GameObject* go,uint32 state,Unit* player){currentScript->OnLootStateChanged(go,state,player);}} scripts;auto sScriptMgr=&scripts;
+void ScriptManager::OnGameObjectLootStateChanged(GameObject* go,uint32 state,Unit* player){currentScript->OnLootStateChanged(go,state,player);}
 // Deliberately model the native low-counter lookup; production must compare full identities.
 struct ObjectAccessor{static Player* GetPlayer(GameObject& go,ObjectGuid guid){for(auto* p:players)if(p->guid.value==guid.value&&p->world&&p->map==go.map)return p;return nullptr;}
  static GameObject* GetGameObject(Player& p,ObjectGuid guid){for(auto* go:objects)if(go->guid.value==guid.value&&go->world&&go->map==p.map)return go;return nullptr;}};

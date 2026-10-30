@@ -1715,7 +1715,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         }
         InventoryResult CanStoreItems(Item** pItem, int count, uint32& ItemID) const;
         InventoryResult CanEquipNewItem(uint8 slot, uint16& dest, uint32 item, bool swap, bool not_loading = true) const;
-        InventoryResult CanEquipItem(uint8 slot, uint16& dest, Item* pItem, bool swap, bool not_loading = true) const;
+        InventoryResult CanEquipItem(uint8 slot, uint16& dest, Item* pItem, bool swap, bool not_loading = true, bool mailOffhand = false) const;
 
         // This method must be called before equipping parent item!
         InventoryResult CanEquipChildItem(Item* parentItem) const;
@@ -1731,7 +1731,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         std::list<uint32> GetSpecListByClass(uint32 classId) const;
         bool CanGetItemForLoot(ItemTemplate const* proto, bool specCheck = true) const;
         bool CheckGemForSpec(ItemTemplate const* proto, uint32 playerSpecID) const;
-        Item* StoreNewItem(ItemPosCountVec const& pos, uint32 item, bool update, ItemRandomEnchantmentId const& randomPropertyId = {}, GuidSet const& allowedLooters = GuidSet(), std::vector<uint32> const& bonusListIDs = std::vector<uint32>(), uint32 context = 0, bool isRefunde = false);
+        Item* StoreNewItem(ItemPosCountVec const& pos, uint32 item, bool update, ItemRandomEnchantmentId const& randomPropertyId = {}, GuidSet const& allowedLooters = GuidSet(), std::vector<uint32> const& bonusListIDs = std::vector<uint32>(), uint32 context = 0, bool isRefunde = false, bool equipFromLoot = false);
         Item* StoreItem(ItemPosCountVec const& pos, Item* pItem, bool update);
         Item* EquipNewItem(uint16 pos, uint32 item, bool update, int32 randomPropertyId = 0, std::vector<uint32> const& bonusListIDs = std::vector<uint32>(), uint32 context = 0, bool isRefunde = false);
         Item* EquipItem(uint16 pos, Item* pItem, bool update);
@@ -1849,7 +1849,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void DestroyConjuredItems(bool update);
         void DestroyZoneLimitedItem(bool update, uint32 new_zone);
         void SplitItem(uint16 src, uint16 dst, uint32 count);
-        void SwapItem(uint16 src, uint16 dst);
+        void SwapItem(uint16 src, uint16 dst, bool mailOffhand = false);
         void AddItemToBuyBackSlot(Item* pItem);
         Item* GetItemFromBuyBackSlot(uint32 slot);
         void RemoveItemFromBuyBackSlot(uint32 slot, bool del);

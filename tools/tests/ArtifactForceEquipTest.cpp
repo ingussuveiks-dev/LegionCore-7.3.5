@@ -9,7 +9,8 @@
 using uint16 = uint16_t;
 using uint32 = uint32_t;
 using SpellEffIndex = int;
-enum { SPELL_EFFECT_HANDLE_HIT_TARGET = 1, NULL_SLOT = 255 };
+enum { SPELL_EFFECT_HANDLE_HIT_TARGET = 1, NULL_SLOT = 255, INVTYPE_2HWEAPON = 17 };
+struct ItemTemplate { uint32 artifact = 1, type = 13; uint32 GetArtifactID() const { return artifact; } uint32 GetInventoryType() const { return type; } };
 enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_CANT_EQUIP, EQUIP_ERR_BAG_FULL };
 struct ChildGuid { bool empty = true; bool IsEmpty() const { return empty; } };
 struct Item
@@ -17,6 +18,8 @@ struct Item
     uint16 position = 0xFF20;
     bool equipped = false;
     ChildGuid child;
+    ItemTemplate proto;
+    ItemTemplate const* GetTemplate() const { return &proto; }
     bool IsEquipped() const { return equipped; }
     ChildGuid GetChildItem() const { return child; }
     uint16 GetPos() const { return position; }
@@ -29,18 +32,20 @@ struct Player
     uint16 destination = 0xFF0F;
     InventoryResult equipResult = EQUIP_ERR_OK, childResult = EQUIP_ERR_OK, lastError = EQUIP_ERR_OK;
     Item* GetItemByEntry(uint32 entry) { assert(entry == expectedEntry); return artifact; }
-    InventoryResult CanEquipItem(int slot, uint16& target, Item* item, bool swap)
+    InventoryResult CanEquipItem(int slot, uint16& target, Item* item, bool swap, bool notLoading = true, bool mailOffhand = false)
     {
         assert(slot == NULL_SLOT && item == artifact && swap);
+        assert(notLoading && mailOffhand == (item->proto.artifact && item->proto.type == INVTYPE_2HWEAPON && item->child.IsEmpty()));
         ++checks;
         target = destination;
         return equipResult;
     }
     InventoryResult CanEquipChildItem(Item* item) { assert(item == artifact); ++childChecks; return childResult; }
     void SendEquipError(InventoryResult result, Item* item) { assert(item == artifact); ++errors; lastError = result; }
-    void SwapItem(uint16 source, uint16 target)
+    void SwapItem(uint16 source, uint16 target, bool mailOffhand = false)
     {
         assert(source != target && inventory[source] == artifact);
+        assert(mailOffhand == (artifact->proto.artifact && artifact->proto.type == INVTYPE_2HWEAPON && artifact->child.IsEmpty()));
         ++swaps;
         std::swap(inventory[source], inventory[target]);
         inventory[target]->position = target;

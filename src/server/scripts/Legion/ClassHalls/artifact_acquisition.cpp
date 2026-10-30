@@ -2056,6 +2056,27 @@ public:
     GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
 };
 
+class player_stromkar_loot_equipment : public PlayerScript
+{
+public:
+    player_stromkar_loot_equipment() : PlayerScript("player_stromkar_loot_equipment") { }
+    bool CanAutoEquipLoot(Player* player, ObjectGuid const& source, uint32 item, uint32 count) override
+    {
+        if (item != 128910 || count != 1 || !source.IsGameObject() || !player ||
+            !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+            player->getClass() != CLASS_WARRIOR || player->GetMapId() != 1539 ||
+            !ArtifactAcquisition::Active(player, 41105) || player->HasItemCount(128910, 1, true))
+            return false;
+        GameObject* object = player->GetMap()->GetGameObject(source);
+        if (!object || object->GetEntry() != 247877 || !object->IsInWorld() || !object->isSpawned() ||
+            object->GetMap() != player->GetMap() || !player->InSamePhase(object) || !player->canSeeOrDetect(object) ||
+            !player->IsWithinLOSInMap(object) || player->GetExactDist(object) > 5.0f)
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1037 && scenario->GetCurrentStep() == 9;
+    }
+};
+
 namespace StromkarPresentation
 {
 bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
@@ -2205,5 +2226,6 @@ void AddSC_artifact_acquisition()
     new scene_xalatath_pickup();
     new scene_stromkar_pickup();
     new go_stromkar_pickup();
+    new player_stromkar_loot_equipment();
     new go_xalatath_pickup();
 }

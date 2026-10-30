@@ -4,13 +4,17 @@
 #include <iostream>
 #include <set>
 #include <vector>
+using uint16=std::uint16_t;
 using uint32 = uint32_t;
 using LootState = uint32;
-using ItemPosCountVec = std::vector<uint32>;
+struct ItemPosCountVec:std::vector<uint32>{void emplace_back(std::uint16_t,uint32){assert(false);}};
 #include "CriteriaTypes.inc"
 enum { CLASS_WARRIOR = 1, TYPEID_PLAYER = 4, GO_ACTIVATED = 2, GO_JUST_DEACTIVATED = 3, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1,
     NULL_BAG = 255, NULL_SLOT = 255, GAMEOBJECT_TYPE_CHEST = 3, GAMEOBJECT_TYPE_FISHINGNODE = 17 };
 enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_INVENTORY_FULL };
+constexpr uint32 INVENTORY_SLOT_BAG_0=255,EQUIPMENT_SLOT_MAINHAND=15;
+constexpr InventoryResult EQUIP_ERR_INV_FULL=EQUIP_ERR_INVENTORY_FULL;
+
 struct Item { };
 struct LootItem
 {
@@ -24,7 +28,7 @@ struct LootItem
     std::set<uint32> GetAllowedLooters() const { return {}; }
 };
 struct Loot
-{
+{uint32 objGuid=0;
     LootItem item;
     uint32 gold = 0, unlootedCount = 1;
 #include "NativeIsLooted.inc"
@@ -65,6 +69,12 @@ struct GameObject
     float GetInteractionDistance() const { return interactionRange; }
     Creature* FindNearestCreature(uint32 identity, float range) { assert(identity == 98678 && range == 10.f); return soulPresent ? &soul : nullptr; }
 };
+struct GameObject;struct Unit;
+struct ScriptMgr
+{ template<class... Args> bool CanAutoEquipLoot(Args&&...){return false;}
+    void OnGameObjectLootStateChanged(GameObject* object, uint32 state, Unit* player);
+} scriptManager;
+auto* sScriptMgr = &scriptManager;
 struct Player : Unit
 {
     uint32 status = QUEST_STATUS_INCOMPLETE, playerClass = CLASS_WARRIOR, credits = 0, achievements = 0, items = 0;
@@ -99,8 +109,7 @@ struct Player : Unit
         destination.push_back(1);
         return EQUIP_ERR_OK;
     }
-    Item* StoreNewItem(ItemPosCountVec const&, uint32 identity, bool, uint32, std::set<uint32> const&, std::vector<uint32> const&, uint32)
-    {
+    Item* StoreNewItem(ItemPosCountVec const&, uint32 identity, bool, uint32, std::set<uint32> const&, std::vector<uint32> const&, uint32,bool refund=false,bool autoEquip=false) {assert(!refund&&!autoEquip);
         assert(identity == 128908);
         if (!storeWorks)
             return nullptr;
@@ -147,11 +156,7 @@ struct GameObjectScript
 #include "PickupAdmission.inc"
 #include "PickupObject.inc"
 GameObjectScript* currentScript = nullptr;
-struct ScriptMgr
-{
-    void OnGameObjectLootStateChanged(GameObject* object, uint32 state, Unit* player) { assert(currentScript); currentScript->OnLootStateChanged(object, state, player); }
-} scriptManager;
-auto* sScriptMgr = &scriptManager;
+void ScriptMgr::OnGameObjectLootStateChanged(GameObject* object, uint32 state, Unit* player){ assert(currentScript); currentScript->OnLootStateChanged(object, state, player); }
 #include "NativeSetLootState.inc"
 bool CompletedLoot(Loot* loot, GameObject* go) {
 #include "NativeCompleteLoot.inc"

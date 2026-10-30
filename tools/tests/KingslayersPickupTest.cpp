@@ -7,7 +7,7 @@
 #include <set>
 #include <vector>
 using uint64=uint64_t;using uint8=uint8_t;using uint16=uint16_t;using uint32=uint32_t;using int32=int32_t;
-using LootState=uint32;using SpellCastResult=uint32;using ItemPosCountVec=std::vector<uint32>;
+using LootState=uint32;using SpellCastResult=uint32;struct ItemPosCountVec:std::vector<uint32>{void emplace_back(std::uint16_t,uint32){assert(false);}};
 enum {QUEST_STATUS_NONE=0,CLASS_ROGUE=4,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,GO_READY=1,GO_ACTIVATED=2,GO_JUST_DEACTIVATED=3,
  GAMEOBJECT_FIELD_FLAGS=17,GO_FLAG_NOT_SELECTABLE=16,INVENTORY_SLOT_BAG_0=255,EQUIPMENT_SLOT_MAINHAND=15,EQUIPMENT_SLOT_OFFHAND=16,
  SPELL_CAST_OK=0,TYPEID_PLAYER=4,NULL_BAG=255,NULL_SLOT=255,GAMEOBJECT_TYPE_FISHINGNODE=17};
@@ -25,10 +25,14 @@ struct Scenario{uint32 id=1123,step=8;bool accept=true;std::map<uint32,CriteriaP
 struct Manager{Scenario scenario;bool present=true;Scenario* GetScenario(uint32 instance){return present&&instance==42?&scenario:nullptr;}} manager;
 auto* sScenarioMgr=&manager;
 enum InventoryResult{EQUIP_ERR_OK,EQUIP_ERR_INVENTORY_FULL};
+constexpr InventoryResult EQUIP_ERR_INV_FULL=EQUIP_ERR_INVENTORY_FULL;
+
 struct LootItem{struct{uint32 ItemID=128870,RandomPropertiesID=0;struct{std::vector<uint32> BonusListIDs;uint32 Context=0;}ItemBonus;}item;uint32 count=1;bool freeforall=false,is_looted=false;std::set<uint32> GetAllowedLooters(){return {};}};
-struct Loot{LootItem item;uint32 gold=0,unlootedCount=1;
+struct Loot{uint32 objGuid=0;LootItem item;uint32 gold=0,unlootedCount=1;
 #include "IsLooted.inc"
 };
+struct GameObject;struct Unit;
+struct ScriptMgr{ template<class... Args> bool CanAutoEquipLoot(Args&&...){return false;}void OnGameObjectLootStateChanged(GameObject* g,uint32 s,Unit* u);}scripts;auto* sScriptMgr=&scripts;
 struct Player:Unit{
  bool world=true,contact=true,alive=true,teleport=false,rewarded=false,owned=false,bank=false,paired=false,room=true,storage=true,phase=true,visible=true,los=true;
  uint32 questId=42504;QuestStatusData quest;std::vector<std::pair<uint64_t,std::function<void()>>>tasks;uint64_t clock=0;std::vector<uint32>conversations;bool failOutro=false;uint32 directCredits=0;std::function<void()>onCredit;
@@ -47,7 +51,7 @@ struct Player:Unit{
  Item* AddItem(uint32,uint32){++grants;if(!room||!storage)return nullptr;owned=true;return &parent;}
  void UpdateAchievementCriteria(uint32 type,uint32 asset,uint32=0){if(type==CRITERIA_TYPE_SCRIPT_EVENT_2){assert(asset==51616);++events;if(onCredit)onCredit();if(manager.scenario.accept){manager.scenario.progress[48591].Counter=1;if(manager.scenario.progress[48589].Counter)manager.scenario.step=9;}}else{assert(type==CRITERIA_TYPE_COMPLETE_SCENARIO);++explicitRewards;}}
  InventoryResult CanStoreNewItem(uint32,uint32,ItemPosCountVec& dest,uint32 id,uint32 count,void*,bool){assert(id==128870&&count==1);if(!room)return EQUIP_ERR_INVENTORY_FULL;dest.push_back(1);return EQUIP_ERR_OK;}
- Item* StoreNewItem(ItemPosCountVec const&,uint32,bool,uint32,std::set<uint32> const&,std::vector<uint32> const&,uint32){if(!storage)return nullptr;owned=true;return &parent;}
+ Item* StoreNewItem(ItemPosCountVec const&,uint32,bool,uint32,std::set<uint32> const&,std::vector<uint32> const&,uint32,bool refund=false,bool autoEquip=false) {assert(!refund&&!autoEquip);if(!storage)return nullptr;owned=true;return &parent;}
  void SendEquipError(InventoryResult,void*,void*,uint32){++errors;}
  QuestStatusData*getQuestStatus(uint32 id){quest.Status=status;return id==questId&&status?&quest:nullptr;}
  void AddDelayedEvent(uint64_t delay,std::function<void()>&&fn){tasks.push_back({clock+delay,std::move(fn)});}void AddQuestDelayedEvent(uint32,uint64_t,std::function<void()>&&);
@@ -81,7 +85,7 @@ struct GameObject{
 struct GameObjectAI{GameObject* go;explicit GameObjectAI(GameObject* g):go(g){}virtual ~GameObjectAI()=default;virtual bool GossipHello(Player*,bool){return false;}virtual void OnStateChanged(uint32,Unit*){}virtual ObjectGuid GetGUID(int32){return {};}virtual void SetGUID(ObjectGuid const&,int32){}virtual uint32 GetData(uint32){return 0;}virtual void UpdateAI(uint32){};};
 struct GameObjectScript{explicit GameObjectScript(char const*){}virtual ~GameObjectScript()=default;virtual GameObjectAI* GetAI(GameObject* g)const{return new GameObjectAI(g);}virtual bool OnGossipHello(Player*,GameObject*){return false;}virtual void OnLootStateChanged(GameObject*,uint32,Unit*){}};
 GameObjectScript* currentScript;
-struct ScriptMgr{void OnGameObjectLootStateChanged(GameObject* g,uint32 s,Unit* u){currentScript->OnLootStateChanged(g,s,u);}}scripts;auto* sScriptMgr=&scripts;
+void ScriptMgr::OnGameObjectLootStateChanged(GameObject* g,uint32 s,Unit* u){currentScript->OnLootStateChanged(g,s,u);}
 struct ObjectAccessor{static Player*FindPlayer(ObjectGuid id){auto i=players.find(id);return i==players.end()?nullptr:i->second;}static Player* GetPlayer(GameObject&,ObjectGuid id){return FindPlayer(id);}template<class T>static Creature* GetCreature(T&,ObjectGuid id){auto i=actors.find(id);return i==actors.end()||i->second.removed?nullptr:&i->second;}};
 GameObject door;Creature garona;
 GameObject*Creature::FindNearestGameObject(uint32 id,float distance){assert(id==251106&&distance==60);return &door;}

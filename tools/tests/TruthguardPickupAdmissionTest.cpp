@@ -15,8 +15,10 @@ enum { CLASS_PALADIN=2, QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1, GO_R
     NULL_BAG=255, NULL_SLOT=255, GAMEOBJECT_TYPE_CHEST=3, GAMEOBJECT_TYPE_FISHINGNODE=17,
     INVENTORY_SLOT_BAG_0=255, EQUIPMENT_SLOT_MAINHAND=15, EQUIPMENT_SLOT_OFFHAND=16,
     ITEM_FIELD_CREATOR=1, ITEM_FIELD_DYNAMIC_FLAGS=2, ITEM_FLAG_CHILD=4 };
-using ItemPosCountVec = std::vector<uint32>;
+struct ItemPosCountVec:std::vector<uint32>{void emplace_back(std::uint16_t,uint32){assert(false);}};
 enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_INVENTORY_FULL, EQUIP_ERR_CANT_EQUIP };
+constexpr InventoryResult EQUIP_ERR_INV_FULL=EQUIP_ERR_INVENTORY_FULL;
+
 #include "NativeCastResults.inc"
 uint32 warnings=0;
 #define TC_LOG_WARN(...) (++warnings)
@@ -47,7 +49,7 @@ struct LootItem
     std::set<uint32> GetAllowedLooters() const { return {}; }
 };
 struct Loot
-{
+{uint32 objGuid=0;
     LootItem item;
     uint32 gold=0, unlootedCount=1;
 #include "NativeIsLooted.inc"
@@ -81,6 +83,12 @@ struct Player;
 struct GameObject;
 struct GameObjectAI;
 struct Unit { virtual ~Unit()=default; virtual Player* ToPlayer() { return nullptr; } };
+struct GameObject;struct Unit;
+struct ScriptMgr
+{ template<class... Args> bool CanAutoEquipLoot(Args&&...){return false;}
+    void OnGameObjectLootStateChanged(GameObject* object,uint32 state,Unit* player);
+} scriptManager;
+auto* sScriptMgr=&scriptManager;
 struct Player : Unit
 {
     bool world=true,contact=true,alive=true,teleport=false,phase=true,visible=true,los=true,rewarded=false;
@@ -149,8 +157,7 @@ struct Player : Unit
         if(!room) return EQUIP_ERR_INVENTORY_FULL;
         destination.push_back(1); return EQUIP_ERR_OK;
     }
-    Item* StoreNewItem(ItemPosCountVec const&,uint32 identity,bool,uint32,std::set<uint32> const&,std::vector<uint32> const&,uint32)
-    {
+    Item* StoreNewItem(ItemPosCountVec const&,uint32 identity,bool,uint32,std::set<uint32> const&,std::vector<uint32> const&,uint32,bool refund=false,bool autoEquip=false) {assert(!refund&&!autoEquip);
         assert(identity==128866);
         if(!storeWorks) return nullptr;
         carried=true; return &storedItem;
@@ -228,14 +235,9 @@ struct GameObjectScript
 };
 #include "Policy.inc"
 #include "Callback.inc"
-struct ScriptMgr
-{
-    void OnGameObjectLootStateChanged(GameObject* object,uint32 state,Unit* player)
-    {
+void ScriptMgr::OnGameObjectLootStateChanged(GameObject* object,uint32 state,Unit* player){
         currentScript->OnLootStateChanged(object,state,player);
     }
-} scriptManager;
-auto* sScriptMgr=&scriptManager;
 GameObjectAI* GameObject::AI() const { static GameObjectAI defaultAI(nullptr); return &defaultAI; }
 #include "NativeSetLootState.inc"
 bool CompletedLoot(Loot* loot,GameObject* go)
