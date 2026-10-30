@@ -1,3 +1,4 @@
+#requires -Version 7.0
 param([Parameter(Mandatory=$true)][string]$Executable,[Parameter(Mandatory=$true)][string[]]$Arguments,[Parameter(Mandatory=$true)][string]$InputFile,[Parameter(Mandatory=$true)][string]$OutputFile,[Parameter(Mandatory=$true)][string]$ErrorFile)
 $ErrorActionPreference='Stop'
 if([IO.Path]::GetFileName($Executable) -notin @('mysql.exe','mariadb.exe')){throw 'This helper owns only a native SQL client process'}

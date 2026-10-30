@@ -1,3 +1,4 @@
+#requires -Version 7.0
 param([Parameter(Mandatory=$true)][string]$EvidenceDirectory,[ValidateSet('World','Hotfix')][string]$Database='World',[Parameter(Mandatory=$true)][scriptblock]$Test)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
@@ -23,8 +24,9 @@ try{
  # Controlled denied-write probe: even a failed TEMP setup cannot fall through
  # to production DML. WHERE0 additionally prevents data changes if grants regress.
  $canary=if($Database -eq 'Hotfix'){'hotfix_data'}else{'conditions'}
- "DELETE FROM ``$($c[4])``.$canary WHERE 1=0;"|& $mysql --host=$($c[0]) --port=$($c[1]) --user=$reader --database=$($c[4]) --batch --raw 1> "$EvidenceDirectory/denied.stdout" 2> "$EvidenceDirectory/denied.stderr"
- if(!$LASTEXITCODE -or [IO.File]::ReadAllText("$EvidenceDirectory/denied.stderr") -notmatch 'ERROR 1142 .*DELETE command denied'){throw 'Persistent DELETE privilege was not denied'}
+ [IO.File]::WriteAllText("$EvidenceDirectory/denied.sql","DELETE FROM ``$($c[4])``.$canary WHERE 1=0;")
+ $deniedCode=& "$PSScriptRoot/Invoke-NativeSqlFiles.ps1" -Executable $mysql -Arguments @("--host=$($c[0])","--port=$($c[1])","--user=$reader","--database=$($c[4])",'--batch','--raw') -InputFile "$EvidenceDirectory/denied.sql" -OutputFile "$EvidenceDirectory/denied.stdout" -ErrorFile "$EvidenceDirectory/denied.stderr"
+ if(!$deniedCode -or [IO.File]::ReadAllText("$EvidenceDirectory/denied.stderr") -notmatch 'ERROR 1142 .*DELETE command denied'){throw 'Persistent DELETE privilege was not denied'}
  $env:CODEX_SQL_READER_USER=$reader;$env:CODEX_SQL_READER_PASSWORD=$secret
  & $Test
 }finally{
