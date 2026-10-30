@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-31",
+  "scope": "Only Erunak102826/Grash105298/Adel104853 final-damage wound guards in Sharasdal1066. Healing thresholds, progression recipients, raw delayed callbacks, bosses/loot and actual full client sequence remain separate/open.",
+  "cause": "All three existing guards ran in raw DamageTaken and compared template GetHealth. Native98..110 target scaling can turn a smaller raw hit into a lethal target-relative hit, or cause the raw/base comparison to block an ordinary high-scale hit. The active-only raw hook also does not retain suspended original content policy. Losing a healing companion can remove its existing narrative/puzzle path. This repair changes the guard units/order, not the content rules.",
+  "sources": [
+    {
+      "source": "Local complete914-line Sharasdal.cpp, full instance1600, CreatureAISelector/ScriptMgr, native Unit::DealDamage/GetHealth and Creature::GetHealthMultiplierForTarget/current+suspended dispatch",
+      "review": "All companion constructors/reset/damage/heal/movement/actions/timers/click paths, bosses, waterwall, direct legacy pickup and registration read. Whole remaining script is pinned unchanged. Native ScriptName factory takes precedence over AIName for these ordinary static actors; Grash retaining AIName SmartAI is not grounds to remove/replace its selected CreatureScript."
+    },
+    {
+      "source": "Fresh matching26972 DB2+readonly Hotfix/World context",
+      "review": "Exactly3 script bindings:102826/npc_erunak_stonespeaker,104853/npc_adel_waterspeaker,105298/SmartAI/npc_grash;98..110 each. Six static spawns362063/362093,362078/362094,362066/362092 all map1600/phase6120. Scenario1066/class7. Native208093 effect0=6/aura226/self1; original additional125/63 effects catalogued without substituting CastSpell for AddAura or claiming full presentation. Full six-stage1066 tree read; initial Big Help2282/root47120 has49815/49861(amount2)/49900/50161; rescue2283/root47122 has49816/49957. No IDs/timings/phase invented."
+    },
+    {
+      "source": "C:/wamp64/www/TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "review": "Bounded matching scripts search for three exact actors returned none; not exhaustive history or modern behavior import."
+    },
+    {
+      "source": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+      "review": "Pinned full914-line donor obtained; relevant three raw/base-health/wound blocks match local originals. Fresh search also identifies dufernst9222216e0dda0708ae53e6e6f6b07db7d65ba46f and Titans6ff03c46b5a1ff0d5bc916bbe3b39ea9c8c03ffe raw hooks. No external fix imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No new footage/transcript/audio/client session. No retail choreography, route/voice/VFX or complete scenario claim."
+    }
+  ],
+  "implementation": "Only change each of the three overrides to DamageTakenAfterScaling and compare damage with GetHealth(attacker). Preserve native bounded arithmetic and active/suspended dispatch, zero before wound claim, original wait_heal claim before AddAura208093, Erunak Talk7/8, Grash Talk1/2, Adel Talk2/3 and STUNNED8. No owner redirect, group credit, healing, item/quest/criteria grant, timer/reset/retry/new ScriptName or SQL/configuration change. Exact whole-script certificate reverses only these three methods plus terminal LF normalization.",
+  "validation": {
+    "baseline": "3600 pinned32bfe713f ASAN contexts reproduce1152 lethal bypasses and144 ordinary-hit overblocks. Expected-broken controlled counterfactuals, not live incidents.",
+    "repaired": "3621 ASAN actual methods/native GetHealth/GetHealthMultiplierForTarget/full bounded scaling+instance/primary/suspended dispatch contexts. Three roles x four player/pet/guardian/NPC labels x four scales x three health fractions x five damage intensities x five primary/suspended/alias/missing-active/AI-disabled modes. Repeated lethal hits retain one aura/speech/stun; nonlethal, unscaled/missing-stat, null callback and UINT32_MAX/reentrant aura/rejected aura paths covered. World, labels, AddAura result, health/death decision remain controlled; no progression/heal services in this host.",
+    "native": "Fresh typed26972+readonly Hotfix all six-stage criteria and208093 effects; full-EOF read-only live binding/scaling/six-spawn/scenario readback with terminal marker/stderr/exit checks. No live updater/data mutation.",
+    "selected_pe": "All three actual GetAI factories select new0xa8 and empty raw0xa0; native constructors zero exact wound latch0x59/0x5a/0x59. Actual incoming attacker reaches native target-relative HP; zero, once latch, claim-before208093/self aura, exact speech pairs and native stun retained, exactly4 calls/no progression. Actual FactorySelector scripted result returns before AIName lookup; Grash SmartAI label unchanged. Native exact double UINT32_MAX bound and instance/current+suspended guard bridge independently retained.",
+    "canonical": "PASS3621/native/EOF World/selected installed PE; retained2408 Truthguard,1536 Silver Hand and768 Tuure guard/heal contexts, Scepter VerifyReleaseBinary, Warlock/mover and209 numeric bound+selected PE. Earlier23 damage suites belong to prior unchanged core a055e4d02 validation; not falsely rerun/certified for this separate script edit. Existing native float-conversion/unused baseline and shared fixture warnings visible; none suppressed."
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "952C5BE2BFD97FDEE5C3304D83A450298768BEADC43AD32CD289D580B2849501",
+      "worldserver.map": "96D53DF917A18DFED906165F49CBF6C50C2270AB23BF8B646CA64192090A42C8",
+      "bnetserver.exe": "A46063595CA7AE150FED5C7E11521BE037A2F2045EBB02CA481D0A2DEDF75AEB",
+      "bnetserver.map": "D11D91B49409E27954C30B35C9E0EC8C7E4639FB481FA90A5128E65F5B620DD6"
+    },
+    "build": "Original scripts/common Release libraries built; both final links staged without global OutDir and selected staged implementation checked before offline four-file EXE/MAP promotion. Backup/copy/protected config/certificate/DLL hashes verified.",
+    "runtime": "Fresh checks found no user/unknown world or bnet. Only owned hidden world10668 reached ready, own shutdown0/exit0/stderr0/newDBErrors0; process gone. No user server stopped or hidden server left."
+  },
+  "diagnostics": "Before/after canonical/own-test crash and log snapshots, completion/exit/output checks clean for baseline/repaired/native/build/link/PE/promotion/owned startup/retained runs. No failed iteration for this focused fix. Active Crashes empty/no reports removed; mixed6090-byte shared101430/103151LINK2 DBErrors remains unchanged SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0. No active log truncated, security boundary bypassed or character data reset. Closed diagnostic hash archive follows focused commit.",
+  "remaining": "OPEN: all three40pct heal release callbacks read pre-application HP; Grash50pct speech and90pct/three-criterion intro need separate native post-heal/lifecycle/eligibility/receipt review. Adel7s click retains raw clicker/this, no retry/reentry/duplicate guard; boss death recipients/conversation ownership, original native progression and legacy AddItem/delete-on-activation pickup/full bags/equip/return need independent repairs. Existing source does not certify full1066; no direct fix inferred for these paths. Actual client combat/wound rendering/voice/healing/follow/route/party/faction/pet and full36 remain user-owned/OPEN. Reset3 consumed; no new reset authorized."
+}

@@ -83,9 +83,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
                 if (!wait_heal)
@@ -410,9 +410,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
                 if (!wait_heal)
@@ -548,9 +548,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
                 if (!wait_heal)
