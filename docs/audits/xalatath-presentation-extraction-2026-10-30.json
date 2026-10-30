@@ -1,0 +1,8 @@
+{
+  "issue": "Xalatath retained presentation extraction after intervening artifact helpers",
+  "date": "2026-10-30",
+  "cause": "The fixture sliced from namespace XalatathPresentation through namespace XalatathPickup. New unrelated Fire/Blood/Frost/Monk helpers now occupy that interval and made the host require fire_return_recovery.h and unrelated service APIs.",
+  "fix": "Extract balanced production XalatathPresentation namespace and complete scene_xalatath_pickup class separately, retaining the real wrapper/complete method and every original assertion. No production behavior changed.",
+  "checks": "Counterfactual existing fixture fails C1083, repaired fixture passes all scene/lifecycle/native force-equip/paired-item admission, status, error, cancellation and repeat tests. All seven presentation suites and canonical Scepter/fullbag PE pass. Captured failed/passing diagnostics: no new/changed crash or appended server/DBErrors failure. Actual client remains separate.",
+  "evidence": ".codex/stromkar-fullbag-canonical-checks-2026-10-30 and .codex/stromkar-fullbag-presentations-2026-10-30-run2"
+}
