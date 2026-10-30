@@ -656,5 +656,10 @@
     "audit": "docs/audits/artifact-audit-reader-close-2026-10-30.json",
     "status": "Pinned f629 actual main publisher reproduces rejected-input reader locks; explicit finally disposal fixes them. Portable baseline/ordinary checks and full20tables465351 count/byte/native export pass. No runtime/data changes.",
     "next": "Fire247494 real128820 loot at11997/1480/957/4 then1125/1500 completion->196020; current28map23LINK review retained."
+  },
+  "scenario_lfg_python_launcher_2026_10_30": {
+    "audit": "docs/audits/scenario-lfg-python-launcher-2026-10-30.json",
+    "status": "WindowsApps python alias caused final PE invocation failure; runner now selects real bundled interpreter/explicit override and full native/catalog/actual20A9F355 PE checks pass. No game/config/character change.",
+    "next": "Finish already applied Fire World12 loot audit/commit; callback1125/1500->196020 and deferred196023 start recheck remain next."
   }
 }

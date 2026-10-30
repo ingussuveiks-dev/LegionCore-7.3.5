@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-30",
+  "status": "Scenario lifecycle test interpreter resolution repaired; full native/catalog/actual Release PE checks pass",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "Test-ScenarioLfgLifecycle preferred Get-Command python, which resolved an existing WindowsApps App Execution Alias without an installed interpreter. Native/catalog/library checks passed, but the final real PE check failed with Python was not found. Prefer actual existing bundled interpreter, allow explicit -PythonExecutable, otherwise exclude WindowsApps aliases from command discovery; retain unavailable-runtime failure and unchanged PE check.",
+  "change": "Optional -PythonExecutable preserves caller choice. Default prefers existing primary-runtime interpreter under current user profile, then actual non-alias python applications; clear error if unavailable. Same verify_scenario_lfg_release.py still executes with the selected Release path. User PATH/App Execution Alias settings unchanged.",
+  "validation": "Initial ordinary fire-loot-shared run failed visibly at launcher after native completion/exit/relog/faction/group, matching26972 catalog and fresh original-library checks. Repaired ScenarioLfgLifecycle -VerifyReleaseBinary runs all the same checks plus actual canonical20A9F355 PE10 call paths successfully. Old C4390/C4244 fixture warnings remain visible. Initial failure is not reported as a passing ordinary test.",
+  "diagnostics": "Before/after canonical+own crash hashes/log lengths/timestamps and exits/stdout/stderr inspected. No new/changed production crash, server warning/error/assertion or DBErrors. Mixed3915-byte sharedLINK2 untouched; no game server started/stopped or executable/configuration/character change for this runner fix.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\scenario-lfg-python-launcher-2026-10-30",
+    "files": 6,
+    "result": "Initial launcher failure and passing full-regression diagnostics copied preserving bytes; source/destination/source SHA256 verified. No active production report removed."
+  },
+  "evidence": [
+    ".codex/fire-loot-shared-2026-10-30",
+    ".codex/scenario-lfg-real-python-2026-10-30"
+  ],
+  "remaining": "Fire World12 is applied with clean owned9724 startup and live20-refusal data pass; finish its audit/commit, then real1125/1500->196020 callback plus delayed196023 source17 context recheck. Current28map/23LINK inventory and full36/client remain OPEN."
+}

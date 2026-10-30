@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary, [string]$ReleaseDirectory)
+param([switch]$VerifyReleaseBinary, [string]$ReleaseDirectory, [string]$PythonExecutable)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/scenario-lfg-lifecycle"
@@ -64,8 +64,12 @@ if($VerifyReleaseBinary){
  }
  if((Get-Item "$repo/src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp").LastWriteTimeUtc -gt (Get-Item "$repo/build-extractors/src/server/scripts/Release/scripts.lib").LastWriteTimeUtc){throw 'Final-link scripts library predates introduction cleanup'}
  'PASS: Release contains cleanup implementation; original final-link libraries are fresh.'
- $python=Get-Command python -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1
- if(!$python){$python='C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'}
- & $python "$PSScriptRoot/verify_scenario_lfg_release.py" $ReleaseDirectory
+ if(!$PythonExecutable){
+  $bundled=Join-Path ([Environment]::GetFolderPath('UserProfile')) '.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'
+  if(Test-Path -LiteralPath $bundled -PathType Leaf){$PythonExecutable=$bundled}
+  else{$PythonExecutable=Get-Command python -CommandType Application -ErrorAction SilentlyContinue|Where-Object {$_.Source -notmatch '[\\/]WindowsApps[\\/]python(?:3)?\.exe$'}|Select-Object -ExpandProperty Source -First 1}
+ }
+ if(!$PythonExecutable -or !(Test-Path -LiteralPath $PythonExecutable -PathType Leaf)){throw 'Python runtime unavailable; pass -PythonExecutable with the installed interpreter path'}
+ & $PythonExecutable "$PSScriptRoot/verify_scenario_lfg_release.py" $ReleaseDirectory
  if($LASTEXITCODE){throw 'Linked Release scenario lifecycle verification failed'}
 }
