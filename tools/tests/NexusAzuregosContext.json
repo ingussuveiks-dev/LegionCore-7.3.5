@@ -14,7 +14,10 @@
     "conversation_creature": "entry IN(2140,1681,1682,1683,1684,2143)",
     "spell_script_names": "spell_id IN(207752,209811,211768,207797,211763,211725)",
     "gameobject_template": "entry=248515",
-    "gameobject": "id=248515"
+    "gameobject": "id=248515",
+    "creature_template_addon": "entry IN(104832,105799,105800,105801,104902,106699,106700,106701,106702,106747,104546)",
+    "creature_addon": "guid IN(SELECT guid FROM creature WHERE id IN(104832,105799,105800,105801,104902,106699,106700,106701,106702,106747,104546))",
+    "creature_template_scaling": "Entry IN(104832,105799,105800,105801,104902,106699,106700,106701,106702,106747,104546)"
   },
   "columns": {
     "smart_scripts": [
@@ -382,6 +385,33 @@
       "state",
       "isActive",
       "personal_size"
+    ],
+    "creature_template_addon": [
+      "entry",
+      "path_id",
+      "mount",
+      "bytes1",
+      "bytes2",
+      "emote",
+      "auras"
+    ],
+    "creature_addon": [
+      "guid",
+      "path_id",
+      "mount",
+      "bytes1",
+      "bytes2",
+      "emote",
+      "auras"
+    ],
+    "creature_template_scaling": [
+      "Entry",
+      "LevelScalingMin",
+      "LevelScalingMax",
+      "LevelScalingDeltaMin",
+      "LevelScalingDeltaMax",
+      "LevelScalingDuration",
+      "VerifiedBuild"
     ]
   }
 }

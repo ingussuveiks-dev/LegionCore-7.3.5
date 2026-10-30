@@ -1,4 +1,4 @@
-"""Existing native dispatch consumed by the Priest-only SQL condition repair."""
+"""Existing native dispatch consumed by the separate Mage/Priest SQL repairs."""
 from pathlib import Path
 import runpy,bisect
 from capstone import Cs,CS_ARCH_X86,CS_MODE_64,CS_OP_MEM,CS_OP_REG
@@ -11,6 +11,10 @@ for p,q in (
  ('?ProcessEvent@SmartScript@@','?GetConditionsForSmartEvent@ConditionMgr@@'),
  ('?IsObjectMeetToConditionList@ConditionMgr@@','?Meets@Condition@@'),
  ('?Meets@Condition@@','?FindNearestCreature@WorldObject@@'),
+ ('?Meets@Condition@@','?GetScenario@ScenarioMgr@@'),
+ ('?Meets@Condition@@','?GetCriteriaTree@AchievementGlobalMgr@@'),
+ ('?Meets@Condition@@','?GetAchievementMgr@Scenario@@'),
+ ('?Meets@Condition@@','?IsCompletedCriteriaTree@?$AchievementMgr@VScenario@@@@'),
  ('?SetScript9@SmartAI@@','?SetScript9@SmartScript@@'),
  ('?SetScript9@SmartScript@@','?GetScript@SmartAIMgr@@'),
  ('?SetScript9@SmartScript@@','?InitTimer@SmartScript@@'),
@@ -20,4 +24,4 @@ a=n['symbol']('?SetData@SmartAI@@');i=bisect.bisect_right(n['starts'],a-n['base'
 body=list(d.disasm(n['binary'][n['offset'](a):n['offset'](a)+n['base']+e-a],a))
 # ProcessEventsFor(this RCX, event EDX, unit R8, var0 R9, ...).
 assert any(x.mnemonic=='xor' and len(x.operands)==2 and all(o.type==CS_OP_REG and o.reg==X86_REG_R8D for o in x.operands) for x in body),'SetData no longer passes actual null Unit'
-print('PASS actual Release SmartAI null-Unit SetData, root precheck, native condition-target/nearest-creature and native timed-list initialization/update dispatch. SQL shapes and scoped ASAN host verify Mage1101 receiver data; actual client handoff remains separate.')
+print('PASS actual Release null-Unit SetData, condition targets/nearest-creature, real scenario/criteria-tree completion and native timed-list dispatch. Separate scoped hosts verify Mage1101 and Priest1065 data; actual client handoff remains separate.')

@@ -19,7 +19,10 @@ constexpr uint32 UNIT_STATE_CASTING=1,CONDITION_NEAR_CREATURE=29,MAX_CONDITION_T
 struct Unit;using Creature=Unit;using Player=Unit;using WorldObject=Unit;
 struct SmartScript;struct SmartScriptHolder;struct Condition;struct GameObject;
 struct SmartAI {SmartScript*script=nullptr;SmartScript*GetScript(){return script;}void SetData(uint32,uint32);void SetScript9(SmartScriptHolder&,uint32,Unit*);void SetCombatMove(bool){assert(false);}};
-struct Map{}world,otherWorld;
+struct Map{uint32 id=1;bool instance=true;Map*ToInstanceMap(){return instance?this:nullptr;}uint32 GetInstanceId(){return id;}}world,otherWorld;
+#ifdef NEXUS_HEALING_TEST
+#include "NexusHealingServices.inc"
+#endif
 std::vector<Unit*> grid;uint32 clockTime=0;bool failCast=false;
 struct Receipt{uint32 time,action,payload;};std::vector<Receipt> receipts;
 struct Aura{void ModStackAmount(int32){assert(false);}};
@@ -35,6 +38,10 @@ struct Unit {
  void GetPosition(float&a,float&b,float&c){a=x;b=c=0;}
  SpellCastResult CastSpell(Unit*target,uint32 spell,bool triggered){assert(target==this&&!triggered&&spell==207752);receipts.push_back({clockTime,11,spell});return failCast?SPELL_FAILED_BAD_TARGETS:SPELL_CAST_OK;}
  void CastSpell(float,float,float,uint32,bool){assert(false);}
+#ifdef NEXUS_HEALING_TEST
+ uint32 health=1,maxHealth=100;float GetHealthPct(){return 100.0f*health/maxHealth;}uint32 GetMaxHealth(){return maxHealth;}
+ bool InInstance(){return map&&map->instance;}uint32 GetInstanceId(){return map?map->id:0;}HealingAchievement*GetAchievementMgr(){return &healingScenario.achievement;}
+#endif
 };
 bool IsCreature(Unit*u){return u&&!u->player;}bool IsGameObject(Unit*){return false;}bool IsUnit(Unit*u){return u!=nullptr;}
 struct SmartGameObjectAI;struct GameObject{SmartGameObjectAI*AI(){return nullptr;}SpellCastResult CastSpell(Unit*,uint32){return SPELL_FAILED_BAD_TARGETS;}};struct SpellInfo{};
@@ -58,6 +65,10 @@ struct Hooks {bool allow=true;bool OnConditionCheck(Condition*,ConditionSourceIn
 #include "ConditionPrefix.inc"
  switch(ConditionType){
 #include "NearCondition.inc"
+#ifdef NEXUS_HEALING_TEST
+#include "CriteriaCondition.inc"
+#include "ScenarioCondition.inc"
+#endif
  default:assert(false);}
 #include "ConditionTail.inc"
 using ConditionList=std::vector<Condition*>;using ConditionReferenceContainer=std::map<uint32,ConditionList>;using ConditionTypeContainer=std::map<uint32,ConditionList>;using SmartEventConditionContainer=std::map<std::pair<int64,uint32>,ConditionTypeContainer>;
@@ -100,6 +111,9 @@ struct SmartGameObjectAI {void SetScript9(SmartScriptHolder&,uint32,Unit*){asser
  switch(e.GetEventType()){
 #include "UpdateEvents.inc"
 #include "DataEvent.inc"
+#ifdef NEXUS_HEALING_TEST
+#include "HealthEvent.inc"
+#endif
  case SMART_EVENT_DEATH:ProcessAction(e,unit,var0,var1,bvar,spell,gob);break;
  default:assert(false);}
 }
@@ -112,7 +126,11 @@ struct SmartGameObjectAI {void SetScript9(SmartScriptHolder&,uint32,Unit*){asser
  // Retain actual payload and native timed ordering; endpoint services only.
  case 12:receipts.push_back({clockTime,12,e.payload});break;
  case 41:receipts.push_back({clockTime,41,0});break;
- case 205:case 206:receipts.push_back({clockTime,e.actionType,e.payload});break;
+ case 205:case 206:receipts.push_back({clockTime,e.actionType,e.payload});
+#ifdef NEXUS_HEALING_TEST
+ if(e.actionType==205&&acceptCriteria){if(e.payload==49864)healingScenario.achievement.scions=true;if(e.payload==50369)healingScenario.healed=true;}
+#endif
+ break;
  default:assert(false);}
 #include "LinkTail.inc"
 #include "InitTimer.inc"
@@ -146,4 +164,5 @@ int main(int argc,char**argv){
  // synthesized progress. Re-entry recovery itself is a separate native path.
  for(uint32 mode=0;mode<3;++mode){Run r(rows,fixed);if(mode==0)r.source.alive=false;if(mode==1)r.source.map=&otherWorld;if(mode==2)r.source.phase=2;for(uint32 i=0;i<3;++i)r.Die(i,&r.player);assert(r.source.auraRemovals==0&&receipts.empty());}
  std::cout<<"PASS native null-invoker baseline blocks receiver; repaired3 source guards: "<<runs<<" full6-order x player/pet/guardian/environment runs, real DATA/LINK/list timers/aura removal, native rejected-cast and busy-cast deferral, repeated/negative/boundary/map/phase/missing-receiver guards and all9 preserved timed payloads. Allocation, combat, criteria/chat and client endpoints remain controlled.\n";
+ return 0;
 }

@@ -6148,5 +6148,181 @@
       "isActive": 0,
       "personal_size": 0
     }
+  ],
+  "creature_template_addon": [
+    {
+      "entry": 104546,
+      "path_id": 0,
+      "mount": 0,
+      "bytes1": 33554432,
+      "bytes2": 0,
+      "emote": 0,
+      "auras": ""
+    },
+    {
+      "entry": 105799,
+      "path_id": 0,
+      "mount": 0,
+      "bytes1": 0,
+      "bytes2": 0,
+      "emote": 0,
+      "auras": "209811 207512"
+    },
+    {
+      "entry": 105800,
+      "path_id": 0,
+      "mount": 0,
+      "bytes1": 0,
+      "bytes2": 0,
+      "emote": 0,
+      "auras": "209811 207512"
+    },
+    {
+      "entry": 105801,
+      "path_id": 0,
+      "mount": 0,
+      "bytes1": 0,
+      "bytes2": 0,
+      "emote": 0,
+      "auras": "209811 207512"
+    },
+    {
+      "entry": 106699,
+      "path_id": 0,
+      "mount": 0,
+      "bytes1": 0,
+      "bytes2": 0,
+      "emote": 0,
+      "auras": "208026 209379"
+    },
+    {
+      "entry": 106700,
+      "path_id": 0,
+      "mount": 0,
+      "bytes1": 0,
+      "bytes2": 0,
+      "emote": 0,
+      "auras": "209811 207512"
+    },
+    {
+      "entry": 106701,
+      "path_id": 0,
+      "mount": 0,
+      "bytes1": 0,
+      "bytes2": 0,
+      "emote": 0,
+      "auras": "209811 207512"
+    },
+    {
+      "entry": 106702,
+      "path_id": 0,
+      "mount": 0,
+      "bytes1": 0,
+      "bytes2": 0,
+      "emote": 0,
+      "auras": "209811 207512"
+    }
+  ],
+  "creature_addon": [],
+  "creature_template_scaling": [
+    {
+      "Entry": 104546,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 2000,
+      "VerifiedBuild": 27980
+    },
+    {
+      "Entry": 104832,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 100,
+      "VerifiedBuild": null
+    },
+    {
+      "Entry": 104902,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 100,
+      "VerifiedBuild": null
+    },
+    {
+      "Entry": 105799,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 100,
+      "VerifiedBuild": null
+    },
+    {
+      "Entry": 105800,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 100,
+      "VerifiedBuild": null
+    },
+    {
+      "Entry": 105801,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 100,
+      "VerifiedBuild": null
+    },
+    {
+      "Entry": 106699,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 1000,
+      "VerifiedBuild": 27980
+    },
+    {
+      "Entry": 106700,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 100,
+      "VerifiedBuild": 27980
+    },
+    {
+      "Entry": 106701,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 100,
+      "VerifiedBuild": 27980
+    },
+    {
+      "Entry": 106702,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 100,
+      "VerifiedBuild": 27980
+    },
+    {
+      "Entry": 106747,
+      "LevelScalingMin": 98,
+      "LevelScalingMax": 110,
+      "LevelScalingDeltaMin": 0,
+      "LevelScalingDeltaMax": 0,
+      "LevelScalingDuration": 100,
+      "VerifiedBuild": null
+    }
   ]
 }
