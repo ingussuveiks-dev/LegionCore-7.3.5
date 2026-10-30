@@ -397,6 +397,10 @@ class spell_stromkar_opening_recoil : public SpellScript
             PreventHitDefaultEffect(effect);
             return;
         }
+        // Recoil travels away from the body but must leave the participant
+        // looking back at it. This is the landing-to-source angle, independent
+        // of the player's initial facing and the collision-shortened distance.
+        landing.SetOrientation(landing.GetAngle(source));
         GetHitDest()->Relocate(landing);
         SetExplTargetDest(landing);
     }

@@ -1,8 +1,8 @@
 """Verify the selected awakening AI, recoil hooks and native arrival consumers."""
 from pathlib import Path
 import runpy,struct
-from capstone import CS_OP_IMM,CS_OP_MEM
-from capstone.x86_const import X86_REG_RIP
+from capstone import CS_OP_IMM,CS_OP_MEM,CS_OP_REG
+from capstone.x86_const import X86_REG_RIP,X86_REG_BPL,X86_REG_R8B,X86_REG_RSP
 p=runpy.run_path(str(Path(__file__).with_name('verify_stromkar_execute_jump_release.py')))
 n,ins,values=(p[k] for k in ('n','instructions','values'))
 ai='npc_stromkar_awakening@@'
@@ -41,6 +41,23 @@ for prefix in ('?GetFirstCollisionPosition@WorldObject@@','?GetHeight@WorldObjec
     calls_prefix(launch,prefix)
 calls_prefix(check,'?Controller@'+script)
 calls_prefix('?Controller@'+script,'?GetOriginalTarget@SpellScript@@')
+# The second angle is landing->source, after the existing outward fallback.
+# Normalized orientation is then copied with the destination and consumed by
+# the native MoveJump(Position) wrapper. Merely storing it without enabling
+# facing would still leave the participant facing away along the flight path.
+angle=n['symbol']('?GetAngle@Position@@QEBAMPEBU1@@Z')
+angle_calls=[i for i,x in enumerate(ins(launch)) if x.mnemonic=='call' and x.operands[0].type==CS_OP_IMM and x.operands[0].imm==angle]
+assert len(angle_calls)==2,'Landing-to-body facing calculation missing'
+jump=list(ins('?EffectJumpDest@Spell@@'))
+def operand_is_register(x,reg):return x.type==CS_OP_REG and x.reg==reg
+set_recoil=[i for i,x in enumerate(jump) if x.mnemonic=='mov' and operand_is_register(x.operands[0],X86_REG_BPL) and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==1]
+assert len(set_recoil)==1
+assert {1539,206360,206361}<={o.imm for x in jump[max(0,set_recoil[0]-13):set_recoil[0]] for o in x.operands if o.type==CS_OP_IMM},'Facing flag not scoped to native recoil pair/map'
+facing=[jump[i+1].operands[0].imm for i,x in enumerate(jump[:-1]) if x.mnemonic=='test' and operand_is_register(x.operands[0],X86_REG_BPL) and jump[i+1].mnemonic=='jne']
+assert len(facing)==1
+enabled=next(x for x in jump if x.address==facing[0])
+assert enabled.mnemonic=='mov' and operand_is_register(enabled.operands[0],X86_REG_R8B) and enabled.operands[1].type==CS_OP_IMM and enabled.operands[1].imm==1,'Scoped recoil does not enable spline facing'
+assert any(x.mnemonic=='mov' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.base==X86_REG_RSP and x.operands[0].mem.disp==0x40 and operand_is_register(x.operands[1],X86_REG_R8B) for x in jump),'Facing flag not passed to actual MoveJump ABI'
 def references(method):
     result=set()
     for x in ins(method):

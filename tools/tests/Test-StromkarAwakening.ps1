@@ -1,6 +1,7 @@
-param([string]$MigrationPath,[switch]$VerifyLiveData,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory)
+param([string]$MigrationPath,[switch]$VerifyLiveData,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory,[switch]$FacingBaseline)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..");$out="$repo/build-extractors/runtime-test/stromkar-awakening"
 if(!$MigrationPath){$MigrationPath="$repo/sql/updates/world/2026_10_28_03_stromkar_awakening.sql"}
+if($FacingBaseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify repaired Release'}
 function Section([string]$s,[string]$start,[string]$end){$s=$s.Replace("`r`n","`n");$a=$s.IndexOf($start);$b=$s.IndexOf($end,[Math]::Max(0,$a));if($a -lt 0 -or $b -le $a){throw "Missing native $start"};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories @($repo,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  $migration=Get-Content $MigrationPath -Raw;$sha=(Get-FileHash $MigrationPath -Algorithm SHA1).Hash
@@ -31,7 +32,14 @@ UNION ALL SELECT 103398,9,1,0,0,100,1,0,0,41,0,0,1,0,0,0,0,'TS - Despawn' WHERE 
  if($rows -notcontains "baseline-click-credit`t1" -or $rows -notcontains "binding`tSmartAI`tnpc_stromkar_awakening"){throw 'Original click counterfactual/new binding missing'}
  $data=@($rows|Where-Object {$_ -like "row`t*"}|ForEach-Object {$_.Substring(4)});$expected=@("0`t9`t0`t41105`t0`t0`t0","0`t15`t0`t1`t0`t0`t0","0`t22`t0`t1539`t0`t0`t0","0`t32`t0`t16`t0`t0`t0","0`t36`t0`t0`t0`t0`t0","0`t44`t0`t1037`t7`t0`t0");if(Compare-Object $data $expected){throw 'Native late-stun gates differ'};[IO.File]::WriteAllLines("$out/rows.tsv",[string[]]$data)
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
- [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncd /d `"$out`"`ncl /nologo /EHsc /std:c++17 /fsanitize=address /Zi `"$PSScriptRoot/StromkarAwakeningTest.cpp`" /Fe:test.exe /Fo:test.obj`nif errorlevel 1 exit /b 1`ntest.exe`nexit /b %errorlevel%`n")
+ $facingFlags=''
+ if($FacingBaseline){
+  $oldFacing=(& git -C $repo show e910406a6:src/server/scripts/Legion/ClassHalls/stromkar_awakening.h) -join "`n"
+  if($LASTEXITCODE){throw 'Pinned pre-facing controller unavailable'}
+  [IO.File]::WriteAllText("$out/FacingBaseline.h",$oldFacing)
+  $facingFlags="/DSTROMKAR_FACING_BASELINE /I`"$out`""
+ }
+ [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncd /d `"$out`"`ncl /nologo /EHsc /std:c++17 /fsanitize=address /Zi $facingFlags `"$PSScriptRoot/StromkarAwakeningTest.cpp`" /Fe:test.exe /Fo:test.obj`nif errorlevel 1 exit /b 1`ntest.exe`nexit /b %errorlevel%`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Actual controller/recoil regression failed'}
  # Reuse the established native condition/cast/arrival harness, retaining its
  # production bodies; only its controlled effect sink/profile differs here.

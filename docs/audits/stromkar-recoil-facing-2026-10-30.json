@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-30",
+  "status": "Focused facing repair checked and deployed; rendered client recoil facing still pending",
+  "report": "User reports actual recoil moves the character but leaves their back toward Zakajz. Existing current15F screenshot and statement retained privately; no new client traversal or reset requested.",
+  "cause": "Native target106 normalizes away the explicit source unit. The recoil script preserved its real original target for ownership but supplied no final facing. EffectJumpDest enabled facing only if an explicit objectGUID survived, leaving native MoveSpline to align the player with the outward flight. Both destination orientation and spline-facing enable are necessary.",
+  "repair": "Scoped actual206360/206361 recoil now calculates landing-to-original103398 facing after native floor/LOS/distance validation. Player/map1539 exact native pair explicitly enables that facing in MoveJump despite destination106 correctly removing its explicit object target. Native spline sets facing, instead of defaulting to outward travel direction. Initial player facing, fallback or authored landing, collision-shortened distance do not change the intended final direction. Other jumps retain their existing orientation policy. No later forced rotation, teleport, credit or character mutation.",
+  "coverage": [
+    "Pinned e910406a6 actual controller header fails the new landing-to-source angle assertion. Repaired ASAN controller covers64 combinations: authored/fallback x8 source directions x4 initial facings at translated coordinates. Existing real blast, arrival/stun/expiry, exactly-once progression, abort/reset, accepted/missing aura, actors and unrelated participants remain covered. Geometry/cast/aura endpoints are controlled, not a real client/WMO flight.",
+    "Actual extracted EffectJumpDest final-call section now tests empty normalized objectGUID, self-arrival target and hasOrientation=true for the exact player/recoil/map pair. NPC, foreign map, wrong child, Execute and ordinary explicit-object versus targetless paths stay isolated. Existing fixture had always returned GUID9 even with null target; corrected it to model native normalization. Pinned old core has no orientation enable. Native MotionMaster retains actual SetFacing(o) before Launch and failed-launch/arrival guards.",
+    "Actual linked recoil Launch has the second Position::GetAngle call for landing/source; core compiled map1539/206360/206361 predicate flows to the true hasOrientation byte passed into actual MoveJump ABI. Registered hooks/AI, source-target retention, native jump launch/arrival and earlier condition/Execute consumers still verified.",
+    "Full immutable awakening migration TEMP replay/ten custom refusals/live data, ASAN actual arrival cast/source17/condition cases, native self-target/failed launch suite pass. Shared native Execute landing, Skyhold destination/arrival (ASAN) and HeroicLeap impact/native26972 catalog pass. No SQL change.",
+    "Original game.lib and scripts.lib paths rebuilt and staged with actual generated link inputs. Four-file hash backup/promotion only with repeated fresh absence checks. Canonical awakening/live/PE, Scepter and previous completed-scene equip/native/PE checks pass. Owned worldserver34032 ready/graceful shutdown0/exit0/stderr0/newDBErrors0; protected configurations/certificates unchanged. No task server remains."
+  ],
+  "diagnostics": "Before/after canonical and test crashes/logs recorded for every run. No new/changed crash or appended server warning/error/assertion/DBErrors in passing runs. Known mixed4640-byte sharedLINK2 remains OPEN, untouched. Initial invocation omitted VerifyLiveData needed to reconstruct the original already-released migration baseline and stopped at expected-data assertion; rerun uses real released data. New controller passed, then old shared arrival fixture lacked native _arrivalMapId; added default uint32(-1), preserving ordinary behavior and allowing actual current production arrival extraction. First PE proof helper shadowed existing Register symbol string; renamed helper and full proof passes. Expected old-facing assertion is a counterfactual, not an ordinary success. Compiler conversion/enum warnings preserved.",
+  "release": {
+    "path": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "4C09ABB42E28411DD2FB219E0B4CD2A655539CC303DA69F6035A937D0D6CB2BE",
+      "bnetserver.exe": "F6DDA93E26372B4793C6DEB6341B3B690ED0E7C4CFF7558200FF8F5BFB3A9617",
+      "worldserver.map": "82CBB808A938689EEAA6C80B2ADB5B11A8BC352ADC45FA1B099B58CDBA7AB210",
+      "bnetserver.map": "D6D1A270BE24AF65CF9C4652F6887D8C571CF7151B20C842356AF30271455F48"
+    },
+    "backup": ".codex/release-before-stromkar-recoil-facing-2026-10-30/manifest.json",
+    "stage": ".codex/stromkar-recoil-facing-release-2026-10-30"
+  },
+  "evidence": ".codex/stromkar-recoil-facing-{counterfactual,baseline-native,native-pass,native-complete,shared-checks,build,pe-layout,pe-proof,pe-pass,promotion}-2026-10-30; build-extractors/runtime-test/stromkar-awakening",
+  "remaining": "Actual client facing/timing after new4C09ABB4 not yet confirmed. Recoil ground burst/cracks are NOT fixed by facing. Return button/Val kyr loss, initial blade too large, ritual missiles rather than beams, missingLINK2, original intermittent client initializer silence and all36 full traversal remain OPEN. No reset authorization; preserve Stage8 failed extraction and later genuine artifact acquisition/equip."
+}

@@ -2011,7 +2011,10 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
         arrivalCast.SpellId = delayCast->Spell;
         arrivalCast.Target = !delayCast->TargetGUID.IsEmpty() ? delayCast->TargetGUID : m_caster->GetGUID();
     }
-    m_caster->GetMotionMaster()->MoveJump(*destTarget, speedXY, speedZ, m_spellInfo->Id, !m_targets.GetObjectTargetGUID().IsEmpty(), &arrivalCast);
+    // Destination106 intentionally has no explicit object after normalization.
+    // Keep this scoped recoil's script-validated landing facing in the spline.
+    bool hasOrientation = (m_caster->IsPlayer() && stromkarRecoil) || !m_targets.GetObjectTargetGUID().IsEmpty();
+    m_caster->GetMotionMaster()->MoveJump(*destTarget, speedXY, speedZ, m_spellInfo->Id, hasOrientation, &arrivalCast);
 }
 
 void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & speedZ)

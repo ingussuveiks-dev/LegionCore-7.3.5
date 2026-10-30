@@ -117,7 +117,7 @@ SpellCastResult Unit::CastSpell(Unit* target,uint32 identity,bool triggered) {
 }
 struct ObjectAccessor { static Unit* GetUnit(Unit& owner,ObjectGuid identity) { assert(identity==1);return &owner; } };
 struct EffectMovementGenerator {
-    uint32 _arrivalSpellId=206456,_pointId=206455;
+    uint32 _arrivalSpellId=206456,_pointId=206455,_arrivalMapId=uint32(-1);
     ObjectGuid _arrivalSpellTargetGuid=1;
     bool _arrived=true;
     void Finalize(Unit&);

@@ -15,7 +15,7 @@ using SpellEffIndex=uint32;
 uint32 warnings=0;
 #define TC_LOG_WARN(...) (++warnings)
 struct ObjectGuid{uint64_t id=0;void Clear(){id=0;}bool IsEmpty()const{return !id;}bool operator==(ObjectGuid b)const{return id==b.id;}bool operator!=(ObjectGuid b)const{return id!=b.id;}bool operator<(ObjectGuid b)const{return id<b.id;}};
-struct Position{float x=0,y=0,z=0,o=0;void Relocate(Position const&p){*this=p;}float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}};
+struct Position{float x=0,y=0,z=0,o=0;void Relocate(Position const&p){*this=p;}float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}void SetOrientation(float angle){o=angle;}float GetAngle(Position const*p)const{return std::atan2(p->y-y,p->x-x);}};
 using WorldLocation=Position;
 struct Map{}world,otherWorld;
 struct Scenario{uint32 id=1037,step=7;uint32 GetScenarioId()const{return id;}uint32 GetCurrentStep()const{return step;}}scenario;
@@ -66,7 +66,11 @@ struct SpellScript{Unit*caster=nullptr,*target=nullptr,*original=nullptr;WorldLo
 #define PrepareSpellScript(...) public:
 #define SpellCheckCastFn(...) 0
 #define SpellEffectFn(...) 0
+#ifdef STROMKAR_FACING_BASELINE
+#include "FacingBaseline.h"
+#else
 #include "../../src/server/scripts/Legion/ClassHalls/stromkar_awakening.h"
+#endif
 
 void ResetWorld(){bornAI.reset();born.reset();objects.clear();scenario={};manager={};spells={};warnings=0;}
 void Channel(npc_stromkar_awakening&ai,Player&p){SpellInfo s;s.Id=204771;ai.SpellHit(&p,&s);}
@@ -91,5 +95,13 @@ int main(){
  ResetWorld();{Creature c;Player p;npc_stromkar_awakening ai(&c);Channel(ai,p);Blast(ai,p);Stun(p,true);c.acceptedWithoutAura=true;ai.UpdateAI(1);assert(!warnings&&!c.summons&&ai.sourceChannelPending);c.auras.insert({206390,c.guid});ai.UpdateAI(4999);assert(!warnings&&!c.summons);ai.UpdateAI(1);assert(born);born->auras.clear();born->acceptedWithoutAura=true;Stun(p,false);ai.UpdateAI(2000);assert(!warnings&&!p.credits&&ai.bossChannelPending);born->auras.insert({206390,born->guid});ai.UpdateAI(2000);assert(!warnings&&p.credits==1);}
  ResetWorld();{Creature c;Player p;npc_stromkar_awakening ai(&c);Channel(ai,p);Blast(ai,p);Stun(p,true);c.acceptedWithoutAura=true;ai.UpdateAI(1);ai.UpdateAI(1999);assert(!warnings&&!c.summons);ai.UpdateAI(1);assert(warnings==1&&!c.summons&&!p.credits);}
  ResetWorld();{Creature c;Player p;npc_stromkar_awakening ai(&c);Channel(ai,p);assert(!c.groundPlays);Blast(ai,p);Blast(ai,p);assert(c.groundPlays==1&&!c.groundStops);Stun(p,true);ai.UpdateAI(1999);assert(!c.groundStops);ai.UpdateAI(1);assert(c.groundStops==1&&!ai.groundPulse&&!p.credits);ai.UpdateAI(1);assert(c.groundStops==1);ai.Reset();assert(c.groundStops==1);Channel(ai,p);Blast(ai,p);assert(c.groundPlays==2);ai.Reset();assert(c.groundStops==2&&!p.credits);}
- std::cout<<"PASS actual awakening controller/recoil: real blast and stun/expiry gate, spawn/channel/credit acknowledgement, interruption/retry/abort, shared participants, exactly-once transient ground kit/cleanup and no click-only credit. Cast/aura/collision/visual sink services controlled; no client rendering claim.\n";
+ for(bool authored:{false,true})for(int direction=0;direction<8;++direction)for(float initial:{0.0f,1.0f,3.0f,5.0f}){
+  ResetWorld();Creature c;c.x=123;c.y=-456;Player p;float angle=direction*0.785398163f;p.x=c.x+10*std::cos(angle);p.y=c.y+10*std::sin(angle);p.o=initial;
+  npc_stromkar_awakening ai(&c);Channel(ai,p);spells.authored=authored;
+  spell_stromkar_opening_recoil s;s.caster=&p;s.original=&c;s.dest={c.x+25*std::cos(angle),c.y+25*std::sin(angle),0,initial};s.Launch(0);
+  assert(!s.prevented);float toward=std::atan2(c.y-s.dest.y,c.x-s.dest.x);float difference=s.dest.o-toward;
+  assert(std::fabs(std::atan2(std::sin(difference),std::cos(difference)))<0.0001f);
+  assert(!p.credits&&!p.recoilCasts&&!p.arrivalCasts);
+ }
+ std::cout<<"PASS actual awakening controller/recoil: real blast and stun/expiry gate, spawn/channel/credit acknowledgement, interruption/retry/abort, shared participants, exactly-once transient ground kit/cleanup and no click-only credit;64 authored/fallback landing facings point back toward the source. Cast/aura/collision/visual sink services controlled; no client rendering claim.\n";
 }
