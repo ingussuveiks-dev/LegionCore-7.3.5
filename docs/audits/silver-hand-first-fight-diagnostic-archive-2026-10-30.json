@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-30",
+  "fix_commit": "def2dcca9",
+  "archive": "build-extractors/bin/Release/fixed/silver-hand-first-fight-2026-10-30",
+  "files": 272,
+  "manifest_sha256": "74c06405d1e129cbb22abf2e717c7dd4c878efc872c0a6a43661351ee75090e9",
+  "verification": "Closed original diagnostic files copied with source/destination/source and final SHA256 readback. Includes identified fixture/ASAN/protected-API/build/PE failed iterations and paired passing native/ASAN/live SQL/PE/full-build/link/promotion/startup/regressions, owned5904 stdout/ownership. Original evidence retained.",
+  "diagnostics": "Active canonical Crashes empty, no report existed to remove. Mixed6090-byte DBErrors hash8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 and timestamp unchanged before/after archival; unknown101430/103151LINK2 remain unresolved. No active log truncated or unrelated history removed.",
+  "limits": "ASAN fixture null-AI stderr is not a live-server dump. No executables/security blocks/credentials/characters archived, no unknownLINK/client/full36 issue classified fixed."
+}

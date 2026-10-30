@@ -5403,5 +5403,16 @@
   "research": "89231609d/docs/audits/artifact-missing-link-scenes-2026-10-30.json typed full5969 scenes found5 hits,none resolves Wardstone/sharedLINK payload;103151 scene was already reviewed. Do not repeat as a new discovery.",
   "next": "FirstTravard106429 waypoint18 summons106624Gnorz then arms firstfight after2s; EnterEvade later grants50850 via unchecked nearby player and can miss early actual death. Trace actual owned death/admission/missing summon/retry before repair. Preserve actual1s/2s/delays,mainhand/loot/return and source-bound route checks.",
   "remaining": "Survival39427 wholemiddle/unknownWardstoneLINK4/shared101430+103151LINK2/Stromkarclient/full36 progression and client/gameplay variants still OPEN. User owns client tests; reset3 consumed,no additional reset or unknown-server stop."
+},
+  "latest_silver_hand_first_fight_repair_2026_10_30": {
+  "audit": "docs/audits/silver-hand-first-fight-2026-10-30.json",
+  "fix_commit": "def2dcca9",
+  "archive": "docs/audits/silver-hand-first-fight-diagnostic-archive-2026-10-30.json",
+  "status": "FirstTravard106429 now requires actual owned106624Gnorz death at1092/2 before50850; native2s readiness/1s death deadline,actual full-GUID primary+suspended instance receipt,one eligible42120 map participant,missing spawn/actor retry and epoch/claim guard. Evade/living/absent opponent cannot advance. Existing1s/2s/source poses/ordinary208257 preserved; no SQL/character change.",
+  "runtime": "Canonical world42C221E817A9EDF687CA6C88D414FC7E4A65E784E0B1D4216A30D5F337AAA582,bnet3DDDADAED246174D6FA3E62C385ED58B8DB861469D72CDFC74C0EF02DDD1A947. Full game/scripts rebuilt after nonvirtual GetDisabledAI getter; original libraries/final inputs/staged links verified. Own5904ready/graceful0/gone,protected files unchanged.",
+  "checks": "3 pinned expected-broken/54 repaired ASAN actual header+affected methods/native InitSummon/death/GUID/FunctionProcessor/lifecycle,matching26972/EOF live bindings/instance/path/class rows,selected canonical callback/instance/recipient/epoch PE. Retained26entrance/1536allies/85aberration/full death PE,Scepter,Warlock,sparse DB2 pass.272closed diagnostics SHA archived,Crashes empty,mixed6090 LINK2 unchanged.",
+  "data": "Native208257 ShadowExplosion self aura4,zero named/linked/dummy/aura hook rows; no native progress grant. DB path10993805 has19 points,last19=1957.08/2336.17/80.4548;1539 actual instance_silver_hand binding checked.",
+  "next": "Inspect first-Travard earlier firstwp/WAYPOINT10 path10993804 actual50766 and subsequent Talk6/door/5s+9s/path10993805. It still selects unchecked nearest Player and lacks observed-arrival/eligible-recipient retry; tracing whole handoff is required before editing. Keep new first-fight state atAI+0x180 and its native2s epoch closure; old9-byte marker assumptions are obsolete.",
+  "remaining": "Actual client fullHoly/all36/path/audio/visual/pet/group/faction/reentry remain OPEN. Destroyed/recreated AI does not restore an old same-instance route/receipt. Survival39427/unknownWardstoneLINK4/shared101430+103151LINK2/Stromkar client retests remain OPEN. User owns client tests; reset3 consumed,no new resets or unknown-server stops."
 }
 }

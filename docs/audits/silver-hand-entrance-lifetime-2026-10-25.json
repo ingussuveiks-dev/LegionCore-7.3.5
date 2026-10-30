@@ -51,5 +51,6 @@
     "Preserving2s firstfight timing is not verification/repair of a one-hit or opponent death before the marker, missing Gnorc/failed summon, EnterEvade/50850 ownership, later waypoint recipients or combat/scenario choreography. Native actual movement and persisted106416/50765/group counters still require full relevant route/client checks.",
     "Reset generation belongs to pending AI entry, not a persisted abandon/rapid-retake epoch. Accepted motion recovery, actor recreation while an old MovePoint is still physically running and native visibility/voice/camera/pet/faction/party behavior remain separate. No ready-marker is published merely from timer completion.",
     "Other actors' Unit-owned AI timers, third downstream50877/50912/50915/DoAction, aberration50pct/one-hit/intentional companion deaths/rescue prerequisites, late scenes/outro/true Dalaran arrival, genuine loot/equip/save/relog and all36 full chains remain unfinished; client tests remain with user."
-  ]
+  ],
+  "first_fight_followup_2026_10_30": "Historical2s marker/EnterEvade race separately repaired def2dcca9; see silver-hand-first-fight-2026-10-30.json. Three pinned failing behaviors paired with54 repaired ASAN/native and actual canonical PE/startup. Original pending-entry proof retained; actual client/fullHoly/all36 remain OPEN."
 }
