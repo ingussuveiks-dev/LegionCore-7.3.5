@@ -8,7 +8,7 @@
     "Full original/applied template+condition fingerprints and unchanged complete loot/SmartAI fingerprints, explicit SIGNAL plus independently guarded mutations reject partial/custom states even with --force. Original one state-change200152 action and unknown0->LINK1 are unchanged. No original chain edge deleted to suppress diagnostics."
   ],
   "sequence": [
-    "Local26972 actual940/8 Fleshripper event48788 ->940/9 Maw48184 ->940/10 return48857. Native101778 death summons103795 and247566, original48788/root7 is not Player-safe for pet/guardian kills and is a separate repair candidate; not certified by this loot fix.",
+    "Local26972 actual940/8 Fleshripper event48788 ->940/9 Maw48184 ->940/10 return48857. Native101778 death summons103795 and247566. Correction: original48788/root7 already resolves pet/guardian controlling Players through099175d55; own TALK fields are separately repaired by World09. See fleshripper-speakers-2026-10-30.json; actual full client transitions still pending.",
     "Native200152 immediate personal101478 satisfies40740 objective then48184 advances the pickup stage. A real item is now required before that original scene action. Package1532 full linked texts reviewed: clone MainHand128402, OffHand0, cinematic local triggers; no active TriggerServerEvent producer or real inventory grant. Scene1168 currently has no event/ScriptName.200134249-only and alternate205138(54072/phase/ability) remain unchanged; wire guarded real scene completion next."
   ],
   "validation": [
@@ -49,5 +49,6 @@
     ".codex/artifact-post-blood-loot-2026-10-30"
   ],
   "remaining": "Native1168 completion->200134 guarded existing equipment; real bag/cast/swap denial/retry and original unknownLINK1;101778 pet-safe death credit/speakers; Frost/Fire real loot/callback/scenario selection; original full Blood intro/combat/return/turnin/group/faction/abandon/reentry/client.19 LINK candidates/sharedLINK2/Stromkar recoil+continuous beams/middle39427/full36 stay OPEN. Client tests user-owned; no reset authorization.",
-  "scene_followup": "World08 now resolves1168/1532 completion->200134 with registered native gate/33 predicates. See blood-scene-equip-2026-10-30.json; whole Blood/client/101778 pet-credit/unknownLINK1 stay OPEN."
+  "scene_followup": "World08 now resolves1168/1532 completion->200134 with registered native gate/33 predicates. See blood-scene-equip-2026-10-30.json; whole Blood/client/101778 pet-credit/unknownLINK1 stay OPEN.",
+  "credit_review_correction": "Earlier blood-real-loot and blood-scene audit text incorrectly called target7/205 pet-unsafe. Actual production action205 already uses GetScriptCreditPlayer +owner/charmer resolver and per-owner dedup from099175d55. Current native and canonicalPE regression passes pets/guardians/charmers/null/unavailable owners/raw invoker preservation. Player::UpdateAchievementCriteria(ignoreGroup=true) forwards the real player reference to the existing same-instance Scenario; no new group grants or nearest unrelated-player fallback introduced. No40740-specific quest-object binding found. TALK fails independently of this already-fixed credit path. Historical erroneous statements corrected below; whole client/scenario remains unproven."
 }

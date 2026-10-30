@@ -5169,5 +5169,12 @@
       "bnetserver.map": "8016C4097DF110237FEB88FA78265B63702162A7A446DBCCD1020AA0EFCFCBC4"
     },
     "audit": "docs/audits/blood-scene-equip-2026-10-30.json"
+  },
+  "fleshripper_speakers_2026_10_30": {
+    "audit": "docs/audits/fleshripper-speakers-2026-10-30.json",
+    "status": "World09 RELEASED exactly two101778 TALK7->SELF1. NativeASan/typed26972/TEMP15 refusals/full6table live/retained Blood loot+scene pass, own14284 clean closed. CanonicalD43884C7/24ABA795 unchanged; no characters touched.",
+    "credit_correction": "Original205/root7 already resolves pet/guardian Player owners since099175d55; current native+canonicalPE verified. Earlier suspected missing credit was incorrect; no credit selector/nearest-player/group rule changed.",
+    "fresh_audit": "Current structural-refresh-2026-10-30.json after09:20tables465276/36routes149pairs0automatedfindings/3boundedMonk;2scene-only Frost/Fire,19primaryLINKreviews.",
+    "next": "Trace Frost247386 chestData27=199868 as well as190435/1071/1466/186209 and exact901/6 path before adding real loot. Fire actual scenario/loot/callback,19LINK/sharedLINK2/Stromkar visuals/middle39427/all36 remain OPEN."
   }
 }

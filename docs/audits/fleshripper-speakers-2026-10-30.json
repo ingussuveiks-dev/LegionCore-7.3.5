@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-30",
+  "status": "Fleshripper101778 own aggro/death speakers deployed World09 RELEASED; existing pet credit confirmed, no replacement credit logic",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "101778 TALK ids0(aggro)/1(death) target7 selects a Creature pet/guardian/NPC as talker. Actual TALK then requests its nonexistent/wrong text group. Player/null causes fall back to101778 and masked the error. Native NPC broadcasts105369/105368 and original sounds60326/60330 belong to101778.",
+  "change": "Only source0/101778 ids0,1 target_type7->SELF1. Full6table fingerprints guard complete original/applied SmartAI states and all creature templates/texts/conditions/ready Maw loot+return objects. SIGNAL plus guarded UPDATE reject custom/partial contexts even under --force. All casts,80/50/25 health waves, once flags, links, summon positions/lifetimes,205/48788/raw invoker,128402 loot/1168 scene and return/data are unchanged.",
+  "credit_review_correction": "Earlier blood-real-loot and blood-scene audit text incorrectly called target7/205 pet-unsafe. Actual production action205 already uses GetScriptCreditPlayer +owner/charmer resolver and per-owner dedup from099175d55. Current native and canonicalPE regression passes pets/guardians/charmers/null/unavailable owners/raw invoker preservation. Player::UpdateAchievementCriteria(ignoreGroup=true) forwards the real player reference to the existing same-instance Scenario; no new group grants or nearest unrelated-player fallback introduced. No40740-specific quest-object binding found. TALK fails independently of this already-fixed credit path. Historical erroneous statements corrected below; whole client/scenario remains unproven.",
+  "validation": [
+    "Full original6table snapshot replay, exact two fields only, idempotence,15 custom/partial refusal variants under --force all leave complete6table state untouched. Live full equality and actual updater RELEASED/LF-SHA1 pass; native SQL EOF receipt required before assertions.",
+    "MSVC ASan compiles extracted production TALK, SELF/VICTIM and exact native NONE/INVOKER target branch, native event/action prefixes, aggro/death/health/LINK/CreatureTextMgr admission. Original pet/guardian/NPC wrong speaker vs repaired two own groups; direct Player/null, onehit, repeated aggro/death/health and80/50/25 three original waves. Exact six-action death TALK1 ->103795 ->247566 ->205/48788(target7) ->242469 ->data7 preserved once. Failed conditions/expired/missing actor gates retained. Cast/summon/credit/world services observed as requests, not integrated outcome proof.",
+    "Matching26972 typed catalog confirms original event48788 ->940/8 and actual105369/105368 text/sound rows, original203956 native health cast and200152 scene data. Shared Test-ScriptPetCredit -VerifyReleaseBinary passes native controlling-owner/dedup/invoker semantics and deployed real ProcessAction resolver/caster bridges, timestamps/thunks checked.",
+    "Retained Blood loot TEMP18/live and Blood scene TEMP22/live pass after World09. Owned14284 ready/graceful shutdown0/exit0/newDBErrors0/stderr empty/protected hashes unchanged. Data-only fix: canonical worldD43884C7/bnet24ABA795 unchanged.",
+    "Fresh drained/count-validated20tables465276 objects parse and match exact native prefix bytes/server count trailers/empty stderr;36routes/149pairs/0 automated findings/3 bounded actor links;25maps1947owners83timed19 primaryLINK reviews/2scene-only Frost247386 andFire247494. Structural review certifies no full client route."
+  ],
+  "development": "New native fixture overcounted original six-action death chain as seven; corrected expected count to exact original sequence, retaining separate48788/raw target7 assertion. Initial assertion/exit3 and passing nativeASan snapshots retained. No production crash or SQL failure.",
+  "deployment": {
+    "migration": "sql\\updates\\world\\2026_10_30_09_fleshripper_speakers.sql",
+    "lf_sha1": "0BBD9017E90B765908281B355707327C1E544D72",
+    "owned_pid": 14284,
+    "canonical_hashes": {
+      "worldserver.exe": "D43884C78BB50AEC80FD2236E4EBE9012D558F97DB602988F9FA8DBC35C4846E",
+      "bnetserver.exe": "24ABA79511DA5FFBBFAF3C5F24C8DA95F639DB9C256B6C36246143D53D025915"
+    },
+    "result": "Fresh both-server absence checked before migration/startup; only owned14284 started/closed. No executable change, user process stop, character/item/quest reset."
+  },
+  "diagnostics": "All capture/TEMP/native/ASan/catalog/creditPE/updater/live/export runs have canonical+own before/after crash hashes/log lengths/timestamps; exits/stdout/stderr inspected. Only new fixture assertion above, repaired and archived. No new/changed production crash, server warning/error/assertion or appended DBErrors. Active Crashes empty; mixed3915-byte101430/103151 unresolvedLINK2 unchanged atUTC2026-10-29T13:29:05.1130661Z. No mixed log cleared.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\fleshripper-speaker-fixture-2026-10-30",
+    "files": 12,
+    "result": "Failed assertion and passing diagnostic snapshots byte-preserved/source-destination-source SHA256 verified; no active production report removed."
+  },
+  "evidence": [
+    ".codex/fleshripper-speakers-original-2026-10-30",
+    ".codex/fleshripper-speakers-correct-six-actions-2026-10-30",
+    ".codex/fleshripper-speakers-native-catalog-2026-10-30",
+    ".codex/blood-existing-pet-credit-2026-10-30",
+    ".codex/fleshripper-speakers-updater-2026-10-30",
+    ".codex/fleshripper-speakers-live-2026-10-30",
+    ".codex/fleshripper-all36-refresh-2026-10-30",
+    ".codex/artifact-post-fleshripper-2026-10-30"
+  ],
+  "remaining": "Actual audible/speech rendering, pet/guardian final blow/full940 stage transitions/loot/equipment/return and complete Blood client route. Next Frost247386 native chest fields including199868 and scenario901, Fire247494 actual scenario/loot/callback;19LINK/sharedLINK2/Stromkar visuals/middle39427/full36 remain OPEN. No character reset permission; client tests user-owned."
+}

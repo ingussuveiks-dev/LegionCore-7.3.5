@@ -1,13 +1,13 @@
 {
   "date": "2026-10-30",
   "build": "7.3.5.26972",
-  "status": "Current structural review after World30/08; no full chain/client certification",
+  "status": "Current structural review after World30/09; no full chain/client certification",
   "capture": {
-    "world": ".codex/artifact-post-blood-scene-2026-10-30/world",
-    "routes": ".codex\\artifact-post-blood-scene-2026-10-30\\routes.json",
-    "routes_sha256": "88987965FF04C62C8B5CB3EE4908796A962BAA9CF0D446AACAB6D43CE0F85192",
-    "maps": ".codex\\artifact-post-blood-scene-2026-10-30\\map-links.json",
-    "maps_sha256": "62B2992EE4E0C471B32A7CC550D8A4BD566AA09ACC6B438F9ECC4238803471D4",
+    "world": ".codex/artifact-post-fleshripper-2026-10-30/world",
+    "routes": ".codex\\artifact-post-fleshripper-2026-10-30\\routes.json",
+    "routes_sha256": "A59AFAE6BB30E0363277A4A8B5CC513B0186D5C02FBF5260CCBCC6C7F3CC82BA",
+    "maps": ".codex\\artifact-post-fleshripper-2026-10-30\\map-links.json",
+    "maps_sha256": "B54F66EEBF869A186600DB97A9E353F4316CD2E6DAE73FFCA6C72EC06A69381D",
     "tables": 20,
     "parsed_counted_objects": 465276,
     "static_actor_scope": "Retained2026-10-29 map-actor snapshot; current fresh world script/template/condition tables. No claim of fresh complete spawn traversal."
