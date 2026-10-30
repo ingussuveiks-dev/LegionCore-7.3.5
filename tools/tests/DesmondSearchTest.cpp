@@ -1,6 +1,7 @@
 // Actual SmartScript dispatcher/guards/LINK/CAST/close and personal spell-hit body.
 // Cast scheduling and quest storage are controlled endpoints, not a live client/quest.
 #include <cstdint>
+#include <cassert>
 #include <cstdio>
 #include <fstream>
 #include <sstream>
@@ -68,6 +69,13 @@ bool roll_chance_i(uint32){return true;}
 #define TC_LOG_ERROR(...) ++errors
 #define TC_LOG_DEBUG(...) ((void)0)
 struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
  std::vector<SmartScriptHolder> mEvents;Unit actor;Unit* me=&actor;Unit* go=nullptr;ObjectGuid mLastInvoker;
  unsigned errors=0,creditCalls=0;
  Unit* GetBaseObject(){return me;}Unit* GetLastInvoker(){return mLastInvoker.unit;}bool IsInPhase(uint32)const{return true;}

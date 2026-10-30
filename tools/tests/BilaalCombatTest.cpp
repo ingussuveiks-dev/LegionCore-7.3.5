@@ -43,6 +43,13 @@ bool Validate(SmartScriptHolder&e){switch(e.GetActionType()){
 #include "Validation.inc"
  default:return false;}return true;}
 struct SmartScript{
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
  Unit* me=nullptr;GameObject* go=nullptr;WorldObject* victim=nullptr;bool nullTargets=false;std::vector<SmartScriptHolder>mEvents,mTimedActionList;int mLastInvoker=0;
  bool IsInPhase(uint32){return true;}void* GetBaseObject(){return me;}bool IsUnit(WorldObject*o){return o->IsUnit();}
  ObjectList* GetTargets(SmartScriptHolder&,Unit*){return nullTargets?nullptr:new ObjectList(victim?ObjectList{victim}:ObjectList{});}
@@ -55,7 +62,7 @@ struct SmartScript{
  void OnReset();void UpdateTimer(SmartScriptHolder&e,uint32 diff);
  void Tick(uint32 diff){for(auto&e:mEvents)UpdateTimer(e,diff?diff:1);}
 };
-void SmartScript::ProcessAction(SmartScriptHolder&e,Unit*unit,uint32,uint32,bool,void*,GameObject*){
+void SmartScript::ProcessAction(SmartScriptHolder&e,Unit*unit,uint32 var0,uint32 var1,bool bvar,void*spell,GameObject*gob){
  e.runOnce=true; // actual native pre-dispatch latch; extraction verifies placement
  switch(e.GetActionType()){
 #include "CastAction.inc"

@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-30",
+  "status": "Implementation and staged Release verified; World35 stays pending until matching EXE promotion. Canonical startup/live deployment receipt follows separately.",
+  "problem": "Wardstone101325 root0 awards native48172 once, then LINK1 casts199770, LINK2 casts187027, LINK3 summons101360, LINK4 is unknown. A rejected ordinary LINK cast set a500ms timer only on its copied holder; LINK timers are excluded from UpdateTimer. Root credit was already consumed, permanently stranding transform/base after a rejected cast. In-progress also inherited the legacy accepted-tail shortcut.",
+  "local_evidence": [
+    "Matching26972 typed native reader: Taking199728 target25/dummy/4000ms; native source13 Wardstone-only damage/instant-kill mask and real48172 amount0->one receipt then3 retained.",
+    "199770 has cast0 and triggers199823, whose cast0/duration4000ms is retained; 187027 has native CASTABLE_WHILE_DEAD0x00800000,199770 does not. Native catalog verifies actual attributes, not a guessed whitelist.",
+    "Creature::Update CORPSE calls Unit::Update but never ordinary UpdateAI. SmartAI::JustDied does not reset the script. Thus a dead-allowed cosmetic retry also required real corpse scheduling. WorldObject/Map summon path permits an in-world corpse as source; no alive bypass or resurrection added."
+  ],
+  "repair": [
+    "Strict opt-in SMARTCAST_RETRY_LINK512 for ordinary one-shot creature LINK SELF CAST only, with no combined flags. World35 changes exactly101325/source0/id1,2 action_param2 from0 to512, guarded by full11-table exact original/applied context hashes. Existing global action11/85/86 capture had no512 bit. Other data/scripts and unknownLINK4 unchanged.",
+    "Detached owned queue stores copied action/context plus actor/invoker/GO GUIDs and spell ID. Re-resolves native actors/SpellInfo, reuses ProcessEvent/ordinary CastSpell.500ms spacing,6000ms lifetime, max10 retries and16 pending/active attempts, terminal useful warnings/errors. Never replays root205 credit.",
+    "Per-base/event in-flight ticket and completed set prevent synchronous same-cast reentry from duplicating accepted casts/tail. Reset/initialize cancel via epoch and clear state; missing/outworld/expired/replaced actors cancel. Dead actors require the spell actual native CASTABLE_WHILE_DEAD attribute.",
+    "Creature corpse update invokes new default-no-op CreatureAI::UpdateCorpseAI only when AI enabled, under native AI lock and with deathstate recheck. SmartAI override services only this queue through OnCorpseUpdate; ordinary dead AI events/combat/path/despawn timers remain stopped.",
+    "Retained extracted fixture service adapters refuse unexpected512 use loudly; real queue is tested in the dedicated ASAN host. Older scope-only reset/update adapters have no pending opt-in work. Restored preexisting missing runOnce/context/expired-actor fixture members; no production checks removed.",
+    "Legacy WardstoneData now leases restricted SELECT+CREATE TEMP reader, verifies persistent DELETE denied, uses fully drained native SQL pipes and completion trailer. After World35 activation it independently verifies complete11-table live context before normalizing only two flags for the retained earlier admission test."
+  ],
+  "checks": {
+    "native_ASAN": "43 cases compile extracted production CAST/queue/begin/finish/reset/LINK/dispatch/once/loader/header state plus actual Creature corpse dispatch, SmartAI override/default and corpse handler. Includes pinned no-flag stall,9 independent first/second failure combinations,499+1ms,busy,owner loss,conditions/reset/epoch/replaced/expired/dead/missing actor,10-attempt/6s diagnostics,capacity/reentrant queueing,GUID context restoration,10 malformed flag contexts and synchronous accepted-cast reentry.",
+    "corpse": "Real extracted Creature dispatch drives rejected187027 after native-style lightning death, disabled-AI deferral,499+1ms timing,Unit-update deathstate transition guard,default no-op and no ordinary event/credit replay. World/spell completion/allocation remain controlled endpoints.",
+    "data": "11 full-schema tables preserved, exactly2 opt-in fields, repeat idempotence,20 partial/custom refusals. Earlier44 source18/17/22 predicates and22 refusals remain independently passing with unchanged native target/death masks.",
+    "retained": "Fresh isolated child processes pass all15 shared regressions: Ariden,DarkWhispers,Desmond,Guardian1644 runs,Maelstrom,Malithar,MarksmanshipReturn,Titanstrike,Aluneth,DemonSouls,Highmountain,Murky,Thoradin,Xalatath and StromkarExitHole including24Mage+48Priest+62exit. Fire/Bilaal ASAN,original Wardstone81 matrices/native catalog and retained Judgment also pass.",
+    "build": "Final game/scripts/shared Release built using original static-library locations. All scripts rebuilt after CreatureAI vtable change. Final links staged separately from canonical, bothEXE/maps present, original link inputs checked; canonical hashes unchanged.",
+    "PE": "Actual staged world cbcd766380a2bd9bb8e6425c1a8a6afd9ab3adc4592dc8a7f8f92df5be566d05:11 real queue/dispatch/GUID/reset/init call paths,SmartAI corpse vtable slot66 wired to Creature::Update,strict native512 LINK61/self1/once/creature0 validator,finite diagnostics. No global OutDir or mere string-only implementation claim."
+  },
+  "failed_iterations": [
+    "Initial shared extraction placements pulled queue methods into old FindLinkedEvent or phase-to-EOF ranges. Helpers grouped after GetLastInvoker and before IncPhase; retained full extracts now compile.",
+    "Old fixtures lacked newly referenced inactive services and some preexisting runOnce/context/IsQuestObjectExpired members. Restored fixture contracts; Highmountain adds actual expired-actor refusal. These were native harness compile failures, not ignored passing tests.",
+    "Private GetNewClosure aggregate captured stale LASTEXITCODE and falsely marked one failed compile passing and a passing child failed. That aggregate is rejected. Final15 suite uses fresh pwsh ProcessStartInfo children, drains both pipes, records actual Process.ExitCode and independently rejects compiler errors/stderr. No closure result counted as pass.",
+    "One early retained aggregate folder was reused before original output was copied. Original failed compiler bytes are unavailable, openly recorded; later unique failing and passing evidence retained. No claim that missing bytes are preserved.",
+    "First corpse build called UnitAI pointer i_AI directly, which lacks the CreatureAI hook; compilerC2039 rejected it. Use actual Creature::AI() typed getter. Final full Release rebuild passes.",
+    "Initial PE flag verifier required512 comparison directly in memory, but compiler retained flags from actual5c field in eax. Corrected verifier traces source load/bit9/compare on same register. Actual implementation unchanged; repaired verifier passes.",
+    "Retained Helheim/Journals and current188-shape harness failures repaired separately in afcc847e6 with audit artifact-retained-fixtures-2026-10-30.json; none treated as an ordinary successful run."
+  ],
+  "evidence": [
+    ".codex/wardstone-linked-cast-capture-2026-10-30",
+    ".codex/wardstone-linked-cast-hashes-2026-10-30",
+    ".codex/wardstone-retry-attributes-2026-10-30",
+    "build-extractors/runtime-test/smart-linked-cast-retry",
+    ".codex/wardstone-linked-cast-shared-20261030-164200",
+    ".codex/wardstone-linked-cast-retained-final-2026-10-30",
+    ".codex/wardstone-retained-judgment-2026-10-30",
+    ".codex/wardstone-linked-cast-final-build-2026-10-30",
+    ".codex/wardstone-linked-cast-final-build2-2026-10-30",
+    ".codex/wardstone-linked-cast-link-2026-10-30",
+    ".codex/wardstone-linked-cast-stage-pe2-2026-10-30",
+    ".codex/wardstone-linked-cast-stage-pe3-2026-10-30"
+  ],
+  "diagnostics": "Before/after canonical/test crash files and log lengths/timestamps reviewed, real child exits/stdout/stderr and appended DBErrors/server diagnostics inspected. No new/changed crash or appended server failure. Expected rejected fixture cases and failed build/verifier iterations explicitly paired with passes. Existing active mixed5365-byte101430/103151 missingLINK2 remains unresolved and unmodified.",
+  "remaining": "Actual client Taking cursor/lightning/4s presentation/transform/base,all subsequent stones,group/faction/retry/abandon/reentry/fullscenario remain OPEN. Unknown101325LINK4 not invented. Survival39427 middle flight/sharedLINK2 and all36 traversal still OPEN. This repair does not certify any full artifact chain. No character/item/progress changes or user servers stopped."
+}

@@ -119,12 +119,20 @@ struct ObjectAccessor { static Unit* GetUnit(Unit&,ObjectGuid guid){return guid.
 struct GameObject { SpellCastResult CastSpell(Unit*,uint32){return SPELL_CAST_OK;} };
 using ObjectList=std::list<WorldObject*>;
 struct SmartScriptHolder {
+    bool runOnce=false;
     uint32 type=11,targetType=7;
     struct {struct {uint32 spell=205040,flags=0;} cast;} action;
     struct {float x=0,y=0,z=0;struct{uint32 dist=0;}playerDistance;} target;
     uint32 GetTargetType()const{return targetType;}
 };
 struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
     Unit* me=nullptr;
     Unit* invoker=nullptr;
     GameObject* go=nullptr;
@@ -141,6 +149,7 @@ struct SmartScript {
         return l;
     }
     void ProcessAction(SmartScriptHolder& e,Unit* unit){
+        uint32 var0=0,var1=0;bool bvar=false;auto spell=nullptr;auto gob=nullptr;
         switch(e.type){
 #include "CastAction.inc"
 #include "InvokerCast.inc"

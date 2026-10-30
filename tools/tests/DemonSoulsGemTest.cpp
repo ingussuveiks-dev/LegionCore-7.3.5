@@ -90,6 +90,13 @@ struct SmartAI
 std::vector<WorldObject*> world;
 struct SmartScript
 {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
     Creature* me;bool trigger=false;uint64 mLastInvoker=0;uint32 visualRequests=0;std::vector<SmartScriptHolder> mEvents;
     explicit SmartScript(Creature* actor,std::vector<Row> const& rows):me(actor){for(auto row:rows)if(row.entry==me->entry)mEvents.emplace_back(row);}
     WorldObject* GetBaseObject(){return me;}Unit* GetLastInvoker(){return nullptr;}

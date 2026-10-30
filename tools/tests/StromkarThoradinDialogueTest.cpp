@@ -97,6 +97,13 @@ std::vector<uint32> spoken;
 struct CreatureTextMgr { void SendChat(Creature*,uint8 group,ObjectGuid const&) { spoken.push_back(group); } } textManager;
 auto* sCreatureTextMgr=&textManager;
 struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
     Creature* me;
     std::vector<SmartScriptHolder> mEvents;
     uint32 mTalkerEntry=0,mLastTextID=0,mTextTimer=0,pathStarts=0;

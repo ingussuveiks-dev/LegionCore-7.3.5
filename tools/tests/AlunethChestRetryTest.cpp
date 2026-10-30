@@ -80,7 +80,14 @@ default:assert(false);}return true;}
 struct ObjectGuid{static uint32 Empty;};uint32 ObjectGuid::Empty=0;
 using ObjectList=std::list<WorldObject*>;
 bool roll_chance_i(uint32){assert(false);return false;}uint32 urand(uint32 a,uint32 b){assert(a==b);return a;}float rand_norm(){assert(false);return 0;}
-struct SmartScript{Unit*me=nullptr;std::vector<SmartScriptHolder>mEvents,mTimedActionList;uint32 mEventPhase=0,mLastInvoker=0;unsigned teleport=0,data=0,unaura=0,finalSpeech=0;
+struct SmartScript{
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+Unit*me=nullptr;std::vector<SmartScriptHolder>mEvents,mTimedActionList;uint32 mEventPhase=0,mLastInvoker=0;unsigned teleport=0,data=0,unaura=0,finalSpeech=0;
  WorldObject*GetBaseObject(){return me;}Unit*GetLastInvoker(){return nullptr;}bool IsUnit(WorldObject*o){return o&&o->ToUnit();}ObjectList*GetTargets(SmartScriptHolder const&,Unit*){return nullptr;}
  void ResetBaseObject(){}void SetPhase(uint32);bool IsInPhase(uint32)const;void RecalcTimer(SmartScriptHolder&,uint32,uint32);void InitTimer(SmartScriptHolder&);void OnReset();void UpdateTimer(SmartScriptHolder&,uint32);
  void ProcessEventsFor(SMART_EVENT,Unit* =nullptr,uint32=0,uint32=0,bool=false,void const* =nullptr,GameObject* =nullptr);

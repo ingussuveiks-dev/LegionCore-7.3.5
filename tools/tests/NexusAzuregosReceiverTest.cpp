@@ -123,6 +123,13 @@ using SmartAIEventList=std::vector<SmartScriptHolder>;
 struct ScriptMgr {SmartAIEventList rows;SmartAIEventList GetScript(uint32 id,uint32 type){SmartAIEventList out;for(auto const&r:rows)if(r.entryOrGuid==id&&r.source_type==type)out.push_back(r);return out;}}scriptMgr;auto*sSmartScriptMgr=&scriptMgr;
 using ObjectList=std::list<Unit*>;
 struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
  Unit*me=nullptr;GameObject*go=nullptr;Unit*mLastInvoker=nullptr;SmartAIEventList mEvents,mTimedActionList;bool isProcessingTimedActionList=false;uint32 listStarts=0;
  Unit*GetBaseObject(){return me;}Unit*GetLastInvoker(){return mLastInvoker;}bool IsInPhase(uint32){return true;}bool IsSmart(Unit*u){return u&&u->ai.script;}bool IsSmartGO(GameObject*){return false;}
  ObjectList*GetTargets(SmartScriptHolder const&e,Unit*){auto*l=new ObjectList;if(e.targetType==1)l->push_back(me);else if(e.targetType==19){for(auto u:grid)if(!u->player&&u->alive&&u->entry==e.payload&&me->IsWithinDistInMap(u,50)){l->push_back(u);break;}}

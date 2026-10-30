@@ -34,6 +34,7 @@ bool NearOther(Unit* object,uint32 ConditionValue1,uint32 ConditionValue2){bool 
 #include "NearCondition.inc"
  }return condMeets;}
 struct SmartScriptHolder{
+ bool runOnce=false;
  int actionType=205,targetType=18;struct {struct {uint32 type=92,misc1=50959,misc2=0,misc3=0;}achievementCriteria;
  struct {uint32 spell=212550,flags=18;}cast;}action;
  struct {float x=0,y=0,z=0;struct{uint32 dist=100,spell=0;}playerDistance;}target;
@@ -41,6 +42,13 @@ struct SmartScriptHolder{
 };
 struct FakeGO{int CastSpell(Unit*,uint32){return SPELL_FAILED_BAD_TARGETS;}};
 struct SmartScript{
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
  Unit* me;FakeGO* go=nullptr;bool IsPlayer(Unit* p){return p&&p->ToPlayer();}bool IsUnit(Unit* p){return p!=nullptr;}
  Unit* GetBaseObject(){return me;}
  ObjectList* GetWorldObjectsInDist(float dist){auto l=new ObjectList;for(auto p:world)if(p->map==me->map&&p->phase==me->phase&&std::abs(p->x-me->x)<=dist)l->push_back(p);return l;}
@@ -49,7 +57,7 @@ struct SmartScript{
 #include "InvokerTarget.inc"
  }return l;}
  void RecalcTimer(SmartScriptHolder&,int,int){}
- void Run(SmartScriptHolder& e,Unit* unit){switch(e.actionType){
+ void Run(SmartScriptHolder& e,Unit* unit){uint32 var0=0,var1=0;bool bvar=false;auto spell=nullptr;auto gob=nullptr;switch(e.actionType){
 #include "CriteriaAction.inc"
 #include "CastAction.inc"
  }}

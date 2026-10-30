@@ -197,6 +197,9 @@ public:
     // called when the corpse of this creature gets removed
     virtual void CorpseRemoved(uint32& /*respawnDelay*/) {}
 
+    // Limited corpse work; ordinary combat/event updates remain stopped.
+    virtual void UpdateCorpseAI(uint32 /*diff*/) {}
+
     virtual void PassengerBoarded(Unit* /*passenger*/, int8 /*seatId*/, bool /*apply*/) {}
 
     virtual void OnSpellClick(Unit* /*clicker*/) { }

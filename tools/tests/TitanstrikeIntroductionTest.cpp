@@ -31,6 +31,7 @@ using WorldObject=Unit;
 #include "CreditPlayer.inc"
 using ObjectList=std::list<Unit*>;
 struct SmartScriptHolder {
+ bool runOnce=false;
  uint32 entryOrGuid=0,event_id=0,link=0,event=0,flags=0,type=0,targetType=0,t1=0;
  struct {struct {uint32 spell=0,flags=0;}cast;struct {uint32 type=0,misc1=0,misc2=0,misc3=0;}achievementCriteria;}action;
  struct {float x=0,y=0,z=0;}target;
@@ -38,6 +39,13 @@ struct SmartScriptHolder {
 };
 struct GO {SpellCastResult CastSpell(Unit*,uint32){return SPELL_FAILED_BAD_TARGETS;}};
 struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
  Unit* me;Player* participant;Unit* ghost;GO* go=nullptr;std::map<uint32,SmartScriptHolder> rows;
  int lists=0,paths=0,follows=0,data=0,flags=0,retries=0;bool playerNearby=true;
  Unit* GetBaseObject(){return me;}bool IsUnit(Unit* u){return u!=nullptr;}

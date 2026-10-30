@@ -1,5 +1,6 @@
 // Native event/action/timer sections; map lookup, casts and world mutations
 // are controlled services. This does not emulate client rendering or awards.
+#include <cassert>
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
@@ -88,6 +89,13 @@ struct SmartScriptHolder {
 };
 struct Call {uint32 time,action,value;};
 struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
     std::vector<SmartScriptHolder> mEvents,mTimedActionList;std::vector<Call> calls;
     Creature actor;Creature* me=&actor;GameObject* go=nullptr;Creature* visual=nullptr;Player player;Unit* lastInvoker=nullptr;
     uint32 errors=0,now=0,mTalkerEntry=0,mLastTextID=0,mTextTimer=0,mEventPhase=0,pathId=101390;ObjectGuid mTextGUID,mLastInvoker;bool mUseTextTimer=false,playerAvailable=true;

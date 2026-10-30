@@ -90,6 +90,13 @@ struct SmartScriptHolder {
 };
 bool roll_chance_i(uint32){return true;}
 struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
  std::vector<SmartScriptHolder> mEvents,mTimedActionList;uint32 mScriptType=0;Unit* me=nullptr;GameObject* go=nullptr;Unit* mLastInvoker=nullptr;unsigned errors=0,retries=0;std::vector<std::pair<uint32,uint32>> data;std::vector<uint32> requests;
  Unit* GetBaseObject(){return me?me:go;}void InstallEvents(){}void OnUpdate(uint32);void UpdateTimer(SmartScriptHolder&,uint32);Unit* GetLastInvoker(){return mLastInvoker;}bool IsInPhase(uint32)const{return true;}void RecalcTimer(SmartScriptHolder&,uint32,uint32);
  ObjectList* GetTargets(SmartScriptHolder const& e,Unit*){auto l=new ObjectList();switch(e.GetTargetType()){

@@ -1,3 +1,4 @@
+#include <cassert>
 #include "JournalsFixture.inc"
 #include "StormheimTorchTargets.h"
 using Object=WorldObject;
@@ -31,7 +32,14 @@ struct SmartScriptHolder {uint32 event_id=0,link=0,entryOrGuid=98577,source_type
  struct {uint32 type=33;struct{uint32 creature=98577;}killedMonster;struct{uint32 spell=194069,stack=0;}addAura;struct{uint32 delay=10000;}forceDespawn;}action;
  uint32 target=7;uint32 GetEventType()const{return event.type;}uint32 GetActionType()const{return action.type;}uint32 GetScriptType()const{return source_type;}};
 struct MurkyAI;
-struct SmartScript {Creature* me;MurkyAI* ai;std::vector<SmartScriptHolder> mEvents;ObjectGuid mLastInvoker;uint32 mScriptType=0;bool trigger=false;struct DummyEvent{void Remove(){}} eventValue;DummyEvent* event=&eventValue;
+struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+Creature* me;MurkyAI* ai;std::vector<SmartScriptHolder> mEvents;ObjectGuid mLastInvoker;uint32 mScriptType=0;bool trigger=false;struct DummyEvent{void Remove(){}} eventValue;DummyEvent* event=&eventValue;
  WorldObject* GetBaseObject(){return me;}bool IsInPhase(uint32){return true;}void SetPhase(uint32){}void ResetBaseObject(){}void InitTimer(SmartScriptHolder& e){e.active=true;}bool IsUnit(WorldObject* o){return o&&o->ToUnit();}bool IsPlayer(WorldObject* o){return o&&o->ToPlayer();}bool IsSmart(){return true;}Unit* GetLastInvoker(){return nullptr;}
  ObjectList* GetTargets(SmartScriptHolder const& e,Unit* unit){return new ObjectList{e.target==1?static_cast<WorldObject*>(me):unit};}SmartScriptHolder FindLinkedEvent(uint32 id){for(auto e:mEvents)if(e.event_id==id)return e;return {};}
  void RecalcTimer(SmartScriptHolder&,uint32,uint32){}void OnReset();void ProcessEventsFor(SMART_EVENT,Unit* =nullptr,uint32=0,uint32=0,bool=false,SpellInfo const* =nullptr,GameObject* =nullptr);void ProcessEvent(SmartScriptHolder&,Unit* =nullptr,uint32=0,uint32=0,bool=false,SpellInfo const* =nullptr,GameObject* =nullptr);void ProcessAction(SmartScriptHolder&,Unit* =nullptr,uint32=0,uint32=0,bool=false,SpellInfo const* =nullptr,GameObject* =nullptr);

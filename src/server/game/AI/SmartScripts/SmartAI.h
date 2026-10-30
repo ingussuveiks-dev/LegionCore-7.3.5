@@ -131,6 +131,7 @@ class TC_GAME_API SmartAI : public CreatureAI
 
         // called when the corpse of this creature gets removed
         void CorpseRemoved(uint32& respawnDelay) override;
+        void UpdateCorpseAI(uint32 diff) override;
 
         // Called at World update tick if creature is charmed
         void UpdateAIWhileCharmed(const uint32 diff);

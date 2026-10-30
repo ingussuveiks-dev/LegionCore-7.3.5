@@ -16,7 +16,8 @@ struct GameObject {};
 struct SpellInfo {uint32 Id;struct Misc {struct {uint32 SchoolMask=1;} MiscData;} misc;Misc const* GetMisc()const{return &misc;}};
 struct Motion {float x=0,y=0,z=0;bool cleared=false;void Clear(){cleared=true;}void MovePoint(int,float a,float b,float c){x=a;y=b;z=c;}};
 struct Creature:Unit {
- bool flying=false,noGravity=false;Motion motion;
+ bool flying=false,noGravity=false,expired=false;Motion motion;
+ bool IsQuestObjectExpired()const{return expired;}
  bool isInCombat()const{return false;}Motion* GetMotionMaster(){return &motion;}
  void SetCanFly(bool on){flying=on;}void SetDisableGravity(bool on){noGravity=on;}
  void GetPosition(float& x,float& y,float& z,float& o){x=4970.65f;y=3950.95f;z=799.212f;o=1.29f;}
@@ -36,6 +37,13 @@ struct Conditions {
 } conditions;
 auto sConditionMgr=&conditions;
 struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
  Creature creature;Creature* me=&creature;ObjectGuid mLastInvoker;Unit* invoker=nullptr;unsigned launches=0,resetCalls=0;
  std::vector<SmartScriptHolder> mEvents{SmartScriptHolder{}};
  Creature* GetBaseObject(){return me;}bool IsInPhase(uint32)const{return true;}
@@ -71,6 +79,9 @@ int main(){
  assert(!event.runOnce&&!fixed.launches); // Invalid player cannot consume the captive.
  first.quest=true;fixed.ProcessEvent(event,&first,0,0,false,&wrong);fixed.ProcessEvent(event,&first);
  assert(!event.runOnce&&!fixed.launches);
+ fixed.creature.expired=true;fixed.ProcessEvent(event,&first,0,0,false,&release);
+ assert(!event.runOnce&&!fixed.launches);
+ fixed.creature.expired=false;
  fixed.ProcessEvent(event,&first,0,0,false,&release);
  assert(event.runOnce&&fixed.launches==1&&fixed.mLastInvoker.value==1);
  for(int i=0;i<8;++i)fixed.ProcessEvent(event,&first,0,0,false,&release);

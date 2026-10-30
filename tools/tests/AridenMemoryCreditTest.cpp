@@ -84,6 +84,7 @@ int Unit::CastSpell(Unit* target,uint32 spell,bool) {
 }
 using ObjectList=std::list<Unit*>;
 struct SmartScriptHolder {
+    bool runOnce=false;
     int actionType=11,targetType=23;
     struct { struct { uint32 spell=198287,flags=18; } cast; } action;
     struct { float x=0,y=0,z=0;struct{uint32 dist=0;}playerDistance; } target;
@@ -91,6 +92,13 @@ struct SmartScriptHolder {
 };
 struct FakeGO { int CastSpell(Unit*,uint32) { return SPELL_FAILED_BAD_TARGETS; } };
 struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
     Unit* me;
     Unit* invoker=nullptr;
     FakeGO* go=nullptr;
@@ -106,7 +114,7 @@ struct SmartScript {
         return l;
     }
     void RecalcTimer(SmartScriptHolder&,int,int) {}
-    void Run(SmartScriptHolder& e,Unit* unit) { invoker=unit; switch(e.actionType) {
+    void Run(SmartScriptHolder& e,Unit* unit) { uint32 var0=0,var1=0;bool bvar=false;auto spell=nullptr;auto gob=nullptr;invoker=unit; switch(e.actionType) {
 #include "CastAction.inc"
 #include "InvokerCast.inc"
     }}

@@ -22,6 +22,8 @@
 #include "Creature.h"
 #include "Unit.h"
 #include "SmartScriptMgr.h"
+#include <set>
+#include <tuple>
 
 class SmartScript
 {
@@ -56,6 +58,7 @@ class SmartScript
         bool IsGameObject(WorldObject* obj);
 
         void OnUpdate(const uint32 diff);
+        void OnCorpseUpdate(uint32 diff);
         void OnMoveInLineOfSight(Unit* who);
 
         Unit* DoSelectLowestHpFriendly(float range, uint32 MinHPDiff);
@@ -97,6 +100,31 @@ class SmartScript
         }
 
     private:
+        struct LinkedCastRetry
+        {
+            SmartScriptHolder action;
+            ObjectGuid base, invoker, gameObject;
+            uint32 var0 = 0, var1 = 0, spell = 0, delay = 500, lifetime = 6000, attempts = 0, epoch = 0;
+            bool bvar = false, failed = false;
+        };
+        std::vector<LinkedCastRetry> mLinkedCastRetries;
+        struct LinkedCastAttempt
+        {
+            ObjectGuid base;
+            int64 entry;
+            uint32 event, ticket, epoch;
+        };
+        std::vector<LinkedCastAttempt> mLinkedCastAttempts;
+        std::set<std::tuple<ObjectGuid, int64, uint32>> mCompletedLinkedCasts;
+        uint32 mNextLinkedCastTicket = 0;
+        LinkedCastRetry* mProcessingLinkedCastRetry = nullptr;
+        uint32 mLinkedCastRetryEpoch = 0;
+        uint32 BeginLinkedCastAttempt(SmartScriptHolder const& e);
+        bool FinishLinkedCastAttempt(uint32 ticket, bool accepted);
+        void QueueLinkedCastRetry(SmartScriptHolder const& e, Unit* unit, uint32 var0, uint32 var1, bool bvar, SpellInfo const* spell, GameObject* gob);
+        void UpdateLinkedCastRetries(uint32 diff);
+        void ResetLinkedCastRetries();
+
         void IncPhase(int32 p = 1);
         void DecPhase(int32 p = 1);
         bool IsInPhase(uint32 p) const;

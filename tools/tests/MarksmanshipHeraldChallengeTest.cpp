@@ -201,6 +201,13 @@ struct SmartScriptHolder {
 using SmartAIEventList=std::vector<SmartScriptHolder>;using ObjectList=std::list<WorldObject*>;
 uint32 urand(uint32 minimum,uint32 maximum){assert(minimum==maximum);return minimum;}
 struct SmartScript {
+ // This older scope has no linked-cast opt-in; unexpected use must fail.
+ template<class... Args>void QueueLinkedCastRetry(Args const&...){assert(false);}
+ template<class... Args>uint32 BeginLinkedCastAttempt(Args const&...){assert(false);return 0;}
+ template<class... Args>bool FinishLinkedCastAttempt(Args const&...){assert(false);return false;}
+ void UpdateLinkedCastRetries(uint32){}
+ void ResetLinkedCastRetries(){}
+
 #ifdef XALATATH_ACTOR_RETRY_TEST
     uint32 lists=0;std::vector<uint32> casts;
     void ResetBaseObject(){}void InitTimer(SmartScriptHolder& row){row.timer=row.event.minMaxRepeat.min;row.active=true;}

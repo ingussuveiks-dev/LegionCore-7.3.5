@@ -1,20 +1,29 @@
+#requires -Version 7.0
 param([string]$MigrationFile,[switch]$VerifyLiveData)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/talonclaw-wardstone-data"
+if(!$env:CODEX_SQL_READER_USER){
+ $lease="$out/reader-$([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fffffff'))"
+ $arguments=[Collections.Generic.List[string]]::new();if($MigrationFile){$arguments.Add("-MigrationFile '$($MigrationFile.Replace("'","''"))'")};if($VerifyLiveData){$arguments.Add('-VerifyLiveData')}
+ $body=[scriptblock]::Create("& '$($PSCommandPath.Replace("'","''"))' $($arguments -join ' ')")
+ & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$lease/diagnostics" -Test { & "$PSScriptRoot/Invoke-WithTemporarySqlReader.ps1" -EvidenceDirectory $lease -Test $body }
+ return
+}
 if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_01_talonclaw_wardstone_admission.sql";if(!(Test-Path $MigrationFile)){$MigrationFile="$repo/sql/updates/world/2026_10_30_01_talonclaw_wardstone_admission.sql"}}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -Test {
  $migration=Get-Content $MigrationFile -Raw
  $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
+ $c[2]=$env:CODEX_SQL_READER_USER;$c[3]=$env:CODEX_SQL_READER_PASSWORD
  $script:queryIndex=0
  function Query([string]$sql,[switch]$Refusal){
   $old=$env:MYSQL_PWD;$errorFile="$out/sql-$script:queryIndex.stderr";++$script:queryIndex
-  [IO.File]::WriteAllText("$out/sql-$($script:queryIndex-1).sql",$sql)
-  $previousConsole=[Console]::OutputEncoding;$previousPipe=$OutputEncoding
-  try{$env:MYSQL_PWD=$c[3];[Console]::OutputEncoding=[Text.UTF8Encoding]::new($false);$OutputEncoding=[Text.UTF8Encoding]::new($false);$ErrorActionPreference='Continue';$rows=@($sql|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($c[0]) --port=$($c[1]) --user=$($c[2]) --database=$($c[4]) --default-character-set=utf8mb4 --batch --raw --skip-column-names --force 2>$errorFile);$code=$LASTEXITCODE;$ErrorActionPreference='Stop';$errors=[string](Get-Content $errorFile -Raw)
-   [IO.File]::WriteAllLines("$out/sql-$($script:queryIndex-1).stdout",[string[]]$rows)
+  $inputPath="$out/sql-$($script:queryIndex-1).sql";$outputPath="$out/sql-$($script:queryIndex-1).stdout"
+  [IO.File]::WriteAllText($inputPath,$sql+"`nSELECT '__TALON_WARD_DATA_COMPLETE__';`n")
+  try{$env:MYSQL_PWD=$c[3];$code=& "$PSScriptRoot/Invoke-NativeSqlFiles.ps1" -Executable C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe -Arguments @("--host=$($c[0])","--port=$($c[1])","--user=$($c[2])","--database=$($c[4])",'--default-character-set=utf8mb4','--batch','--raw','--skip-column-names','--force') -InputFile $inputPath -OutputFile $outputPath -ErrorFile $errorFile
+   $rows=[IO.File]::ReadAllLines($outputPath);$errors=[IO.File]::ReadAllText($errorFile)
    if($Refusal){if($errors -notmatch 'Talonclaw Wardstone/click/conditions differ; review before updating' -or @([regex]::Matches($errors,'ERROR [0-9]+')).Count -ne 1){throw "Unexpected Talonclaw Wardstone refusal: $errorFile"}}
-   elseif($code -ne 0 -or $errors){throw "Talonclaw Wardstone SQL failed: $errorFile"};return ,$rows
-  }finally{$env:MYSQL_PWD=$old;[Console]::OutputEncoding=$previousConsole;$OutputEncoding=$previousPipe}
+   elseif($code -ne 0 -or $errors){throw "Talonclaw Wardstone SQL failed: $errorFile"};if(!$rows.Count -or $rows[-1] -cne '__TALON_WARD_DATA_COMPLETE__'){throw 'Incomplete native Wardstone SQL capture'};return ,@($rows|Select-Object -SkipLast 1)
+  }finally{$env:MYSQL_PWD=$old}
  }
  $fixture=Get-Content "$PSScriptRoot/TalonclawWardstoneOriginal.json" -Raw -Encoding UTF8|ConvertFrom-Json
  $filters=[ordered]@{smart_scripts='source_type=0 AND entryorguid IN(101325,100207,101360)';conditions='(SourceTypeOrReferenceId IN(13,17) AND SourceEntry IN(199728,199770,199823)) OR (SourceTypeOrReferenceId=18 AND SourceGroup=101325) OR (SourceTypeOrReferenceId=22 AND SourceEntry IN(101325,100207,101360))';creature_template='entry IN(101325,100207,101360)';npc_spellclick_spells='npc_entry=101325'}
@@ -77,8 +86,14 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_10_30_01_talonc
   if(Test-Path $followup){$sha=[Security.Cryptography.SHA1]::Create();try{$hash=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes((Get-Content $followup -Raw).Replace("`r`n","`n"))))).Replace('-','')}finally{$sha.Dispose()}
    $applied=Query "SELECT COUNT(*) FROM updates WHERE name='2026_10_30_02_mist_warder_speakers.sql' AND hash='$hash' AND state='RELEASED';";$speakersApplied=$applied -contains '1'
   }
+  $retryApplied=$false
+  if(Test-Path "$repo/sql/updates/world/2026_10_30_35_talonclaw_linked_cast_retry.sql"){
+   & "$PSScriptRoot/Test-WardstoneLinkedCastData.ps1" -VerifyLiveData
+   $retryApplied=$true
+  }
   $fullLive=Query (Snapshot 'live');foreach($table in $filters.Keys){$expected=Signature $rows "first-$table"
    if($table -eq 'smart_scripts' -and $speakersApplied){$expected=[string]::Join("`n",[string[]]@($expected.Split("`n")|ForEach-Object {$f=$_.Split("`t");if($f[0] -eq '100207' -and $f[1] -eq '0' -and [int]$f[2] -in @(4,5)){$f[21]='1'};$f -join "`t"}))}
+   if($table -eq 'smart_scripts' -and $retryApplied){$expected=[string]::Join("`n",[string[]]@($expected.Split("`n")|ForEach-Object {$f=$_.Split("`t");if($f[0] -eq '101325' -and $f[1] -eq '0' -and [int]$f[2] -in @(1,2)){$f[16]='512'};$f -join "`t"}))}
    if((Signature $fullLive "live-$table") -cne $expected){throw "Live differs from Talonclaw Wardstone regression $table"}
   }
  }

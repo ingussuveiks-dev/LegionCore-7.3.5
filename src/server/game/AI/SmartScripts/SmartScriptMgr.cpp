@@ -898,6 +898,15 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         case SMART_ACTION_CAST:
         case SMART_ACTION_INVOKER_CAST:
         case SMART_ACTION_CAST_CUSTOM:
+            if (e.GetActionType() != SMART_ACTION_ADD_AURA && (e.action.cast.flags & SMARTCAST_RETRY_LINK) &&
+                (e.GetActionType() != SMART_ACTION_CAST || e.GetEventType() != SMART_EVENT_LINK ||
+                 e.GetScriptType() != SMART_SCRIPT_TYPE_CREATURE || e.GetTargetType() != SMART_TARGET_SELF ||
+                 !(e.event.event_flags & SMART_EVENT_FLAG_NOT_REPEATABLE) ||
+                 e.action.cast.flags != SMARTCAST_RETRY_LINK))
+            {
+                TC_LOG_ERROR("sql.sql", "SmartAIMgr: Entry %ld Event %u linked-cast retry requires an ordinary one-shot creature LINK self cast, skipped.", e.entryOrGuid, e.event_id);
+                return false;
+            }
             if (e.GetActionType() != SMART_ACTION_ADD_AURA && (e.action.cast.flags & SMARTCAST_RETRY_HEALTH_THRESHOLD) &&
                 (e.GetActionType() != SMART_ACTION_CAST || e.GetEventType() != SMART_EVENT_HEALTH_PCT ||
                  e.GetScriptType() != SMART_SCRIPT_TYPE_CREATURE || e.GetTargetType() != SMART_TARGET_VICTIM ||

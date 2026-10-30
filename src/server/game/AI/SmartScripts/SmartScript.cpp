@@ -101,6 +101,7 @@ SmartScript::~SmartScript()
 
 void SmartScript::OnReset()
 {
+    ResetLinkedCastRetries();
     SetPhase(0);
     ResetBaseObject();
     for (auto& itr : mEvents)
@@ -668,9 +669,14 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             }
 
             bool const retryThreshold = (e.action.cast.flags & SMARTCAST_RETRY_HEALTH_THRESHOLD) != 0;
+            bool const retryLink = (e.action.cast.flags & SMARTCAST_RETRY_LINK) != 0;
+            uint32 const linkedTicket = retryLink ? BeginLinkedCastAttempt(e) : 0;
+            if (retryLink && !linkedTicket)
+                return;
             ObjectList* targets = GetTargets(e, unit);
             if (!targets)
             {
+                if (retryLink) { FinishLinkedCastAttempt(linkedTicket, false); return; }
                 if (retryThreshold) { e.runOnce = false; RecalcTimer(e, 500, 500); return; }
                 break;
             }
@@ -702,7 +708,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 else if (go)
                     result = go->CastSpell(unit, e.action.cast.spell);
 
-                bool spellCastFailed = result != SPELL_CAST_OK && (retryThreshold || result != SPELL_FAILED_SPELL_IN_PROGRESS);
+                bool spellCastFailed = result != SPELL_CAST_OK && (retryThreshold || retryLink || result != SPELL_FAILED_SPELL_IN_PROGRESS);
                 if (me && e.action.cast.flags & SMARTCAST_COMBAT_MOVE)
                 {
                     ENSURE_AI(SmartAI, me->AI())->SetCombatMove(spellCastFailed);
@@ -722,10 +728,15 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             // If there is at least 1 failed cast and no successful casts at all, retry again on next loop
             if (!successfulSpellCast && (failedSpellCast || retryThreshold))
             {
+                if (retryLink && FinishLinkedCastAttempt(linkedTicket, false))
+                    QueueLinkedCastRetry(e, unit, var0, var1, bvar, spell, gob);
                 if (retryThreshold) e.runOnce = false;
                 RecalcTimer(e, 500, 500);
                 return;
             }
+
+            if (retryLink && !FinishLinkedCastAttempt(linkedTicket, true))
+                return;
 
             break;
         }
@@ -4191,6 +4202,8 @@ void SmartScript::OnUpdate(uint32 const diff)
 
     InstallEvents();//before UpdateTimers
 
+    UpdateLinkedCastRetries(diff);
+
     for (auto& mEvent : mEvents)
         UpdateTimer(mEvent, diff);
 
@@ -4311,6 +4324,7 @@ void SmartScript::GetScript()
 
 void SmartScript::OnInitialize(WorldObject* obj, AreaTriggerEntry const* at)
 {
+    ResetLinkedCastRetries();
     if (obj)//handle object based scripts
     {
         switch (obj->GetTypeId())
@@ -4591,6 +4605,152 @@ void SmartScript::SetScript9(SmartScriptHolder& e, uint32 entry)
 Unit* SmartScript::GetLastInvoker()
 {
     return ObjectAccessor::FindUnit(mLastInvoker);
+}
+
+void SmartScript::OnCorpseUpdate(uint32 diff)
+{
+    // Only opted-in pending casts are serviced; spell attributes still decide
+    // whether a dead caster is allowed. Never run ordinary dead-AI timers.
+    UpdateLinkedCastRetries(diff);
+}
+
+void SmartScript::ResetLinkedCastRetries()
+{
+    mLinkedCastRetries.clear();
+    mLinkedCastAttempts.clear();
+    mCompletedLinkedCasts.clear();
+    ++mLinkedCastRetryEpoch;
+}
+
+uint32 SmartScript::BeginLinkedCastAttempt(SmartScriptHolder const& e)
+{
+    if (!me || mCompletedLinkedCasts.count(std::make_tuple(me->GetGUID(), e.entryOrGuid, e.event_id)))
+        return 0;
+    for (auto const& attempt : mLinkedCastAttempts)
+        if (attempt.epoch == mLinkedCastRetryEpoch && attempt.base == me->GetGUID() &&
+            attempt.entry == e.entryOrGuid && attempt.event == e.event_id)
+            return 0; // An ordinary cast can synchronously re-enter SmartAI.
+    if (mLinkedCastAttempts.size() >= 16)
+    {
+        TC_LOG_ERROR("scripts.ai", "SmartScript: Entry %ld Event %u exceeded linked-cast attempt capacity.", e.entryOrGuid, e.event_id);
+        return 0;
+    }
+    if (!++mNextLinkedCastTicket)
+        ++mNextLinkedCastTicket;
+    mLinkedCastAttempts.push_back({me->GetGUID(), e.entryOrGuid, e.event_id, mNextLinkedCastTicket, mLinkedCastRetryEpoch});
+    return mNextLinkedCastTicket;
+}
+
+bool SmartScript::FinishLinkedCastAttempt(uint32 ticket, bool accepted)
+{
+    auto found = std::find_if(mLinkedCastAttempts.begin(), mLinkedCastAttempts.end(), [=](LinkedCastAttempt const& attempt) { return attempt.ticket == ticket; });
+    if (found == mLinkedCastAttempts.end())
+        return false; // Reset/initialization during the cast cancelled its tail.
+    LinkedCastAttempt attempt = *found;
+    mLinkedCastAttempts.erase(found);
+    if (attempt.epoch != mLinkedCastRetryEpoch || !me || !me->IsInWorld() || me->IsQuestObjectExpired() || me->GetGUID() != attempt.base)
+        return false;
+    return !accepted || mCompletedLinkedCasts.insert(std::make_tuple(attempt.base, attempt.entry, attempt.event)).second;
+}
+
+void SmartScript::QueueLinkedCastRetry(SmartScriptHolder const& e, Unit* unit, uint32 var0, uint32 var1, bool bvar, SpellInfo const* spell, GameObject* gob)
+{
+    // Only explicitly opted-in LINK self casts may resume their own tail.
+    // Never replay the parent event (which may already have awarded credit).
+    if (!me || e.GetActionType() != SMART_ACTION_CAST || e.GetEventType() != SMART_EVENT_LINK ||
+        e.GetScriptType() != SMART_SCRIPT_TYPE_CREATURE || e.GetTargetType() != SMART_TARGET_SELF ||
+        !(e.event.event_flags & SMART_EVENT_FLAG_NOT_REPEATABLE) ||
+        e.action.cast.flags != SMARTCAST_RETRY_LINK)
+        return;
+    if (mCompletedLinkedCasts.count(std::make_tuple(me->GetGUID(), e.entryOrGuid, e.event_id)))
+        return;
+
+    auto same = [&](LinkedCastRetry const& pending)
+    {
+        return pending.epoch == mLinkedCastRetryEpoch && pending.base == me->GetGUID() &&
+            pending.action.entryOrGuid == e.entryOrGuid && pending.action.event_id == e.event_id;
+    };
+    if (mProcessingLinkedCastRetry && same(*mProcessingLinkedCastRetry))
+    {
+        mProcessingLinkedCastRetry->failed = true;
+        return;
+    }
+    if (std::any_of(mLinkedCastRetries.begin(), mLinkedCastRetries.end(), same))
+        return; // Repeated notifications do not extend the retry lifetime.
+    if (mLinkedCastRetries.size() >= 16)
+    {
+        TC_LOG_ERROR("scripts.ai", "SmartScript: Entry %ld Event %u exceeded linked-cast retry capacity.", e.entryOrGuid, e.event_id);
+        return;
+    }
+
+    LinkedCastRetry pending;
+    pending.action = e;
+    pending.base = me->GetGUID();
+    pending.invoker = unit ? unit->GetGUID() : ObjectGuid::Empty;
+    pending.gameObject = gob ? gob->GetGUID() : ObjectGuid::Empty;
+    pending.var0 = var0;
+    pending.var1 = var1;
+    pending.bvar = bvar;
+    pending.spell = spell ? spell->Id : 0;
+    pending.epoch = mLinkedCastRetryEpoch;
+    mLinkedCastRetries.push_back(std::move(pending));
+}
+
+void SmartScript::UpdateLinkedCastRetries(uint32 diff)
+{
+    // Casts may re-enter SmartAI, reset this script or queue a different action.
+    // Iterate detached values so those operations cannot invalidate references.
+    std::vector<LinkedCastRetry> active;
+    active.swap(mLinkedCastRetries);
+    for (auto& pending : active)
+    {
+        SpellInfo const* castInfo = sSpellMgr->GetSpellInfo(pending.action.action.cast.spell);
+        if (pending.epoch != mLinkedCastRetryEpoch || !me || !me->IsInWorld() || !castInfo ||
+            (!me->IsAlive() && !castInfo->HasAttribute(SPELL_ATTR0_CASTABLE_WHILE_DEAD)) ||
+            me->IsQuestObjectExpired() || me->GetGUID() != pending.base)
+            continue;
+        if (diff >= pending.lifetime)
+        {
+            TC_LOG_WARN("scripts.ai", "SmartScript: Entry %ld Event %u linked cast %u expired without success.", pending.action.entryOrGuid, pending.action.event_id, pending.action.action.cast.spell);
+            continue;
+        }
+        pending.lifetime -= diff;
+        if (diff < pending.delay)
+            pending.delay -= diff;
+        else
+        {
+            pending.failed = false;
+            pending.action.runOnce = false;
+            pending.action.active = true;
+            ++pending.attempts;
+            mProcessingLinkedCastRetry = &pending;
+            ProcessEvent(pending.action,
+                pending.invoker.IsEmpty() ? nullptr : ObjectAccessor::GetUnit(*me, pending.invoker),
+                pending.var0, pending.var1, pending.bvar,
+                pending.spell ? sSpellMgr->GetSpellInfo(pending.spell) : nullptr,
+                pending.gameObject.IsEmpty() ? nullptr : ObjectAccessor::GetGameObject(*me, pending.gameObject));
+            mProcessingLinkedCastRetry = nullptr;
+            if (!pending.failed || pending.epoch != mLinkedCastRetryEpoch)
+                continue;
+            if (pending.attempts >= 10)
+            {
+                TC_LOG_WARN("scripts.ai", "SmartScript: Entry %ld Event %u linked cast %u failed after ten retries.", pending.action.entryOrGuid, pending.action.event_id, pending.action.action.cast.spell);
+                continue;
+            }
+            pending.delay = 500;
+        }
+        auto duplicate = std::find_if(mLinkedCastRetries.begin(), mLinkedCastRetries.end(), [&](LinkedCastRetry const& other)
+        {
+            return other.epoch == pending.epoch && other.base == pending.base &&
+                other.action.entryOrGuid == pending.action.entryOrGuid && other.action.event_id == pending.action.event_id;
+        });
+        if (duplicate != mLinkedCastRetries.end())
+            *duplicate = std::move(pending); // Keep the original deadline during re-entry.
+        else if (mLinkedCastRetries.size() < 16)
+            mLinkedCastRetries.push_back(std::move(pending));
+        else
+            TC_LOG_ERROR("scripts.ai", "SmartScript: Entry %ld Event %u exceeded linked-cast retry capacity during update.", pending.action.entryOrGuid, pending.action.event_id);
+    }
 }
 
 void SmartScript::IncPhase(int32 p)

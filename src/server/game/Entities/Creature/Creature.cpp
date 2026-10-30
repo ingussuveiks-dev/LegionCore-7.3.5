@@ -1060,6 +1060,15 @@ void Creature::Update(uint32 diff)
             if (m_deathState != CORPSE)
                 break;
 
+            if (IsAIEnabled)
+            {
+                m_AI_locked = true;
+                AI()->UpdateCorpseAI(diff);
+                m_AI_locked = false;
+                if (m_deathState != CORPSE)
+                    break;
+            }
+
             if (m_groupLootTimer && lootingGroupLowGUID)
             {
                 if (m_groupLootTimer <= diff)
