@@ -1,7 +1,7 @@
 param([switch]$VerifyLiveData)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$out="$repo/build-extractors/runtime-test/odyn-gaze-self-target"
+$out="$repo/build-extractors/runtime-test/odyn-gaze-self-target/run-$([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fffffff'))"
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -Test {
  & "$PSScriptRoot/Invoke-WithTemporarySqlReader.ps1" -EvidenceDirectory "$out/sql-reader" -Test {
  function Section($s,$a,$b){$i=$s.IndexOf($a);$j=$s.IndexOf($b,[Math]::Max(0,$i));if($i -lt 0 -or $j -le $i){throw "Missing native $a"};$s.Substring($i,$j-$i)}
@@ -50,7 +50,13 @@ INSERT INTO conditions SELECT SourceTypeOrReferenceId,SourceGroup,SourceEntry,So
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/OdynGazeSelfTargetTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/rules.tsv`"`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Native self-target regression failed'}
- if($VerifyLiveData){$r=Query "SELECT ConditionTarget,ConditionValue1 FROM conditions WHERE SourceTypeOrReferenceId=17 AND SourceEntry=215997;";if($r.Count -ne 1 -or $r[0] -ne "0`t1"){throw 'Live caster gate mismatch'}}
+ if($VerifyLiveData){
+  $r=Query "SELECT ConditionTarget,ConditionValue1 FROM conditions WHERE SourceTypeOrReferenceId=17 AND SourceEntry=215997;"
+  if($r.Count -ne 1 -or $r[0] -ne "0`t1"){throw 'Live caster gate mismatch'}
+  $sha=(Get-FileHash "$repo/sql/updates/world/2026_10_30_28_odyn_gaze_self_target.sql" -Algorithm SHA1).Hash
+  $r=Query "SELECT hash,state FROM updates WHERE name='2026_10_30_28_odyn_gaze_self_target.sql';"
+  if($r.Count -ne 1 -or $r[0] -ne "$sha`tRELEASED"){throw 'Live updater hash/state mismatch'}
+ }
  'PASS guarded TEMP repeat and five custom refusals. No live writes by this test.'
  }
 }
