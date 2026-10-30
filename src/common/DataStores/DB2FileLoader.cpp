@@ -864,7 +864,7 @@ char* DB2FileLoaderSparseImpl::AutoProduceData(uint32& maxId, char**& indexTable
     uint32 recordsize = _loadInfo->Meta->GetRecordSize();
     uint32 offsetCount = _header->MaxId - _header->MinId + 1;
     uint32 records = 0;
-    uint32 expandedDataSize = 0;
+    std::size_t expandedDataSize = 0;
     for (uint32 i = 0; i < offsetCount; ++i)
     {
         if (_catalog[i].FileOffset && _catalog[i].RecordSize)
@@ -880,7 +880,7 @@ char* DB2FileLoaderSparseImpl::AutoProduceData(uint32& maxId, char**& indexTable
     indexTable = new index_entry_t[maxId];
     memset(indexTable, 0, maxId * sizeof(index_entry_t));
 
-    auto dataTable = new char[records * recordsize];
+    auto dataTable = new char[std::size_t(records) * recordsize];
 
     // we store flat holders pool as single memory block
     std::size_t stringFields = _loadInfo->GetStringFieldCount(false);
@@ -963,9 +963,10 @@ char* DB2FileLoaderSparseImpl::AutoProduceData(uint32& maxId, char**& indexTable
                     }
                     case FT_STRING_NOT_LOCALIZED:
                     {
-                        auto slot = reinterpret_cast<char const***>(&dataTable[offset]);
-                        *slot = reinterpret_cast<char const**>(&stringHoldersPool[stringHoldersRecordPoolSize * recordNum + stringFieldOffset]);
-                        **slot = stringPtr;
+                        // Unlike LocalizedString, an unlocalized field stores
+                        // the string pointer itself, not a pointer to a holder.
+                        auto slot = reinterpret_cast<char const**>(&dataTable[offset]);
+                        *slot = stringPtr;
                         strcpy(stringPtr, RecordGetString(rawRecord, x, z));
                         stringPtr += strlen(stringPtr) + 1;
                         stringFieldOffset += sizeof(char*);
@@ -1010,14 +1011,24 @@ char* DB2FileLoaderSparseImpl::AutoProduceStrings(char** indexTable, uint32 inde
 
     auto offsetCount = _header->MaxId - _header->MinId + 1;
     uint32 records = 0;
+    std::size_t expandedDataSize = 0;
     for (uint32 i = 0; i < offsetCount; ++i)
         if (_catalog[i].FileOffset && _catalog[i].RecordSize)
+        {
             ++records;
+            expandedDataSize += _catalog[i].RecordSize;
+        }
 
     auto recordsize = _loadInfo->Meta->GetRecordSize();
-    std::size_t stringFields = _loadInfo->GetStringFieldCount(true);
-    auto stringTable = new char[_header->CatalogDataOffset - _dataStart - records * ((recordsize - (!_loadInfo->Meta->HasIndexFieldInData() ? 4 : 0)) - stringFields * sizeof(char*))];
-    memset(stringTable, 0, _header->CatalogDataOffset - _dataStart - records * ((recordsize - (!_loadInfo->Meta->HasIndexFieldInData() ? 4 : 0)) - stringFields * sizeof(char*)));
+    // Multiple catalog IDs can share one physical record. Strings are copied
+    // for every ID, so size this pool from the expanded records, as in
+    // AutoProduceData, rather than from the smaller physical file span.
+    // Both string kinds occupy variable bytes in sparse records; exclude all
+    // their pointer slots when calculating the fixed-size serialized portion.
+    std::size_t stringFields = _loadInfo->GetStringFieldCount(false);
+    auto stringTableSize = expandedDataSize - std::size_t(records) * ((recordsize - (!_loadInfo->Meta->HasIndexFieldInData() ? 4 : 0)) - stringFields * sizeof(char*));
+    auto stringTable = new char[stringTableSize];
+    memset(stringTable, 0, stringTableSize);
     auto stringPtr = stringTable;
 
     for (uint32 y = 0; y < offsetCount; y++)
@@ -1031,6 +1042,8 @@ char* DB2FileLoaderSparseImpl::AutoProduceStrings(char** indexTable, uint32 inde
             continue;
 
         auto recordData = indexTable[indexVal];
+        if (!recordData)
+            continue; // Another locale may contain an ID absent from the base.
 
         uint32 offset = 0;
         uint32 fieldIndex = 0;
