@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-30",
+  "status": "Baelgun/Magroth/Gavinrad pet presentation repaired and World19 RELEASED; full Frost/client/all36 not certified",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "actors": {
+    "Gavinrad": 93951,
+    "Magroth": 93950,
+    "Baelgun": 93948
+  },
+  "cause": "Native action206 creates conversations only for selected Players. These three AGGRO roots select VICTIM2, so pet/guardian aggro loses real740/742/743 Lich King commentary. Seven own TALK groups use VICTIM2 or rawINVOKER7 and select the pet as talker; native CreatureTextMgr has no corresponding pet group. Baelgun valid cast19135->LINK3 speech is also affected.",
+  "change": "Exactly13 target fields: three conversation roots ->native130 with70yd owner distance (6 fields), seven TALK targets ->SELF1. Native owner/charmer/player identity and world/map/phase/range/scope checks retained; no nearest-player fallback. Preserve Baelgun independent proximity738/range120, all18 Smart rows/event flags/timers/casts/validLINKs, all seven own texts and all original conversation records. No quest/item/criteria/health/phase/teleport grant or new C++ behavior.",
+  "validation": [
+    "Full9table original/applied/dependency hashes for Smart scripts, source22, texts, templates/WDB/spawns, conversation data/creature/actor738+740+742+743. Exactly13 fields, idempotence/22 TEMP custom-partial refusal cases under --force with native EOF receipt; full live equality/RELEASED LF-SHA1. No character data.",
+    "MSVC ASan reuses Halak actual extracted Smart dispatcher, owner function/helper,130 resolver/selector/scope tail,206 conversation and TALK/CreatureTextMgr admission with real18 SQL rows. Original pet loses commentary and own lines; corrected Player/pet/guardian/charm/NPC/ownerless/null/world/map/phase/range70 boundary/unavailable-owner/scope/one-hit death/repeated events/missing actors pass. Baelgun real aggro LINK2, combat19135 LINK3 and death2 line remain; Magroth/Gavinrad own0+1 preserved. Independent two repeating combat requests and one-shot Baelgun special remain unchanged.",
+    "The host controls world creation, packet/chat/spell effects and timer-active scheduling. It observes native cast requests and full-schema original timers but does not certify their actual casting/timing, failed-spawn recovery or client rendering. Failed conversation creation retains existing once-on-attempt behavior. Original proximity738 is data/native-catalog protected, not a newly modeled LOS walkthrough.",
+    "Matching26972 confirms seven native combat spells, seven BroadcastText records, and5 native lines covering738 (1761/96903 ->1762/98164),740 (1768/97437),742 (1770/97443),743 (1771/97445). No new sound/translation/visual IDs inferred. Canonical actual native130/loader/owner/map/phase/range and206/TALK PE pass. Prior Halak native/live9table/TEMP20 still passes after sharing the generic conversation spy and explicit main return.",
+    "Fresh both-server CIM absence before hash-verified pending19 promotion. Owned6200 canonical ready/graceful shutdown0/exit0/stderr empty/newDB0/protected hashes unchanged; closed. No EXE/core modification, user/unknown process stopped, character reset or client operation."
+  ],
+  "deployment": {
+    "owned_pid": 6200,
+    "lf_sha1": "66A7C8DACCDAE89280D29852C21FC0D76D305B91",
+    "canonical_hashes": {
+      "worldserver.exe": "DB0526D1CBDE25EE6660968C52CD4ACD927060C3F5AF0D775C3BD6C975527C92",
+      "bnetserver.exe": "204B17EAEC111ACBAFFA87868FC8589E74795F3136BC30C4B63D99F437373E25"
+    },
+    "migration": "sql/updates/world/2026_10_30_19_frost_souls_presentation.sql"
+  },
+  "diagnostics": "Every data/native/ASan/catalog/PE/updater/live/structural check has before/after canonical+own crash/log snapshots, exit/stdout/stderr inspected. No new production crash/server warning/error/assertion/DBErrors. Crashes empty; mixed3915-byte sharedLINK2 DBErrors unchanged atUTC2026-10-29T13:29:05.1130661Z and retained.",
+  "archive": {
+    "policy": "After commit archive original failed diagnostic files byte-for-byte; verify source/destination/source SHA256 and record actual fix commit. No production log truncated.",
+    "cause": "Initial reuse renamed the Halak main function, exposing its implicit-main-only return and C4716. Add explicit return0 in test host; native three-soul and prior Halak regressions pass. Production C++/EXEs unaffected.",
+    "path": "build-extractors/bin/Release/fixed/frost-souls-validation-2026-10-30/manifest.json"
+  },
+  "fresh_audit": {
+    "capture": ".codex/artifact-post-frost-souls-2026-10-30",
+    "maps": 28,
+    "automated_findings": 0,
+    "owner_contexts": 2168,
+    "primary_links": 23,
+    "native_pairs": 149,
+    "timed": 97,
+    "tables": 20,
+    "routes": 36,
+    "limits": "Static/native-source candidate inventory, not all36 chain/client certification; unknown edges preserved.",
+    "bounded_actor_links": 3,
+    "objects": 465568,
+    "map_records": 7439
+  },
+  "independent_reference_review": {
+    "url": "https://github.com/BlaMacfly/SylvaniaCore/blob/1f90ecb29308cd71569b9e394700a232b4b447ac/sql/sylvania/campagne_guerrier_legioncore.sql",
+    "review": "Fetched complete SQL and searched/reviewed the relevant actor/spell rows as source material; relevant four103151 Smart rows0/1/3/4 match the same missing2, and three Warrior101875 placements exist without201032/201031 producer rows. It is a later schema port explicitly sourced from LegionCore, not an independent matching26972 behavior/packet capture. No missing action or continuous-beam repair established. Priest sibling only supplied placements/texts for these IDs, no relevant Smart producer. No external SQL executed or adapted.",
+    "sha256": "2E9672EC96AB17A0DE1B350AD5FF1F610E49BB0FA6328AC6142AF4243F97ACBD"
+  },
+  "evidence": [
+    ".codex/frost-kings-original-2026-10-30",
+    ".codex/frost-kings-fingerprints-2026-10-30",
+    ".codex/frost-souls-native-repaired-2026-10-30",
+    ".codex/frost-souls-catalog-2026-10-30",
+    ".codex/frost-souls-updater-2026-10-30",
+    ".codex/frost-souls-final-live-2026-10-30",
+    ".codex/frost-souls-all36-refresh-2026-10-30"
+  ],
+  "next": "Review actual artifact combat conversations101114/2 and3 (Faceless Oppressor1331/1336) plus105799/4 and106700/4 Scion1667: raw pet invokers still rejected by206. Preserve native49022 credit, full encounter and Azuregos data1 recipients.109109/109417 map1489 phase7727 are later campaign scope; do not include merely because shared artifact map.",
+  "remaining": "Actual Frost conversations/speech/voice/rendering/combat/full route remain user-owned client checks.23 expandedLINK candidates and shared101430/103151 missingLINK2, Stromkar recoil/cracked-ground/three beams, Survival39427, original GO/cast denial/re-entry/full bags and full36 remain OPEN. No further reset permission."
+}

@@ -5232,5 +5232,12 @@
     "audit": "docs/audits/halak-presentation-2026-10-30.json",
     "status": "World18 RELEASED:93949 native741 conversation target130/70yd actual owner; two TALK targets SELF. ASan actual206/130/owner/scope/chat/native26972/full9live/TEMP20/actualcanonicalPE pass; own20368 clean closed. SameDB0526D1/204B17EA EXEs,3915 mixedLINK2 retained.",
     "remaining": "Actual Halak741 client conversation/chat/audio, combat cast acceptance and full Frost route remain OPEN. Preserve93949/5->3 invalid non-LINK target;79961 is independently repeating combat spell and must not be converted blindly toLINK61. All23 expanded candidates/shared101430+103151 missingLINK2, Stromkar recoil/cracked-ground/three beams, Survival39427 and full36/client/retry cases remain unfinished. No further reset permission; client is user-owned."
+  },
+  "frost_souls_presentation_2026_10_30": {
+    "audit": "docs/audits/frost-souls-presentation-2026-10-30.json",
+    "next": "Review actual artifact combat conversations101114/2 and3 (Faceless Oppressor1331/1336) plus105799/4 and106700/4 Scion1667: raw pet invokers still rejected by206. Preserve native49022 credit, full encounter and Azuregos data1 recipients.109109/109417 map1489 phase7727 are later campaign scope; do not include merely because shared artifact map.",
+    "status": "World19 RELEASED13 fields:Baelgun93948/Magroth93950/Gavinrad93951 native740/742/743 owner130+seven own TALK targets. ASan/native26972/full9live/TEMP22/actualPE+priorHalak pass; own6200 clean closed; sameDB0526D1/204B17EA EXEs and3915 mixedDBErrors.",
+    "fresh_audit": "20tables/465568;36/149/0 findings/3bounded;28maps2168owners97timed23LINK reviews. No fullclient certification.",
+    "remaining": "Actual Frost conversations/speech/voice/rendering/combat/full route remain user-owned client checks.23 expandedLINK candidates and shared101430/103151 missingLINK2, Stromkar recoil/cracked-ground/three beams, Survival39427, original GO/cast denial/re-entry/full bags and full36 remain OPEN. No further reset permission."
   }
 }

@@ -40,7 +40,7 @@ struct Generator{uint64 Generate(){return 1;}};
 struct ObjectMgr{Generator generator;template<HighGuid>Generator* GetGenerator(){return &generator;}} objectManager;auto sObjectMgr=&objectManager;
 struct Story{uint32 id;Player* player;};std::vector<Story> stories;bool failConversation=false;
 struct Conversation{bool CreateConversation(uint64,uint32,Unit*,void*,Position const&);};std::vector<std::unique_ptr<Conversation>> liveStories;
-bool Conversation::CreateConversation(uint64,uint32 id,Unit* owner,void*,Position const& pos){assert(id==741&&owner&&owner->ToPlayer()&&pos.x==1);if(failConversation)return false;stories.push_back({id,owner->ToPlayer()});liveStories.emplace_back(this);return true;}
+bool Conversation::CreateConversation(uint64,uint32 id,Unit* owner,void*,Position const& pos){assert(id&&owner&&owner->ToPlayer()&&pos.x==1);if(failConversation)return false;stories.push_back({id,owner->ToPlayer()});liveStories.emplace_back(this);return true;}
 
 bool IsCreature(Unit* u){return u&&u->creature;}bool IsPlayer(Unit* u){return u&&u->player;}
 using ObjectList=std::list<Unit*>;struct SpellInfo{};struct GameObject{};
@@ -150,4 +150,5 @@ int main(int argc,char** argv){
  // A fresh native reset/encounter can repeat its original presentation once.
  Clear();{auto s=Script(fixed,93949,&guardian);s.ProcessEventsFor(SMART_EVENT_AGGRO,&guardian);assert(stories.size()==1);}
  std::puts("PASS native Halak event/TALK/chat admission, actual player owner helper/130 resolver/target and conversation206: original pet loses741 and own0/1 speech; repaired player/pet/guardian/charm, ownerless/no stranger, world/map/phase/range/scope, duplicate events/one-hit death/missing actor. Native six-row combat graph unchanged, invalid5->3 deliberately observed; cast timing/health/world creation/packet rendering controlled or separate. Failed story creation retains original once-on-attempt semantics; no client/full encounter certification.");
+ return 0;
 }
