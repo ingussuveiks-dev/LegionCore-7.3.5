@@ -73,7 +73,7 @@ int main(int argc,char** argv){
     for(unsigned phase: {2u,3u}){RetryFixture cue;cue.Reach();cue.script.mEvents[2].event.event_phase_mask=6;cue.script.SetPhase(phase);scenarioManager.scenario.step=7;cue.Tick();assert(cue.vereesa.summons==1&&cue.script.mEvents[2].runOnce);}
 #endif
     conditionManager.SmartEventConditionStore.clear();
-    std::ifstream shapes(argv[3]);unsigned rows=0;int64 actor;uint32 source,id,flags,link,entry,lifetime,originalSummonFlags;float positionX,positionY,positionZ,orientation;
+    std::ifstream shapes(argv[3]);unsigned expectedRows=0;shapes>>expectedRows;assert(shapes&&expectedRows);unsigned rows=0;int64 actor;uint32 source,id,flags,link,entry,lifetime,originalSummonFlags;float positionX,positionY,positionZ,orientation;
     while(shapes>>actor>>source>>id>>flags>>link>>entry>>lifetime>>originalSummonFlags>>positionX>>positionY>>positionZ>>orientation){
         expected={entry,lifetime,positionX,positionY,positionZ,orientation};RetryFixture shape;SmartScriptHolder action;action.entryOrGuid=actor;action.source_type=source;action.event_id=73;action.link=74;action.type=60;action.event.event_flags=1;action.event.event_phase_mask=2;action.actionType=50;action.action.summonGO={entry,lifetime,2};action.targetType=8;action.target.x=positionX;action.target.y=positionY;action.target.z=positionZ;action.target.o=orientation;shape.script.SetPhase(2);assert(ValidateSummon(action));
         SmartScriptHolder after;after.entryOrGuid=actor;after.source_type=source;after.event_id=74;after.type=61;after.actionType=1;after.action.talk={99,0};after.targetType=1;shape.script.mEvents={action,after};shape.vereesa.summonAvailable=false;
@@ -88,7 +88,7 @@ int main(int argc,char** argv){
         ++rows;
         if(!(originalSummonFlags&2)){RetryFixture legacy;action.action.summonGO.flags=originalSummonFlags;action.event.event_phase_mask=0;action.runOnce=false;assert(ValidateSummon(action));legacy.script.mEvents={action,after};legacy.vereesa.summonAvailable=false;legacy.script.ProcessEvent(legacy.script.mEvents[0]);assert(legacy.script.mEvents[0].runOnce&&legacy.vereesa.speeches==1&&!legacy.vereesa.summons);}
     }
-    assert(rows>=192);
+    assert(shapes.eof()&&rows==expectedRows);
     expected={};
     for(unsigned target: {1u,128u}){RetryFixture retained;SmartScriptHolder action;action.type=61;action.actionType=50;action.action.summonGO={248419,3600};action.targetType=target;action.target.x=expected.positionX;action.target.y=expected.positionY;action.target.z=expected.positionZ;action.target.o=expected.orientation;
         if(target==128){expected.positionX=expected.positionY=expected.positionZ=expected.orientation=0;}retained.script.ProcessAction(action);assert(retained.vereesa.summons==1&&action.runOnce);retained.vereesa.summonAvailable=false;retained.script.ProcessAction(action);assert(action.runOnce&&retained.vereesa.summons==1);expected={};}

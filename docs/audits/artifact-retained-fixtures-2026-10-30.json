@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-30",
+  "scope": "Repair stale retained test services discovered while verifying shared SmartAI cast changes. No production gameplay/data changes in this commit.",
+  "causes": [
+    "Helheim retained fixture extracted current KilledMonsterCredit without its separately tested Skyhold policy boundary. The boundary now refuses loudly if entered; no success stub.",
+    "Journals extracted current action33 without native GetScriptCreditPlayer. Export the real resolver and assert guardian-to-owner credit once, matching existing production behavior; old assertion incorrectly expected credit loss.",
+    "Bow summon fixture required at least192 shapes from an older database. Current complete database has188. Capture the current count before TEMP shadow creation, drain native SQL stdout/stderr through EOF with completion receipt, require every captured shape to execute and match exact count. Do not lower the assertion to188."
+  ],
+  "checks": [
+    "Full Murky prerequisite sequence: Helheim supplies, Built Scale, Journals and native Murky regression pass; native owner credit and repeated receipt remain once.",
+    "Xalatath finale prerequisite sequence includes native bow test against all188 current shapes, weapon creation retry and actual finale callbacks; passes.",
+    "Test-StormheimJudgment.ps1 passes after inherited policy boundary de-duplication; source extracted real handlers remain active."
+  ],
+  "evidence": [
+    ".codex/wardstone-linked-cast-shared-20261030-164200",
+    ".codex/wardstone-retained-judgment-2026-10-30",
+    ".codex/wardstone-linked-cast-shared-20261030-162859/Test-StormheimMurky/helheim-compiler-failure.log",
+    ".codex/wardstone-linked-cast-shared-20261030-163405/Test-StormheimMurky/journal-owner-credit-assertion.log",
+    ".codex/wardstone-linked-cast-shared-20261030-163610/Test-XalatathFinaleActorRetry/bow-live-shape-assertion.log",
+    ".codex/wardstone-linked-cast-shared-20261030-163851/Test-XalatathFinaleActorRetry/bow-count-scope-assertion.log"
+  ],
+  "diagnostics": "Before/after canonical and test crash/log snapshots, actual child exit/stdout/stderr reviewed. No new/changed crash, appended DBErrors or server warnings/errors/assertions. Compiler/assertion failures were test-harness failures, preserved and paired with passing repaired checks. No client traversal claimed; mixed existing LINK2 log preserved.",
+  "limitation": "Several original prerequisite scripts write reused upstream output paths; failures copied to unique diagnostics before repeat. Earlier retained aggregate was overwritten before this repair (see linked-cast audit), so its original bytes are unavailable. No claim that missing original evidence was archived."
+}

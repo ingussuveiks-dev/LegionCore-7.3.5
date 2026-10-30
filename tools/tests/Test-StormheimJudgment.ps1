@@ -55,7 +55,9 @@ $fixture=$fixture.Replace('explicit SmartGameObjectAI(GameObject*){}', 'GameObje
 # Skyhold return policy. A Warrior-only call is outside this Stormheim fixture;
 # fail loudly if it is ever reached instead of silently allowing that credit.
 if(!$fixture.Contains('#include "KilledMonsterCredit.inc"')){throw 'Shared kill dispatcher fixture boundary missing'}
-$fixture=$fixture.Replace('#include "KilledMonsterCredit.inc"',"namespace SkyholdArtifactReturn {inline bool CanCredit(Player*,Quest const*){assert(false && `"Warrior return outside Stormheim fixture`" );return false;}}`n#include `"KilledMonsterCredit.inc`"")
+if(!$fixture.Contains('namespace SkyholdArtifactReturn')){
+ $fixture=$fixture.Replace('#include "KilledMonsterCredit.inc"',"namespace SkyholdArtifactReturn {inline bool CanCredit(Player*,Quest const*){assert(false && `"Warrior return outside Stormheim fixture`" );return false;}}`n#include `"KilledMonsterCredit.inc`"")
+}
 [IO.File]::WriteAllText("$output/JudgmentFixture.inc",$fixture)
 $source=Get-Content "$repo/src/server/scripts/Legion/stormheim_judgment.cpp" -Raw
 $source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')

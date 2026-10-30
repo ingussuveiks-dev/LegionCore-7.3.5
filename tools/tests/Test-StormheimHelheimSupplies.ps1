@@ -49,6 +49,16 @@ $fixture=$fixture.Replace('struct PlayerMenu {','struct PlayerMenu {std::vector<
 $fixture=$fixture.Replace('uint32 GetTeam(){return team;}','bool canAdd=true;uint32 popup=0;bool CanAddQuest(Quest const*,bool){return canAdd;}void AddQuestAndCheckCompletion(Quest const* q,WorldObject*){Accept(q->id);}void SetPopupQuestId(uint32 id){popup=id;}uint32 GetTeam(){return team;}')
 $fixture=$fixture.Replace('virtual void sQuestAccept(Player*,Quest const*)','virtual void sQuestReward(Player*,Quest const*,uint32){++delegated;}virtual void sQuestAccept(Player*,Quest const*)')
 $fixture=$fixture.Replace('uint32 GetTeam(){return team;}','uint32 GetSkillValue(int){return 0;}bool IsInArmyTraining(){return false;}struct Army {std::vector<int> currentUnits[1];} armyTrainingInfo;uint32 GetAuraCount(uint32){return 0;}uint32 GetTeam(){return team;}')
+# This shared dispatcher now references the independently tested Warrior
+# return policy. None of this Stormheim fixture's credits may enter it.
+$killInclude='#include "KilledMonsterCredit.inc"'
+if(!$fixture.Contains($killInclude)){throw 'Shared kill dispatcher fixture boundary missing'}
+$smart=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
+$creditStart=$smart.IndexOf('Player* GetScriptCreditPlayer(');$creditEnd=$smart.IndexOf('Unit* GetScriptCreditCaster(',$creditStart)
+if($creditStart -lt 0 -or $creditEnd -le $creditStart){throw 'Native owner-credit resolver missing'}
+[IO.File]::WriteAllText("$output/ScriptCreditPlayer.inc",$smart.Substring($creditStart,$creditEnd-$creditStart))
+$fixture=$fixture.Replace($killInclude,"#include `"ScriptCreditPlayer.inc`"`n$killInclude")
+$fixture=$fixture.Replace($killInclude,"namespace SkyholdArtifactReturn {inline bool CanCredit(Player*,Quest const*){assert(false && `"Warrior return outside Stormheim fixture`" );return false;}}`n$killInclude")
 [IO.File]::WriteAllText("$output/HelheimSuppliesFixture.inc",$fixture)
 $go=Get-Content "$repo/src/server/game/Entities/GameObject/GameObjectData.cpp" -Raw
 $a=$go.IndexOf('uint32 GameObjectTemplate::GetLootId() const');$b=$go.IndexOf('uint32 GameObjectTemplate::GetGossipMenuId() const',$a)

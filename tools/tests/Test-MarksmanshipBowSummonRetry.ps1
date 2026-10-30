@@ -1,3 +1,4 @@
+#requires -Version 7.0
 param([switch]$Baseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
 if($Baseline -and $VerifyReleaseBinary){throw 'Baseline cannot certify repaired Release'}
@@ -13,6 +14,7 @@ $normalization=(Get-Content "$PSScriptRoot/MarksmanshipFinalStageBaseline.sql" -
 $scope='SourceTypeOrReferenceId=22 AND SourceEntry=100397 AND SourceGroup=63'
 $reset="DELETE FROM conditions WHERE $scope; DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart; DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_actor; DELETE FROM gameobject_template; INSERT INTO gameobject_template SELECT * FROM saved_object; DELETE FROM gameobject; INSERT INTO gameobject SELECT * FROM saved_spawn;"
 $sql=@"
+SELECT 'shape-count',COUNT(*) FROM smart_scripts WHERE action_type=50 AND target_type=8;
 SELECT 'shape',entryorguid,source_type,id,event_flags,link,action_param1,action_param2,action_param3,target_x,target_y,target_z,target_o FROM smart_scripts WHERE action_type=50 AND target_type=8 ORDER BY entryorguid,source_type,id;
 CREATE TEMPORARY TABLE saved_smart LIKE smart_scripts;
 INSERT INTO saved_smart SELECT * FROM smart_scripts WHERE entryorguid=100397;
@@ -67,11 +69,23 @@ $variants=@{
 foreach($name in $variants.Keys){$sql+="$reset`n$($variants[$name])`n$migration`nSELECT '$name',COUNT(*) FROM conditions WHERE $scope;`n"}
 $sql+="$reset`nINSERT INTO conditions(SourceTypeOrReferenceId,SourceGroup,SourceEntry,SourceId,ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1,Comment) VALUES(22,63,100397,0,1,4,1,1489,'Custom bow retry');`n$migration`nSELECT 'custom-gate',COUNT(*) FROM conditions WHERE $scope;`nSELECT 'custom-preserved',COUNT(*) FROM conditions WHERE Comment='Custom bow retry';`n"
 $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
+$sql+="`nSELECT '__BOW_RETRY_COMPLETE__';`n"
 $previous=$env:MYSQL_PWD
-try{$env:MYSQL_PWD=$connection[3];$rows=@($sql|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Bow retry TEMP fixture failed'}}finally{$env:MYSQL_PWD=$previous}
+try{
+ $env:MYSQL_PWD=$connection[3]
+ [IO.File]::WriteAllText("$out/fixture.sql",$sql)
+ $code=& "$PSScriptRoot/Invoke-NativeSqlFiles.ps1" -Executable C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe -Arguments @("--host=$($connection[0])","--port=$($connection[1])","--user=$($connection[2])","--database=$($connection[4])",'--batch','--raw','--skip-column-names') -InputFile "$out/fixture.sql" -OutputFile "$out/fixture.stdout" -ErrorFile "$out/fixture.stderr"
+ if($code -or (Get-Item "$out/fixture.stderr").Length){throw 'Bow retry TEMP fixture failed'}
+ $rows=[IO.File]::ReadAllLines("$out/fixture.stdout")
+ if($rows[-1] -cne '__BOW_RETRY_COMPLETE__'){throw 'Bow retry output incomplete'}
+}finally{$env:MYSQL_PWD=$previous}
 foreach($expected in @("first-count`t4","count`t4","new-row`t1","custom-gate`t1","custom-preserved`t1")+@($variants.Keys|ForEach-Object {"$_`t0"})){if($rows -notcontains $expected){throw "Bow retry mismatch: $expected"}}
 foreach($kind in @('smart','gates','object')){$before=@($rows|Where-Object {$_ -like "before-$kind`t*"}|ForEach-Object {$_.Substring(8+$kind.Length)});$after=@($rows|Where-Object {$_ -like "after-$kind`t*"}|ForEach-Object {$_.Substring(7+$kind.Length)});if(Compare-Object $before $after){throw "Unexpected bow retry $kind change"}}
 foreach($kind in @('row','gate','shape')){[IO.File]::WriteAllLines("$out/$kind.tsv",[string[]]@($rows|Where-Object {$_ -like "$kind`t*"}|ForEach-Object {$_.Substring($kind.Length+1)}))}
+$shapeCount=@($rows|Where-Object {$_ -like "shape-count`t*"})
+if($shapeCount.Count -ne 1 -or [int]$shapeCount[0].Split("`t")[1] -lt 1){throw 'Missing native shape count'}
+$shapePath="$out/shape.tsv";$shapeRows=[IO.File]::ReadAllLines($shapePath)
+[IO.File]::WriteAllLines($shapePath,@($shapeCount[0].Split("`t")[1])+$shapeRows)
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing native section $start"};$source.Substring($first,$last-$first)}
 $source=if($Baseline){(& git -C $repo show '3e67822dc6c8a77262ab7a119fa7c969a225f587:src/server/game/AI/SmartScripts/SmartScript.cpp') -join "`n"}else{Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw}
 if(!$source){throw 'Missing pinned or current summon source'}
