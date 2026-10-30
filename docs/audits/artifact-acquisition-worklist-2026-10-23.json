@@ -5148,5 +5148,10 @@
     "status": "World07 RELEASED247566->128402;42 exact940/9 loot/owned9..10 predicates; original200152+unknownLINK1 intact. Native/ASan/TEMP18 refusals/shared actualPE/live pass; own14376 clean closed; no binaries/characters changed.",
     "fresh_audit": ".codex/artifact-post-blood-loot-2026-10-30:20tables465243 objects;36/149/0 automated findings/3boundedMonk;2scene-only Frost247386/Fire247494;25maps1947owners83timed19LINK reviews.",
     "next": "Wire guarded real Blood1168/1532 completion->native200134;101778 pet/guardian death credit also OPEN. Then Frost/Fire and all36. Do not equate structural0 with client/full-chain completion."
+  },
+  "native_sql_client_flush_2026_10_30": {
+    "audit": "docs/audits/native-sql-client-flush-2026-10-30.json",
+    "status": "Old buffered prepared-SIGNAL stdout loss reproduced1/20; mandatory native --unbuffered +existing EOF drains,80 both-client repaired repetitions/1MiB/Monk22 refusals/complete20tables465243 count+byte validations pass. Internal upstream cause unproven; retain count/EOF guards.",
+    "next": "Blood scene C++/World08 staged native+actualPE pass but not promoted yet; complete protected canonical promotion/live, then remaining36. The36-route objective remains incomplete."
   }
 }

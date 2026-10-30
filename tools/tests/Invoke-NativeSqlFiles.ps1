@@ -5,6 +5,10 @@ $inputPath=[IO.Path]::GetFullPath($InputFile);$outputPath=[IO.Path]::GetFullPath
 if(@($inputPath,$outputPath,$errorPath|Sort-Object -Unique).Count -ne 3){throw 'SQL input/stdout/stderr paths must be distinct'}
 $start=[Diagnostics.ProcessStartInfo]::new();$start.FileName=$Executable;$start.UseShellExecute=$false;$start.CreateNoWindow=$true;$start.WindowStyle=[Diagnostics.ProcessWindowStyle]::Hidden
 $start.RedirectStandardInput=$true;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true;$start.StandardInputEncoding=[Text.UTF8Encoding]::new($false)
+# Keep per-query results out of the client's exit-time stdout buffer as well
+# as draining both OS pipes. A prepared SIGNAL under --force reproduced a
+# missing final result despite a clean exit and completed pipe-copy tasks.
+$start.ArgumentList.Add('--unbuffered')
 foreach($argument in $Arguments){$start.ArgumentList.Add($argument)}
 $process=[Diagnostics.Process]::new();$process.StartInfo=$start
 $outputStream=$null;$errorStream=$null;$started=$false

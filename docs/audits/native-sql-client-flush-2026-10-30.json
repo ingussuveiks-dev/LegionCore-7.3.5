@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-30",
+  "status": "Per-query native client flushing added; buffered prepared-refusal loss reproduced and retained,80 repaired repetitions plus complete export pass",
+  "fix_commit": "Implementation commit containing this audit; resolve final hash from Git history.",
+  "cause": "c9fd59c07 helper correctly waits process and pipe EOF, but real Blood TEMP refusal emitted only before rows with native exit0/one expected1644. Isolated read-only prepared-SIGNAL counterfactual with old helper lost a tail in1/20 buffered invocations;20/20 explicit per-query flush invocations complete. Mandatory --unbuffered asks MariaDB/MySQL to flush each query result; retains full pipe drains. Internal upstream runtime cause is not established. Row/count/EOF guards remain necessary; finite passing repetitions are bounded evidence.",
+  "change": "Invoke-NativeSqlFiles now always passes native --unbuffered (both actual clients document Flush buffer after each query). Keeps original async concurrent stdout/stderr drains, actual scalar exit, credential environment restoration and hidden owned SQL processes. SQL query/error content is untouched. No game/core/data migration or canonical EXE change in this commit.",
+  "counterfactual": {
+    "old_helper_sha256": "67F931B51DB8683A0B3AE649748D5F788D21BA6EADF92F79E0F9DBA3DE1B5326",
+    "real_refusal": ".codex/blood-scene-refusal-initial-2026-10-30/sql-10.stdout",
+    "isolated": ".codex/native-sql-flush-probe-2026-10-30/buffered-12.stdout",
+    "result": "Old buffered probe19/20 complete,1/20 incomplete at72rows/8263bytes; corresponding unbuffered20/20 complete at73rows/8324bytes. Actual Blood failure native0/expected1644 had only before rows; incomplete native output caused a visible test failure, never accepted as production success."
+  },
+  "validation": [
+    "New Test-NativeSqlPreparedRefusal executes40 read-only session-local prepared-SIGNAL counterfactuals per MariaDB11.4.9/MySQL8.4.9 client.80/80 native actual0, exactly one expected1644 retained, exact72 before/after row contents and final EOF marker. No persistent tables/routines or game state writes.",
+    "Existing both-client complete1MiB/SQL1054-before/payload-after/tail-after-error/native-nonzero/metadata suite passes. Prepared1644 and intentional1054 are expected failing counterfactual statements, not ordinary successful queries.",
+    "Actual Blood scene full-schema TEMP22 custom/partial refusals and nativeASan pass after flush; new Blood query wrapper also explicitly requires retained terminal marker before reading assertions. Original incomplete result remains in ignored archive. Unreleased Blood implementation is a separate forthcoming commit.",
+    "Retained live Monk scene TEMP22 refusal cases pass. Actual exporter publication rejects valid-JSON-boundary count loss/missing marker/post-marker bytes/malformed row. Full fresh20-table465243-object export parses, matches native exact prefix bytes/server row-count trailers/empty stderr. Earlier incomplete931row counterfactual remains separately retained."
+  ],
+  "diagnostics": "All counterfactual/fixed native/TEMP/shared/export checks have before/after canonical+own crash hashes and log lengths/timestamps. No new/changed crash, server warnings/errors/assertions or DBErrors. Active Crashes empty; mixed3915-byte sharedLINK2 unchanged. No user/unknown server stopped, owned game server started or character state changed for this I/O fix. Existing productionF0BB199C unchanged; staged Blood EXE is separate and not yet promoted.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\native-sql-client-flush-2026-10-30",
+    "files": 309,
+    "result": "Original raw failed outputs, old helper, stress inputs/expected errors and passing diagnostic evidence copied with source/destination/source SHA256 verification. No active production diagnostics cleared."
+  },
+  "evidence": [
+    ".codex/native-sql-flush-probe-2026-10-30",
+    ".codex/native-sql-per-query-flush-2026-10-30",
+    ".codex/native-sql-flush-export-2026-10-30",
+    ".codex/native-sql-flush-count-verify-2026-10-30",
+    ".codex/artifact-post-client-flush-2026-10-30"
+  ],
+  "remaining": "Keep EOF/count/publication guards. Complete separately staged Blood1168 existing-item callback promotion/live/nativePE validation, then Frost/Fire pickups/19LINK candidates/sharedLINK2/Stromkar visuals/middle39427/all36. Client traversal remains user-owned; no reset permission."
+}
