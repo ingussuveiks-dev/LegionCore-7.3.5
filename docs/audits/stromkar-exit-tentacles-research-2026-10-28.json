@@ -1,6 +1,6 @@
 {
   "date": "2026-10-28",
-  "status": "OPEN: no production tentacle model, spell, spawn or cleanup change yet",
+  "status": "Original exact exit-hole producer subsequently identified/restored in World34; actual rendered client result and both shared LINK2 payloads remain OPEN.",
   "report": "User video and screenshot show a blue-purple tentacle cluster blocking the exit hole until Soth'ozz dies. Keep separate from four killable pillar104583 and brief central reveal.",
   "confirmed_local": [
     "Soth103226 actual native death LINK4 sendsdata1/1 to exact Effects Bunny103151/spawn369686 at1907.55,2335.26,75.7038,phase5739. Links5/6 open exact closed251349 blockers136767/136768. Their state1 is already correct; earlier AiID0 must not be mistaken for door state.",
@@ -21,5 +21,11 @@
   },
   "diagnostics": "All successful native/CASC/build probes wrapped with before/after canonical/test crash and log snapshots: no new crashes, DBErrors appends or server errors. Initial reader compile failures corrected and retained privately; one read-only nonexistent creature_template.name SQL query corrected after SHOW COLUMNS, no mutation. Existing1305-byte shared LINK2 log retained. No character changes or task server remains. Final reader rerun initially returned config-required exit2 because LEGION_DIALOGUE_CONFIG was omitted; rerun explicitly supplies/restores the local config path. This is a research harness invocation failure, not a server failure; failed-run snapshots retained. No runtime errors were suppressed. User runtime later appended six LINK2 entries, active DBErrors now2175 bytes; current probes remain clean. Logs retained.",
   "next": "Identify the original exit cluster producer and supported pose/scale from native asset geometry and matching Legion source/sniff/video before creating it. Preserve real Soth death cleanup, pet/guardian owner credit, native blockers and exactly-once progression. Resolve shared103151/101430 LINK2 from full intended sequence rather than deleting a dangling edge merely to hide errors. Continue independent Bilaal104546 and Aluneth/all36 work while client checks remain user-owned.",
-  "completed_separately": "9f16a9cb9 ritual source22 stage0OR1;81632a3bd single369687 persistent dome override. Both deployed data-only on canonical261E2031 with clean startup/live readback. These do not certify the tentacle cluster. Awakening766fae12b separately deployed3E71306E with real initial trap and native Stage9 acknowledgment; see stromkar-awakening-2026-10-28.json. This still does not identify the hole cluster."
+  "completed_separately": "9f16a9cb9 ritual source22 stage0OR1;81632a3bd single369687 persistent dome override. Both deployed data-only on canonical261E2031 with clean startup/live readback. These do not certify the tentacle cluster. Awakening766fae12b separately deployed3E71306E with real initial trap and native Stage9 acknowledgment; see stromkar-awakening-2026-10-28.json. This still does not identify the hole cluster.",
+  "later_original_producer_2026_10_30": {
+    "audit": "docs/audits/stromkar-exit-hole-aura-2026-10-30.json",
+    "status": "World34 RELEASED original204345 Shadow Pool only103151/spawn369686 at native1907.55/2335.26/75.7038. Exact22594 WPP pose+addon corroborated by matching26972 aura/visual/actual CASC tendril files611390/655465. Original native Soth death removes it before202014; existing missingLINK2 kept visible.5124024bf, test snapshot repairb4f19b113 pushed.",
+    "checks": "12 complete live tables/1 addon insertion/20 TEMP refusals, ASAN62 exit plus24 Mage+48 Priest, matching26972/actualPE, own31016 ready/graceful0, no new diagnostics.385 closed files hash archived; four canonical EXE/map hashes unchanged. ActiveCrashes empty; mixed5365-byte LINK2 retained.",
+    "remaining": "Actual rendered hole cluster/size/disappearance and stage5->6 passage, re-entry and fullclient remain pending. Both101430/103151 LINK2 payloads unresolved; no unknown action inferred/deleted. Other Stromkar and Survival39427/full36 still OPEN. No reset or character mutation."
+  }
 }
