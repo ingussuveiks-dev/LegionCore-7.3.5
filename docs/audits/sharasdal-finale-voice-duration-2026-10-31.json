@@ -205,5 +205,15 @@
     "Actual client voice/rendering/scheduling/possible original offset overlap still require user traversal. Lifetimes cover conservative native audio budgets; do not claim the conversation starts from the correct caller/stage or that old NPC-caster expiry is repaired.",
     "Lady original104856 JustDied still selects nearest Player and dereferences killer for1923. Correct real362095 versus illusion362091/owner/null/surrender/native1906 and post-pickup1923 placement remain OPEN. Native creature lookup needs living Lady; a duration-only repair cannot create1906 after ordinary death.",
     "249342 native loot link0/activation AddItem/delete/direct completion, actual full bags/equip209685/scene209684/return remain OPEN, as do companion route interruptions/full1066/all36/Glow/Survival/WardstoneLINK4/sharedLINK2/Stromkar/client. See separate final-boss-pickup research audit; no reset performed."
-  ]
+  ],
+  "fix_commit": "fedcfe0ad",
+  "diagnostic_archive": {
+    "fix_commit": "fedcfe0ad",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-finale-voice-duration-2026-10-31",
+    "files": 210,
+    "manifest_sha256": "61e1d2ce85497d3f0df42a9bd30de910948fa9af495146beaf88ef56561218b6",
+    "verification": "Source/destination/source/final SHA256 verified; canonical6090-byte mixed LINK2 hash/length/timestamp and empty Crashes unchanged. No active file removed or truncated; no task servers retained.",
+    "failures_paired": {},
+    "excluded_open": "Mixed open final-boss/pickup/dialogue/donor/video and earlier original-route research, mixed active DBErrors excluded. Only native voice-budget diagnostics archived; audio media and client files excluded. Source video/contact sheets stay in ignored .codex/sharasdal-reference, not a whole-chain fix certificate."
+  }
 }

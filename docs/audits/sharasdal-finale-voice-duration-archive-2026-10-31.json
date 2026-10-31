@@ -1,0 +1,9 @@
+{
+  "fix_commit": "fedcfe0ad",
+  "directory": "build-extractors/bin/Release/fixed/sharasdal-finale-voice-duration-2026-10-31",
+  "files": 210,
+  "manifest_sha256": "61e1d2ce85497d3f0df42a9bd30de910948fa9af495146beaf88ef56561218b6",
+  "verification": "Source/destination/source/final SHA256 verified; canonical6090-byte mixed LINK2 hash/length/timestamp and empty Crashes unchanged. No active file removed or truncated; no task servers retained.",
+  "failures_paired": {},
+  "excluded_open": "Mixed open final-boss/pickup/dialogue/donor/video and earlier original-route research, mixed active DBErrors excluded. Only native voice-budget diagnostics archived; audio media and client files excluded. Source video/contact sheets stay in ignored .codex/sharasdal-reference, not a whole-chain fix certificate."
+}
