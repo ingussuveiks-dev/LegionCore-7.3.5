@@ -1,7 +1,7 @@
 {
   "date": "2026-10-31",
   "status": "Data-derived native Sheilun companion tactic producer/acknowledgement deployed; actual client battle/physical pickup/outro/return/full36 OPEN",
-  "fix_commit": "recorded by following archive audit",
+  "fix_commit": "d280d4a46",
   "cause": "Both original defensive/aggressive white-bubble options acknowledged the role without applying either native tactical state. Research872b3da2a identifies self infinite204654 Balanced dummy baseline and204653 Reckless with actual native79/outgoing25 and87/taken50, all-school127. No custom multiplier is needed.",
   "change": [
     "Insert only a native tactic acknowledgement call before each role event in the already guarded Plan::Select; leave six source tuples, menu/quest/role admission, original start commands and all other scripts unchanged. Choice0 requests204654, choice1 requests204653 by ordinary native NPC self-triggered CastSpell; require resultOK and actual chosen aura before consuming role progression.",
@@ -84,5 +84,13 @@
     ".codex/sheilun-tactics-stage-pe1-open-2026-10-31",
     ".codex/sheilun-tactics-stage-pe2-open-2026-10-31"
   ],
-  "next": "Continue real manual physical source/storage acknowledgement and native outro/return. Preserve phase duplication and original boss/GO shortcut findings, actual client limitations, other artifacts and user-owned client testing; no reset."
+  "next": "Continue real manual physical source/storage acknowledgement and native outro/return. Preserve phase duplication and original boss/GO shortcut findings, actual client limitations, other artifacts and user-owned client testing; no reset.",
+  "archive": {
+    "fix_commit": "d280d4a46",
+    "directory": "build-extractors/bin/Release/fixed/sheilun-tactics-2026-10-31",
+    "manifest_sha256": "a8064fa0b9e327525217692e3a4f7d49b6e0b21996a566178008ac0f7f303589",
+    "files": 262,
+    "verification": "Source/destination/source/final SHA256 verified; canonical15D26F67 retained; Crashes empty, mixed6090LINK2 unchanged. Owned32988 clean exit0 and gone. No active report removed/log truncated.",
+    "remaining": "Only resolved native tactic producer/acknowledgement and paired fixture/PE iterations archived. Independent source/video/visual/phase/physical/storage/outro/return research and tactical client fidelity remain OPEN outside fixed. Full sequence/all36/client remain OPEN. Mixed6090LINK2 unchanged; no active report removed/log truncated/config/binary/dump/media/credential/character archived."
+  }
 }
