@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-01",
+  "status": "OPEN physical source/outro/return implementation; matching local native/core/controller research only",
+  "canonical_world_sha256": "45ec027ec49c842b5d8d190910b641e10e3dd2312da63719c60e72c37a5b816d",
+  "local_world": [
+    "Fresh full-EOF read-only World query confirms instance1541/instance_sheylun. Tak-Tak101880 has only two outdoor static spawns (1514/340392 and870/382726), shared SmartAI and gossip19254. All12 native Smart rows are19254 selections/links for other routes; no ON_SUMMONED/RESET or return19257 producer. Do not overwrite those shared rows or infer an existing1541 foot actor.",
+    "102479 has native spell-click202435/caster-clicker1 and no AI/ScriptName/static spawn. Actual WDB display alternatives are23922 and67670, remaining two0; flags_extra0. Previous invisible-model candidates alone did not characterize the actual template. Both102590/102648 use4581 and native46598 click; return102648 has no AI/ScriptName.",
+    "No live SQL/gameplay/template change. First query guessed creature_template.name/InhabitType and stopped with Unknown column name after the instance row; inspected actual ObjectMgr loader, moved Name1/display fields to creature_template_wdb and omitted nonexistent InhabitType. Corrected controller2 read reaches fullEOF. Original failed stdout/stderr remains OPEN and visible."
+  ],
+  "actual_default_model": {
+    "creature": 102479,
+    "display_choices": [
+      23922,
+      67670
+    ],
+    "display23922": {
+      "model": 114,
+      "FileDataID": 1112735,
+      "display_scale": 1.75,
+      "model_scale": 1,
+      "display_flags": 0,
+      "texture_file_id": 1112993
+    },
+    "casc": {
+      "build": "7.3.5.26972",
+      "FileDataID": 1112735,
+      "bytes": 178628,
+      "sha256": "08f0a987f2176e23c06d388040cdd32ab6d0677990de1f10c5c0e9982be4871e",
+      "model_name": "Rabbit2",
+      "vertices": 831,
+      "embedded_texture": "Creature\\Rabbit2\\ArmorReflect5.blp",
+      "read": "Private read-only CascLib export, client indexes hashed before/after unchanged, bounded native MD21/MD20 parsing. No client rendering/texture decode performed."
+    },
+    "alternatives": "67670 and25204 use invisible flagged display1/model1731/file124640. Only67670 is an actual102479 template alternative;25204 is another inspected invisible candidate, not its current WDB choice.",
+    "core_selection": "Actual ObjectMgr::ChooseDisplayId uses GetRandomValidModelId for a no-spawn override and flags_extra0. That native method includes both nonzero model alternatives. GetFirstInvisibleModel separately resolves model-info is_trigger; do not add global CREATURE_FLAG_EXTRA_TRIGGER simply to select invisibility, because Creature::UpdateEntry also sets NOT_SELECTABLE for triggers. Any future scoped source selection must preserve click/interaction admission and explicitly document the selected native model. This is a potential raw-spawn visual difference, not a claim that a rabbit has been observed in the client.",
+    "world_visual": "Native202385 aura-dummy has visual52801/kit63682 with item128937 attachment317084 and independent particle317095. It is the staff visual; GO256913/display9806 remains a generic Clickable_Box interaction proxy. No new world staff/source pose is established by these assets."
+  },
+  "native_vehicle_and_effects": [
+    "3035 Flags272=personal16 plus unknown256, Control4=SUMMON_CATEGORY_VEHICLE, Title0/Slot0. Actual Spell::EffectSummonType first creates102648, then automatically casts ride46598 on that same vehicle. AI IsSummonedBy occurs during native creation before the ride cast. Merely accepting202828 is not proof of boarding.",
+    "Native202828 remaining E1/90 rewards native player/group101880 and E2/61 dispatches event48658 even if the earlier native ride failed. A guarded replay can retain those real handlers: allow E0 only when no owned tracked kite exists, guard E1/E2 until actual owner PassengerBoarded seat0/GetVehicleBase matches expected GUID, retry native46598 on that same actor finitely, then replay202828 with E0 suppressed and native E1/E2 authorized once. This is a design under review, not deployed behavior or a repaired boarding regression.",
+    "EffectKillCredit90 calls RewardPlayerAndGroupAtEvent(entry,unitTarget); do not replace it with arbitrary nearest-player or blanket grants. EffectSendEvent61 calls ZoneScript/InstanceScript ProcessEvent, native sEventScripts and both script-event criteria types. Merely calling UpdateAchievementCriteria92 is not a complete replacement. Exact native source/quest/request guards and reentrant failure/abandonment handling still need implementation and tests.",
+    "Native vehicle4581 keeps player seat0/16270 free and Tak-Tak101880 accessory seat1/16271. Native boarding, credit, motion, control/viewpoint/pet restoration and two map legs are separate receipts. Current ordinary return remains unimplemented; prior native202831/Taxis5619/WSSL5710 research retained."
+  ],
+  "gossip_and_voice": [
+    "NPCHandler sends default greeting only when legacy CreatureScript OnGossipHello returnsfalse, then invokes AI sGossipHello. Select invokes AI menu/index before legacy sender/action/default handling. A scoped Tak-Tak delegate must avoid first sending wrong19254 and must consume the real19257 menu before callbacks, retaining native shared SmartAI outside its owned1541 context. No such delegate is implemented yet.",
+    "CreatureTextMgr resolves SoundEntriesID by native BroadcastText and actor gender, and native BCT emotes/delays, when sound override is absent. Preserve native BCT104773/774/775/776/777/785 and Tak-Tak104958 with previously fully decoded durations; do not restore the old arbitrary14s exit timer. Check whether scene1192/package1557 already owns any proposed presentation before adding dialogue to avoid duplication."
+  ],
+  "evidence": [
+    ".codex/sheilun-physical-controller-open-2026-11-01",
+    ".codex/sheilun-physical-controller2-open-2026-11-01",
+    ".codex/sheilun-physical-default-display-open-2026-11-01",
+    ".codex/sheilun-source-default-model-open-2026-11-01",
+    ".codex/sheilun-source-default-model-parse-open-2026-11-01",
+    ".codex/sheilun-source-visibility-flags-open-2026-11-01"
+  ],
+  "diagnostics": "Completed corrected World/native/CASC/parse checks report no new/changed crash, appendedDBErrors or server warnings/errors/assertions. No server started for this research. Existing mixed6090LINK2 retained and Crashes empty. Research and its failed first query stay outside fixed archives; no binary/config/credential/character/media committed.",
+  "next": "Implement coherent owner/quest-bound physical source, real native inventory storage acknowledgement, boss player/pet/guardian/ally credit and outro/native return with bounded spawn/cast/boarding retries. Original auto item/progress/timer194151 shortcuts remain OPEN. Source/context design in ignored .codex/sheilun-login-work-state.txt; client/all36 unresolved."
+}

@@ -51,7 +51,9 @@ int main(int argc,char** argv)
     std::cout<<"SOURCE\troot-tables-base-plus-hotfix\tvisual-effect-name-and-parent-attachment-base-only\n";
     for(auto area:areas)if(area->MapID==1541||area->AreaID==8005)
         std::cout<<"MAP_AREA\t"<<area->ID<<'\t'<<area->MapID<<'\t'<<area->AreaID<<'\t'<<area->DisplayMapID<<'\t'<<area->LocLeft<<'\t'<<area->LocRight<<'\t'<<area->LocTop<<'\t'<<area->LocBottom<<'\t'<<area->AreaName->Str[0]<<'\n';
-    for(uint32 id:{67670u,25204u})
+    // Include both current102479 WDB alternatives, alongside the other
+    // previously inspected invisible-actor candidate.
+    for(uint32 id:{23922u,67670u,25204u})
     {
         auto d=displays.LookupEntry(id);if(!d)return 6;
         auto m=models.LookupEntry(d->ModelID);if(!m)return 7;
