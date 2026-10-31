@@ -1,8 +1,16 @@
-param([switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
+param([switch]$PrepareHost,[switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$ipath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$instance=(Get-Content "$repo/$ipath" -Raw).Replace("`r",'')
+$retainedReply=$source.Contains('CreatureAI* firstAI =')
+if($retainedReply){
+ & "$PSScriptRoot/Test-SharasdalErunakReply.ps1" -ScopeOnly
+ if(!$?){throw 'Actual Erunak waypoint reply certificate failed'}
+ # The new reply suite compiles the whole current actor. Keep this earlier
+ # upper84 matrix at its certified implementation; its headers are unchanged.
+ $source=(& git -C $repo show "c33b7e1f2:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned upper introduction missing'}
+}
 $old=(& git -C $repo show "b8f080c1f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-upper actor missing'}
 $oldInstance=(& git -C $repo show "b8f080c1f:$ipath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-upper instance missing'}
 $npc=Block $source 'class npc_erunak_stonespeaker :';$oldNPC=Block $old 'class npc_erunak_stonespeaker :'
@@ -56,8 +64,10 @@ $hostSource=Adapt $hostSource 'virtual void Reset(){}' 'uint32 guidCalls=0;virtu
 [IO.File]::WriteAllText("$out/TimerHost.inc",$hostSource)
 # Host extensions and the full current policy are exercised by the native
 # regression below. Actual movement/network/registry services stay controlled.
+if($PrepareHost){return}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($Baseline){'/DBASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi $mode /I`"$out`" `"$PSScriptRoot/SharasdalErunakUpperTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`ncd /d `"$out`"`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Actual upper Erunak introduction regression failed'}
+if($retainedReply){'Retained84 upper matrix uses pinned c33b7e1f2 after strict reply scope; the reply suite compiles the full current actor and unchanged headers'}
 if($VerifyReleaseBinary){if(!$ReleaseDirectory){$ReleaseDirectory="$repo/build-extractors/bin/Release"};$prior=$env:PYTHONPATH;try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$prior";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_sharasdal_erunak_upper_release.py" $ReleaseDirectory;if($LASTEXITCODE){throw 'Actual upper Erunak implementation missing'}}finally{$env:PYTHONPATH=$prior}}

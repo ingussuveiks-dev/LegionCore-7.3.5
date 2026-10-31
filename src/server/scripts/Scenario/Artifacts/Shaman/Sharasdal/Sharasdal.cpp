@@ -246,10 +246,16 @@ public:
                         {
                             if (Creature* adel = me->FindNearestCreature(104853, 70.0f, true))
                             {
-                                adel->AI()->Talk(0);
+                                CreatureAI* firstAI = adel->GetDisabledAI() ? static_cast<CreatureAI*>(adel->GetDisabledAI()) : adel->AI();
+                                if (!firstAI) return;
+                                firstAI->Talk(0);
                                 adel->AddDelayedEvent(5000, [adel]() -> void
                                 {
-                                    adel->AI()->Talk(1);
+                                    // This queue belongs to the captured Creature,
+                                    // but its current AI can change before the reply.
+                                    if (!adel->IsInWorld() || adel->IsPreDelete() || !adel->IsAlive()) return;
+                                    CreatureAI* replyAI = adel->GetDisabledAI() ? static_cast<CreatureAI*>(adel->GetDisabledAI()) : adel->AI();
+                                    if (replyAI) replyAI->Talk(1);
                                 });
                             }
                         }

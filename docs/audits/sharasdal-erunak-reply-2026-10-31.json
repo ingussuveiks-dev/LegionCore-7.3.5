@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-31",
+  "scope": "Only actual Erunak waypoint8 Adelee Talk0 and same-Creature native five-second Talk1 AI availability. Other shared waypoint/ascent/recipient/path rules remain OPEN, not certified by this repair.",
+  "cause": "Both initial and delayed speech dereferenced adel->AI() without checking it. Actual Creature::AIM_Destroy deletes current AI and sets it null while the Creature and its Unit-owned FunctionProcessor can remain alive. Charm/suspended content may instead have a distinct original AI. This is a source/native-counterfactual unsafe dereference; no production crash attributed to it was observed.",
+  "lifetime_correction": "The captured pointer is the same Creature which owns this Unit queue, not an escaped captured AI. Native Unit.h AddDelayedEvent forwards to its own m_Functions; Unit::Update ticks it independently of CreatureAI/victim/stun, and C++ member destruction releases its work. Preserve that existing ownership and five-second timing; no global queue clear or unsupported AI use-after-free claim.",
+  "sources": [
+    "Actual Sharasdal.cpp whole Erunak MovementInform, Creature::AIM_Destroy, Unit.h own AddDelayedEvent/m_Functions, Unit::Update native clock, FunctionProcessor implementation and CreatureAI::Talk native text dispatch.",
+    "Read-only full-EOF World paths10993808/09/10/11, real lower Adelee362078 and upper362094, native broadcast texts107634/107635. No timing/schema/actor added from spell names or a newer core.",
+    "Native WaypointMovementGenerator::OnArrived dispatches zero-based current node before UpdateWaypointID.10993809 has11 rows including callback8 speech.10993810 has6 rows labeled1,2,3,4,6,7, so native final callback5 is genuine. Preserve83810/208580/-208580/209992 ascent; no fabricated missing scene event."
+  ],
+  "implementation": [
+    "Resolve original suspended AI when present, otherwise current AI, and require availability before initial Talk0/queue. No actor AI pointer is captured.",
+    "At the same native5000ms callback, require Creature in-world/notpredelete/alive and resolve available original suspended or current AI again before Talk1. Missing/dead/removed/no-AI optional speaker safely skips this one finite presentation; no quest or scenario delivery depends on this speech.",
+    "No field/layout/instance/header/SQL/ScriptName/data/character change. Other waypoint nodes/home update/1707/ascent/nearest-player behavior retained under exact whole-source c33b7e1f2 certificate; broad original claimant/path admission still unresolved."
+  ],
+  "validation": {
+    "counterfactual": "Pinned c33b7e1f2 whole Erunak/native FunctionProcessor/AIM_Destroy demonstrates callback still queued after current AI is deleted/null. Unchecked callback deliberately not invoked; expected unsafe recipe plus pinned source, not an observed access violation or passing gameplay.",
+    "current": "23 ASAN cases compile whole current Erunak/both unchanged headers plus actual native FunctionProcessor/AIM_Destroy/quest/lifecycle/conversation dependencies. Exact0/4999/5000ms/once output, missing AI before scheduling and at four elapsed times, current/suspended/current-null/alias before/after request, replacement, stun/cast Unit clock, dead/out-of-world/predelete, missing actor, unrelated Unit work, original Erunak AI removal and native AI lock. Registry/movement/speaker text services are controlled; no actual client route/voice claim.",
+    "retained": "84 upper introduction contexts pass at pinned c33b7e1f2 only after strict current reply certificate; current reply23 compiles actual new whole actor/unchanged headers. Earlier lower/upper source policies and unchanged full instance remain covered by certificates and actual full selected Release chain.",
+    "release": "Original-path scripts.lib Release build and original final linker into separate stage4BA5B32D. Actual selected isolated+full stage+canonical PE proves issued Erunak waypoint vtable/native zero-based dispatch, first/reply current-or-suspended null guards, real same-Creature Unit FunctionProcessor36a0/5000ms queue/capture/type-erased callback, world/predelete/alive and Talk1. Retained full upper/lower/gauntlet/upper-wall/acquisition/Lady/Kraliss/roar/wall/Brutes/guard/wound/rescue PE passes. Mandatory ScepterLogin -VerifyReleaseBinary passes. Four-file offline EXE/MAP backup/copy/hash and protected config/cert/DLL check; binary revision68d6a512d precedes focused commit, actual code verified directly.",
+    "runtime": "Own PID20188 only, fresh canonical ready, graceful server shutdown0/exit0/stderr empty/newDBErrors0/protected hashes unchanged/process gone. No user/unknown server stopped.",
+    "reviewed_failed_checks": {
+      "sharasdal-erunak-reply-regression-open-2026-10-31": "Initial harness renamed an included main, losing special implicit return and causing C4716. Extract only the shared native host prefix before main instead; paired current23 regression2 passes. No production change for this fixture failure.",
+      "sharasdal-erunak-reply-baseline-open-2026-10-31": "Same initial renamed-main fixture C4716; paired baseline2 expected-unsafe recipe passes after host-prefix extraction. No native unsafe callback invoked."
+    }
+  },
+  "canonical": {
+    "worldserver.exe": "4ba5b32d850b49978a101182aeab45414afd770dc82766ce0b9ea3e7b4b7dfef",
+    "worldserver.map": "edae97adfc55790a3d4d17aecece2adbc2643605644bf18f34c087b4231cb5de",
+    "bnetserver.exe": "cc0e3d7887802172d2a7ac39fa3ba48f90c109eddbb2f94713275392dae830c7",
+    "bnetserver.map": "2e1865253208e1d536e3da01cfcc9a7e97de9b20ec4b714c84dbd84830d7089f"
+  },
+  "diagnostics": "All suites/build/link/native PE/promotion/startup wrapped with before/after canonical+own crash/log snapshots and captured output/exit review. No new or changed crash, appended DBErrors, unexplained server warning/error/assertion. Extracted native conversion/signedness/shadow/unused warnings reviewed; final production build adds none. Crashes empty; mixed6090-byte shared101430/103151LINK2 DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved, no truncation.",
+  "remaining": [
+    "Actual client Adelee two lines/native voice timing, complete lower route/cave/guard/rescue/ascent/camera/re-entry and whole1066/all36 remain user checks.",
+    "Shared Erunak waypoint role/issued path/original claimant and nearest-player208580 admission still OPEN. This guarded optional speech does not reconstruct interrupted routes or guarantee a speaker which has no AI/remains missing.",
+    "Living Lady1906/209457 real boarding/finisher source, native210247 cleanup, wave lifetime/full chain and generic other NPC-caster conversation expiry remain OPEN.",
+    "WardstoneLINK4/Survival middle/Glow/Stromkar client/sharedLINK2 remain unfinished. No character/item/AP/quest/checkpoint reset; reset3 consumed."
+  ],
+  "next": "Continue shared Erunak original caller and issued waypoint/ascent delivery, then living Lady/native210247/waves and remaining all36 independent repairs."
+}
