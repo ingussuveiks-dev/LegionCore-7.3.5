@@ -3,6 +3,11 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$ipath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$instance=(Get-Content "$repo/$ipath" -Raw).Replace("`r",'')
+if($instance.Contains('#include "sharasdal_lower_ascent.h"')){
+ & "$PSScriptRoot/Test-SharasdalLowerAscent.ps1" -ScopeOnly
+ if(!$?){throw 'Current lower-ascent instance scope failed'}
+ $instance=(& git -C $repo show "ccc0e2f74:$ipath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-ascent instance comparison missing'}
+}
 $retainedReply=$source.Contains('CreatureAI* firstAI =')
 if($retainedReply){
  & "$PSScriptRoot/Test-SharasdalErunakReply.ps1" -ScopeOnly

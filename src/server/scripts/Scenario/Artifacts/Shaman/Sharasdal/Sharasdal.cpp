@@ -232,6 +232,10 @@ public:
                 if (!script)
                     return;
 
+                if (id == 5 && me->GetEntry() == 102826 && me->GetDBTableGUIDLow() == 362063 &&
+                    SharasdalWall::Path(me) == 10993810)
+                    script->SetGuidData(50336, me->GetGUID()); // Retain actual arrival, including native step2.
+
                 if (script->getScenarionStep() <= 2)
                 {
                     switch (id)
@@ -263,15 +267,6 @@ public:
                         case 9:
                             me->CreateConversation(1707);
                             break;
-                    }
-                }
-                else if (script->getScenarionStep() == 3)
-                {
-                    if (id == 5)
-                    {
-                        DoCast(83810);
-                        if (Player* pl = me->FindNearestPlayer(100.0f))
-                            pl->CastSpell(pl, 208580);
                     }
                 }
             }
@@ -522,6 +517,13 @@ public:
                 }
             if (step == 2 && (!SharasdalWall::World(me) || !BindWallRecipient(player)))
                 return;
+            if (step == 2)
+            {
+                InstanceScript* script = me->GetInstanceScript();
+                if (!script) return;
+                script->SetGuidData(208580, player->GetGUID());
+                if (script->GetGuidData(208580) != player->GetGUID()) return;
+            }
             struct BusyGuard { bool& flag; ~BusyGuard() { flag = false; } } guard{_gossipBusy};
             _gossipBusy = true;
             if (step <= 1 && !SharasdalGrash::Receipt(scenario, 47303))
@@ -562,7 +564,8 @@ public:
                         me->GetMotionMaster()->MovePath(10993808, false); // 3
                         if (Creature* erunak = me->FindNearestCreature(102826, 70.0f))
                         {
-                            erunak->AI()->Talk(2);
+                            if (CreatureAI* content = erunak->GetDisabledAI() ? static_cast<CreatureAI*>(erunak->GetDisabledAI()) : erunak->AI())
+                                content->Talk(2);
                             erunak->GetMotionMaster()->MovePath(10993809, false); // 2 5 9
                         }
                     }, _functions.CalculateTime(1000));
@@ -575,8 +578,10 @@ public:
                         me->GetMotionMaster()->MovePath(10993810, false);  // 0 3
                         if (Creature* erunak = me->FindNearestCreature(102826, 70.0f))
                         {
-                            erunak->AI()->Talk(9);
+                            if (CreatureAI* content = erunak->GetDisabledAI() ? static_cast<CreatureAI*>(erunak->GetDisabledAI()) : erunak->AI())
+                                content->Talk(9);
                             erunak->GetMotionMaster()->MovePath(10993810, false, irand(-5, 5), irand(-5, 5));
+                            if (InstanceScript* script = me->GetInstanceScript()) script->SetGuidData(10993810, erunak->GetGUID());
                         }
                         if (Creature* adel = me->FindNearestCreature(104853, 70.0f))
                             adel->GetMotionMaster()->MovePath(10993810, false, irand(-5, 5), irand(-5, 5));

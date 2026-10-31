@@ -71,16 +71,8 @@ assert any(i>credit_site for i in sites(update,'?Receipt@SharasdalGuard@@'))
 assert any(x.mnemonic=='cmp' and x.op_str.startswith('qword ptr [r8 + 0x18],') for x in update)
 assert any(x.mnemonic=='cmp' and x.op_str=='dword ptr [rsi + 0x320], 0x1e' for x in update)
 enter=instructions('?OnPlayerEnter'+suffix)
-clears=[]
-for i,x in enumerate(enter):
-    if x.mnemonic!='mov' or x.operands[0].type!=CS_OP_MEM or x.operands[0].mem.disp!=0x31a:continue
-    if x.operands[1].type==CS_OP_IMM and x.operands[1].imm==0:clears.append(i);continue
-    for byte,zero,aliases in [(X86_REG_R14B,'r14d, r14d',{X86_REG_R14,X86_REG_R14D,X86_REG_R14W,X86_REG_R14B}),
-                              (X86_REG_BPL,'ebp, ebp',{X86_REG_RBP,X86_REG_EBP,X86_REG_BP,X86_REG_BPL})]:
-        if x.operands[1].type==CS_OP_REG and x.operands[1].reg==byte:
-            zeros=[j for j,y in enumerate(enter[:i]) if y.mnemonic=='xor' and y.op_str==zero]
-            if zeros and not any(set(y.regs_access()[1])&aliases for y in enter[zeros[-1]+1:i]):clears.append(i)
-assert clears, 'Original guard exhausted flag must be cleared by actual zero dataflow on re-entry'
+from sharasdal_reentry_pe import verify_zero_rearm
+verify_zero_rearm(enter,0x31a,0x31c)
 movement=instructions('?MovementInform@npc_erunak_stonespeakerAI@npc_erunak_stonespeaker@@')
 assert not sites(movement,'?UpdateAchievementCriteria@Player@@') and 49957 not in values(movement)
 for body in (death,update,recipient):

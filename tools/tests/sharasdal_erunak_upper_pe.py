@@ -78,10 +78,13 @@ def verify(n):
  assert {0x3af,0x464,0x9c0,0x9c8}<=fields(entry) and {102826,362063,362093,40341}<=values(entry)
  dispatch=[i for i,x in enumerate(entry) if x.mnemonic=='call' and x.op_str=='qword ptr [rax + 0x80]']
  assert len(dispatch)==2
- for at,receiver in zip(dispatch,('rsi','rbx')):
+ current=entry[dispatch[0]-1].op_str.split(', ')[1]
+ suspended=entry[dispatch[1]-1].op_str.split(', ')[1]
+ assert current=='rsi' and suspended in ('rbx','rdi')
+ for at,receiver in zip(dispatch,(current,suspended)):
   assert [(x.mnemonic,x.op_str) for x in entry[at-3:at]]==[
    ('mov','r8d, 0x9d95'),('mov','rdx, r14'),('mov',f'rcx, {receiver}')]
- assert any(x.mnemonic=='cmp' and x.op_str=='rbx, rsi' for x in entry[dispatch[0]:dispatch[1]])
+ assert any(x.mnemonic=='cmp' and x.op_str==f'{suspended}, {current}' for x in entry[dispatch[0]:dispatch[1]])
  created=ins('?OnCreatureCreate@instance_sharasdal_InstanceMapScript@instance_sharasdal@@')
  assert {102826,362093}<=values(created) and 0x464 in fields(created)
  los=ins(method('MoveInLineOfSight'))

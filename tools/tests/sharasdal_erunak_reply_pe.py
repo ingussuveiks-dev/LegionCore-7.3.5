@@ -30,9 +30,10 @@ def verify(n):
  assert movement[first+6].operands[0].imm==movement[first+10].address
  assert movement[first+9].operands[0].imm>movement[first_talk].address
  queued,=sites(n,movement,'?AddDelayedEvent@FunctionProcessor@@')
+ frame=movement[queued-2].operands[1].mem.disp
  assert [(x.mnemonic,x.op_str) for x in movement[queued-3:queued]]==[
-  ('lea','rcx, [rbx + 0x36a0]'),('lea','r8, [rsp + 0x50]'),('mov','edx, 0x1388')]
- assert any(x.op_str=='qword ptr [rsp + 0x58], rbx' for x in movement[first_talk:queued])
+  ('lea','rcx, [rbx + 0x36a0]'),('lea',f'r8, [rsp + {frame:#x}]'),('mov','edx, 0x1388')]
+ assert any(x.op_str==f'qword ptr [rsp + {frame+8:#x}], rbx' for x in movement[first_talk:queued])
  callbacks=[name for name in n['symbols'] if name.startswith('?_Do_call@') and '??MovementInform@npc_erunak_stonespeakerAI@' in name]
  name,=callbacks;reply=ins(name)
  for prefix in ('?IsInWorld@Object@@','?IsPreDelete@Object@@'):assert sites(n,reply,prefix)
@@ -51,8 +52,12 @@ def verify(n):
   except (ValueError,struct.error):continue
   if n['symbol'](name) in raw:found.append(address)
  assert len(found)==1
- assert {1707,83810,208580}<=values(movement) # shared native ascent retained, not certified safe here
+ new_ascent=any(name.startswith('?UpdateAscent@instance_sharasdal_') for name in n['symbols'])
+ if new_ascent:
+  from sharasdal_lower_ascent_pe import verify_movement
+  verify_movement(n)
+ else:assert {1707,83810,208580}<=values(movement)
  for body in (movement,reply):
   for prefix in ('?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?AddItem@Player@@','?CompleteQuest@Player@@'):
    assert not sites(n,body,prefix)
- print('PASS selected actual Erunak waypoint vtable/native zero-based dispatch; Adelee current-or-original-suspended AI checked before Talk0 and real same-Creature FunctionProcessor36a0/5000ms callback. Registered callback rechecks world/notdelete/alive and available AI before Talk1; no cached AI capture or new grant. Shared1707/83810/208580 path retained, original claimant/path admission and actual client remain separate.')
+ print('PASS selected actual Erunak waypoint vtable/native zero-based dispatch; Adelee current-or-original-suspended AI checked before Talk0 and real same-Creature FunctionProcessor36a0/5000ms callback. Registered callback rechecks world/notdelete/alive and available AI before Talk1; no cached AI capture or new grant. Ascent follows the selected original or separately checked repaired bridge; actual client remains separate.')

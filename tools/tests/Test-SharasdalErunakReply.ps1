@@ -2,6 +2,14 @@ param([switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+$instanceSource=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp" -Raw
+if($instanceSource.Contains('#include "sharasdal_lower_ascent.h"')){
+ & "$PSScriptRoot/Test-SharasdalLowerAscent.ps1" -ScopeOnly
+ if(!$?){throw 'Current lower-ascent scope failed'}
+ $source=(& git -C $repo show "ccc0e2f74:$path") -join "`n"
+ $instanceSource=(& git -C $repo show 'ccc0e2f74:src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp') -join "`n"
+ if($LASTEXITCODE){throw 'Pinned pre-ascent comparison missing'}
+}
 $old=(& git -C $repo show "c33b7e1f2:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned original reply missing'}
 $npc=Block $source 'class npc_erunak_stonespeaker :';$oldNPC=Block $old 'class npc_erunak_stonespeaker :'
 $movement=Block $npc 'void MovementInform('; $original=Block $oldNPC 'void MovementInform('
@@ -9,7 +17,7 @@ $normal=$movement.Replace('CreatureAI* firstAI = adel->GetDisabledAI() ? static_
 if(($normal -replace '\s','') -cne ($original -replace '\s','')){throw 'Other waypoint/ascent/path/home/speech behavior changed'}
 if(($source.Replace($movement,$original) -replace '\s','') -cne ($old -replace '\s','')){throw 'Other Erunak/companions/upper/quest/progress/combat/registration changed'}
 foreach($name in @('sharasdal_erunak_entry.h','sharasdal_erunak_upper.h')){$relative='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/'+$name;$prior=(& git -C $repo show "c33b7e1f2:$relative") -join "`n";if($LASTEXITCODE -or (($prior -replace '\s','') -cne ((Get-Content "$repo/$relative" -Raw) -replace '\s',''))){throw 'Entry/upper member policy changed'}}
-$relative='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp';$prior=(& git -C $repo show "c33b7e1f2:$relative") -join "`n";if($LASTEXITCODE -or (($prior -replace '\s','') -cne ((Get-Content "$repo/$relative" -Raw) -replace '\s',''))){throw 'Instance admission/death/re-entry changed'}
+$relative='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp';$prior=(& git -C $repo show "c33b7e1f2:$relative") -join "`n";if($LASTEXITCODE -or (($prior -replace '\s','') -cne ($instanceSource -replace '\s',''))){throw 'Instance admission/death/re-entry changed'}
 if($ScopeOnly){'PASS only same-Creature Adelee0/5s1 current-or-original-suspended AI guards; native Unit-owned clock/lifetime, other waypoint/ascent/nearest-player and all other actors/progression retained';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sharasdal-erunak-reply$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory)

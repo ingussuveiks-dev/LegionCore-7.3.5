@@ -46,7 +46,15 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/shar
 $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 [IO.File]::WriteAllText("$out/Policy.inc",(Block $source 'namespace SharasdalGuard')+(Block $source 'namespace SharasdalBrutes')+(Block $source 'namespace SharasdalKraliss')+(Block $source 'namespace SharasdalLady')+(Block $actor 'Position const sumpos[3]')+';'+$(if($actor.Contains('#include "sharasdal_gauntlet_arrival.h"')){Block $actor 'namespace SharasdalGrash'}))
 [IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldNPC}else{$currentNPC})+';')
-[IO.File]::WriteAllText("$out/Instance.inc",(Block $(if($Baseline){$old}else{$source}) 'struct instance_sharasdal_InstanceMapScript :')+';')
+$hostInstance=$source
+if($source.Contains('#include "sharasdal_lower_ascent.h"')){
+ & "$PSScriptRoot/Test-SharasdalLowerAscent.ps1" -ScopeOnly
+ if(!$?){throw 'Current ascent certificate failed'}
+ # Retained death/gauntlet matrix; the current ascent header and its full
+ # Erunak/Grash handlers are exercised in their dedicated native suites.
+ $hostInstance=(& git -C $repo show "ccc0e2f74:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-ascent native instance missing'}
+}
+[IO.File]::WriteAllText("$out/Instance.inc",(Block $(if($Baseline){$old}else{$hostInstance}) 'struct instance_sharasdal_InstanceMapScript :')+';')
 $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 foreach($entry in @(@('Owner','Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const'),@('ModifyHealth','int64 Unit::ModifyHealth('),@('CreateConversation','void Unit::CreateConversation('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $core $entry[1]))}
 [IO.File]::WriteAllText("$out/OwnerGuid.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'ObjectGuid GetCharmerOrOwnerGUID() const'))

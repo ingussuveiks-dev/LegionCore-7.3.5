@@ -33,7 +33,7 @@ select=ins(method('sGossipSelect'))
 assert 49819 not in values(select) and {40341,47133,4}<=values(select)
 assert {0x1bc,0x1d0,0x1e0,0x1e4,0x1f4}<=fields(select)
 needs(select,method('UpperWallScenario'),'?AddQuestDelayedEvent@Player@@','?getQuestStatus@Player@@','?MovePoint@MotionMaster@@')
-issued,=[i for i,x in enumerate(select) if x.mnemonic=='inc' and x.op_str=='dword ptr [rdi + 0x1e0]']
+issued,=[i for i,x in enumerate(select) if x.mnemonic=='inc' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0x1e0]
 assert issued<sites(select,'?MovePoint@MotionMaster@@')[0]
 assert {-17.96,802.05,807.66}<=floats(select)
 movement=ins(method('MovementInform'));arrival=ins(method('UpperWallArrival'));credit=ins(method('CompleteUpperWall'))

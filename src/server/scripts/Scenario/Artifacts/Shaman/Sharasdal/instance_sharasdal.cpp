@@ -8,6 +8,10 @@
 #include "ScenarioMgr.h"
 #include "Conversation.h"
 #include "ObjectMgr.h"
+#include "ObjectAccessor.h"
+#include "WaypointManager.h"
+#include "WaypointMovementGenerator.h"
+#include "MoveSpline.h"
 #include <array>
 
 namespace SharasdalGuard
@@ -575,6 +579,7 @@ public:
             RearmGrashWall(player);
             if (player) RearmGauntlet(player->GetGUID(), 40341);
             if (player) RearmErunak(player->GetGUID());
+            RearmAscent(player);
         }
 
         void UpdateGuard(uint32 diff)
@@ -633,6 +638,7 @@ public:
         ObjectGuid upperGrash;
         ObjectGuid gauntletIllusion;
         ObjectGuid upperErunak;
+        #include "sharasdal_lower_ascent.h"
 
         void RearmErunak(ObjectGuid const& player)
         {
@@ -698,6 +704,7 @@ public:
          
         void Update(uint32 diff) override
         {
+            UpdateAscent(diff);
             UpdateLady(diff);
             UpdateKraliss(diff);
             UpdateBrutePresentation(diff);

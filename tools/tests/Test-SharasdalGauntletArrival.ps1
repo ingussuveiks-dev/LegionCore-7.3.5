@@ -6,6 +6,13 @@ $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$ip
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$instance=(Get-Content "$repo/$ipath" -Raw).Replace("`r",'')
 $comparison=$source
 $comparisonInstance=$instance
+if($instance.Contains('#include "sharasdal_lower_ascent.h"')){
+ & "$PSScriptRoot/Test-SharasdalLowerAscent.ps1" -ScopeOnly
+ if(!$?){throw 'Current lower ascent certificate failed'}
+ $comparison=(& git -C $repo show "ccc0e2f74:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-ascent actor missing'}
+ $comparisonInstance=(& git -C $repo show "ccc0e2f74:$ipath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-ascent instance missing'}
+ $source=$comparison;$instance=$comparisonInstance
+}
 if($source.Contains('#include "sharasdal_erunak_upper.h"')){
  & "$PSScriptRoot/Test-SharasdalErunakUpper.ps1" -ScopeOnly
  if(!$?){throw 'Current upper intro source certificate failed'}

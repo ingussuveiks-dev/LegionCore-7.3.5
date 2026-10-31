@@ -79,10 +79,15 @@ assert any(x.mnemonic=='mov' and x.op_str=='qword ptr [rbx + 0x1b4], rsi' for x 
 assert struct.unpack_from('<Q',n['binary'],table+0x80)[0]==n['symbol']('?SetGUID'+suffix)
 entry=instructions('?OnPlayerEnter@instance_sharasdal_InstanceMapScript@instance_sharasdal@@')
 assert sites(entry,'?GetCreature@Map@@') and {0x39f,0x9c0,0x9c8}<=fields(entry)
-entry_calls=[i for i,x in enumerate(entry) if x.mnemonic=='call' and x.op_str=='rbx']
+slot_loads=[i for i,x in enumerate(entry) if x.mnemonic=='mov' and x.operands[0].type==CS_OP_REG and x.operands[1].type==CS_OP_MEM and x.reg_name(x.operands[1].mem.base)=='rax' and x.operands[1].mem.disp==0x80]
+entry_calls=[]
+for at in slot_loads:
+ register=entry[at].reg_name(entry[at].operands[0].reg)
+ call,=[i for i,x in enumerate(entry[at+1:at+10],at+1) if x.mnemonic=='call' and x.op_str==register]
+ entry_calls.append(call)
 assert len(entry_calls)==2
 for at in entry_calls:
- assert any(x.mnemonic=='mov' and x.op_str=='rbx, qword ptr [rax + 0x80]' for x in entry[max(0,at-9):at])
+ assert any(x.mnemonic=='mov' and x.op_str==f'{entry[at].op_str}, qword ptr [rax + 0x80]' for x in entry[max(0,at-9):at])
  assert any(x.mnemonic=='mov' and x.op_str=='r8d, 0x9d95' for x in entry[max(0,at-5):at])
 def ai_register(displacement):
  # Restrict this proof to the original Grash loop. A later, separately
