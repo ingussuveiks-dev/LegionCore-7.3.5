@@ -46,5 +46,15 @@
     "Data has no standalone GM predicate; automatic controller must reject GM. An explicitly active GM with matching class/map/native3 is not claimed blocked by these data rules.",
     "LivingLady1906/actual vehicle/finisher, native210247/waves/other NPC conversation expiry/full1066/all36, WardstoneLINK4/Survival/Glow/Stromkar client/sharedLINK2 remain OPEN. No reset/grant authorization; reset3 consumed."
   ],
-  "next": "Continue instance-owned actual lower-Erunak arrival plus original step2 Grash caller/weak40341 pending scene delivery across early/late Kraliss victory, preserving native208580/-208580/209992/50336 and eligible manual click."
+  "next": "Continue instance-owned actual lower-Erunak arrival plus original step2 Grash caller/weak40341 pending scene delivery across early/late Kraliss victory, preserving native208580/-208580/209992/50336 and eligible manual click.",
+  "fix_commit": "c061140a7",
+  "diagnostic_archive": {
+    "fix_commit": "c061140a7",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-ascent-admission-2026-10-31",
+    "manifest_sha256": "bf98a71cf2205a365d0b12ae302364f366abfe69340248976ae99092a68364fb",
+    "files": 326,
+    "verification": "Retained source/destination/source/final SHA256 verified; canonical4BA5B32D unchanged; no active reports removed/logs truncated. Crashes empty; mixed6090LINK2 unchanged/unresolved; own19400 exited/no task server remains.",
+    "evidence_limit": "Initial TEMP refusal mutation omitted required comment. Its outer original diagnostic is retained; inner SQL stderr was read before a default-output repeat overwrote that file. Current fixture files have current verified hashes only; no unavailable original-inner-file hash or reconstructed-original claim.",
+    "remaining": "Actual client click/camera/native exit and separate automatic original-caller/arrival order, livingLady1906/210247/waves/full1066/all36 remain OPEN."
+  }
 }
