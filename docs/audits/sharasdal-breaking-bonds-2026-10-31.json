@@ -37,5 +37,23 @@
     "runtime": "Only owned hidden world1500 reached ready after native updater and spell validation; own shutdown0/exit0/stderr0/newDBErrors0 and is gone. No user/unknown server stopped or task server left."
   },
   "diagnostics": "Before/after canonical/own test crash and log snapshots, native exits, complete stdout/stderr and newly appended diagnostics inspected. No new/changed crash or appended server warning/error/assertion/DBErrors. Active Crashes empty/no file removed; mixed6090-byte shared101430/103151LINK2 log SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged. No mixed log truncated, security/quarantine boundary bypassed or character/item/AP/quest/checkpoint reset. Closed diagnostics archive follows fix commit; guard-group/source research stays OPEN.",
-  "remaining": "Next: investigate actual Adelee guard death group/49957 and replace Erunak arrival-only credit after matching source evidence; trace initial102792 deaths, pet/guardian/dead owner/shared group, duplicate1693/late gossip flag producers, Grash initial path before full BigHelp acknowledgement/interrupted issued routes and later nearest-player ice-wall credits. Erunak/Adel40pct incoming heal markers still retain documented cancelled-full-health limitation. Continue remaining raw actor events, boss owner/group/conversation,249342/128911 pickup/full bags/equip/outro. Actual spell castbar, interruption/animations/voice/all factions/party/full1066/all36 remain client pending. Glow producer,Survival39427 middle flight,WardstoneLINK4/sharedLINK2 and Stromkar client stay OPEN; reset3 consumed."
+  "remaining": "Next: investigate actual Adelee guard death group/49957 and replace Erunak arrival-only credit after matching source evidence; trace initial102792 deaths, pet/guardian/dead owner/shared group, duplicate1693/late gossip flag producers, Grash initial path before full BigHelp acknowledgement/interrupted issued routes and later nearest-player ice-wall credits. Erunak/Adel40pct incoming heal markers still retain documented cancelled-full-health limitation. Continue remaining raw actor events, boss owner/group/conversation,249342/128911 pickup/full bags/equip/outro. Actual spell castbar, interruption/animations/voice/all factions/party/full1066/all36 remain client pending. Glow producer,Survival39427 middle flight,WardstoneLINK4/sharedLINK2 and Stromkar client stay OPEN; reset3 consumed.",
+  "diagnostic_archive": {
+    "date": "2026-10-31",
+    "fix_commit": "dc26bd9e9",
+    "archive": "build-extractors/bin/Release/fixed/sharasdal-breaking-bonds-2026-10-31",
+    "files": 410,
+    "manifest_sha256": "c4481fb18d30eb659905281147dcea9d792bb2ba4cff6e371337c6671cc8608f",
+    "verification": "Source/destination/source/final SHA256 verified; failed fixture adapter/grant setup paired with corrected native tests. Expected baseline/security/guard refusals distinguished. Active Crashes empty/no file removed; mixed6090-byte DBErrors unchanged/not truncated.",
+    "reviewed_failed_checks_and_passing_pair": {
+      "sharasdal-rescue-baseline-2026-10-31": "Host still declared two-argument UpdateAchievementCriteria while native EffectSendEvent passes quantity. Correct native adapter/default1 paired with baseline2/repaired2/repaired3/canonical; no production workaround.",
+      "sharasdal-rescue-sql-2026-10-31": "Initial fixture CREATE DATABASE correctly denied1044 to runtime account; no database created. Replaced unsupported test setup with existing SELECT+TEMP-only reader harness, persistent-DML denial canary and native temporary shadows;12 guard refusals/idempotence/canonical pass. No runtime-account grants changed or boundary bypassed."
+    },
+    "excluded_open_research": [
+      ".codex/sharasdal-adel-context-2026-10-31",
+      ".codex/sharasdal-adel-cast-context-2026-10-31",
+      ".codex/sharasdal-heal-context-2026-10-31",
+      ".codex/sharasdal-heal-health-context-2026-10-31"
+    ]
+  }
 }
