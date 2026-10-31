@@ -187,9 +187,11 @@ public:
                 _pendingHealRecovery = true;
         }
 
-        void UpdateLifecycle(uint32) override
+        void UpdateLifecycle(uint32 diff) override
         {
             SharasdalCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            // AI-owned intro timers retain the Unit clock while stunned or suspended.
+            _functions.Update(diff);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
@@ -277,7 +279,7 @@ public:
                     adel->AI()->Talk(8);
                     adel->GetMotionMaster()->MovePath(10993811, false, irand(-5, 5), irand(-5, 5));
                 }
-                me->AddDelayedEvent(5000, [this]() -> void
+                _functions.AddDelayedEvent(5000, [this]() -> void
                 {
                     me->CreateConversation(1868);
                 });
@@ -287,11 +289,12 @@ public:
             {
                 _introDone = true;
                 who->ToPlayer()->KilledMonsterCredit(105805);
-                me->AddDelayedEvent(3000, [this]() -> void
+                _functions.AddDelayedEvent(3000, [this]() -> void
                 {
                     Talk(0);
                     if (Creature* targ = me->FindNearestCreature(102792, 70.0f, true))
-                        me->AI()->AttackStart(targ);
+                        if (CreatureAI* ai = me->AI())
+                            ai->AttackStart(targ);
                 });
                 firstbattle = true;
             }
@@ -301,8 +304,6 @@ public:
         {
             if (me->HasUnitState(UNIT_STATE_STUNNED)) // need for this
                 return;
-
-            _functions.Update(diff);
 
             if (!UpdateVictim())
                 return;

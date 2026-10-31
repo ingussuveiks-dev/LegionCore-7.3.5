@@ -4,6 +4,15 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
 function Adapt([string]$s,[string]$a,[string]$b){if(!$s.Contains($a)){throw "Gauntlet boundary changed: $a"};$s.Replace($a,$b)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$ipath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$instance=(Get-Content "$repo/$ipath" -Raw).Replace("`r",'')
+$comparison=$source
+if($source.Contains('// AI-owned intro timers')){
+ & "$PSScriptRoot/Test-SharasdalErunakTimers.ps1" -ScopeOnly
+ if(!$?){throw 'Actual Erunak timer certificate failed'}
+ $beforeTimers=(& git -C $repo show "c3dd68ad5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-timer comparison missing'}
+ # Only the unrelated comparison is frozen; the new Erunak suite compiles its
+ # full current actor and native lifecycle/queue/destruction implementation.
+ $comparison=$comparison.Replace((Block $source 'class npc_erunak_stonespeaker :'),(Block $beforeTimers 'class npc_erunak_stonespeaker :'))
+}
 $old=(& git -C $repo show "ef0bbcbbf:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-gauntlet actor missing'}
 $oldInstance=(& git -C $repo show "ef0bbcbbf:$ipath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-gauntlet instance missing'}
 $npc=Block $source 'class npc_lady_zitrin :';$oldNPC=Block $old 'class npc_lady_zitrin :'
@@ -17,7 +26,7 @@ if(($los -replace '\s','') -cne 'voidMoveInLineOfSight(Unit*who)override{AcceptG
 $normal=$normal.Replace($los,(Block $oldNPC 'void MoveInLineOfSight('))
 $normal=Adapt $normal "            Scenario* gauntlet = GauntletWorld();`n            if (intro && gauntlet && gauntlet->GetCurrentStep() == 3)" '            if (intro)'
 if(($normal -replace '\s','') -cne ($oldNPC -replace '\s','')){throw 'Other Lady death/combat/timers/wave spell/pose/summon fields changed'}
-$normal=$source.Replace($npc,$oldNPC).Replace('#include "Map.h"','')
+$normal=$comparison.Replace($npc,$oldNPC).Replace('#include "Map.h"','')
 if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Other companions/Grash walls/Kraliss/acquisition/spells/registrations changed'}
 $normal=$instance.Replace('        ObjectGuid gauntletIllusion;','').Replace((Block $instance 'void RearmGauntlet('),'').Replace('            if (player) RearmGauntlet(player->GetGUID(), 40341);','').Replace('            if (creature->GetEntry() == 104856 && creature->GetDBTableGUIDLow() == 362091) gauntletIllusion = creature->GetGUID();','')
 $added=@'

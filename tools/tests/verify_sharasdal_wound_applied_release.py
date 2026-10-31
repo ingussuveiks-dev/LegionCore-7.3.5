@@ -24,9 +24,22 @@ for role,pending in [('npc_erunak_stonespeaker',0x5b),('npc_adel_waterspeaker',0
     # No actor/health/quest credit/role mutation from the notification itself.
     life=instructions('?UpdateLifecycle'+suffix)
     if role=='npc_erunak_stonespeaker':
-        assert [(x.mnemonic,x.op_str) for x in life[:3]]==[
-            ('lea','r8, [rcx + 0x59]'),('lea','rdx, [rcx + 0x5b]'),('mov','rcx, qword ptr [rcx + 0x20]')]
-        assert life[3].mnemonic=='jmp' and n['resolve'](life[3].operands[0].imm)==n['symbol']('?Recover@SharasdalCompanion@@')
+        sites=retained['guard']['retained']['sites']
+        if sites(life,'?Update@FunctionProcessor@@'):
+            # The Erunak intro queue now owns its captures. Retain the exact
+            # old recovery arguments before the new lifecycle-clock tail call.
+            assert [(x.mnemonic,x.op_str) for x in life[3:8]]==[
+                ('mov','edi, edx'),('lea','r8, [rcx + 0x59]'),
+                ('lea','rdx, [rcx + 0x5b]'),('mov','rbx, rcx'),
+                ('mov','rcx, qword ptr [rcx + 0x20]')]
+            assert sites(life,'?Recover@SharasdalCompanion@@')==[8]
+            assert [(x.mnemonic,x.op_str) for x in life[9:11]]==[
+                ('lea','rcx, [rbx + 0x60]'),('mov','edx, edi')]
+            assert sites(life,'?Update@FunctionProcessor@@')==[14]
+        else:
+            assert [(x.mnemonic,x.op_str) for x in life[:3]]==[
+                ('lea','r8, [rcx + 0x59]'),('lea','rdx, [rcx + 0x5b]'),('mov','rcx, qword ptr [rcx + 0x20]')]
+            assert life[3].mnemonic=='jmp' and n['resolve'](life[3].operands[0].imm)==n['symbol']('?Recover@SharasdalCompanion@@')
     else:
         assert retained['guard']['retained']['sites'](life,'?Recover@SharasdalCompanion@@')
     reset=instructions('?Reset'+suffix)

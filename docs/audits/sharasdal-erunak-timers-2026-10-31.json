@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-31",
+  "scope": "Erunak intro3s/5s AI capture ownership and lifecycle clock only; quest admission, nearest actors and waypoint policy remain explicitly separate work. No whole1066/all36/client completion claim.",
+  "cause": "Both complete actual npc_erunak_stonespeakerAI MoveInLineOfSight branches stored [this] lambdas in me->AddDelayedEvent. Native Creature::AIM_Destroy deletes i_AI without destroying its Creature Unit FunctionProcessor, leaving two possible dangling AI captures. Existing AI _functions was unused and ticked only from UpdateAI after the stun gate.",
+  "local_sources": [
+    "src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+    "src/server/game/Entities/Creature/Creature.cpp (native locked current/distinct suspended lifecycle before ordinary update throttling and native AIM_Destroy)",
+    "src/common/Utilities/FunctionProcessor.h/.cpp (owned pending and queued functions/destruction)",
+    "src/server/game/AI/CreatureAI.cpp (actual SafeLOS)"
+  ],
+  "implementation": [
+    "Store only the two existing3s/5s intro lambdas in the existing AI-owned _functions. AI destruction now destroys both queue containers with its captures; no global Unit queue clearing or unrelated event cancellation.",
+    "Move its one clock to UpdateLifecycle after the unchanged40pct wound recovery, using the actual unthrottled native diff. Remove UpdateAI clock so active, stunned, casting, no-victim, suspended-only, alias and current-null paths have exactly one elapsed-time source. Native lifecycle lock prevents synchronous deletion from a callback.",
+    "Preserve native3s Talk0/nearest living102792 attack and5s conversation1868, original path10993811/offsets/speech/105805 and same-AI Reset behavior. Guard a temporarily missing current AI before AttackStart instead of dereferencing null. Optional missing-AI/missing-target attack is not replayed or treated as progress. Admission/recipient/path recovery remains separate.",
+    "Strict whole-source delta certificate pins c3dd68ad5 and permits only two queue-owner changes, lifecycle clock relocation and missing-current-AI guard; gauntlet comparison freezes only this certified unrelated actor. Current full Erunak remains compiled by new native suite; no implementation copied into an assertion model."
+  ],
+  "validation": {
+    "baseline": "Pinned c3dd68ad5 complete old Erunak with actual FunctionProcessor and actual AIM_Destroy leaves one queued Unit capture after actual AI deletion for each branch. Explicit expected broken counterfactual; dangling pointer deliberately not invoked, no fabricated ASAN crash or client claim.",
+    "current": "42 ASAN cases compile whole actual Erunak, actual FunctionProcessor/EventMap/SafeLOS/locked lifecycle/AIM_Destroy and unchanged Recover helper. Both exact3s/5s/once/oversized tick, repeated LOS, pet presence, missing actors/current AI, stunned/casting/no victim/no UpdateAI, current+suspended/current-null/alias, same-AI Reset, native lock-blocked destruction, destruction/replacement/retry and unrelated Unit work; post-applied positive40pct recovery preserved. Geometry/map/quest/combat/network service boundaries controlled. Does not test eligible quest admission or actual client movement/conversation.",
+    "retained": "Gauntlet73 and post-applied wound960 pass; latter is disclosed pinned wound-context consumer after strict certificate, while new full current actor independently exercises actual recovery. Full selected PE retains gauntlet/upper-wall/native acquisition/Lady/Kraliss/Brutes/guard/wounds/rescue and native locked dispatch.",
+    "release": "Original scripts.lib build, original final-link inputs in separate stage, selected stage and canonical factory/registration/SafeLOS278/lifecycle110/destructor60 and actual callback vtables/timing/no Unit scheduling/no UpdateAI double clock. ScepterLogin -VerifyReleaseBinary passes. Offline four-file EXE/MAP backup/hash/protected config/cert/DLL verification; no SQL or character edit. Binary revision2f848cf44 precedes focused commit; implementation proved directly.",
+    "runtime": "Own PID1284 only: canonical ready, shutdown0/exit0/stderr empty/newDBErrors0/protected hashes unchanged/process gone. No user or unknown server stopped.",
+    "reviewed_failed_checks": {
+      "sharasdal-erunak-timers-regression-2026-10-31": "Fixture compile only: native EventMap already declares EVENT_1..4 and Recover needs IsAlive, not isAlive. Removed redundant fixture enum and matched actual service spelling; unchanged production delta passes regression2 and final42ASAN. No executable ran, no new runtime diagnostic.",
+      "sharasdal-erunak-timers-stage-pe-2026-10-31": "Inspector initially decoded82 rows of short script/callback vtables and rejected an unrelated non-address after the actual table. Resolve rows individually as the existing gauntlet inspector does, preserving each real pointer; exact factory/registration/callback proofs then pass stage-pe2 and canonical. Production stage bytes unchanged."
+    }
+  },
+  "canonical": {
+    "worldserver.exe": "a5304d9606117005f64e423f8ee96ffbff190021d478d3a941e1f409554f2bd3",
+    "worldserver.map": "df84db6fb76b0671fecedffb29cdf6690bd52df96729fdfaaf5051ca529c17d6",
+    "bnetserver.exe": "bf97ebcd993e3ff876125f379c3a32bc2e15cb6cc58fb281ef32dcb4062b106b",
+    "bnetserver.map": "edfd625d050d7c69ae48c315426df2e426af08dbc64483764c067a1624f5bea7"
+  },
+  "diagnostics": "All wrapped checks retain before/after crash/log snapshots and captured outputs. Both fixture/inspector failures above repaired and paired with passing checks; conversion/unused/signedness warnings in extracted native tests reviewed. No new production warning, crash, appended DBErrors or unexplained server diagnostic. Canonical Crashes empty. Existing6090-byte shared101430/103151LINK2 DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved; no log truncation or active file removal.",
+  "remaining": [
+    "Erunak exact lower362063/upper362093 role, native stage/40341 recipient/prerequisite/receipt admission; unearned visitor must not consume the intro; original player/attempt/missing actors and abandoned/replaced quest must be traced separately. This fix deliberately does not certify those old policies.",
+    "Shared MovementInform path/node5 ascent must be traced against actual lower10993810 (six rows, native zero-based final node5) as well as upper10993811(two rows). Preserve actual38821/208580/-208580/209992 native ascent and avoid inventing an empty scene event.",
+    "Gauntlet full wave travel/vehicle cleanup, living Lady1906/209457 boarding/finisher, native210247, actual client/full1066/all36 and earlier Wardstone/Survival/Glow/Stromkar/sharedLINK2 remain OPEN. User owns client checks; reset3 consumed, no new reset/grant authorized."
+  ],
+  "next": "Continue exact Erunak lower/upper intro admission and genuine entry/path/receipt recovery from matching local26972/World/core data, then living Lady/native210247/other all36 independent work."
+}
