@@ -3,6 +3,12 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+if($source.Contains('namespace SharasdalWall')){
+ & "$PSScriptRoot/Test-SharasdalWall.ps1" -ScopeOnly
+ # The wall host executes the actual new route/credit handlers; these two wound
+ # consumers remain frozen only after the whole-source wall certificate.
+ $source=(& git -C $repo show "007b8732a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned applied-wound context missing'}
+}
 $pinned=(& git -C $repo show "3897fd3bf:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned two-actor wound baseline missing'}
 $whole=$source
 foreach($role in @('npc_erunak_stonespeaker','npc_adel_waterspeaker')){

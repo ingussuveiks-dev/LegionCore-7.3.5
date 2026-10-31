@@ -8,6 +8,9 @@ if((Block (Block $actor 'class npc_erunak_stonespeaker :') 'struct npc_erunak_st
  # The dedicated two-actor host executes the current final-applied hooks.
  # Freeze only this retained initial-Brute fixture after its whole-source certificate.
  $actor=(& git -C $repo show "3897fd3bf:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned unchanged initial Brute actor context missing'}
+ if((Get-Content "$repo/$path" -Raw).Contains('void RearmGrashWall(')){
+  $source=(& git -C $repo show "007b8732a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned instance after wall source certificate missing'}
+ }
 }
 $old=(& git -C $repo show "514ac7bd0:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned guard instance missing'}
 $oldActor=(& git -C $repo show "514ac7bd0:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned Grash/Erunak source missing'}

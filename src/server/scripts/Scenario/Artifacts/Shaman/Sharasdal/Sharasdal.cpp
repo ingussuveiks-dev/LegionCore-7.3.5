@@ -13,6 +13,7 @@
 #include "SpellScript.h"
 #include "Timer.h"
 #include "WaypointManager.h"
+#include "WaypointMovementGenerator.h"
 
 namespace SharasdalCompanion
 {
@@ -72,6 +73,33 @@ namespace SharasdalGrash
         auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
         auto found = progress->find(47161);
         return found != progress->end() && found->second.Counter >= 2;
+    }
+}
+
+namespace SharasdalWall
+{
+    Scenario* World(Creature* actor)
+    {
+        if (!actor || !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() ||
+            actor->GetEntry() != 105298 || actor->GetMapId() != 1600 || actor->GetDBTableGUIDLow() != 362066)
+            return nullptr;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1066 ? scenario : nullptr;
+    }
+
+    uint32 Path(Creature* actor)
+    {
+        MovementGenerator* movement = actor->GetMotionMaster()->GetMotionSlot(MOTION_SLOT_IDLE);
+        return movement && movement->GetMovementGeneratorType() == WAYPOINT_MOTION_TYPE ?
+            static_cast<WaypointMovementGenerator<Creature>*>(movement)->GetPathId() : 0;
+    }
+
+    uint64 Wall(uint32 path, uint32 node)
+    {
+        if (path == 10993808 && node == 3) return 134291;
+        if (path == 10993810 && node == 0) return 134287;
+        if (path == 10993810 && node == 3) return 134290;
+        return 0;
     }
 }
 
@@ -368,6 +396,74 @@ public:
         uint32 _introRetry = 0, _introTries = 0, _gossipActions = 0;
         FunctionProcessor _healFunctions;
 
+        ObjectGuid _wallRecipient;
+        std::weak_ptr<uint8> _wallAttempt;
+        bool _wallPending = false, _wallBusy = false, _wallExhausted = false, _wallPresent = false;
+        uint32 _wallRetry = 0, _wallTries = 0;
+
+        bool BindWallRecipient(Player* player)
+        {
+            QuestStatusData* status = player->getQuestStatus(40341);
+            if (!status) return false;
+            player->AddQuestDelayedEvent(40341, 0, []() {});
+            if (!status->ScriptLifetime) return false;
+            _wallRecipient = player->GetGUID();
+            _wallAttempt = status->ScriptLifetime;
+            _wallPending = _wallExhausted = _wallPresent = false;
+            _wallRetry = _wallTries = 0;
+            return true;
+        }
+
+        void CompleteWallCredit(uint32 diff)
+        {
+            if (!_wallPending || _wallBusy) return;
+            Scenario* scenario = SharasdalWall::World(me);
+            if (!scenario) return;
+            if (SharasdalGrash::Receipt(scenario, 47127))
+            {
+                _wallPending = false;
+                return;
+            }
+            Player* player = ObjectAccessor::GetPlayer(*me, _wallRecipient);
+            QuestStatusData* status = player ? player->getQuestStatus(40341) : nullptr;
+            if (_wallAttempt.expired() || (player && (!status || status->ScriptLifetime != _wallAttempt.lock() ||
+                player->GetQuestRewardStatus(40341) ||
+                (player->GetQuestStatus(40341) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40341) != QUEST_STATUS_COMPLETE))))
+            {
+                _wallPending = false;
+                TC_LOG_WARN("scripts", "Sharasdal wall arrival cancelled after its original quest attempt ended");
+                return;
+            }
+            if (scenario->GetCurrentStep() != 2)
+            {
+                _wallPending = false;
+                TC_LOG_WARN("scripts", "Sharasdal wall arrival has no accepted criterion after its stage ended");
+                return;
+            }
+            bool present = SharasdalGrash::Eligible(player, me);
+            if (_wallExhausted && present && !_wallPresent)
+            {
+                _wallExhausted = false;
+                _wallRetry = _wallTries = 0;
+            }
+            _wallPresent = present;
+            if (_wallExhausted) return;
+            if (_wallRetry > diff) { _wallRetry -= diff; return; }
+            struct BusyGuard { bool& flag; ~BusyGuard() { flag = false; } } guard{_wallBusy};
+            _wallBusy = true;
+            if (present) player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49817);
+            if (SharasdalGrash::Receipt(scenario, 47127)) _wallPending = false;
+            else
+            {
+                _wallRetry = 1000;
+                if (++_wallTries >= 30)
+                {
+                    _wallExhausted = true;
+                    TC_LOG_WARN("scripts", "Sharasdal wall arrival could not reach its original recipient/native criterion; retry when that recipient returns");
+                }
+            }
+        }
+
         uint32 GetData(uint32 menu) const override
         {
             switch (menu)
@@ -376,6 +472,15 @@ public:
                 case 19483: return _gossipActions & (1u << 2);
                 case 19467: return _gossipActions & (1u << 4);
                 default: return 0;
+            }
+        }
+
+        void SetGUID(ObjectGuid const& guid, int32 id = 0) override
+        {
+            if (id == 40341 && _wallPending && guid == _wallRecipient)
+            {
+                _wallExhausted = false;
+                _wallRetry = _wallTries = 0;
             }
         }
 
@@ -414,6 +519,8 @@ public:
                         return;
                     }
                 }
+            if (step == 2 && (!SharasdalWall::World(me) || !BindWallRecipient(player)))
+                return;
             struct BusyGuard { bool& flag; ~BusyGuard() { flag = false; } } guard{_gossipBusy};
             _gossipBusy = true;
             if (step <= 1 && !SharasdalGrash::Receipt(scenario, 47303))
@@ -592,6 +699,7 @@ public:
             // Advance existing replies before scheduling a fresh three-second delay.
             _healFunctions.Update(diff);
             CompleteIntroHeal(diff);
+            CompleteWallCredit(diff);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
@@ -616,15 +724,26 @@ public:
             me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
             if (type == WAYPOINT_MOTION_TYPE)
             {
-                if (id == 3 || id == 0)
+                Scenario* scenario = SharasdalWall::World(me);
+                uint32 path = SharasdalWall::Path(me);
+                uint64 wall = SharasdalWall::Wall(path, id);
+                if (scenario && wall &&
+                    ((path == 10993808 && (_gossipActions & 1) && scenario->GetCurrentStep() >= 1 && scenario->GetCurrentStep() <= 2) ||
+                     (path == 10993810 && (_gossipActions & 4) && scenario->GetCurrentStep() >= 2 && scenario->GetCurrentStep() <= 3)))
                 {
                     DoCast(209904);
                     if (GameObject* go = me->FindNearestGameObject(248514, 5.0f))
-                        if (InstanceScript* inst = me->GetInstanceScript())
-                            inst->HandleGameObject(go->GetGUID(), true);
-
-                    if (Player* targ = me->FindNearestPlayer(100.0f))
-                        targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49817);
+                        if (go->GetDBTableGUIDLow() == wall && go->IsInWorld() && me->InSamePhase(go))
+                            if (InstanceScript* inst = me->GetInstanceScript())
+                            {
+                                inst->HandleGameObject(go->GetGUID(), true, go);
+                                if (path == 10993810 && id == 0 && go->GetGoState() == GO_STATE_ACTIVE &&
+                                    !_wallAttempt.expired() && !SharasdalGrash::Receipt(scenario, 47127))
+                                {
+                                    _wallPending = true;
+                                    CompleteWallCredit(0);
+                                }
+                            }
                 }
             }
             else if (type == POINT_MOTION_TYPE)

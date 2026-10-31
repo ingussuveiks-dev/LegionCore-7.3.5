@@ -307,6 +307,18 @@ public:
             UpdateGuard(0);
         }
 
+        void RearmGrashWall(Player* player)
+        {
+            if (!player) return;
+            if (Creature* grash = instance->GetCreature(lowerGrash))
+            {
+                auto current = grash->AI();
+                auto suspended = grash->GetDisabledAI();
+                if (current) current->SetGUID(player->GetGUID(), 40341);
+                if (suspended && suspended != current) suspended->SetGUID(player->GetGUID(), 40341);
+            }
+        }
+
         void OnPlayerEnter(Player* player) override
         {
             if (player)
@@ -330,6 +342,7 @@ public:
                 guardExhausted = false;
                 guardRetry = guardTries = 0;
             }
+            RearmGrashWall(player);
         }
 
         void UpdateGuard(uint32 diff)
