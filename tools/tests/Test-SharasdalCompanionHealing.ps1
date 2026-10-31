@@ -5,6 +5,13 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+$newGrash=$source.Contains('namespace SharasdalGrash')
+if(!$Baseline -and $newGrash){
+ & "$PSScriptRoot/Test-SharasdalGrashHealing.ps1" -ScopeOnly
+ # The separate full Grash host compiles its final-heal/Reset/lifecycle hooks.
+ # Keep this earlier three-role matrix as a strictly scoped wound countercheck.
+ $source=(& git -C $repo show "e17413eaa:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned retained three-role healing context missing'}
+}
 $pinned=(& git -C $repo show "c3c3ce355:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned wound/heal baseline missing'}
 $pairs=@(@('Erunak','npc_erunak_stonespeaker'),@('Grash','npc_grash'),@('Adel','npc_adel_waterspeaker'))
 if(!$Baseline){
@@ -27,7 +34,7 @@ if(!$Baseline){
  $whole=$whole.Replace((Block $whole 'namespace SharasdalCompanion'),'')
  if(($whole -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unrelated Sharasdal actor, click, boss, loot or registration changed'}
 }
-if($ScopeOnly){'PASS exact three40pct pending-heal/reset/re-wound/lifecycle scope; Grash50/90pct/story/others unchanged';return}
+if($ScopeOnly){if($newGrash){'PASS retained three40pct policy through frozen e17413eaa plus exact new Grash source certificate; current Grash final-heal/intro hooks checked separately'}else{'PASS exact three40pct pending-heal/reset/re-wound/lifecycle scope; Grash50/90pct/story/others unchanged'};return}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sharasdal-companion-healing"}
 $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $selected=if($Baseline){$pinned}else{$source}
@@ -57,7 +64,8 @@ $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -
 $mode=if($Baseline){'/DSHARASDAL_HEAL_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi $mode /I`"$out`" `"$PSScriptRoot/SharasdalCompanionHealingTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw "Sharasdal native heal regression failed: $LASTEXITCODE"}
+if($newGrash -and !$Baseline){'Retained matrix uses pinned e17413eaa after exact new Grash scope; current full Grash hooks have their separate native regression'}
 if($VerifyReleaseBinary){
  $previous=$env:PYTHONPATH
- try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_sharasdal_companion_healing_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical post-heal lifecycle missing'}}finally{$env:PYTHONPATH=$previous}
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";$verifier=if($newGrash){'verify_sharasdal_grash_healing_release.py'}else{'verify_sharasdal_companion_healing_release.py'};& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/$verifier" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical post-heal lifecycle missing'}}finally{$env:PYTHONPATH=$previous}
 }

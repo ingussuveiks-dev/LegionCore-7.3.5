@@ -23,6 +23,9 @@ assert any(x.op_str=='dword ptr [rbx + 0x3140], 0xfffffff7' and x.mnemonic=='and
 assert any(x.op_str=='edx, 0x32cdd' for x in body[hp:remove]) and len([x for x in body if x.mnemonic=='call'])==4
 for script,flag,pending in [('npc_erunak_stonespeaker',0x59,0x5b),('npc_grash',0x5a,0x5b),('npc_adel_waterspeaker',0x59,0x5a)]:
     table=previous['selected_tables'][script];suffix='@'+script+'AI@'
+    if script=='npc_grash' and any(name.startswith('?OnHealApplied'+suffix) for name in native['symbols']):
+        assert struct.unpack_from('<Q',native['binary'],table+0x288)[0]==native['symbol']('?OnHealApplied'+suffix)
+        continue  # Its full final-heal/Reset/lifecycle proof is in the Grash inspector.
     life='?UpdateLifecycle'+suffix;heal='?HealReceived'+suffix;reset='?Reset'+suffix
     for method,slot in ((life,0x110),(heal,0xb0),(reset,0x28)):
         assert struct.unpack_from('<Q',native['binary'],table+slot)[0]==native['symbol'](method)
@@ -57,4 +60,4 @@ assert len(dispatch)==2
 assert any(x.op_str=='byte ptr [rsi + 0x3a9d], 1' for x in update[dispatch[0]-12:dispatch[0]])
 assert any(x.op_str=='byte ptr [rsi + 0x3a9d], 0' for x in update[dispatch[-1]:dispatch[-1]+4])
 assert any(x.op_str=='rcx, rax' and x.mnemonic=='cmp' for x in update[dispatch[0]-6:dispatch[0]])
-print('PASS selected three positive incoming-heal markers/reset/new-wound invalidation, native HealReceived->HealDone->ModifyHealth order, locked disabled/current lifecycle0x110 and observed40pct->clear latch/stun->208093 removal. Grash50/90pct legacy story remains separate; no new progression/cast/health grant or client proof')
+print('PASS selected unchanged Erunak/Adel incoming-heal markers/reset/new-wound invalidation, native HealReceived->HealDone->ModifyHealth order, locked disabled/current lifecycle0x110 and observed40pct helper. Legacy Grash checked here only when its replacement hook is absent; new Grash final-heal/story proof is separate. No client proof')

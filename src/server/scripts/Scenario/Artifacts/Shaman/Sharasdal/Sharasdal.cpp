@@ -6,6 +6,10 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "ObjectAccessor.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include "WaypointManager.h"
 
 namespace SharasdalCompanion
 {
@@ -19,6 +23,44 @@ namespace SharasdalCompanion
         waitHeal = false;
         actor->ClearUnitState(UNIT_STATE_STUNNED);
         actor->RemoveAura(208093);
+    }
+}
+
+namespace SharasdalGrash
+{
+    bool Eligible(Player* player, Creature* actor)
+    {
+        if (!player || !actor || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->isGameMaster() || player->IsBeingTeleported() || player->getClass() != CLASS_SHAMAN ||
+            !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() || actor->GetEntry() != 105298 ||
+            actor->GetMapId() != 1600 || !player->GetMap() || player->GetMap() != actor->GetMap() ||
+            player->GetInstanceId() != actor->GetInstanceId() || !player->InSamePhase(actor) ||
+            !player->canSeeOrDetect(actor) || !player->IsWithinLOSInMap(actor) ||
+            !player->IsWithinDistInMap(actor, 100.0f) || player->GetQuestRewardStatus(40341) ||
+            (player->GetQuestStatus(40341) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40341) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1066 && scenario->GetCurrentStep() <= 4;
+    }
+
+    bool Receipt(Scenario* scenario, uint32 tree)
+    {
+        if (!scenario || scenario->GetScenarioId() != 1066)
+            return false;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto found = progress->find(tree);
+        return found != progress->end() && found->second.Counter;
+    }
+
+    uint32 Menu(uint32 step)
+    {
+        switch (step)
+        {
+            case 0: case 1: return 19509;
+            case 2: return 19483;
+            case 4: return 19467;
+            default: return 0;
+        }
     }
 }
 
@@ -256,55 +298,27 @@ public:
 
     bool OnGossipHello(Player* player, Creature* creature) override
     {
-        InstanceScript *script = player->GetInstanceScript();
-
-        if (!script)
+        player->PlayerTalkClass->ClearMenus();
+        if (!SharasdalGrash::Eligible(player, creature) ||
+            !creature->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) ||
+            creature->HasUnitState(UNIT_STATE_STUNNED) || !player->IsWithinDistInMap(creature, INTERACTION_DISTANCE))
             return true;
-
-        switch (script->getScenarionStep())
-        {
-            case 0:
-            case 1:
-                player->ADD_GOSSIP_ITEM_DB(19509, 0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                player->SEND_GOSSIP_MENU(28831, creature->GetGUID());
-                break;
-            case 2:
-                player->ADD_GOSSIP_ITEM_DB(19483, 0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                player->SEND_GOSSIP_MENU(28782, creature->GetGUID());
-                break;
-            case 4:
-                player->ADD_GOSSIP_ITEM_DB(19467, 0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                player->SEND_GOSSIP_MENU(28747, creature->GetGUID());
-                break;
-        }
-        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "", GOSSIP_SENDER_MAIN, 0);
+        Scenario* scenario = sScenarioMgr->GetScenario(creature->GetInstanceId());
+        uint32 step = scenario->GetCurrentStep();
+        uint32 menu = SharasdalGrash::Menu(step);
+        if (!menu || !creature->AI() || creature->AI()->GetData(menu) ||
+            (step <= 1 && (!SharasdalGrash::Receipt(scenario, 47121) || !SharasdalGrash::Receipt(scenario, 47180))))
+            return true;
+        player->PlayerTalkClass->GetGossipMenu().SetMenuId(menu);
+        player->ADD_GOSSIP_ITEM_DB(menu, 0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        player->SEND_GOSSIP_MENU(step <= 1 ? 28831 : step == 2 ? 28782 : 28747, creature->GetGUID());
         return true;
     }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
+    bool OnGossipSelect(Player* /*player*/, Creature* /*creature*/, uint32 /*sender*/, uint32 /*action*/) override
     {
-        InstanceScript *script = player->GetInstanceScript();
-
-        if (!script)
-            return true;
-
-        switch (script->getScenarionStep())
-        {
-            case 0:
-            case 1:
-                creature->AI()->DoAction(1);
-                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50161);
-                break;
-            case 2:
-                creature->AI()->DoAction(2);
-                break;
-            case 4:
-                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49819);
-                creature->GetMotionMaster()->MovePoint(1, -17.96f, 802.05f, 807.66f);
-                break;
-        }
-        player->CLOSE_GOSSIP_MENU();
-        creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0); // госсип
+        // The AI validates the actual packet menu/index before the legacy
+        // CreatureScript callback receives translated sender/action values.
         return true;
     }
 
@@ -327,10 +341,83 @@ public:
         bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
 
+        ObjectGuid _introHealer;
+        std::weak_ptr<uint8> _introAttempt;
+        bool _introReached50 = false, _introReached90 = false, _introBusy = false, _gossipBusy = false;
+        uint32 _introRetry = 0, _introTries = 0, _gossipActions = 0;
+        FunctionProcessor _healFunctions;
+
+        uint32 GetData(uint32 menu) const override
+        {
+            switch (menu)
+            {
+                case 19509: return _gossipActions & 1;
+                case 19483: return _gossipActions & (1u << 2);
+                case 19467: return _gossipActions & (1u << 4);
+                default: return 0;
+            }
+        }
+
         void Reset() override
         {
+            CancelIntroHeal();
+            _healFunctions.KillAllFunctions();
             _pendingHealRecovery = false;
             events.Reset();
+        }
+
+        void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
+        {
+            if (_introBusy || _gossipBusy || gossipListId || !SharasdalGrash::Eligible(player, me) ||
+                !me->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) || me->HasUnitState(UNIT_STATE_STUNNED) ||
+                !player->IsWithinDistInMap(me, INTERACTION_DISTANCE))
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            uint32 step = scenario->GetCurrentStep();
+            uint32 menuIdExpected = SharasdalGrash::Menu(step);
+            uint32 actionBit = 1u << (step <= 1 ? 0 : step);
+            GossipMenu& menu = player->PlayerTalkClass->GetGossipMenu();
+            GossipMenuItem const* option = menu.GetItem(gossipListId);
+            if (!menuIdExpected || menuId != menuIdExpected || menu.GetMenuId() != menuId ||
+                !option || option->OptionNpc != GossipOptionNpc::None || option->IsCoded ||
+                option->Sender != GOSSIP_SENDER_MAIN || option->Action != GOSSIP_ACTION_INFO_DEF + 1 ||
+                (_gossipActions & actionBit) || (step <= 1 &&
+                (!SharasdalGrash::Receipt(scenario, 47121) || !SharasdalGrash::Receipt(scenario, 47180))))
+                return;
+            if (step <= 2)
+                for (uint32 pathId : {step <= 1 ? 10993808u : 10993810u, step <= 1 ? 10993809u : 10993810u})
+                {
+                    WaypointPath const* path = sWaypointMgr->GetPathScript(pathId);
+                    if (!path || path->empty())
+                    {
+                        TC_LOG_WARN("scripts", "Sharasdal Grash path %u is unavailable; retaining gossip for retry", pathId);
+                        return;
+                    }
+                }
+            struct BusyGuard { bool& flag; ~BusyGuard() { flag = false; } } guard{_gossipBusy};
+            _gossipBusy = true;
+            if (step <= 1 && !SharasdalGrash::Receipt(scenario, 47303))
+            {
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50161);
+                if (!SharasdalGrash::Receipt(scenario, 47303))
+                    return;
+            }
+            if (step == 4 && !SharasdalGrash::Receipt(scenario, 47133))
+            {
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49819);
+                if (!SharasdalGrash::Receipt(scenario, 47133))
+                    return;
+            }
+            _gossipActions |= actionBit;
+            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            player->PlayerTalkClass->ClearMenus();
+            player->CLOSE_GOSSIP_MENU();
+            if (step <= 2)
+                DoAction(step <= 1 ? 1 : 2);
+            else
+            {
+                me->GetMotionMaster()->MovePoint(1, -17.96f, 802.05f, 807.66f);
+            }
         }
 
         void EnterCombat(Unit* who) override
@@ -387,43 +474,104 @@ public:
             }
         }
 
-        void HealReceived(Unit* who, uint32& addhealth) override
+        void OnHealApplied(Unit* who, uint32 /*amount*/, int32 /*gain*/) override
         {
-            if (!_introDone && me->GetPositionZ() <= 795.0f)
-            {
-                if (me->GetHealthPct() >= 90)
-                {
-                    _introDone = true;
-                    if (Player* targ = me->FindNearestPlayer(100.0f))
-                    {
-                        targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49815);
-                        targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49900);
-                        targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50161);
-                    }
-                }
-            }
-
-            if (!_introDone1)
-            {
-                if (me->GetHealthPct() >= 50)
-                {
-                    _introDone1 = true;
-                    Talk(0);
-                    me->AddDelayedEvent(3000, [this]() -> void
-                    {
-                        if (Creature* targ = me->FindNearestCreature(102826, 70.0f, true))
-                            targ->AI()->Talk(1);
-                    });
-                }
-            }
-
-            if (wait_heal && addhealth)
+            if (wait_heal)
                 _pendingHealRecovery = true;
+            Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            if (_introBusy || (_introDone && _introDone1) || !SharasdalGrash::Eligible(player, me) ||
+                me->GetPositionZ() > 795.0f || me->GetHealthPct() < 50 ||
+                sScenarioMgr->GetScenario(me->GetInstanceId())->GetCurrentStep() > 1)
+                return;
+            player->AddQuestDelayedEvent(40341, 0, []() { });
+            if (QuestStatusData* status = player->getQuestStatus(40341))
+            {
+                _introHealer = player->GetGUID();
+                _introAttempt = status->ScriptLifetime;
+                _introReached50 = true;
+                _introReached90 = me->GetHealthPct() >= 90;
+                _introRetry = _introTries = 0;
+            }
         }
 
-        void UpdateLifecycle(uint32) override
+        void CancelIntroHeal()
+        {
+            _introHealer.Clear();
+            _introAttempt.reset();
+            _introReached50 = _introReached90 = false;
+            _introRetry = _introTries = 0;
+        }
+
+        void CompleteIntroHeal(uint32 diff)
+        {
+            if (_introBusy || _introHealer.IsEmpty()) return;
+            if (_introRetry > diff) { _introRetry -= diff; return; }
+            Player* player = ObjectAccessor::GetPlayer(*me, _introHealer);
+            QuestStatusData* status = player ? player->getQuestStatus(40341) : nullptr;
+            if (_introAttempt.expired() || !status || status->ScriptLifetime != _introAttempt.lock() ||
+                !SharasdalGrash::Eligible(player, me) || me->GetPositionZ() > 795.0f ||
+                me->GetHealthPct() < 50 || sScenarioMgr->GetScenario(me->GetInstanceId())->GetCurrentStep() > 1)
+            {
+                CancelIntroHeal();
+                return;
+            }
+            struct BusyGuard { bool& flag; ~BusyGuard() { flag = false; } } guard{_introBusy};
+            _introBusy = true;
+            if (!_introDone1 && _introReached50)
+            {
+                _introDone1 = true;
+                Talk(0);
+                ObjectGuid healer = _introHealer;
+                std::weak_ptr<uint8> attempt = _introAttempt;
+                _healFunctions.AddFunction([this, healer, attempt]()
+                {
+                    Player* original = ObjectAccessor::GetPlayer(*me, healer);
+                    QuestStatusData* current = original ? original->getQuestStatus(40341) : nullptr;
+                    if (attempt.expired() || !current || current->ScriptLifetime != attempt.lock() ||
+                        !SharasdalGrash::Eligible(original, me)) return;
+                    if (Creature* erunak = me->FindNearestCreature(102826, 70.0f, true))
+                        if (erunak->IsInWorld() && !erunak->IsPreDelete() && erunak->IsAlive() && erunak->AI())
+                            erunak->AI()->Talk(1);
+                }, _healFunctions.CalculateTime(3000));
+            }
+            if (!_introReached90 || me->GetHealthPct() < 90) { CancelIntroHeal(); return; }
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!SharasdalGrash::Receipt(scenario, 47121))
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49815);
+            // Criteria delivery can synchronously advance native state. Retain
+            // the original quest attempt before emitting its second receipt.
+            player = ObjectAccessor::GetPlayer(*me, _introHealer);
+            status = player ? player->getQuestStatus(40341) : nullptr;
+            if (_introAttempt.expired() || !status || status->ScriptLifetime != _introAttempt.lock() ||
+                !SharasdalGrash::Eligible(player, me) || me->GetPositionZ() > 795.0f ||
+                sScenarioMgr->GetScenario(me->GetInstanceId())->GetCurrentStep() > 1)
+            {
+                CancelIntroHeal();
+                return;
+            }
+            scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!SharasdalGrash::Receipt(scenario, 47180))
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49900);
+            if (SharasdalGrash::Receipt(scenario, 47121) && SharasdalGrash::Receipt(scenario, 47180))
+            {
+                _introDone = true;
+                CancelIntroHeal();
+                return;
+            }
+            if (++_introTries >= 30)
+            {
+                TC_LOG_WARN("scripts", "Sharasdal Grash heal criteria rejected after thirty attempts; retaining real-heal retry");
+                CancelIntroHeal();
+            }
+            else _introRetry = 1000;
+        }
+
+        void UpdateLifecycle(uint32 diff) override
         {
             SharasdalCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            // Advance existing replies before scheduling a fresh three-second delay.
+            _healFunctions.Update(diff);
+            CompleteIntroHeal(diff);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
