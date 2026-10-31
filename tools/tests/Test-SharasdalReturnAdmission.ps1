@@ -1,6 +1,6 @@
-param([string]$DataFile='',[string]$OutputDirectory='')
+param([switch]$PrepareHost,[string]$DataFile='',[string]$OutputDirectory='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-if(!$DataFile){
+if(!$DataFile -and !$PrepareHost){
  & "$PSScriptRoot/Test-SharasdalAcquisitionData.ps1"
  if(!$?){throw 'Fresh tested return condition graph unavailable'}
  $DataFile="$repo/build-extractors/runtime-test/sharasdal-acquisition-data/return-rows.tsv"
@@ -39,6 +39,7 @@ $flags=Section $unit '            if (index == UNIT_FIELD_NPC_FLAGS)' '         
 [IO.File]::WriteAllText("$out/Flags.inc",$flags)
 if(!(Get-Content "$repo/src/server/game/Entities/Object/Updates/UpdateFieldFlags.cpp" -Raw).Contains('UF_FLAG_PUBLIC | UF_FLAG_DYNAMIC,                       // UNIT_FIELD_NPC_FLAGS')){throw 'Native NPC flags are no longer dynamic'}
 if(!(Get-Content "$repo/src/server/game/Entities/Object/Object.cpp" -Raw).Contains('_fieldNotifyFlags           = UF_FLAG_DYNAMIC;')){throw 'Native dynamic field notification default changed'}
+if($PrepareHost){return}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/SharasdalReturnAdmissionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$DataFile`"`nexit /b %errorlevel%`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Actual native return admission/visibility/refresh failed'}

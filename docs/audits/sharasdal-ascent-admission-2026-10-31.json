@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-31",
+  "scope": "Only native elevator208580 and linked exit209992 source17 admission plus actual38821/208580 source18 offer/click admission. Automatic Erunak final-arrival/Kraliss ordering/original recipient remains OPEN; this is not an automatic-ascent or whole1066/all36 repair.",
+  "cause": "No source17/18 conditions restricted this camera/elevator pair to its actual active quest/scenario participant. Empty native stores admit a foreign/no-quest click or direct cast; a delayed aura-removal209992 could also run after abandonment/reward/map/stage change. Existing original Erunak first-grid visitor choice independently remains unsafe.",
+  "local_sources": [
+    "Fresh matching26972/read-onlyHotfix SharasdalAscentCatalog:208580 aura430/1247/range100/instant/120000ms;209992 native252 teleport,164 camera-aura removal,61/50336, native1066 step3/root47130 and separate actual ascent47131/arrival47378.83810 remains optional infinite self dummy cosmetic.",
+    "Actual World scene1247/package1604/playback20/custom0; native negative208580->209992/default type0/caster0/target0/removeMask0/targetCount-1; original1600/-187.08,802.57,796.5/0 destination. No scripts, custom1247 scene event or implicit-target conditions. Exact38821/spawn362075/phase7001/flags3 clicker-self path retained.",
+    "Generic38821 has56 spawns total,55 outside1600. All spawn/template/click/native scene/destination/link rows remain unchanged. Only its specific208580 offer is constrained; unrelated source18 spell sentinels and all other spawn rows are preserved.",
+    "Native Condition::Meets cases32/15/22/36/44/9/28, actual empty-list wrapper/ElseGroups/not-grouped+spellclick lookups, Player canSeeSpellClickOn/quest refresh/dynamic NPC flags, Unit HandleSpellClick targetflags3, Spell source17 bridge, Aura linked positive removal guards/default triggered cast. Spell.prepare calls strict CheckCast before triggered-direct cast; native scene-complete/cancel/removal and death/logout policy preserved."
+  ],
+  "implementation": [
+    "World05 adds exactly36 rules: three profiles (17/0/208580,17/0/209992,18/38821/208580), each two ElseGroups ANDing Player typemask16, Shaman classmask64, map1600, alive, actual1066/native3 and incomplete40341 OR complete-unturned40341. Conditions check caster/clicker0, never NPC/owner/pet progression.",
+    "Source17 rechecks actual active quest at linked exit execution. Native scene complete/cancel/expiry still invokes original209992; abandoned/rewarded/wrong-map/stage participants receive no accepted exit effects. Original death/removeMask0 and logout skip remain native. Legitimate actual native3 click recovery stays admitted for both factions/active statuses.",
+    "Exact guarded old-or-applied transaction, including original click/one1600 elevator/native scene/destination/full negative link/no scripts or custom targeting, refuses partial/custom contexts before changes. Unrelated conditions and generic38821 spawns are untouched. No C++ gameplay/new ScriptNames/EXE/config/character/item/quest/AP/checkpoint change.",
+    "Return-admission test adds optional PrepareHost only; ordinary default test path remains unchanged. New native host uses the exact real empty-list wrapper, minimal actual condition cases and positive linked-cast branch; it does not inherit earlier adapters empty-list false behavior."
+  ],
+  "migration": {
+    "file": "sql/updates/world/2026_10_31_05_sharasdal_ascent_admission.sql",
+    "lf_sha1": "5a1bbb88f18ca3d784cdfac3bf51739fd339af86",
+    "state": "RELEASED",
+    "rules": 36
+  },
+  "validation": {
+    "sql": "Native MariaDB eight-table TEMP fixtures: only36 scoped rules, idempotence, exact unchanged other rows/same-entry-other-spell sentinels/all56 generic spawns,21 context/custom/partial refusals with full EOF and inspected stderr. Initial temporary-only and post-updater VerifyLiveData pass; fixture never mutates live World.",
+    "native": "64 ASAN cases compile actual native Condition branches/empty wrapper/ElseGroups/source17 bridge/not-grouped and source18 lookups/visibility/refresh/dynamic serialization/click flags3 plus native linked removal-mask/default cast snippets. Both factions/status1+3;12 denials each, direct208580 and triggered209992, pets, late abandon/reward/map/stage, default/cancel/expire/enemy-removal versus death/logout. Explicit old empty-store counterfactual accepts foreign participant. Registry/geometry/full CastSpell/scene/teleport/50336 effect sinks are controlled; no full native spell-engine or client traversal claimed.",
+    "release": "Actual unchanged canonical4BA5B32D PE proves strict prepare CheckCast before native cast calls, actual spell-ID/source17 caster+target evaluation, source18 visibility/click and dynamic NPC publication, ordinary click cast, negative-ID/type0 linked removal lookup and triggered row-effect cast/removal/action fields. No new binary build or deployment required; previous canonical Scepter Release check retained.",
+    "runtime": "Only own PID19400, normal updater actually applies World05, fresh canonical ready, graceful shutdown0/exit0/newDBErrors0/stderr empty/protected hashes unchanged/process gone. Actual updates row5A1BBB88F18CA3D784CDFAC3BF51739FD339AF86 RELEASED and fresh live36-rule readback pass. No user/unknown server stopped.",
+    "reviewed_failed_checks": {
+      "sharasdal-ascent-admission-shape-open-2026-10-31": "Private read query used inappropriate PowerShell escaping around SQL reserved group field. Correct single-quoted here-string preserves native loader projection; shape2 full EOF succeeds, no mutation. Failed helper discards preceding stdout, not used as absence evidence.",
+      "sharasdal-ascent-admission-data-open-2026-10-31": "Refusal fixture inserted a new linked row without required comment, causing native SQL1364 instead of intended context refusal. Explicit fixture comment fixes construction; data2/live21 refusals pass. Outer diagnostics retained; this initial inner SQL stderr was read then overwritten by the default-output repeat, so no original-inner-file hash is claimed.",
+      "sharasdal-ascent-admission-native-open-2026-10-31": "Initial extraction chose negative-linked action default (RemoveAurasDueToSpell) rather than positive exit-cast branch. Anchor extraction after actual positive removal-mask guards; native4 passes.",
+      "sharasdal-ascent-admission-native2-open-2026-10-31": "Reusable broad condition switch referenced an unused quest-objective reader not linked in this host. Extract only actual seven condition kinds used by the36 rows; default rejects unknown kinds, native4 passes. No production check disabled.",
+      "sharasdal-ascent-admission-native3-open-2026-10-31": "Earlier reusable adapter evaluated an empty list through ElseGroups and returned false, unlike actual native empty-list wrapper true. Compile the exact real wrapper; old empty-store counterfactual and repaired64 both pass in native4. Assertion was a harness failure, no server crash or hidden diagnostic."
+    }
+  },
+  "canonical": {
+    "worldserver.exe": "4ba5b32d850b49978a101182aeab45414afd770dc82766ce0b9ea3e7b4b7dfef",
+    "worldserver.map": "edae97adfc55790a3d4d17aecece2adbc2643605644bf18f34c087b4231cb5de",
+    "bnetserver.exe": "cc0e3d7887802172d2a7ac39fa3ba48f90c109eddbb2f94713275392dae830c7",
+    "bnetserver.map": "2e1865253208e1d536e3da01cfcc9a7e97de9b20ec4b714c84dbd84830d7089f"
+  },
+  "diagnostics": "Before/after canonical+own crash/log snapshots and output/exit inspection for every native/SQL/PE/promotion/startup/live test. Reviewed fixture failures paired above. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes empty; mixed6090-byte shared101430/103151LINK2 DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved; no truncation.",
+  "remaining": [
+    "Actual client valid elevator click/20s camera/complete/cancel/120s expiry/landing and rejection/re-entry are user checks, not certified by controlled effect sinks or startup.",
+    "Automatic lower10993810 node5 before Kraliss victory remains forgotten; absent/foreign first-grid visitor is not replaced with a proper original pending claimant by data gates. Implement actual-arrival original-player/weak quest controller, finite failed cast/re-entry and both arrival/victory orders next.",
+    "Data has no standalone GM predicate; automatic controller must reject GM. An explicitly active GM with matching class/map/native3 is not claimed blocked by these data rules.",
+    "LivingLady1906/actual vehicle/finisher, native210247/waves/other NPC conversation expiry/full1066/all36, WardstoneLINK4/Survival/Glow/Stromkar client/sharedLINK2 remain OPEN. No reset/grant authorization; reset3 consumed."
+  ],
+  "next": "Continue instance-owned actual lower-Erunak arrival plus original step2 Grash caller/weak40341 pending scene delivery across early/late Kraliss victory, preserving native208580/-208580/209992/50336 and eligible manual click."
+}
