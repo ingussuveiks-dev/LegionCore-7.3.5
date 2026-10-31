@@ -64,12 +64,16 @@ public:
         uint8 countgossip;
 
         #include "sheilun_taran_intro.h"
+        #include "sheilun_companion_wounds.h"
+
+        void WoundSpeech() { Talk(11); Talk(12); }
 
         void Reset() override
         {
             events.Reset();
             me->SetWalk(false);
             CancelIntroHeal();
+            _pendingWoundHeal = false;
         }
 
         void EnterCombat(Unit* who) override
@@ -119,34 +123,9 @@ public:
             }
         }
 
-        void HealReceived(Unit* /*who*/, uint32& /*addhealth*/) override
-        {
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(204237);
-                    wait_heal = false;
-                }
-            }
-        }
-
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*dmgType*/) override
         {
             damage /= 2;
-            if (damage >= me->GetHealth())
-            {
-                damage = 0;
-                if (!wait_heal)
-                {
-                    wait_heal = true;
-                    me->AddAura(204237, me);
-                    Talk(11);
-                    Talk(12);
-                    me->AddUnitState(UNIT_STATE_STUNNED);
-                }
-            }
         }
 
         void MovementInform(uint32 type, uint32 id) override
@@ -318,8 +297,15 @@ public:
         bool wait_heal;
         FunctionProcessor _functions;
 
+        #include "sheilun_companion_wounds.h"
+
+        void WoundSpeech() { Talk(0); Talk(1); }
+        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int32 /*gain*/) override { ObserveWoundHeal(); }
+        void UpdateLifecycle(uint32 /*diff*/) override { RecoverWound(); }
+
         void Reset() override
         {
+            _pendingWoundHeal = false;
             events.Reset();
             if (me->GetEntry() == 101882)
                 DoCast(203836);
@@ -381,35 +367,6 @@ public:
         void MovementInform(uint32 type, uint32 id) override
         {
             me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
-        }
-
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
-        {
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(204237);
-                    wait_heal = false;
-                }
-            }
-        }
-
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
-        {
-            if (damage >= me->GetHealth())
-            {
-                damage = 0;
-                if (!wait_heal)
-                {
-                    wait_heal = true;
-                    me->AddAura(204237, me);
-                    Talk(0);
-                    Talk(1);
-                    me->AddUnitState(UNIT_STATE_STUNNED);
-                }
-            }
         }
 
         void UpdateAI(uint32 diff) override

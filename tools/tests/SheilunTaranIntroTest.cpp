@@ -7,7 +7,9 @@
 #include <memory>
 #include <vector>
 #include <cstdlib>
-using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;
+using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;using DamageEffectType=uint32;
+enum{UNIT_MOD_HEALTH,TOTAL_PCT};
+template<class V,class P>V CalculatePct(V base,P pct){return V(base*static_cast<float>(pct)/100.f);}
 constexpr uint32 CLASS_MONK=10,CRITERIA_TYPE_SCRIPT_EVENT_2=92,UNIT_FIELD_BYTES_1=1,UNIT_STATE_STUNNED=1;
 enum QuestStatus{QUEST_STATUS_NONE,QUEST_STATUS_COMPLETE,QUEST_STATUS_INCOMPLETE};
 struct ObjectGuid{uint64 value=0;void Clear(){value=0;}bool IsEmpty()const{return !value;}bool operator==(ObjectGuid const&o)const{return value==o.value;}};
@@ -16,14 +18,18 @@ struct Progress{uint64 Counter=0;};struct Achievements{std::map<uint32,Progress>
 struct Scenario{uint32 id=1007,step=0;Achievements achievements;uint32 GetScenarioId()const{return id;}uint32 GetCurrentStep()const{return step;}Achievements&GetAchievementMgr(){return achievements;}};
 struct Manager{Scenario* current=nullptr;Scenario*GetScenario(uint32){return current;}}manager;auto*sScenarioMgr=&manager;
 struct Unit;struct Creature;struct Player;
-struct CreatureAI{virtual~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}virtual void HealDone(Unit*,uint32&){}virtual void OnHealApplied(Unit*,uint32,int32){}virtual void UpdateLifecycle(uint32){}virtual void Reset(){}};
-struct InstanceScript{bool CheckDamageManager()const{return false;}void UpdateDamageManager(uint64,int32,bool){assert(false);}};
-struct Unit{
+struct CreatureAI{virtual~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}virtual void HealDone(Unit*,uint32&){}virtual void OnHealApplied(Unit*,uint32,int32){}virtual void UpdateLifecycle(uint32){}virtual void Reset(){}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}};
+struct InstanceScript{bool CheckDamageManager()const{return false;}void UpdateDamageManager(uint64,int32,bool){assert(false);}void OnCreatureDamageTaken(Creature*,Unit*,uint32&){}};
+struct WorldObject{virtual~WorldObject()=default;};
+struct Unit:WorldObject{
  virtual~Unit()=default;bool IsAIEnabled=false;CreatureAI* healerAI=nullptr;Player* owner=nullptr;int32 health=100,maximum=1000;
- virtual Creature*ToCreature(){return nullptr;}virtual Player*ToPlayer(){return nullptr;}virtual CreatureAI*GetAI(){return healerAI;}
+ virtual Creature*ToCreature(){return nullptr;}virtual Creature const*ToCreature()const{return nullptr;}virtual Player*ToPlayer(){return nullptr;}virtual CreatureAI*GetAI(){return healerAI;}
  Player*GetCharmerOrOwnerPlayerOrPlayerItself();InstanceScript*GetInstanceScript(){return nullptr;}uint64 GetGUID()const{return 99;}
  int32 ModifyHealth(int32 amount,Unit*){int32 gain=std::min(maximum-health,amount);health+=gain;return gain;}
  int32 DealHeal(Unit*,uint32);
+ uint64 GetHealth()const{return health;}uint64 GetHealth(Unit*)const;float GetHealthPct()const{return 100.f*health/maximum;}
+ uint8 GetLevelForTarget(WorldObject const*)const{return 100;}float GetModifierValue(uint32,uint32)const{return 1;}
+ uint32 Deal(Creature*,uint32);
 };
 struct Player:Unit{
  ObjectGuid guid{42};void*map=reinterpret_cast<void*>(1);bool world=true,alive=true,contact=true,gm=false,teleport=false,phase=true,rewarded=false,hasQuest=true,accept=true;
@@ -40,29 +46,38 @@ namespace ObjectAccessor{Player*GetPlayer(Creature&,ObjectGuid id){auto i=player
 struct Motion{unsigned moves=0;void MovePoint(uint32 id,float x,float y,float z){assert(id==1&&x==-1020.62f&&y==-3135.73f&&z==26.91f);++moves;}};
 struct Creature:Unit{
  CreatureAI*i_AI=nullptr,*i_disabledAI=nullptr;bool m_AI_locked=false,m_isUpdate=false,world=true,alive=true,predelete=false,deleted=false,scoped=false;
- uint32 entry=101881,spawn=362837,mapId=1541,poses=0,kits=0,cleared=0,removed=0;void*map=reinterpret_cast<void*>(1);Motion motion;
- Creature*ToCreature()override{return this;}CreatureAI*AI(){return i_AI;}CreatureAI*GetAI()override{return AI();}
+ uint32 entry=101881,spawn=362837,mapId=1541,poses=0,kits=0,cleared=0,removed=0,states=0,auraCalls=0;void*map=reinterpret_cast<void*>(1);Motion motion;
+ struct ScaleStat{uint64 healthMax=1000;}stat;bool scalable=false,statPresent=true,auraAccepted=true;std::function<void()>onAura;
+ Creature*ToCreature()override{return this;}Creature const*ToCreature()const override{return this;}CreatureAI*AI(){return i_AI;}CreatureAI*GetAI()override{return AI();}
+ bool HasScalableLevels()const{return scalable;}uint8 getLevel()const{return 110;}ScaleStat const*GetScaleLevelStat(uint8){return statPresent?&stat:nullptr;}uint64 GetMaxHealthByLevel(uint8)const{return stat.healthMax;}uint64 GetCreateHealth()const{return maximum;}float GetHealthMultiplierForTarget(WorldObject const*)const;
  bool IsInWorld()const{return world;}bool IsAlive()const{return alive;}bool IsPreDelete()const{return predelete;}bool IsDelete()const{return deleted;}bool HasQuestObjectScope()const{return scoped;}
  uint32 GetEntry()const{return entry;}uint32 GetDBTableGUIDLow()const{return spawn;}uint32 GetMapId()const{return mapId;}uint32 GetInstanceId()const{return 7;}void*GetMap()const{return map;}
  float GetHealthPct()const{return 100.f*health/maximum;}void SetByteValue(uint32 field,uint32 slot,uint8 value){assert(field==1&&!slot&&!value);++poses;}
  void SetAnimKitId(uint32 value){assert(!value);++kits;}Motion*GetMotionMaster(){return &motion;}void SetWalk(bool value){assert(!value);}
- void ClearUnitState(uint32 state){assert(state==1);++cleared;}void RemoveAura(uint32 id){assert(id==204237);++removed;}
+ bool AddAura(uint32 id,Creature*target){assert(id==204237&&target==this);++auraCalls;if(onAura)onAura();return auraAccepted;}void AddUnitState(uint32 state){assert(state==1);states|=state;}
+ void ClearUnitState(uint32 state){assert(state==1);++cleared;states&=~state;}void RemoveAura(uint32 id){assert(id==204237);++removed;}
  void NotifyHealApplied(Unit*,uint32,int32);void Update(uint32);
 };
 #define TC_LOG_WARN(...) (++warnings)
+using CreatureLevelStat=Creature::ScaleStat;
+#include "Health.inc"
+#include "Multiplier.inc"
 #include "Notify.inc"
 #include "DealHeal.inc"
 #include "Tick.inc"
 struct EventMap{void Reset(){}};
 struct Taran:CreatureAI{
- Creature*me;bool _introHealDone=false,wait_heal=false;unsigned talk2=0;EventMap events;
+ Creature*me;bool _introHealDone=false,wait_heal=false;unsigned talk2=0;std::vector<uint32>speech;EventMap events;
  explicit Taran(Creature*actor):me(actor){}
- void Talk(uint32 id){assert(id==2);++talk2;}
+ void Talk(uint32 id){speech.push_back(id);if(id==2)++talk2;else assert(id==11||id==12);}
 #ifndef BASELINE
 #include "Intro.inc"
+#include "Wounds.inc"
+#include "Speech.inc"
 #endif
 #include "HealReceived.inc"
 #include "Reset.inc"
+#include "Damage.inc"
 };
 struct Filter:CreatureAI{bool cancel=false;void HealDone(Unit*,uint32& amount)override{if(cancel)amount=0;}};
 struct Test{

@@ -42,6 +42,7 @@ void CancelIntroHeal()
 
 void OnHealApplied(Unit* who, uint32 /*amount*/, int32 /*gain*/) override
 {
+    ObserveWoundHeal();
     Scenario* scenario = IntroHealScenario();
     Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
     if (_introHealBusy || _introHealDone || !scenario || scenario->GetCurrentStep() != 0 ||
@@ -61,6 +62,7 @@ void OnHealApplied(Unit* who, uint32 /*amount*/, int32 /*gain*/) override
 
 void UpdateLifecycle(uint32 diff) override
 {
+    RecoverWound();
     if (_introHealBusy || _introHealer.IsEmpty()) return;
     if (_introHealTimer > diff) { _introHealTimer -= diff; return; }
     Player* player = ObjectAccessor::GetPlayer(*me, _introHealer);

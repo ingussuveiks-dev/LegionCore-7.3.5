@@ -43,7 +43,7 @@ int main(int argc,char** argv)
             }
         }
     }
-    std::set<uint32> selected{202435,202438,194151,204779,204773};
+    std::set<uint32> selected{202435,202438,194151,204779,204773,204237};
     for(auto effect:effects)if((effect->Effect==61&&(effect->EffectMiscValue[0]==48495||effect->EffectMiscValue[0]==48646))||
        (effect->Effect==90&&(effect->EffectMiscValue[0]==101880||effect->EffectMiscValue[0]==102479))||
        effect->EffectMiscValue[0]==256913||effect->EffectMiscValue[0]==102479||effect->EffectMiscValue[0]==102505)selected.insert(effect->SpellID);
