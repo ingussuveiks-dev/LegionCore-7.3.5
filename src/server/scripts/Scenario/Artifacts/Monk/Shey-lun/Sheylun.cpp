@@ -6,6 +6,9 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "ObjectAccessor.h"
+#include "ScenarioMgr.h"
+#include "Scenario.h"
 
 
 // 101881
@@ -60,10 +63,13 @@ public:
         FunctionProcessor _functions;
         uint8 countgossip;
 
+        #include "sheilun_taran_intro.h"
+
         void Reset() override
         {
             events.Reset();
             me->SetWalk(false);
+            CancelIntroHeal();
         }
 
         void EnterCombat(Unit* who) override
@@ -113,20 +119,8 @@ public:
             }
         }
 
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void HealReceived(Unit* /*who*/, uint32& /*addhealth*/) override
         {
-            if (!_introHealDone)
-                if (me->GetHealthPct() >= 95)
-                {
-                    _introHealDone = true;
-                    Talk(2);
-                    me->SetByteValue(UNIT_FIELD_BYTES_1, 0, 0);
-                    me->SetAnimKitId(0);
-                    if (Player* pl = who->ToPlayer())
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48371);
-                    me->GetMotionMaster()->MovePoint(1, -1020.62f, -3135.73f, 26.91f);
-                }
-
             if (wait_heal)
             {
                 if (me->GetHealthPct() >= 40)
