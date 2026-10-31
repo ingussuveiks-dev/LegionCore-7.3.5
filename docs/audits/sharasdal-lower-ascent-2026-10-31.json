@@ -43,5 +43,14 @@
     "Interrupted route before actual arrival or missing Erunak is not reconstructed; no force movement/progress. Request is native instance-memory scoped, not persisted through server restart. Generic stale accepted scene aura/new quest lifetime is not globally repaired by this controller; World05 protects inactive/wrong-stage exit.",
     "Living Lady1906/209457 true boarding/finisher source, native210247 cleanup/waves and other NPC-caster conversation expiry remain OPEN. WardstoneLINK4/Survival middle/Glow/sharedLINK2/Stromkar client and all36 full chains unfinished. No resets/items/AP/quest grants; reset3 authorization already consumed."
   ],
-  "next": "Continue independent living Lady/native210247/wave lifecycle and generic NPC conversation lifetime investigation, then remaining36, without stopping at this focused fix."
+  "next": "Continue independent living Lady/native210247/wave lifecycle and generic NPC conversation lifetime investigation, then remaining36, without stopping at this focused fix.",
+  "fix_commit": "53665bb91",
+  "diagnostic_archive": {
+    "fix_commit": "53665bb91",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-lower-ascent-2026-10-31",
+    "manifest_sha256": "6d638d3f9122d4d4e7aa7f9eda0192f8edaf7327cd80b1bd8b7eaf691066b67c",
+    "files": 555,
+    "verification": "Source/destination/source/final SHA256 verified; canonicalCA0AA90D retained. Crashes empty/no active reports removed/logs truncated; mixed6090LINK2 unchanged/unresolved. Own22296 exited/no task server remains. Original expected-broken counterfactual preserved with repaired71/22 regression and actual Release evidence.",
+    "remaining": "Mixed6090-byte sharedLINK2 and informative server history untouched; no active crash existed or removed. Client camera/physical route/full1066/all36/livingLady1906/native210247/waves/generic other NPC conversations remain OPEN. No binary/dump/media/configuration/credentials/character data."
+  }
 }
