@@ -44,6 +44,7 @@ int main(int argc, char** argv)
     DB2Storage<SpellMiscEntry> misc("SpellMisc.db2", SpellMiscLoadInfo::Instance());
     DB2Storage<SpellDurationEntry> durations("SpellDuration.db2", SpellDurationLoadInfo::Instance());
     DB2Storage<SpellInterruptsEntry> interrupts("SpellInterrupts.db2", SpellInterruptsLoadInfo::Instance());
+    DB2Storage<SpellXSpellVisualEntry> visuals("SpellXSpellVisual.db2", SpellXSpellVisualLoadInfo::Instance());
     DB2Storage<ItemSparseEntry> items("ItemSparse.db2", ItemSparseLoadInfo::Instance());
     DB2Storage<ItemChildEquipmentEntry> children("ItemChildEquipment.db2", ItemChildEquipmentLoadInfo::Instance());
     DB2Storage<ScenarioStepEntry> steps("ScenarioStep.db2", ScenarioStepLoadInfo::Instance());
@@ -53,7 +54,16 @@ int main(int argc, char** argv)
         !steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0)) return 4;
     spells.LoadFromDB(); effects.LoadFromDB(); misc.LoadFromDB(); durations.LoadFromDB(); interrupts.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
-    std::set<uint32> selected{209683,209684,209685};
+    if (!visuals.Load(argv[1],0)) return 16;
+    visuals.LoadFromDB();
+    unsigned outroVisuals = 0;
+    for (auto row : visuals) if (row->SpellID == 209743)
+    {
+        ++outroVisuals;
+        std::cout << "OUTRO_VISUAL\t209743\t" << row->ID << '\t' << row->SpellVisualID << '\n';
+    }
+    std::cout << "OUTRO_VISUAL_COUNT\t209743\t" << outroVisuals << '\n';
+    std::set<uint32> selected{209683,209684,209685,209743};
     for (bool changed=true; changed;)
     {
         changed=false;

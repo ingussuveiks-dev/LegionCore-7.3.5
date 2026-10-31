@@ -3,6 +3,12 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp';$actorPath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$actor=(Get-Content "$repo/$actorPath" -Raw).Replace("`r",'')
+$scopeActor=$actor
+if($actor.Contains('#include "sharasdal_acquisition.h"')){
+ & "$PSScriptRoot/Test-SharasdalAcquisition.ps1" -ScopeOnly
+ if(!$?){throw 'Actual acquisition actor scope certificate failed'}
+ $scopeActor=(& git -C $repo show "ab9a5b3d9:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-acquisition actor missing'}
+}
 $old=(& git -C $repo show "d7610f9d1:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned instance before Lady missing'}
 $oldActor=(& git -C $repo show "d7610f9d1:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned Lady actor missing'}
 $normal=$source.Replace((Block $source 'namespace SharasdalLady'),'')
@@ -26,7 +32,7 @@ foreach($prefix in @($deathPrefix,$entryPrefix)){$prefix=$prefix.Replace("`r",''
 $normal=$normal.Replace('            UpdateLady(diff);','')
 if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Other native Kraliss/guard/Brute/wall/entry/fields changed'}
 $currentNPC=Block $actor 'class npc_lady_zitrin :';$oldNPC=Block $oldActor 'class npc_lady_zitrin :'
-$normalActor=$actor.Replace((Block $currentNPC 'void JustDied('),(Block $oldNPC 'void JustDied('))
+$normalActor=$scopeActor.Replace((Block $currentNPC 'void JustDied('),(Block $oldNPC 'void JustDied('))
 if(($normalActor -replace '\s','') -cne ($oldActor -replace '\s','')){throw 'Other Lady combat/intro/gauntlet/Kraliss/roar/companions/pickup changed'}
 if($ScopeOnly){'PASS only real Lady instance victory/upper recipient/original quest/native receipt and empty death callback; illusion/gauntlet/combat/Kraliss/roar/all other actors retained. No premature1923 or pickup grant';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}

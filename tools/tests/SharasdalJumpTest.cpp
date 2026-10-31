@@ -36,6 +36,6 @@ int main(){
   spell.info.Id=spellId;spell.info.effect.TriggerSpell=spellId==206455?206456:spellId==206360?206361:SkyholdDeparture::Arrival(spellId);spell.info.effect.MiscValue=300;spell.location.Relocate(1000,2000,300);
   spell.EffectJumpDest(0);assert(p.movement.current&&p.movement.current->_arrivalSpellTargetGuid.value==p.GetGUID().value);p.movement.Complete();assert(p.casts==1);++cases;
  }
- std::cout<<"PASS "<<cases<<" actual Spell::EffectJumpDest/CalculateJumpSpeeds/NativeDelay, Unit::CastSpell, MotionMaster and EffectMovementGenerator contexts: only map1600 Player209683->209684 self/origin map, positive actual launch/completion, cancellation/death/transfer/cleanup/failure/repeat and retained other native branches. Existing zero-distance no-launch remains; endpoint/spline/Spell services controlled. Missing World209683 target row, actual GO claim/item/equip/scene and client remain separate implementation work.\n";
+ std::cout<<"PASS "<<cases<<" actual Spell::EffectJumpDest/CalculateJumpSpeeds/NativeDelay, Unit::CastSpell, MotionMaster and EffectMovementGenerator contexts: only map1600 Player209683->209684 self/origin map, positive actual launch/completion, cancellation/death/transfer/cleanup/failure/repeat and retained other native branches. Existing zero-distance no-launch remains; endpoint/spline/Spell services controlled. World209683 target and actual GO claim/item/equip/scene are covered separately by acquisition suites; actual client remains separate.\n";
 #endif
 }

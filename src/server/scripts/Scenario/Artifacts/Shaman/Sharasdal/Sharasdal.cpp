@@ -1340,33 +1340,7 @@ public:
 };
 
 // 249342
-class go_art_sharasdal : public GameObjectScript
-{
-public:
-    go_art_sharasdal() : GameObjectScript("go_art_sharasdal") {}
-
-    void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
-    {
-        if (target && state == GO_ACTIVATED)
-        {
-            if (target->GetTypeId() == TYPEID_PLAYER)
-            {
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49820);
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 1066, 1);
-                if (Creature* trigger = go->FindNearestCreature(105787, 10.0f))
-                    trigger->DespawnOrUnsummon(1000);
-
-                if (!target->ToPlayer()->HasItemCount(128911, 1))
-                    target->ToPlayer()->AddItem(128911, 1);
-                go->Delete();
-
-                target->CastSpell(target, 209684, true);
-
-                target->ToPlayer()->KilledMonsterCredit(105787);
-            }
-        }
-    }
-};
+#include "sharasdal_acquisition.h"
 
 void AddSC_Sharasdal()
 {
@@ -1378,4 +1352,6 @@ void AddSC_Sharasdal()
     new npc_lady_zitrin();
     new npc_sharasdal_waterwall();
     new go_art_sharasdal();
+    RegisterSpellScript(spell_sharasdal_acquisition);
+    RegisterAuraScript(aura_sharasdal_acquisition);
 };
