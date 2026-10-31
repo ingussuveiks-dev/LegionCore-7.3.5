@@ -30,5 +30,14 @@
     "Living Lady1906/209457 real boarding/finisher threshold/producer remains OPEN; do not infer health percentages, impact kill or credit from cosmetic209487 name. Native210247 cleanup, waves and other NPC-caster conversation expiry remain OPEN.",
     "WardstoneLINK4, Survival middle, Glow producer, sharedLINK2 and Stromkar client remain unfinished. No character/item/AP/quest/checkpoint reset or extra grants; reset3 authorization already consumed."
   ],
-  "next": "Continue independent wave/vehicle and native210247 lifecycle investigation; resolve remaining36 implementation findings without ending at this focused fix."
+  "next": "Continue independent wave/vehicle and native210247 lifecycle investigation; resolve remaining36 implementation findings without ending at this focused fix.",
+  "fix_commit": "d060cddbb",
+  "diagnostic_archive": {
+    "fix_commit": "d060cddbb",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-combat-ai-2026-10-31",
+    "manifest_sha256": "cd01d4191627ba7b3827e5c85d535d424bc7fa18b512463bca752467816964c7",
+    "files": 227,
+    "verification": "Source/destination/source/final SHA256 verified; canonical439BD173 retained. Crashes empty/no active reports removed/logs truncated; mixed6090LINK2 unchanged/unresolved; own13060 exited/no task servers.",
+    "remaining": "Living Lady1906/209457/finisher threshold, waves/native210247/generic NPC conversations/full1066/all36/client remain OPEN. Mixed6090 sharedLINK2 and informative runtime history untouched. No active crash existed or removed; no binary/dump/media/config/credential/character data."
+  }
 }
