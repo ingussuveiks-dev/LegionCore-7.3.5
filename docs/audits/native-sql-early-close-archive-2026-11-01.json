@@ -1,0 +1,11 @@
+{
+  "fix_commit": "a878b1c1f",
+  "issue": "Native SQL-client stdin IOException masked an early nonzero child exit.",
+  "checks": "Pinned6 failing-baseline/6 repaired native early-close cases, retained10 exact SQL stream cases and80 prepared-refusal cases; both MariaDB and MySQL clients. All suites completed with no new/changed crashes, appended DBErrors or server failures.",
+  "archive": "build-extractors/bin/Release/fixed/native-sql-early-close-2026-11-01",
+  "source_files": 262,
+  "final_manifest_files": 270,
+  "final_manifest_sha256": "dc15f575d6358ad6cdcb8a224ad1db644ce5fc81a0e644093b83082cd8bcbb42",
+  "integrity": "Each reviewed original was copied with matching source/archive/source SHA256 and retained in its test directory. Final manifest includes the closed archive-verification diagnostics. No credential files, executables, dumps, character data or unrelated old stream cases included.",
+  "cleanup_boundary": "Canonical Crashes remains empty. No runtime error log was truncated. Mixed6090-byte DBErrors with unresolved LINK2 and separate OPEN Sheilun native-fixture failures were excluded. Canonical45EC027E unchanged; no task-owned server remains. This closes only the SQL transport issue, not physical acquisition, normal return, client traversal or all36 artifact chains."
+}
