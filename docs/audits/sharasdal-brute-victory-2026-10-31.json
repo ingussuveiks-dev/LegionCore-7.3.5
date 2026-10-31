@@ -53,5 +53,19 @@
     "Native accepted history can recover presentation without creating new progress. Pending real contributions belong to the original quest attempt/live instance; no actor/criterion serialization across server restart or lease-destroying logout. Abandon/new-attempt fresh scenario policy and full re-entry traversal remain separate checks; no stale attempt credited or character state reset.",
     "Original route actions are unchanged. Once-per-AI gossip bits still do not prove issued-path completion/interruption/re-entry recovery. Grash waypoint0/3 wall/49817 admission, later walls/gauntlet, other raw actor callbacks, Erunak/Adel40pct pre-heal marker limitation, boss player/pet/guardian credit and249342 actual loot/full bags/equip/outro remain OPEN.",
     "Preserve earlier Glow211502,Survival39427 middle flight,Wardstone LINK4,sharedLINK2 and Stromkar client evidence. Continue next independent backend repair; client testing stays with user and reset3 authorization is consumed."
-  ]
+  ],
+  "fix_commit": "06ccdbe3b",
+  "diagnostic_archive": {
+    "fix_commit": "06ccdbe3b",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-brute-victory-2026-10-31",
+    "files": 395,
+    "manifest_sha256": "aeff82a94c3587c84de605644bdcf08b28a2448f1c25ee048f086e4689ca1a01",
+    "verification": "Source/destination/source/final SHA256 verified; canonical6090-byte mixed LINK2 hash/length/timestamp and empty Crashes unchanged. No active file removed or truncated; no task servers retained.",
+    "failures_paired": {
+      "sharasdal-brutes-baseline-2026-10-31": "Fixture C2679 vector initializer assignment and C2039 new-only state in baseline fixed; baseline2 old source counterfactual and repaired2 ASAN pass.",
+      "sharasdal-brutes-pe-inspection-2026-10-31": "Old inspector assumed literal zero at guard exhaustion field; actual function zeroes r14 then stores preserved r14b. Corrected zero dataflow check passes retained/canonical PE.",
+      "sharasdal-brutes-staged-pe-2026-10-31": "Inspector selected voice retry subtraction instead of role wait. Corrected check ties subtraction to role field3d8 and fresh-success branch; final staged/canonical PE pass."
+    },
+    "excluded_open": "Mixed open sharasdal-brutes-context (later route/wall), earlier adel/cast/heal context, raw callback/boss/loot research and mixed active DBErrors. Source video/contact sheets stay in ignored .codex/sharasdal-reference, not a whole-chain fix certificate."
+  }
 }
