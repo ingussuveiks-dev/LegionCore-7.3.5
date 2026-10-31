@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-31",
+  "status": "OPEN manual source/outro/return implementation; positive native menu and complete voice payload evidence, no new gameplay/data/character mutation",
+  "voice_assets": [
+    {
+      "FileDataID": 1383871,
+      "Bytes": 21357,
+      "SHA256": "D8CED1042552E5698C5F020456CB6F4AE40248BE4BE8B369F41BF1B4913B9073",
+      "VoiceMs": 2839
+    },
+    {
+      "FileDataID": 1383888,
+      "Bytes": 35184,
+      "SHA256": "57D570AD32F9C4803A87A93B5694E91422200F1599BEE93B2E09065C6065D27B",
+      "VoiceMs": 5128
+    },
+    {
+      "FileDataID": 1383889,
+      "Bytes": 57325,
+      "SHA256": "BF3EB7E0FB64905320315B532E7548DB49E3934A20D19B57A168F785998981D0",
+      "VoiceMs": 9088
+    },
+    {
+      "FileDataID": 1383890,
+      "Bytes": 81307,
+      "SHA256": "BE4FC7AC7B84A03B2BA7A12865EDF31B133A10214B0F8F59B672F35EE1B29879",
+      "VoiceMs": 13034
+    },
+    {
+      "FileDataID": 1383891,
+      "Bytes": 44685,
+      "SHA256": "DEA7ECA902C6418B4777A57F8808967A2CB185F7D20D6E462AE2E39A95143E7A",
+      "VoiceMs": 6861
+    },
+    {
+      "FileDataID": 1383892,
+      "Bytes": 38796,
+      "SHA256": "E52ACFB595298AA3C4B3937E85AB1BCFCD7FA1A741569CC410305E86E6A77543",
+      "VoiceMs": 5673
+    },
+    {
+      "FileDataID": 1383893,
+      "Bytes": 41358,
+      "SHA256": "CE94C7B15C8DF7079BDCFE95A7835E0CA7F5ACF4FFB7789A77101F0DD30FA570",
+      "VoiceMs": 6246
+    }
+  ],
+  "voice_scope": "Native26972 BroadcastText/SoundKitEntry identities from existing SheilunOutroCatalog:104773->61957/1383888,104774->61958/1383889,104775..777->61959..61/1383890..92,104785->61962/1383893 and104958->61951/1383871. Exported through existing read-only private CascAudioProbe, matching client .build.info checked, all seven Vorbis streams fully decoded, positive finite durations and unchanged CASC index hashes. No listening, actual NPC playback, continuous footage or client-render claim.",
+  "menu": [
+    "Fresh full-EOF World lookup by native BroadcastText discovers existing return menu19257/option0/104954 and npc_text28290/104957 with native1.0 probability. The earlier audit correctly established only current template19254 lacks this option; absence of a19257 row was never established.19257/28290 need an actual admitted caller, not replacement of shared outgoing19254.",
+    "Current101880 SmartAI graph has12 rows for19254 outgoing/other campaign options and no19257 return dispatch. No19257 source14/15 conditions in fresh result. Preserve these existing shared routes. Existing accessory Tak-Tak seat1/player0 of4581 and native202828/3035 remain unchanged findings."
+  ],
+  "physical_loader_trace": [
+    "Fresh World GO256913 Data1/lootId0 still disconnects existing100-percent128937 loot256913. Existing object script fires on GO_ACTIVATED, manually AddItem and48646 before storage, then native202435 and14s return. Existing boss does its own nearestPlayer2s item/progress/scene and14s return. No new shortcut/grant introduced.",
+    "Actual Player::SendLoot fills native loot then invokes GO_ACTIVATED before the client item-storage request. Player::StoreLootItem first performs CanStoreNewItem, respects native full-bag error, requires real StoreNewItem result before marking/removing loot. Chest release sets GO_JUST_DEACTIVATED only when native loot is exhausted; partial/full-bag release in dungeon retains GO_ACTIVATED. Existing Sharasdal repair uses real owned-item validation on this later state. Neither cast-accepted nor opening-loot is a storage receipt.",
+    "Actual AutoStoreLoot bool from native202436 is still not a store-success receipt and does not open the historical loot-style pane. Choose the existing source path only with actual native storage acknowledgement and source/quest/scenario admission; original retail NPC-versus-GO identity remains unproven."
+  ],
+  "route_search": [
+    "Fresh World has waypoints, waypoint_data_script, script_waypoint; queried full exact actor/path102648/102590/101880 variants and native map-coordinate candidate regions (835 rows including EOF). No exact three-actor route row or addon path was returned. Coordinate-only matches span unrelated maps/content, including Nighthold102263 and older scripted quests, and are not interpreted as Sheilun paths.",
+    "Current template addons for102648/102590/102479/102505 absent;101880 addon is zero path. Native target positions202828/202693/202435/202436 absent. Retain earlier native taxi candidates5507/5592/5619/5730 and rejected6041 limits: no binding or1541 whole flight established. Current newer localTrinity numeric database hits and general web searches did not establish an independent matching route; unrelated search results are not sources."
+  ],
+  "development_failure": "First readonly acquisition query used obsolete creature_template.modelid1 and stopped at its first statement. Preserved complete stderr/stdout; queried actual schemas, corrected query removes that field and uses gossip_menu.MenuID. Paired fresh acquisition-context2 reaches full EOF. Do not treat initial failed query as absence evidence.",
+  "evidence": [
+    ".codex/sheilun-acquisition-context-open-2026-10-31",
+    ".codex/sheilun-acquisition-schema-open-2026-10-31",
+    ".codex/sheilun-acquisition-context2-open-2026-10-31",
+    ".codex/sheilun-outro-audio-assets-open-2026-10-31",
+    ".codex/sheilun-return-menu-open-2026-10-31",
+    ".codex/sheilun-return-greeting-open-2026-10-31",
+    ".codex/sheilun-return-waypoint-schema-open-2026-10-31",
+    ".codex/sheilun-waypoint-columns-open-2026-10-31",
+    ".codex/sheilun-return-waypoints-open-2026-10-31"
+  ],
+  "diagnostics": "All native/SQL/media operations recorded before/after. No new/changed crashes, appended DBErrors or server errors/warnings/assertions. Mixed6090 LINK2 retained. No server launched in this research; prior owned33188 cleanly stopped. Research stays OPEN outside fixed.",
+  "next": "Repair distinct NPC plan/start admissions against actual scenario receipts, and then physical source/storage/outro/return. Preserve both real tactical choices, native stage progression, owner/pet/guardian/group semantics, failure/retry and client limits. No character reset."
+}
