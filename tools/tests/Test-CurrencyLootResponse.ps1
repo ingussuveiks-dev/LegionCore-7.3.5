@@ -19,7 +19,7 @@ $cmd=@"
 @echo off
 call "$vs/VC/Auxiliary/Build/vcvars64.bat" >nul
 if errorlevel 1 exit /b 1
-cl /nologo /EHsc /std:c++17 /W4 $sanitizer /I"$output" "$PSScriptRoot/CurrencyLootResponseTest.cpp" /Fe"$output/CurrencyLootResponseTest.exe" /Fo"$output/CurrencyLootResponseTest.obj" /link /INCREMENTAL:NO
+cl /nologo /EHsc /std:c++17 /W4 $sanitizer /I"$output" "$PSScriptRoot/CurrencyLootResponseTest.cpp" /Fe"$output/CurrencyLootResponseTest.exe" /Fo"$output/CurrencyLootResponseTest.obj" /Fd"$output/CurrencyLootResponseTest.pdb" /link /INCREMENTAL:NO
 if errorlevel 1 exit /b 1
 "$output/CurrencyLootResponseTest.exe"
 exit /b %errorlevel%
