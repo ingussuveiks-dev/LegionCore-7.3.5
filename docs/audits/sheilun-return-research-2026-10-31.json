@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-31",
+  "status": "OPEN Sheilun return implementation; full relevant historical visual sequence and matching native outro/vehicle/route candidates researched",
+  "source": {
+    "id": "esO2JR2WI-0",
+    "title": "[Quest 41003] - The Emperor's Gift {Mistweaver Artifact Scenario}",
+    "duration": 688,
+    "upload_date": "20161225",
+    "webpage_url": "https://www.youtube.com/watch?v=esO2JR2WI-0",
+    "uploader": "Phoenix Gaming",
+    "width": 640,
+    "height": 360,
+    "vcodec": "vp9",
+    "acodec": "none",
+    "sha256": "3c8700af41e8fa407315de08c75d32151508bd705c27ac32ab7bff42a64bbdb9"
+  },
+  "review": {
+    "whole": "All9 sheets/138 selected whole-video frames reviewed at5s, exact selected source-frame PTS. Intro/outro and edited transitions included; no continuous playback/audio claim.",
+    "final": "All13 sheets/145 source frames505..649 reviewed at1s, including boss defeat, actual manual claim, acquisition scene, all visible outro bubbles, Tak-Tak gossip, boarding, both flight/map segments, landing and Ponshu window. Source PTS labels, visual-only historical360p; no client26972/packet/source-GUID claim.",
+    "individual_frames": [
+      "final-1s/frame-0032.png (536s item/loot pane and tooltip)",
+      "final-1s/frame-0082.png (586s actual Tak-Tak gossip)"
+    ],
+    "limits": "No audio stream downloaded/listened to, no continuous playback. Historical2016-12-25 client build not identified as26972. Source has an edited/crossfade transition around165s and a later author outro; the reviewed final505..646 sequence contains a visible map-loading screen rather than the previous xLetalis cut hiding the return selection. Pixels do not prove actor IDs/packet type/retail source GUID or exact world coordinates."
+  },
+  "observations": [
+    "0..15 author intro;15..40 Ponshu/class hall and movement to Tak-Tak;40..60 outward kite,65 loading,70..100 approach/landing;105..125 Taran healing/stage transition;130..160 approach/Xaphan;165..260 combat/rescues with wounded allies;265 stage3;280..295 move to planning platform;300..330 visible companion planning choices;335..350 approach to Aspersius;355..507 final fight. Five-second overview does not establish every intermediate timing, choice or cast.",
+    "508..512 final-stage transition/boss collapse/pool changes,513 visible staff.513..530 player stays away and Taran gives defeat/claim bubbles;531..535 approaches staff.536 actual loot-style pane/item tooltip,537..5448s acquisition scene/title,545..546 equipment-related popup (addon/native origin not established),548..554 first lore bubble,561..565 second,569..574 third. Source remains manually claimed, with no automatic timed return.",
+    "577..584 player remains/approaches Tak-Tak near rim;585 sparkles,586..587 actual greeting and return option,588 mounted kite,590 departure speech,592..602 departure over the rim and monastery with a farewell bubble visible around596.603..604 loading screen;605..606 Wandering Isle/Pei-Wu Forest appears,610..624 flight past Mandori Village,625..629 temple-front descent,630 player is on foot.631..636 walks to Ponshu;637..640 completion window,641 closes/quest tracking changes.642..646 map/standing,647+ author outro. These are sampled visual intervals, not measured server timer requirements."
+  ],
+  "native_dialogue": {
+    "tool": "tools/research/SheilunOutroCatalog.cpp",
+    "tables": "Matching26972 DB2 base+readonly Hotfix. All129297 BroadcastText records searched,9 exact relevant text matches. Both Map parent/cosmetic IDs explicitly checked.",
+    "broadcast_text": {
+      "defeat": 104773,
+      "claim": 104774,
+      "lore_first": 104775,
+      "lore_second": 104776,
+      "lore_third": 104777,
+      "farewell": 104785,
+      "return_option": 104954,
+      "return_greeting": 104957,
+      "departure": 104958
+    },
+    "voice": {
+      "104773": [
+        61957,
+        1383888
+      ],
+      "104774": [
+        61958,
+        1383889
+      ],
+      "104775": [
+        61959,
+        1383890
+      ],
+      "104776": [
+        61960,
+        1383891
+      ],
+      "104777": [
+        61961,
+        1383892
+      ],
+      "104785": [
+        61962,
+        1383893
+      ],
+      "104958": [
+        61951,
+        1383871
+      ]
+    },
+    "live_gap": "World Taran101881 stops at group12; no defeat/lore/farewell rows. Tak-Tak101880 has only speech0/1 (outgoing). Existing shared gossip19254 lacks return option104954/greeting104957. No code/data restoration or clip-duration claim in this research; native voice files have not yet been extracted/fully decoded for these lines."
+  },
+  "native_vehicle": [
+    "Both actual102590/102648 templates use Vehicle4581. World vehicle_template_accessory installs Tak-Tak101880 into seat1 (not seat0), minion1/manual8, offsets2.97703/-0.00540706/0.196992. Actual seat0/16270 is free for Player: Flags1073774599 and no CAN_CONTROL0x800; seat1/16271 Flags33587215. Do not place driver in seat0 or infer occupancy/control from a mocked vehicle.",
+    "Native202828 has summon102648/properties3035, effect90/101880, effect61/48658. Properties3035 Flags272/Control4/Faction0/Title0/Slot0. Native native spell-click46598 and actual PassengerBoarded are separate from accepting a summon/cast. Defer original receipt until real boarding without inventing a new group/quest grant. Preserve owner/pet/guardian lookup, real eligible native group behavior, finite same-actor retry, cleanup and client control/viewpoint/pet boundaries.",
+    "Quest41003 objectives281594/281598/281599 have objects101880/102479/101880 at storage0/1/2; return281599 has SEQUENCED0x02. The two101880 objectives are distinct: an object-ID-only getter may select the first. Verify the actual return storage index/ID, not merely101880 count. No matching criteria asset48658/type92 in matching native Criteria data; retain its original event semantics without claiming an extra scenario step."
+  ],
+  "routes": [
+    "Map1514 Artifact-MonkOrderHall and1541 Artifact-TerraceofEndlessSpringAcquisition both have ParentMapID/CosmeticParentMapID=-1. No public TaxiNodes in those maps. Full matching TaxiPathNode scan finds5 script path IDs containing1514; none contains1541. First probe only included1541 path membership and missed these1514-only candidates; broadened final tool includes both maps/actual parents and reports exact counts. No global absence claim from the narrower probe.",
+    "5507:4 points854.988/3572.97/211.201 ->887.045/3605.53/192.236.5592:4 low forest points334.394/3312.87/70.5824 ->294.177/3342.01/70.5824.5619:8 points651.14/3324.51/200.78 ->938.717/3714/189.803.5730:15 points938.747/3713.86/190.441 ->901.837/4072.2/199.42. All4 have FromTaxiNode=ToTaxiNode=0, so do not assume ordinary ActivateTaxiPathTo endpoint admission.",
+    "6041 is a separate11-point1514->1693 route, native spell232910 Fly to Stormstout Brewery/effect123. Explicitly excluded from Sheilun. No native effect123 producer for the other4 candidates. No exact integer current C++ binding established; decimal coordinate coincidences were not treated as path IDs. Path/source/camera/map handoff still requires a verified scripted implementation.",
+    "Fresh actual1514 anchors: Ponshu100438/spawn369000 at924.417/3606.17/196.414, Tak-Tak101880/spawn340392 at935.785/3719.75/189.146. MapArea1044 Left4979.17/Right2308.33/Top1785.42/Bottom6.25.5619 ends by the west Tak-Tak stand about109yd from Ponshu; it is not automatically the observed temple-front landing.5507 ends about37yd from Ponshu, compatible with the subsequent short walk, but exact retail102648 binding/whole route is not proved. Do not blindly concatenate paths or copy a different scene flight."
+  ],
+  "item_ui_limit": "536s shows an actual loot-style pane before scene537. Native current-core202436/CREATE_ITEM_2 with ItemType0 uses AutoStoreLoot and produces no such source loot window itself; its bool returns max_slot>0 even when stores fail. It cannot serve as proof of successful storage. Existing real GO256913 native loot could preserve manual loot UI with separate102479/202385 visual, but that design is not yet implemented/proven as the retail original. Do not choose an automatic native-cast grant simply because a matching spell name exists.",
+  "additional_metadata": "kzbPS3FcFkk is WoW Quests (2016-08-26,1342s), not a confirmed Varenne upload. Metadata only; no media fetched/reviewed. Direct web fetches of both YouTube pages failed; accessible ordinary yt-dlp metadata/download succeeded without auth/cookies. No-supported-JS-runtime warnings retained, selected360p stream fully downloaded/probed/decoded without error; no all-format availability claim.",
+  "evidence": [
+    ".codex/sheilun-return-video-metadata-open-2026-10-31",
+    ".codex/sheilun-return-video-download-open-2026-10-31",
+    ".codex/sheilun-return-video-sampling-open-2026-10-31",
+    ".codex/sheilun-return-video-dense-open-2026-10-31",
+    ".codex/sheilun-return-context-open-2026-10-31",
+    ".codex/sheilun-outro-context-open-2026-10-31",
+    ".codex/sheilun-outro-native-open-2026-10-31",
+    ".codex/sheilun-outro-native2-open-2026-10-31",
+    ".codex/sheilun-outro-native3-open-2026-10-31",
+    ".codex/sheilun-outro-native4-open-2026-10-31",
+    ".codex/sheilun-return-anchors-open-2026-10-31",
+    ".codex/sheilun-return-reference/whole-sampling.json",
+    ".codex/sheilun-return-reference/final-sampling.json"
+  ],
+  "diagnostics": "Each metadata/media/native/catalog/readonly World operation has before/after canonical+own crash/log evidence and inspected exit/stdout/stderr. All listed operations exit0/no new crash, DBErrors or server warning/error/assertion. CanonicalECAA2D24 unchanged; no server launched, Crashes empty/mixed6090LINK2 retained, no character/item/progress edit or reset. OPEN research stays outside fixed archives.",
+  "next": "Implement actual manual source/loot with native202385 visual and storage acknowledgement before202435; complete real prerequisite/owner/pet/guardian victory and legitimate group/reentry lifecycle. Restore native outro voices with full clip durations and guarded caller, actual seat0 boarding/native202828 receipt, safe segmented return/landing/control cleanup before deleting old boss auto-grant/14s Zen Escape. Taran middle-stage Creature-owned raw-AI delayed callbacks and raw/repeated gossip counters are separate independent repair candidates. Full36/client remains OPEN."
+}
