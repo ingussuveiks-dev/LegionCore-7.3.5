@@ -32,5 +32,22 @@
     "runtime": "Final owned hidden world32860 reached ready, own shutdown0/exit0/stderr0/newDBErrors0 and is gone. No user/unknown server stopped or hidden task server left."
   },
   "diagnostics": "All native/baseline/repaired/build/link/PE/promotion/startup checks have before/after canonical and own-runtime crash/log snapshots plus exits/output inspected. No new/changed crash or appended server warning/error/assertion/DBErrors. Active Crashes empty/no report removed; mixed6090-byte shared101430/103151LINK2 log SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged. No active log truncated, security boundary bypassed or character/item/AP/quest/checkpoint reset. Closed diagnostic archive follows fix commit.",
-  "remaining": "Next independent repairs: Adel7s Unit-owned raw clicker/AI capture, eligibility/owner/duplicates/retry;102792 instance death nearest-player/delayed raw recipient/group ownership; Grash actual issued waypoint/ice-wall acknowledgement, interrupted route/re-entry and later nearest-player wall recipient; Erunak/Adel40pct incoming markers still retain documented cancelled-full-health limitation; other raw actor callbacks, boss owner/pet/guardian credit/conversation recipients,249342/128911 pickup/full bags/equip/outro. New once-per-AI gossip admission is not a movement-completion proof. Actual spell targeting/scaling, all party/faction/client health/gossip/voice/routes/full1066/all36 remain client-pending. Existing Glow211502 producer,Survival39427 middle flight,WardstoneLINK4/sharedLINK2 and Stromkar client remain OPEN. User owns client tests/reset3 consumed."
+  "remaining": "Next independent repairs: Adel7s Unit-owned raw clicker/AI capture, eligibility/owner/duplicates/retry;102792 instance death nearest-player/delayed raw recipient/group ownership; Grash actual issued waypoint/ice-wall acknowledgement, interrupted route/re-entry and later nearest-player wall recipient; Erunak/Adel40pct incoming markers still retain documented cancelled-full-health limitation; other raw actor callbacks, boss owner/pet/guardian credit/conversation recipients,249342/128911 pickup/full bags/equip/outro. New once-per-AI gossip admission is not a movement-completion proof. Actual spell targeting/scaling, all party/faction/client health/gossip/voice/routes/full1066/all36 remain client-pending. Existing Glow211502 producer,Survival39427 middle flight,WardstoneLINK4/sharedLINK2 and Stromkar client remain OPEN. User owns client tests/reset3 consumed.",
+  "diagnostic_archive": {
+    "date": "2026-10-31",
+    "fix_commit": "5d37de360",
+    "archive": "build-extractors/bin/Release/fixed/sharasdal-grash-healing-2026-10-31",
+    "files": 240,
+    "manifest_sha256": "faf66d4c20a84ad9381aa287cc4f6a989ee124762e254027fc021cfe657bb04d",
+    "verification": "Original source/destination/source/final SHA256 verified; paired failed research/inspection evidence included. Active Crashes empty/no report removed; mixed6090-byte DBErrors unchanged/not truncated. See main audit for native/client limits.",
+    "reviewed_failed_checks_and_passing_pair": {
+      "sharasdal-grash-gossip-context-2026-10-31": "Read-only research query used incompatible guessed column/table names. Matching GossipData.cpp and WaypointManager.cpp establish actual columns/table; context2 and final fullEOF data readback pass, no SQL update.",
+      "sharasdal-grash-pe-inspection-2026-10-31": "Menu helper is inlined with no separate symbol. Inspection2 records actual metadata; staged/final/canonical validator proves menu setter, getter and real raw packet dispatch in callers.",
+      "sharasdal-grash-staged-pe-2026-10-31": "Talk has two native overloads. Exact uint8/ObjectGuid signature inspected; staged-pe2/final/canonical selected PE pass."
+    },
+    "excluded_open_research": [
+      ".codex/sharasdal-heal-context-2026-10-31",
+      ".codex/sharasdal-heal-health-context-2026-10-31"
+    ]
+  }
 }
