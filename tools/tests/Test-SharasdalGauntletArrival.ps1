@@ -5,6 +5,13 @@ function Adapt([string]$s,[string]$a,[string]$b){if(!$s.Contains($a)){throw "Gau
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$ipath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$instance=(Get-Content "$repo/$ipath" -Raw).Replace("`r",'')
 $comparison=$source
+$comparisonInstance=$instance
+if($source.Contains('#include "sharasdal_erunak_upper.h"')){
+ & "$PSScriptRoot/Test-SharasdalErunakUpper.ps1" -ScopeOnly
+ if(!$?){throw 'Current upper intro source certificate failed'}
+ $comparisonInstance=(& git -C $repo show "b8f080c1f:$ipath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-upper comparison missing'}
+ foreach($header in @('Conversation.h','ObjectMgr.h','SpellMgr.h')){$comparison=$comparison.Replace("#include `"$header`"",'')}
+}
 if($source.Contains('// AI-owned intro timers')){
  & "$PSScriptRoot/Test-SharasdalErunakTimers.ps1" -ScopeOnly
  if(!$?){throw 'Actual Erunak timer certificate failed'}
@@ -29,7 +36,7 @@ $normal=Adapt $normal "            Scenario* gauntlet = GauntletWorld();`n      
 if(($normal -replace '\s','') -cne ($oldNPC -replace '\s','')){throw 'Other Lady death/combat/timers/wave spell/pose/summon fields changed'}
 $normal=$comparison.Replace($npc,$oldNPC).Replace('#include "Map.h"','')
 if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Other companions/Grash walls/Kraliss/acquisition/spells/registrations changed'}
-$normal=$instance.Replace('        ObjectGuid gauntletIllusion;','').Replace((Block $instance 'void RearmGauntlet('),'').Replace('            if (player) RearmGauntlet(player->GetGUID(), 40341);','').Replace('            if (creature->GetEntry() == 104856 && creature->GetDBTableGUIDLow() == 362091) gauntletIllusion = creature->GetGUID();','')
+$normal=$comparisonInstance.Replace('        ObjectGuid gauntletIllusion;','').Replace((Block $instance 'void RearmGauntlet('),'').Replace('            if (player) RearmGauntlet(player->GetGUID(), 40341);','').Replace('            if (creature->GetEntry() == 104856 && creature->GetDBTableGUIDLow() == 362091) gauntletIllusion = creature->GetGUID();','')
 $added=@'
             if (creature->GetEntry() == 105298 && creature->GetDBTableGUIDLow() == 362092)
             {

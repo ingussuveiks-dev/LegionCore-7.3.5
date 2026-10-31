@@ -1,7 +1,15 @@
-param([switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
+param([switch]$PrepareHost,[switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+$newUpper=$source.Contains('#include "sharasdal_erunak_upper.h"')
+if($newUpper){
+ & "$PSScriptRoot/Test-SharasdalErunakUpper.ps1" -ScopeOnly
+ if(!$?){throw 'Actual upper introduction certificate failed'}
+ # Freeze only this older lower-entry matrix after the strict new scope.
+ # The upper suite compiles the full current actor/both member headers.
+ $source=(& git -C $repo show "b8f080c1f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned retained lower-entry actor missing'}
+}
 $old=(& git -C $repo show "bf9292b2f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-entry source missing'}
 $npc=Block $source 'class npc_erunak_stonespeaker :';$oldNPC=Block $old 'class npc_erunak_stonespeaker :'
 $los=Block $npc 'void MoveInLineOfSight(';$oldLOS=Block $oldNPC 'void MoveInLineOfSight('
@@ -59,8 +67,10 @@ struct Player:Unit{
 $prefix=$prefix.Replace((Block $prefix 'struct Unit{'),$unit.Replace("`r",'')).Replace((Block $prefix 'struct Player:Unit{'),$player.Replace("`r",''))
 $prefix=$prefix.Replace('CreatureAI* AI(){return i_AI;}', 'uint32 entry=102826,mapId=1600;uint64 db=362063;uint32 GetEntry()const{return entry;}uint64 GetDBTableGUIDLow()const{return db;}uint32 GetMapId()const{return mapId;}CreatureAI* AI(){return i_AI;}')
 [IO.File]::WriteAllText("$out/TimerHost.inc",$prefix)
+if($PrepareHost){return}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($Baseline){'/DBASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi $mode /I`"$out`" `"$PSScriptRoot/SharasdalErunakEntryTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`ncd /d `"$out`"`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Actual lower Erunak entry regression failed'}
+if($newUpper){'Retained62 lower-entry matrix uses pinned b8f080c1f after strict upper scope; full current actor/both headers/native clock are compiled in the upper suite'}
 if($VerifyReleaseBinary){if(!$ReleaseDirectory){$ReleaseDirectory="$repo/build-extractors/bin/Release"};$previous=$env:PYTHONPATH;try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_sharasdal_erunak_entry_release.py" $ReleaseDirectory;if($LASTEXITCODE){throw 'Actual lower Erunak entry Release missing'}}finally{$env:PYTHONPATH=$previous}}

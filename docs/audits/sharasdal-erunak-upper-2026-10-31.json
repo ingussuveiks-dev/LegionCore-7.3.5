@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-31",
+  "scope": "Only real upper Erunak102826/362093 introduction and shared lower/upper original-player arrival/re-entry recovery. No SQL/new ScriptName or character/item/progression reset.",
+  "causes": [
+    "Previous height-only branch latched before validating original Player40341/native ascent, actual companion paths or successful conversation; invalid/early visitors, missing companion/path/factory could consume the intro permanently.",
+    "NPC-created1868 has no Player caster playback key in native Conversation::Update; native per-view expiry is independent. This focused caller now uses the eligible original Player. Other NPC-caster conversations remain OPEN.",
+    "Inactive grids may miss an absent tick, so lower and upper finite attempts need actual original-player OnPlayerEnter rearm. First LOS may occur during native loading/contact protection and needs a later real eligible presence probe."
+  ],
+  "local_sources": [
+    "Actual matching26972 Scenario/CriteriaTree/Criteria: native3/root47130, ascent47131/29795/92/50336 distinct from arrival47378/29661/92/50314. Actual208580 scene1247/package1604 and -208580->209992 native teleport/ascent retained.",
+    "Fresh native209312 sole effect0/type219/misc1868/implicit18, no spell visual or extra effects. World full EOF/empty stderr: no attached scripts/linked/13-or17 conditions/other206 producer. Exact upper Grash105298/362092, Erunak102826/362093, Adelee104853/362094 and two-row10993811 retained.",
+    "World04 RELEASED0254d9342e54808a3864ee931530e65c2de5eeec supplies complete native3961/3962/8701/8702/8703 chain, real Adelee0/Erunak1 speakers and47816ms native budget. Prior upper-voice audit preserves audio/decode/timing limitations.",
+    "Actual native lazy quest lifetime/readers, FunctionProcessor/EventMap/SafeLOS/current+suspended lifecycle/AIM_Destroy, path reader and Conversation GenerateDynamicFieldData/CanNeverSee2/Update. This repair required no new external behavior source."
+  ],
+  "implementation": [
+    "Bind full original Player GUID and weak40341 quest attempt only for actual upper map1600/scenario1066/native3 and shared live/contact/class7/active unturned40341/map+instance/phase/visibility/LOS20 policy. May bind before teleport effect2; movement waits for actual47131. No nearest replacement for a pending owner.",
+    "Require exact living upper companions and original suspended content AI where present; defer rooted/stunned/casting actors. Per-actor full GUID/path and speech masks retry only failed native10993811 installations; adopt installed path, preserve existing Talk8 and original offset policy. Acknowledged installation does not certify actual client arrival.",
+    "After all three installed paths, use AI-owned numeric5000ms delay. Native recovery then lower FunctionProcessor then lower delivery then upper delay precede arrival probes; old tick cannot age newly created work. Step4 can finish already-started presentation without requiring Grash after his next legitimate route; never start a late approach that overwrites stage4.",
+    "Use actual209312 SpellInfo and bool Conversation::CreateConversation1868 with original Player creator/authored NPC position. Verify both full native speaker GUIDs, re-resolve original Player and quest attempt/contact100 after factory, BindQuestObject40341, then latch. Remove successful-but-invalid map-owned objects; delete failed creation; finite30/1s diagnostics and real readiness/presence/re-entry recovery.",
+    "Append upper ownerF2/weak108/guides118+128/masks138+139/flags13a..13f/counters140..148 (actual factory150); retain lower/header and previous wound/queue offsets. Instance appends upperErunak464, retaining all earlier fields. Native OnPlayerEnter calls SetGUID40341 on exact lower/upper current and distinct suspended AI; full original GUID only rearms pending work, never grants progress.",
+    "Actual eligible map-player arrival probes recover loading guards after they settle. Lower continues each legitimate personal entry; upper requires a unique eligible candidate before initial binding, not a choice among unrelated players. All other actors, waypoint branches, native kill/loot/quest/scenario grants remain unchanged."
+  ],
+  "validation": {
+    "baseline": "Pinned b8f080c1f whole Erunak with actual native conversation payload/view/expiry routines reproduces invalid/early consumed intro, missing-Grash partial approach, failed factory lost retry and NPC-caster unexpired allocation. Explicit expected-broken counterfactual; no fabricated crash/client run.",
+    "current": "84 ASAN contexts compile full current Erunak/both member headers, actual quest lifetime/objective/native credit mutation branch, FunctionProcessor/EventMap/SafeLOS/AI lifecycle/destruction, native instance re-entry body/path reader and Conversation payload/per-view/expiry. Covers admission24 refusals/status1+3, all failed actor paths/replacement/once speech, cold guards, finite failures/readiness, missing metadata/factory/speaker identity, original full GUID/weak attempt/reentrant abandonment/new attempt, native3/4/5, Reset/destruction, current/suspended/current-null/alias, original re-entry and lower no-away/loading/pet-only rejection. Movement/registry/factory/group/scope services remain controlled; NativeVoice uses synthetic32bit viewer keys while controller and registry use full128bit GUIDs.",
+    "retained": "73 full current Lady/illusion+instance gauntlet cases and46 coupled current Brute/Grash native kill/owner/pet/guardian/group cases pass. Retained lower62 matrix uses pinned b8f080c1f only after strict upper scope certificate; current lower/shared re-entry and actual new lifecycle separately compiled/exercised in84. Initial62 upper matrix superseded by84.",
+    "data": "Fresh typed matching26972/read-onlyHotfix and full EOF/empty-stderr World checks pass: actual ascent distinct from arrival, sole209312/no visuals/extra producer, full5lines/47816ms/two speakers/exact roles/two-node path. No live data mutation.",
+    "release": "Final original-path scripts Release build and final link using original library inputs; separate A695C187 stage then full selected stage3+canonical upper/retained Sharasdal PE pass. Constructor now out of line and rbp allocation directly proved, not assumed absent. Mandatory ScepterLogin -VerifyReleaseBinary and full canonical native conversation/view/expiry+retained Talonclaw/Thasdorah chain pass. Offline four EXE/MAP backup/copy/hash, protected configs/certificates/DLLs retained. Binary revision11060617a precedes this focused commit; actual implementation verified directly.",
+    "runtime": "Own canonical PID19572 only: fresh ready, graceful server shutdown0/exit0, stderr empty/newDBErrors0/protected hashes unchanged/process gone. No user/unknown server stopped.",
+    "reviewed_failed_checks": {
+      "sharasdal-erunak-upper-pe-isolated-2026-10-31": "Inspector expected separate byte clears; actual MSVC word/qword stores now proved at their real widths. Passing isolated5/full stage3/canonical.",
+      "sharasdal-erunak-upper-pe-isolated2-2026-10-31": "Inspector required direct weak-control displacement110 in Complete; actual weak object is passed by address108 to the native helper. Accept/Cancel prove108+110; Complete proves native attempt calls. Passing isolated5/full stage3/canonical.",
+      "sharasdal-erunak-upper-pe-isolated3-2026-10-31": "Inspector assumed memory-operand GUID comparisons; actual native low/high getters return registers. Now require two calls to each getter and four checked 64-bit comparisons. Passing isolated5/full stage3/canonical.",
+      "sharasdal-erunak-upper-pe-isolated4-2026-10-31": "Actual lower tail transfer is conditional JE rather than CALL/JMP. Require exact362063 comparison and JE to selected lower implementation; upper JMP independently proved. Passing isolated5/full stage3/canonical.",
+      "sharasdal-erunak-upper-pe-stage-2026-10-31": "Larger instance constructor is out of line. Follow actual factory call/receiver and exact constructor primary-vtable install. Passing stage3/canonical.",
+      "sharasdal-erunak-upper-pe-stage2-2026-10-31": "Earlier Kraliss inspector hard-coded r14 zero register; unchanged entry now uses rbp. Shared checker proves actual zero source and no intervening alias writes for byte and qword stores; Lady checked likewise. Passing stage3/canonical.",
+      "sharasdal-erunak-upper-conversation-pe-2026-10-31": "Generic retained chain derives fixture path from release.parents[1]; private stage therefore lacked runtime-test/talonclaw-world-pickup/layout.tsv. Actual canonical path has the existing native fixture; full canonical conversation chain passes. No fixture or production behavior fabricated."
+    }
+  },
+  "canonical": {
+    "worldserver.exe": "a695c187f48a0bda4b271d4275e7434cd715d9c993ddc4c3347f382b80076dd9",
+    "worldserver.map": "f6d862e94f7d18cf34ff3fda0001428cb802aa532e8d3a91ee3b8438382b1d80",
+    "bnetserver.exe": "2ebd59ef76e8561ef6e053f2579396c98038bc6b479bcc49b11cc695bbf73f18",
+    "bnetserver.map": "e04ab2d777344600ce7ed67074c9f7509415772895da842c29213f5888b68309"
+  },
+  "diagnostics": "Before/after canonical+own crash/log snapshots for each suite/probe/build/link/PE/promotion/startup; inspect captured output/exit. No new or changed crash, appended DBErrors, unexplained server warning/error/assertion. Extracted native conversion/signedness/shadow/unused compiler warnings reviewed; final production build adds none. Active Crashes empty; mixed6090-byte shared101430/103151LINK2 DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 remains unresolved and untouched.",
+  "remaining": [
+    "Actual26972 client approach/path arrival/voices/5line timing/visibility/camera/loading/re-entry/full1066 and all36 remain user-client checks, not certified by controlled native tests or compilation.",
+    "Exactly-once presentation is per AI lifetime; no persisted server-restart reconstruction or generic all-NPC conversation expiry repair claimed.",
+    "Shared lower10993810 genuine final zero-based node5/208580 ascent producer and remaining waypoint admission/original claimant, Adelee Unit-owned5s callback, native210247 cleanup, living Lady1906 boarding/finisher source, wave lifetime/full chain remain OPEN.",
+    "Wardstone LINK4, Survival middle chain, Glow producer, Stromkar client/render and mixed sharedLINK2 remain OPEN. Reset3 consumed; no new character/item/AP/quest/checkpoint reset authorized."
+  ],
+  "next": "Continue shared Erunak waypoint role/path/original-claimant/lifetime review, then native210247/living Lady/waves and remaining all36 independent repairs. Do not stop at this focused fix."
+}

@@ -85,7 +85,9 @@ for at in entry_calls:
  assert any(x.mnemonic=='mov' and x.op_str=='rbx, qword ptr [rax + 0x80]' for x in entry[max(0,at-9):at])
  assert any(x.mnemonic=='mov' and x.op_str=='r8d, 0x9d95' for x in entry[max(0,at-5):at])
 def ai_register(displacement):
- loads=[x for x in entry if x.mnemonic=='mov' and x.operands[0].type==CS_OP_REG and x.operands[1].type==CS_OP_MEM and x.operands[1].mem.disp==displacement]
+ # Restrict this proof to the original Grash loop. A later, separately
+ # verified Erunak loop also loads the current/suspended AI pair.
+ loads=[x for x in entry[:entry_calls[-1]+1] if x.mnemonic=='mov' and x.operands[0].type==CS_OP_REG and x.operands[1].type==CS_OP_MEM and x.operands[1].mem.disp==displacement]
  assert len(loads)==1
  return loads[0].reg_name(loads[0].operands[0].reg)
 current,suspended=ai_register(0x9c0),ai_register(0x9c8)

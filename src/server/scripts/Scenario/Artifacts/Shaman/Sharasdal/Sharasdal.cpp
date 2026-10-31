@@ -17,6 +17,9 @@
 #include "WaypointMovementGenerator.h"
 #include "Group.h"
 #include "QuestData.h"
+#include "Conversation.h"
+#include "ObjectMgr.h"
+#include "SpellMgr.h"
 #include <map>
 
 namespace SharasdalCompanion
@@ -164,6 +167,7 @@ public:
         bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
         #include "sharasdal_erunak_entry.h"
+        #include "sharasdal_erunak_upper.h"
 
         void Reset() override
         {
@@ -197,6 +201,8 @@ public:
             // AI-owned intro timers retain the Unit clock while stunned or suspended.
             _functions.Update(diff);
             CompleteLowerEntries(diff);
+            CompleteUpperIntro(diff);
+            ProbeErunakArrival(); // New work starts after this tick's clocks.
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
@@ -276,26 +282,7 @@ public:
                 return;
             }
 
-            if (me->GetPositionZ() >= 795.0f && !_introDone && me->IsWithinDistInMap(who, 20.0f))
-            {
-                _introDone = true;
-                if (Creature* garsh = me->FindNearestCreature(105298, 30.0f, true))
-                {
-                    garsh->AI()->Talk(8);
-                    garsh->GetMotionMaster()->MovePath(10993811, false);
-                }
-                me->GetMotionMaster()->MovePath(10993811, false, irand(-5, 5), irand(-5, 5));
-                if (Creature* adel = me->FindNearestCreature(104853, 30.0f, true))
-                {
-                    adel->AI()->Talk(8);
-                    adel->GetMotionMaster()->MovePath(10993811, false, irand(-5, 5), irand(-5, 5));
-                }
-                _functions.AddDelayedEvent(5000, [this]() -> void
-                {
-                    me->CreateConversation(1868);
-                });
-
-            }
+            AcceptUpperIntro(who->ToPlayer());
         }
 
         void UpdateAI(uint32 diff) override

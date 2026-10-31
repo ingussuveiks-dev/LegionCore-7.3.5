@@ -574,6 +574,7 @@ public:
             }
             RearmGrashWall(player);
             if (player) RearmGauntlet(player->GetGUID(), 40341);
+            if (player) RearmErunak(player->GetGUID());
         }
 
         void UpdateGuard(uint32 diff)
@@ -631,6 +632,21 @@ public:
 
         ObjectGuid upperGrash;
         ObjectGuid gauntletIllusion;
+        ObjectGuid upperErunak;
+
+        void RearmErunak(ObjectGuid const& player)
+        {
+            for (ObjectGuid const& guid : {lowerErunak, upperErunak})
+                if (Creature* actor = instance->GetCreature(guid))
+                {
+                    if (actor->GetEntry() != 102826 ||
+                        (actor->GetDBTableGUIDLow() != 362063 && actor->GetDBTableGUIDLow() != 362093)) continue;
+                    auto current = actor->AI();
+                    auto suspended = actor->GetDisabledAI();
+                    if (current) current->SetGUID(player, 40341);
+                    if (suspended && suspended != current) suspended->SetGUID(player, 40341);
+                }
+        }
 
         void RearmGauntlet(ObjectGuid const& guid, int32 event)
         {
@@ -659,6 +675,7 @@ public:
         
         void OnCreatureCreate(Creature* creature) override
         {
+            if (creature->GetEntry() == 102826 && creature->GetDBTableGUIDLow() == 362093) upperErunak = creature->GetGUID();
             if (creature->GetEntry() == 104856 && creature->GetDBTableGUIDLow() == 362091) gauntletIllusion = creature->GetGUID();
             if (creature->GetEntry() == 105298 && creature->GetDBTableGUIDLow() == 362092)
             {

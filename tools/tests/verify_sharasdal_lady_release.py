@@ -70,12 +70,8 @@ assert sites(update,'?Eligible@SharasdalGuard@@')
 assert any(i<at for i in sites(update,'?Receipt@SharasdalLady@@')) and any(i>at for i in sites(update,'?Receipt@SharasdalLady@@'))
 assert any(x.mnemonic=='cmp' and x.op_str=='dword ptr [rsi + 0x440], 0x1e' for x in update)
 enter=instructions('?OnPlayerEnter'+suffix)
-rearm=[i for i,x in enumerate(enter) if x.mnemonic=='mov' and x.op_str=='byte ptr [rdi + 0x43b], r14b']
-assert len(rearm)==1
-at=rearm[0];zeros=[i for i,x in enumerate(enter[:at]) if x.mnemonic=='xor' and x.op_str=='r14d, r14d']
-assert zeros and not any(set(x.regs_access()[1])&{X86_REG_R14,X86_REG_R14D,X86_REG_R14W,X86_REG_R14B} for x in enter[zeros[-1]+1:at])
-assert any(x.mnemonic=='mov' and x.op_str=='qword ptr [rdi + 0x43c], r14' for x in enter)
-# The retained guard inspector proves r14 zero before these unchanged entry paths.
+from sharasdal_reentry_pe import verify_zero_rearm
+verify_zero_rearm(enter,0x43b,0x43c)
 tick=instructions('?Update'+suffix)
 assert sites(tick,'?UpdateLady'+suffix)[0]<sites(tick,'?UpdateKraliss'+suffix)[0]<sites(tick,'?UpdateBrutePresentation'+suffix)[0]
 for body in (record,recipient,update):

@@ -23,22 +23,32 @@ assert vtable[0x278//8]==n['symbol'](method('MoveInLineOfSight'))
 assert any(n['symbol'](factory) in rows(at) for at in refs('?AddSC_Sharasdal@@'))
 los=ins(method('MoveInLineOfSight'));life=ins(method('UpdateLifecycle'));update=ins(method('UpdateAI'))
 new_entry=any(name.startswith(method('AcceptLowerEntry')) for name in n['symbols'])
+new_upper=any(name.startswith(method('AcceptUpperIntro')) for name in n['symbols'])
 if new_entry:
  from sharasdal_erunak_entry_pe import verify
  verify(n)
  # The upper branch keeps the same selected5s callback. Lower3s now belongs
  # to BeginLowerIntro after its real per-player objective acknowledgement.
- assert len(sites(los,'?AddDelayedEvent@FunctionProcessor@@'))==1 and 5000 in values(los)
- assert sites(los,method('AcceptLowerEntry')) and not sites(los,'?KilledMonsterCredit@Player@@')
+ if new_upper:
+  from sharasdal_erunak_upper_pe import verify as verify_upper
+  verify_upper(n)
+  assert not sites(los,'?AddDelayedEvent@FunctionProcessor@@')
+ else:
+  assert len(sites(los,'?AddDelayedEvent@FunctionProcessor@@'))==1 and 5000 in values(los)
+ if not new_upper:assert sites(los,method('AcceptLowerEntry'))
+ assert not sites(los,'?KilledMonsterCredit@Player@@')
  assert not sites(los,'?AddDelayedEvent@Unit@@') and not sites(update,'?Update@FunctionProcessor@@')
  destructor=ins('??_Gnpc_erunak_stonespeakerAI@npc_erunak_stonespeaker@@')
  destroy,=sites(destructor,'??1FunctionProcessor@@')
- assert destructor[destroy-1].op_str=='rcx, [rsi + 0x60]'
+ assert destructor[destroy-1].op_str==('rcx, [rdi + 0x60]' if new_upper else 'rcx, [rsi + 0x60]')
  assert n['symbol']('??_Gnpc_erunak_stonespeakerAI@npc_erunak_stonespeaker@@')==vtable[0]
  callbacks=[name for name in n['symbols'] if name.startswith('?_Do_call@') and '??MoveInLineOfSight@npc_erunak_stonespeakerAI@' in name]
- upper,=callbacks;body=ins(upper)
- assert 1868 in values(body) and sites(body,'?CreateConversation@Unit@@')
- assert any(n['symbol'](upper) in rows(at)[:8] for at in refs(method('MoveInLineOfSight')))
+ if new_upper:
+  assert not callbacks
+ else:
+  upper,=callbacks;body=ins(upper)
+  assert 1868 in values(body) and sites(body,'?CreateConversation@Unit@@')
+  assert any(n['symbol'](upper) in rows(at)[:8] for at in refs(method('MoveInLineOfSight')))
 else:
  queue=sites(los,'?AddDelayedEvent@FunctionProcessor@@');assert len(queue)==2
  for at,delay in zip(queue,[5000,3000]):
@@ -73,4 +83,4 @@ else:
    assert any(x.op_str=='r8, qword ptr [rdx + 0x10]' for x in bodies[guard:])
   for forbidden in ('?AddItem@Player@@','?CompleteQuest@Player@@','?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?AddDelayedEvent@Unit@@'):
    assert not sites(bodies,forbidden)
-print('PASS selected Erunak factory/registration/SafeLOS278/lifecycle110/destructor: both3s/5s captures use owned FunctionProcessor60, exact wound recovery then once-per-lifecycle diff, no UpdateAI double clock, native AI destruction clears its queue, selected real callback vtables retain1868 and guarded current-AI102792 attack. Full gauntlet/upper-wall/acquisition/Lady/Kraliss/wound PE retained; upper intro admission/client/full1066 remain separate.')
+print('PASS selected Erunak factory/registration/SafeLOS278/lifecycle110/destructor: lower3s owned FunctionProcessor60; upper5s owned numeric lifecycle when present, otherwise selected legacy owned callback. Exact wound recovery then once-per-lifecycle clocks, no UpdateAI double clock; native AI destruction clears owned work. Full gauntlet/upper-wall/acquisition/Lady/Kraliss/wound PE retained; actual client/full1066 remain separate.')

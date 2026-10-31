@@ -18,6 +18,10 @@ def floats(n,body):
     except (ValueError,struct.error):pass
  return result
 def verify_lifecycle(n):
+ if any(name.startswith(method('AcceptUpperIntro')) for name in n['symbols']):
+  from sharasdal_erunak_upper_pe import verify_lifecycle as upper_lifecycle
+  upper_lifecycle(n)
+  return
  life=n['instructions'](method('UpdateLifecycle'))
  assert sites(n,life,'?Recover@SharasdalCompanion@@')==[8]
  assert sites(n,life,'?Update@FunctionProcessor@@')==[11]

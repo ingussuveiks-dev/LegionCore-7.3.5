@@ -5,6 +5,7 @@ import runpy
 import struct
 from capstone import CS_OP_IMM, CS_OP_MEM, CS_OP_REG
 from capstone.x86_const import X86_REG_RIP, X86_REG_R14, X86_REG_R14D, X86_REG_R14W, X86_REG_R14B
+from capstone.x86_const import X86_REG_RBP, X86_REG_EBP, X86_REG_BP, X86_REG_BPL
 
 retained=runpy.run_path(str(Path(__file__).with_name('verify_sharasdal_rescue_release.py')))
 n=retained['n']; instructions=n['instructions']; sites=retained['sites']; values=retained['values']
@@ -13,7 +14,17 @@ factory=instructions('?GetInstanceScript@instance_sharasdal@@')
 table_pattern=re.compile(r'\s+\w+:\w+\s+\?\?_7instance_sharasdal_InstanceMapScript@instance_sharasdal@@6B@\s+([0-9a-fA-F]{16})')
 tables=[int(m[1],16) for line in (n['args'].release/'worldserver.map').read_text(errors='replace').splitlines() if (m:=table_pattern.match(line))]
 table,=tables
-assert table in retained['references'](factory)
+if table not in retained['references'](factory):
+    # The enlarged instance is now constructed out of line. Follow the
+    # selected factory's actual call and prove its constructor installs this
+    # same table on the allocated object, rather than accepting any reference.
+    ctor='??0instance_sharasdal_InstanceMapScript@instance_sharasdal@@'
+    at,=sites(factory,ctor)
+    assert factory[at-1].op_str=='rcx, rax' and factory[at-2].op_str=='rdx, rbx'
+    body=instructions(ctor)
+    install,=[i for i,x in enumerate(body) if x.mnemonic=='lea' and any(o.type==CS_OP_MEM and o.mem.base==X86_REG_RIP and x.address+x.size+o.mem.disp==table for o in x.operands)]
+    assert body[install].op_str.startswith('rax, ') and body[install+1].op_str=='qword ptr [rbx], rax'
+    assert any(x.op_str=='rbx, rcx' for x in body[:install])
 slots=struct.unpack_from('<128Q',n['binary'],n['offset'](table))
 selected={}
 for method in ('CreatureDies','OnPlayerEnter','Update'):
@@ -64,9 +75,11 @@ clears=[]
 for i,x in enumerate(enter):
     if x.mnemonic!='mov' or x.operands[0].type!=CS_OP_MEM or x.operands[0].mem.disp!=0x31a:continue
     if x.operands[1].type==CS_OP_IMM and x.operands[1].imm==0:clears.append(i);continue
-    if x.operands[1].type==CS_OP_REG and x.operands[1].reg==X86_REG_R14B:
-        zeros=[j for j,y in enumerate(enter[:i]) if y.mnemonic=='xor' and y.op_str=='r14d, r14d']
-        if zeros and not any(set(y.regs_access()[1])&{X86_REG_R14,X86_REG_R14D,X86_REG_R14W,X86_REG_R14B} for y in enter[zeros[-1]+1:i]):clears.append(i)
+    for byte,zero,aliases in [(X86_REG_R14B,'r14d, r14d',{X86_REG_R14,X86_REG_R14D,X86_REG_R14W,X86_REG_R14B}),
+                              (X86_REG_BPL,'ebp, ebp',{X86_REG_RBP,X86_REG_EBP,X86_REG_BP,X86_REG_BPL})]:
+        if x.operands[1].type==CS_OP_REG and x.operands[1].reg==byte:
+            zeros=[j for j,y in enumerate(enter[:i]) if y.mnemonic=='xor' and y.op_str==zero]
+            if zeros and not any(set(y.regs_access()[1])&aliases for y in enter[zeros[-1]+1:i]):clears.append(i)
 assert clears, 'Original guard exhausted flag must be cleared by actual zero dataflow on re-entry'
 movement=instructions('?MovementInform@npc_erunak_stonespeakerAI@npc_erunak_stonespeaker@@')
 assert not sites(movement,'?UpdateAchievementCriteria@Player@@') and 49957 not in values(movement)
