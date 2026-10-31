@@ -101,6 +101,42 @@ namespace SharasdalKraliss
 }
 
 
+namespace SharasdalLady
+{
+    bool Receipt(Scenario* scenario)
+    {
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto found = progress->find(47380);
+        return found != progress->end() && found->second.Counter;
+    }
+
+    Player* Recipient(Creature* defeated, Unit* killer)
+    {
+        if (Player* tagged = defeated->GetLootRecipient())
+            if (SharasdalGuard::Eligible(tagged, defeated->GetMap()) && tagged->InSamePhase(defeated) &&
+                tagged->IsWithinDistInMap(defeated, 100.0f)) return tagged;
+        if (!killer || killer->GetMap() != defeated->GetMap() || !killer->InSamePhase(defeated)) return nullptr;
+        if (Player* owner = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
+            return SharasdalGuard::Eligible(owner, defeated->GetMap()) && owner->InSamePhase(defeated) &&
+                owner->IsWithinDistInMap(defeated, 100.0f) ? owner : nullptr;
+        Creature* ally = killer->ToCreature();
+        if (killer->GetCharmerOrOwnerGUID() || !ally ||
+            !((ally->GetEntry() == 102826 && ally->GetDBTableGUIDLow() == 362093) ||
+              (ally->GetEntry() == 105298 && ally->GetDBTableGUIDLow() == 362092) ||
+              (ally->GetEntry() == 104853 && ally->GetDBTableGUIDLow() == 362094))) return nullptr;
+        Player* recipient = nullptr;
+        for (auto const& reference : defeated->GetMap()->GetPlayers())
+            if (Player* player = reference.getSource())
+                if (SharasdalGuard::Eligible(player, defeated->GetMap()) && player->InSamePhase(defeated) &&
+                    player->IsWithinDistInMap(defeated, 100.0f))
+                {
+                    if (recipient && !recipient->IsInSameGroupWith(player)) return nullptr;
+                    recipient = player;
+                }
+        return recipient;
+    }
+}
+
 class instance_sharasdal : public InstanceMapScript
 {
 public:
@@ -201,6 +237,75 @@ public:
                 {
                     kralissExhausted = true;
                     TC_LOG_WARN("scripts", "Sharasdal Kraliss victory could not reach its original recipient/native criterion; retry on re-entry");
+                }
+            }
+        }
+
+        ObjectGuid ladyRecipient;
+        std::weak_ptr<uint8> ladyAttempt;
+        bool ladySeen = false, ladyPending = false, ladyBusy = false, ladyExhausted = false;
+        uint32 ladyRetry = 0, ladyTries = 0;
+
+        void RecordLadyDeath(Creature* creature, Unit* killer)
+        {
+            if (ladySeen || !creature || creature->GetEntry() != 104856 || creature->GetDBTableGUIDLow() != 362095 ||
+                creature->GetMap() != instance || !creature->IsInWorld() || creature->IsPreDelete() || creature->IsAlive()) return;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1066 || scenario->GetCurrentStep() > 4 || SharasdalLady::Receipt(scenario)) return;
+            ladySeen = true;
+            Player* player = SharasdalLady::Recipient(creature, killer);
+            QuestStatusData* status = player ? player->getQuestStatus(40341) : nullptr;
+            if (!status)
+            {
+                TC_LOG_WARN("scripts", "Sharasdal Lady death has no eligible original player/owner or known companion recipient");
+                return;
+            }
+            player->AddQuestDelayedEvent(40341, 0, []() {});
+            ladyRecipient = player->GetGUID();
+            ladyAttempt = status->ScriptLifetime;
+            ladyPending = true;
+            ladyExhausted = false;
+            ladyRetry = ladyTries = 0;
+            UpdateLady(0);
+        }
+
+        void UpdateLady(uint32 diff)
+        {
+            if (!ladyPending || ladyBusy || ladyExhausted) return;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1066) return;
+            if (SharasdalLady::Receipt(scenario)) { ladyPending = false; return; }
+            Player* player = nullptr;
+            for (auto const& reference : instance->GetPlayers())
+                if (reference.getSource() && reference.getSource()->GetGUID() == ladyRecipient) player = reference.getSource();
+            QuestStatusData* status = player ? player->getQuestStatus(40341) : nullptr;
+            if (ladyAttempt.expired() || (player && (!status || status->ScriptLifetime != ladyAttempt.lock() ||
+                player->GetQuestRewardStatus(40341) ||
+                (player->GetQuestStatus(40341) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40341) != QUEST_STATUS_COMPLETE))))
+            {
+                ladyPending = false;
+                TC_LOG_WARN("scripts", "Sharasdal Lady victory cancelled after its original quest attempt ended");
+                return;
+            }
+            if (scenario->GetCurrentStep() < 4) return;
+            if (scenario->GetCurrentStep() != 4)
+            {
+                ladyPending = false;
+                TC_LOG_WARN("scripts", "Sharasdal Lady victory has no accepted criterion after its stage ended");
+                return;
+            }
+            if (ladyRetry > diff) { ladyRetry -= diff; return; }
+            struct BusyGuard { bool& flag; ~BusyGuard() { flag = false; } } guard{ladyBusy};
+            ladyBusy = true;
+            if (SharasdalGuard::Eligible(player, instance)) player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50397);
+            if (SharasdalLady::Receipt(scenario)) ladyPending = false;
+            else
+            {
+                ladyRetry = 1000;
+                if (++ladyTries >= 30)
+                {
+                    ladyExhausted = true;
+                    TC_LOG_WARN("scripts", "Sharasdal Lady victory could not reach its original recipient/native criterion; retry on re-entry");
                 }
             }
         }
@@ -385,6 +490,11 @@ public:
 
         void CreatureDies(Creature* creature, Unit* killer) override
         {
+            if (creature && creature->GetEntry() == 104856)
+            {
+                RecordLadyDeath(creature, killer);
+                return;
+            }
             if (creature && creature->GetEntry() == 102839)
             {
                 RecordKralissDeath(creature, killer);
@@ -430,6 +540,11 @@ public:
 
         void OnPlayerEnter(Player* player) override
         {
+            if (ladyPending && player && player->GetGUID() == ladyRecipient)
+            {
+                ladyExhausted = false;
+                ladyRetry = ladyTries = 0;
+            }
             if (kralissPending && player && player->GetGUID() == kralissRecipient)
             {
                 kralissExhausted = false;
@@ -544,6 +659,7 @@ public:
          
         void Update(uint32 diff) override
         {
+            UpdateLady(diff);
             UpdateKraliss(diff);
             UpdateBrutePresentation(diff);
             UpdateBrutes(diff);

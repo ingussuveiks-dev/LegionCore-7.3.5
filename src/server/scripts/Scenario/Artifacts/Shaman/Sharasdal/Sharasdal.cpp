@@ -1222,11 +1222,10 @@ public:
             events.RescheduleEvent(EVENT_4, 25000); // 209983 + script
         }
 
-        void JustDied(Unit* who) override
+        void JustDied(Unit* /*who*/) override
         {
-            if (Player* targ = me->FindNearestPlayer(100.0f))
-                targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50397);
-            who->CreateConversation(1923);
+            // Native instance Kill dispatch retains only the real boss victory.
+            // Conversation1923 belongs to the later artifact acquisition.
         }
 
 

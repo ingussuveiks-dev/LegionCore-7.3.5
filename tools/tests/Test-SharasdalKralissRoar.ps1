@@ -3,6 +3,11 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+if((Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp" -Raw).Contains('namespace SharasdalLady')){
+ & "$PSScriptRoot/Test-SharasdalLady.ps1" -ScopeOnly
+ if(!$?){throw 'Current Lady source certificate failed'}
+ $source=(& git -C $repo show "d7610f9d1:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-Lady roar scope missing'}
+}
 $old=(& git -C $repo show "267d273dc:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned native roar source missing'}
 $npc=Block $source 'class npc_kraliss :';$oldNPC=Block $old 'class npc_kraliss :'
 $legacy=@'

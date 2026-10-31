@@ -3,9 +3,16 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp';$actorPath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$actor=(Get-Content "$repo/$actorPath" -Raw).Replace("`r",'')
+$scopeSource=$source;$scopeActor=$actor
+if($source.Contains('namespace SharasdalLady')){
+ & "$PSScriptRoot/Test-SharasdalLady.ps1" -ScopeOnly
+ if(!$?){throw 'Current Lady source certificate failed'}
+ $scopeSource=(& git -C $repo show "d7610f9d1:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-Lady instance missing'}
+ $scopeActor=(& git -C $repo show "d7610f9d1:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-Lady actor missing'}
+}
 $old=(& git -C $repo show "553a4c55a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned instance before Kraliss ownership missing'}
 $oldActor=(& git -C $repo show "553a4c55a:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned Kraliss actor missing'}
-$normal=$source.Replace((Block $source 'namespace SharasdalKraliss'),'')
+$normal=$scopeSource.Replace((Block $scopeSource 'namespace SharasdalKraliss'),'')
 $start=$normal.IndexOf('        ObjectGuid kralissRecipient;');$end=$normal.IndexOf('        void BeginBrutes(',$start)
 if($start -lt 0 -or $end -lt $start){throw 'Kraliss member/method boundaries changed'};$normal=$normal.Remove($start,$end-$start)
 $deathPrefix=@'
@@ -35,13 +42,15 @@ if($currentNPC.Contains('events.RescheduleEvent(EVENT_3, 1000);')){
  $roarBase=(& git -C $repo show "267d273dc:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-roar actor missing'}
  $normalNPC=Block $roarBase 'class npc_kraliss :'
 }
-$normalActor=$actor.Replace($currentNPC,$normalNPC.Replace((Block $normalNPC 'void JustDied('),(Block $oldNPC 'void JustDied(')))
+$normalActor=$scopeActor.Replace($currentNPC,$normalNPC.Replace((Block $normalNPC 'void JustDied('),(Block $oldNPC 'void JustDied(')))
 if(($normalActor -replace '\s','') -cne ($oldActor -replace '\s','')){throw 'Other Kraliss combat/cast/Reset/actor or Lady/outro/pickup changed'}
 if($ScopeOnly){'PASS exact real Kraliss instance death/owner/quest/native credit/retry and removal of proximity credit; prior wall/Brute/guard/actors/boss combat/Lady/outro/pickup retained';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sharasdal-kraliss"}
 $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
-[IO.File]::WriteAllText("$out/Policy.inc",(Block $source 'namespace SharasdalGuard')+(Block $source 'namespace SharasdalBrutes')+(Block $source 'namespace SharasdalKraliss'))
+$policy=(Block $source 'namespace SharasdalGuard')+(Block $source 'namespace SharasdalBrutes')+(Block $source 'namespace SharasdalKraliss')
+if($source.Contains('namespace SharasdalLady')){$policy+=(Block $source 'namespace SharasdalLady')}
+[IO.File]::WriteAllText("$out/Policy.inc",$policy)
 [IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldNPC}else{$currentNPC})+';')
 [IO.File]::WriteAllText("$out/Instance.inc",(Block $(if($Baseline){$old}else{$source}) 'struct instance_sharasdal_InstanceMapScript :')+';')
 $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
