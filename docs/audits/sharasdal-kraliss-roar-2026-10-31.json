@@ -28,5 +28,15 @@
     "Client roar speech/castbar/audio/timing, Wreck target/dash/visuals and full fight remain user-owned. No general spell/casting/AI change.",
     "Continue OPEN Lady362095 versus illusion362091/native50397 owner/null/surrender and1906 defeat conversation; then249342 actual native loot/storage/full bags/equip209685/scene209684/outro1923/return. Detailed data and all80 reviewed final1s frames recorded in sharasdal-final-boss-pickup-research-2026-10-31.json. No guessed dialogue duration/clone/progress repair was deployed.",
     "Original companion route interruptions/final POINT wall/gossip and whole1066/all36/client remain OPEN, as do Glow211502/Survival39427 middle/WardstoneLINK4/sharedLINK2/Stromkar client. Reset3 consumed; no reset."
-  ]
+  ],
+  "fix_commit": "ea3da7f1d",
+  "diagnostic_archive": {
+    "fix_commit": "ea3da7f1d",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-kraliss-roar-2026-10-31",
+    "files": 175,
+    "manifest_sha256": "32b4887740c9e2173ad22adcf19afab523c50ee4bf69b8a894134b61caadefe4",
+    "verification": "Source/destination/source/final SHA256 verified; canonical6090-byte mixed LINK2 hash/length/timestamp and empty Crashes unchanged. No active file removed or truncated; no task servers retained.",
+    "failures_paired": {},
+    "excluded_open": "Mixed open final-boss/pickup/dialogue/video research, earlier original routes and mixed active DBErrors excluded. Only roar-lifetime closed diagnostics archived. Source video/contact sheets stay in ignored .codex/sharasdal-reference, not a whole-chain fix certificate."
+  }
 }
