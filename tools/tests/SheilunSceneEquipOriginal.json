@@ -1,0 +1,14 @@
+{
+  "spell_scene": [
+    {
+      "SceneScriptPackageID": 1557,
+      "MiscValue": 1192,
+      "PlaybackFlags": 4,
+      "CustomDuration": 0,
+      "ScriptName": null,
+      "comment": ""
+    }
+  ],
+  "spell_scene_event": [],
+  "conditions": []
+}

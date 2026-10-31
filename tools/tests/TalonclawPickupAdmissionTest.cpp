@@ -191,15 +191,16 @@ int main(int argc, char** argv) {
     bool twinblades = argc == 4 && std::string(argv[2]).find("twinblades-") == 0;
     bool brewmaster = argc == 4 && std::string(argv[2]).find("brewmaster-") == 0;
     bool windwalker = argc == 4 && std::string(argv[2]).find("windwalker-") == 0;
+    bool mistweaver = argc == 4 && std::string(argv[2]).find("mistweaver-") == 0;
     bool blood = argc == 4 && std::string(argv[2]).find("blood-") == 0;
     bool frost = argc == 4 && std::string(argv[2]).find("frost-") == 0;
     bool fire = argc == 4 && std::string(argv[2]).find("fire-") == 0;
     bool frostCast = frost && std::string(argv[2]) == "frost-cast";
     bool fireCast = fire && std::string(argv[2]) == "fire-cast";
     bool bloodCast = blood && std::string(argv[2]) == "blood-cast";
-    bool monkCast = (brewmaster || windwalker) && std::string(argv[2]).find("-cast") != std::string::npos;
+    bool monkCast = (brewmaster || windwalker || mistweaver) && std::string(argv[2]).find("-cast") != std::string::npos;
     bool sceneCast = feralCast || monkCast || bloodCast || frostCast || fireCast;
-    bool guardian = fire || frost || blood || brewmaster || windwalker || twinblades || restoration || feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
+    bool guardian = fire || frost || blood || brewmaster || windwalker || mistweaver || twinblades || restoration || feral || (argc == 4 && std::string(argv[2]).find("guardian-") == 0);
     bool guardianRoot = guardian && !sceneCast && std::string(argv[2]).find("-loot") == std::string::npos;
     bool guardianGossip = guardian && std::string(argv[2]).find("-gossip") != std::string::npos;
     if (guardian) {
@@ -221,12 +222,12 @@ int main(int argc, char** argv) {
             lastStage = guardianRoot ? 5 : 4; expectedItem = 127829; expectedClassMask = 2048;
             eventEntry = 251878; scenarioManager = {};
         }
-        if (brewmaster || windwalker) {
-            expectedQuest = brewmaster ? 42765 : 40570; expectedMap = brewmaster ? 1625 : 1528;
-            expectedScenario = brewmaster ? 1137 : 983; firstStage = brewmaster ? 7 : 6;
-            lastStage = firstStage + (guardianRoot ? 1 : 0); expectedItem = brewmaster ? 128938 : 128940;
-            expectedClassMask = 512; eventEntry = brewmaster ? 251605 : 248086; scenarioManager = {};
-            if (monkCast) { playersOwnArtifactByDefault = true; lastStage = firstStage + 1; expectedScene = brewmaster ? 1342 : 1160; }
+        if (brewmaster || windwalker || mistweaver) {
+            expectedQuest = mistweaver ? 41003 : brewmaster ? 42765 : 40570; expectedMap = mistweaver ? 1541 : brewmaster ? 1625 : 1528;
+            expectedScenario = mistweaver ? 1007 : brewmaster ? 1137 : 983; firstStage = mistweaver ? 4 : brewmaster ? 7 : 6;
+            lastStage = firstStage + (guardianRoot ? 1 : 0); expectedItem = mistweaver ? 128937 : brewmaster ? 128938 : 128940;
+            expectedClassMask = 512; eventEntry = mistweaver ? 256913 : brewmaster ? 251605 : 248086; scenarioManager = {};
+            if (monkCast) { playersOwnArtifactByDefault = true; lastStage = firstStage + 1; expectedScene = mistweaver ? 1192 : brewmaster ? 1342 : 1160; }
         }
         if (blood) {
             expectedQuest = 40740; expectedMap = 1489; expectedScenario = 940; firstStage = 9;

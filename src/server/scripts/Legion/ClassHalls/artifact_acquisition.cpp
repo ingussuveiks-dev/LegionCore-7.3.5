@@ -1974,7 +1974,8 @@ struct Pickup
 
 Pickup const Pickups[] = {
     {1160, 1524, 1528, 983, 6, 40570, 128940},
-    {1342, 1668, 1625, 1137, 7, 42765, 128938}
+    {1342, 1668, 1625, 1137, 7, 42765, 128938},
+    {1192, 1557, 1541, 1007, 4, 41003, 128937}
 };
 
 // Scene-specific admission is independent of ordinary native equip-spell use.

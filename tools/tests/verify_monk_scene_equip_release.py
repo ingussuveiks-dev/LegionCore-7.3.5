@@ -1,4 +1,4 @@
-"""Verify the registered Monk scene gate and both path records in linked PE."""
+"""Verify the registered Monk scene gate and all three path records in linked PE."""
 import bisect
 from pathlib import Path
 import re
@@ -41,8 +41,9 @@ assert vtable in refs(constructor),'Constructor does not install the tested scen
 assert n['symbol'](constructor) in n['calls'](registration) or vtable in refs(registration),'Scene gate is not constructed by AddSC'
 assert n['symbol'](handler) in n['calls'](wrapper) or n['symbol'](wrapper)==n['symbol'](handler)
 paths=data_symbol('?Pickups@MonkArtifactScene@@')
-assert struct.unpack_from('<14I',n['binary'],n['offset'](paths))==(1160,1524,1528,983,6,40570,128940,1342,1668,1625,1137,7,42765,128938)
-assert any(paths<=v<paths+56 for v in refs(handler)),'Gate does not consume its two native path records'
+assert struct.unpack_from('<21I',n['binary'],n['offset'](paths))==(1160,1524,1528,983,6,40570,128940,1342,1668,1625,1137,7,42765,128938,1192,1557,1541,1007,4,41003,128937)
+assert {paths,paths+84}<=refs(handler),'Gate does not traverse all three native path records'
+assert any(i.mnemonic=='add' and len(i.operands)==2 and i.operands[1].type==CS_OP_IMM and i.operands[1].imm==28 for i in ins(handler)), 'Native seven-field path traversal stride differs'
 calls=n['calls'](handler)
 for target in ('?HasSceneStatus@Player@@','?HasItemCount@Player@@','?GetScenario@ScenarioMgr@@'):
     assert n['symbol'](target) in calls,('Missing actual admission consumer',target)
@@ -59,4 +60,4 @@ assert len(sites)==1
 window=body[max(0,sites[0]-20):sites[0]]
 assert any(i.mnemonic=='xor' and len(i.operands)==2 and all(o.type==CS_OP_REG and o.reg==X86_REG_R9D for o in i.operands) or i.mnemonic=='mov' and len(i.operands)==2 and i.operands[0].type==CS_OP_REG and i.operands[0].reg in (X86_REG_R9D,X86_REG_R9B) and i.operands[1].type==CS_OP_IMM and i.operands[1].imm==0 for i in window),'Inventory check no longer excludes bank-only copies'
 assert b'scene_monk_artifact_equipment' in n['binary']
-print('PASS actual registered Monk scene constructor/vtable/OnTrigger consumes both exact path records, real completed-scene/quest/scenario and inventory-only item checks; gate itself casts/grants/transfers nothing. Native host verifies invalid/stale/context branches; SQL callback and client behavior are separate checks.')
+print('PASS actual registered Monk scene constructor/vtable/OnTrigger consumes all three exact path records, real completed-scene/quest/scenario and inventory-only item checks; gate itself casts/grants/transfers nothing. Native host verifies invalid/stale/context branches; SQL callback and client behavior are separate checks.')

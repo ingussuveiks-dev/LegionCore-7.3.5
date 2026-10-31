@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-31",
+  "status": "Guarded native Sheilun scene1192 real equipment callback deployed; physical pickup/return/full chain/client remain OPEN",
+  "fix_commit": "Implementation commit containing this audit; resolve exact hash from Git history.",
+  "cause": "Native package1557 equips only its visual clone. World scene1192 had ScriptNameNULL and no terminal event, so202438/native effect249 on existing128937 was disconnected. Old Aspersius shortcut creates an item/scene but never supplies this actual equipment callback. Original physical source/grants/return are separate unresolved issues.",
+  "change": [
+    "Append1192/1557/map1541/scenario1007/first4/quest41003/item128937 to the existing registered Monk scene gate; retain both existing Monk records. Complete status, actual Player/world/contact/alive/no teleport/class10/map/active un-rewarded incomplete-or-complete quest/inventory-only artifact/live matching instance and stage4..5 are all required. No new script constructor, queued pointer, raw item/credit/scenario grant or transfer.",
+    "World06 changes only1192 ScriptName, adds terminal complete->202438/MonsterCredit0 and33 source17 predicates. Preserve package1557/flags4/duration0. Keep ordinary native202438 use outside1541 via explicit ElseGroup0 while separate C++ scene gate refuses late callbacks there. Four AND groups admit stages4/5 and incomplete/complete un-rewarded quest with actual item/class/map/alive/completed scene. Existing source17 native validation and equip implementation retained.",
+    "Native sceneComplete trigger occurs before EndScene and is intentionally insufficient for real equipment. The core terminal complete/cancel dispatch sets completed status and closes actual scene instance IDs, providing at most one new cast request. Failed native cast remains a failure; only a genuinely new scene may make another request. No forced swap/success or added retry timer."
+  ],
+  "sequence_and_limits": [
+    "This focus follows existing202435->202437/effect198->1192; native core terminal callback now requests202438 effect249 existing-item equip and unchanged225893 ability push. flags4/effect198 is tested without inventing an ACTIVATE_SCENE aura. Independent real256913 source, disconnected Data1 loot link, source/visual102479/102505 position and native Tak-Tak202828 boarding/return remain OPEN.",
+    "Only current eligible scene context is authorized; the callback does not serialize quest-at-launch identity or award progression. Abandoned/rewarded/missing quest at delivery is denied; an eligible reaccepted quest with an already owned item is governed by current admission. New scene IDs supersede old IDs, and old map/instance/scene context is denied. There is no repair of original boss shortcuts in this commit.",
+    "No actual client rendering, swap/offhand/full-bag UI behavior, native ability push appearance, canceled playback UX or whole quest traversal observed. Cast/equip endpoints in this scene host are controlled. Shared native EffectForceEquipItem remains unchanged and still owns real equip feasibility/error handling. Pet/guardian kills, group/faction progression belong to the separately OPEN death/physical source path; this Player-session callback awards no kill/quest/scenario credit."
+  ],
+  "validation": [
+    "New full-schema3table pinned-original TEMP migration: exact1 script binding/1 callback/33 predicate values, unchanged native package/flags/duration, idempotence,20 custom/partial refusal variants with complete before/after equality even under --force. Fully drained native SQL files preserve stdout/stderr. Live expected equality and updater RELEASED/LF-SHA1 pass after canonical restart.",
+    "MSVC ASan compiles current actual registered guard/Active helper/native Player scene lifecycle and packet handlers, plus actual native condition cases/ElseGroup evaluator using real generated33 rows. Original missing-mapping baseline and unguarded-late-map counterfactual paired with fixed requests/rejections. Actual flags4 non-aura launch, early sceneComplete versus terminal completion, ordinary complete/cancel once,15 invalid delivery contexts,65 stage/status states, unknown/stale/replaced/reentrant IDs, inventory/bank/quest/context checks and failed-cast/new-scene retry pass. Controlled session/world/cast endpoints are not integrated client traversal.",
+    "Retained two Monk flags21 scene ASan and both33-row native casts/full live World06 equality pass. Existing fixture extension adds a third explicit Monk profile and flags-aware non-aura start without changing old defaults.",
+    "Fresh typed26972 DB2/readonly Hotfix catalog confirms1192/202435/202437/202438 native relationships. Earlier full package1557/child156/17script text read and historical video limits are recorded separately in sheilun-acquisition-research-2026-10-31.json/bfafbf797; no video evidence claimed for actual local client.",
+    "Original scripts.vcxproj Release with BuildProjectReferences=false and no OutDir override rebuilt scripts.lib. Stage relink reads original final-link LIB inputs and preserves old canonical hashes. Actual linked PE verifies registered constructor/vtable/OnTrigger->Denied, all21 native path fields, start+84 loop bound and28-byte stride, real scene/quest/scenario/inventory consumers and bank=false. Selected Sheilun wounds/opening/native damage/heal, full shared NPC Conversation and retained Sharasdal chain PE pass on exact staged bytes; four-file promotion and matching canonical hashes verified. Canonical public scene PE and mandatory ScepterLogin VerifyReleaseBinary pass.",
+    "Owned21092 canonical updater reaches fresh ready, server shutdown0/exit0, stderr/newDBErrors0, protected configuration/certificate hashes unchanged and process gone. New binding loaded without missing ScriptName warnings. No user/unknown server stopped; no task background server left running."
+  ],
+  "development": "First staged PE command incorrectly supplied --release to the existing positional CLI. It exited2 before inspecting anything; corrected public runner and reran successfully with separate preserved diagnostics. This was a tool invocation failure, not a server fix/baseline success. Production compile/link have no new warnings; existing extracted SmartEventConditions C4244 and Scepter signed/narrowing warnings remain visible and reviewed, not suppressed.",
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_31_06_sheilun_scene_equip.sql",
+    "lf_sha1": "404d3888ee2aa75fea0270d60a984fd354d895e9",
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "ecaa2d24d6d7d05ae56c2083ee597797df6e8df4fdc8806e5d4bcfd89a60dbf6",
+      "worldserver.map": "6b2516ad1445ddde4bd5b9f0c99051d820cb0098cdff123b61b1ba1a83da94b7",
+      "bnetserver.exe": "25f04eed06bd29cbdfeda7913e8c40ad9f6418ff842e87e5b36b3f0991bc0edd",
+      "bnetserver.map": "a9af36545f397657ad99311be61464fc5ad669a380c2cbe7250c2c2982d6e89b"
+    },
+    "backup": ".codex/release-before-sheilun-scene-2026-10-31/manifest.json",
+    "stage": ".codex/sheilun-scene-release",
+    "owned_pid": 21092
+  },
+  "diagnostics": "All native/TEMP/catalog/build/link/PE/promotion/startup/Scepter tests have canonical+own pre/post crash/log evidence with inspected completion/status/stdout/stderr. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes empty. Mixed6090-byte unresolved101430/103151 LINK2 SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged; not truncated/archived as fixed. No character/item/quest edit or reset.",
+  "evidence": [
+    ".codex/sheilun-scene-data1-open-2026-10-31",
+    ".codex/sheilun-scene-native1-open-2026-10-31",
+    ".codex/sheilun-scene-retained-monk-open-2026-10-31",
+    ".codex/sheilun-scene-native-catalog-open-2026-10-31",
+    ".codex/sheilun-scene-build-open-2026-10-31",
+    ".codex/sheilun-scene-link-open-2026-10-31",
+    ".codex/sheilun-scene-stage-pe-open-2026-10-31",
+    ".codex/sheilun-scene-stage-pe2-open-2026-10-31",
+    ".codex/sheilun-scene-pe-research-open-2026-10-31",
+    ".codex/sheilun-scene-stage-retained-open-2026-10-31",
+    ".codex/sheilun-scene-promotion-open-2026-10-31",
+    ".codex/sheilun-scene-startup-open-2026-10-31",
+    ".codex/sheilun-scene-scepter-open-2026-10-31",
+    ".codex/sheilun-scene-canonical-native-open-2026-10-31",
+    ".codex/sheilun-scene-disassembly.txt",
+    ".codex/sheilun-scene-final-native-open-2026-10-31"
+  ],
+  "archive": "Pending hash-verified focused archive after implementation commit. Independent acquisition/scene source/video research remains OPEN outside fixed.",
+  "next": "Continue actual Sheilun pool physical source/loot and native Tak-Tak producer/route, then remaining all36 independent acquisition/actor/lifecycle issues. Remove original automatic boss grants only with a complete evidence-backed real pickup. User owns client tests; reset3 exhausted. Structural/native checks do not certify whole36 chains."
+}
