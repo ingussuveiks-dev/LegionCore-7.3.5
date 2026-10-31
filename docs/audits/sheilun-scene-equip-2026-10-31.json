@@ -1,7 +1,7 @@
 {
   "date": "2026-10-31",
   "status": "Guarded native Sheilun scene1192 real equipment callback deployed; physical pickup/return/full chain/client remain OPEN",
-  "fix_commit": "Implementation commit containing this audit; resolve exact hash from Git history.",
+  "fix_commit": "65546bb25",
   "cause": "Native package1557 equips only its visual clone. World scene1192 had ScriptNameNULL and no terminal event, so202438/native effect249 on existing128937 was disconnected. Old Aspersius shortcut creates an item/scene but never supplies this actual equipment callback. Original physical source/grants/return are separate unresolved issues.",
   "change": [
     "Append1192/1557/map1541/scenario1007/first4/quest41003/item128937 to the existing registered Monk scene gate; retain both existing Monk records. Complete status, actual Player/world/contact/alive/no teleport/class10/map/active un-rewarded incomplete-or-complete quest/inventory-only artifact/live matching instance and stage4..5 are all required. No new script constructor, queued pointer, raw item/credit/scenario grant or transfer.",
@@ -55,6 +55,13 @@
     ".codex/sheilun-scene-disassembly.txt",
     ".codex/sheilun-scene-final-native-open-2026-10-31"
   ],
-  "archive": "Pending hash-verified focused archive after implementation commit. Independent acquisition/scene source/video research remains OPEN outside fixed.",
+  "archive": {
+    "fix_commit": "65546bb25",
+    "directory": "build-extractors/bin/Release/fixed/sheilun-scene-equip-2026-10-31",
+    "manifest_sha256": "b73d6b74ca5071219df210ba283ccc0438f6f0859427cbb7d9339155ba14d601",
+    "files": 400,
+    "verification": "Source/destination/source/final SHA256 verified; canonicalECAA2D24 retained. Crashes empty/no active reports removed/logs truncated; mixed6090LINK2 unchanged/unresolved; own21092 exited/no task servers.",
+    "remaining": "Real pool source256913/loot link/102479+102505 pose/native Tak-Tak producer/boarding/route and old boss auto-grants remain OPEN; historical video/source research stays outside fixed. Repeated native.tsv is spell context, not certification of physical source. Client/full36 remain OPEN. Mixed6090LINK2 and informative runtime history unchanged; no active report removed or log truncated; no binaries/dumps/media/configs/credentials/characters."
+  },
   "next": "Continue actual Sheilun pool physical source/loot and native Tak-Tak producer/route, then remaining all36 independent acquisition/actor/lifecycle issues. Remove original automatic boss grants only with a complete evidence-backed real pickup. User owns client tests; reset3 exhausted. Structural/native checks do not certify whole36 chains."
 }
