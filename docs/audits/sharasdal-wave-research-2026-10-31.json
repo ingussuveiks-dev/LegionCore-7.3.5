@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-31",
+  "status": "Read-only native wave investigation; no new gameplay fix or actual client wave traversal claimed. Canonical439BD173/d060cddbb unchanged.",
+  "local_world": "Full-EOF/no-stderr World read confirms105251/npc_sharasdal_waterwall,Vehicle4717,manual summoned/no static spawns. Actual6547/209132 AT template maps custom11160,attached native shape; one entry6547 action1/on-enter1/type0/targetFlags1056840/46598/hitMaxCount1/amount1. No matching extra World spell scripts/linked-spells/conditions were returned. Full rows preserved; native action handling was traced separately, not modeled as a forced spell. Separate named native-loader column read confirms HasAttached1/HasDynamicShape0,Radius6/Height8,Visual54940,isMoving0/Speed0; it is attached to the moving NPC, not an independent AT spline.",
+  "typed_native": "New SharasdalWaveCatalog.cpp uses matching26972 DB2Storage plus read-only Hotfix overlays and EOF.209132 Wave FX infinite aura23 ticks1000ms ->209184 Pillar Splash dummy3/targets22+7; separate aura395 creates6547.46598 is real hardcoded Ride Vehicle, explicit25/control-vehicle236 plus self dummy4, infinite.210247 Despawn All Followers has three dummy3 effects/targets22+7 and no native progression/despawn effect; name is not implementation.",
+  "vehicle": "Actual4717 has one seat0/16540:Flags32783(0x800f),FlagsB33554432,FlagsC0,attachment2 offset(.5,0,2.5),Enter131/Ride132/Exit37. CAN_CONTROL0x800 is absent. Native Vehicle::AddPassenger invokes SetCharmedBy/UpdateCharmAI only on a control seat, so ordinary wave boarding does not itself establish temporary AI replacement. Reject that suspected causal path instead of adding a global movement-dispatch change.",
+  "core_trace": "Native AreaTrigger::DoAction first requires a Player (0x8), uses contact unit as caster(0x40), restores native AT owner as target(0x2000), retains special passenger-vehicle target handling(0x100000), then real46598. Native aura395 owns AT lifetime. Existing wave constructor is passive, native Lady summons at original2s/6s from three fixed lanes, issues point1 to(-148.25,802.57,796.49), then ordinary209132. Current MovementInform POINT cleanup removes actual vehicle passengers then despawns100ms. Native Point finalization can also report a stopped finalized spline; this handler is cleanup, not a progression producer, so an early cancellation cleanup is not by itself evidence of a quest-credit bug.",
+  "rejected_hypotheses": [
+    "Vehicle4717 does exist; a missing-normal-vehicle assertion is unsupported.",
+    "A native noncontrol wave seat does not prove loss of current AI on ordinary boarding.",
+    "209184 dummy splash is not the server ride producer; existing6547 action46598 is the real route.",
+    "No invented210247 follower cleanup, timer, teleport, progress or late-world SQL was added."
+  ],
+  "remaining": "Physical movement/attached shape/contact/actual boarding/removal/camera/pet portrait and full wave/client sequence remain user checks. Missing actors/cast admission, stalled/manual-lifetime summons and unusual AI removal still need focused native or runtime reproduction before a repair. Native210247 actual three-effect intended server targets/producer and living Lady1906/209457/finisher remain OPEN. Other NPC-caster conversation expiry/full1066/all36/sharedLINK2 remain unfinished.",
+  "evidence": [
+    ".codex/sharasdal-wave-world-open-2026-10-31",
+    ".codex/sharasdal-wave-native-open-2026-10-31",
+    ".codex/sharasdal-wave-shape-open-2026-10-31"
+  ],
+  "diagnostics": "World full-context/named-shape and typed native probes have before/after canonical+own crash/log snapshots, full EOF/empty SQL stderr and exit0. No new/changed crash, appended DBErrors or server failure. No server started/stopped or SQL/client/character mutation. Crashes empty; mixed6090-byte sharedLINK2 retained/unresolved. Open research evidence is not archived as a fixed quest.",
+  "next": "Continue generic dynamically NPC-created conversation cleanup with explicit player/static/late-viewer/quest-scope regression coverage; preserve native content budgets and caller attribution. Wave/client gaps remain visible."
+}
