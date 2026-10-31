@@ -22,6 +22,9 @@
 #include "ItemEnchantmentMgr.h"
 #include "SharedDefines.h"
 #include "ConditionMgr.h"
+#include <memory>
+
+struct QuestObjectScope;
 
 namespace WorldPackets
 {
@@ -396,6 +399,8 @@ struct TC_GAME_API Loot
     void AddOrReplaceItem(uint32 itemID, uint32 currencyID, uint32 _count, bool isRes = false, bool update = false);
 
     void clear();
+    bool BindQuestObjectScope(WorldObject const* source);
+    bool CanLootQuestObject(Player const* player) const;
     bool empty() const { return items.empty() && gold == 0; }
     bool isLooted() const { return gold == 0 && unlootedCount == 0; }
 
@@ -524,9 +529,19 @@ class TC_GAME_API LootMgr
         void AddLoot(Loot* loot);
         void RemoveLoot(ObjectGuid const& guid);
 
+        bool BindQuestObjectLoot(Loot const* loot, WorldObject const* source);
+        void BindQuestObjectLoots(WorldObject const* source);
+        bool CanLootQuestObject(Loot const* loot, Player const* player);
+        void ClearQuestObjectLoot(Loot const* loot);
+
     protected:
         LootsMap m_Loots;
         std::recursive_mutex m_LootsLock;
+        // Keep the weak attempt with the container, including personal loot
+        // whose source has already left the map. Do not keep quests alive.
+        std::map<Loot const*, std::weak_ptr<QuestObjectScope>> m_QuestObjectLoot;
+        std::map<ObjectGuid, std::set<Loot const*>> m_LootsBySource;
+        std::map<Loot const*, ObjectGuid> m_LootSources;
 };
 
 #define sLootMgr LootMgr::instance()

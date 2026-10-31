@@ -89,6 +89,15 @@ struct ObjectAccessor
     static Conversation* GetConversation(Player& p,ObjectGuid g)
     {return p.map.conversations.count(g.id)?p.map.conversations.at(g.id):nullptr;}
 };
+// Loot registration is an external endpoint in this focused lifetime host.
+// Its real registry/receipt behavior is covered by QuestObjectLootNative.
+struct LootScopeObserver
+{
+    unsigned notifications=0;
+    void BindQuestObjectLoots(WorldObject const* source)
+    { assert(source && source->_questObjectBound); ++notifications; }
+} lootScopeObserver;
+auto sLootMgr=&lootScopeObserver;
 #include "ObjectScope.inc"
 #include "PlayerScope.inc"
 int main()

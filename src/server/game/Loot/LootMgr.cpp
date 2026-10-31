@@ -764,6 +764,9 @@ bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bo
     if (!lootOwner || !lootOwner->CanContact())
         return false;
 
+    if (!BindQuestObjectScope(lootFrom) || !CanLootQuestObject(lootOwner))
+        return false;
+
     Creature* creature = nullptr;
     GameObject* go = nullptr;
     if (lootFrom)
@@ -1040,6 +1043,10 @@ void Loot::FillNotNormalLootFor(Player* player, bool presentAtLooting)
 
 void Loot::clear()
 {
+    // A refused fill can bind an otherwise empty/already-clear container.
+    sLootMgr->ClearQuestObjectLoot(this);
+    if (!GetGUID().IsEmpty())
+        sLootMgr->RemoveLoot(GetGUID());
     //If loot not generate or already clear
     if(isClear)
         return;
@@ -1081,9 +1088,6 @@ void Loot::clear()
     unlootedCount = 0;
     roundRobinPlayer.Clear();
     objType = 0;
-
-    if (!GetGUID().IsEmpty())
-        sLootMgr->RemoveLoot(GetGUID());
 
     chance = 20;
     personal = false;
@@ -1482,6 +1486,8 @@ static bool IsLootItemVisibleTo(Loot const& loot, LootItem const& item, Player* 
 // return true if there is any FFA, quest or conditional item for the player.
 bool Loot::hasItemFor(Player* player) const
 {
+    if (!CanLootQuestObject(player))
+        return false;
     QuestItemMap const& lootPlayerQuestItems = GetPlayerQuestItems();
     QuestItemMap::const_iterator q_itr = lootPlayerQuestItems.find(player->GetGUIDLow());
     if (q_itr != lootPlayerQuestItems.end())
@@ -1538,7 +1544,7 @@ bool Loot::hasOverThresholdItem() const
 
 void Loot::BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* viewer, PermissionTypes permission, ItemQualities threshold /*= ITEM_QUALITY_POOR*/) const
 {
-    if (permission == NONE_PERMISSION)
+    if (permission == NONE_PERMISSION || !CanLootQuestObject(viewer))
         return;
 
     packet.Coins = gold;
@@ -1844,6 +1850,8 @@ bool Loot::IsLastEncounter()
 // Basic checks for player/item compatibility - if false no chance to see the item in the loot
 bool Loot::AllowedForPlayer(Player const* player, uint32 ItemID, uint32 CurrencyID, uint8 type, bool needs_quest, LootItem* lootItem) const
 {
+    if (!CanLootQuestObject(player))
+        return false;
     TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer ItemID %u CurrencyID %u type %u", ItemID, CurrencyID, type);
 
     if (lootItem)
@@ -3936,6 +3944,18 @@ Loot* LootMgr::GetLoot(ObjectGuid const& guid)
 void LootMgr::AddLoot(Loot* loot)
 {
     std::lock_guard<std::recursive_mutex> _lock(m_LootsLock);
+    auto previous = m_LootSources.find(loot);
+    if (previous != m_LootSources.end() && previous->second != loot->objGuid)
+    {
+        auto source = m_LootsBySource.find(previous->second);
+        if (source != m_LootsBySource.end())
+        {
+            source->second.erase(loot);
+            if (source->second.empty()) m_LootsBySource.erase(source);
+        }
+    }
+    m_LootSources[loot] = loot->objGuid;
+    m_LootsBySource[loot->objGuid].insert(loot);
     if (!loot->GetGUID())
         loot->GenerateLootGuid(loot->objGuid);
     //ASSERT(!loot->GetGUID().IsEmpty());
@@ -3958,4 +3978,66 @@ void LootMgr::RemoveLoot(ObjectGuid const& guid)
 
     //m_Loots.erase(itr);
     itr->second = nullptr;
+}
+
+bool Loot::BindQuestObjectScope(WorldObject const* source)
+{
+    return sLootMgr->BindQuestObjectLoot(this, source);
+}
+
+bool Loot::CanLootQuestObject(Player const* player) const
+{
+    return sLootMgr->CanLootQuestObject(this, player);
+}
+
+bool LootMgr::BindQuestObjectLoot(Loot const* loot, WorldObject const* source)
+{
+    if (!source || !source->HasQuestObjectScope())
+        return true; // Additional native loot tables retain an existing lease.
+    auto scope = source->GetQuestObjectScope();
+    std::lock_guard<std::recursive_mutex> lock(m_LootsLock);
+    auto inserted = m_QuestObjectLoot.emplace(loot, scope);
+    auto& original = inserted.first->second;
+    // An uncleared container cannot change owners or accepted quest attempts.
+    // Retain even an expired weak reference so an absent source fails closed.
+    if (!original.owner_before(scope) && !scope.owner_before(original))
+        return true;
+    original.reset(); // A conflicting uncleared container stays closed to all.
+    return false;
+}
+
+void LootMgr::BindQuestObjectLoots(WorldObject const* source)
+{
+    if (!source || !source->HasQuestObjectScope()) return;
+    std::lock_guard<std::recursive_mutex> lock(m_LootsLock);
+    if (auto creature = source->ToCreature()) BindQuestObjectLoot(&creature->loot, source);
+    if (auto object = source->ToGameObject()) BindQuestObjectLoot(&object->loot, source);
+    auto found = m_LootsBySource.find(source->GetGUID());
+    if (found != m_LootsBySource.end())
+        for (auto loot : found->second) BindQuestObjectLoot(loot, source);
+}
+
+bool LootMgr::CanLootQuestObject(Loot const* loot, Player const* player)
+{
+    std::lock_guard<std::recursive_mutex> lock(m_LootsLock);
+    auto found = m_QuestObjectLoot.find(loot);
+    if (found == m_QuestObjectLoot.end())
+        return true;
+    auto scope = found->second.lock();
+    return player && scope && !scope->Cancelled && scope->Owner == player->GetGUID();
+}
+
+void LootMgr::ClearQuestObjectLoot(Loot const* loot)
+{
+    std::lock_guard<std::recursive_mutex> lock(m_LootsLock);
+    m_QuestObjectLoot.erase(loot);
+    auto origin = m_LootSources.find(loot);
+    if (origin == m_LootSources.end()) return;
+    auto source = m_LootsBySource.find(origin->second);
+    if (source != m_LootsBySource.end())
+    {
+        source->second.erase(loot);
+        if (source->second.empty()) m_LootsBySource.erase(source);
+    }
+    m_LootSources.erase(origin);
 }

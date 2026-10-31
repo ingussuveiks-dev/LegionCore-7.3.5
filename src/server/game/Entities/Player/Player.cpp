@@ -11919,7 +11919,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
 
         // not check distance for GO in case owned GO (fishing bobber case, for example)
         // And permit out of range GO with no owner in case fishing hole
-        if (!go || (loot_type != LOOT_FISHINGHOLE && (loot_type != LOOT_FISHING || go->GetOwnerGUID() != GetGUID()) && !go->IsWithinDistInMap(this, INTERACTION_DISTANCE)) || (loot_type == LOOT_CORPSE && go->GetRespawnTime() && go->isSpawnedByDefault()))
+        if (!go || !go->CanTargetQuestObject(this) || (loot_type != LOOT_FISHINGHOLE && (loot_type != LOOT_FISHING || go->GetOwnerGUID() != GetGUID()) && !go->IsWithinDistInMap(this, INTERACTION_DISTANCE)) || (loot_type == LOOT_CORPSE && go->GetRespawnTime() && go->isSpawnedByDefault()))
         {
             SendLootRelease(guid);
             return;
@@ -11931,6 +11931,9 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
 
         lootPesonal = &personalLoot[guid];
         loot = &go->loot;
+
+        if (!loot->BindQuestObjectScope(go) || !lootPesonal->BindQuestObjectScope(go))
+            return;
 
         bool personal = go->IsPersonal();
 
@@ -12168,7 +12171,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
     {
         Creature* creature = GetMap()->GetCreature(guid);
 
-        if (!creature || creature->IsAlive() != (loot_type == LOOT_PICKPOCKETING))
+        if (!creature || !creature->CanTargetQuestObject(this) || creature->IsAlive() != (loot_type == LOOT_PICKPOCKETING))
         {
             SendLootRelease(guid);
             return;
@@ -12187,6 +12190,9 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
 
         lootPesonal = &personalLoot[guid];
         loot = &creature->loot;
+
+        if (!loot->BindQuestObjectScope(creature) || !lootPesonal->BindQuestObjectScope(creature))
+            return;
 
         if (loot_type == LOOT_PICKPOCKETING)
         {
@@ -12292,6 +12298,12 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
         case LOOT_FISHINGHOLE: loot_type = LOOT_FISHING; break;
         case LOOT_FISHING_JUNK: loot_type = LOOT_FISHING; break;
         default: break;
+    }
+
+    if (!loot->CanLootQuestObject(this) || (lootPesonal && !lootPesonal->CanLootQuestObject(this)))
+    {
+        SendLootRelease(guid);
+        return;
     }
 
     // need know merged fishing/corpse loot type for achievements
@@ -33519,6 +33531,8 @@ bool Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore cons
 
 void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
 {
+    if (!loot || !loot->CanLootQuestObject(this))
+        return;
     QuestItem* qitem = NULL;
     QuestItem* ffaitem = NULL;
     QuestItem* conditem = NULL;
@@ -37614,7 +37628,7 @@ uint32 Player::GetGoldFromLoot()
     std::lock_guard<std::recursive_mutex> guard(i_personalLootLock);
     for (PersonalLootMap::iterator itr = personalLoot.begin(); itr != personalLoot.end();)
     {
-        if (itr->second.isOpen)
+        if (itr->second.isOpen && itr->second.CanLootQuestObject(this))
         {
             if (itr->second.gold)
                 SendNotifyLootMoneyRemoved(&itr->second);

@@ -712,6 +712,7 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         bool InheritQuestObjectScope(WorldObject const* source);
         bool IsQuestObjectExpired() const;
         bool HasQuestObjectScope() const { return _questObjectBound; }
+        std::weak_ptr<QuestObjectScope> GetQuestObjectScope() const { return _questObjectScope; }
         bool CanTargetQuestObject(WorldObject const* target) const;
         bool MustBeVisibleOnlyForSomePlayers() const { return !_visibilityPlayerList.empty(); }
         void GetMustBeVisibleForPlayersList(GuidUnorderedSet& playerList) { playerList = _visibilityPlayerList; }

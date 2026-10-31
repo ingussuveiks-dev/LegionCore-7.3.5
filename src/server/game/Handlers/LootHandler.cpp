@@ -36,7 +36,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLo
         {
             GameObject* go = player->GetMap()->GetGameObject(lguid);
             // not check distance for GO in case owned GO (fishing bobber case, for example) or Fishing hole GO
-            if (!go || ((go->GetOwnerGUID() != player->GetGUID() && go->GetGoType() != GAMEOBJECT_TYPE_FISHINGHOLE) && !go->IsWithinDistInMap(player, INTERACTION_DISTANCE)))
+            if (!go || !go->CanTargetQuestObject(player) || ((go->GetOwnerGUID() != player->GetGUID() && go->GetGoType() != GAMEOBJECT_TYPE_FISHINGHOLE) && !go->IsWithinDistInMap(player, INTERACTION_DISTANCE)))
             {
                 player->SendLootRelease(lguid);
                 return;
@@ -81,7 +81,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLo
         {
             Creature* creature = player->GetMap()->GetCreature(lguid);
 
-            bool lootAllowed = creature &&
+            bool lootAllowed = creature && creature->CanTargetQuestObject(player) &&
                     creature->IsAlive() == (player->getClass() == CLASS_ROGUE && creature->lootForPickPocketed);
 
             Unit *looter = creature ? creature->GetOtherRecipient() : nullptr;
@@ -97,7 +97,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLo
             loot = &creature->loot;
         }
 
-        if (!loot || !player->CanContact())
+        if (!loot || !player->CanContact() || !loot->CanLootQuestObject(player))
             return;
 
         if(Group* group = player->GetGroup())
@@ -150,14 +150,15 @@ void WorldSession::LootCorps(ObjectGuid corpsGUID, WorldObject* lootedBy)
     WorldObject* _looted = lootedBy ? lootedBy : player;
 
     Creature* creature = player->GetMap()->GetCreature(corpsGUID);
-    if (!creature)
+    if (!creature || !creature->CanTargetQuestObject(player))
         return;
 
     std::list<Creature*> corpesList;
     _looted->GetCorpseCreatureInGrid(corpesList, LOOT_DISTANCE);
+    corpesList.remove_if([player](Creature* corpse) { return !corpse || !corpse->CanTargetQuestObject(player); });
 
     WorldPackets::Loot::AELootTargets targets;
-    targets.Count = corpesList.size() * 2 - 1; // Count all AOE package loot, not count targets
+    targets.Count = corpesList.empty() ? 0 : corpesList.size() * 2 - 1; // Count all AOE package loot, not count targets
     player->SendDirectMessage(targets.Write());
 
     creature->SetOtherLootRecipient(lootedBy ? lootedBy->GetGUID() : ObjectGuid::Empty);
@@ -206,7 +207,7 @@ void WorldSession::DoLootRelease(ObjectGuid lguid)
         GameObject* go = GetPlayer()->GetMap()->GetGameObject(lguid);
 
         // not check distance for GO in case owned GO (fishing bobber case, for example) or Fishing hole GO
-        if (!go || ((go->GetOwnerGUID() != _player->GetGUID() && go->GetGoType() != GAMEOBJECT_TYPE_FISHINGHOLE) && !go->IsWithinDistInMap(_player, INTERACTION_DISTANCE)))
+        if (!go || !go->CanTargetQuestObject(player) || ((go->GetOwnerGUID() != _player->GetGUID() && go->GetGoType() != GAMEOBJECT_TYPE_FISHINGHOLE) && !go->IsWithinDistInMap(_player, INTERACTION_DISTANCE)))
             return;
 
         lootPesonal = player->GetPersonalLoot(lguid);
@@ -406,7 +407,7 @@ void WorldSession::DoLootRelease(ObjectGuid lguid)
     {
         Creature* creature = player->GetMap()->GetCreature(lguid);
 
-        bool lootAllowed = creature &&
+        bool lootAllowed = creature && creature->CanTargetQuestObject(player) &&
                 creature->IsAlive() == (player->getClass() == CLASS_ROGUE && creature->lootForPickPocketed);
 
         Unit *looter = creature ? creature->GetOtherRecipient() : nullptr;
@@ -549,6 +550,9 @@ void WorldSession::HandleDoMasterLootRoll(WorldPackets::Loot::DoMasterLootRoll& 
             return;
     }
 
+    if (!loot || !loot->CanLootQuestObject(_player))
+        return;
+
     packet.LootListID -= 1; //restore slot index;
     if (packet.LootListID >= loot->items.size() + loot->quest_items.size())
     {
@@ -579,18 +583,22 @@ void WorldSession::HandleMasterLootItem(WorldPackets::Loot::MasterLootItem& pack
         if (lootData.Object.IsCreatureOrVehicle())
         {
             Creature* creature = GetPlayer()->GetMap()->GetCreature(lootData.Object);
-            if (!creature)
+            if (!creature || !creature->CanTargetQuestObject(GetPlayer()) || !creature->CanTargetQuestObject(target))
                 continue;
 
             loot = &creature->loot;
+            if (!loot->BindQuestObjectScope(creature))
+                continue;
         }
         else if (lootData.Object.IsGameObject())
         {
             GameObject* pGO = GetPlayer()->GetMap()->GetGameObject(lootData.Object);
-            if (!pGO)
+            if (!pGO || !pGO->CanTargetQuestObject(GetPlayer()) || !pGO->CanTargetQuestObject(target))
                 continue;
 
             loot = &pGO->loot;
+            if (!loot->BindQuestObjectScope(pGO))
+                continue;
         }
         else if (lootData.Object.IsLoot())
         {
@@ -599,7 +607,7 @@ void WorldSession::HandleMasterLootItem(WorldPackets::Loot::MasterLootItem& pack
                 continue;
         }
 
-        if (!loot)
+        if (!loot || !loot->CanLootQuestObject(GetPlayer()) || !loot->CanLootQuestObject(target))
             continue;
 
         uint8 _LootListID = lootData.LootListID - 1;    //restore slot index; WTF?

@@ -30,6 +30,7 @@
 #include "GridNotifiersImpl.h"
 #include "Group.h"
 #include "Log.h"
+#include "LootMgr.h"
 #include "Map.h"
 #include "MapManager.h"
 #include "MMapFactory.h"
@@ -2964,6 +2965,7 @@ void WorldObject::BindQuestObjectScope(std::shared_ptr<QuestObjectScope> const& 
     _questObjectBound = true;
     _questObjectScope = scope;
     scope->Register(GetGUID());
+    sLootMgr->BindQuestObjectLoots(this);
     AddPlayerInPersonnalVisibilityList(scope->Owner);
 }
 
