@@ -51,8 +51,35 @@
     ".codex/sheilun-physical-default-display-open-2026-11-01",
     ".codex/sheilun-source-default-model-open-2026-11-01",
     ".codex/sheilun-source-default-model-parse-open-2026-11-01",
-    ".codex/sheilun-source-visibility-flags-open-2026-11-01"
+    ".codex/sheilun-source-visibility-flags-open-2026-11-01",
+    ".codex/sheilun-return-flight-candidate1-open-2026-11-01",
+    ".codex/sheilun-return-flight-candidate2-open-2026-11-01",
+    ".codex/sheilun-return-flight-candidate3-open-2026-11-01"
   ],
   "diagnostics": "Completed corrected World/native/CASC/parse checks report no new/changed crash, appendedDBErrors or server warnings/errors/assertions. No server started for this research. Existing mixed6090LINK2 retained and Crashes empty. Research and its failed first query stay outside fixed archives; no binary/config/credential/character/media committed.",
-  "next": "Implement coherent owner/quest-bound physical source, real native inventory storage acknowledgement, boss player/pet/guardian/ally credit and outro/native return with bounded spawn/cast/boarding retries. Original auto item/progress/timer194151 shortcuts remain OPEN. Source/context design in ignored .codex/sheilun-login-work-state.txt; client/all36 unresolved."
+  "next": "Implement coherent owner/quest-bound physical source, real native inventory storage acknowledgement, boss player/pet/guardian/ally credit and outro/native return with bounded spawn/cast/boarding retries. Original auto item/progress/timer194151 shortcuts remain OPEN. Source/context design in ignored .codex/sheilun-login-work-state.txt; client/all36 unresolved.",
+  "flight_candidate": {
+    "tool": "tools/research/SheilunReturnFlight.cpp",
+    "scope": "Functional first1541 takeoff and202831 destination joined to native5619 candidate points; not recovered retail1541 points, not proof that retail AI binds5619/202831, and not a deployed route.",
+    "native_admission": "Actual MapDifficulty3431/map1541/difficulty12 MaxPlayers1/Flags0. InstanceMap::CanEnter enforces that cap for non-GMs and same-party admission. Preserve native eligible group effects, but do not invent simultaneous multi-player native map occupancy or per-player overlapping outro from a mock that bypasses this cap.",
+    "first": "Two declared starting anchors: actual sampled pool(-1017.29,-2772.8,38.57111) and existing Taran approach(-1019.15,-2795.95,38.91). Each goes up10yd then functional points(-1017.29,-2745,68.57111),(-1032,-2705,95),(-1060,-2660,135). These are derived placement, not a native/sniffed route.",
+    "second": "Actual read-only World202831 target1514(476.04,3281.42,329.5), followed by all8 actual typed DB2/Hotfix5619 points; requires native map1514/no delay/event/flags and contiguous0..7. Final point938.717041,3713.99829,189.803421.",
+    "interpolation": "Real linked Movement::SplineBase ModeCatmullrom, matching MotionMaster::MoveSmoothFlyPath SetSmooth/SetFly. At least64 samples/segment or4 per approximate yard, bounded8192. Preloads all crossed native GridMap/VMAP tiles, samples +/-2yd horizontal offsets and0.1/2/4yd LOS profile with ModelIgnoreFlags::Nothing. This declared static corridor is not the full oriented kite/passenger hull or phase-enabled dynamic objects.",
+    "results": {
+      "pool_start_samples": 6057,
+      "taran_start_samples": 6795,
+      "second_samples": 26280,
+      "all_curve_segments_clear": true,
+      "minimum_first_pool_clearance_yards": 0,
+      "minimum_first_taran_clearance_yards": 0.338886261,
+      "minimum_second_clearance_yards": 0.317825317
+    },
+    "failures": "Candidate1 failed compilation because G3D::Vector3 was only forward-declared; added the actual G3D/Vector3.h include. Candidate2 passes curves, candidate3 additionally reads real map admission and passes. Full failed compiler output and passing native runs remain OPEN outside fixed archives; no native crash or hidden collision failure.",
+    "limits": "No production C++/SQL/EXE change, vehicle spawning/boarding/control, final exit spline/client pet portrait, dynamic phase-visible collisions or actual client flight verified. Native landing5710 floor is separately verified by the completed login focus; runtime route still needs coherent lifecycle and regression implementation."
+  },
+  "scene_and_exit_api": [
+    "Native Player::SendSpellScene launch resets m_sceneStatus[sceneId] to SCENE_LAUNCH. HasSceneStatus is >= comparison, so LAUNCH also returns true after COMPLETE; do not infer active playback from it alone. Native1192 completion is guarded by existing scene_monk_artifact_equipment and owned-item/current-context predicates. Preserve these handlers and actual scene callbacks.",
+    "Native Unit::_ExitVehicle launches a real MoveSpline with SetTransportExit after actual seat removal and pet restoration. Preserve that exit spline and restore player control/viewpoint before a cross-map transition. Boost spell219912 contains tutorial/Broken Shore queue effects and must not be reused for a Monk return.",
+    "MotionMaster::MoveSmoothFlyPath installs EffectMovementGenerator(pointID), allowing an actual spline endpoint MovementInform receipt. Do not advance the flight from a timer, summon/cast acceptance, unissued mover ACK or a restarted spline."
+  ]
 }
