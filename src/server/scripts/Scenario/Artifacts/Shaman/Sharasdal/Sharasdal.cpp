@@ -1130,10 +1130,10 @@ public:
             events.RescheduleEvent(EVENT_2, 20000); // 209764 на рандома. Через спелл хит 209755, который делает рывок и 209757
         }
 
-        void JustDied(Unit* who) override
+        void JustDied(Unit* /*who*/) override
         {
-            if (Player* targ = me->FindNearestPlayer(100.0f))
-                targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50240);
+            // The native instance Kill dispatch retains this real victory and
+            // its eligible player/owner; proximity alone is not ownership.
         }
 
         void SpellHitTarget(Unit* who, SpellInfo const* spell) override

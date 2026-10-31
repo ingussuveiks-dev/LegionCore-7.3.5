@@ -65,6 +65,41 @@ namespace SharasdalBrutes
     }
 }
 
+namespace SharasdalKraliss
+{
+    bool Receipt(Scenario* scenario)
+    {
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto found = progress->find(47330);
+        return found != progress->end() && found->second.Counter;
+    }
+
+    Player* Recipient(Creature* defeated, Unit* killer)
+    {
+        // Unit::Kill has already resolved the native reward/looter assignment.
+        // Retain that real recipient when eligible, including an environmental
+        // finishing blow; proximity alone must never manufacture a claimant.
+        if (Player* tagged = defeated->GetLootRecipient())
+            if (SharasdalGuard::Eligible(tagged, defeated->GetMap()) && tagged->InSamePhase(defeated) &&
+                tagged->IsWithinDistInMap(defeated, 100.0f)) return tagged;
+        if (Player* player = SharasdalGuard::Recipient(defeated, killer)) return player;
+        if (!killer || killer->GetMap() != defeated->GetMap() || !killer->InSamePhase(defeated) ||
+            killer->GetCharmerOrOwnerGUID()) return nullptr;
+        Creature* ally = killer->ToCreature();
+        if (!ally || ally->GetEntry() != 104853 || ally->GetDBTableGUIDLow() != 362078) return nullptr;
+        Player* recipient = nullptr;
+        for (auto const& reference : defeated->GetMap()->GetPlayers())
+            if (Player* player = reference.getSource())
+                if (SharasdalGuard::Eligible(player, defeated->GetMap()) && player->InSamePhase(defeated) &&
+                    player->IsWithinDistInMap(defeated, 100.0f))
+                {
+                    if (recipient && !recipient->IsInSameGroupWith(player)) return nullptr;
+                    recipient = player;
+                }
+        return recipient;
+    }
+}
+
 
 class instance_sharasdal : public InstanceMapScript
 {
@@ -100,6 +135,75 @@ public:
         ObjectGuid bruteVoiceRecipient, lowerGrash, lowerErunak;
         std::weak_ptr<uint8> bruteVoiceAttempt;
         uint32 bruteVoiceRetry = 0, bruteVoiceTries = 0, bruteRoleWait = 0, bruteRoleRetry = 0, bruteRoleTries = 0;
+
+        ObjectGuid kralissRecipient;
+        std::weak_ptr<uint8> kralissAttempt;
+        bool kralissSeen = false, kralissPending = false, kralissBusy = false, kralissExhausted = false;
+        uint32 kralissRetry = 0, kralissTries = 0;
+
+        void RecordKralissDeath(Creature* creature, Unit* killer)
+        {
+            if (kralissSeen || !creature || creature->GetEntry() != 102839 || creature->GetDBTableGUIDLow() != 362080 ||
+                creature->GetMap() != instance || !creature->IsInWorld() || creature->IsPreDelete() || creature->IsAlive()) return;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1066 || scenario->GetCurrentStep() > 2 || SharasdalKraliss::Receipt(scenario)) return;
+            kralissSeen = true;
+            Player* player = SharasdalKraliss::Recipient(creature, killer);
+            QuestStatusData* status = player ? player->getQuestStatus(40341) : nullptr;
+            if (!status)
+            {
+                TC_LOG_WARN("scripts", "Sharasdal Kraliss death has no eligible original player/owner or known companion recipient");
+                return;
+            }
+            player->AddQuestDelayedEvent(40341, 0, []() {});
+            kralissRecipient = player->GetGUID();
+            kralissAttempt = status->ScriptLifetime;
+            kralissPending = true;
+            kralissExhausted = false;
+            kralissRetry = kralissTries = 0;
+            UpdateKraliss(0);
+        }
+
+        void UpdateKraliss(uint32 diff)
+        {
+            if (!kralissPending || kralissBusy || kralissExhausted) return;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1066) return;
+            if (SharasdalKraliss::Receipt(scenario)) { kralissPending = false; return; }
+            Player* player = nullptr;
+            for (auto const& reference : instance->GetPlayers())
+                if (reference.getSource() && reference.getSource()->GetGUID() == kralissRecipient) player = reference.getSource();
+            QuestStatusData* status = player ? player->getQuestStatus(40341) : nullptr;
+            if (kralissAttempt.expired() || (player && (!status || status->ScriptLifetime != kralissAttempt.lock() ||
+                player->GetQuestRewardStatus(40341) ||
+                (player->GetQuestStatus(40341) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40341) != QUEST_STATUS_COMPLETE))))
+            {
+                kralissPending = false;
+                TC_LOG_WARN("scripts", "Sharasdal Kraliss victory cancelled after its original quest attempt ended");
+                return;
+            }
+            if (scenario->GetCurrentStep() < 2) return;
+            if (scenario->GetCurrentStep() != 2)
+            {
+                kralissPending = false;
+                TC_LOG_WARN("scripts", "Sharasdal Kraliss victory has no accepted criterion after its stage ended");
+                return;
+            }
+            if (kralissRetry > diff) { kralissRetry -= diff; return; }
+            struct BusyGuard { bool& flag; ~BusyGuard() { flag = false; } } guard{kralissBusy};
+            kralissBusy = true;
+            if (SharasdalGuard::Eligible(player, instance)) player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50240);
+            if (SharasdalKraliss::Receipt(scenario)) kralissPending = false;
+            else
+            {
+                kralissRetry = 1000;
+                if (++kralissTries >= 30)
+                {
+                    kralissExhausted = true;
+                    TC_LOG_WARN("scripts", "Sharasdal Kraliss victory could not reach its original recipient/native criterion; retry on re-entry");
+                }
+            }
+        }
 
         void BeginBrutes(ObjectGuid recipient = ObjectGuid::Empty, std::weak_ptr<uint8> attempt = std::weak_ptr<uint8>())
         {
@@ -281,6 +385,11 @@ public:
 
         void CreatureDies(Creature* creature, Unit* killer) override
         {
+            if (creature && creature->GetEntry() == 102839)
+            {
+                RecordKralissDeath(creature, killer);
+                return;
+            }
             if (creature && creature->GetEntry() == 102792)
             {
                 RecordBruteDeath(creature, killer);
@@ -321,6 +430,11 @@ public:
 
         void OnPlayerEnter(Player* player) override
         {
+            if (kralissPending && player && player->GetGUID() == kralissRecipient)
+            {
+                kralissExhausted = false;
+                kralissRetry = kralissTries = 0;
+            }
             if (player)
             {
                 for (BruteCredit& credit : bruteCredits)
@@ -430,6 +544,7 @@ public:
          
         void Update(uint32 diff) override
         {
+            UpdateKraliss(diff);
             UpdateBrutePresentation(diff);
             UpdateBrutes(diff);
             UpdateGuard(diff);

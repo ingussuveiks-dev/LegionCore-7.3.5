@@ -3,6 +3,11 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+$newKraliss=(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp" -Raw).Contains('namespace SharasdalKraliss')
+if($newKraliss){
+ & "$PSScriptRoot/Test-SharasdalKraliss.ps1" -ScopeOnly
+ $source=(& git -C $repo show "553a4c55a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned wall actor after Kraliss certificate missing'}
+}
 $pinned=(& git -C $repo show "007b8732a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Grash wall baseline missing'}
 $old=Block $pinned 'class npc_grash :';$current=Block $source 'class npc_grash :'
 $normal=$current
@@ -23,6 +28,7 @@ $whole=$source.Replace($current,$old).Replace((Block $source 'namespace Sharasda
 if(($whole -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Other actors/instance/spells/wounds/rescue/boss/pickup changed'}
 $instancePath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp'
 $instanceSource=(Get-Content "$repo/$instancePath" -Raw).Replace("`r",'')
+if($newKraliss){$instanceSource=(& git -C $repo show "553a4c55a:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Pinned unchanged wall entry instance missing'}}
 $oldInstance=(& git -C $repo show "007b8732a:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Pinned instance re-entry context missing'}
 $normalizedInstance=$instanceSource.Replace((Block $instanceSource 'void RearmGrashWall('),'').Replace('            RearmGrashWall(player);','')
 if(($normalizedInstance -replace '\s','') -cne ($oldInstance -replace '\s','')){throw 'Other instance death/owner/criteria/presentation/entry changed'}

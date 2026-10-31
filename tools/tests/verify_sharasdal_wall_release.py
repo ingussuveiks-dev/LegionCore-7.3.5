@@ -2,7 +2,7 @@
 from pathlib import Path
 import runpy
 import struct
-from capstone import CS_OP_IMM,CS_OP_MEM
+from capstone import CS_OP_IMM,CS_OP_MEM,CS_OP_REG
 
 retained=runpy.run_path(str(Path(__file__).with_name('verify_sharasdal_wound_applied_release.py')))
 n=retained['n'];instructions=n['instructions'];suffix='@npc_grashAI@npc_grash@@'
@@ -82,7 +82,14 @@ assert len(entry_calls)==2
 for at in entry_calls:
  assert any(x.mnemonic=='mov' and x.op_str=='rbx, qword ptr [rax + 0x80]' for x in entry[max(0,at-9):at])
  assert any(x.mnemonic=='mov' and x.op_str=='r8d, 0x9d95' for x in entry[max(0,at-5):at])
-assert any(x.mnemonic=='cmp' and x.op_str=='rdi, rsi' for x in entry[entry_calls[0]:entry_calls[1]])
+def ai_register(displacement):
+ loads=[x for x in entry if x.mnemonic=='mov' and x.operands[0].type==CS_OP_REG and x.operands[1].type==CS_OP_MEM and x.operands[1].mem.disp==displacement]
+ assert len(loads)==1
+ return loads[0].reg_name(loads[0].operands[0].reg)
+current,suspended=ai_register(0x9c0),ai_register(0x9c8)
+assert any(x.mnemonic=='cmp' and x.op_str==f'{suspended}, {current}' for x in entry[entry_calls[0]:entry_calls[1]])
+for at,receiver in zip(entry_calls,(current,suspended)):
+ assert any(x.mnemonic=='mov' and x.op_str==f'rcx, {receiver}' for x in entry[at-5:at])
 for body in (credit,select):
  for prefix in ('?AddItem@Player@@','?CompleteQuest@Player@@','?AddDelayedEvent@Unit@@'):
   assert not sites(body,prefix)

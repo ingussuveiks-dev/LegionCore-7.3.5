@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-31",
+  "scope": "Actual lower Kraliss victory and original40341 recipient delivery. Not Lady, combat/roar lifecycle, artifact pickup/outro, whole1066/all36 or actual client certification.",
+  "cause": "Old Kraliss JustDied chose nearest living Player, losing dead-owner/pet victories and choosing an unrelated nearby spectator. No earned receipt survived early stage or temporary native rejection. Unit::Kill already resolves the actual loot recipient before AI and instance death callbacks; that native assignment must be considered before killer ownership.",
+  "sources": "Local matching26972+Hotfix ScenarioStep/CriteriaTree/Criteria/SpellEffect/MapDifficulty through fresh native SharasdalBossCatalog; full-EOF read-only World spawns/bindings/producer/instance rows; complete current scripts and pinned553a4c55a, native Unit::Kill/GetCharmerOrOwnerPlayerOrPlayerItself/Creature::GetLootRecipient/ObjectAccessor/Scenario admission and40341 ScriptLifetime first. Local data/dispatch resolve this defect. No new external donor, gameplay/audio observation or client claim.",
+  "native_context": {
+    "actor": "Sole102839/db362080/map1600/phase6120 and sole npc_kraliss binding. Native difficulty3491/12 max1: group tests are defensive, not ordinary admission.",
+    "criterion": "1066 step2/root47126 AND has wall47127/29660/type92/49817/1 and Kraliss47330/29774/type92/50240/1. No alternate native61/World205/event producer or extra criterion conditions. Both wall-before-boss and boss-before-wall must work.",
+    "recipient": "First actual eligible native loot recipient, then native player/charmer/owner or known lower Erunak362063/Grash362066/Adelee362078. Recipient must be class7, active incomplete/complete unturned40341, contactable/in-world/notGM/notteleporting/same map+phase/range100. Dead player accepted. Known unowned allies select only an unambiguous eligible shared group. Untagged null/unowned/environmental sources cannot invent a nearby claimant. No killer alive/world restriction is added to native recorded final blows; dying/despawning source ownership remains usable."
+  },
+  "implementation": [
+    "Only exact real dead boss on the actual1066 instance can record victory. Seen-before-resolution prevents duplicate/reentrant death from choosing a replacement. Native loot recipient is tried before killer owner and known lower3 allies. Missing eligible recipient leaves a visible warning, no player/pet/item/quest grant.",
+    "Retain original full player GUID and native40341 ScriptLifetime; no corpse/AI/player raw pointer survives. Early real victory waits for native step2, emits only50240, and clears only after actual47330 acknowledgement. Existing wall49817 stays independent.",
+    "Busy guard, one-second/up-to-thirty retries, visible refusal/cancellation, original-player OnPlayerEnter rearm. Missing original player cannot be replaced by a nearby spectator. Expired/replaced/ended/rewarded attempt cancels; real pending victory survives boss Reset/corpse removal. No serialized new-attempt reconstruction is claimed.",
+    "Selected Kraliss JustDied is empty; native Unit::Kill instance CreatureDies owns delivery. Whole-source certificates retain all other boss combat/reset/roar, Lady/illusion, original companions, wall/guard/Brutes/heals/rescue, pickup and registrations. Prior Wall PE inspector now derives actual current/suspended receiver registers from9c0/9c8 loads instead of assuming allocator choices. No SQL/config/assets/characters/items/AP/checkpoint/reset change."
+  ],
+  "validation": {
+    "counterfactual": "Pinned553a4c55a actual old Kraliss callback plus native Kill dispatch reproduces nearest-GM spectator credit and lost dead-owner pet victory. Expected broken baseline, paired with repaired tests, not normal successful gameplay.",
+    "native": "68 ASAN contexts plus extras compile full current boss/instance and actual native owner, loot getter, quest token, Scenario gate, heal/lifecycle and Unit::Kill instance dispatch fragment. Covers incomplete/complete quests, player/pet/guardian/charmer/3 lower allies, dead owner/dying source, tagged null/unowned/GM/pet sources, bad tag fallback, wrong actor/map/phase/range/class/GM/quest/stage, both wall orders, early0/1, duplicate/reentrant death, freed corpse, same-group/ambiguous claimants, finite native refusal, absence with no updates and entry rearm, held/replaced/ended token and Reset.",
+    "limits": "Registry/geometry/groups/damage integration/criterion counter+root advance/loot assignment service are controlled where stated. Actual Creature::GetLootRecipient body is compiled; full native Unit::Kill reward/damage engine and real client combat are separately traced, not wholly simulated. Shared scenario receives one native update, no blanket group grants. Native map cap1 retained.",
+    "retained": "37 wall contexts+extras and46 Brute/guard contexts retained; exact whole-source certificates compose prior wound/rescue/heal/role/gossip paths. Canonical68+selected full retained PE, fresh native data/World EOF and Scepter VerifyReleaseBinary checked.",
+    "pe": "Actual selected Kraliss factory/vtable, prior nonempty native JustDied slot130 and native Unit::Kill dispatch, selected instance CreatureDies40/OnPlayerEnter/Update, exact102839/362080 gates, native GetLootRecipient->FindPlayer before owner helper, both complete inlined eligibility regions, full GUID/weak token, fields3e4..410, sole50240/47330 acknowledgement, finite retry/seen/busy/entry rearm. Existing actual wall/guard/Brute/wound/rescue selected PE proofs retained. No forced quest/item/outro call.",
+    "paired_inspector_failures": {
+      "staged-pe": "Prior Wall inspector hardcoded rsi/rdi receivers. Actual allocation uses r14/rdi; derive receivers from native9c0/9c8 loads, retaining alias and real virtual-call checks. No production workaround.",
+      "staged-pe2": "Recipient helper was inlined. Inspect actual complete predicate dataflow instead of requiring a named call. Final additionally proves both tagged-player and companion scan regions and actual native getter priority."
+    }
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "af04744addde97e320f2cdbced05aa9f4885ce6a71857fca2b93a3778a39a7d2",
+      "worldserver.map": "749825ec552a8a89ac7a952b6d6b2f971880c57ea6b24c63467449e77d9c1d14",
+      "bnetserver.exe": "973d4148146e62cef231ebae5cbb8580c659b240951497e73066818fc7e9ec2b",
+      "bnetserver.map": "360144dec09b24e4a0e77ed3acae3e3ee66dd1350e83baaf8b64e6141c4e9da8"
+    },
+    "build": "Original scripts/common Release libraries and original link inputs, stage3, no global OutDir. Hash-backed four-file offline backup/promotion, protected config/cert/DLL hashes unchanged. Intermediate705447 and BF0AEDC2 builds are superseded; final AF04744A includes actual loot recipient priority.",
+    "runtime": "Final owned31864 reached ready, graceful shutdown0/exit0/stderr empty/newDBErrors0 and gone. Interim owned28268 also closed. No user/unknown server stopped; no hidden server retained. No SQL deployed."
+  },
+  "diagnostics": "Every native/data/build/link/PE/promotion/startup test has before/after repository/canonical/own-runtime crash and log snapshots. No new/changed crashes or appended DBErrors/server warnings/errors/assertions. Both inspector failures paired with final passing actual-binary proof. Canonical Crashes empty. Mixed6090-byte shared101430/103151 LINK2 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged/unresolved, never cleared or classified fixed. Closed issue archive follows implementation commit.",
+  "remaining": [
+    "Actual client combat/spells/scaling/pet/guardian/dead-owner/group/faction/re-entry/wall transition still require traversal. Raw delayed Kraliss roar callback and interrupted original companion routes remain OPEN.",
+    "Lady real362095 must be separated from early illusion362091; old nearest-player50397 and unguarded who->CreateConversation1923 remain OPEN.1923 is post-pickup dialogue, and current duration/ordering requires separate investigation.",
+    "249342 native loot link0/manual activation AddItem/delete/direct scenario completion, actual full bags/loot/equip209685/scene209684/return/outro remain OPEN. Open boss/pickup research is excluded from fixed archive.",
+    "No whole1066/all36/client claim. Glow211502, Survival39427 middle flight, Wardstone LINK4/shared LINK2 and Stromkar/client checks remain OPEN. User owns client tests; reset3 consumed, no reset performed."
+  ]
+}
