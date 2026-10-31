@@ -1,0 +1,8 @@
+{
+  "fix_commit": "1b864e141",
+  "directory": "build-extractors/bin/Release/fixed/sheilun-companion-wounds-2026-10-31",
+  "manifest_sha256": "4f6895f3d9d02f5b0b1ae901318ab0b74984de146c5ca9bb025330ca620e746f",
+  "files": 421,
+  "verification": "Source/destination/source/final SHA256 verified; canonical48E80940 retained. Crashes empty/no active reports removed/logs truncated; mixed6090LINK2 unchanged/unresolved; own21644 exited/no task servers.",
+  "remaining": "Real Sheilun source/loot/scene1192/equip202438/return and original Aspersius auto-grants remain OPEN, along with physical client combat/routes/all36. Other independent world/scene/video/source research remains outside fixed wound archive; native.tsv is contextual matching data, not certification of every row. Mixed6090LINK2 and informative runtime history unchanged. No active crash report removed or log truncated; no binaries/dumps/media/configs/credentials/characters."
+}
