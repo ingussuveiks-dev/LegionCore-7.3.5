@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-31",
+  "fix_commit": "48c05ad6c",
+  "archive": "build-extractors/bin/Release/fixed/creature-heal-applied-2026-10-31",
+  "files": 371,
+  "manifest_sha256": "bb47a179440773b349992b5c79f577026e82cdc41fc15a85d5d344adab56cceb",
+  "verification": "Source/destination/source/final SHA256; no active report removed or mixed DBErrors truncated. See main audit for native/automated and client limits.",
+  "reviewed_failed_checks_and_passing_pair": {
+    "creature-heal-staged-pe-2026-10-31": "Inspector expected nonexistent ScriptedAI::_EnterEvadeMode; actual selected inherited CreatureAI symbol verified at0x280. Staged-pe2 and canonical pass all81 original slot identities plus appended0x288 hook."
+  },
+  "excluded_open_research": [
+    ".codex/sharasdal-heal-context-2026-10-31",
+    ".codex/sharasdal-heal-health-context-2026-10-31",
+    ".codex/sharasdal-intro-heal-native-2026-10-31"
+  ]
+}

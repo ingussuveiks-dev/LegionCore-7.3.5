@@ -23,5 +23,21 @@
     "runtime": "Only owned hidden world8236 reached ready; own shutdown0/exit0, stderr0/newDBErrors0. It is gone. No user or unknown server stopped."
   },
   "diagnostics": "Before/after canonical and own runtime crash/log snapshots plus exit/stdout/stderr inspected. No new/changed crash, appended DBErrors or server warning/error/assertion. Mixed6090-byte DBErrors with shared101430/103151LINK2 retained byte-for-byte at SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0. Active Crashes empty; no active log truncated or character/reset/security boundary touched. Existing full-tree compiler warnings are in unchanged production sources, not new server diagnostics.",
-  "remaining": "New hook alone changes no actor progression. Next Grash actual50/90pct post-heal receipt, participant/quest lifetime/retry, native49815/49900 versus separate gossip50161 recruitment, stale/forged gossip and AI-owned delayed reply. Three40pct pre-heal markers retain prior documented cancelled-full-health limitation pending hook consumers. Actual client heal/render/group/faction/full1066/all36 traversal is not certified. Glow producer, Survival39427 middle flight, WardstoneLINK4/sharedLINK2 and Stromkar client remain OPEN; user owns client tests/reset3 consumed."
+  "remaining": "New hook alone changes no actor progression. Next Grash actual50/90pct post-heal receipt, participant/quest lifetime/retry, native49815/49900 versus separate gossip50161 recruitment, stale/forged gossip and AI-owned delayed reply. Three40pct pre-heal markers retain prior documented cancelled-full-health limitation pending hook consumers. Actual client heal/render/group/faction/full1066/all36 traversal is not certified. Glow producer, Survival39427 middle flight, WardstoneLINK4/sharedLINK2 and Stromkar client remain OPEN; user owns client tests/reset3 consumed.",
+  "diagnostic_archive": {
+    "date": "2026-10-31",
+    "fix_commit": "48c05ad6c",
+    "archive": "build-extractors/bin/Release/fixed/creature-heal-applied-2026-10-31",
+    "files": 371,
+    "manifest_sha256": "bb47a179440773b349992b5c79f577026e82cdc41fc15a85d5d344adab56cceb",
+    "verification": "Source/destination/source/final SHA256; no active report removed or mixed DBErrors truncated. See main audit for native/automated and client limits.",
+    "reviewed_failed_checks_and_passing_pair": {
+      "creature-heal-staged-pe-2026-10-31": "Inspector expected nonexistent ScriptedAI::_EnterEvadeMode; actual selected inherited CreatureAI symbol verified at0x280. Staged-pe2 and canonical pass all81 original slot identities plus appended0x288 hook."
+    },
+    "excluded_open_research": [
+      ".codex/sharasdal-heal-context-2026-10-31",
+      ".codex/sharasdal-heal-health-context-2026-10-31",
+      ".codex/sharasdal-intro-heal-native-2026-10-31"
+    ]
+  }
 }
