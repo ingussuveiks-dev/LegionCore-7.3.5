@@ -1,7 +1,7 @@
 {
   "date": "2026-10-31",
   "status": "Taran Zhu AI capture lifetime repaired, native regression and canonical Release verified; later sequence/full36/client OPEN",
-  "fix_commit": "recorded in following archive audit",
+  "fix_commit": "e7dce8969",
   "cause": "Both original npc_tazhan_chuAI callbacks captured raw this but belonged to the longer-lived Creature/Unit FunctionProcessor. Native AIM_Destroy could delete their AI while retaining the queued callbacks. This is a demonstrated dangling capture, not attribution of an observed client crash.",
   "change": [
     "Append a distinct AI-owned FunctionProcessor after existing intro/wound fields; move only the original5s Talk1 and4s wall-hide/Talk4/point2 callbacks to it. Native AI destruction destroys this queue and its captures. No shared FunctionProcessor/core/API change.",
@@ -65,5 +65,13 @@
     ".codex/sheilun-presentation-stage-pe2-2026-10-31",
     ".codex/sheilun-presentation-startup-2026-10-31"
   ],
-  "next": "Continue Sheilun real source/storage/outro/return using physical-source and return research. Preserve unresolved independent artifacts and user-owned client testing."
+  "next": "Continue Sheilun real source/storage/outro/return using physical-source and return research. Preserve unresolved independent artifacts and user-owned client testing.",
+  "archive": {
+    "fix_commit": "e7dce8969",
+    "directory": "build-extractors/bin/Release/fixed/sheilun-taran-presentation-2026-10-31",
+    "manifest_sha256": "ee6e5633087b1879ea3d0de118e57a17a422bc6fade2d3f3e7903615435a4ad7",
+    "files": 229,
+    "verification": "Source/destination/source/final SHA256 verified; canonical2F61800A retained; Crashes empty, mixed6090LINK2 unchanged. Owned33188 clean exit0 and gone. No active report removed/log truncated.",
+    "remaining": "Only resolved AI-capture lifetime and its paired development fixture/PE failures archived. Independent source/video/visual/physical/storage/return research remains OPEN outside fixed. Full sequence/all36/client remain OPEN. Mixed6090LINK2 unchanged; no active report removed/log truncated/config/binary/dump/media/credential/character archived."
+  }
 }
