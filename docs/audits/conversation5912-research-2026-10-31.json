@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-31",
+  "status": "OPEN data/voice correctness research; no gameplay, SQL, duration or character change.",
+  "relationship": "The generic NPC lifetime census found5912, but this research has not established an artifact-chain caller. Do not divert a generic cleanup repair into a guessed per-entry duration change.",
+  "world": "Full-EOF/no-stderr read-only World: actor5912 slot0/model51642/creature121786/display28222/duration4294967007; line13244 offset0. creature_template_wdb121786 is Vereesa Windrunner/Ranger of the Silver Union/build26365, but no actual creature_template or creature spawn exists for this ID. No matching selected SmartAI cast row returned; selected query is not an exhaustive incoming cast audit.",
+  "native": "Matching26972 DB2Storage/read-onlyHotfix: line13244 ->Broadcast135682/AdditionalDuration1000/Next0; female text: We have a target in this area that must be brought down. The choice of weapon is up to you. SoundKit87363/FileData1687745. Native spell252224 Conversation has effect0/type219/misc5912/targets18+0, difficulty0. No252224/121786/135682 caller found in current scripts or World update files. No decoded/played audio, full duration or actual client sequence verified.",
+  "arithmetic": "Raw4294967007 is UINT32_MAX-288; unchanged native +5000 publishes4711. Arithmetic covered by93 generic native cases, not proof4711 is the correct clip budget. Do not clamp, guess silent timing or suppress diagnostics.",
+  "reviewed_failed_probe": "conversation5912-world-open-2026-10-31 stopped on unknown creature_template.name; earlier actor/line stdout and native stderr retained. Corrected full-row query uses actual creature_template_wdb and reaches full EOF in conversation5912-world2-open-2026-10-31. No missing trailing result is inferred from the failed query.",
+  "evidence": [
+    ".codex/conversation-npc-budget-open-2026-10-31",
+    ".codex/conversation-npc-effective-budget-open-2026-10-31",
+    ".codex/conversation5912-world-open-2026-10-31",
+    ".codex/conversation5912-world2-open-2026-10-31",
+    ".codex/conversation5912-native-open-2026-10-31"
+  ],
+  "diagnostics": "Every SQL/native probe has before/after canonical+own crash/log snapshots and reviewed exit/stdout/stderr. Corrected SQL/native reader pass; failed schema assumption preserved. No new/changed crash/appendedDBErrors/server diagnostics. Canonical FB474757 retained/no server launched/stopped. Mixed6090LINK2 unchanged/unresolved. Evidence remains OPEN outside fixed archives.",
+  "canonical_world_sha256": "fb4747574f3abd9e6dbe89d17d8f7e7bf9673988028920b47163c9b2975b34b5",
+  "next": "Preserve unresolved5912 clip correctness for a real producer/audio investigation. Continue next independent artifact chain repair: Discipline Bilaal actual death/disabled-AI/49810/Azuregos104546 retry; retain user-owned client testing and completed generic lifetime repair."
+}
