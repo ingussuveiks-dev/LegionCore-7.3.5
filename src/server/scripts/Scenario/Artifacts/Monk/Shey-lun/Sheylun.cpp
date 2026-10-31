@@ -9,6 +9,8 @@
 #include "ObjectAccessor.h"
 #include "ScenarioMgr.h"
 #include "Scenario.h"
+#include "Map.h"
+#include "sheilun_plan.h"
 
 
 // 101881
@@ -17,28 +19,9 @@ class npc_tazhan_chu : public CreatureScript
 public:
     npc_tazhan_chu() : CreatureScript("npc_tazhan_chu") { }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
+    bool OnGossipSelect(Player*, Creature*, uint32, uint32) override
     {
-
-        player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48494);
-        creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0); // госсип
-        creature->GetMotionMaster()->MovePoint(0, -1019.15f, -2795.95f, 38.91f);
-        if (Creature* mob = creature->FindNearestCreature(101882, 107.0f, true))
-        {
-            mob->GetMotionMaster()->MovePoint(0, -1019.15f, -2795.95f, 38.91f);
-            mob->AI()->Talk(4);
-            mob->CastSpell(mob, 60958);
-        }
-
-        if (Creature* mob = creature->FindNearestCreature(101885, 107.0f, true))
-            mob->GetMotionMaster()->MovePoint(0, -1019.15f, -2795.95f, 38.91f);
-
-        if (Creature* mob = creature->FindNearestCreature(101883, 107.0f, true))
-            mob->GetMotionMaster()->MovePoint(0, -1019.15f, -2795.95f, 38.91f);
-
-        if (GameObject* go = creature->FindNearestGameObject(246464, 100.0f))
-            go->SetPhaseMask(2, true);
-        player->CLOSE_GOSSIP_MENU();
+        // Native sGossipSelect receives the actual menu and option index.
         return true;
     }
 
@@ -90,11 +73,12 @@ public:
 
         void DoAction(int32 const action) override
         {
-            if (action == 1)
-                countgossip++;
+            if (action == 1) SheilunPlan::Refresh(me);
+        }
 
-            if (countgossip == 3)
-                me->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 1); // госсип
+        void sGossipSelect(Player* player, uint32 menu, uint32 option) override
+        {
+            SheilunPlan::Start(player, me, menu, option);
         }
 
         void DamageDealt(Unit* victim, uint32& damage, DamageEffectType /*damageType*/) override
@@ -257,30 +241,9 @@ class npc_sheylun_small_events : public CreatureScript
 public:
     npc_sheylun_small_events() : CreatureScript("npc_sheylun_small_events") { }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
+    bool OnGossipSelect(Player*, Creature*, uint32, uint32) override
     {
-
-        uint32 criteria = 0;
-        switch (creature->GetEntry())
-        {
-            case 101882: //fay
-                criteria = 48446;
-                break;
-            case 101883: //birdman
-                criteria = 48447;
-                break;
-            case 101885: //Taoshi
-                criteria = 48448;
-                break;
-        }
-        if (criteria)
-        {
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, criteria);
-            creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0); // госсип
-            if (Creature* chu = creature->FindNearestCreature(101881, 100.0f, true))
-                chu->AI()->DoAction(1);
-        }
-        player->CLOSE_GOSSIP_MENU();
+        // Sender/action are both zero for these native white-bubble options.
         return true;
     }
 
@@ -304,6 +267,10 @@ public:
         #include "sheilun_companion_wounds.h"
 
         void WoundSpeech() { Talk(0); Talk(1); }
+        void sGossipSelect(Player* player, uint32 menu, uint32 option) override
+        {
+            SheilunPlan::Select(player, me, menu, option);
+        }
         void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int32 /*gain*/) override { ObserveWoundHeal(); }
         void UpdateLifecycle(uint32 /*diff*/) override { RecoverWound(); }
 

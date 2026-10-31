@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-31",
+  "status": "Sheilun distinct plan/start native admissions and acknowledged transitions deployed; tactical effects/physical pickup/return/full client and all36 OPEN",
+  "fix_commit": "recorded by following archive audit",
+  "cause": [
+    "Original companion script sends48446/47/48 but increments Taran countgossip even for a duplicate/rejected event. Three calls from just Fei Li can enable Taran without three accepted distinct roles. Taran original script then sends48494 and moves actors/hides wall even if that event is rejected.",
+    "Native Player::PrepareGossipMenu builds both white-bubble choices with Sender0/Action0. WorldSession passes actual GossipID/GossipIndex to AI sGossipSelect before the legacy CreatureScript callback, so legacy sender/action cannot validate or distinguish the option index. SendCloseGossip only sends a packet and retains server menu contents."
+  ],
+  "change": [
+    "Move both selections to their existing registered AI sGossipSelect consumers; legacy CreatureScript callbacks return true without repeating effects. Validate real current menu ID, offered option index, actual white-bubble uncoded/free item with sender/action0, player world/alive/contact/class10/active unrewarded41003/no teleport, same map/phase/visible/LOS/native interaction range and actual live matching map1541/scenario1007 actor with gossip bit.",
+    "Accept only the six actual World companion source tuples (both rescued and upper copies of each of101882/101883/101885);102063 and unrelated actors do not qualify. Consume server menu items through actual ClearMenus before native delivery, then close the window. For each role require step2 and its receipt absent; send only native48446/47/48. Capture full player/source GUIDs and weak current quest lease; resolve both from original map and recheck actual source entry/spawn/player/quest/context after native criteria before clearing only its gossip bit.",
+    "Taran readiness derives from all three real46636/37/38 receipts and native step3, not call count. Existing DoAction1 and once-per-native-lifecycle refresh only restore its gossip flag if48494 receipt46662 is absent; neither awards progression. Start validates actual362837/menu19235/option0, all three plan receipts and unreceived46662, then native48494 must be acknowledged in matching current context before original point0, Fei Li Talk4/60958, companion movements and246464 phase2. Nullable Fei AI no longer dereferenced. Original coordinates/delays/combat/wounds/rescue/loot/registrations retained; old count field retained only for layout, no longer authoritative."
+  ],
+  "validation": [
+    "Exact whole Sheylun.cpp/helper source delta against04e5ba3b5; no changes to unrelated actors, movement handlers, combat, rescue, presentation timers, boss, pickup or registration. Prior opening/wound/timer scope suites separately certify this delta; current native heal/wound bodies and full presentation actor are still compiled, with plan endpoints explicitly controlled in retained hosts.",
+    "583 MSVC ASAN cases compile current actual helper, both AI delegates, real DoAction, inert legacy handlers, exact ordinary native packet dispatch and eight native GossipMenu/PlayerMenu getter/clear methods.384 combinations cover all six role orders, three real tactical-index bits and rescued-versus-upper source bits.124 invalid player/actor/quest/menu contexts, all roles duplicate/rejected/retry, stale-menu synchronous reentry, same-role other-copy duplication,56 reentrant quest/map/source/phase/status revocations, complete-active quest, missing companions/wall/Taran and null Fei AI pass. World/criteria/visibility/range/motion/cast endpoints controlled; no complete client traversal.",
+    "Pinned EXPECTED BROKEN04e5ba3b5 counterfactual compiles original handlers and actual packet/getter path: repeated rejected Fei selections enable Taran with no plan receipts; rejected start still moves/hides. Old dangling code is not involved. Paired repaired cases require real receipts and leave rejected offers retryable.",
+    "Fresh typed26972 DB2 + readonly Hotfix confirms1007 steps2/3, role events48446/47/48 and46636/37/38, start48494/46662. Public full-EOF readonly World validation verifies five bindings, all eight source spawns/phases, seven exact original menu options/indices and absence of extra menu conditions. No persistent SQL or character writes.",
+    "Retained97 applied opening,8535 final-damage/heal wound and42 native presentation lifetime cases pass. Original scripts Release BuildProjectReferences=false without OutDir override rebuilt scripts.lib; staged link checks actual original LIB inputs and unchanged prior canonical hashes. Selected actual PE proves two registered factory/vtableC8 consumers/native packet dispatch, inert legacy callbacks, full six-record120-byte/20-stride native role loop, menu and source/quest lease resolutions, receipt order, original commands after48494, readiness before owned presentation clock and native core heal/wounds. Canonical public583/native/live/Release PE plus ScepterLogin VerifyReleaseBinary pass.",
+    "Owned canonical worldserver21872 fresh ready, server shutdown0/exit0/stderr0/newDB0, protected configuration/certificates unchanged and process gone. Four-file offline promotion/backup hashes verified; no user server stopped or task background server left."
+  ],
+  "development": [
+    "Initial host C4389 bool-versus-uint flag assertion corrected with an explicit bool conversion; final current plan host compiles without warnings. Baseline unused original action parameters remain visible, as do retained native health, EventMap/FunctionProcessor and Scepter warnings; production build/link no new warnings.",
+    "Initial current host incorrectly modeled SendCloseGossip as clearing server menu. Actual GossipDef.cpp investigation found packet-only behavior; production now explicitly ClearMenus before credit, and host compiles eight real getter/clear methods, with SendClose only a controlled packet/count endpoint. Added four synchronous stale-menu cases; final583 and paired baseline2 pass. Earlier incomplete fixtures remain visible, not accepted as full menu proof.",
+    "Initial upper-only source assumption was revised before promotion after full World/phase and native InSamePhaseId trace. Both rescued and upper actual sources can be encountered under current common7000 phase overlap. Final six records/eight-spawn data check/384 combinations cover both; no phase mutation or unproven upper-only certification.",
+    "First phase query used nonexistent PhaseGroup. Full stderr/stdout preserved; corrected query reaches EOF. Initial source26 phase-condition query was the wrong source type and gives no absence evidence; actual ConditionMgr source23 plus fresh phases3 query establishes real phase gates. These broader phase findings remain OPEN outside fixed.",
+    "Initial PE event-argument assertion named EDX as the role event; actual native ABI uses EDX92/R8D record+12. Inspected linked window and asserted both actual operands. Corrected stage2 and canonical PE pass; failed stage1 retained."
+  ],
+  "open_sequence": [
+    "Native World8005 definition5 adds common7000; actor phase lists include7000 and native InSamePhaseId uses intersection. Thus rescued/upper copies may overlap. Source23 definition2 admits7001 in stages2/3/4, definition3 admits7002 in0/1. This focus accepts only real sources and deduplicates by native role receipt; it does not certify or repair duplicate visual placement, NPC-to-NPC phase/search behavior or later actor continuity. Raw phase research remains OPEN outside fixed.",
+    "Both real option indices remain admitted, preserving all original localized options. Original scripts did not apply distinct defensive/aggressive combat policy; no unverified new buff/threshold invented here. Those tactical effects and native companion speech remain OPEN.",
+    "Current caller receives only original native scenario events; no pet/group progression is manually synthesized. Shared same-instance scenario receipts remain authoritative. Player/pet/guardian final blows, NPC ally victory and legitimately eligible group/faction boss progress belong to the separately OPEN battle/acquisition path. No faction-specific gate added.",
+    "Failed criteria leaves valid actor gossip available for a fresh offer. A missing Taran recovers readiness from accepted native receipts when its actual AI is present again; no recovery grants credit. Quest-abandon/reaccept, map/phase/source revocations during delivery deny later effects. Whole instance reset/re-entry, actual failed movement/cast,204779 combat, all three client menus/voices/tactical effects, physical source/storage/outro/TakTak flight/landing and whole1007/all36 remain OPEN. Existing boss/go auto-grants and14s return shortcut deliberately unchanged until real complete path works."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "0e730ba4762057a77223d040bb591963dfe4bb45574f847c6fc3da3402cf7355",
+      "worldserver.map": "2d582091dd4fbd6b96dd6110980fa140b6fb5172a6480ddaeb28cadbeec4abc3",
+      "bnetserver.exe": "199affea8c7465ebaa7c3e050183645738e5f57978e1e6fdeface4849bfa8176",
+      "bnetserver.map": "7844e7a6edd59d6db62ec3a44c7773e796f5081cd2509968d5c5cfbc29956b52"
+    },
+    "stage": ".codex/sheilun-plan-release",
+    "backup": ".codex/release-before-sheilun-plan-2026-10-31/manifest.json",
+    "sql": "No migration, persistent data mutation, manual quest/item grant or character reset"
+  },
+  "diagnostics": {
+    "new_changed_crashes": 0,
+    "appended_dberrors": 0,
+    "server_errors_warnings_assertions": 0,
+    "active_crashes": "empty",
+    "mixed_unresolved_db_bytes": 6090,
+    "mixed_unresolved_db_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "owned_pid": 21872,
+    "owned_exit": 0,
+    "task_servers_remaining": 0
+  },
+  "evidence": [
+    ".codex/sheilun-plan-baseline-2026-10-31",
+    ".codex/sheilun-plan-baseline2-2026-10-31",
+    ".codex/sheilun-plan-build-2026-10-31",
+    ".codex/sheilun-plan-build2-2026-10-31",
+    ".codex/sheilun-plan-build3-2026-10-31",
+    ".codex/sheilun-plan-build4-2026-10-31",
+    ".codex/sheilun-plan-call-pe-2026-10-31",
+    ".codex/sheilun-plan-canonical-2026-10-31",
+    ".codex/sheilun-plan-native1-2026-10-31",
+    ".codex/sheilun-plan-native2-2026-10-31",
+    ".codex/sheilun-plan-native3-2026-10-31",
+    ".codex/sheilun-plan-native4-2026-10-31",
+    ".codex/sheilun-plan-pe-research-2026-10-31",
+    ".codex/sheilun-plan-promotion-2026-10-31",
+    ".codex/sheilun-plan-retained-2026-10-31",
+    ".codex/sheilun-plan-stage-pe1-2026-10-31",
+    ".codex/sheilun-plan-stage-pe2-2026-10-31",
+    ".codex/sheilun-plan-startup-2026-10-31"
+  ],
+  "open_evidence": [
+    ".codex/sheilun-plan-phases1-2026-10-31",
+    ".codex/sheilun-plan-phases2-2026-10-31",
+    ".codex/sheilun-plan-phases3-2026-10-31"
+  ],
+  "next": "Continue native companion tactical effects and real manual physical source/storage/outro/return; retain source/menu/voice/route audits and user-owned client testing, no reset."
+}

@@ -63,6 +63,7 @@ void OnHealApplied(Unit* who, uint32 /*amount*/, int32 /*gain*/) override
 void UpdateLifecycle(uint32 diff) override
 {
     RecoverWound();
+    SheilunPlan::Refresh(me);
     // Preserve the former Unit timer clock, including stun and suspended AI.
     _presentationFunctions.Update(diff);
     if (_introHealBusy || _introHealer.IsEmpty()) return;

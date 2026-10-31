@@ -3,6 +3,13 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/Sheylun.cpp';$header='src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_taran_intro.h'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$intro=(Get-Content "$repo/$header" -Raw).Replace("`r",'')
+$currentSource=$source;$currentIntro=$intro
+if($source.Contains('#include "sheilun_plan.h"')){
+ & "$PSScriptRoot/Test-SheilunPlan.ps1" -ScopeOnly
+ if(!$?){throw 'Current plan delta failed certification'}
+ $source=(& git -C $repo show "04e5ba3b5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned retained timer source missing'}
+ $intro=(& git -C $repo show "04e5ba3b5:$header") -join "`n";if($LASTEXITCODE){throw 'Pinned retained timer helper missing'}
+}
 $old=(& git -C $repo show "d52af1bc7:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-timer source missing'}
 $oldIntro=(& git -C $repo show "d52af1bc7:$header") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-timer opening helper missing'}
 $normal=$source.Replace('        // These callbacks capture this AI, so they must not outlive it.','').Replace('        // Keep the older combat/rescue queue on its original UpdateAI clock.','').Replace('        FunctionProcessor _presentationFunctions;','').Replace('_presentationFunctions.AddDelayedEvent(4000,','me->AddDelayedEvent(4000,').Replace('_presentationFunctions.AddDelayedEvent(5000,','me->AddDelayedEvent(5000,')
@@ -12,6 +19,7 @@ if(($normal -replace '\s','') -cne ($oldIntro -replace '\s','')){throw 'Opening 
 $actor=Block $source 'struct npc_tazhan_chuAI :';$oldActor=Block $old 'struct npc_tazhan_chuAI :'
 if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent')).Count -ne 2 -or ([regex]::Matches($intro,'_presentationFunctions.Update\(diff\)')).Count -ne 1){throw 'Unexpected queue consumers/clock count'}
 if($ScopeOnly){'PASS exact whole-file d52af1bc7 certificate: only two4s/5s capture owners, appended AI processor and one lifecycle clock; original reset, rescue/combat queue, events, paths, spells, casts, gossip, wounds, credits and other actors retained';return}
+$actor=Block $currentSource 'struct npc_tazhan_chuAI :';$intro=$currentIntro
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sheilun-taran-presentation$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $selected=if($Baseline){$oldActor}else{$actor}

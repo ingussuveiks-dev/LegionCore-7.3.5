@@ -43,6 +43,7 @@ struct CreatureAI{
  virtual void Reset(){}virtual void EnterCombat(Unit*){}virtual void DoAction(int32){}virtual void DamageDealt(Unit*,uint32&,DamageEffectType){}
  virtual void SetData(uint32,uint32){}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void MovementInform(uint32,uint32){}
  virtual void MoveInLineOfSight(Unit*){}virtual void UpdateAI(uint32){}virtual void UpdateLifecycle(uint32){}
+ virtual void sGossipSelect(Player*,uint32,uint32){}
  virtual void Talk(uint32 id){me->talks.push_back(id);if(me->onTalk)me->onTalk(id);}
  void MoveInLineOfSight_Safe(Unit*);
 };
@@ -54,6 +55,8 @@ void Creature::Lifecycle(uint32 diff){
 #include "AIDestroy.inc"
 #include "SafeLOS.inc"
 struct ScriptedAI:CreatureAI{using CreatureAI::CreatureAI;bool UpdateVictim(){return me->victim;}void DoCast(uint32 id){me->casts.push_back(id);}void DoMeleeAttackIfReady(){}};
+// Current plan admission/refresh is exercised by its separate native suite.
+namespace SheilunPlan {void Refresh(Creature*){} void Start(Player*,Creature*,uint32,uint32){}}
 #include "Actor.inc"
 using Taran=npc_tazhan_chuAI;
 struct Run{

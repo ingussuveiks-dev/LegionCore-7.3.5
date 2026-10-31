@@ -66,6 +66,8 @@ using CreatureLevelStat=Creature::ScaleStat;
 #include "DealHeal.inc"
 #include "Tick.inc"
 struct EventMap{void Reset(){}};
+// Plan admission/refresh has its own actual packet/receipt regression suite.
+namespace SheilunPlan { void Refresh(Creature*) {} }
 struct Taran:CreatureAI{
  Creature*me;bool _introHealDone=false,wait_heal=false;unsigned talk2=0;std::vector<uint32>speech;EventMap events;
  explicit Taran(Creature*actor):me(actor){}

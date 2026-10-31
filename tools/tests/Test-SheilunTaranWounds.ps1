@@ -3,6 +3,13 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/Sheylun.cpp';$header='src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_taran_intro.h'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$intro=(Get-Content "$repo/$header" -Raw).Replace("`r",'')
+$currentSource=$source
+if($source.Contains('#include "sheilun_plan.h"')){
+ & "$PSScriptRoot/Test-SheilunPlan.ps1" -ScopeOnly
+ if(!$?){throw 'Current plan delta failed certification'}
+ $source=(& git -C $repo show "04e5ba3b5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned retained wound source missing'}
+ $intro=(& git -C $repo show "04e5ba3b5:$header") -join "`n";if($LASTEXITCODE){throw 'Pinned retained wound helper missing'}
+}
 if($source.Contains('FunctionProcessor _presentationFunctions;')){
  & "$PSScriptRoot/Test-SheilunTaranPresentation.ps1" -ScopeOnly
  if(!$?){throw 'Current presentation owner delta failed certification'}
@@ -30,6 +37,7 @@ if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Sheilun chang
 $normal=$intro.Replace('    ObserveWoundHeal();','').Replace('    RecoverWound();','')
 if(($normal -replace '\s','') -cne ($oldIntro -replace '\s','')){throw 'Opening receipt changed beyond applied-wound observation/lifecycle delegation'}
 if($ScopeOnly){'PASS exact two-class Sheilun companion wound/final-damage/reset-only delta; whole opening/routes/gossip/boss/pickup unchanged';return}
+$source=$currentSource
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sheilun-taran-wounds$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Test-SheilunTaranIntro.ps1" -PrepareHost -OutputDirectory $out;if(!$?){throw 'Current native Taran host preparation failed'}
