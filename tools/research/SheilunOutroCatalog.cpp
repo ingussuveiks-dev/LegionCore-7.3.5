@@ -33,11 +33,32 @@ int main(int argc,char** argv)
     DB2Storage<SpellEntry> spells("Spell.db2",SpellLoadInfo::Instance());
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2",SpellEffectLoadInfo::Instance());
     DB2Storage<WorldMapAreaEntry> areas("WorldMapArea.db2",WorldMapAreaLoadInfo::Instance());
-    if(!texts.Load(argv[1],0)||!soundNames.Load(argv[1],0)||!sounds.Load(argv[1],0)||!properties.Load(argv[1],0)||!nodes.Load(argv[1],0)||!paths.Load(argv[1],0)||!points.Load(argv[1],0)||!criteria.Load(argv[1],0)||!maps.Load(argv[1],0)||!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!areas.Load(argv[1],0))return 5;
+    DB2Storage<WorldSafeLocsEntry> safe("WorldSafeLocs.db2",WorldSafeLocsLoadInfo::Instance());
+    if(!texts.Load(argv[1],0)||!soundNames.Load(argv[1],0)||!sounds.Load(argv[1],0)||!properties.Load(argv[1],0)||!nodes.Load(argv[1],0)||!paths.Load(argv[1],0)||!points.Load(argv[1],0)||!criteria.Load(argv[1],0)||!maps.Load(argv[1],0)||!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!areas.Load(argv[1],0)||!safe.Load(argv[1],0))return 5;
     texts.LoadFromDB();soundNames.LoadFromDB();sounds.LoadFromDB();properties.LoadFromDB();nodes.LoadFromDB();paths.LoadFromDB();points.LoadFromDB();criteria.LoadFromDB();
     maps.LoadFromDB();
     spells.LoadFromDB();effects.LoadFromDB();
     areas.LoadFromDB();
+    safe.LoadFromDB();
+    std::cout.precision(9);
+    for(auto loc:safe)if(loc->ID==1324||loc->MapID==1514||loc->MapID==1541)
+        std::cout<<"SAFE_LOC\t"<<loc->ID<<'\t'<<loc->MapID<<'\t'<<loc->Loc.X<<'\t'<<loc->Loc.Y<<'\t'<<loc->Loc.Z<<'\t'<<loc->Loc.O<<'\t'<<loc->Name->Str[0]<<'\n';
+    // Effect252 uses the spell's actual destination/World target-position row.
+    // Its common MiscValue1324 is not a WorldSafeLocs foreign key.
+    std::set<uint32> transit{194011,194151,199465,202831,210115,215788,217820,202828,202693,202742};
+    for(auto spell:spells)
+    {
+        std::string name=spell->Name->Str[0];
+        std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});
+        if(spell->ID>=190000&&spell->ID<=240000&&name.find("kite")!=std::string::npos)transit.insert(spell->ID);
+    }
+    for(auto effect:effects)if(effect->Effect==28&&(effect->EffectMiscValue[0]==102648||effect->EffectMiscValue[0]==102590))transit.insert(effect->SpellID);
+    for(auto id:transit)
+    {
+        if(auto spell=spells.LookupEntry(id))std::cout<<"TRANSIT_SPELL\t"<<id<<'\t'<<spell->Name->Str[0]<<'\n';
+        for(auto effect:effects)if(effect->SpellID==id&&!effect->DifficultyID)
+            std::cout<<"TRANSIT_EFFECT\t"<<id<<'\t'<<effect->EffectIndex<<'\t'<<effect->Effect<<'\t'<<effect->EffectMiscValue[0]<<'\t'<<effect->EffectMiscValue[1]<<'\t'<<effect->EffectTriggerSpell<<'\t'<<effect->ImplicitTarget[0]<<'\t'<<effect->ImplicitTarget[1]<<'\n';
+    }
     std::vector<std::string> const terms={"great service for pandaria","staff of our last emperor","ten thousand years ago, emperor shaohao","will not hide away","emperor's staff against","white tiger bless","back to turtle","like the emperor now","get back to the wandering isle","wookin' grook"};
     std::set<uint32> kits,localNodes,scenarioPaths;
     uint32 textCount=0,selected=0,returnCriteria=0;

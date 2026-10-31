@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-31",
+  "status": "OPEN implementation and client traversal; read-only native/local research",
+  "loot": [
+    "Matching26972 Lock1691 has one nonzero slot: Type2/Index5/Skill0/Action0, LockType5 Open/Unlocked Items. Map1541 InstanceType5 is a dungeon, non-raid dungeon, scenario and instance according to the actual MapEntry methods. Native full-bag chest release therefore retains unexhausted loot in GO_ACTIVATED.",
+    "Actual GameObjectTemplate chest layout is Data0=lock1691, Data1=loot0, Data2=chestRestockTime1, Data3=consumable0, Data14=openText23645 and Data17=PlayerCondition0. Data2 is not the consumable field. Flags0x204000 correspond to currently unnamed GO_FLAG_UNK14 and GO_FLAG_UNK21; no additional semantics inferred.",
+    "GO256913 has no static spawn. Native Whirlpool246318 spawn134376 is map1541/area8005, phase7000, (-1017.29,-2772.8,36.4643), scale0.4. It is not phase7003, and its Z is not an approved staff base height. No selected SmartAI or creature_summon_groups producer for102479/102505,202385/202436/202435 or the acquisition GO was found in the fresh full-EOF queries. This is a scoped search, not proof about every client asset or historical producer."
+  ],
+  "model": {
+    "display": 9806,
+    "FileDataID": 353152,
+    "bytes": 3508,
+    "sha256": "eebb0279406029767c9ad13378150015b80f72a94bbbaaf32fcf568810508726",
+    "name": "Clickable_Box",
+    "scope": "Read-only CASC export with matching build and unchanged index hashes. Parsed bounded MD21/MD20 header using this core's packed model layout:24 vertices, one CREATURE\\GHOST\\BLACK32.BLP texture, render flags16/4. The GO is an interaction proxy, not the staff mesh; actual item128937 visual remains native202385 on102479. No texture decoding, client rendering or exact retail source-GUID claim."
+  },
+  "return": [
+    "Native WorldSafeLoc5710 is explicitly named Mistweaver Exit Safe Loc: map1514 (937.987854,3716.6814,189.062347), facing85.275 degrees. Native Taxi5619 ends at (938.717041,3713.99829,189.803421), about2.87 yards away. This is stronger evidence for the return landing than the earlier unbound5507 front-door candidate. Neither the explicit caller nor the complete map1541 flight is recovered by this proximity alone.",
+    "Native202831 Travel to Turtle on Kite uses effect252, self/DEST_DB17. Actual World spell_target_position maps it to1514 (476.04,3281.42,329.5), orientation0.986984. Native202742 uses effect227 and World destination1541 (-1073,-3143.71,27.66), orientation0.02. Existing194151 Zen Escape instead targets1514 (734.37,3434.16,123.47); it is not the exit landing or the high-sky202831 transition.",
+    "Effect252 is Spell::EffectTeleportUnits. Actual TARGET_DEST_DB selection and the self-only fallback read sSpellMgr->GetSpellTargetPosition(spellID); MiscValue1324 is not used as a WorldSafeLoc foreign key. WorldSafeLoc1324 is an unrelated Borean Tundra map571 graveyard. Initial prototype SAFE_SPELL numeric joins were incorrect tool interpretation, not evidence of corrupt destinations. The corrected catalog prints raw TRANSIT_EFFECT values and independently named safe locations.",
+    "Fresh selected spell_area and SmartAI11/85 producers for202828/202831 returned no rows; instance1541 uses instance_sheylun. No exact return implementation was established. Preserve native202828/3035, vehicle4581 player seat0 and Tak-Tak seat1, existing return menu19257 and the full voice evidence from the earlier audit when implementing."
+  ],
+  "diagnostics": "All listed completed native/SQL/asset inspections had no new or changed crashes, DBErrors or server diagnostics. Existing mixed unresolved DBErrors6090 bytes remains untouched. Earlier prototype and failed exploratory SQL evidence remains OPEN, outside fixed archives. No runtime server or character mutation for this research.",
+  "evidence": [
+    ".codex/sheilun-loot-fields-open-2026-10-31",
+    ".codex/sheilun-loot-native1-open-2026-10-31",
+    ".codex/sheilun-loot-model-open-2026-10-31",
+    ".codex/sheilun-loot-model-inspection-open-2026-10-31",
+    ".codex/sheilun-loot-producers-open-2026-10-31",
+    ".codex/sheilun-return-safe-native-open-2026-10-31",
+    ".codex/sheilun-return-safe-native2-open-2026-10-31",
+    ".codex/sheilun-return-destinations-open-2026-10-31",
+    ".codex/sheilun-transit-producers-open-2026-10-31"
+  ],
+  "remaining": "Actual manual source/storage acknowledgement, boss player/pet/guardian/ally credit, outro caller, safe boarding and both flight legs; abandonment/re-entry/group variants; actual client pickup/scene/equipment/camera/pet/return/turn-in. This research does not certify the full chain or all36 artifact chains."
+}
