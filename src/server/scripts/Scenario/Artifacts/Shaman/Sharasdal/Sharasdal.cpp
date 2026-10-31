@@ -401,6 +401,8 @@ public:
         bool _wallPending = false, _wallBusy = false, _wallExhausted = false, _wallPresent = false;
         uint32 _wallRetry = 0, _wallTries = 0;
 
+        #include "sharasdal_upper_wall.h"
+
         bool BindWallRecipient(Player* player)
         {
             QuestStatusData* status = player->getQuestStatus(40341);
@@ -482,10 +484,16 @@ public:
                 _wallExhausted = false;
                 _wallRetry = _wallTries = 0;
             }
+            if (id == 40341 && _upperArrived && guid == _upperRecipient)
+            {
+                _upperExhausted = false;
+                _upperRetry = _upperTries = 0;
+            }
         }
 
         void Reset() override
         {
+            if (!_upperOpened && (_upperMoving || _upperArrived)) CancelUpperWall();
             CancelIntroHeal();
             _healFunctions.KillAllFunctions();
             _pendingHealRecovery = false;
@@ -529,12 +537,8 @@ public:
                 if (!SharasdalGrash::Receipt(scenario, 47303))
                     return;
             }
-            if (step == 4 && !SharasdalGrash::Receipt(scenario, 47133))
-            {
-                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49819);
-                if (!SharasdalGrash::Receipt(scenario, 47133))
-                    return;
-            }
+            if (step == 4 && !BindUpperWall(player))
+                return;
             _gossipActions |= actionBit;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             player->PlayerTalkClass->ClearMenus();
@@ -543,7 +547,7 @@ public:
                 DoAction(step <= 1 ? 1 : 2);
             else
             {
-                me->GetMotionMaster()->MovePoint(1, -17.96f, 802.05f, 807.66f);
+                me->GetMotionMaster()->MovePoint(_upperPoint, -17.96f, 802.05f, 807.66f);
             }
         }
 
@@ -590,6 +594,9 @@ public:
                 {
                     _functions.AddFunction([this]() -> void
                     {
+                        // A late one-second approach must not replace the already
+                        // accepted final-wall movement (e.g. a one-hit gauntlet).
+                        if (IsUpperGrash() && (_gossipActions & (1u << 4))) return;
                         me->GetMotionMaster()->MovePoint(0, -44.47f, 802.39f, 797.16f);
                         if (Creature* erunak = me->FindNearestCreature(102826, 40.0f, true))
                             erunak->GetMotionMaster()->MovePoint(0, -18.62f, 808.39f, 807.72f);
@@ -700,6 +707,7 @@ public:
             _healFunctions.Update(diff);
             CompleteIntroHeal(diff);
             CompleteWallCredit(diff);
+            CompleteUpperWall(diff);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
@@ -748,6 +756,11 @@ public:
             }
             else if (type == POINT_MOTION_TYPE)
             {
+                if (IsUpperGrash() && id)
+                {
+                    UpperWallArrival(id);
+                    return;
+                }
                 if (id == 1)
                 {
                     DoCast(209904);

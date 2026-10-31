@@ -37,7 +37,7 @@ assert sites(movement,'?World@SharasdalWall@@') and sites(movement,'?GetMotionSl
 # native _pathId2c, zero-based arrival node and exact three wall GUIDs remain.
 path_slot,=sites(movement,'?GetMotionSlot@MotionMaster@@')
 assert any(x.mnemonic=='xor' and x.op_str=='edx, edx' for x in movement[max(0,path_slot-6):path_slot])
-assert any(x.mnemonic=='mov' and x.op_str=='ebp, dword ptr [rbp + 0x2c]' for x in movement)
+assert any(x.mnemonic=='mov' and x.op_str=='r14d, dword ptr [r14 + 0x2c]' for x in movement)
 assert {10993808,10993810,134291,134287,134290,248514,209904,1,2,3,4}<=values(movement)
 assert any(x.mnemonic=='test' and x.op_str=='byte ptr [rbx + 0x10c], 1' for x in movement)
 assert any(x.mnemonic=='test' and x.op_str=='byte ptr [rbx + 0x10c], 4' for x in movement)
@@ -45,7 +45,7 @@ assert sites(movement,'?GetDBTableGUIDLow@GameObject@@') and sites(movement,'?In
 opened=sites(movement,'?HandleGameObject@InstanceScript@@')[0]
 state,=sites(movement,'?GetGoState@GameObject@@')
 assert opened<state
-assert any(x.mnemonic=='mov' and x.op_str=='r9, rsi' for x in movement[opened-10:opened])
+assert any(x.mnemonic=='mov' and x.op_str=='r9, rbp' for x in movement[opened-10:opened])
 assert movement[state+1].mnemonic=='test' and movement[state+1].op_str=='eax, eax' and movement[state+2].mnemonic=='jne'
 finished,=sites(movement,'?CompleteWallCredit'+suffix)
 assert state<finished and any(x.mnemonic=='mov' and x.op_str=='byte ptr [rbx + 0x1b0], 1' for x in movement[state:finished])
@@ -54,7 +54,8 @@ assert not sites(movement,'?FindNearestPlayer@WorldObject@@') and not events(mov
 select=instructions('?sGossipSelect'+suffix)
 # BindWallRecipient is inlined; it must precede the existing consumed-action bit
 # and route command, retaining the complete caller GUID and native quest lease.
-lease,=sites(select,'?AddQuestDelayedEvent@Player@@')
+leases=sites(select,'?AddQuestDelayedEvent@Player@@');assert len(leases)==2
+lease=leases[0] # lower binding still precedes its original route; upper has a separate lease
 assert 40341 in values(select) and {0x190,0x1a0,0x1a8}<=fields(select)
 assert sites(select,'?World@SharasdalWall@@') and sites(select,'?getQuestStatus@Player@@')
 assert struct.unpack_from('<Q',n['binary'],table+0x48)[0]==n['symbol']('?DoAction'+suffix)
@@ -70,10 +71,11 @@ assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rbx], 0' for x in credit[a
 life=instructions('?UpdateLifecycle'+suffix)
 assert sites(life,'?CompleteIntroHeal'+suffix)[0]<sites(life,'?CompleteWallCredit'+suffix)[0]
 rearm=instructions('?SetGUID'+suffix)
-assert {40341,0}<=values(rearm) and {0x190,0x1b0,0x1b2,0x1b4}<=fields(rearm)
+assert 40341 in values(rearm) and {0x190,0x1b0,0x1b2,0x1b4}<=fields(rearm)
 assert sites(rearm,'??8ObjectGuid@@') and not events(rearm)
-assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rbx + 0x1b2], 0' for x in rearm)
-assert any(x.mnemonic=='mov' and x.op_str=='qword ptr [rbx + 0x1b4], rax' for x in rearm)
+assert any(x.mnemonic=='xor' and x.op_str=='esi, esi' for x in rearm)
+assert any(x.mnemonic=='mov' and x.op_str=='byte ptr [rbx + 0x1b2], sil' for x in rearm)
+assert any(x.mnemonic=='mov' and x.op_str=='qword ptr [rbx + 0x1b4], rsi' for x in rearm)
 assert struct.unpack_from('<Q',n['binary'],table+0x80)[0]==n['symbol']('?SetGUID'+suffix)
 entry=instructions('?OnPlayerEnter@instance_sharasdal_InstanceMapScript@instance_sharasdal@@')
 assert sites(entry,'?GetCreature@Map@@') and {0x39f,0x9c0,0x9c8}<=fields(entry)

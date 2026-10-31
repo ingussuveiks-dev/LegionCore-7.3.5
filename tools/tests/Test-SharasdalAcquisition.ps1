@@ -3,7 +3,13 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $actor=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "ab9a5b3d9:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-acquisition actor missing'}
-$normal=$actor.Replace('#include "sharasdal_acquisition.h"',(Block $old 'class go_art_sharasdal :')+';').Replace('    RegisterSpellScript(spell_sharasdal_acquisition);','').Replace('    RegisterAuraScript(aura_sharasdal_acquisition);','')
+$scopeActor=$actor
+if($actor.Contains('#include "sharasdal_upper_wall.h"')){
+ & "$PSScriptRoot/Test-SharasdalUpperWall.ps1" -ScopeOnly
+ if(!$?){throw 'Actual upper wall scope certificate failed'}
+ $scopeActor=(& git -C $repo show "da3f4b8bb:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-upper-wall actor missing'}
+}
+$normal=$scopeActor.Replace('#include "sharasdal_acquisition.h"',(Block $old 'class go_art_sharasdal :')+';').Replace('    RegisterSpellScript(spell_sharasdal_acquisition);','').Replace('    RegisterAuraScript(aura_sharasdal_acquisition);','')
 if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Other companions/heals/gossip/walls/Kraliss/Lady/registration changed'}
 if($ScopeOnly){'PASS only old GO pickup replaced by scoped acquisition header and two matching loaders; all other actor content retained';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify repaired Release'}

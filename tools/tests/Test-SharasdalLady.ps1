@@ -11,7 +11,13 @@ if($actor.Contains('#include "sharasdal_acquisition.h"')){
 }
 $old=(& git -C $repo show "d7610f9d1:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned instance before Lady missing'}
 $oldActor=(& git -C $repo show "d7610f9d1:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned Lady actor missing'}
-$normal=$source.Replace((Block $source 'namespace SharasdalLady'),'')
+$scopeInstance=$source
+if($actor.Contains('#include "sharasdal_upper_wall.h"')){
+ # The acquisition certificate above includes the strict upper-wall certificate.
+ # Freeze only this older comparison; native Instance.inc below stays current.
+ $scopeInstance=(& git -C $repo show "da3f4b8bb:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-upper-wall instance missing'}
+}
+$normal=$scopeInstance.Replace((Block $scopeInstance 'namespace SharasdalLady'),'')
 $start=$normal.IndexOf('        ObjectGuid ladyRecipient;');$end=$normal.IndexOf('        void BeginBrutes(',$start)
 if($start -lt 0 -or $end -lt $start){throw 'Lady member/method boundary changed'};$normal=$normal.Remove($start,$end-$start)
 $deathPrefix=@'

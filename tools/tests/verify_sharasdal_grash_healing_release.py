@@ -58,8 +58,9 @@ assert recover<clock<finish
 reset=instructions('?Reset'+suffix)
 assert sites(reset,'?CancelIntroHeal'+suffix) and sites(reset,'?KillAllFunctions@FunctionProcessor@@')
 select=instructions('?sGossipSelect'+suffix)
-assert events(select)==[50161,49819]
-assert {47303,47133}<=immediates(select)
+assert events(select)==[50161]
+assert sites(select,"?UpperWallScenario"+suffix) and 40341 in immediates(select) # inlined upper bind; receipt belongs to its arrival helper
+assert 47303 in immediates(select)
 if any(name.startswith('?Recruitable@SharasdalGrash@@') for name in n['symbols']):
     recruitment=instructions('?Recruitable@SharasdalGrash@@')
     assert {47121,47180,47161,2}<=immediates(recruitment)
@@ -80,4 +81,4 @@ assert len(data_slots)==1
 assert any(x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==data_slots[0] for x in hello)
 legacy=instructions('?OnGossipSelect@npc_grash@@')
 assert [(x.mnemonic,x.op_str) for x in legacy[:2]]==[('mov','al, 1'),('ret','')]
-print('PASS selected Grash applied-heal0x288/empty pre-heal0xb0, native50/90/795 guards, persistent owner/quest lease, only49815+49900 acknowledged receipts/finite retry, AI-owned3s reply and lifecycle clock order; actual raw packet gossip dispatch installs native menu/option admission, separate50161/49819 receipt guards, role-only removal and inert legacy callback. Original route/final damage source certificate is separate; full client sequence remains pending')
+print('PASS selected Grash applied-heal0x288/empty pre-heal0xb0, native50/90/795 guards, persistent owner/quest lease, only49815+49900 acknowledged receipts/finite retry, AI-owned3s reply and lifecycle clock order; actual raw packet gossip dispatch installs native menu/option admission, separate50161 recruitment and issued upper-wall helper without early49819, role-only removal and inert legacy callback. Original route/final damage source certificate is separate; full client sequence remains pending')

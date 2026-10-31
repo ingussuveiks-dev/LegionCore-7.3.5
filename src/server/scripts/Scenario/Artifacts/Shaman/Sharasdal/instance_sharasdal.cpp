@@ -529,7 +529,8 @@ public:
         void RearmGrashWall(Player* player)
         {
             if (!player) return;
-            if (Creature* grash = instance->GetCreature(lowerGrash))
+            for (ObjectGuid const& guid : {lowerGrash, upperGrash})
+            if (Creature* grash = instance->GetCreature(guid))
             {
                 auto current = grash->AI();
                 auto suspended = grash->GetDisabledAI();
@@ -627,6 +628,8 @@ public:
             }
         }
 
+        ObjectGuid upperGrash;
+
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override
         // OnPlayerDeath
         {            
@@ -643,6 +646,7 @@ public:
         
         void OnCreatureCreate(Creature* creature) override
         {
+            if (creature->GetEntry() == 105298 && creature->GetDBTableGUIDLow() == 362092) upperGrash = creature->GetGUID();
             if (creature->GetEntry() == 105298 && creature->GetDBTableGUIDLow() == 362066) lowerGrash = creature->GetGUID();
             if (creature->GetEntry() == 102826 && creature->GetDBTableGUIDLow() == 362063) lowerErunak = creature->GetGUID();
             if (creature->GetGUID() == lowerGrash || creature->GetGUID() == lowerErunak)

@@ -1,4 +1,4 @@
-param([switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[switch]$RetainedGrash,[string]$OutputDirectory='')
+param([switch]$PrepareHost,[switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[switch]$RetainedGrash,[string]$OutputDirectory='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
@@ -98,6 +98,7 @@ void Player::UpdateAchievementCriteria(uint32 type,uint32 asset){
 }
 '@)
 [IO.File]::WriteAllText("$out/NativeHost.inc",$hostSource)
+if($PrepareHost){return}
 $compileSource="$PSScriptRoot/SharasdalWallTest.cpp"
 if($RetainedGrash){
  if($Baseline){throw 'Retained current Grash is not the wall counterfactual'}
