@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-31",
+  "status": "PASS focused retained fixture correction; no gameplay or database change",
+  "cause": "The older currency packet fixture extracted a production section that now invokes IsLootItemVisibleTo, but did not extract that already-existing helper. Its compile failure C3861 was a stale fixture, not a newly failing runtime currency serializer. The helper already exists in pinned330996949 before the pending quest-object loot repair.",
+  "fix": "Extract the complete native visibility helper as well as the currency response section. Provide explicit controlled player/group/admission endpoints and test revoked admission in addition to existing CurrencyID1149/1220, quantity64/23, default/custom slot, player, personal and looted-state cases. Add optional AddressSanitizer compilation. The actual condition evaluator and quest-scope policy are not modeled or certified by this small host.",
+  "validation": "Test-CurrencyLootResponse.ps1 -AddressSanitizer passed; native exit0, no new/changed crashes, appended DBErrors or server diagnostics. The failed first compilation remains preserved and paired with the successful corrected fixture.",
+  "evidence": [
+    ".codex/quest-loot-retained-currency1-2026-10-31",
+    ".codex/quest-loot-retained-currency2-2026-10-31",
+    "build-extractors/runtime-test/currency-loot-response"
+  ],
+  "limits": "This serializer/visibility-helper regression is separate from the pending quest-object core implementation, native runtime/client currency receipt and all36 artifact-chain traversal. Existing mixed unresolved DBErrors6090 bytes remains untouched. Diagnostic archival follows the verified local archive procedure separately."
+}
