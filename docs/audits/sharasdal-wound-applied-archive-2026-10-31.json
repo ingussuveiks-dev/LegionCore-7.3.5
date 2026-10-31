@@ -1,0 +1,12 @@
+{
+  "fix_commit": "01a6dcf69",
+  "directory": "build-extractors/bin/Release/fixed/sharasdal-wound-applied-2026-10-31",
+  "files": 220,
+  "manifest_sha256": "af54de4c779cae8c54d58545d72ee6affbad8a93844f64e193e28fab81bfb2d2",
+  "verification": "Source/destination/source/final SHA256 verified; canonical6090-byte mixed LINK2 hash/length/timestamp and empty Crashes unchanged. No active file removed or truncated; no task servers retained.",
+  "failures_paired": {
+    "sharasdal-wound-applied-retained-Brutes-2026-10-31": "CRLF here-string mismatch against normalizedLF source after rewrite. Prefix explicitly normalizesCR now; retained2 full native matrices and canonical scope pass.",
+    "sharasdal-wound-applied-staged-pe-2026-10-31": "Tiny leaf bounds include int3 padding before next public symbol. Read actual linked methods; now trim trailing padding only while exactly verifying cmp/je/mark/ret and target. Staged-pe2 and canonical native PE pass."
+  },
+  "excluded_open": "Earlier mixed open Brute/adel/cast/heal route/wall/raw callback/boss/loot research and mixed active DBErrors. Only wound-marker closed diagnostics archived. Source video/contact sheets stay in ignored .codex/sharasdal-reference, not a whole-chain fix certificate."
+}
