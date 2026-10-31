@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-31",
+  "status": "OPEN automatic lower ascent and spell/click admission. Counterfactual defects reproduced; no production or live data change and no repaired regression yet. Do not archive this issue as fixed.",
+  "canonical_world_sha256": "4ba5b32d850b49978a101182aeab45414afd770dc82766ce0b9ea3e7b4b7dfef",
+  "local_native": [
+    "Fresh matching26972 typed DB2/read-onlyHotfix:83810 Cosmetic Water Channel self infinite dummy aura4, no progression.208580 Elevator Camera explicit25 aura430/scene1247, instant/range100/native120000ms maximum aura. Actual World spell_scene1247/package1604/playback20 closure was previously reviewed in gauntlet native catalog; no custom scene event is needed for native removal.",
+    "Native209992 Exit Elevator effect0/252 self+destination17, effect1/164 removes208580, effect2/61 sends50336. Keep existing World destination map1600/-187.08/802.57/796.5/0 and negative208580->209992/type0; never replace with direct credit/teleport.",
+    "Actual native2/root47126 AND:47127/29660/type92/49817 wall and47330/29774/type92/50240 real Kraliss. Native3/root47130 AND:47131/29795/type92/50336 ascent and47378/29661/type92/50314 arrival. Real victory may precede or follow the guide reaching the elevator.",
+    "Fresh full-EOF World read:38821/spawn362075/map1600/-215.63,808.604,262.383/phase7001;208580 click cast_flags3/user_type0 = original clicker casts on self. No source13/17 conditions for83810/208580/209992 or source18group38821; no attached scripts/scene1247 custom event. Legitimate native click is an alternate/manual recovery and must remain admitted for eligible actual participants.",
+    "10993810 has six DB rows labeled1,2,3,4,6,7; actual WaypointMovementGenerator dispatches zero-based currentNode before UpdateWaypointID, so final callback5 is genuine. Preserve10993809 early speech and separate two-row upper10993811.",
+    "Actual WorldObject::FindNearestPlayer uses AnyPlayerInObjectRangeCheck(GetVisibilityRange)+PlayerSearcher, choosing first alive same-phase grid visitor. Requested range limits grid visit, predicate uses visibility range; no nearest-distance/quest/owner/GM check. Correct original attribution is required in this scenario; global helper repair is not a substitute."
+  ],
+  "counterfactual": {
+    "test": "tools/tests/Test-SharasdalAscentCounterfactual.ps1",
+    "pin": "066dddfa6",
+    "coverage": "Complete pinned Erunak and actual native waypoint dispatch in ASAN: actual final node5 at native2 executes speech but stores no ascent; after modeled real Kraliss transition to native3 and60s lifecycle no camera. At native3 a controlled foreign GM/no40341 first-grid visitor gets208580 while eligible player gets none. No visitor at arrival followed by later player presence also never retries.",
+    "limits": "Native cast/scene engine, actual Kraliss death transition, grid visitor choice/geometry and physical traversal remain controlled. Matching roots/spell effects independently read. Expected-broken counterfactual only; no50336 manually awarded, no actual client run/crash claimed. Existing eligible38821 click may provide alternate recovery; automatic producer failure does not prove every client is unable to progress."
+  },
+  "core_followup": [
+    "Native Aura linked removal skips on logout; removeMask0 skips death, ordinary complete/cancel/expiry invokes triggered209992. Native Player::SceneCompleted removes matching aura430 and new SendSpellScene application resets native scene status to LAUNCH. After death/failed completion, retry must not consider aura acceptance alone a permanent ascent receipt.",
+    "Actual Spell::prepare calls CheckCast(true) before the TRIGGERED_CAST_DIRECTLY cast branch; CheckCast unconditionally executes source17 condition bridge after earlier denial checks. Source17 native player/class/map/alive/scenario3/active-unturned40341 gates can therefore protect208580 and late linked209992, including abandonment before removal. Actual selected PE and native conditions/linked/default/death/logout regressions remain required before adding data.",
+    "Preferred automatic repair is instance-owned original full GUID/weak40341 request bound by real step2 lower-Grash gossip before consumption, exact lower-Erunak installed10993810 final arrival retained at native2or3, then finite original-player native3 scene retry/re-entry. Actual47131 remains sole completion receipt. No progress from gossip/spawn/death/presence/timer alone; preserve native scene/negative link/teleport/50336 and legitimate click alternative."
+  ],
+  "reviewed_failed_probes": {
+    "sharasdal-erunak-ascent-world-open-2026-10-31": "Guessed SceneID/Event/Flags/Delay/ScriptName projection was incompatible with local spell_scene_event; initial helper discarded preceding stdout. Actual native loader uses MiscValue/trigerSpell/MonsterCredit/Event; complete corrected world2 EOF read passes. Initial output is not absence evidence; no live mutation.",
+    "sharasdal-erunak-ascent-baseline-open-2026-10-31": "Initial native waypoint test declaration used T& whereas actual specialization body takes Creature&. Preserve exact Creature& parameter; baseline2 and final pinned public counterfactual pass. Fixture compiler error only, no production edit."
+  },
+  "diagnostics": "Before/after native/catalog/World/counterfactual canonical+own crash/log snapshots; exit/stdout/stderr reviewed. No new or changed crash, appended DBErrors or unexplained server warning/error/assertion. Extracted native warnings reviewed; Crashes empty, mixed6090-byte sharedLINK2 error log unchanged/unresolved. No server launched/stopped, SQL/character/client changes. Open evidence remains outside fixed archives.",
+  "remaining": "Implement and verify spell/click admission and original-caller actual-arrival deferred automatic ascent; then living Lady1906/native210247/waves/full1066/all36. User owns actual client20s camera/arrival/render/voices and full chain; no further character/item/AP/quest/checkpoint reset authorized.",
+  "next": "Start guarded source17/18 native ascent admission, then instance-owned actual-arrival original quest delivery across both Kraliss/arrival orders, preserving existing native camera/elevator alternative."
+}
