@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary,[string]$DataDirectory='',[string]$OutputDirectory='')
+param([switch]$PrepareHost,[switch]$VerifyReleaseBinary,[string]$DataDirectory='',[string]$OutputDirectory='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$DataDirectory){$DataDirectory="$repo/build-extractors/runtime-test/sharasdal-finale-voice-data"}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sharasdal-finale-voice"}
@@ -13,6 +13,7 @@ $begin=$source.IndexOf('bool Conversation::GenerateDynamicFieldData(');if($begin
 [IO.File]::WriteAllText("$out/PlayerVisibility.inc",(Section $source '    if (Player* player = caster->ToPlayer())' '    uint32 duration = 0;'))
 [IO.File]::WriteAllText("$out/Update.inc",(Section $source 'void Conversation::Update(uint32 p_time)' 'void Conversation::Remove()'))
 [IO.File]::WriteAllText("$out/Playback.inc",(Section $source 'bool Conversation::CanNeverSee2(' 'bool Conversation::LoadFromDB('))
+if($PrepareHost){return}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/SharasdalFinaleVoiceTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$DataDirectory/baseline-conversation.tsv`" `"$DataDirectory/conversation.tsv`"`nexit /b %errorlevel%`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Sharasdal finale conversation lifetime regression failed'}

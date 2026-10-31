@@ -1,0 +1,11 @@
+{
+  "conversation_data": [
+    {"entry":1868,"id":3961,"textId":0,"unk1":0,"unk2":0,"idx":0},
+    {"entry":1868,"id":3962,"textId":6400,"unk1":0,"unk2":1,"idx":1}
+  ],
+  "conversation_creature": [
+    {"entry":1868,"id":0,"creatureId":104853,"creatureGuid":7195931,"unk1":0,"unk2":0,"duration":7800},
+    {"entry":1868,"id":1,"creatureId":102826,"creatureGuid":7195931,"unk1":0,"unk2":0,"duration":7800}
+  ],
+  "conversation_actor": []
+}

@@ -1,0 +1,182 @@
+{
+  "date": "2026-10-31",
+  "scope": "Only upper conversation1868 missing native continuation payload and its local enUS voice budget. Upper intro admission/movement/caller/NPC world expiry and actual client/full1066/all36 remain OPEN.",
+  "cause": "World conversation_data1868 had only3961/3962. Matching26972 native Next chain continues8701/8702/8703. Actual GenerateDynamicFieldData sends only explicit World rows, so three native lines were absent from its dynamic line payload. Original actor sum15600 plus native5000 gave20600ms; adding those rows alone would still truncate their native voice budget.",
+  "source_order": {
+    "local": "Actual World1868 two original line payloads/two actor records/no overlay; matching26972 typed ConversationLine/BroadcastText/SoundKit/SoundKitEntry/SpellEffect/SpellXSpellVisual/CriteriaTree/Criteria, read-onlyHotfix and read-onlyCASC assets first. Exact current Conversation payload/factory duration/per-view/Update paths reviewed.",
+    "local_trinity_reference": "C:/wamp64/www/TrinityCore current Conversation template/payload loop and local historical bb718b557862057524778414ee728bf1923a14a4 (2018-01-10) ConversationDataStore NextLineID loop plus explicit per-line dynamic payload. Used only as structural reference; later schema/UI-camera fields not copied. Actual IDs/fields/slot layout come from this core and26972.",
+    "historical_reference": "https://github.com/TrinityCore/TrinityCore/blob/bb718b557862057524778414ee728bf1923a14a4/src/server/game/Globals/ConversationDataStore.cpp",
+    "external_limit": "No new web/video gameplay review or audio listening for this focused data fix; native bytes/metadata/full decode are not actual client playback."
+  },
+  "native": {
+    "lines": [
+      [
+        3961,
+        108432,
+        1000,
+        3962
+      ],
+      [
+        3962,
+        108433,
+        2000,
+        8701
+      ],
+      [
+        8701,
+        111278,
+        4000,
+        8702
+      ],
+      [
+        8702,
+        111279,
+        1000,
+        8703
+      ],
+      [
+        8703,
+        111280,
+        1000,
+        0
+      ]
+    ],
+    "texts": [
+      [
+        108432,
+        0,
+        60694
+      ],
+      [
+        108433,
+        60695,
+        0
+      ],
+      [
+        111278,
+        60671,
+        0
+      ],
+      [
+        111279,
+        0,
+        60672
+      ],
+      [
+        111280,
+        71643,
+        0
+      ]
+    ],
+    "audio_files": [
+      [
+        60671,
+        1370762
+      ],
+      [
+        60672,
+        1370763
+      ],
+      [
+        60694,
+        1370785
+      ],
+      [
+        60695,
+        1370786
+      ],
+      [
+        71643,
+        1466914
+      ]
+    ],
+    "payloads": [
+      {
+        "FileDataID": 1370762,
+        "SHA256": "785FBD82A817EA653B7D71E997B9822C1C92F06D62280404386C3FA0CCC5D812",
+        "VoiceMs": 9958,
+        "Bytes": 65657
+      },
+      {
+        "FileDataID": 1370763,
+        "SHA256": "CA9B117FF145DA4937A49C858106E5F4ACFD64A229A66D1C5507FEAD89203CBD",
+        "VoiceMs": 1175,
+        "Bytes": 10908
+      },
+      {
+        "FileDataID": 1370785,
+        "SHA256": "C9210FDF2A102EC81C9A3CBE44BF3C0A371E68DDC14B783AE71F8136A73A0DF9",
+        "VoiceMs": 2448,
+        "Bytes": 19982
+      },
+      {
+        "FileDataID": 1370786,
+        "SHA256": "413A959240E659F0D609DDC8864AD7D97EE95D63979B67EF8863F663DEEF32E3",
+        "VoiceMs": 6333,
+        "Bytes": 40253
+      },
+      {
+        "FileDataID": 1466914,
+        "SHA256": "25F7E569F5B7121535754377A9022BE5E05D24E560F669805CEB2347801E32CF",
+        "VoiceMs": 10950,
+        "Bytes": 71857
+      }
+    ],
+    "full_chain": "3961->3962->8701->8702->8703->0; BCT108432/108433/111278/111279/111280. Existing actor0 Adelee104853 and actor1 Erunak102826 supply all five lines; new speaker slots1/0/1 follow corresponding native male/female BCT voice selection, no third actor invented.",
+    "producer": "Unique native219 producer209312, sole effect0/219/misc1868/implicit18/difficulty0 and no SpellXSpellVisual rows. Existing caller still uses NPC me->CreateConversation1868 without acknowledgement; that is separate next work. Initial private World research used wrong action170 filter; later source enum206 readback finds no206/1868 row. Do not use the170 query as producer absence evidence."
+  },
+  "repair": {
+    "migration": "sql/updates/world/2026_10_31_04_sharasdal_upper_intro_lines.sql",
+    "lf_sha1": "0254d9342e54808a3864ee931530e65c2de5eeec",
+    "updater_state": "RELEASED",
+    "original_offsets_retained": [
+      0,
+      6400
+    ],
+    "added_rows": [
+      [
+        1868,
+        8701,
+        14733,
+        0,
+        1,
+        2
+      ],
+      [
+        1868,
+        8702,
+        28691,
+        0,
+        0,
+        3
+      ],
+      [
+        1868,
+        8703,
+        30866,
+        0,
+        1,
+        4
+      ]
+    ],
+    "timing_provenance": "Preserve original0/6400. Each later offset is previous start+hashed enUS native voice milliseconds+native AdditionalDuration.14733=6400+6333+2000;28691=14733+9958+4000;30866=28691+1175+1000. These added offsets are derived scheduling, not captured Blizzard packet timestamps; no voice overlap is modeled, actual client scheduling remains unverified.",
+    "budget": "Absolute last-line end42816ms exceeds sequential39864ms. Preserve actor0 duration7800, extend only actor1 from7800 to35016; sum42816 plus unchanged native5000 gives47816. Only1868 three line additions/one duration field; original two line offsets/unknowns, both actors/IDs/GUID metadata and no-overlay policy retained.",
+    "guard": "Exact complete original OR exact complete applied line+actor context, no overlay. SIGNAL on custom/partial context, all writes independently guarded; idempotent native transaction, no general deletes or invented progress/actors/spells."
+  },
+  "validation": {
+    "data": "Native MariaDB TEMP shadows only, whole three-table snapshots, explicit unrelated sentinels, exactly three additions/one duration change and repeat idempotence;15 custom/partial/missing/overlay/half-applied refusals with exact expected errors/full EOF. Live World unchanged by fixture. After real updater, VerifyLiveData compares actual World to the passing fixture and updates readback shows RELEASED/exact0254d934... hash.",
+    "audio": "Fresh typednative/read-onlyHotfix complete5-line chain/BCT/kit/file/gender/AdditionalDuration; five local matching26972 Vorbis payloads byte/hash checked and fully ffmpeg decoded, all CASC index hashes unchanged. VoiceMs2448/6333/9958/1175/10950; both derived timing and conservative absolute/sequential budget checked. No listening, client playback, other locales or retail timestamp claim.",
+    "native": "11 ASAN contexts compile actual GenerateDynamicFieldData/native creation-budget section/personal visibility/CanNeverSee2/Update. Original explicit2-line payload lacks3 continuation slots; explicit lines-only counterfactual20600 truncates; repaired5 native slot payload/2 actors/47816 remains visible through42816 and expires after exact native deadline. Original fields, missing/dead actors, empty definitions, quest expiry/replay and group-first player clock retained. Factory wrapper/registry/player creator services controlled; production NPC caller/world expiry not certified.",
+    "retained": "19 original actual native1906/1923 finale payload/lifetime cases still pass after adding PrepareHost-only test support. Full selected canonical conversation producer/per-view payload/deadline/quest scope and visibility PE passes, world143413D7 unchanged; no C++ server behavior changed.",
+    "runtime": "Only own PID32956, normal canonical updater applied04, fresh ready, server shutdown0/exit0, stderr empty/newDBErrors0/protected configs/certs unchanged, process gone. No user/unknown server stopped, no character or progress mutation.",
+    "reviewed_failed_checks": {}
+  },
+  "diagnostics": "Every native/audio/TEMP/ASAN/PE/updater/readback test retains before/after canonical+own crashes/log lengths/timestamps and full output. All completed, no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Expected15 fixture SIGNAL refusals are disclosed counterfactuals and reviewed. Native extracted unused parameter warning reviewed. Canonical Crashes empty; existing6090-byte shared101430/103151LINK2 DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved; no error log truncated or active file removed.",
+  "remaining": [
+    "Upper Erunak362093 unguarded Player/Z visitor latch, original40341/native3+ascent47131 admission, exact three movement actors, cast/factory success/retry/re-entry still require C++ work. No whole quest or client verification from this data migration.",
+    "Actual core Conversation::Update indexes playing by casterGUID; CanNeverSee2 admits only Player GUIDs. NPC-created1868 can stay allocated after per-player visibility expires. This underlying NPC caller/world-expiry issue remains OPEN and was not included in passing player-creator lifetime certification or a fixed archive. Use an actual acknowledged native factory/original eligible player/quest scope in the focused upper caller repair or separately prove a correct global lifecycle policy.",
+    "Actual client all five voices/language/volume/order/overlap/fade, other locale durations, companion movement/waves/warm-cold entry and full1066 remain user checks. Derived offsets are explicit, not claimed as exact retail capture.",
+    "Living Lady1906/209457/finisher/native210247/full waves/all36/earlier Wardstone/Survival/Glow/Stromkar/sharedLINK2 remain unfinished. User owns client testing; reset3 consumed, no further reset/grants authorized."
+  ],
+  "next": "Repair upper Erunak362093 native3/ascent47131/original40341 caller and finite actual upper Grash/Adelee movement/acknowledged1868 creation; preserve full five-line data/47.816s native budget and solve its NPC caller lifetime without forging progress. Then shared waypoint/native210247/living Lady and remaining all36."
+}

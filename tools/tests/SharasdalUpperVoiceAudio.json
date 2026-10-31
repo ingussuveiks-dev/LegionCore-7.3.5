@@ -1,0 +1,129 @@
+{
+  "Build": "7.3.5.26972",
+  "Lines": [
+    [
+      3961,
+      108432,
+      1000,
+      3962
+    ],
+    [
+      3962,
+      108433,
+      2000,
+      8701
+    ],
+    [
+      8701,
+      111278,
+      4000,
+      8702
+    ],
+    [
+      8702,
+      111279,
+      1000,
+      8703
+    ],
+    [
+      8703,
+      111280,
+      1000,
+      0
+    ]
+  ],
+  "Texts": [
+    [
+      108432,
+      0,
+      60694
+    ],
+    [
+      108433,
+      60695,
+      0
+    ],
+    [
+      111278,
+      60671,
+      0
+    ],
+    [
+      111279,
+      0,
+      60672
+    ],
+    [
+      111280,
+      71643,
+      0
+    ]
+  ],
+  "Files": [
+    [
+      60671,
+      1370762
+    ],
+    [
+      60672,
+      1370763
+    ],
+    [
+      60694,
+      1370785
+    ],
+    [
+      60695,
+      1370786
+    ],
+    [
+      71643,
+      1466914
+    ]
+  ],
+  "Payloads": [
+    {
+      "FileDataID": 1370762,
+      "SHA256": "785FBD82A817EA653B7D71E997B9822C1C92F06D62280404386C3FA0CCC5D812",
+      "VoiceMs": 9958,
+      "Bytes": 65657
+    },
+    {
+      "FileDataID": 1370763,
+      "SHA256": "CA9B117FF145DA4937A49C858106E5F4ACFD64A229A66D1C5507FEAD89203CBD",
+      "VoiceMs": 1175,
+      "Bytes": 10908
+    },
+    {
+      "FileDataID": 1370785,
+      "SHA256": "C9210FDF2A102EC81C9A3CBE44BF3C0A371E68DDC14B783AE71F8136A73A0DF9",
+      "VoiceMs": 2448,
+      "Bytes": 19982
+    },
+    {
+      "FileDataID": 1370786,
+      "SHA256": "413A959240E659F0D609DDC8864AD7D97EE95D63979B67EF8863F663DEEF32E3",
+      "VoiceMs": 6333,
+      "Bytes": 40253
+    },
+    {
+      "FileDataID": 1466914,
+      "SHA256": "25F7E569F5B7121535754377A9022BE5E05D24E560F669805CEB2347801E32CF",
+      "VoiceMs": 10950,
+      "Bytes": 71857
+    }
+  ],
+  "Offsets": [
+    0,
+    6400,
+    14733,
+    28691,
+    30866
+  ],
+  "OriginalActorSumMs": 15600,
+  "RequiredActorSumMs": 42816,
+  "AbsoluteLineEndMs": 42816,
+  "SequentialLineEndMs": 39864,
+  "NativePaddingMs": 5000,
+  "Limitation": "Native bytes fully decoded; no listening or actual client playback. Preserve original0/6400 offsets; added offsets derived from native enUS voices/AdditionalDuration, not captured Blizzard timestamps. Does not repair upper caller/admission/NPC world expiry."
+}
