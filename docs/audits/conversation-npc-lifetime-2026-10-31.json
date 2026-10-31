@@ -35,5 +35,14 @@
     "worldserver.map": "9d20a16c1097cc65edd6aa89f23016f583bd427e45838cb510a9d436aa1955e9",
     "bnetserver.exe": "4c8e0a116d445a37815f8d1dd7e2eeb4a217dfbdd50227eb27a298ad0951877f",
     "bnetserver.map": "f581e8114f00d6c172386fd27e33726a5143e7d4777bb7189c2e09dffbbbabe4"
+  },
+  "fix_commit": "d6aa24710",
+  "diagnostic_archive": {
+    "fix_commit": "d6aa24710",
+    "directory": "build-extractors/bin/Release/fixed/conversation-npc-lifetime-2026-10-31",
+    "manifest_sha256": "5698a1edf706ac1295a39089964a25eeeb1d3d5d138b83a7efa7505e5456d035",
+    "files": 508,
+    "verification": "Source/destination/source/final SHA256 verified; canonical FB474757 retained. Crashes empty/no active reports removed/logs truncated; mixed6090LINK2 unchanged/unresolved; own17800 exited/no task servers.",
+    "remaining": "OPEN actor5912 data correctness: both census directories excluded; mixed6090 sharedLINK2 and all informative runtime history untouched. Existing unchanged build warnings copied only as contextual evidence with unresolved separate source findings in audit; no claim those warning causes repaired. Lady1906/209457/finisher/waves/native210247/full1066/all36/client remain OPEN. No active report removed or log truncated; no binary/dump/media/config/credentials/character data."
   }
 }
