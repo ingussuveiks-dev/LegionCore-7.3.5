@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-31",
+  "scope": "Kraliss102839 delayed combat roar lifetime only; no boss credit, Lady, loot, SQL or full-chain/client certification.",
+  "cause": "EVENT1 Talk0 queued a1s lambda capturing AI this on Unit::m_Functions. Native CreatureAI::EnterEvadeMode clears BasicEvents/combat functions then Reset; Kraliss Reset only resets its EventMap. Native Unit::Update dispatches m_Functions even in the corpse branch before actor-state checks; native AIM_Destroy deletes AI without clearing that unrelated Unit queue. Thus reset/death still cast and replacement can leave a dangling AI capture.",
+  "sources": "Local full current and pinned267d273dc Kraliss, native EventMap/FunctionProcessor/CreatureAI::UpdateVictim/EnterEvadeMode/Creature::AIM_Destroy/Creature Update ALIVE and CORPSE/Unit Update first; matching26972+read-onlyHotfix Spell/SpellEffect through typed SharasdalKralissRoarCatalog. No modern/external implementation or gameplay/audio assumption needed.",
+  "implementation": "Only replace Unit-owned1s raw-AI lambda with existing AI EventMap EVENT3; keep Talk0 before scheduling,18s roar announcements,1s pending roar209748,20s Wreck209764+209755 targets, original20508/209755->209757 hit handlers, Reset/death/native instance credit and every other actor byte-for-source certificate. Normal native victim/casting guard now also applies to the delayed roar. Reset clears it; AI destruction frees it; suspended AI does not dispatch it. Do not globally clear unrelated Unit functions, change quest criteria, bypass failed casts or replay the roar.",
+  "validation": {
+    "counterfactual": "Pinned267d273dc full actual boss + native FunctionProcessor/EventMap/UpdateVictim proves cast after Reset and after death combat stop, and queued raw capture after AI destruction. Dangling pointer deliberately not invoked; no reproduced access violation or actual client claim.",
+    "repaired": "21 ASAN contexts compile full actual current boss, complete actual native EventMap/FunctionProcessor and actual UpdateVictim/AIM_Destroy. Exact18s speech/999+1ms roar/20s Wreck, multiple reset times, dead combat/world/despawn/missing victim, active cast deferral, native passive evade/attack-off, failed cast no immediate replay, AI destruction/new AI/locked actual AIM_Destroy, suspended AI clock/no Unit callback, unrelated Unit function retained, pet victim, fresh combat timing and original hit-spell handlers.",
+    "limits": "Creature/victim/threat/Spell and actual corpse/AI dispatch integration are controlled or explicitly traced, not a client/damage engine replacement. Native corpse source guard verifies Unit::Update plus UpdateCorpseAI, not ordinary UpdateAI; normal runtime death dispatch separately remains retained. Failed native cast/presentation/voice and actual Wreck movement require client exercise.",
+    "data": "Fresh native26972/read-onlyHotfix exact14 spell/effect rows: Deafening Roar209748 damage+interrupt, Wreck209764/209755/209757 chain and original Charge20508 targets. No SQL/client asset change.",
+    "retained": "All68 real-victory contexts rerun against actual current full boss/instance; exact source certificates compose wall/Brutes/guard/rescue/heals. Selected actual canonical PE also proves all retained paths. Scepter VerifyReleaseBinary retained.",
+    "pe": "Actual selected npc_kraliss factory/vtable UpdateAI18/Reset28/unique EnterCombat, AI EventMap38, native victim/casting guards before ExecuteEvent, event-result1/2/3 branch targets and sole event3 DoCast209748, actual Cancel/Schedule pairs2/20000,3/1000,1/18000 and initial1/18000,2/20000. Reset reaches actual EventMap.Reset. No Unit/FunctionProcessor AddDelayedEvent/AddFunction/global KillAllFunctions or progression/item/quest calls. Prior native loot/owner/quest/victory/wall/heal/rescue binary proofs retained."
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "fa95d2db01a6db56a8375f6fef4030d3a106c3c60d2eb47d764542b928ce33db",
+      "worldserver.map": "a64891b777c89ab429bc57f218341b48d48b4935ebf03416e187da7ba9504be0",
+      "bnetserver.exe": "f3a675476e9189443f22ad5624edb013def44e1950736222c3ff976c5d6a7dcf",
+      "bnetserver.map": "f110141bebf8ba50444a786ec6eabfb71c12abd05afd39aca998136a2309e912"
+    },
+    "build": "Original scripts/common Release libraries and original final-link inputs, staged world+bnet with no global OutDir. Stage/hash-backed four-file offline promotion and backup; protected configs/certificates/DLLs retained. No SQL/characters/reset.",
+    "runtime": "Own34752 final ready/graceful shutdown0/exit0/newDBErrors0/stderr empty and gone; no user/unknown server stopped or background server retained."
+  },
+  "diagnostics": "Each native/data/build/link/PE/promotion/startup/canonical check has before/after repository/canonical/own-runtime crash/log snapshots and exit/stdout/stderr review. No new crashes or appended DBErrors/server warnings/errors/assertions. Reviewed inherited native conversion/unused-parameter warnings remain, no new production build/test errors. Canonical Crashes empty; existing mixed6090-byte101430/103151LINK2 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged/unresolved and is not archived fixed or cleared.",
+  "remaining": [
+    "Client roar speech/castbar/audio/timing, Wreck target/dash/visuals and full fight remain user-owned. No general spell/casting/AI change.",
+    "Continue OPEN Lady362095 versus illusion362091/native50397 owner/null/surrender and1906 defeat conversation; then249342 actual native loot/storage/full bags/equip209685/scene209684/outro1923/return. Detailed data and all80 reviewed final1s frames recorded in sharasdal-final-boss-pickup-research-2026-10-31.json. No guessed dialogue duration/clone/progress repair was deployed.",
+    "Original companion route interruptions/final POINT wall/gossip and whole1066/all36/client remain OPEN, as do Glow211502/Survival39427 middle/WardstoneLINK4/sharedLINK2/Stromkar client. Reset3 consumed; no reset."
+  ]
+}

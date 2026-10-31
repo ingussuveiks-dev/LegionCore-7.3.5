@@ -28,7 +28,14 @@ foreach($prefix in @($deathPrefix,$entryPrefix)){
 $normal=$normal.Replace('            UpdateKraliss(diff);','')
 if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Other native instance guard/Brute/wall/fields/entry/registration changed'}
 $currentNPC=Block $actor 'class npc_kraliss :';$oldNPC=Block $oldActor 'class npc_kraliss :'
-$normalActor=$actor.Replace((Block $currentNPC 'void JustDied('),(Block $oldNPC 'void JustDied('))
+$normalNPC=$currentNPC
+if($currentNPC.Contains('events.RescheduleEvent(EVENT_3, 1000);')){
+ & "$PSScriptRoot/Test-SharasdalKralissRoar.ps1" -ScopeOnly
+ if(!$?){throw 'Current roar source certificate failed'}
+ $roarBase=(& git -C $repo show "267d273dc:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-roar actor missing'}
+ $normalNPC=Block $roarBase 'class npc_kraliss :'
+}
+$normalActor=$actor.Replace($currentNPC,$normalNPC.Replace((Block $normalNPC 'void JustDied('),(Block $oldNPC 'void JustDied(')))
 if(($normalActor -replace '\s','') -cne ($oldActor -replace '\s','')){throw 'Other Kraliss combat/cast/Reset/actor or Lady/outro/pickup changed'}
 if($ScopeOnly){'PASS exact real Kraliss instance death/owner/quest/native credit/retry and removal of proximity credit; prior wall/Brute/guard/actors/boss combat/Lady/outro/pickup retained';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}
@@ -53,6 +60,7 @@ $kill=Block $core 'void Unit::Kill(';[IO.File]::WriteAllText("$out/Kill.inc",'vo
 function Adapt([string]$value,[string]$before,[string]$after){if(!$value.Contains($before)){throw "Native host boundary changed: $before"};$value.Replace($before,$after)}
 $fixture=Get-Content "$PSScriptRoot/SharasdalGrashHealingTest.cpp" -Raw
 $hostSource=$fixture.Substring(0,$fixture.IndexOf('#include "Policy.inc"'))
+$hostSource=Adapt $hostSource 'EVENT_2=2};' 'EVENT_2=2,EVENT_3=3};'
 $hostSource=Adapt $hostSource '#include <algorithm>' "#include <algorithm>`n#include <array>"
 $hostSource=Adapt $hostSource 'enum{CLASS_SHAMAN=7,' 'enum{UNIT_FIELD_FLAGS=2,CLASS_SHAMAN=7,'
 $hostSource=Adapt $hostSource 'struct ObjectGuid{' 'struct ObjectGuid{static ObjectGuid const Empty;'

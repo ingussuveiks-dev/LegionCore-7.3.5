@@ -1126,7 +1126,7 @@ public:
 
         void EnterCombat(Unit* who) override
         {
-            events.RescheduleEvent(EVENT_1, 18000); // 209748 с m_Functions
+            events.RescheduleEvent(EVENT_1, 18000); // 209748
             events.RescheduleEvent(EVENT_2, 20000); // 209764 на рандома. Через спелл хит 209755, который делает рывок и 209757
         }
 
@@ -1159,11 +1159,8 @@ public:
                 {
                     case EVENT_1:
                         Talk(0);
-                        me->AddDelayedEvent(1000, [this]() -> void
-                        {
-                            DoCast(209748);
-                        });
-                        events.RescheduleEvent(EVENT_1, 18000); // 209748 с m_Functions
+                        events.RescheduleEvent(EVENT_3, 1000);
+                        events.RescheduleEvent(EVENT_1, 18000); // 209748
                         break;
                     case EVENT_2:
                         if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0))
@@ -1172,6 +1169,9 @@ public:
                             me->CastSpell(pTarget, 209755);
                         }
                         events.RescheduleEvent(EVENT_2, 20000); // 209764 на рандома. Через спелл хит 209755, который делает рывок и 209757
+                        break;
+                    case EVENT_3:
+                        DoCast(209748);
                         break;
                 }
             }
