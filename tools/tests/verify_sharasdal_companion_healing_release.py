@@ -23,9 +23,10 @@ assert any(x.op_str=='dword ptr [rbx + 0x3140], 0xfffffff7' and x.mnemonic=='and
 assert any(x.op_str=='edx, 0x32cdd' for x in body[hp:remove]) and len([x for x in body if x.mnemonic=='call'])==4
 for script,flag,pending in [('npc_erunak_stonespeaker',0x59,0x5b),('npc_grash',0x5a,0x5b),('npc_adel_waterspeaker',0x59,0x5a)]:
     table=previous['selected_tables'][script];suffix='@'+script+'AI@'
-    if script=='npc_grash' and any(name.startswith('?OnHealApplied'+suffix) for name in native['symbols']):
+    if any(name.startswith('?OnHealApplied'+suffix) for name in native['symbols']):
         assert struct.unpack_from('<Q',native['binary'],table+0x288)[0]==native['symbol']('?OnHealApplied'+suffix)
-        continue  # Its full final-heal/Reset/lifecycle proof is in the Grash inspector.
+        assert struct.unpack_from('<Q',native['binary'],table+0xb0)[0]==native['symbol']('?HealReceived@UnitAI@@')
+        continue  # Dedicated Grash/final-applied wound inspectors prove the replacement hooks.
     if script=='npc_adel_waterspeaker' and any(name.startswith('?GetSpellScript@?$GenericSpellScriptLoader@Vspell_sharasdal_breaking_bonds@@@@') for name in native['symbols']):
         for method,slot in [('Reset',0x28),('UpdateLifecycle',0x110),('HealReceived',0xb0)]:
             assert struct.unpack_from('<Q',native['binary'],table+slot)[0]==native['symbol']('?'+method+suffix)

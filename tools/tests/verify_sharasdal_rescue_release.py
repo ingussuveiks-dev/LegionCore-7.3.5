@@ -25,7 +25,8 @@ def references(body):
 def table_contains(address,targets,count=16):
     return targets<=set(struct.unpack_from('<'+str(count)+'Q',n['binary'],n['offset'](address)))
 
-for method,slot in [('Reset',0x28),('UpdateLifecycle',0x110),('HealReceived',0xb0)]:
+wound_hook=('OnHealApplied',0x288) if any(name.startswith('?OnHealApplied'+actor) for name in n['symbols']) else ('HealReceived',0xb0)
+for method,slot in [('Reset',0x28),('UpdateLifecycle',0x110),wound_hook]:
     assert struct.unpack_from('<Q',n['binary'],table+slot)[0]==n['symbol']('?'+method+actor)
 assert struct.unpack_from('<Q',n['binary'],table+0x220)[0]==n['symbol']('?OnSpellClick@CreatureAI@@')
 assert instructions('?OnSpellClick@CreatureAI@@')[0].mnemonic=='ret'

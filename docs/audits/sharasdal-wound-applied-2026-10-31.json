@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-31",
+  "scope": "Only Erunak102826 and Adelee104853 final-applied combat wound markers. Not whole Sharasdal1066/all36/client certification.",
+  "cause": "Both HealReceived handlers set pending before healer HealDone could cancel the amount. A held lethal blow zeros damage without reducing health; the wounded actor can still be at or above40pct/full HP. A later cancelled heal then marked pending and UpdateLifecycle cleared wound208093/stun despite no final applied heal. Native DealHeal/ModifyHealth/Notify ordering established locally; this corrects the explicitly retained pre-HealDone marker limit in the earlier40pct audit.",
+  "sources": "Current complete Sharasdal source/instance, pinned3897fd3bf, actual Unit::DealHeal prefix/ModifyHealth, Creature::NotifyHealApplied/current+suspended lifecycle and existing matching26972/local World wound/actor context in companion-damage/healing/native catalogs. No new gameplay/video/audio/external implementation claim or imported modern API.",
+  "implementation": [
+    "Replace only two HealReceived overrides with OnHealApplied(Unit*,uint32,int32). If already wounded, mark pending. Native dispatcher admits final positive amount and nonnegative gain, including actual positive overheal; zero/cancelled final amount is not dispatched. Native health application untouched.",
+    "Existing Recover consumes pending, requires live/inworld/not-predelete and actual HP>=40, clears wound latch before removing original stun/208093. Existing Reset/new wound invalidation retained. No captured actor/healer/delayed pointers, extra fields or manual health/credit/item/quest grants.",
+    "Whole-source certificate pinned3897fd3bf retains exact other source, full actor Reset/damage/lifecycle/rescue/routes/combat/registration, Grash final-heal/progression, real initial Brutes and guard/native rescue. No SQL/config/cert/DLL/character/item/AP/checkpoint changes."
+  ],
+  "validation": {
+    "counterfactual": "Pinned3897fd3bf actual two old hooks with native DealHeal/ModifyHealth/Notify/lifecycle: real held lethal full-health wound then healer HealDone cancels positive incoming to0; both actors wrongly unstun. Expected broken counterfactual; not an ordinary successful run.",
+    "repaired": "960 cases:2 actors x4 controlled healer identities x4 current/suspended/alias/disabled AI modes x3 lower/upper/other-map placements x10 cancellation/zero/subthreshold/crossing40/positive-overheal/reset/dead/outworld/predelete cases. Repeated updates/heals/re-wound preserve once cleanup. Full current Adelee actor additionally proves accepted native rescue presentation may finish while independently cancelled-heal wound persists; later actual positive overheal removes wound without another rescue/progress.",
+    "native_boundaries": "Actual two changed handlers, Erunak real Reset/final-damage/lifecycle, full Adelee actor/shared policies, actual Unit DealHeal prefix/ModifyHealth/Notify, quest lifetime/owner code/FunctionProcessor and locked Creature lifecycle compiled with ASAN. Healer identities, health/world/registry/geometry/criteria/clock adapters controlled; not actual full pet spell delivery/client targeting/audio/renderer. No quest eligibility gate added to ordinary health restoration.",
+    "retained": "Individually wrapped46 Brute,34 guard,40 rescue,99 Grash native matrices plus extras;1152 earlier heal/damage and3621 wound contexts retained through explicit whole-source certificates/frozen prior fixture hosts. Dedicated new host alone executes these two current applied hooks. Generic native CreatureHealApplied160+extras passed. Selected canonical inspector follows actual factories/vtables, two0x288 slots, empty native0xb0, tiny wait59/pending5b or5a hooks,40pct helper/lifecycle/reset; full native final-positive Notify0x288/current+suspended/prior-lock dispatch proved, prior guard/rescue/Brute/Grash paths retained. Canonical Scepter VerifyReleaseBinary passed.",
+    "development": "First retained Brute source check failed from CRLF here-string vs normalizedLF source after a local rewrite. Prefix now explicitly normalizesCR; retained2 and canonical scope pair it. First new PE inspector compared next-symbol padding int3 with the four-instruction leaf. Read actual linked instructions and now exclude trailing int3 only, retaining exact cmp/je/mark/ret and branch target. Staged-pe2 plus canonical passing pair; no production check or behavior bypassed.",
+    "warnings": "Reviewed inherited fixture conversion/shadow/unused warnings in actual extracted FunctionProcessor/Owner/DealHeal/actor and legacy scaling adapters; no newly introduced production warning/error or ASAN failure.",
+    "evidence": [
+      ".codex/sharasdal-wound-applied-baseline-2026-10-31",
+      ".codex/sharasdal-wound-applied-repaired-2026-10-31",
+      ".codex/sharasdal-wound-applied-retained2-*-2026-10-31",
+      ".codex/sharasdal-wound-applied-retained-core-2026-10-31",
+      ".codex/sharasdal-wound-applied-staged-pe2-2026-10-31",
+      ".codex/sharasdal-wound-applied-canonical-native-2026-10-31",
+      ".codex/sharasdal-wound-applied-canonical-scepter-2026-10-31"
+    ]
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "BAC35CFE66E52D4FE0ACB9CAAE8E610BC75CF57460710F68C80AC83776AD4B6B",
+      "worldserver.map": "3397241E6FFDEBACD36BBD2A1D5E54F543C8147217D44D4752B59F5E1C434001",
+      "bnetserver.exe": "11DE6C4C36C1965D399E9EA7C9561293B4038067F52026D3BFC9D7CB80358424",
+      "bnetserver.map": "CE6CD6C7C2DF9CAFAEFC05D69DB7BDF554BE057B7D5F5FA792288593EC950C92"
+    },
+    "build": "Original scripts/common Release libraries and separately linked staged world+bnet using original lib inputs, no global OutDir; actual staged PE proved then offline four-file hash-backed copy. Protected config/certificates/DLLs unchanged. No new SQL; existing World31_01 native208171 binding retained.",
+    "runtime": "Own hidden worldserver33404 reached ready, own shutdown0/exit0/newDBErrors0/stderr empty, gone. No user/unknown process stopped or hidden task server retained."
+  },
+  "diagnostics": "Before/after canonical/own-test/runtime/repository CWD crash snapshots and log offsets for each test/build/link/PE/copy/startup; exit/status/stdout/stderr/new server warning/error/assert/DBErrors reviewed. No new/changed crash or appended errors. Empty canonical Crashes; original mixed6090-byte shared101430/103151LINK2 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 retained unchanged, not cleared/archived as fixed. Closed evidence archive follows fix commit.",
+  "remaining": [
+    "Actual client wound animation/heal spell/unstun/movement/upper/shared actor traversal and full1066/all36 not verified by native fixtures or startup; user owns client tests.",
+    "Next Grash issued-path acknowledgement/interruption/reentry and native wall248514/49817 admission, other raw actor callbacks, boss owner/pet/guardian/progression,249342 real loot/full bags/equip/outro/new-attempt boundaries.",
+    "Keep Glow211502 producer, Survival39427 middle flight, Wardstone LINK4/sharedLINK2 and Stromkar client checks OPEN. No reset; prior reset3 authorization consumed."
+  ]
+}

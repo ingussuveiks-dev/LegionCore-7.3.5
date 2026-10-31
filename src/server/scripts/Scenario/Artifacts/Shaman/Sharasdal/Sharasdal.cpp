@@ -152,9 +152,9 @@ public:
             // victory; the instance owns the real two-death continuation.
         }
 
-        void HealReceived(Unit* /*who*/, uint32& addhealth) override
+        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int32 /*gain*/) override
         {
-            if (wait_heal && addhealth)
+            if (wait_heal)
                 _pendingHealRecovery = true;
         }
 
@@ -733,9 +733,9 @@ public:
         }
 
 
-        void HealReceived(Unit* /*who*/, uint32& addhealth) override
+        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int32 /*gain*/) override
         {
-            if (wait_heal && addhealth)
+            if (wait_heal)
                 _pendingHealRecovery = true;
         }
 

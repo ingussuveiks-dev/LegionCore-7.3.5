@@ -3,6 +3,12 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp';$actorPath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$actor=(Get-Content "$repo/$actorPath" -Raw).Replace("`r",'')
+if((Block (Block $actor 'class npc_erunak_stonespeaker :') 'struct npc_erunak_stonespeakerAI :').Contains('void OnHealApplied(')){
+ & "$PSScriptRoot/Test-SharasdalWoundApplied.ps1" -ScopeOnly
+ # The dedicated two-actor host executes the current final-applied hooks.
+ # Freeze only this retained initial-Brute fixture after its whole-source certificate.
+ $actor=(& git -C $repo show "3897fd3bf:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned unchanged initial Brute actor context missing'}
+}
 $old=(& git -C $repo show "514ac7bd0:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned guard instance missing'}
 $oldActor=(& git -C $repo show "514ac7bd0:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned Grash/Erunak source missing'}
 $normalized=$source.Replace((Block $source 'namespace SharasdalBrutes'),'')
@@ -18,6 +24,7 @@ $prefix=@'
                 return;
             }
 '@
+$prefix=$prefix.Replace("`r",'')
 if(!$normalized.Contains($prefix)){throw 'Real Brute Kill dispatch branch missing'};$normalized=$normalized.Replace($prefix,'')
 foreach($method in @('void OnPlayerEnter(','void OnUnitDeath(','void OnCreatureCreate(','void Update(')){$normalized=$normalized.Replace((Block $normalized $method),(Block $old $method))}
 if(($normalized -replace '\s','') -cne ($old -replace '\s','')){throw 'Existing guard credit/owner/lease/fields or unrelated instance/graveyard/registration changed'}
