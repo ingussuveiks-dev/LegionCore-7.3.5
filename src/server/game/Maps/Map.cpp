@@ -1388,13 +1388,13 @@ void Map::RemovePlayerFromMap(Player* player, bool remove)
 
     if (InstanceScript* data_s = player->GetInstanceScript())
     {
-        // Ashran keeps capture-point participant pointers; detach while the
-        // player is still in the map, including ordinary teleports and logout.
-        if (GetId() == 1191)
-            data_s->OnPlayerLeave(player);
+        // Instance cleanup needs the departing player and its original map,
+        // including ordinary teleports and logout, before world removal.
+        data_s->OnPlayerLeave(player);
         data_s->OnPlayerLeaveForScript(player);
     }
 
+    sScriptMgr->OnPlayerLeaveMap(this, player);
     player->RemoveFromWorld();
     if (!remove)
         SendRemoveTransports(player);
@@ -1407,7 +1407,6 @@ void Map::RemovePlayerFromMap(Player* player, bool remove)
     {
         player->SetPreDelete();
         DeleteFromWorld(player);
-        sScriptMgr->OnPlayerLeaveMap(this, player);
     }
 }
 

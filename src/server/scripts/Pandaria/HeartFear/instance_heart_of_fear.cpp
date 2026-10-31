@@ -2,6 +2,7 @@
 //Heart of Fear
 
 #include "VMapFactory.h"
+#include "Pet.h"
 #include "heart_of_fear.h"
 
 const DoorData doorData[] =
@@ -105,9 +106,11 @@ public:
             stormUnleashed = 0;
         }
 
-        void OnPlayerLeave(Player* player)
+        void OnPlayerLeave(Player* player) override
         {
-            DoRemoveAurasDueToSpellOnPlayers(126159);
+            player->RemoveAurasDueToSpell(126159);
+            if (Pet* pet = player->GetPet())
+                pet->RemoveAurasDueToSpell(126159);
         }
 
         void OnCreatureCreate(Creature* creature)

@@ -3,6 +3,7 @@
 
 #include "AccountMgr.h"
 #include "PlayerDefines.h"
+#include "Pet.h"
 #include "siege_of_orgrimmar.h"
 #include "Packets/WorldStatePackets.h"
 
@@ -411,10 +412,14 @@ public:
                 player->RemoveAurasDueToSpell(_toxinlist[n]);
         }
 
-        void OnPlayerLeave(Player* player)
+        void OnPlayerLeave(Player* player) override
         {
             for (uint8 n = 0; n < 30; ++n)
-                DoRemoveAurasDueToSpellOnPlayers(removelist[n]);
+            {
+                player->RemoveAurasDueToSpell(removelist[n]);
+                if (Pet* pet = player->GetPet())
+                    pet->RemoveAurasDueToSpell(removelist[n]);
+            }
         }
 
         void RemoveDebuffFromPlayers()

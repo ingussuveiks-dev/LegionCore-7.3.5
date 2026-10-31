@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-31",
+  "status": "PASS focused instance leave dispatch/lifetime repair, canonical Release promotion and owned clean startup; whole artifact chains/client traversal remain OPEN",
+  "cause": [
+    "Map::RemovePlayerFromMap called the project InstanceScript one-argument OnPlayerLeave only on map1191. The other twelve declared overrides never received ordinary departure/logout cleanup through the map lifecycle. Neither OnPlayerLeaveForScript nor ScriptMgr two-argument MapScript dispatch forwards that callback.",
+    "ScriptMgr::OnPlayerLeaveMap was called only for remove=true and after DeleteFromWorld. Ordinary transfers received no MapScript notification; destructive removal published a destroyed Player pointer to scripts.",
+    "Enabling dormant instance callbacks exposed existing map-wide aura removal in Heart of Fear and Siege of Orgrimmar. Those leave handlers must clean the departing player and their primary pet without removing remaining group members auras."
+  ],
+  "implementation": [
+    "Run the actual instance one-argument OnPlayerLeave once for every present InstanceScript before the retained challenge cleanup hook, world/grid removal and deletion. Preserve Ashran exactly-once participant detach.",
+    "Run ScriptMgr two-argument MapScript leave once for both remove flags while the original Player/map are live. Preserve transport-removal flag split, visibility/grid cleanup and native deletion behavior.",
+    "Scope the two raid handlers to the departing Player plus GetPet(), preserving all original30 Siege array entries/order/duplicate and the separate deliberate map-wide RemoveDebuffFromPlayers helper. Explicit override declarations and Pet.h enable actual Pet methods."
+  ],
+  "local_reference_review": {
+    "order": "Matching current core/API/callers, thirteen override bodies, then local TrinityCore current and pinned7.3.5 history. No modern behavior copied blindly; no web/video evidence needed for this dispatch defect.",
+    "project_history": "0f9ccc0a0c added the specific Ashran call; prior code retained challenge cleanup only.",
+    "pinned_trinity": [
+      "7f2b7dc9c2165d2608742473a931f55b1c1a753a",
+      "c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "ccbe4404f1806f047c009d14ed1dea9806dd5736"
+    ],
+    "finding": "Those7.3.5 snapshots do not declare this project-specific one-argument InstanceScript leave API. Their MapScript hook runs before RemoveFromWorld for both flags. Current local Trinity has its own instance callback before base removal; it is a reference rather than a version-matched implementation."
+  },
+  "regression": {
+    "source": "Test-InstanceLeave.ps1:62 actual extracted production Map::RemovePlayerFromMap, native map-wide aura helper and all13 declared instance leave bodies under ASAN. Seven map identities, both remove flags, present/null script; original Player/world ordering, exact once, retained challenge hook, transports/grid/delete, full GUID distinction, Dark Riders988/shared1001/1002/null scenario and tracked participants, Broken Shore per-player arrival/boarding erase, Ashran participants and departing phase reset. Both pet-presence cases and unrelated player/pet/aura retention. Controlled endpoints are explicitly identified.",
+    "counterfactual_source": "Pinned ba856f49b baseline4 asserts62 EXPECTED_BROKEN behaviors, including dormant callback omission and directly invoked old raid-wide cleanup. It exits0 after observing the defect; it is not a successful ordinary run and does not dereference old destroyed memory.",
+    "native": "Test-InstanceLeaveNative.ps1 current1:4 real InstanceMap::RemovePlayerFromMap cases, actual Player destructor, ScriptMgr routing, instance lookup and native RemoveAurasDueToSpell198654/real linked DarkRidersRevil::RetireFollower sinks. Human/Orc, both remove flags. One-argument observer is a fixture InstanceScript; complete actual content callbacks are covered by extracted source and retained lifecycle checks, not represented as client traversal.",
+    "counterfactual_native": "Preserved ba856f49b original final-link game/scripts libraries. Baseline2 observes instance0 for all4 cases, MapScript0 on ordinary departure and MapScript1 publishing an already-destroyed pointer on deletion. External destructor counter records this safely; observer does not dereference the destroyed pointer. Corrected in-memory native instance-save admission is present in both paired runs.",
+    "native_boundary": "Actual generated final-link libraries/headers/Release MD ABI, read-only World/Hotfix/Login and no CharacterDatabase pool. No real character loads/resets or persistent fixture writes. Bounded socketless account0 sessions survive to process exit to avoid account UPDATE cleanup. Full native core is not ASAN-instrumented.",
+    "retained": [
+      "Dark Riders full stage/entrance/stationary arrival/Revil controller apply-reapply-remove/native minion filter and matching native DB2 catalog",
+      "Ashran lifecycle/shared instance/reset/acquisition/entry",
+      "ScenarioResume fresh/live/boot/consumed selector/completion/faction/class/instance admission",
+      "BoostShipArrival both factions and native transport attachment ordering",
+      "Test-ScepterLogin.ps1 -VerifyReleaseBinary against actual promoted Release"
+    ],
+    "pe": "verify_instance_leave_release.py stage2 and canonical: real unique Dark Riders vtable OnPlayerLeave slot32, retained challenge slot39, single MapScript call before Player::RemoveFromWorld/delete and remove-flag branch; both raid player/pet sinks with no group-wide helper. Includes retained11 SmartScript linked/corpse retry checks. Stage1 verifier indexed the preceding je one instruction too early; corrected against preserved exact assembly, without changing production.",
+    "combat_and_credit": "No kill dispatcher, pet/guardian credit, inventory, quest/scenario grant or teleport implementation changed. Existing owner/pet/guardian stage coverage and native Revil filters retained. No claim that this lifecycle repair verifies combat/visuals or complete scenarios."
+  },
+  "development_failures": [
+    "Source1/2 extraction did not include highmaul.hpp, leaving exact constant PlayChogallScene unresolved. Runner now reads neighboring .h/.hpp; source3 then exposed incorrect fake Ashran Player* signatures, corrected to actual full ObjectGuid endpoint signatures. Current4/baseline4 compile and pass62. Failed diagnostic records remain; no crash/new runtime error.",
+    "Native baseline1 behavioral assertions matched but emitted InstanceMap::SetResetSchedule missing-save errors on ordinary final departures because the fake admission omitted its real in-memory InstanceSave. AddInstanceSave establishes the prerequisite without CharacterDB or writes. Baseline2/current1 have clean exit/stdout/stderr/DBErrors and post-test diagnostics. This was a fixture error, not a suppressed loader check.",
+    "Pre-existing compiler warnings from the full scripts build and retained fixtures remain visible. The source host scenario member shadows an extracted local, and old baseline raid Player parameters are unused; these warnings are not represented as newly repaired gameplay errors."
+  ],
+  "deployment": {
+    "canonical_directory": "build-extractors/bin/Release",
+    "build": "Original game.vcxproj and scripts.vcxproj Release x64, original final-link libraries; no global OutDir. Staged .codex/instance-leave-release then offline four-file promotion with backup/hash comparison and protected config/certificate/DLL checks.",
+    "hashes": {
+      "worldserver.exe": "a937ae0602cc737d5dfe566893018a4462c4c2655ecd22876748e3bcd143d6f3",
+      "worldserver.map": "9104b84c407d3b421f41eadc669724895ec5ade57050716032fed17a48d2d913",
+      "bnetserver.exe": "27145e5998e0f4bb275d02b6ea06f897470cd6965403017d403480fc3d8336bc",
+      "bnetserver.map": "b7ed6db72da9188bdfd9f135ea6310362679896456dfcc55db1ddff18fef45a0"
+    },
+    "original_link_inputs": {
+      "build-extractors/src/server/game/Release/game.lib": "264de492f2311bd04ae5b0bf1d6fcbc7ab5c9b742f10cf257a0c779a829aa6d5",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "bba65df8afa6b153f33873cade478ad677033349b180b0bb965864722381e105"
+    },
+    "baseline_manifest": {
+      "canonical": "229FC18DC64E27827240A2EA0053399298896FA788D5FAC6560345CEA0CE649F",
+      "scripts": "812D63E1B30E8EC4751C5FFBAE6A078BF6B9485FCC70E7F2CDB3B5C0E2405569",
+      "pin": "ba856f49b",
+      "game": "23F1695F8365B9ACE2A307EEA1A8B4611EEDA3FC33B2EBEC3E34E75DBD94330C"
+    },
+    "owned_startup": "PID30732 fresh ready, graceful shutdown0/exit0, stderr0/newDBErrors0/protected hashes unchanged, process gone. No user/unknown server stopped; no task servers remain.",
+    "sql": "No SQL migration, config, character or item changes."
+  },
+  "diagnostics": {
+    "post_test": "All final source/native/retained/build/stage/PE/promotion/canonical/startup wrappers Completed=true, no new/changed crashes, appended DBErrors or server warnings/errors/assertions. Source/native/PE failed iterations are explicitly paired with passing repairs above.",
+    "active_crashes": "empty; no report removed",
+    "mixed_dberrors": {
+      "bytes": 6090,
+      "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+      "status": "Existing unresolved101430/103151 LINK2 retained; never truncated or archived as wholly fixed."
+    },
+    "archive": "Pending focused implementation commit; closed resolved evidence will be hash-verified separately. OPEN Army/missing-data research excluded."
+  },
+  "remaining": [
+    "User-owned client traversal: DK988 real exit/re-entry/follower/ghost visuals, Ashran departure, Broken Shore bird/camera/pet cleanup, both raid departure/group/primary-pet effects and other legacy callers. Source and native dispatch do not certify every callback native aura cascade/client effect.",
+    "Additional shared Army Training research is OPEN: actual227261 removal links216938/218193;218193 periodic219095 and trigger216862 have no SpellEffect rows in inspected matching DB2/hotfix. Unknown-spell branches retain native diagnostics; no invented data, new grants, whitelist bypass or effect suppression added. This focused leave fix does not claim full Withered Training completion/return verification.",
+    "Sheilun manual physical source, actual native storage witness, removal of original premature automatic grants, outro and native Tak-Tak return/re-entry remain OPEN. Preserve prior loot/visual/voice/route research and all36 worklist; do not confuse this focused lifecycle repair with completion of all chains."
+  ]
+}
