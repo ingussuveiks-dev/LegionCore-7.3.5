@@ -21,6 +21,7 @@ struct Unit {
  virtual Player const* ToPlayer()const{return nullptr;}Player* ToPlayer(){return const_cast<Player*>(static_cast<Unit const*>(this)->ToPlayer());}
  uint32 GetTypeId()const{return ToPlayer()?4u:3u;}
  virtual Creature const* ToCreature()const{return nullptr;}
+ virtual Creature* ToCreature(){return nullptr;}
  Player* GetCharmerOrOwnerPlayerOrPlayerItself()const;
  ObjectGuid GetCharmerGUID()const{return charmer;}ObjectGuid GetOwnerGUID()const{return owner;}
 #include "OwnerGuid.inc"
@@ -50,7 +51,9 @@ struct Creature:Unit {
  Creature(){IsAIEnabled=true;}
  bool IsPreDelete()const{return preDelete;}uint32 GetEntry()const{return entry;}uint32 GetMapId()const{return mapId;}uint32 GetInstanceId()const{return 7;}
  bool IsWithinDistInMap(Unit* u,float d)const{assert(d==20);auto p=u?u->ToPlayer():nullptr;return p&&p->map==map&&p->entryNear;}
- Creature const* ToCreature()const override{return this;}CreatureAI* GetAI()override{return primary;}CreatureAI* AI(){return primary;}
+ Creature const* ToCreature()const override{return this;}Creature* ToCreature()override{return this;}CreatureAI* GetAI()override{return primary;}CreatureAI* AI(){return primary;}
+ // Existing actor fixtures isolate lifecycle behavior; native dispatch is tested separately.
+ void NotifyHealApplied(Unit*,uint32,int32){}
  void ClearUnitState(uint32){}void RemoveAura(uint32 id){assert(id==204237);++removals;}
  void SetByteValue(uint32 field,uint32 offset,uint32 value){assert(field==1&&!offset&&!value);++poses;}void SetAnimKitId(uint32 id){assert(!id);++animations;}
  Creature* GetMotionMaster(){return this;}void MovePoint(uint32 id,float x,float y,float z){assert(id==1&&x==-13.92f&&y==1175.70f&&z==-66.31f);++moves;}

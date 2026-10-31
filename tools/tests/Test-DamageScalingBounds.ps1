@@ -4,6 +4,10 @@ if($Baseline -and $VerifyReleaseBinary){throw 'Baseline cannot certify Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $path='src/server/game/Entities/Unit/Unit.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+if($source.Contains('creature->NotifyHealApplied(this, addhealth, gain);')){
+ & "$PSScriptRoot/Test-CreatureHealApplied.ps1" -ScopeOnly
+ $source=(& git -C $repo show "5a4a13649:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned unchanged damage context missing'}
+}
 $pinned=(& git -C $repo show "a148a34b5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned native division baseline missing'}
 $old='    damage /= victim->GetHealthMultiplierForTarget(this);'
 $current='    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));'

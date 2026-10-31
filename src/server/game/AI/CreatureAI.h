@@ -223,6 +223,12 @@ protected:
 
     virtual bool _EnterEvadeMode();
 
+public:
+    // Final positive heal after HealDone and ModifyHealth. Gain can be zero
+    // for overhealing; cancelled heals and negative health changes are excluded.
+    // Append after existing virtuals so their slots remain unchanged.
+    virtual void OnHealApplied(Unit* /*healer*/, uint32 /*amount*/, int32 /*gain*/) {}
+
 private:
     bool m_MoveInLineOfSight_locked;
     bool m_canSeeEvenInPassiveMode;

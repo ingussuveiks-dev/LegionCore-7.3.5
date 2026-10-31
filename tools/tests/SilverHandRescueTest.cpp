@@ -76,6 +76,7 @@ struct Unit : WorldObject
     FunctionProcessor functions;
     virtual Player* ToPlayer(){return nullptr;}
     virtual Player const* ToPlayer() const{return nullptr;}
+    virtual Creature* ToCreature(){return nullptr;}
     ObjectGuid GetCharmerOrOwnerGUID() const{return charmer?charmer->GetGUID():owner?owner->GetGUID():ObjectGuid{};}
     Player* GetCharmerOrOwnerPlayerOrPlayerItself() const;
     UnitAI* GetAI(){return ai;}
@@ -157,6 +158,9 @@ struct Motion
 };
 struct Creature : Unit
 {
+    Creature* ToCreature() override{return this;}
+    // Existing rescue fixture isolates lifecycle behavior; dispatch is tested separately.
+    void NotifyHealApplied(Unit*,uint32,int32){}
     uint32 entry=106933,mapId=1539,instance=42,states=UNIT_STATE_STUNNED,despawns=0;
     std::vector<uint32> removals;
     Motion motion;

@@ -12260,7 +12260,11 @@ int32 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto
         GetAI()->HealDone(victim, addhealth);
 
     if (addhealth)
+    {
         gain = victim->ModifyHealth(int32(addhealth), this);
+        if (Creature* creature = victim->ToCreature())
+            creature->NotifyHealApplied(this, addhealth, gain);
+    }
 
     Unit* unit = this;
 

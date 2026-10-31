@@ -621,6 +621,8 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         CreatureAI* AI() const { return reinterpret_cast<CreatureAI*>(i_AI); }
 
+        void NotifyHealApplied(Unit* healer, uint32 amount, int32 gain);
+
         SpellSchoolMask GetMeleeDamageSchoolMask() const override { return m_meleeDamageSchoolMask; }
         void SetMeleeDamageSchool(SpellSchools school) { m_meleeDamageSchoolMask = SpellSchoolMask(1 << school); }
 

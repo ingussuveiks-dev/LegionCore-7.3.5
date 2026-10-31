@@ -1283,6 +1283,27 @@ bool Creature::AIM_Destroy()
     return true;
 }
 
+void Creature::NotifyHealApplied(Unit* healer, uint32 amount, int32 gain)
+{
+    if (!amount || gain < 0)
+        return;
+
+    struct RestoreAILock
+    {
+        bool& flag;
+        bool previous;
+        ~RestoreAILock() { flag = previous; }
+    } restore{m_AI_locked, m_AI_locked};
+    m_AI_locked = true;
+
+    CreatureAI* active = AI();
+    CreatureAI* suspended = reinterpret_cast<CreatureAI*>(i_disabledAI);
+    if (active)
+        active->OnHealApplied(healer, amount, gain);
+    if (suspended && suspended != active)
+        suspended->OnHealApplied(healer, amount, gain);
+}
+
 bool Creature::AIM_Initialize(CreatureAI* ai)
 {
     // make sure nothing can change the AI during AI update

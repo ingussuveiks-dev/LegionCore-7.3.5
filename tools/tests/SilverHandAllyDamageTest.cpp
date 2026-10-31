@@ -39,6 +39,7 @@ struct Unit : WorldObject
     bool IsAIEnabled=false;
     CreatureAI* healAI=nullptr;
     virtual Creature const* ToCreature() const {return nullptr;}
+    virtual Creature* ToCreature() {return nullptr;}
     uint64 GetHealth() const {return currentHealth;}
     uint64 GetHealth(Unit*) const;
     float GetHealthPct() const {return maximum?100.0f*float(currentHealth)/float(maximum):0;}
@@ -75,7 +76,9 @@ struct Creature : Unit
     bool IsInWorld() const{return world;}
     bool IsPreDelete() const{return preDelete;}
     Creature const* ToCreature() const override {return this;}
-    Creature* ToCreature() {return this;}
+    Creature* ToCreature() override {return this;}
+    // This fixture certifies wound/lifecycle behavior; dispatch has its own native regression.
+    void NotifyHealApplied(Unit*,uint32,int32) {}
     CreatureAI* AI(){return primary;}
     InstanceScript* GetInstanceScript(){return nullptr;}
     bool HasScalableLevels() const {return scalable;}
