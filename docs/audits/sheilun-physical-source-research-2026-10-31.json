@@ -1,0 +1,156 @@
+{
+  "date": "2026-10-31",
+  "status": "OPEN real pickup/return; native NPC click/visual/item-spell and static pool anchors identified, no gameplay/data/character mutation",
+  "native_click": [
+    "Fresh fully drained readonly World:102479 has NPC_FLAG_SPELLCLICK0x01000000 and npc_spellclick202435/cast_flags1/user_type0/flags1.102505 has46598 and Vehicle4578. No static102479/102505/256913 spawn. This gives a real existing NPC interaction path; GO256913 is not proven to be the original retail source. Do not remove or replace old automatic grants without a working physical path.",
+    "Actual Unit::HandleSpellClick resolves clicker as caster for flag1, applies source18 conditions then normal cast to clickee, and calls AI OnSpellClick regardless of accepted cast result. New acquisition must bind original actual target/source and require successful native storage before progression; OnSpellClick alone is not a success receipt. Native202435 self effects90/102479,61/48646,160/202437 remain separate from storage.",
+    "All five native1007 ScenarioStep.RewardQuestID are0, so the generic scenario RewardQuest path cannot supply128937. No matching creature loot or fixed/choice quest rewards in fresh World query. None of this authorizes an unconditional item grant."
+  ],
+  "native_visual": [
+    "Typed26972 root tables+readonly Hotfix: displays67670/25204 both Model1731/File124640/scale1, Flags1/alpha255, StateSpellVisualKit0/ObjectEffectPackage0; no World template equipment or addon for102479/102505. An actor template alone does not provide the staff model.",
+    "Native202385 I am Sheilun Staff of the Mists is self infinite dummy aura4. SpellXSpellVisual94165->visual52801, aura events7..8/target2 ->kit63682. Effect134434/type2 ->attachment317084 ->effect-name26949/type1/GenericID128937. This is an actual item-model attachment, not a CreatureDisplayInfo guess. Attachment19 has scale1.5, pitch-1.5708, offset0/0/2. Second attachment317095 ->effect10790/modelFile200316 with scale0.4 and offset0. Native visual root Hotfix loaded; client parent/effect-name records are base-only and size-checked, as in the established visual catalog.",
+    "New SheilunVisualCatalog.cpp reuses the established packed parent-key reader. New SheilunPhysicalCatalog.cpp independently reads the actual typed visual item identifier/pose plus model, map-area and vehicle data. Exact rendering/particles/source lifetime still need the client; no external mesh/model substituted."
+  ],
+  "native_item": [
+    "Expanded matching Spell name search found202436 Retrieving Sheilun, Staff of the Mists. Its native effect157 CREATE_ITEM_2 has EffectItemType0/BasePoints0/MiscValue64359/MiscValueB0/self target. The apparent64359 is not the item ID. EffectCreateItem2/SpellInfo::IsLootCrafting route this zero-item spell through Player::AutoStoreLoot(spellId202436,LootTemplates_Spell,true,context0). No202436/64359 or Item128937 row exists in spell_loot_template in the current World.",
+    "No World spell_linked_spell/spell_script_names producer found for202385 or202436 in the fresh query. Original202435 triggers202437 only;202436 is not currently invoked by that native effect graph. Restoring source/provenance/admission, missing loot and successful storage-before202435 remains implementation work. Keep failed casts/full bags/existing/banked artifact/duplicate events/quest attempt and owner/group/native stage semantics explicit; do not equate CastSpell accepted with item stored."
+  ],
+  "map_and_static_surface": [
+    "Native WorldMapArea1059/map1541/area8005 bounds Left-2497.92/Right-3200/Top-789.584/Bottom-1258.33. Historical guide UI39.2/48.6 converts approximately toX-1017.39456/Y-2773.13536, close to existing Whirlpool134376 XY-1017.29/-2772.8 and boss362866 XY-1018.24/-2771.94. This is corroboration at rounded guide precision, not an exact retail spawn tuple.",
+    "New SheilunPoolSurface.cpp loads actual1541 terrain+VMAP tile33/37 and samples3x3 around those3 anchors (27 points), both high100 and local40 height probes. Actual pool static floor is about38.57111 at all samples; terrain11.53987 and terrain liquid3.79644 lie below it. Existing WhirlpoolZ36.4643 and bossZ39.372 are different authored model offsets; neither is a safe copied staff base. Client-visible pool water/dynamic objects and actual source placement/pose remain unverified. Aura attachment offset2 is relative visual pose, not a reason to move every source/NPC Z by2."
+  ],
+  "local_sources": [
+    {
+      "path": ".codex/LegionCore_world_735.26972_2020_04_25.sql",
+      "bytes": 243128702,
+      "sha256": "1ab50f16504c42496ec5fdab6135126a2b8641bbd633849b20b2931e8d43cff6",
+      "seen_insert_tables": {
+        "creature": 5,
+        "creature_template": 3,
+        "creature_template_addon": 1,
+        "creature_template_wdb": 2,
+        "gameobject": 2,
+        "gameobject_loot_template": 1,
+        "gameobject_template": 1,
+        "npc_spellclick_spells": 1,
+        "smart_scripts": 1,
+        "spell_scene": 1,
+        "spell_scene_event": 1,
+        "spell_target_position": 1
+      },
+      "unknown_schema": [],
+      "selected_context_rows": 109
+    },
+    {
+      "path": ".codex/TDB735/TDB_full_735.00_2018_02_19/TDB_world_735.00_2018_02_19.sql",
+      "bytes": 313674890,
+      "sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+      "seen_insert_tables": {
+        "creature": 20,
+        "creature_template": 24,
+        "creature_template_addon": 1,
+        "gameobject": 8,
+        "gameobject_loot_template": 1,
+        "gameobject_template": 6,
+        "npc_spellclick_spells": 1,
+        "smart_scripts": 6,
+        "spell_target_position": 1
+      },
+      "unknown_schema": [],
+      "selected_context_rows": 13
+    },
+    {
+      "path": ".codex/armament-sources/titans-world_database_01.sql",
+      "bytes": 50684537,
+      "sha256": "d707dab63e7c61b9f24d6a1962b189a656efdaa6696ee04eafe45736d42000f3",
+      "seen_insert_tables": {
+        "creature": 46
+      },
+      "unknown_schema": [],
+      "selected_context_rows": 52
+    },
+    {
+      "path": ".codex/armament-sources/titans-world_database_02.sql",
+      "bytes": 50951773,
+      "sha256": "15330db0220a5822dce4a50e3c4bc18337656211a05ce0a61e7fd2f7cc428db9",
+      "seen_insert_tables": {
+        "creature_template": 19,
+        "creature_template_addon": 2,
+        "creature_template_wdb": 11
+      },
+      "unknown_schema": [],
+      "selected_context_rows": 8
+    },
+    {
+      "path": ".codex/armament-sources/titans-world_database_03.sql",
+      "bytes": 50912860,
+      "sha256": "700cff5cce83422c999735f09a685a9bf304b70caa8055f02214d99d4002a31e",
+      "seen_insert_tables": {
+        "creature_template_wdb": 3,
+        "gameobject": 16,
+        "gameobject_loot_template": 2,
+        "gameobject_template": 10
+      },
+      "unknown_schema": [
+        "creature_template_wdb"
+      ],
+      "selected_context_rows": 26
+    },
+    {
+      "path": ".codex/armament-sources/titans-world_database_04.sql",
+      "bytes": 51186773,
+      "sha256": "22065825a5fb08d6c996285916088b6f8266b217aa0c6f715a242f8546d57ed5",
+      "seen_insert_tables": {
+        "npc_spellclick_spells": 1
+      },
+      "unknown_schema": [],
+      "selected_context_rows": 4
+    },
+    {
+      "path": ".codex/armament-sources/titans-world_database_05.sql",
+      "bytes": 48999553,
+      "sha256": "2fcfd484dde46b0836823005d3d8b6a0aedc099e8348dca585419a3b084925f7",
+      "seen_insert_tables": {
+        "smart_scripts": 8,
+        "spell_scene": 1,
+        "spell_scene_event": 1,
+        "spell_target_position": 1
+      },
+      "unknown_schema": [],
+      "selected_context_rows": 14
+    }
+  ],
+  "source_limits": [
+    "2020 LegionCore full SQL and TDB735.00 full SQL were completely streamed with actual CREATE/INSERT schemas, including lowercase insert with variable spacing, native exit/EOF and hashes; creature/gameobject insertion coverage explicitly checked. No physical102479/102505/256913 source or1541 Tak-Tak101880/102648 source found in their selected spawn tables. Five pinned-family Titans parts retain same missing physical path in inspected creature/gameobject tables.",
+    "Prototype1 missed lowercase INSERT in the2020 SQL and printed0 selected rows; that is invalid absence evidence. Prototype2 fixes case/spacing and positively reads109 selected contexts there. The split Titans part03 has unknown creature_template_wdb schema because its DDL is in a previous part; those WDB rows were not certified by this prototype. Creature/gameobject spawn tables have their own known schemas. Do not claim a full cross-part template/SQL reconstruction; raw results and both prototypes remain OPEN.",
+    "Other saved2016/uwow2 creature_data has102479/102505 WDB names/models only (build21154); uwow6 numeric matches are unrelated BroadcastText IDs. Newer local DestinyCore2d631f4e and LegionPlayerBot32e6abf0 references do not supply an independent source; the latter has same automatic grant/return code family. Modern data and scalar ID coincidences were not adapted.",
+    "Secondary guide https://www.wowhead.com/quest=41003/the-emperors-gift gives rounded pickup39.2/48.6 and return43.7/53.0; modern/Remix comments were excluded. Warcraft Wiki describes separate manual claim and Tak-Tak gossip. Existing full historical sampled video has a980s cut before kite; no actual gossip click or complete return/turn-in claimed. Next independent historical sequence should cover that missing transition."
+  ],
+  "reviewed_tool_failures": [
+    "Physical native1 compile used GameObjectDisplayInfoLoadInfo instead of actual GameobjectDisplayInfoLoadInfo. Corrected/native2 and final5 compile/load pass; no gameplay change.",
+    "Visual context SQL first used modelid instead of actual creature_model_info.DisplayID. Complete stdout/stderr preserved; corrected query reached strict EOF with two model rows. No absent equipment/reward claim from failed tail.",
+    "A zero-result query produced only one EOF row; private readonly helper treated it as a scalar string and compared its last character. Wrapped Get-Content in @(...), reran query with a fresh evidence directory and checked exit0/empty stderr/exact EOF. No lost native stdout or live mutation.",
+    "Physical native4 used obsolete ordinary visual structs/LoadInfo for parent-key attachment and effect-name records. Native DB2 loader assertion Unknown format character h was caught and process exited; no crash report was generated in canonical/runtime/repo directories and diagnostics/log checks remained visible. Final5 uses the established explicit packed byte-sized effect-name layout and full attachment parent field, asserts both native record sizes, and loads the same assets successfully. Native core checks were retained; no file corruption or runtime gameplay cause inferred from the invalid research reader."
+  ],
+  "evidence": [
+    ".codex/sheilun-physical-click-open-2026-10-31",
+    ".codex/sheilun-reward-native-open-2026-10-31",
+    ".codex/sheilun-visual-context-open-2026-10-31",
+    ".codex/sheilun-visual-context2-open-2026-10-31",
+    ".codex/sheilun-visual-spells-open-2026-10-31",
+    ".codex/sheilun-item-native-open-2026-10-31",
+    ".codex/sheilun-item-spell-open-2026-10-31",
+    ".codex/sheilun-item-spell2-open-2026-10-31",
+    ".codex/sheilun-physical-native-open-2026-10-31",
+    ".codex/sheilun-physical-native2-open-2026-10-31",
+    ".codex/sheilun-physical-native3-open-2026-10-31",
+    ".codex/sheilun-physical-native4-open-2026-10-31",
+    ".codex/sheilun-physical-native5-open-2026-10-31",
+    ".codex/sheilun-visual-native-open-2026-10-31",
+    ".codex/sheilun-pool-surface-open-2026-10-31",
+    ".codex/sheilun-physical-sql-open-2026-10-31",
+    ".codex/sheilun-physical-sql2-open-2026-10-31"
+  ],
+  "runtime": "CanonicalECAA2D24 remains deployed65546bb25/archive4708acba1; no new server launched. Crashes empty,6090-byte mixed unresolved LINK2 unchanged. Readonly native/TEMP-free World/source/geometry research only; no character/item/progress reset or grant. All failures and OPEN source evidence remain outside fixed classification.",
+  "next": "Trace actual native202436 storage and202385 source admission with a grounded pool source; complete real owner/pet/guardian death and prerequisite receipts, no nearest player, repeat/retry/re-entry/group handling. Review historical full return sequence and native202828/4581 seats/route before retiring old automatic item/14s return. Independent middle-stage Taran/companion raw gossip/timer/null-AI issues remain candidates. Full36/client remains OPEN."
+}

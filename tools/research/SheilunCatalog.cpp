@@ -34,6 +34,7 @@ int main(int argc,char** argv)
     for(auto step:steps)if(step->ScenarioID==1007)
     {
         std::cout<<"STEP\t"<<step->ScenarioID<<'\t'<<unsigned(step->OrderIndex)<<'\t'<<step->ID<<'\t'<<step->Criteriatreeid<<'\t'<<step->Title->Str[0]<<'\t'<<step->Description->Str[0]<<'\n';
+        std::cout<<"STEP_REWARD\t"<<step->ID<<'\t'<<step->RewardQuestID<<'\t'<<unsigned(step->Flags)<<'\t'<<step->RelatedStep<<'\t'<<step->Supersedes<<'\n';
         std::set<uint32> todo{uint32(step->Criteriatreeid)},seen;
         while(!todo.empty())
         {
@@ -46,6 +47,12 @@ int main(int argc,char** argv)
         }
     }
     std::set<uint32> selected{202435,202438,194151,204779,204773,204237};
+    for(auto spell:spells)
+    {
+        std::string name=spell->Name->Str[0];
+        std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});
+        if(name.find("sheilun")!=std::string::npos||name.find("sheylun")!=std::string::npos)selected.insert(spell->ID);
+    }
     for(auto effect:effects)if((effect->Effect==61&&(effect->EffectMiscValue[0]==48495||effect->EffectMiscValue[0]==48646))||
        (effect->Effect==90&&(effect->EffectMiscValue[0]==101880||effect->EffectMiscValue[0]==102479))||
        effect->EffectMiscValue[0]==256913||effect->EffectMiscValue[0]==102479||effect->EffectMiscValue[0]==102505)selected.insert(effect->SpellID);
@@ -54,7 +61,10 @@ int main(int argc,char** argv)
     {
         if(auto spell=spells.LookupEntry(id))std::cout<<"SPELL\t"<<id<<'\t'<<spell->Name->Str[0]<<'\n';
         for(auto e:effects)if(e->SpellID==id&&!e->DifficultyID)
+        {
             std::cout<<"EFFECT\t"<<id<<'\t'<<unsigned(e->EffectIndex)<<'\t'<<e->Effect<<'\t'<<e->EffectAura<<'\t'<<e->EffectMiscValue[0]<<'\t'<<e->EffectTriggerSpell<<'\t'<<unsigned(e->ImplicitTarget[0])<<'\t'<<unsigned(e->ImplicitTarget[1])<<'\n';
+            std::cout<<"EFFECT_ITEM\t"<<id<<'\t'<<unsigned(e->EffectIndex)<<'\t'<<e->EffectItemType<<'\t'<<e->EffectBasePoints<<'\t'<<e->EffectMiscValue[1]<<'\n';
+        }
         for(auto m:misc)if(m->SpellID==id&&!m->DifficultyID)
             if(auto d=durations.LookupEntry(m->DurationIndex))std::cout<<"DURATION\t"<<id<<'\t'<<d->Duration<<'\t'<<d->MaxDuration<<'\n';
     }

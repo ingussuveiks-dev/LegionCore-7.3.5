@@ -1,0 +1,3 @@
+#define ARTIFACT_VISUAL_ACTOR 67670
+#define ARTIFACT_VISUAL_SPELLS 202385u, 202435u, 202436u, 202437u, 202438u, 202693u, 202828u
+#include "WarswordsHelyaVisualCatalog.cpp"
