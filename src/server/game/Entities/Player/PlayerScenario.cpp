@@ -5,6 +5,7 @@
 #include "WorldSession.h"
 #include "ObjectMgr.h"
 #include "Creature.h"
+#include "Item.h"
 #include "SpellMgr.h"
 #include "BrokenShoreClassRoute.h"
 
@@ -160,6 +161,44 @@ bool Player::ExitCompletedBrokenShoreLogin()
     m_scenarioResume = {};
     m_scenarioLoginId = m_scenarioLoginInstance = 0;
     SetScenarioId(0);
+    return true;
+}
+
+bool Player::ExitCompletedSheilunLogin()
+{
+    // Native232943 can prefill this quest's objectives. They alone do not
+    // establish acquisition: require the actual owned inventory artifact too.
+    // This rejected-login recovery routes the player; it grants no progress.
+    if (GetMapId() != 1541 || getClass() != CLASS_MONK ||
+        (m_scenarioLoginId && m_scenarioLoginId != 1007) ||
+        (m_scenarioResume.scenario && m_scenarioResume.scenario != 1007) ||
+        IsQuestRewarded(41003) ||
+        (GetQuestStatus(41003) != QUEST_STATUS_INCOMPLETE && GetQuestStatus(41003) != QUEST_STATUS_COMPLETE) ||
+        GetQuestObjectiveData(41003, 102479) < 1)
+        return false;
+
+    Scenario* progress = sScenarioMgr->GetScenario(GetInstanceId());
+    if (progress && (progress->GetMap() != GetMap() || progress->GetScenarioId() != 1007))
+        return false;
+
+    // GetItemByEntry scans actual inventory/bag slots even before their world
+    // insertion. Bag::GetItemCount deliberately excludes those loading items.
+    Item* staff = GetItemByEntry(128937, false);
+    if (!staff || staff->GetOwnerGUID() != GetGUID() || !staff->GetCount())
+        return false;
+
+    WorldSafeLocsEntry const* exit = sWorldSafeLocsStore.LookupEntry(5710);
+    if (!exit || exit->MapID != 1514)
+        return false;
+    float facing = exit->Loc.O * float(M_PI / 180.0);
+    if (!MapManager::IsValidMapCoord(exit->MapID, exit->Loc.X, exit->Loc.Y, exit->Loc.Z, facing) ||
+        !TeleportTo(exit->MapID, exit->Loc.X, exit->Loc.Y, exit->Loc.Z, facing))
+        return false;
+
+    m_scenarioResume = {};
+    m_scenarioLoginId = m_scenarioLoginInstance = 0;
+    SetScenarioId(0);
+    TC_LOG_INFO("entities.player", "Sheilun: login returns artifact owner %u to native Mistweaver exit", GetGUIDLow());
     return true;
 }
 

@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-01",
+  "status": "PASS focused rejected-login return for actual inventory Sheilun owners; canonical Release deployed; ordinary physical acquisition/outro/flight and client/all36 remain OPEN",
+  "cause": "Completed Scenario1007 intentionally clears its entrance checkpoint in SaveToDB, PrepareScenarioLogin and RecordScenarioEntrance. Native post-AddPlayer login admission rejects an unrecorded scenario, and CharacterHandler had no Sheilun exit recovery, falling through to go-back/home even for a player already carrying the artifact. The pinned old caller reproduces the wrong destination; this is separate from the still-open premature boss/GO acquisition grants.",
+  "implementation": [
+    "Append a nonvirtual Player::ExitCompletedSheilunLogin method and call it only after native invalid-login admission and the retained Dark Riders/Broken Shore recovery branches. Accepted live/garrison maps stay on their native route; unrelated or ineligible rejected logins retain existing diagnostics and fallback.",
+    "Require map1541/Monk, no conflicting current/checkpoint scenario, active unrewarded41003, its unique102479 objective and an actual positive-count128937 item owned by the same full Player GUID in inventory. Optional live Scenario must be1007 on the same map. Native232943 prefills quest objectives, so counters alone and bank-only artifacts do not authorize recovery.",
+    "Use the real Player::GetItemByEntry128937,false scan, including loaded bags before world insertion, equipment, child and current backpack slots. Do not use Bag::GetItemCount to infer loading inventory, and do not count bank/reagent/mail-only ownership.",
+    "Resolve matching native WorldSafeLoc5710, require map1514 and valid coordinates, convert its facing degrees to radians, and use ordinary TeleportTo. Clear scenario checkpoint/selectors only after the native transfer is accepted. No item, quest, objective, scenario, resurrection or combat credit is granted, no admission check disabled and no log suppressed."
+  ],
+  "native_sources": {
+    "order": "Matching local26972 DB2/Hotfix data, actual World quest records, core completion/admission/loaded-inventory paths and existing project Dark Riders/Broken Shore recovery implementations. Local native evidence resolves this routing defect; no external implementation or new video claim.",
+    "exit": {
+      "id": 5710,
+      "map": 1514,
+      "position": [
+        937.987854,
+        3716.6814,
+        189.062347
+      ],
+      "facing_degrees": 85.2750015,
+      "name": "7.0 Artifacts - Monk Acquisition Scenario - Mistweaver - Exit Safe Loc"
+    },
+    "geometry": "SheilunReturnLanding.cpp uses actual typed DB2Storage plus read-only Hotfix, native GridMap/VMAP and ModelIgnoreFlags::Nothing. All9 samples at center and +/-0.3yd have floor189.062256 (~0.000091yd below savedZ) and clear vertical0.5..2.0yd body segment. This is static supporting collision, not every race/client/model streaming test.",
+    "objectives": "Fresh full-EOF read-only World query:41003 objective281594/101880/storage0,281598/102479/storage1,281599/101880/storage2/SEQUENCED2. Recovery reads the unique102479 entry, never conflates the two101880 records or fabricates the later return credit.",
+    "prior_research": [
+      "docs/audits/sheilun-loot-return-anchors-2026-10-31.json",
+      "docs/audits/sheilun-return-research-2026-10-31.json"
+    ]
+  },
+  "regression": {
+    "current": "Test-SheilunLogin.ps1 current1:52 ASAN cases compiling the actual new recovery method, post-AddPlayer native CharacterHandler block, native GetItemByEntry and objective lookup with actual Player.h slot enums. Includes incomplete/complete/unrewarded statuses, AddPlayer true/false, backpack/loading bag/equipped/child/expanded inventory, zero/consumed selectors, native pose/facing, missing/foreign/zero-count/wrong item, bank/bank-bag/reagent/inactive-slot-only denial, prefills without item, scenario/map/checkpoint/native-data guards, failed transfer retaining checkpoint and original go-back/home behavior, accepted live/garrison paths. Player/session/world/teleport/item endpoints are controlled; no whole-client/native Player::TeleportTo execution claim.",
+    "counterfactual": "Baseline1 compiles the exact fa1beeac4 post-AddPlayer CharacterHandler block. All22 eligible-owner cases assert EXPECTED_BROKEN home fallback. Current recovery is compiled but not called by that pinned old caller. This isolates the missing route and is not a successful ordinary login or a manufactured native crash.",
+    "pe": "verify_sheilun_login_release.py stage1 and canonical verify the actual delayed login lambda branch, native admission and preserved DK/Broken Shore shortcuts, item128937 with bank=false, Item owner/full GUID inequality and positive-count gates, unique102479/scenario/checkpoint checks, actual5710 sparse-row offset and1514 MapID, native pose fields and radians multiplier, ordinary transfer and checkpoint/selector clearing after success. Confirms absence of item/progression grants. Retained quest-object loot and instance-leave PE checks also pass on the exact staged bytes.",
+    "retained": [
+      "DarkRidersLogin actual post-AddPlayer admission and live World Revil; its fake Sheilun method explicitly returnsfalse only for this isolated map1533 host",
+      "ScenarioResume constructor/consumed selector, boot/live/fresh/completion/routing and accepted paths",
+      "NewBloodLogin and real Bag-count/tome inventory loading boundaries",
+      "Mandatory Test-ScepterLogin.ps1 -VerifyReleaseBinary on promoted canonical executable"
+    ],
+    "combat_and_alternatives": "Recovery has no killer or combat credit. Native player/pet/guardian death eligibility, exactly-once victory, physical-source ownership and group credit remain in the separately OPEN acquisition work. The new class/quest/item route makes no faction-specific destination assumption;1514 is the matching shared Monk hall. Actual faction/race/client login/camera/pet tests remain pending."
+  },
+  "build_and_deployment": {
+    "build": "Original game.vcxproj and scripts.vcxproj Release x64 fully rebuilt after Player.h nonvirtual declaration; no object layout or virtual-slot changes. No global OutDir. Stage linker reads actual original generated game/scripts/shared/common libraries; no canonical mutation until offline promotion.",
+    "canonical_directory": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "45ec027ec49c842b5d8d190910b641e10e3dd2312da63719c60e72c37a5b816d",
+      "worldserver.map": "76966ad467599ed0bbdeec4b742135d3496f0dc6f28913896a3fcbafeb3b7b21",
+      "bnetserver.exe": "4b977f3cd74995b21f707d01cc551d8024bfc89c43ec1bfed86e52dc4af24217",
+      "bnetserver.map": "777542336e071bf252696540bf4b25501a84bdef557ae80d414688ed16558acf"
+    },
+    "actual_final_link_inputs": {
+      "build-extractors/src/server/game/Release/game.lib": "c7a9cf5db80b9ec762ed8476f5bbbe1e740a8d327bac68d40fab832ba6965945",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "faf1906405ccad3f651d4cc4fd0baa672ca10507b7fb4ec30728a57fb031c725"
+    },
+    "backup": ".codex/release-before-sheilun-login-2026-11-01",
+    "promotion": "Four-file offline backup/promotion hashes matched, protected configs/certificates/DLLs preserved, no user/unknown server stopped.",
+    "owned_startup": "PID32300 fresh ready, graceful shutdown0/exit0, stderr/newDBErrors0, protected hashes unchanged, process gone; no task servers remain.",
+    "sql": "No SQL migration, persistent fixture, runtime config, real character/reset or item modification."
+  },
+  "diagnostics": {
+    "final_checks": "Final source/baseline/native landing/World data/retained/build/stage/PE/promotion/canonical/startup wrappers Completed=true; no new/changed crash, appended DBErrors or server warnings/errors/assertions.",
+    "fixture_repair": "Native landing1 failed compilation C2660 because this core requires the eighth VMAP ModelIgnoreFlags argument. Corrected to Nothing against the native header and paired landing2 passes. No failed native process/crash was hidden. Pre-existing full-build/fixture compiler warnings remain visible and are not claimed repaired.",
+    "active_crashes": "empty; no report removed",
+    "mixed_DBErrors": {
+      "bytes": 6090,
+      "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+      "status": "Existing unresolved101430/103151 LINK2 untouched; not archived as wholly fixed or truncated."
+    },
+    "archive": "Pending focused implementation commit and closed evidence hash verification."
+  },
+  "remaining": [
+    "Actual rejected-login/relog/restart client return, client loading/gravity/camera/pet state and walking from native5710 to Ponshu require user traversal. Automated source/PE/native static collision does not prove the client sequence.",
+    "This recovery checks current inventory ownership and saved objective, not provenance of the item or a particular accepted quest attempt. Existing legitimate owners can return without new progress. It is not a proof of real boss defeat/manual pickup, and does not repair the old automatic grants.",
+    "Original Sheylun.cpp boss/GO shortcuts still grant128937/48646 and194151 on timers. Complete physical source/native storage witness, source scope/full bags/retry, boss player/pet/guardian/ally credit, actual outro/native202828 Tak-Tak boarding and both flight legs remain OPEN. Preserve the previous native voice/visual/route evidence and all36 worklist.",
+    "Ordinary unfinished live/fresh re-entry remains governed by ScenarioResume. This focused route does not serialize exact actor/criteria state or create a new persistent completion marker. No additional character reset is authorized."
+  ]
+}
