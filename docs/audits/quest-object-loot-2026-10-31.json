@@ -45,5 +45,22 @@
   ],
   "diagnostics": "Canonical Crashes empty. Mixed unresolved DBErrors.log remains6090 bytes, SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0, untouched. Resolved closed evidence will be hash-archived separately; existing mixed errors, unrelated history and OPEN Sheilun research are not cleared or relabeled fixed.",
   "evidence_prefix": ".codex/quest-loot-",
-  "remaining": "Actual client visibility/window/full-bag/currency/Fetch/group/abandonment checks remain client work. Original Sheilun boss timer/GO_ACTIVATED grants, physical manual source, voiced outro and native Tak-Tak return are still OPEN and unchanged by this prerequisite; see sheilun-loot-return-anchors-2026-10-31.json. This repair does not certify the complete Sheilun chain or all36 artifact chains."
+  "remaining": "Actual client visibility/window/full-bag/currency/Fetch/group/abandonment checks remain client work. Original Sheilun boss timer/GO_ACTIVATED grants, physical manual source, voiced outro and native Tak-Tak return are still OPEN and unchanged by this prerequisite; see sheilun-loot-return-anchors-2026-10-31.json. This repair does not certify the complete Sheilun chain or all36 artifact chains.",
+  "archive": {
+    "fix_commit": "3a56efbb4",
+    "directory": "build-extractors/bin/Release/fixed/quest-object-loot-2026-10-31",
+    "manifest_sha256": "fbadd7b7ef9d5f802295d407749ef0822904bc365e8d7ba533c93b0c372ffe29",
+    "files": 1001,
+    "verification": "Source/destination/source/final SHA256 verified; canonical229FC18D retained, owned19440 clean exit0/gone; Crashes empty and mixed6090LINK2 hash/length/mtime unchanged. No active report removed or log truncated.",
+    "remaining": "Only shared quest-object loot repair and paired native/baseline/fixture/PE/build/deployment evidence copied. Resolved baseline3 probe cleanup FATAL/ACCESS_VIOLATION stderr retained; no dump existed. Expected behavioral baseline is labeled counterfactual and paired92/70. Pre-existing compiler warnings are recorded, not represented as repaired. Original sources remain; no active report removed or log truncated. Mixed6090 and unrelated history/OPEN Sheilun research/client/all36 unchanged. No config/binary/dump/credential/character/media copied.",
+    "historical_retained_evidence": {
+      "audit": "docs/audits/stromkar-full-bag-loot-2026-10-30.json",
+      "fix_commit": "f880ccb7f",
+      "original_archive": "build-extractors/bin/Release/fixed/stromkar-fullbag-loot-2026-10-30",
+      "review": "Copied retained runtime history includes the earlier26 declaration/compiler errors from run-20261030-112554-9291757. The diagnostic log is byte-identical to the original reviewed fixed archive, whose audit records the repaired fixture declarations. Current retained94 ASAN passes; this historical repair is not attributed to3a56efbb4.",
+      "verified_log_sha256": "e932a64bf0c9b36972e6db42eec065dbb700f84314ae44e278b2a406b0fc8d4d"
+    },
+    "post_copy_diagnostic_review": "Every copied runtime DBErrors is empty. ERROR/FATAL/native exception/ASAN/compiler-error scan matches the three reviewed focused compilation failures, baseline3 resolved probe cleanup fatal/exception and the separately proven historical Stromkar declaration log. No unexplained error was moved or hidden; all source files remain."
+  },
+  "fix_commit": "3a56efbb4"
 }

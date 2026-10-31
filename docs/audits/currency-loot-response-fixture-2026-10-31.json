@@ -8,7 +8,28 @@
   "evidence": [
     ".codex/quest-loot-retained-currency1-2026-10-31",
     ".codex/quest-loot-retained-currency2-2026-10-31",
-    "build-extractors/runtime-test/currency-loot-response"
+    "build-extractors/runtime-test/currency-loot-response",
+    ".codex/quest-loot-retained-currency3-2026-10-31"
   ],
-  "limits": "This serializer/visibility-helper regression is separate from the pending quest-object core implementation, native runtime/client currency receipt and all36 artifact-chain traversal. Existing mixed unresolved DBErrors6090 bytes remains untouched. Diagnostic archival follows the verified local archive procedure separately."
+  "limits": "This serializer/visibility-helper regression is separate from the pending quest-object core implementation, native runtime/client currency receipt and all36 artifact-chain traversal. Existing mixed unresolved DBErrors6090 bytes remains untouched. Diagnostic archival follows the verified local archive procedure separately.",
+  "archive": {
+    "fix_commit": "3a56efbb4",
+    "directory": "build-extractors/bin/Release/fixed/quest-object-loot-2026-10-31",
+    "manifest_sha256": "fbadd7b7ef9d5f802295d407749ef0822904bc365e8d7ba533c93b0c372ffe29",
+    "files": 1001,
+    "verification": "Source/destination/source/final SHA256 verified; canonical229FC18D retained, owned19440 clean exit0/gone; Crashes empty and mixed6090LINK2 hash/length/mtime unchanged. No active report removed or log truncated.",
+    "remaining": "Only shared quest-object loot repair and paired native/baseline/fixture/PE/build/deployment evidence copied. Resolved baseline3 probe cleanup FATAL/ACCESS_VIOLATION stderr retained; no dump existed. Expected behavioral baseline is labeled counterfactual and paired92/70. Pre-existing compiler warnings are recorded, not represented as repaired. Original sources remain; no active report removed or log truncated. Mixed6090 and unrelated history/OPEN Sheilun research/client/all36 unchanged. No config/binary/dump/credential/character/media copied.",
+    "historical_retained_evidence": {
+      "audit": "docs/audits/stromkar-full-bag-loot-2026-10-30.json",
+      "fix_commit": "f880ccb7f",
+      "original_archive": "build-extractors/bin/Release/fixed/stromkar-fullbag-loot-2026-10-30",
+      "review": "Copied retained runtime history includes the earlier26 declaration/compiler errors from run-20261030-112554-9291757. The diagnostic log is byte-identical to the original reviewed fixed archive, whose audit records the repaired fixture declarations. Current retained94 ASAN passes; this historical repair is not attributed to3a56efbb4.",
+      "verified_log_sha256": "e932a64bf0c9b36972e6db42eec065dbb700f84314ae44e278b2a406b0fc8d4d"
+    },
+    "post_copy_diagnostic_review": "Every copied runtime DBErrors is empty. ERROR/FATAL/native exception/ASAN/compiler-error scan matches the three reviewed focused compilation failures, baseline3 resolved probe cleanup fatal/exception and the separately proven historical Stromkar declaration log. No unexplained error was moved or hidden; all source files remain."
+  },
+  "fix_commits": [
+    "1cdf0a8b6",
+    "21bee1bd4"
+  ]
 }
