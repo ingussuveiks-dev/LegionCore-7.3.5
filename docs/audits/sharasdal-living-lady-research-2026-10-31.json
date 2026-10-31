@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-31",
+  "status": "OPEN living-Lady presentation research. No production/SQL change, no threshold/kill/timer guessed; canonical upper-wall12584be3d implementation unchanged.",
+  "local_world": "Full-EOF read-only World: actual upper Grash362092/105298 already VehicleId4720, faction1665; real Lady362095 and early illusion362091 both104856/VehicleId0/faction16. Known upper Eru362093/Adel362094 retained. No source13/17 condition or linked-spell rows for209457/209552/209796/210213/210214.",
+  "native_pickup": "Matching26972/read-onlyHotfix209457 Get Picked Up by Grash: effect0 aura236/control-vehicle/implicit38 nearby entry, effect1 self aura4; instant0ms, range150, infinite duration. Native vehicle4720 has seats0/16549 and1/16550, attachments5 and3; no control-seat flag, passenger Enter131/Ride132/Exit37, all base VehicleEnter/Ride/Exit animation values65535, no base AnimKit override. Actual boarding, pending-event failure, native removal and correct original actors must be observed; a successful cast is insufficient.",
+  "native_finisher_candidate": "209487 Get Stepped On: native dummy3, explicit target25, ordinary800ms cast/range150. Visual55051 -> caster cast kit66752 -> animation26116/AnimKit8204/segment15814/Anim181(DRAGON_STOMP); impact kit66743 to caster+target. This fits sampled stomp and actual Grash model181, but the native server caller and precise impact/death scheduling remain unproven. It has no native damage/instakill/50397 effect; name alone is not kill authorization.",
+  "rejected_smashing": "210213 has visual0.210214 is a2s self dummy with visual55262 and native description Smash the safety lock on the goods, triggering a magical alarm; sound Disable_Beacon01. It is not evidence of a Lady finisher and was not copied.",
+  "dialogue": "Actual1906 native lines4028..4032 still108591..108595, AdditionalDuration500 each, Next chain4029/4030/4031/4032/0, AnimKit0/VisualKit0 and Start/EndAnimation60. They do not encode a Grash-specific grabbing kit. Earlier actual World offsets0/6267/10932/15983/20866 and repaired native lifetime28788ms remain; post-acquisition1923 remains separate. Native209552 is true219/1906 producer.",
+  "other_native": "209903 Fixate Grash is infinite128/nearby entry38/range100.209983 Control Thoughts is243/faction14/12seconds/explicit25/range50000. Their names are not proof of new server producers. Preserve actual native cleanup/caster ownership; do not overwrite unrelated auras/faction/AI queues.",
+  "visual_source_limits": "SpellXSpellVisual/SpellVisual/SpellVisualAnim/AnimKit/AnimKitSegment/AnimationData/SoundKitName loaded through matching typed reader plus read-onlyHotfix. Full parent-bearing SpellVisualEvent/SpellVisualKitEffect records are read from native DB2 with record-size assertions, following prior visual-catalog approach; these disabled parent tables have no Hotfix LoadFromDB applied in this probe. Do not describe this as a complete client VFX playback verification.",
+  "assets": {
+    "source": "D:/wow/Legion7.3.5 build26972, read-only shared CASC extraction; all client Data/data index hashes unchanged",
+    "display": 69084,
+    "model": 8628,
+    "file": 1276106,
+    "bytes": 1879008,
+    "sha256": "35b768f5f5d9c2c8c110c21ea65217c991e8187ad0e68f6427176bdc062bae66",
+    "metadata": "MD21 with MD20 at8/version274;59 bounded64-byte sequence records,113 lookup entries/55 nonnegative in-range indices. Model has native non-alias Anim181 duration1600ms. No rendered carry/stomp/attachment trajectory was viewed.",
+    "schema_reference": "https://github.com/wowmodelviewer/wowmodelviewer/blob/ab6060333415dbcc31328447896ea33c2a36a4f6/Source/games/wow/modelheaders.h",
+    "schema_validation": "Matching local and Trinity extractor headers inspected first; only layout reference used from current pinned WMV implementation, checked against exact local payload/bounds/record fields. Current renderer is not assumed Legion behavior. Parser preserves remapped lookup records; lookup equality is not a file invariant."
+  },
+  "video": {
+    "source": "https://www.youtube.com/watch?v=wmKA8X7QX0U",
+    "prior_review": "Whole1029s at5s frame sampling and full80 final880..959 samples at1s retained from earlier audits; no continuous/audio/current26972-client claim.",
+    "additional_review": "Re-viewed all18 frames of contact sheets02/03/04, timestamps892..909. Lady is visibly held above Grash during living interrogation/refusal, Grash cry precedes later ground/stomp motion, final stage changes908..909. These samples do not expose exact health threshold, cast IDs, complete movement or server killer. Earlier frame timing/voice details remain in finale audits."
+  },
+  "core_constraints": [
+    "Native Point finalization issue already repaired by12584be3d; keep actual upper wall acknowledgement before49819.",
+    "Native Unit::DealDamage calls instance final damage hook after health multiplier normalization but before native SetLootRecipient/LowerPlayerDamageReq. A one-hit deferred presentation must account for that order and target-relative health; do not lose player/pet/guardian/charmer ownership or native loot/group rules.",
+    "Native Unit::Kill consumes real IsDamageEnoughForLootingAndReward/native looter/group assignment before existing actual-death instance callback. Do not award50397 from surrender, a timer, cosmetic spell name, an illusion or nearest unrelated player. Existing actual Lady73 cases/both wall-death orders remain authoritative.",
+    "Native nearby-entry38 selection without conditions falls back to SearchNearbyTarget; passing an explicit Grash pointer is not a guarantee that209457 selects that actor. Correct scoped target selection/pending boarding/actual vehicle acknowledgement would be required before adding a producer.",
+    "Native Conversation creation requires living actor lookup, exposes exact creature full GUID and line data, and bool factory/map ownership. Existing1906 cannot simply be created from a dead boss. Quest/player/fullGUID lifetime, failure retries, abandonment/re-entry and original actor cleanup require a whole sequence implementation."
+  ],
+  "reviewed_probe_failure": "Initial private M2 parser incorrectly asserted lookup-index global ID equals the named sequence ID; actual valid model has16 remapped entries, including aliases. Pinned primary reader contract and exact payload reviewed, assumption removed; committed exact-file reader retains every mapping, validates all indices/alias bounds and native181, passes. Failed original evidence retained OPEN, not hidden or archived as a fixed quest.",
+  "diagnostics": "All native/data/CASC/model probes wrapped before/after canonical/own crash/log snapshots. Exit/stdout/stderr reviewed; no new/changed crashes/appendedDBErrors/server failure. Original failed model assertion is explicitly paired. No server launched/stopped, SQL/character reset or client asset modification. Mixed6090-byte sharedLINK2 DBErrors unchanged and unresolved.",
+  "next": "Keep living surrender threshold/producer/actual Grash carry and finisher integration visibly OPEN. Trace the earlier illusion/gauntlet admission50314 and original actor movement/retry as a prerequisite; then complete living dialogue/native boarding/finisher without inventing percentage thresholds or manual progression. Continue other all36 independent repairs; user owns client traversal."
+}
