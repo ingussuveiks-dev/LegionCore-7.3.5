@@ -1,0 +1,18 @@
+{
+  "fix_commit": "79e4c7504",
+  "directory": "build-extractors/bin/Release/fixed/sheilun-login-2026-11-01",
+  "manifest_sha256": "2d8006df19c879dcf81841ad52f4be5dff0fb40611ad1410cdae8ea61b2c368f",
+  "files": 217,
+  "verification": "Source/destination/source/final SHA256 verified; all copied errors reviewed and paired native landing2 PASS, source52/baseline22 PASS counterfactual. Owned32300 ready/shutdown0/exit0/gone; canonical45EC027E retained, Crashes empty and mixed6090LINK2 hash/length/mtime unchanged. No active file removed/truncated.",
+  "scope": "Only focused rejected-login recovery, paired52/22 source cases, repaired native landing C2660 iteration,9 actual landing samples, current retained source/run inputs, build/PE/promotion/owned startup evidence. No OPEN physical-source/outro/flight research or historical unrelated runtime logs copied. Original files remain; no active crash removed or log truncated. No configs/binaries/dumps/credentials/characters/media.",
+  "post_copy_diagnostic_review": {
+    "known_compiler_errors": [
+      {
+        "source": ".codex/sheilun-login-native-landing1-2026-11-01/check-output.log",
+        "reviewed_error_lines": 1
+      }
+    ],
+    "unexplained": [],
+    "all_copied_DBErrors_empty": true
+  }
+}
