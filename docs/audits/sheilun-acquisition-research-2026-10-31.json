@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-31",
+  "status": "OPEN real Sheilun pickup/return; matching native scene and historical gameplay research, no production gameplay change",
+  "native": [
+    "Typed26972 DB2+readonly Hotfix: scenario1007 step3 requires48494+48495; step4 requires48646.202435 sends credit102479/event48646 and invokes202437/scene1192.202438 equips already owned128937 and pushes225893; it grants no item.",
+    "New typed SheilunSceneCatalog.cpp traverses package1557, child156 and NextSceneScript chain:5969 text rows,2 packages,17 selected scripts.13853 creates an active-player visual clone and equips its MainHand128937.13854 performs the relative camera/title/hold-weapon sequence, sends sceneComplete and EndScene.14809 owns soundtrack77341. Relative camera points are not world pickup coordinates. Base scene text reader has no Hotfix overlay; World scene1557/1192 is flags4/duration0/ScriptNameNULL and has no event mappings.",
+    "Expanded SheilunCatalog.cpp searches every exported GameObjects row for map1541, display9806 and Sheilun/Sheylun/Shay-lun names. No matching client-side static GO rows in this data. This is not proof no server-side source exists."
+  ],
+  "world": [
+    "Fully drained readonly World query with checked native exit/stderr and terminal EOF:256913/9806/Shay-lun is the only matching named template; type3/lock1691/Data1=0, no spawn. Loot256913->128937100pct exists but is disconnected.102479/102505 templates exist without static spawn.9806 is shared generic artifact interaction geometry and also unrelated objects; display alone does not identify the staff.",
+    "No202438 source17 predicates or1192 scene callbacks. Tak-Tak101880 has existing outdoor gossip19254 and scripts; native202828 summons102648 with Vehicle4581 and personal credit101880/event48658. No matching static101880/102648 in1541 and no102648 AI in examined C++ paths. Native return path and actual producer/source/pose still require implementation evidence."
+  ],
+  "external": {
+    "github": "Pinned Titans76b195fed30e94da716688639c1c1b1d05d60f55 Sheylun blob51fd508927048b01318b67ad71118af71c44a033 contains same nearest-player automatic grants/14s return; it is not an independent correct implementation. Local newer TrinityCore/current+all-ref targeted history had no202435 implementation. See .codex/sheilun-external-reference-2026-10-31.json.",
+    "video": {
+      "url": "https://www.youtube.com/watch?v=aFOi6i7b1kk",
+      "uploader": "xLetalis",
+      "upload_date": "2016-08-22",
+      "duration_seconds": 1008,
+      "download": "Accessible640x360 VP9 video-only; no cookies/auth. yt-dlp warns no supported JS runtime, but selected whole stream downloaded/probed successfully. No audio review.",
+      "sha256": "6e8c78e97abc0a405c8dc745d9330539e43d260920ba73776298647a99c23008",
+      "review": "Visually reviewed all13 sheets/202 whole-video samples at5s, then all7 final sheets/79 samples at1s covering910..988. Historical360p/video-only, no audio or continuous playback/client26972 claim.",
+      "observations": [
+        "0..335 earlier common Monk intro/evacuation; cut around335..340 to class hall ceremony; cut around445..450 precedes artifact flight. Unseen prerequisites/selection must not be claimed verified.",
+        "480..500 wounded Taran healed and stage1->2;515..660 demon encounter/rescues with repeatedly wounded allies;665 stage3;680..695 approach/pool dialogue;700..919 Aspersius fight. These5s samples do not establish precise cast/transition timings or IDs.",
+        "910..922 final combat and final-stage banner;923 boss gone/pool returns to pale water, visible glowing upright staff;923..936 player remains outside pool and heals, staff remains.937..940 moves to staff, loot/item tooltip visible around940;941..948 acquisition camera/title.949 onward actual player visible with staff.951..979 Taran dialogue/healing.980 cut to kite with Tak-Tak speech, then flight until988/outro. The exact gossip selection/boarding/whole return/turn-in is not visible across the980 cut. No world pose, spell IDs or source template ID inferred from video pixels."
+      ]
+    },
+    "secondary": [
+      "https://www.wowhead.com/guide/artifact-weapons/sheilun-mistweaver-monk",
+      "https://warcraft.wiki.gg/wiki/The_Emperor%27s_Gift"
+    ],
+    "unreviewed": "Independent Varenne kzbPS3FcFkk located but not fetched/reviewed. Alpha tI-9i-6wsoQ not reviewed. No modern/Remix behavior adapted."
+  },
+  "evidence": [
+    ".codex/sheilun-scene-native-open-2026-10-31",
+    ".codex/sheilun-source-native3-open-2026-10-31",
+    ".codex/sheilun-acquisition-read-open-2026-10-31",
+    ".codex/sheilun-video-download-open-2026-10-31",
+    ".codex/sheilun-video-sample-open-2026-10-31",
+    ".codex/sheilun-video-dense-open-2026-10-31",
+    ".codex/sheilun-reference/whole-sampling.json"
+  ],
+  "diagnostics": "All catalog/readonly DB/media operations wrapped with canonical+own before/after crash/log checks; native exits0/no appended server diagnostics/newDBErrors/crashes. Mixed6090-byte unresolved LINK2 retained. No server launched, no logs truncated or OPEN evidence archived as fixed. Original failed source queries retained; nonexistent table/incorrect package lookup not treated as absence evidence.",
+  "runtime": "Canonical48E8094096F699B460ED8F3F885026057A2CAD4639DCBA907260BEEB9068E5EC remains unchanged; both task servers absent. No character/item/quest reset or grant.",
+  "next": "Repair independently missing scene1192 terminal complete->native202438 with actual scene/quest/owned-item/context admission, retaining physical source/loot/native return OPEN. Remove boss automatic grants only with a complete evidence-backed real source path; do not guess pool pose or fabricate raw item/credit."
+}

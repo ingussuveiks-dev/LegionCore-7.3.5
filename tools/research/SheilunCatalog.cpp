@@ -5,6 +5,8 @@
 #include "DatabaseEnv.h"
 #include "MySQLThreading.h"
 #include <cstdlib>
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <set>
 #include <string>
@@ -56,8 +58,11 @@ int main(int argc,char** argv)
         for(auto m:misc)if(m->SpellID==id&&!m->DifficultyID)
             if(auto d=durations.LookupEntry(m->DurationIndex))std::cout<<"DURATION\t"<<id<<'\t'<<d->Duration<<'\t'<<d->MaxDuration<<'\n';
     }
-    for(auto object:objects)if(object->OwnerID==1541)
+    for(auto object:objects)
     {
+        std::string name=object->Name->Str[0];
+        std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});
+        if(object->OwnerID!=1541&&object->DisplayID!=9806&&name.find("sheilun")==std::string::npos&&name.find("sheylun")==std::string::npos&&name.find("shay-lun")==std::string::npos)continue;
         std::cout<<"CLIENT_GO\t"<<object->ID<<'\t'<<object->Name->Str[0]<<'\t'<<object->OwnerID<<'\t'<<unsigned(object->TypeID)<<'\t'<<object->DisplayID<<'\t'<<object->Position.X<<'\t'<<object->Position.Y<<'\t'<<object->Position.Z<<'\t'<<object->PhaseID;
         for(auto value:object->PropValue)std::cout<<'\t'<<value;
         std::cout<<'\n';
