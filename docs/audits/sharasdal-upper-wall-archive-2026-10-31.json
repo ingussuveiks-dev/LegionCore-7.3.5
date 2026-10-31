@@ -1,0 +1,8 @@
+{
+  "fix_commit": "12584be3d",
+  "directory": "build-extractors/bin/Release/fixed/sharasdal-upper-wall-2026-10-31",
+  "manifest_sha256": "748fd7a0741a1f5e4eb4b6d5f851517e372d8b5fe61cc29e302aed6e05a45f14",
+  "files": 404,
+  "verification": "Original bytes source/destination/source/final SHA256 verified. No active report removed/log truncated. Canonical Crashes empty; mixed6090-byte sharedLINK2 DBErrors unchanged/unresolved; no task server remains.",
+  "remaining": "User client movement/door/cast/combat/re-entry, living Lady1906/210247/gauntlet/full1066/all36 remain OPEN."
+}

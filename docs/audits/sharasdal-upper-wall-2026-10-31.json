@@ -49,5 +49,14 @@
     "Actual client upper movement/door animation/cast visuals/combat/retry/re-entry remain user-owned. No server-restart scenario reconstruction or full1066 traversal claim. Other non-upper legacy POINT behavior is outside this focused delta.",
     "Historical living Lady surrender/1906/Grash finishing strike, other gauntlet/raw callbacks, native210247 follower cleanup/actual return/209668 unknown producer and full1066/all36 still implementation/client OPEN. Survival/WardstoneLINK4/Glow/Stromkar/sharedLINK2 also retain their existing unresolved audits."
   ],
-  "next": "Trace living Lady1906 and actual final strike without replacing real death/native loot/owner credit; then native210247 cleanup/return and remaining all36 work. Client tests remain user-owned; no character/AP/item/quest/checkpoint reset."
+  "next": "Trace living Lady1906 and actual final strike without replacing real death/native loot/owner credit; then native210247 cleanup/return and remaining all36 work. Client tests remain user-owned; no character/AP/item/quest/checkpoint reset.",
+  "fix_commit": "12584be3d",
+  "diagnostic_archive": {
+    "fix_commit": "12584be3d",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-upper-wall-2026-10-31",
+    "manifest_sha256": "748fd7a0741a1f5e4eb4b6d5f851517e372d8b5fe61cc29e302aed6e05a45f14",
+    "files": 404,
+    "verification": "Original bytes source/destination/source/final SHA256 verified. No active report removed/log truncated. Canonical Crashes empty; mixed6090-byte sharedLINK2 DBErrors unchanged/unresolved; no task server remains.",
+    "remaining": "User client movement/door/cast/combat/re-entry, living Lady1906/210247/gauntlet/full1066/all36 remain OPEN."
+  }
 }
