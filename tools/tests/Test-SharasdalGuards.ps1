@@ -3,6 +3,11 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $actorPath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp'
 $actor=(Get-Content "$repo/$actorPath" -Raw).Replace("`r",'');$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+if($source.Contains('namespace SharasdalBrutes')){
+ & "$PSScriptRoot/Test-SharasdalBrutes.ps1" -ScopeOnly
+ $source=(& git -C $repo show "514ac7bd0:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned unchanged guard instance missing'}
+ $actor=(& git -C $repo show "514ac7bd0:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned unchanged guard actor context missing'}
+}
 $oldActor=(& git -C $repo show "c27da5170:$actorPath") -join "`n";if($LASTEXITCODE){throw 'Pinned actor missing'}
 $old=(& git -C $repo show "c27da5170:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned instance missing'}
 $removed=@'

@@ -4,7 +4,7 @@ import re
 import runpy
 import struct
 from capstone import CS_OP_IMM, CS_OP_MEM, CS_OP_REG
-from capstone.x86_const import X86_REG_RIP
+from capstone.x86_const import X86_REG_RIP, X86_REG_R14, X86_REG_R14D, X86_REG_R14W, X86_REG_R14B
 
 retained=runpy.run_path(str(Path(__file__).with_name('verify_sharasdal_rescue_release.py')))
 n=retained['n']; instructions=n['instructions']; sites=retained['sites']; values=retained['values']
@@ -60,7 +60,14 @@ assert any(i>credit_site for i in sites(update,'?Receipt@SharasdalGuard@@'))
 assert any(x.mnemonic=='cmp' and x.op_str.startswith('qword ptr [r8 + 0x18],') for x in update)
 assert any(x.mnemonic=='cmp' and x.op_str=='dword ptr [rsi + 0x320], 0x1e' for x in update)
 enter=instructions('?OnPlayerEnter'+suffix)
-assert any(x.mnemonic=='mov' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0x31a and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==0 for x in enter)
+clears=[]
+for i,x in enumerate(enter):
+    if x.mnemonic!='mov' or x.operands[0].type!=CS_OP_MEM or x.operands[0].mem.disp!=0x31a:continue
+    if x.operands[1].type==CS_OP_IMM and x.operands[1].imm==0:clears.append(i);continue
+    if x.operands[1].type==CS_OP_REG and x.operands[1].reg==X86_REG_R14B:
+        zeros=[j for j,y in enumerate(enter[:i]) if y.mnemonic=='xor' and y.op_str=='r14d, r14d']
+        if zeros and not any(set(y.regs_access()[1])&{X86_REG_R14,X86_REG_R14D,X86_REG_R14W,X86_REG_R14B} for y in enter[zeros[-1]+1:i]):clears.append(i)
+assert clears, 'Original guard exhausted flag must be cleared by actual zero dataflow on re-entry'
 movement=instructions('?MovementInform@npc_erunak_stonespeakerAI@npc_erunak_stonespeaker@@')
 assert not sites(movement,'?UpdateAchievementCriteria@Player@@') and 49957 not in values(movement)
 for body in (death,update,recipient):

@@ -65,6 +65,14 @@ namespace SharasdalGrash
             default: return 0;
         }
     }
+
+    bool Recruitable(Scenario* scenario)
+    {
+        if (!Receipt(scenario, 47121) || !Receipt(scenario, 47180)) return false;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto found = progress->find(47161);
+        return found != progress->end() && found->second.Counter >= 2;
+    }
 }
 
 namespace SharasdalRescue
@@ -140,20 +148,8 @@ public:
 
         void EnterEvadeMode() override
         {
-            // need to activate it ONLY if creature isn't stunned
-            _functions.AddFunction([this]() -> void
-            {
-                if (firstbattle)
-                {
-                    firstbattle = false;
-                    me->CreateConversation(1693);
-                    me->AddDelayedEvent(5000, [this]() -> void
-                    {
-                        if (Creature* grash = me->FindNearestCreature(105298, 70.0f, true))
-                            grash->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 1); // госсип
-                    });
-                }
-            }, _functions.CalculateTime(1000));
+            // Retain this guide's scripted movement. Evading is not a Brute
+            // victory; the instance owns the real two-death continuation.
         }
 
         void HealReceived(Unit* /*who*/, uint32& addhealth) override
@@ -332,7 +328,7 @@ public:
         uint32 step = scenario->GetCurrentStep();
         uint32 menu = SharasdalGrash::Menu(step);
         if (!menu || !creature->AI() || creature->AI()->GetData(menu) ||
-            (step <= 1 && (!SharasdalGrash::Receipt(scenario, 47121) || !SharasdalGrash::Receipt(scenario, 47180))))
+            (step <= 1 && !SharasdalGrash::Recruitable(scenario)))
             return true;
         player->PlayerTalkClass->GetGossipMenu().SetMenuId(menu);
         player->ADD_GOSSIP_ITEM_DB(menu, 0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -406,8 +402,7 @@ public:
             if (!menuIdExpected || menuId != menuIdExpected || menu.GetMenuId() != menuId ||
                 !option || option->OptionNpc != GossipOptionNpc::None || option->IsCoded ||
                 option->Sender != GOSSIP_SENDER_MAIN || option->Action != GOSSIP_ACTION_INFO_DEF + 1 ||
-                (_gossipActions & actionBit) || (step <= 1 &&
-                (!SharasdalGrash::Receipt(scenario, 47121) || !SharasdalGrash::Receipt(scenario, 47180))))
+                (_gossipActions & actionBit) || (step <= 1 && !SharasdalGrash::Recruitable(scenario)))
                 return;
             if (step <= 2)
                 for (uint32 pathId : {step <= 1 ? 10993808u : 10993810u, step <= 1 ? 10993809u : 10993810u})

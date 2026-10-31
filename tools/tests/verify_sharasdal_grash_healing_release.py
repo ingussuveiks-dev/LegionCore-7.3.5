@@ -59,7 +59,13 @@ reset=instructions('?Reset'+suffix)
 assert sites(reset,'?CancelIntroHeal'+suffix) and sites(reset,'?KillAllFunctions@FunctionProcessor@@')
 select=instructions('?sGossipSelect'+suffix)
 assert events(select)==[50161,49819]
-assert {47121,47180,47303,47133}<=immediates(select)
+assert {47303,47133}<=immediates(select)
+if any(name.startswith('?Recruitable@SharasdalGrash@@') for name in n['symbols']):
+    recruitment=instructions('?Recruitable@SharasdalGrash@@')
+    assert {47121,47180,47161,2}<=immediates(recruitment)
+    assert sites(select,'?Recruitable@SharasdalGrash@@')
+else:
+    assert {47121,47180}<=immediates(select)
 assert sites(select,'?GetItem@GossipMenu@@') and sites(select,'?GetMenuId@GossipMenu@@')
 assert sites(select,'?Eligible@SharasdalGrash@@') and sites(select,'?RemoveFlag@Object@@')
 assert sites(select,'?ClearMenus@PlayerMenu@@') and sites(select,'?SendCloseGossip@PlayerMenu@@')
