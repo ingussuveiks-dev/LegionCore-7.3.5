@@ -178,5 +178,14 @@
     "Actual client all five voices/language/volume/order/overlap/fade, other locale durations, companion movement/waves/warm-cold entry and full1066 remain user checks. Derived offsets are explicit, not claimed as exact retail capture.",
     "Living Lady1906/209457/finisher/native210247/full waves/all36/earlier Wardstone/Survival/Glow/Stromkar/sharedLINK2 remain unfinished. User owns client testing; reset3 consumed, no further reset/grants authorized."
   ],
-  "next": "Repair upper Erunak362093 native3/ascent47131/original40341 caller and finite actual upper Grash/Adelee movement/acknowledged1868 creation; preserve full five-line data/47.816s native budget and solve its NPC caller lifetime without forging progress. Then shared waypoint/native210247/living Lady and remaining all36."
+  "next": "Repair upper Erunak362093 native3/ascent47131/original40341 caller and finite actual upper Grash/Adelee movement/acknowledged1868 creation; preserve full five-line data/47.816s native budget and solve its NPC caller lifetime without forging progress. Then shared waypoint/native210247/living Lady and remaining all36.",
+  "fix_commit": "b4ee155d3",
+  "diagnostic_archive": {
+    "fix_commit": "b4ee155d3",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-upper-voice-2026-10-31",
+    "manifest_sha256": "e37e2eb0c263364c5cdb89dc83b1ec3371a4a9a1c1944e03e558ab4bba125e07",
+    "files": 162,
+    "verification": "Original bytes source/destination/source/final SHA256 verified. No active report removed/log truncated. Canonical Crashes empty; mixed6090-byte sharedLINK2 DBErrors unchanged/unresolved; no task server remains.",
+    "remaining": "User client five voices/order/language/overlap/fade, exact captured timestamps, upper caller/admission/NPC world expiry, living Lady1906/210247/full waves/full1066/all36 remain OPEN."
+  }
 }
