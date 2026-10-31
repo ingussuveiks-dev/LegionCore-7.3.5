@@ -6,6 +6,7 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
 $newGrash=$source.Contains('namespace SharasdalGrash')
+$newRescue=$source.Contains('namespace SharasdalRescue')
 if(!$Baseline -and $newGrash){
  & "$PSScriptRoot/Test-SharasdalGrashHealing.ps1" -ScopeOnly
  # The separate full Grash host compiles its final-heal/Reset/lifecycle hooks.
@@ -67,5 +68,5 @@ $mode=if($Baseline){'/DSHARASDAL_HEAL_BASELINE'}else{''}
 if($newGrash -and !$Baseline){'Retained matrix uses pinned e17413eaa after exact new Grash scope; current full Grash hooks have their separate native regression'}
 if($VerifyReleaseBinary){
  $previous=$env:PYTHONPATH
- try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";$verifier=if($newGrash){'verify_sharasdal_grash_healing_release.py'}else{'verify_sharasdal_companion_healing_release.py'};& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/$verifier" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical post-heal lifecycle missing'}}finally{$env:PYTHONPATH=$previous}
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";$verifier=if($newRescue){'verify_sharasdal_rescue_release.py'}elseif($newGrash){'verify_sharasdal_grash_healing_release.py'}else{'verify_sharasdal_companion_healing_release.py'};& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/$verifier" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical post-heal lifecycle missing'}}finally{$env:PYTHONPATH=$previous}
 }

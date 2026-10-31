@@ -9,6 +9,9 @@
 #include "ObjectAccessor.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include "Spell.h"
+#include "SpellScript.h"
+#include "Timer.h"
 #include "WaypointManager.h"
 
 namespace SharasdalCompanion
@@ -61,6 +64,30 @@ namespace SharasdalGrash
             case 4: return 19467;
             default: return 0;
         }
+    }
+}
+
+namespace SharasdalRescue
+{
+    Scenario* World(Creature* actor)
+    {
+        if (!actor || !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() ||
+            actor->GetEntry() != 104853 || actor->GetMapId() != 1600 || actor->GetPositionZ() >= 795.0f)
+            return nullptr;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1066 ? scenario : nullptr;
+    }
+
+    bool Eligible(Player* player, Creature* actor)
+    {
+        if (!World(actor) || !player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->isGameMaster() || player->IsBeingTeleported() || player->getClass() != CLASS_SHAMAN ||
+            !player->GetMap() || player->GetMap() != actor->GetMap() || player->GetInstanceId() != actor->GetInstanceId() ||
+            !player->InSamePhase(actor) || !player->canSeeOrDetect(actor) || !player->IsWithinLOSInMap(actor) ||
+            !player->IsWithinDistInMap(actor, INTERACTION_DISTANCE) || player->GetQuestRewardStatus(40341) ||
+            (player->GetQuestStatus(40341) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40341) != QUEST_STATUS_COMPLETE))
+            return false;
+        return true;
     }
 }
 
@@ -689,8 +716,19 @@ public:
         bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
 
+        std::shared_ptr<uint8> _rescueLife = std::make_shared<uint8>();
+        FunctionProcessor _rescueFunctions;
+        bool _rescueAccepted = false, _rescueSchedule = false, _rescueDone = false;
+        bool _rescueNotifyDone = false, _rescueNotifyQueued = false, _rescueNotifyExhausted = false;
+        uint32 _rescueDelay = 0, _rescueNotifyTries = 0;
+
         void Reset() override
         {
+            _rescueLife = std::make_shared<uint8>();
+            _rescueFunctions.KillAllFunctions();
+            _rescueAccepted = _rescueSchedule = _rescueNotifyQueued = false;
+            _rescueNotifyExhausted = false;
+            _rescueNotifyTries = 0;
             _pendingHealRecovery = false;
             events.Reset();
         }
@@ -708,9 +746,78 @@ public:
                 _pendingHealRecovery = true;
         }
 
-        void UpdateLifecycle(uint32) override
+        void AcceptRescue(uint32 remainingDelay)
+        {
+            if (_rescueAccepted || _rescueDone || !SharasdalGrash::Receipt(SharasdalRescue::World(me), 47123))
+                return;
+            _rescueAccepted = _rescueSchedule = true;
+            _rescueDelay = remainingDelay;
+            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+        }
+
+        void CompleteRescue()
+        {
+            if (_rescueDone) return;
+            if (!SharasdalGrash::Receipt(SharasdalRescue::World(me), 47123))
+            {
+                _rescueAccepted = false;
+                return;
+            }
+            _rescueDone = true;
+            me->SetByteValue(UNIT_FIELD_BYTES_1, 0, 0);
+            me->SetAnimKitId(0);
+            me->HandleEmoteCommand(53);
+        }
+
+        void NotifyGrash()
+        {
+            _rescueNotifyQueued = false;
+            Scenario* scenario = SharasdalRescue::World(me);
+            if (!_rescueDone || !scenario || scenario->GetCurrentStep() != 2 ||
+                !SharasdalGrash::Receipt(scenario, 47123) || !SharasdalGrash::Receipt(scenario, 47197))
+                return;
+            if (Creature* grash = me->FindNearestCreature(105298, 70.0f, true))
+                if (grash->IsInWorld() && !grash->IsPreDelete() && grash->IsAlive() && grash->AI() &&
+                    grash->GetPositionZ() < 795.0f && me->InSamePhase(grash))
+                {
+                    _rescueNotifyDone = true;
+                    if (!grash->AI()->GetData(19483) &&
+                        (!grash->GetDisabledAI() || !grash->GetDisabledAI()->GetData(19483)) &&
+                        !grash->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP))
+                    {
+                        grash->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                        grash->AI()->Talk(5);
+                    }
+                    return;
+                }
+            if (++_rescueNotifyTries >= 30)
+            {
+                _rescueNotifyExhausted = true;
+                TC_LOG_WARN("scripts", "Sharasdal rescue cannot resolve lower Grash after thirty attempts; retaining reset/re-entry recovery");
+            }
+        }
+
+        void UpdateLifecycle(uint32 diff) override
         {
             SharasdalCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            auto lifetime = _rescueLife;
+            _rescueFunctions.Update(diff);
+            if (lifetime != _rescueLife) return;
+            Scenario* scenario = SharasdalRescue::World(me);
+            if (!scenario) return;
+            if (!_rescueAccepted && !_rescueDone && SharasdalGrash::Receipt(scenario, 47123))
+                AcceptRescue(2000); // Recover presentation from an accepted persisted criterion; do not grant it again.
+            if (_rescueSchedule)
+            {
+                _rescueSchedule = false;
+                _rescueFunctions.AddFunction([this]() { CompleteRescue(); }, _rescueFunctions.CalculateTime(_rescueDelay));
+            }
+            if (_rescueDone && !_rescueNotifyDone && !_rescueNotifyQueued && !_rescueNotifyExhausted &&
+                scenario->GetCurrentStep() == 2 && SharasdalGrash::Receipt(scenario, 47197))
+            {
+                _rescueNotifyQueued = true;
+                _rescueFunctions.AddFunction([this]() { NotifyGrash(); }, _rescueFunctions.CalculateTime(_rescueNotifyTries ? 1000 : 0));
+            }
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
@@ -744,24 +851,6 @@ public:
                     }
                 }
             }
-        }
-
-        void OnSpellClick(Unit* clicker) override
-        {
-            me->AddDelayedEvent(7000, [this, clicker]() -> void
-            {
-                clicker->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49816);
-                clicker->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49957);
-                me->SetByteValue(UNIT_FIELD_BYTES_1, 0, 0);
-                me->SetAnimKitId(0);
-                me->HandleEmoteCommand(53);
-                me->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0); // spell click
-                if (Creature* garsh = me->FindNearestCreature(105298, 70.0f, true))
-                {
-                    garsh->AI()->Talk(5);
-                    garsh->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 1); // gossip
-                }
-            });
         }
 
         void UpdateAI(uint32 diff) override
@@ -800,6 +889,106 @@ public:
 };
 
 
+
+class spell_sharasdal_breaking_bonds : public SpellScript
+{
+    // Native208171 keeps its real five-second SEND_EVENT; this guard owns no credit.
+    PrepareSpellScript(spell_sharasdal_breaking_bonds);
+    using AdelAI = npc_adel_waterspeaker::npc_adel_waterspeakerAI;
+    bool _scoped = true, _effectAllowed = false, _notified = false;
+    ObjectGuid _source;
+    uint32 _instance = 0, _started = 0;
+    std::weak_ptr<uint8> _quest, _actor;
+
+    static AdelAI* Receiver(Creature* creature)
+    {
+        if (!creature) return nullptr;
+        if (auto active = dynamic_cast<AdelAI*>(creature->AI())) return active;
+        return dynamic_cast<AdelAI*>(creature->GetDisabledAI());
+    }
+
+    bool Validate(SpellInfo const* info) override
+    {
+        return info && info->Id == 208171 && info->GetEffect(EFFECT_0, DIFFICULTY_NONE)->Effect == SPELL_EFFECT_SEND_EVENT &&
+            info->GetEffect(EFFECT_0, DIFFICULTY_NONE)->MiscValue == 49816;
+    }
+
+    bool Load() override
+    {
+        Unit* caster = GetCaster();
+        Unit* original = GetOriginalTarget(); // InitExplicitTargets preserves this before removing a redundant self target.
+        Creature* creature = original ? original->ToCreature() : nullptr;
+        _scoped = (caster && caster->GetMapId() == 1600) || (creature && creature->GetEntry() == 104853);
+        if (!_scoped) return true;
+        _started = getMSTime();
+        Player* player = caster ? caster->ToPlayer() : nullptr;
+        AdelAI* ai = Receiver(creature);
+        if (SharasdalRescue::Eligible(player, creature) && ai)
+        {
+            _source = creature->GetGUID();
+            _instance = creature->GetInstanceId();
+            _actor = ai->_rescueLife;
+            player->AddQuestDelayedEvent(40341, 0, []() { });
+            if (QuestStatusData* status = player->getQuestStatus(40341))
+                _quest = status->ScriptLifetime;
+        }
+        return true; // Invalid scoped casts must retain this guard, not unload it.
+    }
+
+    AdelAI* Ready(Player* player, bool after)
+    {
+        if (!player || _source.IsEmpty() || player->GetInstanceId() != _instance || _quest.expired() || _actor.expired())
+            return nullptr;
+        Creature* creature = ObjectAccessor::GetCreature(*player, _source);
+        AdelAI* ai = Receiver(creature);
+        QuestStatusData* status = player->getQuestStatus(40341);
+        if (!SharasdalRescue::Eligible(player, creature) || !ai || ai->_rescueLife != _actor.lock() ||
+            !status || status->ScriptLifetime != _quest.lock() ||
+            !creature->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK))
+            return nullptr;
+        Scenario* scenario = SharasdalRescue::World(creature);
+        if (!SharasdalGrash::Receipt(scenario, 47197)) return nullptr;
+        if (after)
+            return (scenario->GetCurrentStep() == 1 || scenario->GetCurrentStep() == 2) &&
+                SharasdalGrash::Receipt(scenario, 47123) ? ai : nullptr;
+        return scenario->GetCurrentStep() == 1 && !SharasdalGrash::Receipt(scenario, 47123) ? ai : nullptr;
+    }
+
+    SpellCastResult Check()
+    {
+        return !_scoped || Ready(GetCaster() ? GetCaster()->ToPlayer() : nullptr, false) ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
+    }
+
+    void BeforeEvent(SpellEffIndex effect)
+    {
+        if (!_scoped) return;
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        _effectAllowed = player && GetHitUnit() == player && Ready(player, false);
+        if (!_effectAllowed)
+        {
+            PreventHitDefaultEffect(effect);
+            TC_LOG_WARN("scripts", "Sharasdal Breaking Bonds rejected a stale actor/quest before native49816; no rescue transition");
+        }
+    }
+
+    void AfterEvent()
+    {
+        if (!_scoped || !_effectAllowed || _notified) return;
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        AdelAI* ai = GetHitUnit() == player ? Ready(player, true) : nullptr;
+        if (!ai) return;
+        _notified = true;
+        uint32 elapsed = getMSTimeDiff(_started, getMSTime());
+        ai->AcceptRescue(elapsed < 7000 ? 7000 - elapsed : 0);
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_sharasdal_breaking_bonds::Check);
+        OnEffectHitTarget += SpellEffectFn(spell_sharasdal_breaking_bonds::BeforeEvent, EFFECT_0, SPELL_EFFECT_SEND_EVENT);
+        AfterHit += SpellHitFn(spell_sharasdal_breaking_bonds::AfterEvent);
+    }
+};
 
 // 102839
 class npc_kraliss : public CreatureScript
@@ -1073,6 +1262,7 @@ void AddSC_Sharasdal()
     new npc_erunak_stonespeaker();
     new npc_grash();
     new npc_adel_waterspeaker();
+    RegisterSpellScript(spell_sharasdal_breaking_bonds);
     new npc_kraliss();
     new npc_lady_zitrin();
     new npc_sharasdal_waterwall();

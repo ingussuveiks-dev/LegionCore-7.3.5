@@ -4,6 +4,10 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+if($source.Contains('namespace SharasdalRescue')){
+ & "$PSScriptRoot/Test-SharasdalRescue.ps1" -ScopeOnly
+ $source=(& git -C $repo show "dd6965c51:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned unchanged Grash context missing'}
+}
 $pinned=(& git -C $repo show "e17413eaa:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Grash baseline missing'}
 $old=Block $pinned 'class npc_grash :';$current=Block $source 'class npc_grash :'
 $oldAI=Block $old 'struct npc_grashAI :';$newAI=Block $current 'struct npc_grashAI :'

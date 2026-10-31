@@ -26,6 +26,10 @@ for script,flag,pending in [('npc_erunak_stonespeaker',0x59,0x5b),('npc_grash',0
     if script=='npc_grash' and any(name.startswith('?OnHealApplied'+suffix) for name in native['symbols']):
         assert struct.unpack_from('<Q',native['binary'],table+0x288)[0]==native['symbol']('?OnHealApplied'+suffix)
         continue  # Its full final-heal/Reset/lifecycle proof is in the Grash inspector.
+    if script=='npc_adel_waterspeaker' and any(name.startswith('?GetSpellScript@?$GenericSpellScriptLoader@Vspell_sharasdal_breaking_bonds@@@@') for name in native['symbols']):
+        for method,slot in [('Reset',0x28),('UpdateLifecycle',0x110),('HealReceived',0xb0)]:
+            assert struct.unpack_from('<Q',native['binary'],table+slot)[0]==native['symbol']('?'+method+suffix)
+        continue  # Full rescue lifecycle/retained wound marker are checked by the rescue inspector.
     life='?UpdateLifecycle'+suffix;heal='?HealReceived'+suffix;reset='?Reset'+suffix
     for method,slot in ((life,0x110),(heal,0xb0),(reset,0x28)):
         assert struct.unpack_from('<Q',native['binary'],table+slot)[0]==native['symbol'](method)
@@ -60,4 +64,4 @@ assert len(dispatch)==2
 assert any(x.op_str=='byte ptr [rsi + 0x3a9d], 1' for x in update[dispatch[0]-12:dispatch[0]])
 assert any(x.op_str=='byte ptr [rsi + 0x3a9d], 0' for x in update[dispatch[-1]:dispatch[-1]+4])
 assert any(x.op_str=='rcx, rax' and x.mnemonic=='cmp' for x in update[dispatch[0]-6:dispatch[0]])
-print('PASS selected unchanged Erunak/Adel incoming-heal markers/reset/new-wound invalidation, native HealReceived->HealDone->ModifyHealth order, locked disabled/current lifecycle0x110 and observed40pct helper. Legacy Grash checked here only when its replacement hook is absent; new Grash final-heal/story proof is separate. No client proof')
+print('PASS selected unchanged legacy wound markers/reset plus native HealReceived->HealDone->ModifyHealth order, locked disabled/current lifecycle0x110 and observed40pct helper. Replaced Grash/Adel lifecycle hooks delegate to their dedicated inspectors when present; no client proof')
