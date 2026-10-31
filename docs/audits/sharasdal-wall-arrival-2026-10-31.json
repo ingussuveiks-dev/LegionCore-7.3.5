@@ -52,5 +52,21 @@
     "No general route interruption/cancel/replacement/AI recreation/fresh-quest replay or automatic repositioning was added. Original queued DoAction/other raw callbacks and full route recovery remain OPEN. Missing/unavailable wall or unacknowledged open never grants a criterion; actual retry/path/collision/rendering requires separate review/client traversal.",
     "Final POINT wall/gossip49819, Kraliss50240 and Lady50397 actual owner/pet/guardian/null-killer progression/voice, gauntlet,249342 actual loot/full bags/equip/outro and full new-attempt/full1066/all36 remain OPEN.",
     "Actual client wall animation/movement/phase/timing/arrival and complete chain are user-owned checks. Preserve Glow211502,Survival39427 middle flight,Wardstone LINK4/sharedLINK2/Stromkar client evidence. Reset3 consumed; no reset performed."
-  ]
+  ],
+  "fix_commit": "b53aa5b88",
+  "diagnostic_archive": {
+    "fix_commit": "b53aa5b88",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-wall-arrival-2026-10-31",
+    "files": 377,
+    "manifest_sha256": "74f40e50b899d5b58066128e16626e9c7155092d94a2e8bca47db16e8ba237ae",
+    "verification": "Source/destination/source/final SHA256 verified; canonical6090-byte mixed LINK2 hash/length/timestamp and empty Crashes unchanged. No active file removed or truncated; no task servers retained.",
+    "failures_paired": {
+      "sharasdal-wall-retained-current-grash-2026-10-31": "Expanded old fixture lacked the real2/2 prerequisite, then indexed an empty menu (ASAN access violation). Explicit earlier encounter precondition added in fixture only; current99 and final canonical99 pass. Original ASAN output preserved; no production workaround.",
+      "sharasdal-wall-pe-inspection-2026-10-31": "Inspection expected separate Path/Wall/Bind symbols. Release inlines them; actual MovementInform/raw selection examined instead. Native final PE proves actual fields/path gates.",
+      "sharasdal-wall-staged-pe-2026-10-31": "Inspector expected separately emitted native waypoint MovementInform. It is inlined into OnArrived; actual DoUpdate->OnArrived/native dispatch proved in final PE.",
+      "sharasdal-wall-staged-pe2-2026-10-31": "Inspector assumed direct memory virtual call. Actual OnArrived loads slot1a8 into r9 and passes node/type2 to call-r9. Corrected actual dataflow passes staged3/final/canonical PE.",
+      "sharasdal-wall-release-build2-2026-10-31": "New instance entry adapter declared suspended AI as CreatureAI but native returns UnitAI. Use actual auto-deduced pointer; build3 original libs/final stage2/selected PE/canonical startup and tests pass."
+    },
+    "excluded_open": "Mixed open sharasdal-route-open-context and route-model contexts, earlier Brute/adel/cast/heal raw callback/boss/loot research and mixed active DBErrors excluded. Only wall-arrival diagnostics archived. Source video/contact sheets stay in ignored .codex/sharasdal-reference, not a whole-chain fix certificate."
+  }
 }
