@@ -1,7 +1,7 @@
 {
   "date": "2026-10-31",
   "status": "Sheilun distinct plan/start native admissions and acknowledged transitions deployed; tactical effects/physical pickup/return/full client and all36 OPEN",
-  "fix_commit": "recorded by following archive audit",
+  "fix_commit": "d53261ea6",
   "cause": [
     "Original companion script sends48446/47/48 but increments Taran countgossip even for a duplicate/rejected event. Three calls from just Fei Li can enable Taran without three accepted distinct roles. Taran original script then sends48494 and moves actors/hides wall even if that event is rejected.",
     "Native Player::PrepareGossipMenu builds both white-bubble choices with Sender0/Action0. WorldSession passes actual GossipID/GossipIndex to AI sGossipSelect before the legacy CreatureScript callback, so legacy sender/action cannot validate or distinguish the option index. SendCloseGossip only sends a packet and retains server menu contents."
@@ -80,5 +80,13 @@
     ".codex/sheilun-plan-phases2-2026-10-31",
     ".codex/sheilun-plan-phases3-2026-10-31"
   ],
-  "next": "Continue native companion tactical effects and real manual physical source/storage/outro/return; retain source/menu/voice/route audits and user-owned client testing, no reset."
+  "next": "Continue native companion tactical effects and real manual physical source/storage/outro/return; retain source/menu/voice/route audits and user-owned client testing, no reset.",
+  "archive": {
+    "fix_commit": "d53261ea6",
+    "directory": "build-extractors/bin/Release/fixed/sheilun-plan-2026-10-31",
+    "manifest_sha256": "c7f56fbbaeb4e88360941e066f152d33d128ee947424fa051bb0a63270699067",
+    "files": 300,
+    "verification": "Source/destination/source/final SHA256 verified; canonical0E730BA4 retained; Crashes empty, mixed6090LINK2 unchanged. Owned21872 clean exit0 and gone. No active report removed/log truncated.",
+    "remaining": "Only resolved native plan/start admissions and their paired fixture/PE iterations archived. Phase-overlap research, source/video/visual/physical/storage/tactical/return research remains OPEN outside fixed. Full sequence/all36/client remain OPEN. Mixed6090LINK2 unchanged; no active report removed/log truncated/config/binary/dump/media/credential/character archived."
+  }
 }
