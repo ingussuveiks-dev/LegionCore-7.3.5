@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-31",
+  "status": "OPEN tactical choice producer; two matching native effects identified, no gameplay/data/character mutation in this research",
+  "native": [
+    "New SheilunTacticsCatalog.cpp loads matching26972 typed Spell/Effect/Misc/Duration/AuraOptions/CastTime/Range with readonly Hotfix. Scans all179641 names/descriptions/aura descriptions for named companions and narrow202000..205000 tactical wording, plus11 actual scripted spells and four-depth native triggers.59 candidates/74 selected records include unrelated older Pandaria companions and class spells; keyword hits are not behavioral certification.",
+    "Native204653 Reckless: effect0 apply aura79 MOD_DAMAGE_PERCENT_DONE +25, effect1 aura87 MOD_DAMAGE_PERCENT_TAKEN +50; both all-school misc127, self target1, infinite duration, instant cast. Tooltip references s1 for both effects and must not override actual25/50 numeric records.",
+    "Native204654 Balanced: infinite instant self dummy aura4/base0/misc127; description says fighting defensively at the cost of damage. It has no numeric reduction effect to copy or invent. Treating it as ordinary baseline relative to native Reckless25/50 is an inference consistent with these records; distinct aura producers and actual gameplay still require implementation/client checks.",
+    "Existing203836 Brilliance Aura,204593 Aspect of the Hawk,204624 Aerialist are utility dummy4 plus native395 area-trigger5981/6041/6045 and must remain separate; do not replace or remove them when selecting tactics. Native60958 is Cosmetic Fire Cast, preserving its separate start animation."
+  ],
+  "world": [
+    "Fresh fully drained readonly query finds no positive/negative204653/204654 spell_linked_spell or spell_script_names rows and no companion template/spawn addons. These queries reach exact EOF with no other rows. Existing Sheylun.cpp and current localTrinity sources have no204653/204654 consumer found; native scripts currently multiply companion damage by2 for either UI choice. No generic core damage change inferred.",
+    "Existing original option0 texts104452/104456/104460 request defensive fighting, option1 texts104453/104457/104461 request greater damage and accept risk. Mapping these to Balanced/Reckless respectively is evidence-based inference, not a recovered sniff binding. Current native menu/index admission is already deployed d53261ea6; tactical producer remains absent."
+  ],
+  "core_trace": [
+    "Actual AuraEffect::HandleModDamagePercentDone dispatch79 checks change/stat mode and normal school, then updates native mainhand/offhand/ranged TOTAL_PCT through HandleStatModifier; player-only UI modifier remains player-only. Ordinary SpellDamageBonusDone also consumes79 by school. Actual MeleeDamageBonusTaken consumes native GetTotalAuraMultiplierByMiscMask87; that getter delegates native predicate/multiplier and existing same-effect stack rules. Core definitions confirm types79/87. No fixed damage/health or surrender threshold should be introduced.",
+    "A successful CastSpell request is not enough: chosen native aura must actually exist on the original qualified NPC before its role event; failed/rejected aura must retain the role flag for a fresh offer. Capture/revalidate player and source full GUIDs/quest lease around casts/removal/native criteria, preserve the opposite tactic until new one is confirmed, remove only204653/204654 counterpart, and retain utility buffs. Do not award48380..83/48495/48646 or item128937 here."
+  ],
+  "evidence": [
+    ".codex/sheilun-tactics-native1-open-2026-10-31",
+    ".codex/sheilun-tactics-world1-open-2026-10-31",
+    ".codex/sheilun-tactics-hooks-open-2026-10-31"
+  ],
+  "native_sha256": "7470606c821a33225f3947af2d0c420a410676d073a262f924c40e8e3c913668",
+  "limits": "No tactical spell cast in actual client, no video playback/listening or current client battle certification. No custom numeric defensive multiplier, native-script producer or source packet binding established. Phase duplication, physical pickup/storage/outro/return and all36 remain OPEN. Research kept outside fixed.",
+  "runtime": "Canonical world0e730ba4762057a77223d040bb591963dfe4bb45574f847c6fc3da3402cf7355; prior own21872 graceful0/gone, no research server launched. Crashes empty/mixed6090LINK2 unchanged.",
+  "next": "Implement and separately test actual chosen aura acknowledgement before each role credit, mutual exclusion/retry/reentrant guards, native damage handler/multiplier data and actual linked Release consumers. Keep full client tactics/pickup/return OPEN."
+}
