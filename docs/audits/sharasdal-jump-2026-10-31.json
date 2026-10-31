@@ -33,5 +33,14 @@
     "Restore actual loot249342/storage/full-bag/owned/bank-only retry, real128911/128934 native equip and truthful209683 DB target/collision before any acquisition progress.",
     "Native209684/209685 ordering and scene1609 actual client cancellation/expiry; post-pickup209743/1923; early return bubble105819/210252 gate and dirty flag refresh; retain actual1469 return destination and native personal/group credit.",
     "Historical living Lady surrender/1906/Grash strike, original gauntlet/routes/other raw callbacks, full1066/all36 and actual client traversal still OPEN."
-  ]
+  ],
+  "fix_commit": "b7cd355e7",
+  "diagnostic_archive": {
+    "fix_commit": "b7cd355e7",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-jump-2026-10-31",
+    "manifest_sha256": "6fd51ebab3cc180333ed1538f319ce2f24a7c61ddac1cc15632847a74d3c009f",
+    "files": 238,
+    "hash_verification": "Original bytes source/destination/source/final SHA256 verified. Active Crashes empty. Mixed DBErrors unchanged, not copied as resolved or truncated.",
+    "remaining": "Actual World jump destination and249342 loot/equip/scene/outro/return/full1066/all36/client OPEN."
+  }
 }
