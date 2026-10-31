@@ -39,5 +39,11 @@ int main(){unsigned cases=0;
   if(mode){r.erunak.i_disabledAI=mode==4?nullptr:&r.content;r.erunak.primary=mode==1?&r.temporary:mode==2?nullptr:mode==3?&r.content:nullptr;}
   r.ai->DoAction(1);r.ai->UpdateAI(1000);assert(r.actor.motion.paths==std::vector<uint32>{10993808}&&r.erunak.motion.paths==std::vector<uint32>{10993809}&&r.messages.empty());assert(r.content.speech==(mode==4?std::vector<uint32>{}:std::vector<uint32>{2})&&r.temporary.speech.empty());++cases;
  }
- std::cout<<"PASS "<<cases<<" current whole Grash raw step2 gossip binds original full GUID before menu/action consumption; refusal retains retry, actual installed Erunak path precedes issue message, absent actor cannot acknowledge, duplicate gossip cannot replay; original/suspended/null speech2/9 guards. Instance admission/controller, movement installation and geometry are controlled services here and covered separately; no client traversal claim.\n";
+ for(uint32 first=0;first<5;++first)for(uint32 second=0;second<5;++second){Run r;Creature lady;CreatureAI adelAI,adelTemporary;r.actor.lady=&lady;
+  auto install=[](Creature&actor,CreatureAI&original,CreatureAI&temporary,uint32 mode){actor.primary=mode==0||mode==3?&original:mode==1?&temporary:nullptr;actor.i_disabledAI=mode==1||mode==2||mode==3?&original:nullptr;};
+  install(r.erunak,r.content,r.temporary,first);install(r.adel,adelAI,adelTemporary,second);
+  r.ai->MovementInform(POINT_MOTION_TYPE,1);assert(r.ai->attacks==std::vector<Unit*>{&lady});assert(r.content.attacks==(first==4?std::vector<Unit*>{}:std::vector<Unit*>{&lady}));assert(adelAI.attacks==(second==4?std::vector<Unit*>{}:std::vector<Unit*>{&lady}));assert(r.temporary.attacks.empty()&&adelTemporary.attacks.empty()&&r.messages.empty()&&r.owner.credits.empty());++cases;
+ }
+ {Run r;Creature lady;r.actor.lady=&lady;r.actor.erunak=r.actor.adel=nullptr;r.ai->MovementInform(POINT_MOTION_TYPE,1);assert(r.ai->attacks==std::vector<Unit*>{&lady}&&r.messages.empty());++cases;}
+ std::cout<<"PASS "<<cases<<" current whole Grash raw step2 gossip binds original full GUID before menu/action consumption; refusal retains retry, actual installed Erunak path precedes issue message, absent actor cannot acknowledge, duplicate gossip cannot replay; original/suspended/null speech2/9 and legacy point1 two-companion attack guards. Instance admission/controller, movement installation and geometry are controlled services here and covered separately; no client traversal claim.\n";
 }

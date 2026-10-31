@@ -5,6 +5,11 @@ function Pinned([string]$path){$s=(& git -C $repo show "ccc0e2f74:$path") -join 
 function Same([string]$a,[string]$b,[string]$why){if(($a -replace '\s','') -cne ($b -replace '\s','')){throw $why}}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$ipath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$instance=(Get-Content "$repo/$ipath" -Raw).Replace("`r",'');$old=Pinned $path;$oldInstance=Pinned $ipath
+if($source.Contains('content->AttackStart(lady);')){
+ & "$PSScriptRoot/Test-SharasdalCombatAI.ps1" -ScopeOnly
+ if(!$?){throw 'Current combat AI certificate failed'}
+ $source=(& git -C $repo show "585592236:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-combat actor missing'}
+}
 $erunak=Block $source 'class npc_erunak_stonespeaker :';$oldErunak=Block $old 'class npc_erunak_stonespeaker :'
 $movement=Block $erunak 'void MovementInform(';$oldMovement=Block $oldErunak 'void MovementInform('
 $arrival=@'

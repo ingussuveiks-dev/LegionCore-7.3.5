@@ -769,9 +769,11 @@ public:
                     {
                         AttackStart(lady);
                         if (Creature* erunak = me->FindNearestCreature(102826, 40.0f, true))
-                            erunak->AI()->AttackStart(lady);
+                            if (CreatureAI* content = erunak->GetDisabledAI() ? static_cast<CreatureAI*>(erunak->GetDisabledAI()) : erunak->AI())
+                                content->AttackStart(lady);
                         if (Creature* adel = me->FindNearestCreature(104853, 40.0f, true))
-                            adel->AI()->AttackStart(lady);
+                            if (CreatureAI* content = adel->GetDisabledAI() ? static_cast<CreatureAI*>(adel->GetDisabledAI()) : adel->AI())
+                                content->AttackStart(lady);
                     }
                 }
             }
@@ -1291,7 +1293,8 @@ public:
                         {
                             Talk(2);
                             me->CastSpell(garsh, 209983);
-                            garsh->AI()->Talk(9);
+                            if (CreatureAI* content = garsh->GetDisabledAI() ? static_cast<CreatureAI*>(garsh->GetDisabledAI()) : garsh->AI())
+                                content->Talk(9);
                         }
                         events.RescheduleEvent(EVENT_4, 25000); // 209983 + script
                 }
