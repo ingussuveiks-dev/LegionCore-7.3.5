@@ -40,5 +40,17 @@
     "Historical low-health surrender/interrogation/native209552/1906 and Grash strike are still missing. Only credit for real ordinary death is repaired. Post-pickup1923 is no longer wrongly requested on death and remains unscheduled until proper claim controller restoration; this is explicit remaining implementation work.",
     "Next249342 native loot link0 versus unsafe activation AddItem/delete/direct-completion, actual storage/full bags/equip209685/native jump209683->scene209684/self-arrival/209743 outro/return. Need native spell249 validation before original61/134/ability effects, real owned item, exact original GO/GUID/quest attempt, finite retry/cleanup; code-coupled SQL stays outside live updater until matching Release ready.",
     "All36/full1066 and Glow211502/Survival39427 middle/WardstoneLINK4/sharedLINK2/Stromkar client remain OPEN. User owns client testing, reset3 consumed; no reset performed."
-  ]
+  ],
+  "fix_commit": "4795e9bbe",
+  "diagnostic_archive": {
+    "fix_commit": "4795e9bbe",
+    "directory": "build-extractors/bin/Release/fixed/sharasdal-lady-2026-10-31",
+    "files": 201,
+    "manifest_sha256": "e97a354e489c4f3577e4ef2814cb2eea04a2b7404d09428bd73853b1feecdbcc",
+    "verification": "Source/destination/source/final SHA256 verified; canonical6090-byte mixed LINK2 hash/length/timestamp and empty Crashes unchanged. No active file removed or truncated; no task servers retained.",
+    "failures_paired": {
+      "sharasdal-lady-staged-pe-2026-10-31": "New inspector read fields/events from immediate roar wrapper instead of its retained Kraliss module. Retained PE proof passed, new metadata lookup raised KeyError before Lady proof. Correct nested exports; staged-pe2 and canonical73/PE pass without production workaround."
+    },
+    "excluded_open": "Mixed open sharasdal-boss and sharasdal-pickup research, earlier route/raw callbacks and mixed active DBErrors excluded. Only real Lady victory closed diagnostics archived. Source video/contact sheets stay in ignored .codex/sharasdal-reference, not a whole-chain fix certificate."
+  }
 }
