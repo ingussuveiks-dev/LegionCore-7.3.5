@@ -69,6 +69,8 @@ struct EventMap{void Reset(){}};
 struct Taran:CreatureAI{
  Creature*me;bool _introHealDone=false,wait_heal=false;unsigned talk2=0;std::vector<uint32>speech;EventMap events;
  explicit Taran(Creature*actor):me(actor){}
+ // Presentation is a separately compiled native queue/AI-destruction suite.
+ struct PresentationEndpoint { void Update(uint32) {} } _presentationFunctions;
  void Talk(uint32 id){speech.push_back(id);if(id==2)++talk2;else assert(id==11||id==12);}
 #ifndef BASELINE
 #include "Intro.inc"

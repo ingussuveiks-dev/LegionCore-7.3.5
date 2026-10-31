@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-31",
+  "status": "Taran Zhu AI capture lifetime repaired, native regression and canonical Release verified; later sequence/full36/client OPEN",
+  "fix_commit": "recorded in following archive audit",
+  "cause": "Both original npc_tazhan_chuAI callbacks captured raw this but belonged to the longer-lived Creature/Unit FunctionProcessor. Native AIM_Destroy could delete their AI while retaining the queued callbacks. This is a demonstrated dangling capture, not attribution of an observed client crash.",
+  "change": [
+    "Append a distinct AI-owned FunctionProcessor after existing intro/wound fields; move only the original5s Talk1 and4s wall-hide/Talk4/point2 callbacks to it. Native AI destruction destroys this queue and its captures. No shared FunctionProcessor/core/API change.",
+    "Tick exactly once in the existing native lifecycle before opening-heal early returns, retaining the former Unit clock through stun, casting and original suspended/current/alias AI. Keep the pre-existing combat/rescue processor on its original stunned UpdateAI clock. Reset semantics, delays, spell202053, gameobject246321/range35/phase2, speech and coordinates remain unchanged."
+  ],
+  "validation": [
+    "Exact whole-source/helper certificate against d52af1bc7 excludes unrelated story, cast, admission, damage, reset, gossip, loot and registration changes. Older wound scope separately certifies this delta, normalizes only its additions and still compiles current heal/wound bodies. Retained intro host explicitly controls presentation endpoint, which is compiled separately.",
+    "ASAN42 cases compile full actual Taran constructor/Reset/LOS/movement/rescue/combat methods and native FunctionProcessor/EventMap/SafeLOS/current+suspended lifecycle/AIM_Destroy. Test exact4s/5s, stun/cast/suspended/alias/disabled clocks, deletion and replacement, locked destruction, unrelated Unit queue retention, reentrant Reset/enqueue, missing walls, nonplayer/range/once LOS and unchanged stunned rescue. Opening/wound endpoints in this host are controlled; retained97 opening and8535 final-damage/applied-wound contexts pass separately.",
+    "Explicit pinned d52af1bc7 EXPECTED BROKEN counterfactual proves both Unit queues retain captured AI after actual AIM_Destroy; dangling callbacks deliberately not executed. Paired repaired native destruction checks show no escaped capture or later effect. No fabricated server crash is claimed.",
+    "Original scripts.vcxproj Release BuildProjectReferences=false without OutDir override; original scripts.lib rebuilt. Staged final link verifies original LIB inputs and old canonical hashes unchanged. Actual registered Taran factory190, old processor60, new processor110, destructor/vtables, live callback tables,4s/5s queues and one lifecycle clock are verified. Native heal/wound PE retained. Four-file canonical promotion hashes and public42+Release PE and ScepterLogin VerifyReleaseBinary pass.",
+    "Owned canonical worldserver33188 reaches fresh ready, gracefully server shutdown0/exit0, newDBErrors0/stderr0, protected configuration/certificates unchanged; process gone. No user server stopped."
+  ],
+  "development_failures": [
+    "native1: host redundantly declared EVENT1..4 already provided by actual EventMap; removed duplicate host declarations, native3/current pass.",
+    "native2: test incorrectly tried native AIM_Destroy with suspended AI still installed; original native assertion correctly refused. Test now restores original content/clears suspended slot before native destruction. No core assertion suppressed and no crash reports generated; native3 passes.",
+    "stage-pe1: inspector assumed LEA rbx+60 for unchanged UpdateAI queue; actual optimized code uses ADD rcx,60. Inspected actual instructions and asserted exact emitted operand; stage-pe2 and canonical pass."
+  ],
+  "compiler_diagnostics": "Production compile/link have no new warnings. Extracted native EventMap C4244, FunctionProcessor Size/SizeQueue size_t->uint32 C4267 and original unused actor parameters C4100 remain visible. They are unchanged native declarations; tested queue sizes bounded by fixture and no narrowing error observed. Retained native health double/float and variable-shadow warnings, Scepter signed/narrowing warnings remain visible. No diagnostic suppression or generic warning repair in this scope.",
+  "sequence_limits": [
+    "This fix preserves original Reset behavior; resetting a living AI does not cancel either presentation timer, matching the prior Unit queue. Dead/predelete/map lifetime follows the existing Creature dispatcher; no new player eligibility/quest lifetime policy is invented for narrative-only speech.",
+    "Original failed202053 cast may still allow its later wall hide, and unrelated gossip/rescue nearest-player/companion AI handling remain OPEN. No pet/guardian/group/faction kill or quest progress granted by these callbacks. Player/pet/guardian final blows remain covered by separate wound tests and the OPEN actual boss/pickup path.",
+    "Actual approach/voice/point arrival/barrier rendering, abandon/re-entry/full scenario transitions, real manual physical artifact source/visual/storage receipt, old boss automatic item+credit and14s return shortcut, Tak-Tak outro/menu/boarding/flight/landing and client verification remain OPEN. Research audits preserve native data/video limits; this narrow memory-safety repair does not certify all36 chains."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "2f61800a446b42c53e7ab6aa5b569108cf881539efe7dc47dbaa2ef200f9882a",
+      "worldserver.map": "fd0f2f761dafa1186fc6707856cb5952715581ae4f07219cb7546ee5d24fe58b",
+      "bnetserver.exe": "ff2e0fbe9eedd865fe0dc13a566689d71f20a5ca1befbcc45968df2cbb885f13",
+      "bnetserver.map": "9818d213be521b78170fc6af949e1a1735b3d1e0125624b0abe01daeb5b6db0f"
+    },
+    "stage": ".codex/sheilun-presentation-release",
+    "backup": ".codex/release-before-sheilun-presentation-2026-10-31/manifest.json",
+    "sql": "No migration, persistent World/character edit, grant or reset"
+  },
+  "diagnostics": {
+    "new_changed_crashes": 0,
+    "appended_dberrors": 0,
+    "server_errors_warnings_assertions": 0,
+    "active_crashes": "empty",
+    "unresolved_db_bytes": 6090,
+    "unresolved_db_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "unresolved": "Mixed LINK2 diagnostics retained; no truncation, archive reclassification or unrelated log removal",
+    "owned_pid": 33188,
+    "owned_exit": 0,
+    "task_servers_remaining": 0
+  },
+  "evidence": [
+    ".codex/sheilun-presentation-baseline-2026-10-31",
+    ".codex/sheilun-presentation-build-2026-10-31",
+    ".codex/sheilun-presentation-canonical-2026-10-31",
+    ".codex/sheilun-presentation-combat-pe-2026-10-31",
+    ".codex/sheilun-presentation-link-2026-10-31",
+    ".codex/sheilun-presentation-native1-2026-10-31",
+    ".codex/sheilun-presentation-native2-2026-10-31",
+    ".codex/sheilun-presentation-native3-2026-10-31",
+    ".codex/sheilun-presentation-pe-research-2026-10-31",
+    ".codex/sheilun-presentation-promotion-2026-10-31",
+    ".codex/sheilun-presentation-retained-2026-10-31",
+    ".codex/sheilun-presentation-stage-pe1-2026-10-31",
+    ".codex/sheilun-presentation-stage-pe2-2026-10-31",
+    ".codex/sheilun-presentation-startup-2026-10-31"
+  ],
+  "next": "Continue Sheilun real source/storage/outro/return using physical-source and return research. Preserve unresolved independent artifacts and user-owned client testing."
+}

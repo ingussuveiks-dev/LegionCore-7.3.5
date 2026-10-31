@@ -3,6 +3,14 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/Sheylun.cpp';$header='src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_taran_intro.h'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$intro=(Get-Content "$repo/$header" -Raw).Replace("`r",'')
+if($source.Contains('FunctionProcessor _presentationFunctions;')){
+ & "$PSScriptRoot/Test-SheilunTaranPresentation.ps1" -ScopeOnly
+ if(!$?){throw 'Current presentation owner delta failed certification'}
+ # Only normalize the separately certified presentation additions. All current
+ # wound and opening bodies below are still compiled by their native suites.
+ $source=$source.Replace('        // These callbacks capture this AI, so they must not outlive it.','').Replace('        // Keep the older combat/rescue queue on its original UpdateAI clock.','').Replace('        FunctionProcessor _presentationFunctions;','').Replace('_presentationFunctions.AddDelayedEvent(4000,','me->AddDelayedEvent(4000,').Replace('_presentationFunctions.AddDelayedEvent(5000,','me->AddDelayedEvent(5000,')
+ $intro=$intro.Replace('    // Preserve the former Unit timer clock, including stun and suspended AI.','').Replace('    _presentationFunctions.Update(diff);','')
+}
 $old=(& git -C $repo show "57321f47e:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-wound Taran source missing'}
 $oldIntro=(& git -C $repo show "57321f47e:$header") -join "`n";if($LASTEXITCODE){throw 'Pinned opening helper missing'}
 $normal=$source

@@ -63,6 +63,8 @@ void OnHealApplied(Unit* who, uint32 /*amount*/, int32 /*gain*/) override
 void UpdateLifecycle(uint32 diff) override
 {
     RecoverWound();
+    // Preserve the former Unit timer clock, including stun and suspended AI.
+    _presentationFunctions.Update(diff);
     if (_introHealBusy || _introHealer.IsEmpty()) return;
     if (_introHealTimer > diff) { _introHealTimer -= diff; return; }
     Player* player = ObjectAccessor::GetPlayer(*me, _introHealer);

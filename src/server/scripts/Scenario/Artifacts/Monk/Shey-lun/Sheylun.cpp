@@ -66,6 +66,10 @@ public:
         #include "sheilun_taran_intro.h"
         #include "sheilun_companion_wounds.h"
 
+        // These callbacks capture this AI, so they must not outlive it.
+        // Keep the older combat/rescue queue on its original UpdateAI clock.
+        FunctionProcessor _presentationFunctions;
+
         void WoundSpeech() { Talk(11); Talk(12); }
 
         void Reset() override
@@ -140,7 +144,7 @@ public:
                         Talk(3);
                         DoCast(202053);
 
-                        me->AddDelayedEvent(4000, [this]() -> void
+                        _presentationFunctions.AddDelayedEvent(4000, [this]() -> void
                         {
                             std::list<GameObject*> gob;
                             GetGameObjectListWithEntryInGrid(gob, me, 246321, 35.0f);
@@ -192,7 +196,7 @@ public:
             {
                 _introDone = true;
                 Talk(0);
-                me->AddDelayedEvent(5000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(5000, [this]() -> void
                 {
                     Talk(1);
                 });
