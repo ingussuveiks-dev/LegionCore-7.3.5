@@ -6,7 +6,14 @@ $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$ip
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$instance=(Get-Content "$repo/$ipath" -Raw).Replace("`r",'')
 $old=(& git -C $repo show "da3f4b8bb:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned upper wall actor missing'}
 $oldInstance=(& git -C $repo show "da3f4b8bb:$ipath") -join "`n";if($LASTEXITCODE){throw 'Pinned upper wall instance missing'}
-$normal=$source.Replace('        #include "sharasdal_upper_wall.h"','')
+$scopeSource=$source;$scopeInstance=$instance
+if($source.Contains('#include "sharasdal_gauntlet_arrival.h"')){
+ & "$PSScriptRoot/Test-SharasdalGauntletArrival.ps1" -ScopeOnly
+ if(!$?){throw 'Actual gauntlet delta certificate failed'}
+ $scopeSource=(& git -C $repo show "ef0bbcbbf:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-gauntlet actor missing'}
+ $scopeInstance=(& git -C $repo show "ef0bbcbbf:$ipath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-gauntlet instance missing'}
+}
+$normal=$scopeSource.Replace('        #include "sharasdal_upper_wall.h"','')
 $normal=Adapt $normal '            CompleteUpperWall(diff);' ''
 $normal=Adapt $normal '            if (!_upperOpened && (_upperMoving || _upperArrived)) CancelUpperWall();' ''
 $normal=Adapt $normal 'me->GetMotionMaster()->MovePoint(_upperPoint, -17.96f, 802.05f, 807.66f);' 'me->GetMotionMaster()->MovePoint(1, -17.96f, 802.05f, 807.66f);'
@@ -42,7 +49,7 @@ $replacement=@'
 '@
 $normal=Adapt $normal "            if (step == 4 && !BindUpperWall(player))`n                return;" $replacement.Replace("`r",'')
 if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Other actors/heals/lower walls/gauntlet/deaths/acquisition or registrations changed'}
-$normal=$instance.Replace('        ObjectGuid upperGrash;','').Replace('            if (creature->GetEntry() == 105298 && creature->GetDBTableGUIDLow() == 362092) upperGrash = creature->GetGUID();','')
+$normal=$scopeInstance.Replace('        ObjectGuid upperGrash;','').Replace('            if (creature->GetEntry() == 105298 && creature->GetDBTableGUIDLow() == 362092) upperGrash = creature->GetGUID();','')
 $normal=$normal.Replace((Block $normal 'void RearmGrashWall('),(Block $oldInstance 'void RearmGrashWall('))
 if(($normal -replace '\s','') -cne ($oldInstance -replace '\s','')){throw 'Other instance fields/deaths/credit/entry or initialization changed'}
 if($ScopeOnly){'PASS only upper Grash issued point/real final wall/original recipient/re-entry; all lower routes, other actors, acquisition, deaths and earlier instance field order retained';return}

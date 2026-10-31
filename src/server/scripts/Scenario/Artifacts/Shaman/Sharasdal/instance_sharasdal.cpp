@@ -573,6 +573,7 @@ public:
                 guardRetry = guardTries = 0;
             }
             RearmGrashWall(player);
+            if (player) RearmGauntlet(player->GetGUID(), 40341);
         }
 
         void UpdateGuard(uint32 diff)
@@ -629,6 +630,18 @@ public:
         }
 
         ObjectGuid upperGrash;
+        ObjectGuid gauntletIllusion;
+
+        void RearmGauntlet(ObjectGuid const& guid, int32 event)
+        {
+            if (Creature* illusion = instance->GetCreature(gauntletIllusion))
+            {
+                auto current = illusion->AI();
+                auto suspended = illusion->GetDisabledAI();
+                if (current) current->SetGUID(guid, event);
+                if (suspended && suspended != current) suspended->SetGUID(guid, event);
+            }
+        }
 
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override
         // OnPlayerDeath
@@ -646,7 +659,12 @@ public:
         
         void OnCreatureCreate(Creature* creature) override
         {
-            if (creature->GetEntry() == 105298 && creature->GetDBTableGUIDLow() == 362092) upperGrash = creature->GetGUID();
+            if (creature->GetEntry() == 104856 && creature->GetDBTableGUIDLow() == 362091) gauntletIllusion = creature->GetGUID();
+            if (creature->GetEntry() == 105298 && creature->GetDBTableGUIDLow() == 362092)
+            {
+                upperGrash = creature->GetGUID();
+                RearmGauntlet(upperGrash, 105298);
+            }
             if (creature->GetEntry() == 105298 && creature->GetDBTableGUIDLow() == 362066) lowerGrash = creature->GetGUID();
             if (creature->GetEntry() == 102826 && creature->GetDBTableGUIDLow() == 362063) lowerErunak = creature->GetGUID();
             if (creature->GetGUID() == lowerGrash || creature->GetGUID() == lowerErunak)

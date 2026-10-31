@@ -7,6 +7,7 @@
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
 #include "ObjectAccessor.h"
+#include "Map.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "Spell.h"
@@ -1210,10 +1211,7 @@ public:
     {
         npc_lady_zitrinAI(Creature* creature) : ScriptedAI(creature)
         {
-            if (me->GetPositionX() <= -15.0f)
-                intro = true;
-            else
-                intro = false;
+            intro = IsGauntletIllusion();
             _introDone = false;
             introtimer = 2000;
         }
@@ -1221,6 +1219,8 @@ public:
         uint32 introtimer;
         EventMap events;
         bool _introDone, intro;
+
+        #include "sharasdal_gauntlet_arrival.h"
 
         void Reset() override
         {
@@ -1244,24 +1244,13 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (who->GetTypeId() != TYPEID_PLAYER)
-                return;
-
-            if (me->GetPositionX() <= -15.0f && !_introDone && me->IsWithinDistInMap(who, 40.0f))
-            {
-                _introDone = true;
-                intro = false;
-                who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50314);
-                me->GetMotionMaster()->MovePoint(0, 10.37f, 803.32f, 806.75f);
-                if (Creature* garsh = me->FindNearestCreature(105298, 200.0f, true))
-                    garsh->AI()->DoAction(3);
-                me->DespawnOrUnsummon(1000);
-            }
+            AcceptGauntletArrival(who ? who->ToPlayer() : nullptr);
         }
 
         void UpdateAI(uint32 diff) override
         {
-            if (intro)
+            Scenario* gauntlet = GauntletWorld();
+            if (intro && gauntlet && gauntlet->GetCurrentStep() == 3)
             {
                 if (introtimer <= diff)
                 {

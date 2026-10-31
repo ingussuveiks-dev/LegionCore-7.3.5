@@ -1,4 +1,4 @@
-param([switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$OutputDirectory='')
+param([switch]$PrepareHost,[switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$OutputDirectory='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp';$actorPath='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
@@ -44,7 +44,7 @@ if($ScopeOnly){'PASS only real Lady instance victory/upper recipient/original qu
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sharasdal-lady"}
 $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
-[IO.File]::WriteAllText("$out/Policy.inc",(Block $source 'namespace SharasdalGuard')+(Block $source 'namespace SharasdalBrutes')+(Block $source 'namespace SharasdalKraliss')+(Block $source 'namespace SharasdalLady')+(Block $actor 'Position const sumpos[3]')+';')
+[IO.File]::WriteAllText("$out/Policy.inc",(Block $source 'namespace SharasdalGuard')+(Block $source 'namespace SharasdalBrutes')+(Block $source 'namespace SharasdalKraliss')+(Block $source 'namespace SharasdalLady')+(Block $actor 'Position const sumpos[3]')+';'+$(if($actor.Contains('#include "sharasdal_gauntlet_arrival.h"')){Block $actor 'namespace SharasdalGrash'}))
 [IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldNPC}else{$currentNPC})+';')
 [IO.File]::WriteAllText("$out/Instance.inc",(Block $(if($Baseline){$old}else{$source}) 'struct instance_sharasdal_InstanceMapScript :')+';')
 $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
@@ -155,6 +155,12 @@ $hostSource=Adapt $hostSource 'Motion* GetMotionMaster(){return &motion;}' 'Crea
 $hostSource=Adapt $hostSource 'assert(id==1693);' 'assert(id==1693||id==1923);'
 $hostSource+='struct Position{float x,y,z,o;float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}};uint32 urand(uint32 low,uint32){return low;}'
 [IO.File]::WriteAllText("$out/NativeHost.inc",$hostSource)
+if($actor.Contains('#include "sharasdal_gauntlet_arrival.h"')){
+ Copy-Item -LiteralPath "$repo/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/sharasdal_gauntlet_arrival.h" -Destination $out
+ $hostSource=Adapt $hostSource 'assert(range==100||range==5);return range==5?interact:near;' 'assert(range==100||range==5||range==40);return range==5?interact:near;'
+ [IO.File]::WriteAllText("$out/NativeHost.inc",$hostSource)
+}
+if($PrepareHost){return}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($Baseline){'/DBASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi $mode /I`"$out`" `"$PSScriptRoot/SharasdalLadyTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`ncd /d `"$out`"`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
