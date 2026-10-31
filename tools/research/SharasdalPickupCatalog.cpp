@@ -53,7 +53,7 @@ int main(int argc, char** argv)
         !steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0)) return 4;
     spells.LoadFromDB(); effects.LoadFromDB(); misc.LoadFromDB(); durations.LoadFromDB(); interrupts.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
-    std::set<uint32> selected{209684,209685};
+    std::set<uint32> selected{209683,209684,209685};
     for (bool changed=true; changed;)
     {
         changed=false;

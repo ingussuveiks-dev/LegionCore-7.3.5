@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-31",
+  "scope": "Only native map1600 Player209683->209684 destination-jump arrival prerequisite. Full actual GO249342 loot/item/equip/scene/outro/return is unfinished implementation, not client-only verification.",
+  "cause": "Native26972 effect42 of209683 uses DB-destination17 and triggers self-only209684. Existing EffectJumpDest leaves its arrival target empty, so actual Unit::CastSpell rejects it. Merely filling SELF would allow the old generic Finalize to fire on interruption/map transfer and retain an invalid zero-duration movement.",
+  "implementation": [
+    "Normalize only map1600 Player209683->209684 to full native selfGUID. Preserve metadata, jump speeds, delay, target destination and all unrelated branches.",
+    "For this same scoped pair reject nonpositive actual Launch, clear LONG_JUMP and do not install a false movement. Capture actual launch map into existing EffectMovementGenerator+0x24; its existing arrived/alive/same-map gate owns the callback. No new raw callback, teleport, quest/item/credit or fake movement success.",
+    "Exact zero-distance still returns without launch or scene. Missing World209683 target row is not fabricated here. No SQL/config/assets/character/AP/checkpoint reset."
+  ],
+  "sources": "Local complete native SpellEffects/MotionMaster/EffectMovementGenerator/Unit cast first; matching26972 DB2/read-onlyHotfix SharasdalPickupCatalog now includes209683 and closure209684/209685. Prior complete local/TC/pinned GitHub/historical-video investigations in finale followup audits retained; no donor code copied.",
+  "validation": {
+    "baseline": "Pinned71f30c267 actual destination jump/native CastSpell demonstrates empty SELF and false zero-launch movement. Explicit SELF-only counterfactual additionally demonstrates interruption/map-transfer casts; that is not described as ordinary pre-fix gameplay.",
+    "current": "22 ASAN contexts execute extracted actual EffectJumpDest/CalculateJumpSpeeds/GetSpellTriggerDelay, Unit::CastSpell, MotionMaster overloads and EffectMovementGenerator Update/Finalize/MovementInform: successful/repeated completion, zero/negative launch, interruption/death/map transfer/cleanup/failed cast, four foreign metadata/map variants, NPC, launch mode/flying/no destination/zero-distance, four retained Skyhold/Stromkar pairs. Whole SpellEffects/MotionMaster source scope certificate restores pinned71f30c267 byte content ignoring whitespace only.",
+    "limits": "Endpoint, spline engine, GUID registry and cast-effect services are controlled; failed-cast case proves the native refusal is reached, not a successful aura. No real client or GO pickup/equip progression is claimed.",
+    "retained": "Actual SkyholdDeparture11 native pairs and Stromkar1 baseline/current ASAN; SkyholdJumpDestination six-map actual arrival baseline/current ASAN; StromkarAwakening VerifyLiveData temp migration twice/ten custom refusals, controller/facing/arrival/cast/motion ASAN; BoostHeroicLeap admission/cast ASAN. World native target-position repair and actual full pickup remain OPEN.",
+    "pe": "Staged and canonical actual linked descriptor selfGUID128-bit copy, precise Player/map/pair gates, positive Launch branch/state cleanup, captured actual map constructor+0x24, arrival arrived/alive/same-map/native CastSpell and original null guard. Baseline uses existing binary inspection library; actual retained11 linked SmartAI retry paths pass too. Canonical Scepter VerifyReleaseBinary passes.",
+    "reviewed_failed_check": "Initial StromkarAwakening run omitted VerifyLiveData against an already migrated DB, so its expected original five-row temporary baseline was absent; diagnostics Completed=false/no new errors. Rerun with documented VerifyLiveData reconstructs the pinned old graph only in TEMP tables and passes all preserved checks. No live data workaround. An initial direct SkyholdJumpDestination invocation lacked its own diagnostic wrapper; its output is not relied upon for post-test evidence and the entire suite was repeated with before/after snapshots and ASAN.",
+    "warnings": "Existing native fixture uint8/int32-to-float conversions; shared Scepter signedness conversions; unrelated SpellEffects4303 enum/float C5055. No newly introduced production warnings or ignored runtime failure."
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "b191c81cabb191767a6f8fc38b05c97d183b8a7dc206c2dab44c5ac7099c698c",
+      "worldserver.map": "30f859eb2f7679e8e0d709eb90fcf5d89acc6e36b1ec3d3b111556a0c6715297",
+      "bnetserver.exe": "a2ff2605bef20073429f33974b2dd02c75b60b31c30af5603fb2a4585f834457",
+      "bnetserver.map": "96d13d52e19536bd3c7682b75161afc13bbecf666282dbbee3407328ae4d4873"
+    },
+    "build": "Original game/common Release libs and original final-link inputs; separate .codex/staged-sharasdal-jump-2026-10-31, no globalOutDir. Fresh no-server check and all four stage/canonical SHA256 copies verified. Config/certs/DLL/data retained.",
+    "runtime": "Own PID30288 ready, graceful shutdown0/exit0, stderr empty/newDBErrors0/protected config/cert hashes unchanged, gone. No user server stopped."
+  },
+  "diagnostics": "New native/data/build/link/PE/promotion/canonical/startup checks wrapped with before/after canonical and own runtime crash/log snapshots; no new/changed crashes, appendedDBErrors or server warnings/errors/assertions. Mixed unresolved6090-byte shared101430/103151LINK2 unchanged; no crash removed or log truncated.",
+  "remaining": [
+    "Restore actual loot249342/storage/full-bag/owned/bank-only retry, real128911/128934 native equip and truthful209683 DB target/collision before any acquisition progress.",
+    "Native209684/209685 ordering and scene1609 actual client cancellation/expiry; post-pickup209743/1923; early return bubble105819/210252 gate and dirty flag refresh; retain actual1469 return destination and native personal/group credit.",
+    "Historical living Lady surrender/1906/Grash strike, original gauntlet/routes/other raw callbacks, full1066/all36 and actual client traversal still OPEN."
+  ]
+}

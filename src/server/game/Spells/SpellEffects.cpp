@@ -2004,7 +2004,9 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
         m_spellInfo->Id == 206455 && arrivalCast.SpellId == 206456;
     bool stromkarRecoil = m_caster->GetMapId() == 1539 &&
         m_spellInfo->Id == 206360 && arrivalCast.SpellId == 206361;
-    if (m_caster->IsPlayer() && (skyholdDeparture || stromkarExecution || stromkarRecoil))
+    bool sharasdalAcquisition = m_caster->GetMapId() == 1600 &&
+        m_spellInfo->Id == 209683 && arrivalCast.SpellId == 209684;
+    if (m_caster->IsPlayer() && (skyholdDeparture || stromkarExecution || stromkarRecoil || sharasdalAcquisition))
         arrivalCast.Target = m_caster->GetGUID();
     if (!arrivalCast.SpellId && delayCast)
     {
