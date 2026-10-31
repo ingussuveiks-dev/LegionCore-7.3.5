@@ -1,0 +1,15 @@
+{
+  "fix_commit": "ef5713b44",
+  "directory": "build-extractors/bin/Release/fixed/sharasdal-guard-victory-2026-10-31",
+  "files": 359,
+  "manifest_sha256": "34f1e354ba0d0b464cb1a3d86d44508dc3509c547283982ae9c43e94bae45f95",
+  "verification": "Source/destination/source/final SHA256 verified; canonical6090-byte mixed LINK2 hash/length/timestamp and empty Crashes unchanged. No active file removed or truncated; no task servers retained.",
+  "failures_paired": {
+    "sharasdal-guards-baseline-2026-10-31": "Single-element PowerShell array emitted misnamed include; direct actual Owner.inc extraction fixed it. Baseline3 exact old waypoint/native Kill and repaired2 ASAN pass.",
+    "sharasdal-guards-staged-pe-2026-10-31": "Inspector compared resolved Update tail target against issued wrapper in vtable. Actual map/factory table established raw wrapper and resolved tail; staged-pe3/canonical-native2 pass.",
+    "sharasdal-guards-staged-pe2-2026-10-31": "Inspector assumed memory-operand virtual call. Native Kill loads slot40 into r9 then calls r9 with actual creature/killer. Disassembly/dataflow check corrected; staged-pe3/canonical-native2 pass.",
+    "sharasdal-guard-video-download-2026-10-31": "Unavailable combined media format; successful video-only download2 paired. Public source video remains outside archive.",
+    "sharasdal-guard-video-detail-2026-10-31": "Detail reader assumed webm but selected format was mp4. Corrected detail2 extracts all75 frames, visually reviewed. Original media retained separately."
+  },
+  "excluded_open": "Earlier sharasdal-adel-context/cast-context/heal-context/heal-health-context; initial Brute/route/raw callbacks/loot research and mixed active DBErrors. Source video/contact sheets stay in ignored .codex/sharasdal-reference, not a whole-chain fix certificate."
+}
