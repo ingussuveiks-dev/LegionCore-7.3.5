@@ -72,11 +72,50 @@
       "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
       "status": "Existing unresolved101430/103151 LINK2 retained; never truncated or archived as wholly fixed."
     },
-    "archive": "Pending focused implementation commit; closed resolved evidence will be hash-verified separately. OPEN Army/missing-data research excluded."
+    "archive": {
+      "fix_commit": "ec3f7a22a",
+      "directory": "build-extractors/bin/Release/fixed/instance-leave-2026-10-31",
+      "manifest_sha256": "62a3086cad459be2a5b8a2ea34da63462e265405e9b52bbdb41298fd04c82313",
+      "files": 378,
+      "verification": "Source/destination/source/final SHA256 verified. Owned30732 ready/shutdown0/exit0/gone; canonicalA937AE06 unchanged, Crashes empty, mixed6090LINK2 hash/length/mtime retained. No active report removed or log truncated.",
+      "scope": "Only resolved leave dispatch/lifetime, paired source/native counterfactuals, repaired fixture/verifier iterations, retained current lifecycle inputs, build/PE/promotion/owned-startup evidence. Original files remain; no active crash removed or log truncated. OPEN Army research, mixed6090LINK2 and historical October15 Scepter socket-smoke logs excluded. No configs, binaries, dumps, credentials, characters or media copied.",
+      "post_copy_diagnostic_review": {
+        "reviewed": [
+          {
+            "file": ".codex/instance-leave-native-baseline1-2026-10-31/check-output.log",
+            "reviewed_error_lines": 2
+          },
+          {
+            "file": ".codex/instance-leave-pe-stage1-2026-10-31/check-output.log",
+            "reviewed_error_lines": 1
+          },
+          {
+            "file": ".codex/instance-leave-source-baseline3-2026-10-31/check-output.log",
+            "reviewed_error_lines": 2
+          },
+          {
+            "file": ".codex/instance-leave-source-current3-2026-10-31/check-output.log",
+            "reviewed_error_lines": 2
+          },
+          {
+            "file": "build-extractors/runtime-test/instance-leave-native-baseline/run-20261031-233831/Server.log",
+            "reviewed_error_lines": 2
+          },
+          {
+            "file": "build-extractors/runtime-test/instance-leave-native-baseline/run-20261031-233831/stderr.log",
+            "reviewed_error_lines": 2
+          }
+        ],
+        "unexplained": [],
+        "all_copied_DBErrors_empty": true,
+        "scope": "Known fixture/compiler/verifier failures above paired with final passing repaired regressions. No historical Scepter socket logs or OPEN Army research copied. No active file removed/truncated."
+      }
+    }
   },
   "remaining": [
     "User-owned client traversal: DK988 real exit/re-entry/follower/ghost visuals, Ashran departure, Broken Shore bird/camera/pet cleanup, both raid departure/group/primary-pet effects and other legacy callers. Source and native dispatch do not certify every callback native aura cascade/client effect.",
     "Additional shared Army Training research is OPEN: actual227261 removal links216938/218193;218193 periodic219095 and trigger216862 have no SpellEffect rows in inspected matching DB2/hotfix. Unknown-spell branches retain native diagnostics; no invented data, new grants, whitelist bypass or effect suppression added. This focused leave fix does not claim full Withered Training completion/return verification.",
     "Sheilun manual physical source, actual native storage witness, removal of original premature automatic grants, outro and native Tak-Tak return/re-entry remain OPEN. Preserve prior loot/visual/voice/route research and all36 worklist; do not confuse this focused lifecycle repair with completion of all chains."
-  ]
+  ],
+  "fix_commit": "ec3f7a22a"
 }
