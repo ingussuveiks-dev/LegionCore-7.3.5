@@ -12,6 +12,7 @@ if($source.Contains('// AI-owned intro timers')){
  # Only the unrelated comparison is frozen; the new Erunak suite compiles its
  # full current actor and native lifecycle/queue/destruction implementation.
  $comparison=$comparison.Replace((Block $source 'class npc_erunak_stonespeaker :'),(Block $beforeTimers 'class npc_erunak_stonespeaker :'))
+ if($source.Contains('#include "sharasdal_erunak_entry.h"')){$comparison=$comparison.Replace('#include <map>','').Replace('#include "Group.h"','').Replace('#include "QuestData.h"','')}
 }
 $old=(& git -C $repo show "ef0bbcbbf:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-gauntlet actor missing'}
 $oldInstance=(& git -C $repo show "ef0bbcbbf:$ipath") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-gauntlet instance missing'}

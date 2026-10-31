@@ -15,6 +15,9 @@
 #include "Timer.h"
 #include "WaypointManager.h"
 #include "WaypointMovementGenerator.h"
+#include "Group.h"
+#include "QuestData.h"
+#include <map>
 
 namespace SharasdalCompanion
 {
@@ -160,6 +163,7 @@ public:
         bool _introDone, wait_heal, firstbattle;
         bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
+        #include "sharasdal_erunak_entry.h"
 
         void Reset() override
         {
@@ -192,6 +196,7 @@ public:
             SharasdalCompanion::Recover(me, _pendingHealRecovery, wait_heal);
             // AI-owned intro timers retain the Unit clock while stunned or suspended.
             _functions.Update(diff);
+            CompleteLowerEntries(diff);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
@@ -262,8 +267,14 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (who->GetTypeId() != TYPEID_PLAYER)
+            if (!who || who->GetTypeId() != TYPEID_PLAYER)
                 return;
+
+            if (me->GetDBTableGUIDLow() == 362063)
+            {
+                AcceptLowerEntry(who->ToPlayer());
+                return;
+            }
 
             if (me->GetPositionZ() >= 795.0f && !_introDone && me->IsWithinDistInMap(who, 20.0f))
             {
@@ -284,19 +295,6 @@ public:
                     me->CreateConversation(1868);
                 });
 
-            }
-            else if (!_introDone && me->IsWithinDistInMap(who, 20.0f))
-            {
-                _introDone = true;
-                who->ToPlayer()->KilledMonsterCredit(105805);
-                _functions.AddDelayedEvent(3000, [this]() -> void
-                {
-                    Talk(0);
-                    if (Creature* targ = me->FindNearestCreature(102792, 70.0f, true))
-                        if (CreatureAI* ai = me->AI())
-                            ai->AttackStart(targ);
-                });
-                firstbattle = true;
             }
         }
 

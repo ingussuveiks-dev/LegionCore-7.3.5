@@ -25,7 +25,10 @@ for role,pending in [('npc_erunak_stonespeaker',0x5b),('npc_adel_waterspeaker',0
     life=instructions('?UpdateLifecycle'+suffix)
     if role=='npc_erunak_stonespeaker':
         sites=retained['guard']['retained']['sites']
-        if sites(life,'?Update@FunctionProcessor@@'):
+        if any(name.startswith('?AcceptLowerEntry'+suffix) for name in n['symbols']):
+            from sharasdal_erunak_entry_pe import verify_lifecycle
+            verify_lifecycle(n)
+        elif sites(life,'?Update@FunctionProcessor@@'):
             # The Erunak intro queue now owns its captures. Retain the exact
             # old recovery arguments before the new lifecycle-clock tail call.
             assert [(x.mnemonic,x.op_str) for x in life[3:8]]==[
