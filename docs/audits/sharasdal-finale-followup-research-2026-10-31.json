@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-31",
+  "status": "OPEN boss/claim mechanics research; voice-budget repair is independently deployed fedcfe0ad/d51abc0a2",
+  "local_reference_order": "Local26972/Hotfix/World/scripts/native dispatch first. Current local Trinity has no matching script; targeted src/server/scripts searches at7f2b7dc9c2165d2608742473a931f55b1c1a753a,c2d61e05cf3dc555608e6b2a06772c27d207548c,ccbe4404f1806f047c009d14ed1dea9806dd5736 each return0 Sharasdal/Zithreen/Zitrin matches. Local DestinyCore2d631f4e79b1d1dd0bcc674f97436ae4785700e0 identified through subsequent GitHub search is a later core reference only: its shared GO script bool/raw this-go-unit5s captures/broadcast credit/equip209685+scene209684/manual event are not a compatible lifecycle fix and were not copied.",
+  "github": [
+    {
+      "source": "https://github.com/dufernst/LegionCore-7.3.5/blob/9222216e0dda0708ae53e6e6f6b07db7d65ba46f/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+      "local_file_sha256": "3E706F89B4AFB213E61037657667D858BA98818F6CFCEE1C7934BBFF66AD171F"
+    },
+    {
+      "source": "https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/blob/fed58f79c498521836612acd12009e9fa9e60e31/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+      "local_file_sha256": "B9ADA453805D2EFDE0CFAD1B3A04643C8C14B18E348C84F135CBCA61C263DB33"
+    },
+    {
+      "source": "https://github.com/Titans-Project/LegionCore-Reforged/blob/6ff03c46b5a1ff0d5bc916bbe3b39ea9c8c03ffe/src/server/scripts/Legion/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+      "local_file_sha256": "B9ADA453805D2EFDE0CFAD1B3A04643C8C14B18E348C84F135CBCA61C263DB33"
+    }
+  ],
+  "donor_result": "Full three files fetched through GitHub connector; whole Lady and pickup classes reviewed. All retain the same nearest-player50397/unguarded killer1923 and unsafe activation AddItem/delete/direct-completion paths. No missing surrender/claim implementation was found in these files. Global Zithreen and targeted Ashamane/Trinity search responses retained locally; unrelated addon/lore/retail guide results were not used as native technical evidence.",
+  "native_mechanics": "New typed matching26972/readonlyHotfix scan resolves actual209552 Boss Death Conversation: sole effect219/1906/target18 caster destination.209743 Portal Home Conversation likewise219/1923/target18. These distinguish defeat from post-pickup without guessing IDs.209683 native destination jump42/misc125,200 triggers209684;20968415s scene/stun/event and209685 existing-item equip/event/105787/push ability were already traced. Current EffectJumpDest only normalizes empty self-arrival targets for scoped Skyhold/Stromkar; Sharasdal's native209683 may need the same self-target analysis when restoring its actual pickup route. Do not claim its present GO calls that spell: it currently jumps straight to209684.",
+  "rejected_lookalikes": "209702 Boss04 Defeated Convo actually points1918, not1906.209824 Grabbing Smash triggers209825 quest42061 and summon105846/209830, so these names do not establish Lady's final blow.209796 Ping NPCs for Defeat is dummy3 with no local World binding/condition/link or spell_shaman implementation found. Name alone is not a producer. Selected closure contains missing210446 from an unrelated lookalike; no spell replacement or suppression made.",
+  "world": "Exact104856 template has empty AIName/npc_lady_zitrin,flags0/flags2=35653632/no mechanic immunity or extra flags; no spawn/template addon or source0/-362091/-362095 SAI rows and no alternate World205/92/50397 producer. Selected209796/209668/209683/209684/209685/209743 have no World script binding/source13 condition/linked-spell rows. Initial query syntax used bare * after a label and failed1064; corrected qualified aliases/full EOF pass. No server DBErrors appended; failed read evidence remains OPEN.",
+  "voice_budget_status": "Native voice lifetimes alone are repaired:1906 actual28788ms and1923 actual28727ms, preserving9 line/6 actor payloads and offsets. Ten native voice files decoded, not listened to. See sharasdal-finale-voice-duration audit. Original donor/caller/surrender/loot/scene/return issues are not resolved by this data change.",
+  "evidence": [
+    ".codex/sharasdal-boss-trinity-history-open-context-2026-10-31",
+    ".codex/sharasdal-boss-donors-open-context-2026-10-31",
+    ".codex/sharasdal-boss-defeat-mechanics-open-context-2026-10-31",
+    ".codex/sharasdal-boss-defeat-mechanics2-open-context-2026-10-31",
+    ".codex/sharasdal-boss-finale-mechanics-native-open-context-2026-10-31",
+    ".codex/sharasdal-boss-finale-mechanics-native2-open-context-2026-10-31",
+    ".codex/sharasdal-boss-finale-links-open-context-2026-10-31"
+  ],
+  "next": "First retain only exact real362095 death/native loot then owner/pet/guardian/known upper3 companion victory with original40341/native50397 acknowledgement; ignore early illusion362091 and remove the unsafe premature1923 callback. Keep historical surrender/1906 presentation explicitly OPEN rather than inventing threshold/animation. Then restore actual249342 native loot/storage/full bags/equip/scene/outro/return using the real boss receipt. No code-coupled SQL in live updater until matching executable ready. Preserve original routes and all retained tests/source certificates; user owns client checks/reset3 consumed.",
+  "runtime": "Canonical remains FA95D2DB/World31_02 RELEASED; own7884 cleanly shut down0, no task servers retained. No new crashes/appended server errors/DBErrors; mixed6090LINK2 unchanged/unresolved. Open research excluded from all fixed archives."
+}
