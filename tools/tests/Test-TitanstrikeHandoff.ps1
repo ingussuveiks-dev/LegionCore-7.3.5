@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[string]$OutputDirectory='')
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$out="$repo/build-extractors/runtime-test/titanstrike-handoff"
+$out=if($OutputDirectory){[IO.Path]::GetFullPath($OutputDirectory)}else{"$repo/build-extractors/runtime-test/titanstrike-handoff"}
 New-Item -ItemType Directory -Force $out | Out-Null
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_23_titanstrike_aftermath_handoff.sql" -Raw
 $original="INSERT INTO saved_smart(entryorguid,source_type,id,event_type,event_chance,event_flags,action_type,action_param1,action_param2,target_type,target_param1,comment) SELECT 106730,9,6,0,100,1,205,92,50997,21,100,'Pinned pre23 handoff' WHERE NOT EXISTS(SELECT 1 FROM saved_smart WHERE entryorguid=106730 AND source_type=9 AND id=6);"
@@ -99,7 +99,7 @@ $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
 [IO.File]::WriteAllText("$out/CreditAction.inc",(Section $source '        case SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA:' '        case SMART_ACTION_SUMMON_CONVERSATION:'))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($Baseline){'/DBASELINE'}else{''}
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/TitanstrikeHandoffTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi $mode /I`"$out`" `"$PSScriptRoot/TitanstrikeHandoffTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Hati handoff regression failed'}
 if($VerifyReleaseBinary){$previous=$env:PYTHONPATH;try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_titanstrike_handoff_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical handoff PE verification failed'}}finally{$env:PYTHONPATH=$previous}}
 "PASS: guarded handoff23 changes only early flag/50997 ownership; native pose/overcharge/list/death preserved, idempotent and$($variants.Count) custom variants retained"

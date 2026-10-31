@@ -61,6 +61,7 @@ int main(int argc, char** argv)
         baseline.entry = identity;
         baseline.casterGUID = caster.guid;
         baseline.playing.clear();
+        currentTime = 100;
         assert(baseline.Start(&caster) && baseline.deadline == baselineDeadline);
         currentTime = 100;
         assert(!baseline.CanNeverSee2(&viewer));
@@ -68,7 +69,7 @@ int main(int argc, char** argv)
         assert(!baseline.CanNeverSee2(&viewer));
         ++currentTime;
         baseline.Update(1);
-        assert(!baseline.removed && baseline.CanNeverSee2(&viewer));
+        assert(baseline.removed && baseline.CanNeverSee2(&viewer));
         assert(baseline.deadline < requiredEnd);
         if (identity == 504)
             assert(baseline.deadline < store.lines.back().textId);
@@ -81,6 +82,7 @@ int main(int argc, char** argv)
         fixed.entry = identity;
         fixed.casterGUID = caster.guid;
         fixed.playing.clear();
+        currentTime = 100000;
         assert(fixed.Start(&caster));
         assert(fixed.deadline >= requiredEnd + 5000);
         assert(fixed.deadline == fixedDeadline && fixed.lifetime == fixedDeadline);
@@ -134,5 +136,5 @@ int main(int argc, char** argv)
         store.lines.clear();
         assert(!missing.Start(&caster));
     }
-    std::cout << "PASS: actual498/504 creature/line factory-budget/visibility/update bodies reproduce13601/20101ms per-player truncation.35300/54550ms retain29533/48286ms native conservative voice/gap budgets plus5000ms. Seven line/four actor payloads, late viewers, missing actors/retry and scope cleanup preserved. Controlled map/clock/remove; existing6000ms boss despawn, rapid dialogue ordering, NPC-caster persistence and client playback are not repaired or simulated.\n";
+    std::cout << "PASS: actual498/504 creature/line factory-budget/visibility/update bodies reproduce13601/20101ms per-player truncation.35300/54550ms retain29533/48286ms native conservative voice/gap budgets plus5000ms. Seven line/four actor payloads, admitted late viewers, missing actors/retry and scope cleanup preserved with finite NPC window/viewer cleanup. Controlled map/clock/remove; existing6000ms boss despawn, rapid dialogue ordering and client playback are not simulated.\n";
 }

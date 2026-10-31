@@ -42,6 +42,12 @@ Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/sharasda
 [IO.File]::WriteAllText("$out/Path.inc",(Block (Block $source 'namespace SharasdalWall') 'uint32 Path('))
 & "$PSScriptRoot/Test-SharasdalFinaleVoice.ps1" -PrepareHost -OutputDirectory $out
 if(!$?){throw 'Native conversation host preparation failed'}
+if($Baseline -and (Get-Content "$repo/src/server/game/Entities/Conversation/Conversation.cpp" -Raw).Contains('_npcCaster')){
+ # Preserve the historical NPC persistence counterfactual only in this old
+ # actor baseline. Current upper/native NPC suites use the repaired core.
+ & "$PSScriptRoot/Test-ConversationNpcLifetime.ps1" -Baseline -PrepareHost -OutputDirectory $out
+ if(!$?){throw 'Pinned pre-NPC-cleanup baseline host failed'}
+}
 $voice=Get-Content "$PSScriptRoot/SharasdalFinaleVoiceTest.cpp" -Raw
 [IO.File]::WriteAllText("$out/VoiceHost.inc",$voice.Substring(0,$voice.IndexOf('static void Load(')))
 $entry=Get-Content "$PSScriptRoot/SharasdalErunakEntryTest.cpp" -Raw

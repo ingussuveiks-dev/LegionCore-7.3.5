@@ -52,7 +52,9 @@ assert any(entry.op_str == 'edx, 0x38' for entry in allow), 'Actual health field
 assert any(entry.mnemonic == 'cmp' and entry.op_str == 'rax, 1' and allow[index + 1].mnemonic == 'jbe'
            for index, entry in enumerate(allow[:-1])), 'Actual1HP surrender no longer blocks combat speech'
 update = instructions(update_name)
-assert any(entry.mnemonic == 'lea' and entry.op_str == 'rdx, [rbx + 0x500]' for entry in update), 'Update no longer compares captured opponent identity'
-assert any(entry.mnemonic == 'movups' and '[rsi + 0x500]' in entry.op_str
+from conversation_npc_lifetime_pe import verify as verify_npc_lifetime
+verify_npc_lifetime(dict(native, instructions=instructions))
+assert any(entry.mnemonic == 'lea' and entry.op_str == 'rdx, [rbx + 0x508]' for entry in update), 'Update no longer compares captured opponent identity after appended native lifetime fields'
+assert any(entry.mnemonic == 'movups' and '[rsi + 0x508]' in entry.op_str
            for entry in instructions(create_name)), 'Creator does not retain the actual opponent GUID'
 print('PASS: deployed combat219 hooks validate native2152/2153/2154, gate Thorim1609/1099/2 before defeat48020/1HP, preserve other casters/default effects and native destinations, install Story Update to retire stale combat dialogue while retaining base cleanup')

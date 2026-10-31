@@ -127,6 +127,8 @@ bool Conversation::CreateConversation(ObjectGuid::LowType guidlow, uint32 trigge
 
     SetUInt32Value(CONVERSATION_FIELD_LAST_LINE_END_TIME, duration);
     SetDuration(duration);
+    _createdAt = getMSTime();
+    _npcCaster = !caster->IsPlayer();
     // setActive(true);
 
     if (!GetMap()->AddToMap(this))
@@ -149,12 +151,27 @@ void Conversation::Update(uint32 p_time)
 
     if (GetDuration())
     {
+        uint32 const deadline = GetUInt32Value(CONVERSATION_FIELD_LAST_LINE_END_TIME);
+        if (_npcCaster)
+        {
+            uint32 const now = getMSTime();
+            if (now - _createdAt <= deadline)
+                return;
+            // NPCs never acquire a Player playback key. Close their native
+            // admission window, but let every already admitted viewer finish
+            // their own full published clip before removing this one-shot.
+            for (auto const& viewer : playing)
+                if (now - viewer.second <= deadline)
+                    return;
+            Remove();
+            return;
+        }
         auto data = playing.find(casterGUID);
         if (data == playing.end())
             return;
        
         uint32 const dur = getMSTime() - data->second;
-        if (dur > GetUInt32Value(CONVERSATION_FIELD_LAST_LINE_END_TIME))
+        if (dur > deadline)
             expired = true;
 
         if (expired)
@@ -330,13 +347,16 @@ bool Conversation::CanNeverSee2(WorldObject const* seer) const
     if (!seer->IsPlayer())
         return true;
 
+    uint32 const now = getMSTime();
     auto data = playing.find(seer->GetGUID());
     if (data == playing.end())
     {
-        const_cast<Conversation*>(this)->playing[seer->GetGUID()] = getMSTime();
+        if (_npcCaster && GetDuration() && now - _createdAt > GetUInt32Value(CONVERSATION_FIELD_LAST_LINE_END_TIME))
+            return true;
+        const_cast<Conversation*>(this)->playing[seer->GetGUID()] = now;
         return false;
     }
-    uint32 const dur = getMSTime() - data->second;
+    uint32 const dur = now - data->second;
     return dur > GetUInt32Value(CONVERSATION_FIELD_LAST_LINE_END_TIME);
 }
 

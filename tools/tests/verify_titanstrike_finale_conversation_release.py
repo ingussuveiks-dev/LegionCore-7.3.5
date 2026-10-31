@@ -21,8 +21,6 @@ viewer = instructions(viewer_name)
 assert native['symbol']('?GetUInt32Value@Object@@') in native['calls'](viewer_name), 'Per-viewer deadline read missing'
 assert any(entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rdx + 0x16], 4' for entry in viewer), 'Non-player visibility rejection changed'
 assert any(entry.mnemonic == 'mov' and entry.op_str == 'edx, 0xc' for entry in viewer), 'Per-viewer comparison reads wrong field'
-comparisons = [index for index, entry in enumerate(viewer) if entry.mnemonic == 'cmp' and entry.op_str == 'edi, eax']
-assert any(viewer[index + 1].mnemonic == 'seta' and
-           any(entry.mnemonic == 'sub' and entry.op_str == 'edi, ebx' for entry in viewer[max(0, index - 8):index])
-           for index in comparisons), 'Per-viewer elapsed/deadline comparison changed'
+from conversation_npc_lifetime_pe import verify_viewer
+verify_viewer(dict(native, instructions=instructions))
 print('PASS: actual Release sums native actor duration field32 at stride36 and rejects non-player viewers; real per-player elapsed time consumes last-line field12 independently of NPC-caster expiry')

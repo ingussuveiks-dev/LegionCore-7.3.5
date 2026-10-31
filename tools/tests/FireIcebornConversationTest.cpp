@@ -46,6 +46,7 @@ struct ConversationDynamicFieldLines {uint32 id,textId,unk1,unk2;};
 uint32 currentTime=0;uint32 getMSTime(){return currentTime;}
 struct Conversation {
     uint32 entry=786,deadline=0,lifetime=0,casterGUID=42;bool questExpired=false,removed=false;
+    uint32 _createdAt=0;bool _npcCaster=false;
     std::map<uint32,uint32> playing;std::set<uint32> personal;Position createdAt;
     void AddPlayerInPersonnalVisibilityList(uint32 id){personal.insert(id);}
     bool CreateConversation(uint32,uint32,Unit*,void const*,Position const&);
@@ -56,7 +57,7 @@ struct Conversation {
     void SetLine(ConversationDynamicFieldLines* value,uint32 index,bool){lines[index]=*value;}
     void SetUInt32Value(uint32 field,uint32 value){assert(field==7);deadline=value;}
     uint32 GetUInt32Value(uint32 field)const{assert(field==7);return deadline;}
-    void SetDuration(int32 value){assert(value>0);lifetime=value;}uint32 GetDuration(){return lifetime;}
+    void SetDuration(int32 value){assert(value>0);lifetime=value;}uint32 GetDuration()const{return lifetime;}
     bool IsQuestObjectExpired(){return questExpired;}void Remove(){removed=true;}
     bool GenerateDynamicFieldData(uint32,WorldObject*,uint32&);
     bool CanNeverSee2(WorldObject const*)const;
@@ -96,7 +97,7 @@ int main(int argc,char** argv){
  _set_abort_behavior(0,_CALL_REPORTFAULT);assert(argc==3);WorldObject owner,peer,unrelated,pet;peer.guid=43;unrelated.guid=44;pet.player=false;pet.guid=7;
  constexpr uint32 required=48827,repairedLifetime=53827;
  Load(argv[1],6000);currentTime=100;auto old=Cast(pet);assert(old->casterGUID==7&&old->personal.empty()&&old->deadline==11000&&old->actors.size()==1&&old->lines.size()==4);
- assert(!old->CanNeverSee2(&owner)&&old->CanNeverSee2(&pet)&&old->playing.count(42)&&!old->playing.count(7));currentTime+=100000;old->Update(1);assert(!old->removed);
+ assert(!old->CanNeverSee2(&owner)&&old->CanNeverSee2(&pet)&&old->playing.count(42)&&!old->playing.count(7));currentTime+=100000;old->Update(1);assert(old->removed);
  currentTime=100;auto shortPlayer=Cast(owner);assert(!shortPlayer->CanNeverSee2(&owner));currentTime+=11001;shortPlayer->Update(1);assert(shortPlayer->removed&&11000<14723&&11000<store.lines[2].textId&&11000<store.lines[3].textId);
  Load(argv[2],required);currentTime=100;auto fixed=Cast(owner);assert(fixed->casterGUID==42&&fixed->personal==std::set<uint32>{42}&&fixed->deadline==repairedLifetime&&fixed->lifetime==required+5000&&fixed->actors.size()==1&&fixed->lines.size()==4);
  assert(!fixed->CanNeverSee2(&owner));currentTime+=11001;fixed->Update(1);assert(!fixed->removed);currentTime=100+required;fixed->Update(1);assert(!fixed->removed);currentTime=100+repairedLifetime;fixed->Update(1);assert(!fixed->removed);++currentTime;fixed->Update(1);assert(fixed->removed);
@@ -106,5 +107,5 @@ int main(int argc,char** argv){
  currentTime=100;auto expired=Cast(owner);expired->questExpired=true;expired->Update(1);assert(expired->removed);
  live.clear();{Spell spell;spell.caster=&owner;spell.effectHandleMode=0;spell.EffectSummonConversation(0);assert(live.empty());spell.effectHandleMode=1;spell.info.effect.MiscValue=0;spell.EffectSummonConversation(0);assert(live.empty());}
  currentTime=100;auto replay=Cast(owner);assert(!replay->CanNeverSee2(&owner)&&replay->deadline==repairedLifetime);
- std::cout<<"PASS actual native219/786 payload/visibility/playback/update: original pet cannot start own expiry; original Player11000ms expires before first native voice end14723ms and last two offsets. Repaired Player/group personal list,original4 lines+Lyandra actor,48827ms audio/gap+5000ms lifetime,strict expiry,missing definitions/mode/scope cleanup/replay retained. Group-first still awaits owner visibility as native; map/outer delivery/client scheduling remain controlled or separate.\n";
+ std::cout<<"PASS actual native219/786 payload/visibility/playback/update: pet has no Player personal list and now expires through finite native window/viewer cleanup; original Player11000ms expires before first native voice end14723ms and last two offsets. Repaired Player/group personal list,original4 lines+Lyandra actor,48827ms audio/gap+5000ms lifetime,strict expiry,missing definitions/mode/scope cleanup/replay retained. Group-first still awaits owner visibility as native; map/outer delivery/client scheduling remain controlled or separate.\n";
 }

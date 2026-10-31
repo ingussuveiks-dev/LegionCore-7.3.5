@@ -43,6 +43,7 @@ struct ConversationDynamicFieldLines {uint32 id,textId,unk1,unk2;};
 uint32 currentTime=0;uint32 getMSTime(){return currentTime;}
 struct Conversation {
     uint32 entry=1072,deadline=0,lifetime=0,casterGUID=42;bool questExpired=false,removed=false;
+    uint32 _createdAt=0;bool _npcCaster=false;
     std::map<uint32,uint32> playing{{42,100}};
     std::map<uint32,ConversationDynamicFieldCreatures> creatures;std::map<uint32,ConversationDynamicFieldLines> lines;
 #ifdef MARKSMANSHIP_INTERROGATION_TEST
@@ -55,7 +56,7 @@ struct Conversation {
     void SetLine(ConversationDynamicFieldLines* value,uint32 index,bool){lines[index]=*value;}
     void SetUInt32Value(uint32 field,uint32 value){assert(field==7);deadline=value;}
     uint32 GetUInt32Value(uint32 field)const{assert(field==7);return deadline;}
-    void SetDuration(int32 value){assert(value>0);lifetime=value;}uint32 GetDuration(){return lifetime;}
+    void SetDuration(int32 value){assert(value>0);lifetime=value;}uint32 GetDuration()const{return lifetime;}
     bool IsQuestObjectExpired(){return questExpired;}void Remove(){removed=true;}
     bool GenerateDynamicFieldData(uint32,WorldObject*,uint32&);
     bool CanNeverSee2(WorldObject const*)const;
@@ -105,9 +106,9 @@ int main(int argc,char** argv){
     for(uint32 missing:{100397u,100398u}){Unit unavailable;unavailable.nearby.erase(missing);Conversation rejected;assert(!rejected.Start(&unavailable));}
     {Conversation cleanup;assert(cleanup.Start(&finder));cleanup.questExpired=true;currentTime=101;cleanup.Update(1);assert(cleanup.removed);}
     {Conversation replay;assert(replay.Start(&finder)&&replay.deadline==fixedDeadline);}
-    {WorldObject petCaster;petCaster.player=false;petCaster.guid=7;Conversation misowned;misowned.casterGUID=7;misowned.playing.clear();assert(misowned.Start(&petCaster));
+    {currentTime=100;WorldObject petCaster;petCaster.player=false;petCaster.guid=7;Conversation misowned;misowned.casterGUID=7;misowned.playing.clear();assert(misowned.Start(&petCaster));
         currentTime=100;assert(!misowned.CanNeverSee2(&finder)&&misowned.CanNeverSee2(&petCaster)&&!misowned.playing.count(7));
-        currentTime=100+fixedDeadline+1;misowned.Update(1);assert(!misowned.removed);
+        currentTime=100+fixedDeadline+1;misowned.Update(1);assert(misowned.removed);
         Conversation owned;owned.playing.clear();assert(owned.Start(&finder));currentTime=100;assert(!owned.CanNeverSee2(&finder)&&owned.playing.count(42));
         currentTime=100+fixedDeadline+1;owned.Update(1);assert(owned.removed);
     }

@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[string]$OutputDirectory='')
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$out="$repo/build-extractors/runtime-test/titanstrike-combat-dialogue"
+$out=if($OutputDirectory){[IO.Path]::GetFullPath($OutputDirectory)}else{"$repo/build-extractors/runtime-test/titanstrike-combat-dialogue"}
 New-Item -ItemType Directory -Force $out | Out-Null
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_25_titanstrike_combat_dialogue.sql" -Raw
 $reset='DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart; DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_actor; DELETE FROM spell_script_names;'
@@ -62,7 +62,7 @@ $source=Get-Content "$repo/src/server/game/Entities/Conversation/Conversation.cp
 [IO.File]::WriteAllText("$out/BaseUpdate.inc",(Section $source 'void Conversation::Update(uint32 p_time)' 'void Conversation::Remove()'))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($Baseline){'/DBASELINE'}else{''}
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/TitanstrikeCombatDialogueTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi $mode /I`"$out`" `"$PSScriptRoot/TitanstrikeCombatDialogueTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native combat-dialogue regression failed'}
 $previous=$env:LEGION_DIALOGUE_CONFIG
 try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile TitanstrikeFinaleCatalog.cpp -ProbeName TitanstrikeFinaleCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log"}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}

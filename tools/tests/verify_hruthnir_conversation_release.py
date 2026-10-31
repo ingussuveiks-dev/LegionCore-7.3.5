@@ -41,5 +41,5 @@ assert visibility[position + 1].mnemonic == 'test' and visibility[position + 1].
 assert visibility[position + 2].mnemonic == 'jne'
 rejection = next(entry for entry in visibility if entry.address == visibility[position + 2].operands[0].imm)
 assert rejection.mnemonic == 'xor' and rejection.op_str == 'al, al', 'Expired viewer does not return false from real visibility admission'
-print('PASS: actual Release creature-bound slot duration field32/stride40 accumulates into factory budget; native30s fallback/5s padding, per-player deadline and scope-expiry consumers verified; no NPC-caster cleanup repair asserted')
+print('PASS: actual Release creature-bound slot duration field32/stride40 accumulates into factory budget; native30s fallback/5s padding, per-player deadline and scope-expiry consumers verified')
 print('PASS: constructed Conversation primary slot0x168 selects CanNeverSee2; actual WorldObject visibility dispatch passes obj/seer and returns false on an expired viewer')

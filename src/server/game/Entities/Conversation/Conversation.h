@@ -122,5 +122,7 @@ class TC_GAME_API Conversation : public WorldObject, public GridObject<Conversat
         ObjectGuid casterGUID;
 
         std::map<ObjectGuid, uint32> playing;
+        uint32 _createdAt = 0;
+        bool _npcCaster = false;
 };
 #endif

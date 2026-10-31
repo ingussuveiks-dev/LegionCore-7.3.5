@@ -54,6 +54,7 @@ int main(int argc, char** argv)
             repaired.entry = identity;
             repaired.casterGUID = caster.guid;
             repaired.playing.clear();
+            currentTime = 1000000;
             assert(repaired.Start(&caster));
             assert(repaired.deadline >= requiredEnd + 5000);
             assert(repaired.deadline == repairedDeadline && repaired.lifetime == repairedDeadline);
@@ -73,6 +74,13 @@ int main(int argc, char** argv)
             }
             currentTime = 1000000;
             assert(!repaired.CanNeverSee2(&viewer));
+            Unit lateViewer;
+            lateViewer.guid = 43;
+            if (npcCaster)
+            {
+                currentTime += 1000;
+                assert(!repaired.CanNeverSee2(&lateViewer));
+            }
             for (uint32 checkpoint : {originalDeadline + 1, store.lines.back().textId, requiredEnd, requiredEnd + 5000, repairedDeadline})
             {
                 currentTime = 1000000 + checkpoint;
@@ -84,9 +92,13 @@ int main(int argc, char** argv)
             assert(repaired.removed == !npcCaster && repaired.CanNeverSee2(&viewer));
             if (npcCaster)
             {
-                Unit lateViewer;
-                lateViewer.guid = 43;
                 assert(!repaired.CanNeverSee2(&lateViewer));
+                Unit tooLate;
+                tooLate.guid = 44;
+                assert(repaired.CanNeverSee2(&tooLate));
+                currentTime += 1000;
+                repaired.Update(1);
+                assert(repaired.removed && repaired.CanNeverSee2(&lateViewer));
             }
             repaired.questExpired = true;
             repaired.Update(1);

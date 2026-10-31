@@ -44,6 +44,7 @@ int main(int argc, char** argv)
     baseline.entry = 497;
     baseline.casterGUID = caster.guid;
     baseline.playing.clear();
+    currentTime = 100;
     assert(baseline.Start(&caster) && baseline.deadline == 35000);
     currentTime = 100;
     assert(!baseline.CanNeverSee2(&viewer));
@@ -51,7 +52,7 @@ int main(int argc, char** argv)
     assert(!baseline.CanNeverSee2(&viewer));
     ++currentTime;
     baseline.Update(1);
-    assert(!baseline.removed && baseline.CanNeverSee2(&viewer));
+    assert(baseline.removed && baseline.CanNeverSee2(&viewer));
     assert(baseline.deadline < store.lines[8].textId && baseline.deadline < store.lines[9].textId);
     store.creatures = repairedCreatures;
 #ifdef BASELINE
@@ -61,6 +62,7 @@ int main(int argc, char** argv)
     repaired.entry = 497;
     repaired.casterGUID = caster.guid;
     repaired.playing.clear();
+    currentTime = 100000;
     assert(repaired.Start(&caster));
     assert(repaired.deadline >= 67992 + 5000);
     assert(repaired.deadline == 73000 && repaired.lifetime == 73000);
@@ -118,5 +120,5 @@ int main(int argc, char** argv)
     store.creatures = repairedCreatures;
     store.lines.clear();
     assert(!missing.Start(&caster));
-    std::cout << "PASS: actual497 generation/lifetime/visibility/update bodies reproduce35001ms per-player cutoff before40000/41000 lines;73000ms retains46672ms absolute and67992ms conservative sequential native voice/gap budgets plus5000ms. All3 actor/10 line payloads, player sentinel, independent late viewer, missing actor retry and scope cleanup preserved. NPC-caster object persistence remains unchanged; controlled lookup/clock/remove, not client playback.\n";
+    std::cout << "PASS: actual497 generation/lifetime/visibility/update bodies reproduce35001ms per-player cutoff before40000/41000 lines;73000ms retains46672ms absolute and67992ms conservative sequential native voice/gap budgets plus5000ms. All3 actor/10 line payloads, player sentinel, independent admitted late viewer, missing actor retry and scope cleanup preserved; finite NPC cleanup follows native window/viewer deadlines. Controlled lookup/clock/remove, not client playback.\n";
 }

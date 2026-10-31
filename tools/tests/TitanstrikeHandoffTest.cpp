@@ -109,13 +109,14 @@ uint32 payloadDuration=73800;
 std::vector<struct Conversation*> created;
 struct Conversation:WorldObject {
     uint32 duration=0,deadline=0;
+    uint32 _createdAt=0;bool _npcCaster=false;
     ObjectGuid casterGUID;
     std::map<ObjectGuid,uint32> playing;
     Conversation(){inWorld=false;}
     virtual ~Conversation()=default;
     virtual void Update(uint32){}
     ObjectGuid GetCasterGUID(){return casterGUID;}
-    int32 GetDuration(){return int32(duration);}
+    int32 GetDuration()const{return int32(duration);}
     void SetDuration(int32 value){duration=value;}
     uint32 GetUInt32Value(uint32 field) const{assert(field==7);return deadline;}
     void SetUInt32Value(uint32 field,uint32 value){assert(field==7);deadline=value;}

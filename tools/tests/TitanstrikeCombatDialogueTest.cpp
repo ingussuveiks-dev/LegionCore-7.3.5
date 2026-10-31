@@ -46,6 +46,7 @@ std::vector<struct Conversation*> created;
 struct Conversation:WorldObject {
     bool expired=false;
     uint32 duration=12000,casterGUID=3,deadline=12000,identity=0;
+    uint32 _createdAt=0;bool _npcCaster=false;
     Position position;
     std::map<uint32,uint32> playing;
     virtual ~Conversation()=default;
@@ -57,7 +58,7 @@ struct Conversation:WorldObject {
     void Remove(){inWorld=false;}
     bool CreateConversation(uint64,uint32 entry,Creature*,SpellInfo const*,Position const& target){
         if(!createOk)return false;
-        identity=entry;position=target;created.push_back(this);return true;
+        identity=entry;position=target;_createdAt=getMSTime();_npcCaster=true;created.push_back(this);return true;
     }
 };
 Creature* activeActor=nullptr;
@@ -110,6 +111,8 @@ int main()
     createOk=true;TitanstrikeCombatDialogue::Create(&actor,&info,Position{});assert(created.size()==1);
     ++boss.guid;created[0]->Update(1);assert(!created[0]->IsInWorld());
     scenario.achievement.progress.clear();scenario.achievement.progress[30091]={1};assert(TitanstrikeCombatDialogue::Allowed(&actor));
+    Clear();actor=Creature{};boss=Creature{};boss.entry=106730;actor.boss=&boss;activeActor=&actor;
+    TitanstrikeCombatDialogue::Create(&actor,&info,Position{});assert(created.size()==1);timeNow=12001;created[0]->Update(1);assert(!created[0]->IsInWorld());
     Clear();activeActor=&actor;
 #ifdef BASELINE
     Conversation running;

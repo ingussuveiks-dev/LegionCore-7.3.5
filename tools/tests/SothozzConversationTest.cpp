@@ -46,6 +46,7 @@ struct ConversationDynamicFieldLines {uint32 id,textId,unk1,unk2;};
 uint32 currentTime=0;uint32 getMSTime(){return currentTime;}
 struct Conversation {
     uint32 entry=1338,deadline=0,lifetime=0,casterGUID=42;bool questExpired=false,removed=false;
+    uint32 _createdAt=0;bool _npcCaster=false;
     std::map<uint32,uint32> playing;std::set<uint32> personal;Position createdAt;
     void AddPlayerInPersonnalVisibilityList(uint32 id){personal.insert(id);}
     bool CreateConversation(uint32,uint32,Unit*,void const*,Position const&);
@@ -56,7 +57,7 @@ struct Conversation {
     void SetLine(ConversationDynamicFieldLines* value,uint32 index,bool){lines[index]=*value;}
     void SetUInt32Value(uint32 field,uint32 value){assert(field==7);deadline=value;}
     uint32 GetUInt32Value(uint32 field)const{assert(field==7);return deadline;}
-    void SetDuration(int32 value){assert(value>0);lifetime=value;}uint32 GetDuration(){return lifetime;}
+    void SetDuration(int32 value){assert(value>0);lifetime=value;}uint32 GetDuration()const{return lifetime;}
     bool IsQuestObjectExpired(){return questExpired;}void Remove(){removed=true;}
     bool GenerateDynamicFieldData(uint32,WorldObject*,uint32&);
     bool CanNeverSee2(WorldObject const*)const;
@@ -89,7 +90,7 @@ int main(int argc,char** argv){
  assert(store.actors.size()==1&&store.actors[0].creatureId==103144&&store.actors[0].actorId==51657&&store.actors[0].duration==10400&&store.lines.size()==1&&store.lines[0].id==3114);
  WorldObject owner,peer,unrelated,pet;peer.guid=43;unrelated.guid=44;pet.player=false;pet.guid=7;
  currentTime=100;auto old=Cast(pet);assert(old->casterGUID==7&&old->personal.empty()&&old->createdAt.x==7&&old->deadline==15400&&old->actors.size()==1&&old->lines.size()==1);
- assert(!old->CanNeverSee2(&owner)&&old->CanNeverSee2(&pet)&&old->playing.count(42)&&!old->playing.count(7));currentTime+=15401;old->Update(1);assert(!old->removed); // native non-Player caster can create publicly, but cannot acquire its own playback key
+ assert(!old->CanNeverSee2(&owner)&&old->CanNeverSee2(&pet)&&old->playing.count(42)&&!old->playing.count(7));currentTime+=15401;old->Update(1);assert(old->removed); // NPC native admission/viewer deadlines now permit finite cleanup.
  currentTime=100;auto fixed=Cast(owner);assert(fixed->casterGUID==42&&fixed->personal==std::set<uint32>{42}&&fixed->createdAt.x==42&&fixed->deadline==15400);
  assert(!fixed->CanNeverSee2(&owner));currentTime+=15400;fixed->Update(1);assert(!fixed->removed);++currentTime;fixed->Update(1);assert(fixed->removed);
  GroupReference second{&peer,nullptr},first{&owner,&second};Group group{&first};owner.group=&group;
@@ -99,6 +100,6 @@ int main(int argc,char** argv){
  currentTime=100;auto expired=Cast(owner);expired->questExpired=true;expired->Update(1);assert(expired->removed);
  live.clear();{Spell spell;spell.caster=&owner;spell.effectHandleMode=0;spell.EffectSummonConversation(0);assert(live.empty());spell.effectHandleMode=1;spell.info.effect.MiscValue=0;spell.EffectSummonConversation(0);assert(live.empty());}
  currentTime=100;auto replay=Cast(owner);assert(!replay->CanNeverSee2(&owner)&&replay->deadline==15400);
- std::cout<<"PASS native effect219 ->1338 visibility/payload/lifetime/CanNeverSee2/Update: pet creation succeeds without Player/group personal list, Player seers cannot register pet caster playback and expiry stalls; actual Player caster has native owner/group list, Thoradin51657/line3114,15400ms lifetime and ordinary owner-observed expiry. Missing definitions/mode/zero-entry/quest-scope cleanup/replay retained. Map creation/scope inheritance/visibility delivery and client rendering remain controlled or separate.\n";
+ std::cout<<"PASS native effect219 ->1338 visibility/payload/lifetime/CanNeverSee2/Update: pet creation has no Player/group personal list but now retires after its native viewer window; actual Player caster retains native owner/group list, Thoradin51657/line3114,15400ms lifetime and ordinary owner-observed expiry. Missing definitions/mode/zero-entry/quest-scope cleanup/replay retained. Map creation/scope inheritance/visibility delivery and client rendering remain controlled or separate.\n";
  return 0;
 }

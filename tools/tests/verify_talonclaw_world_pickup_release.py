@@ -6,7 +6,7 @@ from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_IMM, CS_OP_MEM, CS_AC_RE
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_talonclaw_world_model_release.py')))
 native = previous['native']
-layout = native['args'].release.parents[1] / 'runtime-test/talonclaw-world-pickup/layout.tsv'
+layout = Path(__file__).resolve().parents[2] / 'build-extractors/runtime-test/talonclaw-world-pickup/layout.tsv'
 tag, source_offset, size = layout.read_text(encoding='utf-8-sig').strip().split('\t')
 assert tag == 'SUMMONER_OFFSET' and int(size) == 16
 source_offset = int(source_offset)

@@ -46,6 +46,7 @@ struct ConversationDynamicFieldLines {uint32 id,textId,unk1,unk2;};
 uint32 currentTime=0;uint32 getMSTime(){return currentTime;}
 struct Conversation {
     uint32 entry=786,deadline=0,lifetime=0,casterGUID=42;bool questExpired=false,removed=false;
+    uint32 _createdAt=0;bool _npcCaster=false;
     std::map<uint32,uint32> playing;std::set<uint32> personal;Position createdAt;
     void AddPlayerInPersonnalVisibilityList(uint32 id){personal.insert(id);}
     bool CreateConversation(uint32,uint32,Unit*,void const*,Position const&);
@@ -56,7 +57,7 @@ struct Conversation {
     void SetLine(ConversationDynamicFieldLines* value,uint32 index,bool){lines[index]=*value;}
     void SetUInt32Value(uint32 field,uint32 value){assert(field==7);deadline=value;}
     uint32 GetUInt32Value(uint32 field)const{assert(field==7);return deadline;}
-    void SetDuration(int32 value){assert(value>0);lifetime=value;}uint32 GetDuration(){return lifetime;}
+    void SetDuration(int32 value){assert(value>0);lifetime=value;}uint32 GetDuration()const{return lifetime;}
     bool IsQuestObjectExpired(){return questExpired;}void Remove(){removed=true;}
     bool GenerateDynamicFieldData(uint32,WorldObject*,uint32&);
     bool CanNeverSee2(WorldObject const*)const;
