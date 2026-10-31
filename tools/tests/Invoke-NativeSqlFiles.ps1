@@ -22,11 +22,20 @@ try{
  # not guarantee the final redirected bytes had arrived before disposal.
  $stdout=$process.StandardOutput.BaseStream.CopyToAsync($outputStream)
  $stderr=$process.StandardError.BaseStream.CopyToAsync($errorStream)
- [void]$process.StandardInput.WriteAsync($sql).GetAwaiter().GetResult()
- [void]$process.StandardInput.FlushAsync().GetAwaiter().GetResult();$process.StandardInput.Close()
+ $inputFailure=$null
+ try{
+  [void]$process.StandardInput.WriteAsync($sql).GetAwaiter().GetResult()
+  [void]$process.StandardInput.FlushAsync().GetAwaiter().GetResult()
+ }catch{$inputFailure=$_.Exception.GetBaseException()}
+ try{$process.StandardInput.Close()}catch{if(!$inputFailure){$inputFailure=$_.Exception.GetBaseException()}}
  $process.WaitForExit()
  [void]$stdout.GetAwaiter().GetResult();[void]$stderr.GetAwaiter().GetResult()
  $outputStream.Flush();$errorStream.Flush()
+ # A native parser/connection error can close stdin before the complete file
+ # is written. Drain both outputs and return that real failing exit; a pipe
+ # exception must not replace its SQL diagnostic. An unexplained input failure
+ # with a successful child, or a non-IO failure, still fails visibly.
+ if($inputFailure -and ($process.ExitCode -eq 0 -or $inputFailure -isnot [IO.IOException])){throw $inputFailure}
  $process.ExitCode
 }finally{
  if($started){try{$process.StandardInput.Close()}catch{};if(!$process.HasExited){$process.WaitForExit()}}

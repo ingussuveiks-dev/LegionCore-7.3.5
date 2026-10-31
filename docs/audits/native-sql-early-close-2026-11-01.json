@@ -1,0 +1,19 @@
+{
+  "status": "Verified focused SQL-client transport repair; independent Sheilun acquisition implementation remains OPEN and unpromoted.",
+  "cause": "A native SQL error can terminate mysql/mariadb while WriteAsync or FlushAsync still writes a larger input file. The old helper propagated the resulting IOException instead of completing both output-copy tasks and returning the native failing exit. The SQL error remained in the captured stderr but callers received a broken-pipe exception.",
+  "repair": "Always close stdin, wait for the owned SQL client and drain both stdout/stderr before interpreting input failure. An IOException paired with a nonzero child exit returns that actual failing scalar exit. A successful child paired with an input failure, or a non-IO input failure, remains a visible exception. Native SQL errors are never suppressed or converted into success.",
+  "regression": {
+    "test": "tools/tests/Test-NativeSqlEarlyClose.ps1",
+    "baseline": "Pinned actual ab99b2d2d helper:6 EXPECTED_BROKEN cases, both MariaDB11.4.9 and MySQL8.4.9 clients, three repetitions each. An expected1054 precedes8MiB of remaining input; original pre-error stdout and exactly one native1054 are preserved, but the helper throws its stdin IOException.",
+    "repaired": "All6 cases return the real nonzero native integer exit after both streams finish; exact pre-error stdout and one native1054 checked. Trailing SELECT is not executed. No database mutation.",
+    "retained": "Test-NativeSqlFiles.ps1:10 clean, metadata, native failure, error-before-payload and post-error cases with exact1MiB payloads across both clients. Test-NativeSqlPreparedRefusal.ps1:80 expected prepared-SIGNAL1644 cases preserve all72 before/after rows plus EOF and native scalar0 under explicit --force.",
+    "evidence": [
+      "build-extractors/runtime-test/native-sql-early-close-baseline1",
+      "build-extractors/runtime-test/native-sql-early-close-fixed1",
+      "build-extractors/runtime-test/native-sql-files",
+      "build-extractors/runtime-test/native-sql-prepared-refusal"
+    ]
+  },
+  "diagnostics": "All four suites completed with no changed/new crashes, appended canonical DBErrors or server warnings/errors/assertions. Expected native client SQL1054/1644 stderr is explicitly asserted as counterfactual evidence, not an ordinary successful query.",
+  "runtime_boundary": "No server executable, database records, character data or client assets changed by this fix. Canonical worldserver remains45EC027E. No task-owned server is running. Mixed6090-byte DBErrors/LINK2 remains unresolved and untouched. The separate Sheilun native-fixture initialization crash, missing loader prerequisites and open gameplay tests are outside this resolved issue and its archive."
+}
