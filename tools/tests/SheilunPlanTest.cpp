@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cstdint>
 #include <map>
+#include <set>
 #include <memory>
 #include <vector>
 #include <functional>
@@ -9,6 +10,9 @@
 using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;
 constexpr uint32 CLASS_MONK=10,CRITERIA_TYPE_SCRIPT_EVENT_2=92,UNIT_FIELD_NPC_FLAGS=1,UNIT_NPC_FLAG_GOSSIP=1;
 constexpr float INTERACTION_DISTANCE=5;
+enum SpellCastResult{SPELL_CAST_OK,SPELL_FAILED_ERROR};
+unsigned tacticWarnings=0;
+#define TC_LOG_WARN(...) (++tacticWarnings)
 enum QuestStatus{QUEST_STATUS_NONE,QUEST_STATUS_COMPLETE,QUEST_STATUS_INCOMPLETE};
 struct ObjectGuid{uint64 value=0;bool operator==(ObjectGuid const&other)const{return value==other.value;}};
 struct QuestStatusData{std::shared_ptr<uint8>ScriptLifetime;};
@@ -48,7 +52,10 @@ struct Creature:Unit{
  bool IsInWorld()const{return world;}bool IsAlive()const{return alive;}bool IsPreDelete()const{return predelete;}bool HasQuestObjectScope()const{return scoped;}
  uint32 GetMapId()const{return mapId;}uint32 GetInstanceId()const{return 7;}uint32 GetEntry()const{return entry;}uint32 GetDBTableGUIDLow()const{return spawn;}Map*GetMap()const{return map;}ObjectGuid GetGUID()const{return guid;}
  bool HasFlag(uint32 field,uint32 flag){assert(field==UNIT_FIELD_NPC_FLAGS);return (flags&flag)!=0;}void SetFlag(uint32 field,uint32 flag){assert(field==1);flags|=flag;}void RemoveFlag(uint32 field,uint32 flag){assert(field==1);flags&=~flag;}void SetUInt32Value(uint32 field,uint32 value){assert(field==1);flags=value;}
- CreatureAI*AI(){return ai;}Motion*GetMotionMaster(){return &motion;}void CastSpell(Creature*target,uint32 spell){assert(target==this&&spell==60958);++casts;}
+ SpellCastResult tacticResult=SPELL_CAST_OK;bool tacticApplies=true,removeWorks=true;uint32 tacticCasts=0,tacticRemoves=0;std::set<uint32>auras;std::function<void()>onTacticCast,onTacticRemove;
+ CreatureAI*AI(){return ai;}Motion*GetMotionMaster(){return &motion;}
+ SpellCastResult CastSpell(Creature*target,uint32 spell,bool triggered=false){assert(target==this);if(spell==60958){assert(!triggered);++casts;return SPELL_CAST_OK;}assert(triggered&&(spell==204653||spell==204654));++tacticCasts;if(onTacticCast)onTacticCast();if(tacticResult==SPELL_CAST_OK&&tacticApplies)auras.insert(spell);return tacticResult;}
+ bool HasAura(uint32 spell){return auras.count(spell)!=0;}void RemoveAurasDueToSpell(uint32 spell){assert(spell==204653||spell==204654);++tacticRemoves;if(onTacticRemove)onTacticRemove();if(removeWorks)auras.erase(spell);}
  Creature*FindNearestCreature(uint32 wanted,float distance,bool living=true){assert(distance==100.f||distance==107.f);for(auto const&row:map->actors)if(row.second->entry==wanted&&(!living||row.second->alive))return row.second;return nullptr;}
  GameObject*FindNearestGameObject(uint32 wanted,float distance){assert(wanted==246464&&distance==100.f);return wall;}
 };
@@ -76,7 +83,7 @@ void Dispatch(Player*player,Creature*unit,Packet packet){
 }
 struct Run{
  Map map;Scenario scenario;Player player;GameObject wall;Creature taran,fei,nurong,taoshi;Taran taranAI{&taran};Small feiAI{&fei},nurongAI{&nurong},taoshiAI{&taoshi};
- Run(){manager.scenario=&scenario;player.map=&map;map.players[42]=&player;taran.map=fei.map=nurong.map=taoshi.map=&map;taran.guid={1};fei.guid={2};nurong.guid={3};taoshi.guid={4};fei.entry=101882;fei.spawn=362865;nurong.entry=101883;nurong.spawn=362869;taoshi.entry=101885;taoshi.spawn=362867;taran.ai=&taranAI;fei.ai=&feiAI;nurong.ai=&nurongAI;taoshi.ai=&taoshiAI;map.actors={{1,&taran},{2,&fei},{3,&nurong},{4,&taoshi}};fei.flags=nurong.flags=taoshi.flags=33;taran.wall=&wall;}
+ Run(){tacticWarnings=0;manager.scenario=&scenario;player.map=&map;map.players[42]=&player;taran.map=fei.map=nurong.map=taoshi.map=&map;taran.guid={1};fei.guid={2};nurong.guid={3};taoshi.guid={4};fei.entry=101882;fei.spawn=362865;nurong.entry=101883;nurong.spawn=362869;taoshi.entry=101885;taoshi.spawn=362867;taran.ai=&taranAI;fei.ai=&feiAI;nurong.ai=&nurongAI;taoshi.ai=&taoshiAI;map.actors={{1,&taran},{2,&fei},{3,&nurong},{4,&taoshi}};fei.flags=nurong.flags=taoshi.flags=33;taran.wall=&wall;}
  Creature*Role(uint32 i){return i==0?&fei:i==1?&nurong:&taoshi;}uint32 Menu(Creature*actor){return actor==&taran?19235:actor==&fei?19225:actor==&nurong?19226:19227;}
  void Offer(Creature*actor){player.talk.menu.id=Menu(actor);player.talk.menu.items={{0,{}},{1,{}}};if(actor==&taran)player.talk.menu.items.erase(1);}
  void Click(Creature*actor,uint32 option=0,bool offer=true){if(offer)Offer(actor);Dispatch(&player,actor,{Menu(actor),option});}

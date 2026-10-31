@@ -1,10 +1,14 @@
-param([switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyNativeCatalog,[switch]$VerifyLiveData,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
+param([switch]$Baseline,[switch]$ScopeOnly,[switch]$PrepareHost,[switch]$VerifyNativeCatalog,[switch]$VerifyLiveData,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/Sheylun.cpp';$header='src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_taran_intro.h'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$intro=(Get-Content "$repo/$header" -Raw).Replace("`r",'')
 $old=(& git -C $repo show "04e5ba3b5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-plan source missing'}
 $oldIntro=(& git -C $repo show "04e5ba3b5:$header") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-plan opening missing'}
+if((Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_plan.h" -Raw).Contains('#include "sheilun_tactics.h"')){
+ & "$PSScriptRoot/Test-SheilunTactics.ps1" -ScopeOnly
+ if(!$?){throw 'Current native tactic producer delta failed certification'}
+}
 $normal=$source.Replace('#include "Map.h"','').Replace('#include "sheilun_plan.h"','')
 foreach($role in @('npc_tazhan_chu','npc_sheylun_small_events')){
  $actor=Block $source "class $role :";$prior=Block $old "class $role :"
@@ -26,12 +30,14 @@ foreach($pair in @(@('Taran','npc_tazhan_chu'),@('Small','npc_sheylun_small_even
  if($pair[0] -eq 'Taran'){[IO.File]::WriteAllText("$out/Action.inc",(Block $actor 'void DoAction('))}
 }
 Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_plan.h" "$out/Plan.inc"
+if(Test-Path "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_tactics.h"){Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_tactics.h" "$out/sheilun_tactics.h"}
 $packet=(Get-Content "$repo/src/server/game/Handlers/NPCHandler.cpp" -Raw).Replace("`r",'');$at=$packet.IndexOf('unit->AI()->sGossipSelect(player, packet.GossipID, packet.GossipIndex);');$start=$packet.LastIndexOf('        if (unit)',$at)
 if($at -lt 0 -or $start -lt 0){throw 'Native ordinary menu/index dispatch missing'}
 [IO.File]::WriteAllText("$out/Dispatch.inc",(Block $packet.Substring($start) 'if (unit)'))
 $gossip=Get-Content "$repo/src/server/game/Entities/Creature/GossipDef.cpp" -Raw
 $methods=@('uint32 GossipMenu::GetMenuId(','GossipMenuItemContainer const& GossipMenu::GetMenuItems(','void GossipMenu::ClearMenu(','uint32 GossipMenu::GetMenuItemSender(','uint32 GossipMenu::GetMenuItemAction(','void PlayerMenu::ClearMenus(','uint32 PlayerMenu::GetGossipOptionSender(','uint32 PlayerMenu::GetGossipOptionAction(')
 [IO.File]::WriteAllText("$out/Gossip.inc",(($methods|ForEach-Object {Block $gossip $_}) -join "`n"))
+if($PrepareHost){return}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath;$mode=if($Baseline){'/DBASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi $mode /I`"$out`" `"$PSScriptRoot/SheilunPlanTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`ncd /d `"$out`"`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Sheilun plan regression failed'}

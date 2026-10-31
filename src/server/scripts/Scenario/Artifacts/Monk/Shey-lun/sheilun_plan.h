@@ -77,6 +77,8 @@ inline void Close(Player* player)
     }
 }
 
+#include "sheilun_tactics.h"
+
 inline void Select(Player* player, Creature* actor, uint32 menu, uint32 option)
 {
     Role const* role = nullptr;
@@ -95,6 +97,7 @@ inline void Select(Player* player, Creature* actor, uint32 menu, uint32 option)
     Map* map = actor->GetMap();
     ObjectGuid recipient = player->GetGUID(), source = actor->GetGUID();
     uint32 receipt = role->receipt, entry = role->entry, spawn = role->spawn;
+    if (!ApplyTactic(player, actor, *role, option, map, recipient, source, attempt)) return;
     player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, role->event);
     // Criteria callbacks can replace a quest attempt, change maps or remove
     // actors. Resolve both original objects after the real native delivery.

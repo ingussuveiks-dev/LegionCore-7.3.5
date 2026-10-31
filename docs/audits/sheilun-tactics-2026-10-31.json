@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-31",
+  "status": "Data-derived native Sheilun companion tactic producer/acknowledgement deployed; actual client battle/physical pickup/outro/return/full36 OPEN",
+  "fix_commit": "recorded by following archive audit",
+  "cause": "Both original defensive/aggressive white-bubble options acknowledged the role without applying either native tactical state. Research872b3da2a identifies self infinite204654 Balanced dummy baseline and204653 Reckless with actual native79/outgoing25 and87/taken50, all-school127. No custom multiplier is needed.",
+  "change": [
+    "Insert only a native tactic acknowledgement call before each role event in the already guarded Plan::Select; leave six source tuples, menu/quest/role admission, original start commands and all other scripts unchanged. Choice0 requests204654, choice1 requests204653 by ordinary native NPC self-triggered CastSpell; require resultOK and actual chosen aura before consuming role progression.",
+    "After cast and again after opposite-aura removal, re-resolve original player/source full GUIDs from original map, compare original weak41003 quest attempt, real class/player/contact/map/phase/visibility/LOS/range, actual source entry/spawn/gossip bit, matching1541/1007 step2 and unreceived role leaf. Keep the previous tactic until requested aura confirmed. Remove only the exact counterpart and require chosen-present/opposite-absent before returning to original native role delivery. Rejected/lost/nonexclusive aura emits a useful production warning and leaves role available for a fresh offer.",
+    "No new damage coefficient, health setting, surrender threshold, permanent pet/guardian ownership or item/kill/quest/scenario grant. Preserve203836/204593/204624 utility buffs/area triggers, original companion damage modifier, native aura damage machinery, existing wounded recovery and original battle/loot/return logic."
+  ],
+  "evidence_and_inference": [
+    "Native26972 typed Spell/Effect/Misc/Duration/AuraOptions/CastTime/Range plus readonly Hotfix confirms exact two spells. Reckless actual numeric25/out and50/taken override misleading shared tooltip$s1 text; Balanced is a zero-valued dummy marker, so no invented defensive percentage. Both self target1/instant/infinite/all-school127.",
+    "Mapping defensive option0 to Balanced and aggressive option1 to Reckless is an inference from their matching native descriptions and original option BroadcastTexts104452/53/56/57/60/61, not a recovered source packet or observed local client implementation. Balanced represents ordinary baseline relative to native Reckless; actual client choice/battle fidelity remains OPEN. See sheilun-tactics-research-2026-10-31.json/872b3da2a.",
+    "Fresh public readonly full-EOF World confirms no204653/204654 spell_group membership, custom script/link/source17 conditions, or relevant companion template/spawn addon conflict. This also validates the controlled no-same-effect-group service in the extracted native multiplier host. No World or character mutation."
+  ],
+  "validation": [
+    "Exact Plan header certificate against872b3da2a normalizes only include and ApplyTactic call; older Plan source scope separately certifies it. Current full583 Plan/native menu+packet/World five bindings/eight sources/seven options still pass with actual new helper and explicitly controlled cast/aura endpoints.",
+    "282 MSVC ASAN actual choice/plan/packet/menu cases: six real sources, both options/all prior modes, actual aura-before-credit, exclusive counterpart-only removal/utility retention, rejected cast/accepted-without-aura/failed removal/lost aura and fresh retries, rejected role event with changed-choice retry,192 reentrant cast/removal quest/player/source/scenario revocations, stale-menu synchronous reentry and duplicate denial. Cast/world endpoints are controlled; warnings are counted in intentional negative cases and production logging remains intact.",
+    "19 separate ASAN native damage-consumer cases compile actual AuraEffect::HandleModDamagePercentDone, full Unit::HandleStatModifier, native percent helpers, Unit total aura multiplier/mask getter, and actual UnitMods/UnitModifierType/WeaponAttackType/AuraType/handle-mode enums. Native float GetAmount is retained. Three physical weapon TOTAL_PCT25-percent updates, apply/remove/mode/null/player/stat-disabled branches, all seven87 school masks/taken50 percent, native baseline/removal and40 reversible cycles pass. Full spell/cast/health engine is not modeled.",
+    "Explicit pinned872b3da2a EXPECTED BROKEN baseline compiles all six role/index selections: role credited with zero tactic casts/auras. Repaired282/19 plus retained583 pass. Fresh typed native catalog and live conflict checks pass in the canonical public runner.",
+    "Original scripts.vcxproj Release BuildProjectReferences=false without OutDir override rebuilt original scripts.lib; staged final link validates original LIB inputs and unchanged prior canonical hashes. Selected actual PE proves registered two AI C8 consumers and plan acknowledgement call gates native role credit, exact option-to-self-spell selection, CastResultOK/three actual aura checks/two original source+quest revalidations/opposite removal and retained warnings. Actual native HandleEffect references the mapped aura table and its79 entry points to the three physical-stat handler; ordinary spell79 and inlined school-mask predicate/native87 multiplier consumers verified. Full native opening/wounds/presentation/Plan PE retained. Updated prior Plan inspector also passes exact pre-tactic canonical backup, retaining its original register constraint.",
+    "Four-file canonical promotion/backup hashes verified. Canonical public282+19/native catalog/full-EOF conflict/selected Release plus mandatory ScepterLogin VerifyReleaseBinary pass. Owned32988 reaches fresh ready, server shutdown0/exit0/stderr0/newDB0, protected config/certificate hashes unchanged and process gone. No user/unknown server stopped or task background server left."
+  ],
+  "development": [
+    "Initial new native damage host declared GetAmount int32 although actual AuraEffect API/m_amount is float. Exact25/50 expected math was unaffected, but corrected to actual float before final verification. Four artificial int-to-float handler warnings disappear; actual unchanged Unit multiplier float-to-int same-effect-group warning remains visible. Current25/50 are integral and live group0 verified; no core warning suppression or generic numeric change.",
+    "Initial PE research exposed retained Plan inspector role pointer changing fromR14 toRSI after the new call. It now asserts exact old register for old binary and exact new register plus actual acknowledgement gate when new call exists. Both staged/current and pre-tactic backup pass; failed output preserved.",
+    "First tactic PE treated function-only symbol metadata as if it included global data. Added a separate exact bounded MAP-data lookup for AuraEffectHandler, verify actual table79 pointer and real HandleEffect RIP consumer. Second tactic PE assumed GetTotalAuraMultiplierByMiscMask remains an out-of-line call; actual compiler inlines it. Inspected actual native window, then asserted exact87 generic multiplier call, actual school virtual280 and real mask-predicate vtable/callback. Corrected stage3 and canonical pass. No implementation guards relaxed to make checks pass."
+  ],
+  "sequence_limits": [
+    "This is native aura production/confirmation and preserves prior instance/actor lifetime behavior. A failed native role receipt leaves the applied tactic but retains the role offer; a fresh valid selection may change it before its first accepted role receipt. Credited roles cannot recast or change through stale/other-copy selections. No broad cleanup of utility or unrelated auras.",
+    "On actor death, reset, abandonment/re-entry or old-instance teardown, native aura lifecycle and existing scenario/quest cleanup remain authoritative. Reentrant invalid quest/map/phase/source before credit is denied. Whole instance retry/reset/visual duplicate phases and tactical persistence across actual client re-entry remain OPEN; no user character reset.",
+    "These Player-menu events do not attribute player progression to pets. Combat pet/guardian final blows, NPC ally boss victory and legitimate group/faction acquisition remain part of the separate OPEN boss/source path; native wounded final-damage policy remains unchanged and retained PE checked. No faction gate or manual party credit added.",
+    "Actual local client native buff icons/tooltips, offensive/defensive battle pacing, utility triggers, healing/surrender, audio/geometry and full1007 traversal remain unverified. Existing boss nearest-player2s grant and GO early-loot grant/14s return shortcut remain OPEN; real manual source/storage/native202385/outro19257/TakTak flight/landing/all36 work continues."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "15d26f678bf9ed07c6aa24c9c3a6635810e57dfc13cb5448120435d45f92dba5",
+      "worldserver.map": "408abd2e0b41b94ef5391979be7e10360c77ba63c40eb32c864f26532d48da78",
+      "bnetserver.exe": "13a664d53b48a7827b4c5f1f59860ad6f82414eb29073ca187327f3f4ac929c4",
+      "bnetserver.map": "0f6561259b74961b4cbff78e0dbb23d2f18b0198caed71622ec7f19101043c20"
+    },
+    "stage": ".codex/sheilun-tactics-release",
+    "backup": ".codex/release-before-sheilun-tactics-2026-10-31/manifest.json",
+    "sql": "No migration/persistent World or character change/reset"
+  },
+  "diagnostics": {
+    "new_changed_crashes": 0,
+    "appended_dberrors": 0,
+    "server_errors_warnings_assertions": 0,
+    "active_crashes": "empty",
+    "mixed_unresolved_db_bytes": 6090,
+    "mixed_unresolved_db_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "owned_pid": 32988,
+    "owned_exit": 0,
+    "task_servers_remaining": 0
+  },
+  "evidence": [
+    ".codex/sheilun-tactics-baseline-open-2026-10-31",
+    ".codex/sheilun-tactics-build-open-2026-10-31",
+    ".codex/sheilun-tactics-canonical-open-2026-10-31",
+    ".codex/sheilun-tactics-core-pe-open-2026-10-31",
+    ".codex/sheilun-tactics-native2-open-2026-10-31",
+    ".codex/sheilun-tactics-native3-open-2026-10-31",
+    ".codex/sheilun-tactics-native4-open-2026-10-31",
+    ".codex/sheilun-tactics-pe-research-open-2026-10-31",
+    ".codex/sheilun-tactics-pe-research2-open-2026-10-31",
+    ".codex/sheilun-tactics-promotion-open-2026-10-31",
+    ".codex/sheilun-tactics-retained-pe-open-2026-10-31",
+    ".codex/sheilun-tactics-retained-plan-open-2026-10-31",
+    ".codex/sheilun-tactics-stage-pe1-open-2026-10-31",
+    ".codex/sheilun-tactics-stage-pe2-open-2026-10-31",
+    ".codex/sheilun-tactics-stage-pe3-open-2026-10-31",
+    ".codex/sheilun-tactics-startup-open-2026-10-31"
+  ],
+  "open_research_evidence": [
+    ".codex/sheilun-tactics-audit-open-2026-10-31",
+    ".codex/sheilun-tactics-hooks-open-2026-10-31",
+    ".codex/sheilun-tactics-native1-open-2026-10-31",
+    ".codex/sheilun-tactics-world1-open-2026-10-31"
+  ],
+  "reviewed_failed_checks": [
+    ".codex/sheilun-tactics-pe-research-open-2026-10-31",
+    ".codex/sheilun-tactics-stage-pe1-open-2026-10-31",
+    ".codex/sheilun-tactics-stage-pe2-open-2026-10-31"
+  ],
+  "next": "Continue real manual physical source/storage acknowledgement and native outro/return. Preserve phase duplication and original boss/GO shortcut findings, actual client limitations, other artifacts and user-owned client testing; no reset."
+}

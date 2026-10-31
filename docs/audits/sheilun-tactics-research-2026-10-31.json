@@ -23,5 +23,6 @@
   "native_sha256": "7470606c821a33225f3947af2d0c420a410676d073a262f924c40e8e3c913668",
   "limits": "No tactical spell cast in actual client, no video playback/listening or current client battle certification. No custom numeric defensive multiplier, native-script producer or source packet binding established. Phase duplication, physical pickup/storage/outro/return and all36 remain OPEN. Research kept outside fixed.",
   "runtime": "Canonical world0e730ba4762057a77223d040bb591963dfe4bb45574f847c6fc3da3402cf7355; prior own21872 graceful0/gone, no research server launched. Crashes empty/mixed6090LINK2 unchanged.",
-  "next": "Implement and separately test actual chosen aura acknowledgement before each role credit, mutual exclusion/retry/reentrant guards, native damage handler/multiplier data and actual linked Release consumers. Keep full client tactics/pickup/return OPEN."
+  "next": "Implement and separately test actual chosen aura acknowledgement before each role credit, mutual exclusion/retry/reentrant guards, native damage handler/multiplier data and actual linked Release consumers. Keep full client tactics/pickup/return OPEN.",
+  "implementation_followup": "docs/audits/sheilun-tactics-2026-10-31.json; producer now deployed, data-derived mapping/client fidelity limits retained"
 }

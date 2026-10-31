@@ -75,7 +75,12 @@ for body,is_start in [(select,False),(start,True)]:
   assert {101882,101885,101883,246464,60958}<=values(body)
   assert sites(n,body,'?Talk@CreatureAI@@') and sites(n,body,'?CastSpell@Unit@@')
  else:
-  assert select[credit-3].op_str=='r8d, dword ptr [r14 + 0xc]' and select[credit-2].op_str=='edx, 0x5c'
+  tactic=sites(n,body,helper('ApplyTactic'))
+  owner='rsi' if tactic else 'r14'
+  assert select[credit-3].op_str==f'r8d, dword ptr [{owner} + 0xc]' and select[credit-2].op_str=='edx, 0x5c'
+  if tactic:
+   accepted,=tactic;assert accepted<credit
+   assert any(x.mnemonic=='je' and x.operands[0].imm>body[credit].address for x in body[accepted:credit])
   assert sites(n,body,helper('Refresh'))[0]>remove
  for forbidden in ('?AddItem@Player@@','?CompleteQuest@Player@@','?KilledMonsterCredit@Player@@','?AddDelayedEvent@Unit@@'):
   assert not sites(n,body,forbidden)
