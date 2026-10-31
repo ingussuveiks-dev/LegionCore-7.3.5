@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-31",
+  "scope": "Sharasdal1066/map1600 step1: replace Erunak waypoint guard credit with the actual local Zithreenai Tidecaller102831/spawn362076 death. This is a focused backend repair, not whole1066/all36 or client certification.",
+  "cause": "The only existing49957 producer after the Breaking Bonds repair was Erunak MovementInform waypoint8. It selected the nearest player and granted Defeat Adelee's Guards even with the Tidecaller alive. Real Tidecaller death had no corresponding instance handler. Adelee's actual208171 cast correctly requires47197, so arrival credit could hide the missing combat producer.",
+  "sources": {
+    "matching_local": "Fresh native26972 DB2 plus read-only Hotfix:1066 step1/root47122/operator4 AND contains guard leaf47197/29695/type92/49957/amount1 and separate rescue47123/29659/49816/1. No native SEND_EVENT61 spell produces49957. Full EOF World: sole map1600 Tidecaller362076 at(-383.491,809.198,248.189),phase6120,SmartAI/faction16, preserved combat210282. No criterion-data/event_scripts/SmartAI205 alternate guard producer or formation/spawn_group definition. Known lower Erunak362063 and Grash362066 are distinct from later copies. SceneScriptText/GlobalText raw string-context scan supplied only fade exclusions, no guard payload; it does not certify whole scene interpretation.",
+    "trinity": "Targeted Sharasdal-name git grep in scripts/updates/old7.3.5 at7f2b7dc9c2165d2608742473a931f55b1c1a753a,c2d61e05cf3dc555608e6b2a06772c27d207548c,ccbe4404f1806f047c009d14ed1dea9806dd5736 and current BrokenIsles scripts produced no matching implementation. Newer checkout remains a reference; no modern code ported. This was not an exhaustive all-history/all-schema search.",
+    "github": [
+      "https://github.com/dufernst/LegionCore-7.3.5/blob/master/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp (retrieved original file still uses waypoint49957 and old click49957)",
+      "https://github.com/Titans-Project/LegionCore-Reforged/blob/8695b4ae1fabb8646a4cc7eaa0ffa84c131a1025/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp (same two producers)",
+      "https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/blob/fed58f79c498521836612acd12009e9fa9e60e31/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp (same two producers)"
+    ],
+    "gameplay": {
+      "url": "https://www.youtube.com/watch?v=wmKA8X7QX0U",
+      "author_title": "xLetalis, WOW Legion - Sharas'Dal - Restoration Shaman Artifact Quest, published2016-08-20,1029s",
+      "actually_reviewed": "All13 contact sheets/206 frames spanning0..1029 at5s sampling, then all13 detail sheets/75 frames spanning480..555 at1s plus individual original frames around534/537/539/541. Visual sampling only, no audio or continuous playback claim. Nominal sheet times are approximate sampling labels (up to2.5s broad/0.5s detail), not packet timestamps.",
+      "finding": "Around528..534 target is named Zithreenai Tidecaller; guard counter remains0/1. Around537 it becomes1/1 after that Tidecaller dies, while a Frenzied Deep Sea Makrura is visibly still alive/fighting through541. Breaking Bonds occurs around544..549 and only then advances to stage3. Erunak's arrival/dialogue precedes victory. Thus nearby Makrura deaths must not be invented as additional required guard objectives.",
+      "inference_and_limit": "Mapping the visible Tidecaller to exact local102831/362076 is an inference from matching name/layout and the sole matching local spawn, not a GUID shown in the video. This2016 client is behavioral evidence checked against native26972 metadata, not a fresh7.3.5 client traversal. Other later stages were sampled but remain independently unverified. Local ignored media/contact sheets retained as source evidence.",
+      "local_source_hashes": {
+        "detail-wmKA8X7QX0U.info.json": "16531d3300b79a60fe5b5c47e7ccd7f843a8114144280d2358c970a82d6780f1",
+        "detail-wmKA8X7QX0U.mp4": "2412da827327e6f0959df99fdbf2b8d5db9edbcf7acf3e8a5e8122c406b0b001",
+        "wmKA8X7QX0U.info.json": "50814110c8d625ed0c9f0c852a602e6df0aca20b823ddd902d8f1053f66160c5",
+        "wmKA8X7QX0U.webm": "f9f5bd8eb3a59f2b90ec8e75c06fe50800e46e08337940b5ba3a052696512cd0"
+      }
+    }
+  },
+  "implementation": [
+    "Instance CreatureDies accepts only a real dead/in-world/non-predelete102831/362076 in its actual map, native1066 step0..1 and no existing47197 receipt. Native Unit::Kill supplies the actual killer. Owner/charmer resolution covers Players,pets,guardians; a dead eligible owner remains admissible. Invalid or unresolved owners never fall back to a nearby unrelated player.",
+    "Unowned native lower Erunak362063 or Grash362066 can choose an eligible nearby Shaman40341 participant. Multiple eligible participants must share the native group. One Player.UpdateAchievementCriteria forwards to the shared scenario; no manual party-credit loop or credit to a pet. Foreign allies/copies/null killers/other maps/phases/range/quests/classes/GM or teleporting players cannot award it.",
+    "Capture only the eligible player's fullGUID and native40341 weak quest-attempt token; no delayed actor/player pointer. A real early victory may wait for Big Help without manufacturing prerequisites. Deliver only at step1, acknowledge actual47197 after the native update, and use a busy guard for synchronous re-entry. A removed corpse is no longer required after an earned defeat. Expired/replaced/abandoned/rewarded quest attempts cancel with a useful warning.",
+    "Native refusal or a temporarily absent original recipient retries at1s up to30 attempts with an explicit warning, retaining the pending earned receipt. Original recipient re-entry rearms it. A changed scenario/stage cannot create credit. No saved-state/character/item/quest edits, forced kill, fake completion or new SQL binding.",
+    "Remove only Erunak waypoint8's two-line nearest-player49957 grant. Its dialogue/path behavior, all other NPCs, original initial Brute handler, wounds/healing, Breaking Bonds registration and pickup remain unchanged under the exact c27da5170 source certificate."
+  ],
+  "validation": {
+    "counterfactual": "Pinned c27da5170 actual instance and exact Erunak case8: actual native Kill dispatch/real Tidecaller death yields no guard criterion, whereas waypoint8 grants49957 to nearest unrelated player while guard lives. Counterfactual explicitly expected to expose old behavior; no raw delayed actor deliberately freed.",
+    "native_host": "34 ASAN matrices plus additional actual early-death/removed-corpse, both active quest states, player/pet/guardian/charm/both allies, dead owner, grouped/ambiguous participants, already accepted receipt, held old quest token, abandonment/reward, destroyed owner,1s/30 refusals/exhaustion/re-entry and synchronous re-entry cases. Compiles full production instance/new policy and actual owner resolver, AddQuestDelayedEvent, Scenario.CanUpdateCriteria, Unit::Kill instance-dispatch block and exact current waypoint case8. Geometry/registry/group identity/criterion service are controlled adapters; full combat/Spell engine and client are not modeled as proven.",
+    "retained": "Current Breaking Bonds40-context suite, Grash99-context suite, retained1152 three-role healing and3621 final-damage/scaling cases pass. Current rescue source certificate composes the narrow new guard scope before freezing its unchanged actor. Fresh native26972/Hotfix/World EOF guard data and existing208171 binding pass. Canonical Scepter VerifyReleaseBinary passes.",
+    "release": "Build scripts.lib at its actual original final-link path; stage world/bnet EXE+MAP separately, then verify implementation in the selected PE. Native instance factory installs CreatureDies byte40,OnPlayerEnter248,Update232; Unit.Kill loads slot40 then calls its register target with actual creature/killer. Update's issued tail wrapper is resolved correctly. Exact entry/spawn/40341/full token/47197 acknowledgement/sole92+49957/finite30 paths and absence of waypoint achievement call are present. Retained native generic wound/heal/Grash/Breaking Bonds/retry paths also pass.",
+    "development_failures": "Initial fixture emitted a misnamed include through a single-element PowerShell array flattening mistake; corrected direct Owner.inc extraction and passing baseline2/baseline3/repaired2 pair it. PE inspector initially assumed resolved Update tail target equals raw vtable entry, then assumed an immediate memory virtual call; actual map/disassembly established issued wrapper and register-loaded Kill dispatch, verified by staged-pe3 and canonical native checks. First video request asked for unavailable combined format; video-only download succeeded. Detail extraction initially assumed webm while actual best format was mp4; corrected and all detail frames reviewed. Failed evidence remains paired with successful checks; no production bypass.",
+    "diagnostic_scope": "Final canonical-native2/data2/Scepter2, baseline3/repaired2 and individually wrapped retained2 suites include inherited repository CWD as well as canonical and exact runtime directories. Earlier narrower snapshots remain historical evidence and are not substituted for this final recertification. Compiler shadow warnings are controlled fixture context; retained conversion/sign warnings come from unchanged production excerpts. No ASAN finding or unexplained new runtime diagnostic.",
+    "evidence": [
+      ".codex/sharasdal-guards-baseline3-2026-10-31",
+      ".codex/sharasdal-guards-repaired2-2026-10-31",
+      ".codex/sharasdal-guards-staged-pe3-2026-10-31",
+      ".codex/sharasdal-guards-canonical-native2-2026-10-31",
+      ".codex/sharasdal-guards-canonical-data2-2026-10-31",
+      ".codex/sharasdal-guards-canonical-scepter2-2026-10-31",
+      ".codex/sharasdal-guards-retained2-*-2026-10-31",
+      ".codex/sharasdal-guards-canonical-startup-2026-10-31"
+    ]
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "391C95F9F7A1E2373AF2932CC5213100657E21A144098633A2F8DAAAD3CD9B5F",
+      "worldserver.map": "368DB8F430653A3C39E7F1EAB8E890593D409BA58F93957DFF8B3AB476D919F5",
+      "bnetserver.exe": "C4790B707CC43ACAD08CD4430A1D14A19CC5E68672B38B323EFF2C69BA3AA353",
+      "bnetserver.map": "92AD6E85265CB449B8AFB81BF51393E220BD19BB36DB7C4D5E426952C1446866"
+    },
+    "owned_startup": "PID17828: ready, graceful shutdown0/exit0, empty stderr,newDBErrors0; gone. Fresh checks found no user/unknown server before four-file hash-backed promotion. Config/certificates/DLLs preserved. No new migration or character/reset operation. Existing World31_01 Breaking Bonds remains bound and unchanged."
+  },
+  "diagnostics": "Canonical Crashes empty; mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 and original timestamp retained, unresolved101430/103151 LINK2. No new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions in final checks. Closed evidence archive follows implementation commit; mixed active log must not be cleared.",
+  "remaining": [
+    "Actual client Tidecaller kill/pet/guardian/ally/group, early kill, failed cast/rescue and next-stage traversal remain user-owned checks. No native fixture substitutes for client behavior.",
+    "Pending victory belongs to its original quest attempt in the live instance. Logout that destroys the lease, abandonment/new attempt or server restart does not persist it. Fresh scenario/actor restart and abandoned-quest re-entry policy remain a separate full-chain check; no stale attempt awarded.",
+    "Initial102792 Brutes still use nearest-player OnUnitDeath credit, duplicated1693/late raw gossip flag updates and Erunak evade behavior. Grash's initial route may launch before actual Big Help1; once-per-AI gossip mask does not prove issued-path completion/interruption recovery. These are the next independent repair.",
+    "Erunak/Adel incoming-heal40pct markers, other raw actor callbacks, later wall/gauntlet/boss owner credit,249342 actual loot/full bags/equip/outro and whole1066/all36 remain OPEN. Preserve earlier Glow211502,Survival39427 middle,Wardstone LINK4,sharedLINK2 and Stromkar client evidence; no new reset authorization."
+  ]
+}

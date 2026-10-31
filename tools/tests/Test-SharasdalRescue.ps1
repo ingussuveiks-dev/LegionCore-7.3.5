@@ -3,6 +3,10 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth -and $last -lt $source.Length){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};if($depth){throw "Unclosed $start"};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
+if((Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/instance_sharasdal.cpp" -Raw).Contains('namespace SharasdalGuard')){
+ & "$PSScriptRoot/Test-SharasdalGuards.ps1" -ScopeOnly
+ $source=(& git -C $repo show "c27da5170:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned unchanged Breaking Bonds actor context missing'}
+}
 $pinned=(& git -C $repo show "dd6965c51:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned native rescue baseline missing'}
 $old=Block $pinned 'class npc_adel_waterspeaker :';$current=Block $source 'class npc_adel_waterspeaker :'
 foreach($method in @('npc_adel_waterspeakerAI(Creature*','CreatureAI* GetAI(','void EnterCombat(','void HealReceived(','void DamageTakenAfterScaling(','void MovementInform(','void UpdateAI(')){

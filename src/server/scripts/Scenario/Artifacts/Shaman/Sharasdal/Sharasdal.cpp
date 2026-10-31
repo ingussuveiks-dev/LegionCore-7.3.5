@@ -206,8 +206,6 @@ public:
                             break;
                         case 8:
                         {
-                            if (Player* targ = me->FindNearestPlayer(100.0f))
-                                targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49957);
                             if (Creature* adel = me->FindNearestCreature(104853, 70.0f, true))
                             {
                                 adel->AI()->Talk(0);
