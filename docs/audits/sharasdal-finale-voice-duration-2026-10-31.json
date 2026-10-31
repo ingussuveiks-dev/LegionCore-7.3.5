@@ -1,0 +1,209 @@
+{
+  "date": "2026-10-31",
+  "scope": "Only native1906 defeat and1923 post-pickup conversation lifetime budgets; caller ownership/timing, Lady surrender and artifact acquisition remain OPEN.",
+  "cause": "Native Conversation::GenerateDynamicFieldData sums all creature-row durations and CreateConversation adds5000ms. Existing1906 sum8433 yields13433ms, before final line4028..4032 last start20866.1923 sum13800 yields18800ms, before final line4071 start19050. Matching actual native voices extend required ends to23788 and23727ms. Either original lifetime can remove the conversation before its final lines/voice finish.",
+  "sources": "Local matching26972+read-only Hotfix typed ConversationLine/BroadcastText/SoundKit/SoundKitEntry, actual full native Conversation generation/create lifetime/personal visibility/CanNeverSee2/Update and World loader. Exact original World line/creature rows and existing native Release producer/consumer inspected. Ten enUS Vorbis payloads fully read from matching D:/wow/Legion7.3.5 CASC via private read-only probe; all32 index hashes stable. No audio listening or client playback claim. No modern donor implementation copied.",
+  "implementation": "World31_02 changes only conversation_creature.duration at1906/id0 from2811 to18166 and1923/id0 from4600 to14527; original other four actor budgets, all6 bindings/Guid/unknown fields and9 line payloads/offsets remain. Native sums become23788/23727 and actual lifetimes28788/28727. Strict complete original-or-applied tuple guard plus no actor overlay; refuse partial/custom context and repeat idempotently. No C++/ScriptName/config/characters/AP/quest/item/checkpoint reset or global duration change.",
+  "audio": {
+    "payloads": [
+      {
+        "FileDataID": 1370793,
+        "DurationSeconds": 6.197324,
+        "VoiceMs": 6198,
+        "Bytes": 40659,
+        "SHA256": "4A84A75F02D16EF4440E82999063A4AD67BB6204D6A5A6B76CEAACAE0FF6CC32"
+      },
+      {
+        "FileDataID": 1370794,
+        "DurationSeconds": 2.972925,
+        "VoiceMs": 2973,
+        "Bytes": 21790,
+        "SHA256": "2DDE2E5A92AD1F4EDA044A0057D8C3E667A343E2DCB18F2F79C155739635BCE7"
+      },
+      {
+        "FileDataID": 1370795,
+        "DurationSeconds": 4.808753,
+        "VoiceMs": 4809,
+        "Bytes": 32512,
+        "SHA256": "4740AED56B68198E127774F62C355A56922559E09E10A28B009430957AEFD0C5"
+      },
+      {
+        "FileDataID": 1370796,
+        "DurationSeconds": 4.694014,
+        "VoiceMs": 4695,
+        "Bytes": 30662,
+        "SHA256": "B6351116F20E6B52C1431D11E7F13F0A4155BD539E8356C5859F89705063076A"
+      },
+      {
+        "FileDataID": 1370797,
+        "DurationSeconds": 2.421043,
+        "VoiceMs": 2422,
+        "Bytes": 18106,
+        "SHA256": "4159F95284D68C8A3E108C7876307B93D11CE3AC03CD52A6F66472BF13B20855"
+      },
+      {
+        "FileDataID": 1370800,
+        "DurationSeconds": 3.535238,
+        "VoiceMs": 3536,
+        "Bytes": 25283,
+        "SHA256": "D2F8A221B6849981333F7F4346F797AA31B2D8E636450B850B86DF72FEDAD36F"
+      },
+      {
+        "FileDataID": 1370801,
+        "DurationSeconds": 9.608707,
+        "VoiceMs": 9609,
+        "Bytes": 62419,
+        "SHA256": "A9EE6E536114C8076C8B9E1D04B44989BA09465FD5EEEA4D948CFDD5DDA32F11"
+      },
+      {
+        "FileDataID": 1370803,
+        "DurationSeconds": 3.144308,
+        "VoiceMs": 3145,
+        "Bytes": 23123,
+        "SHA256": "79BDC4FDACD97730432A48946062CABDCEDF88E7AD584C63A8599D728E2643DE"
+      },
+      {
+        "FileDataID": 1370804,
+        "DurationSeconds": 2.957506,
+        "VoiceMs": 2958,
+        "Bytes": 21156,
+        "SHA256": "078B852E1074E35118F2A53AD3A3461EB9C8E89EF0335F69B1C31F9053C0226D"
+      },
+      {
+        "FileDataID": 1370805,
+        "DurationSeconds": 4.176735,
+        "VoiceMs": 4177,
+        "Bytes": 30419,
+        "SHA256": "F9E38218F11EE9E1EB0ACEEBED9849C6BFC53B55B33CB9D86AA1FA5AA48AECAA"
+      }
+    ],
+    "conversations": [
+      {
+        "Conversation": 1906,
+        "OriginalActorSumMs": 8433,
+        "OriginalLifetimeMs": 13433,
+        "AbsoluteLineEndMs": 23788,
+        "SequentialLineEndMs": 23597,
+        "RequiredActorSumMs": 23788,
+        "RepairedLifetimeMs": 28788,
+        "NativePaddingMs": 5000,
+        "Lines": [
+          {
+            "Line": 4028,
+            "OffsetMs": 0,
+            "VoiceMs": 6198,
+            "AdditionalMs": 500,
+            "AbsoluteEndMs": 6698,
+            "SequentialEndMs": 6698
+          },
+          {
+            "Line": 4029,
+            "OffsetMs": 6267,
+            "VoiceMs": 2973,
+            "AdditionalMs": 500,
+            "AbsoluteEndMs": 9740,
+            "SequentialEndMs": 10171
+          },
+          {
+            "Line": 4030,
+            "OffsetMs": 10932,
+            "VoiceMs": 4809,
+            "AdditionalMs": 500,
+            "AbsoluteEndMs": 16241,
+            "SequentialEndMs": 15480
+          },
+          {
+            "Line": 4031,
+            "OffsetMs": 15983,
+            "VoiceMs": 4695,
+            "AdditionalMs": 500,
+            "AbsoluteEndMs": 21178,
+            "SequentialEndMs": 20675
+          },
+          {
+            "Line": 4032,
+            "OffsetMs": 20866,
+            "VoiceMs": 2422,
+            "AdditionalMs": 500,
+            "AbsoluteEndMs": 23788,
+            "SequentialEndMs": 23597
+          }
+        ],
+        "ClientPlaybackVerified": false
+      },
+      {
+        "Conversation": 1923,
+        "OriginalActorSumMs": 13800,
+        "OriginalLifetimeMs": 18800,
+        "AbsoluteLineEndMs": 23727,
+        "SequentialLineEndMs": 21889,
+        "RequiredActorSumMs": 23727,
+        "RepairedLifetimeMs": 28727,
+        "NativePaddingMs": 5000,
+        "Lines": [
+          {
+            "Line": 4066,
+            "OffsetMs": 0,
+            "VoiceMs": 9609,
+            "AdditionalMs": 500,
+            "AbsoluteEndMs": 10109,
+            "SequentialEndMs": 10109
+          },
+          {
+            "Line": 4068,
+            "OffsetMs": 12950,
+            "VoiceMs": 3145,
+            "AdditionalMs": 500,
+            "AbsoluteEndMs": 16595,
+            "SequentialEndMs": 13754
+          },
+          {
+            "Line": 4069,
+            "OffsetMs": 14700,
+            "VoiceMs": 2958,
+            "AdditionalMs": 500,
+            "AbsoluteEndMs": 18158,
+            "SequentialEndMs": 17212
+          },
+          {
+            "Line": 4071,
+            "OffsetMs": 19050,
+            "VoiceMs": 4177,
+            "AdditionalMs": 500,
+            "AbsoluteEndMs": 23727,
+            "SequentialEndMs": 21889
+          }
+        ],
+        "ClientPlaybackVerified": false
+      }
+    ],
+    "derivation": "For each native line, use maximum actual voice duration across its gender kits/files, round milliseconds upward, include native AdditionalDuration500. Preserve original World start offsets. Required budget=max(last absolute offset+voice+gap, sequential sum of voices+gaps); retain native5000 padding in addition.1906 absolute23788/sequential23597;1923 absolute23727/sequential21889. Take-up111294/60709/1370800 also decoded for continued research, not newly played by this fix."
+  },
+  "validation": {
+    "native": "19 ASAN contexts compile actual complete native GenerateDynamicFieldData, creation duration fragment, personal group visibility, CanNeverSee2 and Update. Both original lifetimes expire before actual last-line start; repaired lifetimes retain all3+3 creature GUID bindings and9 line fields until full budget/native padding, strict > deadline, quest cleanup/replay and native group-first owner playback clock. Controlled missing actors and dead Lady still reject native creation; no fabricated solution to those separate callers.",
+    "data": "Temporary native MariaDB original and applied fixtures: exactly2 duration fields changed; other actors/line/unknown data and unrelated sentinels unchanged. Double apply idempotent.13 custom/partial/overlay/missing/extra/wrong-offset/unknown/identity/duration cases each produce exactly one expected SIGNAL and preserve full rows. Full EOF/stdout/stderr captured. Separate before/after real World readback confirms tests write only temporary tables. Final VerifyLiveData matches actual updater-applied rows.",
+    "audio": "Persistent Test-SharasdalFinaleVoiceAudio verifies ten exact payload byte lengths/SHA256, full Vorbis decode/metadata, fresh native9 line/BCT/kit/file/gender chains and corrected baseline sums; derived budgets23788/23727 match applied temporary fixtures. No media committed.",
+    "pe": "Canonical verify_hruthnir_conversation_release proves actual40-byte creature vector duration32 accumulation, native Create fallback30000/add5000/actual deadline field12+duration4dc, real Update expiry, constructor CanNeverSee2 slot168 and WorldObject viewer dispatch. Binary is unchanged by data repair; source compiled regression and actual applied readback are separate evidence.",
+    "tooling_correction": "First asset research correctly read/decoded ten files but indexed creature duration at field8 instead of7, reporting an invalid5000ms original lifetime for both. This draft baseline calculation is rejected, not a passing original budget certificate. Corrected assets2 validates field count and exact original8433/13800 sums, preserves first evidence, and paired persistent native/data/audio tests pass before migration promotion. No production data used the draft values."
+  },
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_31_02_sharasdal_finale_voice_duration.sql",
+    "sql_sha256": "e8fbc2d961eeca7f0780e9fe45f583a21c7dc84bd98f41cf766fd32faf2daff4",
+    "sql_lf_sha1": "1fb277d771bbf32084583203ae0978e414010e2a",
+    "updater": "Actual updates row RELEASED hash1FB277D771BBF32084583203AE0978E414010E2A; canonical startup and full live tuple readback pass. Data-only migration tested outside live updater before promotion; no new C++ registration dependency.",
+    "directory": "build-extractors/bin/Release",
+    "hashes": {
+      "worldserver.exe": "fa95d2db01a6db56a8375f6fef4030d3a106c3c60d2eb47d764542b928ce33db",
+      "worldserver.map": "a64891b777c89ab429bc57f218341b48d48b4935ebf03416e187da7ba9504be0",
+      "bnetserver.exe": "f3a675476e9189443f22ad5624edb013def44e1950736222c3ff976c5d6a7dcf",
+      "bnetserver.map": "f110141bebf8ba50444a786ec6eabfb71c12abd05afd39aca998136a2309e912"
+    },
+    "runtime": "Owned7884 reached ready, graceful shutdown0/exit0/newDBErrors0/stderr empty and gone. No user/unknown server stopped or background server retained. Existing canonical FA95D2DB executable and protected config/cert/DLL hashes unchanged."
+  },
+  "diagnostics": "Every native/data/CASC/audio/build-probe/PE/promotion/startup test has repository/canonical/own-runtime before/after crash/log snapshots and exit/stdout/stderr review. No new/changed crashes or appended server warnings/errors/assertions/DBErrors. Temporary SQL13 expected refusals are counterfactual guard tests, not normal errors or server DBErrors. Canonical Crashes empty. Mixed6090-byte shared101430/103151LINK2 DBErrors hash8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged/unresolved; never cleared or archived fixed. Closed budget evidence archive follows fix commit.",
+  "remaining": [
+    "Actual client voice/rendering/scheduling/possible original offset overlap still require user traversal. Lifetimes cover conservative native audio budgets; do not claim the conversation starts from the correct caller/stage or that old NPC-caster expiry is repaired.",
+    "Lady original104856 JustDied still selects nearest Player and dereferences killer for1923. Correct real362095 versus illusion362091/owner/null/surrender/native1906 and post-pickup1923 placement remain OPEN. Native creature lookup needs living Lady; a duration-only repair cannot create1906 after ordinary death.",
+    "249342 native loot link0/activation AddItem/delete/direct completion, actual full bags/equip209685/scene209684/return remain OPEN, as do companion route interruptions/full1066/all36/Glow/Survival/WardstoneLINK4/sharedLINK2/Stromkar/client. See separate final-boss-pickup research audit; no reset performed."
+  ]
+}

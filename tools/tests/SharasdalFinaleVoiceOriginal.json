@@ -1,0 +1,133 @@
+{
+  "conversation_data": [
+    {
+      "entry": 1906,
+      "id": 4028,
+      "textId": 0,
+      "unk1": 3269427312,
+      "unk2": 0,
+      "idx": 0
+    },
+    {
+      "entry": 1906,
+      "id": 4029,
+      "textId": 6267,
+      "unk1": 3269427312,
+      "unk2": 1,
+      "idx": 1
+    },
+    {
+      "entry": 1906,
+      "id": 4030,
+      "textId": 10932,
+      "unk1": 3269427312,
+      "unk2": 2,
+      "idx": 2
+    },
+    {
+      "entry": 1906,
+      "id": 4031,
+      "textId": 15983,
+      "unk1": 3269427312,
+      "unk2": 0,
+      "idx": 3
+    },
+    {
+      "entry": 1906,
+      "id": 4032,
+      "textId": 20866,
+      "unk1": 3269427312,
+      "unk2": 2,
+      "idx": 4
+    },
+    {
+      "entry": 1923,
+      "id": 4066,
+      "textId": 0,
+      "unk1": 0,
+      "unk2": 0,
+      "idx": 0
+    },
+    {
+      "entry": 1923,
+      "id": 4068,
+      "textId": 12950,
+      "unk1": 0,
+      "unk2": 1,
+      "idx": 1
+    },
+    {
+      "entry": 1923,
+      "id": 4069,
+      "textId": 14700,
+      "unk1": 0,
+      "unk2": 0,
+      "idx": 2
+    },
+    {
+      "entry": 1923,
+      "id": 4071,
+      "textId": 19050,
+      "unk1": 0,
+      "unk2": 2,
+      "idx": 3
+    }
+  ],
+  "conversation_creature": [
+    {
+      "entry": 1906,
+      "id": 0,
+      "creatureId": 102826,
+      "creatureGuid": 743508,
+      "unk1": 0,
+      "unk2": 0,
+      "duration": 2811
+    },
+    {
+      "entry": 1906,
+      "id": 1,
+      "creatureId": 104856,
+      "creatureGuid": 743605,
+      "unk1": 0,
+      "unk2": 0,
+      "duration": 2811
+    },
+    {
+      "entry": 1906,
+      "id": 2,
+      "creatureId": 105298,
+      "creatureGuid": 743508,
+      "unk1": 0,
+      "unk2": 0,
+      "duration": 2811
+    },
+    {
+      "entry": 1923,
+      "id": 0,
+      "creatureId": 102826,
+      "creatureGuid": 7195931,
+      "unk1": 0,
+      "unk2": 0,
+      "duration": 4600
+    },
+    {
+      "entry": 1923,
+      "id": 1,
+      "creatureId": 105298,
+      "creatureGuid": 7195931,
+      "unk1": 0,
+      "unk2": 0,
+      "duration": 4600
+    },
+    {
+      "entry": 1923,
+      "id": 2,
+      "creatureId": 104853,
+      "creatureGuid": 7195931,
+      "unk1": 0,
+      "unk2": 0,
+      "duration": 4600
+    }
+  ],
+  "conversation_actor": []
+}

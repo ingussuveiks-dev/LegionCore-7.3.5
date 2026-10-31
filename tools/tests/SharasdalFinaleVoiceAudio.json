@@ -1,0 +1,325 @@
+{
+  "Build": "7.3.5.26972",
+  "Payloads": [
+    {
+      "FileDataID": 1370793,
+      "DurationSeconds": 6.197324,
+      "VoiceMs": 6198,
+      "Bytes": 40659,
+      "SHA256": "4A84A75F02D16EF4440E82999063A4AD67BB6204D6A5A6B76CEAACAE0FF6CC32"
+    },
+    {
+      "FileDataID": 1370794,
+      "DurationSeconds": 2.972925,
+      "VoiceMs": 2973,
+      "Bytes": 21790,
+      "SHA256": "2DDE2E5A92AD1F4EDA044A0057D8C3E667A343E2DCB18F2F79C155739635BCE7"
+    },
+    {
+      "FileDataID": 1370795,
+      "DurationSeconds": 4.808753,
+      "VoiceMs": 4809,
+      "Bytes": 32512,
+      "SHA256": "4740AED56B68198E127774F62C355A56922559E09E10A28B009430957AEFD0C5"
+    },
+    {
+      "FileDataID": 1370796,
+      "DurationSeconds": 4.694014,
+      "VoiceMs": 4695,
+      "Bytes": 30662,
+      "SHA256": "B6351116F20E6B52C1431D11E7F13F0A4155BD539E8356C5859F89705063076A"
+    },
+    {
+      "FileDataID": 1370797,
+      "DurationSeconds": 2.421043,
+      "VoiceMs": 2422,
+      "Bytes": 18106,
+      "SHA256": "4159F95284D68C8A3E108C7876307B93D11CE3AC03CD52A6F66472BF13B20855"
+    },
+    {
+      "FileDataID": 1370800,
+      "DurationSeconds": 3.535238,
+      "VoiceMs": 3536,
+      "Bytes": 25283,
+      "SHA256": "D2F8A221B6849981333F7F4346F797AA31B2D8E636450B850B86DF72FEDAD36F"
+    },
+    {
+      "FileDataID": 1370801,
+      "DurationSeconds": 9.608707,
+      "VoiceMs": 9609,
+      "Bytes": 62419,
+      "SHA256": "A9EE6E536114C8076C8B9E1D04B44989BA09465FD5EEEA4D948CFDD5DDA32F11"
+    },
+    {
+      "FileDataID": 1370803,
+      "DurationSeconds": 3.144308,
+      "VoiceMs": 3145,
+      "Bytes": 23123,
+      "SHA256": "79BDC4FDACD97730432A48946062CABDCEDF88E7AD584C63A8599D728E2643DE"
+    },
+    {
+      "FileDataID": 1370804,
+      "DurationSeconds": 2.957506,
+      "VoiceMs": 2958,
+      "Bytes": 21156,
+      "SHA256": "078B852E1074E35118F2A53AD3A3461EB9C8E89EF0335F69B1C31F9053C0226D"
+    },
+    {
+      "FileDataID": 1370805,
+      "DurationSeconds": 4.176735,
+      "VoiceMs": 4177,
+      "Bytes": 30419,
+      "SHA256": "F9E38218F11EE9E1EB0ACEEBED9849C6BFC53B55B33CB9D86AA1FA5AA48AECAA"
+    }
+  ],
+  "Files": [
+    [
+      60702,
+      1370793
+    ],
+    [
+      60703,
+      1370794
+    ],
+    [
+      60704,
+      1370795
+    ],
+    [
+      60705,
+      1370796
+    ],
+    [
+      60706,
+      1370797
+    ],
+    [
+      60709,
+      1370800
+    ],
+    [
+      60710,
+      1370801
+    ],
+    [
+      60711,
+      1370803
+    ],
+    [
+      60712,
+      1370804
+    ],
+    [
+      60713,
+      1370805
+    ]
+  ],
+  "Texts": [
+    [
+      108591,
+      60702,
+      0
+    ],
+    [
+      108592,
+      0,
+      60703
+    ],
+    [
+      108593,
+      60704,
+      0
+    ],
+    [
+      108594,
+      60705,
+      0
+    ],
+    [
+      108595,
+      60706,
+      0
+    ],
+    [
+      108721,
+      60710,
+      0
+    ],
+    [
+      108722,
+      60711,
+      0
+    ],
+    [
+      108723,
+      60712,
+      0
+    ],
+    [
+      108724,
+      0,
+      60713
+    ],
+    [
+      111294,
+      60709,
+      0
+    ]
+  ],
+  "Lines": [
+    [
+      4028,
+      108591,
+      500,
+      4029
+    ],
+    [
+      4029,
+      108592,
+      500,
+      4030
+    ],
+    [
+      4030,
+      108593,
+      500,
+      4031
+    ],
+    [
+      4031,
+      108594,
+      500,
+      4032
+    ],
+    [
+      4032,
+      108595,
+      500,
+      0
+    ],
+    [
+      4066,
+      108721,
+      500,
+      4068
+    ],
+    [
+      4068,
+      108722,
+      500,
+      4069
+    ],
+    [
+      4069,
+      108723,
+      500,
+      4071
+    ],
+    [
+      4071,
+      108724,
+      500,
+      0
+    ]
+  ],
+  "Conversations": [
+    {
+      "Conversation": 1906,
+      "OriginalActorSumMs": 8433,
+      "OriginalLifetimeMs": 13433,
+      "AbsoluteLineEndMs": 23788,
+      "SequentialLineEndMs": 23597,
+      "RequiredActorSumMs": 23788,
+      "RepairedLifetimeMs": 28788,
+      "NativePaddingMs": 5000,
+      "Lines": [
+        {
+          "Line": 4028,
+          "OffsetMs": 0,
+          "VoiceMs": 6198,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 6698,
+          "SequentialEndMs": 6698
+        },
+        {
+          "Line": 4029,
+          "OffsetMs": 6267,
+          "VoiceMs": 2973,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 9740,
+          "SequentialEndMs": 10171
+        },
+        {
+          "Line": 4030,
+          "OffsetMs": 10932,
+          "VoiceMs": 4809,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 16241,
+          "SequentialEndMs": 15480
+        },
+        {
+          "Line": 4031,
+          "OffsetMs": 15983,
+          "VoiceMs": 4695,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 21178,
+          "SequentialEndMs": 20675
+        },
+        {
+          "Line": 4032,
+          "OffsetMs": 20866,
+          "VoiceMs": 2422,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 23788,
+          "SequentialEndMs": 23597
+        }
+      ],
+      "ClientPlaybackVerified": false
+    },
+    {
+      "Conversation": 1923,
+      "OriginalActorSumMs": 13800,
+      "OriginalLifetimeMs": 18800,
+      "AbsoluteLineEndMs": 23727,
+      "SequentialLineEndMs": 21889,
+      "RequiredActorSumMs": 23727,
+      "RepairedLifetimeMs": 28727,
+      "NativePaddingMs": 5000,
+      "Lines": [
+        {
+          "Line": 4066,
+          "OffsetMs": 0,
+          "VoiceMs": 9609,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 10109,
+          "SequentialEndMs": 10109
+        },
+        {
+          "Line": 4068,
+          "OffsetMs": 12950,
+          "VoiceMs": 3145,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 16595,
+          "SequentialEndMs": 13754
+        },
+        {
+          "Line": 4069,
+          "OffsetMs": 14700,
+          "VoiceMs": 2958,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 18158,
+          "SequentialEndMs": 17212
+        },
+        {
+          "Line": 4071,
+          "OffsetMs": 19050,
+          "VoiceMs": 4177,
+          "AdditionalMs": 500,
+          "AbsoluteEndMs": 23727,
+          "SequentialEndMs": 21889
+        }
+      ],
+      "ClientPlaybackVerified": false
+    }
+  ]
+}
