@@ -13,6 +13,7 @@
 #include "SmartAI.h"
 #include "CreatureTextMgr.h"
 #include "TemporarySummon.h"
+#include "EventObjectData.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_temple_intro.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_belphiar.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_summerpetal.h"
@@ -30,10 +31,11 @@ template struct FixtureAccess<IntroStoryTag,&FuZanTempleIntro::Actor::_story>;
 struct IntroClockTag { using Type=std::map<ObjectGuid,uint32> Conversation::*; friend Type Access(IntroClockTag); };
 template struct FixtureAccess<IntroClockTag,&Conversation::playing>;
 
-static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bool withTempleRescue=false,bool withSummerpetal=false)
+static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bool withTempleRescue=false,bool withSummerpetal=false,bool withTransition=false)
 {
     Require(argc==3,"Private native config/runtime missing");
     Require(!withSummerpetal||withTempleRescue,"Summerpetal requires native rescue loader context");
+    Require(!withTransition||withSummerpetal,"EventObject transition requires the complete actual actor context");
     std::string error;Require(sConfigMgr->LoadInitial(argv[1],{},error),"Private config failed");
     sLog->Initialize(nullptr);MySQL::Library_Init();
     WorldDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("WorldDatabaseInfo",""),1,1);
@@ -50,6 +52,7 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     std::string sources="(entryorguid=109413 AND source_type IN(0,9))";
     if(withSanctuaryDoor)sources+=" OR (entryorguid IN(251591,-138378) AND source_type=1)";
     if(withTempleRescue)sources+=" OR (entryorguid IN(109393,109394,109395,109397,109355,109610) AND source_type=0)";
+    if(withTransition)sources+=" OR (entryorguid=103 AND source_type=13) OR (entryorguid=109465 AND source_type=0)";
     WorldDatabase.DirectExecute(("INSERT INTO fuzan_native_smart_seed SELECT * FROM smart_scripts WHERE "+sources).c_str());
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts LIKE fuzan_native_smart_seed");
     WorldDatabase.DirectExecute("INSERT INTO smart_scripts SELECT * FROM fuzan_native_smart_seed");
@@ -58,6 +61,7 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     if(withTempleRescue)conditionSources=withSanctuaryDoor?
         "SourceEntry IN(109413,251591,109393,109394,109395,109397,109355,109610)":
         "SourceEntry IN(109413,109393,109394,109395,109397,109355,109610)";
+    if(withTransition)conditionSources="("+conditionSources+" OR SourceEntry=103)";
     WorldDatabase.DirectExecute(("INSERT INTO fuzan_native_condition_seed SELECT * FROM conditions WHERE SourceTypeOrReferenceId=22 AND "+conditionSources).c_str());
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions LIKE fuzan_native_condition_seed");
     WorldDatabase.DirectExecute("INSERT INTO conditions SELECT * FROM fuzan_native_condition_seed");
@@ -110,7 +114,7 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     ro=LoginDatabase.Query("SELECT @@session.transaction_read_only");Require(ro&&ro->Fetch()[0].GetBool(),"Login not read-only");
     ro=CharacterDatabase.Query("SELECT @@session.transaction_read_only");Require(ro&&ro->Fetch()[0].GetBool(),"Character not read-only");
     auto count=WorldDatabase.Query("SELECT (SELECT COUNT(*) FROM smart_scripts),(SELECT COUNT(*) FROM conditions)");
-    Require(count&&count->Fetch()[0].GetUInt32()==3u+(withSanctuaryDoor?1u:0u)+(withTempleRescue?32u:0u)&&
+    Require(count&&count->Fetch()[0].GetUInt32()==3u+(withSanctuaryDoor?1u:0u)+(withTempleRescue?32u:0u)+(withTransition?6u:0u)&&
         count->Fetch()[1].GetUInt32()==14u+(withTempleRescue?1u:0u)+summerConditions,"Actual scoped loader rows changed");
     sDB2Manager.LoadStores(argv[2],LOCALE_enUS);LoadGameTables(argv[2]);
     sSpellMgr->LoadSpellInfoStore();sSpellMgr->LoadSpellRanks();sSpellMgr->LoadTalentSpellInfo();
@@ -185,6 +189,7 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     (sAchievementMgr->*Access(IntroCriteriaTag{})).assign(MAX_CRITERIA_TREE,nullptr);
     if(withSanctuaryDoor){sObjectMgr->LoadPageTexts();sObjectMgr->LoadGameObjectTemplate();}
     if(withTempleRescue){sCreatureTextMgr->LoadCreatureTexts();sSmartWaypointMgr->LoadFromDB();}
+    if(withTransition)sEventObjectDataStore->LoadEventObjectTemplates(); // Read-only template loader; never global spawn/clone maintenance.
     sSmartScriptMgr->LoadSmartAIFromDB();sConditionMgr->LoadConditions();sConversationDataStore->LoadConversationData();
     dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1625,{}}});
     MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1625,{}}});
