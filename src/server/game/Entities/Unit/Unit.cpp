@@ -12146,17 +12146,33 @@ void Unit::RemoveAllMinionsByFilter(uint32 ID, uint8 filter /*=0*/) //0 - by ent
 {
     if(filter)
     {
-        for (Unit::ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end();)
-        {
-            Unit* unit = ObjectAccessor::GetUnit(*this, *itr);
-            ++itr;
+        // Summon-controller auras also create ordinary TempSummons (for
+        // example 217302 -> 217304, properties 3331). Those belong to the
+        // summoner's entry lists, but never enter m_Controlled. Snapshot GUIDs
+        // before callbacks can remove or replace other summons.
+        ControlList const controlled = m_Controlled;
+        GuidSet candidates = controlled;
+        if (ID)
+            for (auto const& entry : tempSummonList)
+                candidates.insert(entry.second.begin(), entry.second.end());
 
+        for (ObjectGuid const& guid : candidates)
+        {
+            Unit* unit = ObjectAccessor::GetUnit(*this, guid);
             if (!unit || !unit->IsInWorld() || unit->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) != ID)
                 continue;
 
-            if (unit->ToCreature() && unit->ToCreature()->isSummon()) // minion, actually
-                unit->ToTempSummon()->UnSummon();
-            // i think this is safe because i have never heard that a despawned minion will trigger a same minion
+            Creature* creature = unit->ToCreature();
+            if (!creature || !creature->isSummon())
+                continue;
+
+            TempSummon* summon = creature->ToTempSummon();
+            // Preserve the existing controlled-unit branch. A stale entry
+            // list must not remove another player's ordinary summon.
+            if (!controlled.count(guid) && summon->GetSummonerGUID() != GetGUID())
+                continue;
+
+            summon->UnSummon();
         }
     }
     else

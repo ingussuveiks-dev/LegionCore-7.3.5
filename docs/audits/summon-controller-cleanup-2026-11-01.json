@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-01",
+  "status": "DEPLOYED focused native summon-controller cleanup; brewing starter/instructions/full ALL36 remain OPEN",
+  "cause": "AuraEffect::HandleSummonController removes its native trigger spell through RemoveAllMinionsByFilter(spell,1). That branch previously examined only m_Controlled. Native217302 ->217304 summons109224 using properties3331 (Control1/Title0), an ordinary personal TempSummon recorded in tempSummonList, not m_Controlled. Removing the controller left the NPC for its one-hour lifetime. Native old-binary cleanup assertion reproduces this after actual main217297 and native three-aura/bar380 setup.",
+  "fix": "Snapshot the original controlled GUID set and, for nonzero spell IDs, all native summon entry lists before callbacks. Resolve every candidate again, preserve existing controlled-unit filtering, and admit additional ordinary TempSummons only when CreatedBySpell matches and exact SummonerGUID is this owner. Deduplicate GUIDs. Keep filter0 entry cleanup/500ms behavior, zero-ID ordinary summons, native aura application, independent GO cleanup and diagnostics.",
+  "controlled_semantics": "The original controlled-set branch retains its previous admission, including already controlled summoned actors. Exact summoner ownership is required for the newly covered ordinary entry-list branch. No nearest-player/group cleanup, arbitrary entry deletion or quest/item credit added.",
+  "validation": [
+    "Pinned c8c57558d production method and unchanged actual Aura428 handler extracted into final ASAN fixture reproduce EXPECTED_BROKEN ordinary owned summon retention. Repaired31 cases pass: owner/control/spell/world matrix, missing/player/non-summon candidates, duplicate and repeated cleanup, callback removal/replacement of other objects and lists, callback-created summon excluded from current snapshot, zero-ID compatibility, unchanged entry filter and actual aura mode/apply/remove/GO cleanup.",
+    "Actual native26972/Hotfix/World in-memory probe with four read-only pools: Human/Orc Campfire CMSG_GAME_OBJ_USE demonstrates independent missing starter, then an explicitly controlled native217297 invocation creates exact-owner109224 and actual217302/217321/217332 with bar380 at0/4. The rebuilt real game.lib, native aura removal and native map removal delete that exact ordinary summon. No mocked cleanup, player login/account/character save or manual final credit. This controlled starting endpoint does not verify whole brewing quest or client presentation.",
+    "Original game Release target actually recompiles Unit.cpp to original game/Release/game.lib. Original final-link inputs used for both staged EXEs, no OutDir override. Staged and canonical PE/map verification finds native Aura428->RemoveAllMinionsByFilter, controlled snapshot, ordinary entry-list traversal, exact128-bit summoner guard before real UnSummon, retained RemoveGameObject and no quest-grant calls.",
+    "WarlockRegression, HunterPetAuras including typed native requirement, ScepterLogin -VerifyReleaseBinary and AuraScriptReentry pass. Existing shared fixture/compiler warnings remain visible; no warning or runtime diagnostic disabled.",
+    "Offline four-file canonical promotion with verified backup/source/destination and preserved config/certificate/DLL hashes. Owned canonical worldserver PID22316 reaches fresh ready, receives server shutdown0, exits0 and is gone; stderr empty. No user server stopped. Startup and every test have before/after crash/log checks."
+  ],
+  "iterations": {
+    "model": "First repaired ASAN run reached the final count assertion: matrix arithmetic was24+7=31, not55. Corrected fixture count/footer and model-only guid shadow warning; final31 pass, historical failure retained. No production guard relaxed.",
+    "native_bootstrap": "Early brewing probes omitted map870 registration, then GO/player hash registries, and cached native zone/area. Corrected fixture setup to real campfire5785/5974; terrain getters alone were insufficient because CheckCast uses cached current zone/area. These are fixture faults, not claimed production regressions.",
+    "native_session": "An early prototype deleted unauthenticated account0 WorldSession, whose destructor attempted UPDATE account online=0. READ ONLY blocked both attempts; no real account write. Final native fixture follows existing socketless session lifetime, detaches player and retains session until process teardown without authenticated logout. Logs remain open with the unfinished brewing research, not hidden/cleared.",
+    "pe": "First local inspection missed existing capstone module search path. Reused local .codex/pe-review-deps; selected stage and canonical checks pass. No dependency installed or security setting changed."
+  },
+  "release": {
+    "canonical_directory": "build-extractors/bin/Release",
+    "world_before_sha256": "7E102EB4B49DC7534A757B6DF88DE8F4E9E3DBE326962ED685DCFF4797FB9730",
+    "world_sha256": "486313E70A1E410EC916B821A3C660E67BE8CD9476DB5F53B5B582262784F00C",
+    "bnet_before_sha256": "3555FF074DA8D680B534FFEE4CF2EC4F593A4FE6DF3300AD3044CBD65DD10975",
+    "bnet_sha256": "8879BB249BF2F0DA2F02988B7BE9FB21B9FE038364CD291BE55274D9AD64446D",
+    "sql": "None. No new ScriptNames/migration/updater input. Existing World08/09 retained."
+  },
+  "diagnostics": {
+    "new_or_changed_crashes": [],
+    "passing_runs": "Final ASAN31, actual native cleanup, shared regressions, build/link/PE/promotion and owned startup have no unexplained appended DBErrors/server warnings/errors/assertions. Historical failing probes are explicitly classified above.",
+    "canonical_crashes": "Empty after owned shutdown.",
+    "canonical_mixed_DBErrors": "6090 bytes unchanged SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0; unrelated unresolved LINK2 history untouched/untruncated.",
+    "archive": "Pending focused verified fixed archive after fix commit; mixed/open brewing and Yigthregor evidence must remain outside fixed."
+  },
+  "limits": "Actual client disappearance/re-entry, logout/reconnect and complete minigame remain pending user tests. The independent missing Campfire main/instruction implementation is not repaired. No quest/item/character reset, progression grant, route invention or claim that all36 are complete.",
+  "evidence_sha256": {
+    ".codex/summon-controller-cleanup-baseline2-open-2026-11-01/stdout.log": "c71a0858ab71286f6eb944cf1aecfb40d38ffdad298bf8d99d4c312fbb1a76f9",
+    ".codex/summon-controller-cleanup-fixed1-open-2026-11-01/stdout.log": "961e67cdfccb529dbb109a08c0159dba18480d003a5758159fb21b560e1abbad",
+    ".codex/summon-controller-cleanup-fixed2-open-2026-11-01/stdout.log": "5c6e46706bbcb1d676c55ffffb417901a2529f274e5dcceb08e7a605d3e6d1c5",
+    ".codex/summon-controller-cleanup-canonical1-open-2026-11-01/stdout.log": "5c6e46706bbcb1d676c55ffffb417901a2529f274e5dcceb08e7a605d3e6d1c5",
+    ".codex/summon-controller-cleanup-native1-open-2026-11-01/run/stdout.log": "3ce327f47d390819a530590dbb3a7a437c577488fd29df5ecb1a9e969251f9c0",
+    ".codex/summon-controller-cleanup-native1-open-2026-11-01/run/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".codex/summon-controller-cleanup-native1-open-2026-11-01/run/process-result.json": "84526a02276c6df2382861e62b133019f679de668fcb5aa804492209e4387ab1",
+    ".codex/summon-controller-cleanup-game-build1.log": "53b0210b26af192167828ffc5f20529d4e637f263e664baf23fee1ee4654a5bc",
+    ".codex/summon-controller-cleanup-stage-pe1-launch.log": "b24ac9c36a4b22ebb8019b14c37fdd82db0547fc1543d0400ea7a2d9c1c31271",
+    ".codex/summon-controller-cleanup-startup1-launch.log": "227e3c7fb73daaaaa9284377ac8f01cb99ef67ace9465040c61ae399021f0512",
+    ".codex/release-before-summon-controller-cleanup-2026-11-01/manifest.json": "a2ea123df5118e003b57b107d8087b9c9a4a08b4d0090c41801ec54ba11556ae"
+  }
+}

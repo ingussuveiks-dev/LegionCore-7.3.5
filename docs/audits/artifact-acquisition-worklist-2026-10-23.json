@@ -1,4 +1,10 @@
 {
+  "latest_summon_controller_cleanup_2026_11_01": {
+    "audit": "docs/audits/summon-controller-cleanup-2026-11-01.json",
+    "status": "DEPLOYED focused native summon-controller cleanup; brewing starter/instructions/full ALL36 remain OPEN",
+    "world_sha256": "486313E70A1E410EC916B821A3C660E67BE8CD9476DB5F53B5B582262784F00C",
+    "next": "Implement Fu Zan42868 actual Campfire starter and native four-ingredient instruction/retry lifecycle; keep original Yu lon ride, Yigthregor path and remaining36/client issues open. No reset."
+  },
   "latest_fuzan_return_flight_research_2026_11_01": {
     "audit": "docs/audits/fuzan-return-flight-research-2026-11-01.json",
     "status": "OPEN: original Yu lon return boarding/flight absent locally; Yigthregor waypoint intent still unresolved",
