@@ -1,5 +1,7 @@
 {
   "latest_fuzan_defense_dialogue_2026_11_01": {
+    "fix_commit": "02719f982",
+    "archive": "docs/audits/fuzan-defense-dialogue-archive-2026-11-01.json",
     "audit": "docs/audits/fuzan-defense-dialogue-2026-11-01.json",
     "status": "DEPLOYED B187F6DD: remove premature raw32-death Yu'lon reply; preserve native weighted100 defense/51 SmartAI rows/20 conditions and authored Korithis dialogue.20 pinned expected-broken/25 repaired ASAN cases, actual26972 trees/live equality, Monk loot/scene retained, staged+canonical factory PE/Scepter/owned19696 ready+graceful0 clean. No SQL/character reset; client/full42765/all36 remain OPEN.",
     "next": "Continue Fu Zan earlier admission/rescue and actual Korithis/full loot/equip/return/client checks, plus other independent36 fixes. Keep LiLi7/8/Ponshu10 and sharedWardstoneLINK findings visible."

@@ -1,0 +1,11 @@
+{
+  "fix_commit": "02719f982",
+  "directory": "build-extractors/bin/Release/fixed/fuzan-defense-dialogue-2026-11-01",
+  "source_files": 447,
+  "manifest_entries": 457,
+  "manifest_sha256": "bf4f38e55d762769cb3f1ec76c36cc9994d5df4c28abccec5fb357087d863e9a",
+  "verification": "Source/archive/source SHA256 checked for every copied file, then all457 final manifest entries rehashed successfully. Archive and final verification wrappers clean: no new/changed crashes, appended DBErrors or server warnings/errors/assertions. Originals retained; active Crashes already empty. No log removed or truncated.",
+  "scope": "Only focused Fu Zan defense/dialogue source/native/data/build/stage/PE/promotion/startup and retained-check evidence.20 expected-broken old cases paired with25 passing repaired ASAN cases,51 native SmartAI/20 conditions and actual26972 weighted100 tree, canonicalB187F6DD factory/Scepter and owned19696 ready/shutdown0/exit0/gone. Complete client42765 and all36 are not certified.",
+  "reviewed_failures": "Readonly World1 absent name/World2 absent Map are paired with full-EOF World3. Native1 missing config environment paired with2/3. Baseline1 omitted host condition bridge and baseline2 wrong14-column fixture assertion paired with baseline3/4 and fixed1..3. All are described in the implementation audit. Existing pinned unused-parameter and retained signed/narrowing warnings remain visible. No unresolved crash copied as fixed.",
+  "deferred": "Mixed canonical DBErrors6090 SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 and unrelated Native39 partial-ASAN limitation remain outside this archive. User owns client traversal; native failed-path/missing-actor retry and earlier/later full Fu Zan lifecycle remain independent follow-up checks. No credentials, binaries, dumps or character data included."
+}

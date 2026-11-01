@@ -43,5 +43,7 @@
     ".codex/fuzan-temple-defense-canonical-checks1-open-2026-11-01",
     ".codex/fuzan-temple-defense-startup1-open-2026-11-01"
   ],
-  "next": "Continue full Fu Zan42765 lifecycle from earlier admissions/rescues through actual Korithis, real pickup/scene/equip and return, plus other remaining36 chains. Client visual/audio/combat/travel and original path-start/missing-actor retry are not certified by the controlled source regression. No character/quest/item reset."
+  "next": "Continue full Fu Zan42765 lifecycle from earlier admissions/rescues through actual Korithis, real pickup/scene/equip and return, plus other remaining36 chains. Client visual/audio/combat/travel and original path-start/missing-actor retry are not certified by the controlled source regression. No character/quest/item reset.",
+  "fix_commit": "02719f982",
+  "archive": "docs/audits/fuzan-defense-dialogue-archive-2026-11-01.json"
 }
