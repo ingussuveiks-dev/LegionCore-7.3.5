@@ -4,6 +4,17 @@
 
 #include "ScriptMgr.h"
 #include "InstanceScript.h"
+#include "SmartAI.h"
+#include "ConditionMgr.h"
+#include "Conversation.h"
+#include "Map.h"
+#include "ObjectAccessor.h"
+#include "QuestData.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include "Spell.h"
+#include "SpellScript.h"
+#include "fuzan_temple_intro.h"
 
 class instance_temple_of_the_jade_serpent : public InstanceMapScript
 {
@@ -22,4 +33,7 @@ public:
 void AddSC_instance_temple_of_the_jade_serpent()
 {
     new instance_temple_of_the_jade_serpent();
+    RegisterCreatureAI(npc_fuzan_temple_intro);
+    RegisterSpellScript(spell_fuzan_temple_intro);
+    RegisterSpellScript(spell_fuzan_temple_complete);
 }

@@ -24,7 +24,11 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_11_01_02_fuzan_
  $filters=[ordered]@{smart_scripts='entryorguid=109413 AND source_type IN(0,9)';conditions='SourceTypeOrReferenceId=22 AND SourceEntry=109413';creature_template='entry=109413';creature='id=109413'}
  $orders=@{smart_scripts='source_type,id';conditions='SourceGroup,SourceId,ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1';creature_template='entry';creature='guid'}
  $setup='';foreach($table in $filters.Keys){$setup+="CREATE TEMPORARY TABLE saved_$table LIKE $table;INSERT INTO saved_$table SELECT * FROM $table WHERE $($filters[$table]);CREATE TEMPORARY TABLE $table LIKE saved_$table;INSERT INTO $table SELECT * FROM saved_$table;`n"}
- $baseline="DELETE FROM conditions WHERE $($filters.conditions);`n"
+ # World03 legitimately binds the new scoped controller while retaining
+ # this exact admission policy. Certify its complete two-spell delta before
+ # normalizing only the ScriptName in this older migration's TEMP fixture.
+ $normalize="UPDATE creature_template SET ScriptName='' WHERE entry=109413 AND ScriptName='npc_fuzan_temple_intro' AND (SELECT COUNT(*) FROM spell_script_names WHERE spell_id IN(217775,217774))=2 AND EXISTS(SELECT 1 FROM spell_script_names WHERE spell_id=217775 AND ScriptName='spell_fuzan_temple_intro') AND EXISTS(SELECT 1 FROM spell_script_names WHERE spell_id=217774 AND ScriptName='spell_fuzan_temple_complete');`n"
+ $baseline=$normalize+"DELETE FROM conditions WHERE $($filters.conditions);`n"
  function Snapshot([string]$tag){$s='';foreach($table in $filters.Keys){$s+="SELECT '$tag-$table',t.* FROM $table t WHERE $($filters[$table]) ORDER BY $($orders[$table]);`n"};$s}
  function Signature($rows,[string]$tag){[string]::Join("`n",[string[]]@($rows|Where-Object {$_ -like "$tag`t*"}|ForEach-Object {$_.Substring($tag.Length+1)}))}
  $rows=Query ($setup+$baseline+(Snapshot 'original')+$migration+(Snapshot 'first')+$migration+(Snapshot 'second'))
@@ -54,6 +58,6 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_11_01_02_fuzan_
   foreach($table in $filters.Keys){if((Signature $bad "before-$table") -cne (Signature $bad "after-$table")){throw "Refusal mutated rows: $name/$table"}}
   "PASS refusal $name"
  }
- if($VerifyLiveData){$live=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Live Fu Zan admission differs: $table"}}}
+ if($VerifyLiveData){$live=Query ($setup+$normalize+(Snapshot 'live'));foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Live Fu Zan admission differs: $table"}}}
  'PASS Fu Zan intro full-schema TEMP4 tables:14 exact admission predicates only; unchanged native3-row cast/list/30s event, template and spawn; idempotence/12 refusals and optional live equality'
 }
