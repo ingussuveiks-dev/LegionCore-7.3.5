@@ -1,6 +1,7 @@
 {
   "latest_fuzan_brewing_implementation_2026_11_01": {
     "audit": "docs/audits/fuzan-brewing-implementation-2026-11-01.json",
+    "archive_audit": "docs/audits/fuzan-brewing-archive-2026-11-01.json",
     "status": "DEPLOYED native/server brewing42868 restoration; actual client/retail fidelity and ALL36 remain OPEN",
     "world_sha256": "072C4EB632A6B0B2FF9E3CC72D9E076295F5471315FA0B10696DA85F2C9553A5",
     "checks": "Human/Orc solo+group owner native four actual ingredient packets,27 alternatives each, live data15schemas/21refusals, actual guarded canonical PE, owned startup296exit0. No new diagnostics; mixed6090 DBErrors retained.",

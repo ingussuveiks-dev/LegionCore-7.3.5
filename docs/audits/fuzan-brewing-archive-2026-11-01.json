@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-01",
+  "implementation_commit": "87311432f0845f027239ee3959b39c380cedadb5",
+  "related_verifier_commit": "f176ef601",
+  "related_native_controller_cleanup_commit": "85872b7ac3ee4918fc99870b60d3f0e920105e14",
+  "implementation_audit": "docs/audits/fuzan-brewing-implementation-2026-11-01.json",
+  "cause_and_fix": "Restore actual42868 source/native recipe receipt/lifetime control, preserve native personal217331 completion and unrelated classes/summons; initialize the native fixture proc table and repair reviewed iteration/inspection errors. Final live Human/Orc solo+group-owner traversals,27 named alternatives, ASAN/ordinary fixtures, full15-schema/21refusal data, actual guarded canonical PE and owned startup pass.",
+  "archive": "build-extractors/bin/Release/fixed/fuzan-brewing-2026-11-01/verified1",
+  "verified_at_utc": "2026-11-01T19:31:32.2254788Z",
+  "source_files": 1196,
+  "manifested_payload_files": 1198,
+  "total_files_including_verified_manifest": 1199,
+  "verified_manifest_sha256": "D2B60B10FED815E9002476942C5C747C7C0F4171655300163C6952645E3425D1",
+  "verification": "Each selected original source was hashed before copy, the archived bytes and original source were hashed after copy, and all original sources and final archived payloads were verified again. Original bytes remain in place. The final manifest records1198 payload files; its own file is additional.",
+  "classification": "Expected counterfactuals, failed prototypes and superseded candidates are retained with causes in issue-review.json. Native1..8 proc initialization omission is paired with final live22/23 corrected runs. Existing PE field/inline checks are separately fixed in f176ef601. These failures are not ordinary successful quest runs.",
+  "excluded": "Runtime configurations/credentials, executables, PDBs, dumps, client media and real character data. Earlier exploratory catalog/start/recipe folders remain separate. Unresolved Yigthregor/mixed canonical errors are not classified as fixed.",
+  "runtime": {
+    "world_sha256": "072C4EB632A6B0B2FF9E3CC72D9E076295F5471315FA0B10696DA85F2C9553A5",
+    "bnet_sha256": "DADDE450601D70E4ECA45A5AA9EA270A7CFE6A67977AAB98816A5CE88858A5E7",
+    "world10_lf_sha1": "1F400B32B9ACA7ADB29336C502C622975D88AF15",
+    "owned_servers": "PID956 and final PID296 both reached ready and gracefully exited0; stderr empty, no task server left. No user/unknown server stopped.",
+    "active_crashes": 0,
+    "unresolved_db_errors": "6090 bytes/SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged. Not archived as resolved and not truncated.",
+    "maintenance": "No active crash file needed removal. No active log was rotated/truncated; informative Server history preserved. No security quarantine boundary altered."
+  },
+  "post_test_diagnostics": ".codex/fuzan-brewing-archive1-open-2026-11-01: completed, no new/changed crashes, appended DBErrors or server warnings/errors/assertions",
+  "remaining": "Actual client/fidelity checks, original Yu lon flight, Yigthregor missing path and the remaining ALL36 worklist stay OPEN. Fixed archival certifies this reviewed repair/evidence only."
+}
