@@ -1,0 +1,24 @@
+{
+  "fix_commit": "44d3f5701",
+  "directory": "build-extractors/bin/Release/fixed/sheilun-manual-acquisition-2026-11-01",
+  "manifest_sha256": "7501cb9e82d66f1298633c238f50b55dda4fef6cbacc04cb27086d99aa05c65d",
+  "source_files": 2937,
+  "manifest_entries": 2947,
+  "scope": "Reviewed focused acquisition, source/native/data/build/PE/promotion/startup/live readback and fresh structural audit evidence, including failed iterations paired with the final regressions. Source/archive/source SHA256 verified; originals retained. No configs, binaries, dumps, character data or mixed canonical logs copied. No active crash removed or log truncated.",
+  "checks": "Live Native42:10 source/8 return/1 completed-outro rejoin/2 before-save memory cases; pinned Baseline3:8 expected-broken cases; live SQL11:29 temporary-shadow cases; retained handler ASAN and admission checks; original full Release game6/scripts7; canonical22-function PE and Scepter; owned11828 ready/graceful shutdown0/exit0/gone. Canonical D22B1F3E and released World01 were present before archive. Actual client traversal remains separate.",
+  "reviewed_failures": [
+    "Build1 used incorrect local field/logger names; build3 lacked QuestData.h. Correct native APIs/includes compile in final game6/scripts7.",
+    "Early readonly data capture used a mismatched EOF label; data2 reaches the helper's expected read-world sentinel. SQL1 readonly temporary creation, SQL3 same-name LIKE alias, SQL4/5 mistaken12-root assumption were corrected to native seeded temporary tables and7 roots/5 LINK. SQL8 updated both route siblings in a refusal fixture; exact Map1541 scope preserves the base row. Final live SQL11 passes29 cases. SQL2 and other early transport failures retain complete output after separately committed a878b1c1f.",
+    "Native prerequisite failures: criteria-data/accessor/page-text/character-XP/real display/instance-template setup; native2's only nonempty copied DBErrors is missing PageText bootstrap, paired with real loader in final42 and clean diagnostics. Pet/guardian fixtures now use native Minion initialization; shared owner semantics unchanged.",
+    "Native19/24/28/37 assertion/crash fixtures used missing display/index, double-owned guardian and plain Map parent; final typed MapInstanced fixture42 and baseline3 pass. Reused logout fixture finishes its old exit spline before safe-pose ACK; save proof uses actual prepared statement memory without executing character SQL.",
+    "Native20 exposed actual return-driver timing; Map now binds accepted private scope before AddToWorld/accessory creation. Native31..33 exposed real missing1168 entrance/obsolete difficulty8, fixed by guarded World01 and native live42. Early source opening and claim guards are paired with final real NPC/GO loot, full-bag retry, pet/guardian/ally cases.",
+    "Native21 session registry/WorldPortAck bootstrap and native41 timer-only text accessor were fixture errors; final real-session registry and actual text loader map pass. Retained hosts and surrounding source certificates explicitly account for the new API without disabling their functional checks.",
+    "PE1..4 and retained-PE1 assumed compiler instruction order, int8 argument width or non-inlined calls. Corrected checks validate actual basic-block/call/data flow in canonical PE1 and retained-PE2. Probe1 import failure is paired with probe2."
+  ],
+  "deferred_unresolved": [
+    "Native39 partial-ASAN link never executed due to instrumented/uninstrumented dependency annotation mismatches. Its runtime/evidence/PDB receipt remain outside fixed; no mismatch suppression or full-core ASAN pass claimed.",
+    "Canonical mixed DBErrors6090 SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 remains untouched and unresolved. Wardstone101325LINK4 and101430/103151LINK2 are separate from the fresh structural report's100438/100475 actor links.",
+    "Full client41003/all36, real authenticated save/reconnect, complete visual/audio/camera/pet behavior and unrecovered retail first-flight geometry remain open. Fresh structural36 routes/149 race-class pairs/0 automated findings retains3 actor-link reviews and does not certify full chains."
+  ],
+  "post_archive_diagnostics": "Archive wrapper completed successfully, no new/changed crash, appended DBErrors or server warning/error/assertion; no task-owned or unknown server running. Active Crashes was already empty."
+}

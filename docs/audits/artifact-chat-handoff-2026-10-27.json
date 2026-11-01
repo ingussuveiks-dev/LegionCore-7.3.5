@@ -1,5 +1,7 @@
 {
   "latest_sheilun_manual_acquisition_2026_11_01": {
+    "fix_commit": "44d3f5701",
+    "archive": "docs/audits/sheilun-manual-acquisition-archive-2026-11-01.json",
     "audit": "docs/audits/sheilun-manual-acquisition-2026-11-01.json",
     "status": "DEPLOYED D22B1F3E/World01: manual owned native loot/storage/scene instead of automatic boss/GO grants; native boarded two-map return, cancellation, completed-outro rejoin and before-save safe position.10source/8return/1rejoin/2save native cases on actual live loaders,29 SQL shadows, retainedASAN, actual22-function PE/slot44, mandatoryScepter and owned11828 ready+shutdown0/exit0 clean. Fresh36/149/0 structural audit retains3 actor links. Mixed6090 unresolved, no task servers or character edits. Full client41003/all36 OPEN; partial-nativeASAN39 did not link and is not claimed passed.",
     "next": "Continue independent remaining artifact repairs; actual client full sequence/visual/audio/loot/equip/camera/pet/reconnect and native-derived first-flight fidelity remain separate checks. Preserve shared Tak-Tak19254 and original fresh-boot entrance restart; no quest/item reset."
