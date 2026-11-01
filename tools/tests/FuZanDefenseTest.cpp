@@ -14,7 +14,9 @@
 #include <vector>
 using uint32=uint32_t;using uint64=uint64_t;using uint8=uint8_t;using ReactStates=uint32;
 #include "EventConstants.inc"
+#include "ConditionTargetConstants.inc"
 struct Unit;struct Creature;struct Player;struct GameObject;struct SmartScript;struct World;
+using WorldObject=Unit;
 struct ObjectGuid {Unit* unit=nullptr;static ObjectGuid const Empty;void Clear(){unit=nullptr;}};
 ObjectGuid const ObjectGuid::Empty{};
 struct FakeAI {
@@ -66,7 +68,7 @@ template<class T> struct AchievementMgr {
 };
 #include "CriteriaEvaluator.inc"
 struct ConditionRow {uint32 entry,id,type,target,value1,value2,value3,negative;};
-struct ConditionSourceInfo {Unit* unit;Creature* base;ConditionSourceInfo(Unit* u,Creature* b):unit(u),base(b){}};
+struct ConditionSourceInfo {Unit* unit;Creature* base;Unit* mConditionTargets[MAX_CONDITION_TARGETS]{};ConditionSourceInfo(Unit* u,Creature* b):unit(u),base(b){mConditionTargets[0]=u;mConditionTargets[1]=b;}};
 using ConditionList=std::vector<ConditionRow>;
 struct Conditions {
  std::vector<ConditionRow> rows;World* world=nullptr;
@@ -142,8 +144,10 @@ struct SmartScript {
 void SmartScript::Update(uint32 diff){for(auto& e:mEvents)if(e.type==SMART_EVENT_UPDATE)ProcessEvent(e);
 #include "TextTimer.inc"
 void FakeAI::SetData(uint32 id,uint32 value){if(script)script->ProcessEventsFor(SMART_EVENT_DATA_SET,nullptr,id,value);}
-bool Conditions::IsObjectMeetToConditions(ConditionSourceInfo&,ConditionList const& list){
- for(auto c:list){bool ok=false;
+bool Conditions::IsObjectMeetToConditions(ConditionSourceInfo& sourceInfo,ConditionList const& list){
+ for(auto c:list){uint32 ConditionTarget=c.target;
+#include "ConditionObjectGuard.inc"
+  bool ok=false;
   switch(c.type){case 44:ok=c.value1==1137&&world->step==c.value2;break;
    case 52:assert(c.value1==49567);ok=world->Complete();break;
    case 29:ok=world->alive[c.value1]!=0;break;default:assert(false);

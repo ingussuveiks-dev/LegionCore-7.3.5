@@ -32,12 +32,13 @@ template struct FixtureAccess<IntroStoryTag,&FuZanTempleIntro::Actor::_story>;
 struct IntroClockTag { using Type=std::map<ObjectGuid,uint32> Conversation::*; friend Type Access(IntroClockTag); };
 template struct FixtureAccess<IntroClockTag,&Conversation::playing>;
 
-static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bool withTempleRescue=false,bool withSummerpetal=false,bool withTransition=false,bool withWaveRepair=false)
+static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bool withTempleRescue=false,bool withSummerpetal=false,bool withTransition=false,bool withWaveRepair=false,bool withDefense=false)
 {
     Require(argc==3,"Private native config/runtime missing");
     Require(!withSummerpetal||withTempleRescue,"Summerpetal requires native rescue loader context");
     Require(!withTransition||withSummerpetal,"EventObject transition requires the complete actual actor context");
     Require(!withWaveRepair||withTransition,"Owned wave entry requires the complete actual transition context");
+    Require(!withDefense||withWaveRepair,"Native defense requires the repaired real entry context");
     std::string error;Require(sConfigMgr->LoadInitial(argv[1],{},error),"Private config failed");
     sLog->Initialize(nullptr);MySQL::Library_Init();
     WorldDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("WorldDatabaseInfo",""),1,1);
@@ -55,6 +56,7 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     if(withSanctuaryDoor)sources+=" OR (entryorguid IN(251591,-138378) AND source_type=1)";
     if(withTempleRescue)sources+=" OR (entryorguid IN(109393,109394,109395,109397,109355,109610) AND source_type=0)";
     if(withTransition)sources+=" OR (entryorguid=103 AND source_type=13) OR (entryorguid=109465 AND source_type=0)";
+    if(withDefense)sources+=" OR (source_type=0 AND entryorguid IN(109391,109438,109511,109933,110471,109821,109515,109820))";
     WorldDatabase.DirectExecute(("INSERT INTO fuzan_native_smart_seed SELECT * FROM smart_scripts WHERE "+sources).c_str());
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts LIKE fuzan_native_smart_seed");
     WorldDatabase.DirectExecute("INSERT INTO smart_scripts SELECT * FROM fuzan_native_smart_seed");
@@ -64,7 +66,9 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
         "SourceEntry IN(109413,251591,109393,109394,109395,109397,109355,109610)":
         "SourceEntry IN(109413,109393,109394,109395,109397,109355,109610)";
     if(withTransition)conditionSources="("+conditionSources+" OR SourceEntry=103)";
+    if(withDefense)conditionSources="("+conditionSources+" OR SourceEntry IN(109391,109438,109511,109933,110471,109821,109515,109820))";
     WorldDatabase.DirectExecute(("INSERT INTO fuzan_native_condition_seed SELECT * FROM conditions WHERE SourceTypeOrReferenceId=22 AND "+conditionSources).c_str());
+    if(withDefense)WorldDatabase.DirectExecute("INSERT INTO fuzan_native_condition_seed SELECT * FROM conditions WHERE SourceTypeOrReferenceId=23 AND SourceGroup=8262");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions LIKE fuzan_native_condition_seed");
     WorldDatabase.DirectExecute("INSERT INTO conditions SELECT * FROM fuzan_native_condition_seed");
     uint32 summerConditions=0;
@@ -100,12 +104,39 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     {
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE fuzan_native_text_seed LIKE creature_text");
         WorldDatabase.DirectExecute("INSERT INTO fuzan_native_text_seed SELECT * FROM creature_text WHERE CreatureID IN(109393,109394,109395,109397,109355,109610)");
+        if(withDefense)WorldDatabase.DirectExecute("INSERT INTO fuzan_native_text_seed SELECT * FROM creature_text WHERE CreatureID IN(109391,109821,109933)");
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_text LIKE fuzan_native_text_seed");
         WorldDatabase.DirectExecute("INSERT INTO creature_text SELECT * FROM fuzan_native_text_seed");
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE fuzan_native_waypoint_seed LIKE waypoints");
         WorldDatabase.DirectExecute("INSERT INTO fuzan_native_waypoint_seed SELECT * FROM waypoints WHERE entry IN(109355,109610)");
+        if(withDefense)WorldDatabase.DirectExecute("INSERT INTO fuzan_native_waypoint_seed SELECT * FROM waypoints WHERE entry=109391");
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE waypoints LIKE fuzan_native_waypoint_seed");
         WorldDatabase.DirectExecute("INSERT INTO waypoints SELECT * FROM fuzan_native_waypoint_seed");
+    }
+    if(withDefense)
+    {
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE fuzan_native_phase_seed LIKE phase_definitions");
+        WorldDatabase.DirectExecute("INSERT INTO fuzan_native_phase_seed SELECT * FROM phase_definitions WHERE zoneId=8262");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE phase_definitions LIKE fuzan_native_phase_seed");
+        WorldDatabase.DirectExecute("INSERT INTO phase_definitions SELECT * FROM fuzan_native_phase_seed");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE fuzan_native_addon_seed LIKE creature_template_addon");
+        WorldDatabase.DirectExecute("INSERT INTO fuzan_native_addon_seed SELECT * FROM creature_template_addon WHERE entry IN(109391,109438,109511,109933,110471,109821,109515,109820)");
+        WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE creature_template_addon LIKE fuzan_native_addon_seed");
+        WorldDatabase.DirectExecute("INSERT INTO creature_template_addon SELECT * FROM fuzan_native_addon_seed");
+#if defined(FUZAN_DEFENSE_CRITERIA_REPAIR) || defined(FUZAN_DEFENSE_CRITERIA_BASELINE) || defined(FUZAN_DEFENSE_CRITERIA_LIVE)
+        // SetData has an outer null-invoker check. Timed UPDATE dispatch goes
+        // directly through ProcessEvent's native base-object fallback, so its
+        // original group11/target0 remains unchanged and is a positive control.
+        auto criteria=WorldDatabase.Query("SELECT COUNT(*),SUM(SourceGroup=9 AND ConditionTarget IN(0,1)),SUM(SourceGroup=11 AND ConditionTarget=0),SUM(SourceGroup=9 AND ConditionTarget=1) FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=109391 AND SourceGroup IN(9,11) AND ConditionTypeOrReference=52 AND ConditionValue1=49567");
+        Require(criteria&&criteria->Fetch()[0].GetUInt32()==2&&criteria->Fetch()[1].GetUInt32()==1&&criteria->Fetch()[2].GetUInt32()==1,"Defense criteria projection refuses changed context");
+#ifdef FUZAN_DEFENSE_CRITERIA_LIVE
+        Require(criteria->Fetch()[3].GetUInt32()==1,"Actual native defense actor-target condition missing");
+#elif defined(FUZAN_DEFENSE_CRITERIA_BASELINE)
+        WorldDatabase.DirectExecute("UPDATE conditions SET ConditionTarget=0 WHERE SourceTypeOrReferenceId=22 AND SourceEntry=109391 AND SourceGroup=9 AND ConditionTypeOrReference=52 AND ConditionValue1=49567");
+#else
+        WorldDatabase.DirectExecute("UPDATE conditions SET ConditionTarget=1 WHERE SourceTypeOrReferenceId=22 AND SourceEntry=109391 AND SourceGroup=9 AND ConditionTypeOrReference=52 AND ConditionValue1=49567");
+#endif
+#endif
     }
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");WorldDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
     HotfixDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");HotfixDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
@@ -116,8 +147,8 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     ro=LoginDatabase.Query("SELECT @@session.transaction_read_only");Require(ro&&ro->Fetch()[0].GetBool(),"Login not read-only");
     ro=CharacterDatabase.Query("SELECT @@session.transaction_read_only");Require(ro&&ro->Fetch()[0].GetBool(),"Character not read-only");
     auto count=WorldDatabase.Query("SELECT (SELECT COUNT(*) FROM smart_scripts),(SELECT COUNT(*) FROM conditions)");
-    Require(count&&count->Fetch()[0].GetUInt32()==3u+(withSanctuaryDoor?1u:0u)+(withTempleRescue?32u:0u)+(withTransition?6u:0u)&&
-        count->Fetch()[1].GetUInt32()==14u+(withTempleRescue?1u:0u)+summerConditions,"Actual scoped loader rows changed");
+    Require(count&&count->Fetch()[0].GetUInt32()==3u+(withSanctuaryDoor?1u:0u)+(withTempleRescue?32u:0u)+(withTransition?6u:0u)+(withDefense?54u:0u)&&
+        count->Fetch()[1].GetUInt32()==14u+(withTempleRescue?1u:0u)+summerConditions+(withDefense?27u:0u),"Actual scoped loader rows changed");
     sDB2Manager.LoadStores(argv[2],LOCALE_enUS);LoadGameTables(argv[2]);
     sSpellMgr->LoadSpellInfoStore();sSpellMgr->LoadSpellRanks();sSpellMgr->LoadTalentSpellInfo();
     sSpellMgr->LoadSkillLineAbilityMap();sSpellMgr->LoadSpellCustomAttr();sSpellMgr->LoadSpellInfoSpellSpecificAndAuraState();
@@ -130,8 +161,10 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     if(withTransition)for(auto name:{"eventobject_fuzan_wave_entry","spell_fuzan_wave_attempt","aura_fuzan_wave_controller","spell_fuzan_wave_conversation","spell_fuzan_wave_retrieval"})names.emplace_back(name);
     std::sort(names.begin(),names.end());names.erase(std::unique(names.begin(),names.end()),names.end());
     sObjectMgr->LoadInstanceTemplate();sObjectMgr->LoadScenarioData();
+    if(withDefense)sObjectMgr->LoadPhaseDefinitions();
     sObjectMgr->LoadCreatureModelInfo();sObjectMgr->LoadWDBCreatureTemplates();sObjectMgr->LoadCreatureTemplates();
     sObjectMgr->LoadCreatureClassLevelStats();sObjectMgr->LoadCreatureScalingData();sObjectMgr->LoadCreatureDifficultyStat();
+    if(withDefense)sObjectMgr->LoadCreatureTemplateAddons();
     if(withTempleRescue)
     {
         auto maiden=const_cast<CreatureTemplate*>(sObjectMgr->GetCreatureTemplate(109355));Require(maiden,"Actual Summerpetal template missing");

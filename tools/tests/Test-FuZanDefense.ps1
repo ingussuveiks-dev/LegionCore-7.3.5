@@ -7,9 +7,15 @@ $out=[IO.Path]::GetFullPath($OutputDirectory)
   "$repo/tools/research/FuZanDefenseCatalog.cpp","$repo/src/server/game/AI/SmartScripts/SmartScript.cpp",
   "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.h","$repo/src/server/game/Achievements/AchievementMgr.cpp",
   "$repo/src/server/game/DataStores/DBCEnums.h","$repo/src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/instance_temple_of_the_jade_serpent.cpp",
-  "$repo/src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_wave_entry.h")
+  "$repo/src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_wave_entry.h",
+  "$repo/src/server/game/Conditions/ConditionMgr.cpp","$repo/src/server/game/Conditions/ConditionMgr.h")
  $hashes=@{};foreach($path in $inputs){$hashes[$path]=(Get-FileHash -LiteralPath $path).Hash}
  function Section([string]$text,[string]$start,[string]$end){$i=$text.IndexOf($start);$j=$text.IndexOf($end,[Math]::Max(0,$i));if($i -lt 0 -or $j -le $i){throw "Missing production section $start"};$text.Substring($i,$j-$i)}
+ $conditionSource=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.cpp" -Raw
+ [IO.File]::WriteAllText("$out/ConditionObjectGuard.inc",(Section $conditionSource '    // ASSERT(ConditionTarget < MAX_CONDITION_TARGETS);' '    bool condMeets = false;'))
+ $conditionHeader=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.h" -Raw
+ $targetCount=[regex]::Match($conditionHeader,'MAX_CONDITION_TARGETS\s*=\s*(\d+)').Groups[1].Value;if(!$targetCount){throw 'Native condition target bound missing'}
+ [IO.File]::WriteAllText("$out/ConditionTargetConstants.inc","constexpr uint32 MAX_CONDITION_TARGETS=$targetCount;`n")
  $smart=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
  $sections=[ordered]@{
   FindLinkedEvent=@('SmartScriptHolder SmartScript::FindLinkedEvent(','void SmartScript::OnUpdate(')
@@ -81,10 +87,19 @@ $out=[IO.Path]::GetFullPath($OutputDirectory)
   foreach($row in $expected){
    $matches=@($actual|Where-Object {if($table -eq 'smart_scripts'){$_.entryorguid -eq $row.entryorguid -and $_.id -eq $row.id}else{$_.SourceEntry -eq $row.SourceEntry -and $_.SourceGroup -eq $row.SourceGroup -and $_.ConditionTypeOrReference -eq $row.ConditionTypeOrReference -and $_.ConditionValue1 -eq $row.ConditionValue1}})
    if($matches.Count -ne 1){throw "Fu Zan ambiguous/missing native row: $table"}
-   foreach($property in $row.PSObject.Properties){if($matches[0].($property.Name) -cne $property.Value){throw "Fu Zan native field differs: $table/$($property.Name)"}}
+   foreach($property in $row.PSObject.Properties){
+    if($table -eq 'conditions' -and $row.SourceEntry -eq 109391 -and $row.SourceGroup -eq 9 -and $property.Name -eq 'ConditionTarget'){
+     if($matches[0].ConditionTarget -notin @(0,1)){throw 'Unknown native DATA condition target'};continue
+    }
+    if($matches[0].($property.Name) -cne $property.Value){throw "Fu Zan native field differs: $table/$($property.Name)"}
+   }
   }
  }
- 'PASS live native51 SmartAI/20 condition rows and exact instance binding unchanged'
+ 'PASS live native51 SmartAI/20 conditions; only known DATA8 target0/1 admitted, native UPDATE target0 unchanged'
+ # Isolate the inherited-death regression from the separately reproduced
+ # original DATA null-target defect. No live metadata is written here.
+ foreach($row in $fixture.conditions){if($row.SourceEntry -eq 109391 -and $row.SourceGroup -eq 9){$row.ConditionTarget=1}}
+ 'SCOPE controlled death fixture projects DATA8 target1 and compiles actual missing-object guard; full native NULL/phase proof is separate'
  foreach($table in @('smart_scripts','conditions')){
   $lines=@($fixture.$table|ForEach-Object {($_.PSObject.Properties.Value|ForEach-Object {[Convert]::ToString($_,[Globalization.CultureInfo]::InvariantCulture)}) -join "`t"})
   [IO.File]::WriteAllLines("$out/$table.tsv",[string[]]$lines)

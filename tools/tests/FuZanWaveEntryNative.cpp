@@ -203,6 +203,7 @@ static void CheckReconnect(uint8 race,uint32 mode,uint32 number)
     else{f.Pump(7000);f.Check(mode!=3,mode==0);}
     std::cout<<"CASE wave-entry real Player destruction/recreation race="<<unsigned(race)<<" mode="<<mode<<" PASS\n";
 }
+#ifndef FUZAN_WAVE_ENTRY_NATIVE_SUPPORT_ONLY
 int main(int argc,char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
@@ -216,3 +217,4 @@ int main(int argc,char** argv)
         std::cout<<"PASS128 actual native wave-entry cases; original victory/story/entry receipts, exact effects/owned actor cardinality, cancellation/reentry/receiver admission and actual retrieval-effect endpoint. No saved character/full client pickup or chain claim.\n";return 0;
     }catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}
 }
+#endif

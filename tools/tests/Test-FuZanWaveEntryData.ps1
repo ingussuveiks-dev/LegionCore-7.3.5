@@ -23,7 +23,32 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_11_01_07_fuzan_
  $setup='';foreach($table in $filters.Keys){$setup+="CREATE TEMPORARY TABLE saved_$table LIKE $table;INSERT INTO saved_$table SELECT * FROM $table WHERE $($filters[$table]);CREATE TEMPORARY TABLE $table LIKE saved_$table;INSERT INTO $table SELECT * FROM saved_$table;`n"}
  $restore="UPDATE eventobject_template SET ScriptName='SmartEventObject' WHERE entry=103;DELETE FROM spell_script_names WHERE spell_id IN(217814,217817,218883,218882,217659,217667,217666,217669);`n"
  $expected="UPDATE eventobject_template SET ScriptName='eventobject_fuzan_wave_entry' WHERE entry=103;INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(218883,'spell_fuzan_wave_attempt');INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(218882,'spell_fuzan_wave_attempt');INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(217659,'spell_fuzan_wave_attempt');INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(217667,'spell_fuzan_wave_attempt');INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(217666,'spell_fuzan_wave_attempt');INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(217669,'spell_fuzan_wave_attempt');INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(217659,'aura_fuzan_wave_controller');INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(217667,'aura_fuzan_wave_controller');INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(217817,'aura_fuzan_wave_controller');INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(217817,'spell_fuzan_wave_conversation');INSERT INTO spell_script_names(spell_id,ScriptName) VALUES(217814,'spell_fuzan_wave_retrieval');`n"
- $certified=$setup+$migration+$restore
+ # Later focused repairs legitimately supersede one pinned DATA target and
+ # Yu'lon's phase. Admit only their exact RELEASED payloads/field cohort, then
+ # model the historical World07 input in TEMP; never rewrite released SQL.
+ $knownBaseline='';$futureExpected=''
+ $later=Query "SELECT 'later',name,hash,state FROM updates WHERE name IN('2026_11_01_08_fuzan_defense_actor_conditions.sql','2026_11_01_09_fuzan_confrontation_phase_bridge.sql') ORDER BY name;"
+ $laterRows=@($later|Where-Object {$_ -like "later`t*"});$conditionLater=$false;$phaseLater=$false
+ foreach($line in $laterRows){
+  $parts=$line -split "`t";$name=$parts[1];$path="$repo/sql/updates/world/$name";if(!(Test-Path $path)){throw 'Released later Fu Zan migration source missing'}
+  $payload=[IO.File]::ReadAllText($path).Replace("`r`n","`n");$sha=[Security.Cryptography.SHA1]::Create()
+  try{$hash=[Convert]::ToHexString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($payload)))}finally{$sha.Dispose()}
+  if($parts[2] -cne $hash -or $parts[3] -cne 'RELEASED'){throw 'Later Fu Zan updater payload/state differs'}
+  if($name -eq '2026_11_01_08_fuzan_defense_actor_conditions.sql'){$conditionLater=$true}else{$phaseLater=$true}
+ }
+ if($phaseLater -and !$conditionLater){throw 'Later phase bridge without the native DATA repair'}
+ if($conditionLater){
+  $scope='SourceTypeOrReferenceId=22 AND SourceEntry=109391 AND SourceGroup=9 AND ConditionTypeOrReference=52 AND ConditionValue1=49567'
+  $cohort=Query "SELECT 'known-condition',COUNT(*) FROM conditions WHERE $scope AND ConditionTarget=1;"
+  if(($cohort|Where-Object {$_ -eq "known-condition`t1"}).Count -ne 1){throw 'Released native DATA repair fields differ'}
+  $knownBaseline+="UPDATE conditions SET ConditionTarget=0 WHERE $scope;`n";$futureExpected+="UPDATE conditions SET ConditionTarget=1 WHERE $scope;`n"
+ }
+ if($phaseLater){
+  $cohort=Query "SELECT 'known-phase',COUNT(*) FROM creature WHERE guid=373396 AND id=109391 AND map=1625 AND BINARY PhaseId=BINARY '6905 6906';"
+  if(($cohort|Where-Object {$_ -eq "known-phase`t1"}).Count -ne 1){throw 'Released native phase bridge fields differ'}
+  $knownBaseline+="UPDATE creature SET PhaseId='6905' WHERE guid=373396;`n";$futureExpected+="UPDATE creature SET PhaseId='6905 6906' WHERE guid=373396;`n"
+ }
+ $certified=$setup+$knownBaseline+$migration+$restore
  function Snapshot([string]$tag){$result='';foreach($table in $filters.Keys){$result+="SELECT '$tag-$table',t.* FROM $table t WHERE $($filters[$table]) ORDER BY $($orders[$table]);`n"};$result}
  function Signature($rows,[string]$tag){[string]::Join("`n",[string[]]@($rows|Where-Object {$_ -like "$tag`t*"}|ForEach-Object {$_.Substring($tag.Length+1)}))}
  $pins='';foreach($table in $filters.Keys){if(!@($fixture.$table).Count){continue};$columns=@($fixture.$table[0].PSObject.Properties.Name|ForEach-Object {'`'+$_+'`'}) -join ',';$pins+="SELECT 'pin-$table',$columns FROM $table WHERE $($filters[$table]) ORDER BY $($orders[$table]);`n"}
@@ -64,7 +89,8 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_11_01_07_fuzan_
  }
  foreach($name in $variants.Keys){$bad=Query ($certified+$variants[$name]+(Snapshot 'before')+$migration+(Snapshot 'after')) -Refusal;foreach($table in $filters.Keys){if((Signature $bad "before-$table") -cne (Signature $bad "after-$table")){throw "Refusal mutated rows: $name/$table"}};"PASS refusal $name"}
  if($VerifyLiveData){
-  $live=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $rows "first-$table")){throw "Actual live WaveEntry differs: $table"}}
+  $expectedLive=Query ($certified+$migration+$futureExpected+(Snapshot 'expected-live'))
+  $live=Query (Snapshot 'live');foreach($table in $filters.Keys){if((Signature $live "live-$table") -cne (Signature $expectedLive "expected-live-$table")){throw "Actual live WaveEntry differs: $table"}}
   # UpdateFetcher::ReadSQLUpdate uses Windows text-mode ifstream: CRLF is LF
   # in the hashed payload. A raw file-byte SHA1 is not its updater hash.
   $payload=[IO.File]::ReadAllText($MigrationFile).Replace("`r`n","`n")
