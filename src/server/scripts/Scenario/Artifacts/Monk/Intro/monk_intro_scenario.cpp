@@ -6,6 +6,7 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "FunctionProcessor.h"
 
 
 // 97778
@@ -213,6 +214,14 @@ public:
 
         bool _introDone;
 
+        // These callbacks use this AI. The Unit queue can outlive an AI swap.
+        FunctionProcessor _presentationFunctions;
+
+        void UpdateLifecycle(uint32 diff) override
+        {
+            _presentationFunctions.Update(diff);
+        }
+
         void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
             damage = 0;
@@ -224,7 +233,7 @@ public:
             if (type == POINT_MOTION_TYPE)
             {
                 Talk(5);
-                me->AddDelayedEvent(4000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(4000, [this]() -> void
                 {
                     if (Player* pl = me->FindNearestPlayer(100.0f))
                         Talk(6, pl->GetGUID());
@@ -253,9 +262,10 @@ public:
                     pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46902);
                     Talk(7, pl->GetGUID());
 
-                    me->AddDelayedEvent(4000, [this, pl]() -> void
+                    ObjectGuid const playerGuid = pl->GetGUID();
+                    _presentationFunctions.AddDelayedEvent(4000, [this, playerGuid]() -> void
                     {
-                        Talk(8, pl->GetGUID());
+                        Talk(8, playerGuid);
                         me->DespawnOrUnsummon(3000);
                     });
                 }
@@ -269,14 +279,14 @@ public:
                 DoCast(193248);
                 Talk(3);
                 me->GetMotionMaster()->MoveJump(3814.16f, 2009.03f, 935.15f, me->GetOrientation(), 5.0f, 5.0f);
-                me->AddDelayedEvent(3000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(3000, [this]() -> void
                 {
                     Talk(4);
                     if (Player* pl = me->FindNearestPlayer(100.0f))
                         pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46734);
                 });
 
-                me->AddDelayedEvent(7000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(7000, [this]() -> void
                 {
                     me->GetMotionMaster()->MovePoint(1, 3848.98f, 1945.78f, 931.85f);
                 });

@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-01",
+  "status": "DEPLOYED focused AI/player callback lifetime repair; full Monk intro and all36 remain OPEN.",
+  "cause": "Nine Czi97774 schedules four Unit-owned callbacks capturing its AI, including one raw Player*. Native Creature::AIM_Destroy deletes the AI without deleting Unit's FunctionProcessor. The callback can subsequently dereference that deleted AI; departure can also dereference a destroyed Player merely to obtain its GUID. No historical runtime crash is attributed to this source without a matching dump.",
+  "repair": "Only npc_nine_cziAI owns its four original3s/4s/4s/7s callbacks in a FunctionProcessor member. Native Creature::Update invokes its UpdateLifecycle once under m_AI_locked, including original suspended/current-null AI, regardless of stun/casting/victim or UpdateAI. Destruction releases pending captures with the actual AI. Departure stores original full128-bit ObjectGuid by value; native CreatureAI::Talk/CreatureTextMgr already resolve it at dispatch. Existing speech/spells/jump/point/damage immunity/criteria/nearest-player policies and other actors remain exact. No new SQL, quest/item grant or reset.",
+  "local_scope": {
+    "capture": ".codex/nine-czi-context2-open-2026-11-01/world.tsv",
+    "sha256": "0a95ff423c4a79582e630254078e11a0ec9d0ab0d5ec81fd2af4a2562782e8a3",
+    "bindings": "Live npc_nine_czi on97774, two static spawns362181/362252/map1014/phase7000, scenario943. Existing97968 death DATA1/1 producer and all nine text groups captured. This is a shared Monk introduction preceding artifact acquisition, not a claim that all three acquisitions are verified.",
+    "source_trace": "Current native FunctionProcessor queue/update/destructor, Creature AI destruction and locked lifecycle, CreatureAI Talk plus native CreatureTextMgr GUID resolution examined first. No missing authored behavior or version port is inferred; external implementation/video unnecessary for preserving these exact existing callbacks."
+  },
+  "checks": [
+    "Test-MonkNineCziTimers.ps1: exact source certificate reverses only four queue owners/one GUID capture/member+clock/include against pinned aa1513802. Entire actual NPC compiled under ASAN with production FunctionProcessor, native locked lifecycle and AIM_Destroy. Final62 cases: exact/late timers, normal/stunned/casting/no-victim/no UpdateAI, suspended/current-null/alias, reset, delete/replace/retry, unrelated Unit work retained, reentrant AI deletion locked, original Player destruction/nearest replacement/full GUID, repeated/refused LOS/non-Player, missing actors/player endpoints, original spell/movement/credit and maximal damage immunity. World/network/quest progress and movement completion endpoints remain adapters; full native-core ASAN/client traversal not claimed.",
+    "Pinned pre-fix expected-broken counterfactual proves all four captured-AI callbacks persist in Unit queue after real extracted AIM_Destroy. Dangling callbacks deliberately not invoked; no fabricated crash or successful ordinary baseline claim.",
+    "Original CMake scripts Release libraries rebuilt, staged final links use original actual LIB inputs, canonical hashes unchanged until promotion. Actual selected PE verifies registered script/AI factories, all four callback vtables, owned member offset40 ctor/destructor, lifecycle slot110/native Creature dispatch, exact delays, no UpdateAI double clock or Unit queue, full128-bit departure capture without later Player dereference. Staged and canonical checks pass.",
+    "Full retained Fu Zan brewing/intro/door/Belphiar/Summerpetal/wave PE and SmartAI retry/Corpse dispatch pass on new staged bytes. Canonical Test-ScepterLogin -VerifyReleaseBinary passes. No global OutDir override.",
+    "Owned canonical21608 reached fresh ready; server shutdown0, actual exit0, empty stderr, process gone and protected conf/cert/DLL hashes unchanged. All tests/SQL/build/link/PE/promotion/startup have pre/post canonical+own diagnostic snapshots and captured actual exits/stdout/stderr."
+  ],
+  "development": [
+    "First read-only context query incorrectly used creature_text.entry; preserved SQL1054/stderr/partial output, corrected to actual CreatureID and completed full EOF capture. No data mutation.",
+    "First selected PE assertion named inherited DoCast as ScriptedAI. Actual native link resolves UnitAI::DoCast; verifier corrected to that exact symbol and passes, implementation unchanged.",
+    "ASAN compile warnings for existing FunctionProcessor size_t->uint32 returns and unused original NPC parameters are retained; queue sizes are bounded1/2 in this scope. Existing Scepter signed/unsigned warnings also retained. No new runtime warning/assertion/DBError or hidden logging change."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "f3882ad78638d6206fe951cf46b599b2c0a9500d0c9d14e2c64c49df5bb19812",
+    "bnet_sha256": "92d28b5c3ba6343a1051e1eca899b4812c38a8f9cf2c3462b70b46bc22d78b05",
+    "stage": ".codex/nine-czi-release-final",
+    "backup": ".codex/release-before-nine-czi-timers-2026-11-01",
+    "order": "Fresh process absence before every four-file copy, original backup/stage/destination hashes verified. No user/unknown server stopped, SQL promoted or character edited. Own21608 closed."
+  },
+  "diagnostics": "Final checks clean: no new/changed canonical or own crashes, appended DBErrors/server warnings/errors/assertions. Active Crashes empty. Existing mixed6090-byte DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unresolved/untouched, no truncation. Fixed archive follows focused implementation commit; unresolved sharedLINK2 and other evidence excluded.",
+  "evidence": ".codex/nine-czi-{context1-open,context2-open,timers1,timers2,baseline1,release-build1,stage1,pe-research1,pe1,pe2,retained-fuzan-pe1,promotion1,startup1,canonical1,scepter1}-2026-11-01 and own process captures; stage/backup manifests.",
+  "remaining": "Nine Czi existing prerequisite/nearest-recipient/introDone-before-player behavior, actual jump arrival/waypoint admission and full943; Master Hait/Chen raw captured AI/player/cross-actor callbacks; actual client/all36 progression remain OPEN. Creature/Player service adapters do not certify pet/guardian/group/faction quest delivery or abandonment/re-entry progression. No new native credit logic or death handling changed; existing97968 producer remains exact. Continue independent Hait/Chen lifetime repair. SharedLINK2, WardstoneLINK4, LiLi7/8, later Ponshu10, Fu Zan flight/Yigthregor and client tests remain visible. No additional reset authorized."
+}

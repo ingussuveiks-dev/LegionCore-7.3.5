@@ -1,4 +1,5 @@
 {
+  "latest_monk_nine_czi_timers_2026_11_01": {"audit":"docs/audits/monk-nine-czi-timers-2026-11-01.json","status":"Canonical F3882AD7/92D28B5C,62ASAN+actual PE/Scepter/owned21608 ready+graceful0, no new diagnostics; mixed6090 retained. Continue Hait/Chen callback lifetimes; full943/client/all36 OPEN, no reset."},
   "latest_fuzan_sanctuary_door_2026_11_01": {
     "fix_commit": "ff0314a4f",
     "archive": "docs/audits/fuzan-sanctuary-door-admission-archive-2026-11-01.json",
