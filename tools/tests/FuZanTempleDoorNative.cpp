@@ -47,6 +47,7 @@ static void CheckDoor(uint8 race,uint32 number,uint32 mode)
 #endif
         Require(door.isSpawned()&&door.getLootState()==GO_READY&&!door.HasFlag(GAMEOBJECT_FIELD_FLAGS,GO_FLAG_IN_USE),"Native door initially unusable");
         Require(door.GetGoType()==GAMEOBJECT_TYPE_DOOR&&door.GetGOInfo()->GetAutoCloseTime()==0,"Native no-close door metadata changed");
+        Require(door.GetGOInfo()->door.open==2570,"Native Ox Kick lock changed");
         Require(door.GetGOInfo()->displayId==11896&&door.GetGOInfo()->visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].SpellVisualID==58002,"Native door display/visual changed");
         if(mode==18)
         {
@@ -58,10 +59,15 @@ static void CheckDoor(uint8 race,uint32 number,uint32 mode)
         }
         else
         {
-        if(mode==1||mode==2||mode==19)
+        if(mode==1||mode==2||mode==19||mode==22)
         {
             if(mode==2){LootPet pet(player,map);door.Use(&pet);}
             else if(mode==19)door.AI()->GossipHello(&player,false); // Native report-use hook shape.
+            else if(mode==22)
+            {
+                Require(player.CastSpell(&door,218174,false)==SPELL_CAST_OK,"Native early Ox Kick cast rejected");
+                for(uint32 elapsed=0;elapsed<1000;elapsed+=10)player.Unit::Update(10);
+            }
             else door.Use(&player);
             Require(!FuZanTempleDoor::Opened(scenario),"Future door criterion granted before active stage");
 #ifdef FUZAN_DOOR_BASELINE
@@ -138,7 +144,20 @@ static void CheckDoor(uint8 race,uint32 number,uint32 mode)
             Require(FuZanTempleDoor::Opened(scenario)&&door.getLootState()==GO_READY&&!door.HasFlag(GAMEOBJECT_FIELD_FLAGS,GO_FLAG_IN_USE),
                 "Report-first native hook did not retain separate physical Use");
         }
-        door.Use(&player);
+        if(mode==23)
+        {
+            Require(player.CastSpell(&door,3365,false)==SPELL_FAILED_BAD_TARGETS,"Actual wrong native key was not rejected");
+            for(uint32 elapsed=0;elapsed<1000;elapsed+=10)player.Unit::Update(10);
+            Require(!FuZanTempleDoor::Opened(scenario)&&!ai->GetScript()->HasRunEvent(0,SMART_EVENT_GOSSIP_HELLO)&&
+                door.getLootState()==GO_READY&&!door.HasFlag(GAMEOBJECT_FIELD_FLAGS,GO_FLAG_IN_USE),"Failed native lock cast changed progression or readiness");
+        }
+        if(mode==21||mode==22||mode==23)
+        {
+            Require(player.CastSpell(&door,218174,false)==SPELL_CAST_OK,"Native active Ox Kick cast rejected");
+            for(uint32 elapsed=0;elapsed<1000;elapsed+=10)player.Unit::Update(10);
+            Require(FuZanTempleDoor::Opened(scenario),"Actual ordinary Ox Kick did not dispatch native205/49141");
+        }
+        else door.Use(&player);
         Require(FuZanTempleDoor::Opened(scenario)&&door.HasFlag(GAMEOBJECT_FIELD_FLAGS,GO_FLAG_IN_USE)&&door.getLootState()==GO_ACTIVATED,"Eligible native205 did not acknowledge49141 and open original door");
         if(mode==12)Require(instance->nested&&scenario->GetCurrentStep()==2,"Real next-step reentry not exercised");
         auto counter=scenario->GetAchievementMgr().GetCriteriaProgressMap()->at(49141).Counter;
@@ -194,7 +213,7 @@ int main(int argc,char** argv)
 #else
         {
             for(uint32 mode=0;mode<16;++mode)CheckDoor(race,++number,mode);
-            for(uint32 mode=17;mode<=20;++mode)CheckDoor(race,++number,mode);
+            for(uint32 mode=17;mode<=23;++mode)CheckDoor(race,++number,mode);
         }
 #endif
         CharacterDatabase.Close();LoginDatabase.Close();HotfixDatabase.Close();WorldDatabase.Close();
@@ -203,7 +222,7 @@ int main(int argc,char** argv)
 #elif defined(FUZAN_DOOR_FAULTS)
         std::cout<<"PASS2 explicit missing-native-criteria-routing faults/recovery; diagnostics retained, ordinary clean40 separate.\n";
 #else
-        std::cout<<"PASS40 actual native sanctuary door cases; ordinary205/native49141/default model/visual/open state preserved, report/use hook orders/checkpoint recreation/shared source/negative admissions. No full packet/client traversal or character save.\n";
+        std::cout<<"PASS46 actual native sanctuary door cases; ordinary205/native49141/default model/visual/open state preserved, actual untriggered218174 Ox Kick and wrong3365 key rejection, report/use hook orders/checkpoint recreation/shared source/negative admissions. No full packet/client traversal or character save.\n";
 #endif
         return 0;
     }catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}

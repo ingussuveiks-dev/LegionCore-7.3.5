@@ -63,7 +63,7 @@ if($Baseline -and $FaultInjection){throw 'Counterfactual and repaired fault inje
   }}catch{
    if(!$FaultInjection -or $_.Exception.Message -notlike 'New runtime diagnostics require investigation:*'){throw}
    # These are deliberate missing-actor/interrupted-story counterfactuals,
-   # paired with the ordinary40 clean cases. Keep every original diagnostic.
+   # paired with the ordinary46 clean cases. Keep every original diagnostic.
    $diagnostics=Get-Content "$out/native-diagnostics/diagnostics-after.json" -Raw|ConvertFrom-Json
    $messages=@($diagnostics.ServerDiagnostics)
    $patterns=@('Fu Zan: native sanctuary door event52452 did not acknowledge49141; original object remains available for retry')
@@ -75,7 +75,7 @@ if($Baseline -and $FaultInjection){throw 'Counterfactual and repaired fault inje
    foreach($line in $stderrLines){if($line -notmatch '^ERROR \[scripts.ai\]' -or !@($patterns|Where-Object {$line -match $_}).Count){throw "Unexplained fault stderr: $line"}}
    $messages|Set-Content "$out/expected-fault-diagnostics.txt"
    $messages|ForEach-Object {"EXPECTED_FAULT $_"}
-   'PASS explicit native fault diagnostics reviewed; original logs retained, paired ordinary clean40 required'
+   'PASS explicit native fault diagnostics reviewed; original logs retained, paired ordinary clean46 required'
   }
  }finally{$env:PATH=$prior}
  foreach($path in $inputs){if((Get-FileHash -LiteralPath $path).Hash -ne $hashes[$path]){throw 'Native Fu Zan source input changed during execution'}}

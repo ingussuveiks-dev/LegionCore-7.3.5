@@ -1,0 +1,24 @@
+{
+  "scope": "Additional actual native spell coverage for the deployed ff0314a4f sanctuary-door repair; no new production code, migration, character or quest mutation.",
+  "matching_data": "Read-only native26972 DB2 reader with the actual Hotfix overlay: Lock2570 has only slot1 type3/LOCK_KEY_SPELL218174. Ox Kick218174 and Opening3365 both use native effect33/target23, but3365 does not match the lock. Native GO251591/DB138378 retains door.open2570, original display11896/visual58002 and zero autoclose.",
+  "native_sequence": "Actual untriggered Player::CastSpell(GameObject*,218174,false), actual CheckCast/CanOpenLock, EffectOpenLock and SendLoot. EffectOpenLock first attempts native physical activation before its second lock check; the scoped door restores an unacknowledged activation to READY. Valid SendLoot then calls native SmartAI205/49141 before the original physical opening. No new credit is given from OnStateChanged and no lock check is bypassed.",
+  "regression": "Final native4-live:46 passing cases, Human and Orc. Retains40 original cases and adds fresh actual Ox Kick, premature actual Ox Kick followed by an active-stage retry, and ordinary wrong3365 key rejection followed by successful ordinary218174. Both early/failed attempts leave the root unconsumed, no49141 and the original door READY without IN_USE. No manual49141 seeding. Private scenario/quest preconditions and modeled Unit updates remain fixture controls; this is not an authenticated packet/client/full-chain traversal.",
+  "evidence": [
+    ".codex/fuzan-door-lock-catalog1-2026-11-01/native.tsv",
+    ".codex/fuzan-door-oxkick-native1-open-2026-11-01:44 passing cases before wrong-key coverage",
+    ".codex/fuzan-door-oxkick-native2-open-2026-11-01:46 passing cases",
+    ".codex/fuzan-door-oxkick-native4-final-2026-11-01:final46 and original final-link input hashes"
+  ],
+  "reviewed_iteration": "Native3 failed compilation of a new metadata assertion because this core names the door Lock reference door.open, not door.lockId. Corrected the assertion to the actual header field; final native4 compiles and all46 cases pass. Original failed build/exit evidence retained and paired with the passing regression; no check or diagnostic disabled.",
+  "diagnostics": "Final catalog/native wrappers completed, exit0, empty stderr and no new/changed crash, appended DBErrors or server warning/error/assertion. Full native core Release is not ASAN-instrumented. No new server launched or user server stopped. Existing mixed canonical6090-byte DBErrors remains unresolved and untruncated; active Crashes empty.",
+  "deployment": "Unchanged canonical worldserver SHA2561b6e33c64513c134419a786ddf813c2a23a879d6e808d185681c4232c96e5a40; World04 remains RELEASED640ac99148e3f322c2197432993a0c1eb7604423. No rebuild/deployment is needed for this test-only addition.",
+  "archive": {
+    "fix_commit": "ff0314a4f",
+    "directory": "build-extractors/bin/Release/fixed/fuzan-sanctuary-ox-kick-2026-11-01",
+    "source_files": 106,
+    "manifest_entries": 116,
+    "manifest_sha256": "bf2ac89cff1e51ceb9d43500bc0c1121245a75ff80977ce68a5d0d4ce8ef4b81",
+    "verification": "All source/archive/source and final-member hashes verified. Original logs retained; failed metadata assertion compilation paired with final46 pass. Configs, credentials, binaries/PDB/maps/dumps, broader unresolved research and mixed canonical log excluded. No active report removed or log truncated."
+  },
+  "open": "Actual client prompt/cast presentation, physical collision/visual, re-entry and full guard/rescue/Belphiar/dialogue/acquisition/return sequence remain separate checks. This verifies one door's native key path, not whole42765 or all36 artifacts. Broader rescue research and mixed LINK2 diagnostics remain OPEN outside the fixed archive."
+}
