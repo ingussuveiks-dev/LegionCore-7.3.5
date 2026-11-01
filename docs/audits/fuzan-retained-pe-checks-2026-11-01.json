@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-01",
+  "scope": "Repair two retained PE assertions discovered while checking a separate pending brewing implementation. This focused change does not modify production C++, SQL, runtime files or character data.",
+  "findings": [
+    {
+      "check": "Fu Zan intro Story::Played deadline getter",
+      "cause": "The verifier required immediate156. Matching UpdateFields.h defines OBJECT_END=12 and CONVERSATION_FIELD_LAST_LINE_END_TIME=OBJECT_END+0. Both the existing canonical486313E7 executable and isolated A91063EC candidate pass edx=12 to Object::GetUInt32Value.",
+      "repair": "Require12 and verify its actual argument assignment immediately before the sole getter call. Retain all conversation/owner/clock/credit checks."
+    },
+    {
+      "check": "Fu Zan wave-entry Instance::Minion",
+      "cause": "The verifier required a direct helper call although the Release compiler inlines the complete scan and omits that helper symbol.",
+      "repair": "When no direct helper call exists, inspect the actual role-loop entry list, ObjectAccessor resolution, alive/summon branches, full128-bit SummonerGUID comparison against the instance owner and created-by-spell read. Require native entry109350/109352 and spell217666/217669, with the three rejection guards targeting the same loop continuation. Existing independent wave ownership and progression checks remain."
+    }
+  ],
+  "evidence": {
+    "failing_original_checks": [
+      ".codex/fuzan-brewing-pe-inspect1-open-2026-11-01",
+      ".codex/fuzan-prior-wave-stage1-open-2026-11-01"
+    ],
+    "field_read_comparison": [
+      ".codex/fuzan-played-canonical-baseline-open-2026-11-01",
+      ".codex/fuzan-brewing-pe-inspect2-open-2026-11-01"
+    ],
+    "inlined_scan_review": ".codex/fuzan-brewing-pe-inspect4-open-2026-11-01",
+    "repaired_canonical_checks": [
+      ".codex/fuzan-played-verifier-fixed1-open-2026-11-01",
+      ".codex/fuzan-prior-wave-canonical2-open-2026-11-01"
+    ],
+    "repaired_staged_checks": ".codex/fuzan-prior-wave-stage2-open-2026-11-01",
+    "native_regression": ".codex/fuzan-brewing-shared-wave-native1-open-2026-11-01:128 actual native cases, both races and player/pet/guardian victory endpoints, cancellation/reentry/receipt/owned actor paths; readonly pools and no authenticated save"
+  },
+  "diagnostics": "Every listed check has before/after crash and log snapshots. No new/changed canonical or test crash report, appended DBErrors or server warnings/errors/assertions. Expected old-verifier assertion failures are counterfactuals, not ordinary successful tests. Existing mixed6090-byte canonical DBErrors remains unresolved and untouched. Local diagnostic evidence is retained; verified fixed archival is recorded separately after the focused fix commit is known.",
+  "limits": "PE and native fixtures do not establish actual client dialogue/visibility/travel or full artifact-chain completion. The isolated brewing candidate remains a separate pending change."
+}

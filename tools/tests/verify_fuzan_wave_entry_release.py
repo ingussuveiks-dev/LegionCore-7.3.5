@@ -18,8 +18,30 @@ enter=require('?Enter'+suffix,('?CanEnter'+suffix,'?AdoptQuestCancellationReceip
 credit=require('?Credit'+suffix,('?CanUpdateCriteria@Scenario@@','?Dispatch'+suffix,'?Receipt@FuZanSummerpetal@@'),(49176,200))
 dispatch=require('?Dispatch'+suffix,('?OnInitialize@SmartScript@@','?InitTimer@SmartScript@@','?ProcessEvent@SmartScript@@'))
 update=require('?Update'+suffix,('?AdoptQuestCancellationReceipt@Player@@','?GetQuestCancellationReceipt@Player@@',
-    '?CastSpell@Unit@@','?Minion'+suffix,'?Cleanup'+suffix,'?CleanupReceiver'+suffix),
+    '?CastSpell@Unit@@','?Cleanup'+suffix,'?CleanupReceiver'+suffix),
     (200,500,42765,217817,217659,217667))
+# Release may inline the complete Minion scan and omit its public symbol. In
+# that case verify the scan itself, including the full owner GUID and both
+# native entry/created-by-spell pairs; do not require a nonexistent call.
+if not sites(n,update,'?Minion'+suffix):
+    assert {109350,109352,217666,217669} <= values(update)
+    scans=sites(n,update,'?GetSummonList@Unit@@')
+    assert len(scans)==1,'One native entry-list scan in the role loop'
+    scan=update[scans[0]:scans[0]+48]
+    assert sites(n,scan,'?GetCreature@ObjectAccessor@@') and sites(n,scan,'??8ObjectGuid@@')
+    pairs=[(op.mnemonic,op.op_str) for op in scan]
+    for guard in (('cmp','dword ptr [rax + 0xa18], 0'),
+                  ('test','byte ptr [r14 + 0x30e8], 1'),
+                  ('movups','xmm0, xmmword ptr [r14 + 0x3b64]'),
+                  ('lea','rdx, [rsi + 0x638]'),('mov','edx, 0x7c')):
+        assert guard in pairs,('Inlined native alive/summon/128-bit-owner/created-spell guard',guard)
+    alive=pairs.index(('cmp','dword ptr [rax + 0xa18], 0'))
+    summon=pairs.index(('test','byte ptr [r14 + 0x30e8], 1'))
+    owner=sites(n,scan,'??8ObjectGuid@@')[0]
+    reject=[scan[alive+1],scan[summon+1],scan[owner+2]]
+    assert [op.mnemonic for op in reject]==['jne','je','je'] and len({op.operands[0].imm for op in reject})==1
+    reads=sites(n,scan,'?GetUInt32Value@Object@@')
+    assert len(reads)==2 and pairs[reads[0]+1]==('cmp','eax, r12d') and pairs[reads[1]+1]==('cmp','eax, r13d')
 reconnect=require('?OnPlayerEnter'+suffix,('?AdoptQuestCancellationReceipt@Player@@',),(42765,))
 tickets=require('?Spell'+suffix,('?Allow'+suffix,'?Owns@FuZanWaveEntry@@'),(217817,218883,217659,217667,217666,217669))
 scene=require('?Create@spell_fuzan_wave_conversation@@',('?PreventHitDefaultEffect@SpellScript@@',

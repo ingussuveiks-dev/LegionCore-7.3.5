@@ -83,7 +83,12 @@ create = require('?Create@spell_fuzan_temple_intro@@',
                  ('?PreventHitDefaultEffect@SpellScript@@', '?CreateConversation@Conversation@@',
                   '?GetCreature@Conversation@@', '?GetLowPart@ObjectGuid@@', '?GetHighPart@ObjectGuid@@',
                   '?GetPlayer@ObjectAccessor@@', '?BindQuestObject@Player@@'), (2770, 109353, 109413, 373394, 42765))
-played = require('?Played@Story@FuZanTempleIntro@@', ('?GetUInt32Value@Object@@',), (156,))
+played = require('?Played@Story@FuZanTempleIntro@@', ('?GetUInt32Value@Object@@',), (12,))
+deadline_read = sites(n, played, '?GetUInt32Value@Object@@')
+assert len(deadline_read) == 1 and any(
+    op.mnemonic == 'mov' and op.op_str == 'edx, 0xc'
+    for op in played[max(0, deadline_read[0]-3):deadline_read[0]]
+), 'Native OBJECT_END12/CONVERSATION_FIELD_LAST_LINE_END_TIME argument'
 assert {0x4e0, 0x4f0} <= fields(played), 'Actual native caster GUID and native playing map'
 story = require('?Update@Story@FuZanTempleIntro@@',
                 ('?GetCreature@ObjectAccessor@@', '?Owns@Actor@FuZanTempleIntro@@',
