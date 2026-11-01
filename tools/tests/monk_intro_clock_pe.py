@@ -3,6 +3,9 @@ from sharasdal_erunak_entry_pe import sites
 
 def verify_clock(native,method,member):
     body=native['instructions'](method)
+    # A short leaf can lack unwind bounds; the PE decoder then also returns
+    # the linker's trailing INT3 alignment. All executable guards stay exact.
+    while body and body[-1].mnemonic=='int3':body=body[:-1]
     pairs=[(op.mnemonic,op.op_str) for op in body]
     assert len(body)==9
     assert pairs[:3]==[('mov','rax, qword ptr [rcx + 0x20]'),('mov','r8d, dword ptr [rax + 0xa18]'),('test','r8d, r8d')]

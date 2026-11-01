@@ -68,7 +68,12 @@ for section in range(struct.unpack_from('<H', binary, pe + 6)[0]):
         zero_filled = relative >= raw_size or binary[raw + relative:raw + relative + 16] == bytes(16)
         break
 assert zero_filled, 'Factory identity does not load16 bytes of native PE zero-initialized storage'
-assert any(entry.op_str == 'ecx, 0xc0' for entry in factory[:store])
+has_owned_escort_clock = any(name.startswith('?UpdateLifecycle@npc_hrutnirAI@npc_hrutnir@@') for name in native['symbols'])
+allocation = 'ecx, 0x140' if has_owned_escort_clock else 'ecx, 0xc0'
+assert any(entry.op_str == allocation for entry in factory[:store])
+if has_owned_escort_clock:
+    assert any(entry.op_str == 'rcx, [rsi + 0xc0]' for entry in factory[store:])
+    assert positions(factory, '??0FunctionProcessor@@'), 'New member must be constructed after the unchanged owned497 identity'
 
 lookup = instructions(lookup_name)
 find = positions(lookup, '?Find@?$HashMapHolder@VConversation@@@@')[0]

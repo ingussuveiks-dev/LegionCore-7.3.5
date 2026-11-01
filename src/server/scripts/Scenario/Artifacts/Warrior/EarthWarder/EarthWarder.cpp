@@ -11,6 +11,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "SpellMgr.h"
+#include "FunctionProcessor.h"
 #include <memory>
 #include <set>
 
@@ -116,6 +117,7 @@ public:
         uint32 magnarIntroInstanceGeneration = 0;
         bool magnarOfferReady = false;
         ObjectGuid magnarConversation = ObjectGuid::Empty;
+        FunctionProcessor _presentationFunctions;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -372,7 +374,7 @@ public:
             {
                 firstfighting = false;
                 Talk(3);
-                me->AddDelayedEvent(5000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(5000, [this]() -> void
                 {
                     Talk(4);
                     me->GetMotionMaster()->MovePath(9859004, false);
@@ -471,11 +473,11 @@ public:
                 if (id == 6)
                 {
                     Talk(18);
-                    me->AddDelayedEvent(5000, [this]() -> void
+                    _presentationFunctions.AddDelayedEvent(5000, [this]() -> void
                     {
                         if (Creature* targ = me->FindNearestCreature(94714, 85.0f, true))
                         {
-                            targ->AI()->Talk(5);
+                            sCreatureTextMgr->SendChat(targ, 5);
                             AttackStart(targ);
                             secondfighting = true;
                             std::list<Creature*> adds;
@@ -510,7 +512,7 @@ public:
                             if (InstanceScript* inst = me->GetInstanceScript())
                                 inst->HandleGameObject(go->GetGUID(), true);
                         secondfighting = false;
-                        me->AddDelayedEvent(4000, [this]() -> void
+                        _presentationFunctions.AddDelayedEvent(4000, [this]() -> void
                         {
                             Talk(19);
                             Talk(6);
@@ -529,14 +531,14 @@ public:
                     case 4:
                         Talk(7);
                         Talk(8);
-                        me->AddDelayedEvent(15000, [this]() -> void
+                        _presentationFunctions.AddDelayedEvent(15000, [this]() -> void
                         {
                             Talk(9);
                         });
                         break;
                     case 5:
                         Talk(12);
-                        me->AddDelayedEvent(2000, [this]() -> void
+                        _presentationFunctions.AddDelayedEvent(2000, [this]() -> void
                         {
                             Talk(13);
                         });
@@ -636,12 +638,20 @@ public:
             {
                 _introDone = true;
                 Talk(0);
-                me->AddDelayedEvent(5000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(5000, [this]() -> void
                 {
                     Talk(1);
                     me->GetMotionMaster()->MovePoint(1, 4864.44f, -33.53f, 48.68f);
                 });
             }
+        }
+
+        void UpdateLifecycle(uint32 diff) override
+        {
+            // Match the native Unit queue's ALIVE/CORPSE clock even when
+            // combat, stun or a suspended AI prevents ordinary UpdateAI.
+            if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)
+                _presentationFunctions.Update(diff);
         }
 
         void UpdateAI(uint32 diff) override

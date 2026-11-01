@@ -294,6 +294,10 @@ struct Player
     template<typename... Args> void UpdateAchievementCriteria(Args...) { assert(false); }
 };
 void GetCreatureListWithEntryInGrid(std::list<Creature*>&, Creature*, uint32, float) { assert(false); }
+// Earlier escort callbacks execute in HruthnirTimersTest. This retained
+// chamber/gossip fixture must fail loudly if it enters that separate boundary.
+struct EscortTextBoundary { void SendChat(Creature*, uint32) { assert(false); } } escortTextBoundary;
+auto* sCreatureTextMgr = &escortTextBoundary;
 #include "Policy.inc"
 struct CreatureScript
 {
