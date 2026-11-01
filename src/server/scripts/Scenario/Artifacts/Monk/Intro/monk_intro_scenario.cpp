@@ -8,6 +8,14 @@
 #include "GameObjectAI.h"
 #include "FunctionProcessor.h"
 #include "ObjectAccessor.h"
+#include "Player.h"
+#include "Group.h"
+#include "QuestData.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include "SpellMgr.h"
+#include "SpellScript.h"
+#include "Timer.h"
 
 
 // 97778
@@ -25,10 +33,13 @@ public:
     {
         npc_master_haitAI(Creature* creature) : ScriptedAI(creature)
         {
-            me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+            if (me->GetMapId() == 1014 && me->GetDBTableGUIDLow() == 362105)
+                me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
         }
 
         FunctionProcessor _presentationFunctions;
+        std::shared_ptr<uint8> _clickLifetime = std::make_shared<uint8>();
+        std::weak_ptr<uint8> _pendingClick;
 
         void UpdateLifecycle(uint32 diff) override
         {
@@ -207,15 +218,10 @@ public:
             }
         }
 
-        void OnSpellClick(Unit* clicker) override
+        void OnSpellClick(Unit* /*clicker*/) override
         {
-            if (!clicker)
-                return;
-
-            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-            clicker->ToPlayer()->KilledMonsterCredit(98514);
-            clicker->ToPlayer()->KilledMonsterCredit(97778);
-            DoAction(1);
+            // Native197120 acceptance owns the interaction. This hook also
+            // runs after rejected conditions/casts and cannot grant or start it.
         }
 
 
@@ -234,6 +240,8 @@ public:
         }
     };
 };
+
+#include "monk_hait_click.h"
 
 // 97774
 class npc_nine_czi : public CreatureScript
@@ -519,4 +527,5 @@ void AddSC_monk_intro_scenario()
     new npc_master_hait();
     new npc_nine_czi();
     new npc_monk_chen_porter();
+    RegisterSpellScript(spell_monk_hait_click);
 };

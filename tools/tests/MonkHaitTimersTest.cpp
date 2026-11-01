@@ -28,7 +28,7 @@ struct Creature:Unit{
  Player* nearest=nullptr;Creature* chuan=nullptr;Creature* demon=nullptr;GameObject* door=nullptr;Motion motion;Vehicle vehicle;uint32 npcflags=0,flags=0,states=0,attacks=0,melee=0;ObjectGuid attacked;
  std::vector<std::pair<uint32,ObjectGuid>> talks;std::vector<uint32> casts;std::function<void()> onTalk;
  Creature(){world.emplace(guid,this);}~Creature();CreatureAI* AI(){return i_AI;}bool AIM_Destroy();void Lifecycle(uint32 diff);
- ObjectGuid GetGUID()const{return guid;}bool IsAlive()const{return alive;}
+ ObjectGuid GetGUID()const{return guid;}bool IsAlive()const{return alive;}uint32 GetMapId()const{return map;}uint32 GetDBTableGUIDLow()const{return 362105;}
  void SetFlag(uint32 field,uint32 value){(field==UNIT_FIELD_NPC_FLAGS?npcflags:flags)|=value;}void RemoveFlag(uint32 field,uint32 value){(field==UNIT_FIELD_NPC_FLAGS?npcflags:flags)&=~value;}
  void SetHomePosition(float,float,float,float){}float GetPositionX()const{return 1;}float GetPositionY()const{return 1;}float GetPositionZ()const{return 1;}float GetOrientation()const{return 0;}
  bool HasUnitState(uint32 state)const{return (states&state)!=0;}void SetWalk(bool value){walk=value;}Motion* GetMotionMaster(){return &motion;}Vehicle* GetVehicleKit(){return hasVehicle?&vehicle:nullptr;}

@@ -21,6 +21,7 @@ if(($normalized -replace '\s','') -cne ($oldActor -replace '\s','')){throw 'Othe
 $outside=$source.Replace($actor,$oldActor).Replace('#include "ObjectAccessor.h"','')
 $hait=Block $source 'class npc_master_hait :';$oldHait=Block $old 'class npc_master_hait :'
 if(($hait -replace '\s','') -cne ($oldHait -replace '\s','')){& "$PSScriptRoot/Test-MonkHaitTimers.ps1" -ScopeOnly;if(!$?){throw 'Successor Hait scope failed'};$outside=$outside.Replace($hait,$oldHait)}
+if($source.Contains('#include "monk_hait_click.h"')){foreach($include in @('Player.h','Group.h','QuestData.h','Scenario.h','ScenarioMgr.h','SpellMgr.h','SpellScript.h','Timer.h','monk_hait_click.h')){$outside=$outside.Replace('#include "'+$include+'"','')};$outside=$outside.Replace('RegisterSpellScript(spell_monk_hait_click);','')}
 $outside=$outside.Replace("if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)`n                _presentationFunctions.Update(diff);",'_presentationFunctions.Update(diff);')
 if(($outside -replace '\s','') -cne ($old -replace '\s','')){throw 'Other Monk actors changed'}
 if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -ne 9 -or $actor.Contains('me->AddDelayedEvent(') -or $actor.Contains('[this, pl]')){throw 'Nine owned callbacks and immutable player GUID required'}

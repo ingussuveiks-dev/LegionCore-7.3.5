@@ -22,6 +22,7 @@ $chen=Block $source 'class npc_monk_chen_porter :';$oldChen=Block $old 'class np
 if(($chen -replace '\s','') -cne ($oldChen -replace '\s','')){& "$PSScriptRoot/Test-MonkChenTimers.ps1" -ScopeOnly;if(!$?){throw 'Successor Chen scope failed'};$outside=$outside.Replace($chen,$oldChen)}
 $hait=Block $source 'class npc_master_hait :';$oldHait=Block $old 'class npc_master_hait :'
 if(($hait -replace '\s','') -cne ($oldHait -replace '\s','')){& "$PSScriptRoot/Test-MonkHaitTimers.ps1" -ScopeOnly;if(!$?){throw 'Successor Hait scope failed'};$outside=$outside.Replace($hait,$oldHait)}
+if($source.Contains('#include "monk_hait_click.h"')){foreach($include in @('Player.h','Group.h','QuestData.h','Scenario.h','ScenarioMgr.h','SpellMgr.h','SpellScript.h','Timer.h','monk_hait_click.h')){$outside=$outside.Replace('#include "'+$include+'"','')};$outside=$outside.Replace('RegisterSpellScript(spell_monk_hait_click);','')}
 if(($outside -replace '\s','') -cne ($old -replace '\s','')){throw 'Other Monk actors changed'}
 if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -ne 4 -or $actor.Contains('me->AddDelayedEvent(') -or $actor.Contains('[this, pl]')){throw 'Four actor-owned callbacks and immutable player GUID required'}
 if($ScopeOnly){'PASS exact four Nine Czi timer owners/one immutable GUID; other native gameplay/actors unchanged';return}

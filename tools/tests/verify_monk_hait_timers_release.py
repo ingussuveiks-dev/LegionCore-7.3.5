@@ -25,7 +25,7 @@ assert slots[0x110//8]==n['symbol'](method('UpdateLifecycle'))
 assert all(n['symbol'](method(name)) in slots for name in ('MovementInform','SetData','DoAction','OnSpellClick','UpdateAI'))
 life=verify_clock(n,method('UpdateLifecycle'),0x38);destroy=ins('??_Gnpc_master_haitAI@npc_master_hait@@')
 destruct,=sites(n,destroy,'??1FunctionProcessor@@')
-assert (destroy[destruct-1].mnemonic,destroy[destruct-1].op_str)==('add','rcx, 0x38')
+assert (destroy[destruct-1].mnemonic,destroy[destruct-1].op_str) in (('add','rcx, 0x38'),('lea','rcx, [rbx + 0x38]'))
 assert not sites(n,ins(method('UpdateAI')),'?Update@FunctionProcessor@@')
 
 def queue(body,expected):

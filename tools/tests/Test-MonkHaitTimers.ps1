@@ -4,6 +4,16 @@ function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 
 function Shape([string]$text){($text -replace '//[^\n]*','') -replace '\s',''}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "ad164392f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-Hait source missing'}
+$currentActor=Block $source 'class npc_master_hait :'
+if($source.Contains('#include "monk_hait_click.h"')){
+ # Certify the narrow successor independently, then compare timer behavior
+ # with its predecessor. The native fixture below compiles the CURRENT actor.
+ & "$PSScriptRoot/Test-MonkHaitClick.ps1" -ScopeOnly
+ $preClick=(& git -C $repo show "bb877ffc3:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-click source missing'}
+ $source=$source.Replace($currentActor,(Block $preClick 'class npc_master_hait :'))
+ foreach($include in @('Player.h','Group.h','QuestData.h','Scenario.h','ScenarioMgr.h','SpellMgr.h','SpellScript.h','Timer.h','monk_hait_click.h')){$source=$source.Replace('#include "'+$include+'"','')}
+ $source=$source.Replace('RegisterSpellScript(spell_monk_hait_click);','')
+}
 $actor=Block $source 'class npc_master_hait :';$oldActor=Block $old 'class npc_master_hait :'
 $helper=Block $actor 'static void AttackDemon('
 $expectedHelper=@'
@@ -54,7 +64,7 @@ if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -
 if($ScopeOnly){'PASS exact seven Hait AI timers/five native Chuan texts/two foreign GUID callbacks with vehicle-owned cleanup and finite actual-AI attack retry; other native gameplay/actors unchanged';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Broken counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-hait-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
-[IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$actor})+';')
+[IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$currentActor})+';')
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
 [IO.File]::WriteAllText("$out/TalkForward.inc",(Block (Get-Content "$repo/src/server/game/AI/CreatureAI.cpp" -Raw) 'void CreatureAI::Talk(uint8 id, ObjectGuid WhisperGuid)'))
