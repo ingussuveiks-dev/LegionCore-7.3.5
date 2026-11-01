@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-01",
+  "fix_commit": "7f715eeaedf7141ae1a357a6e00ef4b3da7d0dd0",
+  "audit": "docs/audits/monk-nine-czi-timers-2026-11-01.json",
+  "archive": "build-extractors/bin/Release/fixed/monk-nine-czi-timers-2026-11-01/verified1",
+  "source_files": 140,
+  "manifested_payloads": 142,
+  "verified_manifest_sha256": "8f93a1d566a9fad8c86a56cb63b00f72cf428188799f1c1a670f75fc0aec84d3",
+  "verification": "Source/archive/source SHA256 and final payload hashes checked, canonical tested/deployed F3882AD7 retained. Actual62ASAN/registered PE/retained Fu Zan/Scepter and owned21608 ready/graceful0 pass. Failed query and wrong inherited-symbol assertion are preserved with repaired passing evidence. Archive excludes executables/PDB/dumps/config/client media/character data and unresolved shared issues; source files retained.",
+  "diagnostics": "Archive pre/post snapshots clean, no new/changed crash, appended server warning/error/assertion or DBErrors. No server present/stopped; active Crashes empty. Mixed6090-byte DBErrors remains unresolved/unchanged/untruncated. No active resolved crash existed to remove.",
+  "remaining": "This closes focused callback lifetime evidence only. Nine Czi admission/nearest-recipient/progression, Master Hait/Chen lifetimes, full Monk intro/acquisitions/all36 and actual client remain OPEN. No new reset. Continue next independent repair."
+}

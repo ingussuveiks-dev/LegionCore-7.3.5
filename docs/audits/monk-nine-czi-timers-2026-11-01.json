@@ -1,6 +1,8 @@
 {
   "date": "2026-11-01",
   "status": "DEPLOYED focused AI/player callback lifetime repair; full Monk intro and all36 remain OPEN.",
+  "fix_commit": "7f715eeaedf7141ae1a357a6e00ef4b3da7d0dd0",
+  "closed_archive": "docs/audits/monk-nine-czi-timers-archive-2026-11-01.json",
   "cause": "Nine Czi97774 schedules four Unit-owned callbacks capturing its AI, including one raw Player*. Native Creature::AIM_Destroy deletes the AI without deleting Unit's FunctionProcessor. The callback can subsequently dereference that deleted AI; departure can also dereference a destroyed Player merely to obtain its GUID. No historical runtime crash is attributed to this source without a matching dump.",
   "repair": "Only npc_nine_cziAI owns its four original3s/4s/4s/7s callbacks in a FunctionProcessor member. Native Creature::Update invokes its UpdateLifecycle once under m_AI_locked, including original suspended/current-null AI, regardless of stun/casting/victim or UpdateAI. Destruction releases pending captures with the actual AI. Departure stores original full128-bit ObjectGuid by value; native CreatureAI::Talk/CreatureTextMgr already resolve it at dispatch. Existing speech/spells/jump/point/damage immunity/criteria/nearest-player policies and other actors remain exact. No new SQL, quest/item grant or reset.",
   "local_scope": {
