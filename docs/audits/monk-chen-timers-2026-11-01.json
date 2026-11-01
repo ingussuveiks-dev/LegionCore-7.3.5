@@ -1,6 +1,8 @@
 {
   "date": "2026-11-01",
   "status": "DEPLOYED focused callback lifetime/native text repair; full Monk intro/all36 remain OPEN.",
+  "fix_commit": "f6f059d38aeb147f309e8ac5a2aa2238e1b03fb1",
+  "closed_archive": "docs/audits/monk-chen-timers-archive-2026-11-01.json",
   "cause": "Chen103148 has nine Unit-owned callbacks capturing its AI, four also retaining a raw Player only for GetGUID. Actual AIM_Destroy deletes AI independently of Unit queue. Player logout/destruction can invalidate that capture. Five fresh target-NPC text calls unnecessarily dereference the other NPC's transient AI. Native CreatureAI::Talk(uint8,ObjectGuid) only forwards source/group/GUID to CreatureTextMgr::SendChat; text does not require target AI.",
   "repair": "All nine callbacks belong to Chen's FunctionProcessor, updated once by existing native locked UpdateLifecycle regardless of combat/stun/current/suspended AI. AI destruction deletes its work. Four callbacks copy original full128-bit ObjectGuid. Five cross-NPC text requests call precisely the native CreatureTextMgr forwarder with the original source/group/target, retaining speech with missing target AI. Original3/7/11/15/15/16s waypoint dialogue and4/5/8s aftermath, separate same-time12/13 lines, follow/path calls and nearest-source selection remain exact. No new SQL, direct grant, teleport, progress or character reset.",
   "sources": {
