@@ -1,0 +1,133 @@
+{
+  "date": "2026-11-01",
+  "status": "DEPLOYED focused server interaction/lifecycle repair; actual client traversal and original retail fidelity remain OPEN",
+  "problem": "Actual Campfire251490 use credited the first42868 objective but created no brewing controller. The four original Type22 sources had native first/child spells but no instruction/delivery bridge, so no actual recipe completion.",
+  "implementation": {
+    "sources": "Only map870/fire128074 and four original ingredient spawns128078/128068/128077/128081 admit the active living Monk. A successful native217297, exact personal109224 and all three auras must exist before the real first GO receipt. Repeated fire clicks retain the current attempt; failed actor setup rolls back its own partial auras.",
+    "native_graph": "217297 ->217302/controller428 ->217304/properties3331 personal109224, plus217321/native bar380 and217332. Actual Type22 -> dummy217213/217216/217219/217224 -> native Added217251/217282/217290/217296 -> native Credit217248/217280/217287/217295 ->217244 target120 CASTER_AREA_SUMMON -> guarded hit of the exact owner actor -> native217335 selected owner ->217334 +1. Native217332/217331 effect90 alone awards109191 and quest readiness.",
+    "personal_credit": "Effect90 dispatches EffectKillCreditPersonal;134 is the separate group dispatcher. Group members keep their own private actors, requests and power bars. No extra group credit is added.",
+    "receipts": "Issued source GUID/ingredient/nonce, immutable script actor GUID, original native Added cast GUID and quest ScriptLifetime prevent unissued, repeated, old or newly rebound delivery. Effect64 schedules Credit10ms later: its real parent GUID is validated. Launch and hit effects reject stale deliveries; native ForceCast217244 supplies the real receipt. Consume before native reentrant energize, verify actual +1 and final native quest status. Recheck living/contactable/same map/nonteleporting/within60 owner at the final receipt.",
+    "movement": "Native217304 destination is adjusted only inside the admitted source handoff to the actual public109187/spawn366254 pose. Normal MovePoint pathfinding approaches an actual fire contact point, waits for real MovementInform/pose/LOS, plays native intro, and returns to the actual original pose after completion. No teleport or forced destination. Existing unrelated Margaux waypoints109224 are preserved and unused.",
+    "speech": "Native owner-only localized BroadcastText and exactly one native gender-resolved sound packet. Full measured intro/success/failure/completion clips govern waits. Public42868 acceptance retains native115360.17 matching native CASC payloads were hashed and fully decoded earlier; this is not a listening or client playback claim.",
+    "lifetime": "Finite provisional/travel/whole-attempt and issued/receipt waits; normal source retries. Weak quest lifetime cannot rebind an old aura after reacceptance. Release only the public hide owned by this attempt, before native Aura428 immediately cleans the summon map reference. Preserve already-hidden state. Native pre-save logout and old-map leave hooks clean on the owning thread. No cross-map Player mutation or raw delayed AI pointer captures.",
+    "shared_contexts": "Other spell/class contexts delegate native behavior. Finder requires actual created-by217304 and exact summoner; other-source same-entry summons survive alongside a full recipe and cleanup. Leave hooks are Monk scoped. Real unrelated Hunter main/Added/Credit/lifetime/map-leave/pre-save endpoints retain their native behavior.",
+    "progression": "No direct final KilledMonsterCredit/CompleteQuest, SetPower, artifact/item grant or replacement summon. Native wrong-lower217336/timeout-clear217337 and abandon effects remain the power endpoints. No real character, item or quest reset."
+  },
+  "data": {
+    "migration": "sql/updates/world/2026_11_01_10_fuzan_brewing.sql",
+    "lf_sha1": "1F400B32B9ACA7ADB29336C502C622975D88AF15",
+    "updater_state": "RELEASED",
+    "delta": "Exactly seven template ScriptNames and15 spell bindings. Fifteen full native table schemas/rows, unchanged unrelated records, idempotence and21 explicit custom/partial refusal snapshots checked against MariaDB. Matching EXE was promoted before the SQL entered the live updater directory.",
+    "retained": "Original GO types/spells/charges/positions/phase6863, quests/objectives/sequencing, public queststarter/enders, creature templates/text and four Margaux waypoints remain unchanged.",
+    "conditions": "Native PlayerCondition42337..42340 are missing in matching26972 input. Keep native ConditionMgr missing-record semantics; no fabricated aura gate or data rewrite."
+  },
+  "verification": {
+    "native": {
+      "evidence": [
+        ".codex/fuzan-brewing-native22-live-asan-shared-open-2026-11-01",
+        ".codex/fuzan-brewing-native23-live-release-shared-open-2026-11-01"
+      ],
+      "races": [
+        "Human",
+        "Orc"
+      ],
+      "recipes": "Each race completes actual solo and grouped-owner four-source packet sequences, actual native power/quest proc and return cleanup. No manual Added/energize/progression endpoint in the ordinary repaired traversal.",
+      "named_alternatives_per_race": [
+        "reportOnly",
+        "rangeAdmission",
+        "classAdmission",
+        "sourceFlags",
+        "missingPublicActor",
+        "existingBar",
+        "failedActorRollback",
+        "unrelatedNativeDelegation",
+        "rawOtherSummon",
+        "noController",
+        "arrivalDeadline",
+        "orphanReapplication",
+        "abandonmentLease",
+        "reacceptNoRebind",
+        "retainedHideLease",
+        "repeatedFire",
+        "wrongRetry",
+        "timeoutRetry",
+        "unissuedDummy",
+        "forgedAdded",
+        "staleDeliveryReaccept",
+        "preSaveLogout",
+        "oldMapLeave",
+        "concurrentPersonalOwners",
+        "nativePersonalCreditInGroup",
+        "pendingDeadOwner",
+        "deathCleanup"
+      ],
+      "database_pools": "All four readonly; no authenticated login/save. Metadata is in-memory private projection before promotion, actual registered live bindings in the final22/23 runs.",
+      "instrumentation": "ASAN instruments the newly compiled production script/fixture. Linked core libraries and STL remain ordinary Release ABI; vector/string annotation macros align that ABI. Core itself is not instrumented."
+    },
+    "controlled_limits": "Fixture uses real entry/pose/template/DBGUID/native assets, controlled phaseMask1 and cached actual zone5785/area5974. Arrival-deadline test holds movement updates; pending-dead-owner test sets the death state before ordinary aura teardown, separately paired with real Unit::setDeathState. Other-source summon uses a controlled created-by0 identity. Orphan reapplication is a native endpoint, not a saved-character login. These tests do not certify actual phase6863/client packets/rendering or physical blocked navigation.",
+    "binary": "Original CMake Release scripts target and original final-link library inputs; no OutDir override. Actual canonical PE verifies9 factories/callback bindings, map/logout vtables, exact created-by finder, alive/teleport/distance/nonce helper and its rejecting branch before the sole native energize, public visibility virtual dispatch, previous Fu Zan hooks, no manufactured final credit and retained core summon cleanup.",
+    "shared": "Native wave-entry128 cases; core cleanup31 ASAN cases; AuraScriptReentry, WarlockRegression, HunterPetAuras/native catalog and canonical Test-ScepterLogin -VerifyReleaseBinary pass. Existing compiler warnings are retained.",
+    "passing_evidence": [
+      ".codex/fuzan-brewing-native22-live-asan-shared-open-2026-11-01",
+      ".codex/fuzan-brewing-native23-live-release-shared-open-2026-11-01",
+      ".codex/fuzan-brewing-data3-live-open-2026-11-01",
+      ".codex/fuzan-brewing-pe6-guard-final-open-2026-11-01",
+      ".codex/fuzan-brewing-guard-promotion1-open-2026-11-01",
+      ".codex/fuzan-brewing-guard-startup1-open-2026-11-01",
+      ".codex/fuzan-brewing-guard-canonical-pe1-open-2026-11-01",
+      ".codex/fuzan-brewing-guard-core-pe2-open-2026-11-01",
+      ".codex/fuzan-brewing-guard-scepter1-open-2026-11-01",
+      ".codex/fuzan-brewing-updater-readback2-open-2026-11-01",
+      ".codex/fuzan-brewing-shared-wave-native1-open-2026-11-01",
+      ".codex/fuzan-brewing-shared-cleanup1-open-2026-11-01"
+    ]
+  },
+  "iteration_review": [
+    "Initial compile had an ambiguous Fire enum/helper name; explicit qualification repaired it, final original-library builds pass.",
+    "Early delivery used a temporary hit scope for delayed effect64. Real native parent GUID stamping repaired the ten-millisecond child handoff. Immutable stale guards and actual endpoint regressions pass.",
+    "Initial visibility restoration after native Aura428 cleanup was too late. BeforeEffectRemove restoration now runs while the source map exists; death/abandon/immediate reaccept tests pass.",
+    "Native1..8 inherited an uninitialized proc-event vector. ASAN8 exposed the GetSpellProcEvent access violation. Load the real native proc table as normal server startup does; final22/23 pass. Earlier apparent noninstrumented endpoint passes do not suffice as full progression evidence.",
+    "Initial ASAN link had STL annotation ABI mismatch with ordinary Release libraries. Matching that ABI leaves script/fixture ASAN instrumentation enabled; limitation recorded above.",
+    "Early test wrongly expected group credit from effect90. Native dispatcher90 is personal; tests now preserve that endpoint and keep the grouped peer incomplete.",
+    "Retained PE field/helper assertions were repaired separately in f176ef601 with canonical/staged/native evidence. New PE checks also inspect actual Unit visibility virtual dispatch and outlined delivery helper, rather than assume direct calls or inlining.",
+    "SQL refusal stderr includes native query echoes; validate the exact expected4025 guard failure and all unchanged snapshots. Preserve complete stdout/stderr. Updater SHA is uppercase, verified against exact LF payload.",
+    "One local PE invocation used a wrapper-shadowed loop name and another lacked the existing capstone path. Corrected invocations pass; these are retained invocation failures, not server defects."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "072C4EB632A6B0B2FF9E3CC72D9E076295F5471315FA0B10696DA85F2C9553A5",
+    "bnet_sha256": "DADDE450601D70E4ECA45A5AA9EA270A7CFE6A67977AAB98816A5CE88858A5E7",
+    "stage": ".codex/fuzan-brewing-release-guard-final",
+    "backup": ".codex/release-before-fuzan-brewing-guard-2026-11-01",
+    "intermediate": "First implementation E928AF07/6FAC0A37 was promoted before World10; owned PID956 ready/shutdown0/exit0. Final guarded072C4EB6/DADDE450 supersedes it; owned PID296 ready/shutdown0/exit0/gone. Original486313/8879 backup remains separate.",
+    "protected": "Configuration/certificates/DLL hashes preserved; extracted data and log directories retained. Original final-link inputs and stage/canonical copy hashes checked. Local matching PDB remains in the retained guarded stage.",
+    "ownership": "Only task-owned hidden worldservers were launched and gracefully stopped. No user/unknown server stopped; none left by this task."
+  },
+  "diagnostics": {
+    "result": "Before/after crash and log snapshots for each test/build/SQL/PE/startup. Final tests exit0, stderr empty, no new/changed crash reports, DBErrors bytes or server warnings/errors/assertions. Expected SQL refusal and counterfactual/prototype evidence are separately classified above.",
+    "active_crashes": "Empty; no crash report removed to hide unresolved evidence.",
+    "mixed_db_errors": "UNRESOLVED6090 bytes; SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged. Not truncated or represented as fixed. Informative Server history retained.",
+    "archive": "Verified fixed archival and focused fix commit are recorded separately after the implementation commit is known."
+  },
+  "limits": [
+    "Actual client accept/fire/ingredient interaction, power UI, phase6863 visibility, animation/audio, route, turn-in, group use and saved relog/re-entry remain user client checks. Automated/native checks are distinct from client traversal.",
+    "Video UlCgR4ypmiE was frame-sampled and its full autogenerated captions read; continuous/full-video audio and exact build were not verified. Water/grain/brew/banana follows that successful sample; random-request variability is unestablished.",
+    "Wrong ingredient lower-one, timeout clear-four and dynamically computed approach/return are explicit implementation inferences from native spells/text and available footage, not recovered retail failure choreography or authored waypoints.",
+    "Original Yu lon return flight, Yigthregor missing-path warning, remaining artifact worklist and full ALL36/client coverage remain OPEN. This focused repair does not certify those issues."
+  ],
+  "research": [
+    "docs/audits/fuzan-brewing-native-research-2026-11-01.json",
+    "docs/audits/fuzan-return-flight-research-2026-11-01.json",
+    "docs/audits/summon-controller-cleanup-2026-11-01.json"
+  ],
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_brewing.h": "48AE9E958A13FCD1287C67034A62F4DCBB5F12DB95EEFD95E62ADCA651B39865",
+    "src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/instance_temple_of_the_jade_serpent.cpp": "48532A3E332E01171624B02E5A70255C1B50B2E1CABE1E475DE2BEA8687E0510",
+    "tools/tests/FuZanBrewingNative.cpp": "04E8348488E9D8ADA1E5923A61E63D5A16747E7950D0323506BFEE59DB1D1274",
+    "tools/tests/Test-FuZanBrewingNative.ps1": "43922BC569E272C34E68567B6441DBD1AE674FFD704344CECD4AF0C302BCE94C",
+    "tools/tests/Test-FuZanBrewingData.ps1": "014F886AECF1146674356037476BABAE9FCE927A0C0B1C0D76A069516AE63071",
+    "tools/tests/FuZanBrewingOriginal.json": "AD6F4288A7D3545181082A4C915F7F13EB4E0CCBE5AB40AB7E167F7B89BA050A",
+    "tools/tests/verify_fuzan_brewing_release.py": "79B5B9860D6D3EBC1493B083594D918786C1ACDC82DF14CE3C8A2DF037150026",
+    "sql/updates/world/2026_11_01_10_fuzan_brewing.sql": "480C5CBA43A2CD685064FA0A1F1AAFA8BC136740CA915B77A90DB0D048F1B861"
+  }
+}

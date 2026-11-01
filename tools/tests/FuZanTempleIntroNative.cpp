@@ -19,6 +19,9 @@
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_belphiar.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_summerpetal.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_wave_entry.h"
+#ifdef FUZAN_BREWING_NATIVE
+#include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_brewing.h"
+#endif
 
 struct IntroInstanceTag { using Type=InstanceScript* InstanceMap::*; friend Type Access(IntroInstanceTag); };
 template struct FixtureAccess<IntroInstanceTag,&InstanceMap::i_data>;
@@ -171,6 +174,9 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     sObjectMgr->LoadScriptNames();
     if(withPickup){sSpellMgr->LoadSpellScene();sSpellMgr->LoadSpellLinked();sObjectMgr->LoadNPCText();sGossipDataStore->LoadGossipMenu();sGossipDataStore->LoadGossipMenuItems();}
     auto& names=const_cast<ObjectMgr::ScriptNameContainer&>(sObjectMgr->GetAllScriptNames());
+#ifdef FUZAN_BREWING_NATIVE
+    for(auto name:{"npc_fuzan_brewing","npc_fuzan_brewing_questgiver","go_fuzan_brewing_fire","go_fuzan_brewing_ingredient","spell_fuzan_brewing_summon","spell_fuzan_brewing_ingredient","spell_fuzan_brewing_delivery","spell_fuzan_brewing_receipt","aura_fuzan_brewing_controller"})names.emplace_back(name);
+#endif
     for(auto name:{"npc_fuzan_temple_intro","spell_fuzan_temple_intro","spell_fuzan_temple_complete"})names.emplace_back(name);
     if(withSanctuaryDoor)names.emplace_back("go_fuzan_temple_sanctuary_door");
     if(withTempleRescue)names.emplace_back("npc_fuzan_belphiar");
@@ -207,6 +213,32 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     Require(!actor->ScriptID,"Custom intro creature binding must not be overwritten");actor->ScriptID=nativeScript;
 #endif
     sScriptDataStore->LoadSpellScriptNames();auto& bindings=sScriptDataStore->*Access(IntroBindingsTag{});
+#ifdef FUZAN_BREWING_NATIVE
+    auto bindBrewing=[&](uint32 spell,char const* name){
+        auto range=bindings.equal_range(spell);auto id=sObjectMgr->GetScriptId(name);
+#ifdef FUZAN_BREWING_LIVE
+        Require(std::distance(range.first,range.second)==1 && range.first->second.first==id,"Actual live brewing spell registration differs");
+#else
+        Require(range.first==range.second,"Private brewing fixture refuses custom/partial binding");bindings.emplace(spell,std::make_pair(id,true));
+#endif
+    };
+    for(auto pair:{std::make_pair(217304u,"spell_fuzan_brewing_summon"),{217302u,"aura_fuzan_brewing_controller"},{217244u,"spell_fuzan_brewing_receipt"}})
+        bindBrewing(pair.first,pair.second);
+    for(uint32 id:{217213u,217216u,217219u,217224u})
+        bindBrewing(id,"spell_fuzan_brewing_ingredient");
+    for(uint32 id:{217251u,217282u,217290u,217296u,217248u,217280u,217287u,217295u})
+        bindBrewing(id,"spell_fuzan_brewing_delivery");
+    for(auto pair:{std::make_pair(109224u,"npc_fuzan_brewing"),{109187u,"npc_fuzan_brewing_questgiver"}})
+    {
+        auto value=const_cast<CreatureTemplate*>(sObjectMgr->GetCreatureTemplate(pair.first));auto id=sObjectMgr->GetScriptId(pair.second);
+        Require(value && value->AIName.empty(),"Brewing fixture refuses custom creature AI");
+#ifdef FUZAN_BREWING_LIVE
+        Require(value->ScriptID==id,"Actual live brewing creature registration differs");
+#else
+        Require(!value->ScriptID,"Private brewing fixture refuses custom/partial creature binding");value->ScriptID=id;
+#endif
+    }
+#endif
     uint32 waveBindings=0;
     std::vector<std::pair<uint32,std::string>> waveNames;
     if(withTransition)
@@ -251,6 +283,13 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
 #endif
     }
     sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
+#ifdef FUZAN_BREWING_NATIVE
+    RegisterCreatureAI(npc_fuzan_brewing);RegisterCreatureAI(npc_fuzan_brewing_questgiver);
+    RegisterGameObjectAI(go_fuzan_brewing_fire);RegisterGameObjectAI(go_fuzan_brewing_ingredient);
+    RegisterSpellScript(spell_fuzan_brewing_summon);RegisterSpellScript(spell_fuzan_brewing_ingredient);
+    RegisterSpellScript(spell_fuzan_brewing_delivery);RegisterSpellScript(spell_fuzan_brewing_receipt);RegisterAuraScript(aura_fuzan_brewing_controller);
+    new map_fuzan_brewing();new player_fuzan_brewing();
+#endif
     RegisterCreatureAI(npc_fuzan_temple_intro);RegisterSpellScript(spell_fuzan_temple_intro);RegisterSpellScript(spell_fuzan_temple_complete);
     if(summerConditions){RegisterCreatureAI(npc_fuzan_summerpetal);new condition_fuzan_summerpetal_continuation();}
     if(withWaveRepair){new eventobject_fuzan_wave_entry();RegisterSpellScript(spell_fuzan_wave_attempt);RegisterAuraScript(aura_fuzan_wave_controller);RegisterSpellScript(spell_fuzan_wave_conversation);RegisterSpellScript(spell_fuzan_wave_retrieval);}

@@ -21,6 +21,7 @@
 #include "fuzan_belphiar.h"
 #include "fuzan_summerpetal.h"
 #include "fuzan_wave_entry.h"
+#include "fuzan_brewing.h"
 
 class instance_temple_of_the_jade_serpent : public InstanceMapScript
 {
@@ -51,4 +52,15 @@ void AddSC_instance_temple_of_the_jade_serpent()
     RegisterAuraScript(aura_fuzan_wave_controller);
     RegisterSpellScript(spell_fuzan_wave_conversation);
     RegisterSpellScript(spell_fuzan_wave_retrieval);
+    RegisterCreatureAI(npc_fuzan_brewing);
+    RegisterCreatureAI(npc_fuzan_brewing_questgiver);
+    RegisterGameObjectAI(go_fuzan_brewing_fire);
+    RegisterGameObjectAI(go_fuzan_brewing_ingredient);
+    RegisterSpellScript(spell_fuzan_brewing_summon);
+    RegisterSpellScript(spell_fuzan_brewing_ingredient);
+    RegisterSpellScript(spell_fuzan_brewing_delivery);
+    RegisterSpellScript(spell_fuzan_brewing_receipt);
+    RegisterAuraScript(aura_fuzan_brewing_controller);
+    new map_fuzan_brewing();
+    new player_fuzan_brewing();
 }
