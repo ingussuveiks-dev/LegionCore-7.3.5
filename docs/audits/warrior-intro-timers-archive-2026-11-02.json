@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-02",
+  "status": "Verified resolved Warrior intro diagnostic archive; full933/client/all36 remain OPEN",
+  "fix_commit": "daadfd338689008a3708a4bfabff50286f5cb058",
+  "archive": "build-extractors\\bin\\Release\\fixed\\warrior-intro-timers-2026-11-02\\verified1",
+  "source_files": 256,
+  "payload_files": 258,
+  "manifest_sha256": "36F3337D1193E5DA44D33D925E5D28A623DC72C1D863B14516FFD9D4244F5574",
+  "verification": "Original stdout/stderr including actual native2 ASAN null-AI failure, fixture/schema/PE iterations,45 passing repaired cases, native933 catalog, retained Malgalor and actual stage/canonical consumers preserved. Every source/archive/source and final payload SHA256 verified after tested6F4717E9 deployment. Owned12284 shutdown0/exit0/gone; no user server stopped.",
+  "cleanup": "No active crash report to remove. Unresolved mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged/untruncated; active Crashes empty. Originals retained; configs/credentials/executables/dumps/character data excluded.",
+  "audit": "docs/audits/warrior-intro-timers-2026-11-02.json"
+}
