@@ -1,4 +1,9 @@
 {
+  "latest_fuzan_brewing_research_2026_11_01": {
+    "audit": "docs/audits/fuzan-brewing-native-research-2026-11-01.json",
+    "status": "OPEN: real Campfire and ingredient packets do not start/advance the native brewing trial; implementation not restored yet",
+    "next": "Implement guarded actual Campfire starter, native personal109224/owner-only speech and four real Type22 surfaces; preserve actual child->Added->217244 SpellHit->217335->native proc credit, asynchronous receipt, native deadlines and cleanup. Trace movement and failure semantics before claiming original fidelity; test failed casts/missing actors, stale/repeated packets, two owners/groups, death/abandon/re-entry and full sequence. Keep coupled SQL outside live updater until matching EXE promotion."
+  },
   "latest_summon_controller_cleanup_2026_11_01": {
     "audit": "docs/audits/summon-controller-cleanup-2026-11-01.json",
     "status": "DEPLOYED focused native summon-controller cleanup; brewing starter/instructions/full ALL36 remain OPEN",

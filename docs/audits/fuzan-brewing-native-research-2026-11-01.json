@@ -1,0 +1,87 @@
+{
+  "date": "2026-11-01",
+  "status": "OPEN: real Campfire and ingredient packets do not start/advance the native brewing trial; implementation not restored yet",
+  "scope": "Fu Zan prerequisite42868 The Monkey Kings Challenge, outdoor map870/area5974/phase6863; complete ALL36 remains open",
+  "native_data": {
+    "objectives": "284846/type2/GO251490/storage0, then284852/type0/credit109191/storage1/SEQUENCED2. Native raw Quest loader derives KILL/CAST flags; no live quest flag change.",
+    "starter": "Campfire251490/spawn128074/924.45,-2409.51,168.598/lock1691 OPEN5, goober quest42868, spell0/event0/blankAI/Script. Original/public109187 spawn366254/947.104,-2418.57,168.681 is questgiver; no AI/Script and no acceptance event.",
+    "main": "217297 force-casts217302/217321/217332 from owner.217302 native Aura428 ->217304 personalALLY3331/Title0/entry109224/duration1h.217321 uses native bar380 at0..4, alternate UI433;217332 triggers native217331 credit109191 at100%. Ordinary summon cleanup is now separately repaired/deployed85872b7ac.",
+    "ingredients": [
+      {
+        "entry": 251505,
+        "spawn": 128078,
+        "first": 217214,
+        "child": 217213,
+        "request": 217245,
+        "added": 217251
+      },
+      {
+        "entry": 251501,
+        "spawn": 128068,
+        "first": 217217,
+        "child": 217216,
+        "request": 217278,
+        "added": 217282
+      },
+      {
+        "entry": 251503,
+        "spawn": 128077,
+        "first": 217220,
+        "child": 217219,
+        "request": 217286,
+        "added": 217290
+      },
+      {
+        "entry": 251510,
+        "spawn": 128081,
+        "first": 217225,
+        "child": 217224,
+        "request": 217294,
+        "added": 217296
+      }
+    ],
+    "credit": "Added chain ->217248/217280/217287/217295 ->217244 ScriptEffect77/BasePoints49/target120 CASTER_AREA_SUMMON. A passive observation-only native AI receives217244 from exact owner once per Added.217335 explicitly targets selected owner and force-casts native217334 +1 alternate power. Four controlled native energizes cause real217332/217331/109191 and ready quest. No direct KilledMonsterCredit/CompleteQuest endpoint was inserted.",
+    "targets": "Target92 is TARGET_UNIT_SELECTED, NOT SUMMONER. Request auras and217335/336/337 need explicit owner target.217247 failure aura targets1 SELF and must self-cast from owner.217244 target120 is native caster-owned area summons.",
+    "timing": "Request auras11000ms; failure aura2172479000ms ->217252 script77. Lower217336 -1, clear217337 -4, abandon217333 removes main/meter/completion and force221291 selfclear4. Failure state transitions have not yet been behaviorally verified. Added chain is asynchronous; three Added missiles have native speed20, and even water receipts require native event updates. Never grant progress from CastSpell return alone.",
+    "conditions": "World source13/17/check-cast/trigger-delay rows for217200..217350 absent; extended dummy/proc/aura/filter/script tables have no relevant recipe implementation. Type22 Data5 values42337..42340 are absent in matching native PlayerCondition store; native IsPlayerMeetingCondition returns true for missing IDs and existing Type22 Use does not evaluate this field. No field or check changed; client interpretation remains unverified. Do not invent these as aura gates.",
+    "movement": "No authored109224 native route recovered. Existing waypoints109224 are labelled Margaux and lie in unrelated Suramar coordinates; do not attach this numeric collision to the Monkey King."
+  },
+  "actual_native_probe": {
+    "path": ".codex/fuzan-brewing-recipe-native4-observer-open-2026-11-01",
+    "result": "Human/Orc: decoded CMSG_GAME_OBJ_USE for original campfire grants first1/1 but no controller; explicitly controlled native217297 creates real owner NPC and native0/4 meter; four actual Type22 ingredient use packets leave request and meter unchanged. These are EXPECTED_BROKEN observations, not ordinary successful quest runs.",
+    "controlled_endpoints": "Separately supplied native request/failure/Added/217335 casts prove actual target/removal/217244 receipt/four-power/109191 and native aura cleanup. They do not implement or prove an autonomous minigame. Actual actor positions/quest/zone are controlled initial state; no client login or traversal.",
+    "observer": "Only NullCreatureAI.SpellHit is instrumented to count217244 and caster identity. It never advances power, quests or AI steps. All four pools read-only, synthetic in-memory player/session, no account/character/item/quest reset/save or external server."
+  },
+  "video": {
+    "url": "https://www.youtube.com/watch?v=UlCgR4ypmiE",
+    "title": "The Monkey Kings Challenge WoW Monk Order Hall",
+    "uploader": "WoW Quests",
+    "duration_seconds": 79.901,
+    "review": "Actual paused frames at0,5,10,...75seconds and one resulting end/recommendations screen; full exported autogenerated captions read. Partial/frame-sampled review, not continuous playback/full-video audio review. Exact upload date/client build unestablished; page said10years ago.",
+    "observed": "Accept/campfire, Monkey King near pot, ordered water->grain->smelly brew->banana with one-quarter meter increments, ready quest, return movement/turn-in and next42765 UI. No failure/abandonment/reconnect/group footage reviewed. Pixels do not supply exact XYZ or route."
+  },
+  "voices": {
+    "native_ids": "115345 intro/64418/1399700/6069ms;115346 water/64434/1399716/3959ms;115347 grain/64428/1399710/4224ms;115392 brew/64429/1399711/5765ms;115348 banana/64423/1399705/4819ms;115359 completion/64430/1399712/5515ms;115360 acceptance/64435/1399717/4611ms. Four success and six failure clips also identified.",
+    "verification": "17 local CASC payloads hashed/ffprobed and fully decoded as Vorbis, client26972 build/index hashes unchanged. No listening/client audio certification. Native CT group3 MinTimer47502 is not a verified voice duration.",
+    "delivery": "WorldObject::Talk(BroadcastText) already emits native sound; do not add a second sound on top. Its PlayerDistWorker checks phase/distance, not private ownership, so a future personal dialogue implementation must preserve owner-only audience."
+  },
+  "sources": "Matching local World/DB2/Hotfix/code first; bounded local DestinyCore/LegionPlayerBot and TrinityTDB735.00 scripts/world-update and GitHub queries found no matching implementation, only unrelated numeric spell/object rows. Three cached donor first-ID scans supplied no matching controller implementation; these are bounded searches, not exhaustive absence proofs. No modern code adapted. Historical video used only within stated coverage.",
+  "iterations": "Prototype recipe1 incorrectly treated92 as summoner and cast failure aura from NPC. Corrected to exact native SELECTED/SELF selectors. Recipe2 checked Added effects before native events/missiles completed. Recipe3 failed compile due nested MiscData.Speed field name; corrected recipe4 and actual native receipt passes. Optional PlayerCondition catalog5 assumed records exist/exit9; catalog6 explicitly reports four absent IDs, no production predicate changed. Earlier bootstrap/session/cache faults are retained in separate open brewing evidence and described in core cleanup audit.",
+  "diagnostics": "Catalog4/6, corrected World queries, actual native recipe4 and audio checks exit0/empty stderr/no new or changed crash, appended DBErrors or server warning/error/assertion. Expected broken starter/ingredient observations remain OPEN. Canonical mixed6090-byte DBErrors unchanged, Crashes empty; no task server left.",
+  "next": "Implement guarded actual Campfire starter, native personal109224/owner-only speech and four real Type22 surfaces; preserve actual child->Added->217244 SpellHit->217335->native proc credit, asynchronous receipt, native deadlines and cleanup. Trace movement and failure semantics before claiming original fidelity; test failed casts/missing actors, stale/repeated packets, two owners/groups, death/abandon/re-entry and full sequence. Keep coupled SQL outside live updater until matching EXE promotion.",
+  "evidence_sha256": {
+    ".codex/fuzan-brewing-catalog4-open-2026-11-01/native.tsv": "dd94f83aac53804e04c6c06ed6d07d76592f2aca514c0db723a3418f769e4910",
+    ".codex/fuzan-brewing-catalog6-open-2026-11-01/native.tsv": "1616b445ced608302e4f2012eaf159f578285ae045ce6d2bab358b329ee3600a",
+    ".codex/fuzan-brewing-surfaces1-open-2026-11-01/world.tsv": "2a4e691f9036abda5d76db3cbb6fb7c7d777469469772ea57acea462b7910dd9",
+    ".codex/fuzan-brewing-target-conditions1-open-2026-11-01/world.tsv": "be87f0785ed318fc608f41d6397d8620d047179356921bfb9ac92f3f9083cca2",
+    ".codex/fuzan-brewing-extended-spells1-open-2026-11-01/world.tsv": "fc632c9480f309eb1d0ae7f9fc55dc5fc1c3c7f8491353c25ec94a1f2c2b98ca",
+    ".codex/fuzan-brewing-recipe-native4-observer-open-2026-11-01/run/stdout.log": "9ec078e866eb295219e7b61f323b915e45c0a188316508a286b050239bc44191",
+    ".codex/fuzan-brewing-recipe-native4-observer-open-2026-11-01/run/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".codex/fuzan-brewing-recipe-native4-observer-open-2026-11-01/run/process-result.json": "aa5b60f99dc5e4a90b2a1b8803425a3c30e1a0c4ae5ecdc57ec0f4c22a95d6fd",
+    ".codex/fuzan-brewing-video-open-2026-11-01/auto-transcript.txt": "07246cf2fe186a07d008d22b26272161af07704123b1f13c64cf476a8a07b56b",
+    "build-extractors/runtime-test/fuzan-brewing-audio/indexes-before.json": "0d4f8f612596ef00146a52fb85283bf8ec350622b6190ab3d509e03b653495bf",
+    "build-extractors/runtime-test/fuzan-brewing-audio/indexes-after.json": "0d4f8f612596ef00146a52fb85283bf8ec350622b6190ab3d509e03b653495bf",
+    "tools/research/FuZanBrewingCatalog.cpp": "e8737bd03ef78a36144569456c543130d066d992578106643aa8c2b6847bd722",
+    "tools/tests/FuZanBrewingAudio.json": "2555e767281598f1ff2d739c5ad9a2e14d9f62165d769ff0d4183e7e35ce99f8"
+  }
+}

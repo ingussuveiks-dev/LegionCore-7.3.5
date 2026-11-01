@@ -1,0 +1,108 @@
+{
+  "Build": "7.3.5.26972",
+  "Source": "Matching native BroadcastText/SoundKitEntry plus read-only local CASC;17 whole Vorbis payloads decoded with unchanged client index hashes. Metadata is not an audio-listening or client-playback claim.",
+  "Payloads": [
+    {
+      "SHA256": "601F25CB1682BE39D9F4E38D51258A978ADE836078C4B40CA95750A1EB5E0ADE",
+      "FileDataID": 1399700,
+      "VoiceMs": 6069,
+      "Bytes": 42694
+    },
+    {
+      "SHA256": "7BB829DF116C5EF958F3844EA7B01EF0D2EEB23B4853DB66CEE2D3612CEF48FE",
+      "FileDataID": 1399701,
+      "VoiceMs": 2833,
+      "Bytes": 21542
+    },
+    {
+      "SHA256": "535B75BFFBC17E529781569AAC62F05A7262FB019BEAA89D8DF8BCABFF028C24",
+      "FileDataID": 1399702,
+      "VoiceMs": 2759,
+      "Bytes": 21580
+    },
+    {
+      "SHA256": "65ED26E261B4D2E079784746E8897F3C8CFC9405C756B9C34EE73C74146D4999",
+      "FileDataID": 1399703,
+      "VoiceMs": 3533,
+      "Bytes": 24993
+    },
+    {
+      "SHA256": "CE386EFBFA0F5472E1D4BBF1D2978184B056369FA46ECFB98A6F1A80820A5CD6",
+      "FileDataID": 1399704,
+      "VoiceMs": 3153,
+      "Bytes": 24178
+    },
+    {
+      "SHA256": "F8D5A510A506037E46167B2F9801A87325D780C74DB32DBF51EC8787D58947B3",
+      "FileDataID": 1399705,
+      "VoiceMs": 4819,
+      "Bytes": 35729
+    },
+    {
+      "SHA256": "9C5EEAFF2DCBED7A37212DAB92FBBE314D91AC33346B8C4FE940A809D43BE888",
+      "FileDataID": 1399706,
+      "VoiceMs": 3777,
+      "Bytes": 26859
+    },
+    {
+      "SHA256": "AFC6AF135ACFB5CB40D84FFA7F0036A9DDCA226E4E4E9B7EF4F49AC3F6CD38EA",
+      "FileDataID": 1399707,
+      "VoiceMs": 5460,
+      "Bytes": 38292
+    },
+    {
+      "SHA256": "D9BC9625B3F610BE4D46F5E82A04876547D61C80CFDF33FFC3691D5BAF826162",
+      "FileDataID": 1399708,
+      "VoiceMs": 6139,
+      "Bytes": 43370
+    },
+    {
+      "SHA256": "B8139333A4CA20803F0B5D44EB5FD5A5CBFDA13008BF925231275C731FB1F0C3",
+      "FileDataID": 1399710,
+      "VoiceMs": 4224,
+      "Bytes": 31499
+    },
+    {
+      "SHA256": "B33E175ACA3900530D47A7E51A610A74F059028E2307F3B251E748495EB997DC",
+      "FileDataID": 1399711,
+      "VoiceMs": 5765,
+      "Bytes": 40837
+    },
+    {
+      "SHA256": "B8D799FC41C08319213F5F321BF8C344B1CA905334F8DFC6CC502BD5E369A051",
+      "FileDataID": 1399712,
+      "VoiceMs": 5515,
+      "Bytes": 38987
+    },
+    {
+      "SHA256": "3CFD2B33A1F931B43D5DB588EE0F555CF8E4392F487CC5359553D753A4F2D35F",
+      "FileDataID": 1399713,
+      "VoiceMs": 4875,
+      "Bytes": 33762
+    },
+    {
+      "SHA256": "C47C60A8049A3E458A3B9160C531E5458591FC1629D3ABC2D7385766CD600E5B",
+      "FileDataID": 1399714,
+      "VoiceMs": 5298,
+      "Bytes": 36783
+    },
+    {
+      "SHA256": "CBDC11D7D4673EA5F7F50A86881AA25554DE8341E07ABB9E2C59AA5235958C02",
+      "FileDataID": 1399715,
+      "VoiceMs": 5966,
+      "Bytes": 41490
+    },
+    {
+      "SHA256": "BBE3FE47C8CA9EC06C957B226642A0EE9CD01969AEF0DAFEF4D1E726F485368B",
+      "FileDataID": 1399716,
+      "VoiceMs": 3959,
+      "Bytes": 27787
+    },
+    {
+      "SHA256": "EDC7351AB792935543B8985214BD19D5D5DDE72FD9FC42A5F7D372B07782DC6E",
+      "FileDataID": 1399717,
+      "VoiceMs": 4611,
+      "Bytes": 33757
+    }
+  ]
+}
