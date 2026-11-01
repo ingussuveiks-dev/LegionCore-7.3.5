@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-01",
+  "fix_commit": "c1f5cc57dfe03d81a286e119a5e8f44f912d200d",
+  "audit": "docs/audits/monk-hait-lifetimes-2026-11-01.json",
+  "archive": "build-extractors/bin/Release/fixed/monk-hait-lifetimes-2026-11-01/verified1",
+  "source_files": 259,
+  "manifested_payloads": 261,
+  "verified_manifest_sha256": "eaa9bb51faf723a49e4c8a7ed38b218339bd0b5037ca4d074a1c16ab8dead299",
+  "verification": "Original source/archive/source and final payload SHA256 verified. Canonical82E6EF5E contains actual reviewed native-clock/vehicle cleanup code;87Hait59Chen77Nine ASAN, actual canonical callbacks/three death guards, retained Fu Zan/Scepter and owned30860 ready/graceful0 pass. Two PE operand assumptions and Nine immediate-cast assertion are preserved with passing corrected regressions. Injected exhausted-AI diagnostic is an expected failing attack paired with recovered-AI passes, not ordinary successful combat. Excludes configs/executable/PDB/dumps/client media/character data/unresolved mixed logs; source files retained.",
+  "diagnostics": "Archive pre/post canonical+own snapshots clean, no new/changed crash or appended DBErrors/server warning/error/assertion. No running/stopped user server, active Crashes empty. Existing mixed6090-byte DBErrors unchanged/unresolved/untruncated; no active resolved report to remove.",
+  "remaining": "Closes callback/cleanup/death-clock evidence only. Hait click type/rejection/repeat/admission, original recipients/full943/Monk/all36 and actual client remain OPEN. SharedLINK2 and other independent issues remain visible. No new character reset; continue next repair."
+}
