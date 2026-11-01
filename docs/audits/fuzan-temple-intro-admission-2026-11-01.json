@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-01",
+  "status": "World02 RELEASED: focused intro invoker admission repaired; conversation acceptance/completion, whole42765 and client traversal remain OPEN",
+  "cause": "109413/373392 native OOC_LOS0 accepts any friendly Unit within16 and consumes its NOT_REPEATABLE event before scheduling217775 and Script9. Nearby friendly109414/373398 is about5.79 yards away in the same6905 phase; native creature-relocation dispatch permits NPC and pet callbacks. A non-Player can consume the event before the intended player arrives. Native217775 is mixed219/conversation2770 plus aura4, so the pure-credit GetScriptCreditCaster owner remapping does not make this a player-only admission. Exact precondition-free dispatch is reproduced as three expected-broken NPC/pet/guardian counterfactuals; no actual client NPC race is claimed observed.",
+  "repair": "Add14 source22/group1/sourceId0 conditions, seven fully ANDed predicates in each incomplete9/complete28 ElseGroup. Require real Player type4, Monk mask512, map1625, alive, unrewarded active42765 and actual actor scenario1137/order0 before native ProcessAction marks runOnce. Keep the original three full SmartAI rows, native217775, linked list and30s52411 action, range/flags/targets, actor/spawn and dialogue unchanged. No item, quest, criteria or timer granted/edited by this migration. Source19 quest/turn-in logic untouched.",
+  "native_research": {
+    "source": "Matching26972 Spell/Effect/Misc/Duration, ConversationLine, BroadcastText and SoundKitEntry through typed reader with read-only Hotfix, plus local actual World/core/relocation code. Local data resolves admission; no newer core or external gameplay copied.",
+    "spells": "217775: effect0 219/2770 target18, effect1 6/aura4 self,70000ms.217774:61/event52411, no producer established in this focus.217786 ->217787 is Felfire Bomb/AT7604 and unrelated to this admission.",
+    "dialogue": "All9 native2770 records examined:5759 ->5938 ->5760 ->5761 ->5775 ->5762 ->5763 ->5764 ->5765.5938/5775/5765 intentionally have BroadcastText0 control records. Six speech texts and six native SoundKit/FileData links are recorded. No audio files decoded, continuous video watched or client playback certified here. Existing native World offsets0/3500/6400/14850/20000/24800/27700 and zero duration fields remain unchanged."
+  },
+  "checks": [
+    "Full-schema MariaDB TEMP shadows for four tables. Exact14 new predicates only, unchanged full3-row SmartAI/native list/30s event and template/spawn; migration twice/idempotence plus12 custom/partial refusals, each preserving every snapshot under --force. No permanent DML in fixture tests; complete stdout/stderr/EOF retained.",
+    "MSVC ASAN compiles actual relevant Condition::Meets predicates, native ElseGroup evaluator, SmartScript dispatch/event/action prefixes, actual LOS and LINK resolution.3 expected-broken unguarded invokers;875 repaired cases across all12 class bits, four quest states, all9 scenario steps, life, NPC/pet/guardian/null, wrong map/scenario/reward/range/LOS/combat/expired object, repeats and proper later Player admission. Cast/list services are controlled endpoints, not conversation/failed-cast proof.",
+    "Post-updater live2 reruns875 plus TEMP/idempotence/12 refusals and full live equality. Actual updater metadata is RELEASED with the expected LF SHA1,14 live rows. Canonical loader startup owned3436 reached fresh ready, graceful shutdown0/exit0/gone; stdout reviewed/stderr empty/protected runtime hashes unchanged. Native B187F6DD already supports all predicates; no EXE/library change required."
+  ],
+  "deployment": {
+    "migration": "sql/updates/world/2026_11_01_02_fuzan_temple_intro_admission.sql",
+    "lf_sha1": "5b35f23317ab5dd4b5a609e42788daec6f3debe9",
+    "raw_sha256": "fdce079622a39430495c15ecf1b321efabbde1b47c20e3e76f099c21e20eae8f",
+    "release_world_sha256": "b187f6dd4b59783a8237cfeba492d6817cf291713ec7ef5106771d35b0cbf9c3",
+    "processes": "No user/unknown server stopped. Owned3436 exited and no task server remains. No character, item or quest reset."
+  },
+  "diagnostics": "Final source2/live2/native3/SQL3/updater/readback wrappers completed and no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Existing6090-byte mixed DBErrors hash8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 remains untouched. Active Crashes empty. Initial source1 fixture global variable shadow warning corrected by renaming the host variable; no warning disabled. Native2/debug assumed every ConversationLine had a BroadcastText; native3 preserves legitimate zero-text controls while still rejecting nonzero missing text. SQL1 host unquoted hyphen keys and SQL2 inline named CHECK syntax fixed before live promotion; SQL3/full post-updater fixtures pass. Live1's outer shell exit1 came from the trailing inventory query for an absent bnetserver, while all test wrappers passed; live2 independently exits0 after owned startup completion.",
+  "unresolved": "The pre-existing Script9 still starts independently of successful native217775 conversation creation and credits after30s. Failed casts/missing actors, actual accepted conversation/playback completion, late/re-entry/abandonment and legitimate group semantics need a separate acknowledged transition repair. This admission-only migration intentionally does not claim that issue solved or the full intro/chain verified. Keep evidence visible; do not archive open conversation-producer research as a finished quest.",
+  "evidence": [
+    ".codex/fuzan-temple-admission-world1-open-2026-11-01",
+    ".codex/fuzan-temple-conversation-world1-open-2026-11-01",
+    ".codex/fuzan-temple-admission-native3-open-2026-11-01",
+    ".codex/fuzan-temple-admission-source2-open-2026-11-01",
+    ".codex/fuzan-temple-admission-startup1-open-2026-11-01",
+    ".codex/fuzan-temple-admission-update-readback1-open-2026-11-01",
+    ".codex/fuzan-temple-admission-live2-open-2026-11-01"
+  ]
+}
