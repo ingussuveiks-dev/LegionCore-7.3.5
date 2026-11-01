@@ -10,14 +10,19 @@ $addition=@'
 
         void UpdateLifecycle(uint32 diff) override
         {
-            _presentationFunctions.Update(diff);
+            if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)
+                _presentationFunctions.Update(diff);
         }
 '@
 $normalized=$actor.Replace($addition,'').Replace('_presentationFunctions.AddDelayedEvent(', 'me->AddDelayedEvent(').Replace("                        ObjectGuid const playerGuid = pl->GetGUID();`n",'').Replace('[this, playerGuid]','[this, pl]').Replace('Talk(8, playerGuid);','Talk(8, pl->GetGUID());')
 $normalized=[regex]::Replace($normalized,'sCreatureTextMgr->SendChat\(hait, (\d+)(, playerGuid)?\);',{param($m)'hait->AI()->Talk('+$m.Groups[1].Value+$(if($m.Groups[2].Success){', pl->GetGUID()'})+');'})
 $normalized=$normalized.Replace('sCreatureTextMgr->SendChat(*itr, 0);','(*itr)->AI()->Talk(0);')
 if(($normalized -replace '\s','') -cne ($oldActor -replace '\s','')){throw 'Other Chen admission/spells/movement/credit/reset/combat changed'}
-if(($source.Replace($actor,$oldActor) -replace '\s','') -cne ($old -replace '\s','')){throw 'Other Monk actors changed'}
+$outside=$source.Replace($actor,$oldActor).Replace('#include "ObjectAccessor.h"','')
+$hait=Block $source 'class npc_master_hait :';$oldHait=Block $old 'class npc_master_hait :'
+if(($hait -replace '\s','') -cne ($oldHait -replace '\s','')){& "$PSScriptRoot/Test-MonkHaitTimers.ps1" -ScopeOnly;if(!$?){throw 'Successor Hait scope failed'};$outside=$outside.Replace($hait,$oldHait)}
+$outside=$outside.Replace("if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)`n                _presentationFunctions.Update(diff);",'_presentationFunctions.Update(diff);')
+if(($outside -replace '\s','') -cne ($old -replace '\s','')){throw 'Other Monk actors changed'}
 if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -ne 9 -or $actor.Contains('me->AddDelayedEvent(') -or $actor.Contains('[this, pl]')){throw 'Nine owned callbacks and immutable player GUID required'}
 if($ScopeOnly){'PASS exact nine Chen timer owners/four immutable GUID captures/five native text forwarders; other native gameplay/actors unchanged';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Broken counterfactual cannot certify Release'}
@@ -26,6 +31,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
 [IO.File]::WriteAllText("$out/TalkForward.inc",(Block (Get-Content "$repo/src/server/game/AI/CreatureAI.cpp" -Raw) 'void CreatureAI::Talk(uint8 id, ObjectGuid WhisperGuid)'))
+[IO.File]::WriteAllText("$out/DeathState.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'enum DeathState')+';')
 $cs=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
 foreach($pair in @(@('Lifecycle','if (i_AI || i_disabledAI)'),@('AIDestroy','bool Creature::AIM_Destroy('))){[IO.File]::WriteAllText("$out/$($pair[0]).inc",(Block $cs $pair[1]))}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

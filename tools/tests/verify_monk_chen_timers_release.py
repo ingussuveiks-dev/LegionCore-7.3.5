@@ -7,6 +7,7 @@ import runpy
 import struct
 from capstone import CS_OP_MEM
 from sharasdal_erunak_entry_pe import sites, values
+from monk_intro_clock_pe import verify_clock
 
 p=runpy.run_path(str(Path(__file__).with_name('verify_monk_nine_czi_timers_release.py')))
 n,refs,table,resolved=p['n'],p['refs'],p['table'],p['resolved']
@@ -22,9 +23,7 @@ slots=resolved(raw)
 assert slots[0]==n['symbol']('??_Gnpc_monk_chen_porterAI@npc_monk_chen_porter@@')
 assert slots[0x110//8]==n['symbol'](method('UpdateLifecycle'))
 assert all(n['symbol'](method(name)) in slots for name in ('MovementInform','MoveInLineOfSight','SetData','UpdateAI'))
-life=ins(method('UpdateLifecycle'));destroy=ins('??_Gnpc_monk_chen_porterAI@npc_monk_chen_porter@@')
-assert [(op.mnemonic,op.op_str) for op in life[:1]]==[('add','rcx, 0x40')]
-assert sites(n,life,'?Update@FunctionProcessor@@')==[1] and life[1].mnemonic=='jmp'
+life=verify_clock(n,method('UpdateLifecycle'),0x40);destroy=ins('??_Gnpc_monk_chen_porterAI@npc_monk_chen_porter@@')
 destroy_site,=sites(n,destroy,'??1FunctionProcessor@@')
 assert (destroy[destroy_site-1].mnemonic,destroy[destroy_site-1].op_str)==('add','rcx, 0x40')
 assert not sites(n,ins(method('UpdateAI')),'?Update@FunctionProcessor@@')

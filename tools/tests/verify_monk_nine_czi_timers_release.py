@@ -8,6 +8,7 @@ import struct
 from capstone import CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 from sharasdal_erunak_entry_pe import sites, values
+from monk_intro_clock_pe import verify_clock
 
 n=runpy.run_path(str(Path(__file__).with_name('verify_smart_linked_cast_retry_release.py')))
 ins=n['instructions'];suffix='@npc_nine_cziAI@npc_nine_czi@@'
@@ -35,9 +36,7 @@ assert slots[0]==n['symbol']('??_Gnpc_nine_cziAI@npc_nine_czi@@')
 assert slots[0x110//8]==n['symbol'](method('UpdateLifecycle'))
 assert all(n['symbol'](method(name)) in slots for name in ('MovementInform','MoveInLineOfSight','SetData','UpdateAI'))
 assert any(op.mnemonic in ('call','jmp') and op.operands[0].type==CS_OP_MEM and op.operands[0].mem.disp==0x110 for op in ins('?Update@Creature@@'))
-life=ins(method('UpdateLifecycle'));destroy=ins('??_Gnpc_nine_cziAI@npc_nine_czi@@')
-assert [(x.mnemonic,x.op_str) for x in life[:1]]==[('add','rcx, 0x40')]
-assert sites(n,life,'?Update@FunctionProcessor@@')==[1] and life[1].mnemonic=='jmp'
+life=verify_clock(n,method('UpdateLifecycle'),0x40);destroy=ins('??_Gnpc_nine_cziAI@npc_nine_czi@@')
 destroy_site,=sites(n,destroy,'??1FunctionProcessor@@')
 assert (destroy[destroy_site-1].mnemonic,destroy[destroy_site-1].op_str)==('add','rcx, 0x40')
 assert not sites(n,ins(method('UpdateAI')),'?Update@FunctionProcessor@@')

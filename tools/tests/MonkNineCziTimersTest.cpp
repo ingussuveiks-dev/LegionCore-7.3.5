@@ -9,6 +9,7 @@
 #include <iostream>
 using uint32=uint32_t;using uint64=uint64_t;using DamageEffectType=uint32;
 #include "Functions.inc"
+#include "DeathState.inc"
 enum{TYPEID_UNIT,TYPEID_PLAYER,UNIT_FIELD_NPC_FLAGS,UNIT_NPC_FLAG_SPELLCLICK=1,POINT_MOTION_TYPE=8,UNIT_STATE_STUNNED=4,UNIT_STATE_CASTING=8,CRITERIA_TYPE_SCRIPT_EVENT_2=92};
 struct ObjectGuid{uint64 low=0,high=0;bool operator==(ObjectGuid const& other)const{return low==other.low&&high==other.high;}};
 struct Unit{virtual ~Unit()=default;virtual uint32 GetTypeId()const{return TYPEID_UNIT;}};
@@ -17,6 +18,7 @@ struct Motion{uint32 jumps=0,points=0;void MoveJump(float,float,float,float,floa
 struct CreatureAI;
 struct Creature:Unit{
  CreatureAI* i_AI=nullptr;CreatureAI* i_disabledAI=nullptr;bool m_AI_locked=false,IsAIEnabled=true;
+ DeathState deathState=ALIVE;DeathState getDeathState(){return deathState;}
  FunctionProcessor functions;uint32 states=0,flags=UNIT_NPC_FLAG_SPELLCLICK,despawns=0,melee=0;bool near=true,victim=false;float y=1700;Motion motion;Player* nearest=nullptr;
  std::vector<std::pair<uint32,ObjectGuid>> talks;std::vector<uint32> casts;std::function<void()> onTalk;
  CreatureAI* AI(){return i_AI;}bool AIM_Destroy();void Lifecycle(uint32 diff);
@@ -71,6 +73,7 @@ int main(){
   {Run r;r.Begin(path);uint32 other=0;r.actor.AddDelayedEvent(5000,[&]{++other;});assert(r.actor.AIM_Destroy());r.Tick(10000,false);assert(other==1&&r.actor.talks.size()==1);++cases;}
   {Run r;r.Begin(path);r.actor.onTalk=[&]{assert(r.actor.m_AI_locked&&!r.actor.AIM_Destroy());};r.Tick(7000);r.actor.onTalk={};AssertFinished(r,path);++cases;}
   {Run r;r.Begin(path);assert(r.actor.AIM_Destroy());r.actor.talks.clear();r.player.credits.clear();r.actor.casts.clear();r.actor.motion={};r.actor.i_AI=new Nine(&r.actor);r.Tick(10000);assert(r.actor.talks.empty());r.Begin(path);r.Tick(7000);AssertFinished(r,path);++cases;}
+  for(auto state:{ALIVE,CORPSE,DEAD,JUST_DIED,JUST_RESPAWNED}){Run r;r.Begin(path);auto before=r.actor.talks.size(),castsBefore=r.actor.casts.size();r.actor.deathState=state;r.Tick(7000);if(state==ALIVE||state==CORPSE)AssertFinished(r,path);else{assert(r.actor.talks.size()==before&&r.actor.casts.size()==castsBefore&&!r.actor.motion.points);r.actor.deathState=ALIVE;r.Tick(7000);AssertFinished(r,path);}++cases;}
  }
  // The original player can be destroyed and a different nearest player found.
  // The departure text still stores its original full128-bit target, no dereference.

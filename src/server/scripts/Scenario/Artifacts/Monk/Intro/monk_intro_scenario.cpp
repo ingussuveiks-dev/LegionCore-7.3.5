@@ -7,6 +7,7 @@
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
 #include "FunctionProcessor.h"
+#include "ObjectAccessor.h"
 
 
 // 97778
@@ -27,6 +28,38 @@ public:
             me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
         }
 
+        FunctionProcessor _presentationFunctions;
+
+        void UpdateLifecycle(uint32 diff) override
+        {
+            if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)
+                _presentationFunctions.Update(diff);
+        }
+
+        static void AttackDemon(Creature* demon, ObjectGuid haitGuid, uint8 remaining = 10)
+        {
+            Creature* hait = ObjectAccessor::GetCreature(*demon, haitGuid);
+            if (!demon->IsAlive() || !hait || !hait->IsAlive())
+                return;
+
+            if (CreatureAI* ai = demon->AI())
+            {
+                ai->AttackStart(hait);
+                return;
+            }
+
+            if (!remaining)
+            {
+                TC_LOG_ERROR("scripts", "Monk intro: demon %s has no AI for its delayed attack after 10 retries", demon->GetGUID().ToString().c_str());
+                return;
+            }
+
+            demon->AddDelayedEvent(500, [demon, haitGuid, remaining]() -> void
+            {
+                AttackDemon(demon, haitGuid, remaining - 1);
+            });
+        }
+
         void SetData(uint32 type, uint32 data) override
         {
             if (type == 1 && data == 1)
@@ -38,21 +71,21 @@ public:
                 {
                     chuan->AddDelayedEvent(2000, [chuan]() -> void
                     {
-                        chuan->AI()->Talk(3);
+                        sCreatureTextMgr->SendChat(chuan, 3);
                     });
 
                     chuan->AddDelayedEvent(4000, [chuan]() -> void
                     {
-                        chuan->AI()->Talk(4);
+                        sCreatureTextMgr->SendChat(chuan, 4);
                     });
 
                     chuan->AddDelayedEvent(7000, [chuan]() -> void
                     {
-                        chuan->AI()->Talk(5);
+                        sCreatureTextMgr->SendChat(chuan, 5);
                     });
                 }
 
-                me->AddDelayedEvent(10000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(10000, [this]() -> void
                 {
                     Talk(6);
                     me->GetMotionMaster()->MovePoint(1, 3805.70f, 1833.99f, 949.62f);
@@ -72,12 +105,12 @@ public:
                 if (id == 1)
                 {
                     Talk(7);
-                    me->AddDelayedEvent(3000, [this]() -> void
+                    _presentationFunctions.AddDelayedEvent(3000, [this]() -> void
                     {
                         Talk(8);
                     });
 
-                    me->AddDelayedEvent(6000, [this]() -> void
+                    _presentationFunctions.AddDelayedEvent(6000, [this]() -> void
                     {
                         if (Player* pl = me->FindNearestPlayer(40.0f))
                             Talk(9, pl->GetGUID());
@@ -102,23 +135,23 @@ public:
         {
             if (action == 1)
             {
-                me->AddDelayedEvent(1000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(1000, [this]() -> void
                 {
                     if (Player* pl = me->FindNearestPlayer(40.0f))
                         Talk(0, pl->GetGUID());
                 });
 
-                me->AddDelayedEvent(4000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(4000, [this]() -> void
                 {
                     Talk(1);
                 });
 
-                me->AddDelayedEvent(7000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(7000, [this]() -> void
                 {
                     Talk(2);
                 });
 
-                me->AddDelayedEvent(10000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(10000, [this]() -> void
                 {
                     Talk(3);
                     me->CastSpell(me, 193053);
@@ -133,32 +166,41 @@ public:
                         {
                             demon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                             demon->GetMotionMaster()->MovePoint(0, 3812.91f, 1812.55f, 950.99f);
-                            demon->AddDelayedEvent(20000, [demon, chuan]() -> void
+                            ObjectGuid const chuanGuid = chuan->GetGUID();
+                            ObjectGuid const haitGuid = me->GetGUID();
+                            demon->AddDelayedEvent(20000, [demon, chuanGuid]() -> void
                             {
-                                chuan->CastSpell(demon, 227140); // veh
+                                if (Creature* chuan = ObjectAccessor::GetCreature(*demon, chuanGuid))
+                                    chuan->CastSpell(demon, 227140); // veh
                                 demon->CastSpell(3825.61f, 1770.73f, 950.98f, 193268);
                             });
 
-                            chuan->AddDelayedEvent(23000, [this, demon, chuan]() -> void
+                            // Keep cleanup on the actual vehicle even if Chuan or
+                            // Hait disappears while its two native casts run.
+                            demon->AddDelayedEvent(23000, [demon, chuanGuid, haitGuid]() -> void
                             {
                                 if (demon->GetVehicleKit())
                                     demon->GetVehicleKit()->RemoveAllPassengers();
-                                chuan->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
-                                chuan->CastSpell(chuan, 185627);
-                                Talk(4);
+                                if (Creature* chuan = ObjectAccessor::GetCreature(*demon, chuanGuid))
+                                {
+                                    chuan->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+                                    chuan->CastSpell(chuan, 185627);
+                                }
+                                if (Creature* hait = ObjectAccessor::GetCreature(*demon, haitGuid))
+                                    sCreatureTextMgr->SendChat(hait, 4);
                                 demon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                                demon->AI()->AttackStart(me);
+                                AttackDemon(demon, haitGuid);
                             });
                         }
 
                         chuan->AddDelayedEvent(8000, [chuan]() -> void
                         {
-                            chuan->AI()->Talk(0);
+                            sCreatureTextMgr->SendChat(chuan, 0);
                         });
 
                         chuan->AddDelayedEvent(15000, [chuan]() -> void
                         {
-                            chuan->AI()->Talk(1);
+                            sCreatureTextMgr->SendChat(chuan, 1);
                         });
                     }
                 });
@@ -219,7 +261,8 @@ public:
 
         void UpdateLifecycle(uint32 diff) override
         {
-            _presentationFunctions.Update(diff);
+            if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)
+                _presentationFunctions.Update(diff);
         }
 
         void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -333,7 +376,8 @@ public:
 
         void UpdateLifecycle(uint32 diff) override
         {
-            _presentationFunctions.Update(diff);
+            if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)
+                _presentationFunctions.Update(diff);
         }
 
         void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override

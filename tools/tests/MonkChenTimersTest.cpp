@@ -10,6 +10,7 @@
 #include <iostream>
 using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using DamageEffectType=uint32;
 #include "Functions.inc"
+#include "DeathState.inc"
 enum{TYPEID_UNIT,TYPEID_PLAYER,UNIT_FIELD_NPC_FLAGS,UNIT_NPC_FLAG_SPELLCLICK=1,WAYPOINT_MOTION_TYPE=2,UNIT_STATE_STUNNED=4,UNIT_STATE_CASTING=8,MOTION_SLOT_IDLE=0,CRITERIA_TYPE_SCRIPT_EVENT_2=92};
 float const PET_FOLLOW_ANGLE=1.57f,PET_FOLLOW_DIST=1.f;
 uint32 urand(uint32 low,uint32){return low;}
@@ -20,6 +21,7 @@ struct Motion{uint32 points=0,follows=0;std::vector<uint32> paths;void MovePoint
 struct CreatureAI;
 struct Creature:Unit{
  CreatureAI* i_AI=nullptr;CreatureAI* i_disabledAI=nullptr;bool m_AI_locked=false,IsAIEnabled=true;
+ DeathState deathState=ALIVE;DeathState getDeathState(){return deathState;}
  FunctionProcessor functions;uint32 states=0,flags=UNIT_NPC_FLAG_SPELLCLICK,attacks=0,melee=0;bool near=true,victim=false;Motion motion;Player* nearest=nullptr;Creature* hait=nullptr;Creature* morvat=nullptr;Creature* li=nullptr;std::vector<Creature*> adds;
  std::vector<std::pair<uint32,ObjectGuid>> talks;std::function<void()> onTalk;
  CreatureAI* AI(){return i_AI;}bool AIM_Destroy();void Lifecycle(uint32 diff);
@@ -77,6 +79,7 @@ int main(){
   {Run r;r.Begin(path);r.actor.onTalk=[&]{assert(r.actor.m_AI_locked&&!r.actor.AIM_Destroy());};r.Tick(20000);r.actor.onTalk={};AssertFinished(r,path);++cases;}
   {Run r;r.Begin(path);assert(r.actor.AIM_Destroy());r.actor.talks.clear();r.player.credits.clear();r.actor.i_AI=new Chen(&r.actor);r.Tick(20000);assert(r.actor.talks.empty());r.Begin(path);r.Tick(20000);AssertFinished(r,path);++cases;}
   {Run r;r.Begin(path);r.Begin(path);assert(r.actor.functions.SizeQueue()==0&&r.Content()->_presentationFunctions.SizeQueue()==(path==0?12u:6u));auto talks=r.actor.talks.size(),credits=r.player.credits.size();assert(r.actor.AIM_Destroy());r.Tick(30000,false);assert(r.actor.talks.size()==talks&&r.player.credits.size()==credits&&r.hait.talks.empty()&&r.actor.motion.paths.empty());++cases;}
+  for(auto state:{ALIVE,CORPSE,DEAD,JUST_DIED,JUST_RESPAWNED}){Run r;r.Begin(path);auto before=r.actor.talks.size();r.actor.deathState=state;r.Tick(20000);if(state==ALIVE||state==CORPSE)AssertFinished(r,path);else{assert(r.actor.talks.size()==before&&r.hait.talks.empty()&&r.actor.motion.paths.empty());r.actor.deathState=ALIVE;r.Tick(20000);AssertFinished(r,path);}++cases;}
  }
  // Exact original timing and stable ordering of the two distinct15s lines.
  {Run r;r.Begin(0);r.Tick(2999);assert(r.hait.talks.empty());r.Tick(1);assert(r.hait.talks.size()==1);r.Tick(3999);assert(r.actor.talks.size()==1);r.Tick(1);assert(r.actor.talks.size()==2);r.Tick(3999);assert(r.hait.talks.size()==1);r.Tick(1);assert(r.hait.talks.size()==2);r.Tick(3999);assert(r.hait.talks.size()==2&&r.hait.motion.paths.empty());r.Tick(1);assert(r.hait.talks.size()==4&&r.hait.talks[2].first==12&&r.hait.talks[3].first==13&&r.hait.motion.paths.size()==1);r.Tick(999);assert(!r.actor.motion.points);r.Tick(1);AssertFinished(r,0);++cases;}

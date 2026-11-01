@@ -11,20 +11,24 @@ $addition=@'
 
         void UpdateLifecycle(uint32 diff) override
         {
-            _presentationFunctions.Update(diff);
+            if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)
+                _presentationFunctions.Update(diff);
         }
 '@
 $normalized=$actor.Replace($addition,'').Replace('_presentationFunctions.AddDelayedEvent(', 'me->AddDelayedEvent(').Replace("                    ObjectGuid const playerGuid = pl->GetGUID();`n",'').Replace('[this, playerGuid]','[this, pl]').Replace('Talk(8, playerGuid);','Talk(8, pl->GetGUID());')
 if(($normalized -replace '\s','') -cne ($oldActor -replace '\s','')){throw 'Other Nine Czi admission/spells/movement/credit/reset/combat changed'}
-$outside=$source.Replace($actor,$oldActor).Replace('#include "FunctionProcessor.h"','')
+$outside=$source.Replace($actor,$oldActor).Replace('#include "FunctionProcessor.h"','').Replace('#include "ObjectAccessor.h"','')
 $chen=Block $source 'class npc_monk_chen_porter :';$oldChen=Block $old 'class npc_monk_chen_porter :'
 if(($chen -replace '\s','') -cne ($oldChen -replace '\s','')){& "$PSScriptRoot/Test-MonkChenTimers.ps1" -ScopeOnly;if(!$?){throw 'Successor Chen scope failed'};$outside=$outside.Replace($chen,$oldChen)}
+$hait=Block $source 'class npc_master_hait :';$oldHait=Block $old 'class npc_master_hait :'
+if(($hait -replace '\s','') -cne ($oldHait -replace '\s','')){& "$PSScriptRoot/Test-MonkHaitTimers.ps1" -ScopeOnly;if(!$?){throw 'Successor Hait scope failed'};$outside=$outside.Replace($hait,$oldHait)}
 if(($outside -replace '\s','') -cne ($old -replace '\s','')){throw 'Other Monk actors changed'}
 if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -ne 4 -or $actor.Contains('me->AddDelayedEvent(') -or $actor.Contains('[this, pl]')){throw 'Four actor-owned callbacks and immutable player GUID required'}
 if($ScopeOnly){'PASS exact four Nine Czi timer owners/one immutable GUID; other native gameplay/actors unchanged';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Broken counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-nine-czi-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 [IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$actor})+';')
+[IO.File]::WriteAllText("$out/DeathState.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'enum DeathState')+';')
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
 $cs=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
