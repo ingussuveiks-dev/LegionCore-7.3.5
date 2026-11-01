@@ -1,5 +1,7 @@
 {
   "latest_fuzan_temple_admission_2026_11_01": {
+    "fix_commit": "f15506759",
+    "archive": "docs/audits/fuzan-temple-intro-admission-archive-2026-11-01.json",
     "audit": "docs/audits/fuzan-temple-intro-admission-2026-11-01.json",
     "status": "World02 RELEASED5b35f233:109413 one-shot LOS requires actual alive active/unrewarded Monk42765/1625/1137stage0.14 predicates only, native3 SmartAI rows/timer unchanged;875ASAN/3 expected-broken/TEMP12 refusals/live/update/owned3436 ready+shutdown0 clean. Existing B187F6DD binary unchanged, mixed6090 retained.",
     "next": "Continue separate actual217775/2770 accepted-conversation/end->52411 transition; old30s timed list still unacknowledged on cast/actor failure. Full intro/Fu Zan/all36/client remain OPEN, no character reset."

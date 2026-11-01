@@ -1,0 +1,11 @@
+{
+  "fix_commit": "f15506759",
+  "directory": "build-extractors/bin/Release/fixed/fuzan-temple-intro-admission-2026-11-01",
+  "source_files": 431,
+  "manifest_entries": 441,
+  "manifest_sha256": "586754478ae62edb137ee9c9ac94c402ffdcdf7bcc94ade9057aa3b8d243cbe4",
+  "scope": "Only closed admission SQL/source/live/updater/startup diagnostic iterations. Source/archive/source and all final manifest entries verified.3 expected-broken non-Player roots paired with875 passing repaired ASAN cases; four TEMP schemas/idempotence/12 refusals and live equality. Owned3436 ready/shutdown0/exit0/gone; canonicalB187F6DD unchanged, World02 RELEASED5b35f233. Original files retained; no active crash/log removed or truncated.",
+  "reviewed_failures": "SQL1 PowerShell hyphen keys and SQL2 MariaDB named CHECK syntax corrected before promotion; SQL3/live2 native fixtures pass. Source1 host shadow warning fixed by renaming its global, source2/live2 warning-free. Live1 tests all pass; trailing absent-bnet process inventory produced shell exit1, paired with independent live2 exit0. Full raw stdout/stderr and expected native refusal errors preserved.",
+  "diagnostics": "Archive and final verification wrappers pass without new/changed crash, appended DBErrors or server failure. Mixed canonical6090-byte DBErrors remains unchanged and unarchived as resolved. No task/unknown server running.",
+  "excluded_open": "Conversation2770 payload/native research and its zero-text control probe iterations remain outside this fixed archive. Actual accepted217775/2770 completion, native217774 producer, failed-cast recovery and the old unacknowledged30s progress list remain OPEN. Full intro42765/all36/client are not certified. Earlier partial-nativeASAN39 limitation, configs, binaries, dumps, credentials and character data excluded."
+}

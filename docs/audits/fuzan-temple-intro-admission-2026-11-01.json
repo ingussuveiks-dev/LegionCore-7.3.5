@@ -30,5 +30,7 @@
     ".codex/fuzan-temple-admission-startup1-open-2026-11-01",
     ".codex/fuzan-temple-admission-update-readback1-open-2026-11-01",
     ".codex/fuzan-temple-admission-live2-open-2026-11-01"
-  ]
+  ],
+  "fix_commit": "f15506759",
+  "archive": "docs/audits/fuzan-temple-intro-admission-archive-2026-11-01.json"
 }
