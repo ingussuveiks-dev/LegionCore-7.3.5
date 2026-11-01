@@ -12,6 +12,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include <algorithm>
+#include <memory>
 
 // 245188
 class go_mystic_bonfire : public GameObjectScript
@@ -428,6 +429,12 @@ public:
             introDone = false;
         }
 
+        ~npc_vigfus_bladewind_lastAI() override
+        {
+            introLifetime.reset();
+            RemoveIntroConversation();
+        }
+
         EventMap events;
         SummonList summons;
         uint32 count_adds;
@@ -445,6 +452,7 @@ public:
         uint32 introVisualRetryTimer = 0;
         bool introVisualWarned = false;
         ObjectGuid introConversation = {};
+        std::shared_ptr<bool> introLifetime = std::make_shared<bool>(false);
 
         void CancelSpectreRush()
         {
@@ -703,9 +711,10 @@ public:
             }
             if (generation != introGeneration || !introPending)
                 return;
-            me->AddDelayedEvent(24000, [this, generation, playerGuid, helyaGuid]() -> void
+            std::weak_ptr<bool> lifetime = introLifetime;
+            me->AddDelayedEvent(24000, [this, lifetime, generation, playerGuid, helyaGuid]() -> void
             {
-                if (generation != introGeneration || !introPending)
+                if (lifetime.expired() || generation != introGeneration || !introPending)
                     return;
                 Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
                 Creature* helya = ObjectAccessor::GetCreature(*me, helyaGuid);
@@ -718,8 +727,10 @@ public:
                     return;
                 }
                 SpellCastResult result = helya->CastSpell(me, 195062);
-                if (generation != introGeneration || !introPending)
+                if (lifetime.expired() || generation != introGeneration || !introPending)
                     return;
+                player = ObjectAccessor::GetPlayer(*me, playerGuid);
+                helya = ObjectAccessor::GetCreature(*me, helyaGuid);
                 if (result != SPELL_CAST_OK || !IsIntroTarget(player, 100.0f) || !IsIntroHelya(helya) ||
                     !me->HasAura(195062, helyaGuid))
                 {
@@ -732,9 +743,9 @@ public:
                 if (introVisualWarned)
                     TC_LOG_INFO("scripts", "Warswords intro recovered native Helya195062 aura; waiting seven seconds after the acknowledged late blessing");
                 introVisualWarned = false;
-                me->AddDelayedEvent(7000, [this, generation, playerGuid, helyaGuid]() -> void
+                me->AddDelayedEvent(7000, [this, lifetime, generation, playerGuid, helyaGuid]() -> void
                 {
-                    if (generation != introGeneration || !introPending)
+                    if (lifetime.expired() || generation != introGeneration || !introPending)
                         return;
                     Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
                     if (!IsIntroTarget(player, 100.0f) || !IsIntroHelya(ObjectAccessor::GetCreature(*me, helyaGuid)))
@@ -742,8 +753,16 @@ public:
                         CancelIntro(generation);
                         return;
                     }
-                    introPending = false;
                     me->RemoveAura(205424);
+                    if (lifetime.expired() || generation != introGeneration || !introPending)
+                        return;
+                    player = ObjectAccessor::GetPlayer(*me, playerGuid);
+                    if (!IsIntroTarget(player, 100.0f) || !IsIntroHelya(ObjectAccessor::GetCreature(*me, helyaGuid)))
+                    {
+                        CancelIntro(generation);
+                        return;
+                    }
+                    introPending = false;
                     AttackStart(player);
                 });
             });

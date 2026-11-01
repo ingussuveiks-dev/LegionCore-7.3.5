@@ -1,8 +1,9 @@
-param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$TargetBaseline,[switch]$BubbleBaseline,[switch]$CommunionBaseline,[switch]$ConversationBaseline,[switch]$TimingBaseline,[switch]$CleanupBaseline,[switch]$BlessingBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$TargetBaseline,[switch]$BubbleBaseline,[switch]$CommunionBaseline,[switch]$ConversationBaseline,[switch]$TimingBaseline,[switch]$CleanupBaseline,[switch]$BlessingBaseline,[switch]$VerifyReleaseBinary,[switch]$LifetimeBaseline,[switch]$ExportOnly,[string]$OutputDirectory='')
 $ErrorActionPreference='Stop'
-if(@($Baseline,$HelyaBaseline,$TargetBaseline,$BubbleBaseline,$CommunionBaseline,$ConversationBaseline,$TimingBaseline,$CleanupBaseline,$BlessingBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $HelyaBaseline -or $TargetBaseline -or $BubbleBaseline -or $CommunionBaseline -or $ConversationBaseline -or $TimingBaseline -or $CleanupBaseline -or $BlessingBaseline) -and $VerifyReleaseBinary)){throw 'Select one baseline without repaired Release verification'}
+if(@($Baseline,$HelyaBaseline,$TargetBaseline,$BubbleBaseline,$CommunionBaseline,$ConversationBaseline,$TimingBaseline,$CleanupBaseline,$BlessingBaseline,$LifetimeBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $HelyaBaseline -or $TargetBaseline -or $BubbleBaseline -or $CommunionBaseline -or $ConversationBaseline -or $TimingBaseline -or $CleanupBaseline -or $BlessingBaseline -or $LifetimeBaseline) -and $VerifyReleaseBinary)){throw 'Select one baseline without repaired Release verification'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/warswords-final-intro"
+if($OutputDirectory){$out=[IO.Path]::GetFullPath($OutputDirectory)}
 New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp'
@@ -16,6 +17,7 @@ if($ConversationBaseline){$source=(& git -C $repo show "638dfa31:$path") -join "
 if($TimingBaseline){$source=(& git -C $repo show "46ae22fd:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned dialogue timing baseline'}}
 if($CleanupBaseline){$source=(& git -C $repo show "2d87fcfb:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned dialogue cleanup baseline'}}
 if($BlessingBaseline){$source=(& git -C $repo show "20ce5e37:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned premature blessing baseline'}}
+if($LifetimeBaseline){if($VerifyReleaseBinary){throw 'Lifetime counterfactual cannot certify Release'};$source=(& git -C $repo show "661a25685:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned lifetime baseline'}}
 $lateBlessing=$source.Contains('bool IsIntroHelya(')
 if($lateBlessing){
  $header=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw
@@ -24,6 +26,7 @@ if($lateBlessing){
  [IO.File]::WriteAllText("$out/NativeFunctionMethods.inc",$functions.Substring($functions.IndexOf('FunctionProcessor::FunctionProcessor()')))
 }
 $source=$source.Substring($source.IndexOf('class npc_vigfus_bladewind_last :'))
+[IO.File]::WriteAllText("$out/Destructor.inc",$(if($source.Contains('~npc_vigfus_bladewind_lastAI()')){(Block $source '~npc_vigfus_bladewind_lastAI()').Replace('~npc_vigfus_bladewind_lastAI()','~IntroAI()')}else{''}))
 $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void Reset()',$first)
 if($first -lt 0 -or $last -le $first){throw 'Final intro member fields missing'}
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
@@ -51,6 +54,7 @@ $source=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/GetCreature.inc",(Block $source 'Creature* ObjectAccessor::GetCreature('))
 $source=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
 [IO.File]::WriteAllText("$out/ObjectInMap.inc",(Block $source 'template<class T> static T* GetObjectInMap('))
+if($ExportOnly){return}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $definition=if($Baseline){'/DBASELINE'}elseif($HelyaBaseline){'/DHELYA_BASELINE'}elseif($TargetBaseline){'/DTARGET_BASELINE'}elseif($BubbleBaseline){'/DBUBBLE_BASELINE'}elseif($CommunionBaseline){'/DCOMMUNION_BASELINE'}elseif($ConversationBaseline){'/DCONVERSATION_BASELINE'}elseif($TimingBaseline){'/DTIMING_BASELINE'}elseif($CleanupBaseline){'/DCLEANUP_BASELINE'}elseif($BlessingBaseline){'/DBLESSING_BASELINE'}elseif($lateBlessing){'/DWARSWORDS_LATE_BLESSING'}else{''}
 $test=if($lateBlessing){'WarswordsLateBlessingTest.cpp'}else{'WarswordsFinalIntroTest.cpp'}

@@ -18,13 +18,18 @@ if not any(name.startswith(conversation) for name in native['symbols']):
 callbacks = [name for name in native['symbols'] if name.startswith('?_Do_call') and 'MoveInLineOfSight@' + actor in name]
 assert len(callbacks) == 2, 'Late blessing and engagement callbacks are missing or ambiguous'
 outer_wrapper = next(name for name in callbacks if '???R' not in name)
-callback = next(name for name in callbacks if '???R' in name)
-outer = next(name for name in native['symbols'] if name.startswith('??R') and 'MoveInLineOfSight@' + actor in name)
+callback_wrapper = next(name for name in callbacks if '???R' in name)
+callback = callback_wrapper
 wrapper_address = native['symbol'](outer_wrapper)
 wrapper_decoder = Cs(CS_ARCH_X86, CS_MODE_64)
 wrapper_decoder.detail = True
 wrapper = list(wrapper_decoder.disasm(native['binary'][native['offset'](wrapper_address):native['offset'](wrapper_address) + 16], wrapper_address))
-assert wrapper[0].mnemonic == 'add' and wrapper[0].op_str == 'rcx, 8' and wrapper[1].mnemonic == 'jmp' and wrapper[1].operands[0].imm == native['symbol'](outer), 'Installed late callback does not execute the verified closure'
+assert wrapper[0].mnemonic == 'add' and wrapper[0].op_str == 'rcx, 8' and wrapper[1].mnemonic == 'jmp'
+outer, = [name for name in native['symbols'] if name.startswith('??R') and 'MoveInLineOfSight@' + actor in name and native['symbol'](name) == native['resolve'](wrapper[1].operands[0].imm)]
+inner_address = native['symbol'](callback_wrapper)
+inner_wrapper = list(wrapper_decoder.disasm(native['binary'][native['offset'](inner_address):native['offset'](inner_address) + 16], inner_address))
+if inner_wrapper[0].mnemonic == 'add' and inner_wrapper[0].op_str == 'rcx, 8' and inner_wrapper[1].mnemonic == 'jmp':
+    callback, = [name for name in native['symbols'] if name.startswith('??R') and 'MoveInLineOfSight@' + actor in name and native['symbol'](name) == native['resolve'](inner_wrapper[1].operands[0].imm)]
 
 
 def reachable(body, start):
@@ -87,7 +92,8 @@ for prefix, expected in ((opening, {24000}), (conversation, {843}), (outer, {195
     assert expected <= literals, f'Original intro actions changed: {prefix}'
 decoded = instructions(callback)
 assert any(entry.mnemonic == 'mov' and entry.op_str == 'eax, dword ptr [rcx + 0xc8]' for entry in decoded), 'Generation capture lost'
-assert any(entry.mnemonic == 'cmp' and entry.op_str == 'dword ptr [rdi + 0x10], eax' and decoded[index + 1].mnemonic == 'jne' for index, entry in enumerate(decoded[:-1])), 'Stale generation can engage'
+generation_capture = 0x10 if callback == callback_wrapper else 0x18
+assert any(entry.mnemonic == 'cmp' and entry.op_str == f'dword ptr [rdi + {generation_capture:#x}], eax' and decoded[index + 1].mnemonic == 'jne' for index, entry in enumerate(decoded[:-1])), 'Stale generation can engage'
 assert any(entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rcx + 0xc7], 0' and decoded[index + 1].mnemonic == 'je' for index, entry in enumerate(decoded[:-1])), 'Inactive intro callback is admitted'
 assert any(entry.mnemonic == 'inc' and entry.op_str == 'dword ptr [rcx + 0xc8]' for entry in instructions(reset)), 'Reset does not invalidate old callbacks'
 tables = []
@@ -128,7 +134,7 @@ for entry in instructions(outer):
     for operand in entry.operands:
         if entry.mnemonic == 'lea' and operand.type == CS_OP_MEM and operand.mem.base == X86_REG_RIP:
             offset = native['offset'](entry.address + entry.size + operand.mem.disp)
-            if struct.unpack_from('<Q', native['binary'], offset + 0x10)[0] == native['symbol'](callback):
+            if struct.unpack_from('<Q', native['binary'], offset + 0x10)[0] == native['symbol'](callback_wrapper):
                 installed.append(offset)
 assert len(installed) == 1, 'Acknowledged blessing does not install the verified engagement closure'
 cleanup = '?RemoveIntroConversation@' + actor
@@ -152,13 +158,18 @@ assert conversation_body[success].address < conversation_body[store].address < t
 assert conversation_body[store - 2].mnemonic == 'call' and native['resolve'](conversation_body[store - 2].operands[0].imm) == native['symbol']('?GetGuidValue@Object@@'), 'Tracked identity does not come from the successful native conversation'
 for consumer in (reset, outer, callback, '?JustDied@' + actor, '?UpdateLifecycle@' + actor):
     assert native['symbol'](cleanup) in native['calls'](consumer), 'Missing selected dialogue cleanup consumer: ' + consumer
-cleanup_edge = next(entry for entry in decoded if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](cleanup))
-admission = next(index for index, entry in enumerate(decoded) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](helper))
-assert decoded[admission + 2].mnemonic == 'je' and decoded[admission + 2].operands[0].imm < cleanup_edge.address, 'Invalid delayed admission bypasses cancellation'
-engagement = next(entry for entry in decoded if entry.mnemonic == 'jmp' and entry.op_str == 'qword ptr [rax + 0x10]')
-helya_check = next(index for index, entry in enumerate(decoded) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol']('?IsIntroHelya@' + actor))
-helya_branch = next(index for index in range(helya_check + 1, helya_check + 5) if decoded[index].mnemonic.startswith('j'))
-assert decoded[helya_branch].mnemonic == 'je' and decoded[helya_branch].operands[0].imm == decoded[admission + 2].operands[0].imm, 'Participant/Helya failures do not share guarded cancellation'
-success_flow = reachable(decoded, decoded[helya_branch + 1].address)
-assert engagement.address in success_flow and cleanup_edge.address not in success_flow, 'Successful engagement can fall through into cancellation'
+cleanup_edges = [entry for entry in decoded if entry.mnemonic in ('call','jmp') and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](cleanup)]
+assert len(cleanup_edges) == (1 if callback == callback_wrapper else 2)
+admissions = [index for index, entry in enumerate(decoded) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](helper)]
+helya_checks = [index for index, entry in enumerate(decoded) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol']('?IsIntroHelya@' + actor)]
+assert len(admissions) == len(helya_checks) == len(cleanup_edges)
+engagement = next(entry for entry in decoded if entry.mnemonic in ('call','jmp') and entry.op_str == 'qword ptr [rax + 0x10]')
+for admission, helya_check in zip(admissions, helya_checks):
+    assert decoded[admission + 2].mnemonic == 'je'
+    branch = next(index for index in range(helya_check + 1, helya_check + 5) if decoded[index].mnemonic.startswith('j'))
+    assert decoded[branch].mnemonic == 'je' and decoded[branch].operands[0].imm == decoded[admission + 2].operands[0].imm, 'Each original-player/Helya check must share guarded cancellation'
+    failed_flow = reachable(decoded, decoded[admission + 2].operands[0].imm)
+    assert any(edge.address in failed_flow for edge in cleanup_edges) and engagement.address not in failed_flow
+success_flow = reachable(decoded, decoded[branch + 1].address)
+assert engagement.address in success_flow and not any(edge.address in success_flow for edge in cleanup_edges), 'Successful final revalidation can fall into cancellation'
 print('PASS: selected843 factory acknowledgement and128-bit ownership survive the two installed24000/7000ms closures. Captured player/Helya identities and epoch/pending gates are retained; Reset, both cancellation paths and death/lifecycle remove only the tracked map-local conversation. Client timing/rendering and full traversal remain separate.')

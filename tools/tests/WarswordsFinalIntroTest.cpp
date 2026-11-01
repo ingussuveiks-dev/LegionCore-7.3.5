@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <list>
+#include <memory>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
@@ -202,6 +203,7 @@ struct ScriptedAI
     uint32 attacks = 0;
     bool seePassive = false;
     explicit ScriptedAI(Creature* actor) : me(actor) { }
+    virtual ~ScriptedAI() = default;
     virtual void Reset() { }
     virtual void MoveInLineOfSight(Unit*) { }
     virtual void UpdateLifecycle(uint32) { }
@@ -212,6 +214,7 @@ struct IntroAI : ScriptedAI
 {
     uint32 victimChecks = 0, combatTicks = 0;
     explicit IntroAI(Creature* actor) : ScriptedAI(actor), summons(me) { introDone = false; }
+#include "Destructor.inc"
 #include "Fields.inc"
 #include "Reset.inc"
 #include "IsIntroTarget.inc"
