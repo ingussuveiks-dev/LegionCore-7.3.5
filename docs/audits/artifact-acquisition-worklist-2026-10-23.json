@@ -1,4 +1,10 @@
 {
+  "latest_fuzan_return_flight_research_2026_11_01": {
+    "audit": "docs/audits/fuzan-return-flight-research-2026-11-01.json",
+    "status": "OPEN: original Yu lon return boarding/flight absent locally; Yigthregor waypoint intent still unresolved",
+    "native_pickup": "22 passing cases prove actual loot/scene/equip and existing direct transfer; original ride remains open.",
+    "next": "Recover native matching ride/route/arrival evidence before replacing direct teleport. Preserve finite owner-only retries, real boarding, camera/control/pet cleanup, no early synthetic credit, abandon/retry/group/re-entry paths. Independently continue remaining36 chain repairs; client tests belong to user."
+  },
   "latest_fuzan_sanctuary_door_2026_11_01": {
     "fix_commit": "ff0314a4f",
     "archive": "docs/audits/fuzan-sanctuary-door-admission-archive-2026-11-01.json",
