@@ -1,5 +1,7 @@
 {
   "latest_fuzan_sanctuary_door_2026_11_01": {
+    "fix_commit": "ff0314a4f",
+    "archive": "docs/audits/fuzan-sanctuary-door-admission-archive-2026-11-01.json",
     "audit": "docs/audits/fuzan-sanctuary-door-admission-2026-11-01.json",
     "status": "DEPLOYED1B6E33C6/World04: original251591 sanctuary door remains usable after early player/pet activation; native205/49141/default open, retry and checkpoint/report-use orders preserved.40 actual native live cases,4 expected-broken+2 controls,2 explicit retry faults,TEMP24 refusals/live, actual8-function door+retainedPE/Scepter and owned28896 ready+graceful0 clean. Mixed6090 retained; no resets.",
     "next": "Continue independent pre-stage rescue guards/Belphiar death and downstream Fu Zan/all36 repairs. Actual client door/render/full42765/all36 remain OPEN; native cases and structural36 are separate."
