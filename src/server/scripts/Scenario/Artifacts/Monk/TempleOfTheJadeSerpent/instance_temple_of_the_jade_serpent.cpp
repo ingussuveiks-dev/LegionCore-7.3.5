@@ -7,6 +7,7 @@
 #include "SmartAI.h"
 #include "ConditionMgr.h"
 #include "Conversation.h"
+#include "GameObject.h"
 #include "Map.h"
 #include "ObjectAccessor.h"
 #include "QuestData.h"
@@ -15,6 +16,7 @@
 #include "Spell.h"
 #include "SpellScript.h"
 #include "fuzan_temple_intro.h"
+#include "fuzan_temple_sanctuary_door.h"
 
 class instance_temple_of_the_jade_serpent : public InstanceMapScript
 {
@@ -36,4 +38,5 @@ void AddSC_instance_temple_of_the_jade_serpent()
     RegisterCreatureAI(npc_fuzan_temple_intro);
     RegisterSpellScript(spell_fuzan_temple_intro);
     RegisterSpellScript(spell_fuzan_temple_complete);
+    RegisterGameObjectAI(go_fuzan_temple_sanctuary_door);
 }

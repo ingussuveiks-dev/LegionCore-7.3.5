@@ -26,7 +26,7 @@ template struct FixtureAccess<IntroStoryTag,&FuZanTempleIntro::Actor::_story>;
 struct IntroClockTag { using Type=std::map<ObjectGuid,uint32> Conversation::*; friend Type Access(IntroClockTag); };
 template struct FixtureAccess<IntroClockTag,&Conversation::playing>;
 
-static void InitializeIntro(int argc,char** argv)
+static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false)
 {
     Require(argc==3,"Private native config/runtime missing");
     std::string error;Require(sConfigMgr->LoadInitial(argv[1],{},error),"Private config failed");
@@ -42,11 +42,14 @@ static void InitializeIntro(int argc,char** argv)
     // Only native loader input is narrowed, with actual rows copied into
     // connection-local tables before making the sessions read-only.
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE fuzan_native_smart_seed LIKE smart_scripts");
-    WorldDatabase.DirectExecute("INSERT INTO fuzan_native_smart_seed SELECT * FROM smart_scripts WHERE entryorguid=109413 AND source_type IN(0,9)");
+    std::string sources="(entryorguid=109413 AND source_type IN(0,9))";
+    if(withSanctuaryDoor)sources+=" OR (entryorguid IN(251591,-138378) AND source_type=1)";
+    WorldDatabase.DirectExecute(("INSERT INTO fuzan_native_smart_seed SELECT * FROM smart_scripts WHERE "+sources).c_str());
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts LIKE fuzan_native_smart_seed");
     WorldDatabase.DirectExecute("INSERT INTO smart_scripts SELECT * FROM fuzan_native_smart_seed");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE fuzan_native_condition_seed LIKE conditions");
-    WorldDatabase.DirectExecute("INSERT INTO fuzan_native_condition_seed SELECT * FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=109413");
+    std::string conditionSources=withSanctuaryDoor?"SourceEntry IN(109413,251591)":"SourceEntry=109413";
+    WorldDatabase.DirectExecute(("INSERT INTO fuzan_native_condition_seed SELECT * FROM conditions WHERE SourceTypeOrReferenceId=22 AND "+conditionSources).c_str());
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions LIKE fuzan_native_condition_seed");
     WorldDatabase.DirectExecute("INSERT INTO conditions SELECT * FROM fuzan_native_condition_seed");
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");WorldDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
@@ -58,13 +61,14 @@ static void InitializeIntro(int argc,char** argv)
     ro=LoginDatabase.Query("SELECT @@session.transaction_read_only");Require(ro&&ro->Fetch()[0].GetBool(),"Login not read-only");
     ro=CharacterDatabase.Query("SELECT @@session.transaction_read_only");Require(ro&&ro->Fetch()[0].GetBool(),"Character not read-only");
     auto count=WorldDatabase.Query("SELECT (SELECT COUNT(*) FROM smart_scripts),(SELECT COUNT(*) FROM conditions)");
-    Require(count&&count->Fetch()[0].GetUInt32()==3&&count->Fetch()[1].GetUInt32()==14,"Actual scoped loader rows changed");
+    Require(count&&count->Fetch()[0].GetUInt32()==(withSanctuaryDoor?4u:3u)&&count->Fetch()[1].GetUInt32()==14,"Actual scoped loader rows changed");
     sDB2Manager.LoadStores(argv[2],LOCALE_enUS);LoadGameTables(argv[2]);
     sSpellMgr->LoadSpellInfoStore();sSpellMgr->LoadSpellRanks();sSpellMgr->LoadTalentSpellInfo();
     sSpellMgr->LoadSkillLineAbilityMap();sSpellMgr->LoadSpellCustomAttr();sSpellMgr->LoadSpellInfoSpellSpecificAndAuraState();
     sObjectMgr->LoadScriptNames();
     auto& names=const_cast<ObjectMgr::ScriptNameContainer&>(sObjectMgr->GetAllScriptNames());
     for(auto name:{"npc_fuzan_temple_intro","spell_fuzan_temple_intro","spell_fuzan_temple_complete"})names.emplace_back(name);
+    if(withSanctuaryDoor)names.emplace_back("go_fuzan_temple_sanctuary_door");
     std::sort(names.begin(),names.end());names.erase(std::unique(names.begin(),names.end()),names.end());
     sObjectMgr->LoadInstanceTemplate();sObjectMgr->LoadScenarioData();
     sObjectMgr->LoadCreatureModelInfo();sObjectMgr->LoadWDBCreatureTemplates();sObjectMgr->LoadCreatureTemplates();
@@ -108,9 +112,12 @@ static void InitializeIntro(int argc,char** argv)
     Require(bool(objectives),"Native quest objectives missing");do{quest->LoadQuestObjective(objectives->Fetch());}while(objectives->NextRow());
     Require(quest->GetObjectives().size()==3,"Native quest objectives changed");
     sAchievementMgr->LoadCriteriaList();
-    auto rules=WorldDatabase.Query("SELECT COUNT(*) FROM achievement_criteria_data WHERE criteria_id=49115");
-    Require(rules&&!rules->Fetch()[0].GetUInt32(),"Native first criterion has additional rules to load");
+    auto rules=WorldDatabase.Query(withSanctuaryDoor?
+        "SELECT COUNT(*) FROM achievement_criteria_data WHERE criteria_id IN(49115,49138,49141)":
+        "SELECT COUNT(*) FROM achievement_criteria_data WHERE criteria_id=49115");
+    Require(rules&&!rules->Fetch()[0].GetUInt32(),"Scoped native intro/rescue/door criteria have additional World rules to load");
     (sAchievementMgr->*Access(IntroCriteriaTag{})).assign(MAX_CRITERIA_TREE,nullptr);
+    if(withSanctuaryDoor){sObjectMgr->LoadPageTexts();sObjectMgr->LoadGameObjectTemplate();}
     sSmartScriptMgr->LoadSmartAIFromDB();sConditionMgr->LoadConditions();sConversationDataStore->LoadConversationData();
     dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1625,{}}});
     MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1625,{}}});
@@ -286,6 +293,7 @@ static void CheckIntro(uint8 race,uint32 number,uint32 mode)
     session->SetPlayer(nullptr);sScenarioMgr->RemoveScenario(map.GetInstanceId());
 }
 
+#ifndef FUZAN_TEMPLE_NATIVE_SUPPORT_ONLY
 int main(int argc,char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
@@ -311,3 +319,4 @@ int main(int argc,char** argv)
     }
     catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}
 }
+#endif
