@@ -10,7 +10,9 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  $info=[Diagnostics.ProcessStartInfo]::new('git',"show b0f7888a6:$path");$info.WorkingDirectory=$repo;$info.UseShellExecute=$false;$info.CreateNoWindow=$true;$info.RedirectStandardOutput=$true;$info.StandardOutputEncoding=[Text.Encoding]::UTF8
  $git=[Diagnostics.Process]::Start($info);$old=$git.StandardOutput.ReadToEnd();$git.WaitForExit();if($git.ExitCode){throw 'Pinned Malgalor baseline absent'};$git.Dispose()
  [IO.File]::WriteAllText("$out/Baseline.inc",(Block $old 'class npc_malgalor :')+';')
- foreach($actor in @('class npc_ragnvald_dragonborn :','class npc_danica_the_reclaimer :')){if((Block $s $actor).Replace("`r",'') -cne (Block $old $actor).Replace("`r",'')){throw "Unrelated Warrior intro actor changed: $actor"}}
+ & "$PSScriptRoot/Test-WarriorIntroTimers.ps1" -ScopeOnly
+ $timerBaseline=(& git -C $repo show "0ab5e6990:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Warrior intro timer preservation source absent'}
+ foreach($actor in @('class npc_ragnvald_dragonborn :','class npc_danica_the_reclaimer :')){if((Block $timerBaseline $actor).Replace("`r",'') -cne (Block $old $actor).Replace("`r",'')){throw "Other Warrior intro behavior predates the certified timer repair: $actor"}}
  $oldBez=Block $old 'class npc_bezzered :';$newBez=Block $s 'class npc_bezzered :'
  [IO.File]::WriteAllText("$out/LegacyBezzeredes.inc",(Block $oldBez 'void JustDied('))
  $oldBez=$oldBez.Replace((Block $oldBez 'void JustDied('),'')

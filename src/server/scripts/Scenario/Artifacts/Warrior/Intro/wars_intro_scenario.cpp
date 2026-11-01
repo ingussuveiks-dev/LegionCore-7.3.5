@@ -13,6 +13,7 @@
 #include "ObjectAccessor.h"
 #include "MapManager.h"
 #include "TemporarySummon.h"
+#include "FunctionProcessor.h"
 #include "malgalor_scene.h"
 #include "malgalor_finale.h"
 
@@ -38,6 +39,40 @@ public:
 
         bool introDone1, introDone2;
         EventMap events;
+        FunctionProcessor presentationFunctions;
+
+        void UpdateLifecycle(uint32 diff) override
+        {
+            if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)
+                presentationFunctions.Update(diff);
+        }
+
+        static void AttackBattleTarget(Creature* ally, ObjectGuid targetGuid, CreatureAI* fallback = nullptr, uint8 remaining = 10)
+        {
+            Creature* target = ObjectAccessor::GetCreature(*ally, targetGuid);
+            if (!ally->IsAlive() || !target || !target->IsAlive())
+                return;
+
+            CreatureAI* ai = ally->AI();
+            if (!ai)
+                ai = fallback;
+            if (ai)
+            {
+                ai->AttackStart(target);
+                return;
+            }
+
+            if (!remaining)
+            {
+                TC_LOG_ERROR("scripts", "Warrior intro: ally %s has no AI for its delayed attack after 10 retries", ally->GetGUID().ToString().c_str());
+                return;
+            }
+
+            ally->AddDelayedEvent(500, [ally, targetGuid, remaining]() -> void
+            {
+                AttackBattleTarget(ally, targetGuid, nullptr, remaining - 1);
+            });
+        }
 
         void Reset() override
         {
@@ -64,7 +99,7 @@ public:
                 Conversation* conversation = new Conversation;
                 if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1386, who, NULL, *who))
                     delete conversation;
-                me->AddDelayedEvent(2000, [this]() -> void // start battle
+                presentationFunctions.AddDelayedEvent(2000, [this]() -> void // start battle
                 {
                     std::list<Creature*> adds;
                     GetCreatureListWithEntryInGrid(adds, me, 102990, 90.0f);
@@ -77,7 +112,7 @@ public:
                             if (!(*itr)->IsAlive() || (*itr)->HasAura(105419))
                                 continue;
                             if (Creature* targ = (*itr)->FindNearestCreature(97176, 120.0f, true))
-                                (*itr)->AI()->AttackStart(targ);
+                                AttackBattleTarget(*itr, targ->GetGUID(), *itr == me ? this : nullptr);
                             (*itr)->SetHomePosition(-1988.32f + irand(-6, 6), -1231.07f + irand(-7, 7), 4.99f, 0);
                         }
                     if (Creature* targ = me->FindNearestCreature(97176, 120.0f, true))
@@ -87,9 +122,9 @@ public:
                     if (Creature* targ = me->FindNearestCreature(102970, 100.0f, true))
                     {
                         if (Creature* attacker = me->FindNearestCreature(102964, 100.0f, true))
-                            attacker->AI()->AttackStart(targ);
+                            AttackBattleTarget(attacker, targ->GetGUID());
                         if (Creature* attacker = me->FindNearestCreature(102965, 100.0f, true))
-                            attacker->AI()->AttackStart(targ);
+                            AttackBattleTarget(attacker, targ->GetGUID());
                     }
                 });
             }
@@ -186,6 +221,13 @@ public:
 
         bool event;
         uint32 timerevent;
+        FunctionProcessor presentationFunctions;
+
+        void UpdateLifecycle(uint32 diff) override
+        {
+            if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)
+                presentationFunctions.Update(diff);
+        }
 
         void IsSummonedBy(Unit* owner) override
         {
@@ -228,7 +270,7 @@ public:
                     // (*itr)->SetByteFlag(UNIT_FIELD_BYTES_1, 3, 8);
                 }
 
-            me->AddDelayedEvent(3000, [this]() -> void
+            presentationFunctions.AddDelayedEvent(3000, [this]() -> void
             {
                 Conversation* conversation = new Conversation;
                 if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1405, me, NULL, *me))
