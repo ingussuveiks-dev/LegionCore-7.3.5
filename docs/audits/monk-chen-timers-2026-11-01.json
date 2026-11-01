@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-01",
+  "status": "DEPLOYED focused callback lifetime/native text repair; full Monk intro/all36 remain OPEN.",
+  "cause": "Chen103148 has nine Unit-owned callbacks capturing its AI, four also retaining a raw Player only for GetGUID. Actual AIM_Destroy deletes AI independently of Unit queue. Player logout/destruction can invalidate that capture. Five fresh target-NPC text calls unnecessarily dereference the other NPC's transient AI. Native CreatureAI::Talk(uint8,ObjectGuid) only forwards source/group/GUID to CreatureTextMgr::SendChat; text does not require target AI.",
+  "repair": "All nine callbacks belong to Chen's FunctionProcessor, updated once by existing native locked UpdateLifecycle regardless of combat/stun/current/suspended AI. AI destruction deletes its work. Four callbacks copy original full128-bit ObjectGuid. Five cross-NPC text requests call precisely the native CreatureTextMgr forwarder with the original source/group/target, retaining speech with missing target AI. Original3/7/11/15/15/16s waypoint dialogue and4/5/8s aftermath, separate same-time12/13 lines, follow/path calls and nearest-source selection remain exact. No new SQL, direct grant, teleport, progress or character reset.",
+  "sources": {
+    "bindings": ".codex/nine-czi-context2-open-2026-11-01/world.tsv retains103148 script and two map1014 spawns362134/362201; scenario943.",
+    "context": ".codex/chen-context2-open-2026-11-01/world.tsv",
+    "sha256": "7c498dd6e2c19ba77d5689e475317e3e0ed65b50cc1ff16e79508c72ab80219d",
+    "producer": "Live97811 DEATH action45 DATA1/1 targets nearest103148. Existing group/owner admission is not changed or certified by this memory repair.",
+    "paths": "Actual MotionMaster explicit nonzero path selects WaypointMgr::GetPathScript, not creature's ordinary waypoint_data. Live waypoint_data_script contains9859005/6points and9859006/9points. Empty corresponding waypoint_data result is expected and is NOT a missing-route defect. Original path IDs/nodes/callbacks untouched.",
+    "order": "Current Legion code/native queue/locked lifecycle/AI destruction/Talk forwarding and matching live source data first. Existing behavior is preserved without guessing an authored sequence or importing modern code; no new external video evidence needed."
+  },
+  "checks": [
+    "Exact source certificate against dc4d75908 reverses only nine timer owners/member+clock, four GUID captures and five native text forwarders; every other Chen/Monk body is exact. Retained Nine Czi certificate explicitly validates this successor before excluding its already-certified body; its full62ASAN current actor still passes. Fixture POINT_MOTION_TYPE corrected from adapter2 to actual native8, no production enum change.",
+    "Full extracted production Chen compiled with ASAN plus actual FunctionProcessor, locked Creature lifecycle, AIM_Destroy and CreatureAI::Talk forwarding. Final49 cases include exact15s ordering and each original deadline, delayed/late/no UpdateAI/no-victim/stun/cast/current-null/suspended/alias/reset, original Player destruction/replacement/full GUID, delete/recreate/retry, multiple pending roots destroyed, unrelated Unit work and AI lock, missing/replaced NPC, present NPC with null/restored AI retaining all text, follow/path continuation and original damage/LOS/event endpoints. World/network/native credit and real movement completion are controlled service endpoints; full-core ASAN/client not established.",
+    "Pinned expected-broken dc4d75908 counterfactual proves nine captured-AI callbacks remain in Unit queue after actual extracted AIM_Destroy. Dangling callbacks are intentionally not invoked and no runtime crash is manufactured. Preliminary47 cases plus final two repeated-root destruction cases are distinct from whole-scenario success.",
+    "Original-path scripts Release rebuilt, final linked stage uses original LIB inputs without global OutDir; canonical untouched until promotion. Actual final selected PE checks registered script/AI factories, nine callback vtables, member40 ctor/destructor/lifecycle110/native Creature clock, exact delays, four128-bit immutable captures and five real SendChat calls without target-AI reads; original follow/path calls and retained Nine Czi/SmartAI corpse retry pass, staged+canonical.",
+    "Full retained Fu Zan brewing/intro/door/Belphiar/Summerpetal/wave PE passes on final bytes. Canonical Scepter -VerifyReleaseBinary passes. Owned30692 ready/server shutdown0/actual exit0/stderr empty/gone; protected conf/cert/DLL hashes unchanged. No user/unknown process stopped."
+  ],
+  "iterations": [
+    "First candidate guarded five target AI calls and passed47ASAN/PE. It was never promoted. Native Talk inspection established the simpler exact forwarder, so final implementation retains all five lines even without target AI. Final native Talk body is also compiled in the fixture; final47+two repeated-root cases and selected PE pass.",
+    "Initial source context queried ordinary waypoint_data only. Native path selection traced before drawing a conclusion; second full EOF capture includes the actual script table and both complete paths. No route data changed.",
+    "Existing FunctionProcessor size_t conversion/unused NPC parameters/random integer-to-float and Scepter signed/unsigned compile warnings retained/reviewed, with no new server warning/error/assertion/DBError. No failing diagnostics hidden."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "e49eb1981225e8ad9cef62634f127475d205e4d95ca016c46462325b111de285",
+    "bnet_sha256": "2e58464ecd52d53cad278e347e96295215a61486383d6ae7ec2dd1b46f69ac3c",
+    "stage": ".codex/chen-release-final2",
+    "backup": ".codex/release-before-chen-timers-2026-11-01",
+    "order": "Fresh process absence rechecked before each four-file backup/promotion; original/stage/destination hashes verified. No SQL promoted, user server stopped or character modified. Owned30692 closed."
+  },
+  "diagnostics": "All native/read-only SQL/build/link/PE/promotion/startup tests record canonical+own crash/log baselines/tails, actual exits/stdout/stderr. No new/changed crash or appended DBErrors/server warning/error/assertion. Active Crashes empty; mixed6090-byte DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unresolved/unchanged/untruncated. Resolved evidence archival follows focused commit; unresolved shared data excluded.",
+  "evidence": ".codex/chen-{context1-open,context2-open,timers1,timers2,timers3,baseline1,baseline2,release-build1,release-build2,stage1,stage2,pe1,pe2,retained-nine1,retained-nine2,retained-fuzan-pe1,promotion1,startup1,canonical1,scepter1}-2026-11-01 and own30692 captures, final2/backup manifests.",
+  "remaining": "Chen repeated DATA/waypoint admission can still schedule multiple sequences/nearest-player criteria; test covers memory cleanup of repeated pending roots, NOT exactly-once quest progression. Full943 prerequisites/owner/pet/guardian/group/faction credit, real movement/arrival, failed casts/abandonment/re-entry and actual client remain OPEN. Master Hait has independent self-AI and foreign-Creature captures plus nullable/nonplayer click; investigate without breaking demon immunity/vehicle cleanup. SharedLINK2/WardstoneLINK4/LiLi7/8/Ponshu10/Fu Zan flight/Yigthregor and all36 still OPEN. No new reset authorized."
+}

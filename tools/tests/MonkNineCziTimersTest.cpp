@@ -9,7 +9,7 @@
 #include <iostream>
 using uint32=uint32_t;using uint64=uint64_t;using DamageEffectType=uint32;
 #include "Functions.inc"
-enum{TYPEID_UNIT,TYPEID_PLAYER,UNIT_FIELD_NPC_FLAGS,UNIT_NPC_FLAG_SPELLCLICK=1,POINT_MOTION_TYPE=2,UNIT_STATE_STUNNED=4,UNIT_STATE_CASTING=8,CRITERIA_TYPE_SCRIPT_EVENT_2=92};
+enum{TYPEID_UNIT,TYPEID_PLAYER,UNIT_FIELD_NPC_FLAGS,UNIT_NPC_FLAG_SPELLCLICK=1,POINT_MOTION_TYPE=8,UNIT_STATE_STUNNED=4,UNIT_STATE_CASTING=8,CRITERIA_TYPE_SCRIPT_EVENT_2=92};
 struct ObjectGuid{uint64 low=0,high=0;bool operator==(ObjectGuid const& other)const{return low==other.low&&high==other.high;}};
 struct Unit{virtual ~Unit()=default;virtual uint32 GetTypeId()const{return TYPEID_UNIT;}};
 struct Player:Unit{ObjectGuid guid{17,0x1234567800000011};std::vector<uint32> credits;uint32 GetTypeId()const override{return TYPEID_PLAYER;}ObjectGuid GetGUID()const{return guid;}void UpdateAchievementCriteria(uint32 type,uint32 id){assert(type==92);credits.push_back(id);}};

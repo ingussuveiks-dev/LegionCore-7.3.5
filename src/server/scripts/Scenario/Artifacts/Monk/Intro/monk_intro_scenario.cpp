@@ -329,6 +329,13 @@ public:
 
         bool _introDone;
 
+        FunctionProcessor _presentationFunctions;
+
+        void UpdateLifecycle(uint32 diff) override
+        {
+            _presentationFunctions.Update(diff);
+        }
+
         void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
             damage = 0;
@@ -350,44 +357,45 @@ public:
                     if (Player* pl = me->FindNearestPlayer(100.0f))
                         pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46947);
 
-                    me->AddDelayedEvent(3000, [this]() -> void
+                    _presentationFunctions.AddDelayedEvent(3000, [this]() -> void
                     {
                         if (Creature* hait = me->FindNearestCreature(97778, 50.0f, true))
-                            hait->AI()->Talk(10);
+                            sCreatureTextMgr->SendChat(hait, 10);
                     });
 
                     if (Player* pl = me->FindNearestPlayer(100.0f))
                     {
-                        me->AddDelayedEvent(7000, [this, pl]() -> void
+                        ObjectGuid const playerGuid = pl->GetGUID();
+                        _presentationFunctions.AddDelayedEvent(7000, [this, playerGuid]() -> void
                         {
-                            Talk(8, pl->GetGUID());
+                            Talk(8, playerGuid);
                         });
 
-                        me->AddDelayedEvent(11000, [this, pl]() -> void
+                        _presentationFunctions.AddDelayedEvent(11000, [this, playerGuid]() -> void
                         {
                             if (Creature* hait = me->FindNearestCreature(97778, 50.0f, true))
-                                hait->AI()->Talk(11, pl->GetGUID());
+                                sCreatureTextMgr->SendChat(hait, 11, playerGuid);
                         });
 
-                        me->AddDelayedEvent(15000, [this, pl]() -> void
+                        _presentationFunctions.AddDelayedEvent(15000, [this, playerGuid]() -> void
                         {
                             if (Creature* hait = me->FindNearestCreature(97778, 50.0f, true))
                             {
-                                hait->AI()->Talk(12, pl->GetGUID());
+                                sCreatureTextMgr->SendChat(hait, 12, playerGuid);
                             }
                         });
 
-                        me->AddDelayedEvent(15000, [this, pl]() -> void
+                        _presentationFunctions.AddDelayedEvent(15000, [this, playerGuid]() -> void
                         {
                             if (Creature* hait = me->FindNearestCreature(97778, 50.0f, true))
                             {
-                                hait->AI()->Talk(13, pl->GetGUID());
+                                sCreatureTextMgr->SendChat(hait, 13, playerGuid);
                                 hait->GetMotionMaster()->MovePath(9859006, false); // 5 8
                             }
                         });
                     }
 
-                    me->AddDelayedEvent(16000, [this]() -> void
+                    _presentationFunctions.AddDelayedEvent(16000, [this]() -> void
                     {
                         me->GetMotionMaster()->MovePoint(0, 3837.48f, 1729.83f, 946.42f);
                     });
@@ -417,12 +425,12 @@ public:
                 Talk(3);
                 if (Player* pl = me->FindNearestPlayer(100))
                     pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46956);
-                me->AddDelayedEvent(4000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(4000, [this]() -> void
                 {
                     Talk(4);
                 });
 
-                me->AddDelayedEvent(5000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(5000, [this]() -> void
                 {
                     std::list<Creature*> adds;
                     GetCreatureListWithEntryInGrid(adds, me, 98074, 70.0f);
@@ -430,11 +438,11 @@ public:
                         for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
                         {
                             (*itr)->GetMotionMaster()->MoveFollow(me, urand(1, 4), float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
-                            (*itr)->AI()->Talk(0);
+                            sCreatureTextMgr->SendChat(*itr, 0);
                         }
                 });
 
-                me->AddDelayedEvent(8000, [this]() -> void
+                _presentationFunctions.AddDelayedEvent(8000, [this]() -> void
                 {
                     if (Player* pl = me->FindNearestPlayer(100))
                         Talk(5, pl->GetGUID());

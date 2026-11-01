@@ -16,7 +16,10 @@ $addition=@'
 '@
 $normalized=$actor.Replace($addition,'').Replace('_presentationFunctions.AddDelayedEvent(', 'me->AddDelayedEvent(').Replace("                    ObjectGuid const playerGuid = pl->GetGUID();`n",'').Replace('[this, playerGuid]','[this, pl]').Replace('Talk(8, playerGuid);','Talk(8, pl->GetGUID());')
 if(($normalized -replace '\s','') -cne ($oldActor -replace '\s','')){throw 'Other Nine Czi admission/spells/movement/credit/reset/combat changed'}
-if(($source.Replace($actor,$oldActor).Replace('#include "FunctionProcessor.h"','') -replace '\s','') -cne ($old -replace '\s','')){throw 'Other Monk actors changed'}
+$outside=$source.Replace($actor,$oldActor).Replace('#include "FunctionProcessor.h"','')
+$chen=Block $source 'class npc_monk_chen_porter :';$oldChen=Block $old 'class npc_monk_chen_porter :'
+if(($chen -replace '\s','') -cne ($oldChen -replace '\s','')){& "$PSScriptRoot/Test-MonkChenTimers.ps1" -ScopeOnly;if(!$?){throw 'Successor Chen scope failed'};$outside=$outside.Replace($chen,$oldChen)}
+if(($outside -replace '\s','') -cne ($old -replace '\s','')){throw 'Other Monk actors changed'}
 if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -ne 4 -or $actor.Contains('me->AddDelayedEvent(') -or $actor.Contains('[this, pl]')){throw 'Four actor-owned callbacks and immutable player GUID required'}
 if($ScopeOnly){'PASS exact four Nine Czi timer owners/one immutable GUID; other native gameplay/actors unchanged';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Broken counterfactual cannot certify Release'}
