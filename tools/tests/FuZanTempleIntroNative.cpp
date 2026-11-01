@@ -12,7 +12,10 @@
 #include "ConversationData.h"
 #include "SmartAI.h"
 #include "CreatureTextMgr.h"
+#include "TemporarySummon.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_temple_intro.h"
+#include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_belphiar.h"
+#include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_summerpetal.h"
 
 struct IntroInstanceTag { using Type=InstanceScript* InstanceMap::*; friend Type Access(IntroInstanceTag); };
 template struct FixtureAccess<IntroInstanceTag,&InstanceMap::i_data>;
@@ -27,9 +30,10 @@ template struct FixtureAccess<IntroStoryTag,&FuZanTempleIntro::Actor::_story>;
 struct IntroClockTag { using Type=std::map<ObjectGuid,uint32> Conversation::*; friend Type Access(IntroClockTag); };
 template struct FixtureAccess<IntroClockTag,&Conversation::playing>;
 
-static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bool withTempleRescue=false)
+static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bool withTempleRescue=false,bool withSummerpetal=false)
 {
     Require(argc==3,"Private native config/runtime missing");
+    Require(!withSummerpetal||withTempleRescue,"Summerpetal requires native rescue loader context");
     std::string error;Require(sConfigMgr->LoadInitial(argv[1],{},error),"Private config failed");
     sLog->Initialize(nullptr);MySQL::Library_Init();
     WorldDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("WorldDatabaseInfo",""),1,1);
@@ -57,6 +61,35 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     WorldDatabase.DirectExecute(("INSERT INTO fuzan_native_condition_seed SELECT * FROM conditions WHERE SourceTypeOrReferenceId=22 AND "+conditionSources).c_str());
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions LIKE fuzan_native_condition_seed");
     WorldDatabase.DirectExecute("INSERT INTO conditions SELECT * FROM fuzan_native_condition_seed");
+    uint32 summerConditions=0;
+    bool summerProjected=false;
+    if(withTempleRescue)
+    {
+        Require(withTempleRescue,"Summerpetal requires the complete actual rescue loader context");
+        auto rows=WorldDatabase.Query("SELECT COUNT(*) FROM conditions WHERE SourceEntry IN(109355,109610)");
+        Require(bool(rows),"Summerpetal source count missing");
+#if defined(FUZAN_SUMMERPETAL_BASELINE) || defined(FUZAN_BELPHIAR_BASELINE)
+        Require(rows->Fetch()[0].GetUInt32()==0||rows->Fetch()[0].GetUInt32()==3,"Counterfactual refuses other source conditions");
+        if(rows->Fetch()[0].GetUInt32())
+        {
+            auto native=WorldDatabase.Query("SELECT COUNT(*) FROM conditions WHERE (SourceEntry=109355 AND SourceGroup IN(6,7) AND ScriptName='condition_fuzan_summerpetal_continuation') OR (SourceEntry=109610 AND SourceGroup=2 AND ConditionTypeOrReference=44 AND ConditionValue1=1137 AND ConditionValue2=4 AND ScriptName='')");
+            Require(native&&native->Fetch()[0].GetUInt32()==3,"Counterfactual refuses unknown actor conditions");
+            WorldDatabase.DirectExecute("DELETE FROM conditions WHERE SourceEntry IN(109355,109610)");
+        }
+#elif defined(FUZAN_SUMMERPETAL_LIVE)
+        Require(rows->Fetch()[0].GetUInt32()==3,"Actual live Summerpetal/King conditions missing");
+        summerConditions=3;
+#else
+        Require(rows->Fetch()[0].GetUInt32()==0||rows->Fetch()[0].GetUInt32()==3,"Private projection refuses custom/partial actor conditions");
+        summerConditions=rows->Fetch()[0].GetUInt32();
+        if(withSummerpetal&&!summerConditions)
+        {
+            WorldDatabase.DirectExecute("INSERT INTO conditions(SourceTypeOrReferenceId,SourceGroup,SourceEntry,SourceId,ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition,ErrorTextId,ScriptName,Comment) VALUES(22,6,109355,0,0,31,1,3,109355,0,0,0,'condition_fuzan_summerpetal_continuation','Summerpetal actual acknowledged handoff'),(22,7,109355,0,0,31,1,3,109355,0,0,0,'condition_fuzan_summerpetal_continuation','Summerpetal actual owned follow'),(22,2,109610,0,0,44,1,1137,4,0,0,0,'','Monkey King native stage4 path admission')");
+            summerConditions=3;
+            summerProjected=true;
+        }
+#endif
+    }
     if(withTempleRescue)
     {
         WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE fuzan_native_text_seed LIKE creature_text");
@@ -78,7 +111,7 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     ro=CharacterDatabase.Query("SELECT @@session.transaction_read_only");Require(ro&&ro->Fetch()[0].GetBool(),"Character not read-only");
     auto count=WorldDatabase.Query("SELECT (SELECT COUNT(*) FROM smart_scripts),(SELECT COUNT(*) FROM conditions)");
     Require(count&&count->Fetch()[0].GetUInt32()==3u+(withSanctuaryDoor?1u:0u)+(withTempleRescue?32u:0u)&&
-        count->Fetch()[1].GetUInt32()==14u+(withTempleRescue?1u:0u),"Actual scoped loader rows changed");
+        count->Fetch()[1].GetUInt32()==14u+(withTempleRescue?1u:0u)+summerConditions,"Actual scoped loader rows changed");
     sDB2Manager.LoadStores(argv[2],LOCALE_enUS);LoadGameTables(argv[2]);
     sSpellMgr->LoadSpellInfoStore();sSpellMgr->LoadSpellRanks();sSpellMgr->LoadTalentSpellInfo();
     sSpellMgr->LoadSkillLineAbilityMap();sSpellMgr->LoadSpellCustomAttr();sSpellMgr->LoadSpellInfoSpellSpecificAndAuraState();
@@ -87,10 +120,24 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     for(auto name:{"npc_fuzan_temple_intro","spell_fuzan_temple_intro","spell_fuzan_temple_complete"})names.emplace_back(name);
     if(withSanctuaryDoor)names.emplace_back("go_fuzan_temple_sanctuary_door");
     if(withTempleRescue)names.emplace_back("npc_fuzan_belphiar");
+    if(withTempleRescue){names.emplace_back("npc_fuzan_summerpetal");names.emplace_back("condition_fuzan_summerpetal_continuation");}
     std::sort(names.begin(),names.end());names.erase(std::unique(names.begin(),names.end()),names.end());
     sObjectMgr->LoadInstanceTemplate();sObjectMgr->LoadScenarioData();
     sObjectMgr->LoadCreatureModelInfo();sObjectMgr->LoadWDBCreatureTemplates();sObjectMgr->LoadCreatureTemplates();
     sObjectMgr->LoadCreatureClassLevelStats();sObjectMgr->LoadCreatureScalingData();sObjectMgr->LoadCreatureDifficultyStat();
+    if(withTempleRescue)
+    {
+        auto maiden=const_cast<CreatureTemplate*>(sObjectMgr->GetCreatureTemplate(109355));Require(maiden,"Actual Summerpetal template missing");
+        auto id=sObjectMgr->GetScriptId("npc_fuzan_summerpetal");
+#if defined(FUZAN_SUMMERPETAL_BASELINE) || defined(FUZAN_BELPHIAR_BASELINE)
+        Require(!maiden->ScriptID||maiden->ScriptID==id,"Counterfactual refuses custom maiden binding");maiden->ScriptID=0;
+#elif defined(FUZAN_SUMMERPETAL_LIVE)
+        Require(maiden->ScriptID==id&&summerConditions==3,"Actual live maiden binding missing");
+#else
+        if(summerProjected){Require(!maiden->ScriptID&&summerConditions==3,"Pending maiden refuses custom/partial binding");maiden->ScriptID=id;}
+        Require(maiden->ScriptID==(summerConditions?id:0u),"Actual maiden binding/condition cohort differs");
+#endif
+    }
     // Pending code-coupled delta, private memory only. Live mode requires the
     // real native loaders to supply all three future registrations.
     auto actor=const_cast<CreatureTemplate*>(sObjectMgr->GetCreatureTemplate(109413));Require(actor,"Native intro actor missing");
@@ -118,6 +165,7 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     }
     sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
     RegisterCreatureAI(npc_fuzan_temple_intro);RegisterSpellScript(spell_fuzan_temple_intro);RegisterSpellScript(spell_fuzan_temple_complete);
+    if(summerConditions){RegisterCreatureAI(npc_fuzan_summerpetal);new condition_fuzan_summerpetal_continuation();}
     sScriptMgr->SwapScriptContext(true);AIRegistry::Initialize();UnitAI::FillAISpellInfo();sWorld->LoadConfigSettings();opcodeTable.Initialize();
     HashMapHolder<Player>::SetSize(32);HashMapHolder<Creature>::SetSize(20000);HashMapHolder<Pet>::SetSize(20000);HashMapHolder<Conversation>::SetSize(20000);
     auto row=WorldDatabase.Query(

@@ -59,6 +59,7 @@ class TC_GAME_API SmartAI : public CreatureAI
         void SetCombatMove(bool on);
         bool CanCombatMove();
         void SetFollow(Unit* target, float dist = 0.0f, float angle = 0.0f, uint32 credit = 0, uint32 end = 0, uint32 creditType = 0);
+        ObjectGuid GetFollowGuid() const { return mFollowGuid; }
 
         void OnQuestReward(Player* player, Quest const* quest) override;
         void OnStartQuest(Player* player, Quest const* quest) override;

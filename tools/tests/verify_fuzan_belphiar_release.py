@@ -49,13 +49,15 @@ assert len(tables)==1,'Actual constructed AI vtable is ambiguous'
 slots=tables[0]
 for method in ('InitializeAI','Reset','UpdateAI','CanAIAttack','AttackStart','DamageTaken','DamageTakenAfterScaling'):
     assert slots.count(n['symbol']('?'+method+suffix))==1,('Actual virtual dispatch',method)
-assert slots.count(n['symbol']('?JustDied@SmartAI@@'))==1,'Keep original native death/205/summon dispatch'
-assert not any(name.startswith('?JustDied'+suffix) for name in n['symbols']),'Do not replace native death credit'
-for body in (blocked,gate,raw,final,attack,admission,initialize,reset,update,destructor):
+death=require('?JustDied'+suffix,('?GetQuestCancellationReceipt@Player@@','?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@','?JustDied@SmartAI@@'),(42765,109397,373405,1625))
+assert slots.count(n['symbol']('?JustDied'+suffix))==1,'Actual death wrapper must snapshot the quest attempt'
+assert len(sites(n,death,'?JustDied@SmartAI@@'))==1,'Keep one original native death/205/summon dispatch'
+assert max(sites(n,death,'?GetQuestCancellationReceipt@Player@@'))<sites(n,death,'?JustDied@SmartAI@@')[0],'Snapshot before native reentrant callbacks'
+for body in (blocked,gate,raw,final,attack,admission,initialize,reset,update,destructor,death):
     for target in ('?UpdateAchievementCriteria@Player@@','?UpdateAchievementCriteria@Scenario@@','?SetCurrentStep@Scenario@@',
                    '?SummonCreature@WorldObject@@','?AddItem@Player@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?SetHealth@Unit@@'):
         assert not sites(n,body,target),('No manufactured progression/health/summon',target)
-print('PASS linked Belphiar: actual registered factory/7 virtual hooks/native SmartAI JustDied, exact109397/373405/1625/1137/step2 scope, owned flag/reaction cleanup including destruction, early/final damage guard and ordinary native combat; no direct progression grant.')
-print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'belphiar_functions':11,
+print('PASS linked Belphiar: actual registered factory/8 virtual hooks, quest-attempt snapshot before one native SmartAI JustDied, exact109397/373405/1625/1137/step2 scope, owned flag/reaction cleanup including destruction, early/final damage guard and ordinary native combat; no direct progression grant.')
+print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'belphiar_functions':12,
                   'final_damage_slot':slots.index(n['symbol']('?DamageTakenAfterScaling'+suffix)),
-                  'native_death_slot':slots.index(n['symbol']('?JustDied@SmartAI@@'))}))
+                  'native_death_wrapper_slot':slots.index(n['symbol']('?JustDied'+suffix))}))

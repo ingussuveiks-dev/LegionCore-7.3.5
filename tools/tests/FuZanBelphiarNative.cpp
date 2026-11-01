@@ -109,6 +109,7 @@ static void NativeDoor(Map& map,LootPlayer& player)
     for(uint32 t=0;t<1000;t+=10)player.Unit::Update(10);
     Require(FuZanTempleDoor::Opened(sScenarioMgr->GetScenario(map.GetInstanceId())),"Actual native prerequisite door49141 missing");
 }
+#ifndef FUZAN_BELPHIAR_NATIVE_SUPPORT_ONLY
 static void NativeMaidenSequence(Map& map,LootPlayer& player,Creature& boss,Scenario* scenario)
 {
     BelphiarActor king(map,109610,373384,{826.786f,-2549.49f,183.12f,1.2733f});
@@ -269,5 +270,6 @@ int main(int argc,char** argv)
         std::cout<<"PASS96 actual native Belphiar cases,2 races/3 player-pet-guardian killers, actual3 rescue deaths AND native Ox Kick door in both orders, scaled one-hit/ordinary damage, suspended/no-current-AI final fallback, owned cleanup/recreation and exact original52443/one maiden; six actual maiden text/waypoint/52609/King-data/follow continuations. Private earlier preconditions, no character save or full client/Monkey King route claim.\n";
 #endif
         return 0;
-    }catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}
+}catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}
 }
+#endif

@@ -1,3 +1,5 @@
+#pragma once
+
 namespace FuZanTempleDoor
 {
 bool Opened(Scenario* scenario)

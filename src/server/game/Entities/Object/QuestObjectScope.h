@@ -14,6 +14,13 @@ struct QuestObjectScope
     ObjectGuid Owner;
     std::atomic<bool> Cancelled{false};
 
+    // A deferred story can distinguish explicit cancellation from logout
+    // without keeping this scope (or its ordinary children) alive.
+    std::shared_ptr<std::atomic<bool> const> CancellationReceipt() const
+    {
+        return _cancellationReceipt;
+    }
+
     void Register(ObjectGuid const& guid)
     {
         std::lock_guard<std::mutex> lock(Mutex);
@@ -24,6 +31,7 @@ struct QuestObjectScope
     std::vector<ObjectGuid> Cancel()
     {
         std::lock_guard<std::mutex> lock(Mutex);
+        _cancellationReceipt->store(true, std::memory_order_release);
         Cancelled = true;
         std::vector<ObjectGuid> objects;
         objects.swap(Objects);
@@ -35,6 +43,7 @@ private:
     // Never iterate a registry that another map's update thread can append to.
     std::mutex Mutex;
     std::vector<ObjectGuid> Objects;
+    std::shared_ptr<std::atomic<bool>> _cancellationReceipt = std::make_shared<std::atomic<bool>>(false);
 };
 
 #endif

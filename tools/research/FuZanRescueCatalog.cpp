@@ -24,9 +24,14 @@ int main(int argc,char** argv)
     DB2Storage<SpellDurationEntry> durations("SpellDuration.db2",SpellDurationLoadInfo::Instance());
     DB2Storage<LockEntry> locks("Lock.db2",LockLoadInfo::Instance());
     DB2Storage<LockTypeEntry> kinds("LockType.db2",LockTypeLoadInfo::Instance());
+    DB2Storage<LFGDungeonsEntry> dungeons("LFGDungeons.db2",LfgDungeonsLoadInfo::Instance());
     if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0)||
-       !locks.Load(argv[1],0)||!kinds.Load(argv[1],0))return 4;
+       !locks.Load(argv[1],0)||!kinds.Load(argv[1],0)||!dungeons.Load(argv[1],0))return 4;
     spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();durations.LoadFromDB();locks.LoadFromDB();kinds.LoadFromDB();
+    dungeons.LoadFromDB();
+    for(auto row:dungeons)if(row->MapID==1625||row->ScenarioID==1137)
+        std::cout<<"LFG\t"<<row->ID<<'\t'<<row->Name->Str[0]<<'\t'<<row->MapID<<'\t'<<row->ScenarioID<<'\t'
+            <<row->GetMinGroupSize()<<'\t'<<row->GetMaxGroupSize()<<'\t'<<row->RequiredPlayerConditionId<<'\n';
     auto lock=locks.LookupEntry(2570);if(!lock)return 5;
     for(uint32 n=0;n<8;++n)
     {
