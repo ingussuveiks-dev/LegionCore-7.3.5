@@ -2,6 +2,8 @@ param([Parameter(Mandatory=$true)][string]$EvidenceDirectory,[string[]]$RuntimeD
 $ErrorActionPreference='Stop'
 . "$PSScriptRoot/ServerDiagnosticLines.ps1"
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+$EvidenceDirectory=$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($EvidenceDirectory)
+$RuntimeDirectories=@($RuntimeDirectories|ForEach-Object {$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($_)})
 New-Item -ItemType Directory -Force $EvidenceDirectory|Out-Null
 function Snapshot-Crashes {
  $result=@{}
