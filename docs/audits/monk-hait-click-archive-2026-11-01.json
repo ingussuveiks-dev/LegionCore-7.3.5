@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-01",
+  "fix_commit": "c5b86e23cb29bdd0e7ad9e706cdc670fba26c8ea",
+  "status": "Focused repair deployed and regression verified; reviewed local evidence archived. Full943/client/all36 remain OPEN.",
+  "archive": "build-extractors/bin/Release/fixed/monk-hait-click-2026-11-01/verified1",
+  "sources": 395,
+  "payloads": 397,
+  "verified_manifest_sha256": "79af90e35999799ca55e835704d8de109d1a1082b0a1baace7d1e75616e7038a",
+  "integrity": "Original/archive/original SHA256 checked for every file, original evidence rechecked after all copies, final payload manifest verified. Canonical tested96666C00 and no-server/mixed-log/Crashes state checked immediately before and after archive. Original evidence retained. No credentials, configurations, character records, dump, media or executable archived/committed.",
+  "review": "Includes typed native read-only catalogs and full world context, initial and final build/fixture/PE iterations,94 ASAN plus old rejected-click counterfactual, retained87/59/77,17-schema SQL/idempotence/18 unchanged refusals/live and RELEASED updater readback, original staged links/promotion/backup manifest, actual canonical PE, retained Fu Zan/Scepter and owned19732 ready/shutdown0/exit0/gone. Fixture scope and callback timing assumptions and one PE shared_ptr-field assumption were corrected; actual production elapsed deadline retained. See implementation audit for endpoint/client limitations and remaining findings.",
+  "active_diagnostics": "No new/changed crash or appended server error/warning/assertion/DBErrors. Active Crashes empty. Existing unresolved mixed6090-byte DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged, untruncated and excluded from resolved archive. No active runtime history indiscriminately removed.",
+  "continuation": "Continue independent artifact-chain repairs; user owns actual client tests. No additional reset authorized or performed. Empty active crash state certifies only reviewed focused issues."
+}
