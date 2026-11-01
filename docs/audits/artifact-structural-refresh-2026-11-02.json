@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-02",
+  "status": "Fresh read-only inventory after Monk/Hruthnir repairs; no whole-chain/client completion certificate.",
+  "inherited": "main/origin6f12bb823 clean, canonical C8009245/17575BC1, no server running. Recent accepted-Hight c5b86e23c and Hruthnir a7da13abc plus diagnostic d177aa98d are deployed and audited separately. No character reset or live data mutation in this inventory.",
+  "capture": "Twenty complete published world-table JSONL exports,465740 rows, per-query consistent snapshot/count trailers and fully drained stdout/stderr. Typed production ArtifactCatalog reads actual matching26972 ItemSparse/Artifact/ChrSpecialization; structural parser additionally reads native CharBaseInfo/SpellEffect/QuestLineXQuest/ScenarioStep/LfgDungeons. This base-client structural inventory is distinct from hotfix-aware native behavior and actual client traversal.",
+  "routes": {"selections":36,"native_race_class_pairs":149,"automated_loot_link_admission_findings":0,"bounded_actor_reviews":3,"scene_only_pickup_reviews":0},
+  "expanded": {"maps":28,"route_creature_entries":384,"route_object_entries":38,"captured_creature_spawns":5183,"captured_object_spawns":1719,"owner_contexts":2168,"timed_contexts":97,"primary_link_review_candidates":21,"non_smart_or_missing_template":1413,"native_smart":601,"cpp_delegation_review":154,"unresolved_recipients":3,"nested_self_replacement_candidates":2},
+  "scope_review": [
+    "The three bounded reviews remain LiLi100475/1->7 and6->8 plus Ponshu100438/9->10. Existing later-campaign Ponshu45440 classification is retained; this is not three newly proved acquisition blockers.",
+    "Broad21 LINK candidates include already deferred Niskara109108/109109/109357 later campaign paths, missing Wardstone101325/4, shared crypt101430/103151/2 and other preserved unresolved/classification candidates. No action or missing LINK is invented/deleted to reduce this count.",
+    "The three raw recipient92445/92447/92450 candidates are already classified Feed/journal later-campaign paths in artifact-shared-campaign-scope-2026-10-30.json. No duplicate campaign migration or generic owner rewrite is warranted.",
+    "Both nested54638/5463804,5463805 candidates belong to Generic Bunny's non-Smart/blank-script context:84 static spawns across eight captured maps. Its stored random-list rows alone do not execute through the current default AI. No change enables dormant global bunny behavior or hides its inventory rows. Dynamic AI replacement remains outside this structural proof."
+  ],
+  "evidence": {
+    "world": ".codex/artifact-refresh-world-2026-11-02",
+    "actors": ".codex/artifact-refresh-actors-2026-11-02",
+    "items": ".codex/artifact-refresh-2026-11-02/items.tsv",
+    "items_sha256": "3a0eebacd3cc5a65afdf6152661d2031b0a25c400a57cae15ed4f6b90d727812",
+    "routes": ".codex/artifact-refresh-2026-11-02/routes.json",
+    "routes_sha256": "6c4058b948624194db54ee1e55cb904770fa0b2bed000a53b59ecf0c431dbef6",
+    "map_links": ".codex/artifact-refresh-2026-11-02/map-links.json",
+    "map_links_sha256": "6ffaac78e55baa9453b6f08a646a9401889fcbbc397b69edce4c505f65126581",
+    "diagnostic_runs": ".codex/artifact-refresh-{world,native,routes,actors,links}-check-2026-11-02"
+  },
+  "diagnostics": "Every export/native/parser pass records before/after canonical+own crash/log state and actual exits/stdout/stderr. No new/changed crash or appended server warning/error/assertion/DBErrors. Active Crashes empty, unresolved mixed6090-byte DBErrors retained unchanged/untruncated. No server launched for this inventory and no unresolved evidence archived as fixed.",
+  "next": "Continue independent actual acquisition lifecycle repairs: final Fury Vigfus98602 still queues two raw-this24/7s Unit callbacks despite generation guards, and AI destruction does not own its tracked843 cleanup. Trace full native timing/participant/cleanup and retain existing late-blessing/admission/surrender/pet-owner/loot behavior before editing. Ragnvald shared intro callbacks are another separate candidate. Existing missing LINK/flight/client/full36 findings remain OPEN."
+}
