@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-01",
+  "status": "VERIFIED resolved controller-cleanup archive; full brewing/minigame and ALL36 remain open",
+  "fix_commit": "85872b7ac3ee4918fc99870b60d3f0e920105e14",
+  "implementation_audit": "docs/audits/summon-controller-cleanup-2026-11-01.json",
+  "directory": "build-extractors/bin/Release/fixed/summon-controller-cleanup-2026-11-01/verified2",
+  "source_files": 176,
+  "manifest_entries": 187,
+  "manifest_sha256": "56928B6F30987BBFFA530208329B47F0019294FAB9B6917C7D50DCE0C20E5043",
+  "verification": "Every selected source/archive/source SHA256 and187 final member hashes verified. Originals retained. No active report removed and no log truncated. Canonical world486313E7/bnet8879BB24 remains the native/PE/startup-tested implementation; owned22316 is gone.",
+  "included": "Focused implementation/regression/audit, reviewed ASAN count assertion and passing31, missing local capstone-path iteration and passing PE, build/link/promotion/shared checks and owned startup diagnostics. No configs, credentials, binaries/PDB/maps/dumps, personal characters or live history.",
+  "excluded_open": "Mixed native brewing probe includes an independent EXPECTED_BROKEN starter and remains outside fixed with all historical brewing bootstrap/session/cache evidence. Yigthregor path and mixed canonical6090-byte LINK2 history remain unresolved/untouched.",
+  "archive_iteration": "Initial archive template referenced a nonexistent mapped native runner. Its partial parent evidence is retained and explicitly marked INCOMPLETE-first-attempt.txt. The successful verified2 source/final manifests are authoritative; no incomplete attempt is described as verified.",
+  "post_test_diagnostics": "Final archive wrappers clean: no new/changed crash, appended DBErrors or server warnings/errors/assertions. Active canonical Crashes empty, no worldserver/bnetserver process, canonical mixed log hash8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged.",
+  "next": "Continue actual Fu Zan42868 starter/four-ingredient lifecycle, retaining original spell/owner/credit/failure semantics and user-owned client testing. This cleanup repair does not complete the minigame or ALL36."
+}
