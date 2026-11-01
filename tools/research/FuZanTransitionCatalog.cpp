@@ -21,9 +21,12 @@ int main(int argc,char** argv)
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2",SpellEffectLoadInfo::Instance());
     DB2Storage<SpellMiscEntry> misc("SpellMisc.db2",SpellMiscLoadInfo::Instance());
     DB2Storage<SpellDurationEntry> durations("SpellDuration.db2",SpellDurationLoadInfo::Instance());
-    if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0))return 4;
+    DB2Storage<SpellCastingRequirementsEntry> requirements("SpellCastingRequirements.db2",SpellCastingRequirementsLoadInfo::Instance());
+    DB2Storage<AreaGroupMemberEntry> areas("AreaGroupMember.db2",AreaGroupMemberLoadInfo::Instance());
+    if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0)||!requirements.Load(argv[1],0)||!areas.Load(argv[1],0))return 4;
     spells.LoadFromDB();effects.LoadFromDB();misc.LoadFromDB();durations.LoadFromDB();
-    std::set<uint32> selected{217817,218883,218882},seen;
+    requirements.LoadFromDB();areas.LoadFromDB();
+    std::set<uint32> selected{217814,217817,218883,218882},seen;
     while(seen.size()!=selected.size())
     {
         if(selected.size()>100)return 5;
@@ -44,6 +47,13 @@ int main(int argc,char** argv)
             for(auto flags:m->Attributes)std::cout<<'\t'<<uint32(flags);
             std::cout<<'\n';
         }
+        for(auto row:requirements)if(uint32(row->SpellID)==id)
+        {
+            std::cout<<"AREA_GROUP\t"<<id<<'\t'<<row->RequiredAreasID<<'\n';
+            for(auto member:areas)if(member->AreaGroupID==row->RequiredAreasID)std::cout<<"AREA_MEMBER\t"<<id<<'\t'<<member->AreaID<<'\n';
+        }
     }
+    for(auto effect:effects)if(selected.count(effect->EffectTriggerSpell))
+        std::cout<<"INCOMING\t"<<effect->EffectTriggerSpell<<'\t'<<effect->SpellID<<'\t'<<effect->Effect<<'\t'<<effect->EffectIndex<<'\n';
     HotfixDatabase.Close();MySQL::Library_End();
 }

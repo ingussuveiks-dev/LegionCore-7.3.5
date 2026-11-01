@@ -1,6 +1,6 @@
 param([string]$OutputDirectory="$PSScriptRoot/../../build-extractors/runtime-test/fuzan-wave-entry-research")
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..");$out=[IO.Path]::GetFullPath($OutputDirectory)
-$Baseline=$false;$VerifyLiveData=$true # This research deliberately reproduces unfixed current behavior.
+$Baseline=$false;$VerifyLiveData=$true # Earlier fixes remain live; only wave-entry bindings are counterfactually stripped.
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories @($repo) -Test {
  $source=Get-Content "$repo/src/server/game/Globals/QuestData.cpp" -Raw
  $query=[regex]::Match($source,'(?s)void QuestDataStoreMgr::LoadQuests\(\).*?WorldDatabase.Query\(("SELECT ".*?" FROM quest_template")\);').Groups[1].Value
@@ -33,7 +33,7 @@ $Baseline=$false;$VerifyLiveData=$true # This research deliberately reproduces u
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  $extra=@('src/server/scripts/Legion','src/common/Collision/Management','src/common/Collision','dep/g3dlite/include','dep/recastnavigation/Detour/Include')|ForEach-Object {Join-Path $repo $_}
  $args=@('/nologo','/EHsc',$language,'/MD','/DNDEBUG','/DNOMINMAX','/DWIN32_LEAN_AND_MEAN','/D_WIN32_WINNT=0x0601','/DBOOST_ALL_NO_LIB','/DFUZAN_INTRO_LIVE')
- $args+='/DFUZAN_BELPHIAR_LIVE';if($VerifyLiveData){$args+='/DFUZAN_SUMMERPETAL_LIVE'};if($Baseline){$args+='/DFUZAN_SUMMERPETAL_BASELINE'}
+ $args+=@('/DFUZAN_BELPHIAR_LIVE','/DFUZAN_WAVE_ENTRY_BASELINE');if($VerifyLiveData){$args+='/DFUZAN_SUMMERPETAL_LIVE'};if($Baseline){$args+='/DFUZAN_SUMMERPETAL_BASELINE'}
  $args+=($includes+$extra+@('C:/local/boost_1_85_0','C:/wamp64/bin/mysql/mysql5.7.44/include','C:/Program Files/OpenSSL-Win64/include',$out)|ForEach-Object {'/I"'+$_+'"'})
  $args+='"'+$PSScriptRoot+'/FuZanWaveEntryResearch.cpp"'
  $args+=@('/Fe"'+$out+'/probe.exe"','/Fo"'+$out+'/probe.obj"','/link','/DEBUG','/MAP:"'+$out+'/probe.map"','/PDB:"'+$out+'/probe.pdb"')

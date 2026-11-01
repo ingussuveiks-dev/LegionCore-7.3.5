@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fuzan_victory_recipient.h"
+
 struct npc_fuzan_belphiar : SmartAI
 {
     explicit npc_fuzan_belphiar(Creature* creature) : SmartAI(creature) { }
@@ -91,7 +93,7 @@ struct npc_fuzan_belphiar : SmartAI
     }
 
     ObjectGuid VictoryOwner() const { return _victoryOwner; }
-    std::shared_ptr<std::atomic<bool> const> VictoryAttempt() const { return _victoryAttempt; }
+    std::shared_ptr<QuestCancellationReceipt const> VictoryAttempt() const { return _victoryAttempt; }
 
     void JustDied(Unit* killer) override
     {
@@ -108,6 +110,8 @@ struct npc_fuzan_belphiar : SmartAI
             {
                 _victoryOwner = player->GetGUID();
                 _victoryAttempt = player->GetQuestCancellationReceipt(42765);
+                if (auto receiver = dynamic_cast<FuZanVictoryRecipient*>(me->GetInstanceScript()))
+                    receiver->RecordFuZanVictory(me, _victoryOwner, _victoryAttempt);
             }
         }
         SmartAI::JustDied(killer);
@@ -119,5 +123,5 @@ private:
     ReactStates _reaction = REACT_AGGRESSIVE;
     bool _deathRecorded = false;
     ObjectGuid _victoryOwner;
-    std::shared_ptr<std::atomic<bool> const> _victoryAttempt;
+    std::shared_ptr<QuestCancellationReceipt const> _victoryAttempt;
 };

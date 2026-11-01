@@ -6,7 +6,8 @@ $out=[IO.Path]::GetFullPath($OutputDirectory)
  $inputs=@("$PSScriptRoot/FuZanDefenseTest.cpp","$PSScriptRoot/FuZanDefenseOriginal.json",$PSCommandPath,
   "$repo/tools/research/FuZanDefenseCatalog.cpp","$repo/src/server/game/AI/SmartScripts/SmartScript.cpp",
   "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.h","$repo/src/server/game/Achievements/AchievementMgr.cpp",
-  "$repo/src/server/game/DataStores/DBCEnums.h","$repo/src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/instance_temple_of_the_jade_serpent.cpp")
+  "$repo/src/server/game/DataStores/DBCEnums.h","$repo/src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/instance_temple_of_the_jade_serpent.cpp",
+  "$repo/src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_wave_entry.h")
  $hashes=@{};foreach($path in $inputs){$hashes[$path]=(Get-FileHash -LiteralPath $path).Hash}
  function Section([string]$text,[string]$start,[string]$end){$i=$text.IndexOf($start);$j=$text.IndexOf($end,[Math]::Max(0,$i));if($i -lt 0 -or $j -le $i){throw "Missing production section $start"};$text.Substring($i,$j-$i)}
  $smart=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
@@ -47,6 +48,15 @@ $out=[IO.Path]::GetFullPath($OutputDirectory)
  $current=Get-Content "$repo/$relative" -Raw
  $original=Section $original 'class instance_temple_of_the_jade_serpent' 'void AddSC_'
  $current=Section $current 'class instance_temple_of_the_jade_serpent' 'void AddSC_'
+ # This extracted component tests the inherited native death dispatch, not the
+ # wave-entry factory or its other virtual methods. The actual factory/vtable
+ # is separately exercised by the native executable and selected PE checks.
+ if($current.Contains('return new FuZanWaveEntry::Instance(map);')){
+  $wave=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_wave_entry.h" -Raw
+  if($wave -notmatch 'class Instance : public InstanceScript, public FuZanVictoryRecipient' -or $wave -match '\b(OnUnitDeath|CreatureDies)\s*\('){throw 'Defense projection no longer inherits the native death hooks'}
+  $current=$current.Replace('return new FuZanWaveEntry::Instance(map);','return new InstanceScript(map);')
+  'SCOPE defense fixture projects inherited InstanceScript death hooks only; actual wave-entry factory requires native/PE checks'
+ }
  [IO.File]::WriteAllText("$out/OriginalInstance.inc",$original.Replace('instance_temple_of_the_jade_serpent','OriginalTempleFactory'))
  [IO.File]::WriteAllText("$out/CurrentInstance.inc",$current)
  $fixture=Get-Content "$PSScriptRoot/FuZanDefenseOriginal.json" -Raw|ConvertFrom-Json

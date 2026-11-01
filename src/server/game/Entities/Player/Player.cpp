@@ -20690,7 +20690,7 @@ void Player::BindQuestObject(uint32 questId, WorldObject* object)
     object->BindQuestObjectScope(status->ScriptObjects);
 }
 
-std::shared_ptr<std::atomic<bool> const> Player::GetQuestCancellationReceipt(uint32 questId)
+std::shared_ptr<QuestCancellationReceipt const> Player::GetQuestCancellationReceipt(uint32 questId)
 {
     QuestStatusData* status = getQuestStatus(questId);
     if (!status || status->Status == QUEST_STATUS_NONE)
@@ -20701,6 +20701,16 @@ std::shared_ptr<std::atomic<bool> const> Player::GetQuestCancellationReceipt(uin
         status->ScriptObjects->Owner = GetGUID();
     }
     return status->ScriptObjects->CancellationReceipt();
+}
+
+bool Player::AdoptQuestCancellationReceipt(uint32 questId, std::shared_ptr<QuestCancellationReceipt const> const& receipt)
+{
+    if (!receipt || receipt->load(std::memory_order_acquire))
+        return false;
+    if (!GetQuestCancellationReceipt(questId))
+        return false;
+    QuestStatusData* status = getQuestStatus(questId);
+    return status && status->ScriptObjects && status->ScriptObjects->AdoptCancellationReceipt(receipt);
 }
 
 void Player::CancelQuestObjects(uint32 questId)

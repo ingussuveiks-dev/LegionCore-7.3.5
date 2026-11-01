@@ -1,6 +1,7 @@
 """Verify the linked temple factory no longer installs the raw death callback."""
 from pathlib import Path
 import runpy
+import re
 import struct
 
 from capstone import CS_OP_MEM
@@ -27,4 +28,18 @@ for instruction in registration:
             at = n['offset'](address)
             installed.extend(struct.unpack_from('<16Q', n['binary'], at))
 assert n['symbol'](prefix) in {n['resolve'](address) for address in installed if n['base'] <= address < n['base'] + 0x10000000}
-print('PASS linked Fu Zan1625 factory: registered vtable constructs native InstanceScript; obsolete raw32-death derived callback absent. Native51-row SmartAI/weighted criteria dialogue and client traversal are separate checks.')
+maptext=(n['args'].release/'worldserver.map').read_text(errors='replace')
+name='??_7Instance@FuZanWaveEntry@@6BInstanceScript@@@'
+tables=re.findall(r'\s+\w+:\w+\s+'+re.escape(name)+r'\s+([0-9a-fA-F]{16})',maptext)
+if tables:
+    assert len(tables)==1
+    table=int(tables[0],16)
+    assert any(op.mnemonic=='lea' and any(operand.type==CS_OP_MEM and operand.mem.base==X86_REG_RIP and
+        op.address+op.size+operand.mem.disp==table for operand in op.operands) for op in factory),'Factory must install the actual wave-entry vtable'
+    slots=[n['resolve'](address) for address in struct.unpack_from('<51Q',n['binary'],n['offset'](table))]
+    assert slots[5]==n['symbol']('?CreatureDies@InstanceScript@@')
+    assert slots[15]==n['symbol']('?OnUnitDeath@ZoneScript@@')
+    assert not any(name.startswith(('?OnUnitDeath@Instance@FuZanWaveEntry@@','?CreatureDies@Instance@FuZanWaveEntry@@')) for name in n['symbols'])
+    print('PASS linked Fu Zan1625 registered factory installs wave-entry Instance; actual vtable retains native CreatureDies and ZoneScript OnUnitDeath slots, with no obsolete raw32-death callback. Native51-row SmartAI/weighted criteria and client traversal are separate checks.')
+else:
+    print('PASS linked Fu Zan1625 registered factory constructs native InstanceScript; obsolete raw32-death callback absent. Native51-row SmartAI/weighted criteria and client traversal are separate checks.')

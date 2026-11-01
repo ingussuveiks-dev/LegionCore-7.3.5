@@ -51,6 +51,7 @@
 #include <safe_ptr.h>
 
 class SpectatorAddonMsg;
+class QuestCancellationReceipt;
 struct Mail;
 struct ItemExtendedCostEntry;
 
@@ -1983,7 +1984,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void RemoveActiveQuest(uint32 quest_id);
         void AddQuestDelayedEvent(uint32 questId, uint64 delay, std::function<void()>&& action);
         void BindQuestObject(uint32 questId, WorldObject* object);
-        std::shared_ptr<std::atomic<bool> const> GetQuestCancellationReceipt(uint32 questId);
+        std::shared_ptr<QuestCancellationReceipt const> GetQuestCancellationReceipt(uint32 questId);
+        bool AdoptQuestCancellationReceipt(uint32 questId, std::shared_ptr<QuestCancellationReceipt const> const& receipt);
         void CancelQuestObjects(uint32 questId);
         void ResetNewBloodQuest();
         void RemoveRewardedQuest(uint32 quest_id);

@@ -20,6 +20,7 @@
 #include "fuzan_temple_sanctuary_door.h"
 #include "fuzan_belphiar.h"
 #include "fuzan_summerpetal.h"
+#include "fuzan_wave_entry.h"
 
 class instance_temple_of_the_jade_serpent : public InstanceMapScript
 {
@@ -31,7 +32,7 @@ public:
         // Native tree 49567 unlocks Yu'lon's first line/path. Korithis's
         // TEXT_OVER 0 then owns DATA 2/2 and Yu'lon's reply. A raw 32-death
         // callback consumed that one-shot reply before the confrontation.
-        return new InstanceScript(map);
+        return new FuZanWaveEntry::Instance(map);
     }
 };
 
@@ -45,4 +46,9 @@ void AddSC_instance_temple_of_the_jade_serpent()
     RegisterCreatureAI(npc_fuzan_belphiar);
     RegisterCreatureAI(npc_fuzan_summerpetal);
     new condition_fuzan_summerpetal_continuation();
+    new eventobject_fuzan_wave_entry();
+    RegisterSpellScript(spell_fuzan_wave_attempt);
+    RegisterAuraScript(aura_fuzan_wave_controller);
+    RegisterSpellScript(spell_fuzan_wave_conversation);
+    RegisterSpellScript(spell_fuzan_wave_retrieval);
 }

@@ -13,7 +13,7 @@ int main()
 {
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);
     try{
-        std::shared_ptr<std::atomic<bool> const> ordinary;
+        std::shared_ptr<QuestCancellationReceipt const> ordinary;
         std::weak_ptr<QuestObjectScope> original;
         {
             auto scope=std::make_shared<QuestObjectScope>();original=scope;ordinary=scope->CancellationReceipt();
@@ -34,6 +34,38 @@ int main()
         Require(original.expired()&&concurrent->load(std::memory_order_acquire),"Concurrent cancellation/expiry was lost");
         scope=std::make_shared<QuestObjectScope>();auto empty=scope->CancellationReceipt();
         Require(scope->Cancel().empty()&&empty->load(std::memory_order_acquire),"Empty-scope cancellation was lost");
-        std::cout<<"PASS8 actual QuestObjectScope cancellation/ordinary expiry/new attempt/no-retention/idempotence/registered children/concurrent lifetime cases; header ASAN, not an instrumented whole core.\n";return 0;
+        scope=std::make_shared<QuestObjectScope>();auto canonical=scope->CancellationReceipt();original=scope;
+        auto reentered=std::make_shared<QuestObjectScope>();auto local=reentered->CancellationReceipt();
+        Require(reentered->AdoptCancellationReceipt(canonical)&&reentered->CancellationReceipt()==canonical,"Reentry did not retain canonical attempt identity");
+        scope.reset();Require(original.expired(),"Adoption retained the old quest scope");
+        reentered->Cancel();Require(canonical->load()&&local->load(),"Adopted or previously handed-out receipt missed cancellation");
+
+        scope=std::make_shared<QuestObjectScope>();canonical=scope->CancellationReceipt();
+        std::vector<std::shared_ptr<QuestCancellationReceipt const>> views{canonical};
+        for(uint32 i=0;i<3;++i){auto nextScope=std::make_shared<QuestObjectScope>();views.push_back(nextScope->CancellationReceipt());
+            Require(nextScope->AdoptCancellationReceipt(canonical),"Repeated ordinary reentry refused active attempt");scope=nextScope;}
+        scope->Cancel();for(auto const& view:views)Require(view->load(),"Multiple reconnects lost a receipt reader");
+
+        auto fresh=std::make_shared<QuestObjectScope>();auto freshView=fresh->CancellationReceipt();
+        Require(!fresh->AdoptCancellationReceipt(canonical)&&!freshView->load(),"Cancelled old run poisoned a fresh task");
+        auto other=std::make_shared<QuestObjectScope>();auto otherView=other->CancellationReceipt();fresh->Cancel();
+        Require(!fresh->AdoptCancellationReceipt(otherView)&&!otherView->load(),"Already-cancelled scope adopted another active attempt");
+
+        for(uint32 i=0;i<128;++i){auto previous=std::make_shared<QuestObjectScope>();auto receipt=previous->CancellationReceipt();
+            auto current=std::make_shared<QuestObjectScope>();auto before=current->CancellationReceipt();
+            std::thread cancel([previous](){previous->Cancel();});current->AdoptCancellationReceipt(receipt);cancel.join();
+            Require(receipt->load(),"Concurrent old cancellation lost its flag");
+            if(current->CancellationReceipt()==receipt)Require(before->load(),"Concurrent adoption lost a mirrored reader");
+            current->Cancel();Require(before->load(),"Current cancellation failed after adoption race");}
+
+        views.clear();scope=std::make_shared<QuestObjectScope>();views.push_back(scope->CancellationReceipt());
+        for(uint32 i=0;i<1000;++i){auto nextScope=std::make_shared<QuestObjectScope>();auto receipt=nextScope->CancellationReceipt();
+            Require(scope->AdoptCancellationReceipt(receipt),"Deep mirror preparation failed");views.push_back(receipt);scope=nextScope;}
+        scope->Cancel();for(auto const& view:views)Require(view->load(),"Iterative cancellation lost a deep mirror");
+        auto left=std::make_shared<QuestObjectScope>(),right=std::make_shared<QuestObjectScope>();
+        auto leftView=left->CancellationReceipt(),rightView=right->CancellationReceipt();
+        Require(left->AdoptCancellationReceipt(rightView)&&right->AdoptCancellationReceipt(leftView),"Mirror cycle setup failed");
+        left->Cancel();Require(leftView->load()&&rightView->load(),"Mirror cycle failed to cancel finitely");
+        std::cout<<"PASS13 actual QuestObjectScope cancellation/ordinary expiry/new attempt/no-retention/idempotence/children/concurrency plus canonical adoption, multiple reconnect mirrors, refusals and iterative deep/cyclic cancellation; header ASAN, not an instrumented whole core.\n";return 0;
     }catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}
 }

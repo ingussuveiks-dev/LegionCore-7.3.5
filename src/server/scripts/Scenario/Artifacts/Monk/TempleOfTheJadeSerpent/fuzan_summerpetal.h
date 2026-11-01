@@ -233,7 +233,7 @@ struct npc_fuzan_summerpetal : SmartAI
 
 private:
     ObjectGuid _owner,_summoner;
-    std::shared_ptr<std::atomic<bool> const> _cancellation;
+    std::shared_ptr<QuestCancellationReceipt const> _cancellation;
     SmartScriptHolder _credit,_king,_follow;
     bool _scoped=false,_actions=false,_started=false,_spoken=false,_following=false,_contact=false;
     bool _cancelled=false,_routingError=false,_parked=false;

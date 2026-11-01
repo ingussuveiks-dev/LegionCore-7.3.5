@@ -17,6 +17,7 @@
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_temple_intro.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_belphiar.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_summerpetal.h"
+#include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_wave_entry.h"
 
 struct IntroInstanceTag { using Type=InstanceScript* InstanceMap::*; friend Type Access(IntroInstanceTag); };
 template struct FixtureAccess<IntroInstanceTag,&InstanceMap::i_data>;
@@ -31,11 +32,12 @@ template struct FixtureAccess<IntroStoryTag,&FuZanTempleIntro::Actor::_story>;
 struct IntroClockTag { using Type=std::map<ObjectGuid,uint32> Conversation::*; friend Type Access(IntroClockTag); };
 template struct FixtureAccess<IntroClockTag,&Conversation::playing>;
 
-static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bool withTempleRescue=false,bool withSummerpetal=false,bool withTransition=false)
+static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bool withTempleRescue=false,bool withSummerpetal=false,bool withTransition=false,bool withWaveRepair=false)
 {
     Require(argc==3,"Private native config/runtime missing");
     Require(!withSummerpetal||withTempleRescue,"Summerpetal requires native rescue loader context");
     Require(!withTransition||withSummerpetal,"EventObject transition requires the complete actual actor context");
+    Require(!withWaveRepair||withTransition,"Owned wave entry requires the complete actual transition context");
     std::string error;Require(sConfigMgr->LoadInitial(argv[1],{},error),"Private config failed");
     sLog->Initialize(nullptr);MySQL::Library_Init();
     WorldDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("WorldDatabaseInfo",""),1,1);
@@ -125,6 +127,7 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     if(withSanctuaryDoor)names.emplace_back("go_fuzan_temple_sanctuary_door");
     if(withTempleRescue)names.emplace_back("npc_fuzan_belphiar");
     if(withTempleRescue){names.emplace_back("npc_fuzan_summerpetal");names.emplace_back("condition_fuzan_summerpetal_continuation");}
+    if(withTransition)for(auto name:{"eventobject_fuzan_wave_entry","spell_fuzan_wave_attempt","aura_fuzan_wave_controller","spell_fuzan_wave_conversation","spell_fuzan_wave_retrieval"})names.emplace_back(name);
     std::sort(names.begin(),names.end());names.erase(std::unique(names.begin(),names.end()),names.end());
     sObjectMgr->LoadInstanceTemplate();sObjectMgr->LoadScenarioData();
     sObjectMgr->LoadCreatureModelInfo();sObjectMgr->LoadWDBCreatureTemplates();sObjectMgr->LoadCreatureTemplates();
@@ -154,6 +157,36 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     Require(!actor->ScriptID,"Custom intro creature binding must not be overwritten");actor->ScriptID=nativeScript;
 #endif
     sScriptDataStore->LoadSpellScriptNames();auto& bindings=sScriptDataStore->*Access(IntroBindingsTag{});
+    uint32 waveBindings=0;
+    std::vector<std::pair<uint32,std::string>> waveNames;
+    if(withTransition)
+    {
+        for(uint32 spell:{218883u,218882u,217659u,217667u,217666u,217669u})waveNames.emplace_back(spell,"spell_fuzan_wave_attempt");
+        for(uint32 spell:{217659u,217667u,217817u})waveNames.emplace_back(spell,"aura_fuzan_wave_controller");
+        waveNames.emplace_back(217817,"spell_fuzan_wave_conversation");
+        waveNames.emplace_back(217814,"spell_fuzan_wave_retrieval");
+        for(auto const& pair:waveNames)
+        {
+            auto range=bindings.equal_range(pair.first);uint32 id=sObjectMgr->GetScriptId(pair.second.c_str());
+            auto count=std::count_if(range.first,range.second,[=](auto const& row){return row.second.first==id;});
+            Require(count<=1,"Duplicate wave-entry script binding");waveBindings+=uint32(count);
+        }
+        for(uint32 spell:{217814u,217817u,218883u,218882u,217659u,217667u,217666u,217669u})
+        {
+            auto range=bindings.equal_range(spell);
+            for(auto it=range.first;it!=range.second;++it)
+                Require(std::any_of(waveNames.begin(),waveNames.end(),[&](auto const& pair){return pair.first==spell&&sObjectMgr->GetScriptId(pair.second.c_str())==it->second.first;}),"Unknown wave-entry spell script must be loaded/investigated");
+        }
+        Require(waveBindings==0||waveBindings==11,"Partial wave-entry binding cohort");
+#if defined(FUZAN_WAVE_ENTRY_BASELINE)
+        for(uint32 spell:{217814u,217817u,218883u,218882u,217659u,217667u,217666u,217669u})bindings.erase(spell);
+#elif defined(FUZAN_WAVE_ENTRY_LIVE)
+        Require(withWaveRepair&&waveBindings==11,"Actual live wave-entry spell bindings missing");
+#else
+        if(withWaveRepair&&!waveBindings)
+            for(auto const& pair:waveNames)bindings.emplace(pair.first,std::make_pair(sObjectMgr->GetScriptId(pair.second.c_str()),true));
+#endif
+    }
     for(auto pair:{std::make_pair(217775u,"spell_fuzan_temple_intro"),std::make_pair(217774u,"spell_fuzan_temple_complete")})
     {
         uint32 id=sObjectMgr->GetScriptId(pair.second);auto range=bindings.equal_range(pair.first);
@@ -170,6 +203,7 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());
     RegisterCreatureAI(npc_fuzan_temple_intro);RegisterSpellScript(spell_fuzan_temple_intro);RegisterSpellScript(spell_fuzan_temple_complete);
     if(summerConditions){RegisterCreatureAI(npc_fuzan_summerpetal);new condition_fuzan_summerpetal_continuation();}
+    if(withWaveRepair){new eventobject_fuzan_wave_entry();RegisterSpellScript(spell_fuzan_wave_attempt);RegisterAuraScript(aura_fuzan_wave_controller);RegisterSpellScript(spell_fuzan_wave_conversation);RegisterSpellScript(spell_fuzan_wave_retrieval);}
     sScriptMgr->SwapScriptContext(true);AIRegistry::Initialize();UnitAI::FillAISpellInfo();sWorld->LoadConfigSettings();opcodeTable.Initialize();
     HashMapHolder<Player>::SetSize(32);HashMapHolder<Creature>::SetSize(20000);HashMapHolder<Pet>::SetSize(20000);HashMapHolder<Conversation>::SetSize(20000);
     auto row=WorldDatabase.Query(
@@ -189,7 +223,20 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     (sAchievementMgr->*Access(IntroCriteriaTag{})).assign(MAX_CRITERIA_TREE,nullptr);
     if(withSanctuaryDoor){sObjectMgr->LoadPageTexts();sObjectMgr->LoadGameObjectTemplate();}
     if(withTempleRescue){sCreatureTextMgr->LoadCreatureTexts();sSmartWaypointMgr->LoadFromDB();}
-    if(withTransition)sEventObjectDataStore->LoadEventObjectTemplates(); // Read-only template loader; never global spawn/clone maintenance.
+    if(withTransition)
+    {
+        sEventObjectDataStore->LoadEventObjectTemplates(); // No global spawn/clone maintenance.
+        auto event=const_cast<EventObjectTemplate*>(sEventObjectDataStore->GetEventObjectTemplate(103));Require(event,"Actual EO103 template missing");
+        uint32 original=sObjectMgr->GetScriptId("SmartEventObject"),future=sObjectMgr->GetScriptId("eventobject_fuzan_wave_entry");
+        Require(event->ScriptID==(waveBindings?future:original),"Wave-entry template/spell cohort differs or is custom");
+#if defined(FUZAN_WAVE_ENTRY_BASELINE)
+        event->ScriptID=original;
+#elif defined(FUZAN_WAVE_ENTRY_LIVE)
+        Require(withWaveRepair&&event->ScriptID==future,"Actual live wave-entry event binding missing");
+#else
+        if(withWaveRepair)event->ScriptID=future;
+#endif
+    }
     sSmartScriptMgr->LoadSmartAIFromDB();sConditionMgr->LoadConditions();sConversationDataStore->LoadConversationData();
     dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1625,{}}});
     MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1625,{}}});
