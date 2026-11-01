@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-01",
+  "status": "DEPLOYED focused Fu Zan defense/confrontation repair; full42765/client/all36 remain OPEN",
+  "cause": "The instance raw uint8 counter called Yu'lon DATA2/2 on the32nd death, independently of credited scenario progress. That consumes nonrepeatable SmartAI109391/17 and starts the later reply before the confrontation. On the next native update, criterion49567 unlocks row10/TALK0 and replaces the same text timer. After the authored path and Korithis's opening, his actual TEXT_OVER0 sends DATA2/2, but Yu'lon's row17 has already run. Korithis's second reply is lost. This is reproduced with the exact pinned253c5ca40 factory and extracted production SmartScript dispatch/actions/timer.",
+  "repair": "Remove the redundant death-count instance implementation. Keep the same registered instance_temple_of_the_jade_serpent/map1625 factory and return native InstanceScript. Preserve all51 relevant SmartAI rows,20 conditions, four8-actor waves, original speech, two-point109391 route, native criteria and equipment/loot/return behavior. Native tree49567 owns renewed Yu'lon0/path, then Korithis0 ->Yu'lon1 ->Korithis1. No synthetic progress, item, cast, teleport, suppressed diagnostic or SQL migration. Native base creature bookkeeping now applies; its object/minion maps have no custom loader in this factory, and the affected native graph uses ordinary spatial targets rather than an instance-data substitution.",
+  "matching_data": {
+    "client": "7.3.5.26972 runtime DB2 and read-only Hotfix, typed FuZanDefenseCatalog.cpp",
+    "stage": "1137/order5 Battle of the Serpent root49171: initial confrontation52981/tree49177, path-point52590/tree49351 and defense49567",
+    "defense": "Native operator9/Amount100 sums leaf counters times weights: tree49568/event52970 weight5, tree49620/event53046 weight2. Each authored wave is three109438/109511/109933 plus five110471, weight25. Four waves total12 strong/20 imps/100. The criterion is authoritative; an unrelated raw32 count is not.",
+    "dialogue": "Yu'lon109391 row10 requires completed49567, TALK0/6000 ->TEXT_OVER0 row13/path109391 and52981. Actual point1 owns52590; actual point2 sends DATA1/1 to109821. Korithis TALK0/6000 ->TEXT_OVER0 DATA2/2 ->Yu'lon TALK1/6000 ->TEXT_OVER1 DATA2/2 ->Korithis TALK1. Original native text115662/115839/115890/115897 and positions retained.",
+    "source_order": "Matching local data/core fully explains the conflict, so no modern core, external guessed threshold, video or dialogue payload was needed. Earlier LiLi100475 missing7/8 and later Ponshu100438 missing10 remain independent unresolved research."
+  },
+  "validation": [
+    "Test-FuZanDefense: live readonly full51 SmartAI/20 condition equality and exact1625 script binding, typed native tree/criteria verification, original/current production factories plus extracted actual ProcessEventsFor/ProcessEvent guards/ProcessAction prefix/TALK/SET_DATA/WP_START/LINK/TEXT_OVER timer and full IsCompletedCriteriaTree compiled with MSVC ASAN.",
+    "Pinned original20 EXPECTED_BROKEN cases lose Korithis's second reply. Repaired25 pass: player/pet/guardian/ally/null endpoint labels, both kill orders, updates after each death versus a whole burst, complete four-wave sequence/52981/52590/path/two speakers, repeated callbacks, missing/disabled actor raw death notifications, uncredited repeated kills, expired quest object, weighted99->103 boundary and fresh instance retry.",
+    "Spawn/search/chat/credit/path/combat services and earlier stage5 admission are controlled endpoints. These tests do not execute native Unit::DealDamage, real pet/group credit, full spline/collision, authenticated login or actual client presentation. No one-hit scaling code or native group criteria path was changed. Actual failed casts/missing actors/abandonment/re-entry and full42765 path beyond the stated matrix remain client/follow-up checks.",
+    "Retained Test-MonkArtifactLoot -AddressSanitizer -VerifyLiveData: native loot/gossip/admission, full-schema shadows/idempotence/18 refusals and live equality. Retained Test-MonkSceneEquip -AddressSanitizer -VerifyLiveData: native scene lifecycle/packet guards and22 refusals/live equality pass. Existing fixture C4244 warnings remain visible.",
+    "Original scripts.vcxproj Release incrementally rebuilt the changed unit and original scripts.lib, no OutDir override. Original final-link inputs used for stage1 world/bnet; canonical hashes unchanged during staging. Actual staged/canonical PE verifies registered1625 factory vtable calls native InstanceScript constructor and obsolete death-count class symbols are absent. Retained22-function Sheilun acquisition PE and11-call SmartAI retry PE pass.",
+    "Offline four exe/map promotion backed up and source/destination hashes verified, configs/certificates/DLLs preserved. Canonical Scepter -VerifyReleaseBinary passes. Owned canonical PID19696 reached fresh ready, shutdown0/exit0/gone, stdout reviewed/stderr empty/protected hashes unchanged. Canonical PE completed while this known owned process was running; startup wrapper subsequently verifies it gone."
+  ],
+  "release": {
+    "previous_world_sha256": "d22b1f3e4ef7dea909d40b0d5a6488831c200fc111694c39faadc92cb07d555d",
+    "world_sha256": "b187f6dd4b59783a8237cfeba492d6817cf291713ec7ef5106771d35b0cbf9c3",
+    "bnet_sha256": "894cd2b016c0ba72118dd1bdeaeed099f2328fef5bdb5b4f6700c65407d348e5",
+    "backup": ".codex/release-before-fuzan-temple-defense-2026-11-01/manifest.json",
+    "sql": "No migration or live table change. World01 and existing Monk loot/scene migrations remain unchanged."
+  },
+  "diagnostics": {
+    "result": "Final baseline/fixed/native/data/build/stage/PE/promotion/retained/startup wrappers Completed=true, exit0, no new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions. No task server remains. Active Crashes empty.",
+    "reviewed_iterations": "World1 readonly query used absent creature_template.name; World2 used absent scenario_data.Map; World3 completes full EOF. Native1 reader lacked LEGION_DIALOGUE_CONFIG, Native2/3 use local config without exposing it. Baseline1 host omitted native condition bridge; baseline2 asserted15 rather than14 condition columns. Corrected baseline3/4 and fixed1..3 pass; no production check disabled. Fixture savedProgress renamed to avoid its own C4458 shadow warnings. Pinned old newStep C4100 remains a visible counterfactual-only warning.",
+    "existing_unresolved": "Mixed canonical6090-byte DBErrors remains unchanged SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0. No mixed log cleared or unexplained crash archived. Earlier partial-nativeASAN39 limitation remains outside fixed."
+  },
+  "evidence": [
+    ".codex/fuzan-temple-defense-world3-open-2026-11-01",
+    ".codex/fuzan-temple-defense-dialogue1-open-2026-11-01",
+    ".codex/fuzan-temple-defense-native3-open-2026-11-01",
+    ".codex/fuzan-temple-defense-final-regression1-open-2026-11-01",
+    "build-extractors/runtime-test/fuzan-defense-baseline4",
+    "build-extractors/runtime-test/fuzan-defense-fixed3",
+    ".codex/fuzan-temple-defense-build1-open-2026-11-01",
+    ".codex/fuzan-temple-defense-stage-pe1-open-2026-11-01",
+    ".codex/fuzan-temple-defense-retained1-open-2026-11-01",
+    ".codex/fuzan-temple-defense-canonical-checks1-open-2026-11-01",
+    ".codex/fuzan-temple-defense-startup1-open-2026-11-01"
+  ],
+  "next": "Continue full Fu Zan42765 lifecycle from earlier admissions/rescues through actual Korithis, real pickup/scene/equip and return, plus other remaining36 chains. Client visual/audio/combat/travel and original path-start/missing-actor retry are not certified by the controlled source regression. No character/quest/item reset."
+}

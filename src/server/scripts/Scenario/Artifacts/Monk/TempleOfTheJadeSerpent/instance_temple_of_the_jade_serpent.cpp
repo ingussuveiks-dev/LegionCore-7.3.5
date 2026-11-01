@@ -3,8 +3,7 @@
 */
 
 #include "ScriptMgr.h"
-#include "ScriptedCreature.h"
-
+#include "InstanceScript.h"
 
 class instance_temple_of_the_jade_serpent : public InstanceMapScript
 {
@@ -13,52 +12,11 @@ public:
 
     InstanceScript* GetInstanceScript(InstanceMap* map) const override
     {
-        return new instance_temple_of_the_jade_serpent_InstanceMapScript(map);
+        // Native tree 49567 unlocks Yu'lon's first line/path. Korithis's
+        // TEXT_OVER 0 then owns DATA 2/2 and Yu'lon's reply. A raw 32-death
+        // callback consumed that one-shot reply before the confrontation.
+        return new InstanceScript(map);
     }
-
-    struct instance_temple_of_the_jade_serpent_InstanceMapScript : public InstanceScript
-    {
-        instance_temple_of_the_jade_serpent_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
-
-        uint8 diedCounter;
-        ObjectGuid YulonGUID;
-
-        void Initialize() override
-        {
-            YulonGUID.Clear();
-            diedCounter = 0;
-        }
-
-        void OnCreatureCreate(Creature* creature) override
-        {
-            switch (creature->GetEntry())
-            {
-                case 109391:
-                    YulonGUID = creature->GetGUID();
-                    break;
-            }
-        }
-
-        void CreatureDies(Creature* creature, Unit* /*killer*/) override
-        {
-            switch (creature->GetEntry())
-            {
-                case 110471:
-                case 109933:
-                case 109511:
-                case 109438:
-                    diedCounter++;
-                    if (diedCounter == 32)
-                    {
-                        if (Creature* Yulon = instance->GetCreature(YulonGUID))
-                            Yulon->AI()->SetData(2, 2);
-                    }
-                    break;
-            }
-        }
-        
-        void onScenarionNextStep(uint32 newStep) override {}
-    };
 };
 
 void AddSC_instance_temple_of_the_jade_serpent()
