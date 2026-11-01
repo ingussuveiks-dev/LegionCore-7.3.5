@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-02",
+  "fix_commit": "a7da13abc0a47ea36c5adbc6b88d29e4aa92954e",
+  "diagnostic_commit": "d177aa98d33a8b4e42bf2795b23f8e0fe078268a",
+  "status": "Focused repair and diagnostic followup verified/deployed; reviewed evidence archived. Full909/client/all36 remain OPEN.",
+  "archive": "build-extractors/bin/Release/fixed/hruthnir-timers-2026-11-02/verified1",
+  "sources": 281,
+  "payloads": 283,
+  "verified_manifest_sha256": "1e926b08258592a39a6b06bd81ed1dd0b7c8819063426fd8becbee4ee83afce0",
+  "integrity": "Source/archive/source SHA256 for every file, original source recheck after copying and final payload manifest hash verification. Canonical tested C8009245/no-server/empty-Crashes/mixed-log hash rechecked immediately before/after archival. Original evidence retained; no configurations/credentials/dumps/characters/media/executables archived or committed.",
+  "review": "27 explicit evidence runs and three isolated native runtime directories: source context,100 ASAN and pinned expected-broken dangling-queue baseline, retained Gossip/Magnar/native497, original build/stage/backup/promotion, all intermediate inspector/fixture corrections, actual staged+canonical eight callback vtables/native clock/constructor-destructor and retained Hight/Monk/Magnar/gossip/497/corpse policies, Scepter and owned34496 ready/shutdown0/exit0/gone. Native runtime copies exclude their private configuration. Endpoint/full-client limits are retained in the implementation audit.",
+  "snapshot_limitation": "Initial native497 probe used fresh root private logs outside the outer wrapper's conventional logs child. Its full original3807-byte Server.log and empty DBErrors were reviewed afterward, zero diagnostics; no initial private before-snapshot claimed. Corrected exact native logs snapshots then exposed outer relative-path capture on directory change. Both path handling and exact inner snapshots are fixed in d177aa98d; final native3 inner+outer completed clean. The original logs, failed outer attempt and explicit limitation record are preserved.",
+  "active_diagnostics": "No new/changed crash or appended server warning/error/assertion/DBErrors. Active Crashes empty. Unresolved mixed6090-byte DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged, untruncated and excluded from resolved archive. No indiscriminate runtime/history removal.",
+  "continuation": "Continue independent all36 repairs and fresh inventory. Actual client testing belongs to the user; no additional character/item/quest reset authorized or performed."
+}
