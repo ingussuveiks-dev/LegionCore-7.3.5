@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-01",
+  "test_commit": "3dcf8d609661d60470705981f6518dbd45022e64",
+  "audit": "docs/audits/fuzan-pickup-native-2026-11-01.json",
+  "archive": "build-extractors/bin/Release/fixed/fuzan-pickup-2026-11-01",
+  "source_files": 578,
+  "final_manifest_entries": 589,
+  "final_manifest_sha256": "F408130B062948A40501150196041F202EE6883733BF3650C2A218684D96F84F",
+  "cause_and_resolution": "Reviewed native test-harness registration/query/build/metadata/expectation errors are preserved and paired with final22 pickup/scene/equipment/return cases and retained44 defense, exit0/stderr0/no new runtime diagnostics. Focused implementation is present in committed tests and tested private native executable; canonical gameplay binaries/data unchanged.",
+  "preservation": "Each reviewed source was hashed, copied without modification and rehashed at source/destination/source. All589 final members independently verified; original historical evidence retained. No active report/log removed or truncated. Configurations, credentials, executables, PDB/objects/maps, personal character data and canonical mixed error history excluded.",
+  "classification": "Superseded compile/query failures and incorrect harness expectations are not passing game regressions. Formal1 executed44 Defense with a misleading pickup label; final runner pins actual Pickup source and22-case footer. Expiry without COMPLETE must not equip; the original postpickup exit remains available after abandonment without awarding inactive quest objectives.",
+  "diagnostics": "Archive and independent external verification pass: no new/changed crashes, appended DBErrors or unexplained server diagnostics. Active Crashes empty; no worldserver/bnetserver remains. Existing mixed6090-byte DBErrors/hash8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unresolved and untouched.",
+  "unresolved_excluded": "Separate fuzan-corrupted actual DB waypoint2/path0 warning remains open; no corrupted-spawn evidence was placed in this fixed archive. See fuzan-yigthregor-missing-path-research-2026-11-01.json.",
+  "limits": "Earlier entry/stage2 controlled, wave combat AI not ticked, corrupted actor uses template initialization. No client presentation/flight/turn-in/reward, whole-chain reconnect/group or ALL36 completion claim. Continue independent repairs."
+}
