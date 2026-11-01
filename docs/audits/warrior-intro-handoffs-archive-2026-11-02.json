@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-02",
+  "status": "Verified resolved immediate Warrior handoff archive; full933/client/all36 remain OPEN",
+  "fix_commit": "69f97dba8a28a48c63db49140c7290783c129e2f",
+  "archive": "build-extractors\\bin\\Release\\fixed\\warrior-intro-handoffs-2026-11-02\\verified1",
+  "source_files": 353,
+  "payload_files": 355,
+  "manifest_sha256": "E7E60D1CE05FA6E114CF8467F0423E1AAAA5298BB9AB9864C3F7FC9362C23A1A",
+  "verification": "All source/archive/source and final payload SHA256 rechecked after finalBB2F7B09 guarded deployment and41 ASAN/45 retained/native933 two-leaf ALL tree/actual final stage+canonical PE/Scepter/owned20984ready-shutdown0-exit0-gone. Original failed fixture/certificate/inspector output and both candidate link metadata retained; initial18338CAC was never promoted.",
+  "cleanup": "Active Crashes empty with no resolved dump to remove. Unresolved mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged/untruncated. Originals retained; configs/passwords/executables/dumps/character data excluded; no user/unknown server stopped.",
+  "audit": "docs/audits/warrior-intro-handoffs-2026-11-02.json"
+}
