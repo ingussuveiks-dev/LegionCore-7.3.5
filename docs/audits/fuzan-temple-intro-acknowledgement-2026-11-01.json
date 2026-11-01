@@ -37,5 +37,6 @@
   },
   "limits": "Native server visibility clock is a server observation, not proof of actual client receipt/render/audio. Client intro/retail timing/acceptance/rescue/defense/Korithis/combat including player/pet/guardian/group, loot/equip/return/reconnect/full42765 and all36 remain separate checks. Unhandled conversation-line opcode was not implemented or trusted. Local native data resolves this focused repair; no external video/newer-core behavior copied.",
   "evidence_prefix": ".codex/fuzan-temple-intro-*-2026-11-01 and build-extractors/runtime-test/fuzan-temple-intro-*; focused verified archive recorded separately after implementation commit",
-  "fix_commit": "Recorded by the subsequent archive audit; this audit is part of the focused implementation commit."
+  "fix_commit": "2790e5af2",
+  "archive": "docs/audits/fuzan-temple-intro-acknowledgement-archive-2026-11-01.json"
 }
