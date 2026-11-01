@@ -5,6 +5,7 @@ $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Forc
 function Block([string]$s,[string]$token){$a=$s.IndexOf($token);if($a -lt 0){throw "Missing $token"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $token"};$s.Substring($a,$b-$a)}
 $source=Get-Content "$repo/src/server/game/Entities/Player/PlayerScenario.cpp" -Raw
 [IO.File]::WriteAllText("$out/Recovery.inc",(Block $source 'bool Player::ExitCompletedSheilunLogin()'))
+[IO.File]::WriteAllText("$out/PendingReturn.inc",(Block $source 'bool Player::HasPendingSheilunReturn() const'))
 $source=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
 [IO.File]::WriteAllText("$out/Inventory.inc",(Block $source 'Item* Player::GetItemByEntry('))
 [IO.File]::WriteAllText("$out/Objective.inc",(Block $source 'int32 Player::GetQuestObjectiveData(uint32'))

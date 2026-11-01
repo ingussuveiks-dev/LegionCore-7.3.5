@@ -8,6 +8,7 @@
 #include "Item.h"
 #include "SpellMgr.h"
 #include "BrokenShoreClassRoute.h"
+#include "QuestData.h"
 
 namespace
 {
@@ -72,7 +73,9 @@ void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
         instanceId == m_scenarioResume.instance ? sScenarioMgr->GetScenario(instanceId) : nullptr;
     if (live && live->GetMap()->GetId() == mapId && live->GetScenarioId() == m_scenarioLoginId)
     {
-        if (live->IsCompleted(false))
+        // Inventory/quest rows load later. Tentatively keep this exact saved
+        // Monk outro; post-AddPlayer admission revalidates the owned pickup.
+        if (live->IsCompleted(false) && !(mapId == 1541 && m_scenarioLoginId == 1007 && getClass() == CLASS_MONK))
         {
             m_scenarioResume = {};
             m_scenarioLoginId = 0;
@@ -99,7 +102,8 @@ void Player::RecordScenarioEntrance()
 {
     if (!IsInWorld() || !GetMap()) return;
     Scenario* progress = GetMap()->IsScenario() ? sScenarioMgr->GetScenario(GetInstanceId()) : nullptr;
-    if (!progress || !Resumable(GetMap()->GetEntry(),progress->GetScenarioId()) || progress->IsCompleted(false))
+    if (!progress || !Resumable(GetMap()->GetEntry(),progress->GetScenarioId()) ||
+        (progress->IsCompleted(false) && !(progress->GetScenarioId() == 1007 && HasPendingSheilunReturn())))
     {
         m_scenarioResume = {};
         m_scenarioLoginId = m_scenarioLoginInstance = 0;
@@ -162,6 +166,20 @@ bool Player::ExitCompletedBrokenShoreLogin()
     m_scenarioLoginId = m_scenarioLoginInstance = 0;
     SetScenarioId(0);
     return true;
+}
+
+bool Player::HasPendingSheilunReturn() const
+{
+    if (GetMapId() != 1541 || getClass() != CLASS_MONK || isGameMaster() || IsQuestRewarded(41003) ||
+        (GetQuestStatus(41003) != QUEST_STATUS_INCOMPLETE && GetQuestStatus(41003) != QUEST_STATUS_COMPLETE) ||
+        GetQuestObjectiveData(41003, 102479) < 1) return false;
+    Item* item = GetItemByEntry(128937, false);
+    if (!item || item->GetOwnerGUID() != GetGUID() || !item->GetCount()) return false;
+    Quest const* quest = sQuestDataStore->GetQuestTemplate(41003);
+    if (quest) for (auto const& objective : quest->GetObjectives())
+        if (objective.ID == 281599 && objective.ObjectID == 101880 && objective.StorageIndex == 2 && objective.Amount == 1)
+            return GetQuestObjectiveData(quest, objective.StorageIndex) < objective.Amount;
+    return false;
 }
 
 bool Player::ExitCompletedSheilunLogin()

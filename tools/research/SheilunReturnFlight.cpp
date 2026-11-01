@@ -16,6 +16,8 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <array>
+#include "../../src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_return_route.h"
 
 // Functional route candidates, not a recovered retail1541 spline or a proof
 // that retail binds5619 to202831. Evaluate actual native smooth interpolation.
@@ -99,21 +101,53 @@ int main(int argc,char** argv)
         std::cout<<"MAP_ADMISSION\t"<<difficulty->ID<<'\t'<<unsigned(difficulty->DifficultyID)<<'\t'<<unsigned(difficulty->MaxPlayers)<<'\t'<<unsigned(difficulty->Flags)<<'\n';
     auto row=WorldDatabase.Query("SELECT target_map,target_position_x,target_position_y,target_position_z FROM spell_target_position WHERE id=202831");
     if(!row||row->Fetch()[0].GetUInt32()!=1514)return 7;
-    std::vector<G3D::Vector3> second{{row->Fetch()[1].GetFloat(),row->Fetch()[2].GetFloat(),row->Fetch()[3].GetFloat()}};
-    std::map<uint32,G3D::Vector3> ordered;
+    G3D::Vector3 destination(row->Fetch()[1].GetFloat(),row->Fetch()[2].GetFloat(),row->Fetch()[3].GetFloat());
+    std::map<uint32,TaxiPathNodeEntry const*> ordered;
     for(auto node:nodes)if(node->PathID==5619)
     {
-        if(node->ContinentID!=1514||node->Flags||node->Delay||node->ArrivalEventID||node->DepartureEventID)return 8;
-        ordered.emplace(node->NodeIndex,G3D::Vector3(node->Loc.X,node->Loc.Y,node->Loc.Z));
+        if(!ordered.emplace(node->NodeIndex,node).second)return 8;
     }
     if(ordered.size()!=8)return 9;
-    for(uint32 i=0;i<8;++i){auto p=ordered.find(i);if(p==ordered.end())return 10;second.push_back(p->second);}
+    std::vector<TaxiPathNodeEntry const*> route;
+    for(uint32 i=0;i<8;++i){auto p=ordered.find(i);if(p==ordered.end())return 10;route.push_back(p->second);}
+    std::vector<G3D::Vector3> second;
+    if(!SheilunReturnRoute::Second(destination,route,second))return 12;
+    unsigned rejected=0;
+    for(unsigned variant=0;variant<14;++variant)
+    {
+        std::array<TaxiPathNodeEntry,8> copies;
+        std::vector<TaxiPathNodeEntry const*> changed;
+        for(unsigned i=0;i<8;++i){copies[i]=*route[i];changed.push_back(&copies[i]);}
+        G3D::Vector3 start=destination;
+        switch(variant)
+        {
+            case 0:changed.pop_back();break;
+            case 1:changed.push_back(changed.back());break;
+            case 2:changed[3]=nullptr;break;
+            case 3:copies[3].NodeIndex=7;break;
+            case 4:copies[3].ContinentID=1541;break;
+            case 5:copies[3].Flags=1;break;
+            case 6:copies[3].Delay=1;break;
+            case 7:copies[3].ArrivalEventID=1;break;
+            case 8:copies[3].DepartureEventID=1;break;
+            case 9:copies[3].Loc.X=std::numeric_limits<float>::quiet_NaN();break;
+            case 10:copies[3].Loc.Y=std::numeric_limits<float>::infinity();break;
+            case 11:copies[3].Loc.Z=std::numeric_limits<float>::quiet_NaN();break;
+            case 12:start.x=std::numeric_limits<float>::quiet_NaN();break;
+            case 13:copies[3].Loc.X=1000000.f;break;
+        }
+        std::vector<G3D::Vector3> result{{1.f,2.f,3.f}};
+        if(SheilunReturnRoute::Second(start,changed,result)||!result.empty())return 13;
+        ++rejected;
+    }
+    if(!SheilunReturnRoute::First({std::numeric_limits<float>::infinity(),0.f,0.f}).empty())return 14;
+    std::cout<<"REFUSED_NATIVE_ROUTE_VARIANTS\t"<<rejected<<'\n';
     std::cout.precision(9);
     auto root=std::filesystem::path(argv[1]).lexically_normal();if(root.filename().empty())root=root.parent_path();root=root.parent_path().parent_path();
     bool okay=true;
     for(auto start:{G3D::Vector3(-1017.29f,-2772.8f,38.57111f),G3D::Vector3(-1019.15f,-2795.95f,38.91f)})
     {
-        std::vector<G3D::Vector3> first{start,{start.x,start.y,start.z+10.f},{-1017.29f,-2745.f,68.57111f},{-1032.f,-2705.f,95.f},{-1060.f,-2660.f,135.f}};
+        auto first=SheilunReturnRoute::First(start);
         std::cout<<"FUNCTIONAL_1541_START\t"<<start.x<<'\t'<<start.y<<'\t'<<start.z<<'\n';okay=Check(root,1541,first)&&okay;
     }
     for(auto p:second)std::cout<<"CANDIDATE_1514_POINT\t"<<p.x<<'\t'<<p.y<<'\t'<<p.z<<'\n';

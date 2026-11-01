@@ -3,9 +3,11 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_plan.h';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'')
 $old=(& git -C $repo show "872b3da2a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned no-tactics helper missing'}
-$normal=$source.Replace('#include "sheilun_tactics.h"','').Replace('    if (!ApplyTactic(player, actor, *role, option, map, recipient, source, attempt)) return;','')
+. "$PSScriptRoot/SheilunAcquisitionScope.ps1"
+$comparison=if($source.Contains('#include "sheilun_acquisition_api.h"')){Get-SheilunAcquisitionRetainedPlan $source}else{$source}
+$normal=$comparison.Replace('#include "sheilun_tactics.h"','').Replace('    if (!ApplyTactic(player, actor, *role, option, map, recipient, source, attempt)) return;','')
 if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Plan helper changed beyond acknowledged native tactic call/include'}
-if($ScopeOnly){'PASS exact872b3da2a plan header delta: only selected native tactic acknowledgement before role criteria; other admission/receipts/start commands retained';return}
+if($ScopeOnly){'PASS exact872b3da2a retained plan header delta after explicit acquisition observer certificate: only selected native tactic acknowledgement before role criteria; native admission/receipts/start commands retained';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sheilun-tactics$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Test-SheilunPlan.ps1" -PrepareHost -OutputDirectory $out;if(!$?){throw 'Actual native plan/gossip host preparation failed'}

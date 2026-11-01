@@ -46,6 +46,9 @@ auto sLFGMgr=&lfgManager;
 struct Player {
     int m_scenarioLoginId=0;
     void* GetMap(){return nullptr;} bool CanResumeScenarioLogin(int){return false;}
+    // This retained Warlock1630 host cannot satisfy the independently tested
+    // Monk1541 owned-pickup/outro exception in the shared admission body.
+    bool HasPendingSheilunReturn()const{return false;}
     int map=1630,cls=9,status=0,selector=0,instance=17,loads=0;
     bool rewarded=false,relocated=false; float x=-400,y=-4500,z=170,o=0;
     struct Holder {int status=3;int GetPreparedResult(int){return status;}} holder;

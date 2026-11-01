@@ -664,6 +664,10 @@ void WorldSession::LogoutPlayer(bool Save)
         ///- Remove pet
         _player->RemovePet(nullptr, PET_SAVE_AS_CURRENT, true);
 
+        // Scripts can retain an earned departure's safe save position before
+        // persistence. The ordinary OnLogout notification remains after save.
+        sScriptMgr->OnPlayerBeforeLogout(_player);
+
         ///- empty buyback items and save the player in the database
         // some save parts only correctly work in case player present in map/player_lists (pets, etc)
         if (Save)

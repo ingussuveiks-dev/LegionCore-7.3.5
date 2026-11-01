@@ -25,35 +25,36 @@ struct SafeStore {WorldSafeLocsEntry value;bool missing=false;WorldSafeLocsEntry
 struct MapManager {static bool IsValidMapCoord(uint32,float x,float y,float z,float o){return std::isfinite(x)&&std::isfinite(y)&&std::isfinite(z)&&std::isfinite(o)&&std::abs(x)<17000&&std::abs(y)<17000&&std::abs(z)<17000;}};
 struct AreaTriggerStruct{uint32 target_mapId=1;float target_X=2,target_Y=3,target_Z=4;};
 struct AreaStore {bool present=false;AreaTriggerStruct value;AreaTriggerStruct const*GetGoBackTrigger(uint32){return present?&value:nullptr;}}areas;auto sAreaTriggerDataStore=&areas;
-struct QuestObjective{uint32 ObjectID;int8 StorageIndex;};
-struct Quest{std::vector<QuestObjective>objectives{{101880,0},{102479,1},{101880,2}};auto const&GetObjectives()const{return objectives;}};
-struct QuestStore{Quest q;Quest const*GetQuestTemplate(uint32 id){assert(id==41003);return &q;}}quests;auto sQuestDataStore=&quests;
+struct QuestObjective{int32 ObjectID;int8 StorageIndex;uint32 ID=0;int32 Amount=1;};
+struct Quest{std::vector<QuestObjective>objectives{{101880,0,281594},{102479,1,281598},{101880,2,281599}};auto const&GetObjectives()const{return objectives;}};
+struct QuestStore{Quest q;bool missing=false;Quest const*GetQuestTemplate(uint32 id){assert(id==41003);return missing?nullptr:&q;}}quests;auto sQuestDataStore=&quests;
 struct Player {
  uint32 mapId=1541,cls=10,m_scenarioLoginId=0,m_scenarioLoginInstance=0,selector=0;ScenarioResume m_scenarioResume;
- int status=1,claim=1,returnCredit=0;bool rewarded=false,access=false,teleportSuccess=true;ObjectGuid guid;
+ int status=1,claim=1,returnCredit=0;bool rewarded=false,access=false,teleportSuccess=true,gm=false;ObjectGuid guid;
  uint32 m_homebindMapId=1;float m_homebindX=2,m_homebindY=3,m_homebindZ=4;
  uint32 teleports=0,destination=9999;float x=0,y=0,z=0,o=0;Map map;
  std::map<uint8,Item*>slots;std::map<uint8,Bag*>bags;uint8 inventoryEnd=43;
  Item*GetItemByPos(uint8 bag,uint8 slot)const{assert(bag==255);auto i=slots.find(slot);return i==slots.end()?nullptr:i->second;}
  Bag*GetBagByPos(uint8 slot)const{auto i=bags.find(slot);return i==bags.end()?nullptr:i->second;}uint8 GetInventoryEndSlot()const{return inventoryEnd;}
  Item*GetItemByEntry(uint32,bool=false)const;
- uint32 GetMapId(){return mapId;}int getClass(){return cls;}bool IsQuestRewarded(uint32 id){assert(id==41003);return rewarded;}
- int GetQuestStatus(uint32 id){assert(id==41003);return status;}uint32 GetInstanceId(){return 42;}
+ uint32 GetMapId()const{return mapId;}int getClass()const{return cls;}bool IsQuestRewarded(uint32 id)const{assert(id==41003);return rewarded;}bool isGameMaster()const{return gm;}
+ int GetQuestStatus(uint32 id)const{assert(id==41003);return status;}uint32 GetInstanceId(){return 42;}
  int32 GetQuestObjectiveData(uint32,uint32)const;int32 GetQuestObjectiveData(Quest const*,int8 index)const{return index==1?claim:returnCredit;}
  bool TeleportTo(uint32 target,float a,float b,float c,float d){++teleports;destination=target;x=a;y=b;z=c;o=d;return teleportSuccess;}
- void SetScenarioId(uint32 id){selector=id;}bool ExitCompletedSheilunLogin();
+ void SetScenarioId(uint32 id){selector=id;}bool ExitCompletedSheilunLogin();bool HasPendingSheilunReturn()const;
  bool ExitCompletedBrokenShoreLogin(){return false;}bool ExitCompletedDarkRidersLogin(){return false;}
- Map*GetMap(){return &map;}bool CheckInstanceLoginValid(){return access;}float GetOrientation(){return 2;}uint32 GetGUIDLow(){return 1;}ObjectGuid GetGUID(){return guid;}
+ Map*GetMap(){return &map;}bool CheckInstanceLoginValid(){return access;}float GetOrientation(){return 2;}uint32 GetGUIDLow(){return 1;}ObjectGuid GetGUID()const{return guid;}
 };
 #include "Inventory.inc"
 #include "Objective.inc"
 #include "Recovery.inc"
+#include "PendingReturn.inc"
 void Login(Player*player){
 #include "Admission.inc"
 }
 struct Run {
  Player p;Item staff;Bag bag;Scenario progress;
- Run(){sWorldSafeLocsStore=SafeStore{};areas=AreaStore{};scenarios.value=nullptr;errors=logs=0;p.slots[23]=&staff;progress.map=&p.map;}
+ Run(){sWorldSafeLocsStore=SafeStore{};areas=AreaStore{};quests=QuestStore{};scenarios.value=nullptr;errors=logs=0;p.slots[23]=&staff;progress.map=&p.map;}
  void Checkpoint(){p.m_scenarioLoginId=p.selector=1007;p.m_scenarioLoginInstance=42;assert(p.m_scenarioResume.Read("1 1541 1007 42 1000 -1073 -3143 27 0"));}
  void Accepted(){Checkpoint();auto before=p.m_scenarioResume.Write();Login(&p);assert(p.map.additions==1&&p.teleports==1);
 #ifdef BASELINE
@@ -84,6 +85,17 @@ int main(){
   ++cases;
  }
 #ifndef BASELINE
+ for(int mode=0;mode<19;++mode){Run r;
+  switch(mode){case 0:break;case 1:r.p.status=QUEST_STATUS_INCOMPLETE;break;
+   case 2:r.p.mapId=1514;break;case 3:r.p.cls=9;break;case 4:r.p.gm=true;break;case 5:r.p.rewarded=true;break;
+   case 6:r.p.status=0;break;case 7:r.p.claim=0;break;case 8:r.p.slots.clear();break;case 9:r.staff.count=0;break;
+   case 10:r.staff.owner.high=3;break;case 11:r.p.returnCredit=1;break;case 12:quests.missing=true;break;
+   case 13:quests.q.objectives[2].ID=281598;break;case 14:quests.q.objectives[2].StorageIndex=1;break;
+   case 15:quests.q.objectives[2].ObjectID=102479;break;case 16:quests.q.objectives[2].Amount=2;break;
+   case 17:r.p.slots.clear();r.p.slots[47]=&r.staff;break;case 18:r.staff.entry=128938;break;}
+  auto old=r.p.m_scenarioResume.Write();assert(r.p.HasPendingSheilunReturn()==(mode<2));
+  assert(!r.p.teleports&&r.p.m_scenarioResume.Write()==old&&r.staff.count==(mode==9?0u:1u));++cases;
+ }
  for(int mode=0;mode<22;++mode){Run r;r.Checkpoint();Map foreign;
   switch(mode){case 0:r.p.mapId=1514;break;case 1:r.p.cls=9;break;case 2:r.p.m_scenarioLoginId=1002;break;
    case 3:r.p.m_scenarioResume.scenario=1002;break;case 4:r.p.rewarded=true;break;case 5:r.p.status=0;break;case 6:r.p.status=5;break;

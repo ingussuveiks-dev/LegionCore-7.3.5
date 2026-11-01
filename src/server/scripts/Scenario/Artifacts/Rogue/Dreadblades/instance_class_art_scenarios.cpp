@@ -173,12 +173,6 @@ struct instance_monk_intro : public InstanceScript
     instance_monk_intro(InstanceMap* map) : InstanceScript(map) { }
 };
 
-// Sheilun artifact acquisition - map 1541, scenario 1007
-struct instance_sheylun : public InstanceScript
-{
-    instance_sheylun(InstanceMap* map) : InstanceScript(map) { }
-};
-
 //116849
 struct npc_stormstout_brewer_q45404 : public ScriptedAI
 {
@@ -215,6 +209,5 @@ void AddSC_instance_class_art_scenarios()
     RegisterInstanceScript(instance_faronaar_mage, 1616);
     RegisterInstanceScript(instance_ruins_of_falanaar_feral, 1612);
     RegisterInstanceScript(instance_monk_intro, 1014);
-    RegisterInstanceScript(instance_sheylun, 1541);
     RegisterCreatureAI(npc_stormstout_brewer_q45404);
 }

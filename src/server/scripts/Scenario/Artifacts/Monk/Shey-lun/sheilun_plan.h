@@ -1,6 +1,8 @@
 #ifndef SHEILUN_PLAN_H
 #define SHEILUN_PLAN_H
 
+#include "sheilun_acquisition_api.h"
+
 namespace SheilunPlan
 {
 struct Role { uint32 entry, spawn, menu, event, receipt; };
@@ -136,6 +138,7 @@ inline void Start(Player* player, Creature* actor, uint32 menu, uint32 option)
         !PlayerContext(player, actor) || !scenario || actor->GetEntry() != 101881 ||
         actor->GetDBTableGUIDLow() != 362837 || scenario->GetCurrentStep() != 3 ||
         !Planned(scenario) || !Receipt(scenario, 46662)) return;
+    SheilunAcquisition::Started(player);
     actor->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
     actor->GetMotionMaster()->MovePoint(0, -1019.15f, -2795.95f, 38.91f);
     if (Creature* mob = actor->FindNearestCreature(101882, 107.0f, true))

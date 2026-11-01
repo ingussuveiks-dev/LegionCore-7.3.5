@@ -3236,6 +3236,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool ExitCompletedDarkRidersLogin();
         bool ExitCompletedBrokenShoreLogin();
         bool ExitCompletedSheilunLogin();
+        bool HasPendingSheilunReturn() const;
         uint32 GetScenarioLoginInstance() const { return m_scenarioLoginInstance; }
 
         // Adventures.

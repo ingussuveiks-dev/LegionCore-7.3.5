@@ -52,7 +52,17 @@ int main(int argc,char** argv)
         std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(std::tolower(c));});
         if(spell->ID>=190000&&spell->ID<=240000&&name.find("kite")!=std::string::npos)transit.insert(spell->ID);
     }
-    for(auto effect:effects)if(effect->Effect==28&&(effect->EffectMiscValue[0]==102648||effect->EffectMiscValue[0]==102590))transit.insert(effect->SpellID);
+    std::set<int32> sourceEntries{101880,102479,102505,102648,102590};
+    std::set<uint32> sourceProperties{3035,3635};
+    for(auto effect:effects)
+    {
+        if(effect->Effect==28&&sourceEntries.count(effect->EffectMiscValue[0]))
+        {
+            transit.insert(effect->SpellID);
+            sourceProperties.insert(effect->EffectMiscValue[1]);
+        }
+        if(effect->EffectMiscValue[0]==256913)transit.insert(effect->SpellID);
+    }
     for(auto id:transit)
     {
         if(auto spell=spells.LookupEntry(id))std::cout<<"TRANSIT_SPELL\t"<<id<<'\t'<<spell->Name->Str[0]<<'\n';
@@ -76,8 +86,12 @@ int main(int argc,char** argv)
         auto name=soundNames.LookupEntry(id);std::cout<<"SOUND\t"<<id<<'\t'<<(name?name->Name->Str[0]:"")<<'\n';
         for(auto sound:sounds)if(sound->SoundKitID==id)std::cout<<"FILE\t"<<id<<'\t'<<sound->FileDataID<<'\t'<<unsigned(sound->Frequency)<<'\n';
     }
-    auto prop=properties.LookupEntry(3035);if(!prop)return 6;
-    std::cout<<"SUMMON_PROPERTIES\t3035\t"<<prop->Flags<<'\t'<<prop->Control<<'\t'<<prop->Faction<<'\t'<<prop->Title<<'\t'<<prop->Slot<<'\n';
+    for(auto id:sourceProperties)
+    {
+        auto prop=properties.LookupEntry(id);
+        if(!prop){std::cout<<"MISSING_SOURCE_PROPERTIES\t"<<id<<'\n';continue;}
+        std::cout<<"SUMMON_PROPERTIES\t"<<id<<'\t'<<prop->Flags<<'\t'<<prop->Control<<'\t'<<prop->Faction<<'\t'<<prop->Title<<'\t'<<prop->Slot<<'\n';
+    }
     std::set<int32> candidateMaps{1514,1541};
     for(uint32 id:{1514u,1541u})
     {

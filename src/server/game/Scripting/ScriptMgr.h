@@ -750,6 +750,10 @@ class TC_GAME_API PlayerScript : public ScriptObject
 
         // Called after a valid response to a PlayerChoice has been received.
         virtual void OnPlayerChoiceResponse(Player* /*player*/, uint32 /*choiceId*/, uint32 /*responseId*/) { }
+
+        // Logout has begun; called before the final character save. Existing
+        // OnLogout retains its later cleanup order. Append to preserve slots.
+        virtual void OnBeforeLogout(Player* /*player*/) { }
 };
 
 class TC_GAME_API SessionScript : public ScriptObject
@@ -1047,6 +1051,7 @@ class TC_GAME_API ScriptMgr
         void OnPlayerSpellCast(Player* player, Spell* spell, bool skipCheck);
         void OnPlayerLogin(Player* player, bool firstLogin = false);
         void OnPlayerLogout(Player* player);
+        void OnPlayerBeforeLogout(Player* player);
         void OnPlayerCreate(Player* player);
         void OnPlayerDelete(ObjectGuid const& guid);
         void OnPlayerBindToInstance(Player* player, Difficulty difficulty, uint32 mapid, bool permanent);

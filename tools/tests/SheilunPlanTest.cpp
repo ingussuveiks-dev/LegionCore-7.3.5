@@ -24,13 +24,13 @@ struct GossipMenu{uint32 _menuId=0;uint32&id=_menuId;GossipMenuItemContainer _me
 struct QuestMenu{void ClearMenu(){}};
 struct PlayerMenu{GossipMenu _gossipMenu;GossipMenu&menu=_gossipMenu;QuestMenu _questMenu;GossipMenu const&GetGossipMenu()const{return _gossipMenu;}void ClearMenus();uint32 GetGossipOptionSender(uint32)const;uint32 GetGossipOptionAction(uint32)const;};
 #include "Gossip.inc"
-struct Player;struct Creature;struct CreatureAI;
+class Player;class Creature;struct CreatureAI;
 struct Map{std::map<uint64,Creature*>actors;std::map<uint64,Player*>players;Creature*GetCreature(ObjectGuid guid){auto i=actors.find(guid.value);return i==actors.end()?nullptr:i->second;}};
-struct Unit{virtual~Unit()=default;};
+class Unit{public:virtual~Unit()=default;};
 struct Progress{uint64 Counter=0;};struct Achievements{std::map<uint32,Progress>progress;auto const*GetCriteriaProgressMap()const{return &progress;}};
 struct Scenario{uint32 id=1007,step=2;Achievements achievements;uint32 GetScenarioId()const{return id;}uint32 GetCurrentStep()const{return step;}auto&GetAchievementMgr(){return achievements;}};
 struct Manager{Scenario*scenario=nullptr;Scenario*GetScenario(uint32 instance){assert(instance==7);return scenario;}}manager;auto*sScenarioMgr=&manager;
-struct Player:Unit{
+class Player:public Unit{public:
  ObjectGuid guid{42};Map*map=nullptr;bool world=true,alive=true,contact=true,gm=false,teleport=false,phase=true,visible=true,los=true,range=true,rewarded=false,questPresent=true,accept=true;
  uint32 klass=10,closes=0,requests=0;QuestStatus status=QUEST_STATUS_INCOMPLETE;QuestStatusData quest;PlayerMenu talk;PlayerMenu*PlayerTalkClass=&talk;std::function<void()>onCredit;std::vector<uint32>events;
  bool IsInWorld()const{return world;}bool IsAlive()const{return alive;}bool CanContact()const{return contact;}bool isGameMaster()const{return gm;}bool HasPendingTeleport()const{return teleport;}
@@ -47,7 +47,7 @@ struct Player:Unit{
 };
 struct Motion{uint32 moves=0;void MovePoint(uint32 point,float x,float y,float z){assert(!point&&x==-1019.15f&&y==-2795.95f&&z==38.91f);++moves;}};
 struct GameObject{uint32 phases=0;void SetPhaseMask(uint32 mask,bool force){assert(mask==2&&force);++phases;}};
-struct Creature:Unit{
+class Creature:public Unit{public:
  Map*map=nullptr;ObjectGuid guid;uint32 entry=101881,spawn=362837,mapId=1541,flags=32,casts=0;bool world=true,alive=true,predelete=false,scoped=false;CreatureAI*ai=nullptr;Motion motion;GameObject*wall=nullptr;
  bool IsInWorld()const{return world;}bool IsAlive()const{return alive;}bool IsPreDelete()const{return predelete;}bool HasQuestObjectScope()const{return scoped;}
  uint32 GetMapId()const{return mapId;}uint32 GetInstanceId()const{return 7;}uint32 GetEntry()const{return entry;}uint32 GetDBTableGUIDLow()const{return spawn;}Map*GetMap()const{return map;}ObjectGuid GetGUID()const{return guid;}
@@ -62,6 +62,11 @@ struct Creature:Unit{
 namespace ObjectAccessor{Player*FindPlayer(Map*map,ObjectGuid id){auto i=map->players.find(id.value);return i==map->players.end()?nullptr:i->second;}}
 struct CreatureAI{Creature*me;uint32 talks=0;explicit CreatureAI(Creature*actor):me(actor){}virtual~CreatureAI()=default;virtual void sGossipSelect(Player*,uint32,uint32){}virtual void DoAction(int32){}virtual void Talk(uint32 group){assert(group==4);++talks;}};
 struct CreatureScript{virtual~CreatureScript()=default;virtual bool OnGossipSelect(Player*,Creature*,uint32,uint32)=0;};
+// This retained plan host isolates only the newly added controller observer.
+// Actual instance/owner/loot/claim dispatch is executed by the native
+// SheilunAcquisitionNative regression; all plan gates and native callbacks below
+// still compile the current production header.
+namespace SheilunAcquisition { inline void Started(Player*) { } }
 #include "Plan.inc"
 struct Taran:CreatureAI{using CreatureAI::CreatureAI;uint8 countgossip=0;
 #include "TaranAI.inc"

@@ -25964,7 +25964,7 @@ void Player::SaveToDB(bool create /*=false*/)
         // Store the checkpoint in the same transaction as the saved map/position.
         // A completed run or a normal exit must not resurrect an old scenario.
         if (Scenario* progress = GetMap()->IsScenario() ? sScenarioMgr->GetScenario(GetInstanceId()) : nullptr)
-            if (progress->IsCompleted(false)) m_scenarioResume = {};
+            if (progress->IsCompleted(false) && !(progress->GetScenarioId() == 1007 && HasPendingSheilunReturn())) m_scenarioResume = {};
         stmt->setString(index++, m_scenarioResume.Write());
 
         // Index

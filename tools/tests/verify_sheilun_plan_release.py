@@ -57,10 +57,22 @@ assert table+len(payload) in refs(select), 'Actual six-record native loop end no
 assert any(x.mnemonic=='add' and x.op_str=='rbx, 0x14' for x in select)
 for body,is_start in [(select,False),(start,True)]:
  credit,=sites(n,body,'?UpdateAchievementCriteria@Player@@')
- checks=sites(n,body,helper('Receipt')); assert len(checks)==2
+ checks=sites(n,body,helper('Receipt'))
+ # The independently native-tested acquisition observer is inlined after
+ # the two original acknowledgements. Certify its extra receipt explicitly;
+ # retain every original admission/owner/menu/movement check below.
+ observed=is_start and len(checks)==3
+ assert len(checks)==(3 if observed else 2)
  found,=sites(n,body,'?FindPlayer@ObjectAccessor@@');actor,=sites(n,body,'?GetCreature@Map@@')
  remove,=sites(n,body,'?RemoveFlag@Object@@')
  assert checks[0]<credit<found<actor<checks[1]<remove
+ if observed:
+  bind,=sites(n,body,'?Bind@Instance@SheilunAcquisition@@')
+  progress=sites(n,body,'?Progress@Instance@SheilunAcquisition@@')
+  assert len(progress)==2 and checks[1]<bind<progress[0]<progress[1]<checks[2]<remove
+  assert sites(n,body,'?Lease@Instance@SheilunAcquisition@@')
+  assert body[checks[2]+1].op_str=='al, al' and body[checks[2]+2].mnemonic=='je'
+  assert body[checks[2]+3].mnemonic=='mov' and body[checks[2]+3].op_str.startswith('byte ptr [') and body[checks[2]+3].op_str.endswith(', 1')
  assert len(sites(n,body,helper('PlayerContext')))==2
  assert len(sites(n,body,'?getQuestStatus@Player@@'))==2
  assert sites(n,body,'?AddQuestDelayedEvent@Player@@')[0]<credit

@@ -186,7 +186,8 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
              (!activeScenario && player->GetScenarioId() == 1155)) &&
             player->GetQuestStatus(43153) == QUEST_STATUS_INCOMPLETE && !player->IsQuestRewarded(43153);
         bool recordedScenario = activeScenario && activeScenario->GetMap() == player->GetMap() &&
-            !activeScenario->IsCompleted(false) && player->CanResumeScenarioLogin(activeScenario->GetScenarioId());
+            (!activeScenario->IsCompleted(false) || (activeScenario->GetScenarioId() == 1007 && player->HasPendingSheilunReturn())) &&
+            player->CanResumeScenarioLogin(activeScenario->GetScenarioId());
         if (!brokenShoreIntro && !newBloodIntro && !scepterQuest && !recordedScenario)
             return false;
     }

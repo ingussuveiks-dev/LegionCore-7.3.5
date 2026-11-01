@@ -4387,6 +4387,18 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                 break;
         }
 
+    // Sheilun's two native202828 kites install Tak-Tak during AddToWorld,
+    // before IsSummonedBy. Bind here so the ordinary accessory summon
+    // inherits the same accepted quest/privacy scope before its first create.
+    if (entry == 102648 && (GetId() == 1541 || GetId() == 1514) && summoner && summoner->IsPlayer())
+    {
+        Player* owner = summoner->ToPlayer();
+        QuestStatus status = owner->GetQuestStatus(41003);
+        if (owner->getClass() == CLASS_MONK && !owner->isGameMaster() && !owner->IsQuestRewarded(41003) &&
+            (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE))
+            owner->BindQuestObject(41003, summon);
+    }
+
     summon->SetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL, spellId);
     if (summoner)
     {

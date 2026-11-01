@@ -9,7 +9,9 @@ if((Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheil
  & "$PSScriptRoot/Test-SheilunTactics.ps1" -ScopeOnly
  if(!$?){throw 'Current native tactic producer delta failed certification'}
 }
-$normal=$source.Replace('#include "Map.h"','').Replace('#include "sheilun_plan.h"','')
+. "$PSScriptRoot/SheilunAcquisitionScope.ps1"
+$comparison=if($source.Contains('#include "sheilun_acquisition.h"')){Get-SheilunAcquisitionRetainedSource $source}else{$source}
+$normal=$comparison.Replace('#include "Map.h"','').Replace('#include "sheilun_plan.h"','')
 foreach($role in @('npc_tazhan_chu','npc_sheylun_small_events')){
  $actor=Block $source "class $role :";$prior=Block $old "class $role :"
  $restored=$actor.Replace((Block $actor 'bool OnGossipSelect('),(Block $prior 'bool OnGossipSelect(')).Replace((Block $actor 'void sGossipSelect('),'')
@@ -19,7 +21,7 @@ foreach($role in @('npc_tazhan_chu','npc_sheylun_small_events')){
 }
 if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Sheilun plan changed other actors/story/combat/loot/registrations'}
 if(($intro.Replace('    SheilunPlan::Refresh(me);','') -replace '\s','') -cne ($oldIntro -replace '\s','')){throw 'Plan changed opening beyond independent readiness refresh'}
-if($ScopeOnly){'PASS exact04e5ba3b5 full-file plan delta: two native menu/index delegates, inert legacy sender/action handlers, receipt-based readiness and lifecycle recovery; other story/combat/timers/wounds/loot retained';return}
+if($ScopeOnly){'PASS exact04e5ba3b5 retained plan delta after explicit ab99b2d2d acquisition/factory certificate: two native menu/index delegates, inert legacy sender/action handlers, receipt-based readiness and lifecycle recovery; independent acquisition wiring is tested separately';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sheilun-plan$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $selected=if($Baseline){$old}else{$source}
@@ -30,6 +32,7 @@ foreach($pair in @(@('Taran','npc_tazhan_chu'),@('Small','npc_sheylun_small_even
  if($pair[0] -eq 'Taran'){[IO.File]::WriteAllText("$out/Action.inc",(Block $actor 'void DoAction('))}
 }
 Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_plan.h" "$out/Plan.inc"
+Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_acquisition_api.h" "$out/sheilun_acquisition_api.h"
 if(Test-Path "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_tactics.h"){Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_tactics.h" "$out/sheilun_tactics.h"}
 $packet=(Get-Content "$repo/src/server/game/Handlers/NPCHandler.cpp" -Raw).Replace("`r",'');$at=$packet.IndexOf('unit->AI()->sGossipSelect(player, packet.GossipID, packet.GossipIndex);');$start=$packet.LastIndexOf('        if (unit)',$at)
 if($at -lt 0 -or $start -lt 0){throw 'Native ordinary menu/index dispatch missing'}

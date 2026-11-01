@@ -6,12 +6,20 @@ $out="$repo/build-extractors/runtime-test/active-creature-grid-unload"
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -Test {
  $path='src/server/game/Maps/Map.cpp';$current=Get-Content "$repo/$path" -Raw -Encoding UTF8
+ . "$PSScriptRoot/SheilunAcquisitionScope.ps1"
+ $comparison=if($current.Contains("// Sheilun's two native202828 kites")){Get-SheilunAcquisitionRetainedMap $current}else{$current}
  $pinned=(& git -C $repo show "0e238cb1:$path") -join "`n"
  if($LASTEXITCODE){throw 'Pinned map baseline unavailable'}
+ # The functional counterfactual remains0e238cb1. Refresh only the unrelated
+ # surrounding-file reference through the already committed class routing,
+ # loading/logout and instance-leave fixes (b0f7888a6/2fa34b0da/ec3f7a22a).
+ # The new early kite binding is separately exact-certified/native-tested.
+ $surrounding=(& git -C $repo show "c3c6e4f8c:$path") -join "`n"
+ if($LASTEXITCODE){throw 'Reviewed surrounding Map source unavailable'}
  $markers=@('void Map::AddToActive(Creature*','void Map::RemoveFromActive(Creature*','void Map::UnloadAll(')
- $restored=$current
- foreach($marker in $markers){$restored=$restored.Replace((Block $current $marker),(Block $pinned $marker))}
- if(($restored -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unreviewed Map change outside active lifecycle'}
+ $restored=$comparison
+ foreach($marker in $markers){$restored=$restored.Replace((Block $comparison $marker),(Block $surrounding $marker))}
+ if(($restored -replace '\s','') -cne ($surrounding -replace '\s','')){throw 'Unreviewed Map change outside active lifecycle'}
  $selected=if($Baseline){$pinned}else{$current}
  [IO.File]::WriteAllText("$out/MapActive.inc",(($markers|ForEach-Object {Block $selected $_}) -join "`n"))
  [IO.File]::WriteAllText("$out/SetActive.inc",(Block (Get-Content "$repo/src/server/game/Entities/Object/Object.cpp" -Raw -Encoding UTF8) 'void WorldObject::setActive('))

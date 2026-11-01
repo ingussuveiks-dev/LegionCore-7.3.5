@@ -1,0 +1,131 @@
+{
+  "date": "2026-11-01",
+  "status": "DEPLOYED focused manual acquisition/native return/outro recovery; canonical and actual live-data checks pass; full client41003 and all36 chains remain OPEN",
+  "previous_commit": "c3c6e4f8c",
+  "cause": [
+    "Boss101887 and activated GO256913 formerly added128937 and48646 before any real manual source/storage, then used14s return shortcuts. GOData1=0 disconnected its actual native128937 loot256913.",
+    "Native202435 E160 queues202437 after10ms: parent AfterCast is not proof of1192 launch. Native explicit-target normalization also removes the NPC from implicit-self effects; retain and resolve its original full GUID.",
+    "Native202828 summons102648 with3035 and auto46598; its credit101880/event48658 must wait for real player seat0 and native Tak-Tak seat1. Accessories are installed before IsSummonedBy, so late quest binding failed to scope the driver.",
+    "Native1007 completes on the pickup before the separate return objective281599/storage2. Clearing every completed checkpoint prevented an earned outro rejoin. Native1168/1541 is NormalScenario12 with ScenarioID0, but its class route1007/1541 had obsolete8 and no LFG entrance.",
+    "OnLogout runs after SaveToDB. Cleaning a destination kite there alone still saved its air coordinate; a notification before the final save is required."
+  ],
+  "implementation": [
+    "Move the exact existing instance_sheylun factory registration from the shared Rogue unit to Sheylun.cpp; instance-owned full GUIDs, weak accepted41003 lease/epoch, native start46662/victory46663/pickup46717 witnesses. Retain all other companion/rescue/combat code through explicit pinned scope certificates.",
+    "Actual boss362866 death is deduplicated across AI and InstanceScript callbacks. Resolve the eligible player/charmer/pet/guardian/group or the actual recorded battle ally; no nearest-player credit and no progression to pets.",
+    "Create owner-private physical102479 and loot proxy256913 only after native victory. Use actual67670 invisible template alternative plus202385 staff visual; keep native spellclick. The pool placement is a declared functional native-ground-resolved anchor, not recovered retail coordinates. Set GO_READY before first interaction.",
+    "NPC spellclick and real GO Use open the same native personal loot. A successful native StoreLootItem slot consumption/full LootGUID/owned ItemGUID callback, or a legitimate already owned inventory item after actual victory and manual interaction, authorizes the original native effects. Full bags retain unconsumed loot and retry. No manual AddItem/quest completion/scenario completion or14s exit.",
+    "Append a nonvirtual read-only SpellScript::GetOriginalTargetGUID. Re-resolve and compare the complete creature/GO GUID on the current map; reject replaced low-counter slots. Reserve native effect receipts before reentry. Guard the delayed unique202437 child on every map and acknowledge actual1192 launch before retiring the spent physical source on a later instance update.",
+    "Keep1192 terminal completion/equipment as the separately tested native scene path; wait for it or the visible optional-scene timeout before complete native Taran lore and a personal foot Tak-Tak19257. Shared101880 SmartAI19254 remains intact:7 GOSSIP_SELECT roots and5 LINK rows, not12 roots.",
+    "Scope only active non-GM Monk41003 native102648 summons on1541/1514 before AddToWorld so the ordinary driver inherits privacy/lifetime. Actual same-kite46598 retry is finite and seat-aware. Replay native202828 E1/E2 once only after genuine owner seat0/driver seat1 boarding; native objective281599/storage2 is checked explicitly.",
+    "Keep complete native voice intervals, real MotionMaster smooth-flight endpoints and ordinary exit splines. First route is an explicitly derived, collision-checked connector; second uses the actual8 native5619 nodes, whose original retail caller remains unknown. Use SetClientControl(kite,false) after boarding and restore only that issued mover/viewpoint before exit/transfer.",
+    "Only GUID/item/instance/epoch/weak-quest values cross map threads in a mutex-protected transit. Native202831 transfers to1514; real boarding and arrival protection precede native5619 flight to5710. Interrupted destination flight finishes native dismount before its safe landing; unrelated vehicles, movers, taxi, transports and teleports are preserved.",
+    "Append PlayerScript::OnBeforeLogout at slot44, retaining all existing virtual slots and late OnLogout order. Scoped earned transfer/departure cleanup sets the native safe save destination and far semaphore before final persistence. TeleportTo deliberately ignores logout calls, so it is not used as a false saved-position fix. Abandonment immediately before logout still permits only this private transit spatial cleanup, without progression.",
+    "HasPendingSheilunReturn requires actual owned inventory128937, unique102479 acquisition receipt, active unrewarded Monk41003 and native281599 still pending. Tentative pre-inventory live1007 selection is revalidated after AddPlayer. Only this earned pending outro keeps its completed checkpoint; other completed scenarios retain rejection. Same-boot rejoin rebinds the native attempt and restarts unfinished lore without fabricating scene completion. Fresh boot restarts the recorded original entrance, never later criteria/actors."
+  ],
+  "migration": {
+    "sha256": "08a996cacf532ad8f1ac5a3adbb2770551456432f29d7d30c8f163012d5eed47",
+    "scope": "Guarded3 ScriptNames/4 spell bindings/GO loot link/7 native BroadcastText speech rows. Exact1007/1541 difficulty8->12, preserving the base1007/Map0 row; insert missing1168 entrance by selecting actual outbound202742(-1073,-3143.71,27.66,0.02). Refuse custom scripts/loot/voice/routes/entrances. SQL remained pending until the matching EXE was staged/verified/promoted offline; then canonical updater applied it.",
+    "native_inputs": "Matching local26972 DB2, actual local World/Hotfix records and native loaders/vehicle/Spell/core paths. No new external implementation or video-viewing claim.",
+    "released_path": "sql/updates/world/2026_11_01_01_sheilun_manual_acquisition.sql",
+    "updater_sha1_lf": "0682e70f5e2cc4b1192af661e27bf29e085c72e2",
+    "state": "RELEASED, actual updater/readback verified after matching canonical EXE promotion"
+  },
+  "checks": {
+    "native_final": "Native40 and post-updater Native42 -VerifyLiveData on final original game/scripts Release libraries:10 source cases,8 actual two-map return variants,1 completed-outro rejoin and2 before-logout memory-save cases. Human/Orc; real Player/Pet/Guardian/recorded ally kills; native plan/tactics acknowledgement, NPC and GO Use, full bags/retry, packet/store/loot cache, existing-item restart,1192, native vehicle joins/real spline endpoints/202831/WorldPortAck/arrival hold/5619/5710/exit/control/cleanup. Source and compile inputs including runner, headers, migration and real LIBs are snapshotted and hashed before/after.",
+    "native_boundaries": "Earlier rescue/stage and tapped boss/actor identities are fixture inputs. Quest/scene transient reconstruction is controlled; no authenticated socket login or character DB save/load is claimed. Real killer fixtures retire before travel to avoid competing ownership with native guardian deletion. Native flight does not verify client camera/model/portrait/audio.",
+    "privacy": "World/Hotfix/Login read-only. Native artifact-XP SELECT uses an empty connection-local CharacterDB temporary shadow with both connections read-only; no real character rows read, no character writes. Save-position testing executes only unchanged native serialization into actual prepared-statement memory and never submits it.",
+    "counterfactual": "Typed-parent Baseline3 executes the exact pinned ab99b2d2d old JustDied body on native current prerequisites:8 EXPECTED_BROKEN item+48646 grants before manual source. Current claim guards remain installed, free inventory is used and the14s teleport is not executed; not an old whole-binary/client run.",
+    "sql": "SQL10 before deployment and SQL11 after live migration:29 actual MariaDB connection-local temporary-shadow migration cases; idempotence, exact readback, shared gossip/lower text/sibling routes/source-teleport hashes and28 malformed/custom refusals. No permanent writes.",
+    "retained": "ASAN583 Plan,282 Tactics plus19 native damage contexts,97 Taran intro,8535 five-actor wound contexts,42 full Taran presentation/lifecycle; actual Sheilun scene flags4/terminal/equip guarded cases and full-schema data;71 recovery/pending-return ASAN and generic ScenarioResume cases; NewBlood login/quest scopes, DarkRiders login/data, active creature grid unload. Actual native scopes/factories remain compiled from current sources. Mandatory Test-ScepterLogin -VerifyReleaseBinary passes on canonical D22B1F3E; its isolated Warlock host explicitly refuses the unrelated Monk exception.",
+    "pe": "Stage and actual canonical D22B1F3E:22 selected native functions, full original GUID copy, native loot/source guards, pre-create binding control flow, player/driver boarding and real flight/exit paths, owned completed-outro admission, before-save destination fields and unchanged late cleanup, appended PlayerScript slot44 and real moved instance factory. Retained login/instance-leave/loot/active-grid/Plan/Tactics/intro/wound/presentation PE checks pass.",
+    "retained_fixture_repairs": "Exact c3c6 whole-Map certificate removes only the separately native-tested early kite binding. Active-grid functional baseline remains0e238cb1; surrounding reference refresh explicitly includes committed b0f7888a6/2fa34b0da/ec3f7a22a routing/logout/leave fixes. Plan PE explicitly checks its third inlined observer receipt and guarded started-byte write after original acknowledgement; original2 owner/menu/native criteria checks remain. Warlock1522 retained host explicitly returns false for unrelated Monk1541 exception.",
+    "live_native": "Native42 uses actual native World loaders for all3 NPC ScriptIDs,4 spell bindings, GO loot link,1007/1168 routing/entrance and all7 creature-text rows, without production data overrides. Only probe-only fault loaders/transient prior-stage inputs remain fixture controls.10/8/1/2 matrix passes; current bindings are not duplicated during bootstrap.",
+    "all36": "Fresh post-updater structural export/native catalog:36 routes,149 race/class pairs,0 automated loot/link/admission findings,3 actor links requiring review and0 scene-only pickup candidates.131120 class-invitation contexts,900 artifact-choice and2431 native quest admission contexts pass. This is not36 client playthroughs.",
+    "fresh_structural_receipt": {
+      "sha256": "1f9ea2be7f3fb0eefb4e40af1599157397f57be9883f73aa18ae2294a95feed6",
+      "routes": 36,
+      "native_race_class_pairs": 149,
+      "automated_findings": 0,
+      "unresolved_actor_links": [
+        {
+          "kind": "missing_actor_sai_link",
+          "entry": 100438,
+          "event": 9,
+          "link": 10,
+          "reason": "missing_target",
+          "referenced_by_routes": [
+            128937,
+            128938,
+            128940
+          ],
+          "status": "intended action unknown; needs executable route review"
+        },
+        {
+          "kind": "missing_actor_sai_link",
+          "entry": 100475,
+          "event": 1,
+          "link": 7,
+          "reason": "missing_target",
+          "referenced_by_routes": [
+            128940
+          ],
+          "status": "intended action unknown; needs executable route review"
+        },
+        {
+          "kind": "missing_actor_sai_link",
+          "entry": 100475,
+          "event": 6,
+          "link": 8,
+          "reason": "missing_target",
+          "referenced_by_routes": [
+            128940
+          ],
+          "status": "intended action unknown; needs executable route review"
+        }
+      ]
+    },
+    "final_native_input_manifest_sha256": "fc4d9b1ac79bca4e4409808cb8d25e5e5d2f5897aadb0026f60568ee3a6b3ced"
+  },
+  "build": {
+    "canonical_before_world_sha256": "45ec027ec49c842b5d8d190910b641e10e3dd2312da63719c60e72c37a5b816d",
+    "stage_world_sha256": "d22b1f3e4ef7dea909d40b0d5a6488831c200fc111694c39faadc92cb07d555d",
+    "stage_bnet_sha256": "7a01371fc55c06ccc102e552364493dc21bebb43c0f620074c9cbd68d2acb918",
+    "method": "Original full game Release build6 and scripts Release build7, no global OutDir. Stage1 uses actual original final-link game/scripts/shared/common paths, canonical bytes unchanged while staging. Matching .map outputs retained; original Release link configuration does not emit final PDBs.",
+    "promotion": "Offline four-file executable/map backup and hash-verified promotion; protected config/certificate/DLL hashes unchanged. World01 entered updater only after matching EXE. No user/unknown server stopped.",
+    "canonical_world_sha256": "d22b1f3e4ef7dea909d40b0d5a6488831c200fc111694c39faadc92cb07d555d",
+    "canonical_bnet_sha256": "7a01371fc55c06ccc102e552364493dc21bebb43c0f620074c9cbd68d2acb918"
+  },
+  "diagnostics": {
+    "passing_runs": "All final listed native/data/retained/build/stage/PE wrappers Completed=true, exit0, stdout/stderr reviewed; no new/changed canonical crash, new DBErrors or unexplained server warning/error/assertion. Canonical owned startup and post-updater native/data/structural/PE checks also pass.",
+    "existing_unresolved": "Mixed canonical DBErrors6090 with101430/103151 LINK2 remains untouched and unarchived as wholly fixed; SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0. Empty active Crashes is not whole-game certification.",
+    "iteration_causes": "Preserve all failures pending final archive review. Native prerequisites lacked PageText/criteria-data index, Character artifact-XP pool/shadow, race display, instance-template index and accessor capacity; fixed and paired with final native matrix. A generic owned-NPC fixture used SUMMONED_BY instead of native CREATED_BY; replaced by actual pet/guardian types, shared owner semantics unchanged. Parent Map was incorrectly plain Map although native child terrain references require MapInstanced; Native37 exposed this fixture UB, final38/40 and Baseline3 use the correct native parent. Unique guardian fixture ownership was retired before real map removal. Reused logout fixture finishes its old exit spline before driving safe-pose ACK; actual fresh Player would not retain that spline. Missing live LFG resume data in31..33 is paired with migration/native34..40. PE iterations correct compiler basic-block scheduling, int8 seat argument and inlining assumptions; selected native code itself already passed real execution. LiveNative41 incorrectly called timer-only GetTextGroup on ordinary MinTimer0 speech; the actual native loader map contains the correct rows. Native42 validates that map and runs all gameplay cases without production overrides. The optional partial-ASAN39 link never executed; its separate limitation is retained below.",
+    "optional_native_asan": "NOT EXECUTED: partial-ASAN Native39 failed linking against uninstrumented Release dependencies (annotate_string/vector0 vs1). No mismatch/check-disabling flag was used and no native/full-core ASAN pass is claimed. The unsupported temporary mode was removed; its evidence remains outside fixed archives as a validation limitation. Full coherent instrumented dependency build is separate work; retained production-handler ASAN suites above pass.",
+    "owned_runtime": "Owned canonical worldserver PID11828 reached fresh ready, processed server shutdown0, exit0, stderr empty, newDBErrors0, protected hashes unchanged; PID gone. No task-owned background server remains."
+  },
+  "remaining_client_checks": [
+    "Whole quest41003 from acceptance, actual heal/rescue/tactic movement/combat, faction/race admission and visibility. Native fixture begins at a seeded earlier-stage boundary; counts are not36 full chains.",
+    "Actual pool staff visual/click target/loot UI/full bags/equipment/1192 timing and complete voice playback; the chosen source/foot/first-flight geometry is functional, not a recovered retail tuple.",
+    "Client two-leg boarding/spline/camera/mover/portrait/model, player/pet/guardian and shared-NPC behavior, cancellation and real authenticated logout/reconnect/restart. Save-memory/native admission checks are not actual client login.",
+    "Fresh boot restarts native entrance rather than reconstructing transient scenario criteria. Legacy completed owners without a recorded checkpoint retain native5710 recovery; actual shared Tak-Tak outbound re-entry visibility/travel remains a client check, no quest/item reset is performed.",
+    "Optional scene/actor/cast permanent-failure and all dynamic obstacle/abandonment/re-entry/group variants beyond the explicitly tested matrix remain visible client/follow-up checks. Collision sampling is not an oriented full vehicle hull certification.",
+    "All other artifact worklist items, unresolved Wardstone LINK tails and other36 story traversals remain OPEN."
+  ],
+  "evidence": [
+    ".codex/sheilun-acquisition-native40-open-2026-11-01",
+    ".codex/sheilun-acquisition-native42-live-open-2026-11-01",
+    ".codex/sheilun-acquisition-baseline3-open-2026-11-01",
+    ".codex/sheilun-acquisition-sql10-open-2026-11-01",
+    ".codex/sheilun-acquisition-sql11-live-open-2026-11-01",
+    ".codex/sheilun-acquisition-build6-open-2026-11-01",
+    ".codex/sheilun-acquisition-build7-open-2026-11-01",
+    ".codex/sheilun-acquisition-stage1-open-2026-11-01",
+    ".codex/sheilun-acquisition-pe5-open-2026-11-01",
+    ".codex/sheilun-acquisition-retained-pe2-open-2026-11-01",
+    ".codex/sheilun-acquisition-promotion1-open-2026-11-01",
+    ".codex/sheilun-acquisition-scepter-canonical1-open-2026-11-01",
+    ".codex/sheilun-acquisition-startup1-open-2026-11-01",
+    ".codex/sheilun-acquisition-live-readback1-open-2026-11-01",
+    ".codex/sheilun-acquisition-canonical-pe1-open-2026-11-01",
+    ".codex/sheilun-acquisition-all36-fresh1-open-2026-11-01"
+  ]
+}

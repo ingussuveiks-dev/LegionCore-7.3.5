@@ -562,6 +562,11 @@ Unit* SpellScript::GetOriginalTarget()
     return m_spell->m_originalTarget;
 }
 
+ObjectGuid SpellScript::GetOriginalTargetGUID() const
+{
+    return m_spell->m_originalTargetGUID;
+}
+
 Creature* SpellScript::GetHitCreature()
 {
     if (!IsInTargetHook())

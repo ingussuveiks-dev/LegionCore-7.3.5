@@ -5,7 +5,7 @@
 using uint32=uint32_t;using uint16=uint16_t;using uint64=uint64_t;
 #define TC_LOG_INFO(...) ((void)0)
 constexpr int SCENARIO_TYPE_CHALLENGE_MODE=1;
-constexpr int QUEST_STATUS_INCOMPLETE=3,ALLIANCE=0,CLASS_WARLOCK=9;
+constexpr int QUEST_STATUS_INCOMPLETE=3,ALLIANCE=0,CLASS_WARLOCK=9,CLASS_MONK=10;
 struct Position {
     float x=10,y=20,z=30,o=1;
     float GetPositionX()const{return x;}float GetPositionY()const{return y;}
@@ -56,13 +56,16 @@ struct MapManager {
 };
 struct Player {
     ScenarioResume m_scenarioResume;
-    uint32 m_scenarioLoginId=0,m_scenarioLoginInstance=0,selector=0,instance=42;
+    uint32 m_scenarioLoginId=0,m_scenarioLoginInstance=0,selector=0,instance=42,cls=1;bool pendingSheilun=false;
     Map map;Position pos;bool inWorld=true,transport=false,vehicle=false,relocated=false;
     struct Session {bool loading=false;bool PlayerLoading(){return loading;}} session;
     Session* GetSession(){return &session;}
     Map* GetMap()const{return const_cast<Map*>(&map);}uint32 GetMapId()const{return map.GetId();}
     uint32 GetGUIDLow(){return 1;}uint32 GetInstanceId(){return instance;}
-    uint32 GetTeam()const{return 1;}uint32 getClass()const{return 1;}int GetQuestStatus(int){return 0;}
+    uint32 GetTeam()const{return 1;}uint32 getClass()const{return cls;}int GetQuestStatus(int){return 0;}
+    // The real owned-item/native-objective predicate is independently compiled
+    // and exercised by Test-SheilunLogin; this host controls only its admission result.
+    bool HasPendingSheilunReturn()const{return pendingSheilun;}
     bool IsQuestRewarded(int){return false;}uint32 GetScenarioId(){return selector;}
     bool IsInWorld(){return inWorld;}bool GetTransport(){return transport;}bool GetVehicle(){return vehicle;}
     Position GetPosition(){return pos;}void SetScenarioId(uint16 id){selector=id;}
@@ -155,5 +158,21 @@ int main()
     live.id=991;assert(!allowed(&p,1539));live.id=1037;
     live.completed=true;assert(!allowed(&p,1539));live.completed=false;
     p.RecordScenarioEntrance();assert(p.m_scenarioResume.scenario==1037&&p.m_scenarioResume.instance==7&&p.m_scenarioResume.boot==1000);
+    // Completion of Sheilun's pickup precedes its distinct return objective.
+    // Prepare runs before inventory loads; admission/Record then require the
+    // real owned-pickup predicate. Other completed scenarios remain refused.
+    lfgManager.data.entry.ScenarioID=1007;lfgManager.data.map=1541;sMapStore.value.ID=1541;
+    for(bool earned:{false,true}){
+        p=Player{};p.cls=CLASS_MONK;p.map.entry.ID=1541;p.pendingSheilun=earned;
+        assert(p.m_scenarioResume.Read("1 1541 1007 42 1000 -1073 -3143 27 0"));
+        live={&p.map};live.id=1007;live.completed=true;scenarios.entries[42]=&live;
+        p.PrepareScenarioLogin(1541,42);assert(p.m_scenarioLoginInstance==42&&p.selector==1007&&!p.relocated);
+        assert(allowed(&p,1541)==earned);p.RecordScenarioEntrance();
+        assert(bool(p.m_scenarioResume.scenario)==earned);
+        if(earned){assert(!p.selector&&p.CanResumeScenarioLogin(1007));p.pendingSheilun=false;p.RecordScenarioEntrance();assert(!p.m_scenarioResume.scenario&&!p.m_scenarioLoginInstance);}
+    }
+    p=Player{};p.cls=CLASS_MONK;p.map.entry.ID=1541;p.pendingSheilun=true;
+    assert(p.m_scenarioResume.Read("1 1541 1007 42 999 -1073 -3143 27 0"));
+    live.map=&p.map;p.PrepareScenarioLogin(1541,42);assert(p.relocated&&p.selector==1007&&!p.m_scenarioLoginInstance&&p.pos.x==-1073);
     std::cout<<"PASS: production checkpoint parsing, fresh restart, live rejoin, consumed selector, ID reuse/boot separation, completion, map/type/routing gates, shared faction/class/difficulty/dungeon admission and legacy entrance retention/exit cleanup; actual Stromkar1539/1037 reset rejects empty checkpoint and admits the exact entrance receipt after selector consumption\n";
 }

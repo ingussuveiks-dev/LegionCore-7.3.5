@@ -12,6 +12,9 @@ auto sScenarioMgr=&manager;
 struct Player {
     int m_scenarioLoginId=0;
     void* GetMap(){return nullptr;} bool CanResumeScenarioLogin(int){return false;}
+    // This retained host exercises Warlock1522 admission. The independently
+    // native/ASAN-tested Monk1541 owned-outro exception cannot apply here.
+    bool HasPendingSheilunReturn()const{return false;}
     int map=1522, cls=9, status=3, selector=0, loads=0; bool rewarded=false, relocated=false;
     uint32 tome=0, bankTome=0, unrelated=7;
     bool itemsLoaded=false;

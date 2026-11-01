@@ -11,6 +11,9 @@
 #include "Scenario.h"
 #include "Map.h"
 #include "sheilun_plan.h"
+#include "sheilun_acquisition.h"
+#include "sheilun_return.h"
+#include "sheilun_acquisition_scripts.h"
 
 
 // 101881
@@ -463,14 +466,13 @@ public:
             events.RescheduleEvent(EVENT_1, 21000); // 204779
             events.RescheduleEvent(EVENT_2, 35000); // 204773  21
             events.RescheduleEvent(EVENT_3, 36000); // 43 summons
-            if (Creature* tazhan = me->FindNearestCreature(101881, 100.0f, true))
-                tazhan->AI()->AttackStart(me);
-            if (Creature* mob = me->FindNearestCreature(101882, 100.0f, true))
-                mob->AI()->AttackStart(me);
-            if (Creature* mob = me->FindNearestCreature(101885, 100.0f, true))
-                mob->AI()->AttackStart(me);
-            if (Creature* mob = me->FindNearestCreature(101883, 100.0f, true))
-                mob->AI()->AttackStart(me);
+            for (uint32 entry : {101881, 101882, 101885, 101883})
+                if (Creature* ally = me->FindNearestCreature(entry, 100.0f, true))
+                    if (CreatureAI* ai = ally->AI())
+                    {
+                        SheilunAcquisition::BattleAlly(me, ally);
+                        ai->AttackStart(me);
+                    }
         }
 
         void JustSummoned(Creature* summon) override
@@ -480,27 +482,7 @@ public:
 
         void JustDied(Unit* who) override
         {
-            if (Player* pl = me->FindNearestPlayer(100.0f))
-            {
-                pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48495);
-
-                pl->AddDelayedEvent(2000, [pl]() -> void
-                {
-                    pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48646);
-
-                    if (!pl->HasItemCount(128937, 1))
-                        pl->AddItem(128937, 1);
-
-                    pl->CastSpell(pl, 202435, true);
-
-                    pl->AddDelayedEvent(14000, [pl]() -> void
-                    {
-                        pl->KilledMonsterCredit(101880);
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 1007, 1);
-                        pl->CastSpell(pl, 194151);
-                    });
-                });
-            }
+            SheilunAcquisition::Defeated(me, who);
         }
 
         void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -555,29 +537,10 @@ class go_art_sheylun : public GameObjectScript
 public:
     go_art_sheylun() : GameObjectScript("go_art_sheylun") {}
 
-    void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
+    bool OnGossipHello(Player* player, GameObject* go) override
     {
-        if (target && state == GO_ACTIVATED)
-        {
-            if (target->GetTypeId() == TYPEID_PLAYER)
-            {
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48646);
-                if (Creature* trigger = go->FindNearestCreature(102479, 10.0f))
-                    trigger->DespawnOrUnsummon(1000);
-
-                if (!target->ToPlayer()->HasItemCount(128937, 1))
-                    target->ToPlayer()->AddItem(128937, 1);
-
-                target->CastSpell(target, 202435, true);
-
-                target->AddDelayedEvent(14000, [target]() -> void
-                {
-                    target->ToPlayer()->KilledMonsterCredit(101880);
-                    target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 1007, 1);
-                    target->CastSpell(target, 194151);
-                });
-            }
-        }
+        if (SheilunAcquisition::Instance* controller = SheilunAcquisition::Controller(player)) controller->Open(player, go);
+        return true;
     }
 };
 
@@ -588,4 +551,6 @@ void AddSC_Sheylun()
     new go_sheylun_crate();
     new npc_aspersiy();
     new go_art_sheylun();
+    SheilunAcquisition::Register();
+    RegisterInstanceScript(instance_sheylun, 1541);
 };
