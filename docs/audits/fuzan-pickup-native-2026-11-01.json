@@ -1,0 +1,69 @@
+{
+  "date": "2026-11-01",
+  "status": "PASS22 native pickup/return cases plus retained44 defense; test coverage, no new gameplay migration or executable change",
+  "prior_repairs": [
+    "b4e081a4b (owned wave entry)",
+    "d012df4b2 (DATA8 actor condition)",
+    "6af74ac14 (Yu lon confrontation phase bridge)"
+  ],
+  "sequence": "Controlled earlier stage2/entry boundary -> real Belphiar death and maiden timers -> real EO49176 -> native4waves/32deaths -> real path/NPC confrontation -> real Korithis death -> GO251605 -> native opening3365 -> decoded CMSG_LOOT_ITEM -> native stored128938 -> actual loot release ->217814/1342 -> real complete/cancel handler and217813 existing-item equipment -> native19932 gossip ->109440/52751 -> far transfer and actual WorldPortAck1514.",
+  "cases": {
+    "races": "Human/Orc",
+    "normal10": "Player, actual typed Pet, Guardian, actual217666 Monkey King companion, actual217669 Summerpetal companion; native repeated death callbacks and duplicate loot/scene input",
+    "additional12": "Per race: scene canceled, aura expiry/no terminal receipt with stale late packet, full inventory/refusal/reopen original chest, missing earlier entry objective control, abandonment after stored item, Windwalker acquisition/equipment refusal.",
+    "receipt_identity": "Exactly one native artifact; original GUID retained in inventory/equipment and after far-map ACK. Only one109432/109979/109980/109440. Opening or failed full-bag loot never advances pickup.",
+    "scenes": "Complete and cancel terminal handlers equip actual existing item once. Expiry alone does not fabricate SCENE_COMPLETE, equip or accept a late stale completion. Inactive quest and another spec retain their native equipment gates.",
+    "quest": "All3 real objectives109329/109330/109440 are required. Earlier entry objective is explicitly controlled from the217618 teleport227/credit90 boundary, not claimed as replayed admission. Missing-entry control remains INCOMPLETE after real pickup and return; normal controlled-entry case completes. No direct pickup/return credit or AddItem grants.",
+    "abandon": "Native postpickup actor has no quest/phase admission gate and still provides escape after abandonment. Retain native exit, deny abandoned quest progression/equipment; do not invent a new gate that traps the player."
+  },
+  "native_loader": "Optional withPickup retains existing defaults. Exact9 extra Smart rows,103 extra condition rows (loot14, GO56, equip33), actual scene/event/removal link/gossip/NPC text. Native MONSTER-derived KILL/CAST special flags restored in test Quest constructor context, matching LoadQuests; no live quest flag change. All4 pools verified READ ONLY.",
+  "isolation": "Unauthenticated account0 in-process session, synthetic actor/item/quest state only. Reuses exact Sheilun private map/session helper; stops and joins only freshly created probe-owned1514 map workers. No external server, account, character save/reset or user server operation.",
+  "native_link": {
+    "game_sha256": "E3297DB258C9625FC54B33C8BA62B369202AD1A6190BC9A41EBC00762E2ED747",
+    "scripts_sha256": "B7C6F8AF3C8ABBDD40F30E73CB4ADD2EA464D800D5289A888CEC5A42BF710D3A",
+    "probe_sha256": "F98E85E6862703725D70C9BC59EE1CE7B969431038DDAE19ED0F74B310487905",
+    "method": "Actual Release final-link dependencies from generated worldserver.vcxproj; source-extracted scene constructor calls actual linked MonkArtifactScene::Denied. Source and library hashes checked unchanged after run. Native libraries are not ASAN-instrumented."
+  },
+  "diagnostics": {
+    "native_process_exit": 0,
+    "stderr_bytes": 0,
+    "new_crashes": [],
+    "new_DBErrors": [],
+    "new_server_warnings_errors_assertions": [],
+    "private_sql_logger": "WARN4, more inclusive than canonicalERROR5; canonical config unchanged.",
+    "canonical_mixed_DBErrors": "6090 bytes/hash8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged/unresolved; never cleared.",
+    "active_crashes": "Empty. No worldserver/bnetserver process left."
+  },
+  "corrected_fixture_failures": [
+    "Prototype called every artifact registration while scoped loader omitted unrelated names: private registration errors. Corrected by extracting only real Monk scene constructor and linking its actual native implementation; original diagnostics retained.",
+    "Prototype native chest needed its ordinary GO update plus opening3365; raw Use before readiness did not represent a client opening. Shared chest actual loot, not empty personal container, is authoritative.",
+    "Prototype raw Quest constructor omitted native LoadQuests derived KILL/CAST flags. Minimal test initial specialization/staff skill were also absent; native equipment correctly refused until its ordinary prerequisites were represented.",
+    "Formal1 mistakenly built retained Defense source: actual44 defense passed, its pickup-label footer was invalid evidence. Runner now builds Pickup source and strictly checks22 case lines plus its exact footer.",
+    "Formal2/3 used wrong effect enum for90 (KILL_CREDIT, not KILL_CREDIT2=134). Formal4 incorrectly expected equipment without native SCENE_COMPLETE. Formal5 incorrectly expected abandonment to remove the original postpickup escape interaction. All corrected against native source/data; final22 passes. No gameplay behavior or diagnostic was suppressed.",
+    "Read-only context query2 used non-existent RewardSpellCast column. Context3/4 use matching schema and reach full EOF; native/SQL compile/query failures remain visible."
+  ],
+  "remaining": [
+    "Actual217618 initial admission/teleport and earlier client entrance/King route are outside this controlled stage2 boundary.",
+    "Wave combat AI and client camera/voice/rendering/flight are not certified by controlled damage or server ACK.",
+    "Actual questgiver turn-in/reward, reconnect/re-entry across this complete pickup/return sequence and full group variants remain separate checks.",
+    "Yigthregor actual DB default waypoint2/path0 warning remains UNRESOLVED in fuzan-yigthregor-missing-path-research-2026-11-01.json; this test uses existing template-mode actor initialization and does not resolve it.",
+    "Remaining ALL36 work is open; this is not whole-chain/all-artifact completion."
+  ],
+  "canonical_executables_unchanged": {
+    "build-extractors/bin/Release/worldserver.exe": "7E102EB4B49DC7534A757B6DF88DE8F4E9E3DBE326962ED685DCFF4797FB9730",
+    "build-extractors/bin/Release/bnetserver.exe": "3555FF074DA8D680B534FFEE4CF2EC4F593A4FE6DF3300AD3044CBD65DD10975"
+  },
+  "evidence_sha256": {
+    ".codex/fuzan-pickup-native-formal6-open-2026-11-01/native-inputs.json": "ABE877BBE0F5545A5B4E95913A71BDD2C7A5F5B2CA310839E6B88A8A1D5F41F2",
+    ".codex/fuzan-pickup-native-formal6-open-2026-11-01/native-diagnostics/diagnostics-before.json": "2CE4B3051362F0216DA2D21CEA0368B989BEEC4F2F6C9E42FE7D3D77E90F4962",
+    ".codex/fuzan-pickup-native-formal6-open-2026-11-01/native-diagnostics/diagnostics-after.json": "95D0BD7AD61270F93E6B51F4ECBBC570B1C395D1E12EA9D826ECCB97E787EEC5",
+    ".codex/fuzan-pickup-native-formal6-open-2026-11-01/diagnostics-after.json": "4951993E65DCC3F102DC990324701772655E55524B96D63770679BA955627ED4",
+    "C:/wamp64/www/LegionCore-7.3.5/.codex/fuzan-pickup-native-formal6-open-2026-11-01/run-20261101-170341/process-result.json": "BD47AADDF956BE23AC89DAD4C58F620821CD87FAC345C321573C6EABC78B2496",
+    "C:/wamp64/www/LegionCore-7.3.5/.codex/fuzan-pickup-native-formal6-open-2026-11-01/run-20261101-170341/stdout.log": "1F79AB37A191C9EF370FBD0B84A8AC8B7BC96DF1D7305BC2D183FE912968B6D6",
+    "C:/wamp64/www/LegionCore-7.3.5/.codex/fuzan-pickup-native-formal6-open-2026-11-01/run-20261101-170341/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+    ".codex/fuzan-pickup-retained-defense1-open-2026-11-01/native-inputs.json": "6D3D294AABB1D176FBC47852D1217360EC693EA1CCD0077543614E91EDC1B349",
+    ".codex/fuzan-pickup-retained-defense1-open-2026-11-01/native-diagnostics/diagnostics-after.json": "1747E1E312D76A1AED86E316166C57CB2F58859A60EE6FCD0AC8A91CBE64679E",
+    ".codex/fuzan-pickup-retained-defense1-open-2026-11-01/diagnostics-after.json": "9CC96A44E4BF8999F3E2C7412BF302ADE6FF3897168BE20A7206F119E70E3541"
+  },
+  "archive": "Pending focused test commit and subsequent hash-verified fixed archive of resolved harness diagnostics only; unresolved corrupted-spawn evidence and mixed canonical logs excluded."
+}

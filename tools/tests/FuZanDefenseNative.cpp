@@ -169,6 +169,7 @@ static void CheckDefenseAbandon(uint8 race,uint32 number)
     Require(!BelphiarCounter(f.scenario,49568)&&!BelphiarCounter(f.scenario,49620)&&f.scenario->GetCurrentStep()==5,"Native late death advanced abandoned player progress");
     std::cout<<"CASE actual abandon/native phase removal/late NPC death race="<<unsigned(race)<<" PASS\n";
 }
+#ifndef FUZAN_DEFENSE_NATIVE_SUPPORT_ONLY
 int main(int argc,char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
@@ -200,3 +201,4 @@ int main(int argc,char** argv)
         return 0;
     }catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}
 }
+#endif

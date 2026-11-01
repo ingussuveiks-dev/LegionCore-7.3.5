@@ -14,6 +14,7 @@
 #include "CreatureTextMgr.h"
 #include "TemporarySummon.h"
 #include "EventObjectData.h"
+#include "GossipData.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_temple_intro.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_belphiar.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Monk/TempleOfTheJadeSerpent/fuzan_summerpetal.h"
@@ -32,13 +33,14 @@ template struct FixtureAccess<IntroStoryTag,&FuZanTempleIntro::Actor::_story>;
 struct IntroClockTag { using Type=std::map<ObjectGuid,uint32> Conversation::*; friend Type Access(IntroClockTag); };
 template struct FixtureAccess<IntroClockTag,&Conversation::playing>;
 
-static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bool withTempleRescue=false,bool withSummerpetal=false,bool withTransition=false,bool withWaveRepair=false,bool withDefense=false)
+static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bool withTempleRescue=false,bool withSummerpetal=false,bool withTransition=false,bool withWaveRepair=false,bool withDefense=false,bool withPickup=false)
 {
     Require(argc==3,"Private native config/runtime missing");
     Require(!withSummerpetal||withTempleRescue,"Summerpetal requires native rescue loader context");
     Require(!withTransition||withSummerpetal,"EventObject transition requires the complete actual actor context");
     Require(!withWaveRepair||withTransition,"Owned wave entry requires the complete actual transition context");
     Require(!withDefense||withWaveRepair,"Native defense requires the repaired real entry context");
+    Require(!withPickup||withDefense,"Native pickup requires the complete actual defense context");
     std::string error;Require(sConfigMgr->LoadInitial(argv[1],{},error),"Private config failed");
     sLog->Initialize(nullptr);MySQL::Library_Init();
     WorldDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("WorldDatabaseInfo",""),1,1);
@@ -57,6 +59,7 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     if(withTempleRescue)sources+=" OR (entryorguid IN(109393,109394,109395,109397,109355,109610) AND source_type=0)";
     if(withTransition)sources+=" OR (entryorguid=103 AND source_type=13) OR (entryorguid=109465 AND source_type=0)";
     if(withDefense)sources+=" OR (source_type=0 AND entryorguid IN(109391,109438,109511,109933,110471,109821,109515,109820))";
+    if(withPickup)sources+=" OR (source_type=1 AND entryorguid=251605) OR (source_type=0 AND entryorguid=109440)";
     WorldDatabase.DirectExecute(("INSERT INTO fuzan_native_smart_seed SELECT * FROM smart_scripts WHERE "+sources).c_str());
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE smart_scripts LIKE fuzan_native_smart_seed");
     WorldDatabase.DirectExecute("INSERT INTO smart_scripts SELECT * FROM fuzan_native_smart_seed");
@@ -67,8 +70,10 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
         "SourceEntry IN(109413,109393,109394,109395,109397,109355,109610)";
     if(withTransition)conditionSources="("+conditionSources+" OR SourceEntry=103)";
     if(withDefense)conditionSources="("+conditionSources+" OR SourceEntry IN(109391,109438,109511,109933,110471,109821,109515,109820))";
+    if(withPickup)conditionSources="("+conditionSources+" OR SourceEntry IN(251605,109440))";
     WorldDatabase.DirectExecute(("INSERT INTO fuzan_native_condition_seed SELECT * FROM conditions WHERE SourceTypeOrReferenceId=22 AND "+conditionSources).c_str());
     if(withDefense)WorldDatabase.DirectExecute("INSERT INTO fuzan_native_condition_seed SELECT * FROM conditions WHERE SourceTypeOrReferenceId=23 AND SourceGroup=8262");
+    if(withPickup)WorldDatabase.DirectExecute("INSERT INTO fuzan_native_condition_seed SELECT * FROM conditions WHERE (SourceTypeOrReferenceId=4 AND SourceGroup=251605) OR (SourceTypeOrReferenceId=17 AND SourceEntry IN(217813,224657))");
     WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE conditions LIKE fuzan_native_condition_seed");
     WorldDatabase.DirectExecute("INSERT INTO conditions SELECT * FROM fuzan_native_condition_seed");
     uint32 summerConditions=0;
@@ -138,6 +143,17 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
 #endif
 #endif
     }
+    if(withPickup)
+    {
+        for(auto pair:{std::make_pair("spell_scene","MiscValue=1342"),std::make_pair("spell_scene_event","MiscValue=1342"),std::make_pair("spell_linked_spell","spell_trigger=-217814"),std::make_pair("gossip_menu","MenuID=19932"),std::make_pair("gossip_menu_option","MenuID=19932"),std::make_pair("npc_text","ID=29616")})
+        {
+            std::string table=pair.first,seed="fuzan_native_pickup_"+table;
+            WorldDatabase.DirectExecute(("CREATE TEMPORARY TABLE "+seed+" LIKE "+table).c_str());
+            WorldDatabase.DirectExecute(("INSERT INTO "+seed+" SELECT * FROM "+table+" WHERE "+pair.second).c_str());
+            WorldDatabase.DirectExecute(("CREATE TEMPORARY TABLE "+table+" LIKE "+seed).c_str());
+            WorldDatabase.DirectExecute(("INSERT INTO "+table+" SELECT * FROM "+seed).c_str());
+        }
+    }
     WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");WorldDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
     HotfixDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");HotfixDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
     LoginDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");LoginDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
@@ -147,12 +163,13 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     ro=LoginDatabase.Query("SELECT @@session.transaction_read_only");Require(ro&&ro->Fetch()[0].GetBool(),"Login not read-only");
     ro=CharacterDatabase.Query("SELECT @@session.transaction_read_only");Require(ro&&ro->Fetch()[0].GetBool(),"Character not read-only");
     auto count=WorldDatabase.Query("SELECT (SELECT COUNT(*) FROM smart_scripts),(SELECT COUNT(*) FROM conditions)");
-    Require(count&&count->Fetch()[0].GetUInt32()==3u+(withSanctuaryDoor?1u:0u)+(withTempleRescue?32u:0u)+(withTransition?6u:0u)+(withDefense?54u:0u)&&
-        count->Fetch()[1].GetUInt32()==14u+(withTempleRescue?1u:0u)+summerConditions+(withDefense?27u:0u),"Actual scoped loader rows changed");
+    Require(count&&count->Fetch()[0].GetUInt32()==3u+(withSanctuaryDoor?1u:0u)+(withTempleRescue?32u:0u)+(withTransition?6u:0u)+(withDefense?54u:0u)+(withPickup?9u:0u)&&
+        count->Fetch()[1].GetUInt32()==14u+(withTempleRescue?1u:0u)+summerConditions+(withDefense?27u:0u)+(withPickup?103u:0u),"Actual scoped loader rows changed");
     sDB2Manager.LoadStores(argv[2],LOCALE_enUS);LoadGameTables(argv[2]);
     sSpellMgr->LoadSpellInfoStore();sSpellMgr->LoadSpellRanks();sSpellMgr->LoadTalentSpellInfo();
     sSpellMgr->LoadSkillLineAbilityMap();sSpellMgr->LoadSpellCustomAttr();sSpellMgr->LoadSpellInfoSpellSpecificAndAuraState();
     sObjectMgr->LoadScriptNames();
+    if(withPickup){sSpellMgr->LoadSpellScene();sSpellMgr->LoadSpellLinked();sObjectMgr->LoadNPCText();sGossipDataStore->LoadGossipMenu();sGossipDataStore->LoadGossipMenuItems();}
     auto& names=const_cast<ObjectMgr::ScriptNameContainer&>(sObjectMgr->GetAllScriptNames());
     for(auto name:{"npc_fuzan_temple_intro","spell_fuzan_temple_intro","spell_fuzan_temple_complete"})names.emplace_back(name);
     if(withSanctuaryDoor)names.emplace_back("go_fuzan_temple_sanctuary_door");
@@ -248,6 +265,13 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
     auto objectives=WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged FROM quest_objectives WHERE QuestID=42765 ORDER BY StorageIndex");
     Require(bool(objectives),"Native quest objectives missing");do{quest->LoadQuestObjective(objectives->Fetch());}while(objectives->NextRow());
     Require(quest->GetObjectives().size()==3,"Native quest objectives changed");
+    if(withPickup)
+    {
+        for(auto const& objective:quest->GetObjectives())Require(objective.Type==QUEST_OBJECTIVE_MONSTER,"Pickup objective loader normalization needs review");
+        // QuestDataStoreMgr::LoadQuests derives these for MONSTER objectives.
+        // Loading only the raw Quest constructor omits native credit dispatch.
+        quest->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL|QUEST_SPECIAL_FLAGS_CAST);
+    }
     sAchievementMgr->LoadCriteriaList();
     auto rules=WorldDatabase.Query(withSanctuaryDoor?
         "SELECT COUNT(*) FROM achievement_criteria_data WHERE criteria_id IN(49115,49138,49141)":
@@ -270,9 +294,24 @@ static void InitializeIntro(int argc,char** argv,bool withSanctuaryDoor=false,bo
         if(withWaveRepair)event->ScriptID=future;
 #endif
     }
+    if(withPickup)
+    {
+        sObjectMgr->LoadItemTemplates();sObjectMgr->LoadItemTemplateAddon();
+        auto& table=LootTemplates_Gameobject.*Access(LootTableNameTag{});auto original=table;
+        table+=" WHERE Entry=251605 ORDER BY Entry,Item";auto loaded=(LootTemplates_Gameobject.*Access(LoadLootTableTag{}))();table=original;
+        Require(loaded==1&&LootTemplates_Gameobject.HaveLootFor(251605),"Actual native Fu Zan loot context missing");
+    }
     sSmartScriptMgr->LoadSmartAIFromDB();sConditionMgr->LoadConditions();sConversationDataStore->LoadConversationData();
-    dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1625,{}}});
-    MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1625,{}}});
+    if(withPickup)
+    {
+        dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1625,{}},{1514,{}}});
+        MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1625,{}},{1514,{}}});
+    }
+    else
+    {
+        dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1625,{}}});
+        MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1625,{}}});
+    }
 }
 
 static void AdvanceIntro(LootPlayer& player,::Actor& source,uint32 duration)
