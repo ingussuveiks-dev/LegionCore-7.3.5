@@ -74,6 +74,38 @@ public:
             });
         }
 
+        static void ResumeBattle(Creature* ragnvald, uint8 remaining = 10)
+        {
+            if (!ragnvald->IsInWorld() || ragnvald->IsPreDelete() || !ragnvald->IsAlive() || ragnvald->GetEntry() != 97167 || ragnvald->GetMapId() != 1500)
+                return;
+
+            Scenario* scenario = sScenarioMgr->GetScenario(ragnvald->GetInstanceId());
+            if (scenario && (scenario->GetScenarioId() != 933 || scenario->GetCurrentStep() < 2 || scenario->GetCurrentStep() > 3))
+                return;
+
+            if (scenario && scenario->GetCurrentStep() == 3)
+            {
+                if (auto* ai = CAST_AI(npc_ragnvald_dragonbornAI, ragnvald->AI()))
+                {
+                    ai->DoAction(true);
+                    return;
+                }
+            }
+
+            if (!remaining)
+            {
+                TC_LOG_ERROR("scripts", "Warrior intro: Ragnvald %s is missing native933 stage3 or matching AI after 10 battle handoff retries", ragnvald->GetGUID().ToString().c_str());
+                return;
+            }
+
+            uint32 instanceId = ragnvald->GetInstanceId();
+            ragnvald->AddDelayedEvent(500, [ragnvald, remaining, instanceId]() -> void
+            {
+                if (ragnvald->GetInstanceId() == instanceId)
+                    ResumeBattle(ragnvald, remaining - 1);
+            });
+        }
+
         void Reset() override
         {
             events.Reset();
@@ -156,7 +188,7 @@ public:
                     {
                         if (!(*itr)->IsAlive() || (*itr)->HasAura(105419))
                             continue;
-                        (*itr)->AI()->AttackStart(targ);
+                        AttackBattleTarget(*itr, targ->GetGUID());
                     }
                 AttackStart(targ);
             }
@@ -252,7 +284,7 @@ public:
                 }
 
             if (Creature* targ = me->FindNearestCreature(97166, 100.0f, true))
-                targ->AI()->Talk(0);
+                sCreatureTextMgr->SendChat(targ, 0);
 
             me->GetMotionMaster()->MovePoint(0, -1980.04f, -1251.96f, 4.83f);
 
@@ -321,7 +353,7 @@ public:
                     // if (Player* targ = me->FindNearestPlayer(100.0f))
                         // targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, КРИТЕРИЙ_2_1);
                     if (Creature* targ = me->FindNearestCreature(97167, 100.0f, true))
-                        targ->AI()->DoAction(true);
+                        npc_ragnvald_dragonborn::npc_ragnvald_dragonbornAI::ResumeBattle(targ);
                 }
                 else
                     timerevent -= diff;
@@ -370,7 +402,7 @@ public:
                     {
                         if (!(*itr)->IsAlive() || (*itr)->HasAura(105419))
                             continue;
-                        (*itr)->AI()->AttackStart(targ);
+                        npc_ragnvald_dragonborn::npc_ragnvald_dragonbornAI::AttackBattleTarget(*itr, targ->GetGUID());
                     }
                 AttackStart(targ);
             }

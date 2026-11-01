@@ -13,7 +13,7 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  & "$PSScriptRoot/Test-WarriorIntroTimers.ps1" -ScopeOnly
  $timerBaseline=(& git -C $repo show "0ab5e6990:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Warrior intro timer preservation source absent'}
  foreach($actor in @('class npc_ragnvald_dragonborn :','class npc_danica_the_reclaimer :')){if((Block $timerBaseline $actor).Replace("`r",'') -cne (Block $old $actor).Replace("`r",'')){throw "Other Warrior intro behavior predates the certified timer repair: $actor"}}
- $oldBez=Block $old 'class npc_bezzered :';$newBez=Block $s 'class npc_bezzered :'
+ $oldBez=Block $old 'class npc_bezzered :';$newBez=Block $timerBaseline 'class npc_bezzered :'
  [IO.File]::WriteAllText("$out/LegacyBezzeredes.inc",(Block $oldBez 'void JustDied('))
  $oldBez=$oldBez.Replace((Block $oldBez 'void JustDied('),'')
  function Without-Comments([string]$text){[regex]::Replace([regex]::Replace($text,'//[^\r\n]*',''),'\s+','')}
