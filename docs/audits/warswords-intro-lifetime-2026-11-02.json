@@ -1,7 +1,7 @@
 {
   "date": "2026-11-02",
   "status": "DEPLOYED focused final Vigfus AI-lifetime repair; full944/client and all36 remain OPEN.",
-  "fix_commit": "Recorded after focused commit in the archive audit.",
+  "fix_commit": "9310414d2e18ec5ad178471c37330b7cda35053f",
   "cause": "98602 schedules raw-this24s and nested7s closures on the Unit queue. Native AIM_Destroy can delete the AI while that queue survives; generation checks dereference the freed AI. Native cast/aura removal can also reenter and invalidate the AI or original Player. The old inner callback consumed pending before RemoveAura, allowing Reset during removal to be followed by obsolete engagement. No historical crash is attributed without a matching dump.",
   "repair": "Append shared lifetime ownership to this AI, retire it before destructor removal of only its tracked843, and capture weak lifetime in both original Unit closures. Reject expiry before raw-this access at entry and after native195062 cast/205424 removal. Re-resolve the captured128-bit original Player/Helya GUIDs after external calls. Validate generation, pending and actual context before consuming pending and native AttackStart. Keep the original24s plus full7s from successful late cast/aura acknowledgement. No SQL, progress/item grants, reset, movement replacement or combat/loot/return change.",
   "sources": {
@@ -32,7 +32,7 @@
     "result": "Every recorded automated/native/build/PE/promotion/startup check has before/after crash/log/exit evidence. No new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions. Native inner and outer captures pass.",
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
-    "unresolved": "Shared101430/103151 missing LINK2 remains visible and untruncated; active Crashes empty. Resolved evidence archived only after focused commit and hash verification; see follow-up archive audit."
+    "unresolved": "Shared101430/103151 missing LINK2 remains visible and untruncated; active Crashes empty. Resolved evidence318sources/320payloads archived and source/archive/source hashes verified under fixed/warswords-intro-lifetime-2026-11-02/verified1; see warswords-intro-lifetime-archive-2026-11-02.json."
   },
   "limits": "Actual rendered843/audio, Helya channel/interruption, combat/pet/guardian/one-hit/group/faction path, map-transfer conversation natural expiry, abandonment/re-entry/retry, full944 weapon/equip/return and all36 client traversal remain separate. Map-local cleanup deliberately cannot remove a conversation in a foreign map. Existing Wardstone LINK4, shared LINK2, Survival flight, LiLi/Ponshu/Fu Zan/Stromkar and other findings remain OPEN. User owns client tests; no further character reset authorized or performed.",
   "next": "Continue independent acquisition repairs: shared Warrior intro Ragnvald97167 and Danica103608 still have raw-this Unit callbacks. Trace matching local data, actual lifecycle and existing Malgalor preservation certificates before editing; do not infer missing progression from a lifecycle-only repair."

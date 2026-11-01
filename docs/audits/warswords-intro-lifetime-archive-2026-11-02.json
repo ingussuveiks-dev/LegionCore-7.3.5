@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-02",
+  "status": "Verified resolved diagnostic evidence archive; full944/client/all36 remain OPEN",
+  "fix_commit": "9310414d2e18ec5ad178471c37330b7cda35053f",
+  "archive": "build-extractors\\bin\\Release\\fixed\\warswords-intro-lifetime-2026-11-02\\verified1",
+  "source_files": 318,
+  "payload_files": 320,
+  "manifest_sha256": "794B2E9178B14DD7893DEC331B249549FEBB579FA0BDA40F00721B78CB0A6873",
+  "verification": "Every selected source/archive/source SHA256 and final payload manifest rechecked, deployed6F6C1609 present, no server running. Four inspector failures reviewed against actual assembly and paired passing stage/canonical regression. Exact private native logs and original bytes preserved. No credentials/configs/executables/dumps/character data included.",
+  "cleanup": "Active Crashes empty with no resolved report to remove. Unresolved mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged/untruncated; source evidence retained.",
+  "audit": "docs/audits/warswords-intro-lifetime-2026-11-02.json"
+}
