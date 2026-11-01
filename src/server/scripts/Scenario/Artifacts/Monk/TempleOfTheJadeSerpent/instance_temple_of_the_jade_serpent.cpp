@@ -17,6 +17,7 @@
 #include "SpellScript.h"
 #include "fuzan_temple_intro.h"
 #include "fuzan_temple_sanctuary_door.h"
+#include "fuzan_belphiar.h"
 
 class instance_temple_of_the_jade_serpent : public InstanceMapScript
 {
@@ -39,4 +40,5 @@ void AddSC_instance_temple_of_the_jade_serpent()
     RegisterSpellScript(spell_fuzan_temple_intro);
     RegisterSpellScript(spell_fuzan_temple_complete);
     RegisterGameObjectAI(go_fuzan_temple_sanctuary_door);
+    RegisterCreatureAI(npc_fuzan_belphiar);
 }
