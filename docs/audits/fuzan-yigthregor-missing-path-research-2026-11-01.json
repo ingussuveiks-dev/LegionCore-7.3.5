@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-01",
+  "status": "UNRESOLVED: native missing-path warning reproduced; intended 7.3.5 movement still unproven",
+  "scope": "Fu Zan quest42765, scenario1137, map1625, Yigthregor109820 spawn14670030",
+  "observed": {
+    "world_spawn": "MovementType2, phase6906, position872.483,-2772.84,211.671, orientation1.26685; no per-spawn addon",
+    "template": "MovementType0; template addon path0, bytes1=33554432; no candidate waypoint_data0/109820/10982000/14670030/146700300",
+    "native": "Actual Creature::LoadCreatureFromDB using exact World record cached in memory with dbData=false. Native SmartAI enabled/alive, idle and current motion type2, path0, CanFly1, CanHover0, IsLevitating0, unchanged Z after1000ms.",
+    "warning": "WaypointMovementGenerator::LoadPath: creature Yigthregor (Entry:109820) doesn't have waypoint path id:0",
+    "counterfactual_logging": "First probe exit0 without warning was insufficient: existing canonical Logger.sql.sql=5 filtered WARN. Second PRIVATE config uses logger4, preserving Console/DBErrors appenders; canonical config unchanged. Native process exit0/stderr0, diagnostic wrapper correctly FAILED on the warning. Outer wrapper completion=false is not an ordinary pass."
+  },
+  "underlying_cause": "Per-spawn waypoint default overrides template idle, but no path is available. ObjectMgr::LoadCreatureAddons only normalizes an invalid waypoint default when a per-spawn addon row exists; none does here.",
+  "repair_status": "No movement/path/logging gameplay change applied. Choosing idle or inventing a path would require behavioral evidence. Preserve native217786 timed cast and DATA1/1 death cleanup.",
+  "sources_reviewed": [
+    "Matching local World data and native Creature/ObjectMgr/MotionMaster/FactorySelector/WaypointMovementGenerator/SmartAI code.",
+    "Local newer TrinityCore12.1 SQL snapshot bounded search: no creature109820; incompatible-version reference only.",
+    "Prior bounded GitHub109820 repository searches in dufernst/LegionCore-7.3.5 and AshamaneProject/AshamaneCore returned no matches; not proof of global absence.",
+    {
+      "url": "https://www.wowhead.com/es/quest=42765/prueba-en-el-templo",
+      "review": "Search-returned text describes Yigthregor fel-fire attacks while Yu lon protects the player; it does not establish flight coordinates or route."
+    },
+    {
+      "url": "https://warcraft.wiki.gg/wiki/The_Trial_at_the_Temple",
+      "review": "Parsed search text corroborates Yulon confronting the winged creature; no motion/path proof."
+    }
+  ],
+  "video_review": "No YouTube footage watched. Search-returned video links are not reviewed behavioral evidence.",
+  "safety": "Unauthenticated in-memory actors; all four database pools read-only. No global LoadCreatures, clone maintenance, respawn save, account/character/item/quest reset or external server used.",
+  "diagnostics": {
+    "new_crashes": [],
+    "new_private_warning": "Unresolved and retained at original location; not archived to fixed.",
+    "canonical_crashes": "Empty at recheck.",
+    "canonical_mixed_DBErrors": "6090 bytes unchanged; unrelated unresolved history retained, never truncated.",
+    "processes": "No worldserver.exe or bnetserver.exe at post-probe recheck."
+  },
+  "evidence_sha256": {
+    ".codex/fuzan-corrupted-db-spawn2-warnings-open-2026-11-01/run/stdout.log": "3E265009C6548AAFFC7B9A114F602726BE1311693917F61FE64CBC1D3D071840",
+    ".codex/fuzan-corrupted-db-spawn2-warnings-open-2026-11-01/run/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+    ".codex/fuzan-corrupted-db-spawn2-warnings-open-2026-11-01/run/process-result.json": "9CD9BBFCBAC62E209B9E769A921649DBF7CCC883D27AE454D52037DD4DDB8793",
+    ".codex/fuzan-corrupted-db-spawn2-warnings-open-2026-11-01/run/logs/DBErrors.log": "5831449D38F22495C3AC6EEF2C6582ACFCE4AE960DA507A0ED3E9CF1C916EC64",
+    ".codex/fuzan-corrupted-db-spawn2-warnings-open-2026-11-01/native-diagnostics/diagnostics-before.json": "32F612F078C34DDF913FC608F04DE954A1BD2AE1FB385DA0B3C7E27A3BDD264A",
+    ".codex/fuzan-corrupted-db-spawn2-warnings-open-2026-11-01/native-diagnostics/diagnostics-after.json": "7D0BBEDBC6DF97763620727FCCDF766A3C42A0860EF08107D7802B56E2E9DACC",
+    ".codex/fuzan-corrupted-path-context1-open-2026-11-01/world.tsv": "04C5AFC38CB1F368A42E5F15E61E635988280D4905057196CB289BA49DAF0B31"
+  },
+  "next": "Review matching original gameplay/sniff evidence before selecting any movement repair. Independently continue native artifact pickup/scene/equipment/return verification and remaining ALL36 work."
+}
