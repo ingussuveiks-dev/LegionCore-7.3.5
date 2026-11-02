@@ -25,6 +25,7 @@ try {
  $env:PATH="$repo/build-extractors/bin/Release;$env:PATH"
  if(!$DbcDirectory){$DbcDirectory="$repo/build-extractors/bin/Release/dbc/enUS/"}
  $catalog=& "$output/$ProbeName.exe" ($DbcDirectory.TrimEnd('/','\')+'/')
- if($LASTEXITCODE){throw 'Native legendary catalog contains an unresolved item spell or failed to load'}
+ $probeExit=$LASTEXITCODE
  if($OutputFile){$catalog | Set-Content -Encoding utf8 $OutputFile}else{$catalog}
+ if($probeExit){throw "Native catalog $ProbeName failed with exit $probeExit; captured output: $OutputFile"}
 } finally {$env:PATH=$previousPath}

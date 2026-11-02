@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-02",
+  "status": "Native ritual research verified. Production opening/first-wave/ritual admission and receipt repairs remain OPEN; canonical BB2F7B09/7966BAD3 unchanged.",
+  "local_sources": [
+    "Fresh read-only .codex/warrior-opening-graph1-open-2026-11-02/world.tsv: actual102970 death Smart event6/runOnce1/action12 summons103608 with native manual summon type8 at(-2001,-1255,37).97166 and97176 rows are ordinary combat spells; no queried205287/205295/205296 target conditions exist.",
+    "Unit::Kill invokes actual SmartAI JustDied and its native Danica summon before InstanceScript::CreatureDies. Danica IsSummonedBy receives the dead demon, not the killing Player. Owner/pet/guardian attribution must use the real instance death and eligible native scenario participants, not a nearby unrelated Player.",
+    "Native205287 has a5000ms normal cast,8000ms aura, self AI target selection and caster-source area-entry targets22/7 with CAN_TARGET_DEAD. Real native dispatch hits Danica103608 and living97166 as well as both dead102964/102965. An arbitrary hit is not evidence that both original spirits were summoned.",
+    "Normal corpse casts205295/205296 return SPELL_CAST_OK and create exactly one103688/103687 each, with the original full corpse GUID as summoner. No forced/triggered cast or substitute summon was used. Original3s callback currently emits49203/49262 before the actual5000ms cast completes; production correction must retain the native cast and actual receipts."
+  ],
+  "test": {
+    "script": "tools/tests/Test-WarriorRitualNative.ps1",
+    "cpp": "tools/tests/WarriorRitualNative.cpp",
+    "final_evidence": ".codex/warrior-ritual-native6-open-2026-11-02",
+    "passing_predecessors": [".codex/warrior-ritual-native4-open-2026-11-02", ".codex/warrior-ritual-native5-open-2026-11-02"],
+    "limits": "Real MapInstanced parent/InstanceMap/Creature/UnitAI/Spell/Aura and actual normal corpse summons; an observer reproduces the two original corpse-cast branches. No Player, character write, actual933 criteria advancement, full production Danica handler, departure, audio, full client or whole36 verification. World/Hotfix sessions read-only. No video reviewed."
+  },
+  "reviewed_failed_iterations": [
+    "Native1/2 research fixture incorrectly supplied a plain Map as InstanceMap parent. Native EnsureGridCreated_i requires the real MapInstanced grid-reference layout; exit -1073741819 occurred before actor admission. Repaired fixture uses actual MapInstanced; native3 reached actual casting and native4/5/6 passed. No production failure is attributed to this fixture bug. No crash report was created; captured diagnostics and original files remain preserved.",
+    "Native3 asserted hits after only1000ms, shorter than the actual5000ms cast. It failed with exit1 and useful message; native4/5/6 let native dispatch complete. The original cast was retained, not shortened or forced.",
+    "Read-LegionLegendaryCatalog previously threw before persisting stdout on nonzero exit. It now saves output first and reports the real exit code/probe/path. Native2 preserved the failing access-violation trace; native3 preserved the ordinary failed assertion; passing native6 validates the normal path."
+  ],
+  "diagnostics": {
+    "result": "All six runs have before/after outer and exact private inner crash/log snapshots; failed runs explicitly marked failed, passing4/5/6 completed0. No new/changed canonical/private crash files, appended DBErrors or server warnings/errors/assertions. Private configs contain credentials and must never be archived or committed.",
+    "active_crashes": 0,
+    "mixed_db_errors_bytes": 6090,
+    "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
+    "archive": "Production issue remains open; preserve research evidence. Resolved probe parent/capture diagnostics may be archived separately after commit and source/archive/source verification. Never truncate mixed unresolved DBErrors."
+  },
+  "next": "Repair real102970 death credit through the actual instance/eligible original quest lifetimes and acknowledged native45771/46175 receipts, preserving the native summon and all Paladin/other Warrior behavior. Then complete native opening and ritual factory/cast receipt work. Client tests remain with the user; no character reset."
+}
