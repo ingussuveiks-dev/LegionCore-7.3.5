@@ -68,7 +68,9 @@ uint32 RunArrivalCases()
  // Timer helper is also exercised across its uint32 rollover convention.
  for(bool wrap:{false,true}){Escort r;r.Begin();r.player.distance=101;if(wrap)clockNow=0xFFFFFE00;r.map.onUpdate=[&](uint32){r.Arrive();};r.map.i_data=&r.instance;clockNow+=100000;r.map.Update(100000);assert(r.state().arrivalWaiting);r.player.distance=10;for(uint32 i=0;i<1999;++i){++clockNow;r.state().Update(100000);}r.NoArrival();++clockNow;r.state().Update(0);r.Finished();++cases;}
  {Escort r;r.Begin();clockNow=0xFFFFFE00;r.player.distance=101;r.Arrive();r.player.distance=10;clockNow+=2000;r.state().Update(0);r.NoArrival();++clockNow;r.state().Update(0);r.Finished();++cases;}
- {Escort r;r.Begin();r.map.players={{&r.other},{&r.player}};r.other.quest.ScriptLifetime=std::make_shared<uint8>();r.chen.nearest=&r.other;r.Arrive();r.Finished();r.player.world=false;r.Tick(20000);for(uint32 i=1;i<4;++i)assert(r.hait.talks[i].second==r.player.guid);assert(r.other.credits.empty());++cases;}
+ // The optional presentation now requires the original live recipient. The
+ // independent original12/13 handoff still retains that owner's full GUID.
+ {Escort r;r.Begin();r.map.players={{&r.other},{&r.player}};r.other.quest.ScriptLifetime=std::make_shared<uint8>();r.chen.nearest=&r.other;r.Arrive();r.Finished();r.player.world=false;r.Tick(20000);assert(r.hait.talks.size()==2);for(auto const& line:r.hait.talks){assert((line.first==12||line.first==13)&&line.second==r.player.guid);}assert(r.other.credits.empty());++cases;}
  std::cout<<"PASS "<<cases<<" Chen arrival ASAN contexts plus "<<retained<<" retained rescue contexts; actual native waypoint dispatch/index/persistent receipt, original weak owner, exactly-once native46947/29070 and six authored outro deadlines. Endpoint installation/geometry/criteria/network controlled; native mmap probe separate; later Hait/boss/full943 and client traversal remain OPEN.\n";
  return cases;
 }

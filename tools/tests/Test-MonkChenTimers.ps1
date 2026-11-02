@@ -8,7 +8,7 @@ if($source.Contains('#include "jorvinax_defeat.h"')){& "$PSScriptRoot/Test-MonkJ
 if($source.Contains('#include "chen_rescue.h"')){
  & "$PSScriptRoot/Test-MonkChenRescue.ps1" -ScopeOnly
  $preRescue=(& git -C $repo show "6b6fae36c:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-rescue actor missing'}
- $source=$source.Replace($currentActor,(Block $preRescue 'class npc_monk_chen_porter :')).Replace('#include "InstanceScript.h"','').Replace('#include "chen_rescue.h"','')
+ $source=$source.Replace((Block $source 'class npc_monk_chen_porter :'),(Block $preRescue 'class npc_monk_chen_porter :')).Replace('#include "InstanceScript.h"','').Replace('#include "chen_rescue.h"','')
 }
 $actor=Block $source 'class npc_monk_chen_porter :';$oldActor=Block $old 'class npc_monk_chen_porter :'
 $addition=@'

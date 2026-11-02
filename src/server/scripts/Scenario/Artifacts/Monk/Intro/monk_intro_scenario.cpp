@@ -452,7 +452,7 @@ public:
                         if (Player* pl = me->FindNearestPlayer(100.0f))
                             pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46947);
 
-                    _presentationFunctions.AddDelayedEvent(3000, [this]() -> void
+                    if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(3000, [this]() -> void
                     {
                         if (Creature* hait = me->FindNearestCreature(97778, 50.0f, true))
                             sCreatureTextMgr->SendChat(hait, 10);
@@ -461,18 +461,18 @@ public:
                     ObjectGuid const playerGuid = ArrivalPlayer();
                     if (!playerGuid.IsEmpty())
                     {
-                        _presentationFunctions.AddDelayedEvent(7000, [this, playerGuid]() -> void
+                        if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(7000, [this, playerGuid]() -> void
                         {
                             Talk(8, playerGuid);
                         });
 
-                        _presentationFunctions.AddDelayedEvent(11000, [this, playerGuid]() -> void
+                        if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(11000, [this, playerGuid]() -> void
                         {
                             if (Creature* hait = me->FindNearestCreature(97778, 50.0f, true))
                                 sCreatureTextMgr->SendChat(hait, 11, playerGuid);
                         });
 
-                        _presentationFunctions.AddDelayedEvent(15000, [this, playerGuid]() -> void
+                        if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(15000, [this, playerGuid]() -> void
                         {
                             if (MonkChenRescue::Source(me)) return;
                             if (Creature* hait = me->FindNearestCreature(97778, 50.0f, true))
@@ -481,7 +481,7 @@ public:
                             }
                         });
 
-                        _presentationFunctions.AddDelayedEvent(15000, [this, playerGuid]() -> void
+                        if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(15000, [this, playerGuid]() -> void
                         {
                             if (MonkChenRescue::Source(me))
                             {
@@ -497,7 +497,7 @@ public:
                         });
                     }
 
-                    _presentationFunctions.AddDelayedEvent(16000, [this]() -> void
+                    if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(16000, [this]() -> void
                     {
                         me->GetMotionMaster()->MovePoint(0, 3837.48f, 1729.83f, 946.42f);
                     });

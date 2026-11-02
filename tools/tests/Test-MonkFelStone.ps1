@@ -8,7 +8,9 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  if((Shape $source.Replace('void AddSC_monk_fel_stone();','').Replace('AddSC_monk_fel_stone();','')) -cne (Shape $prior)){throw 'Other scenario registration changed'}
  foreach($path in @('src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp','src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp')){
   $prior=(& git -C $repo show "53953490f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned original actor/instance missing'}
-  if((Shape (Get-Content "$repo/$path" -Raw)) -cne (Shape $prior)){throw 'Original actors or shared instance changed'}
+  $actual=Get-Content "$repo/$path" -Raw
+  if($actual.Contains('chenPresentation') -or $actual.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(16000,')){& "$PSScriptRoot/Test-MonkChenPresentation.ps1" -ScopeOnly;$actual=(& git -C $repo show "6cb25d055:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-presentation source missing'}}
+  if((Shape $actual) -cne (Shape $prior)){throw 'Original actors or shared instance changed'}
  }
  $cpp=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_fel_stone.cpp" -Raw
  $expected='void AddSC_monk_fel_stone(){RegisterCreatureAI(npc_monk_fel_stone);RegisterSpellAndAuraScriptPair(spell_monk_fel_stone,aura_monk_fel_stone_scene);RegisterSpellScript(spell_monk_fel_stone_event);RegisterSpellAndAuraScriptPair(spell_monk_fel_stone_pilgrimage,aura_monk_fel_stone_pilgrimage);new player_monk_fel_stone();}'

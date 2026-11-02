@@ -50,7 +50,7 @@ namespace ObjectAccessor{std::map<ObjectGuid,Unit*> units;std::map<ObjectGuid,Pl
 namespace ObjectAccessor{Unit* GetUnit(Unit const& caller,ObjectGuid guid){auto p=GetPlayer(caller,guid);if(p)return p;auto f=units.find(guid);return f!=units.end()&&f->second->map==caller.map?f->second:nullptr;}}
 #include "Owner.inc"
 #include "QuestDelay.inc"
-struct Motion{uint32 points=0,follows=0,requests=0;bool install=true;std::vector<uint32> paths;WaypointMovementGenerator<Creature> waypoint;MovementGenerator* idle=nullptr;MovementGenerator* current=nullptr;Movement::MoveSpline* spline=nullptr;void MovePoint(uint32,float,float,float){++points;idle=current=nullptr;}void MovePath(uint32 id,bool){++requests;if(!install)return;paths.push_back(id);waypoint._pathId=id;waypoint.Bind(sWaypointMgr->GetPathScript(id));waypoint.Node(0);idle=current=&waypoint;if(spline)spline->done=false;}void MoveFollow(Unit*,float,float,uint32){++follows;}MovementGenerator* GetMotionSlot(uint32){return idle;}bool empty()const{return !current;}MovementGenerator* top(){return current;}void Retire(){idle=current=nullptr;}};
+struct Motion{uint32 points=0,follows=0,requests=0;bool install=true;std::vector<uint32> paths;WaypointMovementGenerator<Creature> waypoint;MovementGenerator* idle=nullptr;MovementGenerator* current=nullptr;Movement::MoveSpline* spline=nullptr;std::function<void()> onPoint;void MovePoint(uint32,float,float,float){++points;idle=current=nullptr;if(onPoint)onPoint();}void MovePath(uint32 id,bool){++requests;if(!install)return;paths.push_back(id);waypoint._pathId=id;waypoint.Bind(sWaypointMgr->GetPathScript(id));waypoint.Node(0);idle=current=&waypoint;if(spline)spline->done=false;}void MoveFollow(Unit*,float,float,uint32){++follows;}MovementGenerator* GetMotionSlot(uint32){return idle;}bool empty()const{return !current;}MovementGenerator* top(){return current;}void Retire(){idle=current=nullptr;}};
 struct Creature:Unit{
  CreatureAI* i_AI=nullptr;CreatureAI* i_disabledAI=nullptr;bool m_AI_locked=false,IsAIEnabled=true;
  DeathState deathState=ALIVE;DeathState getDeathState(){return deathState;}
@@ -87,6 +87,7 @@ struct InstanceScript{Map* instance;uint32 baseCreates=0,forScript=0;explicit In
 #include "InstanceUpdate.inc"
 #include "Rescue.inc"
 #include "Jorvinax.inc"
+#include "Presentation.inc"
 #include "Actor.inc"
 #include "BaselineActor.inc"
 #include "Instance.inc"

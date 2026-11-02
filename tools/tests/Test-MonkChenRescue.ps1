@@ -12,7 +12,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  if($hasArrival){
   & "$PSScriptRoot/Test-MonkChenArrival.ps1" -ScopeOnly
   $preArrival=(& git -C $repo show "b015d4e28:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-arrival actor missing'}
-  $source=$source.Replace($currentActor,(Block $preArrival 'class npc_monk_chen_porter :'))
+  $source=$source.Replace((Block $source 'class npc_monk_chen_porter :'),(Block $preArrival 'class npc_monk_chen_porter :'))
  }
  $actor=Block $source 'class npc_monk_chen_porter :';$previous=Block $old 'class npc_monk_chen_porter :'
  $guard=Block $actor 'if (MonkChenRescue::Source(me))'
@@ -36,13 +36,14 @@ if (MonkChenRescue::Source(me))
  $ip='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$actual=(Get-Content "$repo/$ip" -Raw).Replace("`r",'');$prior=(& git -C $repo show "6b6fae36c:$ip") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-rescue instances missing'}
  $currentInstance=Block $actual 'struct instance_monk_intro :'
  if($hasJorvinax){$actual=(& git -C $repo show "7bf4d7a50:$ip") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Jorvinax instance missing'}}
- if($hasArrival){$preArrivalInstance=(& git -C $repo show "b015d4e28:$ip") -join "`n";if($LASTEXITCODE){throw 'Certified pre-arrival instance missing'};$actual=$actual.Replace($currentInstance,(Block $preArrivalInstance 'struct instance_monk_intro :'))}
+ if($hasArrival){$preArrivalInstance=(& git -C $repo show "b015d4e28:$ip") -join "`n";if($LASTEXITCODE){throw 'Certified pre-arrival instance missing'};$actual=$actual.Replace((Block $actual 'struct instance_monk_intro :'),(Block $preArrivalInstance 'struct instance_monk_intro :'))}
  $instance=Block $actual 'struct instance_monk_intro :';$oldInstance=Block $prior 'struct instance_monk_intro :'
  if((Shape $actual.Replace($instance,$oldInstance).Replace('#include "../../Monk/Intro/chen_rescue.h"','')) -cne (Shape $prior)){throw 'Other shared Rogue/Mage/Priest instances/brewer changed'}
  if(!$instance.Contains('InstanceScript::OnCreatureCreate(actor);') -or !$instance.Contains('InstanceScript::GetGuidData(type)')){throw 'Native base create/GUID behavior must remain'}
  if($ScopeOnly){'PASS exact Chen rescue source/status/claim bridge only; all original nine timers/arrival/text/combat and other Monk/shared instance bodies retained';return}
  [IO.File]::WriteAllText("$out/Actor.inc",$currentActor+';');[IO.File]::WriteAllText("$out/BaselineActor.inc",$previous.Replace('npc_monk_chen_porter','npc_monk_chen_porter_baseline')+';');[IO.File]::WriteAllText("$out/Instance.inc",$currentInstance+';')
  [IO.File]::WriteAllText("$out/Jorvinax.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/jorvinax_defeat.h" -Raw).Replace('#include "chen_rescue.h"','#include "Rescue.inc"'))
+ [IO.File]::WriteAllText("$out/Presentation.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_presentation.h" -Raw).Replace('#include "chen_rescue.h"','#include "Rescue.inc"'))
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h" "$out/Rescue.inc"
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_arrival.h" "$out/chen_arrival.h"
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_routes.h" "$out/chen_routes.h"

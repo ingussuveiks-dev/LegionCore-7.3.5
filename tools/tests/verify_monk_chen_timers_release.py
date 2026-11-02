@@ -5,7 +5,7 @@ import json
 import re
 import runpy
 import struct
-from capstone import CS_OP_MEM
+from capstone import CS_OP_MEM,CS_OP_IMM
 from sharasdal_erunak_entry_pe import sites, values
 from monk_intro_clock_pe import verify_clock
 
@@ -28,12 +28,30 @@ destroy_site,=sites(n,destroy,'??1FunctionProcessor@@')
 assert (destroy[destroy_site-1].mnemonic,destroy[destroy_site-1].op_str)==('add','rcx, 0x40')
 assert not sites(n,ins(method('UpdateAI')),'?Update@FunctionProcessor@@')
 guid_callbacks=0;native_text_calls=0
+def reaches_without(body,target,blocked):
+    by_address={op.address:i for i,op in enumerate(body)};pending=[body[0].address];seen=set()
+    while pending:
+        address=pending.pop()
+        if address in seen or address in blocked or address not in by_address:continue
+        if address==target:return True
+        seen.add(address);op=body[by_address[address]]
+        if op.mnemonic in ('ret','int3','ud2'):continue
+        if op.mnemonic.startswith('j') and op.operands[0].type==CS_OP_IMM:pending.append(op.operands[0].imm)
+        if op.mnemonic!='jmp':pending.append(op.address+op.size)
+    return False
 for name,delays in (('MovementInform',[3000,7000,11000,15000,15000,16000]),('SetData',[4000,5000,8000])):
     body=ins(method(name));queued=sites(n,body,'?AddDelayedEvent@FunctionProcessor@@')
     assert len(queued)==len(delays) and not sites(n,body,'?AddDelayedEvent@Unit@@')
     for at,delay in zip(queued,delays):
         previous=[(op.mnemonic,op.op_str) for op in body[at-6:at]]
-        assert any(m=='lea' and re.fullmatch(r'rcx, \[r(?:di|bx) \+ 0x40\]',s) for m,s in previous)
+        direct=any(m=='lea' and re.fullmatch(r'rcx, \[r(?:di|bx) \+ 0x40\]',s) for m,s in previous)
+        if not direct:
+            # The scoped presentation successor retains this exact queue in
+            # callee-saved RBX across the four personal unscoped callbacks.
+            assert name=='MovementInform' and ('mov','rcx, rbx') in previous
+            clocks=[i for i,op in enumerate(body[:at]) if (op.mnemonic,op.op_str)==('lea','rbx, [rdi + 0x40]')]
+            assert clocks and not reaches_without(body,body[at].address,{body[i].address for i in clocks})
+            assert not any(op.op_str.startswith('rbx, ') and op.mnemonic not in ('cmp','test') and i not in clocks for i,op in enumerate(body[:at]) if i>min(clocks))
         assert ('mov',f'edx, {delay:#x}') in previous
     callbacks=[key for key in n['symbols'] if key.startswith('?_Do_call@') and '??'+name+suffix in key]
     assert len(callbacks)==len(delays)

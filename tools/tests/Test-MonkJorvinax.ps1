@@ -6,6 +6,8 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function Prior([string]$path){$s=(& git -C $repo show "7bf4d7a50:$path") -join "`n";if($LASTEXITCODE){throw "Pinned Jorvinax predecessor missing: $path"};$s}
  $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=Prior $path
+ $hasPresentation=$source.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(16000,')
+ if($hasPresentation){& "$PSScriptRoot/Test-MonkChenPresentation.ps1" -ScopeOnly;$source=(& git -C $repo show "6cb25d055:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-presentation actor missing'}}
  $actor=Block $source 'class npc_master_hait :';$previous=Block $old 'class npc_master_hait :'
  $arrival=Block $actor 'if (id == 8)';$oldArrival=Block $previous 'if (id == 8)'
  $bridge=@'
@@ -25,6 +27,7 @@ if (MonkChenRoutes::Source(me))
  $h=$h.Replace('(scenario->GetCurrentStep() > 5 && !EscortStage(scenario))','scenario->GetCurrentStep() > 5').Replace('if (EscortStage(scenario) && EscortLeaf()','if (scenario->GetCurrentStep() == 5 && EscortLeaf()').Replace('bool handoff = handoffPending && EscortStage(scenario) && EscortLeaf()','bool handoff = handoffPending && lastStep == 5 && EscortLeaf()').Replace('(escort ? progress->GetCurrentStep() != 4 : !EscortStage(progress))','progress->GetCurrentStep() != (escort ? 4u : 5u)')
  if((Shape $h) -cne (Shape $prior)){throw 'Other original Chen receipt or authored route behavior changed'}
  $ip='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$actual=(Get-Content "$repo/$ip" -Raw).Replace("`r",'');$priorInstances=Prior $ip
+ if($hasPresentation){$actual=(& git -C $repo show "6cb25d055:$ip") -join "`n";if($LASTEXITCODE){throw 'Certified pre-presentation instance missing'}}
  $normal=$actual.Replace('#include "../../Monk/Intro/jorvinax_defeat.h"','').Replace(', jorvinax(&chenRescue)','').Replace('MonkJorvinax::State jorvinax;','').Replace(' jorvinax.Death(actor, killer);','').Replace('if (type == MonkJorvinax::ArrivalData) jorvinax.Arrival(value);','').Replace(' jorvinax.Update(diff);','')
  if((Shape $normal) -cne (Shape $priorInstances)){throw 'Other instance/base/shared behavior changed'}
  if($ScopeOnly){'PASS exact real-Jorvinax instance death/update and native Hait victory bridge; genuine6-only escort continuation, all other original actor/instance/timer behavior retained';return}

@@ -29,7 +29,10 @@ factory=ins('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@
 script,sraw=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
 assert vt in refs(factory) and script in refs(ins('?AddSC_instance_class_art_scenarios@@'))
 assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')==resolved(sraw)[1]
-jorvinax_successor=0x418 in values(factory)
+presentation_successor=0x430 in values(factory)
+jorvinax_successor=0x418 in values(factory) or presentation_successor
+if presentation_successor:
+    assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),('mov','word ptr [rsi + 0x428], bx')}<=set(pairs(factory))
 routes_successor=0x3b8 in values(factory) or jorvinax_successor
 arrival_successor=0x380 in values(factory) or routes_successor
 if arrival_successor:
@@ -54,7 +57,12 @@ for name,target in (('CreatureDies','Death'),('Update','Update')):
     body=ins(instance(name))
     if jorvinax_successor:
         first,=sites(n,body,state(target));second,=sites(n,body,'?'+target+'@State@MonkJorvinax@@')
-        assert first<second and ('add','rcx, 0x2e0') in pairs(body[:first]) and ('lea','rcx, [rbx + 0x3b8]') in pairs(body[first:second])
+        context_argument=('lea','rcx, [rbx + 0x2e0]') if presentation_successor and name=='Update' else ('add','rcx, 0x2e0')
+        assert first<second and context_argument in pairs(body[:first]) and ('lea','rcx, [rbx + 0x3b8]') in pairs(body[first:second])
+        if presentation_successor and name=='Update':
+            before,after=sites(n,body,'?Update@State@MonkChenPresentation@@')
+            assert before<first<second<after and body[after].mnemonic=='jmp'
+            assert ('xor','r8d, r8d') in pairs(body[:before]) and ('mov','r8b, 1') in pairs(body[second:after])
     else:assert pairs(body)[0]==('add','rcx, 0x2e0') and sites(n,body,state(target))==[1]
 created=ins(instance('OnCreatureCreate'))
 needs(created,'?OnCreatureCreate@InstanceScript@@','?GetGuidValue@Object@@','?Clear@ObjectGuid@@')

@@ -1,4 +1,4 @@
-param([ValidateSet('Chen','Hait')][string]$Actor='Chen')
+param([ValidateSet('Chen','Hait','Departure')][string]$Actor='Chen')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/monk-$($Actor.ToLower())-route-native/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null

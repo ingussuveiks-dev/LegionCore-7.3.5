@@ -19,7 +19,11 @@ def needs(body,*targets):
 
 factory=ins('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')
 vt,raw=table('??_7instance_monk_intro@@6B@',140)
-assert vt in refs(factory) and 0x418 in values(factory)
+presentation_successor=0x430 in values(factory)
+instance_size=0x430 if presentation_successor else 0x418
+assert vt in refs(factory) and instance_size in values(factory)
+if presentation_successor:
+    assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),('mov','word ptr [rsi + 0x428], bx')}<=set(pairs(factory))
 registration,script=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
 assert registration in refs(ins('?AddSC_instance_class_art_scenarios@@'))
 assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')==resolved(script)[1]
@@ -31,7 +35,8 @@ assert {('lea','rdi, [rsi + 0x2e0]'),('mov','word ptr [rdi + 0xd4], bx'),
 for name,target in (('CreatureDies','Death'),('Update','Update')):
     body=ins(instance(name));assert n['symbol'](instance(name)) in resolved(raw)
     before,=sites(n,body,context(target));after,=sites(n,body,state(target))
-    assert before<after and ('add','rcx, 0x2e0') in pairs(body[:before])
+    context_argument=('lea','rcx, [rbx + 0x2e0]') if presentation_successor and name=='Update' else ('add','rcx, 0x2e0')
+    assert before<after and context_argument in pairs(body[:before])
     assert ('lea','rcx, [rbx + 0x3b8]') in pairs(body[before:after])
 
 death=ins(state('Death'));update=ins(state('Update'));ready=ins(state('Ready'))
@@ -96,4 +101,4 @@ for body in (death,update,request):
         assert not sites(n,body,forbidden)
 assert b'Monk Jorvinax: genuine98217 death46951 not acknowledged; retaining original quest attempts' in n['binary']
 print('PASS actual registered Jorvinax real-death receipt: original98217/362203/full GUID/weak quest12103, native owner dispatch retained, missing46951-only real29071/6 acknowledgement, actual2s retry/epoch revalidation, bound9859006 node8/native endpoint and once-before-personal15 text, genuine6-only original escort continuation. Separate retained full-chain PE/client combat and visuals remain distinct.')
-print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'scenario':943,'event':46951,'criterion':29071,'arrival_protocol':94350,'instance_size':0x418}))
+print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'scenario':943,'event':46951,'criterion':29071,'arrival_protocol':94350,'instance_size':instance_size}))
