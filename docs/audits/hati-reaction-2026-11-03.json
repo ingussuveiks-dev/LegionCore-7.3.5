@@ -36,5 +36,10 @@
     "Unknown shared101430/103151 LINK2 and WardstoneLINK4, Survival39427 flight, Fu Zan/Yigthregor/original ride, LiLi/Ponshu and earlier all36 findings remain OPEN. Do not infer missing payloads or clear mixed DBErrors."
   ],
   "fix_commit": "2a29d25941e53b153af7483a5df68b98ccc25ad5",
-  "closed_archive": "docs/audits/hati-reaction-archive-2026-11-03.json"
+  "closed_archive": "docs/audits/hati-reaction-archive-2026-11-03.json",
+  "non_player_followup": {
+    "audit": "docs/audits/hati-owner-2026-11-03.json",
+    "fix_commit": "05a67a351c52e255d313e6bd12cceb1910f350c6",
+    "status": "The separately recorded non-Player update assumption is repaired/deployed; native pinned ASAN counterfactual and12+145 repaired cases pass. Original Player/passive behavior retained; client/full Titanstrike/all36 still open."
+  }
 }

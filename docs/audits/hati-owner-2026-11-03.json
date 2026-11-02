@@ -29,9 +29,11 @@
     "sql_required": false,
     "owned_worldserver": "PID10452 ready/shutdown0/exit0/gone; stderr empty"
   },
-  "diagnostics": "Before/after canonical/root/own crash hashes/log lengths/timestamps and each exit/full stdout/stderr inspected. Deliberate baseline ASAN failure retained with its passing repaired regression. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Native getter local/member shadow warning retained. Canonical Crashes empty; existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unresolved/unchanged/untruncated. Fixed archive follows matching deployed regression and focused commit; unrelated open evidence remains outside fixed.",
+  "diagnostics": "Before/after canonical/root/own crash hashes/log lengths/timestamps and each exit/full stdout/stderr inspected. Deliberate baseline ASAN failure retained with its passing repaired regression. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Native getter local/member shadow warning retained. Canonical Crashes empty; existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unresolved/unchanged/untruncated. Fixed archive follows matching deployed regression and focused commit; unrelated open evidence remains outside fixed. Verified ignored fixed archive:280 sources/282 payloads/18 reviewed diagnostic sets, manifestF3FB4F8EAEC03DFA9117942A9960C84DDDD81349C0E2710CC2CA53F9CE515AC4; source/archive/source and final hashes verified. No active report to remove, mixed log untouched; original evidence retained.",
   "remaining": [
     "Actual client passive/attack/stay/formation/portrait, summon/dismiss/revive/reconnect and full Titanstrike/all36 remain unverified beyond earlier specifically recorded user observations. NPC/GM context is a controlled native regression, not an actual client traversal.",
     "Unknown shared101430/103151 LINK2 and WardstoneLINK4 payloads remain unproven; do not delete links or invent actions. Survival39427 middle flight, Fu Zan/Yigthregor/original ride, LiLi/Ponshu and other recorded acquisition/recovery/visual findings remain OPEN. User owns client testing; reset3 consumed, no further reset authorized."
-  ]
+  ],
+  "fix_commit": "05a67a351c52e255d313e6bd12cceb1910f350c6",
+  "closed_archive": "docs/audits/hati-owner-archive-2026-11-03.json"
 }

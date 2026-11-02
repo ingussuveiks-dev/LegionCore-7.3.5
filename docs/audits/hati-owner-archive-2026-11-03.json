@@ -1,0 +1,11 @@
+{
+  "FixCommit": "05a67a351c52e255d313e6bd12cceb1910f350c6",
+  "Archive": "build-extractors\\bin\\Release\\fixed\\hati-owner-2026-11-03\\verified1",
+  "Sources": 280,
+  "Payloads": 282,
+  "ReviewedDiagnosticSets": 18,
+  "ManifestSHA256": "F3FB4F8EAEC03DFA9117942A9960C84DDDD81349C0E2710CC2CA53F9CE515AC4",
+  "SourceArchiveSourceVerified": true,
+  "ActiveCrashes": 0,
+  "MixedLogUnchanged": true
+}
