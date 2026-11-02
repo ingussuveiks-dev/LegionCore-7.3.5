@@ -39,6 +39,11 @@ int main(int argc, char** argv)
         std::cout << "MAP\t" << map->ID << '\t' << unsigned(map->InstanceType) << '\t' << unsigned(map->MaxPlayers) << '\t' << map->MapName->Str[0] << '\n';
     for (auto entry : mapDifficulties) if (entry->MapID == 1014)
         std::cout << "MAP_DIFFICULTY\t" << entry->ID << '\t' << unsigned(entry->DifficultyID) << '\t' << unsigned(entry->MaxPlayers) << '\n';
+    for (auto effect : effects)
+        if (effect->EffectTriggerSpell == 194141 || effect->EffectTriggerSpell == 200617 ||
+            (effect->EffectAura == 430 && effect->EffectMiscValue[0] == 1111))
+            std::cout << "FINAL_INCOMING\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t'
+                << effect->Effect << '\t' << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t' << effect->EffectTriggerSpell << '\n';
     std::set<uint32> pending{193890}, seen;
     for (auto effect : effects) if (effect->EffectMiscValue[0] == 46951 || effect->EffectMiscValue[0] == 46952)
     {
@@ -97,6 +102,7 @@ int main(int argc, char** argv)
     for (auto step : steps) if (step->ScenarioID == 943)
     {
         ++count;
+        std::cout << "STEP_REWARD\t" << step->ID << '\t' << step->RewardQuestID << '\n';
         std::cout << "STEP\t" << step->ID << '\t' << unsigned(step->OrderIndex) << '\t'
             << step->Criteriatreeid << '\t' << step->Title->Str[0] << '\t' << step->Description->Str[0] << '\n';
         std::set<uint32> nodes{uint32(step->Criteriatreeid)}, visited;

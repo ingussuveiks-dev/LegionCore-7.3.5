@@ -156,6 +156,7 @@ void AddSC_instance_sharasdal();
 
 // Monk Art
 void AddSC_monk_intro_scenario();
+void AddSC_monk_fel_stone();
 
 void AddSC_Sheylun();
 
@@ -347,6 +348,7 @@ void AddScenarioScripts()
 
     // Monk Art
     AddSC_monk_intro_scenario();
+    AddSC_monk_fel_stone();
 
     AddSC_Sheylun();
 
