@@ -65,11 +65,23 @@
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
     "active_crashes": 0,
-    "coverage_limit": "Controlled native/component endpoints, static mmap paths and actual linked PE/startup do not prove client conversation playback, spline traversal, rendering or full quest chain. Parent historical coverage limits remain in parent audits."
+    "coverage_limit": "Controlled native/component endpoints, static mmap paths and actual linked PE/startup do not prove client conversation playback, spline traversal, rendering or full quest chain. Parent historical coverage limits remain in parent audits.",
+    "archive": {
+      "FixCommit": "b92486a2fb3f9f1199010c6bc383292221c2e2f6",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\monk-chen-presentation-2026-11-02\\verified1",
+      "Sources": 2886,
+      "Payloads": 2888,
+      "ManifestSHA256": "E0727C446D3A96EFF51C626EC9682351052F0086BD996D958473B22594FFA74D",
+      "SourceArchiveSourceVerified": true,
+      "ReviewedDiagnosticSets": 224,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "User client: actual dialogue/voice gaps, all four actions, Chen point0 spline/arrival, Hait15s route, portal/turn-in and full943/all36 remain unverified. Optional missing original guide at its due callback is still skipped once like native behavior, not replayed later or fabricated; if the owner is unavailable until12/13 begins, stale greetings retire. New state records issued/retired native attempts, not proof of audible delivery.",
     "Earlier rescue4s/5s AI-owned callbacks remain outside this focused late-outro fix. Fresh context also reveals98074 SendChat0 has no matching text group: live rows onlyGroup3/99968/99970 with duplicate ID0/different native timing. Preserve/open separate research .codex/chen-student-open-state.txt; do not silently substitute3, delete rows or suppress diagnostics. This finding is not fixed by late presentation ownership.",
     "Original actors physically removed/replaced by a new GUID, exact-stage logout/relogin/server restart persistence, shared101430/103151 LINK2, WardstoneLINK4, Survival39427 middle flight, Fu Zan ride/Yigthregor, Warrior recovery/cross-conversation and Stromkar client visual findings remain OPEN. No additional reset authorized; continue independent repairs."
-  ]
+  ],
+  "fix_commit": "b92486a2fb3f9f1199010c6bc383292221c2e2f6"
 }
