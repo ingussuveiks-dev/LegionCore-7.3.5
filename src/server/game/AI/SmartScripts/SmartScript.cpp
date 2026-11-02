@@ -1440,9 +1440,28 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
             {
                 if (IsCreature(*itr))
-                    (*itr)->ToCreature()->AI()->SetData(e.action.setData.field, e.action.setData.data);
+                {
+                    if (CreatureAI* ai = (*itr)->ToCreature()->AI())
+                    {
+                        ai->SetData(e.action.setData.field, e.action.setData.data);
+                        continue;
+                    }
+                }
                 else if (IsGameObject(*itr))
-                    (*itr)->ToGameObject()->AI()->SetData(e.action.setData.field, e.action.setData.data);
+                {
+                    if (GameObjectAI* ai = (*itr)->ToGameObject()->AI())
+                    {
+                        ai->SetData(e.action.setData.field, e.action.setData.data);
+                        continue;
+                    }
+                }
+                else
+                    continue;
+
+                // AI replacement can leave a live receiver without a current AI.
+                // Do not dispatch to a suspended AI or replay data into a different one.
+                TC_LOG_WARN("scripts.ai", "SmartScript::ProcessAction: Entry " SI64FMTD " SourceType %u Event %u SET_DATA %u/%u not delivered to receiver %u (%s): no current AI.",
+                    e.entryOrGuid, e.GetScriptType(), e.event_id, e.action.setData.field, e.action.setData.data, (*itr)->GetEntry(), (*itr)->GetGUID().ToString().c_str());
             }
 
             delete targets;

@@ -24,9 +24,13 @@ flags=[i for i,x in enumerate(b[:-2]) if x.mnemonic=='mov' and len(x.operands)==
        b[i+1].mnemonic=='shr' and b[i+1].operands[1].type==CS_OP_IMM and b[i+1].operands[1].imm==8 and b[i+2].mnemonic=='and' and b[i+2].operands[1].imm==1]
 if not flags:
  flags=[i for i,x in enumerate(b[:-8]) if
-        [(o.mnemonic,o.op_str) for o in b[i:i+8]]==[
+        any([(o.mnemonic,o.op_str) for o in b[i:i+8]]==[
          ('mov','edi, dword ptr [r15 + 0x5c]'),('mov','ebx, edi'),('shr','ebx, 8'),('and','bl, 1'),
-         ('mov','dword ptr [rsp + 0x120], ebx'),('mov','byte ptr [rsp + 0x142], bl'),('shr','edi, 9'),('and','dil, 1')]]
+         ('mov',f'dword ptr [rsp + {word}], ebx'),('mov',f'byte ptr [rsp + {byte}], bl'),('shr','edi, 9'),('and','dil, 1')]
+         # The explicit SET_DATA warning grows ProcessAction's stack frame;
+         # accept only the two inspected spill pairs, retaining the full
+         # uninterrupted flag load/copy/bit8/bit9 proof in either layout.
+         for word,byte in (('0x120','0x142'),('0x130','0x152'))) ]
 assert len(flags)==1
 assert any(x.mnemonic=='call' and x.operands[0].type==CS_OP_IMM and
            n['resolve'](x.operands[0].imm)==n['symbol']('?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@I_N') for x in b)
