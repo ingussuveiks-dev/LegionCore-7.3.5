@@ -96,11 +96,23 @@
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
     "active_crashes": 0,
-    "coverage_limit": "Controlled component/native handlers, actual data/PE/startup are distinct from full client scene/quest traversal. Destination acknowledgement uses controlled arrival endpoints in components; canonical startup is not actual player traversal."
+    "coverage_limit": "Controlled component/native handlers, actual data/PE/startup are distinct from full client scene/quest traversal. Destination acknowledgement uses controlled arrival endpoints in components; canonical startup is not actual player traversal.",
+    "archive": {
+      "FixCommit": "0ffa9a6ffbb59fbce06101cc7371bdd941c25641",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\monk-fel-stone-2026-11-02\\verified1",
+      "Sources": 1099,
+      "Payloads": 1101,
+      "ManifestSHA256": "5E8483D4751F493DB031D82DDBE957DB39D2DC15A20FE371209CED553DEA3025",
+      "SourceArchiveSourceVerified": true,
+      "ReviewedDiagnosticSets": 72,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "User client: real193890/1111 animation/camera/skip/expiry, marker/model, proper return1514, visibility/turn-in12103/reward, repeat/relog/pet/guardian/group/faction and full943. No actual client traversal or all36 completion claimed. No new reset.",
     "Native real child outcomes retain earned objectives across a failed click retry, but in-memory scene ownership and original weak attempt are not persisted across logout/server restart. Exact-stage replay/recovery and physically removed/replaced original actors remain separate open investigation.",
     "Continue remaining independent all36 repairs: original Chen presentation timers/point0 retirement, Warrior cross-conversation/recovery, Fu Zan ride/Yigthregor, shared101430/103151 LINK2, Wardstone missingLINK4, Survival39427 middle flight and Stromkar client visual findings. Preserve all older unresolved audits; do not invent missing actions or erase diagnostics."
-  ]
+  ],
+  "fix_commit": "0ffa9a6ffbb59fbce06101cc7371bdd941c25641"
 }
