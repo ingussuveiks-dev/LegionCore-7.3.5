@@ -14,6 +14,8 @@ if((Shape $expected) -cne (Shape $actual)){throw 'Shared instance changed beyond
 if($ScopeOnly){'PASS exact Danica nearest-player death-credit removal and actual shared-instance owned first-wave death/update hooks; all other Warrior and Paladin behavior preserved';return}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/warrior-first-wave"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Warrior/Intro/first_wave_transition.h" "$out/FirstWave.inc"
+$oldFirstWave=(& git -C $repo show '45315534e:src/server/scripts/Scenario/Artifacts/Warrior/Intro/first_wave_transition.h') -join "`n";if($LASTEXITCODE){throw 'Pinned early-death first-wave baseline missing'}
+[IO.File]::WriteAllText("$out/BaselineFirstWave.inc",$oldFirstWave.Replace('namespace WarriorFirstWave','namespace WarriorFirstWaveBaseline'))
 $helper=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/Intro/malgalor_finale.h" -Raw
 [IO.File]::WriteAllText("$out/Original.inc",'namespace MalgalorFinale {'+(Block $helper 'struct Member')+';'+(Block $helper 'inline uint32 Quest(')+(Block $helper 'inline Player* Original(')+'}')
 [IO.File]::WriteAllText("$out/Legacy.inc",$legacy)

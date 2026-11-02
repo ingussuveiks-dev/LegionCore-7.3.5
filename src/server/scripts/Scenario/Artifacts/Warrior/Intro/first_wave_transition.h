@@ -55,7 +55,7 @@ namespace WarriorFirstWave
         void Death(Creature* actor, Unit* killer)
         {
             Scenario* scenario = Progress();
-            if (pending || !scenario || scenario->GetCurrentStep() != 1 || !actor ||
+            if (pending || !scenario || scenario->GetCurrentStep() > 1 || !actor ||
                 actor->GetMap() != map || !actor->IsInWorld() || actor->IsPreDelete() || actor->IsAlive() ||
                 actor->GetEntry() != 102970 || actor->GetDBTableGUIDLow() != 361138 ||
                 actor->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1)) return;
@@ -86,9 +86,13 @@ namespace WarriorFirstWave
         {
             if (!pending) return;
             Scenario* scenario = Progress();
-            if (!scenario || scenario->GetCurrentStep() != 1 ||
+            if (!scenario || scenario->GetCurrentStep() > 1 ||
                 std::none_of(members.begin(), members.end(), [this](MalgalorFinale::Member const& member) { return Retained(member); }))
             { pending = false; members.clear(); return; }
+            // A ranged/pet/ally kill can precede the Ragnvald approach.
+            // Remember the real death, but let native46877 advance step0;
+            // no later-tree event is emitted while that prerequisite waits.
+            if (scenario->GetCurrentStep() == 0) return;
             if (retry > diff) { retry -= diff; return; }
             retry = 2000;
             for (auto const& member : members)

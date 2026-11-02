@@ -32,7 +32,7 @@ body=ins(death);capture,=sites(n,body,'?AddQuestDelayedEvent@Player@@')
 needs(body,progress,'?Quest@MalgalorFinale@@','?GetQuestStatus@Player@@',
       '?GetReqKillOrCastCurrentCount@Player@@','?InSamePhase@WorldObject@@',
       '?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@',update)
-for operand,jump in (('byte ptr [r12 + 0x34], 0','jne'),('eax, 1','jne'),
+for operand,jump in (('byte ptr [r12 + 0x34], 0','jne'),('eax, 1','ja'),
                      ('qword ptr [r15 + 8], rax','jne'),('dword ptr [r15 + 0xa18], 0','je'),
                      ('eax, 0x1923a','jne'),('qword ptr [r15 + 0x3a88], 0x582b2','jne')):
     at=next(i for i,op in enumerate(body[:capture]) if op.mnemonic=='cmp' and op.op_str==operand)
@@ -59,6 +59,12 @@ needs(body,progress,current,leaf,'?outMessage@Log@@')
 needs(body,'?Retained@State@WarriorFirstWave@@')
 assert b'Warrior first wave: real361138 death46878/47474 not acknowledged' in n['binary']
 one,two=events
+opening_wait=[]
+for at in sites(n,body,'?GetCurrentStep@Scenario@@'):
+    if at<one and pairs(body[at+1:at+2])==[('test','eax, eax')] and body[at+2].mnemonic=='je':
+        assert not {body[i].address for i in events}&reachable(body,body[at+2].operands[0].imm)
+        opening_wait.append(at)
+assert len(opening_wait)==1,'Actual step0 must return without emitting either later-tree event'
 assert ('mov','r8d, 0xb71e') in pairs(body[one-6:one]) and ('mov','rcx, r14') in pairs(body[one-3:one])
 assert ('mov','r8d, 0xb972') in pairs(body[two-6:two]) and ('mov','rcx, r15') in pairs(body[two-3:two])
 assert sites(n,body[one+1:two],progress) and sites(n,body[one+1:two],current)
@@ -79,5 +85,5 @@ for forbidden in ('?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?Ad
 danica=ins('?IsSummonedBy@npc_danica_the_reclaimerAI@')
 assert not sites(n,danica,'?FindNearestPlayer@WorldObject@@')
 assert not sites(n,danica,'?UpdateAchievementCriteria@Player@@'),'Danica summon must not own first-wave player credit'
-print('PASS actual registered shared-instance death/update: real102970/spawn361138, map1500/native933 step1/dead/world/predelete/immunity guards precede original quest-lifetime capture. Full128-bit participant GUID and weak attempt, owner/pet/guardian priority, refreshed original Player and actual45771/46175 receipts gate native46878/47474,2000ms retry skips accepted leaves. Danica summon contains no nearest-player or first-wave credit call; existing Paladin/reinforcement/finale and2/3s actor paths retained. No character/item/quest grants; full933/client/opening and ritual remain separate.')
+print('PASS actual registered shared-instance death/update: real102970/spawn361138, map1500/native933 steps0/1/dead/world/predelete/immunity guards precede original quest-lifetime capture; actual step0 returns before either later-tree event, retaining only a genuine death until native step1. Full128-bit participant GUID and weak attempt, owner/pet/guardian priority, refreshed original Player and actual45771/46175 receipts gate native46878/47474,2000ms retry skips accepted leaves. Danica summon contains no nearest-player or first-wave credit call; existing Paladin/reinforcement/finale and2/3s actor paths retained. No character/item/quest grants; full933/client/opening and ritual remain separate.')
 print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'actual_death':102970,'spawn':361138,'native_events':[46878,47474]}))
