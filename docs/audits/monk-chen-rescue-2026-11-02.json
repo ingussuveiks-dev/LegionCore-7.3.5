@@ -70,12 +70,24 @@
     "active_crashes": 0,
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
-    "coverage_limit": "Earlier metadata/native catalog and static PE wrappers recorded canonical/declared output folders but omitted their inherited repository CWD from the pre-snapshot. That historical omission cannot be reconstructed; subsequent root review found no report, which is not a retrospective baseline. Final native6 explicitly records root, its own runtime and the shared catalog output before/after, and runs the real native catalog in its own captured runtime. Final canonical/review records root as well. Component exes already run in their explicitly captured fixture directories; owned worldserver runs in captured canonical Release. Original incomplete coverage and failed iterations remain visible."
+    "coverage_limit": "Earlier metadata/native catalog and static PE wrappers recorded canonical/declared output folders but omitted their inherited repository CWD from the pre-snapshot. That historical omission cannot be reconstructed; subsequent root review found no report, which is not a retrospective baseline. Final native6 explicitly records root, its own runtime and the shared catalog output before/after, and runs the real native catalog in its own captured runtime. Final canonical/review records root as well. Component exes already run in their explicitly captured fixture directories; owned worldserver runs in captured canonical Release. Original incomplete coverage and failed iterations remain visible.",
+    "archive": {
+      "FixCommit": "34a16eaa53ba1ff9491f85e499026343ec0eacb0",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\monk-chen-rescue-2026-11-02\\verified1",
+      "Sources": 539,
+      "Payloads": 541,
+      "ManifestSHA256": "3D9CB5CC607910CA5A47F6A2E8070DE09A1A586F6C9368AD987033AC34D17294",
+      "SourceArchiveSourceVerified": true,
+      "ReviewedDiagnosticSets": 27,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "Actual client Morvat combat/scaling/pet/guardian/one-hit rescue, original movement/children/dialogue/faction traversal and whole943/all36 remain user checks. Native admission/component/PE/startup evidence is distinct from client traversal.",
     "Original waypoint5 arrival46947 still uses the old nearest-player event and repeated waypoint delivery can replay the later six callbacks. Later Hait46951 and final46952 are separate progression paths; this focused real-death handoff does not certify them. Continue that next independent repair.",
     "The original three route callbacks remain AI-owned and retire on actual AI destruction. Replacement AFTER accepted escort start, lost original route/actor, abandonment after handoff, reconnect/new Player and exact-stage restart recovery are not persisted or certified here. Pending pre-handoff receipt survives AI replacement but never rebinds old death to a new quest token. A fresh native instance remains the honest restart boundary; no character reset is authorized.",
     "Shared101430/103151 LINK2, Wardstone LINK4, Survival39427 middle flight, Fu Zan original ride/Yigthregor, LiLi/Ponshu findings, Warrior cross-conversation/recovery and Stromkar client visuals remain OPEN. Do not invent actions/credits or hide diagnostics to reduce all36 findings."
-  ]
+  ],
+  "fix_commit": "34a16eaa53ba1ff9491f85e499026343ec0eacb0"
 }
