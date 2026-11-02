@@ -29,10 +29,12 @@
     "sql_required": false,
     "owned_worldserver": "PID28300 ready/shutdown0/exit0/gone; stderr empty"
   },
-  "diagnostics": "Before/after canonical/root/own crash hashes and log lengths/timestamps, native exits and full stdout/stderr inspected. Final no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Existing compiler warnings retained. Canonical Crashes empty; existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unresolved/unchanged/untruncated. Fixed archive follows focused implementation commit and matching deployed regressions; no unresolved shared history classified fixed.",
+  "diagnostics": "Before/after canonical/root/own crash hashes and log lengths/timestamps, native exits and full stdout/stderr inspected. Final no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Existing compiler warnings retained. Canonical Crashes empty; existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unresolved/unchanged/untruncated. Fixed archive follows focused implementation commit and matching deployed regressions; no unresolved shared history classified fixed. Verified ignored fixed archive:214 sources/216 payloads/13 reviewed diagnostic sets, manifestD19A0B2ED1291069E37F0ABFBCA5EC9A4BDB8C31A01DBF9561B76DA8CDC2A81E; source/archive/source and final hashes verified. No active report to remove, mixed log untouched; original evidence retained.",
   "remaining": [
     "Actual client passive/explicit attack/stay/formation/portrait, summon/dismiss/revive/reconnect and full Titanstrike/all36 remain separate user-owned checks. Native passive setter synchronization does not claim automatic interruption of a combat already started before synchronization; native direct reaction command still owns CombatStop.",
     "Review the same update missing-Hati branch non-Player caster assumption separately. The ordinary artifact source is a Player; a broader script/GM-applied aura context is not established safe by the current Player matrix. No extra grant or reset is authorized.",
     "Unknown shared101430/103151 LINK2 and WardstoneLINK4, Survival39427 flight, Fu Zan/Yigthregor/original ride, LiLi/Ponshu and earlier all36 findings remain OPEN. Do not infer missing payloads or clear mixed DBErrors."
-  ]
+  ],
+  "fix_commit": "2a29d25941e53b153af7483a5df68b98ccc25ad5",
+  "closed_archive": "docs/audits/hati-reaction-archive-2026-11-03.json"
 }
