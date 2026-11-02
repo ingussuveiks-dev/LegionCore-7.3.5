@@ -23,10 +23,12 @@
     "owned_worldserver": "PID29964 ready/shutdown0/exit0/empty stderr/gone",
     "sql_required": false
   },
-  "diagnostics": "Every native/ASAN/build/PE/promotion/startup/audit test snapshots canonical/root/own crash/log state before and after, checks exit/stdout/stderr/new warnings/errors/assertions/DBErrors. No new/changed runtime crash, appended DBErrors or unexplained server failure. Expected injected missing-data/controller warnings and test/inspector failures are explicitly paired with passing repaired checks. Existing unresolved mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains untouched/untruncated; active Crashes empty. Focused hash archive follows commit; no unresolved report is classified fixed.",
+  "diagnostics": "Every native/ASAN/build/PE/promotion/startup/audit test snapshots canonical/root/own crash/log state before and after, checks exit/stdout/stderr/new warnings/errors/assertions/DBErrors. No new/changed runtime crash, appended DBErrors or unexplained server failure. Expected injected missing-data/controller warnings and test/inspector failures are explicitly paired with passing repaired checks. Existing unresolved mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains untouched/untruncated; active Crashes empty. Focused hash archive follows commit; no unresolved report is classified fixed. Verified ignored fixed archive:3391 sources/3393 payloads/267 reviewed diagnostic sets, manifest92223FA3268F4B56F883E6E7B2A025DABCF315E7039A4F0138DF121FEAF65932; source/archive/source and final hashes verified. No active reports to remove, no mixed-log truncation; original evidence retained.",
   "remaining": [
     "User client: original Chen rescue speech/audio, four student follow paths/replies/appearance/phase,8s route, actual waypoint arrival/Hait/boss/Fel Stone/turn-in and full943/all36. Issued native actions are not proof of audible/network/rendered delivery. Initial Chen voice4443ms vs nominal4000ms callback is a separate metadata-budget finding; audio was decoded but not listened to, no audible overlap or timing fix claimed.",
     "Original physical actors replaced by new GUIDs, exact-stage logout/relogin/server restart persistence and original Nine Czi admission/initial handoff remain separate. No new player/actor is adopted into the original attempt.",
     "Shared101430/103151 LINK2, WardstoneLINK4, Survival39427 middle flight, Fu Zan original Yu lon ride/Yigthregor, LiLi7/8/Ponshu10, Warrior recovery/cross-conversation and Stromkar client visuals remain OPEN. Continue independent all36 repairs; no further character reset."
-  ]
+  ],
+  "fix_commit": "ddc478a60061ff90490b3741bf79d1ad0139568e",
+  "closed_archive": "docs/audits/monk-chen-early-presentation-archive-2026-11-02.json"
 }

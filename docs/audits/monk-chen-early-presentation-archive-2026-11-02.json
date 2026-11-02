@@ -1,0 +1,11 @@
+{
+  "FixCommit": "ddc478a60061ff90490b3741bf79d1ad0139568e",
+  "Archive": "build-extractors\\bin\\Release\\fixed\\monk-chen-early-presentation-2026-11-02\\verified1",
+  "Sources": 3391,
+  "Payloads": 3393,
+  "ReviewedDiagnosticSets": 267,
+  "ManifestSHA256": "92223FA3268F4B56F883E6E7B2A025DABCF315E7039A4F0138DF121FEAF65932",
+  "SourceArchiveSourceVerified": true,
+  "ActiveCrashes": 0,
+  "MixedLogUnchanged": true
+}
