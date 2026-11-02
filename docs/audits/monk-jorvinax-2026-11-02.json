@@ -65,11 +65,23 @@
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
     "active_crashes": 0,
-    "coverage_limit": "Native/component controlled endpoint tests, actual read-only catalog/live rows and linked PE/startup are distinct from real client combat/scene/visual/quest traversal. Historical parent limitations remain in parent audits."
+    "coverage_limit": "Native/component controlled endpoint tests, actual read-only catalog/live rows and linked PE/startup are distinct from real client combat/scene/visual/quest traversal. Historical parent limitations remain in parent audits.",
+    "archive": {
+      "FixCommit": "f2d72db05c524da3ce4dbb759736e9638d3a4ad4",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\monk-jorvinax-2026-11-02\\verified1",
+      "Sources": 2354,
+      "Payloads": 2356,
+      "ManifestSHA256": "2967FB20516C38C4FD0F08F9A26D8C0F71547364444633A1B000BB40136826F0",
+      "SourceArchiveSourceVerified": true,
+      "ReviewedDiagnosticSets": 176,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "Actual client full943/quest12103, boss combat/scaling/one-hit/pet/guardian/faction/group/re-entry/voice/rendering remain user checks; component fatal-death dispatch and startup do not certify them.",
     "Next trace native193890 scene1111/20s/aura430, native98353/19414146952/200617, existing unconditional98353 Smart73 teleport1514+LINK33 and duplicate colocated spawns. Rejected-cast/quest/current-tree/cleanup/real return should be fixed separately without inventing event, duration or deleting diagnostics.",
     "Other6 Chen AI-owned presentation callbacks/point0, physical source deletion/replacement/new quest/relog/server restart persistence, earlier shared101430/103151 LINK2/WardstoneLINK4/Survival39427 flight and all previous all36/client findings remain OPEN. No further reset authorized."
-  ]
+  ],
+  "fix_commit": "f2d72db05c524da3ce4dbb759736e9638d3a4ad4"
 }
