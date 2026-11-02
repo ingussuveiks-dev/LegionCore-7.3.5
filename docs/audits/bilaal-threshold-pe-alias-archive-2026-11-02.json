@@ -1,0 +1,11 @@
+{
+  "FixCommit": "644354d57062ff2cc41702983a3f2199299cc8b4",
+  "Archive": "build-extractors\\bin\\Release\\fixed\\bilaal-threshold-pe-alias-2026-11-02\\verified2",
+  "Sources": 116,
+  "Payloads": 118,
+  "ReviewedDiagnosticSets": 9,
+  "ManifestSHA256": "E5A4AF6D97F4E84BD0CEE977ECBAC6B861D69E3D5FC859F09C02BD848C7DB694",
+  "SourceArchiveSourceVerified": true,
+  "ActiveCrashes": 0,
+  "MixedLogUnchanged": true
+}
