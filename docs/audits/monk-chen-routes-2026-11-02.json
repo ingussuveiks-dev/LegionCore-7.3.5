@@ -100,12 +100,24 @@
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
     "active_crashes": 0,
-    "coverage_limit": "All new native/component/build/PE/runtime scripts are wrapped before first invocation including parser execution, inherited repo CWD and own runtime; native geometry also snapshots canonical/catalog paths. Parent historical coverage limits remain in their own audits, not reconstructed."
+    "coverage_limit": "All new native/component/build/PE/runtime scripts are wrapped before first invocation including parser execution, inherited repo CWD and own runtime; native geometry also snapshots canonical/catalog paths. Parent historical coverage limits remain in their own audits, not reconstructed.",
+    "archive": {
+      "FixCommit": "a99173f6065af28fcfa06e4270862ef70bea4785",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\monk-chen-routes-2026-11-02\\verified1",
+      "Sources": 1428,
+      "Payloads": 1430,
+      "ManifestSHA256": "73BFB21F90D11F2D2EA4979C2AE0F2F6A5ECD2D31255C3AFB0632E3E24681E63",
+      "SourceArchiveSourceVerified": true,
+      "ReviewedDiagnosticSets": 98,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "Actual client full Chen/Hait escort, dialogue timing/voice/phase/doors, combat/scaling/one-hit/pet/guardian/faction/group/reentry/rendering and full943/all36 remain user checks. Native components/geometry/PE/startup do not certify client traversal.",
     "Later actual Hait46951 still uses its native final arrival/nearest recipient; final46952 and quest completion/cleanup need separate source/owner/native-stage tracing. No later receipt is supplied by a route start. Continue next independent repair.",
     "Other AI-owned Chen4s/5s/3s/7s/11s/16s presentation and final Chen point0 can still retire if that AI is destroyed; essential8s and15s native route payloads now survive, not a persisted replay of all dialogue. Original actors physically deleted/replaced by another GUID, new Player/relog/server restart and exact-stage persistence remain OPEN. Original weak attempts never bind to a new quest; no new reset authorized.",
     "Shared101430/103151 LINK2, Wardstone LINK4, Survival39427 middle flight, Fu Zan ride/Yigthregor, Warrior cross-conversation/recovery and Stromkar client visual findings remain OPEN. Never invent missing actions or hide diagnostics to reduce all36 findings."
-  ]
+  ],
+  "fix_commit": "a99173f6065af28fcfa06e4270862ef70bea4785"
 }
