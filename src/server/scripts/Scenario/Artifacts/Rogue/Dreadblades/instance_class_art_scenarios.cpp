@@ -178,11 +178,16 @@ struct instance_monk_intro : public InstanceScript
     void CreatureDies(Creature* actor, Unit* killer) override { chenRescue.Death(actor, killer); }
     ObjectGuid GetGuidData(uint32 type) const override
     {
-        return type == MonkChenRescue::ClaimData ? chenRescue.claim : InstanceScript::GetGuidData(type);
+        if (type == MonkChenRescue::ClaimData) return chenRescue.claim;
+        if (type == MonkChenArrival::ClaimData) return chenRescue.arrivalClaim;
+        if (type == MonkChenArrival::PlayerData) return chenRescue.arrivalPlayer;
+        return InstanceScript::GetGuidData(type);
     }
     void SetGuidData(uint32 type, ObjectGuid value) override
     {
         if (type == MonkChenRescue::RequestData) chenRescue.Request(value);
+        if (type == MonkChenArrival::RouteData) chenRescue.Routed(value);
+        if (type == MonkChenArrival::RequestData) chenRescue.Arrived(value);
     }
     void Update(uint32 diff) override { chenRescue.Update(diff); }
 };

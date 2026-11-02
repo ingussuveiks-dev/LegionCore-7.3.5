@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include "chen_arrival.h"
 
 namespace MonkChenRescue
 {
@@ -29,6 +30,10 @@ struct State
     uint64 epoch = 0;
     uint32 retry = 0, lastStep = 0;
     bool pending = false, started = false, warned = false;
+    ObjectGuid arrivalClaim, arrivalPlayer;
+    bool routeIssued = false, arrivalSeen = false, arrivalDone = false, arrivalWarned = false;
+    uint32 arrivalRetryStart = 0;
+    bool arrivalWaiting = false;
 
     Scenario* Progress() const
     {
@@ -82,6 +87,8 @@ struct State
     void Cancel()
     {
         ++epoch; pending = false; claim.Clear(); members.clear(); retry = 0;
+        arrivalClaim.Clear(); arrivalPlayer.Clear(); arrivalDone = started;
+        arrivalWaiting = false;
     }
 
     void Observe(Creature* actor)
@@ -127,7 +134,7 @@ struct State
 
     void Update(uint32 diff)
     {
-        if (!pending) return;
+        if (!pending) { UpdateArrival(diff); return; }
         Scenario* scenario = Progress();
         if (!scenario || scenario->GetCurrentStep() < lastStep || scenario->GetCurrentStep() > 4 ||
             std::none_of(members.begin(), members.end(), [this](Member const& member) { return Retained(member) != nullptr; }))
@@ -159,13 +166,84 @@ struct State
                     if (!pending || epoch != generation) return;
                     ai = Content();
                     if (ai && ai->GetData(StatusData) == 2)
-                    { pending = false; started = true; claim.Clear(); members.clear(); return; }
+                    { pending = false; started = true; claim.Clear(); return; }
                     claim.Clear();
                 }
             }
         if (!warned)
             TC_LOG_WARN("scripts", "Monk Chen: genuine Morvat death46956/escort not acknowledged; retaining original quest attempts");
         warned = true;
+    }
+
+    bool EscortLeaf() const
+    {
+        Scenario* scenario = Progress();
+        if (!scenario) return false;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto found = progress->find(29070);
+        return found != progress->end() && found->second.Counter;
+    }
+
+    void Routed(ObjectGuid value)
+    {
+        Scenario* scenario = Progress();
+        if (started && !arrivalDone && value == chen && scenario && scenario->GetCurrentStep() == 4 && Leaf() &&
+            std::any_of(members.begin(), members.end(), [this](Member const& member) { return Retained(member) != nullptr; }) &&
+            MonkChenArrival::Issued(Actor())) routeIssued = true;
+    }
+
+    void Arrived(ObjectGuid value)
+    {
+        if (!started || !routeIssued || arrivalDone || arrivalSeen || value != chen || !MonkChenArrival::Callback(Actor())) return;
+        arrivalSeen = true; arrivalWaiting = false;
+        UpdateArrival(0);
+    }
+
+    void UpdateArrival(uint32 /*diff*/)
+    {
+        if (!started || arrivalDone) return;
+        Scenario* scenario = Progress();
+        if (!scenario || scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() < lastStep || scenario->GetCurrentStep() > 5 ||
+            std::none_of(members.begin(), members.end(), [this](Member const& member) { return Retained(member) != nullptr; }))
+        { Cancel(); return; }
+        lastStep = scenario->GetCurrentStep();
+        if (!arrivalSeen && routeIssued && MonkChenArrival::Recorded(Actor()))
+        { arrivalSeen = true; arrivalWaiting = false; }
+        if (!arrivalSeen) return;
+        // A callback can happen during Map::Update; the later instance diff
+        // also includes time BEFORE that receipt. Measure the full retry from
+        // the real attempt instead of spending that same frame twice.
+        if (arrivalWaiting && GetMSTimeDiffToNow(arrivalRetryStart) < 2000) return;
+        arrivalWaiting = true; arrivalRetryStart = getMSTime();
+        CreatureAI* ai = dynamic_cast<CreatureAI*>(Content());
+        if (!ai || ai->GetData(MonkChenArrival::StatusData) != 1 || !MonkChenArrival::Pose(Actor())) return;
+        uint64 generation = epoch;
+        auto original = members;
+        for (auto const& member : original)
+            if (Player* player = Current(member))
+            {
+                if (scenario->GetCurrentStep() == 4 && !EscortLeaf())
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46947);
+                if (!arrivalSeen || arrivalDone || epoch != generation) return;
+                scenario = Progress(); player = Current(member); ai = dynamic_cast<CreatureAI*>(Content());
+                if (!scenario || scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() < lastStep || scenario->GetCurrentStep() > 5)
+                { Cancel(); return; }
+                lastStep = scenario->GetCurrentStep();
+                if (scenario->GetCurrentStep() == 5 && EscortLeaf() && player && ai &&
+                    ai->GetData(MonkChenArrival::StatusData) == 1 && MonkChenArrival::Pose(Actor()))
+                {
+                    arrivalClaim = chen; arrivalPlayer = player->GetGUID();
+                    ai->MovementInform(WAYPOINT_MOTION_TYPE, 5);
+                    if (!arrivalSeen || arrivalDone || epoch != generation) return;
+                    ai = dynamic_cast<CreatureAI*>(Content());
+                    if (ai && ai->GetData(MonkChenArrival::StatusData) == 2)
+                    { arrivalDone = true; arrivalClaim.Clear(); arrivalPlayer.Clear(); return; }
+                    arrivalClaim.Clear(); arrivalPlayer.Clear();
+                }
+            }
+        if (!arrivalWarned)
+            TC_LOG_WARN("scripts", "Monk Chen: real9859005 last-node arrival46947/outro not acknowledged; retaining original quest attempts");
+        arrivalWarned = true;
     }
 };
 }

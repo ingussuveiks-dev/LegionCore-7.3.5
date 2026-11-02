@@ -20,6 +20,7 @@ $addition=@'
                 _presentationFunctions.Update(diff);
         }
 '@
+$addition=$addition.Replace("`r",'')
 $normalized=$actor.Replace($addition,'').Replace('_presentationFunctions.AddDelayedEvent(', 'me->AddDelayedEvent(').Replace("                        ObjectGuid const playerGuid = pl->GetGUID();`n",'').Replace('[this, playerGuid]','[this, pl]').Replace('Talk(8, playerGuid);','Talk(8, pl->GetGUID());')
 $normalized=[regex]::Replace($normalized,'sCreatureTextMgr->SendChat\(hait, (\d+)(, playerGuid)?\);',{param($m)'hait->AI()->Talk('+$m.Groups[1].Value+$(if($m.Groups[2].Success){', pl->GetGUID()'})+');'})
 $normalized=$normalized.Replace('sCreatureTextMgr->SendChat(*itr, 0);','(*itr)->AI()->Talk(0);')
@@ -36,7 +37,10 @@ if($Baseline -and $VerifyReleaseBinary){throw 'Broken counterfactual cannot cert
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-chen-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 [IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$currentActor})+';')
 $bridge=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h" -Raw
-[IO.File]::WriteAllText("$out/RescueSource.inc",$bridge.Substring(0,$bridge.IndexOf('struct Member'))+'}')
+$protocol=$bridge.Substring($bridge.IndexOf('namespace MonkChenRescue'),$bridge.IndexOf('struct Member')-$bridge.IndexOf('namespace MonkChenRescue'))+'}'
+$arrival=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_arrival.h" -Raw
+$protocol+=$arrival.Substring($arrival.IndexOf('namespace MonkChenArrival'),$arrival.IndexOf('inline WaypointPath const* Data()')-$arrival.IndexOf('namespace MonkChenArrival'))+'}'
+[IO.File]::WriteAllText("$out/RescueSource.inc",$protocol)
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
 [IO.File]::WriteAllText("$out/TalkForward.inc",(Block (Get-Content "$repo/src/server/game/AI/CreatureAI.cpp" -Raw) 'void CreatureAI::Talk(uint8 id, ObjectGuid WhisperGuid)'))

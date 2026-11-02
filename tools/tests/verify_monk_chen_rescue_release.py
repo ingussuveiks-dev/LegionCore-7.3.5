@@ -29,9 +29,19 @@ factory=ins('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@
 script,sraw=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
 assert vt in refs(factory) and script in refs(ins('?AddSC_instance_class_art_scenarios@@'))
 assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')==resolved(sraw)[1]
-assert {0x358,0x2e0,0x350}<=values(factory)|fields(factory)
-assert ('mov','qword ptr [rdi + 0x2e0], rbx') in pairs(factory)
-assert {('xor','eax, eax'),('mov','word ptr [rdi + 0x350], ax'),('mov','byte ptr [rdi + 0x352], al')}<=set(pairs(factory))
+arrival_successor=0x380 in values(factory)
+if arrival_successor:
+    # Arrival successor appends packed GUID receipts and a real-time retry;
+    # the original rescue prefix remains at precisely the same offsets.
+    assert {('lea','rdi, [rsi + 0x2e0]'),('mov','qword ptr [rdi], rbx'),
+            ('xor','ebx, ebx'),('mov','word ptr [rdi + 0x70], bx'),
+            ('mov','byte ptr [rdi + 0x72], bl'),('lea','rcx, [rdi + 0x73]'),
+            ('lea','rcx, [rdi + 0x83]'),('mov','dword ptr [rdi + 0x93], ebx'),
+            ('mov','dword ptr [rdi + 0x98], ebx'),('mov','byte ptr [rdi + 0x9c], bl')}<=set(pairs(factory))
+else:
+    assert {0x358,0x2e0,0x350}<=values(factory)|fields(factory)
+    assert ('mov','qword ptr [rdi + 0x2e0], rbx') in pairs(factory)
+    assert {('xor','eax, eax'),('mov','word ptr [rdi + 0x350], ax'),('mov','byte ptr [rdi + 0x352], al')}<=set(pairs(factory))
 assert slots[18]==n['symbol'](instance('GetGuidData')) and slots[19]==n['symbol'](instance('SetGuidData'))
 for name in ('OnCreatureCreate','CreatureDies','Update'):assert n['symbol'](instance(name)) in slots
 for name,target in (('CreatureDies','Death'),('Update','Update')):
@@ -49,7 +59,10 @@ assert ('lea','rdx, [rbx + 8]') in pairs(request) and ('xor','edx, edx') in pair
 
 _,araw=table('??_7npc_monk_chen_porterAI@npc_monk_chen_porter@@6B@',82);aslots=resolved(araw)
 chen_factory=ins('?GetAI@npc_monk_chen_porter@@')
-assert {('mov','byte ptr [rdi + 0x39], 0'),('mov','byte ptr [rdi + 0x38], 0')}<=set(pairs(chen_factory))
+if arrival_successor:
+    assert {('mov','word ptr [rdi + 0x39], 0'),('mov','byte ptr [rdi + 0x38], 0')}<=set(pairs(chen_factory))
+else:
+    assert {('mov','byte ptr [rdi + 0x39], 0'),('mov','byte ptr [rdi + 0x38], 0')}<=set(pairs(chen_factory))
 assert aslots[10]==n['symbol'](actor('GetData')) and aslots[15]==n['symbol'](actor('SetData'))
 status=ins(actor('GetData'))
 assert pairs(status)[:7]==[('xor','eax, eax'),('cmp','edx, 0x17084'),('jne',status[2].op_str),
@@ -101,12 +114,14 @@ needs(update,state('Progress'),state('Retained'),state('Current'),state('Leaf'),
 assert {2000,94340,46956,92,3,4}<=values(update) and ('mov','dword ptr [rdi + 0x68], 0x7d0') in pairs(update)
 assert [('mov','edx, 0x5c'),('mov','r8d, 0xb76c'),('mov','rcx, rbx')]==pairs(update[event-3:event])
 assert ('cmp','eax, 3') in pairs(update[event-15:event]) and sites(n,update,state('Leaf'))[0]<event
-assert pairs(update[event+1:event+5])==[('cmp','byte ptr [rdi + 0x70], 0'),('je',update[event+2].op_str),('cmp','qword ptr [rdi + 0x60], r14'),('jne',update[event+4].op_str)]
+zero,epoch_register=('r12b','rsi') if arrival_successor else ('0','r14')
+assert pairs(update[event+1:event+5])==[('cmp',f'byte ptr [rdi + 0x70], {zero}'),('je',update[event+2].op_str),('cmp',f'qword ptr [rdi + 0x60], {epoch_register}'),('jne',update[event+4].op_str)]
+if arrival_successor:assert ('xor','r12d, r12d') in pairs(update[:event])
 dispatch,=[i for i,op in enumerate(update) if op.mnemonic=='call' and op.op_str=='qword ptr [rax + 0x78]']
 assert event<dispatch and {('cmp','eax, 4'),('cmp','eax, 1'),('mov','edx, 0x17084'),
                          ('movups','xmm0, xmmword ptr [rdi + 8]'),('movups','xmmword ptr [rdi + 0x38], xmm0')}<=set(pairs(update[event:dispatch]))
-assert pairs(update[dispatch-3:dispatch])==[('mov','edx, 1'),('mov','r8d, edx'),('mov','rcx, r14')]
-assert {('cmp','qword ptr [rdi + 0x60], r14'),('cmp','eax, 2'),('mov','word ptr [rdi + 0x70], 0x100')}<=set(pairs(update[dispatch:]))
+assert pairs(update[dispatch-3:dispatch])==[('mov','edx, 1'),('mov','r8d, edx'),('mov',f'rcx, {epoch_register}')]
+assert {('cmp',f'qword ptr [rdi + 0x60], {epoch_register}'),('cmp','eax, 2'),('mov','word ptr [rdi + 0x70], 0x100')}<=set(pairs(update[dispatch:]))
 for body in (death,update,bridge):
     for forbidden in ('?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@'):
         assert not sites(n,body,forbidden)

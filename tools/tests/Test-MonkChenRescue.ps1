@@ -5,6 +5,13 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "6b6fae36c:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-rescue actor source missing'}
+ $currentActor=Block $source 'class npc_monk_chen_porter :'
+ $hasArrival=$source.Contains('bool _arrivalStarted = false;')
+ if($hasArrival){
+  & "$PSScriptRoot/Test-MonkChenArrival.ps1" -ScopeOnly
+  $preArrival=(& git -C $repo show "b015d4e28:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-arrival actor missing'}
+  $source=$source.Replace($currentActor,(Block $preArrival 'class npc_monk_chen_porter :'))
+ }
  $actor=Block $source 'class npc_monk_chen_porter :';$previous=Block $old 'class npc_monk_chen_porter :'
  $guard=Block $actor 'if (MonkChenRescue::Source(me))'
  $expectedGuard=@'
@@ -25,12 +32,24 @@ if (MonkChenRescue::Source(me))
  if((Shape $normal) -cne (Shape $previous)){throw 'Other Chen callbacks/movement/text/combat/arrival/credit changed'}
  if((Shape $source.Replace($actor,$previous).Replace('#include "InstanceScript.h"','').Replace('#include "chen_rescue.h"','')) -cne (Shape $old)){throw 'Other Monk actors changed'}
  $ip='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$actual=(Get-Content "$repo/$ip" -Raw).Replace("`r",'');$prior=(& git -C $repo show "6b6fae36c:$ip") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-rescue instances missing'}
+ $currentInstance=Block $actual 'struct instance_monk_intro :'
+ if($hasArrival){$preArrivalInstance=(& git -C $repo show "b015d4e28:$ip") -join "`n";if($LASTEXITCODE){throw 'Certified pre-arrival instance missing'};$actual=$actual.Replace($currentInstance,(Block $preArrivalInstance 'struct instance_monk_intro :'))}
  $instance=Block $actual 'struct instance_monk_intro :';$oldInstance=Block $prior 'struct instance_monk_intro :'
  if((Shape $actual.Replace($instance,$oldInstance).Replace('#include "../../Monk/Intro/chen_rescue.h"','')) -cne (Shape $prior)){throw 'Other shared Rogue/Mage/Priest instances/brewer changed'}
  if(!$instance.Contains('InstanceScript::OnCreatureCreate(actor);') -or !$instance.Contains('InstanceScript::GetGuidData(type)')){throw 'Native base create/GUID behavior must remain'}
  if($ScopeOnly){'PASS exact Chen rescue source/status/claim bridge only; all original nine timers/arrival/text/combat and other Monk/shared instance bodies retained';return}
- [IO.File]::WriteAllText("$out/Actor.inc",$actor+';');[IO.File]::WriteAllText("$out/BaselineActor.inc",$previous.Replace('npc_monk_chen_porter','npc_monk_chen_porter_baseline')+';');[IO.File]::WriteAllText("$out/Instance.inc",$instance+';')
+ [IO.File]::WriteAllText("$out/Actor.inc",$currentActor+';');[IO.File]::WriteAllText("$out/BaselineActor.inc",$previous.Replace('npc_monk_chen_porter','npc_monk_chen_porter_baseline')+';');[IO.File]::WriteAllText("$out/Instance.inc",$currentInstance+';')
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h" "$out/Rescue.inc"
+ Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_arrival.h" "$out/chen_arrival.h"
+ foreach($stub in @('WaypointMovementGenerator.h','MoveSpline.h','Timer.h')){[IO.File]::WriteAllText("$out/$stub","#pragma once`n// Controlled services declared explicitly in MonkChenRescueTest.cpp.`n")}
+ $waypoints=Get-Content "$repo/src/server/game/Movement/Waypoints/WaypointManager.h" -Raw
+ [IO.File]::WriteAllText("$out/WaypointFields.inc",(Block $waypoints 'enum WaypointMoveType')+';'+(Block $waypoints 'struct WaypointData')+';')
+ [IO.File]::WriteAllText("$out/PathBase.inc",(Block (Get-Content "$repo/src/server/game/Movement/MovementGenerators/PathMovementBase.h" -Raw) 'template<class Entity, class BasePath>')+';')
+ $wp=Get-Content "$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.cpp" -Raw
+ [IO.File]::WriteAllText("$out/WaypointArrival.inc",(Block $wp 'void WaypointMovementGenerator<Creature>::OnArrived(')+(Block $wp 'void WaypointMovementGenerator<Creature>::MovementInform('))
+ [IO.File]::WriteAllText("$out/PathId.inc",(Block (Get-Content "$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.h" -Raw) 'uint32 GetPathId() const'))
+ $timer=Get-Content "$repo/src/common/Utilities/Timer.h" -Raw
+ [IO.File]::WriteAllText("$out/Elapsed.inc",(Block $timer 'inline uint32 getMSTimeDiff(')+(Block $timer 'inline uint32 GetMSTimeDiffToNow('))
  $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
  [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
  $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw

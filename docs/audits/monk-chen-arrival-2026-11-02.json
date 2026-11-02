@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-02",
+  "status": "DEPLOYED focused real Chen final-node arrival acknowledgement; later Hait/boss/full943/client/all36 remain OPEN.",
+  "cause": "The original Chen MovementInform(WAYPOINT,5) sent46947 to FindNearestPlayer and started the six outro callbacks without requiring the native escort tree to accept it. Missing/ineligible nearest players lost the one-shot receipt; repeated callbacks replayed the payload. Native waypoint callbacks use zero-based _currentNode:5 means DB point6/final, not DB point5. Actual OnArrived persists this node even without AI, and the nonrepeating movement generator can retire before the instance update. A complete b015d4e28 actor counterfactual demonstrates the missing-player loss through actual native OnArrived in a controlled component host, not a historical client reproduction.",
+  "repair": "Retain original weak12103 participants from the genuine Morvat death through the original escort. Track9859005 only after the original8s callback actually installs its six-node script route at node0, resetting the actor persistent waypoint sentinel first. Accept actual native node5/current route callback plus finalized spline/native endpoint, or native persistent node5 with a retired/original idle generator and the same final pose. Cache that real receipt; do not create arrival from a timer or proximity alone. Require original eligible full-GUID live Chen362201, current or suspended CreatureAI readiness and a retained participant within native100yd/private phase. Send original46947 only at actual943 step4 without29070, then require real29070 Counter/step5 before full-GUID claim/original immutable player GUID and exactly-once original MovementInform5 outro. Reserve actor local guard before Talk7. Re-resolve epoch/map/original weak attempt/AI/monotonic stage after external calls; native real-time2s retry avoids counting pre-receipt frame time twice or replaying accepted credit. Abandonment/new attempt/unload/reset cannot bind the old receipt to new progress.",
+  "scope": "Only original rescue Chen103148/spawn362201/map1014 and its Monk instance receipt. Initial362134/unscoped actors retain original behavior. Preserve all nine original authored callback deadlines/bodies (root4/5/8s, outro3/7/11/15/15/16s), all native speech/follow9859005/9859006/point0/combat/LOS/damage, other Monk actors and other shared Rogue/Mage/Priest/Brewer instance bodies. Existing rescue readiness/weak source/owner/pet/guardian progression remains covered. No SQL/new ScriptName, forced path/teleport, character reset, direct kill/item/quest grant or native criteria bypass.",
+  "local_evidence": {
+    "world": ".codex/chen-arrival-context1-open-2026-11-02/world.tsv",
+    "native_geometry": "build-extractors/runtime-test/monk-chen-route-native/20261102-085916-461/native.tsv",
+    "facts": "Actual Script9859005 has6 nodes;9859006 has9. No matching creature/template addons, regular path or global Smart start-path producers. Rescue Chen362201 begins4037.92/1684.01/925.359; final DB point6 is3881.59/1726.28/932.669; later Hait362271 is3867.67/1726.28/932.66. Native943 step4 root45906/leaf45907/criterion29070/type92/event46947 admits5. Quest phase7000 remains additive;7001 admits steps4/5/6 and7002 step6, so this transition does not invent a phase change.",
+    "native_order": "Matching local WaypointMovementGenerator::OnArrived calls AI MovementInform with zero-based _currentNode then UpdateWaypointID even without AI. Unit spline position updates before MotionMaster; MovePath installs MOTION_SLOT_IDLE. Tuure in this same core already uses persistent final-node/finalized-spline/actual endpoint checks after generator retirement. The helper validates native script path size and endpoint; no modern core port is used.",
+    "geometry_limit": "Real native Map1014/phase7000/WaypointMgr/PathGenerator verified all6 ordinary complete mmap legs with no force/ignore/notusing/incomplete path. Endpoint deltas .00305/.00159/.00159/.000061/.000061/.00336yd support conservative0.5yd bound. Probe uses isolated NullAI and manual actor Relocate between independent legs, no Players/character save; this is static geometry, not actual movement callbacks/dynamic objects or client traversal.",
+    "source_order": "Matching Legion7.3.5 local DB2/hotfix/world/core/scripts/runtime first. Mechanical receipt defect resolved locally; no YouTube/full gameplay review or external reconstruction claimed."
+  },
+  "checks": [
+    "50 new ASAN contexts plus70 retained rescue cases compile actual State/full current actor/instance, native OnArrived/MovementInform/PathMovementBase/GetPathId/Timer/FunctionProcessor/locked lifecycle/owner/death/quest delay/Scenario.CanUpdateCriteria and Map-before-instance update order. Position/motion installation/criteria writes/players/world/network endpoints remain controlled and separate from the real mmap probe.",
+    "Genuine Morvat player/pet/guardian/ally death and original8s route to native zero-based final node, actual46947/29070/5, original owner vs unrelated nearest/GM, all six exact outro deadlines/full immutable personal GUIDs/Hait9859006/Chenpoint0 pass.100 duplicate requests cannot replay accepted event or payload. Wrong path/node/stale ID/missing path size/unfinished spline/far endpoint/unissued route/wrong copy/invisible actor refuse credit.",
+    "Actual OnArrived without AI still stores5; retired generator/current-null/suspended/recreated AI recover the genuine receipt. Missing actor/owner range/phase/visibility/contact/teleport and failed native event retry safely. Original weak abandonment/new token/map unload/scenario rollback/external event reentry cancel correctly; accepted29070 is not replayed after temporary owner loss. Large Map frames and real Timer uint32 rollover retain a full2s retry.",
+    "Retained59 unscoped full Chen timer/87 Hait/94 Hight click/77 Nine Czi ASAN cases pass. Independent strict new successor source certificate precedes pinned-parent normalization for older scope certificates. Existing nine timers and other actors/shared instance bodies remain exact. No scope check disabled.",
+    "Release original scripts.lib builds both changed TUs; original final-link inputs stage both binaries without mutating canonical. Selected staged/canonical PE verifies actual instance380/state2e0, packed full-GUID receipts, original rescue, initialized local flags, native route/node/spline/endpoint source, real46947/29070/5 and once/epoch/weak/monotonic/retry paths. Retained Nine/Chen/Hait/click/native512-corpse PE also passes.",
+    "Shared unchanged Bilaal portal/Warrior ritual/Fu Zan brewing PE and canonical ScepterLogin VerifyReleaseBinary pass. Offline four-file backup/promotion hashes and protected conf/certificates/DLLs verified; owned canonical ready/shutdown0/exit0/stderr0/gone checked. No unknown/user process stopped."
+  ],
+  "iterations": [
+    "Early Scope1 PowerShell parser extra closing parenthesis failed before its inner diagnostic wrapper; historical pre-snapshot cannot be reconstructed. Fixed scope2 passes. All later first/new script invocations have an outer root/own diagnostic wrapper.",
+    "Host1 compilation found the controlled generator field was named _path_id while actual exported native GetPathId reads _pathId. Renamed the controlled field; actual current full ASAN native1 passes50+70. Native copied-code size_t/unused/shadow/conversion warnings remain visible, no warning suppression.",
+    "Retained1 source certificate caught CRLF in PowerShell here-string versus normalized LF actor. Normalize only the comparison string; exact scope/59/87/94 pass retained2. That wrapper later used nonexistent Test-MonkNineTimers filename; corrected actual Test-MonkNineCziTimers, independent77 passes. These failures/exits remain captured and paired, not successful ordinary runs.",
+    "Retained PE1 found MSVC coalesces rescue39/arrival3a into word-zero at39 and shifts constructor base to a state pointer. Independently inspected actual assembly, kept old exact branch and added strict380/packed GUID constructor branch plus exact new register allocation. StagePE2 verifies old rescue and new arrival, all original callback registrations and native predicates; no implementation checks bypassed."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "stage": ".codex/chen-arrival-release-final",
+    "world_sha256": "347DA8F50CDC923ADE6583DC7F443DFC1A511D4F172BFBA5F581DB3C35DDDEAA",
+    "bnet_sha256": "B82E12DBB1B810683F86D580BA1CE46D959A37E766CE597E120B9C4070F0027D",
+    "promotion": {
+      "Backup": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-chen-arrival-2026-11-02",
+      "Files": [
+        {
+          "Name": "worldserver.exe",
+          "OriginalSHA256": "77DB73C511D0E3164542E868349A317ED22EEE1227B0B33105B8588B05A4DD13",
+          "StageSHA256": "347DA8F50CDC923ADE6583DC7F443DFC1A511D4F172BFBA5F581DB3C35DDDEAA"
+        },
+        {
+          "Name": "worldserver.map",
+          "OriginalSHA256": "E035F63F0A0E76812C1673C346EA256F3D00E1DCD64A052B542597813677D340",
+          "StageSHA256": "86F7E71818C6A0DD06634A039AFA3CF7A31ACD6B70781C1F0ACE9E16DF19CBEB"
+        },
+        {
+          "Name": "bnetserver.exe",
+          "OriginalSHA256": "00AD397D97D2A8B35C1F7C367FC5B4BBCEDA23A1C40ACFADE87ACABB76527076",
+          "StageSHA256": "B82E12DBB1B810683F86D580BA1CE46D959A37E766CE597E120B9C4070F0027D"
+        },
+        {
+          "Name": "bnetserver.map",
+          "OriginalSHA256": "761EF68ADAEF8F56A35F4049A816925DBCECE7355D057A1A6475182F528D67B9",
+          "StageSHA256": "B471BCD16B4829E2594DFE4266920B6E0ADA2D531381DF74CB5D8859500C1C2F"
+        }
+      ],
+      "ProtectedRuntimeHashesVerified": true,
+      "SQLRequired": false
+    },
+    "owned_result": "Owned worldserver PID=18116\nPASS owned PID=18116 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\n",
+    "sql_required": false
+  },
+  "diagnostics": {
+    "result": "All completed exact canonical/root/own before-after crash/log length/timestamp, process status/captured stdout/stderr and appended diagnostics reviewed. No new/changed runtime crash, appended DBErrors or server warnings/errors/assertions. Failed fixture/PE checks remain visible and paired. No active crash to remove; existing mixed6090 unresolved DBErrors unchanged/untruncated. Private configs/binaries/dumps/media/character records excluded. Archival follows focused commit.",
+    "mixed_db_errors_bytes": 6090,
+    "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
+    "active_crashes": 0,
+    "coverage_limit": "Early Scope1 parser failed before inner wrapper; cannot reconstruct a historical pre-snapshot. All later component/native/build/PE/runtime checks include inherited repo CWD and exact own runtime. Native geometry probe also records canonical and catalog CWD/output."
+  },
+  "remaining": [
+    "Actual client full Morvat/Chen escort/combat/scaling/one-hit/player-pet-guardian/faction/phase/doors/dialogue/group/reentry/rendering and full943/all36 remain user checks. Native geometry/component/PE/startup evidence does not certify client traversal.",
+    "If Chen AI is destroyed BEFORE the original8s route issue, the real route was never issued; no arrival is invented. After accepted arrival the original six AI-owned callbacks can retire on AI destruction and a missing Hait at15s can still lose9859006. Continue a separate essential handoff/lifetime repair, later real46951/boss46952 and original actor provenance.",
+    "Original weak participants intentionally do not persist across new quest attempt/new Player/relog/server restart; fresh instance remains the restart boundary. No new character reset is authorized.",
+    "Shared101430/103151 LINK2, Wardstone LINK4, Survival39427 middle flight, Fu Zan ride/Yigthregor, Warrior cross-conversation/recovery and Stromkar client visual findings remain OPEN. Do not invent missing actions or hide diagnostics."
+  ]
+}

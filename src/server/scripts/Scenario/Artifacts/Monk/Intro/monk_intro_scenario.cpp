@@ -382,10 +382,24 @@ public:
 
         bool _introDone;
         bool _rescueStarted = false;
+        bool _arrivalStarted = false;
 
         uint32 GetData(uint32 type) const override
         {
-            return type == MonkChenRescue::StatusData ? (_rescueStarted ? 2 : 1) : 0;
+            if (type == MonkChenRescue::StatusData) return _rescueStarted ? 2 : 1;
+            return type == MonkChenArrival::StatusData ? (_arrivalStarted ? 2 : 1) : 0;
+        }
+
+        ObjectGuid ArrivalPlayer() const
+        {
+            if (MonkChenRescue::Source(me))
+            {
+                InstanceScript* script = me->GetInstanceScript();
+                return script && script->GetGuidData(MonkChenArrival::ClaimData) == me->GetGUID() ?
+                    script->GetGuidData(MonkChenArrival::PlayerData) : ObjectGuid();
+            }
+            if (Player* player = me->FindNearestPlayer(100.0f)) return player->GetGUID();
+            return ObjectGuid();
         }
 
         FunctionProcessor _presentationFunctions;
@@ -413,9 +427,21 @@ public:
                         hait->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
                 if (id == 5)
                 {
+                    if (MonkChenRescue::Source(me))
+                    {
+                        if (_arrivalStarted) return;
+                        InstanceScript* script = me->GetInstanceScript();
+                        if (!script || script->GetGuidData(MonkChenArrival::ClaimData) != me->GetGUID())
+                        {
+                            if (script) script->SetGuidData(MonkChenArrival::RequestData, me->GetGUID());
+                            return;
+                        }
+                        _arrivalStarted = true;
+                    }
                     Talk(7);
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46947);
+                    if (!MonkChenRescue::Source(me))
+                        if (Player* pl = me->FindNearestPlayer(100.0f))
+                            pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46947);
 
                     _presentationFunctions.AddDelayedEvent(3000, [this]() -> void
                     {
@@ -423,9 +449,9 @@ public:
                             sCreatureTextMgr->SendChat(hait, 10);
                     });
 
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
+                    ObjectGuid const playerGuid = ArrivalPlayer();
+                    if (!playerGuid.IsEmpty())
                     {
-                        ObjectGuid const playerGuid = pl->GetGUID();
                         _presentationFunctions.AddDelayedEvent(7000, [this, playerGuid]() -> void
                         {
                             Talk(8, playerGuid);
@@ -520,7 +546,11 @@ public:
                         Talk(5, pl->GetGUID());
                     if (Creature* li = me->FindNearestCreature(98074, 50.0f, true))
                         li->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+                    if (MonkChenRescue::Source(me)) me->UpdateWaypointID(uint32(-1));
                     me->GetMotionMaster()->MovePath(9859005, false); // 2 5
+                    if (MonkChenRescue::Source(me))
+                        if (InstanceScript* script = me->GetInstanceScript())
+                            script->SetGuidData(MonkChenArrival::RouteData, me->GetGUID());
                 });
             }
         }
