@@ -1,0 +1,11 @@
+{
+  "FixCommit": "772150377e561cc0b036d8da3c55900a47f6164c",
+  "Archive": "build-extractors\\bin\\Release\\fixed\\smart-set-data-2026-11-02\\verified1",
+  "Sources": 836,
+  "Payloads": 838,
+  "ReviewedDiagnosticSets": 56,
+  "ManifestSHA256": "2BE908CBF63D0DC9FBFC7F31196A406682F009200F5C448A8C6740046D9081BA",
+  "SourceArchiveSourceVerified": true,
+  "ActiveCrashes": 0,
+  "MixedLogUnchanged": true
+}

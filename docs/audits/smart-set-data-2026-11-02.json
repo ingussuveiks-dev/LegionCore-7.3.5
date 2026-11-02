@@ -35,9 +35,11 @@
     "sql_required": false,
     "owned_worldserver": "PID30216 fresh ready -> server shutdown0 -> exit0; empty stderr; process gone"
   },
-  "diagnostics": "Before/after canonical/root/own snapshots and actual stdout/stderr/exit inspected. Expected ASAN failures are paired with the repaired regression. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unresolved/untouched/untruncated. Archive follows focused commit and matching deployed regression; actual client/full36 remains OPEN.",
+  "diagnostics": "Before/after canonical/root/own snapshots and actual stdout/stderr/exit inspected. Expected ASAN failures are paired with the repaired regression. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unresolved/untouched/untruncated. Archive follows focused commit and matching deployed regression; actual client/full36 remains OPEN. Verified ignored fixed archive:836 sources/838 payloads/56 reviewed diagnostic sets, manifest2BE908CBF63D0DC9FBFC7F31196A406682F009200F5C448A8C6740046D9081BA; source/archive/source and final hashes verified. No active report to remove, mixed log untouched; original evidence retained.",
   "remaining": [
     "Initial Nine genuine97968 death/original eligible owner-pet-guardian/weak quest attempt, early native prerequisite wait, real46734 acknowledgement, original movement point1 and actual arrival before ready-click still require a separate content fix. Missing AI is deliberately reported not delivered by this shared guard.",
     "Actual client and whole36 chains remain unverified. Shared101430/103151 LINK2, WardstoneLINK4, Survival flight, Fu Zan Yu lon/Yigthregor, LiLi/Ponshu, Warrior recovery, Stromkar visuals and earlier recorded findings remain OPEN. User owns client tests; reset3 consumed and no further reset authorized."
-  ]
+  ],
+  "fix_commit": "772150377e561cc0b036d8da3c55900a47f6164c",
+  "closed_archive": "docs/audits/smart-set-data-archive-2026-11-02.json"
 }
