@@ -1,0 +1,11 @@
+{
+  "FixCommit": "3582f2731e16cb1edaec564430a494778bdaefa8",
+  "Archive": "build-extractors\\bin\\Release\\fixed\\warrior-first-wave-early-2026-11-02\\verified1",
+  "Sources": 116,
+  "Payloads": 118,
+  "ManifestSHA256": "1C5C336768F9EAC49E28F57B3259D35A3E96096FAAB24F90AF44BD9C56264A7A",
+  "SourceArchiveSourceVerified": true,
+  "MixedLogUnchanged": true,
+  "ActiveCrashes": 0,
+  "Review": "116 reviewed source files/118 payloads, source/archive/source and final payload hashes verified after canonical/no-server guards. All ordinary follow-up checks completed0; explicit pinned early-death counterfactual paired with repaired87-case regression. No active crash report, no configs/executables/dumps/characters/mixed log archived or truncated; originals retained."
+}

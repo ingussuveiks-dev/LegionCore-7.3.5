@@ -1,7 +1,7 @@
 {
   "date": "2026-11-02",
   "status": "DEPLOYED early real-death retention; full933/client/all36 remain OPEN.",
-  "fix_commit": "Recorded in the subsequent verified archive manifest; this audit accompanies the focused implementation commit.",
+  "fix_commit": "3582f2731e16cb1edaec564430a494778bdaefa8",
   "cause": "The focused3d225581b first-wave instance state accepted a real102970/361138 death only in933 step1. A genuine death before the Ragnvald approach in step0 was discarded, so later native46877/step1 could not consume that already earned death. This is a verified source/component alternative, not a claimed client reproduction or historical crash. The original local source actor has unit_flags32768/blank phase and no queried Smart condition; ordinary Unit::_IsValidAttackTarget has no Scenario-step admission check. Do not infer that all client combat paths were exercised.",
   "repair": "Capture the same strictly validated real source death and original eligible quest participants in steps0 or1. During step0 retain only that original full-GUID/weak-attempt receipt and emit neither46878 nor47474. Actual native progression to step1 remains external: this state never emits46877, sets a Scenario step or grants future credit. After real step1, use the existing native45771/46175 acknowledgement, refreshed original Player, missing-only2000ms retry and cancellation rules. Source corpse removal cannot lose the earned death; abandonment/new attempt/completion or leaving the actual scope still cancels it.",
   "checks": [
@@ -22,7 +22,16 @@
     "active_crashes": 0,
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
-    "archive": "Archive reviewed evidence after canonical verification/commit with source/archive/source and final manifest hashes; preserve mixed unresolved DBErrors and exclude configs/credentials/executables/dumps/characters."
+    "archive": {
+      "FixCommit": "3582f2731e16cb1edaec564430a494778bdaefa8",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\warrior-first-wave-early-2026-11-02\\verified1",
+      "Sources": 116,
+      "Payloads": 118,
+      "ManifestSHA256": "1C5C336768F9EAC49E28F57B3259D35A3E96096FAAB24F90AF44BD9C56264A7A",
+      "SourceArchiveSourceVerified": true,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "Ragnvald46877 admission, original770/1386 factory acknowledgement, stationary retry and exactly-once recovery across AI replacement remain OPEN. This change preserves real earlier deaths while waiting for that actual prerequisite; it does not bypass the prerequisite.",
