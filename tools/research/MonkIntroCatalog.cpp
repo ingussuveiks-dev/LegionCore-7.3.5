@@ -29,6 +29,19 @@ int main(int argc, char** argv)
     DB2Storage<CriteriaEntry> criteria("Criteria.db2", CriteriaLoadInfo::Instance());
     DB2Storage<MapEntry> maps("Map.db2", MapLoadInfo::Instance());
     DB2Storage<MapDifficultyEntry> mapDifficulties("MapDifficulty.db2", MapDifficultyLoadInfo::Instance());
+#ifdef MONK_NINE_ARRIVAL_CATALOG
+    DB2Storage<TaxiPathEntry> taxiPaths("TaxiPath.db2", TaxiPathLoadInfo::Instance());
+    DB2Storage<TaxiPathNodeEntry> taxiNodes("TaxiPathNode.db2", TaxiPathNodeLoadInfo::Instance());
+    DB2Storage<TaxiNodesEntry> hubs("TaxiNodes.db2", TaxiNodesLoadInfo::Instance());
+    if (!taxiPaths.Load(argv[1],0) || !taxiNodes.Load(argv[1],0) || !hubs.Load(argv[1],0)) return 20;
+    taxiPaths.LoadFromDB();taxiNodes.LoadFromDB();hubs.LoadFromDB();
+    auto path=taxiPaths.LookupEntry(5333);if(!path)return 21;
+    std::cout<<"TAXI_PATH\t"<<path->ID<<'\t'<<path->FromTaxiNode<<'\t'<<path->ToTaxiNode<<'\t'<<path->Cost<<'\n';
+    for(auto id:{path->FromTaxiNode,path->ToTaxiNode}) if(auto hub=hubs.LookupEntry(id))
+        std::cout<<"TAXI_HUB\t"<<id<<'\t'<<hub->ContinentID<<'\t'<<hub->Pos.X<<'\t'<<hub->Pos.Y<<'\t'<<hub->Pos.Z<<'\t'<<hub->Name->Str[0]<<'\n';
+    for(auto node:taxiNodes)if(node->PathID==5333)
+        std::cout<<"TAXI_NODE\t"<<node->ID<<'\t'<<unsigned(node->NodeIndex)<<'\t'<<node->ContinentID<<'\t'<<node->Loc.X<<'\t'<<node->Loc.Y<<'\t'<<node->Loc.Z<<'\t'<<unsigned(node->Flags)<<'\t'<<node->Delay<<'\t'<<node->ArrivalEventID<<'\t'<<node->DepartureEventID<<'\n';
+#endif
     if (!spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !misc.Load(argv[1], 0) ||
         !durations.Load(argv[1], 0) || !times.Load(argv[1], 0) || !steps.Load(argv[1], 0) ||
         !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0) || !maps.Load(argv[1], 0) || !mapDifficulties.Load(argv[1], 0)) return 4;
@@ -40,6 +53,9 @@ int main(int argc, char** argv)
     for (auto entry : mapDifficulties) if (entry->MapID == 1014)
         std::cout << "MAP_DIFFICULTY\t" << entry->ID << '\t' << unsigned(entry->DifficultyID) << '\t' << unsigned(entry->MaxPlayers) << '\n';
     std::set<uint32> pending{197120, 193053, 193268, 227140, 185627, 194004, 194020}, seen;
+#ifdef MONK_NINE_ARRIVAL_CATALOG
+    pending.insert({193248,193721,193724});
+#endif
     for (auto effect : effects) if (effect->EffectTriggerSpell == 197120 || effect->EffectTriggerSpell == 194020)
         std::cout << "CLICK_INCOMING\t" << effect->SpellID << '\t' << effect->Effect << '\t' << effect->EffectTriggerSpell << '\n';
     for (auto effect : effects) if ((effect->Effect == 90 || effect->Effect == 134) && effect->EffectMiscValue[0] == 98514)

@@ -4,6 +4,7 @@ Run retained full Chen/Jorvinax/Fel Stone inspectors against this same hash.
 Native components/PE/geometry are distinct from actual client presentation.
 """
 from pathlib import Path
+from monk_intro_instance_pe import construction,zero_alias_pairs
 import hashlib,json,runpy
 from capstone import CS_OP_IMM
 from sharasdal_erunak_entry_pe import sites,values,fields,floats
@@ -12,7 +13,7 @@ p=runpy.run_path(str(Path(__file__).with_name('verify_monk_nine_czi_timers_relea
 n,ins,refs,table,resolved=(p[k] for k in ('n','ins','refs','table','resolved'))
 def presentation(name):return '?'+name+'@State@MonkChenPresentation@@'
 def context(name):return '?'+name+'@State@MonkChenRescue@@'
-def pairs(body):return [(o.mnemonic,o.op_str) for o in body]
+def pairs(body):return zero_alias_pairs(body) if body is factory and nine_successor else [(o.mnemonic,o.op_str) for o in body]
 def needs(body,*targets):
     for target in targets:assert sites(n,body,target),('Native Chen presentation dependency',target)
 def reachable(body,start):
@@ -26,12 +27,12 @@ def reachable(body,start):
         if o.mnemonic!='jmp':pending.append(o.address+o.size)
     return seen
 
-factory=ins('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')
+allocation,factory,nine_successor=construction(n)
 vt,raw=table('??_7instance_monk_intro@@6B@',140)
 loader,lraw=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
 assert vt in refs(factory) and loader in refs(ins('?AddSC_instance_class_art_scenarios@@'))
 assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')==resolved(lraw)[1]
-assert 0x430 in values(factory)
+assert (0x490 if nine_successor else 0x430) in values(allocation)
 assert {('lea','rdi, [rsi + 0x2e0]'),('mov','qword ptr [rsi + 0x3b8], rdi'),
         ('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),
         (('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
@@ -87,5 +88,5 @@ for at in queues:
 for body in (update,owner,guide,valid):
     for forbidden in ('?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@','?AddDelayedEvent@Unit@@','?AddDelayedEvent@FunctionProcessor@@'):
         assert not sites(n,body,forbidden),('No synthetic progress or actor-owned timer',forbidden)
-print('PASS actual registered430 instance/418 presentation state: original context and Jorvinax offsets retained; native before-route3/7/11 and after-route16 dispatch, original weak owner/full source+guide, exact clocks and once/reentry flags, stale greeting retirement and unscoped six native queues. Point0 uses original normal path command, never arrival/progression credit. Client/full943 remain separate.')
-print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x430,'state_offset':0x418,'authored_deadlines_ms':[3000,7000,11000,16000]}))
+print(f'PASS actual registered{0x490 if nine_successor else 0x430:x} instance/418 presentation state: original context and Jorvinax offsets retained; native before-route3/7/11 and after-route16 dispatch, original weak owner/full source+guide, exact clocks and once/reentry flags, stale greeting retirement and unscoped six native queues. Point0 uses original normal path command, never arrival/progression credit. Client/full943 remain separate.')
+print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x490 if nine_successor else 0x430,'state_offset':0x418,'authored_deadlines_ms':[3000,7000,11000,16000]}))

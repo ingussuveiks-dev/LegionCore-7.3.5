@@ -27,7 +27,7 @@ void Early(Run& r)
     assert(r.player.credits==std::vector<uint32>{46956});
 }
 
-int main()
+uint32 RunEarlyPresentationCases()
 {
     auto retained=RunPresentationCases();uint32 cases=0;
     // Complete pinned predecessor plus actual AIM_Destroy: the essential8s
@@ -142,4 +142,8 @@ int main()
         assert(r.other.credits.empty());++cases;
     }
     std::cout<<"PASS "<<cases<<" early Chen ASAN contexts plus retained "<<retained<<" outro/81 routes/50 arrival/70 rescue: actual4/5/8 ordering, AI destruction/replacement/disabled aliases, original accepted weak attempt, NPC phase/private/owner/distance/full GUID/student reread, deletion/reentry/cancellation, clock birth/rollover and exactly-once effects. No client/full943/all36 traversal claimed.\n";
+    return cases;
 }
+#ifndef MONK_NINE_ARRIVAL_TEST
+int main(){RunEarlyPresentationCases();}
+#endif

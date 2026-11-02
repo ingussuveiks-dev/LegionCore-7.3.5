@@ -3,6 +3,7 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $text.Length){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$text.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "aa1513802:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-timer source missing'}
+$rawCurrentNine=Block $source 'class npc_nine_czi :'
 if($source.Contains('#include "jorvinax_defeat.h"')){& "$PSScriptRoot/Test-MonkJorvinax.ps1" -ScopeOnly;$source=(& git -C $repo show "7bf4d7a50:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Jorvinax source missing'}}
 if($source.Contains('#include "chen_rescue.h"')){
  & "$PSScriptRoot/Test-MonkChenRescue.ps1" -ScopeOnly
@@ -35,7 +36,9 @@ if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -
 if($ScopeOnly){'PASS exact four Nine Czi timer owners/one immutable GUID; other native gameplay/actors unchanged';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Broken counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-nine-czi-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
-[IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$actor})+';')
+[IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$rawCurrentNine})+';')
+$bridge=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/nine_czi_arrival.h" -Raw
+[IO.File]::WriteAllText("$out/NineSource.inc",$bridge.Substring($bridge.IndexOf('namespace MonkNineArrival'),$bridge.IndexOf('// A real visit')-$bridge.IndexOf('namespace MonkNineArrival'))+'}')
 [IO.File]::WriteAllText("$out/DeathState.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'enum DeathState')+';')
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))

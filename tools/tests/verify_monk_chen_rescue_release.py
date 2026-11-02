@@ -1,5 +1,6 @@
 """Verify actual registered Morvat receipt, original quest and Chen handoff."""
 from pathlib import Path
+from monk_intro_instance_pe import construction,zero_alias_pairs
 import hashlib,json,runpy
 from capstone import CS_OP_IMM,CS_OP_MEM
 from sharasdal_erunak_entry_pe import sites,values,fields,floats
@@ -10,7 +11,7 @@ ins=n['instructions']
 def state(name):return '?'+name+'@State@MonkChenRescue@@'
 def actor(name):return '?'+name+'@npc_monk_chen_porterAI@npc_monk_chen_porter@@'
 def instance(name):return '?'+name+'@instance_monk_intro@@'
-def pairs(body):return [(op.mnemonic,op.op_str) for op in body]
+def pairs(body):return zero_alias_pairs(body) if body is factory and nine_successor else [(op.mnemonic,op.op_str) for op in body]
 def needs(body,*names):
     for name in names:assert sites(n,body,name),('Native Chen dependency',name)
 def reachable(body,start):
@@ -25,11 +26,11 @@ def reachable(body,start):
     return seen
 
 vt,raw=table('??_7instance_monk_intro@@6B@',140);slots=resolved(raw)
-factory=ins('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')
+allocation,factory,nine_successor=construction(n)
 script,sraw=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
 assert vt in refs(factory) and script in refs(ins('?AddSC_instance_class_art_scenarios@@'))
 assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')==resolved(sraw)[1]
-presentation_successor=0x430 in values(factory)
+presentation_successor=0x430 in values(allocation) or nine_successor
 jorvinax_successor=0x418 in values(factory) or presentation_successor
 if presentation_successor:
     assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),(('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
@@ -66,7 +67,10 @@ for name,target in (('CreatureDies','Death'),('Update','Update')):
     else:assert pairs(body)[0]==('add','rcx, 0x2e0') and sites(n,body,state(target))==[1]
 created=ins(instance('OnCreatureCreate'))
 needs(created,'?OnCreatureCreate@InstanceScript@@','?GetGuidValue@Object@@','?Clear@ObjectGuid@@')
-assert sites(n,created,'?OnCreatureCreate@InstanceScript@@')==[5]
+assert sites(n,created,'?OnCreatureCreate@InstanceScript@@')==([6] if nine_successor else [5])
+if nine_successor:
+    assert pairs(created[:6])==[('mov','qword ptr [rsp + 0x18], rbx'),('mov','qword ptr [rsp + 0x20], rsi'),
+                               ('push','rdi'),('sub','rsp, 0x20'),('mov','rbx, rdx'),('mov','rdi, rcx')]
 assert {1014,103148,362201,97811,362229}<=values(created)
 assert ('movups','xmmword ptr [rdi + 0x2e8], xmm0') in pairs(created)
 claim=ins(instance('GetGuidData'));request=ins(instance('SetGuidData'))

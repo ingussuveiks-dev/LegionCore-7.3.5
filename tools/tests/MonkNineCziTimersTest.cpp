@@ -12,8 +12,9 @@ using uint32=uint32_t;using uint64=uint64_t;using DamageEffectType=uint32;
 #include "DeathState.inc"
 enum{TYPEID_UNIT,TYPEID_PLAYER,UNIT_FIELD_NPC_FLAGS,UNIT_NPC_FLAG_SPELLCLICK=1,POINT_MOTION_TYPE=8,UNIT_STATE_STUNNED=4,UNIT_STATE_CASTING=8,CRITERIA_TYPE_SCRIPT_EVENT_2=92};
 struct ObjectGuid{uint64 low=0,high=0;bool operator==(ObjectGuid const& other)const{return low==other.low&&high==other.high;}};
-struct Unit{virtual ~Unit()=default;virtual uint32 GetTypeId()const{return TYPEID_UNIT;}};
-struct Player:Unit{ObjectGuid guid{17,0x1234567800000011};std::vector<uint32> credits;uint32 GetTypeId()const override{return TYPEID_PLAYER;}ObjectGuid GetGUID()const{return guid;}void UpdateAchievementCriteria(uint32 type,uint32 id){assert(type==92);credits.push_back(id);}};
+struct InstanceScript{void SetGuidData(uint32,ObjectGuid){}};
+struct Unit{ObjectGuid guid;ObjectGuid GetGUID()const{return guid;}virtual ~Unit()=default;virtual uint32 GetTypeId()const{return TYPEID_UNIT;}};
+struct Player:Unit{Player(){guid={17,0x1234567800000011};}std::vector<uint32> credits;uint32 GetTypeId()const override{return TYPEID_PLAYER;}void UpdateAchievementCriteria(uint32 type,uint32 id){assert(type==92);credits.push_back(id);}};
 struct Motion{uint32 jumps=0,points=0;void MoveJump(float,float,float,float,float,float){++jumps;}void MovePoint(uint32 id,float,float,float){assert(id==1);++points;}};
 struct CreatureAI;
 struct Creature:Unit{
@@ -22,6 +23,7 @@ struct Creature:Unit{
  FunctionProcessor functions;uint32 states=0,flags=UNIT_NPC_FLAG_SPELLCLICK,despawns=0,melee=0;bool near=true,victim=false;float y=1700;Motion motion;Player* nearest=nullptr;
  std::vector<std::pair<uint32,ObjectGuid>> talks;std::vector<uint32> casts;std::function<void()> onTalk;
  CreatureAI* AI(){return i_AI;}bool AIM_Destroy();void Lifecycle(uint32 diff);
+ uint32 GetMapId()const{return 0;}uint32 GetEntry()const{return 97774;}uint64 GetDBTableGUIDLow()const{return 0;}InstanceScript* GetInstanceScript(){return nullptr;}
  void RemoveFlag(uint32,uint32 flag){flags&=~flag;}void SetFlag(uint32,uint32 flag){flags|=flag;}
  void SetHomePosition(float,float,float,float){}float GetPositionX()const{return 1;}float GetPositionY()const{return y;}float GetPositionZ()const{return 1;}float GetOrientation()const{return 0;}
  bool IsWithinDistInMap(Unit*,float)const{return near;}bool HasUnitState(uint32 flag)const{return (states&flag)!=0;}
@@ -40,6 +42,7 @@ void Creature::Lifecycle(uint32 diff){
 #include "AIDestroy.inc"
 struct ScriptedAI:CreatureAI{using CreatureAI::CreatureAI;bool UpdateVictim(){return me->victim;}void DoCast(uint32 id){me->casts.push_back(id);}void DoMeleeAttackIfReady(){++me->melee;}};
 struct CreatureScript{explicit CreatureScript(char const*){}virtual ~CreatureScript()=default;virtual CreatureAI* GetAI(Creature*)const=0;};
+#include "NineSource.inc"
 #include "Actor.inc"
 using Nine=npc_nine_czi::npc_nine_cziAI;
 struct Run{

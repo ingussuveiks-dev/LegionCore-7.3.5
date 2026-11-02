@@ -5,6 +5,7 @@ This inspector independently checks the new instance, native death boundary,
 real criteria leaf and authenticated arrival; it cannot certify client visuals.
 """
 from pathlib import Path
+from monk_intro_instance_pe import construction,zero_alias_pairs,reachable
 import hashlib,json,runpy
 from sharasdal_erunak_entry_pe import sites,values,fields,floats
 
@@ -13,15 +14,15 @@ n,ins,refs,table,resolved=(p[k] for k in ('n','ins','refs','table','resolved'))
 def state(name):return '?'+name+'@State@MonkJorvinax@@'
 def context(name):return '?'+name+'@State@MonkChenRescue@@'
 def instance(name):return '?'+name+'@instance_monk_intro@@'
-def pairs(body):return [(o.mnemonic,o.op_str) for o in body]
+def pairs(body):return zero_alias_pairs(body) if body is factory and nine_successor else [(o.mnemonic,o.op_str) for o in body]
 def needs(body,*targets):
     for target in targets:assert sites(n,body,target),('Jorvinax native dependency',target)
 
-factory=ins('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')
+allocation,factory,nine_successor=construction(n)
 vt,raw=table('??_7instance_monk_intro@@6B@',140)
-presentation_successor=0x430 in values(factory)
-instance_size=0x430 if presentation_successor else 0x418
-assert vt in refs(factory) and instance_size in values(factory)
+presentation_successor=0x430 in values(allocation) or nine_successor
+instance_size=0x490 if nine_successor else 0x430 if presentation_successor else 0x418
+assert vt in refs(factory) and instance_size in values(allocation)
 if presentation_successor:
     assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),(('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
 registration,script=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
@@ -84,7 +85,12 @@ assert {('sub','rcx, 0x18c'),('cmp','rcx, 0x2c')}<=set(pairs(pose))
 request=ins(instance('SetGuidData'));assert 94350 in values(request)
 needs(request,state('Guide'),state('BoundRoute'),'?Pose@MonkJorvinax@@',state('Update'),'??9ObjectGuid@@')
 assert {('cmp','dword ptr [rbx + 0x2c], 0x966fbe'),('cmp','dword ptr [rbx + 0x18], 8'),
-        ('cmp','qword ptr [rdi + rax*8 + 0x2f98], rbx'),('mov','word ptr [rsi + 0x57], 1')}<=set(pairs(request))
+        ('cmp','qword ptr [rdi + rax*8 + 0x2f98], rbx'),('mov',f'word ptr [{"rbp" if nine_successor else "rsi"} + 0x57], 1')}<=set(pairs(request))
+if nine_successor:
+    rp=pairs(request);base=rp.index(('mov','rbp, rcx'));anchor=rp.index(('add','rbp, 0x3b8'));flag=rp.index(('mov','word ptr [rbp + 0x57], 1'))
+    assert request[anchor].address not in reachable(request,request[0].address,{request[base].address})
+    assert request[flag].address not in reachable(request,request[0].address,{request[anchor].address})
+    assert not any(o.op_str.startswith('rbp, ') and o.mnemonic not in ('cmp','test') for o in request[base+1:anchor]+request[anchor+1:flag])
 movement=ins('?MovementInform@npc_master_haitAI@npc_master_hait@@')
 assert {1014,97778,362271,94350,46951}<=values(movement)
 bridge=next(i for i,o in enumerate(movement) if (o.mnemonic,o.op_str)==('mov','edx, 0x1708e'))

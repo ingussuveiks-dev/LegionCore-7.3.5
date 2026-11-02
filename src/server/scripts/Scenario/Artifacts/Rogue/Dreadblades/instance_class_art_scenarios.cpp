@@ -17,6 +17,7 @@
 #include "../../Monk/Intro/chen_rescue.h"
 #include "../../Monk/Intro/jorvinax_defeat.h"
 #include "../../Monk/Intro/chen_presentation.h"
+#include "../../Monk/Intro/nine_czi_arrival.h"
 
 //rogue dreadblades 1545
 struct instance_dreadblades : public InstanceScript
@@ -173,12 +174,13 @@ struct instance_ruins_of_falanaar_feral : public InstanceScript
 // Monk order hall introduction - map 1014, scenario 943
 struct instance_monk_intro : public InstanceScript
 {
-    instance_monk_intro(InstanceMap* map) : InstanceScript(map), chenRescue(map), jorvinax(&chenRescue), chenPresentation(&chenRescue) { }
+    instance_monk_intro(InstanceMap* map) : InstanceScript(map), chenRescue(map), jorvinax(&chenRescue), chenPresentation(&chenRescue), nineArrival(&chenRescue) { }
 
     MonkChenRescue::State chenRescue;
     MonkJorvinax::State jorvinax;
     MonkChenPresentation::State chenPresentation;
-    void OnCreatureCreate(Creature* actor) override { InstanceScript::OnCreatureCreate(actor); chenRescue.Observe(actor); }
+    MonkNineArrival::State nineArrival;
+    void OnCreatureCreate(Creature* actor) override { InstanceScript::OnCreatureCreate(actor); chenRescue.Observe(actor); nineArrival.Observe(actor); }
     void CreatureDies(Creature* actor, Unit* killer) override { chenRescue.Death(actor, killer); jorvinax.Death(actor, killer); }
     ObjectGuid GetGuidData(uint32 type) const override
     {
@@ -195,8 +197,9 @@ struct instance_monk_intro : public InstanceScript
         if (type == MonkChenRoutes::EscortData) chenRescue.RouteRequest(value);
         if (type == MonkChenRoutes::HaitData) chenRescue.RouteRequest(value);
         if (type == MonkJorvinax::ArrivalData) jorvinax.Arrival(value);
+        if (type == MonkNineArrival::RequestData) nineArrival.Request(value);
     }
-    void Update(uint32 diff) override { chenPresentation.UpdateRescue(diff); chenPresentation.Update(diff); chenRescue.Update(diff); jorvinax.Update(diff); chenPresentation.Update(diff, true); }
+    void Update(uint32 diff) override { nineArrival.Update(diff); chenPresentation.UpdateRescue(diff); chenPresentation.Update(diff); chenRescue.Update(diff); jorvinax.Update(diff); chenPresentation.Update(diff, true); }
 };
 
 //116849

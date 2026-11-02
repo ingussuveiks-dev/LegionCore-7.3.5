@@ -44,6 +44,7 @@ if (MonkChenRescue::Source(me))
  [IO.File]::WriteAllText("$out/Actor.inc",$currentActor+';');[IO.File]::WriteAllText("$out/BaselineActor.inc",$previous.Replace('npc_monk_chen_porter','npc_monk_chen_porter_baseline')+';');[IO.File]::WriteAllText("$out/Instance.inc",$currentInstance+';')
  [IO.File]::WriteAllText("$out/Jorvinax.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/jorvinax_defeat.h" -Raw).Replace('#include "chen_rescue.h"','#include "Rescue.inc"'))
  [IO.File]::WriteAllText("$out/Presentation.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_presentation.h" -Raw).Replace('#include "chen_rescue.h"','#include "Rescue.inc"'))
+ if(Test-Path "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/nine_czi_arrival.h"){[IO.File]::WriteAllText("$out/NineArrival.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/nine_czi_arrival.h" -Raw).Replace('#include "chen_rescue.h"','#include "Rescue.inc"'))}
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h" "$out/Rescue.inc"
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_arrival.h" "$out/chen_arrival.h"
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_routes.h" "$out/chen_routes.h"

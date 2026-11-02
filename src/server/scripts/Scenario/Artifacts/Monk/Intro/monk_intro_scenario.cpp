@@ -19,6 +19,7 @@
 #include "InstanceScript.h"
 #include "chen_rescue.h"
 #include "jorvinax_defeat.h"
+#include "nine_czi_arrival.h"
 
 
 // 97778
@@ -309,6 +310,13 @@ public:
         {
             if (who->GetTypeId() != TYPEID_PLAYER)
                 return;
+
+            if (MonkNineArrival::Source(me))
+            {
+                if (InstanceScript* script = me->GetInstanceScript())
+                    script->SetGuidData(MonkNineArrival::RequestData, who->GetGUID());
+                return;
+            }
 
             if (!_introDone && me->IsWithinDistInMap(who, 30.0f) && me->GetPositionY() >= 1736.0f)
             {

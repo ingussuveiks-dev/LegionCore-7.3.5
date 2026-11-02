@@ -6,6 +6,8 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function Prior([string]$path){$s=(& git -C $repo show "8d66b5e09:$path") -join "`n";if($LASTEXITCODE){throw "Pinned early presentation predecessor missing: $path"};$s}
  $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$prior=Prior $path
+ $hasNine=$source.Contains('#include "nine_czi_arrival.h"')
+ if($hasNine){& "$PSScriptRoot/Test-MonkNineArrival.ps1" -ScopeOnly;$source=(& git -C $repo show "f67c49e3b:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Nine actor missing'}}
  $actor=Block $source 'class npc_monk_chen_porter :';$oldActor=Block $prior 'class npc_monk_chen_porter :';$normal=$actor
  foreach($deadline in @(4000,5000,8000)){
   $prefix="if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent($deadline,"
@@ -20,6 +22,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  if((Shape $normal) -cne (Shape $oldHeader)){throw 'Existing late presentation ownership, timing or payload changed'}
  foreach($name in @('chen_rescue.h','jorvinax_defeat.h','monk_fel_stone.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$name";if((Shape (Get-Content "$repo/$path" -Raw)) -cne (Shape (Prior $path))){throw 'Original receipt/route/victory/Fel Stone changed'}}
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$instances=Get-Content "$repo/$path" -Raw;$oldInstances=Prior $path
+ if($hasNine){$instances=(& git -C $repo show "f67c49e3b:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Nine instance missing'}}
  if(([regex]::Matches($instances,[regex]::Escape('chenPresentation.UpdateRescue(diff); '))).Count -ne 1 -or (Shape $instances.Replace('chenPresentation.UpdateRescue(diff); ','')) -cne (Shape $oldInstances)){throw 'Only native early update before existing instance calls required'}
  if($ScopeOnly){'PASS exact original4/5 callbacks/redundant8s wrapper scoped out, two padding flags/two early methods and one before-route update; all late/receipt/route/victory/Fel Stone/other actor+instance bodies retained';return}
  & "$PSScriptRoot/Test-MonkChenPresentation.ps1" -ExportOnly -OutputDirectory $out
