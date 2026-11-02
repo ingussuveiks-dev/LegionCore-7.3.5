@@ -1,0 +1,11 @@
+{
+  "FixCommit": "2b13f4bf848ec168b8c8d00ab62ce8b938804e2b",
+  "Archive": "build-extractors\\bin\\Release\\fixed\\monk-nine-rescue-2026-11-02\\verified1",
+  "Sources": 6882,
+  "Payloads": 6884,
+  "ReviewedDiagnosticSets": 530,
+  "ManifestSHA256": "D79ED4829C71049BC3D4CA7B243D8DD9D59F2E17F25ED7378E4651458A47371A",
+  "SourceArchiveSourceVerified": true,
+  "ActiveCrashes": 0,
+  "MixedLogUnchanged": true
+}
