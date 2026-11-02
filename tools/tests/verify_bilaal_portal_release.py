@@ -31,7 +31,31 @@ context = '?Context@State@BilaalPortal@@'
 attempt = '?Try@State@BilaalPortal@@'
 needs(arrived, context, '?GetCreature@Map@@', '?InSamePhaseId@WorldObject@@QEBA_NAEBV', attempt)
 assert {104546, 1, 2000} <= values(arrived)
-needs(context, '?Victory@BilaalDeath@@')
+if any(name.startswith('?Victory@BilaalDeath@@') for name in n['symbols']):
+    needs(context, '?Victory@BilaalDeath@@')
+else:
+    # MSVC inlines the unchanged Progress/Victory into this actual caller
+    # after the Monk receipt is linked in the same translation unit. Trace
+    # the real route, earned/departed flags, native map and nonzero leaf.
+    needs(context, '?GetInstanceId@Map@@', '?GetScenario@ScenarioMgr@@', '?GetScenarioId@Scenario@@',
+          '?GetAchievementMgr@Scenario@@', '?GetCriteriaProgressMap@?$AchievementMgr@VScenario@@@@')
+    code=ins(context);pairs=[(op.mnemonic,op.op_str) for op in code]
+    assert {('mov','rbp, qword ptr [r8]'),('mov','ebx, dword ptr [rbp + 8]'),('cmp','eax, ebx'),
+            ('mov','rsi, qword ptr [rsi]'),('lea','r8, [rsi + 0x18]'),('mov','rcx, rax'),
+            ('mov','rbx, rax'),('cmp','rcx, qword ptr [rbx + 8]'),('cmp','qword ptr [rcx + 0x28], 0')}<=set(pairs)
+    success=next(i for i,op in enumerate(code) if (op.mnemonic,op.op_str)==('mov','al, 1'))
+    failure=next(op.address for op in code[success:] if (op.mnemonic,op.op_str)==('xor','al, al'))
+    # The shared false epilogue starts with the preceding saved-register load.
+    reject=code[next(i for i,op in enumerate(code) if op.address==failure)-1].address
+    for operands,jump in (('byte ptr [rsi + 0x70], 0','je'),('byte ptr [rsi + 0x71], 0','je'),
+                          ('eax, 5','jne'),('qword ptr [rcx + 0x28], 0','je')):
+        at=next(i for i,op in enumerate(code[:success]) if op.mnemonic=='cmp' and op.op_str==operands)
+        branch=next(op for op in code[at+1:at+4] if op.mnemonic.startswith('j'))
+        assert branch.mnemonic==jump and branch.operands[0].imm==reject
+    key=next(i for i,op in enumerate(code) if (op.mnemonic,op.op_str)==('lea','r8, [rsi + 0x18]'))
+    find=next(op for op in code[key+1:] if op.mnemonic=='call')
+    assert find.operands[0].type==CS_OP_IMM and n['resolve'](find.operands[0].imm) in {
+        n['resolve'](address) for name,address in n['symbols'].items() if name.startswith('?find@?$_Hash@')}
 assert 5 in values(context)
 needs(attempt, context, '??0GameObject@@', '??$AddToMap@VGameObject@@@Map@@',
       '?SetRespawnTime@GameObject@@', '?SetSpawnedByDefault@GameObject@@')

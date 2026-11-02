@@ -4,6 +4,11 @@ function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 
 function Shape([string]$text){($text -replace '//[^\n]*','') -replace '\s',''}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "ad164392f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-Hait source missing'}
+if($source.Contains('#include "chen_rescue.h"')){
+ & "$PSScriptRoot/Test-MonkChenRescue.ps1" -ScopeOnly
+ $preRescue=(& git -C $repo show "6b6fae36c:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-rescue actor missing'}
+ $source=$source.Replace((Block $source 'class npc_monk_chen_porter :'),(Block $preRescue 'class npc_monk_chen_porter :')).Replace('#include "InstanceScript.h"','').Replace('#include "chen_rescue.h"','')
+}
 $currentActor=Block $source 'class npc_master_hait :'
 if($source.Contains('#include "monk_hait_click.h"')){
  # Certify the narrow successor independently, then compare timer behavior

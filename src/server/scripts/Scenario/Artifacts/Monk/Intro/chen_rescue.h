@@ -1,0 +1,171 @@
+#pragma once
+
+#include <algorithm>
+
+namespace MonkChenRescue
+{
+constexpr uint32 QuestId = 12103;
+constexpr uint32 StatusData = 94340, ClaimData = 94341, RequestData = 94342;
+
+inline bool Source(Creature* actor)
+{
+    return actor && actor->GetMapId() == 1014 && actor->GetEntry() == 103148 && actor->GetDBTableGUIDLow() == 362201;
+}
+
+struct Member
+{
+    ObjectGuid player;
+    std::weak_ptr<uint8> attempt;
+};
+
+// The real private-instance death, rather than nearest-player SetData, owns
+// this receipt. Earlier prerequisite trees cannot consume its native event.
+struct State
+{
+    explicit State(Map* owner) : map(owner) { }
+    Map* map;
+    ObjectGuid chen, source, lastDeath, claim;
+    std::vector<Member> members;
+    uint64 epoch = 0;
+    uint32 retry = 0, lastStep = 0;
+    bool pending = false, started = false, warned = false;
+
+    Scenario* Progress() const
+    {
+        if (!map || map->IsMapUnload() || map->GetId() != 1014) return nullptr;
+        Scenario* scenario = sScenarioMgr->GetScenario(map->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 943 ? scenario : nullptr;
+    }
+
+    bool Leaf() const
+    {
+        Scenario* scenario = Progress();
+        if (!scenario) return false;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto found = progress->find(29047);
+        return found != progress->end() && found->second.Counter;
+    }
+
+    Player* Retained(Member const& member) const
+    {
+        Player* player = ObjectAccessor::FindPlayer(member.player);
+        auto status = player ? player->getQuestStatus(QuestId) : nullptr;
+        auto attempt = member.attempt.lock();
+        return player && status && attempt && status->ScriptLifetime == attempt && player->GetMap() == map &&
+            player->getClass() == CLASS_MONK && !player->GetQuestRewardStatus(QuestId) &&
+            player->GetQuestStatus(QuestId) == QUEST_STATUS_INCOMPLETE && player->FindQuestSlot(QuestId) < MAX_QUEST_LOG_SIZE ? player : nullptr;
+    }
+
+    Creature* Actor() const
+    {
+        Creature* actor = map ? map->GetCreature(chen) : nullptr;
+        return Source(actor) && actor->GetMap() == map && actor->IsInWorld() && !actor->IsPreDelete() && actor->IsAlive() ? actor : nullptr;
+    }
+
+    UnitAI* Content() const
+    {
+        Creature* actor = Actor();
+        return actor ? (actor->GetDisabledAI() ? actor->GetDisabledAI() : actor->GetAI()) : nullptr;
+    }
+
+    Player* Current(Member const& member) const
+    {
+        Player* player = Retained(member);
+        Creature* actor = Actor();
+        Creature* corpse = map ? map->GetCreature(source) : nullptr;
+        return player && actor && player->IsInWorld() && player->CanContact() && !player->isGameMaster() &&
+            !player->HasPendingTeleport() && player->InSamePhase(actor) && !actor->ShouldHideFor(player->GetGUID()) &&
+            actor->IsWithinDistInMap(player, 100.0f) &&
+            (!corpse || !corpse->IsInWorld() || corpse->IsPreDelete() || player->InSamePhase(corpse)) ? player : nullptr;
+    }
+
+    void Cancel()
+    {
+        ++epoch; pending = false; claim.Clear(); members.clear(); retry = 0;
+    }
+
+    void Observe(Creature* actor)
+    {
+        if (!actor || actor->GetMap() != map) return;
+        if (Source(actor) && !started && (chen.IsEmpty() || !pending)) chen = actor->GetGUID();
+        if (actor->GetEntry() == 97811 && actor->GetDBTableGUIDLow() == 362229 && actor->IsAlive() && !pending)
+            lastDeath.Clear();
+    }
+
+    void Death(Creature* actor, Unit* killer)
+    {
+        Scenario* scenario = Progress();
+        if (pending || started || !scenario || scenario->GetCurrentStep() > 3 || !actor ||
+            actor->GetMap() != map || !actor->IsInWorld() || actor->IsPreDelete() || actor->IsAlive() ||
+            actor->GetEntry() != 97811 || actor->GetDBTableGUIDLow() != 362229 ||
+            map->GetCreature(actor->GetGUID()) != actor || lastDeath == actor->GetGUID()) return;
+        lastDeath = source = actor->GetGUID(); members.clear();
+        for (auto const& reference : map->GetPlayers())
+            if (Player* player = reference.getSource())
+            {
+                if (player->GetMap() != map || !player->IsInWorld() || !player->CanContact() || player->isGameMaster() ||
+                    player->HasPendingTeleport() || player->getClass() != CLASS_MONK || !player->InSamePhase(actor) ||
+                    player->GetQuestRewardStatus(QuestId) || player->GetQuestStatus(QuestId) != QUEST_STATUS_INCOMPLETE ||
+                    player->FindQuestSlot(QuestId) >= MAX_QUEST_LOG_SIZE) continue;
+                player->AddQuestDelayedEvent(QuestId, 0, [] { });
+                auto status = player->getQuestStatus(QuestId);
+                if (status && status->ScriptLifetime) members.push_back({player->GetGUID(), status->ScriptLifetime});
+            }
+        if (members.empty()) return;
+        Player* owner = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+        if (owner)
+            for (auto member = members.begin(); member != members.end(); ++member)
+                if (member->player == owner->GetGUID()) { std::iter_swap(members.begin(), member); break; }
+        ++epoch; retry = 0; lastStep = scenario->GetCurrentStep(); pending = true; warned = false;
+        Update(0);
+    }
+
+    void Request(ObjectGuid actor)
+    {
+        if (actor == chen) Update(0);
+    }
+
+    void Update(uint32 diff)
+    {
+        if (!pending) return;
+        Scenario* scenario = Progress();
+        if (!scenario || scenario->GetCurrentStep() < lastStep || scenario->GetCurrentStep() > 4 ||
+            std::none_of(members.begin(), members.end(), [this](Member const& member) { return Retained(member) != nullptr; }))
+        { Cancel(); return; }
+        lastStep = scenario->GetCurrentStep();
+        if (lastStep < 3) return; // Native46902 must first admit the rescue tree.
+        if (retry > diff) { retry -= diff; return; }
+        retry = 2000;
+        UnitAI* ai = Content();
+        if (!ai || ai->GetData(StatusData) != 1) return;
+        uint64 generation = epoch;
+        auto original = members; // Native event may re-enter and retire this state.
+        for (auto const& member : original)
+            if (Player* player = Current(member))
+            {
+                if (scenario->GetCurrentStep() == 3 && !Leaf())
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46956);
+                if (!pending || epoch != generation) return;
+                scenario = Progress(); player = Current(member); ai = Content();
+                if (!scenario || scenario->GetCurrentStep() < lastStep || scenario->GetCurrentStep() > 4)
+                { Cancel(); return; }
+                lastStep = scenario->GetCurrentStep();
+                if (scenario && scenario->GetCurrentStep() == 4 && Leaf() && player && ai && ai->GetData(StatusData) == 1)
+                {
+                    // Reserve before native SetData/Talk can re-enter. The
+                    // actual AI acknowledges before queuing its original path.
+                    claim = chen;
+                    ai->SetData(1, 1);
+                    if (!pending || epoch != generation) return;
+                    ai = Content();
+                    if (ai && ai->GetData(StatusData) == 2)
+                    { pending = false; started = true; claim.Clear(); members.clear(); return; }
+                    claim.Clear();
+                }
+            }
+        if (!warned)
+            TC_LOG_WARN("scripts", "Monk Chen: genuine Morvat death46956/escort not acknowledged; retaining original quest attempts");
+        warned = true;
+    }
+};
+}

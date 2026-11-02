@@ -3,6 +3,11 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $text.Length){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$text.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "aa1513802:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-timer source missing'}
+if($source.Contains('#include "chen_rescue.h"')){
+ & "$PSScriptRoot/Test-MonkChenRescue.ps1" -ScopeOnly
+ $preRescue=(& git -C $repo show "6b6fae36c:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-rescue actor missing'}
+ $source=$source.Replace((Block $source 'class npc_monk_chen_porter :'),(Block $preRescue 'class npc_monk_chen_porter :')).Replace('#include "InstanceScript.h"','').Replace('#include "chen_rescue.h"','')
+}
 $actor=Block $source 'class npc_nine_czi :';$oldActor=Block $old 'class npc_nine_czi :'
 $addition=@'
 

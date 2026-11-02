@@ -14,6 +14,7 @@
 #include "SmartScriptMgr.h"
 #include "bilaal_death.h"
 #include "bilaal_portal.h"
+#include "../../Monk/Intro/chen_rescue.h"
 
 //rogue dreadblades 1545
 struct instance_dreadblades : public InstanceScript
@@ -170,7 +171,20 @@ struct instance_ruins_of_falanaar_feral : public InstanceScript
 // Monk order hall introduction - map 1014, scenario 943
 struct instance_monk_intro : public InstanceScript
 {
-    instance_monk_intro(InstanceMap* map) : InstanceScript(map) { }
+    instance_monk_intro(InstanceMap* map) : InstanceScript(map), chenRescue(map) { }
+
+    MonkChenRescue::State chenRescue;
+    void OnCreatureCreate(Creature* actor) override { InstanceScript::OnCreatureCreate(actor); chenRescue.Observe(actor); }
+    void CreatureDies(Creature* actor, Unit* killer) override { chenRescue.Death(actor, killer); }
+    ObjectGuid GetGuidData(uint32 type) const override
+    {
+        return type == MonkChenRescue::ClaimData ? chenRescue.claim : InstanceScript::GetGuidData(type);
+    }
+    void SetGuidData(uint32 type, ObjectGuid value) override
+    {
+        if (type == MonkChenRescue::RequestData) chenRescue.Request(value);
+    }
+    void Update(uint32 diff) override { chenRescue.Update(diff); }
 };
 
 //116849

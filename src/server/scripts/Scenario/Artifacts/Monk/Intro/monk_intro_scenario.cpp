@@ -16,6 +16,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 #include "Timer.h"
+#include "InstanceScript.h"
+#include "chen_rescue.h"
 
 
 // 97778
@@ -379,6 +381,12 @@ public:
         }
 
         bool _introDone;
+        bool _rescueStarted = false;
+
+        uint32 GetData(uint32 type) const override
+        {
+            return type == MonkChenRescue::StatusData ? (_rescueStarted ? 2 : 1) : 0;
+        }
 
         FunctionProcessor _presentationFunctions;
 
@@ -474,9 +482,21 @@ public:
         {
             if (type == 1 && data == 1)
             {
+                if (MonkChenRescue::Source(me))
+                {
+                    InstanceScript* script = me->GetInstanceScript();
+                    if (!script || script->GetGuidData(MonkChenRescue::ClaimData) != me->GetGUID())
+                    {
+                        if (script) script->SetGuidData(MonkChenRescue::RequestData, me->GetGUID());
+                        return;
+                    }
+                    if (_rescueStarted) return;
+                    _rescueStarted = true;
+                }
                 Talk(3);
-                if (Player* pl = me->FindNearestPlayer(100))
-                    pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46956);
+                if (!MonkChenRescue::Source(me))
+                    if (Player* pl = me->FindNearestPlayer(100))
+                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46956);
                 _presentationFunctions.AddDelayedEvent(4000, [this]() -> void
                 {
                     Talk(4);

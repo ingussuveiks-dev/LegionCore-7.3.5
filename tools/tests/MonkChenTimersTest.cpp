@@ -14,7 +14,8 @@ using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using DamageEffe
 enum{TYPEID_UNIT,TYPEID_PLAYER,UNIT_FIELD_NPC_FLAGS,UNIT_NPC_FLAG_SPELLCLICK=1,WAYPOINT_MOTION_TYPE=2,UNIT_STATE_STUNNED=4,UNIT_STATE_CASTING=8,MOTION_SLOT_IDLE=0,CRITERIA_TYPE_SCRIPT_EVENT_2=92};
 float const PET_FOLLOW_ANGLE=1.57f,PET_FOLLOW_DIST=1.f;
 uint32 urand(uint32 low,uint32){return low;}
-struct ObjectGuid{uint64 low=0,high=0;bool operator==(ObjectGuid const& other)const{return low==other.low&&high==other.high;}};
+struct ObjectGuid{uint64 low=0,high=0;bool operator==(ObjectGuid const& other)const{return low==other.low&&high==other.high;}bool operator!=(ObjectGuid const& other)const{return !(*this==other);}};
+struct InstanceScript{ObjectGuid GetGuidData(uint32)const{return {};}void SetGuidData(uint32,ObjectGuid){}};
 struct Unit{virtual ~Unit()=default;virtual uint32 GetTypeId()const{return TYPEID_UNIT;}virtual float GetPositionZ()const{return 0;}};
 struct Player:Unit{ObjectGuid guid{17,0x1234567800000011};std::vector<uint32> credits;uint32 GetTypeId()const override{return TYPEID_PLAYER;}ObjectGuid GetGUID()const{return guid;}void UpdateAchievementCriteria(uint32 type,uint32 id){assert(type==92);credits.push_back(id);}};
 struct Motion{uint32 points=0,follows=0;std::vector<uint32> paths;void MovePoint(uint32 id,float,float,float){assert(id==0);++points;}void MovePath(uint32 id,bool){paths.push_back(id);}void MoveFollow(Unit*,float,float,uint32){++follows;}};
@@ -25,6 +26,7 @@ struct Creature:Unit{
  FunctionProcessor functions;uint32 states=0,flags=UNIT_NPC_FLAG_SPELLCLICK,attacks=0,melee=0;bool near=true,victim=false;Motion motion;Player* nearest=nullptr;Creature* hait=nullptr;Creature* morvat=nullptr;Creature* li=nullptr;std::vector<Creature*> adds;
  std::vector<std::pair<uint32,ObjectGuid>> talks;std::function<void()> onTalk;
  CreatureAI* AI(){return i_AI;}bool AIM_Destroy();void Lifecycle(uint32 diff);
+ uint32 GetMapId()const{return 0;}uint32 GetEntry()const{return 103148;}uint32 GetDBTableGUIDLow()const{return 0;}ObjectGuid GetGUID()const{return {19,2};}InstanceScript* GetInstanceScript(){return nullptr;}
  void RemoveFlag(uint32,uint32 flag){flags&=~flag;}
  void SetHomePosition(float,float,float,float){}float GetPositionX()const{return 1;}float GetPositionY()const{return 1;}float GetPositionZ()const override{return 1;}float GetOrientation()const{return 0;}
  bool IsWithinDistInMap(Unit*,float)const{return near;}bool HasUnitState(uint32 flag)const{return (states&flag)!=0;}
@@ -33,7 +35,7 @@ struct Creature:Unit{
 };
 void GetCreatureListWithEntryInGrid(std::list<Creature*>& out,Creature* actor,uint32 id,float){assert(id==98074);out.insert(out.end(),actor->adds.begin(),actor->adds.end());}
 struct CreatureAI{
- Creature* me;explicit CreatureAI(Creature* actor):me(actor){}virtual ~CreatureAI()=default;virtual void Reset(){}virtual void UpdateLifecycle(uint32){}virtual void UpdateAI(uint32){}virtual void MovementInform(uint32,uint32){}virtual void MoveInLineOfSight(Unit*){}virtual void SetData(uint32,uint32){}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}
+ Creature* me;explicit CreatureAI(Creature* actor):me(actor){}virtual ~CreatureAI()=default;virtual void Reset(){}virtual void UpdateLifecycle(uint32){}virtual void UpdateAI(uint32){}virtual void MovementInform(uint32,uint32){}virtual void MoveInLineOfSight(Unit*){}virtual void SetData(uint32,uint32){}virtual uint32 GetData(uint32)const{return 0;}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}
  void Talk(uint8 id,ObjectGuid WhisperGuid={});void AttackStart(Unit*){++me->attacks;}
 };
 struct CreatureTextMgrEndpoint{void SendChat(Creature* source,uint8 id,ObjectGuid guid={}){source->talks.emplace_back(id,guid);if(source->onTalk)source->onTalk();}};
@@ -47,6 +49,7 @@ void Creature::Lifecycle(uint32 diff){
 #include "AIDestroy.inc"
 struct ScriptedAI:CreatureAI{using CreatureAI::CreatureAI;bool UpdateVictim(){return me->victim;}void DoMeleeAttackIfReady(){++me->melee;}};
 struct CreatureScript{explicit CreatureScript(char const*){}virtual ~CreatureScript()=default;virtual CreatureAI* GetAI(Creature*)const=0;};
+#include "RescueSource.inc"
 #include "Actor.inc"
 using Chen=npc_monk_chen_porter::npc_monk_chen_porterAI;
 struct Run{

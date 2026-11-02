@@ -3,6 +3,12 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $text.Length){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$text.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "dc4d75908:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-Chen source missing'}
+$currentActor=Block $source 'class npc_monk_chen_porter :'
+if($source.Contains('#include "chen_rescue.h"')){
+ & "$PSScriptRoot/Test-MonkChenRescue.ps1" -ScopeOnly
+ $preRescue=(& git -C $repo show "6b6fae36c:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-rescue actor missing'}
+ $source=$source.Replace($currentActor,(Block $preRescue 'class npc_monk_chen_porter :')).Replace('#include "InstanceScript.h"','').Replace('#include "chen_rescue.h"','')
+}
 $actor=Block $source 'class npc_monk_chen_porter :';$oldActor=Block $old 'class npc_monk_chen_porter :'
 $addition=@'
 
@@ -28,7 +34,9 @@ if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -
 if($ScopeOnly){'PASS exact nine Chen timer owners/four immutable GUID captures/five native text forwarders; other native gameplay/actors unchanged';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Broken counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-chen-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
-[IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$actor})+';')
+[IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$currentActor})+';')
+$bridge=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h" -Raw
+[IO.File]::WriteAllText("$out/RescueSource.inc",$bridge.Substring(0,$bridge.IndexOf('struct Member'))+'}')
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
 [IO.File]::WriteAllText("$out/TalkForward.inc",(Block (Get-Content "$repo/src/server/game/AI/CreatureAI.cpp" -Raw) 'void CreatureAI::Talk(uint8 id, ObjectGuid WhisperGuid)'))
