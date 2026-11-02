@@ -1,0 +1,68 @@
+{
+  "Build": "7.3.5.26972",
+  "Source": "Actual typed BroadcastText/SoundKit/SoundKitName/SoundKitEntry and four full read-only local CASC Vorbis decodes. No listening or client playback claim.",
+  "UnvoicedReplies": [
+    99968,
+    99969,
+    99970
+  ],
+  "ScriptedReplies": [
+    99968,
+    99970
+  ],
+  "ChenVoices": [
+    {
+      "SoundKit": 62031,
+      "FileDataID": 1384167,
+      "Name": "VO_703_Chen_Stormstout_07",
+      "Broadcast": 99965
+    },
+    {
+      "SoundKit": 62035,
+      "FileDataID": 1384171,
+      "Name": "VO_703_Chen_Stormstout_09",
+      "Broadcast": 99966
+    },
+    {
+      "SoundKit": 62040,
+      "FileDataID": 1384176,
+      "Name": "VO_703_Chen_Stormstout_11",
+      "Broadcast": 99967
+    },
+    {
+      "SoundKit": 62044,
+      "FileDataID": 1384180,
+      "Name": "VO_703_Chen_Stormstout_12",
+      "Broadcast": 100187
+    }
+  ],
+  "WrongStudentOverride": 62044,
+  "WrongOverrideOwner": 100187,
+  "Payloads": [
+    {
+      "VoiceMs": 4443,
+      "FileDataID": 1384167,
+      "SHA256": "79A768FB7CC7B52B8B5C0AAB7A13705CFF12C6EDBD4489443414614C1C29A4EE",
+      "Bytes": 30622
+    },
+    {
+      "VoiceMs": 2125,
+      "FileDataID": 1384171,
+      "SHA256": "B1E0C597246C0CA97EAD8C333C34CCE4E26D0162AE32B5C42143855645969328",
+      "Bytes": 16037
+    },
+    {
+      "VoiceMs": 5500,
+      "FileDataID": 1384176,
+      "SHA256": "ACFFB23103277D92B67E1305475C117E8FF2A07C55456028473EB12693459A24",
+      "Bytes": 37704
+    },
+    {
+      "VoiceMs": 6205,
+      "FileDataID": 1384180,
+      "SHA256": "EE817071912807FFB9CFC4A55BA231F25537CF3CE5D35C5EF66BF3F02A13AB72",
+      "Bytes": 40942
+    }
+  ],
+  "Pending": "Earlier initial Chen voice4443ms precedes nominal4000ms next callback; this metadata budget and AI-owned4s/5s rescue callbacks remain separate open timing/lifetime work. Do not infer actual audible overlap without client/listening evidence."
+}

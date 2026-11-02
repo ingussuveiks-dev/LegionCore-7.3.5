@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-02",
+  "status": "DEPLOYED World03 focused98074 scripted reply/default group and wrong speaker data repair; earlier rescue callback lifetime/timing, actual client/full943/all36 OPEN.",
+  "cause": "Original Chen103148/3622015s rescue callback follows nearby98074 trainees and calls native SendChat(student,0). Actual world98074 had no group0, so native CreatureTextMgr returns at missing group and no response can be selected. Its only two existing group3 timer rows are apologies99968/99970. Worse,99968 has explicit Sound62044: matching native SoundKitName is VO_703_Chen_Stormstout_12 and the only native BroadcastText using62044 is Chen100187 departure instruction. Both genders of native99968/99969/99970 have no sound. Copying group3 or its override blindly would make a trainee speak Chen's actual6.205s departure line.",
+  "repair": "Add only two scripted default group0 responses from the existing native99968/99970 rows, retaining text/type/language/probability/emote/spell/comment but using distinct default IDs0/1 and zero timer/duration/sound. Clear only the proven wrong62044 override on the existing98074/group3/ID0/99968 row. Preserve both group3 text rows, duplicate per-text ID0 and exact MinTimer/MaxTimer158694/240641, all four original spawns/models/template/AI, other NPCs and original authored caller. Native group3 is TEXT_GROUP_TIMER used by AggressorAI/ReactorAI; it is not a substitute for script group0. No invented student voice, new speech queue, progression, character or C++ mutation.",
+  "scope": "Data only, exact one existing Sound cell plus two default rows. Full eight-table context guard accepts complete pinned original or complete installed image only; partial/custom context refuses all writes even with native --force. Whole-column TEMP snapshots include an unrelated NPC sentinel. Existing tested40DF9E95/A60CB84A executable already contains the default0 caller; no rebuild/new ScriptName needed.",
+  "local_evidence": {
+    "world": ".codex/chen-student-metadata1-open-2026-11-02/world.tsv and public MonkStudentRepliesOriginal.json: exact eight native schemas/one template/one WDB row/four global98074 spawns362259/362263/362264/362265 all1014/phase7000/two original timer texts/no addons/Smart or source22 conditions. Actual primary key includes Text; both timer rows legitimately haveID0 and must not be deduplicated/deleted.",
+    "native": ".codex/chen-student-native4-2026-11-02/native.tsv: typed hotfix-aware7.3.5.26972 BroadcastText/SoundKit/SoundKitName/SoundKitEntry, all7 relevant texts, three unvoiced apologies, four Chen voices. Full native BroadcastText scan uniquely maps62044 to100187. GetTextGroup permits only timed groups with nonzeroMinTimer; native SendChat0 uses the ordinary requested group and separate repeat IDs, not group3 fallback.",
+    "audio": "Four matching26972 local read-only CASC exports, original indexes before/after identical, full hashed Vorbis decodes:62031/1384167=4443ms,62035/1384171=2125ms,62040/1384176=5500ms,62044/1384180=6205ms. These are Chen voices, not trainee voices. No listening, actual client playback or continuous gameplay claimed; audio files remain ignored/local.",
+    "source_order": "Matching local Legion7.3.5 data/assets/core fully establish this focused cause. No modern reference port, external gameplay/YouTube review or new character reset."
+  },
+  "checks": [
+    "Native SQL passes8 complete temporary schemas/full snapshots/unrelated sentinel, exact two new default rows and one wrong sound removal, no other context mutation, idempotence and27 unchanged refusal variants including partial installs/custom group0/timer/broadcast/sound/emote/duration/type/language/probability/spell/ID/AI/model/spawn/phase/Smart changes. Every statement uses the full safe guard; expected CHECK4025 rejections are explicit counterfactuals with full captured native exit/stdout/stderr and EOF.",
+    "Actual native CreatureTextMgr.LoadCreatureTexts/TextExist/SendChat/random weighted selection/repeat cycle execute for four real98074 actors on isolated1014/phase7000 with NullCreatureAI, no Players/character writes. Baseline actual missing group0 is identified as a counterfactual; in-memory corrected store and real loader/manager dispatch pass. Native two default IDs alternate before a new repeat cycle, retain actual timed group and never turn default0 into a timer. Both genuine rows have duration0, so controlled101/202 duration sentinels observe real native dispatch without confusing a legitimate zero return with failure; public SQL/live checks retain actual duration0. No manager implementation/access specifier changed.",
+    "After actual canonical updater, native live manager first verifies real loaded default rows/text/type/language/emote/probability/IDs/no timers/no sound/duration0 against original timed text; then only in-memory sentinel durations trace native dispatch. Live8-table full-column context independently matches expected rows. This controlled native test is separate from actual player visibility/chat/emote/client traversal.",
+    "Fresh typed audio regression checks native unvoiced male/female replies, exact4 Chen kit/name/file mappings, sole62044 owner100187, all4 payload hashes/bytes/codec/channels/durations and full decodes. No invented replacement audio or copied timer path.",
+    "Three public PowerShell parsers and unchanged complete production actor source/default5s caller checked. Runtime world/bnet hashes preserved40DF9E95/A60CB84A; no C++ or canonical configuration/certificate/DLL changes. Previous matching runtime full native/PE/Scepter proof remains in the parent Chen outro audit.",
+    "Owned canonical11808 fresh ready -> shutdown0 -> exit0, stderr empty/process gone, actual updater RELEASED LF SHA1 verified; live SQL and actual native loaded manager pass. No user/unknown server stopped. All before/after canonical/root/own diagnostics show no new/changed runtime crash, appended DBErrors or unexplained warning/error/assertion."
+  ],
+  "iterations": [
+    "Successive native research catalogs added explicit world override62044, native SoundKitName and global BroadcastText owner instead of assuming that a valid sound ID belonged to a trainee. This resolved a concrete wrong-speaker cause before designing the data repair. No failed native/data test or hidden symptom.",
+    "Initial CASC extraction reused a prior script whose final label said six; exactly4 files/hashes were actually exported and fully decoded. Fresh public audio regression explicitly validates4 payloads and the correct mappings. Original output retained; no audio listening claim.",
+    "Native pre-update tests1/2 explicitly isolate the counterfactual original missing0 and use an in-memory store fixture; post-update live mode validates the actual loaded defaults before applying duration sentinels. SQL tests shadow all eight tables on separate native connections, never create test rows in production."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "sql": "sql/updates/world/2026_11_02_03_monk_student_replies.sql",
+    "updater": {
+      "UpdateSHA1": "66d9a0440460294dcb08ecde9f07d05db9746aa0",
+      "SQLSHA256": "A872F5CEB99582E3D13BAD99F7637B65909126DCF24E232147DE58735BCAB0C4",
+      "RuntimeHashes": {
+        "bnetserver.exe": "A60CB84A2CBAB31974D7B3954B6B6BAA4D8ED4AC7E7E7D51701C29E0F0D6F538",
+        "worldserver.exe": "40DF9E950C7351BCB136F37A2124596FCB8F972FFD0DF228D610DC0AFDA80EAB"
+      },
+      "NativeLiveManagerVerified": true,
+      "Live8ContextTablesVerified": true,
+      "NoCharacterMutation": true
+    },
+    "owned": "Owned worldserver PID=11808\nPASS owned PID=11808 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "new_executable_required": false,
+    "character_mutation": false
+  },
+  "evidence_prefixes": [
+    ".codex/chen-student-audio-check1-2026-11-02",
+    ".codex/chen-student-audio1-2026-11-02",
+    ".codex/chen-student-audio1-outer-2026-11-02",
+    ".codex/chen-student-context1-2026-11-02",
+    ".codex/chen-student-data1-2026-11-02",
+    ".codex/chen-student-final-audit1-2026-11-02",
+    ".codex/chen-student-final-scope1-2026-11-02",
+    ".codex/chen-student-fixture1-2026-11-02",
+    ".codex/chen-student-live-data1-2026-11-02",
+    ".codex/chen-student-metadata1-open-2026-11-02",
+    ".codex/chen-student-metadata1-outer-2026-11-02",
+    ".codex/chen-student-native1-2026-11-02",
+    ".codex/chen-student-native2-2026-11-02",
+    ".codex/chen-student-native3-2026-11-02",
+    ".codex/chen-student-native4-2026-11-02",
+    ".codex/chen-student-text-native1-2026-11-02",
+    ".codex/chen-student-text-native2-2026-11-02",
+    ".codex/chen-student-updater1-2026-11-02"
+  ],
+  "diagnostics": {
+    "result": "Before/after canonical/root/own/catalog crashes and relevant log lengths/timestamps captured before every first parser/native/SQL/asset/codec/startup check. Captured exits/stdout/stderr, appended server and DB diagnostics inspected. No new/changed runtime crash or unexplained appended diagnostic; expected missing0/CHECK failures are explicit paired counterfactuals. Existing mixed6090 unresolved DBErrors unchanged/untruncated, active Crashes empty. Hash archive follows focused commit.",
+    "mixed_db_errors_bytes": 6090,
+    "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
+    "active_crashes": 0,
+    "coverage_limit": "Native manager uses isolated real actors and in-memory sentinel durations with no Players. TEMP/live SQL, typed metadata, hashes/decodes and canonical startup are distinct from actual client text/emote/sound/full-chain verification."
+  },
+  "remaining": [
+    "User client: actual trainee response bubble/emote and appropriate absence of Chen's voice on the trainee, existing timed3 behavior, visibility/faction/group/pet variants and full943/all36 remain separate checks. Native metadata confirms no trainee audio for these texts; silence is not certification of packet visibility.",
+    "Earlier scoped4s Chen scolding and5s trainee follow/default response are still AI-owned callbacks. Continue preserving genuine accepted weak quest/source and original4/5/8 ordering across AI retirement without synthetic progress; current data fix does not keep an unexecuted callback alive.",
+    "Decoded initial99965 voice budget4443ms exceeds the nominal4000ms next callback. This is a separate timing-budget finding, not a claim of audible overlap: no listening/client playback reviewed, and payload padding may differ from speech. No global voice queue or invented combat delay introduced.",
+    "All older unresolved physical actor replacement/exact-stage relog/restart, shared101430/103151 LINK2, Wardstone missingLINK4, Survival39427 flight, Fu Zan/Warrior recovery and Stromkar client visual findings remain OPEN. No additional character reset."
+  ]
+}
