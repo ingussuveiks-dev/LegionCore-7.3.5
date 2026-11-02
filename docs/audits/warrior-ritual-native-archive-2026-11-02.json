@@ -1,0 +1,14 @@
+{
+  "FixCommit": "b3713829090da54e76ef2b579a195f58e9b7a5aa",
+  "Archive": "build-extractors\\bin\\Release\\fixed\\warrior-ritual-native-probe-2026-11-02\\verified1",
+  "Sources": 151,
+  "Payloads": 153,
+  "ManifestSHA256": "DDD9F4E59A28232C05BE06C5C8E9E91C3922F861DB9F675A77A3D587EFB3B70C",
+  "SourceArchiveSourceVerified": true,
+  "MixedLogUnchanged": true,
+  "ActiveCrashes": 0,
+  "Cause": "Probe InstanceMap parent had incorrect plain Map layout; failed stdout previously discarded before nonzero exit handling",
+  "Repair": "b37138290 real MapInstanced parent and persisted native output/exit; native4/5/6 pass, final6 both corpse summon GUIDs verified",
+  "Review": "Expected failed native1/2 access violation and native3 short timing assertion are preserved and paired with repaired native4/5/6; no production defect attributed to the fixture, production ritual remains OPEN",
+  "Limits": "Private configs/executables/dumps/characters/mixed unresolved logs excluded. No dump was produced, native1 stdout was already lost by the old helper and is not reconstructed; source/archive/source and final payload hashes verified; original files retained, no log truncated"
+}
