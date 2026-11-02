@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-02",
+  "status": "Focused PE regression repair; no production C++, SQL, runtime deployment or character mutation.",
+  "cause": "The retained Bilaal inspector assumed health flag256 was loaded immediately before shift8 and that loader bit8 immediately followed its field5c load. The existing linked-cast512 successor copies EDI to EBX before shift8/mask1 and shares loader EAX across exclusive bit9 then bit8 checks. Both actual canonical40DF9E95 and staged929A350E binaries contain the same forms. The old inspector rejected correct code before inspecting its retained retries. This is a latent verification gap, not evidence of a new Chen/SmartScript runtime regression.",
+  "repair": "Keep the original direct form and additionally accept only the observed exact eight-instruction field5c/EDI-to-EBX/bit8/stored flag/independent bit9 sequence. For the shared loader require exactly two incoming branches to bit8: bit9 clear or exact512; require the original field5c EAX load, no intervening EAX writer on either accepted path, and all existing health/source/victim/one-shot/no-LINK/exclusive256/action75 checks. Retain both native500ms/runOnce failure branches, actual ordinary CastSpell, accepted-result policy, UpdateTimer and Reset inspection. No generic PE decoder change or skipped assertion.",
+  "evidence": [
+    ".codex/chen-early-shared-pe1-2026-11-02 records the original flags assertion; .codex/chen-early-bilaal-inspection2-2026-11-02 records both actual421-instruction action11 regions with identical relevant bit8/bit9 lowering.",
+    ".codex/bilaal-flag-alias-pe1-2026-11-02 records the next original immediate-load assumption in the loader; .codex/bilaal-flag-alias-loader1-2026-11-02 records actual clear/exact512 incoming branches, retained EAX and original exclusive256 gates.",
+    ".codex/bilaal-flag-alias-pe2-2026-11-02 verifies complete inspector against canonical40DF9E95 and stage929A350E; .codex/bilaal-flag-alias-native1-2026-11-02 executes actual extracted health/cast/loader/Reset handlers with ASAN: both native Bilaal shapes, three accepted thresholds/combat, rejected/busy/missing victim500ms retries, reset/skip/combat gates and eight loader refusals. Controlled world/spell endpoints, no client combat claim."
+  ],
+  "iterations": [
+    "The first ignored inspection helper omitted Python struct; native/script NameError captured, import corrected, complete inspection then passed. No server launch/crash.",
+    "Original and partially corrected PE failures are retained, paired with complete repaired checks. Production SmartScript source and original-path game.lib were unchanged by this repair."
+  ],
+  "diagnostics": "Before/after canonical/root/own snapshots: no new/changed crash report, appended DBErrors or unexplained server warning/error/assertion. Existing mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 retained/untruncated. No server process stopped or launched. Hash archive follows focused commit.",
+  "remaining": "Actual Bilaal combat/client traversal, unrelated mixed LINK errors, active Chen early deployment and full artifact/all36 verification remain separate. User owns actual client tests; no new reset."
+}
