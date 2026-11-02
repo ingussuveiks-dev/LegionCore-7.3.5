@@ -26,11 +26,21 @@
     "active_crashes": 0,
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
-    "archive": "Pending focused fix commit; preserve original evidence and unresolved mixed log."
+    "archive": {
+      "FixCommit": "6026f8c578ceb05f989592badab7a73677ac219c",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\warrior-opening-2026-11-02\\verified1",
+      "Sources": 425,
+      "Payloads": 427,
+      "ManifestSHA256": "522495B9D8DC487ADC0BE6ABEDB2818EFD39B885C1142A642E77FD18B3860906",
+      "SourceArchiveSourceVerified": true,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "Actual client visibility/audio/approach/combat/full933/group/faction/abandonment/re-entry remain user checks. In-memory instance recovery does not persist exact actor or criteria state across a server restart or reconstruct an already missing Ragnvald.",
     "Danica ritual still unconditionally attempts49203/49262 before native205287 five-second cast completion and departs from any hit. Repair actual original corpse/spirit receipts, factory/normal cast failures and phase-relative recovery next; missing Danica summon and re-entry persistence remain OPEN.",
     "All36 chains, shared101430/103151 LINK2, Wardstone LINK4, Survival middle flight, Stromkar visuals and other recorded findings remain OPEN; no additional character reset authorized."
-  ]
+  ],
+  "fix_commit": "6026f8c578ceb05f989592badab7a73677ac219c"
 }

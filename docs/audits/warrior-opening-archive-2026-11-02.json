@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-02",
+  "status": "VERIFIED resolved opening fixture/build/PE/runtime evidence; mixed6090 remains unresolved and untouched",
+  "result": {
+    "FixCommit": "6026f8c578ceb05f989592badab7a73677ac219c",
+    "Archive": "build-extractors\\bin\\Release\\fixed\\warrior-opening-2026-11-02\\verified1",
+    "Sources": 425,
+    "Payloads": 427,
+    "ManifestSHA256": "522495B9D8DC487ADC0BE6ABEDB2818EFD39B885C1142A642E77FD18B3860906",
+    "SourceArchiveSourceVerified": true,
+    "MixedLogUnchanged": true,
+    "ActiveCrashes": 0
+  },
+  "review": "Pinned failed opening admission paired with final92ASAN. Three fixture failures and two PE inspector failures are explicitly reviewed in the fix audit, paired with repaired passing tests and actual deployed DAE0455E/90B40249/owned19492ready-exit0. No historical/client crash claim. Source/archive/source and final payload SHA256 verified;425sources/427payloads. Private native configs, executables, character data, dumps and mixed log excluded. Originals retained; no log truncation or active crash removal needed."
+}
