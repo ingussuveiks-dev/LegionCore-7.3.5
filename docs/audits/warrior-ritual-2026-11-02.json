@@ -33,7 +33,16 @@
     "active_crashes": 0,
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
-    "archive": "Pending focused commit and deployed passing regression; unresolved mixed log retained."
+    "archive": {
+      "FixCommit": "ed0ddd7dc64120c14f69451eb50d35ef26d991a3",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\warrior-ritual-2026-11-02\\verified1",
+      "Sources": 639,
+      "Payloads": 641,
+      "ManifestSHA256": "AC13E8A77C019A4014DC4202EED6C044ADDA073762BBA0DB6C349A607EB9EB00",
+      "SourceArchiveSourceVerified": true,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "Actual native Player/Scenario entire933 progression, client movement/early kill path/cast/ghost rendering/audio, faction/group traversal and full quest remain user checks. Native movement endpoints in the component fixture are controlled; native cast/catalog proof is separate.",
@@ -41,5 +50,6 @@
     "Weak original Player/quest attempts are in-memory. Logout/destruction/new weak attempt cancels them; exact-stage ritual recovery after reconnect/server restart or an already removed original actor is not implemented or certified. Generic scenario entrance/live-map recovery does not persist this content state. No character reset is authorized.",
     "Ragnvald's original second-battle1412 factory acceptance/lifetime and complete voice sequencing still need focused review; the new controller preserves that payload after the real stage3/actor handoff. Client playback is not inferred from Map creation.",
     "All36, shared101430/103151 LINK2, Wardstone LINK4, Survival middle flight, Stromkar visual and other recorded findings remain OPEN. Continue independent repairs after the focused commit."
-  ]
+  ],
+  "fix_commit": "ed0ddd7dc64120c14f69451eb50d35ef26d991a3"
 }

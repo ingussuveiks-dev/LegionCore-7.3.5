@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-02",
+  "status": "VERIFIED resolved ritual implementation/fixture/build/PE/runtime evidence; mixed6090 remains unresolved and untouched",
+  "result": {
+    "FixCommit": "ed0ddd7dc64120c14f69451eb50d35ef26d991a3",
+    "Archive": "build-extractors\\bin\\Release\\fixed\\warrior-ritual-2026-11-02\\verified1",
+    "Sources": 639,
+    "Payloads": 641,
+    "ManifestSHA256": "AC13E8A77C019A4014DC4202EED6C044ADDA073762BBA0DB6C349A607EB9EB00",
+    "SourceArchiveSourceVerified": true,
+    "MixedLogUnchanged": true,
+    "ActiveCrashes": 0
+  },
+  "review": "Final84 ASAN and true native immediate normal spirit summons/catalog, current opening92/first-wave87, explicit legacy45/41 and full64 finale retained; actual final3 B84010EC/DB82D532 source/normal cast/owned spirit/native leaves/empty Danica UpdateAI vtable and canonical startup11976exit0/Scepter pass. Intermediate1133 and7B1A candidates and their reviewed differences retained. Fixture/controller/inspector/read-only query failures paired with passing repairs. One whitespace failure corrected. Earlier own-fixture pre-snapshot omission and successful aggregate shell1 from optional absent-directory listing remain explicitly limited in fix audit; no missing evidence reconstructed.639source/641payload original SHA256/source-archive-source verified, private configs/executables/dumps/characters/mixed log excluded, originals retained; no active crash removal or log truncation needed."
+}
