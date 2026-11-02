@@ -4,19 +4,23 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence/$(Get-Date -Format yyyyMMdd-HHmmss-fff)" -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
+ function PriorInitial([string]$path){$s=(& git -C $repo show "cfe6cd302:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-initial missing'};$s}
  function Prior([string]$path){$s=(& git -C $repo show "f67c49e3b:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Nine arrival predecessor missing'};$s}
  $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$old=Prior $path
+ $currentActor=Block $source 'class npc_nine_czi :'
+ if($source.Contains('#include "nine_czi_rescue.h"')){& "$PSScriptRoot/Test-MonkNineRescue.ps1" -ScopeOnly;$source=PriorInitial $path}
  $actor=Block $source 'class npc_nine_czi :';$oldActor=Block $old 'class npc_nine_czi :';$bridge=Block $actor 'if (MonkNineArrival::Source(me))'
  if((Shape $bridge) -cne (Shape 'if (MonkNineArrival::Source(me)) { if (InstanceScript* script = me->GetInstanceScript()) script->SetGuidData(MonkNineArrival::RequestData, who->GetGUID()); return; }')){throw 'Only the actual LOS visitor may request a scoped arrival'}
  if((Shape $actor.Replace($bridge,'')) -cne (Shape $oldActor) -or (Shape $source.Replace($actor,$oldActor).Replace('#include "nine_czi_arrival.h"','')) -cne (Shape $old)){throw 'Initial Nine/unscoped/other actor/native motion/text changed'}
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$instances=Get-Content "$repo/$path" -Raw;$oldInstances=Prior $path
+ if($instances.Contains('MonkNineRescue::State')){$instances=PriorInitial $path}
  $normal=$instances.Replace('#include "../../Monk/Intro/nine_czi_arrival.h"','').Replace(', nineArrival(&chenRescue)','').Replace('MonkNineArrival::State nineArrival;','').Replace(' nineArrival.Observe(actor);','').Replace('if (type == MonkNineArrival::RequestData) nineArrival.Request(value);','').Replace('nineArrival.Update(diff); ','')
  if((Shape $normal) -cne (Shape $oldInstances)){throw 'Other instance/base/Chen/Jorvinax behavior changed'}
  foreach($name in @('chen_rescue.h','chen_arrival.h','chen_routes.h','chen_presentation.h','jorvinax_defeat.h','monk_fel_stone.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$name";if((Shape (Get-Content "$repo/$path" -Raw)) -cne (Shape (Prior $path))){throw 'Prior receipt/presentation/route/victory/Fel Stone changed'}}
  if($ScopeOnly){'PASS exact late362252 actual LOS visitor bridge and appended instance state; entire initial Nine/unscoped/Chen/Hait/native taxi and all previous controllers/instances retained';return}
  & "$PSScriptRoot/Test-MonkChenEarlyPresentation.ps1" -ExportOnly -OutputDirectory $out
  if(!$?){throw 'Actual native Nine arrival host export failed'}
- [IO.File]::WriteAllText("$out/NineActor.inc",$actor+';')
+ [IO.File]::WriteAllText("$out/NineActor.inc",$currentActor+';')
  [IO.File]::WriteAllText("$out/NineBaselineActor.inc",$oldActor.Replace('npc_nine_czi','npc_nine_czi_arrival_baseline')+';')
  [IO.File]::WriteAllText("$out/NineBaselineInstance.inc",(Block $oldInstances 'struct instance_monk_intro :').Replace('instance_monk_intro','instance_monk_intro_nine_baseline')+';')
  if($ExportOnly){return}

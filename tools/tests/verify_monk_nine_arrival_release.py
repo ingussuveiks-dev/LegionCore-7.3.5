@@ -16,7 +16,7 @@ def context(name):return '?'+name+'@State@MonkChenRescue@@'
 assert p['p']['nine_successor'],'Real outlined490 constructor required'
 dispatch=ins('?Update@instance_monk_intro@@');request=ins('?SetGuidData@instance_monk_intro@@')
 first,=sites(n,dispatch,state('Update'));chen,=sites(n,dispatch,'?UpdateRescue@State@MonkChenPresentation@@')
-assert first<chen and ('add','rcx, 0x430') in pairs(dispatch[:first])
+assert first<chen and (('lea','rcx, [rdi + 0x430]') if n.get('monk_initial_successor') else ('add','rcx, 0x430')) in pairs(dispatch[:first])
 assert 94360 in values(request) and ('lea','rcx, [rbp + 0x430]') in pairs(request)
 assert len(sites(n,request,state('Request')))==1
 nine_call,=sites(n,request,state('Request'));rp=pairs(request)
@@ -28,7 +28,7 @@ assert rp[gate+2:gate+6]==[('movups','xmm0, xmmword ptr [rsi]'),('lea','rcx, [rb
 created=ins('?OnCreatureCreate@instance_monk_intro@@')
 assert {1014,97774,362252}<=values(created)
 needs(created,context('Retained'),state('Cancel'),'?GetGuidValue@Object@@')
-assert ('movups','xmmword ptr [rdi + 0x10], xmm0') in pairs(created)
+assert ('movups','xmmword ptr [r14 + 0x10], xmm0' if n.get('monk_initial_successor') else 'xmmword ptr [rdi + 0x10], xmm0') in pairs(created)
 actor=ins(state('Actor'));leaf=ins(state('Leaf'));current=ins(state('Current'))
 needs(actor,'?GetCreature@Map@@','?IsInWorld@Object@@','?IsPreDelete@Object@@')
 assert {1014,97774,362252}<=values(actor) and 1736.0 in floats(n,actor)
@@ -80,4 +80,4 @@ for body in (capture,update,actor,current,leaf,valid):
     for forbidden in ('?FindNearestPlayer@WorldObject@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@','?ActivateTaxiPathTo@Player@@','?MovePoint@MotionMaster@@','?AddDelayedEvent@Unit@@','?AddDelayedEvent@FunctionProcessor@@'):
         assert not sites(n,body,forbidden),('No invented travel/progression or foreign AI callback',forbidden)
 print('PASS actual registered490 instance/430 Nine state: outlined constructor and retained context offsets, real visitor/full original source+weak quest/scenario identity, native2/29069/46902 before personal7,2000ms retry,4s personal8/native3000ms despawn, once/reentry and scoped legacy bypass. Native taxi/client/full943/all36 remain separate.')
-print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x490,'state_offset':0x430,'event':46902,'criterion':29069,'callback_ms':4000,'native_despawn_ms':3000}))
+print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x498 if n.get('monk_initial_successor') else 0x490,'state_offset':0x430,'event':46902,'criterion':29069,'callback_ms':4000,'native_despawn_ms':3000}))

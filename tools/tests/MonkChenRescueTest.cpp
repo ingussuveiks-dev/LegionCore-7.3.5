@@ -13,15 +13,15 @@
 using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;using DamageEffectType=uint32;
 #include "Functions.inc"
 #include "DeathState.inc"
-enum{TYPEID_UNIT,TYPEID_PLAYER,UNIT_FIELD_NPC_FLAGS,UNIT_NPC_FLAG_SPELLCLICK=1,WAYPOINT_MOTION_TYPE=2,POINT_MOTION_TYPE=8,IDLE_MOTION_TYPE=0,UNIT_STATE_ROAMING_MOVE=16,UNIT_STATE_STUNNED=4,UNIT_STATE_CASTING=8,MOTION_SLOT_IDLE=0,CRITERIA_TYPE_SCRIPT_EVENT_2=92,CLASS_MONK=10,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,MAX_QUEST_LOG_SIZE=25};
+enum{TYPEID_UNIT,TYPEID_PLAYER,UNIT_FIELD_NPC_FLAGS,UNIT_NPC_FLAG_SPELLCLICK=1,WAYPOINT_MOTION_TYPE=2,POINT_MOTION_TYPE=8,IDLE_MOTION_TYPE=0,MOTION_SLOT_ACTIVE=1,UNIT_STATE_ROAMING=32,UNIT_STATE_ROAMING_MOVE=16,UNIT_STATE_STUNNED=4,UNIT_STATE_CASTING=8,MOTION_SLOT_IDLE=0,CRITERIA_TYPE_SCRIPT_EVENT_2=92,CLASS_MONK=10,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,MAX_QUEST_LOG_SIZE=25};
 uint32 clockNow=0;uint32 getMSTime(){return clockNow;}
 #include "Elapsed.inc"
 #include "WaypointFields.inc"
 using WaypointPath=std::vector<WaypointData>;
 #include "PathBase.inc"
 struct WaypointMgr{WaypointPath data,haitData;bool available=true,haitAvailable=true;WaypointMgr(){Reset();}void Reset(){available=haitAvailable=true;haitData.assign(9,WaypointData{});for(uint32 i=0;i<9;++i)haitData[i].id=i+1;haitData.back().x=3939.18f;haitData.back().y=1838.15f;haitData.back().z=904.334f;data.assign(6,WaypointData{});for(uint32 i=0;i<6;++i)data[i].id=i+1;data.back().x=3881.59f;data.back().y=1726.28f;data.back().z=932.669f;}WaypointPath const* GetPathScript(uint32 id){return available&&id==9859005?&data:haitAvailable&&id==9859006?&haitData:nullptr;}} waypointMgr;auto sWaypointMgr=&waypointMgr;
-namespace Movement{struct MoveSpline{bool done=true;bool Finalized()const{return done;}};}
-struct MovementGenerator{virtual ~MovementGenerator()=default;virtual uint32 GetMovementGeneratorType()const{return IDLE_MOTION_TYPE;}};
+namespace Movement{struct MoveSpline{uint32 id=1;uint32 GetId()const{return id;}bool done=true;bool Finalized()const{return done;}};}
+struct Unit;struct MovementGenerator{virtual ~MovementGenerator()=default;virtual void Initialize(Unit&){}virtual void Finalize(Unit&){}virtual void Reset(Unit&){}virtual bool Update(Unit&,uint32){return false;}virtual uint32 GetMovementGeneratorType()const{return IDLE_MOTION_TYPE;}};
 struct Creature;
 template<class T> class WaypointMovementGenerator;
 template<> class WaypointMovementGenerator<Creature>:public MovementGenerator,public PathMovementBase<Creature,WaypointPath const*>{
@@ -50,7 +50,7 @@ namespace ObjectAccessor{std::map<ObjectGuid,Unit*> units;std::map<ObjectGuid,Pl
 namespace ObjectAccessor{Unit* GetUnit(Unit const& caller,ObjectGuid guid){auto p=GetPlayer(caller,guid);if(p)return p;auto f=units.find(guid);return f!=units.end()&&f->second->map==caller.map?f->second:nullptr;}}
 #include "Owner.inc"
 #include "QuestDelay.inc"
-struct Motion{uint32 points=0,follows=0,requests=0;bool install=true;std::vector<uint32> paths;WaypointMovementGenerator<Creature> waypoint;MovementGenerator* idle=nullptr;MovementGenerator* current=nullptr;Movement::MoveSpline* spline=nullptr;std::function<void()> onPoint;void MovePoint(uint32,float,float,float){++points;idle=current=nullptr;if(onPoint)onPoint();}void MovePath(uint32 id,bool){++requests;if(!install)return;paths.push_back(id);waypoint._pathId=id;waypoint.Bind(sWaypointMgr->GetPathScript(id));waypoint.Node(0);idle=current=&waypoint;if(spline)spline->done=false;}uint32 jumps=0;void MoveJump(float,float,float,float,float,float){++jumps;}std::function<void()> onFollow;Unit* followTarget=nullptr;float followDistance=0,followAngle=0;uint32 followSlot=0;void MoveFollow(Unit* target,float distance,float angle,uint32 slot){++follows;followTarget=target;followDistance=distance;followAngle=angle;followSlot=slot;if(onFollow)onFollow();}MovementGenerator* GetMotionSlot(uint32){return idle;}bool empty()const{return !current;}MovementGenerator* top(){return current;}void Retire(){idle=current=nullptr;}};
+struct Motion{std::unique_ptr<MovementGenerator> pointOwner;uint32 points=0,follows=0,requests=0;bool install=true;std::vector<uint32> paths;WaypointMovementGenerator<Creature> waypoint;MovementGenerator* idle=nullptr;MovementGenerator* current=nullptr;Movement::MoveSpline* spline=nullptr;std::function<void()> onPoint;void MovePoint(uint32,float,float,float);void MovePath(uint32 id,bool){++requests;if(!install)return;paths.push_back(id);waypoint._pathId=id;waypoint.Bind(sWaypointMgr->GetPathScript(id));waypoint.Node(0);idle=current=&waypoint;if(spline)spline->done=false;}uint32 jumps=0;void MoveJump(float,float,float,float,float,float){++jumps;}std::function<void()> onFollow;Unit* followTarget=nullptr;float followDistance=0,followAngle=0;uint32 followSlot=0;void MoveFollow(Unit* target,float distance,float angle,uint32 slot){++follows;followTarget=target;followDistance=distance;followAngle=angle;followSlot=slot;if(onFollow)onFollow();}MovementGenerator* GetMotionSlot(uint32 slot){return slot==MOTION_SLOT_ACTIVE?current:idle;}bool empty()const{return !current;}MovementGenerator* top(){return current;}void Retire(){idle=current=nullptr;}};
 struct Creature:Unit{
  std::vector<uint32> casts;uint32 despawnRequests=0,despawnDelay=0;
  void DespawnOrUnsummon(uint32 delay){++despawnRequests;despawnDelay=delay;}
@@ -60,7 +60,7 @@ struct Creature:Unit{
  uint32 entry=103148,spawn=362201,states=0,flags=UNIT_NPC_FLAG_SPELLCLICK,attacks=0,melee=0;bool world=true,predelete=false,hidden=false,near=true,phaseVisible=true,victim=false;Motion motion;Player* nearest=nullptr;Creature* hait=nullptr;Creature* morvat=nullptr;Creature* li=nullptr;std::vector<Creature*> adds;FunctionProcessor functions;
  std::vector<std::pair<uint32,ObjectGuid>> talks;std::function<void()> onTalk;
  Movement::MoveSpline spline;Movement::MoveSpline* movespline=&spline;float x=1,y=1,z=1,distance=0;uint32 waypointID=0;
- Creature(){motion.spline=&spline;}void UpdateWaypointID(uint32 id){waypointID=id;}uint32 GetCurrentWaypointID()const{return waypointID;}void ClearUnitState(uint32 flag){states&=~flag;}
+ void* GetTransport(){return transport?this:nullptr;}bool transport=false;void CastSpell(Unit*,uint32 id){casts.push_back(id);if(onCast)onCast();}std::function<void()> onCast;Creature(){motion.spline=&spline;}void UpdateWaypointID(uint32 id){waypointID=id;}uint32 GetCurrentWaypointID()const{return waypointID;}void ClearUnitState(uint32 flag){states&=~flag;}
  bool IsWithinDist3d(float dx,float dy,float dz,float range,bool)const{return std::sqrt((x-dx)*(x-dx)+(y-dy)*(y-dy)+(z-dz)*(z-dz))<=range;}
  CreatureAI* AI(){return i_AI;}CreatureAI* GetAI(){return i_AI;}CreatureAI* GetDisabledAI(){return i_disabledAI;}bool AIM_Destroy();void Lifecycle(uint32 diff);void KillAllDelayedCombats(){}
  uint32 GetMapId()const{return map?map->id:0;}uint32 GetInstanceId()const{return map?map->instance:0;}uint32 GetEntry()const{return entry;}uint32 GetDBTableGUIDLow()const{return spawn;}bool IsInWorld()const{return world;}bool IsPreDelete()const{return predelete;}bool IsAlive()const{return deathState==ALIVE;}bool ShouldHideFor(ObjectGuid)const{return hidden;}InstanceScript* GetInstanceScript(){return map?map->script:nullptr;}
@@ -88,11 +88,22 @@ struct ScriptedAI:CreatureAI{using CreatureAI::CreatureAI;void DoCast(uint32 id)
 struct CreatureScript{explicit CreatureScript(char const*){}virtual ~CreatureScript()=default;virtual CreatureAI* GetAI(Creature*)const=0;};
 struct InstanceScript{Map* instance;uint32 baseCreates=0,forScript=0;explicit InstanceScript(Map* m):instance(m){}virtual ~InstanceScript()=default;virtual void OnCreatureCreate(Creature*){++baseCreates;}virtual void CreatureDies(Creature*,Unit*){}void CreatureDiesForScript(Creature*,Unit*){++forScript;}virtual ObjectGuid GetGuidData(uint32)const{return {555,999};}virtual void SetGuidData(uint32,ObjectGuid){}virtual void Update(uint32){}void UpdateForScript(uint32){}};
 #include "InstanceUpdate.inc"
+#include "MovementMedium.inc"
+template<class T> class PointMovementGenerator:public MovementGeneratorMedium<T,PointMovementGenerator<T>>{
+ public:uint32 id,_movementId;float x,y,z;bool path;PointMovementGenerator(uint32 i,float a,float b,float c,bool p):id(i),_movementId(i),x(a),y(b),z(c),path(p){}
+ uint32 GetMovementGeneratorType()const override{return POINT_MOTION_TYPE;}
+ void DoInitialize(T&){}void DoReset(T&){}bool DoUpdate(T&,uint32){return false;}void DoFinalize(T&);void MovementInform(T&);
+};
+#include "PointFinalize.inc"
+void Motion::MovePoint(uint32 id,float x,float y,float z){++points;if(id==1&&install){pointOwner.reset(new PointMovementGenerator<Creature>(id,x,y,z,true));current=pointOwner.get();if(spline){++spline->id;spline->done=false;}}else idle=current=nullptr;if(onPoint)onPoint();}
 #include "Rescue.inc"
 #include "Jorvinax.inc"
 #include "Presentation.inc"
 #if __has_include("NineArrival.inc")
 #include "NineArrival.inc"
+#endif
+#if __has_include("NineRescue.inc")
+#include "NineRescue.inc"
 #endif
 #include "Actor.inc"
 #include "BaselineActor.inc"

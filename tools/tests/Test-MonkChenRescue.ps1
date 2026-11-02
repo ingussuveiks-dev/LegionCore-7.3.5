@@ -45,6 +45,13 @@ if (MonkChenRescue::Source(me))
  [IO.File]::WriteAllText("$out/Jorvinax.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/jorvinax_defeat.h" -Raw).Replace('#include "chen_rescue.h"','#include "Rescue.inc"'))
  [IO.File]::WriteAllText("$out/Presentation.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_presentation.h" -Raw).Replace('#include "chen_rescue.h"','#include "Rescue.inc"'))
  if(Test-Path "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/nine_czi_arrival.h"){[IO.File]::WriteAllText("$out/NineArrival.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/nine_czi_arrival.h" -Raw).Replace('#include "chen_rescue.h"','#include "Rescue.inc"'))}
+ if(Test-Path "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/nine_czi_rescue.h"){
+  [IO.File]::WriteAllText("$out/NineRescue.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/nine_czi_rescue.h" -Raw).Replace('#include "chen_rescue.h"','#include "Rescue.inc"'))
+  [IO.File]::WriteAllText("$out/PointMovementGenerator.h","#pragma once`n// Native point finalize and medium dispatcher extracted into fixture.`n")
+  $movement=Get-Content "$repo/src/server/game/Movement/MovementGenerators/PointMovementGenerator.cpp" -Raw
+  [IO.File]::WriteAllText("$out/PointFinalize.inc",(Block $movement 'void PointMovementGenerator<T>::DoFinalize(').Insert(0,"template<class T>`n")+(Block $movement 'void PointMovementGenerator<Creature>::MovementInform(').Insert(0,"template<>`n"))
+  [IO.File]::WriteAllText("$out/MovementMedium.inc",(Block (Get-Content "$repo/src/server/game/Movement/MovementGenerator.h" -Raw) 'template<class T, class D>')+';')
+ }
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h" "$out/Rescue.inc"
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_arrival.h" "$out/chen_arrival.h"
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_routes.h" "$out/chen_routes.h"

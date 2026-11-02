@@ -39,6 +39,8 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
 [IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$rawCurrentNine})+';')
 $bridge=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/nine_czi_arrival.h" -Raw
 [IO.File]::WriteAllText("$out/NineSource.inc",$bridge.Substring($bridge.IndexOf('namespace MonkNineArrival'),$bridge.IndexOf('// A real visit')-$bridge.IndexOf('namespace MonkNineArrival'))+'}')
+$initial=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/nine_czi_rescue.h" -Raw
+[IO.File]::AppendAllText("$out/NineSource.inc",$initial.Substring($initial.IndexOf('namespace MonkNineRescue'),$initial.IndexOf('inline bool Pose')-$initial.IndexOf('namespace MonkNineRescue'))+'}')
 [IO.File]::WriteAllText("$out/DeathState.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'enum DeathState')+';')
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))

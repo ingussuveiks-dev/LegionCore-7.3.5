@@ -16,7 +16,7 @@ assert len(valid_names)==1
 valid_name=valid_names[0];valid=ins(valid_name)
 at,=sites(n,dispatch,pres('UpdateRescue'));late=sites(n,dispatch,pres('Update'))
 assert at<late[0]<sites(n,dispatch,ctx('Update'))[0]<late[1]
-assert (('lea','rcx, [rbx + 0x418]') if p['nine_successor'] else ('add','rcx, 0x418')) in pairs(dispatch[:at])
+assert (('lea','rcx, [rdi + 0x418]' if n.get('monk_initial_successor') else 'rcx, [rbx + 0x418]') if p['nine_successor'] else ('add','rcx, 0x418')) in pairs(dispatch[:at])
 assert ('mov','dword ptr [rsi + 0x428], ebx') in pairs(factory)
 needs(early,ctx('Progress'),ctx('Actor'),ctx('Leaf'),ctx('Retained'),'?GetCurrentStep@Scenario@@',
       '?ShouldHideFor@WorldObject@@','?getMSTime@@','?GetCreatureListWithEntryInGrid@WorldObject@@',
@@ -64,5 +64,5 @@ for q in queues:
 for body in (early,student,valid):
     for forbidden in ('?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@','?AddDelayedEvent@Unit@@','?AddDelayedEvent@FunctionProcessor@@'):
         assert not sites(n,body,forbidden),('No new progression or AI-owned callback',forbidden)
-print(f"PASS registered{0x490 if p['nine_successor'] else 0x430:x} instance/418 original4/5 actions before8s route: padding flags, genuine leaf/weak attempt/full Chen GUID/epoch, native clock/once/reentry, four original98074 spawn guards/empty owner/mutual phase/private/70yd2D, full GUID snapshot/dedupe/reread after native random follow/default0; all three unscoped queues retained. Client/full943/all36 remain separate.")
-print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x490 if p['nine_successor'] else 0x430,'state_offset':0x418,'deadlines_ms':[4000,5000,8000]}))
+print(f"PASS registered{0x498 if n.get('monk_initial_successor') else 0x490 if p['nine_successor'] else 0x430:x} instance/418 original4/5 actions before8s route: padding flags, genuine leaf/weak attempt/full Chen GUID/epoch, native clock/once/reentry, four original98074 spawn guards/empty owner/mutual phase/private/70yd2D, full GUID snapshot/dedupe/reread after native random follow/default0; all three unscoped queues retained. Client/full943/all36 remain separate.")
+print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x498 if n.get('monk_initial_successor') else 0x490 if p['nine_successor'] else 0x430,'state_offset':0x418,'deadlines_ms':[4000,5000,8000]}))

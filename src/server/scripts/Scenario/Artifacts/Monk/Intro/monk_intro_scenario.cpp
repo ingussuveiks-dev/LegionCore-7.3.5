@@ -20,6 +20,7 @@
 #include "chen_rescue.h"
 #include "jorvinax_defeat.h"
 #include "nine_czi_arrival.h"
+#include "nine_czi_rescue.h"
 
 
 // 97778
@@ -292,6 +293,7 @@ public:
 
         void MovementInform(uint32 type, uint32 id) override
         {
+            if (MonkNineRescue::Source(me)) return;
             me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
             if (type == POINT_MOTION_TYPE)
             {
@@ -310,6 +312,13 @@ public:
         {
             if (who->GetTypeId() != TYPEID_PLAYER)
                 return;
+
+            if (MonkNineRescue::Source(me))
+            {
+                if (InstanceScript* script = me->GetInstanceScript())
+                    script->SetGuidData(MonkNineRescue::RequestData, who->GetGUID());
+                return;
+            }
 
             if (MonkNineArrival::Source(me))
             {
@@ -344,6 +353,7 @@ public:
 
         void SetData(uint32 type, uint32 data) override
         {
+            if (MonkNineRescue::Source(me)) return; // Only the real instance death owns this transition.
             if (type == 1 && data == 1)
             {
                 DoCast(193248);

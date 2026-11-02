@@ -21,7 +21,7 @@ def needs(body,*targets):
 allocation,factory,nine_successor=construction(n)
 vt,raw=table('??_7instance_monk_intro@@6B@',140)
 presentation_successor=0x430 in values(allocation) or nine_successor
-instance_size=0x490 if nine_successor else 0x430 if presentation_successor else 0x418
+instance_size=0x498 if n.get('monk_initial_successor') else 0x490 if nine_successor else 0x430 if presentation_successor else 0x418
 assert vt in refs(factory) and instance_size in values(allocation)
 if presentation_successor:
     assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),(('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
@@ -36,9 +36,9 @@ assert {('lea','rdi, [rsi + 0x2e0]'),('mov','word ptr [rdi + 0xd4], bx'),
 for name,target in (('CreatureDies','Death'),('Update','Update')):
     body=ins(instance(name));assert n['symbol'](instance(name)) in resolved(raw)
     before,=sites(n,body,context(target));after,=sites(n,body,state(target))
-    context_argument=('lea','rcx, [rbx + 0x2e0]') if presentation_successor and name=='Update' else ('add','rcx, 0x2e0')
+    context_argument=(('lea','rcx, [rdi + 0x2e0]') if name=='Update' else ('lea','rcx, [rbx + 0x2e0]')) if n.get('monk_initial_successor') else ('lea','rcx, [rbx + 0x2e0]') if presentation_successor and name=='Update' else ('add','rcx, 0x2e0')
     assert before<after and context_argument in pairs(body[:before])
-    assert ('lea','rcx, [rbx + 0x3b8]') in pairs(body[before:after])
+    assert ('lea','rcx, [rdi + 0x3b8]' if n.get('monk_initial_successor') and name=='Update' else 'rcx, [rbx + 0x3b8]') in pairs(body[before:after])
 
 death=ins(state('Death'));update=ins(state('Update'));ready=ins(state('Ready'))
 leaf=ins(state('Leaf'));guide=ins(state('Guide'));bound=ins(state('BoundRoute'))

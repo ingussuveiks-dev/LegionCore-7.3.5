@@ -58,8 +58,8 @@ for name,target in (('CreatureDies','Death'),('Update','Update')):
     body=ins(instance(name))
     if jorvinax_successor:
         first,=sites(n,body,state(target));second,=sites(n,body,'?'+target+'@State@MonkJorvinax@@')
-        context_argument=('lea','rcx, [rbx + 0x2e0]') if presentation_successor and name=='Update' else ('add','rcx, 0x2e0')
-        assert first<second and context_argument in pairs(body[:first]) and ('lea','rcx, [rbx + 0x3b8]') in pairs(body[first:second])
+        context_argument=(('lea','rcx, [rdi + 0x2e0]') if name=='Update' else ('lea','rcx, [rbx + 0x2e0]')) if n.get('monk_initial_successor') else ('lea','rcx, [rbx + 0x2e0]') if presentation_successor and name=='Update' else ('add','rcx, 0x2e0')
+        assert first<second and context_argument in pairs(body[:first]) and ('lea','rcx, [rdi + 0x3b8]' if n.get('monk_initial_successor') and name=='Update' else 'rcx, [rbx + 0x3b8]') in pairs(body[first:second])
         if presentation_successor and name=='Update':
             before,after=sites(n,body,'?Update@State@MonkChenPresentation@@')
             assert before<first<second<after and body[after].mnemonic=='jmp'
@@ -67,12 +67,14 @@ for name,target in (('CreatureDies','Death'),('Update','Update')):
     else:assert pairs(body)[0]==('add','rcx, 0x2e0') and sites(n,body,state(target))==[1]
 created=ins(instance('OnCreatureCreate'))
 needs(created,'?OnCreatureCreate@InstanceScript@@','?GetGuidValue@Object@@','?Clear@ObjectGuid@@')
-assert sites(n,created,'?OnCreatureCreate@InstanceScript@@')==([6] if nine_successor else [5])
-if nine_successor:
+assert sites(n,created,'?OnCreatureCreate@InstanceScript@@')==([8] if n.get('monk_initial_successor') else [6] if nine_successor else [5])
+if n.get('monk_initial_successor'):
+    assert pairs(created[:8])==[('mov','qword ptr [rsp + 8], rbx'),('mov','qword ptr [rsp + 0x10], rbp'),('mov','qword ptr [rsp + 0x18], rsi'),('mov','qword ptr [rsp + 0x20], rdi'),('push','r14'),('sub','rsp, 0x20'),('mov','rbx, rdx'),('mov','rsi, rcx')]
+elif nine_successor:
     assert pairs(created[:6])==[('mov','qword ptr [rsp + 0x18], rbx'),('mov','qword ptr [rsp + 0x20], rsi'),
                                ('push','rdi'),('sub','rsp, 0x20'),('mov','rbx, rdx'),('mov','rdi, rcx')]
 assert {1014,103148,362201,97811,362229}<=values(created)
-assert ('movups','xmmword ptr [rdi + 0x2e8], xmm0') in pairs(created)
+assert ('movups','xmmword ptr [rsi + 0x2e8], xmm0' if n.get('monk_initial_successor') else 'xmmword ptr [rdi + 0x2e8], xmm0') in pairs(created)
 claim=ins(instance('GetGuidData'));request=ins(instance('SetGuidData'))
 assert 94341 in values(claim) and ('movups','xmm0, xmmword ptr [rcx + 0x318]') in pairs(claim)
 needs(claim,'?GetGuidData@InstanceScript@@')

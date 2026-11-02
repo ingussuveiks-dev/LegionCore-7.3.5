@@ -32,7 +32,7 @@ vt,raw=table('??_7instance_monk_intro@@6B@',140)
 loader,lraw=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
 assert vt in refs(factory) and loader in refs(ins('?AddSC_instance_class_art_scenarios@@'))
 assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')==resolved(lraw)[1]
-assert (0x490 if nine_successor else 0x430) in values(allocation)
+assert (0x498 if n.get('monk_initial_successor') else 0x490 if nine_successor else 0x430) in values(allocation)
 assert {('lea','rdi, [rsi + 0x2e0]'),('mov','qword ptr [rsi + 0x3b8], rdi'),
         ('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),
         (('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
@@ -41,8 +41,8 @@ assert n['symbol']('?Update@instance_monk_intro@@') in resolved(raw)
 before,after=sites(n,dispatch,presentation('Update'))
 rescue,=sites(n,dispatch,context('Update'));boss,=sites(n,dispatch,'?Update@State@MonkJorvinax@@')
 assert before<rescue<boss<after and dispatch[after].mnemonic=='jmp'
-assert {('xor','r8d, r8d'),(('lea','rcx, [rbx + 0x418]') if sites(n,dispatch,presentation('UpdateRescue')) else ('add','rcx, 0x418'))}<=set(pairs(dispatch[:before]))
-assert {('mov','r8b, 1'),('lea','rcx, [rbx + 0x418]')}<=set(pairs(dispatch[boss:after]))
+assert {('xor','r8d, r8d'),(('lea','rcx, [rdi + 0x418]' if n.get('monk_initial_successor') else 'rcx, [rbx + 0x418]') if sites(n,dispatch,presentation('UpdateRescue')) else ('add','rcx, 0x418'))}<=set(pairs(dispatch[:before]))
+assert {('mov','r8b, 1'),('lea','rcx, [rdi + 0x418]' if n.get('monk_initial_successor') else 'rcx, [rbx + 0x418]')}<=set(pairs(dispatch[boss:after]))
 
 owner=ins(presentation('Owner'));guide=ins(presentation('Guide'));update=ins(presentation('Update'))
 needs(owner,context('Progress'),context('EscortStage'),context('EscortLeaf'),context('Current'),'??8ObjectGuid@@')
@@ -88,5 +88,5 @@ for at in queues:
 for body in (update,owner,guide,valid):
     for forbidden in ('?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@','?AddDelayedEvent@Unit@@','?AddDelayedEvent@FunctionProcessor@@'):
         assert not sites(n,body,forbidden),('No synthetic progress or actor-owned timer',forbidden)
-print(f'PASS actual registered{0x490 if nine_successor else 0x430:x} instance/418 presentation state: original context and Jorvinax offsets retained; native before-route3/7/11 and after-route16 dispatch, original weak owner/full source+guide, exact clocks and once/reentry flags, stale greeting retirement and unscoped six native queues. Point0 uses original normal path command, never arrival/progression credit. Client/full943 remain separate.')
-print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x490 if nine_successor else 0x430,'state_offset':0x418,'authored_deadlines_ms':[3000,7000,11000,16000]}))
+print(f'PASS actual registered{0x498 if n.get('monk_initial_successor') else 0x490 if nine_successor else 0x430:x} instance/418 presentation state: original context and Jorvinax offsets retained; native before-route3/7/11 and after-route16 dispatch, original weak owner/full source+guide, exact clocks and once/reentry flags, stale greeting retirement and unscoped six native queues. Point0 uses original normal path command, never arrival/progression credit. Client/full943 remain separate.')
+print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x498 if n.get('monk_initial_successor') else 0x490 if nine_successor else 0x430,'state_offset':0x418,'authored_deadlines_ms':[3000,7000,11000,16000]}))

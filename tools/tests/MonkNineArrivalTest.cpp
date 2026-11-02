@@ -21,7 +21,7 @@ void NoArrival(Visit& r){assert(!r.receipt().started&&!r.scenario.progress[29069
 void Accepted(Visit& r){assert(r.receipt().started&&!r.receipt().pending&&r.scenario.progress[29069].Counter==1&&r.scenario.step>=3&&Count(r.nine,7)==1);assert(r.player.credits==std::vector<uint32>{46902}&&r.other.credits.empty());assert(r.nine.talks.front().second==r.player.guid);}
 void Departed(Visit& r){Accepted(r);assert(r.receipt().finished&&Count(r.nine,8)==1&&r.nine.despawnRequests==1&&r.nine.despawnDelay==3000&&r.nine.talks.back().second==r.player.guid);}
 
-int main()
+uint32 RunNineArrivalCases()
 {
     auto retained=RunEarlyPresentationCases();uint32 cases=0;
     // Full pinned actor+instance, not a handwritten alternative controller.
@@ -104,6 +104,10 @@ int main()
     // A newly observed original spawn belongs to a fresh attempt only after
     // the previous weak quest lifetime has ended. Active attempts keep GUIDs.
     {Visit r;r.Arrive();auto original=r.nine.guid;auto oldLife=r.receipt().member.attempt;r.player.quest.ScriptLifetime=std::make_shared<uint8>();r.map.creatures.erase(original);r.nine.guid={83,2};r.map.creatures[r.nine.guid]=&r.nine;r.instance.OnCreatureCreate(&r.nine);assert(r.receipt().source==r.nine.guid&&!r.receipt().started&&oldLife.expired());r.scenario.step=2;r.scenario.progress[29069].Counter=0;r.Arrive();assert(r.receipt().started&&r.receipt().member.attempt.lock()==r.player.quest.ScriptLifetime&&r.player.credits.size()==2&&Count(r.nine,7)==2);++cases;}
-    {Visit r;r.nine.spawn=362181;r.nine.y=2007.45f;r.ai()->MoveInLineOfSight(&r.player);assert(Count(r.nine,1)==1&&!r.receipt().pending);r.scenario.step=1;r.ai()->SetData(1,1);r.TickNine(3000);assert(r.player.credits==std::vector<uint32>{46734}&&r.scenario.step==2&&r.nine.motion.jumps==1&&r.nine.casts==std::vector<uint32>{193248});++cases;}
+    {Visit r;r.nine.spawn=362182;r.nine.y=2007.45f;r.ai()->MoveInLineOfSight(&r.player);assert(Count(r.nine,1)==1&&!r.receipt().pending);r.scenario.step=1;r.ai()->SetData(1,1);r.TickNine(3000);assert(r.player.credits==std::vector<uint32>{46734}&&r.scenario.step==2&&r.nine.motion.jumps==1&&r.nine.casts==std::vector<uint32>{193248});++cases;}
     std::cout<<"PASS "<<cases<<" actual Nine arrival ASAN contexts plus retained "<<retained<<" Chen early/67 outro/81 routes/50 arrival/70 rescue: native future-tree rejection recovery, actual visitor/full source/original weak attempt, real29069 receipt before dialogue, AI-independent4s/native3s despawn, native retry, cancellation/source/scenario identity/reentry/rollover/birth clocks and unchanged first role. World/taxi/network endpoints controlled; actual client/full943/all36 remain OPEN.\n";
+    return cases;
 }
+#ifndef MONK_NINE_RESCUE_TEST
+int main(){RunNineArrivalCases();}
+#endif
