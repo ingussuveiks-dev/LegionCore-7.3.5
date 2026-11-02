@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-02",
+  "status": "OPEN production Ragnvald opening/ritual acknowledgement and admission work. Matching native conversation data/constructor regression verified; no production change or new deployment in this research commit.",
+  "context": {
+    "path": ".codex/warrior-opening-context1-open-2026-11-02/world.tsv",
+    "sha256": "BF5A7F1C6563E75578A5D0A50AD3DED78FC4897F88D3BE012A0474552503BB3E",
+    "scope": "Fresh read-only consistent snapshot:38904/42815 actual96678 and103661 objectives, min98/QuestInfo107/native next39654;97167/spawn361094,97166/spawn361091 and103608 bindings; shared1500 scenarios775/class2,933/class1,961/class12; all770/1386/1405/1412 native line/actor records. No character query/reset or live data write."
+  },
+  "findings": [
+    "Current Ragnvald MoveInLineOfSight marks introDone1 before the void native46877 update, native1386 factory and original2s battle timer. Native achievement admission rejects GM or non-contactable Player, but this caller has no acknowledgement and still marks its AI flag. The separate40-yard770 flag is also set before the factory result. Source-level risk is confirmed; actual client occurrence is not attributed without evidence.",
+    "Actual native Conversation1386 refuses construction when required97166 is absent. After real97166 admission it creates with original live97166/Ragnvald GUIDs and15400ms lifetime. The current script ignores that false result and continues its2s battle setup. This native failed-factory counterfactual is paired with successful construction, not counted as an ordinary successful opening.",
+    "Native770 uses its real model actor50342/97167/display67919 and8250ms lifetime; it is not missing creature-actor data.1386 and1405 use two actual creature GUIDs,1412 one. Legacy stored creatureGuid174984/175242 is not used by GenerateDynamicFieldData, which resolves nearest matching creature entry: do not rewrite it as a missing current spawn GUID.",
+    "Current native Scenario admission is stricter than a bare UpdateCurrentStep loop suggests: AchievementMgr::CanUpdateCriteria calls Scenario::CanUpdateCriteria, restricted to the actual current tree; Scenario::UpdateAchievementCriteria snapshots that tree across reentrant step changes. No global scenario-loop repair or invented future-step credit is justified by this research.",
+    "Player::UpdateAchievementCriteria dispatches scenario events only in a live instance and uses native shared Scenario progress. Conversation creation for a Player caster adds native group personal visibility. Do not hand-award group progression or substitute a nearby unrelated Player; original quest/player/instance eligibility and native receipts need explicit treatment.",
+    "Danica currently sends46878/47474 on summon, then its original3s callback creates1405, calls205287 and unconditionally emits49203/49262 to nearest Player. The new deployed ResumeBattle correctly waits for real933 stage3; it does not repair failed cast/conversation receipts or initial admission. These remain separate open behavior."
+  ],
+  "native": {
+    "test": "tools/tests/Test-WarriorOpeningConversationNative.ps1",
+    "cpp": "tools/tests/WarriorOpeningConversationNative.cpp",
+    "runtime": "build-extractors\\runtime-test\\warrior-opening-conversation-native\\20261102-021010-609",
+    "payload_sha256": "E8B37553D175C85741A26CC3F7C6ED41EC8EB499517E213877E5DA4782897AD9",
+    "details": [
+      "770 line1831/BT98840/sound[0]60427, duration8250",
+      "1386 lines3171@0/BT105398/sound[1]60429 and3172@3950/BT105400/sound[0]60430, duration15400",
+      "1405 lines3201@0/BT105404/sound[1]60434 and3202@7100/BT106212/sound[0]60435, duration13000",
+      "1412 line3214/BT105410/sound[0]60436, duration10250"
+    ],
+    "limits": "Real native Map/Creature/NullCreatureAI constructor, actual DB2+hotfix lines/BroadcastText IDs, map insertion/lookup/removal and full GUID actor payloads verified. Creature caster substitutes for the original Player where applicable; no original Player/group personal visibility, actual Scenario event advancement, audio assets/playback, camera/rendering, full933/client or whole36 certification. Sound ID values were read, not audio playback verified. No video viewed in this research."
+  },
+  "diagnostics": {
+    "result": "Fresh SQL read and native compile/execution have exact before/after crashes/logs/exit capture, including an internal wrapper at the native timestamp runtime. All completed0, no new/changed crashes, appended DBErrors or server warnings/errors/assertions. Private configuration hash preserved, no Players/character saves, native World/Hotfix sessions confirmed read-only.",
+    "active_crashes": 0,
+    "mixed_db_errors_bytes": 6090,
+    "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
+    "archive": "Deferred for this open production issue; native evidence remains in its ignored runtime/evidence folders. Never archive private worldserver.conf or clear mixed unresolved logs."
+  },
+  "runtime_unchanged": {
+    "world_sha256": "BB2F7B09BF9CF9EBE653DBB5BA10E48B23EE57913320C7ADD0ED9AC1C74F3D93",
+    "bnet_sha256": "7966BAD358DD54D9E7BD4008D6333A23914810AA1584F2BA24BF56998A0554AB",
+    "owned_processes": "No server launched in this research; prior20984 closed gracefully."
+  },
+  "next": "Implement acknowledged native opening against actual933/0->1, active38904/42815 and real45769 receipt; successful1386 creation must precede the preserved2s battle. Handle stationary retry, missing actors, original full player/quest lifetime, deletion/reset/re-entry/group and exactly-once dispatch across AI replacement, with owned map-local conversation cleanup and native callbacks. Keep successful native770 independent. Prefer durable instance-owned request/receipt state for AI recreation, and do not force criteria, quest/items or reset character data. Trace native LOS/instance ordering before choosing the implementation. Continue independent all36 work; user owns client tests."
+}
