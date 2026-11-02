@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-02",
+  "status": "VERIFIED student default reply/wrong speaker data repair evidence; earlier rescue callback lifetime/timing, client/full943/all36 remain OPEN.",
+  "result": {
+    "FixCommit": "38ad4aeabe3a2789433cc8fe4096ad35a67d36a0",
+    "Archive": "build-extractors\\bin\\Release\\fixed\\monk-student-replies-2026-11-02\\verified1",
+    "Sources": 469,
+    "Payloads": 471,
+    "ManifestSHA256": "2DD5D781A02FA447323A7D6463E191B5DFC4059578FECEB528ABAF6CDF256999",
+    "SourceArchiveSourceVerified": true,
+    "ReviewedDiagnosticSets": 24,
+    "MixedLogUnchanged": true,
+    "ActiveCrashes": 0
+  },
+  "cause": "Original Chen103148/3622015s rescue callback follows nearby98074 trainees and calls native SendChat(student,0). Actual world98074 had no group0, so native CreatureTextMgr returns at missing group and no response can be selected. Its only two existing group3 timer rows are apologies99968/99970. Worse,99968 has explicit Sound62044: matching native SoundKitName is VO_703_Chen_Stormstout_12 and the only native BroadcastText using62044 is Chen100187 departure instruction. Both genders of native99968/99969/99970 have no sound. Copying group3 or its override blindly would make a trainee speak Chen's actual6.205s departure line.",
+  "repair": "Add only two scripted default group0 responses from the existing native99968/99970 rows, retaining text/type/language/probability/emote/spell/comment but using distinct default IDs0/1 and zero timer/duration/sound. Clear only the proven wrong62044 override on the existing98074/group3/ID0/99968 row. Preserve both group3 text rows, duplicate per-text ID0 and exact MinTimer/MaxTimer158694/240641, all four original spawns/models/template/AI, other NPCs and original authored caller. Native group3 is TEXT_GROUP_TIMER used by AggressorAI/ReactorAI; it is not a substitute for script group0. No invented student voice, new speech queue, progression, character or C++ mutation.",
+  "checks": [
+    "Native SQL passes8 complete temporary schemas/full snapshots/unrelated sentinel, exact two new default rows and one wrong sound removal, no other context mutation, idempotence and27 unchanged refusal variants including partial installs/custom group0/timer/broadcast/sound/emote/duration/type/language/probability/spell/ID/AI/model/spawn/phase/Smart changes. Every statement uses the full safe guard; expected CHECK4025 rejections are explicit counterfactuals with full captured native exit/stdout/stderr and EOF.",
+    "Actual native CreatureTextMgr.LoadCreatureTexts/TextExist/SendChat/random weighted selection/repeat cycle execute for four real98074 actors on isolated1014/phase7000 with NullCreatureAI, no Players/character writes. Baseline actual missing group0 is identified as a counterfactual; in-memory corrected store and real loader/manager dispatch pass. Native two default IDs alternate before a new repeat cycle, retain actual timed group and never turn default0 into a timer. Both genuine rows have duration0, so controlled101/202 duration sentinels observe real native dispatch without confusing a legitimate zero return with failure; public SQL/live checks retain actual duration0. No manager implementation/access specifier changed.",
+    "After actual canonical updater, native live manager first verifies real loaded default rows/text/type/language/emote/probability/IDs/no timers/no sound/duration0 against original timed text; then only in-memory sentinel durations trace native dispatch. Live8-table full-column context independently matches expected rows. This controlled native test is separate from actual player visibility/chat/emote/client traversal.",
+    "Fresh typed audio regression checks native unvoiced male/female replies, exact4 Chen kit/name/file mappings, sole62044 owner100187, all4 payload hashes/bytes/codec/channels/durations and full decodes. No invented replacement audio or copied timer path.",
+    "Three public PowerShell parsers and unchanged complete production actor source/default5s caller checked. Runtime world/bnet hashes preserved40DF9E95/A60CB84A; no C++ or canonical configuration/certificate/DLL changes. Previous matching runtime full native/PE/Scepter proof remains in the parent Chen outro audit.",
+    "Owned canonical11808 fresh ready -> shutdown0 -> exit0, stderr empty/process gone, actual updater RELEASED LF SHA1 verified; live SQL and actual native loaded manager pass. No user/unknown server stopped. All before/after canonical/root/own diagnostics show no new/changed runtime crash, appended DBErrors or unexplained warning/error/assertion."
+  ],
+  "iterations": [
+    "Successive native research catalogs added explicit world override62044, native SoundKitName and global BroadcastText owner instead of assuming that a valid sound ID belonged to a trainee. This resolved a concrete wrong-speaker cause before designing the data repair. No failed native/data test or hidden symptom.",
+    "Initial CASC extraction reused a prior script whose final label said six; exactly4 files/hashes were actually exported and fully decoded. Fresh public audio regression explicitly validates4 payloads and the correct mappings. Original output retained; no audio listening claim.",
+    "Native pre-update tests1/2 explicitly isolate the counterfactual original missing0 and use an in-memory store fixture; post-update live mode validates the actual loaded defaults before applying duration sentinels. SQL tests shadow all eight tables on separate native connections, never create test rows in production."
+  ],
+  "cleanup": "Source/archive/source and final payload SHA256 verified for469 original evidence files/471 payloads,24 reviewed diagnostic sets. No active crash report to remove. Mixed6090 unresolved DBErrors unchanged/untruncated. Media/audio, private configs, executables, dumps and character data excluded; original evidence retained. Owned11808 shut down gracefully, no user/unknown server stopped. Earlier4s/5s callback and timing findings remain active, not fixed by this archive.",
+  "remaining": [
+    "User client: actual trainee response bubble/emote and appropriate absence of Chen's voice on the trainee, existing timed3 behavior, visibility/faction/group/pet variants and full943/all36 remain separate checks. Native metadata confirms no trainee audio for these texts; silence is not certification of packet visibility.",
+    "Earlier scoped4s Chen scolding and5s trainee follow/default response are still AI-owned callbacks. Continue preserving genuine accepted weak quest/source and original4/5/8 ordering across AI retirement without synthetic progress; current data fix does not keep an unexecuted callback alive.",
+    "Decoded initial99965 voice budget4443ms exceeds the nominal4000ms next callback. This is a separate timing-budget finding, not a claim of audible overlap: no listening/client playback reviewed, and payload padding may differ from speech. No global voice queue or invented combat delay introduced.",
+    "All older unresolved physical actor replacement/exact-stage relog/restart, shared101430/103151 LINK2, Wardstone missingLINK4, Survival39427 flight, Fu Zan/Warrior recovery and Stromkar client visual findings remain OPEN. No additional character reset."
+  ]
+}

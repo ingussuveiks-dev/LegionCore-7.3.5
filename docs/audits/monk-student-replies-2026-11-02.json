@@ -66,12 +66,24 @@
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
     "active_crashes": 0,
-    "coverage_limit": "Native manager uses isolated real actors and in-memory sentinel durations with no Players. TEMP/live SQL, typed metadata, hashes/decodes and canonical startup are distinct from actual client text/emote/sound/full-chain verification."
+    "coverage_limit": "Native manager uses isolated real actors and in-memory sentinel durations with no Players. TEMP/live SQL, typed metadata, hashes/decodes and canonical startup are distinct from actual client text/emote/sound/full-chain verification.",
+    "archive": {
+      "FixCommit": "38ad4aeabe3a2789433cc8fe4096ad35a67d36a0",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\monk-student-replies-2026-11-02\\verified1",
+      "Sources": 469,
+      "Payloads": 471,
+      "ManifestSHA256": "2DD5D781A02FA447323A7D6463E191B5DFC4059578FECEB528ABAF6CDF256999",
+      "SourceArchiveSourceVerified": true,
+      "ReviewedDiagnosticSets": 24,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "User client: actual trainee response bubble/emote and appropriate absence of Chen's voice on the trainee, existing timed3 behavior, visibility/faction/group/pet variants and full943/all36 remain separate checks. Native metadata confirms no trainee audio for these texts; silence is not certification of packet visibility.",
     "Earlier scoped4s Chen scolding and5s trainee follow/default response are still AI-owned callbacks. Continue preserving genuine accepted weak quest/source and original4/5/8 ordering across AI retirement without synthetic progress; current data fix does not keep an unexecuted callback alive.",
     "Decoded initial99965 voice budget4443ms exceeds the nominal4000ms next callback. This is a separate timing-budget finding, not a claim of audible overlap: no listening/client playback reviewed, and payload padding may differ from speech. No global voice queue or invented combat delay introduced.",
     "All older unresolved physical actor replacement/exact-stage relog/restart, shared101430/103151 LINK2, Wardstone missingLINK4, Survival39427 flight, Fu Zan/Warrior recovery and Stromkar client visual findings remain OPEN. No additional character reset."
-  ]
+  ],
+  "fix_commit": "38ad4aeabe3a2789433cc8fe4096ad35a67d36a0"
 }
