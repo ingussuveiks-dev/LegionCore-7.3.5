@@ -66,12 +66,24 @@
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
     "active_crashes": 0,
-    "coverage_limit": "Early Scope1 parser failed before inner wrapper; cannot reconstruct a historical pre-snapshot. All later component/native/build/PE/runtime checks include inherited repo CWD and exact own runtime. Native geometry probe also records canonical and catalog CWD/output."
+    "coverage_limit": "Early Scope1 parser failed before inner wrapper; cannot reconstruct a historical pre-snapshot. All later component/native/build/PE/runtime checks include inherited repo CWD and exact own runtime. Native geometry probe also records canonical and catalog CWD/output.",
+    "archive": {
+      "FixCommit": "e247562a94daa219883fca75b56f8176976284f9",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\monk-chen-arrival-2026-11-02\\verified1",
+      "Sources": 398,
+      "Payloads": 400,
+      "ManifestSHA256": "F8F33357426743DCD8808C57FDE473248EA67097468B18454E92A89936B299E0",
+      "SourceArchiveSourceVerified": true,
+      "ReviewedDiagnosticSets": 23,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "Actual client full Morvat/Chen escort/combat/scaling/one-hit/player-pet-guardian/faction/phase/doors/dialogue/group/reentry/rendering and full943/all36 remain user checks. Native geometry/component/PE/startup evidence does not certify client traversal.",
     "If Chen AI is destroyed BEFORE the original8s route issue, the real route was never issued; no arrival is invented. After accepted arrival the original six AI-owned callbacks can retire on AI destruction and a missing Hait at15s can still lose9859006. Continue a separate essential handoff/lifetime repair, later real46951/boss46952 and original actor provenance.",
     "Original weak participants intentionally do not persist across new quest attempt/new Player/relog/server restart; fresh instance remains the restart boundary. No new character reset is authorized.",
     "Shared101430/103151 LINK2, Wardstone LINK4, Survival39427 middle flight, Fu Zan ride/Yigthregor, Warrior cross-conversation/recovery and Stromkar client visual findings remain OPEN. Do not invent missing actions or hide diagnostics."
-  ]
+  ],
+  "fix_commit": "e247562a94daa219883fca75b56f8176976284f9"
 }
