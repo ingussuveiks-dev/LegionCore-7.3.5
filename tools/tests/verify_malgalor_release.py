@@ -5,6 +5,7 @@ import struct
 import re
 from capstone import CS_OP_IMM, CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
+from warrior_instance_factory_pe import selected_instance_factory
 
 p = runpy.run_path(str(Path(__file__).with_name('verify_warswords_final_credit_release.py')))
 n = p['native']
@@ -54,7 +55,8 @@ needs(update, '?Kill@Unit@@')
 
 scope = 'instance_broken_shore_InstanceMapScript@instance_broken_shore@@'
 callback = '?CreatureDies@' + scope
-assert any(n['symbol'](callback) in table(a) for a in refs('?GetInstanceScript@instance_broken_shore@@'))
+instance_factory=selected_instance_factory(n,ins)
+assert any(n['symbol'](callback) in table(a) for a in refs(instance_factory))
 needs(callback, '?MalgalorDeath@' + scope)
 needs('?MalgalorDeath@' + scope, '?Death@MalgalorFinale@@', '?Capture@MalgalorFinale@@')
 needs('?Death@MalgalorFinale@@', '?KilledMonsterCredit@Player@@', '?UpdateAchievementCriteria@Player@@',

@@ -19,9 +19,11 @@ def reachable(body,start):
   if op.mnemonic.startswith('j') and op.operands[0].type==CS_OP_IMM:pending.append(op.operands[0].imm)
   if op.mnemonic!='jmp':pending.append(op.address+op.size)
  return seen
+new_opening=any(name.startswith('?GetData@npc_ragnvald_dragonbornAI@') for name in n['symbols'])
 actors=('npc_ragnvald_dragonborn','npc_danica_the_reclaimer')
 parents=[];callbacks=[]
 for actor,member,size,event,delay in zip(actors,(0x60,0x40),(0xe0,0xc0),('MoveInLineOfSight','IsSummonedBy'),(2000,3000)):
+ if new_opening and actor=='npc_ragnvald_dragonborn':event='DoAction'
  suffix=actor+'AI@'+actor+'@@';method=lambda name:'?'+name+'@'+suffix
  address,raw=table('??_7'+suffix+'6B@',82);slots=resolved(raw)
  script,sraw=table('??_7'+actor+'@@6BScriptObject@@@',16)
@@ -45,18 +47,25 @@ for actor,member,size,event,delay in zip(actors,(0x60,0x40),(0xe0,0xc0),('MoveIn
 
 dispatch=ins('?Update@Creature@@')
 assert sum(op.mnemonic=='call' and op.operands[0].type==CS_OP_MEM and op.operands[0].mem.disp==0x110 for op in dispatch)>=2
-bridge=ins(callbacks[0]);assert pairs(bridge)[:1]==[('add','rcx, 8')] and bridge[1].mnemonic=='jmp'
-outlined,=[name for name in n['symbols'] if name.startswith('??R<lambda_') and 'MoveInLineOfSight@npc_ragnvald_dragonbornAI@' in name and n['symbol'](name)==n['resolve'](bridge[1].operands[0].imm)]
-battle=ins(outlined);danica=ins(callbacks[1]);helper='?AttackBattleTarget@npc_ragnvald_dragonbornAI@'
-assert len(sites(n,battle,helper))==len(sites(n,battle,'?GetGuidValue@Object@@'))==3
-assert {102990,102995,97166,97167,97176,102970,102964,102965,105419}<=values(battle)
-assert len(sites(n,battle,'?SetHomePosition@Creature@@QEAAXMMMM'))==2
-own_attack,=[i for i,op in enumerate(battle) if op.mnemonic=='call' and op.op_str=='r8']
-assert pairs(battle[own_attack-4:own_attack])==[('mov','rcx, qword ptr [rsi]'),('mov','rdx, qword ptr [rcx]'),('mov','r8, qword ptr [rdx + 0x10]'),('mov','rdx, rax')]
-assert ('cmove','rdi, rdx') in pairs(battle) and ('cmp','qword ptr [rbx + 0x10], rcx') in pairs(battle)
-for at in sites(n,battle,helper):
- assert ('mov','r9b, 0xa') in pairs(battle[at-6:at])
- assert any(op.mnemonic=='movups' and op.op_str=='xmm0, xmmword ptr [rax]' for op in battle[at-12:at])
+danica=ins(callbacks[1]);helper='?AttackBattleTarget@npc_ragnvald_dragonbornAI@'
+opening=None
+if new_opening:
+ from warrior_opening_pe import verify_actor
+ opening=verify_actor(n,ins,table,resolved,reachable,parents[0],callbacks[0])
+ battle=opening['body']
+else:
+ bridge=ins(callbacks[0]);assert pairs(bridge)[:1]==[('add','rcx, 8')] and bridge[1].mnemonic=='jmp'
+ outlined,=[name for name in n['symbols'] if name.startswith('??R<lambda_') and 'MoveInLineOfSight@npc_ragnvald_dragonbornAI@' in name and n['symbol'](name)==n['resolve'](bridge[1].operands[0].imm)]
+ battle=ins(outlined);helper='?AttackBattleTarget@npc_ragnvald_dragonbornAI@'
+ assert len(sites(n,battle,helper))==len(sites(n,battle,'?GetGuidValue@Object@@'))==3
+ assert {102990,102995,97166,97167,97176,102970,102964,102965,105419}<=values(battle)
+ assert len(sites(n,battle,'?SetHomePosition@Creature@@QEAAXMMMM'))==2
+ own_attack,=[i for i,op in enumerate(battle) if op.mnemonic=='call' and op.op_str=='r8']
+ assert pairs(battle[own_attack-4:own_attack])==[('mov','rcx, qword ptr [rsi]'),('mov','rdx, qword ptr [rcx]'),('mov','r8, qword ptr [rdx + 0x10]'),('mov','rdx, rax')]
+ assert ('cmove','rdi, rdx') in pairs(battle) and ('cmp','qword ptr [rbx + 0x10], rcx') in pairs(battle)
+ for at in sites(n,battle,helper):
+  assert ('mov','r9b, 0xa') in pairs(battle[at-6:at])
+  assert any(op.mnemonic=='movups' and op.op_str=='xmm0, xmmword ptr [rax]' for op in battle[at-12:at])
 assert {1405,205287,49203,49262,92}<=values(danica)
 assert sites(n,danica,'?CreateConversation@Conversation@@') and sites(n,danica,'?DoCast@UnitAI@@QEAAXI')
 assert len(sites(n,danica,'?UpdateAchievementCriteria@Player@@'))==2

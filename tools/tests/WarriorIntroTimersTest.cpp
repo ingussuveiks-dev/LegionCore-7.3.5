@@ -11,10 +11,11 @@
 #include <string>
 #include <vector>
 using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;
-struct ObjectGuid{uint64 low=0,high=0;bool operator==(ObjectGuid const&o)const{return low==o.low&&high==o.high;}std::string ToString()const{return std::to_string(low)+":"+std::to_string(high);}};
+struct ObjectGuid{uint64 low=0,high=0;bool operator==(ObjectGuid const&o)const{return low==o.low&&high==o.high;}bool operator!=(ObjectGuid const&o)const{return !(*this==o);}std::string ToString()const{return std::to_string(low)+":"+std::to_string(high);}};
 #include "Functions.inc"
 #include "DeathState.inc"
 enum{TYPEID_UNIT=0,TYPEID_PLAYER=1,CRITERIA_TYPE_SCRIPT_EVENT_2=92,UNIT_STATE_CASTING=1,EVENT_1=1,EVENT_2,EVENT_3,EVENT_4};
+struct InstanceScript{uint32 GetData(uint32){return 0;}ObjectGuid GetGuidData(uint32){return {};}void SetData(uint32,uint32){}};
 struct Creature;struct CreatureAI;struct Player;
 struct Unit{FunctionProcessor m_Functions;virtual~Unit()=default;virtual uint32 GetTypeId(){return TYPEID_UNIT;}virtual Player*ToPlayer(){return nullptr;}virtual Creature*ToCreature(){return nullptr;}
 #include "UnitTimer.inc"
@@ -28,7 +29,7 @@ struct Pose{float x,y,z;};struct Motion{std::vector<Pose>points;void MovePoint(u
 int32 irand(int32 low,int32 high){assert(low<=0&&high>=0);return 0;}
 struct Creature:Unit{
  CreatureAI*i_AI=nullptr,*i_disabledAI=nullptr;bool m_AI_locked=false,IsAIEnabled=true;DeathState state=ALIVE;uint32 entry=0,mapId=1500,instanceId=42;ObjectGuid guid;bool aura=false,inRange=true,worlded=true,preDelete=false;Motion motion;Player*nearest=nullptr;std::vector<Creature*>nearby;std::vector<uint32>attacks,casts,despawns;std::vector<uint8>talks;std::vector<Pose>homes;uint32 kills=0,actions=0;std::function<void()>onExternal;
- explicit Creature(uint32 id=0):entry(id),guid{id,0x1234567812345678}{}~Creature();Creature*ToCreature()override{return this;}CreatureAI*AI(){return i_AI;}ObjectGuid GetGUID(){return guid;}bool AIM_Destroy();void Lifecycle(uint32);DeathState getDeathState(){return state;}
+ explicit Creature(uint32 id=0):entry(id),guid{id,0x1234567812345678}{}~Creature();Creature*ToCreature()override{return this;}CreatureAI*AI(){return i_AI;}InstanceScript*GetInstanceScript(){return nullptr;}ObjectGuid GetGUID(){return guid;}bool AIM_Destroy();void Lifecycle(uint32);DeathState getDeathState(){return state;}
  bool IsAlive(){return state==ALIVE;}bool IsInWorld(){return worlded;}bool IsPreDelete(){return preDelete;}bool HasUnitState(uint32 id){assert(id==UNIT_STATE_CASTING);return false;}bool HasAura(uint32 id){assert(id==105419);return aura;}bool IsWithinDistInMap(Unit*,float radius){assert(radius==15||radius==40);return inRange;}
  Creature*FindNearestCreature(uint32 id,float radius,bool alive=true){assert(alive&&(radius==100||radius==120||radius==200||radius==250));for(auto*p:nearby)if(p->entry==id&&p->IsAlive())return p;return nullptr;}
  Player*FindNearestPlayer(float radius){assert(radius==100);return nearest;}uint32 GetEntry(){return entry;}uint32 GetMapId(){return mapId;}uint32 GetInstanceId(){return instanceId;}float GetPositionX(){return 1;}float GetPositionY(){return 2;}
@@ -36,7 +37,7 @@ struct Creature:Unit{
  void Kill(Creature*p){assert(p==this);++kills;state=CORPSE;}void CastSpell(Creature*p,uint32 id){assert(p==this&&(id==205295||id==205296));casts.push_back(id);}
  void DespawnOrUnsummon(uint32 delay){assert(delay==4000);despawns.push_back(delay);}
 };
-struct CreatureAI{Creature*me;explicit CreatureAI(Creature*p):me(p){}virtual~CreatureAI()=default;virtual void Reset(){}virtual void EnterCombat(Unit*){}virtual void MoveInLineOfSight(Unit*){}virtual void DoAction(int32 id){assert(id==1);++me->actions;}virtual void UpdateAI(uint32){}virtual void UpdateLifecycle(uint32){}virtual void IsSummonedBy(Unit*){}virtual void SpellHitTarget(Unit*,SpellInfo const*){}
+struct CreatureAI{Creature*me;explicit CreatureAI(Creature*p):me(p){}virtual~CreatureAI()=default;virtual uint32 GetData(uint32)const{return 0;}virtual void Reset(){}virtual void EnterCombat(Unit*){}virtual void MoveInLineOfSight(Unit*){}virtual void DoAction(int32 id){assert(id==1);++me->actions;}virtual void UpdateAI(uint32){}virtual void UpdateLifecycle(uint32){}virtual void IsSummonedBy(Unit*){}virtual void SpellHitTarget(Unit*,SpellInfo const*){}
  void Talk(uint8,ObjectGuid={});void AttackStart(Creature*p){assert(p);me->attacks.push_back(p->entry);if(me->onExternal)me->onExternal();}void DoCast(uint32 id){me->casts.push_back(id);if(me->onExternal)me->onExternal();}bool UpdateVictim(){return false;}void DoMeleeAttackIfReady(){}
 };
 using ScriptedAI=CreatureAI;
@@ -48,6 +49,7 @@ struct Text{void SendChat(Creature*p,uint8 id,ObjectGuid={}){p->talks.push_back(
 #define TC_LOG_DEBUG(...) ((void)0)
 uint32 diagnostics=0;
 #define TC_LOG_ERROR(...) (++diagnostics)
+#define TC_LOG_WARN(...) (++diagnostics)
 #include "AIDestroy.inc"
 void Creature::Lifecycle(uint32 diff){
 #include "Lifecycle.inc"
@@ -59,6 +61,7 @@ struct Conversation{static inline std::vector<uint32>created;static inline std::
 // Successful native object ownership is a controlled endpoint; retain its
 // allocation until fixture cleanup, while failed factory allocations delete.
 #include "Casts.inc"
+#include "OpeningKeys.inc"
 #include "Actors.inc"
 struct Run{
  Creature actor,ally{97166},enemy{97176},demon{102970},attacker1{102964},attacker2{102965},add1{102990},add2{102995};Player player;std::vector<std::unique_ptr<Creature>>others;uint32 which;
@@ -91,6 +94,6 @@ int main(){_set_abort_behavior(0,_CALL_REPORTFAULT);std::cout<<std::unitbuf;uint
  {Run r(0);Unit pet;r.actor.AI()->MoveInLineOfSight(&pet);assert(r.player.credits.empty()&&Conversation::created.empty());r.actor.inRange=false;r.Begin();assert(r.player.credits.empty()&&Conversation::created.empty());++cases;}
  {Run r(0);r.add1.state=CORPSE;r.add2.aura=true;r.Begin();r.Tick(2000);assert(r.add1.attacks.empty()&&r.add1.homes.empty()&&r.add2.attacks.empty()&&r.add2.homes.empty());++cases;}
  {Run r(1);auto next=std::make_unique<Creature>(97167);next->i_AI=npc_ragnvald_dragonborn{}.GetAI(next.get());r.actor.nearby.push_back(next.get());r.Begin();r.Tick(3000);SpellInfo spell{205287};r.actor.AI()->SpellHitTarget(&r.attacker1,&spell);r.actor.AI()->SpellHitTarget(&r.attacker2,&spell);assert(r.attacker1.casts==std::vector<uint32>{205295}&&r.attacker2.casts==std::vector<uint32>{205296});r.actor.AI()->UpdateAI(1999);assert(r.actor.despawns.empty()&&Conversation::created==std::vector<uint32>{1405});r.actor.AI()->UpdateAI(1);assert(r.actor.despawns==std::vector<uint32>{4000}&&Conversation::created==std::vector<uint32>({1405,1412}));r.actor.AI()->UpdateAI(10000);assert(Conversation::created==std::vector<uint32>({1405,1412})&&r.actor.despawns.size()==1);++cases;}
- std::cout<<"PASS "<<cases<<" ASAN contexts: actual complete Ragnvald/Danica actor bodies, native FunctionProcessor/Unit queue/Creature locked current+suspended lifecycle/AIM_Destroy/Talk. Exact2/3s deadlines, ALIVE/CORPSE clocks, AI deletion/replacement, reentrant native deletion rejection, reset persistence and independent Unit work retained. Full128-bit original-target recovery on ally-owned500ms queue survives source-AI deletion; current-AI recovery/no retargeting/dead/missing/bounded exhaustion and native Danica spellhit/2s departure covered. One deliberately exhausted helper diagnostic is an expected failing outcome paired with recovered attacks, not successful combat. World/cast/conversation/motion/credit endpoints controlled; immediate shared foreign-AI/admission/factory-cast failure recovery and full933/client remain separate.\n";
+ std::cout<<"PASS "<<cases<<" ASAN contexts: pinned77ebf820e Ragnvald legacy clock body and current complete Danica; actual new Ragnvald admission/queue belongs to Test-WarriorOpening, native FunctionProcessor/Unit queue/Creature locked current+suspended lifecycle/AIM_Destroy/Talk. Exact2/3s deadlines, ALIVE/CORPSE clocks, AI deletion/replacement, reentrant native deletion rejection, reset persistence and independent Unit work retained. Full128-bit original-target recovery on ally-owned500ms queue survives source-AI deletion; current-AI recovery/no retargeting/dead/missing/bounded exhaustion and native Danica spellhit/2s departure covered. One deliberately exhausted helper diagnostic is an expected failing outcome paired with recovered attacks, not successful combat. World/cast/conversation/motion/credit endpoints controlled; immediate shared foreign-AI/admission/factory-cast failure recovery and full933/client remain separate.\n";
 #endif
 }

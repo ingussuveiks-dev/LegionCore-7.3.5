@@ -9,7 +9,7 @@ death='?Death@State@WarriorReinforcement@@'
 update='?Update@State@WarriorReinforcement@@'
 for callback, callee in (('CreatureDies',death),('Update',update)):
     needs('?'+callback+'@'+scope,callee)
-    assert any(n['symbol']('?'+callback+'@'+scope) in table(a) for a in refs('?GetInstanceScript@instance_broken_shore@@'))
+    assert any(n['symbol']('?'+callback+'@'+scope) in table(a) for a in refs(p['instance_factory']))
 assert {92608,361167}<=values('?OnCreatureCreate@'+scope)
 assert {98257,361151,45773,3}<=values(death)
 needs(death,'?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@','?AddQuestDelayedEvent@Player@@',update)

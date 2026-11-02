@@ -4,11 +4,14 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
 function Shape([string]$s){($s -replace '//[^\n]*','') -replace '\s',''}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/Intro/wars_intro_scenario.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "b37138290:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-wave source missing'}
+& "$PSScriptRoot/Test-WarriorOpening.ps1" -ScopeOnly
+$source=(& git -C $repo show "77ebf820e:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-opening actor source missing'}
 $oldDanica=Block (Block $old 'class npc_danica_the_reclaimer :') 'void IsSummonedBy('
 $legacy=Block $oldDanica 'if (Player* targ = me->FindNearestPlayer(100.0f))'
 if((Shape $source) -cne (Shape $old.Replace($legacy,''))){throw 'First-wave change must remove only Danica summon-owned46878/47474; all actual opening/ritual/combat/timers remain unchanged'}
 $instancePath='src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/instance_broken_shore.cpp'
 $actual=(Get-Content "$repo/$instancePath" -Raw).Replace("`r",'');$oldInstance=(& git -C $repo show "b37138290:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Pinned shared instance missing'}
+$actual=(& git -C $repo show "77ebf820e:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Certified pre-opening instance source missing'}
 $expected=$oldInstance.Replace('#include "../../Warrior/Intro/reinforcement_transition.h"','#include "../../Warrior/Intro/reinforcement_transition.h"'+"`n"+'#include "../../Warrior/Intro/first_wave_transition.h"').Replace('warriorTransition(map) {}','warriorTransition(map), warriorFirstWave(map) {}').Replace('WarriorReinforcement::State warriorTransition;','WarriorReinforcement::State warriorTransition;'+"`n"+'WarriorFirstWave::State warriorFirstWave;').Replace('warriorTransition.Death(creature, killer);','warriorFirstWave.Death(creature, killer);'+"`n"+'warriorTransition.Death(creature, killer);').Replace('warriorTransition.Update(diff);','warriorTransition.Update(diff); warriorFirstWave.Update(diff);')
 if((Shape $expected) -cne (Shape $actual)){throw 'Shared instance changed beyond one owned first-wave state/constructor/death/update; preserve all Paladin and reinforcement/finale hooks'}
 if($ScopeOnly){'PASS exact Danica nearest-player death-credit removal and actual shared-instance owned first-wave death/update hooks; all other Warrior and Paladin behavior preserved';return}

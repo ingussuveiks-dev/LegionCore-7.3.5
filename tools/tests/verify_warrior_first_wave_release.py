@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib,json,runpy
 from sharasdal_erunak_entry_pe import sites,values
+from warrior_instance_factory_pe import selected_instance_factory
 
 p=runpy.run_path(str(Path(__file__).with_name('verify_warrior_intro_handoffs_release.py')))
 n,ins,refs,table,resolved,reachable=(p[k] for k in ('n','ins','refs','table','resolved','reachable'))
@@ -15,7 +16,7 @@ current='?Current@State@WarriorFirstWave@@'
 progress='?Progress@State@WarriorFirstWave@@'
 leaf='?Leaf@State@WarriorFirstWave@@'
 vt,raw=table('??_7'+scope+'6B@',80)
-assert vt in refs(ins('?GetInstanceScript@instance_broken_shore@@'))
+assert vt in refs(ins(selected_instance_factory(n,ins)))
 for callback,dependency in (('CreatureDies',death),('Update',update)):
     body=ins('?'+callback+'@'+scope)
     assert n['symbol']('?'+callback+'@'+scope) in resolved(raw)

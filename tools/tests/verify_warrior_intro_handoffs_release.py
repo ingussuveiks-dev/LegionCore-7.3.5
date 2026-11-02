@@ -21,8 +21,12 @@ for actor,target,allies in (('npc_ragnvald_dragonborn',98257,{102990,102995,9716
  at,=sites(n,body,helper)
  assert {target,105419}|allies<=values(body)
  assert 0x9c0 not in fields(body),'Foreign current AI must be resolved by the guarded helper'
- assert {('mov','r9b, 0xa'),('xor','r8d, r8d'),('movups','xmm0, xmmword ptr [rax]'),('movaps','xmmword ptr [rsp + 0x50], xmm0')}<=set(pairs(body[at-12:at]))
- assert len(sites(n,body,'?GetGuidValue@Object@@'))==1
+ if actor=='npc_ragnvald_dragonborn' and p.get('new_opening'):
+  from warrior_opening_pe import verify_second_battle
+  verify_second_battle(n,body,reachable)
+ else:
+  assert {('mov','r9b, 0xa'),('xor','r8d, r8d'),('movups','xmm0, xmmword ptr [rax]'),('movaps','xmmword ptr [rsp + 0x50], xmm0')}<=set(pairs(body[at-12:at]))
+  assert len(sites(n,body,'?GetGuidValue@Object@@'))==1
  assert any(op.mnemonic=='call' and op.op_str=='qword ptr [rax + 0x10]' for op in body),'Original own AttackStart lost'
 
 danica=ins('?IsSummonedBy@npc_danica_the_reclaimerAI@');send,=sites(n,danica,'?SendChat@CreatureTextMgr@@')

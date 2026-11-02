@@ -16,6 +16,9 @@
 #include "FunctionProcessor.h"
 #include "malgalor_scene.h"
 #include "malgalor_finale.h"
+#include "Conversation.h"
+#include "InstanceScript.h"
+#include "opening_transition.h"
 
 
 // 97167
@@ -33,11 +36,11 @@ public:
     {
         npc_ragnvald_dragonbornAI(Creature* creature) : ScriptedAI(creature)
         {
-            introDone1 = false;
-            introDone2 = false;
+            openingPending = false;
+            openingActorWarned = false;
         }
 
-        bool introDone1, introDone2;
+        bool openingPending, openingActorWarned;
         EventMap events;
         FunctionProcessor presentationFunctions;
 
@@ -119,20 +122,42 @@ public:
             events.RescheduleEvent(EVENT_4, 9000); // 13 16044
         }
 
-        void MoveInLineOfSight(Unit* who) override
+        void MoveInLineOfSight(Unit* /*who*/) override
         {
-            if (who->GetTypeId() != TYPEID_PLAYER)
-                return;
+            // Instance admission owns approach; retain scripted auto-aggro suppression.
+        }
 
-            if (!introDone1 && me->IsWithinDistInMap(who, 15.0f))
+        uint32 GetData(uint32 type) const override
+        {
+            return type == WarriorOpening::AIStatusData ? (openingPending ? WarriorOpening::Queued : WarriorOpening::Idle) : 0;
+        }
+
+        void DoAction(int32 const action) override
+        {
+            if (action == WarriorOpening::StartAction)
             {
-                introDone1 = true;
-                who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46877);
-                Conversation* conversation = new Conversation;
-                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1386, who, NULL, *who))
-                    delete conversation;
-                presentationFunctions.AddDelayedEvent(2000, [this]() -> void // start battle
+                if (!me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || ObjectAccessor::GetCreature(*me, me->GetGUID()) != me) return;
+                InstanceScript* script = me->GetInstanceScript();
+                uint32 ticket = script ? script->GetData(WarriorOpening::RequestData) : 0;
+                if (openingPending || !ticket || script->GetGuidData(WarriorOpening::SourceData) != me->GetGUID()) return;
+                openingPending = true;
+                uint32 instanceId = me->GetInstanceId();
+                presentationFunctions.AddDelayedEvent(2000, [this, ticket, instanceId]()
                 {
+                    openingPending = false;
+                    if (!me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || ObjectAccessor::GetCreature(*me, me->GetGUID()) != me) return;
+                    InstanceScript* script = me->GetInstanceScript();
+                    if (!script || me->GetInstanceId() != instanceId || script->GetGuidData(WarriorOpening::SourceData) != me->GetGUID() ||
+                        script->GetData(WarriorOpening::RequestData) != ticket) return;
+                    if (!me->FindNearestCreature(97176, 120.0f, true) && !me->FindNearestCreature(102970, 100.0f, true))
+                    {
+                        if (!openingActorWarned) TC_LOG_WARN("scripts", "Warrior opening: no original nearby battle target; retaining acknowledged dialogue for retry");
+                        openingActorWarned = true; return;
+                    }
+                    openingActorWarned = false;
+                    script->SetData(WarriorOpening::ClaimData, ticket);
+                    if (script->GetData(WarriorOpening::StartedData) != ticket) return;
+
                     std::list<Creature*> adds;
                     GetCreatureListWithEntryInGrid(adds, me, 102990, 90.0f);
                     GetCreatureListWithEntryInGrid(adds, me, 102995, 90.0f);
@@ -158,22 +183,11 @@ public:
                         if (Creature* attacker = me->FindNearestCreature(102965, 100.0f, true))
                             AttackBattleTarget(attacker, targ->GetGUID());
                     }
+
                 });
+                return;
             }
 
-            if (!introDone2 && me->IsWithinDistInMap(who, 40.0f))
-            {
-                introDone2 = true;
-                Conversation* conversation = new Conversation;
-                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 770, who, NULL, *who))
-                    delete conversation;
-
-            }
-
-        }
-
-        void DoAction(int32 const action) override
-        {
             Conversation* conversation = new Conversation;
             if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1412, me, NULL, *me))
                 delete conversation;

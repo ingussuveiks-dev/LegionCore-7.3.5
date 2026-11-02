@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-02",
+  "status": "DEPLOYED focused Ragnvald opening repair; full933/client/all36 remain OPEN.",
+  "cause": "Original Ragnvald LOS consumed its one-shot flags before native46877 or Conversation1386 acknowledgement and queued battle even for an ineligible Player or a failed factory. Stationary retries and AI recreation could lose the opening. Pinned77ebf820e counterfactual demonstrates failed1386 and denied admission still queue battle; no historical client reproduction or fabricated crash is claimed.",
+  "repair": "Instance-owned original97167/spawn361094 full GUID, one original eligible38904/42815 weak quest attempt and nonzero epoch retain opening facts across transient AI replacement. Preserve native visibility/flight/contact/phase/class/quest admission. Native46877 must yield actual933 step1 and45769 counter; original1386 must exist in the Map with both exact original actor GUIDs. Only then a native Ragnvald AI-owned2000ms callback may claim the same fresh epoch exactly once and execute the unchanged original battle payload. Original770 is independent, retried after factory failure, and does not block battle. Empty scripted LOS override retains original no-autoaggro behavior. No forced Scenario step, SQL, new ScriptName, quest/item grant, triggered replacement cast or character reset.",
+  "checks": [
+    "92 ASAN component cases compile actual Opening state/full current Ragnvald, native FunctionProcessor and Unit queues, actual locked current/suspended AI lifecycle/AIM_Destroy, original quest weak-lifetime helper and native visibility predicate. Controlled Map/Player/Conversation/criteria/combat endpoints are not wholecore/client traversal.",
+    "Cases cover both quests/factions, legitimate original Player death after approach, ineligible/GM/phase/contact/flight/quest/visibility actors, factory and actor-view failures, exact2000ms boundary and late frames, AI destruction/replacement/current+suspended callbacks, same-GUID different Unit rejection, abandoned/new weak attempt/deleted Player/reset/map/scenario, missing targets retry, reentrant AI deletion from native-event/factory endpoints, first-wave early death and obsolete callback cancellation. Accepted epoch is consumed once before any battle callback.",
+    "Retained87 first-wave ASAN,41 actual actor handoffs,64 Malgalor/reinforcement and native933 catalog pass. Legacy45 timer fixture explicitly compiles pinned77 Ragnvald clock body plus current Danica; actual new queue/admission is exercised by the new92 suite. Scope certificates retain original battle payload and all other actor/shared Paladin/first-wave/reinforcement bodies.",
+    "Fresh native26972 Conversation770/1386/1405/1412 construction, actual Map registration/full actor GUIDs/line sound IDs/lifetimes and missing97166 counterfactual pass without Players or character writes. Native Map::Update waits for creature work before InstanceScript::Update; newly queued2000ms work cannot consume the elapsed frame that armed it.",
+    "Original scripts Release libraries/final-link inputs, actual selected stage/canonical PE trace registered Ragnvald factory/status/empty LOS, AI-owned callback/native lifecycle, full source identity/world/instance/epoch/claim guards and unchanged combat, plus instance constructor/vtable/data bridges/Opening-before-first-wave update/native visibility/weak quest/original actors/true factory/actual45769 receipt. Retained shared instance/Malgalor/reinforcement/Vigfus PE and canonical Scepter login checks pass. COMDAT aliases were resolved by actual symbol addresses rather than labels."
+  ],
+  "iterations": [
+    "Native1 fixture lacked native ASSERT/AI const support; corrected adapter. Native2 fixture teardown retained a suspended AI slot while calling native AIM_Destroy; corrected teardown clears and owns both slots. Native3 fixture declared foreign Map after the Run that retained its pointer, causing stack-use-after-scope at teardown; corrected declaration order. Final native4-9 pass, final92 ASAN. These fixture failures remain captured and are not production crash claims.",
+    "StagePE1 inspector assumed a one-byte C3 empty LOS; actual vtable method is ret0/C2. Inspector now checks the exact real empty method. StagePE3 old factory inspector assumed inline instance constructor; compiler outlined it. New inspector traces allocation, Map argument, actual constructor/native base/vtable/Opening map and unchanged return identity. StagePE4 and canonical PE pass; no failing check was disabled."
+  ],
+  "runtime": {
+    "stage": ".codex/warrior-opening-release-final",
+    "world_sha256": "DAE0455E4EE43E92F78DCF69840DA9463A2E27702478536D28E5777F49FFC854",
+    "bnet_sha256": "90B402495FC8AF30BC5B3B4BF3CEA7741C8942CFEE3682E2C3E2F42958D45FF6",
+    "backup": ".codex/release-before-warrior-opening-2026-11-02",
+    "deployment": "Canonical offline four-file promotion matches reviewed stage; protected configuration/certificates/DLL hashes and original exe/map backups verified. Owned worldserver19492 reached fresh ready, server shutdown0, exit0, stderr empty, process gone. No user/unknown server stopped."
+  },
+  "diagnostics": {
+    "result": "Final native/build/PE/promotion/startup/Scepter checks pass with before/after crash/log evidence. Reviewed failed fixture/inspector iterations retained and paired with repaired passing checks. No new/changed canonical crashes, appended DBErrors or unexplained server warning/error/assertion. Existing compiler warnings remain visible.",
+    "active_crashes": 0,
+    "mixed_db_errors_bytes": 6090,
+    "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
+    "archive": "Pending focused fix commit; preserve original evidence and unresolved mixed log."
+  },
+  "remaining": [
+    "Actual client visibility/audio/approach/combat/full933/group/faction/abandonment/re-entry remain user checks. In-memory instance recovery does not persist exact actor or criteria state across a server restart or reconstruct an already missing Ragnvald.",
+    "Danica ritual still unconditionally attempts49203/49262 before native205287 five-second cast completion and departs from any hit. Repair actual original corpse/spirit receipts, factory/normal cast failures and phase-relative recovery next; missing Danica summon and re-entry persistence remain OPEN.",
+    "All36 chains, shared101430/103151 LINK2, Wardstone LINK4, Survival middle flight, Stromkar visuals and other recorded findings remain OPEN; no additional character reset authorized."
+  ]
+}

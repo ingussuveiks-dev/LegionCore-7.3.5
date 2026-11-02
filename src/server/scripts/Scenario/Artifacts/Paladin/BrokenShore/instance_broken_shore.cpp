@@ -14,6 +14,7 @@
 #include "../../Warrior/Intro/malgalor_finale.h"
 #include "../../Warrior/Intro/reinforcement_transition.h"
 #include "../../Warrior/Intro/first_wave_transition.h"
+#include "../../Warrior/Intro/opening_transition.h"
 
 class instance_broken_shore : public InstanceMapScript
 {
@@ -27,10 +28,11 @@ public:
 
     struct instance_broken_shore_InstanceMapScript : public InstanceScript
     {
-        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map), warriorTransition(map), warriorFirstWave(map) {}
+        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map), warriorTransition(map), warriorFirstWave(map), warriorOpening(map) {}
 
         WarriorReinforcement::State warriorTransition;
         WarriorFirstWave::State warriorFirstWave;
+        WarriorOpening::State warriorOpening;
 
         std::list<Creature*> trashGUIDconteiner;
         GuidSet DoorGUIDconteiner;
@@ -58,6 +60,7 @@ public:
         void OnCreatureCreate(Creature* creature) override
         {
             warriorTransition.Observe(creature);
+            warriorOpening.Observe(creature);
             switch (creature->GetEntry())
             {
                 case NPC_ARGENT_PHALANX_1:
@@ -120,6 +123,7 @@ public:
 
         void SetData(uint32 type, uint32 data) override
         {
+            if (type == WarriorOpening::ClaimData) { warriorOpening.Claim(data); return; }
             switch (type)
             {
                 case DATA_TRASH_FIGHT:
@@ -160,6 +164,8 @@ public:
 
         uint32 GetData(uint32 type) const override
         {
+            if (type == WarriorOpening::RequestData) return warriorOpening.Request();
+            if (type == WarriorOpening::StartedData) return warriorOpening.started ? warriorOpening.epoch : 0;
             switch (type)
             {
                 case DATA_TRASH_FIGHT:
@@ -171,6 +177,7 @@ public:
 
         ObjectGuid GetGuidData(uint32 type) const override
         {
+            if (type == WarriorOpening::SourceData) return warriorOpening.source;
             switch (type)
             {
                 case NPC_LORD_MAXWELL_TYROSUS:
@@ -237,7 +244,7 @@ public:
             }
         }
 
-        void Update(uint32 diff) override { warriorTransition.Update(diff); warriorFirstWave.Update(diff); }
+        void Update(uint32 diff) override { warriorOpening.Update(diff); warriorTransition.Update(diff); warriorFirstWave.Update(diff); }
     };
 };
 

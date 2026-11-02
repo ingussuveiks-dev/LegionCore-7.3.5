@@ -34,7 +34,12 @@ if((Shape $normalized) -cne (Shape $old)){throw 'Other Warrior/Malgalor/Bezzered
 if($ScopeOnly){'PASS exactly two AI-owned original2/3s timers/native ALIVE-CORPSE lifecycle and bounded original-target/current-AI battle recovery; all remaining actor/progress/cast/scene/motion bodies unchanged';return}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/warrior-intro-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $selected=if($Baseline){$old}else{$actualSource}
-[IO.File]::WriteAllText("$out/Actors.inc",(Block $selected 'class npc_ragnvald_dragonborn :')+";`n"+(Block $selected 'class npc_danica_the_reclaimer :')+';')
+$clockSource=if($Baseline){$old}else{(& git -C $repo show "77ebf820e:$path") -join "`n"};if($LASTEXITCODE){throw 'Pinned Ragnvald legacy clock source missing'}
+# The actual instance-owned admission/queue is exercised by Test-WarriorOpening.
+# Preserve the earlier native clock/deletion matrix without modeling admission.
+[IO.File]::WriteAllText("$out/Actors.inc",(Block $clockSource 'class npc_ragnvald_dragonborn :')+";`n"+(Block $selected 'class npc_danica_the_reclaimer :')+';')
+$opening=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/Intro/opening_transition.h" -Raw
+[IO.File]::WriteAllText("$out/OpeningKeys.inc",$opening.Substring(0,$opening.IndexOf('    struct State'))+'}')
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
 $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw
