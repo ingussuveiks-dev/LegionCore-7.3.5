@@ -29,7 +29,8 @@ factory=ins('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@
 script,sraw=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
 assert vt in refs(factory) and script in refs(ins('?AddSC_instance_class_art_scenarios@@'))
 assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')==resolved(sraw)[1]
-arrival_successor=0x380 in values(factory)
+routes_successor=0x3b8 in values(factory)
+arrival_successor=0x380 in values(factory) or routes_successor
 if arrival_successor:
     # Arrival successor appends packed GUID receipts and a real-time retry;
     # the original rescue prefix remains at precisely the same offsets.
@@ -38,6 +39,10 @@ if arrival_successor:
             ('mov','byte ptr [rdi + 0x72], bl'),('lea','rcx, [rdi + 0x73]'),
             ('lea','rcx, [rdi + 0x83]'),('mov','dword ptr [rdi + 0x93], ebx'),
             ('mov','dword ptr [rdi + 0x98], ebx'),('mov','byte ptr [rdi + 0x9c], bl')}<=set(pairs(factory))
+    if routes_successor:
+        assert {('lea','rcx, [rdi + 0x9d]'),('lea','rcx, [rdi + 0xad]'),
+                ('mov','qword ptr [rdi + 0xc0], rbx'),('mov','qword ptr [rdi + 0xc8], rbx'),
+                ('mov','dword ptr [rdi + 0xd0], ebx'),('mov','byte ptr [rdi + 0xd4], bl')}<=set(pairs(factory))
 else:
     assert {0x358,0x2e0,0x350}<=values(factory)|fields(factory)
     assert ('mov','qword ptr [rdi + 0x2e0], rbx') in pairs(factory)

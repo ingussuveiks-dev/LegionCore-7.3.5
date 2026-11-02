@@ -5,6 +5,8 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "b015d4e28:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-arrival actor missing'}
+ $hasRoutes=$source.Contains('MonkChenRoutes::EscortData')
+ if($hasRoutes){& "$PSScriptRoot/Test-MonkChenRoutes.ps1" -ScopeOnly;$source=(& git -C $repo show "39f878974:$path") -join "`n";if($LASTEXITCODE){throw 'Certified route actor missing'}}
  $actor=Block $source 'class npc_monk_chen_porter :';$previous=Block $old 'class npc_monk_chen_porter :';$movement=Block $actor 'void MovementInform('
  $guard=Block $movement 'if (MonkChenRescue::Source(me))'
  $expectedGuard=@'
@@ -28,6 +30,7 @@ if (MonkChenRescue::Source(me))
  if((Shape $normal) -cne (Shape $previous)){throw 'Other rescue/timer/text/follow/combat/actor behavior changed'}
  if((Shape $source.Replace($actor,$previous)) -cne (Shape $old)){throw 'Other Monk actors changed'}
  $hp='src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h';$header=(Get-Content "$repo/$hp" -Raw).Replace("`r",'');$prior=(& git -C $repo show "b015d4e28:$hp") -join "`n";if($LASTEXITCODE){throw 'Pinned rescue controller missing'}
+ if($hasRoutes){$header=(& git -C $repo show "39f878974:$hp") -join "`n";if($LASTEXITCODE){throw 'Certified route controller missing'}}
  $h=$header.Replace('#include "chen_arrival.h"','')
  foreach($method in @('bool EscortLeaf()','void Routed(','void Arrived(','void UpdateArrival(')){$h=$h.Replace((Block $h $method),'')}
  $fields=@'
@@ -39,6 +42,7 @@ if (MonkChenRescue::Source(me))
  $h=$h.Replace($fields,'').Replace('arrivalClaim.Clear(); arrivalPlayer.Clear(); arrivalDone = started;','').Replace('arrivalWaiting = false;','').Replace('if (!pending) { UpdateArrival(diff); return; }','if (!pending) return;').Replace('{ pending = false; started = true; claim.Clear(); return; }','{ pending = false; started = true; claim.Clear(); members.clear(); return; }')
  if((Shape $h) -cne (Shape $prior)){throw 'Other native genuine-death rescue controller behavior changed'}
  $ip='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$actual=(Get-Content "$repo/$ip" -Raw).Replace("`r",'');$previousInstanceFile=(& git -C $repo show "b015d4e28:$ip") -join "`n";if($LASTEXITCODE){throw 'Pinned Monk instance missing'}
+ if($hasRoutes){$actual=(& git -C $repo show "39f878974:$ip") -join "`n";if($LASTEXITCODE){throw 'Certified route instance missing'}}
  $instance=Block $actual 'struct instance_monk_intro :';$oldInstance=Block $previousInstanceFile 'struct instance_monk_intro :'
  $normalInstance=$instance.Replace((Block $instance 'ObjectGuid GetGuidData('),(Block $oldInstance 'ObjectGuid GetGuidData(')).Replace('if (type == MonkChenArrival::RouteData) chenRescue.Routed(value);','').Replace('if (type == MonkChenArrival::RequestData) chenRescue.Arrived(value);','')
  if((Shape $normalInstance) -cne (Shape $oldInstance) -or (Shape $actual.Replace($instance,$oldInstance)) -cne (Shape $previousInstanceFile)){throw 'Other instance/base/shared Rogue/Mage/Priest behavior changed'}

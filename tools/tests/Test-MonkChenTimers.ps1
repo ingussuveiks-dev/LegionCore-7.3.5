@@ -40,6 +40,8 @@ $bridge=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen
 $protocol=$bridge.Substring($bridge.IndexOf('namespace MonkChenRescue'),$bridge.IndexOf('struct Member')-$bridge.IndexOf('namespace MonkChenRescue'))+'}'
 $arrival=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_arrival.h" -Raw
 $protocol+=$arrival.Substring($arrival.IndexOf('namespace MonkChenArrival'),$arrival.IndexOf('inline WaypointPath const* Data()')-$arrival.IndexOf('namespace MonkChenArrival'))+'}'
+$routes=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_routes.h" -Raw
+$protocol+=$routes.Substring($routes.IndexOf('namespace MonkChenRoutes'),$routes.IndexOf('inline bool Source(')-$routes.IndexOf('namespace MonkChenRoutes'))+'}'
 [IO.File]::WriteAllText("$out/RescueSource.inc",$protocol)
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))

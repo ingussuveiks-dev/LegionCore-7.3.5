@@ -465,6 +465,7 @@ public:
 
                         _presentationFunctions.AddDelayedEvent(15000, [this, playerGuid]() -> void
                         {
+                            if (MonkChenRescue::Source(me)) return;
                             if (Creature* hait = me->FindNearestCreature(97778, 50.0f, true))
                             {
                                 sCreatureTextMgr->SendChat(hait, 12, playerGuid);
@@ -473,6 +474,12 @@ public:
 
                         _presentationFunctions.AddDelayedEvent(15000, [this, playerGuid]() -> void
                         {
+                            if (MonkChenRescue::Source(me))
+                            {
+                                if (InstanceScript* script = me->GetInstanceScript())
+                                    script->SetGuidData(MonkChenRoutes::HaitData, me->GetGUID());
+                                return;
+                            }
                             if (Creature* hait = me->FindNearestCreature(97778, 50.0f, true))
                             {
                                 sCreatureTextMgr->SendChat(hait, 13, playerGuid);
@@ -542,15 +549,17 @@ public:
 
                 _presentationFunctions.AddDelayedEvent(8000, [this]() -> void
                 {
+                    if (MonkChenRescue::Source(me))
+                    {
+                        if (InstanceScript* script = me->GetInstanceScript())
+                            script->SetGuidData(MonkChenRoutes::EscortData, me->GetGUID());
+                        return;
+                    }
                     if (Player* pl = me->FindNearestPlayer(100))
                         Talk(5, pl->GetGUID());
                     if (Creature* li = me->FindNearestCreature(98074, 50.0f, true))
                         li->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
-                    if (MonkChenRescue::Source(me)) me->UpdateWaypointID(uint32(-1));
                     me->GetMotionMaster()->MovePath(9859005, false); // 2 5
-                    if (MonkChenRescue::Source(me))
-                        if (InstanceScript* script = me->GetInstanceScript())
-                            script->SetGuidData(MonkChenArrival::RouteData, me->GetGUID());
                 });
             }
         }

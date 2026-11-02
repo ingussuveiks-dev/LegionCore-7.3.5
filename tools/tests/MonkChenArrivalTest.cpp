@@ -15,7 +15,7 @@ struct Escort:Run
  void NoArrival(){assert(!state().arrivalDone&&!actor()->_arrivalStarted&&scenario.step==4&&!scenario.progress[29070].Counter);assert(player.credits==std::vector<uint32>{46956});}
 };
 
-int main()
+uint32 RunArrivalCases()
 {
  uint32 retained=RunRescueCases(),cases=0;
  // Complete predecessor loses the native receipt when its nearest player is
@@ -70,4 +70,8 @@ int main()
  {Escort r;r.Begin();clockNow=0xFFFFFE00;r.player.distance=101;r.Arrive();r.player.distance=10;clockNow+=2000;r.state().Update(0);r.NoArrival();++clockNow;r.state().Update(0);r.Finished();++cases;}
  {Escort r;r.Begin();r.map.players={{&r.other},{&r.player}};r.other.quest.ScriptLifetime=std::make_shared<uint8>();r.chen.nearest=&r.other;r.Arrive();r.Finished();r.player.world=false;r.Tick(20000);for(uint32 i=1;i<4;++i)assert(r.hait.talks[i].second==r.player.guid);assert(r.other.credits.empty());++cases;}
  std::cout<<"PASS "<<cases<<" Chen arrival ASAN contexts plus "<<retained<<" retained rescue contexts; actual native waypoint dispatch/index/persistent receipt, original weak owner, exactly-once native46947/29070 and six authored outro deadlines. Endpoint installation/geometry/criteria/network controlled; native mmap probe separate; later Hait/boss/full943 and client traversal remain OPEN.\n";
+ return cases;
 }
+#ifndef MONK_CHEN_ROUTES_TEST
+int main(){RunArrivalCases();}
+#endif

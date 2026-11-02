@@ -19,7 +19,7 @@ uint32 clockNow=0;uint32 getMSTime(){return clockNow;}
 #include "WaypointFields.inc"
 using WaypointPath=std::vector<WaypointData>;
 #include "PathBase.inc"
-struct WaypointMgr{WaypointPath data;bool available=true;WaypointMgr(){Reset();}void Reset(){available=true;data.assign(6,WaypointData{});for(uint32 i=0;i<6;++i)data[i].id=i+1;data.back().x=3881.59f;data.back().y=1726.28f;data.back().z=932.669f;}WaypointPath const* GetPathScript(uint32 id){return available&&id==9859005?&data:nullptr;}} waypointMgr;auto sWaypointMgr=&waypointMgr;
+struct WaypointMgr{WaypointPath data,haitData;bool available=true,haitAvailable=true;WaypointMgr(){Reset();}void Reset(){available=haitAvailable=true;haitData.assign(9,WaypointData{});for(uint32 i=0;i<9;++i)haitData[i].id=i+1;haitData.back().x=3939.18f;haitData.back().y=1838.15f;haitData.back().z=904.334f;data.assign(6,WaypointData{});for(uint32 i=0;i<6;++i)data[i].id=i+1;data.back().x=3881.59f;data.back().y=1726.28f;data.back().z=932.669f;}WaypointPath const* GetPathScript(uint32 id){return available&&id==9859005?&data:haitAvailable&&id==9859006?&haitData:nullptr;}} waypointMgr;auto sWaypointMgr=&waypointMgr;
 namespace Movement{struct MoveSpline{bool done=true;bool Finalized()const{return done;}};}
 struct MovementGenerator{virtual ~MovementGenerator()=default;virtual uint32 GetMovementGeneratorType()const{return IDLE_MOTION_TYPE;}};
 struct Creature;
@@ -29,7 +29,7 @@ template<> class WaypointMovementGenerator<Creature>:public MovementGenerator,pu
  WaypointMovementGenerator(){_path=&waypointMgr.data;}
  uint32 GetMovementGeneratorType()const override{return WAYPOINT_MOTION_TYPE;}
  #include "PathId.inc"
- void Node(uint32 n){_currentNode=n;}void OnArrived(Creature&);void MovementInform(Creature&);
+ void Node(uint32 n){_currentNode=n;}void Bind(WaypointPath const* p){_path=p;}void OnArrived(Creature&);void MovementInform(Creature&);
 };
 float const PET_FOLLOW_ANGLE=1.57f,PET_FOLLOW_DIST=1.f;
 uint32 urand(uint32 low,uint32){return low;}
@@ -49,7 +49,7 @@ struct Player:Unit{uint32 type=CLASS_MONK,status=QUEST_STATUS_INCOMPLETE,slot=0;
 namespace ObjectAccessor{std::map<ObjectGuid,Player*> players;Player* FindPlayer(ObjectGuid guid){auto f=players.find(guid);return f==players.end()?nullptr:f->second;}Player* GetPlayer(Unit const& unit,ObjectGuid guid){auto player=FindPlayer(guid);return player&&player->map==unit.map?player:nullptr;}}
 #include "Owner.inc"
 #include "QuestDelay.inc"
-struct Motion{uint32 points=0,follows=0;std::vector<uint32> paths;WaypointMovementGenerator<Creature> waypoint;MovementGenerator* idle=nullptr;MovementGenerator* current=nullptr;Movement::MoveSpline* spline=nullptr;void MovePoint(uint32,float,float,float){++points;idle=current=nullptr;}void MovePath(uint32 id,bool){paths.push_back(id);waypoint._pathId=id;waypoint.Node(0);idle=current=&waypoint;if(spline)spline->done=false;}void MoveFollow(Unit*,float,float,uint32){++follows;}MovementGenerator* GetMotionSlot(uint32){return idle;}bool empty()const{return !current;}MovementGenerator* top(){return current;}void Retire(){idle=current=nullptr;}};
+struct Motion{uint32 points=0,follows=0,requests=0;bool install=true;std::vector<uint32> paths;WaypointMovementGenerator<Creature> waypoint;MovementGenerator* idle=nullptr;MovementGenerator* current=nullptr;Movement::MoveSpline* spline=nullptr;void MovePoint(uint32,float,float,float){++points;idle=current=nullptr;}void MovePath(uint32 id,bool){++requests;if(!install)return;paths.push_back(id);waypoint._pathId=id;waypoint.Bind(sWaypointMgr->GetPathScript(id));waypoint.Node(0);idle=current=&waypoint;if(spline)spline->done=false;}void MoveFollow(Unit*,float,float,uint32){++follows;}MovementGenerator* GetMotionSlot(uint32){return idle;}bool empty()const{return !current;}MovementGenerator* top(){return current;}void Retire(){idle=current=nullptr;}};
 struct Creature:Unit{
  CreatureAI* i_AI=nullptr;CreatureAI* i_disabledAI=nullptr;bool m_AI_locked=false,IsAIEnabled=true;
  DeathState deathState=ALIVE;DeathState getDeathState(){return deathState;}
@@ -95,7 +95,7 @@ using Chen=npc_monk_chen_porter::npc_monk_chen_porterAI;
 struct Root:CreatureAI{Creature* chen;uint32 calls=0;Root(Creature* m,Creature* c):CreatureAI(m),chen(c){}void JustDied(Unit*)override{++calls;if(chen&&chen->AI())chen->AI()->SetData(1,1);}};
 struct Run{
  InstanceMap map;Scenario scenario;instance_monk_intro instance{&map};Creature chen,source,hait,li,add;Player player,other;Unit pet,guardian;Root root{&source,&chen};CreatureAI haitAI{&hait},temporary{&chen};
- Run(){clockNow=0;waypointMgr.Reset();ObjectAccessor::players.clear();manager.current=&scenario;map.script=&instance;chen.map=source.map=player.map=other.map=pet.map=guardian.map=&map;chen.guid={21,2};source.guid={22,2};player.guid={17,1};other.guid={18,1};pet.owner=guardian.owner=player.guid;source.entry=97811;source.spawn=362229;chen.i_AI=new Chen(&chen);source.i_AI=&root;chen.nearest=&player;chen.hait=&hait;chen.morvat=&source;chen.li=&li;chen.adds={&li,&add};hait.i_AI=&haitAI;map.creatures={{chen.guid,&chen},{source.guid,&source}};map.players={{&player}};ObjectAccessor::players={{player.guid,&player},{other.guid,&other}};instance.OnCreatureCreate(&chen);instance.OnCreatureCreate(&source);}
+ Run(){clockNow=0;waypointMgr.Reset();ObjectAccessor::players.clear();manager.current=&scenario;map.script=&instance;chen.map=source.map=hait.map=player.map=other.map=pet.map=guardian.map=&map;chen.guid={21,2};source.guid={22,2};hait.guid={23,2};hait.entry=97778;hait.spawn=362271;player.guid={17,1};other.guid={18,1};pet.owner=guardian.owner=player.guid;source.entry=97811;source.spawn=362229;chen.i_AI=new Chen(&chen);source.i_AI=&root;chen.nearest=&player;chen.hait=&hait;chen.morvat=&source;chen.li=&li;chen.adds={&li,&add};hait.i_AI=&haitAI;map.creatures={{chen.guid,&chen},{source.guid,&source},{hait.guid,&hait}};map.players={{&player}};ObjectAccessor::players={{player.guid,&player},{other.guid,&other}};instance.OnCreatureCreate(&chen);instance.OnCreatureCreate(&source);instance.OnCreatureCreate(&hait);}
  ~Run(){delete chen.i_AI;if(chen.i_disabledAI&&chen.i_disabledAI!=chen.i_AI&&chen.i_disabledAI!=&temporary)delete chen.i_disabledAI;manager.current=nullptr;ObjectAccessor::players.clear();}
  auto& state(){return instance.chenRescue;}Chen* actor(){return static_cast<Chen*>(chen.i_disabledAI?chen.i_disabledAI:chen.i_AI);}
  void Death(Unit* killer=nullptr){source.deathState=CORPSE;Unit ally;ally.map=&map;(killer?killer:&ally)->DispatchDeath(&source);}
@@ -121,10 +121,10 @@ uint32 RunRescueCases(){
  for(uint32 cancel=0;cancel<7;++cancel){Run r;r.scenario.step=2;r.Death();auto old=r.player.quest.ScriptLifetime;switch(cancel){case 0:r.player.quest.ScriptLifetime.reset();break;case 1:r.player.quest.ScriptLifetime=std::make_shared<uint8>();break;case 2:r.player.map=nullptr;break;case 3:r.map.unloading=true;break;case 4:r.scenario.id=999;break;case 5:r.scenario.step=0;break;case 6:r.player.status=0;break;}r.Tick(2000);assert(!r.state().pending&&!r.state().started);r.player.map=&r.map;r.player.status=3;r.map.unloading=false;r.scenario.id=943;r.scenario.step=3;r.player.quest.ScriptLifetime=std::make_shared<uint8>();r.Death();r.Tick(2000);assert(r.player.credits.empty()&&r.chen.talks.empty());++cases;}
  for(uint32 reentry=0;reentry<6;++reentry){Run r;r.player.onCredit=[&]{if(reentry==0)r.state().Update(0);if(reentry==1)r.state().Cancel();if(reentry==2){delete r.chen.i_AI;r.chen.i_AI=new Chen(&r.chen);}if(reentry==3)manager.current=nullptr;if(reentry==4){r.scenario.step=2;}if(reentry==5)r.player.quest.ScriptLifetime=std::make_shared<uint8>();};r.Death();r.player.onCredit={};if(reentry==0||reentry==2)r.Started();else assert(!r.state().started&&r.chen.talks.empty());++cases;}
  {Run r;r.scenario.step=1;r.Death();assert(r.chen.AIM_Destroy());r.chen.i_AI=new Chen(&r.chen);r.scenario.step=3;r.Tick(0);r.Started();++cases;}
- {Run r;r.chen.i_disabledAI=r.chen.i_AI;r.chen.i_AI=nullptr;r.Death();r.Started();r.chen.Lifecycle(8000);assert(r.chen.motion.paths==std::vector<uint32>{9859005});++cases;}
+ {Run r;r.chen.i_disabledAI=r.chen.i_AI;r.chen.i_AI=nullptr;r.Death();r.Started();r.Tick(8000);assert(r.chen.motion.paths==std::vector<uint32>{9859005});++cases;}
  {Run r;r.actor()->SetData(1,1);r.Tick(20000);assert(r.player.credits.empty()&&r.chen.talks.empty());r.source.deathState=ALIVE;r.state().Death(&r.source,&r.pet);assert(!r.state().pending);++cases;}
  {Run r;r.chen.spawn=362134;r.actor()->SetData(1,1);assert(r.player.credits==std::vector<uint32>{46956}&&r.chen.talks.size()==1);++cases;}
- {Run r;assert(r.instance.baseCreates==2&&r.instance.GetGuidData(99)==(ObjectGuid{555,999}));++cases;}
+ {Run r;assert(r.instance.baseCreates==3&&r.instance.GetGuidData(99)==(ObjectGuid{555,999}));++cases;}
  std::cout<<"PASS "<<cases<<" actual State/current full Chen/instance/native owner/death-order/quest-delay/FunctionProcessor/lifecycle ASAN contexts: early prerequisites, player/pet/guardian/ally kills, native46956 receipt before one original escort, retries, full source/actor identity, original weak attempts, reentrant cancellation and unchanged base/other actor behavior. Criteria/map/visibility/network/movement endpoints controlled; later arrival46947/recovery and client/full943/all36 remain separate. Expected modeled rejection warnings="<<warnings<<".\n";
  return cases;
 }

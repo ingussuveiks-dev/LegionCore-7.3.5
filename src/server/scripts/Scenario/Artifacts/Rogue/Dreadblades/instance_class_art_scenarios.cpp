@@ -188,6 +188,8 @@ struct instance_monk_intro : public InstanceScript
         if (type == MonkChenRescue::RequestData) chenRescue.Request(value);
         if (type == MonkChenArrival::RouteData) chenRescue.Routed(value);
         if (type == MonkChenArrival::RequestData) chenRescue.Arrived(value);
+        if (type == MonkChenRoutes::EscortData) chenRescue.RouteRequest(value);
+        if (type == MonkChenRoutes::HaitData) chenRescue.RouteRequest(value);
     }
     void Update(uint32 diff) override { chenRescue.Update(diff); }
 };
