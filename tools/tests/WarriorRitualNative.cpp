@@ -17,6 +17,13 @@ struct RitualObserver : NullCreatureAI
         {
             uint32 id = target->GetEntry() == 102964 ? 205295 : 205296;
             auto result = target->CastSpell(target, id);
+            std::list<Creature*> actual;
+            target->GetCreatureListWithEntryInGrid(actual, id == 205295 ? 103688 : 103687, 100.0f);
+            Require(result == SPELL_CAST_OK && actual.size() == 1 && actual.front()->IsInWorld() &&
+                actual.front()->ToTempSummon() && actual.front()->ToTempSummon()->GetSummonerGUID() == target->GetGUID() &&
+                actual.front()->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == id,
+                "Native immediate normal corpse cast has no unique actual owned child");
+            std::cout << "IMMEDIATE_SPIRIT\t" << id << '\t' << actual.front()->GetGUID().ToString() << '\n';
             summons.push_back({id, result});
             std::cout << "CORPSE_CAST\t" << id << '\t' << uint32(result) << '\n';
         }
@@ -58,6 +65,20 @@ int main(int argc, char** argv)
             Require(!first.IsAlive() && !second.IsAlive(), "Native corpse setup failed");
             auto info = sSpellMgr->GetSpellInfo(205287);
             Require(info, "Native205287 missing");
+            for (uint32 id : {205287u, 205295u, 205296u})
+            {
+                auto native = sSpellMgr->GetSpellInfo(id);
+                Require(native, "Native ritual spell missing");
+                if (id != 205287)
+                    Require(native->CalcCastTime() == 0 && native->Cooldowns.StartRecoveryTime == 0 && native->Misc.MiscData.Speed == 0,
+                        "Native corpse summon timing changed; adapt receipt admission before retrying it");
+                else
+                    Require(native->CalcCastTime() == 5000 && native->Effects[0]->CalcRadius(&danica) == 90.0f,
+                        "Native ascension timing/radius changed");
+                std::cout << "CAST_DATA\t" << id << '\t' << native->CalcCastTime() << '\t'
+                    << native->Cooldowns.StartRecoveryTime << '\t' << native->Misc.MiscData.Speed << '\t'
+                    << native->Effects[0]->CalcRadius(&danica) << '\n';
+            }
             std::cout << "SPELL\t205287\t" << info->GetDuration() << '\t' << unsigned(UnitAI::AISpellInfo[205287].target)
                 << '\t' << info->HasAttribute(SPELL_ATTR2_CAN_TARGET_DEAD) << '\t' << info->HasAttribute(SPELL_ATTR3_ONLY_TARGET_GHOSTS)
                 << '\t' << info->CalcCastTime() << '\n';

@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib,json,runpy
 from sharasdal_erunak_entry_pe import sites,values
-from warrior_instance_factory_pe import selected_instance_factory
+from warrior_instance_factory_pe import selected_instance_factory,selected_malgalor_death
 
 p=runpy.run_path(str(Path(__file__).with_name('verify_warrior_intro_handoffs_release.py')))
 n,ins,refs,table,resolved,reachable=(p[k] for k in ('n','ins','refs','table','resolved','reachable'))
@@ -23,9 +23,13 @@ for callback,dependency in (('CreatureDies',death),('Update',update)):
     assert len(sites(n,body,dependency))==1
 hook=ins('?CreatureDies@'+scope)
 first,=sites(n,hook,death);reinforcement,=sites(n,hook,'?Death@State@WarriorReinforcement@@')
-finale,=sites(n,hook,'?MalgalorDeath@'+scope)
+fallback=selected_malgalor_death(n,ins)
+finale,=sites(n,hook,'?Death@MalgalorFinale@@' if fallback=='?CreatureDies@'+scope else fallback)
 assert first<reinforcement<finale
-assert pairs(hook[first-1:first])==[('add','rcx, 0x348')]
+if p.get('new_ritual'):
+    assert pairs(hook[first-3:first])==[('lea','rcx, [rbp + 0x348]'),('mov','r8, rsi'),('mov','rdx, rbx')]
+else:
+    assert pairs(hook[first-1:first])==[('add','rcx, 0x348')]
 assert ('lea','rcx, [rbp + 0x2e0]') in pairs(hook[first:reinforcement])
 needs(ins('?Update@'+scope),'?Update@State@WarriorReinforcement@@')
 
@@ -83,8 +87,8 @@ assert body[last+1].operands[0].imm==body[two+1].address,'Accepted46175 must ski
 assert ('mov','dword ptr [rbx + 0x30], 0x7d0') in pairs(body)
 for forbidden in ('?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@','?FindNearestPlayer@WorldObject@@'):
     assert not sites(n,body,forbidden) and not sites(n,ins(death),forbidden)
-danica=ins('?IsSummonedBy@npc_danica_the_reclaimerAI@')
+danica=ins('?SpellHitTarget@npc_danica_the_reclaimerAI@') if p.get('new_ritual') else ins('?IsSummonedBy@npc_danica_the_reclaimerAI@')
 assert not sites(n,danica,'?FindNearestPlayer@WorldObject@@')
-assert not sites(n,danica,'?UpdateAchievementCriteria@Player@@'),'Danica summon must not own first-wave player credit'
-print('PASS actual registered shared-instance death/update: real102970/spawn361138, map1500/native933 steps0/1/dead/world/predelete/immunity guards precede original quest-lifetime capture; actual step0 returns before either later-tree event, retaining only a genuine death until native step1. Full128-bit participant GUID and weak attempt, owner/pet/guardian priority, refreshed original Player and actual45771/46175 receipts gate native46878/47474,2000ms retry skips accepted leaves. Danica summon contains no nearest-player or first-wave credit call; existing Paladin/reinforcement/finale and2/3s actor paths retained. No character/item/quest grants; full933/client/opening and ritual remain separate.')
+assert not sites(n,danica,'?UpdateAchievementCriteria@Player@@'),'Danica bridge/summon must not own first-wave player credit'
+print('PASS actual registered shared-instance death/update: real102970/spawn361138, map1500/native933 steps0/1/dead/world/predelete/immunity guards precede original quest-lifetime capture; actual step0 returns before either later-tree event, retaining only a genuine death until native step1. Full128-bit participant GUID and weak attempt, owner/pet/guardian priority, refreshed original Player and actual45771/46175 receipts gate native46878/47474,2000ms retry skips accepted leaves. Danica summon contains no nearest-player or first-wave credit call; existing Paladin/reinforcement/finale retained; current opening/ritual consumers checked separately. No character/item/quest grants; full933/client/opening and ritual remain separate.')
 print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'actual_death':102970,'spawn':361138,'native_events':[46878,47474]}))

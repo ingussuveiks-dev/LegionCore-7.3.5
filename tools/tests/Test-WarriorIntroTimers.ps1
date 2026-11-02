@@ -33,9 +33,9 @@ foreach($actor in @('class npc_ragnvald_dragonborn :','class npc_danica_the_recl
 if((Shape $normalized) -cne (Shape $old)){throw 'Other Warrior/Malgalor/Bezzeredes behavior changed'}
 if($ScopeOnly){'PASS exactly two AI-owned original2/3s timers/native ALIVE-CORPSE lifecycle and bounded original-target/current-AI battle recovery; all remaining actor/progress/cast/scene/motion bodies unchanged';return}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/warrior-intro-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
-$selected=if($Baseline){$old}else{$actualSource}
+$selected=if($Baseline){$old}else{(& git -C $repo show "1531780a2:$path") -join "`n"};if($LASTEXITCODE){throw 'Pinned Danica legacy clock source missing'}
 $clockSource=if($Baseline){$old}else{(& git -C $repo show "77ebf820e:$path") -join "`n"};if($LASTEXITCODE){throw 'Pinned Ragnvald legacy clock source missing'}
-# The actual instance-owned admission/queue is exercised by Test-WarriorOpening.
+# Actual opening and ritual controllers are exercised by their own current suites.
 # Preserve the earlier native clock/deletion matrix without modeling admission.
 [IO.File]::WriteAllText("$out/Actors.inc",(Block $clockSource 'class npc_ragnvald_dragonborn :')+";`n"+(Block $selected 'class npc_danica_the_reclaimer :')+';')
 $opening=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/Intro/opening_transition.h" -Raw

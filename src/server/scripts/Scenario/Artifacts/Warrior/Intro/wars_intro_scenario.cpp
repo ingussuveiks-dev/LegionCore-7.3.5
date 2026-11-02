@@ -19,6 +19,7 @@
 #include "Conversation.h"
 #include "InstanceScript.h"
 #include "opening_transition.h"
+#include "ritual_transition.h"
 
 
 // 97167
@@ -259,118 +260,21 @@ public:
 
     struct npc_danica_the_reclaimerAI : ScriptedAI
     {
-        npc_danica_the_reclaimerAI(Creature* creature) : ScriptedAI(creature)
-        {
-            event = false;
-            timerevent = 2000;
-        }
+        npc_danica_the_reclaimerAI(Creature* creature) : ScriptedAI(creature) { }
 
-        bool event;
-        uint32 timerevent;
-        FunctionProcessor presentationFunctions;
+        uint32 GetData(uint32 type) const override { return type == WarriorRitual::AIStatusData ? 1 : 0; }
 
-        void UpdateLifecycle(uint32 diff) override
-        {
-            if (me->getDeathState() == ALIVE || me->getDeathState() == CORPSE)
-                presentationFunctions.Update(diff);
-        }
-
-        void IsSummonedBy(Unit* owner) override
-        {
-            // The actual102970/spawn361138 instance death owns46878/47474;
-            // a summon or an unrelated nearest Player cannot award them.
-            std::list<Creature*> trash;
-            GetCreatureListWithEntryInGrid(trash, me, 102964, 90.0f);
-            GetCreatureListWithEntryInGrid(trash, me, 102965, 90.0f);
-            GetCreatureListWithEntryInGrid(trash, me, 92445, 90.0f);
-            GetCreatureListWithEntryInGrid(trash, me, 92446, 90.0f);
-            GetCreatureListWithEntryInGrid(trash, me, 92450, 90.0f);
-            GetCreatureListWithEntryInGrid(trash, me, 92447, 90.0f);
-            GetCreatureListWithEntryInGrid(trash, me, 97176, 90.0f);
-
-            if (!trash.empty())
-                for (std::list<Creature*>::iterator itr = trash.begin(); itr != trash.end(); ++itr)
-                {
-                    (*itr)->Kill((*itr));
-                }
-
-            if (Creature* targ = me->FindNearestCreature(97166, 100.0f, true))
-                sCreatureTextMgr->SendChat(targ, 0);
-
-            me->GetMotionMaster()->MovePoint(0, -1980.04f, -1251.96f, 4.83f);
-
-            std::list<Creature*> adds;
-            GetCreatureListWithEntryInGrid(adds, me, 102990, 160.0f);
-            GetCreatureListWithEntryInGrid(adds, me, 102995, 90.0f);
-            GetCreatureListWithEntryInGrid(adds, me, 97166, 90.0f);
-            GetCreatureListWithEntryInGrid(adds, me, 97167, 90.0f);
-            if (!adds.empty())
-                for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
-                {
-                    if (!(*itr)->IsAlive() || (*itr)->HasAura(105419))
-                        continue;
-                    (*itr)->GetMotionMaster()->MovePoint(0, -1965.64f + irand(-6, 6), -1246.74f + irand(-6, 6), 2.71f);
-                    // (*itr)->SetByteFlag(UNIT_FIELD_BYTES_1, 3, 8);
-                }
-
-            presentationFunctions.AddDelayedEvent(3000, [this]() -> void
-            {
-                Conversation* conversation = new Conversation;
-                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1405, me, NULL, *me))
-                    delete conversation;
-                DoCast(205287); // + filter
-                if (Player* targ = me->FindNearestPlayer(100.0f))
-                {
-                    targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49203);
-                    targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49262);
-                }
-            });
-        }
+        void UpdateAI(uint32 /*diff*/) override { } // Preserve Danica's non-melee presentation AI.
 
         void SpellHitTarget(Unit* target, SpellInfo const* spell) override
         {
-            if (spell->Id == 205287)
-            {
-                event = true;
-                if (Creature* targ = target->ToCreature())
-                {
-                    if (targ->GetEntry() == 102964)
-                        targ->CastSpell(targ, 205295);
-                    if (targ->GetEntry() == 102965)
-                        targ->CastSpell(targ, 205296);
-                }
-            }
+            if (!target || !spell || spell->Id != 205287 || !me->IsInWorld() || me->IsPreDelete() ||
+                !me->IsAlive() || ObjectAccessor::GetCreature(*me, me->GetGUID()) != me) return;
+            InstanceScript* script = me->GetInstanceScript();
+            if (script && script->GetGuidData(WarriorRitual::DanicaData) == me->GetGUID())
+                script->SetGuidData(WarriorRitual::HitData, target->GetGUID());
+            // No borrowed AI/target access after the external native cast.
         }
-
-        void UpdateAI(uint32 diff) override
-        {
-            if (event)
-            {
-                if (timerevent <= diff)
-                {
-                    if (Creature* targ = me->FindNearestCreature(103688, 100.0f, true))
-                    {
-                        targ->GetMotionMaster()->MovePoint(0, targ->GetPositionX(), targ->GetPositionY(), 40.0f);
-                        targ->DespawnOrUnsummon(4000);
-                    }
-                    if (Creature* targ = me->FindNearestCreature(103687, 100.0f, true))
-                    {
-                        targ->GetMotionMaster()->MovePoint(0, targ->GetPositionX(), targ->GetPositionY(), 40.0f);
-                        targ->DespawnOrUnsummon(4000);
-                    }
-                    me->GetMotionMaster()->MovePoint(0, me->GetPositionX(), me->GetPositionY(), 40.0f);
-                    me->DespawnOrUnsummon(4000);
-                    event = false;
-                    // if (Player* targ = me->FindNearestPlayer(100.0f))
-                        // targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, КРИТЕРИЙ_2_1);
-                    if (Creature* targ = me->FindNearestCreature(97167, 100.0f, true))
-                        npc_ragnvald_dragonborn::npc_ragnvald_dragonbornAI::ResumeBattle(targ);
-                }
-                else
-                    timerevent -= diff;
-            }
-        }
-
     };
 };
 

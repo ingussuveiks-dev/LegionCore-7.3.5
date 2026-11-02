@@ -15,6 +15,8 @@
 #include "../../Warrior/Intro/reinforcement_transition.h"
 #include "../../Warrior/Intro/first_wave_transition.h"
 #include "../../Warrior/Intro/opening_transition.h"
+#include "CreatureTextMgr.h"
+#include "../../Warrior/Intro/ritual_transition.h"
 
 class instance_broken_shore : public InstanceMapScript
 {
@@ -28,11 +30,12 @@ public:
 
     struct instance_broken_shore_InstanceMapScript : public InstanceScript
     {
-        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map), warriorTransition(map), warriorFirstWave(map), warriorOpening(map) {}
+        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map), warriorTransition(map), warriorFirstWave(map), warriorOpening(map), warriorRitual(map) {}
 
         WarriorReinforcement::State warriorTransition;
         WarriorFirstWave::State warriorFirstWave;
         WarriorOpening::State warriorOpening;
+        WarriorRitual::State warriorRitual;
 
         std::list<Creature*> trashGUIDconteiner;
         GuidSet DoorGUIDconteiner;
@@ -61,6 +64,7 @@ public:
         {
             warriorTransition.Observe(creature);
             warriorOpening.Observe(creature);
+            warriorRitual.Observe(creature);
             switch (creature->GetEntry())
             {
                 case NPC_ARGENT_PHALANX_1:
@@ -178,6 +182,7 @@ public:
         ObjectGuid GetGuidData(uint32 type) const override
         {
             if (type == WarriorOpening::SourceData) return warriorOpening.source;
+            if (type == WarriorRitual::DanicaData) return warriorRitual.danica;
             switch (type)
             {
                 case NPC_LORD_MAXWELL_TYROSUS:
@@ -205,6 +210,7 @@ public:
 
         void CreatureDies(Creature* creature, Unit* killer) override
         {
+            warriorRitual.Death(creature, killer);
             warriorFirstWave.Death(creature, killer);
             warriorTransition.Death(creature, killer);
             MalgalorDeath(creature, killer);
@@ -244,7 +250,12 @@ public:
             }
         }
 
-        void Update(uint32 diff) override { warriorOpening.Update(diff); warriorTransition.Update(diff); warriorFirstWave.Update(diff); }
+        void SetGuidData(uint32 type, ObjectGuid value) override
+        {
+            if (type == WarriorRitual::HitData) warriorRitual.Hit(value);
+        }
+
+        void Update(uint32 diff) override { warriorOpening.Update(diff); warriorTransition.Update(diff); warriorFirstWave.Update(diff); warriorRitual.Update(diff); }
     };
 };
 

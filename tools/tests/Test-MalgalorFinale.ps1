@@ -20,6 +20,7 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  if((Without-Comments $oldBez) -cne (Without-Comments $newBez)){throw 'Bezzeredes changed beyond moving its death transition to instance ownership'}
  $s=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/instance_broken_shore.cpp" -Raw
  & "$PSScriptRoot/Test-WarriorFirstWave.ps1" -ScopeOnly
+ $s=$s.Replace("            warriorRitual.Death(creature, killer);`r`n",'').Replace("            warriorRitual.Death(creature, killer);`n",'')
  $s=$s.Replace("            warriorFirstWave.Death(creature, killer);`r`n",'').Replace("            warriorFirstWave.Death(creature, killer);`n",'')
  if(([regex]::Matches($s,'void CreatureDies\(')).Count -ne 1 -or !(Block $s 'void CreatureDies(').Contains('MalgalorDeath(creature, killer);')){throw 'Shared native death hook must call the Warrior fallback exactly once'}
  $info.Arguments='show b0f7888a6:src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/instance_broken_shore.cpp'

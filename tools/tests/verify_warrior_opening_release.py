@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib,json,runpy
 from sharasdal_erunak_entry_pe import sites,values,fields
-from warrior_instance_factory_pe import selected_instance_factory
+from warrior_instance_factory_pe import selected_instance_factory,instance_guid_instructions
 
 p=runpy.run_path(str(Path(__file__).with_name('verify_warrior_first_wave_release.py')))
 n,ins,refs,table,resolved,reachable=(p[k] for k in ('n','ins','refs','table','resolved','reachable'))
@@ -22,7 +22,7 @@ observe=ins('?OnCreatureCreate@'+scope)
 assert {97167,361094}<=values(observe)
 needs(observe,opening('Retire'),'?GetGuidValue@Object@@')
 
-request=ins('?GetData@'+scope);claim=ins('?SetData@'+scope);guid=ins('?GetGuidData@'+scope)
+request=ins('?GetData@'+scope);claim=ins('?SetData@'+scope);guid=instance_guid_instructions(n,ins)
 assert {93321,93322}<=values(request) and 93323 in values(claim) and 93324 in values(guid)
 assert {('lea','rbx, [rcx + 0x380]'),('mov','eax, dword ptr [rbx + 0x48]')}<=set(pairs(request))
 for operand,jump in (('byte ptr [rbx + 0x50], 0','je'),('byte ptr [rbx + 0x52], 0','je'),('byte ptr [rbx + 0x53], 0','jne')):

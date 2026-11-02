@@ -30,6 +30,10 @@ if($ScopeOnly){'PASS exact two immediate foreign-ally attack handoffs, native971
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/warrior-intro-handoffs$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Test-WarriorIntroTimers.ps1" -ExportOnly -OutputDirectory $out
 $selected=if($Baseline){$old}else{$source}
+if(!$Baseline){
+ $ritualCertified=(& git -C $repo show "1531780a2:$path") -join "`n";if($LASTEXITCODE){throw 'Certified legacy Danica handoff source missing'}
+ $selected=$selected.Replace((Block $selected 'class npc_danica_the_reclaimer :'),(Block $ritualCertified 'class npc_danica_the_reclaimer :'))
+}
 if($Baseline -and (([regex]::Matches($old,'\(\*itr\)->AI\(\)->AttackStart\(targ\);')).Count -ne 2 -or !$old.Contains('targ->AI()->Talk(0);') -or !$old.Contains('targ->AI()->DoAction(true);') -or $old.Contains('static void ResumeBattle('))){throw 'Pinned unsafe immediate-handoff controls changed'}
 [IO.File]::WriteAllText("$out/Actors.inc",((@('class npc_ragnvald_dragonborn :','class npc_danica_the_reclaimer :','class npc_bezzered :')|ForEach-Object {(Block $selected $_)+';'}) -join "`n"))
 $support=(Get-Content "$PSScriptRoot/WarriorIntroTimersTest.cpp" -Raw).Replace("`r",'');$support=$support.Substring(0,$support.IndexOf('int main('))

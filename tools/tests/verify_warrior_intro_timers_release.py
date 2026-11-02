@@ -20,7 +20,8 @@ def reachable(body,start):
   if op.mnemonic!='jmp':pending.append(op.address+op.size)
  return seen
 new_opening=any(name.startswith('?GetData@npc_ragnvald_dragonbornAI@') for name in n['symbols'])
-actors=('npc_ragnvald_dragonborn','npc_danica_the_reclaimer')
+new_ritual=any(name.startswith('?GetData@npc_danica_the_reclaimerAI@') for name in n['symbols'])
+actors=('npc_ragnvald_dragonborn',) if new_ritual else ('npc_ragnvald_dragonborn','npc_danica_the_reclaimer')
 parents=[];callbacks=[]
 for actor,member,size,event,delay in zip(actors,(0x60,0x40),(0xe0,0xc0),('MoveInLineOfSight','IsSummonedBy'),(2000,3000)):
  if new_opening and actor=='npc_ragnvald_dragonborn':event='DoAction'
@@ -47,7 +48,7 @@ for actor,member,size,event,delay in zip(actors,(0x60,0x40),(0xe0,0xc0),('MoveIn
 
 dispatch=ins('?Update@Creature@@')
 assert sum(op.mnemonic=='call' and op.operands[0].type==CS_OP_MEM and op.operands[0].mem.disp==0x110 for op in dispatch)>=2
-danica=ins(callbacks[1]);helper='?AttackBattleTarget@npc_ragnvald_dragonbornAI@'
+danica=None if new_ritual else ins(callbacks[1]);helper='?AttackBattleTarget@npc_ragnvald_dragonbornAI@'
 opening=None
 if new_opening:
  from warrior_opening_pe import verify_actor
@@ -66,9 +67,13 @@ else:
  for at in sites(n,battle,helper):
   assert ('mov','r9b, 0xa') in pairs(battle[at-6:at])
   assert any(op.mnemonic=='movups' and op.op_str=='xmm0, xmmword ptr [rax]' for op in battle[at-12:at])
-assert {1405,205287,49203,49262,92}<=values(danica)
-assert sites(n,danica,'?CreateConversation@Conversation@@') and sites(n,danica,'?DoCast@UnitAI@@QEAAXI')
-assert len(sites(n,danica,'?UpdateAchievementCriteria@Player@@'))==2
+if new_ritual:
+ from warrior_ritual_pe import verify_bridge
+ verify_bridge(n,ins,refs,table,resolved,reachable)
+else:
+ assert {1405,205287,49203,49262,92}<=values(danica)
+ assert sites(n,danica,'?CreateConversation@Conversation@@') and sites(n,danica,'?DoCast@UnitAI@@QEAAXI')
+ assert len(sites(n,danica,'?UpdateAchievementCriteria@Player@@'))==2
 
 body=ins(helper);lookup,=sites(n,body,'?GetCreature@ObjectAccessor@@')
 queued,=sites(n,body,'?AddDelayedEvent@FunctionProcessor@@')
@@ -98,5 +103,9 @@ assert sites(n,ins(retry),helper)
 for decoded in (battle,body,ins(retry)):
  for forbidden in ('?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@'):
   assert not sites(n,decoded,forbidden)
-print('PASS actual registered Ragnvald/Danica factories/vtables/lifecycle110/constructor-destructor members60/40, two owned2/3s callback vtables and native ALIVE-CORPSE clocks. Three original-target native attack calls retain current-AI/self-only fallback; ally-owned full128-bit GUID500ms/10 retry drops AI fallback capture, rejects missing/dead actors and diagnoses exhaustion. Native original combat/home/1405/205287/49203/49262 retained; no helper progression grants. Full933/client and other admission/failure branches remain separate.')
-print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'owned_callbacks':2,'ally_retry_callbacks':1}))
+if new_ritual:
+ print('PASS registered Ragnvald native AI-owned2s callback/lifecycle and all original full-GUID ally attack retries; Danica uses the registered guarded native hit bridge and instance-owned ritual instead of the old3s AI closure. Actual ritual timing/receipts are checked by verify_warrior_ritual_release; client traversal remains separate.')
+ print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'owned_callbacks':1,'ally_retry_callbacks':1}))
+else:
+ print('PASS actual registered Ragnvald/Danica factories/vtables/lifecycle110/constructor-destructor members60/40, two owned2/3s callback vtables and native ALIVE-CORPSE clocks. Three original-target native attack calls retain current-AI/self-only fallback; ally-owned full128-bit GUID500ms/10 retry drops AI fallback capture, rejects missing/dead actors and diagnoses exhaustion. Native original combat/home/1405/205287/49203/49262 retained; no helper progression grants. Full933/client and other admission/failure branches remain separate.')
+ print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'owned_callbacks':2,'ally_retry_callbacks':1}))
