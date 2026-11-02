@@ -1,0 +1,11 @@
+{
+  "FixCommit": "3d225581ba0052edb8de5ce96b347ae2ddaf8d55",
+  "Archive": "build-extractors\\bin\\Release\\fixed\\warrior-first-wave-2026-11-02\\verified1",
+  "Sources": 318,
+  "Payloads": 320,
+  "ManifestSHA256": "B60E3A9939A158FE93EFADF3AF173629BBAD9A73D53A1B9EC3E9F5A97A42ED44",
+  "SourceArchiveSourceVerified": true,
+  "MixedLogUnchanged": true,
+  "ActiveCrashes": 0,
+  "Review": "Actual source/archive/source and all final payload hashes verified after no-server/canonical hash guards;318 source files/320 payloads. Native1 registry fixture and PE2 exact-source receiver iteration resolved, paired passing final77/source-selected canonical proof; old FC9 candidate never promoted. Source originals retained. No active dump created; mixed6090/configs/executables/characters excluded and no logs truncated."
+}

@@ -1,7 +1,7 @@
 {
   "date": "2026-11-02",
   "status": "DEPLOYED focused first-wave death-credit repair; full933/client/all36 remain OPEN.",
-  "fix_commit": "Recorded in the subsequent verified archive manifest; this audit accompanies the focused implementation commit.",
+  "fix_commit": "3d225581ba0052edb8de5ce96b347ae2ddaf8d55",
   "cause": "Danica103608 IsSummonedBy emitted46878/47474 to the nearest Player100yd. The actual summoner is the dead102970 demon, not the killer. A nearer GM or absent nearest-player lookup can lose the native shared scenario transition; an unrelated Danica summon can also attempt it without a genuine death. Player/pet/guardian/ally attribution and native acceptance were not acknowledged.",
   "repair": "The actual shared instance owns one WarriorFirstWave state. Only real dead native102970/spawn361138 in map1500/scenario933/current step1 can capture eligible active38904/42815 participants. Full original Player GUIDs and weak native quest-attempt lifetimes replace nearest-player attribution; the actual killer's eligible player/owner is preferred, retaining native shared Scenario group credit. Emit46878 only until real45771 receipt, then re-resolve the original Player/current tree before47474 until46175. Retry only missing receipts at2000ms. Abandonment/new attempt/completion/reward/real victory/map transfer or destroyed Player cancels; temporary loading/contact/teleport/phase gates retain the same valid attempt without granting progress while ineligible. Source corpse or Danica/AI removal cannot erase a captured real death. No quest/item/completion/teleport grant or forced cast was added.",
   "native_context": {
@@ -36,7 +36,16 @@
     "active_crashes": 0,
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
-    "archive": "After canonical regression and focused commit, archive reviewed evidence with source/archive/source and final manifest hashes. Keep mixed unresolved DBErrors unchanged; exclude private configs/credentials/executables/dumps/character data."
+    "archive": {
+      "FixCommit": "3d225581ba0052edb8de5ce96b347ae2ddaf8d55",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\warrior-first-wave-2026-11-02\\verified1",
+      "Sources": 318,
+      "Payloads": 320,
+      "ManifestSHA256": "B60E3A9939A158FE93EFADF3AF173629BBAD9A73D53A1B9EC3E9F5A97A42ED44",
+      "SourceArchiveSourceVerified": true,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "remaining": [
     "Opening46877 admission and1386/770 factory acknowledgement, stationary retry/re-entry and AI replacement remain OPEN, as recorded in warrior-opening-native-research-2026-11-02.json. This first-wave repair does not certify the earlier approach/dialogue/battle.",
