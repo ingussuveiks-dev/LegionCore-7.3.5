@@ -1,4 +1,4 @@
-param()
+param([switch]$BaselineData)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/warrior-opening-conversation-native/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
@@ -10,7 +10,9 @@ New-Item -ItemType Directory -Force "$out/logs"|Out-Null
 [IO.File]::WriteAllText("$out/worldserver.conf",$config)
 $previous=$env:LEGION_DIALOGUE_CONFIG
 $previousCompiler=$env:CL
+$previousBaseline=$env:WARRIOR_INTRO_BASELINE_DATA
 try{
+ $env:WARRIOR_INTRO_BASELINE_DATA=if($BaselineData){'1'}else{$null}
  $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf"
  $env:CL="$previousCompiler /DNDEBUG /I`"$repo/src/server/scripts/Legion`""
  Push-Location "$repo/build-extractors/bin/Release"
@@ -20,7 +22,7 @@ try{
    if(!$? -or $LASTEXITCODE){throw "Native conversation execution failed: $out/catalog.log"}
   }
  }finally{Pop-Location}
-}finally{$env:LEGION_DIALOGUE_CONFIG=$previous;$env:CL=$previousCompiler}
+}finally{$env:LEGION_DIALOGUE_CONFIG=$previous;$env:CL=$previousCompiler;$env:WARRIOR_INTRO_BASELINE_DATA=$previousBaseline}
 if((Get-FileHash "$repo/build-extractors/bin/Release/worldserver.conf").Hash -ne $originalHash){throw 'Canonical configuration changed during native probe'}
 if((Test-Path "$out/logs/DBErrors.log") -and (Get-Item "$out/logs/DBErrors.log").Length){throw 'Native probe DBErrors require review'}
 Get-Content "$out/native.tsv"|Where-Object {$_ -match '^PASS'}

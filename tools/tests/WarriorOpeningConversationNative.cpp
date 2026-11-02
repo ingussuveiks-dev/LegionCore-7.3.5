@@ -12,6 +12,7 @@ int main(int argc,char**argv)
         Require(argc==2,"Expected native dbc directory");
         auto config=std::getenv("LEGION_DIALOGUE_CONFIG");
         Require(config,"Private native configuration missing");
+        bool baselineData=std::getenv("WARRIOR_INTRO_BASELINE_DATA")!=nullptr;
         auto directory=std::filesystem::path(argv[1]).lexically_normal();
         if(directory.filename().empty()) directory=directory.parent_path();
         std::string runtime=directory.parent_path().parent_path().string()+'/';
@@ -50,7 +51,8 @@ int main(int argc,char**argv)
                 Actor* caster=id==1405?&danica:&ragnvald;
                 Conversation* result=create(id,caster);
                 Require(result&&result->IsInWorld(),"Native original conversation construction failed after actor admission");
-                uint32 expected=id==770?8250:id==1386?15400:id==1405?13000:10250;
+                uint32 expected=baselineData?(id==770?8250:id==1386?15400:id==1405?13000:10250)
+                    :(id==770?10020:id==1386?18956:id==1405?23285:11643);
                 Require(result->GetDuration()==expected,"Native conversation lifetime differs from actual actor duration plus5000");
                 auto guid=result->GetGUID();
                 Require(ObjectAccessor::GetConversation(*caster,guid)==result,"Native original map lookup failed");
@@ -65,19 +67,28 @@ int main(int argc,char**argv)
                         Require(result->GetCreature(1)->GuidLow==ragnvald.GetGUID().GetLowPart()&&result->GetCreature(1)->GuidHight==ragnvald.GetGUID().GetHighPart(),"Native actor slot1 does not resolve original Ragnvald GUID");
                 }
                 std::cout<<"CONVERSATION\t"<<id<<'\t'<<result->GetDuration()<<'\t'<<result->GetLines().size()<<'\n';
+                Require(result->GetLines().size()==(id==1386||id==1405?2u:1u),"Original line count changed");
+                uint32 index=0;
                 for(auto const& line:result->GetLines())
                 {
+                    uint32 lineID=id==770?1831:id==1386?(index?3172:3171):id==1405?(index?3202:3201):3214;
+                    uint32 start=index?(id==1386?(baselineData?3950:4376):(baselineData?7100:12220)):0;
+                    Require(line.id==lineID&&line.textId==start&&line.unk1==(id==770?135u:32612u)&&line.unk2==index,
+                        "Native original line identity/index/flags or repaired voice start changed");
                     auto native=sConversationLineStore.LookupEntry(line.id);
                     Require(native,"Native conversation line ID missing from matching26972");
                     auto text=sBroadcastTextStore.LookupEntry(native->BroadcastTextID);
                     Require(text,"Native line BroadcastText missing");
                     std::cout<<"LINE\t"<<id<<'\t'<<line.id<<'\t'<<line.textId<<'\t'<<line.unk1<<'\t'<<line.unk2<<'\t'<<native->BroadcastTextID<<'\t'<<text->SoundEntriesID[0]<<'\t'<<text->SoundEntriesID[1]<<'\n';
+                    ++index;
                 }
                 result->Remove();
                 Require(!ObjectAccessor::GetConversation(*caster,guid),"Removed original conversation still resolves");
                 map.RemoveAllObjectsInRemoveList();
             }
-            std::cout<<"PASS native770 model actor and1386/1405/1412 actual live actor GUIDs/factory acknowledgements, map-local removal, matching26972 line/BroadcastText/sound IDs and8250/15400/13000/10250 lifetimes. Missing97166 baseline paired with admitted actors. Isolated NullCreatureAI real map/Creature casters, no Players or character saves; not original Player/group personal visibility, full933 progression, audio or client traversal.\n";
+            std::cout<<"PASS native770 model actor and1386/1405/1412 actual live actor GUIDs/factory acknowledgements, map-local removal, matching26972 line/BroadcastText/sound IDs, exact original packed flags and "
+                <<(baselineData?"COUNTERFACTUAL original8250/15400/13000/10250 budgets/3950/7100 starts":"repaired10020/18956/23285/11643 budgets/4376/12220 starts")
+                <<". Missing97166 baseline paired with admitted actors. Isolated NullCreatureAI real map/Creature casters, no Players or character saves; not original Player/group personal visibility, full933 progression, audio or client traversal.\n";
         }
         WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();
     }

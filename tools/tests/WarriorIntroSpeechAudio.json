@@ -1,0 +1,220 @@
+{
+  "Build": "7.3.5.26972",
+  "Source": "Actual hotfix-aware typed native ConversationLine/BroadcastText/SoundKitEntry plus six read-only local CASC full Vorbis decodes. Metadata is not a listening or client scheduling claim.",
+  "Payloads": [
+    {
+      "Bytes": 31315,
+      "FileDataID": 1370153,
+      "SHA256": "D9DCB0BA60F8A5A39E619FA763D3EF50E08EF82E0626584BA6FAB99B50649B89",
+      "VoiceMs": 4520
+    },
+    {
+      "Bytes": 18741,
+      "FileDataID": 1370155,
+      "SHA256": "CC5E6199148EA40D754A1C2E915A713D309651EE7B3B5732993703BD3CDF06C0",
+      "VoiceMs": 2376
+    },
+    {
+      "Bytes": 58208,
+      "FileDataID": 1370156,
+      "SHA256": "A4002501DE4C10026886A7C149DAA3EBD3D14E0BDF1F46CE1CE126BFB5C1AD31",
+      "VoiceMs": 9080
+    },
+    {
+      "Bytes": 65462,
+      "FileDataID": 1370160,
+      "SHA256": "182A87B12639E2276A3D996FF419D576C0CB547DE3963253E853165D1261ECDE",
+      "VoiceMs": 10220
+    },
+    {
+      "Bytes": 38379,
+      "FileDataID": 1370161,
+      "SHA256": "415AD52F50F9A2984411B2B9498E723457EAE676034EC5F047613C9C67CA57B6",
+      "VoiceMs": 5565
+    },
+    {
+      "Bytes": 42790,
+      "FileDataID": 1370162,
+      "SHA256": "F67E64595E26C80F03C4B1C266C3A60B7D0DF156A632427833391A4C21903E64",
+      "VoiceMs": 6143
+    }
+  ],
+  "Conversations": [
+    {
+      "Conversation": 770,
+      "OriginalActorSumMs": 3250,
+      "RequiredActorSumMs": 5020,
+      "LifetimeMs": 10020,
+      "Lines": [
+        {
+          "Line": 1831,
+          "Index": 0,
+          "OriginalStartMs": 0,
+          "StartMs": 0,
+          "Flags": 135,
+          "Packed": 0,
+          "Broadcast": 98840,
+          "AdditionalMs": 500,
+          "Next": 0,
+          "SoundKit": 60427,
+          "FileDataID": 1370153,
+          "VoiceMs": 4520
+        }
+      ]
+    },
+    {
+      "Conversation": 1386,
+      "OriginalActorSumMs": 10400,
+      "RequiredActorSumMs": 13956,
+      "LifetimeMs": 18956,
+      "Lines": [
+        {
+          "Line": 3171,
+          "Index": 0,
+          "OriginalStartMs": 0,
+          "StartMs": 0,
+          "Flags": 32612,
+          "Packed": 0,
+          "Broadcast": 105398,
+          "AdditionalMs": 2000,
+          "Next": 3172,
+          "SoundKit": 60429,
+          "FileDataID": 1370155,
+          "VoiceMs": 2376
+        },
+        {
+          "Line": 3172,
+          "Index": 1,
+          "OriginalStartMs": 3950,
+          "StartMs": 4376,
+          "Flags": 32612,
+          "Packed": 1,
+          "Broadcast": 105400,
+          "AdditionalMs": 500,
+          "Next": 0,
+          "SoundKit": 60430,
+          "FileDataID": 1370156,
+          "VoiceMs": 9080
+        }
+      ]
+    },
+    {
+      "Conversation": 1405,
+      "OriginalActorSumMs": 8000,
+      "RequiredActorSumMs": 18285,
+      "LifetimeMs": 23285,
+      "Lines": [
+        {
+          "Line": 3201,
+          "Index": 0,
+          "OriginalStartMs": 0,
+          "StartMs": 0,
+          "Flags": 32612,
+          "Packed": 0,
+          "Broadcast": 105404,
+          "AdditionalMs": 2000,
+          "Next": 3202,
+          "SoundKit": 60434,
+          "FileDataID": 1370160,
+          "VoiceMs": 10220
+        },
+        {
+          "Line": 3202,
+          "Index": 1,
+          "OriginalStartMs": 7100,
+          "StartMs": 12220,
+          "Flags": 32612,
+          "Packed": 1,
+          "Broadcast": 106212,
+          "AdditionalMs": 500,
+          "Next": 0,
+          "SoundKit": 60435,
+          "FileDataID": 1370161,
+          "VoiceMs": 5565
+        }
+      ]
+    },
+    {
+      "Conversation": 1412,
+      "OriginalActorSumMs": 5250,
+      "RequiredActorSumMs": 6643,
+      "LifetimeMs": 11643,
+      "Lines": [
+        {
+          "Line": 3214,
+          "Index": 0,
+          "OriginalStartMs": 0,
+          "StartMs": 0,
+          "Flags": 32612,
+          "Packed": 0,
+          "Broadcast": 105410,
+          "AdditionalMs": 500,
+          "Next": 0,
+          "SoundKit": 60436,
+          "FileDataID": 1370162,
+          "VoiceMs": 6143
+        }
+      ]
+    }
+  ],
+  "OriginalCreatures": [
+    [
+      1386,
+      0,
+      97166,
+      174984,
+      0,
+      4294967289,
+      5200
+    ],
+    [
+      1386,
+      1,
+      97167,
+      174984,
+      0,
+      4294967289,
+      5200
+    ],
+    [
+      1405,
+      0,
+      103608,
+      175242,
+      0,
+      4294967289,
+      4000
+    ],
+    [
+      1405,
+      1,
+      97167,
+      174984,
+      0,
+      4294967289,
+      4000
+    ],
+    [
+      1412,
+      0,
+      97167,
+      174984,
+      0,
+      4294967289,
+      5250
+    ]
+  ],
+  "OriginalActors": [
+    [
+      770,
+      0,
+      50342,
+      97167,
+      67919,
+      0,
+      1,
+      0,
+      3250
+    ]
+  ]
+}

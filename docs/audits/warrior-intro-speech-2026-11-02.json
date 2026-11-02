@@ -1,0 +1,203 @@
+{
+  "date": "2026-11-02",
+  "status": "DEPLOYED focused Warrior intro voice starts/budgets; cross-conversation callers, full933/client/all36 remain OPEN.",
+  "cause": "Matching26972 complete native voices contradict two imported cumulative next-line offsets:1386 first voice2376ms+native2000ms gap requires4376, not3950;1405 first voice10220ms+2000ms gap requires12220, not7100. Existing actor sums also consume part of the native5000ms padding instead of covering the complete voice/gap sequences. These are data/published-window mismatches, not a captured client clipping or listening claim.",
+  "repair": "Six cells only:770 model actor0 duration3250->5020;1386 creature1 duration5200->8756 and3172 start3950->4376;1405 creature1 duration4000->14285 and3202 start7100->12220;1412 creature0 duration5250->6643. Preserve first creature durations5200/4000. Actual actor sums5020/13956/18285/6643 retain the existing5000ms native padding and publish10020/18956/23285/11643. Each definition has an independent exact whole-context guard, accepts original/already-repaired canonical half-states, and preserves custom/missing/extra definitions.",
+  "scope": "Data only. No C++ production/caller, combat/cast/movement/credit/quest, ScriptName, actor/GUID/display/flags, viewer policy or character change. New migration stayed outside the live updater until native/audio/TEMP/PE checks passed; no new binary build was needed.",
+  "local_evidence": {
+    "source_order": "Matching local7.3.5 typed DB2/hotfix/live SQL/core first; fully resolves this metadata correction without importing modern Trinity behavior or inventing retail timings. No web/video/listening claim.",
+    "client": "D:/wow/Legion7.3.5/.build.info confirms7.3.5.26972/enUS. Six actual CASC assets exported using private read-only+write-share wrappers, full ffprobe and full Vorbis decode, all32 index hashes unchanged. No client file modification.",
+    "catalog": "tools/research/WarriorIntroAudioCatalog.cpp loads actual DB2Storage ConversationLine/BroadcastText/SoundKit/SoundKitEntry with read-only hotfix overlay. Full effect219 scan identifies197583->770,204941->1386,205299->1405,205321->1412. Fresh world context found no Smart action206 producer for these IDs and only original Ragnvald/Danica ScriptNames. Captured numeric/source metadata, not proprietary audio, is committed.",
+    "voices": [
+      {
+        "Bytes": 31315,
+        "FileDataID": 1370153,
+        "SHA256": "D9DCB0BA60F8A5A39E619FA763D3EF50E08EF82E0626584BA6FAB99B50649B89",
+        "VoiceMs": 4520
+      },
+      {
+        "Bytes": 18741,
+        "FileDataID": 1370155,
+        "SHA256": "CC5E6199148EA40D754A1C2E915A713D309651EE7B3B5732993703BD3CDF06C0",
+        "VoiceMs": 2376
+      },
+      {
+        "Bytes": 58208,
+        "FileDataID": 1370156,
+        "SHA256": "A4002501DE4C10026886A7C149DAA3EBD3D14E0BDF1F46CE1CE126BFB5C1AD31",
+        "VoiceMs": 9080
+      },
+      {
+        "Bytes": 65462,
+        "FileDataID": 1370160,
+        "SHA256": "182A87B12639E2276A3D996FF419D576C0CB547DE3963253E853165D1261ECDE",
+        "VoiceMs": 10220
+      },
+      {
+        "Bytes": 38379,
+        "FileDataID": 1370161,
+        "SHA256": "415AD52F50F9A2984411B2B9498E723457EAE676034EC5F047613C9C67CA57B6",
+        "VoiceMs": 5565
+      },
+      {
+        "Bytes": 42790,
+        "FileDataID": 1370162,
+        "SHA256": "F67E64595E26C80F03C4B1C266C3A60B7D0DF156A632427833391A4C21903E64",
+        "VoiceMs": 6143
+      }
+    ],
+    "conversations": [
+      {
+        "Conversation": 770,
+        "OriginalActorSumMs": 3250,
+        "RequiredActorSumMs": 5020,
+        "LifetimeMs": 10020,
+        "Lines": [
+          {
+            "Line": 1831,
+            "Index": 0,
+            "OriginalStartMs": 0,
+            "StartMs": 0,
+            "Flags": 135,
+            "Packed": 0,
+            "Broadcast": 98840,
+            "AdditionalMs": 500,
+            "Next": 0,
+            "SoundKit": 60427,
+            "FileDataID": 1370153,
+            "VoiceMs": 4520
+          }
+        ]
+      },
+      {
+        "Conversation": 1386,
+        "OriginalActorSumMs": 10400,
+        "RequiredActorSumMs": 13956,
+        "LifetimeMs": 18956,
+        "Lines": [
+          {
+            "Line": 3171,
+            "Index": 0,
+            "OriginalStartMs": 0,
+            "StartMs": 0,
+            "Flags": 32612,
+            "Packed": 0,
+            "Broadcast": 105398,
+            "AdditionalMs": 2000,
+            "Next": 3172,
+            "SoundKit": 60429,
+            "FileDataID": 1370155,
+            "VoiceMs": 2376
+          },
+          {
+            "Line": 3172,
+            "Index": 1,
+            "OriginalStartMs": 3950,
+            "StartMs": 4376,
+            "Flags": 32612,
+            "Packed": 1,
+            "Broadcast": 105400,
+            "AdditionalMs": 500,
+            "Next": 0,
+            "SoundKit": 60430,
+            "FileDataID": 1370156,
+            "VoiceMs": 9080
+          }
+        ]
+      },
+      {
+        "Conversation": 1405,
+        "OriginalActorSumMs": 8000,
+        "RequiredActorSumMs": 18285,
+        "LifetimeMs": 23285,
+        "Lines": [
+          {
+            "Line": 3201,
+            "Index": 0,
+            "OriginalStartMs": 0,
+            "StartMs": 0,
+            "Flags": 32612,
+            "Packed": 0,
+            "Broadcast": 105404,
+            "AdditionalMs": 2000,
+            "Next": 3202,
+            "SoundKit": 60434,
+            "FileDataID": 1370160,
+            "VoiceMs": 10220
+          },
+          {
+            "Line": 3202,
+            "Index": 1,
+            "OriginalStartMs": 7100,
+            "StartMs": 12220,
+            "Flags": 32612,
+            "Packed": 1,
+            "Broadcast": 106212,
+            "AdditionalMs": 500,
+            "Next": 0,
+            "SoundKit": 60435,
+            "FileDataID": 1370161,
+            "VoiceMs": 5565
+          }
+        ]
+      },
+      {
+        "Conversation": 1412,
+        "OriginalActorSumMs": 5250,
+        "RequiredActorSumMs": 6643,
+        "LifetimeMs": 11643,
+        "Lines": [
+          {
+            "Line": 3214,
+            "Index": 0,
+            "OriginalStartMs": 0,
+            "StartMs": 0,
+            "Flags": 32612,
+            "Packed": 0,
+            "Broadcast": 105410,
+            "AdditionalMs": 500,
+            "Next": 0,
+            "SoundKit": 60436,
+            "FileDataID": 1370162,
+            "VoiceMs": 6143
+          }
+        ]
+      }
+    ],
+    "core": "Conversation::GenerateDynamicFieldData accumulates native actor/creature duration fields, serializes original textId/index/packed flags and actual live actor GUIDs. CreateConversation adds5000ms padding. NPC-caster viewers use independent finite admission/playback windows; accepted conversations are not attached to the caster Unit removal list."
+  },
+  "checks": [
+    "Six full hashed local audio decodes rechecked against fresh typed native line/BroadcastText/gap/Next/male-or-female-kit/file mapping in baseline, fixed and live passes. No estimates from dialogue text.2376/9080/10220/5565ms voices plus native gaps establish the two cumulative boundaries; one-line4520/6143 plus500ms define the other budgets.",
+    "TEMP-only SQL uses a short-lived SELECT+CREATE TEMP reader; a controlled DELETE WHERE0 is denied1142 before testing, and user is dropped finally. No persistent test DML/character writes. All three full live schemas/11544 rows cloned, four original target definitions seeded only in TEMP copies. Six allowed cells, every unrelated column/count, exact full target definitions, twice idempotence, four duration/start half-state retries and64 custom/missing/extra definitions with independent repair of the other contexts pass.",
+    "ASAN compiles actual native structs/GenerateDynamicFieldData/factory padding/CanNeverSee2/Update against controlled clock/store/map endpoints. Original counterfactual proves two shortened voice+gap boundaries and four consumed padding budgets; repaired pass verifies six original lines/flags/model/live GUID payloads, two starts/four lifetimes, independent late viewers, natural expiry and refusal when a required real actor is missing. Component endpoints are distinct from actual native map/client traversal.",
+    "Actual native Map/Creature/Conversation factory before deployment explicitly verifies original8250/15400/13000/10250 and3950/7100 as COUNTERFACTUAL original data. After deployment verifies repaired10020/18956/23285/11643 and4376/12220, complete original line identity/index/flags, all actual128-bit actor GUID slots, matching26972 sound/BroadcastText identity and real map-local removal. Missing97166 refusal paired with actual admitted factory success. Isolated NullCreatureAI/no Players or character saves; not full production actor/group progression.",
+    "Actual canonicalB840 PE verifies actor32/stride36 and creature32/stride40 duration accumulation, native fallback/padding, lifetime/deadline fields, NPC admission/viewer expiry, constructor CanNeverSee2 vtable and real WorldObject visibility dispatch. No C++ production source or executable changed.",
+    "Owned canonical PID12376 applied World01, reached fresh ready, graceful server shutdown0/exit0/stderr empty/gone. Protected config/certificate/DLL hashes unchanged; no user/unknown server stopped. Full before/after live11544-row comparison finds exactly six changed rows and every other row/column identical. Native updater RELEASED/LF SHA1de600a27bbb0e95650feac946c574b9043449bd5; independent -VerifyLiveData native/TEMP/ASAN rerun passes."
+  ],
+  "iterations": "First fixed, explicit baseline and installed-data passes succeeded without failed component/SQL/runtime iterations. Native extracted Update emits retained unused-parameter and controlled-host deadline-shadow compiler warnings; these are visible and are not new server runtime diagnostics. A read-only rg Windows wildcard invocation was corrected to --glob; no test or runtime was hidden.",
+  "deployment": {
+    "RowsCompared": 11544,
+    "ChangedRows": 6,
+    "UpdateSHA1": "de600a27bbb0e95650feac946c574b9043449bd5",
+    "WorldSHA256": "B84010EC02AE2B655DED0A28271090F5F82DB62774C985BDCD527A730C7762D3",
+    "BnetSHA256": "DB82D532F0ECEB8CF89354F715DC5301EF88901101ECD9168C3DDC7F8EC4B1F1",
+    "NoOtherConversationChanges": true,
+    "runtime": "build-extractors/bin/Release",
+    "sql": "sql/updates/world/2026_11_02_01_warrior_intro_voice.sql",
+    "updater": "RELEASED",
+    "owned_pid": 12376,
+    "binary_rebuilt": false
+  },
+  "diagnostics": {
+    "result": "Per-test exact own/canonical before/after crash/log snapshots, actual exits/full stdout/stderr reviewed. No new/changed crash, appended DBErrors or server warning/error/assertion. Active Crashes empty. Existing mixed6090 unresolved log unchanged/untruncated. Private reader/config/credentials, proprietary audio, binaries and characters excluded from commits/archive. Resolved evidence archive follows focused commit; originals retained.",
+    "mixed_db_errors_bytes": 6090,
+    "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0"
+  },
+  "reproduction": "Test-WarriorIntroSpeech.ps1 [-BaselineSql|-VerifyLiveData] -AudioDirectory <six locally exported matching26972 .audio files>; fixture hashes identify the required assets. Test-WarriorOpeningConversationNative.ps1 defaults to repaired data; -BaselineData explicitly selects the original live-data counterfactual and never rolls back production data. All tests record their exact runtime diagnostics.",
+  "remaining": [
+    "Actual client listening/scheduling/subtitles/rendering and full933/group/faction/one-hit/pet progression remain user checks. Data windows do not prove full gameplay or all36.",
+    "Cross-conversation scheduling remains OPEN. Existing normal5s205287 plus2s departure calls1412 about7s after1405 creation, which can overlap voices under both old absolute and repaired cumulative schedules. Opening1386 and1405 can also overlap with early/one-hit victory. This focused data change does not invent a global voice queue, delay combat or infer retail timings from5000ms padding. Ragnvald1412 factory refusal is a distinct caller issue.",
+    "Exact-stage original actor/weak-attempt recovery after reconnect/restart remains OPEN as documented in ritual audit. No new character reset; reset3 already consumed.",
+    "Shared101430/103151 LINK2, Wardstone LINK4, Survival39427 middle flight, Fu Zan original ride/Yigthregor, Monk intro repeated roots/nearest progression, Stromkar client visuals and other all36 findings remain OPEN. Continue independent repairs after focused commit."
+  ]
+}
