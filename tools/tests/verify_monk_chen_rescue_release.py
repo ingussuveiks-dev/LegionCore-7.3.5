@@ -29,7 +29,8 @@ factory=ins('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@
 script,sraw=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
 assert vt in refs(factory) and script in refs(ins('?AddSC_instance_class_art_scenarios@@'))
 assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')==resolved(sraw)[1]
-routes_successor=0x3b8 in values(factory)
+jorvinax_successor=0x418 in values(factory)
+routes_successor=0x3b8 in values(factory) or jorvinax_successor
 arrival_successor=0x380 in values(factory) or routes_successor
 if arrival_successor:
     # Arrival successor appends packed GUID receipts and a real-time retry;
@@ -42,7 +43,7 @@ if arrival_successor:
     if routes_successor:
         assert {('lea','rcx, [rdi + 0x9d]'),('lea','rcx, [rdi + 0xad]'),
                 ('mov','qword ptr [rdi + 0xc0], rbx'),('mov','qword ptr [rdi + 0xc8], rbx'),
-                ('mov','dword ptr [rdi + 0xd0], ebx'),('mov','byte ptr [rdi + 0xd4], bl')}<=set(pairs(factory))
+                ('mov','dword ptr [rdi + 0xd0], ebx'),('mov','word ptr [rdi + 0xd4], bx') if jorvinax_successor else ('mov','byte ptr [rdi + 0xd4], bl')}<=set(pairs(factory))
 else:
     assert {0x358,0x2e0,0x350}<=values(factory)|fields(factory)
     assert ('mov','qword ptr [rdi + 0x2e0], rbx') in pairs(factory)
@@ -50,7 +51,11 @@ else:
 assert slots[18]==n['symbol'](instance('GetGuidData')) and slots[19]==n['symbol'](instance('SetGuidData'))
 for name in ('OnCreatureCreate','CreatureDies','Update'):assert n['symbol'](instance(name)) in slots
 for name,target in (('CreatureDies','Death'),('Update','Update')):
-    body=ins(instance(name));assert pairs(body)[0]==('add','rcx, 0x2e0') and sites(n,body,state(target))==[1]
+    body=ins(instance(name))
+    if jorvinax_successor:
+        first,=sites(n,body,state(target));second,=sites(n,body,'?'+target+'@State@MonkJorvinax@@')
+        assert first<second and ('add','rcx, 0x2e0') in pairs(body[:first]) and ('lea','rcx, [rbx + 0x3b8]') in pairs(body[first:second])
+    else:assert pairs(body)[0]==('add','rcx, 0x2e0') and sites(n,body,state(target))==[1]
 created=ins(instance('OnCreatureCreate'))
 needs(created,'?OnCreatureCreate@InstanceScript@@','?GetGuidValue@Object@@','?Clear@ObjectGuid@@')
 assert sites(n,created,'?OnCreatureCreate@InstanceScript@@')==[5]
@@ -111,7 +116,11 @@ assert ('cmp','qword ptr [rdi + 8], rax') in pairs(retained)
 needs(source,'?GetCreature@Map@@','?IsInWorld@Object@@','?IsPreDelete@Object@@')
 assert {1014,103148,362201}<=values(source) and ('cmp','dword ptr [rbx + 0xa18], 0') in pairs(source)
 needs(current,state('Retained'),state('Actor'),'?GetCreature@Map@@','?IsInWorld@Object@@','?CanContact@Player@@','?InSamePhase@WorldObject@@','?IsWithinDistInMap@WorldObject@@')
-assert 100.0 in floats(n,current) and {0x478,0x4ff0,0x6848,0x6849,0x6851}<=fields(current)
+assert 100.0 in floats(n,current) and {0x4ff0,0x6848,0x6849,0x6851}<=fields(current)
+if jorvinax_successor:
+    needs(current,'?ShouldHideFor@WorldObject@@')
+    assert 0x478 in fields(ins('?ShouldHideFor@WorldObject@@'))
+else:assert 0x478 in fields(current)
 assert {('mov','rcx, qword ptr [rax + 0x9c8]'),('mov','rax, qword ptr [rax + 0x9c0]')}<=set(pairs(content))
 
 update=ins(state('Update'));event,=sites(n,update,'?UpdateAchievementCriteria@Player@@')

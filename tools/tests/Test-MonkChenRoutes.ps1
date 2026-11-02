@@ -6,6 +6,8 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function Prior([string]$path){$text=(& git -C $repo show "39f878974:$path") -join "`n";if($LASTEXITCODE){throw "Pinned route predecessor missing: $path"};$text}
  $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=Prior $path
+ $hasJorvinax=$source.Contains('#include "jorvinax_defeat.h"')
+ if($hasJorvinax){& "$PSScriptRoot/Test-MonkJorvinax.ps1" -ScopeOnly;$source=(& git -C $repo show "7bf4d7a50:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Jorvinax source missing'}}
  $actor=Block $source 'class npc_monk_chen_porter :';$previous=Block $old 'class npc_monk_chen_porter :'
  $normal=$actor.Replace('if (MonkChenRescue::Source(me)) return;','')
  if(([regex]::Matches($actor,[regex]::Escape('if (MonkChenRescue::Source(me)) return;'))).Count -ne 1){throw 'Exactly one scoped15s first-line owner bridge required'}
@@ -20,6 +22,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  $normal=$normal.Replace('me->GetMotionMaster()->MovePath(9859005, false);',"if (MonkChenRescue::Source(me)) me->UpdateWaypointID(uint32(-1));`nme->GetMotionMaster()->MovePath(9859005, false);`nif (MonkChenRescue::Source(me)) if (InstanceScript* script = me->GetInstanceScript()) script->SetGuidData(MonkChenArrival::RouteData, me->GetGUID());")
  if((Shape $normal) -cne (Shape $previous) -or (Shape $source.Replace($actor,$previous)) -cne (Shape $old)){throw 'Other native Chen/Monk actor behavior changed'}
  $hp='src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h';$header=(Get-Content "$repo/$hp" -Raw).Replace("`r",'');$prior=Prior $hp
+ if($hasJorvinax){$header=(& git -C $repo show "7bf4d7a50:$hp") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Jorvinax header missing'}}
  $h=$header.Replace('#include "chen_routes.h"','')
  foreach($method in @('void RouteRequest(','void UpdateRoutes(')){$h=$h.Replace((Block $h $method),'')}
  $fields=@'
@@ -32,6 +35,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  $h=$h.Replace($fields.Replace("`r",''),'').Replace('routeRetrying = false; handoffPending = false;','').Replace('if (MonkChenRoutes::Source(actor) && hait.IsEmpty()) hait = actor->GetGUID();','').Replace('if (!pending) { UpdateArrival(diff); UpdateRoutes(); return; }','if (!pending) { UpdateArrival(diff); return; }').Replace('escortStartedAt = getMSTime();','').Replace('handoffStartedAt = getMSTime(); handoffPlayer = member.player; handoffPending = true;','')
  if((Shape $h) -cne (Shape $prior)){throw 'Other original genuine rescue/arrival receipt logic changed'}
  $ip='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$actual=(Get-Content "$repo/$ip" -Raw).Replace("`r",'');$priorInstance=Prior $ip
+ if($hasJorvinax){$actual=(& git -C $repo show "7bf4d7a50:$ip") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Jorvinax instance missing'}}
  $normalInstance=$actual.Replace('if (type == MonkChenRoutes::EscortData) chenRescue.RouteRequest(value);','').Replace('if (type == MonkChenRoutes::HaitData) chenRescue.RouteRequest(value);','')
  if((Shape $normalInstance) -cne (Shape $priorInstance)){throw 'Other Monk or shared instance behavior changed'}
  if($ScopeOnly){'PASS exact two original Chen8s/Hait15s route request bridges and instance-owned receipt clocks; all nine authored deadlines, other payloads/actors/native progression retained';return}

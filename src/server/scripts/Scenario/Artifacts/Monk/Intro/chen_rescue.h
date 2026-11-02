@@ -40,6 +40,7 @@ struct State
     bool routeRetrying = false, routeBusy = false, handoffPending = false;
     bool escortSpoken = false, escortFollowed = false, handoffAnnounced = false, handoffSpoken = false;
     bool escortWarned = false, handoffWarned = false;
+    bool genuineBossDefeat = false;
 
     Scenario* Progress() const
     {
@@ -96,6 +97,7 @@ struct State
         arrivalClaim.Clear(); arrivalPlayer.Clear(); arrivalDone = started;
         arrivalWaiting = false;
         routeRetrying = false; handoffPending = false;
+        genuineBossDefeat = false;
     }
 
     void Observe(Creature* actor)
@@ -211,7 +213,8 @@ struct State
     {
         if (!started || arrivalDone) return;
         Scenario* scenario = Progress();
-        if (!scenario || scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() < lastStep || scenario->GetCurrentStep() > 5 ||
+        if (!scenario || scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() < lastStep ||
+            (scenario->GetCurrentStep() > 5 && !EscortStage(scenario)) ||
             std::none_of(members.begin(), members.end(), [this](Member const& member) { return Retained(member) != nullptr; }))
         { Cancel(); return; }
         lastStep = scenario->GetCurrentStep();
@@ -234,10 +237,11 @@ struct State
                     player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46947);
                 if (!arrivalSeen || arrivalDone || epoch != generation) return;
                 scenario = Progress(); player = Current(member); ai = dynamic_cast<CreatureAI*>(Content());
-                if (!scenario || scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() < lastStep || scenario->GetCurrentStep() > 5)
+                if (!scenario || scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() < lastStep ||
+                    (scenario->GetCurrentStep() > 5 && !EscortStage(scenario)))
                 { Cancel(); return; }
                 lastStep = scenario->GetCurrentStep();
-                if (scenario->GetCurrentStep() == 5 && EscortLeaf() && player && ai &&
+                if (EscortStage(scenario) && EscortLeaf() && player && ai &&
                     ai->GetData(MonkChenArrival::StatusData) == 1 && MonkChenArrival::Pose(Actor()))
                 {
                     arrivalClaim = chen; arrivalPlayer = player->GetGUID();
@@ -262,17 +266,28 @@ struct State
         if (value == chen) UpdateRoutes();
     }
 
+    bool EscortStage(Scenario* scenario) const
+    {
+        if (!scenario) return false;
+        if (scenario->GetCurrentStep() == 5) return true;
+        if (scenario->GetCurrentStep() != 6 || !genuineBossDefeat) return false;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto found = progress->find(29071);
+        return found != progress->end() && found->second.Counter;
+    }
+
     void UpdateRoutes()
     {
         if (!started || members.empty() || routeBusy) return;
         if (routeIssued && arrivalDone && !handoffPending) return;
         Scenario* scenario = Progress();
-        if (!scenario || scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() < lastStep || scenario->GetCurrentStep() > 5 ||
+        if (!scenario || scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() < lastStep ||
+            (scenario->GetCurrentStep() > 5 && !EscortStage(scenario)) ||
             std::none_of(members.begin(), members.end(), [this](Member const& member) { return Retained(member) != nullptr; }))
         { Cancel(); return; }
         lastStep = scenario->GetCurrentStep();
         bool escort = !routeIssued && lastStep == 4 && Leaf() && GetMSTimeDiffToNow(escortStartedAt) >= 8000;
-        bool handoff = handoffPending && lastStep == 5 && EscortLeaf() && GetMSTimeDiffToNow(handoffStartedAt) >= 15000;
+        bool handoff = handoffPending && EscortStage(scenario) && EscortLeaf() && GetMSTimeDiffToNow(handoffStartedAt) >= 15000;
         if (!escort && !handoff) return;
         if (routeRetrying && GetMSTimeDiffToNow(routeRetryAt) < 2000) return;
         routeRetrying = true; routeRetryAt = getMSTime();
@@ -283,7 +298,7 @@ struct State
         {
             if (epoch != generation) return false;
             Scenario* progress = Progress();
-            if (!progress || progress->GetCurrentStep() != (escort ? 4u : 5u) ||
+            if (!progress || (escort ? progress->GetCurrentStep() != 4 : !EscortStage(progress)) ||
                 !(escort ? Leaf() : EscortLeaf()) ||
                 std::none_of(members.begin(), members.end(), [this](Member const& member) { return Retained(member) != nullptr; }))
             { Cancel(); return false; }

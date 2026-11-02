@@ -4,6 +4,8 @@ function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 
 function Shape([string]$text){($text -replace '//[^\n]*','') -replace '\s',''}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "ad164392f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-Hait source missing'}
+$rawCurrentHait=Block $source 'class npc_master_hait :'
+if($source.Contains('#include "jorvinax_defeat.h"')){& "$PSScriptRoot/Test-MonkJorvinax.ps1" -ScopeOnly;$source=(& git -C $repo show "7bf4d7a50:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Jorvinax source missing'}}
 if($source.Contains('#include "chen_rescue.h"')){
  & "$PSScriptRoot/Test-MonkChenRescue.ps1" -ScopeOnly
  $preRescue=(& git -C $repo show "6b6fae36c:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-rescue actor missing'}
@@ -54,6 +56,7 @@ $addition=@'
                 _presentationFunctions.Update(diff);
         }
 '@
+$addition=$addition.Replace("`r",'')
 $normalized=$actor.Replace($helper,'').Replace($addition,'').Replace('_presentationFunctions.AddDelayedEvent(', 'me->AddDelayedEvent(')
 $normalized=[regex]::Replace($normalized,'sCreatureTextMgr->SendChat\(chuan, (\d)\);',{param($m)'chuan->AI()->Talk('+$m.Groups[1].Value+');'})
 $normalized=$normalized.Replace('ObjectGuid const chuanGuid = chuan->GetGUID();','').Replace('ObjectGuid const haitGuid = me->GetGUID();','').Replace('[demon, chuanGuid]','[demon, chuan]').Replace('demon->AddDelayedEvent(23000, [demon, chuanGuid, haitGuid]','chuan->AddDelayedEvent(23000, [this, demon, chuan]')
@@ -69,7 +72,11 @@ if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -
 if($ScopeOnly){'PASS exact seven Hait AI timers/five native Chuan texts/two foreign GUID callbacks with vehicle-owned cleanup and finite actual-AI attack retry; other native gameplay/actors unchanged';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Broken counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-hait-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
-[IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$currentActor})+';')
+$routes=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_routes.h" -Raw
+$protocol=$routes.Substring($routes.IndexOf('namespace MonkChenRoutes'),$routes.IndexOf('inline bool Data()')-$routes.IndexOf('namespace MonkChenRoutes'))+'}'
+$protocol+='namespace MonkJorvinax { constexpr uint32 ArrivalData = 94350; }'
+[IO.File]::WriteAllText("$out/HaitVictoryProtocol.inc",$protocol)
+[IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$rawCurrentHait})+';')
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
 [IO.File]::WriteAllText("$out/TalkForward.inc",(Block (Get-Content "$repo/src/server/game/AI/CreatureAI.cpp" -Raw) 'void CreatureAI::Talk(uint8 id, ObjectGuid WhisperGuid)'))

@@ -18,6 +18,7 @@
 #include "Timer.h"
 #include "InstanceScript.h"
 #include "chen_rescue.h"
+#include "jorvinax_defeat.h"
 
 
 // 97778
@@ -136,11 +137,19 @@ public:
                     if (Player* pl = me->FindNearestPlayer(100.0f))
                         Talk(14, pl->GetGUID());
                 if (id == 8)
+                {
+                    if (MonkChenRoutes::Source(me))
+                    {
+                        if (InstanceScript* script = me->GetInstanceScript())
+                            script->SetGuidData(MonkJorvinax::ArrivalData, me->GetGUID());
+                        return;
+                    }
                     if (Player* pl = me->FindNearestPlayer(100.0f))
                     {
                         Talk(15, pl->GetGUID());
                         pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46951);
                     }
+                }
             }
         }
 

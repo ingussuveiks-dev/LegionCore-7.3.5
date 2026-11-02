@@ -15,6 +15,7 @@
 #include "bilaal_death.h"
 #include "bilaal_portal.h"
 #include "../../Monk/Intro/chen_rescue.h"
+#include "../../Monk/Intro/jorvinax_defeat.h"
 
 //rogue dreadblades 1545
 struct instance_dreadblades : public InstanceScript
@@ -171,11 +172,12 @@ struct instance_ruins_of_falanaar_feral : public InstanceScript
 // Monk order hall introduction - map 1014, scenario 943
 struct instance_monk_intro : public InstanceScript
 {
-    instance_monk_intro(InstanceMap* map) : InstanceScript(map), chenRescue(map) { }
+    instance_monk_intro(InstanceMap* map) : InstanceScript(map), chenRescue(map), jorvinax(&chenRescue) { }
 
     MonkChenRescue::State chenRescue;
+    MonkJorvinax::State jorvinax;
     void OnCreatureCreate(Creature* actor) override { InstanceScript::OnCreatureCreate(actor); chenRescue.Observe(actor); }
-    void CreatureDies(Creature* actor, Unit* killer) override { chenRescue.Death(actor, killer); }
+    void CreatureDies(Creature* actor, Unit* killer) override { chenRescue.Death(actor, killer); jorvinax.Death(actor, killer); }
     ObjectGuid GetGuidData(uint32 type) const override
     {
         if (type == MonkChenRescue::ClaimData) return chenRescue.claim;
@@ -190,8 +192,9 @@ struct instance_monk_intro : public InstanceScript
         if (type == MonkChenArrival::RequestData) chenRescue.Arrived(value);
         if (type == MonkChenRoutes::EscortData) chenRescue.RouteRequest(value);
         if (type == MonkChenRoutes::HaitData) chenRescue.RouteRequest(value);
+        if (type == MonkJorvinax::ArrivalData) jorvinax.Arrival(value);
     }
-    void Update(uint32 diff) override { chenRescue.Update(diff); }
+    void Update(uint32 diff) override { chenRescue.Update(diff); jorvinax.Update(diff); }
 };
 
 //116849

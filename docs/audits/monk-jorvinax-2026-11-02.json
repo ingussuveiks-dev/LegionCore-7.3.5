@@ -1,0 +1,75 @@
+{
+  "date": "2026-11-02",
+  "status": "DEPLOYED focused real Jorvinax defeat/optional Hait victory repair; portal193890/return/full943/client/all36 OPEN.",
+  "cause": "The original scoped later Hait MovementInform(WAYPOINT,8) sent46951 and personal victory line15 merely from arriving at the last waypoint, even while Portal Master Jorvinax was alive. Matching native Scenario943 step1900/5 explicitly requires defeating Jorvinax;1901/6 requires destroying the portal after his death. Genuine boss DEATH205/92/46951 already exists in SmartAI and correctly resolves player/pet/guardian owners; it must not be removed or described as a missing native owner path. A genuine early death can be rejected by the current native tree and lost; after actual5->6 victory the previous escort state also canceled a not-yet-issued original15s Hait handoff.",
+  "repair": "Later Hait362271 only forwards a full-GUID native final-node receipt, never supplies defeat progression. The private instance records only actual98217/362203 death after native AI JustDied dispatch; original Smart205 remains unchanged and its accepted29071/6 result is acknowledged without replay. Capture original eligible weak12103 attempts and full source/killer GUIDs, prioritize the native player/pet/guardian owner, quietly retain genuine early0..4 deaths, retry only a missing native46951 leaf at actual5 using the full native argument list and real2s clock. Re-resolve the original killer only on the same map, revalidate weak attempt/epoch/map/monotonic native stage after delivery, require real29071 and6 before acknowledgement. A true-defeat flag plus real leaf allows the original15s escort handoff and reentrant preceding46947 acknowledgement at6; raw unrelated6 still cancels. Optional personal native Hait15 waits for genuine victory and authenticated actual9859006 final-node8, finalized spline/native endpoint0.5, original installed route/original accepted weak owner. Cache the real persistent node8 when AI/generator retires, even before victory; anchor optional voice to Hait100, not distant Chen. Reserve the once flag before native SendChat; no AI dependency or new quest/item/teleport/summon.",
+  "scope": "Actual Jorvinax98217/spawn362203/map1014/943 and later original Hait97778/spawn362271. Initial Hait362105 and other actors/movement14/timers/combat/unscoped legacy behavior exact. Source certificate pins7bf4d7a50 and certifies full actor/shared-instance/controller delta before prior certificates normalize comparisons; runtime exports compile current production bodies. Original shared Rogue/Mage/Priest/Brewer behavior preserved. No SQL, ScriptNames or character reset.",
+  "local_evidence": {
+    "live": "build-extractors/runtime-test/monk-jorvinax-data/world.tsv: fresh read-only unique boss98217/362203/map1014/phase7000, SmartAI DEATH6/runOnce1/action205/type92/46951/target7, no source22 conditions. Existing native GetScriptCreditPlayer and205 deduplication are compiled in tests, not reconstructed.",
+    "native": "build-extractors/runtime-test/monk-jorvinax-data/native.tsv: actual7.3.5 DB2/hotfix reader, all seven943 steps, private difficulty3448/max1; real29071/46951 defeat versus29072/46952 portal. Native193890 has scene1111/aura430/20s plus98353 credit, triggered194141/46952 and200617; this discovery is not a completed portal-return fix.",
+    "source_order": "Matching local Legion7.3.5 data/scripts/core sufficient for this focused cause. No modern port, external gameplay/YouTube viewing or actual client traversal claimed. Existing native six/nine mmap legs remain parent evidence; this repair does not alter authored geometry or path contents."
+  },
+  "checks": [
+    "94 new ASAN contexts plus81 retained route/50 arrival/70 rescue; actual production controller/instance/Hait native movement body, native Smart205/GetScriptCreditPlayer, native owner/death ordering, weak quest lifetime, FunctionProcessor/lifecycle/AIM_Destroy/waypoint dispatch/Timer/Scenario.CanUpdateCriteria/Map-before-instance ordering. Complete pinned7bf Hait movement counterfactual prematurely advances while boss alive; repaired authentic arrival never does.",
+    "Native player/pet/guardian205 deduplication preserved; genuine early0..4/5 deaths, no-AI/ally/null/corpse disappearance, duplicate deaths/events, refused native credit and2s recovery, wrong/live/predelete/world/fullGUID/source/map/scenario/player/quest gates, original owner priority, expired/replaced quest attempt, genuine boss respawn, temporary world/contact/GM/teleport/phase recovery, reentrant cancel/member/scenario loss pass. Death dispatch is controlled after a genuine modeled fatal hit; actual scaling/combat and one-hit client behavior remain separate.",
+    "Authenticated path9859006/node8/top/finalized/native endpoint/persistent node after retired generator, arrival cached before victory and later combat move, original guide/private phase/range/hidden/dead/missing recovery, no current AI, immutable personal recipient/once reservation, optional speech cancellation at7, real5->6 before original15s handoff and reentrant genuine death inside preceding46947 pass. No timer invents arrival, no route arrival grants victory.",
+    "Retained317 ASAN59Chen/87Hait/94click/77Nine pass with current full Hait bridge exported to legacy unscoped host. Read-only live/native catalog verifies native identities, original death205 and separate real tree meanings.",
+    "Release build1 compiles both production translation units into original scripts.lib. Staged original final-link inputs preserve canonical hashes; actual stage PE verifies registered418 instance/context2e0/new state3b8, native death/owner/weak attempt/real46951+29071/6, original full args, actual2s/epoch/once/native node8 and true6-only EscortStage. Full retained route/arrival/rescue/Monk/512 PE and unchanged shared Bilaal portal/Warrior ritual/Fu Zan brewing pass. Canonical new-path PE and ScepterLogin VerifyReleaseBinary pass the exact deployed hash.",
+    "Offline four-file backup/promote checks source/destination hashes and protects config/certificates/DLLs. Owned canonical PID32848 reached fresh ready, server shutdown0, exit0, empty stderr, gone. No user/unknown server stopped; no character or SQL mutation."
+  ],
+  "iterations": [
+    "ASAN1 rejected a test expecting scoped behavior after deliberately changing Hait spawn identity to an unscoped actor. Production intentionally retains that unscoped native behavior. Corrected the negative test to call the instance full-GUID arrival protocol directly for wrong spawn; ASAN2 and final ASAN3 pass. Original assertion/failed exit retained, no runtime crash generated.",
+    "Retained1/2 caught comparison-only PowerShell here-string line endings after pinned git-show normalization. Explicit member/addition CR normalization and preserved LF source restore exact comparisons; retained3 passes317. No native actor or assertion bypass.",
+    "Stage retainedPE1 encountered native ShouldHideFor now outlined from unchanged Chen Current: retained strict100yd and GM/teleport fields, require actual ShouldHideFor call and its native478 field instead of demanding an inlined478 access. StagePE2 passes the entire retained chain. Actual new418 constructor and sequential original/new death/update calls are checked with exact alternate old/new forms; generic decoder bounds unchanged.",
+    "OwnPE1 expected the handoffGUID offset as a memory displacement, but the actual native function adds0xad to a context pointer before IsEmpty/equality. OwnPE2 strictly checks both adds and native original-owner Retained, plus actual native Pose uses rcx9-node length checks. Final canonical PE passes; failed evidence preserved.",
+    "Earlier preliminary final-context3 queried a nonexistent modern-style creature_template.name; matching core loads creature_template_wdb.Name1. Corrected read-only context4/5 identified actual98217. Preliminary catalog1 blanket output routing failed to produce requested native.tsv although compile exit0; direct native and ordinary reader/fixed capture-exists calls pass. These original unresolved-portal research folders remain outside this fixed archive; no DB2 failure or client observation inferred.",
+    "Copied native/component compiler size/shadow/unused/conversion warnings remain visible. Deliberate rejected native criteria/missing-path warnings in controlled tests are expected injected failures paired with successful recovery, not ordinary successful server runs."
+  ],
+  "deployment": {
+    "stage": ".codex/jorvinax-release",
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "9D4FF5F538985B894E88991E8A9F2096605B907A86788BD47EF6FB4389B3022E",
+    "bnetserver_sha256": "918F0390F18D451724CCF67811B88743BCC9B331C1D7CEEA8BEF03E70F90E5D5",
+    "backup": ".codex/release-before-jorvinax-2026-11-02",
+    "owned_pid": 32848,
+    "owned_exit": 0,
+    "owned_stderr_bytes": 0,
+    "owned_process_gone": true,
+    "sql_required": false
+  },
+  "evidence_prefixes": [
+    ".codex/jorvinax-scope1-2026-11-02",
+    ".codex/jorvinax-export1-2026-11-02",
+    ".codex/jorvinax-asan1-2026-11-02",
+    ".codex/jorvinax-asan2-2026-11-02",
+    ".codex/jorvinax-asan3-2026-11-02",
+    ".codex/jorvinax-retained1-2026-11-02",
+    ".codex/jorvinax-retained2-2026-11-02",
+    ".codex/jorvinax-retained3-2026-11-02",
+    ".codex/jorvinax-data1-2026-11-02",
+    ".codex/jorvinax-release-build1-2026-11-02",
+    ".codex/jorvinax-stage1-2026-11-02",
+    ".codex/jorvinax-stage-inspection1-2026-11-02",
+    ".codex/jorvinax-stage-pe1-2026-11-02",
+    ".codex/jorvinax-stage-pe2-2026-11-02",
+    ".codex/jorvinax-own-pe1-2026-11-02",
+    ".codex/jorvinax-own-pe2-2026-11-02",
+    ".codex/jorvinax-shared-pe1-2026-11-02",
+    ".codex/jorvinax-promotion1-2026-11-02",
+    ".codex/jorvinax-startup1-2026-11-02",
+    ".codex/jorvinax-canonical-pe1-2026-11-02",
+    ".codex/jorvinax-scepter1-2026-11-02"
+  ],
+  "diagnostics": {
+    "result": "Before/after canonical/root/own crash/log lengths and timestamps captured for every current automated/native/build/PE/startup check, including script parsing via outer wrappers. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Failed iterations retain captured exits/output and are paired with repaired regressions. Existing mixed6090 LINK2 log unchanged/untruncated; active Crashes empty. Hash archival follows focused commit.",
+    "mixed_db_errors_bytes": 6090,
+    "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
+    "active_crashes": 0,
+    "coverage_limit": "Native/component controlled endpoint tests, actual read-only catalog/live rows and linked PE/startup are distinct from real client combat/scene/visual/quest traversal. Historical parent limitations remain in parent audits."
+  },
+  "remaining": [
+    "Actual client full943/quest12103, boss combat/scaling/one-hit/pet/guardian/faction/group/re-entry/voice/rendering remain user checks; component fatal-death dispatch and startup do not certify them.",
+    "Next trace native193890 scene1111/20s/aura430, native98353/19414146952/200617, existing unconditional98353 Smart73 teleport1514+LINK33 and duplicate colocated spawns. Rejected-cast/quest/current-tree/cleanup/real return should be fixed separately without inventing event, duration or deleting diagnostics.",
+    "Other6 Chen AI-owned presentation callbacks/point0, physical source deletion/replacement/new quest/relog/server restart persistence, earlier shared101430/103151 LINK2/WardstoneLINK4/Survival39427 flight and all previous all36/client findings remain OPEN. No further reset authorized."
+  ]
+}

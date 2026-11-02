@@ -14,7 +14,7 @@ using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;using int32=int3
 enum{TYPEID_UNIT,TYPEID_PLAYER,UNIT_FIELD_NPC_FLAGS,UNIT_FIELD_FLAGS,UNIT_NPC_FLAG_SPELLCLICK=1,UNIT_FLAG_IMMUNE_TO_PC=256,UNIT_FLAG_IMMUNE_TO_NPC=512,UNIT_FLAG_NOT_ATTACKABLE_1=128,POINT_MOTION_TYPE=8,WAYPOINT_MOTION_TYPE=2,UNIT_STATE_STUNNED=4,UNIT_STATE_CASTING=8,CRITERIA_TYPE_SCRIPT_EVENT_2=92};
 uint32 const cinematicFlags=256|512|128;
 struct ObjectGuid{uint64 low=0,high=0;bool operator==(ObjectGuid const& v)const{return low==v.low&&high==v.high;}bool operator<(ObjectGuid const& v)const{return high==v.high?low<v.low:high<v.high;}std::string ToString()const{return std::to_string(high)+":"+std::to_string(low);}};
-struct Player;struct Creature;struct CreatureAI;
+struct Player;struct Creature;struct CreatureAI;struct InstanceScript{void SetGuidData(uint32,ObjectGuid){}};
 std::map<ObjectGuid,Creature*> world;uint64 nextGuid=1;uint32 expectedFaults=0;
 struct Unit{virtual ~Unit()=default;virtual Player* ToPlayer(){return nullptr;}};
 struct Player:Unit{ObjectGuid guid{1,0xabcdef1234567890};std::vector<uint32> credits,kills;Player* ToPlayer()override{return this;}ObjectGuid GetGUID()const{return guid;}void UpdateAchievementCriteria(uint32 type,uint32 id){assert(type==92);credits.push_back(id);}void KilledMonsterCredit(uint32 id){kills.push_back(id);}};
@@ -28,7 +28,7 @@ struct Creature:Unit{
  Player* nearest=nullptr;Creature* chuan=nullptr;Creature* demon=nullptr;GameObject* door=nullptr;Motion motion;Vehicle vehicle;uint32 npcflags=0,flags=0,states=0,attacks=0,melee=0;ObjectGuid attacked;
  std::vector<std::pair<uint32,ObjectGuid>> talks;std::vector<uint32> casts;std::function<void()> onTalk;
  Creature(){world.emplace(guid,this);}~Creature();CreatureAI* AI(){return i_AI;}bool AIM_Destroy();void Lifecycle(uint32 diff);
- ObjectGuid GetGUID()const{return guid;}bool IsAlive()const{return alive;}uint32 GetMapId()const{return map;}uint32 GetDBTableGUIDLow()const{return 362105;}
+ ObjectGuid GetGUID()const{return guid;}bool IsAlive()const{return alive;}uint32 GetMapId()const{return map;}uint32 GetDBTableGUIDLow()const{return 362105;}uint32 GetEntry()const{return 97778;}InstanceScript* GetInstanceScript(){return nullptr;}
  void SetFlag(uint32 field,uint32 value){(field==UNIT_FIELD_NPC_FLAGS?npcflags:flags)|=value;}void RemoveFlag(uint32 field,uint32 value){(field==UNIT_FIELD_NPC_FLAGS?npcflags:flags)&=~value;}
  void SetHomePosition(float,float,float,float){}float GetPositionX()const{return 1;}float GetPositionY()const{return 1;}float GetPositionZ()const{return 1;}float GetOrientation()const{return 0;}
  bool HasUnitState(uint32 state)const{return (states&state)!=0;}void SetWalk(bool value){walk=value;}Motion* GetMotionMaster(){return &motion;}Vehicle* GetVehicleKit(){return hasVehicle?&vehicle:nullptr;}
@@ -54,6 +54,7 @@ void Creature::Lifecycle(uint32 diff){
 #include "AIDestroy.inc"
 struct ScriptedAI:CreatureAI{using CreatureAI::CreatureAI;bool UpdateVictim(){return me->victim;}void DoMeleeAttackIfReady(){++me->melee;}};
 struct CreatureScript{explicit CreatureScript(char const*){}virtual ~CreatureScript()=default;virtual CreatureAI* GetAI(Creature*)const=0;};
+#include "HaitVictoryProtocol.inc"
 #include "Actor.inc"
 using Hait=npc_master_hait::npc_master_haitAI;
 struct Run{

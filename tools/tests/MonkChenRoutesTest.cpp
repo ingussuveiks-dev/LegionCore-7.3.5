@@ -11,7 +11,7 @@ uint32 Count(Creature const& actor,uint32 line){uint32 n=0;for(auto const& text:
 void NoHait(Escort const& r){assert(r.hait.motion.paths.empty());}
 void Handoff(Escort& r){assert(!r.state().handoffPending&&r.hait.motion.paths==std::vector<uint32>{9859006});assert(r.hait.GetCurrentWaypointID()==uint32(-1));assert(Count(r.hait,12)==1&&Count(r.hait,13)==1);assert(r.player.credits==(std::vector<uint32>{46956,46947}));assert(r.hait.talks.back().second==r.player.guid);}
 
-int main()
+uint32 RunRoutesCases()
 {
  uint32 retained=RunArrivalCases(),cases=0;
  // Full pinned actor/controller/instance predecessors: removing the AI really
@@ -56,4 +56,8 @@ int main()
  for(bool later:{false,true}){Escort r;if(later){r.Begin();clockNow=0xFFFFFE00;r.Arrive();}else{clockNow=0xFFFFFE00;r.Death();}assert(r.chen.AIM_Destroy());r.Tick(later?15000:8000);if(later)NoHait(r);else assert(r.chen.motion.paths.empty());r.Tick(1);if(later)Handoff(r);else assert(r.state().routeIssued);++cases;}
  {Escort r;r.Death();r.state().RouteRequest({999,2});r.Tick(7999);assert(r.chen.motion.paths.empty());r.Tick(1);r.Tick(500000);assert(r.chen.motion.paths.size()==1&&r.hait.motion.paths.empty()&&r.player.credits==std::vector<uint32>{46956});++cases;}
  std::cout<<"PASS "<<cases<<" essential Chen8s/Hait15s route ASAN contexts plus retained "<<retained<<" arrival and70 rescue cases: actual AI destruction/full pinned predecessor, native-clock deadlines/retries, original actors/weak owner, missing/loading actors, real path installation and once independent text/follow, cancellation/reentry/late frame/rollover. Deliberate missing-data/install warnings are expected injected failures paired with recovery. Native motion/criteria/world endpoints controlled; actual mmap geometry separate; later46951/boss/client/full943/all36 OPEN.\n";
+ return cases;
 }
+#ifndef MONK_JORVINAX_TEST
+int main(){RunRoutesCases();}
+#endif

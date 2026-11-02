@@ -4,6 +4,7 @@ function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 
 function Shape([string]$text){(($text -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "bb877ffc3:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-click source missing'}
+if($source.Contains('#include "jorvinax_defeat.h"')){& "$PSScriptRoot/Test-MonkJorvinax.ps1" -ScopeOnly;$source=(& git -C $repo show "7bf4d7a50:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Jorvinax source missing'}}
 if($source.Contains('#include "chen_rescue.h"')){
  & "$PSScriptRoot/Test-MonkChenRescue.ps1" -ScopeOnly
  $preRescue=(& git -C $repo show "6b6fae36c:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-rescue actor missing'}
@@ -15,6 +16,7 @@ $members=@'
         std::shared_ptr<uint8> _clickLifetime = std::make_shared<uint8>();
         std::weak_ptr<uint8> _pendingClick;
 '@
+$members=$members.Replace("`r",'')
 $expectedCtor=@'
 npc_master_haitAI(Creature* creature) : ScriptedAI(creature)
         {

@@ -38,7 +38,9 @@ def queue(body,expected):
 
 data=ins(method('SetData'));move=ins(method('MovementInform'));action=ins(method('DoAction'))
 queue(data,[('rcx, [rdi + 0x36a0]',2000),('rcx, [rdi + 0x36a0]',4000),('rcx, [rdi + 0x36a0]',7000),('rcx, [rbx + 0x38]',10000)])
-queue(move,[('rcx, [rbx + 0x38]',3000),('rcx, [rbx + 0x38]',6000)])
+jorvinax_successor=94350 in values(move)
+move_owner='rdi' if jorvinax_successor else 'rbx'
+queue(move,[(f'rcx, [{move_owner} + 0x38]',3000),(f'rcx, [{move_owner} + 0x38]',6000)])
 queue(action,[(('add','rcx, 0x38'),1000)]+[('rcx, [rbx + 0x38]',delay) for delay in (4000,7000,10000)])
 outer=ins('??R<lambda_4>@?4??DoAction'+suffix)
 queue(outer,[('rcx, [rdi + 0x36a0]',20000),('rcx, [rdi + 0x36a0]',23000),('rcx, [rbx + 0x36a0]',8000),('rcx, [rbx + 0x36a0]',15000)])
