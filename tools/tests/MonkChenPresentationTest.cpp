@@ -20,7 +20,7 @@ void Outro(Escort const& r)
     for(auto const& line:r.hait.talks) if(line.first==11) assert(line.second==r.player.guid);
 }
 
-int main()
+uint32 RunPresentationCases()
 {
     std::cout<<std::unitbuf;
     uint32 retained=RunRoutesCases(),cases=0;
@@ -153,4 +153,8 @@ int main()
     {Escort r;r.Begin();clockNow=0xFFFFFE00;r.Arrive();assert(r.chen.AIM_Destroy());r.Tick(3000);NoOutro(r);r.Tick(1);assert(Count(r.hait,10)==1);r.Tick(4000);r.Tick(4000);r.Tick(5000);Outro(r);++cases;}
     {Escort r;r.Begin();r.Arrive();assert(r.chen.AIM_Destroy());r.chen.i_AI=new Chen(&r.chen);for(uint32 i=0;i<100;++i)r.actor()->MovementInform(WAYPOINT_MOTION_TYPE,5);r.Tick(16000);Outro(r);Handoff(r);assert(r.actor()->_presentationFunctions.SizeQueue()==0);++cases;}
     std::cout<<"PASS "<<cases<<" actual Chen outro ASAN contexts plus retained "<<retained<<" routes/50 arrival/70 rescue: full pinned AI-loss counterfactual, real3/7/11/16s clocks and before-route dispatch, original weak owner/full actors, AI recreation/no AI, native stage/phase/visibility/cancellation/reentry, missing optional guide once-only attempt and no stale greeting after original handoff. Point0 is a native command, not an arrival/progression receipt; ordinary mmap geometry separate. Client/full943/all36 remain OPEN.\n";
+    return cases;
 }
+#ifndef MONK_CHEN_EARLY_PRESENTATION_TEST
+int main(){RunPresentationCases();}
+#endif

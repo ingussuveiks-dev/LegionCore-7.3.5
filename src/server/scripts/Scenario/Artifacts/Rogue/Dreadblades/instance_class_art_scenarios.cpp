@@ -196,7 +196,7 @@ struct instance_monk_intro : public InstanceScript
         if (type == MonkChenRoutes::HaitData) chenRescue.RouteRequest(value);
         if (type == MonkJorvinax::ArrivalData) jorvinax.Arrival(value);
     }
-    void Update(uint32 diff) override { chenPresentation.Update(diff); chenRescue.Update(diff); jorvinax.Update(diff); chenPresentation.Update(diff, true); }
+    void Update(uint32 diff) override { chenPresentation.UpdateRescue(diff); chenPresentation.Update(diff); chenRescue.Update(diff); jorvinax.Update(diff); chenPresentation.Update(diff, true); }
 };
 
 //116849

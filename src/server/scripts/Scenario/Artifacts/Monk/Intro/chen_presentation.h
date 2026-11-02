@@ -1,11 +1,12 @@
 #pragma once
 
 #include "chen_rescue.h"
+#include "ScriptedCreature.h"
 
 namespace MonkChenPresentation
 {
-// The accepted native arrival owns these original3/7/11/16s actions. Losing
-// Chen's AI must not retire them or bind them to another nearby player/actor.
+// Genuine accepted rescue/arrival receipts own the original NPC actions.
+// Losing Chen's AI must not retire them or bind them to another player/actor.
 struct State
 {
     explicit State(MonkChenRescue::State* owner) : context(owner) { }
@@ -13,6 +14,8 @@ struct State
     uint64 epoch = 0;
     uint8 issued = 0;
     bool updating = false;
+    uint8 rescueIssued = 0;
+    bool rescueUpdating = false;
 
     Player* Owner(MonkChenRescue::Member const& member) const
     {
@@ -32,7 +35,7 @@ struct State
     void Update(uint32 /*diff*/, bool departure = false)
     {
         if (updating) return;
-        if (epoch != context->epoch) { epoch = context->epoch; issued = 0; }
+        if (epoch != context->epoch) { epoch = context->epoch; issued = 0; rescueIssued = 0; }
         if (issued == 15) return;
         auto found = std::find_if(context->members.begin(), context->members.end(), [this](MonkChenRescue::Member const& member)
             { return member.player == context->handoffPlayer; });
@@ -78,6 +81,74 @@ struct State
                 sCreatureTextMgr->SendChat(guide, 11, original.player);
         }
         if (!valid()) return;
+    }
+
+    bool Student(Creature* student, Creature* actor, ObjectGuid const& owner) const
+    {
+        if (!student || student->GetEntry() != 98074 || student->GetMap() != context->map ||
+            !student->IsInWorld() || student->IsPreDelete() || !student->IsAlive() ||
+            !student->GetCharmerOrOwnerGUID().IsEmpty() || !student->InSamePhase(actor) ||
+            student->ShouldHideFor(owner) || !actor->IsWithinDistInMap(student, 70.0f, false)) return false;
+        uint64 spawn = student->GetDBTableGUIDLow();
+        return spawn == 362259 || spawn == 362263 || spawn == 362264 || spawn == 362265;
+    }
+
+    void UpdateRescue(uint32 /*diff*/)
+    {
+        if (rescueUpdating) return;
+        if (epoch != context->epoch) { epoch = context->epoch; issued = 0; rescueIssued = 0; }
+        if (rescueIssued == 3 || !context->started) return;
+        // Do not replay early scolding/follow attempts after the acknowledged
+        // ordinary escort has already begun. Missing actors are not replaced.
+        if (context->routeIssued || context->arrivalDone) { rescueIssued = 3; return; }
+        auto progress = context->Progress();
+        Creature* actor = context->Actor();
+        if (!progress || progress->GetCurrentStep() != 4 || !context->Leaf() || !actor) return;
+        auto members = context->members;
+        for (auto const& original : members)
+            // These original callbacks address NPCs, not a player. A retained
+            // genuine attempt still owns them during a transient UI/contact
+            // gate; actor phase/private ownership and quest lifetime remain.
+            if (context->Retained(original) && !actor->ShouldHideFor(original.player))
+            {
+                uint64 generation = context->epoch;
+                ObjectGuid const actorGuid = context->chen;
+                auto valid = [this, generation, actor, actorGuid, &original]() -> bool
+                {
+                    auto scenario = context->Progress();
+                    return context->epoch == generation && !context->routeIssued && !context->arrivalDone && context->chen == actorGuid && context->Actor() == actor &&
+                        scenario && scenario->GetCurrentStep() == 4 && context->Leaf() && context->Retained(original) &&
+                        !actor->ShouldHideFor(original.player);
+                };
+                MonkChenRoutes::Dispatch dispatch(rescueUpdating);
+                uint32 elapsed = GetMSTimeDiffToNow(context->escortStartedAt);
+                if (!(rescueIssued & 1) && elapsed >= 4000)
+                { rescueIssued |= 1; sCreatureTextMgr->SendChat(actor, 4); }
+                if (!valid()) return;
+                if (!(rescueIssued & 2) && elapsed >= 5000)
+                {
+                    rescueIssued |= 2;
+                    std::list<Creature*> nearby;
+                    GetCreatureListWithEntryInGrid(nearby, actor, 98074, 70.0f);
+                    std::vector<ObjectGuid> students;
+                    for (auto student : nearby)
+                        if (Student(student, actor, original.player) &&
+                            std::find(students.begin(), students.end(), student->GetGUID()) == students.end())
+                            students.push_back(student->GetGUID());
+                    for (auto const& guid : students)
+                    {
+                        if (!valid()) return;
+                        Creature* student = context->map->GetCreature(guid);
+                        if (!Student(student, actor, original.player)) continue;
+                        student->GetMotionMaster()->MoveFollow(actor, urand(1, 4), float(-PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+                        if (!valid()) return;
+                        student = context->map->GetCreature(guid);
+                        if (Student(student, actor, original.player)) sCreatureTextMgr->SendChat(student, 0);
+                        if (!valid()) return;
+                    }
+                }
+                return;
+            }
     }
 };
 }

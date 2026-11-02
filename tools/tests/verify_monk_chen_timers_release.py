@@ -46,12 +46,14 @@ for name,delays in (('MovementInform',[3000,7000,11000,15000,15000,16000]),('Set
         previous=[(op.mnemonic,op.op_str) for op in body[at-6:at]]
         direct=any(m=='lea' and re.fullmatch(r'rcx, \[r(?:di|bx) \+ 0x40\]',s) for m,s in previous)
         if not direct:
-            # The scoped presentation successor retains this exact queue in
-            # callee-saved RBX across the four personal unscoped callbacks.
-            assert name=='MovementInform' and ('mov','rcx, rbx') in previous
-            clocks=[i for i,op in enumerate(body[:at]) if (op.mnemonic,op.op_str)==('lea','rbx, [rdi + 0x40]')]
+            # Both scoped successors preserve the original queue in a native
+            # callee-saved register. Every path must define that exact AI+40
+            # address, and no intervening instruction may overwrite it.
+            clock_reg={'MovementInform':'rbx','SetData':'rsi'}[name]
+            assert ('mov',f'rcx, {clock_reg}') in previous
+            clocks=[i for i,op in enumerate(body[:at]) if (op.mnemonic,op.op_str)==('lea',f'{clock_reg}, [rdi + 0x40]')]
             assert clocks and not reaches_without(body,body[at].address,{body[i].address for i in clocks})
-            assert not any(op.op_str.startswith('rbx, ') and op.mnemonic not in ('cmp','test') and i not in clocks for i,op in enumerate(body[:at]) if i>min(clocks))
+            assert not any(op.op_str.startswith(clock_reg+', ') and op.mnemonic not in ('cmp','test') and i not in clocks for i,op in enumerate(body[:at]) if i>min(clocks))
         assert ('mov',f'edx, {delay:#x}') in previous
     callbacks=[key for key in n['symbols'] if key.startswith('?_Do_call@') and '??'+name+suffix in key]
     assert len(callbacks)==len(delays)

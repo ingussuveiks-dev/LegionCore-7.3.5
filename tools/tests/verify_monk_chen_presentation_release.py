@@ -34,13 +34,13 @@ assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk
 assert 0x430 in values(factory)
 assert {('lea','rdi, [rsi + 0x2e0]'),('mov','qword ptr [rsi + 0x3b8], rdi'),
         ('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),
-        ('mov','word ptr [rsi + 0x428], bx')}<=set(pairs(factory))
+        (('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
 dispatch=ins('?Update@instance_monk_intro@@')
 assert n['symbol']('?Update@instance_monk_intro@@') in resolved(raw)
 before,after=sites(n,dispatch,presentation('Update'))
 rescue,=sites(n,dispatch,context('Update'));boss,=sites(n,dispatch,'?Update@State@MonkJorvinax@@')
 assert before<rescue<boss<after and dispatch[after].mnemonic=='jmp'
-assert {('xor','r8d, r8d'),('add','rcx, 0x418')}<=set(pairs(dispatch[:before]))
+assert {('xor','r8d, r8d'),(('lea','rcx, [rbx + 0x418]') if sites(n,dispatch,presentation('UpdateRescue')) else ('add','rcx, 0x418'))}<=set(pairs(dispatch[:before]))
 assert {('mov','r8b, 1'),('lea','rcx, [rbx + 0x418]')}<=set(pairs(dispatch[boss:after]))
 
 owner=ins(presentation('Owner'));guide=ins(presentation('Guide'));update=ins(presentation('Update'))

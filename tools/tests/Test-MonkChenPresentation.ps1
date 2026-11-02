@@ -6,6 +6,8 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function Prior([string]$path){$s=(& git -C $repo show "6cb25d055:$path") -join "`n";if($LASTEXITCODE){throw "Pinned presentation predecessor missing: $path"};$s}
  $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$prior=Prior $path
+ $hasEarly=$source.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4000,')
+ if($hasEarly){& "$PSScriptRoot/Test-MonkChenEarlyPresentation.ps1" -ScopeOnly;$source=(& git -C $repo show "8d66b5e09:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-early actor missing'}}
  $actor=Block $source 'class npc_monk_chen_porter :';$oldActor=Block $prior 'class npc_monk_chen_porter :';$normal=$actor
  foreach($deadline in @(3000,7000,11000,15000,16000)){
   $prefix="if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent($deadline,"
@@ -16,6 +18,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  if((Shape $normal) -cne (Shape $oldActor) -or (Shape $source.Replace($actor,$oldActor)) -cne (Shape $prior)){throw 'Other original Chen/Monk actors, timers, text, routes or progression changed'}
  foreach($header in @('chen_rescue.h','jorvinax_defeat.h','monk_fel_stone.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$header";if((Shape (Get-Content "$repo/$path" -Raw)) -cne (Shape (Prior $path))){throw 'Original context/victory/Fel Stone changed'}}
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$instances=Get-Content "$repo/$path" -Raw;$oldInstances=Prior $path
+ if($hasEarly){$instances=(& git -C $repo show "8d66b5e09:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-early instance missing'}}
  $normal=$instances.Replace('#include "../../Monk/Intro/chen_presentation.h"','').Replace(', chenPresentation(&chenRescue)','').Replace('MonkChenPresentation::State chenPresentation;','').Replace('chenPresentation.Update(diff); ','').Replace(' chenPresentation.Update(diff, true);','')
  if((Shape $normal) -cne (Shape $oldInstances)){throw 'Other original/shared instance behavior changed'}
  if($ScopeOnly){'PASS four original3/7/11/16s presentation callbacks/two redundant15s wrappers scoped out, appended instance state before original route update; original context, Jorvinax, Fel Stone, all other actors/instances/credits/routes unchanged';return}

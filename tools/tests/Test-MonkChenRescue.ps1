@@ -47,7 +47,7 @@ if (MonkChenRescue::Source(me))
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h" "$out/Rescue.inc"
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_arrival.h" "$out/chen_arrival.h"
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_routes.h" "$out/chen_routes.h"
- foreach($stub in @('WaypointMovementGenerator.h','MoveSpline.h','Timer.h','CreatureTextMgr.h')){[IO.File]::WriteAllText("$out/$stub","#pragma once`n// Controlled services declared explicitly in MonkChenRescueTest.cpp.`n")}
+ foreach($stub in @('WaypointMovementGenerator.h','MoveSpline.h','Timer.h','CreatureTextMgr.h','ScriptedCreature.h')){[IO.File]::WriteAllText("$out/$stub","#pragma once`n// Controlled services declared explicitly in MonkChenRescueTest.cpp.`n")}
  $waypoints=Get-Content "$repo/src/server/game/Movement/Waypoints/WaypointManager.h" -Raw
  [IO.File]::WriteAllText("$out/WaypointFields.inc",(Block $waypoints 'enum WaypointMoveType')+';'+(Block $waypoints 'struct WaypointData')+';')
  [IO.File]::WriteAllText("$out/PathBase.inc",(Block (Get-Content "$repo/src/server/game/Movement/MovementGenerators/PathMovementBase.h" -Raw) 'template<class Entity, class BasePath>')+';')

@@ -539,12 +539,12 @@ public:
                 if (!MonkChenRescue::Source(me))
                     if (Player* pl = me->FindNearestPlayer(100))
                         pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46956);
-                _presentationFunctions.AddDelayedEvent(4000, [this]() -> void
+                if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4000, [this]() -> void
                 {
                     Talk(4);
                 });
 
-                _presentationFunctions.AddDelayedEvent(5000, [this]() -> void
+                if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(5000, [this]() -> void
                 {
                     std::list<Creature*> adds;
                     GetCreatureListWithEntryInGrid(adds, me, 98074, 70.0f);
@@ -556,7 +556,7 @@ public:
                         }
                 });
 
-                _presentationFunctions.AddDelayedEvent(8000, [this]() -> void
+                if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(8000, [this]() -> void
                 {
                     if (MonkChenRescue::Source(me))
                     {
