@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-03",
+  "status": "DEPLOYED focused Hati non-Player update crash guard. Actual client/full Titanstrike/all36 remain OPEN.",
+  "prior": "Separate follow-up to docs/audits/hati-reaction-2026-11-03.json. The passive synchronization repair is retained; this is a different null-this contract repair, not a new attribution of any earlier user/server crash.",
+  "cause": "AuraScript default Load returns true; actual AuraScript::_Load therefore admits a script/GM-applied self197344 on a non-Player. Hati OnApply safely checks ToPlayer, but its periodic update only checked nonnull/alive caster. A living non-Player with a resolved controlled creature outside the five Hati entries sets findPet=true and reaches caster->ToPlayer()->GetPet() in the missing-Hati branch. ToPlayer is null. The complete pinnedee6b845e4 update/registration, native aura loading/update dispatch and actual Player::GetPet reproduce an ASAN null-this read in a separately owned child. Ordinary artifact ownership is a Player; this does not claim a known ordinary-player crash or an observed live GM incident.",
+  "repair": "Add actual Player admission to the existing early null/dead caster guard, before any controlled-list selection, primary-pet access or companion lifecycle. Preserve default aura loading, complete apply/remove callbacks, all145 previously verified Player/passive cases, five Hati variants, original2s timer/reset, original summon/custom data/cleanup/range/ownership and all other spell_hunter.cpp bytes except this guard. No SQL/ScriptName, global aura-loader restriction, quest/item grant, forced movement, character reset or diagnostic suppression.",
+  "sources": [
+    "Matching local full Hati loader/apply/remove/update/Register, native AuraScript::_Load and default Load, Aura::GetCaster self-owner path, Player::GetPet and Unit GetPetGUID contract. Matching native26972/World197344/five3725 summon and actor bindings freshly verified in the immediately preceding passive audit; no binding/data changed here. Local source resolves this C++ type contract without modern-core/external adaptation.",
+    "Native getter body is compiled verbatim. GUID storage, pet lookup, world presence and other Unit services are controlled fixture endpoints; ASAN address0x40 is fixture layout, not a claimed production dump offset. Native loader defaults and real effect-update registration/dispatcher are compiled; no authenticated character or live NPC used."
+  ],
+  "checks": [
+    "Test-HatiOwner.ps1 run2: separately owned pinnedee6b845e4 child exits1 with ASAN READ/Player::GetPet/BondOwnerBaseline::OnUpdate through the actual native update dispatcher. ExpectedCounterfactual=true with individual PID/exit/stdout/stderr and before/after canonical/root/own snapshots. This expected failing baseline is paired with the passing repair, not an ordinary successful run.",
+    "Repaired native ASAN:12 non-Player/dead/missing-caster contexts plus retained145 Hati reaction contexts. Covers empty/missing/non-Hati/Hati/mixed controlled sets, alive/dead non-Players, repeated2s updates, missing caster, non-Player ->ordinary Player handoff, actual AuraScript::_Load/default Load and actual Player::GetPet in the retained matrix. Native prior20 passive counterfactuals/105 controls, all125 five-entry/state transitions and passive command consumers still pass.",
+    "Exact full-file/actor differential against ee6b845e4 admits only this guard. Prior reaction test chains the exact successor certificate before retaining its own pre-passive full-file/body differential, and compiles the actual current fixed callback. No unchanged behavior or relevant test invariant removed.",
+    "Original-path scripts.lib Release/x64 and generated actual link dependencies rebuilt; staged BDFCE98D/1C3998BF. Selected PE chains actual registered Hati factory/vtable/Register, uninterrupted zero-valued reaction transfer,2s/custom summon/cleanup and native11-call/corpse512 proof. Exact common-exit null/alive/type4 guard precedes actual controlled-list load and dominates selection; its non-Player branch cannot reach either Player::GetPet, reaction setter, CastSpell or despawn.",
+    "Offline four-file backup/promotion/source-destination hashes/protected configuration/certificate/DLL hashes verified. Owned worldserver10452 fresh ready -> server shutdown0 -> exit0/empty stderr/gone. Canonical selected owner/retained reaction PE and mandatory Scepter native/Release pass. No user/unknown server stopped, SQL or character data changed."
+  ],
+  "iterations": [
+    "Counterfactual run1 fixture other creature inherited default Hati entry100324, so it entered the safe Hati branch and exited9 rather than reproducing the intended crash. Runner correctly rejected the baseline, retaining stdout/stderr/exit. Set explicit unrelated entry777; run2 then reproduces actual null-this ASAN and repaired12+145 passes.",
+    "Selected PE1 assumed controlled-list load destination RCX; actual compiled successor uses RAX after type guard. Inspect actual instructions, then require the exact contiguous null/dead/type4 common-exit sequence and actual RAX load; dominance and all forbidden failure-path checks retained. SelectedPE2/canonical pass.",
+    "To retain workspace capacity, four specifically named task staging/backup worldserver.map files were transparently NTFS LZX-compressed. Original/final SHA256 equal for each; no byte deletion, runtime config/log/crash/EXE/security change. Records remain local in .codex/hati-owner-map-compression-records.json."
+  ],
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "stage": ".codex/hati-owner-release",
+    "backup": ".codex/release-before-hati-owner-2026-11-03",
+    "worldserver_sha256": "BDFCE98D2CA0D2B40ABDE2F6278A69ECD4F861F38925EF54A3BFF7BEAB983A69",
+    "bnetserver_sha256": "1C3998BFF6C75BE161A588C721D57979431E3DF3271BF7F47AD7FB7F5194914A",
+    "sql_required": false,
+    "owned_worldserver": "PID10452 ready/shutdown0/exit0/gone; stderr empty"
+  },
+  "diagnostics": "Before/after canonical/root/own crash hashes/log lengths/timestamps and each exit/full stdout/stderr inspected. Deliberate baseline ASAN failure retained with its passing repaired regression. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Native getter local/member shadow warning retained. Canonical Crashes empty; existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unresolved/unchanged/untruncated. Fixed archive follows matching deployed regression and focused commit; unrelated open evidence remains outside fixed.",
+  "remaining": [
+    "Actual client passive/attack/stay/formation/portrait, summon/dismiss/revive/reconnect and full Titanstrike/all36 remain unverified beyond earlier specifically recorded user observations. NPC/GM context is a controlled native regression, not an actual client traversal.",
+    "Unknown shared101430/103151 LINK2 and WardstoneLINK4 payloads remain unproven; do not delete links or invent actions. Survival39427 middle flight, Fu Zan/Yigthregor/original ride, LiLi/Ponshu and other recorded acquisition/recovery/visual findings remain OPEN. User owns client testing; reset3 consumed, no further reset authorized."
+  ]
+}

@@ -30,9 +30,21 @@ struct Creature:Unit{
  bool IsWithinMeleeRange(Unit*,float){return meleeRange;}float GetAttackDist(){return 5;}
 };
 struct Pet:Creature{};
-struct Player:Unit{Pet* pet=nullptr;Player* ToPlayer()override{return this;}Pet* GetPet(){return pet;}};
+struct Player:Unit{Pet* pet=nullptr;Player* ToPlayer()override{return this;}
+#ifdef HATI_OWNER_TEST
+ struct ObjectGuid{bool valid;bool IsEmpty()const{return !valid;}bool IsPet()const{return valid;}};
+ ObjectGuid GetPetGUID()const{return {pet!=nullptr};}bool IsInWorld()const{return true;}Pet* GetPet()const;
+#else
+ Pet* GetPet(){return pet;}
+#endif
+};
 float Unit::GetDistance(Creature* actor)const{return actor->distance;}
 namespace ObjectAccessor{std::map<uint32,Creature*> actors;Creature* GetCreatureOrPetOrVehicle(Unit&,uint32 id){auto found=actors.find(id);return found==actors.end()?nullptr:found->second;}}
+#ifdef HATI_OWNER_TEST
+using ObjectGuid=Player::ObjectGuid;
+namespace ObjectAccessor{Pet* GetPet(Player const& player,ObjectGuid){return player.pet;}}
+#include "PlayerPet.inc"
+#endif
 #include "React.inc"
 struct PetAI{Creature* me;uint32 attacks=0;explicit PetAI(Creature* actor):me(actor){}void AttackStart(Unit*){++attacks;}void OwnerAttacked(Unit*);void OwnerDamagedBy(Unit*);bool CanAttack(Unit*);};
 #include "Consumers.inc"
@@ -43,7 +55,7 @@ struct Handler{uint32 index;std::function<void(AuraScript*,uint32,AuraEffect*)> 
 struct Hook:std::vector<Handler>{void operator+=(Handler value){push_back(std::move(value));}};
 struct IgnoredHook{void operator+=(int){}};
 struct Aura{Unit* caster=nullptr;bool removed=false;uint32 custom=211147;SpellInfo info;SpellInfo* m_spellInfo=&info;std::vector<AuraScript*> m_loadedScripts;Unit* GetCaster(){return caster;}uint32 GetCustomData(){return custom;}bool IsRemoved(){return removed;}void CallScriptEffectUpdateHandlers(uint32,AuraEffect*);};
-struct AuraScript{Aura* m_aura=nullptr;uint32 state=SPELL_SCRIPT_STATE_NONE;Hook OnEffectUpdate;IgnoredHook AfterEffectApply,AfterEffectRemove;virtual ~AuraScript()=default;virtual void Register(){}Unit* GetCaster()const;Aura* GetAura(){return m_aura;}void _PrepareScriptCall(uint32 value){assert(state==SPELL_SCRIPT_STATE_NONE);state=value;}void _FinishScriptCall(){state=SPELL_SCRIPT_STATE_NONE;}};
+struct AuraScript{Aura* m_aura=nullptr;uint32 state=SPELL_SCRIPT_STATE_NONE;Hook OnEffectUpdate;IgnoredHook AfterEffectApply,AfterEffectRemove;virtual ~AuraScript()=default;virtual void Register(){}virtual bool Load(){return true;}bool _Load(Aura*);Unit* GetCaster()const;Aura* GetAura(){return m_aura;}void _PrepareScriptCall(uint32 value,void* =nullptr){assert(state==SPELL_SCRIPT_STATE_NONE);state=value;}void _FinishScriptCall(){state=SPELL_SCRIPT_STATE_NONE;}};
 template<class T>Handler MakeHandler(void(T::*fn)(uint32,AuraEffect*),uint32 index,uint32 type){assert(index==0&&type==4);return {index,[fn](AuraScript* script,uint32 diff,AuraEffect* effect){(static_cast<T*>(script)->*fn)(diff,effect);}};}
 #define AuraEffectUpdateFn(fn,index,type) MakeHandler(&fn,index,type)
 #define AuraEffectApplyFn(...) 0
@@ -57,7 +69,7 @@ template<class Script>struct Run{
  Run(){ObjectAccessor::actors.clear();pet.entry=1;player.pet=&pet;player.m_Controlled={1,2};ObjectAccessor::actors={{1,&pet},{2,&hati}};hati.owner=&player;script.m_aura=&aura;script.Register();assert(script.OnEffectUpdate.size()==1);aura.caster=&player;aura.m_loadedScripts={&script};}
  void Tick(uint32 diff){aura.CallScriptEffectUpdateHandlers(diff,&effect);assert(script.state==SPELL_SCRIPT_STATE_NONE);}
 };
-int main(){
+uint32 RunReactionCases(){
  uint32 cases=0,broken=0;uint32 entries[]={100324,106548,106549,106550,106551};
  for(auto entry:entries)for(uint32 before=0;before<5;++before)for(uint32 after=0;after<5;++after){
   {Run<BondBaseline> r;r.hati.entry=entry;r.hati.m_reactState=ReactStates(before);r.pet.m_reactState=ReactStates(after);r.Tick(2000);bool mismatch=r.hati.GetReactState()!=ReactStates(after);assert(mismatch==(after==REACT_PASSIVE&&before!=REACT_PASSIVE));broken+=mismatch;}
@@ -83,4 +95,8 @@ int main(){
  {Run<BondFixed> r;r.pet.m_reactState=REACT_PASSIVE;r.Tick(4500);assert(r.hati.GetReactState()==REACT_PASSIVE&&r.script.update==0);r.pet.m_reactState=REACT_DEFENSIVE;r.Tick(1999);assert(r.hati.GetReactState()==REACT_PASSIVE);r.Tick(1);assert(r.hati.GetReactState()==REACT_DEFENSIVE);++cases;}
  {Run<BondFixed> r;r.pet.m_reactState=REACT_PASSIVE;r.other.entry=777;r.other.m_reactState=REACT_AGGRESSIVE;r.player.m_Controlled.insert(3);ObjectAccessor::actors[3]=&r.other;r.Tick(2000);assert(r.hati.GetReactState()==REACT_PASSIVE&&r.other.GetReactState()==REACT_AGGRESSIVE&&!r.other.despawns);++cases;}
  std::cout<<"PASS "<<cases<<" Hati reaction contexts: full actual2s OnUpdate/registration/native aura dispatcher, native zero enum/get/set and PetAI passive consumers, five entries/all25 transitions, explicit attack still permitted, death/missing owner/pet/actor/removed aura/effect gates, unchanged retry/custom summon/despawn/range/timer and primary ownership. Services controlled; actual client combat/stay/portrait/relog/full Titanstrike remain separate.\n";
+ return cases;
 }
+#ifndef HATI_OWNER_TEST
+int main(){RunReactionCases();}
+#endif

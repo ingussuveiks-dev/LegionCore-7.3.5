@@ -2032,7 +2032,7 @@ class spell_hun_hatis_bond : public SpellScriptLoader
                 {
                     update = 0;
                     Unit* caster = GetCaster();
-                    if (!caster || !caster->IsAlive())
+                    if (!caster || !caster->IsAlive() || !caster->ToPlayer())
                         return;
 
                     bool findHati = false;

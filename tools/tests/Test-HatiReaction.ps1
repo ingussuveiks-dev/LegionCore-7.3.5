@@ -5,10 +5,14 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/hati
  function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  $path='src/server/scripts/Spells/spell_hunter.cpp';$source=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "4ea7b499e:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned Hati baseline'}
- $actor=Block $source 'class spell_hun_hatis_bond :';$prior=Block $old 'class spell_hun_hatis_bond :'
+ $actor=Block $source 'class spell_hun_hatis_bond :';$currentActor=$actor;$prior=Block $old 'class spell_hun_hatis_bond :'
+ if($actor.Contains('if (!caster || !caster->IsAlive() || !caster->ToPlayer())')){
+  & "$PSScriptRoot/Test-HatiOwner.ps1" -ScopeOnly
+  $source=(& git -C $repo show "ee6b845e4:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-owner source missing'};$actor=Block $source 'class spell_hun_hatis_bond :'
+ }
  $normalized=$actor.Replace('hati->SetReactState(pet->GetReactState());','if (ReactStates reactState = pet->GetReactState()) hati->SetReactState(reactState);')
  if((Shape $normalized) -cne (Shape $prior) -or (Shape $source.Replace($actor,$prior)) -cne (Shape $old)){throw 'Only zero-valued reaction filter may change; complete apply/remove/timer/summon/cleanup/other scripts retained'}
- foreach($pair in @(@('Bond','BondFixed',$actor),@('Baseline','BondBaseline',$prior))){
+ foreach($pair in @(@('Bond','BondFixed',$currentActor),@('Baseline','BondBaseline',$prior))){
   $class="struct $($pair[1]):AuraScript{uint32 update=0;"+(Block $pair[2] 'void OnUpdate(')+(Block $pair[2] 'void Register()').Replace('spell_hun_hatis_bond_AuraScript::',"$($pair[1])::")+'};'
   [IO.File]::WriteAllText("$out/$($pair[0]).inc",$class)
  }
