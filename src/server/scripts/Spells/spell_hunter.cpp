@@ -2051,14 +2051,13 @@ class spell_hun_hatis_bond : public SpellScriptLoader
                                 case 106550:
                                 case 106551:
                                     findHati = true;
-									if (creature->IsAlive())
-									{
-										hati = creature;
-										if (Player* player = caster->ToPlayer())
-											if (Pet* pet = player->GetPet())
-												if (ReactStates reactState = pet->GetReactState())
-													hati->SetReactState(reactState);
-									}
+                                    if (creature->IsAlive())
+                                    {
+                                        hati = creature;
+                                        if (Player* player = caster->ToPlayer())
+                                            if (Pet* pet = player->GetPet())
+                                                hati->SetReactState(pet->GetReactState());
+                                    }
                                     break;
                                 default:
                                     findPet = true;

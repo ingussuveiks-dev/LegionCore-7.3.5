@@ -27,4 +27,19 @@ int main(int argc,char** argv)
         std::cout<<"SUMMON\t"<<effect->SpellID<<'\t'<<effect->EffectMiscValue[0]<<'\t'<<effect->EffectMiscValue[1]<<'\n';
     auto summon=properties.LookupEntry(3725);if(!summon)return 7;
     std::cout<<"PROPERTIES\t"<<summon->ID<<'\t'<<summon->Control<<'\t'<<summon->Title<<'\t'<<summon->Slot<<'\t'<<summon->Flags<<'\n';
+#ifdef HATI_REACTION_CATALOG
+    for(auto effect:effects)if(!effect->DifficultyID&&effect->SpellID==197344)
+        std::cout<<"BOND_EFFECT\t"<<effect->EffectIndex<<'\t'<<effect->Effect<<'\t'<<effect->EffectAura<<'\t'<<effect->ImplicitTarget[0]<<'\n';
+    WorldDatabase.SetConnectionInfo(sConfigMgr->GetStringDefault("WorldDatabaseInfo",""),1,1);
+    if(WorldDatabase.Open()||!WorldDatabase.PrepareStatements())return 8;
+    WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");WorldDatabase.Execute("SET SESSION TRANSACTION READ ONLY");
+    auto readOnly=WorldDatabase.Query("SELECT @@session.transaction_read_only");if(!readOnly||!readOnly->Fetch()[0].GetBool())return 9;
+    auto binding=WorldDatabase.Query("SELECT spell_id,ScriptName FROM spell_script_names WHERE spell_id=197344 ORDER BY ScriptName");
+    if(!binding)return 10;
+    do{auto row=binding->Fetch();std::cout<<"BINDING\t"<<row[0].GetUInt32()<<'\t'<<row[1].GetString()<<'\n';}while(binding->NextRow());
+    auto actors=WorldDatabase.Query("SELECT entry,AIName,ScriptName FROM creature_template WHERE entry IN(100324,106548,106549,106550,106551) ORDER BY entry");
+    if(!actors)return 11;
+    do{auto row=actors->Fetch();std::cout<<"ACTOR\t"<<row[0].GetUInt32()<<'\t'<<row[1].GetString()<<'\t'<<row[2].GetString()<<'\n';}while(actors->NextRow());
+    std::cout<<"COMPLETE\tHatiReaction\n";
+#endif
 }

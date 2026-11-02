@@ -11,7 +11,12 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  if($LASTEXITCODE){throw 'Pinned formation baseline unavailable'}
  function Formation([string]$source){$method=Block $source 'void Unit::SetMinion('; $start=$method.IndexOf('    std::vector<ObjectGuid> followOrder');if($start -lt 0){$start=$method.IndexOf('    if (m_Controlled.size() < 5)')};if($start -lt 0){throw 'Missing native formation'};$method.Substring($start,$method.Length-$start-1)}
  $currentFormation=Formation $current;$pinnedFormation=Formation $pinned
- if(($current.Replace($currentFormation,$pinnedFormation) -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Change outside SetMinion formation not reviewed'}
+ $currentMethod=Block $current 'void Unit::SetMinion(';$pinnedMethod=Block $pinned 'void Unit::SetMinion('
+ $certified=(& git -C $repo show "0e238cb15:$path") -join "`n";if($LASTEXITCODE){throw 'Original formation fix unavailable'}
+ if(($currentMethod -replace '\s','') -cne ((Block $certified 'void Unit::SetMinion(') -replace '\s','')){throw 'SetMinion differs from the reviewed formation fix'}
+ # Later independent Unit methods do not belong to this extracted test.
+ # Retain the complete SetMinion differential and its certified fixed body.
+ if(($currentMethod.Replace($currentFormation,$pinnedFormation) -replace '\s','') -cne ($pinnedMethod -replace '\s','')){throw 'Change outside SetMinion formation not reviewed'}
  $selected=if($Baseline){$pinnedFormation}else{$currentFormation}
  [IO.File]::WriteAllText("$out/Formation.inc",'void Owner::AssignFormation(Minion* minion,bool apply){'+$selected+'}')
  $guid=Get-Content "$repo/src/server/game/Entities/Object/ObjectGuid.cpp" -Raw -Encoding UTF8
