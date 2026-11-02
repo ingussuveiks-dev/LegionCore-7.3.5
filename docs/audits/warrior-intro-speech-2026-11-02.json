@@ -191,7 +191,18 @@
   "diagnostics": {
     "result": "Per-test exact own/canonical before/after crash/log snapshots, actual exits/full stdout/stderr reviewed. No new/changed crash, appended DBErrors or server warning/error/assertion. Active Crashes empty. Existing mixed6090 unresolved log unchanged/untruncated. Private reader/config/credentials, proprietary audio, binaries and characters excluded from commits/archive. Resolved evidence archive follows focused commit; originals retained.",
     "mixed_db_errors_bytes": 6090,
-    "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0"
+    "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
+    "archive": {
+      "FixCommit": "5d27183db1b71a63b982ef6e19bd1df2965184e6",
+      "Archive": "build-extractors\\bin\\Release\\fixed\\warrior-intro-speech-2026-11-02\\verified1",
+      "Sources": 233,
+      "Payloads": 235,
+      "ManifestSHA256": "49DB14458F3F2510D459733173DCA98471376CDBC1FC0622651FBD89E1410E0E",
+      "SourceArchiveSourceVerified": true,
+      "CompletedDiagnosticSets": 15,
+      "MixedLogUnchanged": true,
+      "ActiveCrashes": 0
+    }
   },
   "reproduction": "Test-WarriorIntroSpeech.ps1 [-BaselineSql|-VerifyLiveData] -AudioDirectory <six locally exported matching26972 .audio files>; fixture hashes identify the required assets. Test-WarriorOpeningConversationNative.ps1 defaults to repaired data; -BaselineData explicitly selects the original live-data counterfactual and never rolls back production data. All tests record their exact runtime diagnostics.",
   "remaining": [
@@ -199,5 +210,6 @@
     "Cross-conversation scheduling remains OPEN. Existing normal5s205287 plus2s departure calls1412 about7s after1405 creation, which can overlap voices under both old absolute and repaired cumulative schedules. Opening1386 and1405 can also overlap with early/one-hit victory. This focused data change does not invent a global voice queue, delay combat or infer retail timings from5000ms padding. Ragnvald1412 factory refusal is a distinct caller issue.",
     "Exact-stage original actor/weak-attempt recovery after reconnect/restart remains OPEN as documented in ritual audit. No new character reset; reset3 already consumed.",
     "Shared101430/103151 LINK2, Wardstone LINK4, Survival39427 middle flight, Fu Zan original ride/Yigthregor, Monk intro repeated roots/nearest progression, Stromkar client visuals and other all36 findings remain OPEN. Continue independent repairs after focused commit."
-  ]
+  ],
+  "fix_commit": "5d27183db1b71a63b982ef6e19bd1df2965184e6"
 }
