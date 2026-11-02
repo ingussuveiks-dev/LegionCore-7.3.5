@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-02",
+  "status": "DEPLOYED focused first-wave death-credit repair; full933/client/all36 remain OPEN.",
+  "fix_commit": "Recorded in the subsequent verified archive manifest; this audit accompanies the focused implementation commit.",
+  "cause": "Danica103608 IsSummonedBy emitted46878/47474 to the nearest Player100yd. The actual summoner is the dead102970 demon, not the killer. A nearer GM or absent nearest-player lookup can lose the native shared scenario transition; an unrelated Danica summon can also attempt it without a genuine death. Player/pet/guardian/ally attribution and native acceptance were not acknowledged.",
+  "repair": "The actual shared instance owns one WarriorFirstWave state. Only real dead native102970/spawn361138 in map1500/scenario933/current step1 can capture eligible active38904/42815 participants. Full original Player GUIDs and weak native quest-attempt lifetimes replace nearest-player attribution; the actual killer's eligible player/owner is preferred, retaining native shared Scenario group credit. Emit46878 only until real45771 receipt, then re-resolve the original Player/current tree before47474 until46175. Retry only missing receipts at2000ms. Abandonment/new attempt/completion/reward/real victory/map transfer or destroyed Player cancels; temporary loading/contact/teleport/phase gates retain the same valid attempt without granting progress while ineligible. Source corpse or Danica/AI removal cannot erase a captured real death. No quest/item/completion/teleport grant or forced cast was added.",
+  "native_context": {
+    "actor_snapshot": ".codex/warrior-intro-timers-context3-open-2026-11-02/world.tsv",
+    "source": "102970 SmartAI/native spawn361138/map1500(-1984.43,-1252.56,6.02399), unit_flags32768 (not native immunity mask0x380). Native death action12 summons103608/type8 at(-2001,-1255,37); kept unchanged.",
+    "smart_graph_sha256": "0A786A80F35C88D99D171CDFE912F9163566C3570EA3C4DCBB9B74EC86A15965",
+    "ordering": "Extracted actual Unit::Kill dispatch: SmartAI JustDied/native Danica summon first, summoner death notification next, actual InstanceScript::CreatureDies then CreatureDiesForScript. First-wave credit now belongs to the latter genuine death, independent of the preceding summon/AI.",
+    "catalog": "Matching26972 DB2 plus read-only hotfix:933 step1 root45770/operator4 ALL, exactly45771/criteria29012/asset46878/amount1 and46175/criteria29183/asset47474/amount1. Native ritual step2 root46911/two leaves and205287/205295/205296 data retained."
+  },
+  "checks": [
+    "77 ASAN cases compile the actual first_wave_transition.h, native Quest/Original member helper, Player::AddQuestDelayedEvent and actual Unit death-dispatch segment. Both quest IDs/faction contexts, player/pet/guardian/ally/no killer, original eligible owner priority, native shared receipt, nearest GM/absent nearest and living-source counterfactuals, missing/disabled/replaced SmartAI/absent Danica, duplicate deaths, native first/second receipt already present, refused event2000ms boundary and no replay of accepted leaf pass.",
+    "Full128-bit GUID lookup, retired/new quest attempts even when the old token remains held elsewhere, abandonment/completion/reward/victory/map change, destroyed heap Player, source removal, temporary contact/loading/teleport/phase deferral/recovery and reentrant quest retirement pass. Controlled service endpoints are distinct from whole-core ASAN and native Player/Scenario traversal.",
+    "Retained45 intro timers and41 immediate handoffs compile actual current complete actors, preserving2/3s native clocks, AI lifetime and original-target attack retries. Danica fixture now expects only the unchanged later49203/49262 callback; its first-wave effects are separately owned/tested by the instance. Full Malgalor/reinforcement64 faction/scaled/one-hit/player-pet-guardian-ally/quest/scene/login paths and typed native catalog pass.",
+    "Strict source certificate pinsb37138290 and permits only Danica initial nearest-player block removal plus the new instance member/constructor/include/death/update hooks. All remaining Warrior/Paladin/reinforcement/finale code is retained. Prior handoff/timer certificate chains this exact check before their pinned historical comparisons, exporting actual current actors; no unrelated behavior is exempted.",
+    "Original scripts Release and original final-link inputs pass. Final2 candidate actual native PE selects the registered instance factory/vtable death/update, real source/map/step/death/immunity guards before original weak receipt capture, full128-bit GUID and quest/instance fields, original owner resolver, fresh Player/current phase between events, actual leaf branch skipping accepted event,2000ms retry and absence of nearest-player/first-wave credit calls in Danica summon. Native shared Paladin/Malgalor/reinforcement PE retained.",
+    "Final2 retained actual Vigfus four weak guards/native Helya blessing/bubble/loot/equip/return PE passes; shared instance/Malgalor/reinforcement native PE passes. Canonical exact first-wave PE repeats against deployed21930E33, Scepter login checks actual final-link result. Owned32108 canonical startup and all post-test diagnostics clean; no hidden server left."
+  ],
+  "reviewed_iterations": [
+    "ASAN native1 incorrectly mutated a fixture GUID without updating its lookup registry, unlike the immutable native GUID registry. The fixture now removes the old full key and registers the distinct full GUID; native2/3/4/5 pass. No production guard was weakened. Fixture shadowing/size/signed warnings were corrected; pre-existing native extracted timer/finale warnings remain visible in their outputs.",
+    "Initial FC9ECD84 candidate is obsolete and remains separate; final2 includes retained original attempts across temporary readiness failures. Final native5 has77 cases. Final2 alone is eligible for promotion.",
+    "PE stage2 assumed only one IsInWorld call before capture, overlooking separate source and participant checks. The inspector now selects the actual original-source receiver r15; stage3 passes all guards against final2. Identical COMDAT aliases for native GetCurrentStep/Progress/Leaf are resolved by the real named symbol addresses, not the unrelated displayed alias text."
+  ],
+  "runtime": {
+    "stage": ".codex/warrior-first-wave-release-final2",
+    "world_sha256": "21930E331E133DDE38923037FD539CCA76DA4B0CFBEF479C8D0AEC3F620D461C",
+    "bnet_sha256": "7909798F246D5F83A078D7D0BCD3B64B801663D33B60681AB299C3D521737CB7",
+    "deployment": "Final2 promoted offline to canonical build-extractors/bin/Release; four original exe/map files backed up under .codex/release-before-warrior-first-wave-2026-11-02. Stage/destination hashes and protected config/certificate/DLL hashes verified. Owned worldserver PID32108 reached fresh ready, server shutdown0, exit0, stderr empty, process gone. No user/unknown server stopped. Canonical selected PE and Test-ScepterLogin -VerifyReleaseBinary pass.",
+    "sql": "No new SQL or ScriptName; native death summon/SmartAI data unchanged. No character query, reset or write requested."
+  },
+  "diagnostics": {
+    "result": "Every automated/native/build/PE step records before/after canonical and relevant private crash/log state, exit and captured output. Passing checks have no new/changed crash reports, appended DBErrors or server warnings/errors/assertions. Failed fixture/inspector iterations remain explicit and preserved, paired with repaired passing regressions.",
+    "active_crashes": 0,
+    "mixed_db_errors_bytes": 6090,
+    "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
+    "archive": "After canonical regression and focused commit, archive reviewed evidence with source/archive/source and final manifest hashes. Keep mixed unresolved DBErrors unchanged; exclude private configs/credentials/executables/dumps/character data."
+  },
+  "remaining": [
+    "Opening46877 admission and1386/770 factory acknowledgement, stationary retry/re-entry and AI replacement remain OPEN, as recorded in warrior-opening-native-research-2026-11-02.json. This first-wave repair does not certify the earlier approach/dialogue/battle.",
+    "Danica3s callback still emits49203/49262 before real native205287 five-second cast finishes, and arbitrary SpellHitTarget starts departure. Real normal corpse casts/native103688/103687 creation have been verified separately; acknowledged original spirits/ritual failure recovery and full step2 must still be repaired. Missing native Danica summon/actor recovery remains separate; no substitute spawn was invented.",
+    "An explicitly retired quest-attempt token is never adopted by a new login/reaccept request. Full client abandonment/logout/re-entry/native Scenario persistence, visibility/audio/motion and actual both-faction traversal remain separate client checks. Unit death receipt is independent of hit size/scaling; the retained scaled one-hit suite belongs to the later Malgalor path, not an actual client102970 combat run.",
+    "Shared101430/103151 LINK2/mixed6090, Wardstone missingLINK4, Survival middle flight, Stromkar visual retests and all other recorded acquisition findings remain OPEN. Continue independent repairs; client testing remains with the user, reset3 already consumed."
+  ]
+}

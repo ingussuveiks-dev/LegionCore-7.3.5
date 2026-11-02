@@ -263,11 +263,8 @@ public:
 
         void IsSummonedBy(Unit* owner) override
         {
-            if (Player* targ = me->FindNearestPlayer(100.0f))
-            {
-                targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46878);
-                targ->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47474);
-            }
+            // The actual102970/spawn361138 instance death owns46878/47474;
+            // a summon or an unrelated nearest Player cannot award them.
             std::list<Creature*> trash;
             GetCreatureListWithEntryInGrid(trash, me, 102964, 90.0f);
             GetCreatureListWithEntryInGrid(trash, me, 102965, 90.0f);

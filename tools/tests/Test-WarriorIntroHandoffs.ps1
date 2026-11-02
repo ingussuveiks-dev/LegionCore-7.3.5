@@ -4,6 +4,8 @@ function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 
 function Shape([string]$text){($text -replace '//[^\n]*','') -replace '\s',''}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/Intro/wars_intro_scenario.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "783373fdb:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-handoff source missing'}
+& "$PSScriptRoot/Test-WarriorFirstWave.ps1" -ScopeOnly
+$certified=(& git -C $repo show "b37138290:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-first-wave handoff source missing'}
 $expected=@'
 static void ResumeBattle(Creature* ragnvald, uint8 remaining = 10) {
  if (!ragnvald->IsInWorld() || ragnvald->IsPreDelete() || !ragnvald->IsAlive() || ragnvald->GetEntry() != 97167 || ragnvald->GetMapId() != 1500) return;
@@ -15,9 +17,9 @@ static void ResumeBattle(Creature* ragnvald, uint8 remaining = 10) {
  ragnvald->AddDelayedEvent(500, [ragnvald, remaining, instanceId]() -> void { if (ragnvald->GetInstanceId() == instanceId) ResumeBattle(ragnvald, remaining - 1); });
 }
 '@
-$helper=Block $source 'static void ResumeBattle('
+$helper=Block $certified 'static void ResumeBattle('
 if((Shape $helper) -cne (Shape $expected)){throw 'Expected typed original-Ragnvald Unit-owned finite handoff changed'}
-$normal=$source.Replace($helper,'').Replace('npc_ragnvald_dragonborn::npc_ragnvald_dragonbornAI::ResumeBattle(targ);','targ->AI()->DoAction(true);').Replace('sCreatureTextMgr->SendChat(targ, 0);','targ->AI()->Talk(0);')
+$normal=$certified.Replace($helper,'').Replace('npc_ragnvald_dragonborn::npc_ragnvald_dragonbornAI::ResumeBattle(targ);','targ->AI()->DoAction(true);').Replace('sCreatureTextMgr->SendChat(targ, 0);','targ->AI()->Talk(0);')
 $ragnvald=Block $normal 'class npc_ragnvald_dragonborn :';$ragnvaldOld=Block $old 'class npc_ragnvald_dragonborn :'
 $ragnvald=$ragnvald.Replace('AttackBattleTarget(*itr, targ->GetGUID());','(*itr)->AI()->AttackStart(targ);')
 if((Shape $ragnvald) -cne (Shape $ragnvaldOld)){throw 'Other Ragnvald timer, retry, fallback, native scene/combat or admission changed'}

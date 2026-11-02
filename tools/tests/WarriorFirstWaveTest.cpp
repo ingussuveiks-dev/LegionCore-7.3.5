@@ -1,0 +1,65 @@
+#include <algorithm>
+#include <cassert>
+#include <cstdint>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+using uint8=uint8_t;using uint32=uint32_t;using uint64=uint64_t;
+enum{QUEST_STATUS_NONE=0,QUEST_STATUS_COMPLETE=1,QUEST_STATUS_INCOMPLETE=3,CLASS_WARRIOR=1,CRITERIA_TYPE_SCRIPT_EVENT_2=92,UNIT_FIELD_FLAGS=1,UNIT_FLAG_IMMUNE_TO_PC=1,UNIT_FLAG_IMMUNE_TO_NPC=2,UNIT_FLAG_NOT_ATTACKABLE_1=4};
+static uint32 warnings=0;
+#define TC_LOG_WARN(...) (++warnings)
+struct ObjectGuid{uint64 low=0,high=0;bool operator==(ObjectGuid g)const{return low==g.low&&high==g.high;}bool operator<(ObjectGuid g)const{return high==g.high?low<g.low:high<g.high;}};
+struct Player;struct Creature;struct Instance;struct Map;struct CreatureAI;
+struct Unit{bool IsAIEnabled=true;Player*owner=nullptr;virtual~Unit()=default;virtual Player*ToPlayer(){return nullptr;}virtual Creature*ToCreature(){return nullptr;}Player*GetCharmerOrOwnerPlayerOrPlayerItself(){return ToPlayer()?ToPlayer():owner;}bool IsCreature(){return ToCreature()!=nullptr;}void Dispatch(Creature*);};
+struct Ref{Player*player;Player*getSource()const{return player;}};
+struct Map{uint32 id=1500,instance=42;bool unload=false;std::vector<Ref>players;std::map<ObjectGuid,Creature*>actors;uint32 GetId(){return id;}uint32 GetInstanceId(){return instance;}bool IsMapUnload(){return unload;}auto const&GetPlayers(){return players;}Creature*GetCreature(ObjectGuid key){auto i=actors.find(key);return i==actors.end()?nullptr:i->second;}}world;
+struct Progress{uint64 Counter=0;};struct Achievement{std::map<uint32,Progress>data;auto const*GetCriteriaProgressMap(){return &data;}};
+struct Scenario{uint32 id=933,step=1;Achievement achievement;uint32 GetScenarioId(){return id;}uint32 GetCurrentStep(){return step;}Achievement&GetAchievementMgr(){return achievement;}}scenarioFixture;
+struct Scenarios{bool missing=false;Scenario*GetScenario(uint32 id){return missing||id!=42?nullptr:&scenarioFixture;}}scenarios;auto*sScenarioMgr=&scenarios;
+struct QuestStatusData{uint32 Status=3;std::shared_ptr<uint8>ScriptLifetime;};
+static std::map<ObjectGuid,Player*>players;
+struct Player:Unit{
+ ObjectGuid guid{1,0x8877665544332211};Map*map=&world;uint32 team=67,cls=1,activeQuest=38904,questState=3,marker=0;bool gm=false,worlded=true,contact=true,pending=false,phase=true,rewarded=false;QuestStatusData quest;std::vector<uint32>events;std::map<uint32,uint32>refuse;std::function<void(uint32)>onEvent;std::vector<std::function<void()>>timers;
+ Player*ToPlayer()override{return this;}ObjectGuid GetGUID(){return guid;}Map*GetMap(){return map;}uint32 GetMapId(){return map->id;}uint32 GetInstanceId(){return map->instance;}uint32 getClass(){return cls;}bool IsInWorld(){return worlded;}bool CanContact(){return contact;}bool isGameMaster(){return gm;}bool HasPendingTeleport(){return pending;}bool InSamePhase(Creature*){return phase;}
+ bool GetQuestRewardStatus(uint32 q){return q==activeQuest&&rewarded;}uint32 GetQuestStatus(uint32 q){return q==activeQuest?questState:0;}QuestStatusData*getQuestStatus(uint32 q){quest.Status=questState;return q==activeQuest&&questState?&quest:nullptr;}uint32 GetQuestObjectiveData(uint32 q,uint32 id){assert(id==103661);return q==activeQuest?marker:0;}
+ void AddDelayedEvent(uint64,std::function<void()>&& f){timers.push_back(std::move(f));}void AddQuestDelayedEvent(uint32,uint64,std::function<void()>&&);
+ void UpdateAchievementCriteria(uint32 type,uint32 asset){assert(type==92&&(asset==46878||asset==47474));events.push_back(asset);if(onEvent)onEvent(asset);if(gm||!contact||!worlded||scenarioFixture.step!=1||refuse[asset])return;scenarioFixture.achievement.data[asset==46878?45771:46175].Counter=1;if(scenarioFixture.achievement.data[45771].Counter&&scenarioFixture.achievement.data[46175].Counter)scenarioFixture.step=2;}
+};
+struct ObjectAccessor{static Player*FindPlayer(ObjectGuid id){auto i=players.find(id);return i==players.end()?nullptr:i->second;}};
+struct CreatureAI{std::function<void(Unit*)>death;void JustDied(Unit*u){if(death)death(u);}void SummonedCreatureDies(Creature*,Unit*){}};
+struct Creature:Unit{ObjectGuid guid{201,0x1122334455667788};Map*map=&world;uint32 entry=102970,spawn=361138,flags=0;bool alive=false,worlded=true,preDelete=false;CreatureAI*ai=nullptr;Instance*instance=nullptr;Player*nearest=nullptr;
+ Creature*ToCreature()override{return this;}ObjectGuid GetGUID(){return guid;}Map*GetMap(){return map;}uint32 GetInstanceId(){return map->instance;}uint32 GetEntry(){return entry;}uint32 GetDBTableGUIDLow(){return spawn;}bool IsAlive(){return alive;}bool IsInWorld(){return worlded;}bool IsPreDelete(){return preDelete;}bool HasFlag(uint32,uint32 f){return (flags&f)!=0;}CreatureAI*AI(){return ai;}void KillAllDelayedCombats(){}Creature*ToTempSummon(){return nullptr;}Unit*GetSummoner(){return nullptr;}Instance*GetInstanceScript(){return instance;}Player*FindNearestPlayer(float f){assert(f==100);return nearest;}};using TempSummon=Creature;using InstanceScript=Instance;
+#include "QuestDelay.inc"
+#include "Original.inc"
+#include "FirstWave.inc"
+struct Instance{WarriorFirstWave::State state{&world};uint32 calls=0,other=0;void CreatureDies(Creature*c,Unit*u){++calls;state.Death(c,u);}void CreatureDiesForScript(Creature*,Unit*){++other;}};
+void Unit::Dispatch(Creature*creature){
+#include "DeathOrder.inc"
+}
+static void Legacy(Creature*me){
+#include "Legacy.inc"
+}
+struct Run{Player player,other;Creature corpse,danica;CreatureAI smart;Instance instance;
+ Run(){world=Map{};scenarioFixture=Scenario{};scenarios.missing=false;players.clear();warnings=0;other.guid.low=2;players[player.guid]=&player;world.players={{&player}};world.actors[corpse.guid]=&corpse;corpse.instance=&instance;corpse.ai=&smart;danica.entry=103608;danica.nearest=&player;}
+ void AddOther(){players[other.guid]=&other;world.players.push_back({&other});}void Death(Unit*killer=nullptr){(killer?killer:&player)->Dispatch(&corpse);}auto&State(){return instance.state;}void Done(){assert(scenarioFixture.step==2&&State().Leaf(45771)&&State().Leaf(46175)&&!State().pending);}
+};
+int main(){_set_abort_behavior(0,_CALL_REPORTFAULT);std::cout<<std::unitbuf;uint32 cases=0;
+ {Run r;r.AddOther();r.other.gm=true;r.danica.nearest=&r.other;Legacy(&r.danica);assert(scenarioFixture.step==1&&r.player.events.empty());r.Death();r.Done();assert(r.player.events==std::vector<uint32>({46878,47474}));std::cout<<"COUNTERFACTUAL pinnedb37138290 nearest GM receives denied events; actual instance death recovers eligible original participant.\n";++cases;}
+ {Run r;r.danica.nearest=nullptr;Legacy(&r.danica);assert(r.player.events.empty());r.Death();r.Done();++cases;}
+ {Run r;r.corpse.alive=true;Legacy(&r.danica);assert(scenarioFixture.step==2);scenarioFixture=Scenario{};r.player.events.clear();r.Death();assert(scenarioFixture.step==1&&r.player.events.empty());std::cout<<"COUNTERFACTUAL old Danica summon can advance without a dead source; repaired path rejects living102970.\n";++cases;}
+ for(uint32 team:{67u,469u})for(uint32 quest:{38904u,42815u})for(uint32 killer=0;killer<5;++killer){Run r;r.player.activeQuest=quest;r.player.team=team;r.AddOther();Unit pet,guardian;Creature ally;pet.owner=&r.other;guardian.owner=&r.other;Unit*who=killer==0?static_cast<Unit*>(&r.player):killer==1?static_cast<Unit*>(&pet):killer==2?static_cast<Unit*>(&guardian):killer==3?static_cast<Unit*>(&ally):nullptr;if(killer==4)r.State().Death(&r.corpse,nullptr);else r.Death(who);r.Done();assert((killer==1||killer==2?r.other.events:r.player.events)==std::vector<uint32>({46878,47474}));auto count=r.player.events.size()+r.other.events.size();r.Death(who);r.State().Update(100000);assert(count==r.player.events.size()+r.other.events.size());++cases;}
+ for(uint32 bad=0;bad<27;++bad){Run r;Map foreign;switch(bad){case 0:world.id=1;break;case 1:world.unload=true;break;case 2:scenarioFixture.id=775;break;case 3:scenarioFixture.id=961;break;case 4:scenarioFixture.step=0;break;case 5:scenarioFixture.step=2;break;case 6:scenarios.missing=true;break;case 7:r.corpse.entry=123;break;case 8:r.corpse.spawn=123;break;case 9:r.corpse.map=&foreign;break;case 10:r.corpse.alive=true;break;case 11:r.corpse.preDelete=true;break;case 12:r.corpse.worlded=false;break;case 13:r.corpse.flags=1;break;case 14:r.corpse.flags=2;break;case 15:r.corpse.flags=4;break;case 16:r.player.cls=2;break;case 17:r.player.questState=0;break;case 18:r.player.questState=1;break;case 19:r.player.gm=true;break;case 20:r.player.worlded=false;break;case 21:r.player.contact=false;break;case 22:r.player.pending=true;break;case 23:r.player.phase=false;break;case 24:r.player.rewarded=true;break;case 25:r.player.marker=1;break;case 26:world.players.clear();break;}r.State().Death(&r.corpse,&r.player);assert(r.player.events.empty()&&!r.State().pending);++cases;}
+ for(uint32 blocked:{46878u,47474u}){Run r;r.player.refuse[blocked]=1;r.Death();assert(r.State().pending&&warnings==1);auto first=r.player.events;for(uint32 i=0;i<3;++i)r.Death();assert(r.player.events==first);r.State().Update(1999);assert(r.player.events==first);r.player.refuse[blocked]=0;r.State().Update(1);r.Done();assert(std::count(r.player.events.begin(),r.player.events.end(),46878u)==(blocked==46878?2:1));++cases;}
+ for(uint32 change=0;change<13;++change){Run r;Map foreign;r.player.refuse[47474]=1;r.Death();auto count=r.player.events.size();switch(change){case 0:r.player.quest.ScriptLifetime.reset();break;case 1:r.player.questState=0;break;case 2:r.player.rewarded=true;break;case 3:r.player.marker=1;break;case 4:r.player.map=&foreign;break;case 5:r.player.worlded=false;break;case 6:r.player.contact=false;break;case 7:r.player.pending=true;break;case 8:r.player.phase=false;break;case 9:players.erase(r.player.guid);++r.player.guid.high;players[r.player.guid]=&r.player;break;case 10:world.unload=true;break;case 11:scenarioFixture.id=775;break;case 12:scenarioFixture.step=3;break;}r.player.refuse[47474]=0;r.State().Update(2000);assert(r.player.events.size()==count);if(change>=5&&change<=8){assert(r.State().pending);r.player.worlded=r.player.contact=r.player.phase=true;r.player.pending=false;r.State().Update(1999);assert(r.player.events.size()==count);r.State().Update(1);r.Done();}else assert(!r.State().pending);++cases;}
+ {Run r;r.player.refuse[47474]=1;r.Death();world.actors.clear();r.corpse.preDelete=true;r.player.refuse[47474]=0;r.State().Update(2000);r.Done();++cases;}
+ for(uint32 mode=0;mode<4;++mode){Run r;CreatureAI replacement;r.smart.death=[&](Unit*){assert(!r.State().pending&&r.player.events.empty());if(mode==0)r.corpse.ai=nullptr;if(mode==1)r.corpse.IsAIEnabled=false;if(mode==3)r.corpse.ai=&replacement;};if(mode==2){r.corpse.ai=nullptr;r.corpse.IsAIEnabled=false;}r.Death();r.Done();assert(r.instance.calls==1&&r.instance.other==1);++cases;}
+ for(uint32 event:{46878u,47474u}){Run r;r.player.onEvent=[&](uint32 asset){if(asset==event){r.player.quest.ScriptLifetime.reset();r.player.questState=0;}};r.Death();if(event==46878)assert(r.player.events==std::vector<uint32>{46878});r.State().Update(2000);assert(!r.State().pending);++cases;}
+ {Run r;r.AddOther();r.player.refuse[46878]=1;r.other.refuse[47474]=1;r.Death();assert(r.State().Leaf(45771)&&!r.State().Leaf(46175));r.player.refuse[46878]=0;r.other.refuse[47474]=0;r.State().Update(2000);r.Done();assert(std::count(r.other.events.begin(),r.other.events.end(),46878u)==1);++cases;}
+ {Run r;r.player.refuse[46878]=1;r.Death();auto lifetime=r.player.quest.ScriptLifetime;r.player.quest.ScriptLifetime=std::make_shared<uint8>();r.player.refuse[46878]=0;r.State().Update(2000);assert(!r.State().pending&&scenarioFixture.step==1);++cases;}
+ for(uint32 leaf:{45771u,46175u}){Run r;scenarioFixture.achievement.data[leaf].Counter=1;r.Death();r.Done();assert(r.player.events==std::vector<uint32>{leaf==45771?47474u:46878u});++cases;}
+ {Run r;auto transient=std::make_unique<Player>();transient->guid.low=5;transient->refuse[46878]=1;players.clear();players[transient->guid]=transient.get();world.players={{transient.get()}};r.State().Death(&r.corpse,transient.get());assert(r.State().pending);players.clear();world.players.clear();transient.reset();r.State().Update(2000);assert(!r.State().pending&&scenarioFixture.step==1);++cases;}
+ std::cout<<"PASS "<<cases<<" ASAN actual first-wave state, original quest helper/weak lifetime and native Unit death dispatch ordering: actual102970/361138 death only,933/step1/native two leaves, both quests/factions, owner-pet-guardian-ally/group priority, missing/disabled/replaced SmartAI, absent Danica/nearest GM, one real death/repeated events,2000ms refused-event retry without replaying accepted leaf, full GUID, abandonment/new attempt/transfer/completion and destroyed heap Player cancellation; temporary contact/loading/teleport/phase gates defer the same valid attempt and recover. Criteria/map/player services controlled; real native catalog and client/full933 remain separate.\n";
+}

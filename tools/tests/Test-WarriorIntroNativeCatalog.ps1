@@ -18,7 +18,9 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/warr
   "EFFECT`t205296`t0`t28`t0`t103687`t3133`t0`t18`t0",
   "DURATION`t205287`t8000`t8000",
   "TREE`t46911`t0`t4`t0`t0","TREE`t46912`t46911`t0`t1`t29573","TREE`t46929`t46911`t0`t1`t29585"
+  "TREE`t45770`t0`t4`t0`t0","TREE`t45771`t45770`t0`t1`t29012","TREE`t46175`t45770`t0`t1`t29183"
  )){if(!$native.Contains($expected)){throw "Matching native intro catalog changed: $expected"}}
  if(@($native -split "`n"|Where-Object {$_ -match '^TREE\t\d+\t46911\t'}).Count -ne 2){throw 'Native Val kyr tree no longer has exactly its two acknowledged leaves'}
+ if(@($native -split "`n"|Where-Object {$_ -match '^TREE\t\d+\t45770\t'}).Count -ne 2){throw 'Native first-wave ALL tree no longer has exactly its two actual death leaves'}
  'PASS matching26972 DB2 plus read-only hotfix-loaded933 steps/criteria46877-46878-47474-49203-49262, native205287 aura8s and205295/205296 summons103688/103687 properties3133. No Players/character saves; no actual visual/cast/credit traversal proof.'
 }

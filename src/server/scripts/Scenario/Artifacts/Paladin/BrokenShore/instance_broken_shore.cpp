@@ -13,6 +13,7 @@
 #include "ObjectMgr.h"
 #include "../../Warrior/Intro/malgalor_finale.h"
 #include "../../Warrior/Intro/reinforcement_transition.h"
+#include "../../Warrior/Intro/first_wave_transition.h"
 
 class instance_broken_shore : public InstanceMapScript
 {
@@ -26,9 +27,10 @@ public:
 
     struct instance_broken_shore_InstanceMapScript : public InstanceScript
     {
-        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map), warriorTransition(map) {}
+        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map), warriorTransition(map), warriorFirstWave(map) {}
 
         WarriorReinforcement::State warriorTransition;
+        WarriorFirstWave::State warriorFirstWave;
 
         std::list<Creature*> trashGUIDconteiner;
         GuidSet DoorGUIDconteiner;
@@ -196,6 +198,7 @@ public:
 
         void CreatureDies(Creature* creature, Unit* killer) override
         {
+            warriorFirstWave.Death(creature, killer);
             warriorTransition.Death(creature, killer);
             MalgalorDeath(creature, killer);
             switch (creature->GetEntry())
@@ -234,7 +237,7 @@ public:
             }
         }
 
-        void Update(uint32 diff) override { warriorTransition.Update(diff); }
+        void Update(uint32 diff) override { warriorTransition.Update(diff); warriorFirstWave.Update(diff); }
     };
 };
 
