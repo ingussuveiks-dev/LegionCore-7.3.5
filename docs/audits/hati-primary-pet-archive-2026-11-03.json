@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-03",
+  "status": "Verified local fixed archive after matching deployed primary-pet identity repair and regression. Actual client edge-case retest/other whole chains remain OPEN.",
+  "issue": "docs/audits/hati-primary-pet-2026-11-03.json",
+  "FixCommit": "069d10a873771a5b09c25a24e3c69fadb9bd7972",
+  "Archive": "build-extractors/bin/Release/fixed/hati-primary-2026-11-03/verified1",
+  "Sources": 543,
+  "Payloads": 545,
+  "ReviewedDiagnosticSets": 33,
+  "ManifestSHA256": "33E54F75826598FA3D0B994C45B48CD953D3FB0A94D39FF8480CBED24BACED98",
+  "SourceArchiveSourceVerified": true,
+  "ActiveCrashes": 0,
+  "MixedLogUnchanged": true,
+  "cause": "Any controlled non-Hati guardian incorrectly set findPet and retained Hati after actual primary dismissal. Only native Player::GetPet pointer identity now sets the flag.",
+  "checks": "76 native ASAN lifecycle contexts +145 reaction +12 owner contexts, pinned10 expected logical mismatches and retained separately owned expected non-Player ASAN counterfactual, fresh26972 native/read-only data, related pet suites, original Release build/link and selected/canonical PE, Scepter, owned29848 ready/graceful0/empty stderr/gone.33 completed diagnostic sets reviewed.",
+  "cleanup": "No active crash report required removal. Existing mixed6090 DBErrors unchanged/untruncated and not classified resolved. Original local evidence retained. No dumps/configs/credentials/character data or EXE/PDB/maps committed; no unrelated history removed.",
+  "remaining": "Prior specifically recorded successful user BM acquisition/upgrade remains valid. This dismissal/guardian edge, revive/reconnect/portrait/combat and other artifact sequences require separate client evidence. Unknown sharedLINK2/WardstoneLINK4 and other open findings retained."
+}
