@@ -69,12 +69,12 @@ created=ins(instance('OnCreatureCreate'))
 needs(created,'?OnCreatureCreate@InstanceScript@@','?GetGuidValue@Object@@','?Clear@ObjectGuid@@')
 assert sites(n,created,'?OnCreatureCreate@InstanceScript@@')==([8] if n.get('monk_initial_successor') else [6] if nine_successor else [5])
 if n.get('monk_initial_successor'):
-    assert pairs(created[:8])==[('mov','qword ptr [rsp + 8], rbx'),('mov','qword ptr [rsp + 0x10], rbp'),('mov','qword ptr [rsp + 0x18], rsi'),('mov','qword ptr [rsp + 0x20], rdi'),('push','r14'),('sub','rsp, 0x20'),('mov','rbx, rdx'),('mov','rsi, rcx')]
+    assert pairs(created[:8])==[('mov','qword ptr [rsp + 8], rbx'),('mov','qword ptr [rsp + 0x10], rbp'),('mov','qword ptr [rsp + 0x18], rsi'),('mov','qword ptr [rsp + 0x20], rdi'),('push','r14'),('sub','rsp, 0x20'),('mov','rbx, rdx'),('mov','rbp, rcx' if n.get('monk_hait_opening_successor') else 'rsi, rcx')]
 elif nine_successor:
     assert pairs(created[:6])==[('mov','qword ptr [rsp + 0x18], rbx'),('mov','qword ptr [rsp + 0x20], rsi'),
                                ('push','rdi'),('sub','rsp, 0x20'),('mov','rbx, rdx'),('mov','rdi, rcx')]
 assert {1014,103148,362201,97811,362229}<=values(created)
-assert ('movups','xmmword ptr [rsi + 0x2e8], xmm0' if n.get('monk_initial_successor') else 'xmmword ptr [rdi + 0x2e8], xmm0') in pairs(created)
+assert ('movups','xmmword ptr [rbp + 0x2e8], xmm0' if n.get('monk_hait_opening_successor') else 'xmmword ptr [rsi + 0x2e8], xmm0' if n.get('monk_initial_successor') else 'xmmword ptr [rdi + 0x2e8], xmm0') in pairs(created)
 claim=ins(instance('GetGuidData'));request=ins(instance('SetGuidData'))
 assert 94341 in values(claim) and ('movups','xmm0, xmmword ptr [rcx + 0x318]') in pairs(claim)
 needs(claim,'?GetGuidData@InstanceScript@@')

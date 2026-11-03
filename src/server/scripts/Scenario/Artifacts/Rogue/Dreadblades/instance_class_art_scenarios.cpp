@@ -17,6 +17,7 @@
 #include "../../Monk/Intro/chen_rescue.h"
 #include "../../Monk/Intro/jorvinax_defeat.h"
 #include "../../Monk/Intro/chen_presentation.h"
+#include "../../Monk/Intro/hait_opening.h"
 #include "../../Monk/Intro/nine_czi_arrival.h"
 #include "../../Monk/Intro/nine_czi_rescue.h"
 
@@ -175,18 +176,21 @@ struct instance_ruins_of_falanaar_feral : public InstanceScript
 // Monk order hall introduction - map 1014, scenario 943
 struct instance_monk_intro : public InstanceScript
 {
-    instance_monk_intro(InstanceMap* map) : InstanceScript(map), chenRescue(map), jorvinax(&chenRescue), chenPresentation(&chenRescue), nineArrival(&chenRescue), nineRescue(new MonkNineRescue::State(&chenRescue)) { }
+    instance_monk_intro(InstanceMap* map) : InstanceScript(map), chenRescue(map), jorvinax(&chenRescue), chenPresentation(&chenRescue), nineArrival(&chenRescue), nineRescue(new MonkNineRescue::State(&chenRescue)), haitOpening(new MonkHaitOpening::State(map)) { }
 
     MonkChenRescue::State chenRescue;
     MonkJorvinax::State jorvinax;
     MonkChenPresentation::State chenPresentation;
     MonkNineArrival::State nineArrival;
     std::unique_ptr<MonkNineRescue::State> nineRescue;
-    void OnCreatureCreate(Creature* actor) override { InstanceScript::OnCreatureCreate(actor); chenRescue.Observe(actor); nineArrival.Observe(actor); nineRescue->Observe(actor); }
+    std::unique_ptr<MonkHaitOpening::State> haitOpening;
+    void OnCreatureDamageTaken(Creature* actor, Unit*, uint32& damage) override { haitOpening->Protect(actor, damage); }
+    void OnCreatureCreate(Creature* actor) override { InstanceScript::OnCreatureCreate(actor); chenRescue.Observe(actor); nineArrival.Observe(actor); nineRescue->Observe(actor); haitOpening->Observe(actor); }
     void CreatureDies(Creature* actor, Unit* killer) override { nineRescue->Death(actor, killer); chenRescue.Death(actor, killer); jorvinax.Death(actor, killer); }
     ObjectGuid GetGuidData(uint32 type) const override
     {
         if (type == MonkChenRescue::ClaimData) return chenRescue.claim;
+        if (type == MonkHaitOpening::AcceptedData) return haitOpening->owner;
         if (type == MonkChenArrival::ClaimData) return chenRescue.arrivalClaim;
         if (type == MonkChenArrival::PlayerData) return chenRescue.arrivalPlayer;
         return InstanceScript::GetGuidData(type);
@@ -201,8 +205,9 @@ struct instance_monk_intro : public InstanceScript
         if (type == MonkJorvinax::ArrivalData) jorvinax.Arrival(value);
         if (type == MonkNineArrival::RequestData) nineArrival.Request(value);
         if (type == MonkNineRescue::RequestData) nineRescue->Request(value);
+        if (type == MonkHaitOpening::AcceptData) haitOpening->Accept(value);
     }
-    void Update(uint32 diff) override { nineRescue->Update(diff); nineArrival.Update(diff); chenPresentation.UpdateRescue(diff); chenPresentation.Update(diff); chenRescue.Update(diff); chenPresentation.UpdateEscortSpeech(diff); jorvinax.Update(diff); chenPresentation.Update(diff, true); }
+    void Update(uint32 diff) override { haitOpening->Update(diff); nineRescue->Update(diff); nineArrival.Update(diff); chenPresentation.UpdateRescue(diff); chenPresentation.Update(diff); chenRescue.Update(diff); chenPresentation.UpdateEscortSpeech(diff); jorvinax.Update(diff); chenPresentation.Update(diff, true); }
 };
 
 //116849

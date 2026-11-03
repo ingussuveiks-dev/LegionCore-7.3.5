@@ -1,10 +1,11 @@
 param([switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
+. "$PSScriptRoot/HaitOpeningPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $text.Length){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$text.Substring($a,$b-$a)}
 function Shape([string]$text){($text -replace '//[^\n]*','') -replace '\s',''}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp'
-$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "ad164392f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-Hait source missing'}
-$rawCurrentHait=Block $source 'class npc_master_hait :'
+$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$source=Get-HaitPreOpeningSource $path $source;$old=(& git -C $repo show "ad164392f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-Hait source missing'}
+$rawCurrentHait=Block (Get-Content "$repo/$path" -Raw) 'class npc_master_hait :'
 if($source.Contains('#include "jorvinax_defeat.h"')){& "$PSScriptRoot/Test-MonkJorvinax.ps1" -ScopeOnly;$source=(& git -C $repo show "7bf4d7a50:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Jorvinax source missing'}}
 if($source.Contains('#include "chen_rescue.h"')){
  & "$PSScriptRoot/Test-MonkChenRescue.ps1" -ScopeOnly
@@ -75,6 +76,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
 $routes=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_routes.h" -Raw
 $protocol=$routes.Substring($routes.IndexOf('namespace MonkChenRoutes'),$routes.IndexOf('inline bool Data()')-$routes.IndexOf('namespace MonkChenRoutes'))+'}'
 $protocol+='namespace MonkJorvinax { constexpr uint32 ArrivalData = 94350; }'
+$protocol+='namespace MonkHaitOpening {'+(Block (Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/hait_opening.h" -Raw) 'inline bool Source(')+'}'
 [IO.File]::WriteAllText("$out/HaitVictoryProtocol.inc",$protocol)
 [IO.File]::WriteAllText("$out/Actor.inc",$(if($Baseline){$oldActor}else{$rawCurrentHait})+';')
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw

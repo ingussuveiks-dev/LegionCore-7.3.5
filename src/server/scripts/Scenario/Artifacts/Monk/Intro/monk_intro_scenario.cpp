@@ -21,6 +21,7 @@
 #include "jorvinax_defeat.h"
 #include "nine_czi_arrival.h"
 #include "nine_czi_rescue.h"
+#include "hait_opening.h"
 
 
 // 97778
@@ -159,6 +160,7 @@ public:
         {
             if (action == 1)
             {
+                if (MonkHaitOpening::Source(me)) return;
                 _presentationFunctions.AddDelayedEvent(1000, [this]() -> void
                 {
                     if (Player* pl = me->FindNearestPlayer(40.0f))

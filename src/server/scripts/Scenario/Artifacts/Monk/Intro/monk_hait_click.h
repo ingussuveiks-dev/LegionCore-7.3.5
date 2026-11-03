@@ -76,9 +76,21 @@ inline void Complete(Player& player, std::shared_ptr<Claim> const& claim)
         player.AddQuestDelayedEvent(QuestId, 10, [owner = &player, claim]() { Complete(*owner, claim); });
         return;
     }
-    claim->finished = true; // consume before the original script can re-enter
+    claim->finished = true; // consume before the instance can re-enter
+    auto script = player.GetMap()->GetCreature(claim->source)->GetInstanceScript();
+    if (!script)
+    {
+        TC_LOG_WARN("scripts", "Monk intro: accepted Hight click has no instance owner; retain click for retry");
+        return;
+    }
+    script->SetGuidData(MonkHaitOpening::AcceptData, player.GetGUID());
+    if (script->GetGuidData(MonkHaitOpening::AcceptedData) != player.GetGUID())
+    {
+        TC_LOG_WARN("scripts", "Monk intro: accepted Hight opening was not retained by its instance; retain click for retry");
+        return;
+    }
+    if (!Current(&player, *claim)) return;
     player.GetMap()->GetCreature(claim->source)->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-    actor->DoAction(1);
 }
 }
 
@@ -107,6 +119,10 @@ class spell_monk_hait_click : public SpellScript
         auto actor = MonkHaitClick::Contact(player, source);
         auto quest = player ? player->getQuestStatus(MonkHaitClick::QuestId) : nullptr;
         if (!actor || !quest) return SPELL_FAILED_BAD_TARGETS;
+        if (auto script = source->GetInstanceScript())
+        {
+            if (!script->GetGuidData(MonkHaitOpening::AcceptedData).IsEmpty()) return SPELL_FAILED_NOT_READY;
+        }
         if (!actor->_pendingClick.expired()) return SPELL_FAILED_NOT_READY;
         if (!quest->ScriptLifetime) quest->ScriptLifetime = std::make_shared<uint8>();
         claim = std::make_shared<MonkHaitClick::Claim>();

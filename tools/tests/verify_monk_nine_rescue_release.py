@@ -17,7 +17,7 @@ context=lambda name:'?'+name+'@State@MonkChenRescue@@'
 instance=lambda name:'?'+name+'@instance_monk_intro@@'
 dispatch=ins(instance('Update'));death_dispatch=ins(instance('CreatureDies'))
 first,=sites(n,dispatch,state('Update'));late,=sites(n,dispatch,'?Update@State@MonkNineArrival@@')
-assert first<late and ('mov','rcx, qword ptr [rcx + 0x490]') in pairs(dispatch[:first])
+assert first<late and ('mov','rcx, qword ptr [rdi + 0x490]' if n.get('monk_hait_opening_successor') else 'rcx, qword ptr [rcx + 0x490]') in pairs(dispatch[:first])
 first_death,=sites(n,death_dispatch,state('Death'));chen,=sites(n,death_dispatch,context('Death'))
 assert first_death<chen and ('mov','rcx, qword ptr [rcx + 0x490]') in pairs(death_dispatch[:first_death])
 assert {('mov','rdi, r8'),('mov','rsi, rdx')}<=set(pairs(death_dispatch[:first_death]))
@@ -85,5 +85,5 @@ for method in ('SetData','MovementInform'):
 for body in (death,update,request,valid,current,actor,leaf):
     for forbidden in ('?FindNearestPlayer@WorldObject@@','?CompleteQuest@Player@@','?AddItem@Player@@','?KilledMonsterCredit@Player@@','?TeleportTo@Player@@','?AddDelayedEvent@Unit@@','?AddDelayedEvent@FunctionProcessor@@'):
         assert not sites(n,body,forbidden)
-print('PASS registered498 instance owns initial Nine state at490; genuine97968/362187 owner/pet/guardian death, original full GUID/weak12103/Scenario identity, actual46734/29046 receipt, native3s/7s point1 and exact issued spline completion/pose before4s readiness; scoped legacy bypass and retained late/Chen checks. Client/full943/all36 remain separate.')
-print(json.dumps({'world_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x498,'owned_state_offset':0x490,'event':46734,'criterion':29046}))
+print(f"PASS registered{n.get('monk_instance_size',0x498):x} instance owns initial Nine state at490; genuine97968/362187 owner/pet/guardian death, original full GUID/weak12103/Scenario identity, actual46734/29046 receipt, native3s/7s point1 and exact issued spline completion/pose before4s readiness; scoped legacy bypass and retained late/Chen checks. Client/full943/all36 remain separate.")
+print(json.dumps({'world_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':n.get('monk_instance_size',0x498),'owned_state_offset':0x490,'event':46734,'criterion':29046}))

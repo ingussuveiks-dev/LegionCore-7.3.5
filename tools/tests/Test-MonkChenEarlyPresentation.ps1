@@ -1,4 +1,5 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[string]$OutputDirectory='')
+. "$PSScriptRoot/HaitOpeningPredecessor.ps1"
 . "$PSScriptRoot/ChenEscortSpeechPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-chen-early"};$out=[IO.Path]::GetFullPath($OutputDirectory)
@@ -6,7 +7,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function Prior([string]$path){$s=(& git -C $repo show "8d66b5e09:$path") -join "`n";if($LASTEXITCODE){throw "Pinned early presentation predecessor missing: $path"};$s}
- $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$prior=Prior $path
+ $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$source=Get-HaitPreOpeningSource $path $source;$prior=Prior $path
  if($source.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4443,')){
   & "$PSScriptRoot/Test-ChenOpeningVoice.ps1" -ScopeOnly
   $source=(& git -C $repo show "8b9ea7da4:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-voice actor missing'}

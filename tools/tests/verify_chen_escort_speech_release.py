@@ -47,5 +47,5 @@ assert body[chat].address not in reachable(body,body[arrival+2].address)
 for forbidden in ('?MovePath@','?MovePoint@','?UpdateAchievementCriteria@','?KilledMonsterCredit@','?CompleteQuest@',
                   '?AddItem@','?TeleportTo@','?CastSpell@','?SummonCreature@','?AddDelayedEvent@'):
     assert not sites(n,body,forbidden),('Optional speech cannot own progression/movement',forbidden)
-print('PASS actual registered498 instance: after-route optional Chen5 uses actual Talk4 clock in original padding/2125ms native bound; original8s/15s routes, admission/weak owner/full actors, arrival retirement, once/reentry, shared unscoped queues and prior4443ms bound retained. Client audio and other coalesced dialogue remain separate.')
+print(f"PASS actual registered{n.get('monk_instance_size',0x498):x} instance: after-route optional Chen5 uses actual Talk4 clock in original padding/2125ms native bound; original8s/15s routes, admission/weak owner/full actors, arrival retirement, once/reentry, shared unscoped queues and prior4443ms bound retained. Client audio and other coalesced dialogue remain separate.")
 print(json.dumps({'world_sha256':hashlib.sha256(n['binary']).hexdigest(),'state_bytes':24,'state_offset':0x418,'actual_previous_voice_offset':0x14,'minimum_previous_voice_ms':2125,'movement_ms':8000}))

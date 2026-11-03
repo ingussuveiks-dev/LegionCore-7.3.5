@@ -10,7 +10,7 @@
 #include <iostream>
 using uint8=uint8_t;using int8=int8_t;using uint32=uint32_t;using int32=int32_t;using uint64=uint64_t;
 #include "Functions.inc"
-struct ObjectGuid { uint64 low=0,high=0;static ObjectGuid Empty;bool operator==(ObjectGuid const&b)const{return low==b.low&&high==b.high;}bool operator<(ObjectGuid const&b)const{return high==b.high?low<b.low:high<b.high;} };
+struct ObjectGuid {bool IsEmpty()const{return !low&&!high;} uint64 low=0,high=0;static ObjectGuid Empty;bool operator==(ObjectGuid const&b)const{return low==b.low&&high==b.high;}bool operator!=(ObjectGuid const&b)const{return !(*this==b);}bool operator<(ObjectGuid const&b)const{return high==b.high?low<b.low:high<b.high;} };
 ObjectGuid ObjectGuid::Empty{};
 enum { CLASS_MONK=10,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,MAX_QUEST_LOG_SIZE=25,
  QUEST_SPECIAL_FLAGS_KILL=1,QUEST_SPECIAL_FLAGS_CAST=2,UNIT_FIELD_NPC_FLAGS=0,UNIT_FIELD_FLAGS=1,
@@ -28,14 +28,15 @@ uint32 warnings=0,errors=0,clockTime=0;uint32 getMSTime(){return clockTime;}
 #define TC_LOG_ERROR(...) (++errors)
 #define TC_LOG_DEBUG(...) ((void)0)
 struct Player;struct Creature;struct CreatureAI;struct Unit;
-struct Map { bool dungeon=true;uint32 events=0;std::map<ObjectGuid,Creature*> actors;Creature*GetCreature(ObjectGuid id){auto i=actors.find(id);return i==actors.end()?nullptr:i->second;}uint32 GetDifficultyID(){return 12;}bool IsDungeon()const{return dungeon;}void ScriptsStart(int,uint32 id,Unit*,void*){assert(id==46736);++events;} } originMap,otherMap;
+struct ZoneScript;
+struct Map { ZoneScript*script=nullptr; bool dungeon=true;uint32 events=0;std::map<ObjectGuid,Creature*> actors;Creature*GetCreature(ObjectGuid id){auto i=actors.find(id);return i==actors.end()?nullptr:i->second;}uint32 GetDifficultyID(){return 12;}bool IsDungeon()const{return dungeon;}void ScriptsStart(int,uint32 id,Unit*,void*){assert(id==46736);++events;} } originMap,otherMap;
 int sEventScripts=0;
 struct WorldObject {
  Map*mapObject=&originMap;uint32 map=1014,instance=8;ObjectGuid guid{1,0xeeee111122223333};bool world=true;float distance=0;
  virtual~WorldObject()=default;virtual bool IsCreature()const{return false;}bool IsInWorld()const{return world;}Map*GetMap()const{return mapObject;}
  uint32 GetMapId()const{return map;}uint32 GetInstanceId()const{return instance;}ObjectGuid GetGUID()const{return guid;}float GetDistance(WorldObject const*p)const{return p->distance;}
 };
-struct ZoneScript { void ProcessEvent(WorldObject*,uint32){assert(false);} };using InstanceScript=ZoneScript;
+struct ZoneScript { ObjectGuid accepted;Creature*openingActor=nullptr;ObjectGuid GetGuidData(uint32)const{return accepted;}void SetGuidData(uint32,ObjectGuid);uint32 nativeEvents=0;void ProcessEvent(WorldObject*,uint32 id){assert(id==46736);++nativeEvents;} };using InstanceScript=ZoneScript;
 struct Vehicle { uint32 GetCreatureEntry(){assert(false);return 0;} };
 struct OutdoorPvP { void HandleSpellClick(Player*,Unit*){} };
 struct Target { uint32 value=0;uint32 GetTarget()const{return value;} };
@@ -54,7 +55,7 @@ struct Unit:WorldObject {
  bool alive=true,condition=true,requirements=true,reject=false,inMap=true,IsAIEnabled=true,defer=false;uint32 casts=0;std::function<void()> queued;
  virtual Player*ToPlayer(){return nullptr;}virtual Creature*ToCreature(){return nullptr;}bool IsPlayer(){return ToPlayer()!=nullptr;}bool IsAlive()const{return alive;}
  virtual uint32 GetEntry(){return 97778;}Vehicle*GetVehicleKit(){return nullptr;}ObjectGuid GetOwnerGUID(){return {};}uint32 GetSpawnMode(){return 0;}bool IsInMap(Unit*){return inMap;}
- ZoneScript*GetZoneScript(){return nullptr;}InstanceScript*GetInstanceScript(){return nullptr;}
+ ZoneScript*GetZoneScript(){return nullptr;}InstanceScript*GetInstanceScript(){return mapObject->script;}
  bool HandleSpellClick(Unit*,int8=-1);void CastSpell(Unit*,SpellInfo const*,bool,void*,void*,ObjectGuid);
  void CastCustomSpell(uint32,int,int8,Unit*,bool,void*,void*,ObjectGuid){assert(false);}
 };
@@ -89,6 +90,10 @@ struct Creature:Unit {
  Creature*FindNearestCreature(uint32 id,float,bool){auto p=id==98001?chuan:demon;return p&&p->alive&&p->world?p:nullptr;}
 };
 void CreatureAI::DoAction(int32 id){assert(id==1);++me->starts;}
+#include "HaitOpeningProtocol.inc"
+// The old native click host controls only the new accepted-owner endpoint;
+// HaitOpeningTest separately compiles the real State/full instance/native map.
+void ZoneScript::SetGuidData(uint32 id,ObjectGuid owner){assert(id==MonkHaitOpening::AcceptData&&openingActor);if(accepted.IsEmpty()){accepted=owner;++openingActor->starts;}}
 struct npc_master_hait { struct npc_master_haitAI:ScriptedAI {
 #include "ActorAdmission.inc"
 };};
@@ -136,8 +141,8 @@ void Unit::CastSpell(Unit*target,SpellInfo const*info,bool triggered,void*,void*
  auto finish=[invocation]{invocation->Hit();};if(defer)queued=finish;else finish();}
 using Hait=npc_master_hait::npc_master_haitAI;
 struct Run {
- Creature actor,chuan,demon;Player player;
- Run(){clockTime=0;questTemplate={};questStore.present=true;scenario={};scenarioMgr.present=true;chuan.entry=98001;chuan.db=362111;demon.entry=98011;demon.db=362135;actor.chuan=&chuan;chuan.demon=&demon;actor.current=new Hait(&actor);}
+ Creature actor,chuan,demon;Player player;ZoneScript instance;
+ Run(){originMap.script=&instance;instance.openingActor=&actor;clockTime=0;questTemplate={};questStore.present=true;scenario={};scenarioMgr.present=true;chuan.entry=98001;chuan.db=362111;demon.entry=98011;demon.db=362135;actor.chuan=&chuan;chuan.demon=&demon;actor.current=new Hait(&actor);}
  Hait*Content(){return static_cast<Hait*>(actor.disabled?actor.disabled:actor.current);}
  void Click(){actor.HandleSpellClick(&player);}void Hit(){auto f=std::move(player.queued);assert(f);f();}
  void Success(){if(!(player.groupReceipt==1&&player.personalReceipt==1&&actor.starts==1&&!actor.npcflags))std::cerr<<"Unexpected receipt/start: group="<<player.groupReceipt<<" personal="<<player.personalReceipt<<" starts="<<actor.starts<<" flags="<<actor.npcflags<<" time="<<clockTime<<" warnings="<<warnings<<"\n";assert(player.groupReceipt==1&&player.personalReceipt==1&&actor.starts==1&&!actor.npcflags);}
@@ -150,7 +155,8 @@ int main(){
  for(uint32 failure=0;failure<3;++failure){Run r;delete r.actor.current;r.actor.current=new OldAI(&r.actor);if(failure==0)r.player.condition=false;if(failure==1)r.player.requirements=false;if(failure==2)r.player.reject=true;r.Click();assert(r.player.personalReceipt==1&&r.player.groupReceipt==1&&r.actor.starts==1&&!r.actor.npcflags&&r.player.personalRequests==0);++cases;}
  std::cout<<"EXPECTED BROKEN bb877ffc3: native rejected conditions/requirements/cast still invokes old hook, granting both receipts and starting scene. No invalid pointer executed.\n";
  for(uint32 failure=0;failure<3;++failure){Run r;if(failure==0)r.player.condition=false;if(failure==1)r.player.requirements=false;if(failure==2)r.player.reject=true;r.Click();assert(!r.player.groupCalls&&!r.player.personalCalls&&!r.actor.starts&&r.actor.npcflags==1&&!r.player.personalRequests);++cases;}
- {Run r;r.Click();r.Success();assert(r.player.groupCalls==1&&r.player.personalCalls==1&&r.player.personalRequests==1&&r.player.criteria==2);r.Click();r.Success();assert(r.player.groupCalls==1&&r.player.personalCalls==1);++cases;}
+ {Run r;r.Click();r.Success();assert(r.player.groupCalls==1&&r.player.personalCalls==1&&r.player.personalRequests==1&&r.player.criteria==2&&r.instance.nativeEvents==1);r.Click();r.Success();assert(r.player.groupCalls==1&&r.player.personalCalls==1);++cases;}
+ {Run r;r.Click();r.Success();delete r.actor.current;r.actor.current=new Hait(&r.actor);assert(r.actor.npcflags);r.Click();assert(r.actor.starts==1&&r.player.groupCalls==1&&r.player.personalCalls==1);++cases;}
  for(uint32 fail=0;fail<35;++fail){Run r;
   if(fail==0)r.player.alive=false;if(fail==1)r.player.world=false;if(fail==2)r.player.contact=false;if(fail==3)r.player.pending=true;if(fail==4)r.player.klass=1;
   // Outside intro Load delegates native use; test the explicit Check directly.
@@ -186,5 +192,5 @@ int main(){
  for(bool allowed:{false,true}){Run r;Group group;GroupReference member{&r.player};group.first=&member;group.raid=true;r.player.group=&group;questTemplate.raidAllowed=allowed;r.Click();if(allowed)r.Success();else assert(!r.player.groupCalls&&!r.actor.starts);++cases;}
  for(uint32 db:{362105u,362271u,0u}){Creature actor;actor.db=db;actor.current=new Hait(&actor);assert((actor.npcflags==1)==(db==362105));++cases;}
  {Creature actor;actor.map=1;actor.current=new Hait(&actor);assert(!actor.npcflags);++cases;}
- assert(!errors);std::cout<<"PASS "<<cases<<" ASAN cases: actual production Hight check/effect/receipt/lease; native click,61,134,90,group/distance,quest-owned delay,original GUID and wrap-safe elapsed time. Includes old rejected-click counterfactual, repeat/concurrent/reentrant/canceled attempts, deadline/retry and lifetime cleanup. World/cast completion/quest objective mutation/DoAction endpoint controlled; full scenario and client not certified.\n";
+ assert(!errors);std::cout<<"PASS "<<cases<<" ASAN cases: actual production Hight check/effect/receipt/lease; native click,61,134,90,group/distance,quest-owned delay,original GUID and wrap-safe elapsed time. Includes old rejected-click counterfactual, repeat/concurrent/reentrant/canceled attempts, deadline/retry and lifetime cleanup. World/cast completion/quest objective mutation/accepted-instance endpoint controlled; full scenario and client not certified.\n";
 }

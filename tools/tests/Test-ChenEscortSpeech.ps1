@@ -1,4 +1,5 @@
 param([switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
+. "$PSScriptRoot/HaitOpeningPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/chen-escort-speech/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($repo,$out) -Test {
@@ -11,7 +12,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/chen
  $path="$root/chen_rescue.h";$rescue=Get-Content "$repo/$path" -Raw;$oldRescue=Prior $path
  $oldBlock=Block $oldRescue 'if (!escortSpoken)'
  if((Shape $rescue.Replace('escortSpoken = true;',$oldBlock)) -cne (Shape $oldRescue)){throw 'Only optional Talk5 dispatch may move; all native route/owner/credit behavior retained'}
- $path='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$instance=Get-Content "$repo/$path" -Raw;$oldInstance=Prior $path
+ $path='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$instance=Get-HaitPreOpeningSource $path (Get-Content "$repo/$path" -Raw);$oldInstance=Prior $path
  if(([regex]::Matches($instance,[regex]::Escape('chenPresentation.UpdateEscortSpeech(diff); '))).Count -ne 1 -or (Shape $instance.Replace('chenPresentation.UpdateEscortSpeech(diff); ','')) -cne (Shape $oldInstance)){throw 'Only one after-route optional speech update permitted in entire shared instance file'}
  if($ScopeOnly){'PASS exact optional Talk5 relocation/actual Talk4 clock/after-route call; full remaining presentation/rescue/shared instance unchanged';return}
  $text=Get-Content "$PSScriptRoot/ChenEscortSpeechOriginal.json" -Raw|ConvertFrom-Json

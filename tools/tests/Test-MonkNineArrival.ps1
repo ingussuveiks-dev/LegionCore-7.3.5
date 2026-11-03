@@ -1,4 +1,5 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[switch]$VerifyNativeCatalog,[string]$OutputDirectory='')
+. "$PSScriptRoot/HaitOpeningPredecessor.ps1"
 . "$PSScriptRoot/ChenEscortSpeechPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-nine-arrival"};$out=[IO.Path]::GetFullPath($OutputDirectory)
@@ -7,7 +8,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function PriorInitial([string]$path){$s=(& git -C $repo show "cfe6cd302:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-initial missing'};$s}
  function Prior([string]$path){$s=(& git -C $repo show "f67c49e3b:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Nine arrival predecessor missing'};$s}
- $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$old=Prior $path
+ $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$source=Get-HaitPreOpeningSource $path $source;$old=Prior $path
  $currentActor=Block $source 'class npc_nine_czi :'
  if($source.Contains('#include "nine_czi_rescue.h"')){& "$PSScriptRoot/Test-MonkNineRescue.ps1" -ScopeOnly;$source=PriorInitial $path}
  $actor=Block $source 'class npc_nine_czi :';$oldActor=Block $old 'class npc_nine_czi :';$bridge=Block $actor 'if (MonkNineArrival::Source(me))'

@@ -23,7 +23,7 @@ if escort_speech:
 assert {94348,94349}<=values(request)
 needs(request,state('UpdateRoutes'),'??8ObjectGuid@@')
 assert sites(n,request,'??8ObjectGuid@@')[-1]<sites(n,request,state('UpdateRoutes'))[0]
-assert {97778,362271,1014}<=values(created) and ('movups','xmmword ptr [rsi + 0x37d], xmm0' if n.get('monk_initial_successor') else 'xmmword ptr [rdi + 0x37d], xmm0') in pairs(created)
+assert {97778,362271,1014}<=values(created) and ('movups','xmmword ptr [rbp + 0x37d], xmm0' if n.get('monk_hait_opening_successor') else 'xmmword ptr [rsi + 0x37d], xmm0' if n.get('monk_initial_successor') else 'xmmword ptr [rdi + 0x37d], xmm0') in pairs(created)
 needs(routes,state('Progress'),state('Retained'),state('Leaf'),state('EscortLeaf'),state('Actor'),state('Cancel'),
       '?getMSTime@@','?GetCreature@Map@@','?FindNearestCreature@WorldObject@@','?IsInWorld@Object@@','?IsPreDelete@Object@@',
       '?SendChat@CreatureTextMgr@@','?MoveFollow@MotionMaster@@','?MovePath@MotionMaster@@',state('Routed'))

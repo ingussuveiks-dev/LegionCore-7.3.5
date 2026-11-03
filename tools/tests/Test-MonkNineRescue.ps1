@@ -1,4 +1,5 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[switch]$VerifyNativeCatalog,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
+. "$PSScriptRoot/HaitOpeningPredecessor.ps1"
 . "$PSScriptRoot/ChenEscortSpeechPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-nine-rescue"};$out=[IO.Path]::GetFullPath($OutputDirectory)
@@ -6,7 +7,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function Prior([string]$path){$s=(& git -C $repo show "cfe6cd302:$path") -join "`n";if($LASTEXITCODE){throw "Missing pinned $path"};$s}
- $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$prior=Prior $path
+ $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$source=Get-HaitPreOpeningSource $path $source;$prior=Prior $path
  if($source.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4443,')){& "$PSScriptRoot/Test-ChenOpeningVoice.ps1" -ScopeOnly;$source=$source.Replace('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4443,','if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4000,')}
  $actor=Block $source 'class npc_nine_czi :';$oldActor=Block $prior 'class npc_nine_czi :'
  $normal=$actor.Replace('if (MonkNineRescue::Source(me)) return;','')

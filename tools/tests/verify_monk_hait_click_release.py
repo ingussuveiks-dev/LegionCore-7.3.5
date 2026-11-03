@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib
 import json
 import runpy
-from capstone import CS_OP_MEM
+from capstone import CS_OP_MEM,CS_OP_IMM
 from sharasdal_erunak_entry_pe import sites, values, fields, floats
 
 p=runpy.run_path(str(Path(__file__).with_name('verify_monk_hait_timers_release.py')))
@@ -52,6 +52,7 @@ for name in ('Event','Credit'):
  assert not sites(n,body,'?KilledMonsterCredit@Player@@')
 require(ins(spell('Credit')),'?GetHitUnit@SpellScript@@')
 after=ins(spell('After'));complete=ins(helper('Complete'))
+opening_successor=any(name.startswith('?Accept@State@MonkHaitOpening@@') for name in n['symbols'])
 require(after,helper('Current'),'?GetHitUnit@SpellScript@@','?GetReqKillOrCastCurrentCount@Player@@','?CastSpell@Unit@@',helper('Complete'),'?getMSTime@@','?outMessage@Log@@')
 assert {12103,97778,98514,194020}<=values(after) and {0x1c,0x50,0x51,0x208,0x209}<=fields(after)
 counts=sites(n,after,'?GetReqKillOrCastCurrentCount@Player@@');cast,=sites(n,after,'?CastSpell@Unit@@')
@@ -60,8 +61,22 @@ require(complete,helper('Current'),'?getMSTime@@','?GetReqKillOrCastCurrentCount
 assert {2000,12103,98514,10,0x1000000}<=values(complete)
 assert [('sub','edx, ebx'),('lea','ecx, [rdx - 1]'),('cmp','ebx, eax'),('cmovbe','ecx, edx'),('cmp','ecx, 0x7d0')] in [pairs(complete)[i:i+5] for i in range(len(complete)-4)]
 remove,=sites(n,complete,'?RemoveFlag@Object@@');count,=sites(n,complete,'?GetReqKillOrCastCurrentCount@Player@@')
-assert count<remove and ('mov','byte ptr [rax + 0x50], 1') in pairs(complete[count:remove])
-assert any(op.mnemonic=='call' and op.operands[0].type==CS_OP_MEM and op.operands[0].mem.disp==0x48 for op in complete[remove+1:]),'Original AI DoAction after consuming actual receipt'
+assert count<remove
+if opening_successor:
+ require(complete,'?GetInstanceScript@WorldObject@@',helper('Current'))
+ assert {94354,94355}<=values(complete)
+ assert any(op.mnemonic=='mov' and op.operands[0].type==CS_OP_MEM and op.operands[0].mem.disp==0x50 and op.operands[1].type==CS_OP_IMM and op.operands[1].imm==1 for op in complete[count:remove])
+ # MSVC retains SetGuidData's actual vtable slot in RBX across GetGUID.
+ segment=pairs(complete[count:remove])
+ load=segment.index(('mov','rbx, qword ptr [rax + 0x98]'))
+ call=segment.index(('call','rbx'))
+ assert load<call and ('mov','edx, 0x17092') in segment[load:call]
+ assert any(op.mnemonic=='call' and op.operands[0].type==CS_OP_MEM and op.operands[0].mem.disp==0x90 for op in complete[count:remove])
+ assert len(sites(n,complete,helper('Current')))==2
+ assert not any(op.mnemonic=='call' and op.operands[0].type==CS_OP_MEM and op.operands[0].mem.disp==0x48 for op in complete[remove+1:])
+else:
+ assert ('mov','byte ptr [rax + 0x50], 1') in pairs(complete[count:remove])
+ assert any(op.mnemonic=='call' and op.operands[0].type==CS_OP_MEM and op.operands[0].mem.disp==0x48 for op in complete[remove+1:]),'Original AI DoAction after consuming actual receipt'
 callback,=[name for name in n['symbols'] if name.startswith('?_Do_call@') and '??Complete@MonkHaitClick@@' in name]
 require(ins(callback),helper('Complete'))
 assert b'Monk intro: native194020 rejected (%u); retain Hight click for retry' in n['binary']
@@ -72,5 +87,6 @@ for body in (check,contact,current,after,complete,ins(callback)):
 require(ins('?EffectKillCredit@Spell@@'),'?RewardPlayerAndGroupAtEvent@Player@@')
 require(ins('?EffectKillCreditPersonal@Spell@@'),'?KilledMonsterCredit@Player@@')
 require(ins('?EffectSendEvent@Spell@@'),'?UpdateAchievementCriteria@Player@@')
-print('PASS actual197120 registered factory/four hooks/native61+134+90 validation; real original-target admission/initial spawn943/0/native raid policy, weak quest+actor+ticket, receipts97778/98514, native194020 result, exact elapsed2s/10ms quest-owned retry and consume-before-flag/native DoAction. No synthetic credit/item/quest/teleport calls; retained NPC clocks/cleanup verified; client/full intro remains separate.')
+transfer='instance acceptance' if opening_successor else 'native DoAction'
+print(f'PASS actual197120 registered factory/four hooks/native61+134+90 validation; real original-target admission/initial spawn943/0/native raid policy, weak quest+actor+ticket, receipts97778/98514, native194020 result, exact elapsed2s/10ms quest-owned retry and consume-before-flag/{transfer}. No synthetic credit/item/quest/teleport calls; retained NPC clocks/cleanup verified; client/full intro remains separate.')
 print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'registered_hooks':4,'spell_id':197120}))

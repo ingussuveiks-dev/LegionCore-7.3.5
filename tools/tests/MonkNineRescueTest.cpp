@@ -18,7 +18,9 @@ struct Rescue:Visit
 };
 int main()
 {
-    uint32 retained=RunNineArrivalCases(),cases=0;
+    // Run large ASAN fixture scopes in sequence, preserving default1MB stack.
+    RunEarlyPresentationCases();
+    uint32 retained=RunNineArrivalCases(false),cases=0;
     for(uint32 mode=0;mode<4;++mode)
     {
         Rescue r;delete r.nine.i_AI;r.nine.i_AI=new InitialOld(&r.nine);auto old=static_cast<InitialOld*>(r.nine.i_AI);

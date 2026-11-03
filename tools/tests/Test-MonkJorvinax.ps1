@@ -1,4 +1,5 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[string]$OutputDirectory='')
+. "$PSScriptRoot/HaitOpeningPredecessor.ps1"
 . "$PSScriptRoot/ChenEscortSpeechPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-jorvinax"};$out=[IO.Path]::GetFullPath($OutputDirectory)
@@ -6,7 +7,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function Prior([string]$path){$s=(& git -C $repo show "7bf4d7a50:$path") -join "`n";if($LASTEXITCODE){throw "Pinned Jorvinax predecessor missing: $path"};$s}
- $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=Prior $path
+ $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$source=Get-HaitPreOpeningSource $path $source;$old=Prior $path
  $hasPresentation=$source.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(16000,')
  if($hasPresentation){& "$PSScriptRoot/Test-MonkChenPresentation.ps1" -ScopeOnly;$source=(& git -C $repo show "6cb25d055:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-presentation actor missing'}}
  $actor=Block $source 'class npc_master_hait :';$previous=Block $old 'class npc_master_hait :'

@@ -1,9 +1,10 @@
 param([switch]$ScopeOnly,[string]$OutputDirectory='')
+. "$PSScriptRoot/HaitOpeningPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $text.Length){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$text.Substring($a,$b-$a)}
 function Shape([string]$text){(($text -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp'
-$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "bb877ffc3:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-click source missing'}
+$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$source=Get-HaitPreOpeningSource $path $source;$old=(& git -C $repo show "bb877ffc3:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-click source missing'}
 if($source.Contains('#include "jorvinax_defeat.h"')){& "$PSScriptRoot/Test-MonkJorvinax.ps1" -ScopeOnly;$source=(& git -C $repo show "7bf4d7a50:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Jorvinax source missing'}}
 if($source.Contains('#include "chen_rescue.h"')){
  & "$PSScriptRoot/Test-MonkChenRescue.ps1" -ScopeOnly
@@ -36,6 +37,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
 [IO.File]::WriteAllText("$out/ActorAdmission.inc",$ctor+"`n"+$members+"`n"+$hook)
 [IO.File]::WriteAllText("$out/OldHook.inc",(Block $oldActor 'void OnSpellClick(').Replace('override',''))
 Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_hait_click.h" "$out/Click.inc"
+$opening=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/hait_opening.h";[IO.File]::WriteAllText("$out/HaitOpeningProtocol.inc",'namespace MonkHaitOpening {'+($opening|Where-Object {$_ -like 'constexpr uint32 AcceptData*'})+'}')
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
 $sources=@{

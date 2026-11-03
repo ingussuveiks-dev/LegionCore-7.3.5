@@ -1,10 +1,11 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[switch]$VerifyNativeCatalog,[string]$OutputDirectory='')
+. "$PSScriptRoot/HaitOpeningPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-chen-rescue"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence/$(Get-Date -Format yyyyMMdd-HHmmss-fff)" -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
- $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "6b6fae36c:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-rescue actor source missing'}
+ $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$source=Get-HaitPreOpeningSource $path $source;$old=(& git -C $repo show "6b6fae36c:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-rescue actor source missing'}
  $currentActor=Block $source 'class npc_monk_chen_porter :'
  $hasJorvinax=$source.Contains('#include "jorvinax_defeat.h"')
  if($hasJorvinax){& "$PSScriptRoot/Test-MonkJorvinax.ps1" -ScopeOnly;$source=(& git -C $repo show "7bf4d7a50:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Jorvinax source missing'}}
@@ -52,6 +53,7 @@ if (MonkChenRescue::Source(me))
   [IO.File]::WriteAllText("$out/PointFinalize.inc",(Block $movement 'void PointMovementGenerator<T>::DoFinalize(').Insert(0,"template<class T>`n")+(Block $movement 'void PointMovementGenerator<Creature>::MovementInform(').Insert(0,"template<>`n"))
   [IO.File]::WriteAllText("$out/MovementMedium.inc",(Block (Get-Content "$repo/src/server/game/Movement/MovementGenerator.h" -Raw) 'template<class T, class D>')+';')
  }
+ [IO.File]::WriteAllText("$out/HaitOpening.inc",((Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/hait_opening.h" -Raw) -replace '(?m)^#include[^\n]*',''))
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h" "$out/Rescue.inc"
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_arrival.h" "$out/chen_arrival.h"
  Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_routes.h" "$out/chen_routes.h"

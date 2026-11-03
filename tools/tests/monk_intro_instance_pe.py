@@ -1,4 +1,4 @@
-"""The exact490/498-byte Monk successors outline their constructors.
+"""The exact490/498/4a0-byte Monk successors outline their constructors.
 
 Keep allocation/call registration separate from real constructor field stores.
 Only proven constructor context/instance/zero registers receive aliases in
@@ -21,24 +21,29 @@ def reachable(body,start,blocked=()):
 
 def construction(n):
     entry=n['instructions']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')
-    initial=0x498 in values(entry)
+    opening=0x4a0 in values(entry)
+    initial=opening or 0x498 in values(entry)
     n['monk_initial_successor']=initial
+    n['monk_hait_opening_successor']=opening
+    n['monk_instance_size']=0x4a0 if opening else 0x498 if initial else 0x490
     if not initial and 0x490 not in values(entry):return entry,entry,False
     pairs=[(o.mnemonic,o.op_str) for o in entry]
-    assert len(entry)==13 and pairs[2:4]==[('mov','rbx, rdx'),('mov','ecx, 0x498' if initial else 'ecx, 0x490')]
+    assert len(entry)==13 and pairs[2:4]==[('mov','rbx, rdx'),('mov',f"ecx, {n['monk_instance_size']:#x}")]
     assert sites(n,entry,'??2@')==[4] and sites(n,entry,'??0instance_monk_intro@@')==[8]
     assert pairs[6:8]==[('mov','rdx, rbx'),('mov','rcx, rax')]
     assert pairs[9:]==[('nop',''),('add','rsp, 0x20'),('pop','rbx'),('ret','')]
     body=n['instructions']('??0instance_monk_intro@@');bp=[(o.mnemonic,o.op_str) for o in body]
     assert not any(o.mnemonic.startswith('j') for o in body)
-    assert ('mov','rbx, rdx') in bp and ('mov','r14, rcx' if initial else 'rsi, rcx') in bp
-    assert sites(n,body,'??0InstanceScript@@')==([9] if initial else [8])
-    zero=bp.index(('xor','ebp, ebp'));restore=bp.index(('pop','rbp'))
-    assert all(not re.match(r'(?:rbp|ebp|bp|bpl)(?:,|$)',o.op_str) for o in body[zero+1:restore])
+    assert ('mov','rbp, rdx' if opening else 'rbx, rdx') in bp and ('mov','r14, rcx' if initial else 'rsi, rcx') in bp
+    assert sites(n,body,'??0InstanceScript@@')==([10] if opening else [9] if initial else [8])
+    zero=bp.index(('xor','r15d, r15d' if opening else 'ebp, ebp'));restore=bp.index(('pop','r15' if opening else 'rbp'))
+    assert all(not re.match(r'(?:r15|r15d|r15w|r15b)(?:,|$)' if opening else r'(?:rbp|ebp|bp|bpl)(?:,|$)',o.op_str) for o in body[zero+1:restore])
     if initial:
         assert {('mov','ecx, 0xa0'),('mov','rdi, rax'),('mov','qword ptr [rax], rsi'),
                 ('mov','qword ptr [r14 + 0x490], rdi'),('mov','rax, r14')}<=set(bp)
-        assert len(sites(n,body,'??2@'))==1
+        assert len(sites(n,body,'??2@'))==(2 if opening else 1)
+        if opening:
+            assert {('mov','ecx, 0x60'),('mov','qword ptr [rax], rbp'),('mov','qword ptr [r14 + 0x498], rbx')}<=set(bp)
         bp=constructor_pairs(body,False)
     assert {('lea','rdi, [rsi + 0x2e0]'),('mov','qword ptr [rsi + 0x430], rdi'),
             ('mov','qword ptr [rsi + 0x438], rbp'),('lea','rcx, [rsi + 0x440]'),
@@ -63,5 +68,10 @@ def constructor_pairs(body,zero):
         # Exact straight-line498 constructor checked above: R14 is the
         # instance, RSI its unchanged2e0 context, EBP remains zero across calls.
         names.update(r14='rsi',rsi='rdi')
+    if ('mov','rbp, rdx') in [(o.mnemonic,o.op_str) for o in body]:
+        # Exact4a0 constructor: RBP is the retained Map, R15 remains zero;
+        # the original context/instance prefix is unchanged. Keep both
+        # source-map and zero-definition aliases tied to that proof above.
+        names.update(rbp='rbx',ebp='ebx',bp='bx',bpl='bl',r15='rbx' if zero else 'rbp',r15d='ebx' if zero else 'ebp',r15w='bx' if zero else 'bp',r15b='bl' if zero else 'bpl')
     pattern=r'\b('+ '|'.join(names)+r')\b'
     return [(o.mnemonic,re.sub(pattern,lambda m:names[m[0]],o.op_str)) for o in body]

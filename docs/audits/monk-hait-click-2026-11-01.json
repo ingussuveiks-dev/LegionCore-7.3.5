@@ -1,4 +1,5 @@
 {
+  "followup_accepted_opening": "docs/audits/hait-opening-2026-11-03.json moves the real after-receipt handoff into the instance and guards accepted replay; all native click/effects/receipt/lifetime checks retained. Later real46868 death and point1 remain OPEN.",
   "date": "2026-11-01",
   "status": "DEPLOYED focused first-Hight click repair; full943, client traversal and all36 remain OPEN.",
   "fix_commit": "c5b86e23cb29bdd0e7ad9e706cdc670fba26c8ea",

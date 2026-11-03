@@ -21,7 +21,7 @@ def needs(body,*targets):
 allocation,factory,nine_successor=construction(n)
 vt,raw=table('??_7instance_monk_intro@@6B@',140)
 presentation_successor=0x430 in values(allocation) or nine_successor
-instance_size=0x498 if n.get('monk_initial_successor') else 0x490 if nine_successor else 0x430 if presentation_successor else 0x418
+instance_size=n.get('monk_instance_size',0x498) if n.get('monk_initial_successor') else 0x490 if nine_successor else 0x430 if presentation_successor else 0x418
 assert vt in refs(factory) and instance_size in values(allocation)
 if presentation_successor:
     assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),(('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))

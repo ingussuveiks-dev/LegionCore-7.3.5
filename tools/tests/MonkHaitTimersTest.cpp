@@ -28,7 +28,7 @@ struct Creature:Unit{
  Player* nearest=nullptr;Creature* chuan=nullptr;Creature* demon=nullptr;GameObject* door=nullptr;Motion motion;Vehicle vehicle;uint32 npcflags=0,flags=0,states=0,attacks=0,melee=0;ObjectGuid attacked;
  std::vector<std::pair<uint32,ObjectGuid>> talks;std::vector<uint32> casts;std::function<void()> onTalk;
  Creature(){world.emplace(guid,this);}~Creature();CreatureAI* AI(){return i_AI;}bool AIM_Destroy();void Lifecycle(uint32 diff);
- ObjectGuid GetGUID()const{return guid;}bool IsAlive()const{return alive;}uint32 GetMapId()const{return map;}uint32 GetDBTableGUIDLow()const{return 362105;}uint32 GetEntry()const{return 97778;}InstanceScript* GetInstanceScript(){return nullptr;}
+ ObjectGuid GetGUID()const{return guid;}bool IsAlive()const{return alive;}uint32 GetMapId()const{return map;}uint32 GetDBTableGUIDLow()const{return 362106;}uint32 GetEntry()const{return 97778;}InstanceScript* GetInstanceScript(){return nullptr;}
  void SetFlag(uint32 field,uint32 value){(field==UNIT_FIELD_NPC_FLAGS?npcflags:flags)|=value;}void RemoveFlag(uint32 field,uint32 value){(field==UNIT_FIELD_NPC_FLAGS?npcflags:flags)&=~value;}
  void SetHomePosition(float,float,float,float){}float GetPositionX()const{return 1;}float GetPositionY()const{return 1;}float GetPositionZ()const{return 1;}float GetOrientation()const{return 0;}
  bool HasUnitState(uint32 state)const{return (states&state)!=0;}void SetWalk(bool value){walk=value;}Motion* GetMotionMaster(){return &motion;}Vehicle* GetVehicleKit(){return hasVehicle?&vehicle:nullptr;}
@@ -57,6 +57,8 @@ struct CreatureScript{explicit CreatureScript(char const*){}virtual ~CreatureScr
 #include "HaitVictoryProtocol.inc"
 #include "Actor.inc"
 using Hait=npc_master_hait::npc_master_haitAI;
+// This retained host covers full shared/unscoped actor queues; actual scoped
+// acceptance/instance ownership is executed by HaitOpeningTest.cpp.
 struct Run{
  std::unique_ptr<Creature> hait=std::make_unique<Creature>(),chuan=std::make_unique<Creature>(),demon=std::make_unique<Creature>();GameObject door;Player player;
  Run(){hait->i_AI=new Hait(hait.get());chuan->i_AI=new CreatureAI(chuan.get());demon->i_AI=new CreatureAI(demon.get());hait->nearest=&player;hait->chuan=chuan.get();chuan->demon=demon.get();chuan->door=&door;}

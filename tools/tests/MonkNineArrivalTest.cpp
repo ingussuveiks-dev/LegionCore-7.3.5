@@ -21,9 +21,9 @@ void NoArrival(Visit& r){assert(!r.receipt().started&&!r.scenario.progress[29069
 void Accepted(Visit& r){assert(r.receipt().started&&!r.receipt().pending&&r.scenario.progress[29069].Counter==1&&r.scenario.step>=3&&Count(r.nine,7)==1);assert(r.player.credits==std::vector<uint32>{46902}&&r.other.credits.empty());assert(r.nine.talks.front().second==r.player.guid);}
 void Departed(Visit& r){Accepted(r);assert(r.receipt().finished&&Count(r.nine,8)==1&&r.nine.despawnRequests==1&&r.nine.despawnDelay==3000&&r.nine.talks.back().second==r.player.guid);}
 
-uint32 RunNineArrivalCases()
+uint32 RunNineArrivalCases(bool includeRetained=true)
 {
-    auto retained=RunEarlyPresentationCases();uint32 cases=0;
+    auto retained=includeRetained?RunEarlyPresentationCases():0;uint32 cases=0;
     // Full pinned actor+instance, not a handwritten alternative controller.
     for(uint32 mode=0;mode<4;++mode)
     {

@@ -1,10 +1,11 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[string]$OutputDirectory='')
+. "$PSScriptRoot/HaitOpeningPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-chen-arrival"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence/$(Get-Date -Format yyyyMMdd-HHmmss-fff)" -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
- $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "b015d4e28:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-arrival actor missing'}
+ $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$source=Get-HaitPreOpeningSource $path $source;$old=(& git -C $repo show "b015d4e28:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-arrival actor missing'}
  $hasRoutes=$source.Contains('MonkChenRoutes::EscortData')
  if($hasRoutes){& "$PSScriptRoot/Test-MonkChenRoutes.ps1" -ScopeOnly;$source=(& git -C $repo show "39f878974:$path") -join "`n";if($LASTEXITCODE){throw 'Certified route actor missing'}}
  $actor=Block $source 'class npc_monk_chen_porter :';$previous=Block $old 'class npc_monk_chen_porter :';$movement=Block $actor 'void MovementInform('
@@ -39,7 +40,7 @@ if (MonkChenRescue::Source(me))
     uint32 arrivalRetryStart = 0;
     bool arrivalWaiting = false;
 '@
- $h=$h.Replace($fields,'').Replace('arrivalClaim.Clear(); arrivalPlayer.Clear(); arrivalDone = started;','').Replace('arrivalWaiting = false;','').Replace('if (!pending) { UpdateArrival(diff); return; }','if (!pending) return;').Replace('{ pending = false; started = true; claim.Clear(); return; }','{ pending = false; started = true; claim.Clear(); members.clear(); return; }')
+ $h=$h.Replace($fields.Replace("`r",''),'').Replace('arrivalClaim.Clear(); arrivalPlayer.Clear(); arrivalDone = started;','').Replace('arrivalWaiting = false;','').Replace('if (!pending) { UpdateArrival(diff); return; }','if (!pending) return;').Replace('{ pending = false; started = true; claim.Clear(); return; }','{ pending = false; started = true; claim.Clear(); members.clear(); return; }')
  if((Shape $h) -cne (Shape $prior)){throw 'Other native genuine-death rescue controller behavior changed'}
  $ip='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$actual=(Get-Content "$repo/$ip" -Raw).Replace("`r",'');$previousInstanceFile=(& git -C $repo show "b015d4e28:$ip") -join "`n";if($LASTEXITCODE){throw 'Pinned Monk instance missing'}
  if($hasRoutes){$actual=(& git -C $repo show "39f878974:$ip") -join "`n";if($LASTEXITCODE){throw 'Certified route instance missing'}}
