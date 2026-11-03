@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-03",
+  "status": "OPEN: native GM-first Althea intro consumption reproduced; no production fix or client/full1123 claim. Keep all evidence active, outside fixed archives.",
+  "scope": "Original108218/360870 map1620, first55-yard intro2422/51549. Separate35-yard2424/guard fight and later2425 release are next sequence checks.",
+  "cause": "The complete current Althea MoveInLineOfSight accepts any Player, sends51549 through that Player and sets introDone=true regardless of native criteria acceptance or conversation creation. Native Scenario achievement admission rejects a GM-mode reference. A GM reaching the original55-yard trigger first therefore consumes the shared one-shot flag without48577 progress. A later otherwise eligible Rogue is skipped by introDone and cannot deliver this event through this actor.",
+  "local_evidence": {
+    "world": "Read-only actual World rows: Althea108218/360870(-8607.59,394.141,110.255), Garona108214/360859(-8643.02,421.559,102.051), guards108216/360869+360872 and108217/360871; all map1620/phaseMask1/empty phase IDs. Althea ScriptName npc_sister_althea_ebonlocke, guards/Garona SmartAI.2422 has real Garona108214 creature actor/5200 and line5133.2424 has original Althea actor data and line5138;2425 Althea/4350 and line5139. Do not overwrite these payloads to repair admission.",
+    "db2": "Matching native26972 order4/step2558/root48576 ALL/operator4 ->48577/30469/type92/51549/amount1. Separate stage5 retains independent victory48585/51613 and door48597/51654. Existing repaired physical door can independently deliver its authored51549; this does not restore a consumed Althea scene.",
+    "reference": "Project source/native data resolve this admission defect. A read-only search of the local newer TrinityCore BrokenIsles scripts found no matching108218/script implementation; no modern behavior copied and no external footage claim."
+  },
+  "reproduction": {
+    "runner": "tools/research/Probe-AltheaIntroAdmission.ps1",
+    "probe": "tools/research/AltheaIntroAdmissionProbe.cpp",
+    "control": "Fresh real InstanceMap1620/native1123 stage4, actual unpersisted native Rogue with active42504 and original actors; exported complete current Althea AI receives the controlled50-yard LOS endpoint. Eligible Rogue first delivers native51549 once and advances4->5; introDone2 remains false.",
+    "counterfactual": "Fresh equivalent instance with a GM-mode Rogue first: native48577 stays0/stage4, but actual introDone becomes true. The same eligible nonGM Rogue then reaches the endpoint and still receives no48577/stage advance. This is an explicitly broken counterfactual, not a passing repaired ordinary run.",
+    "isolation": "Shared native bootstrap uses readonly World/Hotfix/Login/Character pools and empty TEMP account shadows on both Login connections; session destruction/async drain cannot update persistent account rows. Native Release ABI, not ASAN. Actual game/scripts input hashes and canonical config hash remain stable. Earlier accepted quest/scenario and direct LOS entry are controlled, no authenticated client/grid traversal/character save.",
+    "diagnostics": "Before/after canonical and own crash/log snapshots, exits/stdout/stderr reviewed. Final probe exits0 with the intended OPEN counterfactual and no new crash/server diagnostics/DBErrors. No server process launched. Existing mixed6090-byte canonical DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged."
+  },
+  "iterations": [
+    "First read-only query assumed a conversation_template World table; this project stores the queried payloads in conversation_creature/actor/data. Preserved the SQL client error outside fixed, removed the nonexistent table query and confirmed complete EOF with empty stderr. No database write.",
+    "First probe called MoveInLineOfSight through protected CreatureAI base access. Corrected to the actual public override on the exported derived AI; production access rules unchanged. Compiler failure preserved outside fixed."
+  ],
+  "active_evidence": [
+    ".codex/althea-intro-world/world.stderr",
+    ".codex/althea-intro-world-corrected/world.tsv",
+    ".codex/althea-intro-native-open2.log",
+    ".codex/althea-intro-native-open-final.log",
+    "build-extractors/runtime-test/althea-intro-native-open"
+  ],
+  "next": "Repair first-entry eligibility and acknowledgement without consuming an attempt for GM/wrong class/quest/stage/phase/scope or missing actors. Trace both55/35-yard transitions, actual native2422/2424 creation, original guard108216/108217/Garona108214 admission, death/final-blow and later2425 release, repeated/reentrant callbacks, abandonment/retry/reentry and group variants. Keep the original independent victory/door criteria and original movement/combat/timing. Pair this counterfactual with a real repaired native regression before marking this issue fixed.",
+  "limits": "No production code changed for this OPEN issue. Full original guard combat,2422/2424/2425 voice/actor choreography, client visibility/travel/reentry, pet/guardian/group/faction and all36 whole acquisitions remain unverified. Existing door/collision fixes remain separately deployed and verified.",
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "84d0e475975ee2e8bdf293e865f32b39ae73eb753be9f67cff2246a28c80737c",
+    "tools/research/AltheaIntroAdmissionProbe.cpp": "481bf054b4d554d04bf5074da376ce6c2548dd7367dfa8dd7f45316a27f05097",
+    "tools/research/Probe-AltheaIntroAdmission.ps1": "89268f040d76cf0f92315e3a424b6a0633cb551c794d0041cf160eca52a75543"
+  }
+}
