@@ -28,7 +28,20 @@
     "worldserver.exe": "ab6bab8464900005adbd4824c4a1319856764bffa97ca913d7c127b6243b81d9",
     "bnetserver.exe": "fee46164b07d88bb6fe9d645582efd39aea156121644fa594e5f08e12df120b9"
   },
-  "archive": "Pending focused fix commit and resolved-only archive. Keep private Althea native corpse/audio/world evidence outside fixed.",
+  "archive": {
+    "audit": "docs/audits/althea-death-archive-2026-11-03.json",
+    "fix_commit": "958e88c4403513f0fa16a8b2f222bf3e611c13ac",
+    "archive": "build-extractors/bin/Release/fixed/althea-death-2026-11-03/verified1",
+    "sources": 225,
+    "payloads": 226,
+    "diagnostic_sets": 13,
+    "reviewed_failed_sets": 2,
+    "manifest_sha256": "3e3c4e316d811b5b3d1019ca50e4f7340cb3c83db231c0800b1108507a62cff4",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
+  },
   "source_sha256": {
     "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "a7c4cd76fe9a2b33f0bfe0ec59a4951047980d876403bfee4ead734ce28ec7c0",
     "tools/tests/KingslayersDeathCreditTest.cpp": "08842131cc6e297467128f3272b89df444ec8c5205beebc49e7b4bd440c61004",
@@ -37,5 +50,6 @@
     "tools/tests/AltheaConversationNative.cpp": "8159c7e6a7fb1937ea9eb8fe2178a803eab9e29efbdd84f034e4bc94d9acf5b7",
     "tools/tests/Test-AltheaConversationNative.ps1": "f9310ce9f22fd76a9e0011fad9e6c12ce9a3367ecec43abef142239fcea17171",
     "tools/tests/verify_althea_death_release.py": "8446ec9d889a8e9392a1ffb6e661a9c93cdd42967dc429b4bea8e29473065174"
-  }
+  },
+  "fix_commit": "958e88c4403513f0fa16a8b2f222bf3e611c13ac"
 }

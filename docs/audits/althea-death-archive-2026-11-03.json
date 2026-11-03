@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-03",
+  "status": "Resolved null-reference/owner attribution diagnostics archived after tested canonical958e88c44. Separate native corpse/audio findings remain OPEN outside fixed.",
+  "verification": {
+    "fix_commit": "958e88c4403513f0fa16a8b2f222bf3e611c13ac",
+    "archive": "build-extractors/bin/Release/fixed/althea-death-2026-11-03/verified1",
+    "sources": 225,
+    "payloads": 226,
+    "diagnostic_sets": 13,
+    "reviewed_failed_sets": 2,
+    "manifest_sha256": "3e3c4e316d811b5b3d1019ca50e4f7340cb3c83db231c0800b1108507a62cff4",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
+  },
+  "review": "13 before/after diagnostic sets; two initial fixture/PE inspector errors explicitly reviewed and paired with36 passing Althea ASAN and passing retained/stage/canonical proofs. No native crash reproduction claim for the old null reference.",
+  "checks": "36 actual-hook ASAN, retained Merlis/owner/accessor and Garona intro ASAN/native26972 catalog, whole-file scope certificate, original Release link, registered Althea and preceding artifact/shared Conversation stage+canonical PE, mandatory Scepter and owned20752 ready/graceful0/gone.",
+  "excluded_open_evidence": "Private build-extractors/runtime-test/althea-conversation-native, .codex/althea-death-native*/world and standalone AltheaConversationNative outputs remain at original paths and were not archived as fixed.2431 corpse admission and2432 duration9700 before line-start11800 remain unresolved. Public test source/audit preserved as context only.",
+  "active": "No runtime report/log removed or truncated; Crashes empty and mixed6090 DBErrors unchanged/unresolved. No task server remains; no user server stopped. Full1123/client/all36 still OPEN."
+}
