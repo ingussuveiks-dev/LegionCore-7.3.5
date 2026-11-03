@@ -1,0 +1,2480 @@
+{
+  "date": "2026-11-03",
+  "scope": "Candidate source inventory only: dynamic effects/actions/C++ references do not establish invocation, eligibility, playback or a repaired static loader.",
+  "summary": {
+    "spawn_rows": 132,
+    "distinct_ids": 128,
+    "native219_ids": 98,
+    "native219_spells": 106,
+    "direct206_ids": 6,
+    "candidate_union": 102
+  },
+  "entries": [
+    {
+      "id": 160,
+      "spawns": [
+        {
+          "guid": 183,
+          "map": 1152,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 177058,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 293,
+      "spawns": [
+        {
+          "guid": 186,
+          "map": 1464,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 180010,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 20
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 295,
+      "spawns": [
+        {
+          "guid": 187,
+          "map": 1464,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 180044,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 120
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 296,
+      "spawns": [
+        {
+          "guid": 188,
+          "map": 1464,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 180049,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 120
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 357,
+      "spawns": [
+        {
+          "guid": 192,
+          "map": 1464,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 181664,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 20
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 358,
+      "spawns": [
+        {
+          "guid": 193,
+          "map": 1464,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 181676,
+          "effect": 0,
+          "targetA": 7,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 370,
+      "spawns": [
+        {
+          "guid": 189,
+          "map": 1464,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 182371,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 20
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 371,
+      "spawns": [
+        {
+          "guid": 190,
+          "map": 1464,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 182374,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 20
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 374,
+      "spawns": [
+        {
+          "guid": 42,
+          "map": 1220,
+          "phases": "6985 6200 5573 5532 5131 4905 4773 4771 4713 4648 4610 4520"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 182751,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 478,
+      "spawns": [
+        {
+          "guid": 43,
+          "map": 1220,
+          "phases": "6985 6200 5573 5532 5131 4905 4887 4773 4771 4713 4699 4697 4648 4610 4520"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 190116,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 486,
+      "spawns": [
+        {
+          "guid": 9,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 492,
+      "spawns": [
+        {
+          "guid": 22,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 191649,
+          "effect": 5,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 506,
+      "spawns": [
+        {
+          "guid": 23,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 195075,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        },
+        {
+          "spell": 223563,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 527,
+      "spawns": [
+        {
+          "guid": 25,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 192605,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 528,
+      "spawns": [
+        {
+          "guid": 26,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 192626,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 529,
+      "spawns": [
+        {
+          "guid": 27,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 192627,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 530,
+      "spawns": [
+        {
+          "guid": 28,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 192628,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 531,
+      "spawns": [
+        {
+          "guid": 7,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": "Mardum conversation_announcer native LOS/1s player creation531"
+    },
+    {
+      "id": 536,
+      "spawns": [
+        {
+          "guid": 32,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 192663,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 538,
+      "spawns": [
+        {
+          "guid": 33,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 192756,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 540,
+      "spawns": [
+        {
+          "guid": 21,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [
+        {
+          "entryorguid": 97297,
+          "source_type": 0,
+          "id": 1,
+          "event_type": 19,
+          "target_type": 7
+        }
+      ],
+      "cpp_observation": null
+    },
+    {
+      "id": 555,
+      "spawns": [
+        {
+          "guid": 20,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [
+        {
+          "entryorguid": 97297,
+          "source_type": 0,
+          "id": 0,
+          "event_type": 19,
+          "target_type": 7
+        }
+      ],
+      "cpp_observation": null
+    },
+    {
+      "id": 567,
+      "spawns": [
+        {
+          "guid": 11,
+          "map": 1481,
+          "phases": ""
+        },
+        {
+          "guid": 14,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 569,
+      "spawns": [
+        {
+          "guid": 10,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 192228,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 570,
+      "spawns": [
+        {
+          "guid": 19,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 571,
+      "spawns": [
+        {
+          "guid": 13,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 573,
+      "spawns": [
+        {
+          "guid": 12,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 585,
+      "spawns": [
+        {
+          "guid": 16,
+          "map": 1481,
+          "phases": ""
+        },
+        {
+          "guid": 17,
+          "map": 1481,
+          "phases": ""
+        },
+        {
+          "guid": 18,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 622,
+      "spawns": [
+        {
+          "guid": 174,
+          "map": 1500,
+          "phases": "5171 5940 5942 6181"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 195408,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 623,
+      "spawns": [
+        {
+          "guid": 173,
+          "map": 1500,
+          "phases": "5171 5940 5942 6181"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 195411,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 715,
+      "spawns": [
+        {
+          "guid": 45,
+          "map": 1220,
+          "phases": "6619 5978 5975 5886 5441 5431 5266 5264 5038"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 196219,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 716,
+      "spawns": [
+        {
+          "guid": 46,
+          "map": 1220,
+          "phases": "6619 5978 5975 5886 5441 5431 5266 5264 5038"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 196241,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 735,
+      "spawns": [
+        {
+          "guid": 6,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 747,
+      "spawns": [
+        {
+          "guid": 8,
+          "map": 1481,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 195644,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 833,
+      "spawns": [
+        {
+          "guid": 30,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 198359,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [
+        {
+          "entryorguid": 97643,
+          "source_type": 0,
+          "id": 1,
+          "event_type": 19,
+          "target_type": 7
+        }
+      ],
+      "cpp_observation": null
+    },
+    {
+      "id": 869,
+      "spawns": [
+        {
+          "guid": 169,
+          "map": 1493,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 870,
+      "spawns": [
+        {
+          "guid": 170,
+          "map": 1493,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 871,
+      "spawns": [
+        {
+          "guid": 171,
+          "map": 1493,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 872,
+      "spawns": [
+        {
+          "guid": 172,
+          "map": 1493,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 924,
+      "spawns": [
+        {
+          "guid": 110,
+          "map": 1460,
+          "phases": "6967 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 199353,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 925,
+      "spawns": [
+        {
+          "guid": 111,
+          "map": 1460,
+          "phases": "6967 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 199354,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 949,
+      "spawns": [
+        {
+          "guid": 114,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 183988,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 950,
+      "spawns": [
+        {
+          "guid": 116,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 181978,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 951,
+      "spawns": [
+        {
+          "guid": 113,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 186030,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 952,
+      "spawns": [
+        {
+          "guid": 120,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 199675,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 953,
+      "spawns": [
+        {
+          "guid": 122,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 199676,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 954,
+      "spawns": [
+        {
+          "guid": 123,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 199677,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 957,
+      "spawns": [
+        {
+          "guid": 130,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 185271,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 958,
+      "spawns": [
+        {
+          "guid": 133,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 182647,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 959,
+      "spawns": [
+        {
+          "guid": 135,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 186598,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 960,
+      "spawns": [
+        {
+          "guid": 137,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 199718,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1042,
+      "spawns": [
+        {
+          "guid": 139,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 199399,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1043,
+      "spawns": [
+        {
+          "guid": 140,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 186447,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1050,
+      "spawns": [
+        {
+          "guid": 127,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 182441,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1181,
+      "spawns": [
+        {
+          "guid": 24,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 202116,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1183,
+      "spawns": [
+        {
+          "guid": 29,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 202118,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1184,
+      "spawns": [
+        {
+          "guid": 31,
+          "map": 1468,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 202119,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1210,
+      "spawns": [
+        {
+          "guid": 50,
+          "map": 1220,
+          "phases": "7709 7624 7623 7595 7555 7513 7507 7488 7265 7259 7191 6775 6766 6764 6763 6518 6309 6289 6261 6216 6213 6117 5896 5781 5758 5556 5548 5544 5177 5162 5132 5011 4966 4965 4964 4963 4962 4961 4960 4959 4958 4957 4885 4707 4598"
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1396,
+      "spawns": [
+        {
+          "guid": 44,
+          "map": 1220,
+          "phases": "5978 5975 5249 4860"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 205067,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1497,
+      "spawns": [
+        {
+          "guid": 48,
+          "map": 1220,
+          "phases": "5978 5975"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 206437,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1651,
+      "spawns": [
+        {
+          "guid": 47,
+          "map": 1220,
+          "phases": "5978 5975"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 207571,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1750,
+      "spawns": [
+        {
+          "guid": 143,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 208377,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1751,
+      "spawns": [
+        {
+          "guid": 142,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 208379,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1796,
+      "spawns": [
+        {
+          "guid": 177,
+          "map": 1014,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 208575,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1797,
+      "spawns": [
+        {
+          "guid": 178,
+          "map": 1014,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 208576,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1857,
+      "spawns": [
+        {
+          "guid": 176,
+          "map": 1607,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 209147,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 1867,
+      "spawns": [
+        {
+          "guid": 51,
+          "map": 1220,
+          "phases": "7610 6849 6658 6457 6455 6454 6453 6363 4985 4981 4554"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 209310,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 2291,
+      "spawns": [
+        {
+          "guid": 168,
+          "map": 1571,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 213487,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 2294,
+      "spawns": [
+        {
+          "guid": 167,
+          "map": 1571,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 213514,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 2846,
+      "spawns": [
+        {
+          "guid": 53,
+          "map": 1220,
+          "phases": "7610 6849 6658 6457 6455 6454 6453 6363 6171 5275 5270 5269 5268 4985 4981 4667 4554"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 218272,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 2864,
+      "spawns": [
+        {
+          "guid": 118,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 218618,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 2865,
+      "spawns": [
+        {
+          "guid": 121,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 218619,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3405,
+      "spawns": [
+        {
+          "guid": 161,
+          "map": 1520,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3406,
+      "spawns": [
+        {
+          "guid": 163,
+          "map": 1520,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3416,
+      "spawns": [
+        {
+          "guid": 162,
+          "map": 1520,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3417,
+      "spawns": [
+        {
+          "guid": 164,
+          "map": 1520,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3424,
+      "spawns": [
+        {
+          "guid": 49,
+          "map": 1220,
+          "phases": "7709 7624 7623 7595 7507 7488 7265 7259 7191 6775 6766 6764 6763 6518 6309 6289 6261 6216 6213 6117 5896 5781 5758 5556 5548 5544 5177 5162 5132 5011 4966 4965 4964 4963 4962 4961 4960 4959 4958 4957 4885 4707 4598"
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3491,
+      "spawns": [
+        {
+          "guid": 52,
+          "map": 1220,
+          "phases": "7610 6849 6658 6457 6455 6454 6453 6363 4985 4981 4554"
+        }
+      ],
+      "native219": [],
+      "direct206": [
+        {
+          "entryorguid": 609,
+          "source_type": 13,
+          "id": 0,
+          "event_type": 89,
+          "target_type": 7
+        }
+      ],
+      "cpp_observation": null
+    },
+    {
+      "id": 3547,
+      "spawns": [
+        {
+          "guid": 112,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224822,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3549,
+      "spawns": [
+        {
+          "guid": 115,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224899,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3550,
+      "spawns": [
+        {
+          "guid": 117,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224901,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3551,
+      "spawns": [
+        {
+          "guid": 119,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224902,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3552,
+      "spawns": [
+        {
+          "guid": 124,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224903,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3553,
+      "spawns": [
+        {
+          "guid": 125,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224904,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3554,
+      "spawns": [
+        {
+          "guid": 126,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224905,
+          "effect": 0,
+          "targetA": 141,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3555,
+      "spawns": [
+        {
+          "guid": 128,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224906,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3556,
+      "spawns": [
+        {
+          "guid": 129,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224909,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3557,
+      "spawns": [
+        {
+          "guid": 131,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224910,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3558,
+      "spawns": [
+        {
+          "guid": 132,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224911,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3559,
+      "spawns": [
+        {
+          "guid": 134,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224945,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3560,
+      "spawns": [
+        {
+          "guid": 136,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224946,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3561,
+      "spawns": [
+        {
+          "guid": 138,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224948,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3563,
+      "spawns": [
+        {
+          "guid": 141,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224951,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3564,
+      "spawns": [
+        {
+          "guid": 144,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 224967,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3589,
+      "spawns": [
+        {
+          "guid": 152,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 225234,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3590,
+      "spawns": [
+        {
+          "guid": 154,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 225236,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3591,
+      "spawns": [
+        {
+          "guid": 153,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 225239,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3592,
+      "spawns": [
+        {
+          "guid": 155,
+          "map": 1460,
+          "phases": "6902 6847"
+        }
+      ],
+      "native219": [
+        {
+          "spell": 225242,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3601,
+      "spawns": [
+        {
+          "guid": 156,
+          "map": 1520,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3602,
+      "spawns": [
+        {
+          "guid": 158,
+          "map": 1520,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3608,
+      "spawns": [
+        {
+          "guid": 159,
+          "map": 1520,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3617,
+      "spawns": [
+        {
+          "guid": 157,
+          "map": 1520,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3620,
+      "spawns": [
+        {
+          "guid": 160,
+          "map": 1520,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 3890,
+      "spawns": [
+        {
+          "guid": 184,
+          "map": 1220,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 229017,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [
+        {
+          "entryorguid": 114909,
+          "source_type": 0,
+          "id": 1,
+          "event_type": 20,
+          "target_type": 7
+        }
+      ],
+      "cpp_observation": null
+    },
+    {
+      "id": 3899,
+      "spawns": [
+        {
+          "guid": 185,
+          "map": 1220,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 229073,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [
+        {
+          "entryorguid": 114909,
+          "source_type": 0,
+          "id": 0,
+          "event_type": 20,
+          "target_type": 7
+        }
+      ],
+      "cpp_observation": null
+    },
+    {
+      "id": 3998,
+      "spawns": [
+        {
+          "guid": 194,
+          "map": 1220,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 230012,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4587,
+      "spawns": [
+        {
+          "guid": 182,
+          "map": 1705,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 237750,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4807,
+      "spawns": [
+        {
+          "guid": 202,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 240044,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        },
+        {
+          "spell": 240049,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        },
+        {
+          "spell": 241388,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4808,
+      "spawns": [
+        {
+          "guid": 199,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 241386,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4809,
+      "spawns": [
+        {
+          "guid": 198,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 240053,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        },
+        {
+          "spell": 241366,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4810,
+      "spawns": [
+        {
+          "guid": 201,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 240056,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        },
+        {
+          "spell": 241373,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4811,
+      "spawns": [
+        {
+          "guid": 209,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 240057,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        },
+        {
+          "spell": 241370,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4812,
+      "spawns": [
+        {
+          "guid": 210,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 240058,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        },
+        {
+          "spell": 241378,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4813,
+      "spawns": [
+        {
+          "guid": 211,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 240060,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        },
+        {
+          "spell": 241380,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4899,
+      "spawns": [
+        {
+          "guid": 212,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 242902,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4929,
+      "spawns": [
+        {
+          "guid": 213,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 241103,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4951,
+      "spawns": [
+        {
+          "guid": 195,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 245480,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4955,
+      "spawns": [
+        {
+          "guid": 214,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 4963,
+      "spawns": [
+        {
+          "guid": 200,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 241744,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 5002,
+      "spawns": [
+        {
+          "guid": 196,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 5003,
+      "spawns": [
+        {
+          "guid": 197,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 5013,
+      "spawns": [
+        {
+          "guid": 203,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 243034,
+          "effect": 0,
+          "targetA": 1,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 5014,
+      "spawns": [
+        {
+          "guid": 204,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 243044,
+          "effect": 0,
+          "targetA": 1,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 5015,
+      "spawns": [
+        {
+          "guid": 206,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 243047,
+          "effect": 0,
+          "targetA": 1,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 5016,
+      "spawns": [
+        {
+          "guid": 205,
+          "map": 1676,
+          "phases": ""
+        },
+        {
+          "guid": 207,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 243048,
+          "effect": 0,
+          "targetA": 1,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 5027,
+      "spawns": [
+        {
+          "guid": 208,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 243072,
+          "effect": 0,
+          "targetA": 1,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 5048,
+      "spawns": [
+        {
+          "guid": 215,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [
+        {
+          "spell": 243326,
+          "effect": 0,
+          "targetA": 18,
+          "targetB": 0
+        }
+      ],
+      "direct206": [],
+      "cpp_observation": null
+    },
+    {
+      "id": 5170,
+      "spawns": [
+        {
+          "guid": 216,
+          "map": 1676,
+          "phases": ""
+        }
+      ],
+      "native219": [],
+      "direct206": [],
+      "cpp_observation": null
+    }
+  ]
+}

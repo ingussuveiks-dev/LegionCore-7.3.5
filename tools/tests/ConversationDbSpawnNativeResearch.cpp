@@ -4,6 +4,8 @@
 #include "ConversationData.h"
 #include <filesystem>
 #include <cstdlib>
+#include "CellImpl.h"
+#include "NativeConversationGrid.inc"
 int main(int argc,char**argv)
 {
  try
@@ -25,20 +27,21 @@ int main(int argc,char**argv)
    record.posX=f[4].GetFloat();record.posY=f[5].GetFloat();record.posZ=f[6].GetFloat();record.orientation=f[7].GetFloat();
    Map map(record.mapid,300,9999995,DIFFICULTY_NORMAL);map.LoadGrid(record.posX,record.posY);
    auto count=objectCountInWorld[uint8(HighGuid::Conversation)];
-   for(bool direct:{false,true})
+   for(uint32 mode:{0u,1u,2u})
    {
-    auto result=new Conversation;bool loaded=direct?result->LoadConversationFromDB(key,&map,true):result->LoadFromDB(key,&map);
+    auto result=new Conversation;bool loaded=mode==0?result->LoadConversationFromDB(key,&map,true):result->LoadFromDB(key,&map);
     Require(loaded,"Actual DB factory failed before admission");
-    if(!direct)Require(map.AddToMap(result),"Deferred native map insertion failed");
-    std::cout<<"COUNTERFACTUAL_DBSPAWN\t"<<key<<'\t'<<record.id<<'\t'<<direct<<'\t'<<loaded<<'\t'<<result->IsInWorld()<<'\t'<<result->IsInGrid()<<'\t'<<result->GetCasterGUID().IsEmpty()<<'\t'<<result->GetDuration()<<'\t'<<result->GetActors().size()<<'\t'<<result->GetLines().size()<<'\n';
+    if(mode==1)Require(map.AddToMap(result),"Deferred native map insertion failed");
+    if(mode==2){Cell cell(Trinity::ComputeCellCoord(record.posX,record.posY));AddObjectHelper(cell,&map,result);}
+    std::cout<<"COUNTERFACTUAL_DBSPAWN\t"<<key<<'\t'<<record.id<<'\t'<<mode<<'\t'<<loaded<<'\t'<<result->IsInWorld()<<'\t'<<result->IsInGrid()<<'\t'<<result->GetCasterGUID().IsEmpty()<<'\t'<<result->GetDuration()<<'\t'<<result->GetActors().size()<<'\t'<<result->GetLines().size()<<'\n';
     Require(!result->IsInWorld()&&result->IsInGrid()&&result->GetCasterGUID().IsEmpty()&&!result->GetDuration(),"Expected current static admission defect changed");
     result->Remove();Require(result->IsInGrid(),"Current static Remove changed");
     map.RemoveFromMap(result,true);Require(objectCountInWorld[uint8(HighGuid::Conversation)]==count,"Explicit research cleanup leaked");++cases;
    }
   }while(rows->NextRow());
-  WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();
-  Require(cases==4,"Research count changed");
-  std::cout<<"EXPECTED_BROKEN4 actual native531/747 DB factory and direct/deferred map admission: reports success/grid-owned but never in world; no caster, ordinary Remove cannot retire it. Explicit native Map cleanup restored allocation count. Deferred probe uses native AddToMap, not the entire automatic grid-loader path; no client or repaired claim.\n";
+  Require(cases==6,"Research count changed");
+  std::cout<<"EXPECTED_BROKEN6 actual native531/747 DB factory and direct/deferred/exact AddObjectHelper admission: reports success/grid-owned but never in world; no caster, ordinary Remove cannot retire it. Explicit native Map cleanup restored allocation count. Actual production AddObjectHelper body exported unchanged; full cell visitation and authenticated Player traversal remain separate; no client or repaired claim.\n";
+  std::cout.flush();WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();
  }
  catch(std::exception const&error){std::cerr<<error.what()<<'\n';return 1;}
 }

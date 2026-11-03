@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-03",
+  "status": "OPEN static admission; completed source classification and six expected-broken native grid contexts, no gameplay/binary/data repair.",
+  "scope": "Follow-up to conversation-dbspawn-research-2026-11-03.json; current dynamic factory fix remains deployed.",
+  "inventory": {
+    "audit": "docs/audits/conversation-static-source-inventory-2026-11-03.json",
+    "spawn_rows": 132,
+    "distinct_ids": 128,
+    "native219_ids": 98,
+    "native219_spells": 106,
+    "direct206_ids": 6,
+    "candidate_union": 102,
+    "details": "Complete live SpellMgr SpellInfo219 inventory after matching native26972/Hotfix load, all132 current World rows and action206/direct action11 references.106 effects in106 spells cover98 distinct static IDs;7 Smart rows total.531 has a separate source-traced C++ player-triggered creator. These are candidates, not proof of actual casts or duplicate client playback."
+  },
+  "artifact_candidates": "622->195408,623->195411,1796->208575,1797->208576, each native effect0/219 with targetA18. Bounded live queries of eventobject_template/associated spawns, spell_area and Smart11 for these four spells plus747/195644 find no rows and reach full EOF; parent spell/scene/C++ invocation remains unresolved. Do not assume those candidate spells are active or the static records safe to enable.",
+  "native_grid": "Original guid7/531 and8/747 execute direct DB load, deferred native Map::AddToMap, and the exact unchanged exported production AddObjectHelper body with real Cell/Map/AddToGrid/AddToWorld. All6 yield loaded=true/world=false/grid=true/emptyCaster/duration0. Ordinary Remove leaves the grid entry; explicit native Map deletion restores allocation count after each case. Full cell visitation and actual authenticated Player/packet/client paths are still separate. No repaired counterpart exists.",
+  "probe_iteration": "First expanded run captured all6 observations and exited0 with clean diagnostics but did not capture its final assertion/summary placed after DB library shutdown. That run is partial evidence. Final run moves and flushes the count assertion/summary before pool/library close and requires exactly6 observation lines and exactly1 EXPECTED_BROKEN6 marker; final native exit/stdout/stderr and diagnostics pass. Exact cause of missing post-shutdown output is not established; no production failure or logging suppression claim.",
+  "diagnostics": "Native classifier, link query and both grid runs include before/after own+canonical crash/log snapshots. No new/changed crash, appended DBErrors or unexplained server warnings/errors/assertions; all native exits0. Active Crashes empty and mixed6090 DBErrors unchanged/unresolved. Research remains at original ignored paths outside fixed. No SQL/character/config/EXE change or server launch.",
+  "next": "Static activation remains OPEN until intended quest/phase/trigger provenance and duplicate interactions are established; no blanket admission. Continue an independently evidenced acquisition repair while preserving this inventory and full client/all36 checks.",
+  "evidence_sha256": {
+    "build-extractors/runtime-test/conversation-static-sources/20261103-182154-603/native.tsv": "c3178fd68cb10cb4621662ea2146d320879f8e048cb57f2fcd2bf6d76097e3b7",
+    "build-extractors/runtime-test/conversation-static-sources/20261103-182154-603/evidence/diagnostics-after.json": "0acf95ee07dca6cd03334999bba6fa45b1415a9ea33832e33da09844b0fb92ee",
+    ".codex/conversation-static-source-links/world.tsv": "bf8a8cadeba811ceb119fac44c6a27c99f2efb133991305a3d13405d4f4c9287",
+    ".codex/conversation-dbspawn-native-grid2.log": "874d66d0dbbc8982e658f9988c21a04a3b17c7e9d1283b73c30a951ae8773e25",
+    ".codex/conversation-dbspawn-native-grid3.log": "0f7a2e5f64626bd2f53320d3edbc46a42c19b8079b3964d660c69696c98eae2d",
+    "build-extractors/runtime-test/conversation-dbspawn-research/20261103-182405-045/native-inputs.json": "f1735534f29d3b163675330be48413f0707d07e1f2192031aef900e1f1c1bf60",
+    "build-extractors/runtime-test/conversation-dbspawn-research/20261103-182405-045/NativeConversationGrid.inc": "ecc9c563fe0aee4ecc22907de6685b7bfe1555cd9d1be44eb2fc4c8ecfec3f99",
+    "build-extractors/runtime-test/conversation-dbspawn-research/20261103-182544-488/NativeConversationGrid.inc": "ecc9c563fe0aee4ecc22907de6685b7bfe1555cd9d1be44eb2fc4c8ecfec3f99",
+    "tools/tests/ConversationStaticSourcesNative.cpp": "d8fd1970ca1c594cd19a9e3e7c94914abc773bdd9802d85cfbf8562664bb84f1",
+    "tools/tests/Test-ConversationStaticSourcesNative.ps1": "51ed5bf6e078f806587d881c594986eae34f2b9d97bca7d59240a2018fe0b7d4",
+    "tools/tests/ConversationDbSpawnNativeResearch.cpp": "6c178630d89c8e61686a14dae67d1792cacb2135b4f946f803f3a6142ddcc045",
+    "tools/tests/Test-ConversationDbSpawnNativeResearch.ps1": "60bfdd5161ee274883de91995dfc659a1b8319915b6cf553aeef7bd752130b7a"
+  }
+}
