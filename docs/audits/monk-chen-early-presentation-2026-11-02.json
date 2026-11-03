@@ -30,5 +30,10 @@
     "Shared101430/103151 LINK2, WardstoneLINK4, Survival39427 middle flight, Fu Zan original Yu lon ride/Yigthregor, LiLi7/8/Ponshu10, Warrior recovery/cross-conversation and Stromkar client visuals remain OPEN. Continue independent all36 repairs; no further character reset."
   ],
   "fix_commit": "ddc478a60061ff90490b3741bf79d1ad0139568e",
-  "closed_archive": "docs/audits/monk-chen-early-presentation-archive-2026-11-02.json"
+  "closed_archive": "docs/audits/monk-chen-early-presentation-archive-2026-11-02.json",
+  "opening_voice_followup": {
+    "audit": "docs/audits/chen-opening-voice-2026-11-03.json",
+    "fix_commit": "7dc2a42806db7c12305b825c6525b2e99f67561a",
+    "status": "Separate ordinary first-reply minimum repaired4000->4443 in scoped/shared CPP; actualWorld Duration0 and native5s/8s retained. Earlier callback lifetime repair remains in monk-chen-early-presentation audit. Full audio/late coalesced delivery/client/all36 still separate."
+  }
 }

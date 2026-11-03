@@ -85,5 +85,10 @@
     "Decoded initial99965 voice budget4443ms exceeds the nominal4000ms next callback. This is a separate timing-budget finding, not a claim of audible overlap: no listening/client playback reviewed, and payload padding may differ from speech. No global voice queue or invented combat delay introduced.",
     "All older unresolved physical actor replacement/exact-stage relog/restart, shared101430/103151 LINK2, Wardstone missingLINK4, Survival39427 flight, Fu Zan/Warrior recovery and Stromkar client visual findings remain OPEN. No additional character reset."
   ],
-  "fix_commit": "38ad4aeabe3a2789433cc8fe4096ad35a67d36a0"
+  "fix_commit": "38ad4aeabe3a2789433cc8fe4096ad35a67d36a0",
+  "opening_voice_followup": {
+    "audit": "docs/audits/chen-opening-voice-2026-11-03.json",
+    "fix_commit": "7dc2a42806db7c12305b825c6525b2e99f67561a",
+    "status": "Separate ordinary first-reply minimum repaired4000->4443 in scoped/shared CPP; actualWorld Duration0 and native5s/8s retained. Earlier callback lifetime repair remains in monk-chen-early-presentation audit. Full audio/late coalesced delivery/client/all36 still separate."
+  }
 }

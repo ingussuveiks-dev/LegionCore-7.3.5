@@ -64,5 +64,5 @@
       "Bytes": 40942
     }
   ],
-  "Pending": "Earlier initial Chen voice4443ms precedes nominal4000ms next callback; this metadata budget and AI-owned4s/5s rescue callbacks remain separate open timing/lifetime work. Do not infer actual audible overlap without client/listening evidence."
+  "Pending": "Earlier4s/5s rescue callbacks are instance-owned as recorded in monk-chen-early-presentation-2026-11-02.json. Ordinary first reply now waits for verified4443ms native enUS voice in chen-opening-voice-2026-11-03.json. Actual client listening/playback, other locales and late/coalesced cross-line/route spacing remain OPEN; no global voice queue is inferred."
 }
