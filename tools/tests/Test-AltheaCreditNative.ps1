@@ -7,8 +7,10 @@ $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslaye
 $ai=Block $source 'struct npc_sister_althea_ebonlockeAI : ScriptedAI'
 foreach($pair in @(@('AltheaVictory','Player* GetVictoryPlayer('),@('Althea','void JustDied(Unit* who) override'))){[IO.File]::WriteAllText("$out/$($pair[0]).inc",(Block $ai $pair[1]))}
 [IO.File]::WriteAllText("$out/AltheaActor.inc",(Block $source 'class AltheaDeathConversation final : public Conversation')+';')
-[IO.File]::WriteAllText("$out/AltheaDoor.inc",(Block (Block $source 'struct go_kingslayers_doorAI : public GameObjectAI') 'bool GossipHello('))
 $old=(& git -C $repo show 'eb96dd4e6:src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned nearest-player baseline missing'}
+# This victory-only probe controls its earlier door prerequisite through the
+# original hook. Real repaired door interaction is tested by its own native suite.
+[IO.File]::WriteAllText("$out/AltheaDoor.inc",(Block (Block $old 'struct go_kingslayers_doorAI : public GameObjectAI') 'bool GossipHello('))
 [IO.File]::WriteAllText("$out/AltheaBeforeCredit.inc",(Block (Block $old 'struct npc_sister_althea_ebonlockeAI : ScriptedAI') 'void JustDied(Unit* who) override'))
 $quest=Get-Content "$repo/src/server/game/Globals/QuestData.cpp" -Raw
 $query=[regex]::Match($quest,'(?s)void QuestDataStoreMgr::LoadQuests\(\).*?WorldDatabase.Query\(("SELECT ".*?" FROM quest_template")\);').Groups[1].Value

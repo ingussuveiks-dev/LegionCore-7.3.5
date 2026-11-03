@@ -77,7 +77,7 @@ struct CreditParty:Group{
     }
     ~CreditParty(){first->SetGroup(nullptr);second->SetGroup(nullptr);sGroupMgr->RemoveGroup(this);}
 };
-int main(int argc,char** argv){try{
+static void InitializeAltheaNative(int argc,char** argv){
     SetUnhandledExceptionFilter(CrashTrace);Require(argc==2,"Expected dbc directory");auto config=std::getenv("LEGION_DIALOGUE_CONFIG");Require(config,"Private config missing");
     auto directory=std::filesystem::path(argv[1]).lexically_normal();if(directory.filename().empty())directory=directory.parent_path();
     std::string runtime=directory.parent_path().parent_path().string()+'/';char* args[]={argv[0],config,runtime.data()};InitializeNative(3,args);
@@ -105,6 +105,17 @@ int main(int argc,char** argv){try{
     for(auto tree:sCriteriaTreeStore)if(tree->Parent==48584){auto criterion=sCriteriaStore.LookupEntry(tree->CriteriaID);std::cout<<"CHILD "<<tree->ID<<" operator="<<unsigned(tree->Operator)<<" amount="<<tree->Amount<<" criteria="<<tree->CriteriaID<<" asset="<<(criterion?criterion->Asset:0)<<'\n';}
     HashMapHolder<Player>::SetSize(1000);HashMapHolder<Pet>::SetSize(1000);HashMapHolder<Conversation>::SetSize(20000);
     dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1620,{}}});MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1620,{}}});
+}
+static void CloseAltheaNative(){
+    auto accountRows=LoginDatabase.Query("SELECT COUNT(*) FROM account");Require(accountRows&&!accountRows->Fetch()[0].GetUInt32(),"Private TEMP account changed unexpectedly");
+    bool asyncChecked=false;auto receipt=LoginDatabase.AsyncQuery("SELECT COUNT(*) FROM account");
+    receipt.WithCallback([&](QueryResult rows){Require(rows&&!rows->Fetch()[0].GetUInt32(),"Async TEMP account changed unexpectedly");asyncChecked=true;});
+    auto deadline=GetTickCount64()+5000;while(!asyncChecked&&GetTickCount64()<deadline){receipt.InvokeIfReady();Sleep(1);}Require(asyncChecked,"Native session cleanup did not drain");
+    CharacterDatabase.Close();LoginDatabase.Close();WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();
+}
+#ifndef ALTHEA_CREDIT_NATIVE_SUPPORT_ONLY
+int main(int argc,char** argv){try{
+    InitializeAltheaNative(argc,argv);
     uint32 number=0;
     for(uint8 race:{uint8(RACE_HUMAN),uint8(RACE_ORC)})for(uint32 mode=0;mode<13;++mode){
         MapInstanced parent(1620,300);InstanceMap map(1620,300,9999000+number++,DIFFICULTY_N_SCENARIO,&parent);
@@ -141,9 +152,6 @@ int main(int argc,char** argv){try{
         a->SetPlayer(nullptr);b->SetPlayer(nullptr);delete a;delete b;sScenarioMgr->RemoveScenario(map.GetInstanceId());
     }
     std::cout<<"PASS "<<number<<" native Althea cases: original GM counterfactual, both faction quests, actual Player/pet/guardian/NPC Kill, scaled one-hit damage, repeat Kill/callback, null fallback, abandoned/reaccepted/complete quest, wrong stage and dead owner; actual party/shared48585/51613 amount1 progresses5->6 only with independent original door48597/51654, in either event order. Native owner reference, shared empty PlayerGUID and original party conversation visibility retained. Earlier progression and direct door/death hook invocation are controlled; no physical door/client/full1123 claim\n";std::cout.flush();
-    auto accountRows=LoginDatabase.Query("SELECT COUNT(*) FROM account");Require(accountRows&&!accountRows->Fetch()[0].GetUInt32(),"Private TEMP account changed unexpectedly");
-    bool asyncChecked=false;auto receipt=LoginDatabase.AsyncQuery("SELECT COUNT(*) FROM account");
-    receipt.WithCallback([&](QueryResult rows){Require(rows&&!rows->Fetch()[0].GetUInt32(),"Async TEMP account changed unexpectedly");asyncChecked=true;});
-    auto deadline=GetTickCount64()+5000;while(!asyncChecked&&GetTickCount64()<deadline){receipt.InvokeIfReady();Sleep(1);}Require(asyncChecked,"Native session cleanup did not drain");
-    CharacterDatabase.Close();LoginDatabase.Close();WorldDatabase.Close();HotfixDatabase.Close();MySQL::Library_End();
+    CloseAltheaNative();
 }catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}}
+#endif

@@ -13,6 +13,7 @@
 #include "Item.h"
 #include "TemporarySummon.h"
 #include "MapManager.h"
+#include "ScriptsData.h"
 
 // 107979 108015
 class npc_garona_halforcen : public CreatureScript
@@ -356,24 +357,110 @@ public:
     {
         go_kingslayers_doorAI(GameObject* go) : GameObjectAI(go) {}
 
-        bool GossipHello(Player* player, bool isUse) override
-        {
-            if (!isUse)
-                return true;
+        bool opening = false;
 
-            //           if (InstanceScript *script = player->GetInstanceScript())
+        bool Source() const
+        {
+            return go && go->GetEntry() == 251053 && go->GetDBTableGUIDLow() == 133953 &&
+                go->GetMapId() == 1620 && go->GetGoType() == GAMEOBJECT_TYPE_DOOR;
+        }
+
+        bool Leaf(Scenario* scenario, uint32 id) const
+        {
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto found = progress->find(id);
+            return found != progress->end() && found->second.Counter;
+        }
+
+        bool Activated() const
+        {
+            return go->getLootState() == GO_ACTIVATED && go->GetGoState() == GO_STATE_ACTIVE &&
+                go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE);
+        }
+
+        Scenario* Context(Player* player, bool activated) const
+        {
+            // Match native door interaction distance. A closed door's own
+            // model can occlude a ray to its center while remaining usable.
+            if (!Source() || !go->IsInWorld() || !go->isSpawned() || go->IsQuestObjectExpired() ||
+                go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE | GO_FLAG_LOCKED) ||
+                (activated ? !Activated() : go->getLootState() != GO_READY || go->GetGoState() != GO_STATE_READY ||
+                    go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE)) ||
+                !player || !player->IsInWorld() || player->IsPreDelete() || !player->CanContact() || !player->IsAlive() ||
+                player->isGameMaster() || player->getClass() != CLASS_ROGUE || player->HasPendingTeleport() ||
+                player->GetMap() != go->GetMap() || !player->InSamePhase(go) ||
+                !player->canSeeOrDetect(go) ||
+                !player->IsWithinDistInMap(go, go->GetInteractionDistance()) || player->IsQuestObjectExpired() ||
+                !player->CanTargetQuestObject(go) || !go->CanTargetQuestObject(player))
+                return nullptr;
+
+            bool quest = false;
+            for (uint32 id : {42504u, 42627u})
+                if (!player->GetQuestRewardStatus(id) &&
+                    (player->GetQuestStatus(id) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(id) == QUEST_STATUS_COMPLETE))
+                    quest = true;
+            Scenario* scenario = quest ? sScenarioMgr->GetScenario(go->GetInstanceId()) : nullptr;
+            return scenario && scenario->GetScenarioId() == 1123 &&
+                (scenario->CanUpdateCriteria(48577) || scenario->CanUpdateCriteria(48597) || Leaf(scenario, 48597)) ? scenario : nullptr;
+        }
+
+        void Open(Player* player)
+        {
+            if (opening || !Source() || !Context(player, Activated()))
+                return;
+            opening = true;
+            bool const transition = !Activated();
+            if (transition)
+                go->UseDoorOrButton(0, false, player);
+
+            // Native activation (including its state callbacks) must finish
+            // before either event. The two authored leaves belong to different
+            // steps, so recheck the current scenario between their updates.
+            if (Scenario* scenario = Context(player, true))
             {
-                //     if (script->getScenarionStep() == 5)
-                {
-                    if (Creature* garona = player->FindNearestCreature(108214, 60.0f, true))
-                    {
-                        garona->GetMotionMaster()->MovePoint(0, -8625.50f, 415.93f, 103.7f);
-                        garona->RemoveAura(132653);
-                    }
+                if (scenario->CanUpdateCriteria(48577) && !Leaf(scenario, 48577))
                     player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51549);
+            }
+            if (Scenario* scenario = Context(player, true))
+            {
+                if (scenario->CanUpdateCriteria(48597) && !Leaf(scenario, 48597))
+                {
                     player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51654);
+                    scenario = Context(player, true);
+                    if (scenario && Leaf(scenario, 48597))
+                    {
+                        if (Creature* garona = player->FindNearestCreature(108214, 60.0f, true))
+                            if (garona->CanTargetQuestObject(player) && player->CanTargetQuestObject(garona))
+                            {
+                                garona->GetMotionMaster()->MovePoint(0, -8625.50f, 415.93f, 103.7f);
+                                garona->RemoveAura(132653);
+                            }
+                    }
                 }
             }
+
+            // Preserve the original native door script dispatch once per real
+            // activation. An explicit retry on an already open door can recover
+            // missing progress, without toggling it or replaying its scripts.
+            if (transition && Source() && go->IsInWorld() && Activated())
+                go->GetMap()->ScriptsStart(sGameObjectScripts, go->GetDBTableGUIDLow(), player, go);
+            opening = false;
+        }
+
+        bool GossipUse(Player* player) override
+        {
+            if (!Source())
+                return false;
+            Open(player);
+            return true;
+        }
+
+        bool GossipHello(Player* player, bool isUse) override
+        {
+            if (!Source())
+                return false;
+            if (isUse)
+                Open(player); // native completed Opening, never report-use
             return true;
         }
 

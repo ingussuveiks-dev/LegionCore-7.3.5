@@ -3547,6 +3547,12 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
     uint32 lockId = 0;
     ObjectGuid guid;
 
+    // This authored door owns activation/progression in its AI after native
+    // lock validation. Other doors retain their original early-use path.
+    bool const kingslayersDoor = gameObjTarget && gameObjTarget->GetEntry() == 251053 &&
+        gameObjTarget->GetDBTableGUIDLow() == 133953 && gameObjTarget->GetMapId() == 1620 &&
+        sObjectMgr->GetScriptName(gameObjTarget->GetScriptId()) == "go_kingslayers_door";
+
     if (gameObjTarget)
     {
         if (!player->HasPendingPersonalChestLoot(gameObjTarget) &&
@@ -3599,7 +3605,7 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
         // TODO: Add script for spell 41920 - Filling, becouse server it freze when use this spell
         // handle outdoor pvp object opening, return true if go was registered for handling
         // these objects must have been spawned by outdoorpvp!
-        else if (goInfo->type == GAMEOBJECT_TYPE_DOOR)
+        else if (goInfo->type == GAMEOBJECT_TYPE_DOOR && !kingslayersDoor)
         {
             gameObjTarget->UseDoorOrButton(0, false, player);
             player->GetMap()->ScriptsStart(sGameObjectScripts, gameObjTarget->GetDBTableGUIDLow(), player, gameObjTarget);

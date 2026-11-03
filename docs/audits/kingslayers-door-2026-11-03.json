@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-03",
+  "canonical_hashes": {
+    "worldserver.exe": "62bc30bd413dcb9ada5946f09f729c9be2c7d7251a9b84883f47cd42e8bf57f1",
+    "bnetserver.exe": "93b22fba4bca3a62720cfb589079b20e5a6f3ad85ead94843b4345a3a5554d6a"
+  },
+  "deployment": "Original generated game.lib/scripts.lib Release paths rebuilt; staged final links preserve original game/scripts/shared/Common library inputs, no global OutDir. Selected staged and canonical PE pass. Four EXE/MAP files backed up and promoted offline; protected configurations, certificates and DLL hashes unchanged. No SQL/character changes.",
+  "runtime": "Mandatory Test-ScepterLogin.ps1 -VerifyReleaseBinary passes. Owned canonical worldserver PID2896 reached fresh ready, server shutdown0, exit0, empty stderr and gone. No user server stopped; no task-owned server remains.",
+  "diagnostics": "Every automated/native/build/PE/startup test recorded before/after canonical and own crash/log inventories and inspected exit/stdout/stderr/new server diagnostics. Final ordinary runs clean. No new runtime crash. Existing canonical mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged and unresolved; shared101430/103151 LINK2/Wardstone LINK4 and other previous findings remain OPEN. Empty active Crashes does not certify all quests.",
+  "archive": "Resolved task-owned diagnostic evidence will be hash-verified under ignored Release/fixed after focused fix commits. No canonical mixed log rotation.",
+  "status": "DEPLOYED62BC30BD/93B22FBA: original251053/133953 native activation now precedes qualified51549/51654.70ASAN,48 native cases,24 collision controls, retained Althea26/native and36+64+21ASAN, staged/canonical selected PE/Scepter/owned startup pass. Actual client/full1123/all36 remain OPEN.",
+  "cause": "Original AI only overrides GossipHello(use=true), returning true after unconditional51549/51654. Ordinary native GameObject::Use calls GossipUse instead, opens without these events. Calling the old true hook directly can award progress while the door is still closed. Full original EffectOpenLock has an EARLIER door activation before native lock validation; do not confuse its full pipeline with the controlled old true-hook counterfactual.",
+  "matching_evidence": {
+    "world": "Read-only actual251053 is type0/display4413/lock0/startOpen0/autoClose0/ScriptName go_kingslayers_door. Original spawn133953 map1620 pose(-8634.95,419.141,103.702,2.23265), phaseMask1/empty phase IDs. No gameobject_scripts133953, no World30469/30480/30473 extra criteria rules. Original Garona108214/360859 and authored move(-8625.50,415.93,103.7)/aura132653 preserved.",
+    "db2": "Actual hotfix-aware26972 ten1123 steps: order4/2558/root48576 ALL/operator4 ->48577/30469/type92/51549/amount1. Order5/2560/root48584 ALL/operator4 has independent48585/30473/51613 victory and48597/30480/51654 door. Native direct-use stage4 passes into5; only actual separate Althea victory plus door reaches6.",
+    "geometry": "Actual closed4413 model occludes a center LOS ray even though native range-based door Use is valid. An exploratory added centerLOS predicate was removed before promotion. Retain native interaction distance/phase/visibility/scope; do not invent a centerLOS requirement."
+  },
+  "fix": "Scope to exact original251053/db133953/map1620/typeDOOR. GossipUse owns synchronous native UseDoorOrButton, then checks actual GO_ACTIVATED/ACTIVE/IN_USE after callbacks. Require alive contactable nonGM Rogue with active incomplete/complete unrewarded42504 or42627, same map/phase, native visibility/range, nonexpired reciprocal quest scope and actual1123 current48577/48597 or prior accepted48597 for backtracking. Recheck scenario/context between51549 and51654; real native leaf counters prevent repeat. Original scoped nearby Garona movement/aura removal happens after real51654 acknowledgement, once. Native DB script dispatch retained once per physical activation. Explicit use may recover missing credit on already-open source; report-use never opens or credits. Scoped EffectOpenLock defers this exact original door early activation until its normal post-lock SendLoot hook; all other doors unchanged.",
+  "checks": {
+    "asan": "Test-KingslayersDoor.ps1 exports whole actual nested AI and pinned whole Kingslayers.cpp certificate (only door/include change).70 contexts cover both quest variants, state acknowledgement, report/null/source/world/class/contact/death/phase/range/visibility/teleport/scope/quest gates, missing/foreign actors, failed activation/credit retry, abandonment during first event, reentrancy, repeated leaves and independent victory. Engine service boundaries controlled; actual geometry/native API tested separately.",
+    "native": "Test-KingslayersDoorNative.ps1:48 real InstanceMap/Player/registered GameObject factory cases, actual Use/ReportUse packet handlers, whole current source AI, real native criteria and4413 model. Both seeded Human42504/Orc42627 pairs, stage4/5, quest/class/death/range/phase/GM/flags/source/stage refusals, completed-stage backtracking, existing-open recovery, Garona actual point-motion/aura and no replay, reset/AI recreation, party shared Counter1, abandon/reaccept and real native Althea Kill before door. Native reset absolute respawn endpoint controlled with SetRespawnTime(0), not a claim of timed/client reentry.",
+    "spell_scope": "Native HandleEffects invokes real3365 EffectOpenLock and SendLoot with actual lock0 or injected invalid lock, proving post-lock activation/refusal. This is a controlled effect endpoint, NOT completed ordinary Opening traversal. Native full CastSpell3365 preparation rejects the authored lock0 door; ordinary intended door path is actual Use. No spell lock/LOS check bypass added to production.",
+    "baseline": "Pinned old complete registered door AI:8 native cases demonstrate ordinary Use opening without51654, true-hook progress while still closed, report control. Explicit counterfactuals, not ordinary passing behavior.",
+    "retained": "26 native Althea Player/pet/guardian/NPC/group/one-hit/replay and both event orders pass after helper-only refactor. Existing36 hook+64 admission+21 actor resolver ASAN pass. Victory tests pin only the separate prerequisite door hook; dedicated new native suite exercises the actual physical door.",
+    "release": "verify_kingslayers_door_release.py checks registered actual factory/vtable and hooks, native activation before two criteria calls, context/counters/reentrancy, original Garona/native scripts, source gates, scoped pre-lock deferral and whole SpellEffects.cpp pinned-source certificate. Existing Althea exact actor/qualified victory/shared LINK PE chain retained. Staged and canonical pass."
+  },
+  "iterations": [
+    "Initial production compile lacked ScriptsData.h for actual sGameObjectScripts; added the proper declaration and rebuilt original game/scripts libraries cleanly.",
+    "Expanded native fixture initially attempted GameObjectUse default construction; actual packet API requires WorldPacket&&, corrected for both native handlers.",
+    "Expanded fixture first treated ordinary3365 cast on authored lock0 as successful. Actual preparation rejects it; now checks rejection separately and labels direct native HandleEffects coverage honestly. Earlier failed assumptions remain preserved.",
+    "Reset fixture initially assumed Update(diff) advanced absolute GameTime, leaving native respawn visibility inactive. Explicitly seed the respawn endpoint before AI recreation; production timing remains unchanged.",
+    "First whole-source PE certificate read git output with Windows cp1252 and failed on UTF-8 comments. Corrected explicit UTF-8 decoding; full canonical certificates and PE now pass."
+  ],
+  "limits": [
+    "Actual authenticated client door click/animation/mesh passage, Garona timing/voice/follow, both faction routes/group/pet/guardian/relog/reentry and full1123 remain OPEN. Native packet handlers use real unpersisted Players with controlled earlier quests/steps; no full client login or original combat AI claim.",
+    "Other original Althea intro/guard-release nearest-player lookups and later Merlis/return paths require independent review. All36 acquisition chains and shared LINK/Wardstone/Survival/FuZan/LiLi/Ponshu findings remain OPEN. No new character reset."
+  ],
+  "next": "Trace original Althea108218 intro/guard-release nearest-player admission and original guards108216/108217 lifetime against matching1123 and source actor evidence before a separate fix; preserve client/full1123/all36 findings.",
+  "source_sha256": {
+    "src/server/game/Spells/SpellEffects.cpp": "45a11978346b53fd59f30545ee6db3847135f3c1104fb896f0f6b0866c35959b",
+    "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "84d0e475975ee2e8bdf293e865f32b39ae73eb753be9f67cff2246a28c80737c",
+    "tools/tests/KingslayersDoorNative.cpp": "401b72fc02c016df3da6bb32d8e65ec8a9091ef13c57782be293c967c8c900a6",
+    "tools/tests/KingslayersDoorTest.cpp": "b99a706a9b3577ce24181bb592d5d01abd207af386f2d7d48ae0cdf60b9d6f6f",
+    "tools/tests/Test-KingslayersDoorNative.ps1": "3776f1c251b3e5db15428ac4c2ca81734c8ae1ba5142941f4f56c213395a1fb6",
+    "tools/tests/Test-KingslayersDoor.ps1": "28fca12d5b785b620f9243d431edf255975961dcfdb21780ed34d7ba24c1d70c",
+    "tools/tests/verify_kingslayers_door_release.py": "3cea18d8731194e036c95ddaba72a0d601597bbb4a51dc638e4a9b2ec27919f7",
+    "tools/research/KingslayersDoorCatalog.cpp": "50aa5c4266e35d89b6f370464b2a2796f0a62fad80257d93cf7653620587d822"
+  }
+}
