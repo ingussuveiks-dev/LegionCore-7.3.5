@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-03",
+  "status": "DEPLOYED World02 RELEASED: focused2432 cumulative line start/published lifetime repaired; actual client/audio/caller choreography/full1123/all36 remain OPEN.",
+  "cause": "Original Garona2432 actor sum4700 publishes9700ms, before its second line start11800. Complete matching26972 enUS voice5151 is7693ms plus native AdditionalDuration3000, so the authored cumulative next-line boundary is10693,1107ms earlier than imported11800. Voice5152 is2471 plus native1000 gap; whole content14164 requires published19164 including unchanged native5000 padding. This is native metadata and full decode evidence, not captured client clipping/listening.",
+  "fix": "Exactly two cells under one exact complete-definition guard: conversation_creature2432/id1 duration2350->11814, retaining id0 duration2350 and native sum14164; conversation_data2432/id5152 textId11800->10693. Original duplicate Garona role slots, fullGUID data, indexes,95 flags/538968064 packed value and all unrelated rows remain unchanged. Canonical original/repaired/half-states accepted; custom/missing/extra/opposite-kind contexts preserved. No C++ production, caller, actor despawn, movement, combat, criteria, quest, item or character change.",
+  "local_evidence": {
+    "native": "AltheaGaronaAudioCatalog actual hotfix-aware DB2 ConversationLine/BroadcastText/SoundKit/SoundKitEntry:5151/113571/63584/1391998/3000/next5152,5152/113572/63585/1391999/1000/next0. Effect219 spell214901->2432 retained. Separate5150/113570/63581/1391995 catalogued for future Althea work, not repaired here.",
+    "assets": "Actual D:/wow/Legion7.3.5 build26972/enUS verified, three read-only/write-share CASC exports. All three full Vorbis decodes and ffprobe metadata pass;32 client index hashes unchanged. Only metadata/hashes committed; no proprietary audio or listening claim.",
+    "payloads": [
+      {
+        "FileDataID": 1391995,
+        "Bytes": 30682,
+        "VoiceMs": 4543,
+        "SHA256": "AB75A4CDED7047F0521562A794823BB11DE814C60AA355AB289922D8364DF5C5"
+      },
+      {
+        "FileDataID": 1391998,
+        "Bytes": 51223,
+        "VoiceMs": 7693,
+        "SHA256": "A9E736402EEE8CB045D0EDD27F3A1B28C98C86EF9F3D1114CAF1C63CE142E810"
+      },
+      {
+        "FileDataID": 1391999,
+        "Bytes": 19037,
+        "VoiceMs": 2471,
+        "SHA256": "6DF7DBEE4BF9E1CA0BE7C5E5604D759B7AC3537C6A4E9CC327EAAF0FBBB43C84"
+      }
+    ]
+  },
+  "checks": {
+    "temp": "Actual full-schema private TEMP tables, persistent-write-denied reader: whole three-table counts/columns, twice idempotent, both canonical partial states and16 custom definition refusals. Baseline old payload explicitly paired with repaired native generator/padding/viewer/expiry ASAN; late viewer clocks and missing actor refusal retained. Endpoint Map/clock services controlled, not whole-core ASAN.",
+    "native": "Actual Release native2432 factory/map/actor/line controls pass first with isolated in-memory two-field metadata shadow and then installed live rows: duration19164, second start10693. Removing original Garona through real Map retains actual live Conversation/accessor, followed by native removal and allocation-count restoration. No authenticated Player or simulated elapsed client playback. Original native9700/11800 counterfactual captured separately before deployment.",
+    "retained": "36 Althea death/owner/failure/Garona controlled ASAN plus original Merlis attribution regression pass. Actual Release actor-duration summation/fallback/padding, dynamic NPC new-view window, independent admitted viewer deadlines and native removal queue PE pass. Mandatory canonical Test-ScepterLogin -VerifyReleaseBinary passes.",
+    "deployment": {
+      "RowsCompared": 11544,
+      "ChangedRows": 2,
+      "UpdateSHA1": "51ed28ab01db37032415cd8ee91a3e2c83bf1098",
+      "WorldSHA256": "AB6BAB8464900005ADBD4824C4A1319856764BFFA97CA913D7C127B6243B81D9",
+      "BnetSHA256": "FEE46164B07D88BB6FE9D645582EFD39AEA156121644FA594E5F08E12DF120B9",
+      "NoOtherConversationChanges": true
+    },
+    "canonical": "Owned worldserver34572 applied migration through native updater, reached fresh ready, graceful shutdown0/exit0, empty stderr/gone. All11544 conversation metadata rows compared before/after; exactly2 changed rows, remaining11542 unchanged. No user process stopped. WorldAB6BAB84/BnetFEE46164 unchanged, configs/certificates/DLLs preserved. Data-only change needs no new executable."
+  },
+  "iteration": "Initial custom-refusal fixture set creature unk2=0, which was already its exact original value and legitimately passed the guard. Changed the mutation to1. Initial failure retained and paired with passing original/repaired/live16-refusal runs; no production failure or guard bypass.",
+  "limits": [
+    "Native2431 still refuses the actual corpse actor after its living control succeeds. Its private native evidence remains OPEN outside fixed; this change does not claim to fix Althea speech or whole death sequence.",
+    "Original Althea callback still requests Garona2432 after5s and despawns Garona5s after creation. Native story survives actual caster removal; actual client actor/audio continuity, camera, group/faction/pet/reentry and whole1123 remain unverified. No timing/choreography redesign or fabricated client evidence.",
+    "Timing measured for matching enUS assets. Other locale playback and all36 acquisition chains remain separate checks. Static DB-spawn admission and mixed prior DB errors remain OPEN."
+  ],
+  "diagnostics": "All automated/native/audio/SQL/updater/PE/Scepter before/after own+canonical crash inventories/log offsets and native exit/stdout/stderr reviewed. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes empty; mixed6090 DBErrors hash8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved. No task server remains. Open2431 native outputs remain outside fixed; no log truncation.",
+  "archive": "Pending focused fix commit and resolved-only verified archive.",
+  "source_sha256": {
+    "sql/updates/world/2026_11_03_02_garona_outro_voice.sql": "24753f2c13b7a845c1f35e231a6f7e9d0391e36d3726f90b04c7d91b1ecf6aef",
+    "tools/research/AltheaGaronaAudioCatalog.cpp": "f1fcca5f444e16ee1091820336205fd0b16376bfffe04ecb892ec62ca088c2af",
+    "tools/tests/GaronaOutroVoiceAudio.json": "b7cba871cb9fd964db36aba960e84a602071d58617adf32181766a054745e448",
+    "tools/tests/GaronaOutroVoiceTest.cpp": "0515ce3e88490d1c47de4a98178f68151946ab2cf62b0cdf5e6ae355b3d5d431",
+    "tools/tests/Test-GaronaOutroVoice.ps1": "6b6b39f0a2efd7678cb86a5569a8e1a9df3fc644c3ad0fc5bd107cb16329e537",
+    "tools/tests/Test-GaronaOutroVoiceAudio.ps1": "6b9702d24ab8a74e4be455d14cb1112fb482f37dae98468498fa3739a5ecb086",
+    "tools/tests/AltheaConversationNative.cpp": "d6ad051312e8e233020a4b19c53fc99ab22a935a114d45a6f7c9719786f25d76",
+    "tools/tests/Test-AltheaConversationNative.ps1": "0eb2f3e8c68a2f50bb68db6e314b5af4fe82f9e2265dc82ad0d42ca4d1b3564c"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "Build": "7.3.5.26972",
+  "Source": "Actual native line/BroadcastText/SoundKit mapping plus full local read-only CASC hashed Vorbis decodes; no listening/client claim.",
+  "Payloads": [
+    {
+      "FileDataID": 1391995,
+      "Bytes": 30682,
+      "VoiceMs": 4543,
+      "SHA256": "AB75A4CDED7047F0521562A794823BB11DE814C60AA355AB289922D8364DF5C5"
+    },
+    {
+      "FileDataID": 1391998,
+      "Bytes": 51223,
+      "VoiceMs": 7693,
+      "SHA256": "A9E736402EEE8CB045D0EDD27F3A1B28C98C86EF9F3D1114CAF1C63CE142E810"
+    },
+    {
+      "FileDataID": 1391999,
+      "Bytes": 19037,
+      "VoiceMs": 2471,
+      "SHA256": "6DF7DBEE4BF9E1CA0BE7C5E5604D759B7AC3537C6A4E9CC327EAAF0FBBB43C84"
+    }
+  ],
+  "Conversations": [
+    {
+      "Conversation": 2432,
+      "RequiredActorSumMs": 14164,
+      "LifetimeMs": 19164,
+      "Lines": [
+        {
+          "Line": 5151,
+          "Index": 0,
+          "Broadcast": 113571,
+          "SoundKit": 63584,
+          "FileDataID": 1391998,
+          "VoiceMs": 7693,
+          "AdditionalMs": 3000,
+          "Next": 5152,
+          "StartMs": 0,
+          "OriginalStartMs": 0,
+          "Flags": 95,
+          "Packed": 0
+        },
+        {
+          "Line": 5152,
+          "Index": 1,
+          "Broadcast": 113572,
+          "SoundKit": 63585,
+          "FileDataID": 1391999,
+          "VoiceMs": 2471,
+          "AdditionalMs": 1000,
+          "Next": 0,
+          "StartMs": 10693,
+          "OriginalStartMs": 11800,
+          "Flags": 95,
+          "Packed": 538968064
+        }
+      ]
+    }
+  ],
+  "OriginalCreatures": [
+    [
+      2432,
+      0,
+      108214,
+      4651523,
+      0,
+      0,
+      2350
+    ],
+    [
+      2432,
+      1,
+      108214,
+      4651523,
+      0,
+      0,
+      2350
+    ]
+  ],
+  "OriginalActors": []
+}
