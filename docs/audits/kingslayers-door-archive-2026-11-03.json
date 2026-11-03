@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-03",
+  "status": "VERIFIED resolved diagnostics archived after deployed fix, passing regression/canonical PE/Scepter/owned startup. Native evidence is distinct from client/full-chain checks.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/kingslayers-door-2026-11-03",
+    "manifest_sha256": "f455cdd84f625be8b1e69bc3a48f16a651d06d6b816aa8d7915adedea72dc891",
+    "files": 308,
+    "bytes": 350811,
+    "fix_commit": "0446143036d414ed6ba15c3b45924779412b8bcb",
+    "verified": "source/archive/source SHA256, original bytes, offline task-owned diagnostics only"
+  },
+  "cause_and_fix_audit": "docs/audits/kingslayers-door-2026-11-03.json",
+  "diagnostics": "No new crash reports. Reviewed compiler/fixture/assertion/UTF-8 certificate failures preserved alongside passing repaired runs. Shared mixed canonical6090 DBErrors unchanged and unresolved; no user history cleared.",
+  "limits": "Actual client door passage/animation/Garona/Althea continuity and full1123/all36 remain OPEN."
+}

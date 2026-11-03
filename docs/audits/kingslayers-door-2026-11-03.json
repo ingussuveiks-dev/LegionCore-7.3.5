@@ -7,7 +7,15 @@
   "deployment": "Original generated game.lib/scripts.lib Release paths rebuilt; staged final links preserve original game/scripts/shared/Common library inputs, no global OutDir. Selected staged and canonical PE pass. Four EXE/MAP files backed up and promoted offline; protected configurations, certificates and DLL hashes unchanged. No SQL/character changes.",
   "runtime": "Mandatory Test-ScepterLogin.ps1 -VerifyReleaseBinary passes. Owned canonical worldserver PID2896 reached fresh ready, server shutdown0, exit0, empty stderr and gone. No user server stopped; no task-owned server remains.",
   "diagnostics": "Every automated/native/build/PE/startup test recorded before/after canonical and own crash/log inventories and inspected exit/stdout/stderr/new server diagnostics. Final ordinary runs clean. No new runtime crash. Existing canonical mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged and unresolved; shared101430/103151 LINK2/Wardstone LINK4 and other previous findings remain OPEN. Empty active Crashes does not certify all quests.",
-  "archive": "Resolved task-owned diagnostic evidence will be hash-verified under ignored Release/fixed after focused fix commits. No canonical mixed log rotation.",
+  "archive": {
+    "audit": "docs/audits/kingslayers-door-archive-2026-11-03.json",
+    "path": "build-extractors/bin/Release/fixed/kingslayers-door-2026-11-03",
+    "manifest_sha256": "f455cdd84f625be8b1e69bc3a48f16a651d06d6b816aa8d7915adedea72dc891",
+    "files": 308,
+    "bytes": 350811,
+    "fix_commit": "0446143036d414ed6ba15c3b45924779412b8bcb",
+    "verified": "source/archive/source SHA256, original bytes, offline task-owned diagnostics only"
+  },
   "status": "DEPLOYED62BC30BD/93B22FBA: original251053/133953 native activation now precedes qualified51549/51654.70ASAN,48 native cases,24 collision controls, retained Althea26/native and36+64+21ASAN, staged/canonical selected PE/Scepter/owned startup pass. Actual client/full1123/all36 remain OPEN.",
   "cause": "Original AI only overrides GossipHello(use=true), returning true after unconditional51549/51654. Ordinary native GameObject::Use calls GossipUse instead, opens without these events. Calling the old true hook directly can award progress while the door is still closed. Full original EffectOpenLock has an EARLIER door activation before native lock validation; do not confuse its full pipeline with the controlled old true-hook counterfactual.",
   "matching_evidence": {
@@ -45,5 +53,6 @@
     "tools/tests/Test-KingslayersDoor.ps1": "28fca12d5b785b620f9243d431edf255975961dcfdb21780ed34d7ba24c1d70c",
     "tools/tests/verify_kingslayers_door_release.py": "3cea18d8731194e036c95ddaba72a0d601597bbb4a51dc638e4a9b2ec27919f7",
     "tools/research/KingslayersDoorCatalog.cpp": "50aa5c4266e35d89b6f370464b2a2796f0a62fad80257d93cf7653620587d822"
-  }
+  },
+  "fix_commit": "0446143036d414ed6ba15c3b45924779412b8bcb"
 }
