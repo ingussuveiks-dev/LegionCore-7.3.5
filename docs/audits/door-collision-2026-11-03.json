@@ -7,7 +7,16 @@
   "deployment": "Original generated game.lib/scripts.lib Release paths rebuilt; staged final links preserve original game/scripts/shared/Common library inputs, no global OutDir. Selected staged and canonical PE pass. Four EXE/MAP files backed up and promoted offline; protected configurations, certificates and DLL hashes unchanged. No SQL/character changes.",
   "runtime": "Mandatory Test-ScepterLogin.ps1 -VerifyReleaseBinary passes. Owned canonical worldserver PID2896 reached fresh ready, server shutdown0, exit0, empty stderr and gone. No user server stopped; no task-owned server remains.",
   "diagnostics": "Every automated/native/build/PE/startup test recorded before/after canonical and own crash/log inventories and inspected exit/stdout/stderr/new server diagnostics. Final ordinary runs clean. No new runtime crash. Existing canonical mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged and unresolved; shared101430/103151 LINK2/Wardstone LINK4 and other previous findings remain OPEN. Empty active Crashes does not certify all quests.",
-  "archive": "Resolved task-owned diagnostic evidence will be hash-verified under ignored Release/fixed after focused fix commits. No canonical mixed log rotation.",
+  "archive": {
+    "audit": "docs/audits/door-collision-archive-2026-11-03.json",
+    "path": "build-extractors/bin/Release/fixed/door-collision-2026-11-03",
+    "manifest_sha256": "48bb12ea74981d6144228f7b27d8c29acf52c1e612778663092b5efd8f458b0a",
+    "files": 60,
+    "bytes": 99761,
+    "fix_commit": "00ec0658a6f1f3722ce864c07ae4f9cf24d09fba",
+    "verified": "source/archive/source SHA256, original bytes, offline task-owned diagnostics only",
+    "reviewed_private_error_logs_recreated_empty": 1
+  },
   "status": "DEPLOYED62BC30BD/93B22FBA: native DOOR collision now follows physical pose. Actual4413 open/reset mesh and24 DOOR/BUTTON state controls pass; canonical selected PE/Scepter/owned startup clean. Client traversal and all36 remain OPEN.",
   "cause": "GameObject::SetGoState correctly enables collision for READY closed pose and disables it for ACTIVE/ALTERNATIVE. Subsequent SetLootState generic model rule reverses this: native UseDoorOrButton re-enables the open4413 model; ResetDoorOrButton disables the closed model. Both actual native mesh counterfactuals reproduced before repair.",
   "fix": "After existing AI OnStateChanged/global script callbacks, return for GAMEOBJECT_TYPE_DOOR before generic loot collision writes. SetGoState remains authoritative. Other object types retain the existing generic rule, demonstrated with BUTTON controls. No collision/LOS check disabled globally.",
@@ -31,5 +40,6 @@
     "tools/tests/DoorCollisionNative.cpp": "570ce5b77760c2e837e45dbd72fe3d8d43f58931635444b2f83a3228ce47f511",
     "tools/tests/Test-DoorCollisionNative.ps1": "74d18357a24d636e58a633c7004b1b818a4ef906f3e6439c4012ed41a9d2a975",
     "tools/tests/verify_door_collision_release.py": "8bc2b243a2dacb01924d867c883a1512047d2351f43ca2ca23de5a0f49661891"
-  }
+  },
+  "fix_commit": "00ec0658a6f1f3722ce864c07ae4f9cf24d09fba"
 }

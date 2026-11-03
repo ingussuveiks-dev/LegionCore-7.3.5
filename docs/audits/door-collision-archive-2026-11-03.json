@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-03",
+  "status": "VERIFIED resolved diagnostics archived after deployed fix, passing regression/canonical PE/Scepter/owned startup. Native evidence is distinct from client/full-chain checks.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/door-collision-2026-11-03",
+    "manifest_sha256": "48bb12ea74981d6144228f7b27d8c29acf52c1e612778663092b5efd8f458b0a",
+    "files": 60,
+    "bytes": 99761,
+    "fix_commit": "00ec0658a6f1f3722ce864c07ae4f9cf24d09fba",
+    "verified": "source/archive/source SHA256, original bytes, offline task-owned diagnostics only",
+    "reviewed_private_error_logs_recreated_empty": 1
+  },
+  "cause_and_fix_audit": "docs/audits/door-collision-2026-11-03.json",
+  "diagnostics": "No new crash reports. Reviewed compiler/fixture/assertion/UTF-8 certificate failures preserved alongside passing repaired runs. Shared mixed canonical6090 DBErrors unchanged and unresolved; no user history cleared.",
+  "limits": "Actual client door passage/animation/Garona/Althea continuity and full1123/all36 remain OPEN."
+}
