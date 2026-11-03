@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-03",
+  "status": "OPEN current-code1412 refusal counterfactual; no production repair or passing repaired counterpart yet.",
+  "scope": "Warrior933 stage3 Ragnvald97167/361094 second battle after actual two-spirit ritual. Source and controlled caller behavior only; not whole933/client/all36 verification.",
+  "source_findings": [
+    "Current Ragnvald DoAction branch outside WarriorOpening::StartAction directly allocates1412, deletes a failed Conversation, and proceeds to existing98257/250yd and allied90yd native attack requests. It stores neither an accepted conversation GUID nor retry state.",
+    "Current WarriorRitual earned stage3 branch checks genuine46912/46929, actual original Ragnvald/Bezzeredes full GUIDs and phase/range/AI, then sets resumed=true/pending=false and clears the original participant vector before DoAction(true). A refused1412 cannot wake that already-consumed ritual handoff. Native combat and progression must remain independent of an optional conversation failure.",
+    "Native Conversation::CreateConversation may refuse invalid coordinates, inherited quest scope, missing line/actor data or missing nearest creature, or AddToMap failure. Map::AddToMap calls AddToWorld but returns true without checking IsInWorld again; Conversation::AddToWorld separately requires resolving its original caster. Therefore a future accepted receipt needs actual live object/accessor and expected full actor identity, not only the bool. This is source tracing, not a reproduced native Map race.",
+    "Shared NPC Conversation admission/full-viewer cleanup was already repaired; do not infer a fresh global lifetime defect from this caller finding. Historical warrior-intro-speech-2026-11-02.json separately records native1412 clip6643/published11643 and cross1405/1412 voice overlap. Those data were not freshly re-read or client-verified here."
+  ],
+  "counterfactual": {
+    "command": "tools/tests/Test-RagnvaldSecondBattleResearch.ps1",
+    "evidence": "build-extractors/runtime-test/ragnvald-second-battle/counterfactual2/research-evidence",
+    "implementation": "Existing full-current-source successor certificates export actual current Ragnvald/Bezzeredes, explicitly pinned legacy1531780a2 Danica and native FunctionProcessor/Creature lifecycle/AIM_Destroy/Talk. Research invokes only actual current Ragnvald DoAction(true). Factory return/Map/visibility/attack endpoints are controlled.",
+    "contexts": 2,
+    "control": "Accepted factory retains one controlled Map allocation and one native Ragnvald/ally attack request; no replay after30s.",
+    "unrepaired": "Refused factory allocation is correctly deleted; one native Ragnvald/ally attack request still occurs, but no1412 retry after30s. This is an explicitly expected-broken current caller, not an ordinary successful quest test. No repaired counterpart exists yet.",
+    "retained": "41 existing native handoff ASAN cases pass separately, including four explicitly exhausted expected outcomes; they do not repair or certify1412 creation."
+  },
+  "iteration": "First research host registered98257 only with Ragnvald, omitting its full GUID from allied lookup registries, so the ally assertion failed. Corrected all original fixture registries using the established Register helper semantics; second run reaches both control/refused contexts. Initial assertion evidence remains visible and is not a server crash or production fix.",
+  "next": "Implement an instance-owned original-participant/full original actor1412 receipt and finite failed-creation retry without replaying battle, changing earned ritual progression or blocking combat on speech. Preserve native NPC actor identity/visibility/group/faction/weak quest attempts, ordinary lifetime and cleanup; exercise failed/true-but-uninserted/actor mismatch, repeated/reentrant calls, AI deletion/recreation, abandoned/reaccepted quest, map/Scenario change and actual native creation. Keep cross-conversation audio scheduling/client fidelity separate until matching evidence supports it.",
+  "diagnostics": "Both research attempts include before/after canonical+own crashes/log offsets and actual native exit/stdout/stderr. First host assertion is retained, corrected host runs0 and no ASAN failure. No new/changed runtime crash or appended DBErrors/server warning/error/assertion; active Crashes empty and mixed6090 DBErrors unchanged. No server launch, gameplay/data/configuration/character change. Unresolved research evidence stays outside fixed archives.",
+  "canonical": "Hait fix0c6e9f125 remains deployed; world52984c9addd7e27aa27b6787ab6a6a2f166e9320585df256fcbe192bed743f4b, bnet23fb4a3fb410afe980d99b4bab74b1ac71a42bdd41475764166e677908433b33. No task servers.",
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Warrior/Intro/wars_intro_scenario.cpp": "9e783bedbd3762944d0922d9de97b3fd95245088ee576abb5705db6365a00e6f",
+    "src/server/scripts/Scenario/Artifacts/Warrior/Intro/ritual_transition.h": "38e78d529a08d29fd0446e593ec5888aa32d6d87886fcba3c9e389da7532843d",
+    "src/server/game/Entities/Conversation/Conversation.cpp": "0d9e09c9155930db20066575a72a4e3aa6e92eb579f886cc7878d8542b0894bd",
+    "src/server/game/Maps/Map.cpp": "5dfe746ff41b298fce012524d17d96c078f7dd10340508175b8c113402ed85ae",
+    "tools/tests/RagnvaldSecondBattleResearch.cpp": "6baaa60bd4e82ec35c7bd6edca3cd04a57e1ec1d3ef4a14729c1ff1cb26f8e37",
+    "tools/tests/Test-RagnvaldSecondBattleResearch.ps1": "4ab45bb3383210d909ba12c27791c08ba2d3224ee1c3a5ef32340a5d1fb0306b"
+  }
+}
