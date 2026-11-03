@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-03",
+  "status": "Resolved2432 voice metadata diagnostics archived after native updater release and tested fix74cdecdb1; source/archive/source hashes verified.",
+  "verification": {
+    "fix_commit": "74cdecdb1940765ea9e3e15377bad0107412ecfa",
+    "archive": "build-extractors/bin/Release/fixed/garona-outro-voice-2026-11-03/verified1",
+    "sources": 293,
+    "payloads": 294,
+    "diagnostic_sets": 15,
+    "reviewed_failed_sets": 1,
+    "manifest_sha256": "d6135fa45e590dfc914cc2853e5934e60367021d7f0a95b688ce86769e730b32",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
+  },
+  "review": "15 diagnostic sets; one initial custom-refusal fixture assigned the existing original value and was corrected to an actual mutation. Original/repaired/live ASAN/TEMP guards/full-table preservation pass. Native old9700/11800 baseline is explicitly counterfactual, not client clipping evidence.",
+  "checks": "Three full hashed matching26972 enUS CASC Vorbis decodes/index preservation; typed line/BroadcastText/kit/file/gaps;16TEMP refusals/two partial states/idempotence/live; actual native producer/viewer/expiry ASAN, original binary lifetime PE, retained36Althea/Merlis, ScepterRelease, owned34572 ready/shutdown0/exit0/gone. Native updater SHA1 51ed28ab01db37032415cd8ee91a3e2c83bf1098 RELEASED and all11544 rows compared/exact2 changed.",
+  "excluded_open": "Private Althea native folders, garona-outro-native logs and standalone AltheaConversationNative outputs contain unresolved2431 corpse evidence and remain outside fixed at original locations. Private-reader credential material excluded. Public source/audit retained as context.",
+  "active": "No source report/log removed or truncated. Active Crashes empty; mixed6090 DBErrors unchanged/unresolved. WorldAB6BAB84/BnetFEE46164 unchanged, no user process stopped and no task server remains.",
+  "remaining": "Actual client audio/actor continuity after original5s Garona despawn, other locales/full1123/all36 and Althea2431 admission remain OPEN. Metadata repair is not complete quest/client verification."
+}

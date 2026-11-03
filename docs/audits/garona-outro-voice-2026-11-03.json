@@ -48,7 +48,20 @@
     "Timing measured for matching enUS assets. Other locale playback and all36 acquisition chains remain separate checks. Static DB-spawn admission and mixed prior DB errors remain OPEN."
   ],
   "diagnostics": "All automated/native/audio/SQL/updater/PE/Scepter before/after own+canonical crash inventories/log offsets and native exit/stdout/stderr reviewed. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes empty; mixed6090 DBErrors hash8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved. No task server remains. Open2431 native outputs remain outside fixed; no log truncation.",
-  "archive": "Pending focused fix commit and resolved-only verified archive.",
+  "archive": {
+    "audit": "docs/audits/garona-outro-voice-archive-2026-11-03.json",
+    "fix_commit": "74cdecdb1940765ea9e3e15377bad0107412ecfa",
+    "archive": "build-extractors/bin/Release/fixed/garona-outro-voice-2026-11-03/verified1",
+    "sources": 293,
+    "payloads": 294,
+    "diagnostic_sets": 15,
+    "reviewed_failed_sets": 1,
+    "manifest_sha256": "d6135fa45e590dfc914cc2853e5934e60367021d7f0a95b688ce86769e730b32",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
+  },
   "source_sha256": {
     "sql/updates/world/2026_11_03_02_garona_outro_voice.sql": "24753f2c13b7a845c1f35e231a6f7e9d0391e36d3726f90b04c7d91b1ecf6aef",
     "tools/research/AltheaGaronaAudioCatalog.cpp": "f1fcca5f444e16ee1091820336205fd0b16376bfffe04ecb892ec62ca088c2af",
@@ -58,5 +71,6 @@
     "tools/tests/Test-GaronaOutroVoiceAudio.ps1": "6b9702d24ab8a74e4be455d14cb1112fb482f37dae98468498fa3739a5ecb086",
     "tools/tests/AltheaConversationNative.cpp": "d6ad051312e8e233020a4b19c53fc99ab22a935a114d45a6f7c9719786f25d76",
     "tools/tests/Test-AltheaConversationNative.ps1": "0eb2f3e8c68a2f50bb68db6e314b5af4fe82f9e2265dc82ad0d42ca4d1b3564c"
-  }
+  },
+  "fix_commit": "74cdecdb1940765ea9e3e15377bad0107412ecfa"
 }
