@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-03",
+  "status": "OPEN: actual static DB-spawn Conversation world-admission defect reproduced. Research only; no production/gameplay repair or passing repaired counterpart yet.",
+  "scope": "Separate static LoadConversationFromDB/LoadFromDB and grid admission; dynamic CreateConversation repair f70040a05 remains unchanged/deployed. No whole quest/client/all36 certification.",
+  "world": "Fresh read-only consistent snapshots reach full EOF with empty stderr:132 conversation spawns across14 maps, including2 map1500 and2 map1014. Full132-row inventory includes actual model/creature/line counts; two native model-actor candidates are original guid7/entry531 and guid8/entry747 on1481. Not all132 have been executed or certified broken.",
+  "source_trace": [
+    "LoadConversationFromDB sets map/position/phase/payload/line budget, but no casterGUID or duration; LoadFromDB defers admission. Direct add=true reports native Map success. Native automatic grid loader separately calls AddToGrid then AddToWorld and counts the object without checking world admission.",
+    "Conversation::AddToWorld requires resolving a caster even for no-caster DB spawns. Its ordinary Remove handles only in-world objects. This permits a successful loader result with a grid-owned invisible object. Current dynamic factory repair does not change this separate API.",
+    "Local initial cbf4f2536 already has the same caster-only AddToWorld predicate. Local newer TrinityCore Conversation is a different implementation/API and not a matching repair donor.",
+    "Do not enable all132 by dropping the caster guard. Existing Mardum npc_dh_announcer uses its own player LOS/1s request to create531 dynamically; current static DB guid7 uses the same531/1481 position described in source sniff comments. Global static admission could create duplicate unsolicited playback. Actual scope/phases/content use must be reviewed per affected record first."
+  ],
+  "native_counterfactual": {
+    "command": "tools/tests/Test-ConversationDbSpawnNativeResearch.ps1",
+    "probe": "tools/tests/ConversationDbSpawnNativeResearch.cpp",
+    "rows": "Actual read-only World guid7/8 populate only the private native in-memory ConversationSpawnData cache. Full live Conversation payload/DB factory/Map/AddToWorld/Remove and allocation counter execute against Release game.lib. No virtual refusal override.",
+    "contexts": 4,
+    "result": "For both531 and747, direct add=true and deferred LoadFromDB followed by native Map::AddToMap report loaded=true/world=false/grid=true/emptyCaster=true/duration0.531 has1 model/1line;747 has2models/3lines. Remove leaves them grid-owned. Explicit real Map::RemoveFromMap(true) restores conversation allocation count after each counterfactual.",
+    "limits": "Deferred native Map::AddToMap is not the entire automatic ObjectGridLoader/AddObjectHelper path; the exact automatic route is source-traced only. No actual Player, packet, visibility, voice, login, world loading or complete quest traversal exercised. Expected-broken observations are not ordinary successful runs and no repaired counterpart exists."
+  },
+  "safety": "No production source, executable, configuration, SQL, account, character or quest changed; no reset/server launch. Native pools are verified read-only. Deliberately never call LoadConversations, whose clone-maintenance branches can update/delete World records. Native cache shadows and all explicit map objects are cleaned on ordinary completion.",
+  "diagnostics": "All three read-only SQL snapshots and native test have before/after canonical+own crash inventories/log offsets and actual exit/stdout/stderr. Native exit0/stderr empty, no new/changed crash or appended DBErrors/server warning/error/assertion. Active Crashes empty; mixed6090 DBErrors hash8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved. Unresolved research stays outside fixed archives. No worldserver/bnetserver running at recheck.",
+  "canonical": "Unchanged world2fcad171a14b2b17fb8f594dce14a426e05c7d888b65f9554b80bc450df4db4c from f70040a05; prior Ragnvald repair retained.",
+  "next": "Classify actual static versus dynamic-trigger duplicates and intended phase/quest admission before implementing any static-world authorization. Exercise exact automatic grid helper and native ordinary dynamic/absent-caster controls, duplicate creation, grid unload/reload, casterless per-viewer deadline/cleanup, group/faction/quest scope and client paths. Keep independent acquisition repairs and all36/client gaps OPEN.",
+  "evidence_sha256": {
+    ".codex/conversation-dbspawn-world/world.tsv": "1263a2538bae680fb6ddafaee2bf1a9d5ce99bec834d90c31ee380ddd5ffb3dd",
+    ".codex/conversation-dbspawn-model/world.tsv": "c801029dd95c190d1c4079d71e4cd99bb523fe168131d4fdcf81529bdb8eeda7",
+    ".codex/conversation-dbspawn-inventory/world.tsv": "4b7fff5a765d238276a5b82052014555e0a1b0f44fca7efe0457cebd1f38371c",
+    ".codex/conversation-dbspawn-native-research1.log": "aa1cb6da1e894769acb1f9f89f615f506dd094a02b367b8cf1ce3cf5db4b8ccb",
+    "build-extractors/runtime-test/conversation-dbspawn-research/20261103-173816-047/native.tsv": "45ee52c6da38089b735cd2377efb83a8cb9f2187cbd889733fc03a84e246bcf5",
+    "build-extractors/runtime-test/conversation-dbspawn-research/20261103-173816-047/evidence/diagnostics-after.json": "b796514d93f2d5e19d602fda426bd0ddee2d8bfeb753e1b9715a076acce96466",
+    "tools/tests/ConversationDbSpawnNativeResearch.cpp": "93d7bbb6d0db3f3bbcfd3424c28922d2567a9c78a0576444ad561fd1aee47e08",
+    "tools/tests/Test-ConversationDbSpawnNativeResearch.ps1": "9044c5d6c8e182b6cfab5f70191993d6a8857a7745569b8c4dab09245c53b545"
+  }
+}
