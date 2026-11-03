@@ -25,7 +25,20 @@
     "worldserver.exe": "2fcad171a14b2b17fb8f594dce14a426e05c7d888b65f9554b80bc450df4db4c",
     "bnetserver.exe": "89903b03845f7687c2cfb0fc2861cb741f89aea3214c68c41bbc46ffec304d3c"
   },
-  "archive": "Pending focused fix commit and verified ignored fixed archive; no mixed log truncation.",
+  "archive": {
+    "audit": "docs/audits/conversation-world-admission-archive-2026-11-03.json",
+    "fix_commit": "f70040a05210940178f8f8d8c9cbc4aeb106123d",
+    "archive": "build-extractors/bin/Release/fixed/conversation-world-admission-2026-11-03/verified1",
+    "sources": 265,
+    "payloads": 266,
+    "diagnostic_sets": 17,
+    "reviewed_failed_sets": 1,
+    "manifest_sha256": "7a9eff66e980ad88edfabc3394fab9231cf08f8d8578fb9de09c680c221f1122",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
+  },
   "source_sha256": {
     "src/server/game/Entities/Conversation/Conversation.cpp": "bb40cfcbbfd6dd6e7a355e630613c94bd9a25eee44acd8240b170f494cd7c008",
     "tools/tests/ConversationWorldAdmissionNative.cpp": "e0322f2b0c9b1f449fc8e9cf76fa3809dd7cfd4d4ed7d226a39bef3e509ca2e0",
@@ -34,5 +47,6 @@
     "tools/tests/Test-ConversationNpcLifetime.ps1": "c38b715404073f145eb3923c84e8e7cf61ce6483b4429ca8f889100ceb0c35af",
     "tools/tests/WarriorOpeningConversationNative.cpp": "060c9de5d99a25f41ad9c39403885c405ceb52ca25420ead5131f118f2cf412f",
     "tools/tests/verify_conversation_world_admission_release.py": "a2bd55c3612f1cea0322c3d56ea4d20026e1bd74b5a85d4fa387e5e7cb5613ed"
-  }
+  },
+  "fix_commit": "f70040a05210940178f8f8d8c9cbc4aeb106123d"
 }

@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-03",
+  "status": "Reviewed CreateConversation admission diagnostics archived after deployed/tested f70040a05, with verified source/archive/source hashes.",
+  "verification": {
+    "fix_commit": "f70040a05210940178f8f8d8c9cbc4aeb106123d",
+    "archive": "build-extractors/bin/Release/fixed/conversation-world-admission-2026-11-03/verified1",
+    "sources": 265,
+    "payloads": 266,
+    "diagnostic_sets": 17,
+    "reviewed_failed_sets": 1,
+    "manifest_sha256": "7a9eff66e980ad88edfabc3394fab9231cf08f8d8578fb9de09c680c221f1122",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
+  },
+  "review": "17 complete before/after diagnostic sets; one initial missing-include compilation failure reviewed and paired with successful actual raw counterfactual and pinned/repaired8 native controls. Expected old false success is separate from ordinary/repaired runs.",
+  "checks": "Native8 exact factory/Map/accessor/allocation, retained93ASAN lifetime/18derived Fu Zan/native Warrior data+lines, original game.lib/final-link build, selected stage/canonical creator+retained artifact PE, mandatory Scepter, owned34500 ready/graceful0/empty stderr/gone.",
+  "active": "Original source diagnostics preserved; no active crash report/log removed or truncated. Active Crashes empty and existing mixed6090-byte DBErrors unchanged/unresolved. No task server remains and no user process stopped.",
+  "remaining": "Native core is Release, separate93ASAN uses controlled endpoints. Actual client/audio/full quests/all36 and separate retained DB-spawn Conversation loader semantics remain OPEN. NoSQL/reset."
+}
