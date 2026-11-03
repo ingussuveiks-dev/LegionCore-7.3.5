@@ -123,8 +123,8 @@ Quest::Quest(Field* questRecord)
     Expansion               = questRecord[index++].GetUInt32();
 
     LogTitle                = questRecord[index++].GetString();
-    QuestDescription        = questRecord[index++].GetString();
     LogDescription          = questRecord[index++].GetString();
+    QuestDescription        = questRecord[index++].GetString();
     AreaDescription         = questRecord[index++].GetString();
     QuestCompletionLog      = questRecord[index++].GetString();
     PortraitGiverText       = questRecord[index++].GetString();
