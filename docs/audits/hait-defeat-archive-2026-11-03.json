@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-03",
+  "status": "Verified ignored local fixed archive after focused repair is present in tested canonical binaries and pushed to origin/main.",
+  "fix_commit": "0c6e9f1256233eb6c6a4d053a755df1c9a4d1adb",
+  "cause_and_checks": "docs/audits/hait-defeat-2026-11-03.json",
+  "verification": {
+    "fix_commit": "0c6e9f1256233eb6c6a4d053a755df1c9a4d1adb",
+    "archive": "build-extractors/bin/Release/fixed/hait-defeat-2026-11-03/verified1",
+    "sources": 8049,
+    "payloads": 8050,
+    "diagnostic_sets": 642,
+    "reviewed_failed_sets": 11,
+    "manifest_sha256": "07b58a0e58bf36c4589bbc16fb054f9527382a48da0d4477eacca2cb550f88f5",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
+  },
+  "review": "642 before/after diagnostic sets reviewed, including11 explicitly reviewed failed/propagated fixture/PE-shape/archive-preflight sets paired with passing81 current ASAN/native scopes/canonical registered PE/Scepter/owned startup.8049 original sources plus review payload are byte-verified source/archive/source and final-manifest verified.",
+  "snapshot_limit": "First run1 nested export shared the original pre-snapshot path and propagated the pre-execution log collision through three diagnostic wrappers; no independent initial pre-captures or native execution are claimed. Export-only evidence now has its own directory. Original surviving bytes preserved.",
+  "archive_preflight": "Two archive preflights refused additional nested failed-set paths until the complete time-window inventory was explicitly reviewed; neither created a fixed archive. Third pass verifies all11 known failed sets and every archived hash.",
+  "runtime": {
+    "worldserver_sha256": "52984c9addd7e27aa27b6787ab6a6a2f166e9320585df256fcbe192bed743f4b",
+    "bnetserver_sha256": "23fb4a3fb410afe980d99b4bab74b1ac71a42bdd41475764166e677908433b33",
+    "owned_server": "32232 ready/graceful shutdown0/exit0/empty stderr/gone",
+    "user_server_stopped": false
+  },
+  "remaining": "No active report/log removed or truncated. Active Crashes empty means only no unresolved reports here. Existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged/unresolved. Actual physical/client/full943/all36, sharedLINK2/WardstoneLINK4/Fu Zan ride and other original findings remain OPEN. No character reset.",
+  "archive_review_diagnostics": ".codex/hait-defeat-archive-check3/diagnostics-after.json: completed=true; no changed crash/appended DBErrors/server diagnostic"
+}

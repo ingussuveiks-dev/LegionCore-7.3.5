@@ -22,7 +22,8 @@
     "run3 expected-refusal fixture changed the entire map to another map but still executed the modeled98011 World action there; unscoped Hait behavior intentionally remains native. Test wrong-map refusal directly through the new instance state instead. run4/5/final-stage pass; no production behavior was weakened.",
     "Selected PE first expected old Chuan RDI/AI RBX aliases in retained SetData. Actual scoped guard uses AI RDI/one native Chuan lookup RBX; verify exact definitions and queues. New first-death callback similarly keeps shared instance RBP and killer R14; retained Chen/Nine PE aliases are tied to proven unchanged offsets/arguments.",
     "New PE initially expected calls for inlined DefeatValid/GetId/Finalized. Prove actual installed revalidation lambda plus original standalone guard and native spline ID64/done68bit20 with installed generator identity and endpoint, preserving all native/registered checks.",
-    "Retained death-dispatch verifier initially treated caller RBP restoration before the final Jorvinax tail jump as an argument overwrite. The actual RCX argument is materialized from unchanged RBP+3b8 before restoring the caller register; prove no RBP mutation before materialization and no RCX mutation afterward. Retained selected PE then passes unchanged production code."
+    "Retained death-dispatch verifier initially treated caller RBP restoration before the final Jorvinax tail jump as an argument overwrite. The actual RCX argument is materialized from unchanged RBP+3b8 before restoring the caller register; prove no RBP mutation before materialization and no RCX mutation afterward. Retained selected PE then passes unchanged production code.",
+    "Archive preflight explicitly rejected two additional nested run1 propagated failure paths before allowing archival; all642 sets and11 failed sets then reviewed, no unknown failure archived as fixed. Both refused preflights created no fixed archive and are included in verified evidence."
   ],
   "diagnostics": "Every automated/native/build/PE pass has before/after canonical+own crash/log snapshots and actual exit/stdout/stderr. Failed fixture/PE-shape evidence remains visible and paired with passing repair. No new/changed runtime crash or appended DBErrors/server warning/error/assertion. Existing mixed6090-byte DBErrors remains unresolved/untruncated; no user server stopped or character reset.",
   "remaining": [
@@ -50,6 +51,20 @@
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
     "new_unexplained_runtime_errors": 0,
-    "archive": "Pending focused fix commit, then source/archive/source verified local fixed archive; no active removal or mixed-log truncation."
-  }
+    "archive": {
+      "fix_commit": "0c6e9f1256233eb6c6a4d053a755df1c9a4d1adb",
+      "archive": "build-extractors/bin/Release/fixed/hait-defeat-2026-11-03/verified1",
+      "sources": 8049,
+      "payloads": 8050,
+      "diagnostic_sets": 642,
+      "reviewed_failed_sets": 11,
+      "manifest_sha256": "07b58a0e58bf36c4589bbc16fb054f9527382a48da0d4477eacca2cb550f88f5",
+      "source_archive_source_verified": true,
+      "active_crashes": 0,
+      "mixed_log_unchanged": true,
+      "original_diagnostics_preserved": true
+    }
+  },
+  "fix_commit": "0c6e9f1256233eb6c6a4d053a755df1c9a4d1adb",
+  "archive": "docs/audits/hait-defeat-archive-2026-11-03.json"
 }
