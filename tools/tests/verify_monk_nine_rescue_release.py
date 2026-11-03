@@ -19,8 +19,13 @@ dispatch=ins(instance('Update'));death_dispatch=ins(instance('CreatureDies'))
 first,=sites(n,dispatch,state('Update'));late,=sites(n,dispatch,'?Update@State@MonkNineArrival@@')
 assert first<late and ('mov','rcx, qword ptr [rdi + 0x490]' if n.get('monk_hait_opening_successor') else 'rcx, qword ptr [rcx + 0x490]') in pairs(dispatch[:first])
 first_death,=sites(n,death_dispatch,state('Death'));chen,=sites(n,death_dispatch,context('Death'))
-assert first_death<chen and ('mov','rcx, qword ptr [rcx + 0x490]') in pairs(death_dispatch[:first_death])
-assert {('mov','rdi, r8'),('mov','rsi, rdx')}<=set(pairs(death_dispatch[:first_death]))
+if n.get('monk_hait_defeat_successor'):
+    assert first_death<chen and ('mov','rcx, qword ptr [rbp + 0x490]') in pairs(death_dispatch[:first_death])
+    assert {('mov','rbp, rcx'),('mov','r14, r8'),('mov','rsi, rdx'),
+            ('mov','r8, r14'),('mov','rdx, rsi')}<=set(pairs(death_dispatch[:first_death]))
+else:
+    assert first_death<chen and ('mov','rcx, qword ptr [rcx + 0x490]') in pairs(death_dispatch[:first_death])
+    assert {('mov','rdi, r8'),('mov','rsi, rdx')}<=set(pairs(death_dispatch[:first_death]))
 request_dispatch=ins(instance('SetGuidData'));request_call,=sites(n,request_dispatch,state('Request'))
 assert 94361 in values(request_dispatch)
 assert {('movups','xmm0, xmmword ptr [rsi]'),('mov','rcx, qword ptr [rbp + 0x490]'),

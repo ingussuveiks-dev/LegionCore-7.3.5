@@ -59,7 +59,19 @@ for name,target in (('CreatureDies','Death'),('Update','Update')):
     if jorvinax_successor:
         first,=sites(n,body,state(target));second,=sites(n,body,'?'+target+'@State@MonkJorvinax@@')
         context_argument=(('lea','rcx, [rdi + 0x2e0]') if name=='Update' else ('lea','rcx, [rbx + 0x2e0]')) if n.get('monk_initial_successor') else ('lea','rcx, [rbx + 0x2e0]') if presentation_successor and name=='Update' else ('add','rcx, 0x2e0')
-        assert first<second and context_argument in pairs(body[:first]) and ('lea','rcx, [rdi + 0x3b8]' if n.get('monk_initial_successor') and name=='Update' else 'rcx, [rbx + 0x3b8]') in pairs(body[first:second])
+        later_argument=('lea','rcx, [rdi + 0x3b8]' if n.get('monk_initial_successor') and name=='Update' else 'rcx, [rbx + 0x3b8]')
+        if n.get('monk_hait_defeat_successor') and name=='CreatureDies':
+            # The new inlined first-Demon guard retains the same instance in
+            # RBP; both existing consumers still receive their original fields.
+            binding=pairs(body).index(('mov','rbp, rcx'))
+            argument=pairs(body).index(('lea','rcx, [rbp + 0x3b8]'))
+            assert all(not o.op_str.startswith(('rbp,','ebp,','bp,','bpl,')) for o in body[binding+1:argument])
+            # The tail call restores the caller's RBP only after materializing
+            # RCX; no write may change that retained argument before the jump.
+            assert all(not o.op_str.startswith(('rcx,','ecx,','cx,','cl,')) for o in body[argument+1:second])
+            context_argument=('lea','rcx, [rbp + 0x2e0]')
+            later_argument=('lea','rcx, [rbp + 0x3b8]')
+        assert first<second and context_argument in pairs(body[:first]) and later_argument in pairs(body[first:second])
         if presentation_successor and name=='Update':
             before,after=sites(n,body,'?Update@State@MonkChenPresentation@@')
             assert before<first<second<after and body[after].mnemonic=='jmp'

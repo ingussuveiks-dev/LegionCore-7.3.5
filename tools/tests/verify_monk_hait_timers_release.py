@@ -37,7 +37,16 @@ def queue(body,expected):
         assert target in previous and ('mov',f'edx, {delay:#x}') in previous,(owner,delay,previous)
 
 data=ins(method('SetData'));move=ins(method('MovementInform'));action=ins(method('DoAction'))
-queue(data,[('rcx, [rdi + 0x36a0]',2000),('rcx, [rdi + 0x36a0]',4000),('rcx, [rdi + 0x36a0]',7000),('rcx, [rbx + 0x38]',10000)])
+defeat_successor=any(name.startswith('?UpdateDefeat@State@MonkHaitOpening@@') for name in n['symbols'])
+if defeat_successor:
+    # The scoped guard keeps the AI in RDI, and the one native Chuan lookup
+    # returns into RBX. Prove those definitions before checking old queues.
+    assert ('mov','rdi, rcx') in [(o.mnemonic,o.op_str) for o in data]
+    found,=sites(n,data,'?FindNearestCreature@WorldObject@@')
+    assert (data[found+1].mnemonic,data[found+1].op_str)==('mov','rbx, rax')
+    queue(data,[('rcx, [rbx + 0x36a0]',2000),('rcx, [rbx + 0x36a0]',4000),('rcx, [rbx + 0x36a0]',7000),('rcx, [rdi + 0x38]',10000)])
+else:
+    queue(data,[('rcx, [rdi + 0x36a0]',2000),('rcx, [rdi + 0x36a0]',4000),('rcx, [rdi + 0x36a0]',7000),('rcx, [rbx + 0x38]',10000)])
 jorvinax_successor=94350 in values(move)
 move_owner='rdi' if jorvinax_successor else 'rbx'
 queue(move,[(f'rcx, [{move_owner} + 0x38]',3000),(f'rcx, [{move_owner} + 0x38]',6000)])

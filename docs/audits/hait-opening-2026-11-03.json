@@ -50,5 +50,6 @@
     "archive": "Verified build-extractors/bin/Release/fixed/hait-opening-2026-11-03/verified1;7233 original sources/7235 payloads/579 diagnostic sets, manifestSHA256FFE4D0F4135CE4D2F98AAF19EE5D348BA0E216D14D172B2211A2854B6FF752FF. Source/archive/source and final hashes verified. No active removal/mixed-log truncation; unexecuted first preflight snapshot limit disclosed."
   },
   "fix_commit": "8314d0379290707a996b618ca0d893ac20af3174",
-  "archive": "docs/audits/hait-opening-archive-2026-11-03.json"
+  "archive": "docs/audits/hait-opening-archive-2026-11-03.json",
+  "defeat_followup": "docs/audits/hait-defeat-2026-11-03.json supersedes the open first98011 death46868/point1/outro implementation finding only; original opening audit/client/full943/all36 limits remain."
 }

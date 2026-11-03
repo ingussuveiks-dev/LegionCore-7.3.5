@@ -81,6 +81,7 @@ public:
         {
             if (type == 1 && data == 1)
             {
+                if (MonkHaitOpening::Source(me)) return; // Actual instance CreatureDies owns the first Demon.
                 if (Player* pl = me->FindNearestPlayer(100.0f))
                     pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46868);
                 Talk(5);
@@ -116,6 +117,7 @@ public:
 
         void MovementInform(uint32 type, uint32 id) override
         {
+            if (MonkHaitOpening::Source(me) && type == POINT_MOTION_TYPE && id == 1) return;
             me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
             if (type == POINT_MOTION_TYPE)
             {

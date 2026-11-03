@@ -7,7 +7,7 @@ uint32 Unit::ScriptedDamage(Unit* victim,uint32 damage){uint32 damagetype=0;
 #include "HaitDamageDispatch.inc"
 return damage;}
 using Hait=npc_master_hait::npc_master_haitAI;
-static_assert(sizeof(MonkHaitOpening::State)==96,"Owned state layout matches Release constructor");
+static_assert(offsetof(MonkHaitOpening::State,defeatPoint)==96,"Accepted opening prefix retains its deployed offsets");
 struct Opening:Run
 {
  Creature first,pupil,foe;GameObject door;
@@ -57,4 +57,5 @@ int main()
  {Opening r;r.Accept();r.map.creatures.erase(r.foe.guid);auto before=warnings;r.Tick(120000);assert(r.opening().ended&&warnings==before+1&&!r.door.uses);r.map.creatures[r.foe.guid]=&r.foe;r.Tick(1);assert(!r.door.uses);++cases;}
  std::cout<<"PASS "<<cases<<" actual instance-owned opening ASAN contexts: full predecessor AI-loss counterfactual, real1/4/7/10 deadlines, accepted full GUID/weak owner/marker admission, no-AI/replaced/suspended, missing actors/retry, once/reentry/cancel/fresh-clock/rollover, original Demon-owned20/23 casts/cleanup/attack and no fabricated credit. Injected120s expiry is expected and separate from recovery. Receipts/world/casts/vehicle/motion endpoints controlled; later46868 death/point1/client/full943/all36 remain OPEN.\n";
  RunEarlyPresentationCases();
+ return 0;
 }

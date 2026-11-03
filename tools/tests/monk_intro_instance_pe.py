@@ -25,6 +25,8 @@ def construction(n):
     initial=opening or 0x498 in values(entry)
     n['monk_initial_successor']=initial
     n['monk_hait_opening_successor']=opening
+    n['monk_hait_defeat_successor']=any(name.startswith('?UpdateDefeat@State@MonkHaitOpening@@') for name in n['symbols'])
+    n['monk_hait_state_size']=0x98 if n['monk_hait_defeat_successor'] else 0x60
     n['monk_instance_size']=0x4a0 if opening else 0x498 if initial else 0x490
     if not initial and 0x490 not in values(entry):return entry,entry,False
     pairs=[(o.mnemonic,o.op_str) for o in entry]
@@ -43,7 +45,7 @@ def construction(n):
                 ('mov','qword ptr [r14 + 0x490], rdi'),('mov','rax, r14')}<=set(bp)
         assert len(sites(n,body,'??2@'))==(2 if opening else 1)
         if opening:
-            assert {('mov','ecx, 0x60'),('mov','qword ptr [rax], rbp'),('mov','qword ptr [r14 + 0x498], rbx')}<=set(bp)
+            assert {('mov','ecx, '+hex(n['monk_hait_state_size'])),('mov','qword ptr [rax], rbp'),('mov','qword ptr [r14 + 0x498], rbx')}<=set(bp)
         bp=constructor_pairs(body,False)
     assert {('lea','rdi, [rsi + 0x2e0]'),('mov','qword ptr [rsi + 0x430], rdi'),
             ('mov','qword ptr [rsi + 0x438], rbp'),('lea','rcx, [rsi + 0x440]'),
