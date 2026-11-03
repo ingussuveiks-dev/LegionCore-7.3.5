@@ -6,6 +6,10 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/hati
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  $path='src/server/scripts/Spells/spell_hunter.cpp';$source=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "063ac15fa:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned primary-pet baseline'}
  $actor=Block $source 'class spell_hun_hatis_bond :';$prior=Block $old 'class spell_hun_hatis_bond :'
+ if($source.Contains('if (!caster->ToPlayer() || !caster->ToPlayer()->GetPet())')){
+  & "$PSScriptRoot/Test-HatiResurrection.ps1" -ScopeOnly
+  $source=(& git -C $repo show "fbaa14ff8:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-resurrection source missing'};$actor=Block $source 'class spell_hun_hatis_bond :'
+ }
  $check='if (creature == caster->ToPlayer()->GetPet())'
  if(([regex]::Matches($actor,[regex]::Escape($check))).Count -ne 1 -or (Shape $source.Replace($check,'')) -cne (Shape $old)){throw 'Only actual-primary identity check may change; previous complete Hati and all other scripts retained'}
  if($ScopeOnly){'PASS exact primary identity successor; previous Player guard/passive/apply/remove/cleanup retained';return}

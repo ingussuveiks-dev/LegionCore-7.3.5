@@ -1,0 +1,26 @@
+param([switch]$ScopeOnly,[switch]$VerifyNativeCatalog,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
+$ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/hati-resurrection/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"};$out=[IO.Path]::GetFullPath($OutputDirectory)
+& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
+ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
+ function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
+ $path='src/server/scripts/Spells/spell_hunter.cpp';$source=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "fbaa14ff8:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned resurrection baseline'}
+ $actor=Block $source 'class spell_hun_broken_bond :';$prior=Block $old 'class spell_hun_broken_bond :'
+ $check='if (!caster->ToPlayer() || !caster->ToPlayer()->GetPet()) return;'
+ if((Shape $source).Replace((Shape $check),'') -cne (Shape $old) -or ([regex]::Matches((Shape $actor),[regex]::Escape((Shape $check)))).Count -ne 1){throw 'Only expired Broken Bond primary admission may change; corpse cleanup and all previous scripts retained'}
+ if($ScopeOnly){'PASS exact Broken Bond primary admission after original corpse cleanup; all previous callbacks retained';return}
+ & "$PSScriptRoot/Test-HatiPrimaryPet.ps1" -OutputDirectory "$out/retained"
+ if(!$?){throw 'Retained primary/owner/reaction suite failed'}
+ Get-ChildItem -LiteralPath "$out/retained" -Filter '*.inc' | Copy-Item -Destination $out
+ foreach($pair in @(@('BrokenFixed',$actor),@('BrokenBaseline',$prior))){$class='struct '+$pair[0]+':AuraScript{'+(Block $pair[1] 'void OnRemove(')+(Block $pair[1] 'void Register()').Replace('spell_hun_broken_bond_AuraScript::',$pair[0]+'::')+'};';[IO.File]::WriteAllText("$out/$($pair[0]).inc",$class)}
+ $s=Get-Content "$repo/src/server/game/Spells/SpellScript.cpp" -Raw
+ [IO.File]::WriteAllText("$out/RemoveDispatch.inc",(Block (Get-Content "$repo/src/server/game/Spells/Auras/SpellAuras.cpp" -Raw) 'void Aura::CallScriptAfterEffectRemoveHandlers('))
+ [IO.File]::WriteAllText("$out/RemoveNative.inc",(Block $s 'void AuraScript::_PrepareScriptCall(')+(Block $s 'void AuraScript::_FinishScriptCall(')+(Block $s 'AuraApplication const* AuraScript::GetTargetApplication() const')+(Block $s 'void AuraScript::EffectApplyHandler::Call('))
+ [IO.File]::WriteAllText("$out/RemoveEnums.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'enum AuraRemoveMode')+';'+(Block (Get-Content "$repo/src/server/game/Spells/Auras/SpellAuraDefines.h" -Raw) 'enum AuraEffectHandleModes')+';')
+ [IO.File]::WriteAllText("$out/StateStore.inc",(Block (Get-Content "$repo/src/server/game/Spells/SpellScript.h" -Raw) 'class ScriptStateStore')+';')
+ $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+ [IO.File]::WriteAllText("$out/build.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/HatiResurrectionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`ncd /d `"$out`"`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
+ & "$out/build.cmd";$nativeExit=$LASTEXITCODE;[IO.File]::WriteAllText("$out/native-result.json",(@{Exit=$nativeExit}|ConvertTo-Json));if($nativeExit){throw "Hati resurrection regression failed exit$nativeExit"}
+ if($VerifyNativeCatalog){$previous=$env:LEGION_DIALOGUE_CONFIG;try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile HatiResurrectionCatalog.cpp -ProbeName HatiResurrectionCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$? -or $LASTEXITCODE){throw 'Native Broken Bond catalog failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous};$data=Get-Content "$out/native.tsv";foreach($want in @("BROKEN_EFFECT`t0`t6`t4`t25","DURATION`t211117`t30000","BROKEN_BINDING`t211117`tspell_hun_broken_bond","COMPLETE`tHatiResurrection")){if($data -notcontains $want){throw "Missing native fact $want"}};'PASS native26972 Broken Bond30s/dummy0/owner target25 and real211117 binding'}
+ if($VerifyReleaseBinary){if(!$ReleaseDirectory){$ReleaseDirectory="$repo/build-extractors/bin/Release"};$previous=$env:PYTHONPATH;try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$repo/tools/tests;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_hati_resurrection_release.py" $ReleaseDirectory;if($LASTEXITCODE){throw 'Hati resurrection Release check failed'}}finally{$env:PYTHONPATH=$previous}}
+}

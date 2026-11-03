@@ -2130,6 +2130,9 @@ class spell_hun_broken_bond : public SpellScriptLoader
                         }
                     }
                 }
+                if (!caster->ToPlayer() || !caster->ToPlayer()->GetPet())
+                    return;
+
                 if (Aura* aura = caster->GetAura(197344))
                     caster->CastSpell(caster, aura->GetCustomData(), true);
             }
