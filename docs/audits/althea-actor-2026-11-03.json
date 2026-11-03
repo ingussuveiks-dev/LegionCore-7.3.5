@@ -27,7 +27,18 @@
     "bnetserver.exe": "699d626742b85e3c27a8a1991137e2dc09f4c8c254fa87914a91cef15979ca44"
   },
   "archive": {
-    "status": "Resolved current diagnostics will be hash-verified under ignored fixed after the focused fix commit. Earlier unrelated/open evidence remains untouched."
+    "audit": "docs/audits/althea-actor-archive-2026-11-03.json",
+    "fix_commit": "76d363b1aefa6742bad1a6676b048d61fcbe0a3e",
+    "archive": "build-extractors/bin/Release/fixed/althea-actor-2026-11-03/verified1",
+    "sources": 273,
+    "payloads": 274,
+    "diagnostic_sets": 22,
+    "reviewed_failed_fixture_sets": 4,
+    "manifest_sha256": "bf18adc6a36463380edbaeafb8341d6a63c856760ce17047d5fde51dd2dc772a",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
   },
   "source_sha256": {
     "src/server/game/Entities/Conversation/Conversation.cpp": "0cf25687c2318ad770e155060f29e81a91b5a0977d381ec8a6730170acc85c81",
@@ -55,5 +66,6 @@
     "tools/tests/AltheaActorResolverTest.cpp": "be6f2d9351c430976c7c4370b28cc72c5206dddfea151304e914087198cc11eb",
     "tools/tests/ConversationActorResolverPredecessor.ps1": "d83beec74b152f058c6d5a1d410063f56b49e9edc6f1491bbb1167e84fcc3bad",
     "tools/tests/verify_althea_actor_release.py": "c0e86caf27096770d78228ff96b0f79ba4d98867de1e6967fd43b1d671ba3e62"
-  }
+  },
+  "fix_commit": "76d363b1aefa6742bad1a6676b048d61fcbe0a3e"
 }

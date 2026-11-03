@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-03",
+  "status": "VERIFIED resolved current original2431 binding diagnostics and reviewed fixture failures archived after tested canonical deployment/fix commit. Native/client evidence remains distinguished.",
+  "archive": {
+    "audit": "docs/audits/althea-actor-archive-2026-11-03.json",
+    "fix_commit": "76d363b1aefa6742bad1a6676b048d61fcbe0a3e",
+    "archive": "build-extractors/bin/Release/fixed/althea-actor-2026-11-03/verified1",
+    "sources": 273,
+    "payloads": 274,
+    "diagnostic_sets": 22,
+    "reviewed_failed_fixture_sets": 4,
+    "manifest_sha256": "bf18adc6a36463380edbaeafb8341d6a63c856760ce17047d5fde51dd2dc772a",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
+  },
+  "exclusions": "No credentials/config/grants/audio/binaries/maps/character data or mixed DBErrors copied; earlier unrelated/open evidence untouched. No source files removed or logs truncated.",
+  "limitations": "Actual client speech/visibility/Garona continuity/full1123/all36, original51613 recipient admission, static DB/LINK findings remain OPEN. Archive is scoped to the original actor binding repair."
+}
