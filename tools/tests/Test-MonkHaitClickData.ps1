@@ -68,8 +68,15 @@ if(!$MigrationFile){$MigrationFile="$repo/sql/pending/world/2026_11_01_11_monk_h
   foreach($table in $tables){if((Signature $refusal "before-$table") -cne (Signature $refusal "after-$table")){throw "Refused $variantName mutated $table"}}
  }
  if($VerifyLiveData){
+  $liveExpectedRows=$expectedRows
+  $textMigration="$repo/sql/updates/world/2026_11_03_01_monk_intro_default_text.sql"
+  if(Test-Path -LiteralPath $textMigration){
+   & "$PSScriptRoot/Test-MonkIntroText.ps1" -MigrationFile $textMigration -VerifyLiveData -OutputDirectory "$out/retained-default-text"
+   if(!$?){throw 'Certified Monk default-text successor failed'}
+   $liveExpectedRows=Query ($setup+$expected+[IO.File]::ReadAllText($textMigration)+(Snapshot 'expected'))
+  }
   $live=Query ('SET SESSION TRANSACTION READ ONLY;'+(Snapshot 'live'))
-  foreach($table in $tables){if((Signature $live "live-$table") -cne (Signature $expectedRows "expected-$table")){throw "Live native context/registration differs: $table"}}
+  foreach($table in $tables){if((Signature $live "live-$table") -cne (Signature $liveExpectedRows "expected-$table")){throw "Live native context/registration differs: $table"}}
  }
  "PASS native SQL:17 complete schemas, exactly1 spell binding, idempotence,$($variants.Count) unchanged refusal snapshots; live=$VerifyLiveData"
 }

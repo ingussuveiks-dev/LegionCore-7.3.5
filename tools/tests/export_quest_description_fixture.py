@@ -25,6 +25,15 @@ a=source.index('    std::string questLogTitle');b=source.index('    WorldPackets
 assignments='\n'.join(line for line in source.splitlines() if re.match(r'\s*packet.Info.('+'|'.join(names)+r')\s*=',line))
 assert len(assignments.splitlines())==9
 (out/'QuestTextPacket.inc').write_text(source[a:b]+'\nPacket packet;\n'+assignments+'\n')
+local=block((r/'src/server/game/Globals/QuestData.cpp').read_text(),'void QuestDataStoreMgr::LoadQuestTemplateLocale()')
+a=local.index('WorldDatabase.Query(')+len('WorldDatabase.Query(');b=local.index(');',a)
+locale_query=''.join(json.loads(m.group()) for m in re.finditer(r'"(?:[^"\\]|\\.)*"',local[a:b]))
+assert locale_query.startswith('SELECT Id, locale, ') and locale_query.endswith(' FROM quest_template_locale')
+locale_columns=[c.strip() for c in locale_query[7:-len(' FROM quest_template_locale')].split(',')]
+assert set(locale_columns[2:])==set(names)
+(out/'QuestTextLocale.inc').write_text('constexpr char QuestTextLocaleSelect[]='+json.dumps(locale_query)+';\n')
+(out/'QuestTextMonkLocale.inc').write_text('\n'.join(f'ObjectMgr::AddLocaleString(localeFields[{locale_columns.index(n)}].GetString(),LOCALE_enUS,realLocale.{n});' for n in names)+'\n')
+(out/'QuestTextMonkCompare.inc').write_text('\n'.join(f'Require(english.Info.{n}==localeFields[{locale_columns.index(n)}].GetString(),"Repaired Monk enUS field differs");Require(absent.Info.{n}==localeFields[{locale_columns.index(n)}].GetString(),"Repaired Monk absent-locale fallback differs");' for n in names)+'\n')
 for filename,text in {
  'Expected':'\n'.join(f'expected.{n}=fields[index("{n}")].GetString();' for n in names),
  'Loaded':'\n'.join(f'loaded.{n}=quest.{n};' for n in names),

@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <vector>
 #include "QuestTextSelect.inc"
+#include "QuestTextLocale.inc"
 
 namespace {
 void Require(bool value,char const* message){if(!value)throw std::runtime_error(message);}
@@ -63,6 +64,21 @@ int main(int,char**){
    #include "QuestTextLoaded.inc"
    check(loaded,expected,expected);
    auto plain=Select(&quest,nullptr,LOCALE_enUS);check(plain.Info,expected,expected);
+   auto monkMode=std::getenv("LEGION_MONK_TEXT_EXPECTED");
+   if(mode==0&&quest.GetQuestId()==12103&&monkMode&&*monkMode){
+    auto localeQuery=std::string(QuestTextLocaleSelect)+" WHERE ID=12103 AND locale='enUS'";auto nativeLocale=WorldDatabase.Query(localeQuery.c_str());Require(bool(nativeLocale),"Native Monk enUS record missing");auto localeFields=nativeLocale->Fetch();QuestTemplateLocale realLocale;
+    #include "QuestTextMonkLocale.inc"
+    auto english=Select(&quest,&realLocale,LOCALE_enUS);auto absent=Select(&quest,&realLocale,LOCALE_ruRU);
+    if(std::string(monkMode)=="Original"){
+     Require(quest.LogTitle=="DEPRECATED"&&absent.Info.LogTitle=="DEPRECATED","Expected old default title missing");
+     Require(english.Info.LogTitle=="Before the Storm"&&english.Info.QuestCompletionLog=="Return to Lieutenant Dumont in Grizzly Hills.","Expected old empty-localized completion fallback not reproduced");
+     std::cout<<"MONK_TEXT EXPECTED OLD: native enUS title overlays correctly but empty completion falls back to unrelated Lieutenant Dumont; absent locale also receives DEPRECATED.\n";
+    }else{
+     Require(std::string(monkMode)=="Repaired","Unknown Monk text expectation");
+     #include "QuestTextMonkCompare.inc"
+     std::cout<<"MONK_TEXT PASS: all nine native enUS/absent-locale query-packet text roles match existing Legion text, including genuinely empty completion fallback; no quest progress changed.\n";
+    }
+   }
    QuestTemplateLocale translated;
    #include "QuestTextTranslation.inc"
    auto overlay=Select(&quest,&translated,LOCALE_enUS);Texts overlaid;
