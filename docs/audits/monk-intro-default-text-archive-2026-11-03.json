@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-03",
+  "status": "Verified fixed archive after actual World01 updater/live/default-text regression. Actual client/full943/all36 remain OPEN.",
+  "issue": "docs/audits/monk-intro-default-text-2026-11-03.json",
+  "FixCommit": "ddbbda11a81ec2d1613fb7a0c486298930b71266",
+  "Archive": "build-extractors/bin/Release/fixed/monk-intro-text-2026-11-03/verified1",
+  "Sources": 656,
+  "Payloads": 658,
+  "ReviewedDiagnosticSets": 9,
+  "ManifestSHA256": "D973A5BB7C9281077DD6EE3EC2FB9AC3A08D6913AC5F290FCBF2AFC0470F63A4",
+  "SourceArchiveSourceVerified": true,
+  "ActiveCrashes": 0,
+  "MixedLogUnchanged": true,
+  "cause": "Local12103 is repurposed for Monk Before the Storm: class512,98519 starter/99181 ender and98514/98353/97778 objectives. Its default quest_template still had unrelated15595 DEPRECATED/Silverbrook/Grizzly Hills title, summary, description and completion log. Existing26124 enUS locale has the actual Legion Monk text, but native ObjectMgr::GetLocaleString intentionally skips empty strings. Thus actual enUS title overlays correctly while empty localized completion still displays the old Lieutenant Dumont/Grizzly Hills fallback. A locale without a translation receives old default text too. Native before-test reproduces both paths; no actual client observation is claimed.",
+  "repair": "Copy only LogTitle,LogDescription,QuestDescription,QuestCompletionLog from the existing local enUS row to the exact local quest12103 base row. The completion log becomes genuinely empty. Preserve all nine locale strings, any other translation, every other base column including numeric/VerifiedBuild provenance, class/quest admission, original objectives/storage/quantities, rewards, giver/ender and all character records. Do not change global empty-locale fallback or author new story prose.",
+  "checks": [
+    "Test-MonkIntroText run3: six actual complete TEMP schemas with information_schema column-order validation/full-column JSON snapshots, independent exact four-cell oracle, repeat idempotence, unrelated quest sentinel and custom deDE translation sentinel retained.36 explicit CHECK4025 refusals preserve complete snapshots: custom default/enUS text/portraits/provenance, missing rows, class/reward/type/objective/storage/giver/ender changes, case/trailing-space differences and all14 partial images of the four-cell repair. All native stdout/stderr/EOF/exit inspected; expected refusals are deliberate counterfactuals, not ordinary successful gameplay.",
+    "Fresh VerifyOriginal confirms actual live baseline before mutation. Native before-test with complete real Quest constructor and actual enUS overlay reproduces correct Before the Storm title but wrong empty-field Dumont fallback; controlled absent-locale selection retains DEPRECATED. Generic28 constructor/140 role/NULL/long-UTF8/locale fallback contexts still pass the earlier constructor repair.",
+    "After actual canonical updater, native live six-table snapshots equal exact expected rows and updates records World01 RELEASED at exact normalized-LF SHA1. Retained first-Hait data test independently validates all17 schemas/exact197120 registration/idempotence/18 original refusals, then composes only the certified default-text successor for live comparison. Historical World11 is unchanged, not rehashed or rewritten.",
+    "Native after-test reads actual locale through exported original loader projection and native AddLocaleString. All nine query-packet text roles match existing Legion enUS for enUS and controlled absent-locale fallback, including empty completion. Complete28/140 generic contexts and actual canonical LoadQuests/constructor selected PE proof remain passing. No SQL writes in the native reader; no actual packet transmission/client/full story claim.",
+    "Owned worldserver30128 fresh ready -> server shutdown0 -> exit0/empty stderr/gone; configuration/certificate/DLL and both canonical executable hashes unchanged. No user/unknown server stopped. This data repair requires no rebuild; mandatory Scepter native/Release passed for this same unchanged executable in preceding constructor audit."
+  ],
+  "reviewed_iterations": [
+    "Initial expanded refusal suite incorrectly expected an extra deDE translation to reject. The guard intentionally selects only enUS, so a custom other-language row is legitimate and remained preserved. Converted it to a positive full-snapshot sentinel instead of tightening the migration to reject unrelated translations. Run3/final live36 refusals and custom-translation preservation pass; initial diagnostic evidence retained."
+  ],
+  "cleanup": "No active crash report required removal. Existing mixed6090 DBErrors unchanged/untruncated and unresolved. Old unrelated fallback and CHECK refusals are explicit counterfactuals; reviewed mistaken extra-locale refusal assertion paired with final correct positive preservation and repaired checks. Original evidence retained. No runtime configs/credentials/dumps/character records or EXE/PDB/maps committed.",
+  "remaining": [
+    "Actual client query/dialog/log/locale refresh, complete12103/943 story, first accepted Hait callback/nearest-player/actor lifetime and physical re-entry remain separate. Numeric15595 base VerifiedBuild and26124 locale provenance are preserved; this text correction does not certify unrelated whole-row data. No global empty-string semantics, quest state, item or character reset changed.",
+    "Other36 acquisition/client variants, unknown shared101430/103151 LINK2/WardstoneLINK4, Survival39427 middle flight, Fu Zan/Yigthregor/original ride, LiLi/Ponshu and earlier recorded findings remain OPEN. Prior user BM acquisition/upgrade/formation observations remain valid."
+  ]
+}

@@ -30,9 +30,11 @@
     "new_binary_required": false,
     "character_mutation": false
   },
-  "diagnostics": "Before/after canonical/root/own crash hashes/log lengths/timestamps and native outputs/exits reviewed for every automated/SQL/native/updater check. Expected old fallback/CHECK refusals and reviewed mistaken refusal assertion are paired with final repaired results. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes empty; existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged/unresolved/untruncated. Fixed archive follows focused fix commit and matching deployed/native regression.",
+  "diagnostics": "Before/after canonical/root/own crash hashes/log lengths/timestamps and native outputs/exits reviewed for every automated/SQL/native/updater check. Expected old fallback/CHECK refusals and reviewed mistaken refusal assertion are paired with final repaired results. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes empty; existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged/unresolved/untruncated. Fixed archive follows focused fix commit and matching deployed/native regression. Verified ignored archive:656 sources/658 payloads/9 reviewed diagnostic sets, manifestD973A5BB7C9281077DD6EE3EC2FB9AC3A08D6913AC5F290FCBF2AFC0470F63A4; source/archive/source plus final hashes verified. No active removal or mixed-log truncation.",
   "remaining": [
     "Actual client query/dialog/log/locale refresh, complete12103/943 story, first accepted Hait callback/nearest-player/actor lifetime and physical re-entry remain separate. Numeric15595 base VerifiedBuild and26124 locale provenance are preserved; this text correction does not certify unrelated whole-row data. No global empty-string semantics, quest state, item or character reset changed.",
     "Other36 acquisition/client variants, unknown shared101430/103151 LINK2/WardstoneLINK4, Survival39427 middle flight, Fu Zan/Yigthregor/original ride, LiLi/Ponshu and earlier recorded findings remain OPEN. Prior user BM acquisition/upgrade/formation observations remain valid."
-  ]
+  ],
+  "fix_commit": "ddbbda11a81ec2d1613fb7a0c486298930b71266",
+  "closed_archive": "docs/audits/monk-intro-default-text-archive-2026-11-03.json"
 }

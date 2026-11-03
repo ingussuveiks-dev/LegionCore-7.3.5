@@ -33,5 +33,10 @@
     "Other acquisition/claimant/lifetime/full-client/all36 findings and unknown shared101430/103151 LINK2/WardstoneLINK4, Survival39427 flight, Fu Zan/Yigthregor/ride, LiLi/Ponshu remain OPEN. Prior specifically recorded successful BM acquisition/upgrade and formation observations remain valid."
   ],
   "fix_commit": "b0c128ae6a9e8adc8861125a378c7bacd7fd3254",
-  "closed_archive": "docs/audits/quest-description-load-archive-2026-11-03.json"
+  "closed_archive": "docs/audits/quest-description-load-archive-2026-11-03.json",
+  "monk_default_text_followup": {
+    "audit": "docs/audits/monk-intro-default-text-2026-11-03.json",
+    "fix_commit": "ddbbda11a81ec2d1613fb7a0c486298930b71266",
+    "status": "Separately confirmed old default/fallback text repaired via actual World01 updater; exact four cells/live six-table/context/native nine-role before-after proof pass. Prior callback/client/full943/all36 scope remains open."
+  }
 }
