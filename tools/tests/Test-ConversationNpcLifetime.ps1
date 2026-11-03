@@ -1,8 +1,9 @@
 param([switch]$ScopeOnly,[switch]$Baseline,[switch]$PrepareHost,[switch]$VerifyReleaseBinary,[string]$OutputDirectory='')
+. "$PSScriptRoot/ConversationAdmissionPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/game/Entities/Conversation/Conversation.cpp';$header='src/server/game/Entities/Conversation/Conversation.h'
-$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "9a38534f0:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned NPC conversation source missing'}
+$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$source=Get-PreConversationWorldAdmissionSource $source;$old=(& git -C $repo show "9a38534f0:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned NPC conversation source missing'}
 $oldHeader=(& git -C $repo show "9a38534f0:$header") -join "`n";if($LASTEXITCODE){throw 'Pinned NPC conversation header missing'}
 $members=(Get-Content "$repo/$header" -Raw).Replace("`r",'').Replace('        uint32 _createdAt = 0;','').Replace('        bool _npcCaster = false;','')
 if(($members -replace '\s','') -cne ($oldHeader -replace '\s','')){throw 'Other Conversation API/vtable/earlier fields changed'}

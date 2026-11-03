@@ -137,6 +137,15 @@ bool Conversation::CreateConversation(ObjectGuid::LowType guidlow, uint32 trigge
         return false;
     }
 
+    // AddToMap owns the grid entry even when AddToWorld cannot resolve the
+    // caster. Release that entry without deleting the caller's allocation:
+    // every failed CreateConversation still belongs to its caller.
+    if (!IsInWorld())
+    {
+        GetMap()->RemoveFromMap(this, false);
+        return false;
+    }
+
     return true;
 }
 

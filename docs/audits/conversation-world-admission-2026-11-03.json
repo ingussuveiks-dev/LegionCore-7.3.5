@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-03",
+  "status": "DEPLOYED2FCAD171/89903B03: actual CreateConversation admission/ownership defect repaired; native8/retained93ASAN+18FuZan/native Warrior/staged PE pass, canonical PE and Scepter pass. Client/full chains/all36 remain OPEN.",
+  "cause": "Map::AddToMap inserts the Conversation into its grid and returns true even when Conversation::AddToWorld cannot resolve its caster. Native770 model-actor data needs no nearby creature, so an actual unregistered caster reproduces factory=true/world=false/grid=true without overriding virtual methods. Conversation::Remove only removes in-world objects and leaves this allocation in the grid. Existing callers can consume a false success or retain unremovable allocations.",
+  "implementation": "After actual AddToMap success, require IsInWorld. On refusal call the actual Map::RemoveFromMap(this,false), releasing active/grid/accessor/map ownership without deleting the caller allocation, and return false. Existing spell/SmartAI/custom callers already delete failed allocations and can perform their existing retry. Preserve all dynamic data, matching native actor roles, group/personal/quest scope, duration, phases, ordinary native lifetime and unrelated methods. No new grants, logging suppression, SQL or character change.",
+  "baseline": "Before production change, full native current creator observed770/absent=true,false,true and ordinary770/1412 live=true,true,true;1412 absent refuses during creature discovery. Evidence.codex/conversation-admission-native-before2.log and private20261103-172025-176. Explicit Map deletion cleans the counterfactual; never call it an ordinary successful quest run.",
+  "regression": {
+    "native8": "Same native executable runs complete pinned1bf86bb41 factory against actual repaired factory, model770/creature1412 and absent/live actual Creature casters. Baseline is the entire original method inherited by a test subclass, with only its declaration and explicit Conversation* cast for the identical native Map template specialization normalized. No virtual admission override in this paired reproduction. Repaired absent770/1412=false/worldfalse/gridfalse then ordinary caller deletion; all admitted controls=true/world/grid/accessor. Native conversation allocation counter returns exactly to baseline and accessor stays empty after each removal.",
+    "whole_source": "Complete Conversation.cpp predecessor certificate permits exactly the post-AddToMap IsInWorld/Map(false)/false block and verifies all other methods unchanged. Older lifetime scope normalizes only that fully certified successor, then exports actual native lifetime code.",
+    "asan93": "Actual generation/budget/Update/CanNeverSee2 through controlled Map/registry/clock endpoints; normal player/group/NPC late-viewer/quest/static/no-viewer/rollover semantics retained. This is ASAN component evidence, not fully instrumented native game.lib.",
+    "native18": "Actual derived Fu Zan2770 acceptance/cast/payload/ownerclock/217774/52411 and cleanup, both races, abandonment/retake/reset/phase/dead/range/complete/group/reentry. Native Release not ASAN; read-only pools/private metadata shadows/no client or saved character.",
+    "warrior": "Retained real770/1386/1405/1412 actor/line/duration/removal probe passes. Its explicit controlled AddToWorld refusal now receives corrected false/no-grid/caller deletion. Legacy true/grid branch remains separately understood historical behavior; new paired native8 requires repaired false.",
+    "pe": "Staged registered CreateConversation AddToMap->IsInWorld, only admitted true, real Map::RemoveFromMap(this,false) and false CFG verified; full previous Ragnvald/Danica/opening/first-wave/Monk linked proof retained. Canonical repeated proof also passes.",
+    "build": "Original game.lib Release rebuilt Conversation.cpp and original final-link paths used; four staged EXE/MAP files copied only while no worldserver/bnetserver ran. Original four files backed up under.codex/release-before-conversation-admission-2026-11-03, all hashes checked, protected configs/certificates/DLLs unchanged.",
+    "canonical": "Owned worldserver34500 reached fresh ready, graceful shutdown0/exit0, stderr empty/gone. Mandatory Scepter actual Release check passes. No user process stopped or task server left."
+  },
+  "iterations": "Initial native probe compilation omitted the Legion include path needed by the reused established Actor host; no native code executed. Corrected private compiler include path, raw counterfactual and complete pinned/repaired native regression all pass. Original failure retained.",
+  "diagnostics": "All own/canonical before/after crash inventories/log offsets, exit/stdout/stderr reviewed. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes empty; existing mixed6090 DBErrors hash8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 remains unresolved/unmodified. Compiler warning output retained separately.",
+  "limits": [
+    "Native probes use actual unauthenticated in-memory actors/players and private read-only pools; they do not prove actual client audio, visibility, full quest traversal or all36 chains.",
+    "LoadConversationFromDB is retained verbatim. Source review shows it has its own admission/no-caster semantics, which were not exercised or certified here; any separate DB-spawn defect requires independent native evidence. Global Map::AddToMap semantics and other object types remain unchanged.",
+    "No pet/guardian/group progression is added. Existing normal caster lookup, personal/group scope and quest inheritance remain in the exact retained method; actual full client pet/group paths remain separate."
+  ],
+  "canonical_hashes": {
+    "worldserver.exe": "2fcad171a14b2b17fb8f594dce14a426e05c7d888b65f9554b80bc450df4db4c",
+    "bnetserver.exe": "89903b03845f7687c2cfb0fc2861cb741f89aea3214c68c41bbc46ffec304d3c"
+  },
+  "archive": "Pending focused fix commit and verified ignored fixed archive; no mixed log truncation.",
+  "source_sha256": {
+    "src/server/game/Entities/Conversation/Conversation.cpp": "bb40cfcbbfd6dd6e7a355e630613c94bd9a25eee44acd8240b170f494cd7c008",
+    "tools/tests/ConversationWorldAdmissionNative.cpp": "e0322f2b0c9b1f449fc8e9cf76fa3809dd7cfd4d4ed7d226a39bef3e509ca2e0",
+    "tools/tests/Test-ConversationWorldAdmissionNative.ps1": "06cb54cc4f6e9ea541de347d6efde12ce83806fc7a4a00c1712bf5ff9cfde0fc",
+    "tools/tests/ConversationAdmissionPredecessor.ps1": "aa9a524cc8b13a9d3cb3f7e0438d01e9490bcc4f280629135eb34dc9b72941b7",
+    "tools/tests/Test-ConversationNpcLifetime.ps1": "c38b715404073f145eb3923c84e8e7cf61ce6483b4429ca8f889100ceb0c35af",
+    "tools/tests/WarriorOpeningConversationNative.cpp": "060c9de5d99a25f41ad9c39403885c405ceb52ca25420ead5131f118f2cf412f",
+    "tools/tests/verify_conversation_world_admission_release.py": "a2bd55c3612f1cea0322c3d56ea4d20026e1bd74b5a85d4fa387e5e7cb5613ed"
+  }
+}

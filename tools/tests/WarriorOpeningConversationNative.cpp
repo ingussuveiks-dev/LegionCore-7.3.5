@@ -62,14 +62,22 @@ int main(int argc,char**argv)
                 // the native factory/data/grid ownership still run in full.
                 struct RefusedAdmission : Conversation { void AddToWorld() override {} };
                 auto refused=new RefusedAdmission;
-                Require(refused->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(),1412,&ragnvald,nullptr,ragnvald),
-                    "Native factory refused before controlled world-admission boundary");
-                Require(!refused->IsInWorld()&&refused->IsInGrid(),"Native true/uninserted grid ownership changed");
-                auto guid=refused->GetGUID();
-                Require(!ObjectAccessor::GetConversation(ragnvald,guid),"Refused world admission resolves unexpectedly");
-                NativeRagnvaldDiscard::Discard(refused);
+                bool created=refused->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(),1412,&ragnvald,nullptr,ragnvald);
+                if(created)
+                {
+                    Require(!refused->IsInWorld()&&refused->IsInGrid(),"Native true/uninserted grid ownership changed");
+                    auto guid=refused->GetGUID();
+                    Require(!ObjectAccessor::GetConversation(ragnvald,guid),"Refused world admission resolves unexpectedly");
+                    NativeRagnvaldDiscard::Discard(refused);
+                }
+                else
+                {
+                    Require(!refused->IsInWorld()&&!refused->IsInGrid(),"Refused factory retained grid ownership");
+                    delete refused;
+                    std::cout<<"PASS corrected native factory releases refused grid ownership before caller deletion\n";
+                }
                 map.RemoveAllObjectsInRemoveList();
-                std::cout<<"PASS native1412 factory/data/Map::AddToMap true-but-not-in-world grid ownership with explicitly controlled AddToWorld refusal; actual production Discard/RemoveFromMap deletion; ordinary admitted control tested separately\n";
+                std::cout<<"PASS native1412 explicitly controlled AddToWorld refusal cleanup, accepting legacy true/grid with production Discard or corrected false/no-grid with caller deletion; ordinary admitted control separately tested\n";
             }
 #endif
             for(uint32 id:{770u,1386u,1405u,1412u})
