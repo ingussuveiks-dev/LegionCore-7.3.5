@@ -122,7 +122,7 @@ struct State
                 };
                 MonkChenRoutes::Dispatch dispatch(rescueUpdating);
                 uint32 elapsed = GetMSTimeDiffToNow(context->escortStartedAt);
-                if (!(rescueIssued & 1) && elapsed >= 4000)
+                if (!(rescueIssued & 1) && elapsed >= 4443)
                 { rescueIssued |= 1; sCreatureTextMgr->SendChat(actor, 4); }
                 if (!valid()) return;
                 if (!(rescueIssued & 2) && elapsed >= 5000)

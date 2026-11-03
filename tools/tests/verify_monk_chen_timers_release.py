@@ -39,7 +39,7 @@ def reaches_without(body,target,blocked):
         if op.mnemonic.startswith('j') and op.operands[0].type==CS_OP_IMM:pending.append(op.operands[0].imm)
         if op.mnemonic!='jmp':pending.append(op.address+op.size)
     return False
-for name,delays in (('MovementInform',[3000,7000,11000,15000,15000,16000]),('SetData',[4000,5000,8000])):
+for name,delays in (('MovementInform',[3000,7000,11000,15000,15000,16000]),('SetData',[4443,5000,8000])):
     body=ins(method(name));queued=sites(n,body,'?AddDelayedEvent@FunctionProcessor@@')
     assert len(queued)==len(delays) and not sites(n,body,'?AddDelayedEvent@Unit@@')
     for at,delay in zip(queued,delays):

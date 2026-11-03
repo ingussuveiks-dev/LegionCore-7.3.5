@@ -55,8 +55,8 @@ uint32 RunEarlyPresentationCases()
         Run r;r.Death(mode%2?&r.pet:&r.guardian);r.Started();
         if(mode>0){assert(r.chen.AIM_Destroy());if(mode==2)r.chen.i_AI=new Chen(&r.chen);if(mode==3)r.chen.i_disabledAI=new Chen(&r.chen);if(mode==4){r.chen.i_AI=new Chen(&r.chen);r.chen.i_disabledAI=r.chen.i_AI;r.chen.i_AI=nullptr;}if(mode==5){r.chen.i_AI=new Chen(&r.chen);r.chen.IsAIEnabled=false;}}
         for(auto kid:Kids(r))kid->IsAIEnabled=false;
-        r.Tick(3999);NoEarly(r);r.Tick(1);assert(Count(r.chen,4)==1);
-        r.Tick(999);for(auto kid:Kids(r))assert(!kid->motion.follows);r.Tick(1);Early(r);
+        r.Tick(4442);NoEarly(r);r.Tick(1);assert(Count(r.chen,4)==1);
+        r.Tick(556);for(auto kid:Kids(r))assert(!kid->motion.follows);r.Tick(1);Early(r);
         for(uint32 i=0;i<100;++i){r.instance.Update(0);if(r.chen.i_AI)r.chen.i_AI->SetData(1,1);}Early(r);
         r.Tick(2999);assert(!r.state().routeIssued);r.Tick(1);
         assert(r.state().routeIssued&&r.chen.motion.paths==std::vector<uint32>{9859005}&&Count(r.chen,5)==1);
@@ -125,8 +125,8 @@ uint32 RunEarlyPresentationCases()
     // An already-issued route retires an overdue scold/follow rather than
     // ordering students back after the original8s transition.
     {Run r;r.Death();clockNow+=8000;r.state().Update(8000);assert(r.state().routeIssued);r.instance.Update(0);assert(Count(r.chen,4)==0&&r.add.motion.follows==0&&r.li.motion.follows==1);++cases;}
-    {Run r;r.map.i_data=&r.instance;r.map.onUpdate=[&](uint32){r.Death(&r.guardian);};clockNow+=100000;r.map.Update(100000);NoEarly(r);r.Tick(3999);NoEarly(r);r.Tick(1);assert(Count(r.chen,4)==1);r.Tick(1000);Early(r);++cases;}
-    {Run r;clockNow=0xFFFFFE00;r.Death();assert(r.chen.AIM_Destroy());r.Tick(4000);NoEarly(r);r.Tick(1);assert(Count(r.chen,4)==1);r.Tick(1000);Early(r);++cases;}
+    {Run r;r.map.i_data=&r.instance;r.map.onUpdate=[&](uint32){r.Death(&r.guardian);};clockNow+=100000;r.map.Update(100000);NoEarly(r);r.Tick(4442);NoEarly(r);r.Tick(1);assert(Count(r.chen,4)==1);r.Tick(557);Early(r);++cases;}
+    {Run r;clockNow=0xFFFFFE00;r.Death();assert(r.chen.AIM_Destroy());r.Tick(4443);NoEarly(r);r.Tick(1);assert(Count(r.chen,4)==1);r.Tick(557);Early(r);++cases;}
     {Run r;r.chen.i_AI->SetData(1,1);r.Tick(5000);NoEarly(r);assert(r.player.credits.empty());++cases;}
     // Only participants captured by the genuine native receipt can retain
     // these shared NPC effects. A later nearby player cannot inherit them.
@@ -141,7 +141,7 @@ uint32 RunEarlyPresentationCases()
         if(mode==0||mode==2)Early(r);else NoEarly(r);
         assert(r.other.credits.empty());++cases;
     }
-    std::cout<<"PASS "<<cases<<" early Chen ASAN contexts plus retained "<<retained<<" outro/81 routes/50 arrival/70 rescue: actual4/5/8 ordering, AI destruction/replacement/disabled aliases, original accepted weak attempt, NPC phase/private/owner/distance/full GUID/student reread, deletion/reentry/cancellation, clock birth/rollover and exactly-once effects. No client/full943/all36 traversal claimed.\n";
+    std::cout<<"PASS "<<cases<<" early Chen ASAN contexts plus retained "<<retained<<" outro/81 routes/50 arrival/70 rescue: actual4.443/5/8 ordering, AI destruction/replacement/disabled aliases, original accepted weak attempt, NPC phase/private/owner/distance/full GUID/student reread, deletion/reentry/cancellation, clock birth/rollover and exactly-once effects. No client/full943/all36 traversal claimed.\n";
     return cases;
 }
 #ifndef MONK_NINE_ARRIVAL_TEST

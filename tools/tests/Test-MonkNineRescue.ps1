@@ -6,6 +6,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function Prior([string]$path){$s=(& git -C $repo show "cfe6cd302:$path") -join "`n";if($LASTEXITCODE){throw "Missing pinned $path"};$s}
  $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$prior=Prior $path
+ if($source.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4443,')){& "$PSScriptRoot/Test-ChenOpeningVoice.ps1" -ScopeOnly;$source=$source.Replace('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4443,','if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4000,')}
  $actor=Block $source 'class npc_nine_czi :';$oldActor=Block $prior 'class npc_nine_czi :'
  $normal=$actor.Replace('if (MonkNineRescue::Source(me)) return;','')
  $normal=$normal.Replace((Block $normal 'if (MonkNineRescue::Source(me))'),'')
@@ -13,7 +14,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$instances=Get-Content "$repo/$path" -Raw;$oldInstances=Prior $path
  $normal=$instances.Replace('#include "../../Monk/Intro/nine_czi_rescue.h"','').Replace(', nineRescue(new MonkNineRescue::State(&chenRescue))','').Replace('std::unique_ptr<MonkNineRescue::State> nineRescue;','').Replace(' nineRescue->Observe(actor);','').Replace('nineRescue->Death(actor, killer); ','').Replace('if (type == MonkNineRescue::RequestData) nineRescue->Request(value);','').Replace('nineRescue->Update(diff); ','')
  if((Shape $normal) -cne (Shape $oldInstances)){throw 'Other instance/controller behavior changed'}
- foreach($name in @('chen_rescue.h','chen_arrival.h','chen_routes.h','chen_presentation.h','jorvinax_defeat.h','monk_fel_stone.h','nine_czi_arrival.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$name";if((Shape (Get-Content "$repo/$path" -Raw)) -cne (Shape (Prior $path))){throw "Prior controller changed: $name"}}
+ foreach($name in @('chen_rescue.h','chen_arrival.h','chen_routes.h','chen_presentation.h','jorvinax_defeat.h','monk_fel_stone.h','nine_czi_arrival.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$name";$currentHeader=Get-Content "$repo/$path" -Raw;if($name -eq 'chen_presentation.h' -and $currentHeader.Contains('elapsed >= 4443')){& "$PSScriptRoot/Test-ChenOpeningVoice.ps1" -ScopeOnly;$currentHeader=$currentHeader.Replace('elapsed >= 4443','elapsed >= 4000')};if((Shape $currentHeader) -cne (Shape (Prior $path))){throw "Prior controller changed: $name"}}
  if($ScopeOnly){'PASS exact initial362181 LOS/death/movement bridges, appended owned state and original instance endpoints; other actors/controllers/native/unscoped payload retained';return}
  & "$PSScriptRoot/Test-MonkNineArrival.ps1" -ExportOnly -OutputDirectory $out
  if(!$?){throw 'Native retained Nine/Chen export failed'}

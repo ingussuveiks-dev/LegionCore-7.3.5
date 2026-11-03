@@ -6,6 +6,10 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function Prior([string]$path){$s=(& git -C $repo show "8d66b5e09:$path") -join "`n";if($LASTEXITCODE){throw "Pinned early presentation predecessor missing: $path"};$s}
  $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$prior=Prior $path
+ if($source.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4443,')){
+  & "$PSScriptRoot/Test-ChenOpeningVoice.ps1" -ScopeOnly
+  $source=(& git -C $repo show "8b9ea7da4:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-voice actor missing'}
+ }
  $hasNine=$source.Contains('#include "nine_czi_arrival.h"')
  if($hasNine){& "$PSScriptRoot/Test-MonkNineArrival.ps1" -ScopeOnly;$source=(& git -C $repo show "f67c49e3b:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Nine actor missing'}}
  $actor=Block $source 'class npc_monk_chen_porter :';$oldActor=Block $prior 'class npc_monk_chen_porter :';$normal=$actor

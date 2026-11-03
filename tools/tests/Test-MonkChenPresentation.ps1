@@ -6,7 +6,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  function Prior([string]$path){$s=(& git -C $repo show "6cb25d055:$path") -join "`n";if($LASTEXITCODE){throw "Pinned presentation predecessor missing: $path"};$s}
  $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp';$source=Get-Content "$repo/$path" -Raw;$prior=Prior $path
- $hasEarly=$source.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4000,')
+ $hasEarly=$source.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4000,') -or $source.Contains('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4443,')
  if($hasEarly){& "$PSScriptRoot/Test-MonkChenEarlyPresentation.ps1" -ScopeOnly;$source=(& git -C $repo show "8d66b5e09:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-early actor missing'}}
  $actor=Block $source 'class npc_monk_chen_porter :';$oldActor=Block $prior 'class npc_monk_chen_porter :';$normal=$actor
  foreach($deadline in @(3000,7000,11000,15000,16000)){

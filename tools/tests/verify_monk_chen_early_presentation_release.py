@@ -29,12 +29,12 @@ assert {('cmp','byte ptr [rcx + 0x13], 0'),('mov','qword ptr [r12 + 8], rdx'),
         ('mov','ebx, dword ptr [rbx + 0xc0]'),('lea','edi, [rcx - 1]'),('cmovbe','edi, ecx'),
         ('cmp','eax, 4'),('movups','xmm0, xmmword ptr [rbx + 8]'),
         ('movups','xmmword ptr [rdx], xmm0'),('add','qword ptr [rbp - 0x71], 0x10')}<=set(pairs(early))
-assert {4000,5000,98074}<=values(early) and 70.0 in floats(n,early)
+assert {4443,5000,98074}<=values(early) and 70.0 in floats(n,early)
 chats=sites(n,early,'?SendChat@CreatureTextMgr@@');follow,=sites(n,early,'?MoveFollow@MotionMaster@@')
 maps=sites(n,early,'?GetCreature@Map@@');students=sites(n,early,pres('Student'));valids=sites(n,early,valid_name)
 assert len(chats)==2 and len(maps)==2 and len(students)==3 and len(valids)==4
 assert chats[0]<valids[0]<students[0]<valids[1]<maps[0]<students[1]<follow<valids[2]<maps[1]<students[2]<chats[1]<valids[3]
-for bit,deadline,limit in ((1,4000,chats[0]),(2,5000,students[0])):
+for bit,deadline,limit in ((1,4443,chats[0]),(2,5000,students[0])):
     reserve=next(i for i,o in enumerate(early[:limit]) if (o.mnemonic,o.op_str)==('or',f'al, {bit}'))
     assert ('cmp',f'edi, {deadline:#x}') in pairs(early[:reserve])
     assert ('mov','byte ptr [r12 + 0x12], al') in pairs(early[reserve:limit])
@@ -64,5 +64,5 @@ for q in queues:
 for body in (early,student,valid):
     for forbidden in ('?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@','?AddDelayedEvent@Unit@@','?AddDelayedEvent@FunctionProcessor@@'):
         assert not sites(n,body,forbidden),('No new progression or AI-owned callback',forbidden)
-print(f"PASS registered{0x498 if n.get('monk_initial_successor') else 0x490 if p['nine_successor'] else 0x430:x} instance/418 original4/5 actions before8s route: padding flags, genuine leaf/weak attempt/full Chen GUID/epoch, native clock/once/reentry, four original98074 spawn guards/empty owner/mutual phase/private/70yd2D, full GUID snapshot/dedupe/reread after native random follow/default0; all three unscoped queues retained. Client/full943/all36 remain separate.")
-print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x498 if n.get('monk_initial_successor') else 0x490 if p['nine_successor'] else 0x430,'state_offset':0x418,'deadlines_ms':[4000,5000,8000]}))
+print(f"PASS registered{0x498 if n.get('monk_initial_successor') else 0x490 if p['nine_successor'] else 0x430:x} instance/418 voice-bound4.443/5 actions before8s route: padding flags, genuine leaf/weak attempt/full Chen GUID/epoch, native clock/once/reentry, four original98074 spawn guards/empty owner/mutual phase/private/70yd2D, full GUID snapshot/dedupe/reread after native random follow/default0; all three unscoped queues retained. Client/full943/all36 remain separate.")
+print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'instance_size':0x498 if n.get('monk_initial_successor') else 0x490 if p['nine_successor'] else 0x430,'state_offset':0x418,'deadlines_ms':[4443,5000,8000]}))
