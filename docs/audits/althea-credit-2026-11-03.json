@@ -23,7 +23,7 @@
     "A fixture assertion expected shared CriteriaProgress.PlayerGUID to equal the owner. Actual native code leaves it empty for these scenario criteria. Corrected test checks the real eligible helper reference, empty shared field and native owner/group conversation recipients, without altering the core to satisfy an invented expectation.",
     "One native link overlapped scripts.lib rebuild and failed LNK1104; another retained catalog command overlapped the intro catalog and the shared build-item.cmd was overwritten. Re-ran after completed builds and serialized catalog probes; final source/library hashes verified. A temporary MSBuild-process guard also rejected idle reusable workers, so actual file stability certifies inputs instead of process presence. No unknown process stopped. All failed evidence remains reviewed and separate from ordinary passing runs."
   ],
-  "diagnostics": "All automated/native/build/PE/startup before/after canonical and own crash/log inventories, stdout/stderr and exits reviewed. Exploratory fixture SQL/compile/assert/link failures above are explicitly failed, paired with clean corrected regressions; no new runtime crash reports. Final successful runs have no unexplained warnings/errors/assertions or appended DBErrors. Existing compiler warnings in unchanged/exported source stay visible. Canonical mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged/unresolved. Reviewed task-owned fixture error logs will be archived after commit; canonical mixed log is not cleared.",
+  "diagnostics": "All automated/native/build/PE/startup before/after canonical and own crash/log inventories, stdout/stderr and exits reviewed. Exploratory fixture SQL/compile/assert/link failures above are explicitly failed, paired with clean corrected regressions; no new runtime crash reports. Final successful runs have no unexplained warnings/errors/assertions or appended DBErrors. Existing compiler warnings in unchanged/exported source stay visible. Canonical mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged/unresolved. Reviewed task-owned fixture error logs will be archived after commit; canonical mixed log is not cleared. Verified archive now preserves original bytes of all reviewed task evidence; two wholly reviewed task-owned fixture DBErrors logs were then recreated empty. Canonical mixed log and informative Server history remain unchanged.",
   "limits": [
     "Actual client full1123 door/Althea fight/death speech/Garona audio and actor continuity after original despawn, group/faction/pet/guardian/reconnect/reentry and all36 whole acquisitions remain OPEN. Genuine native Kill/criteria paths with controlled bootstrap are distinct from client traversal and full original combat AI.",
     "Original door251053 GossipHello has commented stage admission and unconditional51549/51654 dispatch once called. This work preserves it to isolate the victory repair. Next investigate real GameObject::Use/visibility/conditions/quest scope and matching prerequisites before a separate door-admission change; direct fixture hook invocation does not certify physical interaction.",
@@ -34,7 +34,19 @@
     "bnetserver.exe": "c7c92edb1091d88a3f87b6cda2f20a57cb2c03fea472fb8d8ba944ff827f442b"
   },
   "archive": {
-    "status": "Hash-verified resolved diagnostics archive follows the focused fix commit. Mixed canonical and unrelated/open evidence remain untouched."
+    "audit": "docs/audits/althea-credit-archive-2026-11-03.json",
+    "fix_commit": "bd45d08d22ec04afaca3505c35e93de0b28b518c",
+    "archive": "build-extractors/bin/Release/fixed/althea-credit-2026-11-03/verified1",
+    "sources": 373,
+    "payloads": 374,
+    "diagnostic_sets": 31,
+    "reviewed_failed_sets": 10,
+    "reviewed_private_db_error_logs_rotated": 2,
+    "manifest_sha256": "38455d6a50eadfc7a340f1bdac92efdbe0b6e3e4154976d09651093cf3170427",
+    "source_archive_source_verified_before_reviewed_rotation": true,
+    "active_crashes": 0,
+    "canonical_mixed_log_unchanged": true,
+    "original_diagnostics_archived": true
   },
   "source_sha256": {
     "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "e29db6e3088872587e516d05817e7ec5bb4a9393986b37b6c7f958f8d33bd8c4",
@@ -45,5 +57,6 @@
     "tools/tests/AltheaCreditNative.cpp": "c4976ac9cbfd3f29ad0fdadfb4fd450fc1fd67addbf80c605be457b5c48022f6",
     "tools/tests/Test-AltheaCreditNative.ps1": "761418f967809aefea3d7f9fd8eaaa15cf667887a26ce07ef265956b8d282152",
     "tools/tests/verify_althea_credit_release.py": "2cb1e76ff2a172f9033967fbe074ac35bf4a8f3ea58417ffee375b165759da22"
-  }
+  },
+  "fix_commit": "bd45d08d22ec04afaca3505c35e93de0b28b518c"
 }
