@@ -39,7 +39,20 @@
     "worldserver.exe": "971b584c11076550081d33f1a3df0f2326dc3ab830eab9c73049aa2e6c592e31",
     "bnetserver.exe": "9ef3a9746dec59e846f11413ca0a8dbf07cb91aef1cb4b1fe7f267724c7a53f0"
   },
-  "archive": "Eligible resolved task diagnostics await focused fix commit, then ignored fixed/ragnvald-second-battle-2026-11-03 archive with source/archive/source hashes; mixed6090 log and all unresolved evidence remain active.",
+  "archive": {
+    "audit": "docs/audits/ragnvald-second-battle-archive-2026-11-03.json",
+    "fix_commit": "7569e780aacf980e816a4e1e13d44c64a98fa4c9",
+    "archive": "build-extractors/bin/Release/fixed/ragnvald-second-battle-2026-11-03/verified1",
+    "sources": 662,
+    "payloads": 663,
+    "diagnostic_sets": 41,
+    "reviewed_failed_sets": 6,
+    "manifest_sha256": "9ba386bc528e6087f218b51f516be1c5594eb1fa175a2af98338fbeae6e2c952",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
+  },
   "source_sha256": {
     "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/instance_broken_shore.cpp": "a5b003f0a6793b01f8480dc78202635abc1439087050b7aedcd00b2ee0d1ee1c",
     "src/server/scripts/Scenario/Artifacts/Warrior/Intro/ragnvald_second_battle.h": "306bb4d2324a80f1d17c30ed9cd63973cbed25c5e60720fc52eaef34f48d34dc",
@@ -59,5 +72,6 @@
     "tools/tests/WarriorOpeningConversationNative.cpp": "94cf175864e2eeeee5ca6c05c4b25e1a847a47c1480c303a7a8ab489bd49f8f1",
     "tools/tests/WarriorRitualTest.cpp": "f51d05f3574c66f94ff6bd6bf1b9fd4c0d578dab780278a7994ab3179eb79cba",
     "tools/tests/WarriorSecondBattleTest.cpp": "374ec09d6d121c338f8e9cbe489ad54c0821b72a1a42da1064f5adbe73affd11"
-  }
+  },
+  "fix_commit": "7569e780aacf980e816a4e1e13d44c64a98fa4c9"
 }

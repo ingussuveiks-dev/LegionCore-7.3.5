@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-03",
+  "status": "Resolved focused1412 diagnostics archived after deployed/tested fix7569e780a; original bytes preserved and source/archive/source hashes verified.",
+  "verification": {
+    "fix_commit": "7569e780aacf980e816a4e1e13d44c64a98fa4c9",
+    "archive": "build-extractors/bin/Release/fixed/ragnvald-second-battle-2026-11-03/verified1",
+    "sources": 662,
+    "payloads": 663,
+    "diagnostic_sets": 41,
+    "reviewed_failed_sets": 6,
+    "manifest_sha256": "9ba386bc528e6087f218b51f516be1c5594eb1fa175a2af98338fbeae6e2c952",
+    "source_archive_source_verified": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "original_diagnostics_preserved": true
+  },
+  "review": "41 before/after diagnostic sets include six explicitly reviewed initial research/native/PE inspector failures, each paired with passing corrected native/repaired/selected regressions. Full reasons retained in ignored review.json. Native controlled AddToWorld refusal is not a reproduced default production race.",
+  "checks": "67 actual speech ASAN, retained84ritual/92opening/87firstwave/41handoff/64Malgalor, pinned counterfactual/control, actual native26972 conversation/map cleanup, readonly World EOF, original-path Release, registered stage/canonical PE, mandatory Scepter and owned33620 ready/graceful0/gone all pass.",
+  "active": "No report or source diagnostic removed/truncated; active Crashes empty. Existing mixed6090 DBErrors remains unchanged and unresolved. No task server remains; no user process stopped.",
+  "remaining": "Client audio/voice overlap1405/1412/native full933 battle/group/pet/guardian/reentry and all36 chains remain OPEN. NoSQL/reset or new persistence."
+}
