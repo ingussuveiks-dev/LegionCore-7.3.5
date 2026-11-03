@@ -20,6 +20,11 @@ auto& sDB2Manager=db2Manager;
 struct Scenario
 {
     uint32 currentTree=48588,_criteriaTreeForUpdate=0;
+#ifdef ALTHEA_REGRESSION
+    struct Progress{uint64 Counter=0;};struct Achievements{std::map<uint32,Progress> progress;auto GetCriteriaProgressMap()const{return &progress;}} achievements;
+    auto& GetAchievementMgr(){return achievements;}
+    uint32 id=1123;uint32 GetScenarioId()const{return id;}
+#endif
     bool CanUpdateCriteria(uint32 criteriaId,uint32 recursTree=0)const;
 };
 #include "ScenarioGate.inc"
@@ -31,7 +36,16 @@ struct ObjectGuid
     bool IsEmpty()const{return !high&&!low;}
     uint32 GetGUIDLow()const{return uint32(low);}
 };
-struct Map {};
+struct Map {
+#ifdef ALTHEA_REGRESSION
+    uint32 id=1620,instance=1;
+#endif
+};
+#ifdef ALTHEA_REGRESSION
+enum{CLASS_ROGUE=4,QUEST_STATUS_NONE=0,QUEST_STATUS_COMPLETE=1,QUEST_STATUS_INCOMPLETE=3};
+struct ScenarioMgr{std::map<uint32,Scenario*> scenarios;Scenario* GetScenario(uint32 id){auto i=scenarios.find(id);return i==scenarios.end()?nullptr:i->second;}} scenarioMgr;
+auto sScenarioMgr=&scenarioMgr;
+#endif
 struct WorldObject
 {
     Map* map=nullptr;ObjectGuid objectGuid;bool inWorld=true,preDelete=false;
@@ -39,6 +53,13 @@ struct WorldObject
     ObjectGuid GetGUID()const{return objectGuid;}
     bool IsInWorld()const{return inWorld;}
     bool IsPreDelete()const{return preDelete;}
+#ifdef ALTHEA_REGRESSION
+    bool expired=false,phase=true,near=true,scope=true;
+    uint32 GetMapId()const{return map?map->id:0;}uint32 GetInstanceId()const{return map?map->instance:0;}
+    bool IsQuestObjectExpired()const{return expired;}bool InSamePhase(WorldObject const* other)const{return phase&&other->phase;}
+    bool IsWithinDistInMap(WorldObject const*,float range)const{assert(range==100);return near;}
+    bool CanTargetQuestObject(WorldObject const*)const{return scope;}
+#endif
 };
 struct Player;
 struct Unit:WorldObject
@@ -56,6 +77,12 @@ struct Player:Unit
 {
     std::vector<uint32> criteria;
     Player(){playerType=true;objectGuid={1,1};}
+#ifdef ALTHEA_REGRESSION
+    bool contact=true,gm=false,teleport=false;uint32 klass=CLASS_ROGUE;std::map<uint32,uint32>quests{{42504,QUEST_STATUS_INCOMPLETE}};std::set<uint32>rewarded;
+    bool CanContact()const{return contact;}bool isGameMaster()const{return gm;}uint32 getClass()const{return klass;}
+    bool HasPendingTeleport()const{return teleport;}bool GetQuestRewardStatus(uint32 id)const{return rewarded.count(id)!=0;}
+    uint32 GetQuestStatus(uint32 id)const{auto i=quests.find(id);return i==quests.end()?0:i->second;}
+#endif
     void UpdateAchievementCriteria(uint32 type,uint32 asset){bool valid=asset==51615;
 #ifdef ALTHEA_REGRESSION
  valid=valid||asset==51613;
@@ -96,6 +123,9 @@ struct Creature:Unit
     Creature* SummonCreature(uint32 entry,float x,float y,float z){assert(entry==108222&&x==-8310.60f&&y==284.40f&&z==156.83f);++summoned;return next;}
     #ifdef ALTHEA_REGRESSION
     Player* nearest=nullptr;Creature* garona=nullptr;uint32 despawnDelay=0;uint32 elapsed=0;
+    std::list<Player*> players;bool dead=false,m_IsInKillingProcess=false;
+    bool isDead(bool)const{return dead;}
+    void GetPlayerListInGrid(std::list<Player*>& result,float range){assert(range==100);result=players;}
     std::vector<std::pair<uint32,std::function<void()>>> delayed;
     Player* FindNearestPlayer(float range){assert(range==100);return nearest;}
     void AddDelayedEvent(uint32 delay,std::function<void()> event){delayed.emplace_back(elapsed+delay,std::move(event));}

@@ -462,13 +462,52 @@ public:
                 garona->AI()->AttackStart(me);
         }
 
+        Player* GetVictoryPlayer(Player* killer)
+        {
+            if (!me->IsInWorld() || me->IsPreDelete() || me->GetMapId() != 1620 || me->IsQuestObjectExpired())
+                return nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1123 || !scenario->CanUpdateCriteria(48585))
+                return nullptr;
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto victory = progress->find(48585);
+            if (victory != progress->end() && victory->second.Counter)
+                return nullptr;
+
+            auto eligible = [this](Player* player)
+            {
+                if (!player || !player->IsInWorld() || player->IsPreDelete() || !player->CanContact() ||
+                    player->isGameMaster() || player->getClass() != CLASS_ROGUE || player->HasPendingTeleport() ||
+                    player->GetMap() != me->GetMap() || !player->InSamePhase(me) ||
+                    !player->IsWithinDistInMap(me, 100.0f) || player->IsQuestObjectExpired() ||
+                    !me->CanTargetQuestObject(player) || !player->CanTargetQuestObject(me))
+                    return false;
+                for (uint32 quest : {42504u, 42627u})
+                    if (!player->GetQuestRewardStatus(quest) &&
+                        (player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(quest) == QUEST_STATUS_COMPLETE))
+                        return true;
+                return false;
+            };
+
+            // One native event updates this instance's shared scenario. Prefer
+            // the actual killer/owner; Garona can also land the killing blow.
+            if (eligible(killer))
+                return killer;
+            std::list<Player*> players;
+            me->GetPlayerListInGrid(players, 100.0f);
+            for (Player* player : players)
+                if (eligible(player))
+                    return player;
+            return nullptr;
+        }
+
         void JustDied(Unit* who) override
         {
             Unit* speaker = who;
             if (who)
                 if (Player* owner = who->GetCharmerOrOwnerPlayerOrPlayerItself())
                     speaker = owner;
-            if (Player* pl = me->FindNearestPlayer(100.0f))
+            if (Player* pl = GetVictoryPlayer(speaker ? speaker->ToPlayer() : nullptr))
                 pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51613);
             if (speaker)
             {
