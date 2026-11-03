@@ -55,7 +55,11 @@ struct Player:Unit
 {
     std::vector<uint32> criteria;
     Player(){playerType=true;objectGuid={1,1};}
-    void UpdateAchievementCriteria(uint32 type,uint32 asset){assert(type==92&&asset==51615);criteria.push_back(asset);}
+    void UpdateAchievementCriteria(uint32 type,uint32 asset){bool valid=asset==51615;
+#ifdef ALTHEA_REGRESSION
+ valid=valid||asset==51613;
+#endif
+ assert(type==92&&valid);criteria.push_back(asset);}
 };
 Player const* Unit::ToPlayer()const{return playerType?static_cast<Player const*>(this):nullptr;}
 template<class T>struct HashMapHolder
@@ -83,10 +87,27 @@ struct Creature:Unit
 {
     ScriptedAI* ai=nullptr;Creature* previous=nullptr;Creature* next=nullptr;
     std::list<Creature*> adds;uint32 despawns=0,summoned=0;bool visible=false;
-    Creature* FindNearestCreature(uint32 entry,float radius,bool alive){assert(entry==108222&&radius==60&&alive);return previous;}
+    Creature* FindNearestCreature(uint32 entry,float radius,bool alive){assert(radius==60&&alive);
+#ifdef ALTHEA_REGRESSION
+    if(entry==108214)return garona;
+#endif
+    assert(entry==108222);return previous;}
     Creature* SummonCreature(uint32 entry,float x,float y,float z){assert(entry==108222&&x==-8310.60f&&y==284.40f&&z==156.83f);++summoned;return next;}
+    #ifdef ALTHEA_REGRESSION
+    Player* nearest=nullptr;Creature* garona=nullptr;uint32 despawnDelay=0;uint32 elapsed=0;
+    std::vector<std::pair<uint32,std::function<void()>>> delayed;
+    Player* FindNearestPlayer(float range){assert(range==100);return nearest;}
+    void AddDelayedEvent(uint32 delay,std::function<void()> event){delayed.emplace_back(elapsed+delay,std::move(event));}
+    void Advance(uint32 diff){elapsed+=diff;for(auto it=delayed.begin();it!=delayed.end();)if(it->first<=elapsed){auto event=std::move(it->second);it=delayed.erase(it);event();}else ++it;}
+#endif
     ScriptedAI* AI(){return ai;}
-    void DespawnOrUnsummon(){++despawns;}
+    void DespawnOrUnsummon(uint32 delay=0){++despawns;
+#ifdef ALTHEA_REGRESSION
+    despawnDelay=delay;
+#else
+    (void)delay;
+#endif
+    }
     void SetVisible(bool value){visible=value;}
 };
 struct SummonList
@@ -111,7 +132,11 @@ struct Conversation
     Conversation(){++live;}~Conversation(){--live;}
     bool CreateConversation(uint64,uint32 id,Unit* caster,void*,Unit const& anchor)
     {
-        assert(id==2448&&caster==&anchor);casters.push_back(caster);
+        bool valid=id==2448;
+#ifdef ALTHEA_REGRESSION
+    valid=valid||id==2431||id==2432;
+#endif
+    assert(valid&&caster==&anchor);casters.push_back(caster);
         if(fail)return false;
         owned.emplace_back(this);return true;
     }
@@ -180,4 +205,5 @@ int main()
     std::cout<<"PASS native Merlis death hook + native charmer/owner selection + native in-map live player lookup: direct/pet/guardian/charm, null/unowned/missing/map/predelete/offline, removed killer, missing actors/conversation failure and fresh encounter; existing cleanup and personal51615/2448 recipient retained. Scenario/party/faction/combat/loot/client boundaries are not simulated\n";
 #endif
     ResetConversations();
+    return 0;
 }

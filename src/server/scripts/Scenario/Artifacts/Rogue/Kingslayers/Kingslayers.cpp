@@ -428,11 +428,18 @@ public:
 
         void JustDied(Unit* who) override
         {
+            Unit* speaker = who;
+            if (who)
+                if (Player* owner = who->GetCharmerOrOwnerPlayerOrPlayerItself())
+                    speaker = owner;
             if (Player* pl = me->FindNearestPlayer(100.0f))
                 pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51613);
-            Conversation* conversation = new Conversation;
-            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2431, who, NULL, *who))
-                delete conversation;
+            if (speaker)
+            {
+                Conversation* conversation = new Conversation;
+                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2431, speaker, NULL, *speaker))
+                    delete conversation;
+            }
 
             if (Creature* garona = me->FindNearestCreature(108214, 60.0f, true))
             {
