@@ -189,9 +189,12 @@ public:
                 return;
             }
 
-            Conversation* conversation = new Conversation;
-            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1412, me, NULL, *me))
-                delete conversation;
+            if (me->GetEntry() != 97167 || me->GetMapId() != 1500 || me->GetDBTableGUIDLow() != 361094)
+            {
+                Conversation* conversation = new Conversation;
+                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1412, me, NULL, *me))
+                    delete conversation;
+            }
             if (Creature* targ = me->FindNearestCreature(98257, 250.0f, true))
             {
                 std::list<Creature*> adds;

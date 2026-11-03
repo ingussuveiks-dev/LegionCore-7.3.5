@@ -1,4 +1,4 @@
-// OPEN caller counterfactual, not a repaired-behavior certificate.
+// Full pinned2c6952ecf caller counterfactual, separate from repaired behavior.
 #include "Support.inc"
 int main()
 {
@@ -20,11 +20,11 @@ int main()
         r.Tick(30000);
         assert(Conversation::created == std::vector<uint32>{1412});
         assert(r.actor.attacks.size() == 1 && r.ally.attacks.size() == 1);
-        std::cout << (refused ? "COUNTERFACTUAL OPEN: " : "CONTROL: ")
-                  << "current full Ragnvald1412 factory result=" << !refused
+        std::cout << (refused ? "COUNTERFACTUAL PINNED2c6952ecf: " : "CONTROL: ")
+                  << "full predecessor Ragnvald1412 factory result=" << !refused
                   << "; native attack requests remain once, no conversation retry after30s. "
                   << "Factory/Map/visibility endpoints controlled; no native full-core or client claim.\n";
     }
-    std::cout << "OPEN: current caller loses a refused1412; no passing repaired counterpart exists yet. "
-                 "Retained handoff tests are separate from fixing factory admission/lifetime/voice sequencing.\n";
+    std::cout << "EXPECTED BROKEN predecessor loses a refused1412. "
+                 "Test-WarriorSecondBattle exercises the separate repaired instance owner; client/full933 remain separate.\n";
 }

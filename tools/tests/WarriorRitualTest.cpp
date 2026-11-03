@@ -33,16 +33,16 @@ struct Ref{Player*player;Player*getSource()const{return player;}};
 struct Map
 {
  uint32 id=1500,instance=42;bool unload=false;InstanceScript*script=nullptr;std::vector<Ref>players;std::map<ObjectGuid,Creature*>actors;std::map<ObjectGuid,Conversation*>conversations;
- uint32 GetId(){return id;}uint32 GetInstanceId(){return instance;}bool IsMapUnload(){return unload;}auto const&GetPlayers(){return players;}Creature*GetCreature(ObjectGuid key){auto i=actors.find(key);return i==actors.end()?nullptr:i->second;}
+ uint32 GetId(){return id;}uint32 GetInstanceId(){return instance;}bool IsMapUnload(){return unload;}auto const&GetPlayers(){return players;}Creature*GetCreature(ObjectGuid key){auto i=actors.find(key);return i==actors.end()?nullptr:i->second;}void RemoveFromMap(Conversation*,bool);
 }world;
 struct Criterion{uint64 Counter=0;};struct Achievement{std::map<uint32,Criterion>data;auto const*GetCriteriaProgressMap(){return &data;}};
 struct Scenario{uint32 id=933,step=0;Achievement achievement;uint32 GetScenarioId(){return id;}uint32 GetCurrentStep(){return step;}Achievement&GetAchievementMgr(){return achievement;}}scenarioFixture;
-struct Scenarios{bool missing=false;Scenario*GetScenario(uint32 key){return missing||key!=world.instance?nullptr:&scenarioFixture;}}scenarioManager;auto*sScenarioMgr=&scenarioManager;
+struct Scenarios{bool missing=false;Scenario*current=&scenarioFixture;Scenario*GetScenario(uint32 key){return missing||key!=world.instance?nullptr:current;}}scenarioManager;auto*sScenarioMgr=&scenarioManager;
 struct QuestStatusData{uint32 Status=3;std::shared_ptr<uint8>ScriptLifetime;};static std::map<ObjectGuid,Player*>players;
 struct Player:Unit
 {
  ObjectGuid guid{1,0xAABBCCDDAABBCCDD};Map*map=&world;uint32 cls=1,activeQuest=38904,questState=3,marker=0,team=67;bool contact=true,worlded=true,gm=false,pending=false,phase=true,rewarded=false;QuestStatusData quest;
- std::vector<uint32>events;std::map<uint32,bool>refused;std::function<void(uint32)>onEvent;
+ float range=10;bool visible=true;bool canSeeOrDetect(Creature*){return visible;}std::vector<uint32>events;std::map<uint32,bool>refused;std::function<void(uint32)>onEvent;
  Player*ToPlayer()override{return this;}ObjectGuid GetGUID()const override{return guid;}Map*GetMap()const override{return map;}uint32 GetMapId(){return map->id;}uint32 GetInstanceId(){return map->instance;}uint32 getClass(){return cls;}
  bool IsInWorld(){return worlded;}bool CanContact(){return contact;}bool isGameMaster(){return gm;}bool HasPendingTeleport(){return pending;}bool InSamePhase(Creature*){return phase;}
  bool GetQuestRewardStatus(uint32 q){return q==activeQuest&&rewarded;}uint32 GetQuestStatus(uint32 q){return q==activeQuest?questState:0;}QuestStatusData*getQuestStatus(uint32 q){quest.Status=questState;return q==activeQuest&&questState?&quest:nullptr;}
@@ -62,7 +62,7 @@ struct Creature:Unit
  explicit Creature(uint32 id):guid{id,0x1122334411223344},entry(id){}virtual~Creature();Creature*ToCreature()override{return this;}ObjectGuid GetGUID()const override{return guid;}Map*GetMap()const override{return map;}virtual TempSummon*ToTempSummon(){return nullptr;}
  uint32 GetEntry(){return entry;}uint32 GetDBTableGUIDLow(){return spawn;}uint32 GetMapId(){return map->id;}uint32 GetInstanceId(){return map->instance;}bool IsAlive(){return alive;}bool IsInWorld(){return worlded;}bool IsPreDelete(){return preDelete;}CreatureAI*AI(){return ai;}
  DeathState getDeathState(){return alive?ALIVE:CORPSE;}bool HasFlag(uint32,uint32 mask){return (flags&mask)!=0;}uint32 GetUInt32Value(uint32 key){assert(key==UNIT_FIELD_CREATED_BY_SPELL);return createdSpell;}bool HasUnitState(uint32 key){assert(key==UNIT_STATE_CASTING);return casting;}bool HasAura(uint32 key){assert(key==105419);return aura;}
- bool InSamePhase(Creature*actor){return phase&&actor->phase;}bool IsWithinDistInMap(Creature*target,float radius){return target->map==map&&target->range<=radius;}
+ bool hidden=false;float GetVisibilityRange(){return 100;}bool ShouldHideFor(ObjectGuid){return hidden;}bool InSamePhase(Creature*actor){return phase&&actor->phase;}bool IsWithinDistInMap(Creature*target,float radius){return target->map==map&&target->range<=radius;}bool IsWithinDistInMap(Unit*target,float radius){auto player=target->ToPlayer();return player&&player->map==map&&player->range<=radius;}
  Motion*GetMotionMaster(){return &motion;}float GetPositionX(){return 5;}float GetPositionY(){return 6;}void DespawnOrUnsummon(uint32 delay=0){despawns.push_back(delay);if(!delay)worlded=false;}void Kill(Creature*target){assert(target==this);alive=false;if(onKill)onKill();}
  InstanceScript*GetInstanceScript(){return map?map->script:nullptr;}SpellCastResult CastSpell(Creature*target,uint32 id,bool triggered=false){assert(target==this&&!triggered&&(id==205287||id==205295||id==205296));casts.push_back(id);if(refused[id])return SPELL_FAILED_ERROR;return onCast?onCast(id):SPELL_CAST_OK;}
  Player*FindNearestPlayer(float radius){assert(radius==100);return map->players.empty()?nullptr:map->players.front().player;}Creature*FindNearestCreature(uint32 id,float radius,bool live=true){for(auto const&item:map->actors)if(item.second->entry==id&&item.second->range<=radius&&item.second->alive==live)return item.second;return nullptr;}
@@ -83,12 +83,14 @@ struct Texts{uint32 calls=0;void SendChat(Creature*actor,uint32 group){assert(ac
 enum class HighGuid{Conversation};struct Generator{uint64 next=1;uint64 Generate(){return next++;}}generator;struct ObjectMgr{template<HighGuid>Generator*GetGenerator(){return &generator;}}objects;auto*sObjectMgr=&objects;
 struct Conversation
 {
- struct Actor{uint64 GuidLow=0,GuidHight=0;};static inline std::vector<Conversation*>allocated;static inline uint32 created=0,removed=0,corruption=0;static inline bool fail=false;static inline std::function<void()>onCreate;
+ struct Actor{uint64 GuidLow=0,GuidHight=0;};static inline std::vector<Conversation*>allocated;static inline uint32 created=0,removed=0,corruption=0,secondCreated=0,secondCorruption=0,gridRemoved=0;static inline bool fail=false,secondFail=false;static inline std::function<void()>onCreate,onSecondCreate;
  Map*map=nullptr;ObjectGuid guid;bool worlded=false;std::vector<Actor>actors;
  Conversation(){allocated.push_back(this);}~Conversation(){if(map)map->conversations.erase(guid);allocated.erase(std::find(allocated.begin(),allocated.end(),this));}
- bool CreateConversation(uint64 key,uint32 entry,Unit*caster,void*,Unit&){assert(entry==1405);++created;if(onCreate)onCreate();if(fail)return false;map=caster->GetMap();guid={key,0xFACEFACEFACEFACE};worlded=corruption!=4;map->conversations[guid]=this;auto owner=caster->GetGUID();actors={{owner.low,owner.high}};for(auto const&item:map->actors)if(item.second->entry==97167){actors.push_back({item.first.low,item.first.high});break;}if(corruption==1)actors.clear();if(corruption==2)++actors[0].GuidLow;if(corruption==3)++actors[0].GuidHight;if(corruption==5)map->conversations.erase(guid);return true;}
- bool IsInWorld(){return worlded;}ObjectGuid GetGUID(){return guid;}auto const&GetCreatures(){return actors;}Actor const*GetCreature(uint8 index){assert(index<actors.size());return &actors[index];}void Remove(){++removed;worlded=false;if(map)map->conversations.erase(guid);}
+ bool CreateConversation(uint64 key,uint32 entry,Unit*caster,void*,Unit&){assert(entry==1405||entry==1412);if(entry==1405){++created;if(onCreate)onCreate();if(fail)return false;}else{++secondCreated;if(onSecondCreate)onSecondCreate();if(secondFail)return false;}auto fault=entry==1405?corruption:secondCorruption;map=caster->GetMap();guid={key,0xFACEFACEFACEFACE};worlded=fault!=4;map->conversations[guid]=this;auto owner=caster->GetGUID();actors={{owner.low,owner.high}};if(entry==1405)for(auto const&item:map->actors)if(item.second->entry==97167){actors.push_back({item.first.low,item.first.high});break;}if(fault==1)actors.clear();if(fault==2)++actors[0].GuidLow;if(fault==3)++actors[0].GuidHight;if(fault==5)map->conversations.erase(guid);return true;}
+ Map*GetMap(){return map;}bool IsInWorld(){return worlded;}ObjectGuid GetGUID(){return guid;}auto const&GetCreatures(){return actors;}Actor const*GetCreature(uint8 index){assert(index<actors.size());return &actors[index];}void Remove(){++removed;worlded=false;if(map)map->conversations.erase(guid);}
 };
+void Map::RemoveFromMap(Conversation* object,bool del){assert(object->map==this&&del);++Conversation::gridRemoved;delete object;}
+
 #include "QuestDelay.inc"
 #include "Original.inc"
 namespace WarriorOpening{constexpr uint32 AIStatusData=93320,Idle=1,Queued=2;}
@@ -96,7 +98,7 @@ namespace WarriorOpening{constexpr uint32 AIStatusData=93320,Idle=1,Queued=2;}
 #include "Danica.inc"
 struct npc_ragnvald_dragonborn{struct npc_ragnvald_dragonbornAI{static void ResumeBattle(Creature*){}};};
 #include "BaselineDanica.inc"
-struct RagnvaldAI:CreatureAI{using CreatureAI::CreatureAI;uint32 actions=0;uint32 GetData(uint32 key)const override{return key==WarriorOpening::AIStatusData?1:0;}void DoAction(int32 value)override{assert(value==1&&scenarioFixture.step==3);++actions;}};
+struct RagnvaldAI:CreatureAI{using CreatureAI::CreatureAI;uint32 actions=0;std::function<void()>onAction;uint32 GetData(uint32 key)const override{return key==WarriorOpening::AIStatusData?1:0;}void DoAction(int32 value)override{assert(value==1&&scenarioFixture.step==3);++actions;if(onAction)onAction();}};
 struct Instance:InstanceScript
 {
  WarriorRitual::State ritual{&world};ObjectGuid GetGuidData(uint32 key)const override{return key==WarriorRitual::DanicaData?ritual.danica:ObjectGuid{};}void SetGuidData(uint32 key,ObjectGuid value)override{if(key==WarriorRitual::HitData)ritual.Hit(value);}
@@ -109,7 +111,7 @@ struct Run
  std::vector<std::unique_ptr<TempSummon>>ghosts;uint32 remaining=0,firstHits=0,secondHits=0;bool missingFirst=false,missingSecond=false;std::function<void(uint32)>onGhost;
  Run()
  {
-  world=Map{};scenarioFixture=Scenario{};scenarioManager.missing=false;players.clear();warnings=0;texts.calls=0;Conversation::created=Conversation::removed=Conversation::corruption=0;Conversation::fail=false;Conversation::onCreate={};assert(Conversation::allocated.empty());world.script=&instance;
+  world=Map{};scenarioFixture=Scenario{};scenarioManager.missing=false;scenarioManager.current=&scenarioFixture;players.clear();warnings=0;texts.calls=0;Conversation::created=Conversation::removed=Conversation::corruption=0;Conversation::fail=false;Conversation::onCreate={};assert(Conversation::allocated.empty());world.script=&instance;
   world.players={{&player}};players[player.guid]=&player;other.guid.low=2;players[other.guid]=&other;demon.spawn=361138;demon.alive=false;first.spawn=361098;second.spawn=361099;ragnvald.spawn=361094;ally.spawn=361091;nextEnemy.spawn=361151;danica.summoner=demon.guid;
   for(Creature*actor:std::initializer_list<Creature*>{&demon,&first,&second,&ragnvald,&ally,&enemy,&nextEnemy,&danica}){world.actors[actor->guid]=actor;instance.ritual.Observe(actor);}
   ragnvald.ai=new RagnvaldAI(&ragnvald);danica.ai=new npc_danica_the_reclaimer::npc_danica_the_reclaimerAI(&danica);
@@ -168,4 +170,5 @@ int main()
  for(uint32 key=0;key<2;++key){Run r;if(key==0)r.ally.range=101;else r.ally.phase=false;r.Begin();assert(texts.calls==0);r.Tick(5000);assert(scenarioFixture.step==3);++checks;}
  {Run r;r.ragnvald.phase=false;r.Death();r.Phase2();r.Tick(0);r.Tick(3000);assert(r.danica.casts.empty()&&!r.instance.ritual.spoken);r.ragnvald.phase=true;r.Tick(1000);r.Tick(5000);assert(scenarioFixture.step==3);++checks;}
  std::cout<<"PASS "<<checks<<" actual ritual state/Danica bridge ASAN components: genuine original death/weak quests, normal cast/real owned spirit acknowledgements, two native leaves, exact3s+5s+2s modeled endpoints, missing-only retry/AI replacement and cleanup. Controlled Map/Player/Spell/Conversation endpoints; actual native cast/catalog separate, full933/client pending.\n";
+ return 0;
 }

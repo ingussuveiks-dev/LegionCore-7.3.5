@@ -1,9 +1,10 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[string]$OutputDirectory='')
+. "$PSScriptRoot/RagnvaldSecondBattlePredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 function Shape([string]$s){([regex]::Replace($s,'(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/Intro/wars_intro_scenario.cpp'
-$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "77ebf820e:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned opening baseline source missing'}
+$currentSource=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$source=Get-PreRagnvaldSecondBattleSource $path $currentSource;$old=(& git -C $repo show "77ebf820e:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned opening baseline source missing'}
 & "$PSScriptRoot/Test-WarriorRitual.ps1" -ScopeOnly
 $ritualCertified=(& git -C $repo show "1531780a2:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-ritual actors missing'}
 $source=$source.Replace((Block $source 'class npc_danica_the_reclaimer :'),(Block $ritualCertified 'class npc_danica_the_reclaimer :')).Replace('#include "ritual_transition.h"','')
@@ -24,7 +25,7 @@ $expected=$prior.Replace('#include "../../Warrior/Intro/first_wave_transition.h"
 if((Shape $actual) -cne (Shape $expected)){throw 'Other shared Paladin/Warrior instance dispatch changed'}
 if($ScopeOnly){'PASS instance-owned opening boundary, empty scripted LOS override, exact original2s battle payload and all remaining actor/Paladin/first-wave/reinforcement/finale bodies retained';return}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/warrior-opening"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
-[IO.File]::WriteAllText("$out/Actor.inc",$actor+';')
+[IO.File]::WriteAllText("$out/Actor.inc",(Block $currentSource 'class npc_ragnvald_dragonborn :')+';')
 [IO.File]::WriteAllText("$out/BaselineActor.inc",$previous.Replace('npc_ragnvald_dragonborn','npc_ragnvald_dragonborn_baseline')+';')
 Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Warrior/Intro/opening_transition.h" "$out/Opening.inc"
 Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Warrior/Intro/first_wave_transition.h" "$out/FirstWave.inc"

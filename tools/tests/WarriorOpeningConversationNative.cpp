@@ -4,6 +4,9 @@
 #include "ConversationData.h"
 #include <filesystem>
 #include <cstdlib>
+#ifdef RAGNVALD_SECOND_BATTLE_NATIVE
+#include "RagnvaldDiscard.inc"
+#endif
 
 int main(int argc,char**argv)
 {
@@ -46,6 +49,29 @@ int main(int argc,char**argv)
             std::cout<<"COUNTERFACTUAL native1386 rejects its missing97166 actor; no successful factory result or battle is asserted.\n";
             Require(map.AddToMap(static_cast<Creature*>(&ally)),"Native97166 map admission failed");
             Require(map.AddToMap(static_cast<Creature*>(&danica)),"Native103608 map admission failed");
+#ifdef RAGNVALD_SECOND_BATTLE_NATIVE
+            {
+                Actor unregistered(&map,97167,10004,ragnvald);
+                Require(!unregistered.IsInWorld(),"Negative-control caster entered world");
+                auto incomplete=create(1412,&unregistered);
+                std::cout<<"CONTROL unregistered native caster factory="<<bool(incomplete)
+                    <<" world="<<(incomplete&&incomplete->IsInWorld())<<" grid="<<(incomplete&&incomplete->IsInGrid())<<'\n';
+                if(incomplete)NativeRagnvaldDiscard::Discard(incomplete);
+                map.RemoveAllObjectsInRemoveList();
+                // Isolate AddToWorld refusal from dynamic actor discovery:
+                // the native factory/data/grid ownership still run in full.
+                struct RefusedAdmission : Conversation { void AddToWorld() override {} };
+                auto refused=new RefusedAdmission;
+                Require(refused->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(),1412,&ragnvald,nullptr,ragnvald),
+                    "Native factory refused before controlled world-admission boundary");
+                Require(!refused->IsInWorld()&&refused->IsInGrid(),"Native true/uninserted grid ownership changed");
+                auto guid=refused->GetGUID();
+                Require(!ObjectAccessor::GetConversation(ragnvald,guid),"Refused world admission resolves unexpectedly");
+                NativeRagnvaldDiscard::Discard(refused);
+                map.RemoveAllObjectsInRemoveList();
+                std::cout<<"PASS native1412 factory/data/Map::AddToMap true-but-not-in-world grid ownership with explicitly controlled AddToWorld refusal; actual production Discard/RemoveFromMap deletion; ordinary admitted control tested separately\n";
+            }
+#endif
             for(uint32 id:{770u,1386u,1405u,1412u})
             {
                 Actor* caster=id==1405?&danica:&ragnvald;
@@ -82,7 +108,11 @@ int main(int argc,char**argv)
                     std::cout<<"LINE\t"<<id<<'\t'<<line.id<<'\t'<<line.textId<<'\t'<<line.unk1<<'\t'<<line.unk2<<'\t'<<native->BroadcastTextID<<'\t'<<text->SoundEntriesID[0]<<'\t'<<text->SoundEntriesID[1]<<'\n';
                     ++index;
                 }
+#ifdef RAGNVALD_SECOND_BATTLE_NATIVE
+                if(id==1412)NativeRagnvaldDiscard::Discard(result);else result->Remove();
+#else
                 result->Remove();
+#endif
                 Require(!ObjectAccessor::GetConversation(*caster,guid),"Removed original conversation still resolves");
                 map.RemoveAllObjectsInRemoveList();
             }

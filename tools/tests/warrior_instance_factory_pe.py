@@ -33,7 +33,12 @@ def selected_instance_factory(n,ins):
     if any(name.startswith('?GetData@npc_danica_the_reclaimerAI@') for name in n['symbols']):
         assert {('mov','rdi, rdx'),('mov','rsi, rcx'),('mov','qword ptr [rsi + 0x380], rdi'),
                 ('mov','qword ptr [rsi + 0x3d8], rdi')}<=set(pairs)
-        assert ('mov','ecx, 0x520') in [(row.mnemonic,row.op_str) for row in body[:at]]
+        successor=any(name.startswith('?Update@State@RagnvaldSecondBattle@@') for name in n['symbols'])
+        assert ('mov',f'ecx, {0x528 if successor else 0x520:#x}') in [(row.mnemonic,row.op_str) for row in body[:at]]
+        if successor:
+            assert {('mov','ecx, 0x60'),('mov','qword ptr [rsi + 0x520], rbx'),
+                    ('mov','qword ptr [rax], rdi')}<=set(pairs)
+            n['ragnvald_second_battle_successor']=True
     else:
         assert ('mov','qword ptr [rdi + 0x380], rbx') in pairs
     return constructor

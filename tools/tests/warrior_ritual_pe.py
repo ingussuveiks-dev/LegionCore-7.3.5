@@ -47,6 +47,7 @@ def verify_bridge(n,ins,refs,table,resolved,reachable):
     assert not sites(n,body,'?CastSpell@Unit@@') and not sites(n,body,'?UpdateAchievementCriteria@Player@@')
 
 def verify_presentation_handoff(n,ins,refs,table,resolved,reachable):
+    n['ragnvald_second_battle_successor']=any(name.startswith('?Update@State@RagnvaldSecondBattle@@') for name in n['symbols'])
     prepare=ins(ritual('Prepare'));send,=sites(n,prepare,'?SendChat@CreatureTextMgr@@')
     assert {97166,361091,102964,102965,92445,92446,92450,92447,97176,102990,102995,97167,105419}<=values(prepare)
     needs(n,prepare,ritual('Ready'),ritual('Danica'),'?Kill@Unit@@','?GetCreature@Map@@','?MovePoint@MotionMaster@@')
@@ -56,21 +57,47 @@ def verify_presentation_handoff(n,ins,refs,table,resolved,reachable):
     needs(n,prepare,'?InSamePhase@WorldObject@@','?IsWithinDistInMap@WorldObject@@')
     # Float literals are represented by their exact32-bit native values.
     for value in (-1980.04,-1251.96,4.83):assert any(abs(found-value)<0.0001 for found in floats(n,prepare))
-    depart=ins(ritual('Depart'));assert 4000 in values(depart) and 40.0 in floats(n,depart)
-    assert len(sites(n,depart,'?MovePoint@MotionMaster@@'))==len(sites(n,depart,'?DespawnOrUnsummon@Creature@@'))==2
-    assert {('lea','rbp, [rcx + 0x88]'),('movups','xmm0, xmmword ptr [rbp - 0x20]'),
-            ('movups','xmm1, xmmword ptr [rbp]'),('movups','xmm0, xmmword ptr [rdi + 0x3b64]')}<=set(pairs(depart))
-    needs(n,depart,'??8ObjectGuid@@',ritual('Danica'),'?GetUInt32Value@Object@@')
     body=ins(ritual('Update'))
     action,=[i for i,op in enumerate(body) if op.mnemonic=='call' and op.op_str=='qword ptr [rax + 0x48]']
-    leave,=sites(n,body,ritual('Depart'));assert leave<action
+    if n.get('ragnvald_second_battle_successor'):
+        # MSVC now inlines the unchanged Depart into the native stage3 branch.
+        leave=next(i for i,op in enumerate(body) if op.mnemonic=='cmp' and op.op_str=='byte ptr [rdi + 0x105], 0')
+        finish=next(i for i,op in enumerate(body[leave:],leave) if op.mnemonic=='lea' and op.op_str=='r12, [rdi + 0xc8]')
+        depart=body[leave:finish]
+        assert {('lea','r15, [rdi + 0x88]'),('mov','rdi, rcx')}<=set(pairs(body[:leave]))
+        assert {('movups','xmm0, xmmword ptr [r15 - 0x20]'),('movups','xmm1, xmmword ptr [r15]'),
+                ('movups','xmm0, xmmword ptr [r14 + 0x3b64]'),('mov','edx, 0x7c'),
+                ('lea','ecx, [r13 + 0x321ef]'),('cmp','eax, ecx'),('cmp','r12b, 2')}<=set(pairs(depart))
+    else:
+        depart=ins(ritual('Depart'))
+        leave,=sites(n,body,ritual('Depart'))
+        assert {('lea','rbp, [rcx + 0x88]'),('movups','xmm0, xmmword ptr [rbp - 0x20]'),
+                ('movups','xmm1, xmmword ptr [rbp]'),('movups','xmm0, xmmword ptr [rdi + 0x3b64]')}<=set(pairs(depart))
+    assert leave<action and 4000 in values(depart) and 40.0 in floats(n,depart)
+    assert len(sites(n,depart,'?MovePoint@MotionMaster@@'))==len(sites(n,depart,'?DespawnOrUnsummon@Creature@@'))==2
+    needs(n,depart,'??8ObjectGuid@@',ritual('Danica'),'?GetUInt32Value@Object@@')
     assert {97167,361094,98257,361151,93320,2000,46912,46929}<=values(body[:action])
     assert 250.0 in floats(n,body[:action])
-    assert {('mov','byte ptr [rbx + 0x106], 1'),('mov','byte ptr [rbx + 0xfc], 0'),
-            ('mov','edx, 1'),('mov','rcx, rdi')}<=set(pairs(body[action-8:action]))
-    for operand,jump in (('r15, r15','je'),('r14, r14','je'),('eax, 1','ja')):
+    if n.get('ragnvald_second_battle_successor'):
+        snapshot,=[i for i,op in enumerate(body[:action]) if op.mnemonic=='call' and op.op_str=='rbx']
+        assert {('mov','byte ptr [rdi + 0x106], 1'),('mov','byte ptr [rdi + 0xfc], 0'),
+                ('mov','rbx, qword ptr [rcx + 0x98]'),('mov','edx, 0x16c96'),
+                ('movups','xmm0, xmmword ptr [rax]'),('lea','r8, [rsp + 0x100]')}<=set(pairs(body[leave:snapshot]))
+        assert {('mov','edx, 1'),('mov','rcx, r15')}<=set(pairs(body[snapshot+1:action]))
+        assert sites(n,body[snapshot+1:action],'?clear@?$vector@UMember@MalgalorFinale@@')
+    else:
+        assert {('mov','byte ptr [rbx + 0x106], 1'),('mov','byte ptr [rbx + 0xfc], 0'),
+                ('mov','edx, 1'),('mov','rcx, rdi')}<=set(pairs(body[action-8:action]))
+    for operand,jump in ((('r14, r14','je'),('rbx, rbx','je'),('eax, 1','ja')) if n.get('ragnvald_second_battle_successor') else (('r15, r15','je'),('r14, r14','je'),('eax, 1','ja'))):
         at=max(i for i,op in enumerate(body[leave:action],leave) if op.mnemonic in ('test','cmp') and op.op_str==operand)
         assert body[at+1].mnemonic==jump and body[action].address not in reachable(body,body[at+1].operands[0].imm)
+    if n.get('ragnvald_second_battle_successor'):
+        missing=next(i for i,op in enumerate(body[leave:action],leave) if op.mnemonic=='test' and op.op_str=='r15, r15')
+        assert body[missing+1].mnemonic=='je'
+        target=next(i for i,op in enumerate(body) if op.address==body[missing+1].operands[0].imm)
+        assert pairs(body[target:target+1])==[('mov','r13d, esi')]
+        assert ('xor','esi, esi') in pairs(body[leave:target])
+        assert ('lea','eax, [r13 - 1]') in pairs(body[target:action])
     for dependency in ('?InSamePhase@WorldObject@@','?IsWithinDistInMap@WorldObject@@'):
         at,=sites(n,body[leave:action],dependency);at+=leave
         assert body[at+2].mnemonic=='je' and body[action].address not in reachable(body,body[at+2].operands[0].imm)
@@ -86,7 +113,13 @@ def verify_state(n,ins,refs,table,resolved,reachable):
     vt,raw=table('??_7'+scope+'6B@',80);slots=resolved(raw)
     for slot,method in ((0x90,'GetGuidData'),(0x98,'SetGuidData')):assert slots[slot//8]==n['symbol']('?'+method+'@'+scope)
     setter=ins('?SetGuidData@'+scope)
-    assert {('cmp','edx, 0x16c94'),('movups','xmm0, xmmword ptr [r8]'),('add','rcx, 0x3d8')}<=set(pairs(setter))
+    if n.get('ragnvald_second_battle_successor'):
+        hit,=sites(n,setter,ritual('Hit'))
+        assert {('lea','rbx, [rcx + 0x3d8]'),('cmp','edx, 0x16c94'),('movups','xmm0, xmmword ptr [r8]'),
+                ('mov','rcx, rbx'),('lea','rdx, [rsp + 0x20]'),('movaps','xmmword ptr [rsp + 0x20], xmm0')}<=set(pairs(setter[:hit]))
+        assert setter[hit+3].mnemonic=='ret'
+    else:
+        assert {('cmp','edx, 0x16c94'),('movups','xmm0, xmmword ptr [r8]'),('add','rcx, 0x3d8')}<=set(pairs(setter))
     needs(n,setter,ritual('Hit'))
     death_hook=ins('?CreatureDies@'+scope)
     capture,=sites(n,death_hook,ritual('Death'));wave,=sites(n,death_hook,'?Death@State@WarriorFirstWave@@')
@@ -159,17 +192,18 @@ def verify_state(n,ins,refs,table,resolved,reachable):
     update=ins(ritual('Update'));events=sites(n,update,'?UpdateAchievementCriteria@Player@@');assert len(events)==2
     one,two=events;assert {49203,49262,92,2000,3000}<=values(update)
     needs(n,update,ritual('Progress'),ritual('Retained'),ritual('Current'),ritual('Speak'),ritual('AcceptSpirit'),ritual('Cancel'))
-    assert ('cmp','rax, 0xbb8') in pairs(update[:one]) and ('add','qword ptr [rbx + 0xe0], r15') in pairs(update[:one])
-    assert {('lea','rcx, [rbx + 0x88]'),('lea','rcx, [rbx + 0x98]'),('mov','dword ptr [rbx + 0xf8], 0x7d0')}<=set(pairs(update[:one]))
+    state='rdi' if n.get('ragnvald_second_battle_successor') else 'rbx'
+    assert ('cmp','rax, 0xbb8') in pairs(update[:one]) and ('add',f'qword ptr [{state} + 0xe0], r15') in pairs(update[:one])
+    assert {('lea','rcx, ['+state+' + 0x88]'),('lea','rcx, ['+state+' + 0x98]'),('mov','dword ptr ['+state+' + 0xf8], 0x7d0')}<=set(pairs(update[:one]))
     assert ('mov','r8d, 0xc033') in pairs(update[one-5:one]) and ('mov','r8d, 0xc06e') in pairs(update[two-5:two])
     assert sites(n,update[one+1:two],ritual('Current')) and sites(n,update[one+1:two],ritual('Progress'))
-    assert ('cmp','byte ptr [rbx + 0xfc], 0') in pairs(update[one+1:two])
+    assert ('cmp','byte ptr ['+state+' + 0xfc], 0') in pairs(update[one+1:two])
     # Native two-leaf gates skip exactly their already accepted event.
     assert update[one-8].mnemonic=='jne' and update[one-8].operands[0].imm==update[one+1].address
     assert update[two-8].mnemonic=='jne' and update[two-8].operands[0].imm==update[two+1].address
     normal,=sites(n,update,'?CastSpell@Unit@@')
     assert {('xor','r9d, r9d'),('mov','r8d, 0x321e7'),('mov','rdx, r15'),('mov','rcx, r15')}<=set(pairs(update[normal-8:normal]))
     assert ('mov','edx, 0x16c92') in pairs(update[normal-20:normal]) and ('cmp','eax, 1') in pairs(update[normal-20:normal])
-    for body in (update,hit,ins(ritual('Death')),speak,ins(ritual('Depart')),ins(ritual('Prepare'))):
+    for body in (update,hit,ins(ritual('Death')),speak,update if n.get('ragnvald_second_battle_successor') else ins(ritual('Depart')),ins(ritual('Prepare'))):
         for forbidden in ('?FindNearestPlayer@WorldObject@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?TeleportTo@Player@@'):
             assert not sites(n,body,forbidden)

@@ -2,7 +2,7 @@
 
 namespace WarriorRitual
 {
-    constexpr uint32 AIStatusData = 93330, DanicaData = 93331, HitData = 93332;
+    constexpr uint32 AIStatusData = 93330, DanicaData = 93331, HitData = 93332, SecondBattleData = 93334;
 
     // The instance retains real deaths/normal summon receipts when an actor's
     // combat AI is replaced. Neither a summon nor an arbitrary spell hit is
@@ -280,7 +280,11 @@ namespace WarriorRitual
                 uint32 status = ai ? ai->GetData(WarriorOpening::AIStatusData) : 0;
                 if (enemy && actor && actor->InSamePhase(enemy) && actor->IsWithinDistInMap(enemy, 250.0f) &&
                     (status == WarriorOpening::Idle || status == WarriorOpening::Queued))
-                { resumed = true; pending = false; members.clear(); ai->DoAction(true); return; }
+                {
+                    resumed = true; pending = false;
+                    if (auto script = actor->GetInstanceScript()) script->SetGuidData(SecondBattleData, actor->GetGUID());
+                    members.clear(); ai->DoAction(true); return;
+                }
                 if (!resumeWarned) TC_LOG_WARN("scripts", "Warrior ritual: earned stage3 has no original Ragnvald AI/Bezzeredes target; retaining handoff retry");
                 resumeWarned = true;
                 return;

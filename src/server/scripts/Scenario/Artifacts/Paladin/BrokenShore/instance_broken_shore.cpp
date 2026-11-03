@@ -17,6 +17,7 @@
 #include "../../Warrior/Intro/opening_transition.h"
 #include "CreatureTextMgr.h"
 #include "../../Warrior/Intro/ritual_transition.h"
+#include "../../Warrior/Intro/ragnvald_second_battle.h"
 
 class instance_broken_shore : public InstanceMapScript
 {
@@ -30,7 +31,7 @@ public:
 
     struct instance_broken_shore_InstanceMapScript : public InstanceScript
     {
-        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map), warriorTransition(map), warriorFirstWave(map), warriorOpening(map), warriorRitual(map) {}
+        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map), warriorTransition(map), warriorFirstWave(map), warriorOpening(map), warriorRitual(map), ragnvaldSecondBattle(new RagnvaldSecondBattle::State(map)) {}
 
         WarriorReinforcement::State warriorTransition;
         WarriorFirstWave::State warriorFirstWave;
@@ -41,6 +42,7 @@ public:
         GuidSet DoorGUIDconteiner;
         ObjectGuid tyrosusGUID;
         uint8 alliesFight;
+        std::unique_ptr<RagnvaldSecondBattle::State> ragnvaldSecondBattle;
 
         void MalgalorDeath(Creature* creature, Unit* killer)
         {
@@ -253,9 +255,10 @@ public:
         void SetGuidData(uint32 type, ObjectGuid value) override
         {
             if (type == WarriorRitual::HitData) warriorRitual.Hit(value);
+            if (type == WarriorRitual::SecondBattleData) ragnvaldSecondBattle->Begin(warriorRitual, value);
         }
 
-        void Update(uint32 diff) override { warriorOpening.Update(diff); warriorTransition.Update(diff); warriorFirstWave.Update(diff); warriorRitual.Update(diff); }
+        void Update(uint32 diff) override { warriorOpening.Update(diff); warriorTransition.Update(diff); warriorFirstWave.Update(diff); warriorRitual.Update(diff); ragnvaldSecondBattle->Update(); }
     };
 };
 

@@ -6,8 +6,13 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/ragn
  # full CURRENT Ragnvald/Bezzeredes and explicitly pinned legacy Danica.
  & "$PSScriptRoot/Test-WarriorIntroHandoffs.ps1" -OutputDirectory $out
  if(!$?){throw 'Retained current Ragnvald/native handoff export failed'}
+ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw 'Unclosed source'};$s.Substring($a,$b-$a)}
+ # Keep the counterfactual on its actual full predecessor, even after the
+ # repaired first actor moves1412 into instance ownership.
+ $path='src/server/scripts/Scenario/Artifacts/Warrior/Intro/wars_intro_scenario.cpp';$before=(& git -C $repo show "2c6952ecf:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Ragnvald research predecessor missing'}
+ $actors=Get-Content "$out/Actors.inc" -Raw;$actors=$actors.Replace((Block $actors 'class npc_ragnvald_dragonborn :'),(Block $before 'class npc_ragnvald_dragonborn :'));[IO.File]::WriteAllText("$out/Actors.inc",$actors)
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  [IO.File]::WriteAllText("$out/run-research.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/RagnvaldSecondBattleResearch.cpp`" /Fe`"$out/research.exe`" /Fo`"$out/research.obj`" /Fd`"$out/research.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`ncd /d `"$out`"`n`"$out/research.exe`"`nexit /b %errorlevel%`n")
  & "$out/run-research.cmd";if($LASTEXITCODE){throw 'Ragnvald current-code counterfactual host failed'}
- 'OPEN research only: two current caller contexts/control versus refused1412, no production repair or repaired regression claimed'
+ 'EXPECTED BROKEN pinned2c6952ecf: two predecessor caller contexts/control versus refused1412; current repaired owner tested separately'
 }
