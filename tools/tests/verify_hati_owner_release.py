@@ -25,5 +25,5 @@ for name in ('?GetCreatureOrPetOrVehicle@ObjectAccessor@@','?GetPet@Player@@','?
  assert all(update[i].address not in failure for i in sites(n,update,name)),('Non-Player branch reaches player lifecycle',name)
 assert pairs[guard+2]==('mov','rax, qword ptr [rax + 0x4c8]')
 assert update[lookup].address not in reachable(update,update[0].address,{update[guard].address})
-print('PASS actual registered Hati update rejects null/dead/non-Player caster before controlled-list selection, both native Player::GetPet calls, reaction synchronization, summon and cleanup. Native Player/passive matrix and pinned ASAN counterfactual remain separate; no client/all36 claim.')
+print('PASS actual registered Hati update rejects null/dead/non-Player caster before controlled-list selection, every native Player::GetPet call, reaction synchronization, summon and cleanup. Native Player/passive matrix and pinned ASAN counterfactual remain separate; no client/all36 claim.')
 print(json.dumps({'world_sha256':hashlib.sha256(n['binary']).hexdigest(),'spell':197344,'required_caster_type':4}))

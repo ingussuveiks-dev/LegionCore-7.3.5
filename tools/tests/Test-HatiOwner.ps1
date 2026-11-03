@@ -6,6 +6,10 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/hati
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  $path='src/server/scripts/Spells/spell_hunter.cpp';$source=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "ee6b845e4:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned non-Player baseline'}
  $actor=Block $source 'class spell_hun_hatis_bond :';$prior=Block $old 'class spell_hun_hatis_bond :'
+ if($actor.Contains('if (creature == caster->ToPlayer()->GetPet())')){
+  & "$PSScriptRoot/Test-HatiPrimaryPet.ps1" -ScopeOnly
+  $source=(& git -C $repo show "063ac15fa:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-primary source missing'};$actor=Block $source 'class spell_hun_hatis_bond :'
+ }
  $guard='if (!caster || !caster->IsAlive() || !caster->ToPlayer())'
  if(([regex]::Matches($actor,[regex]::Escape($guard))).Count -ne 1 -or (Shape $source.Replace($guard,'if (!caster || !caster->IsAlive())')) -cne (Shape $old)){throw 'Only actual Hati update Player admission may change; entire previous passive/lifecycle/other scripts retained'}
  if($ScopeOnly){'PASS exact non-Player guard before Hati controlled iteration/player-only lifecycle; full previous passive/apply/remove/timer/lookup/summon/cleanup and other scripts retained';return}

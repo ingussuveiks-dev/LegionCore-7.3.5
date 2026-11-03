@@ -28,7 +28,7 @@ assert loader in refs(ins('?AddSC_hunter_spell_scripts@@'))
 assert n['symbol']('?GetAuraScript@spell_hun_hatis_bond@@')==n['resolve'](slots[2])
 get,=sites(n,update,'?GetReactState@Creature@@');set_state,=sites(n,update,'?SetReactState@Creature@@')
 assert pairs(update[get+1:set_state])==[('movzx','edx, al'),('xor','r8d, r8d'),('mov','rcx, rdi')]
-primary=sites(n,update,'?GetPet@Player@@')[0]
+primary=[i for i in sites(n,update,'?GetPet@Player@@') if i<get][-1]
 assert pairs(update[primary+1:get])==[('test','rax, rax'),('je',update[primary+2].op_str),('mov','rcx, rax')]
 assert primary+4==get and update[primary+2].operands[0].imm>update[set_state].address
 lookup,=sites(n,update,'?GetCreatureOrPetOrVehicle@ObjectAccessor@@')

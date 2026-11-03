@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-03",
+  "status": "DEPLOYED focused Hati primary-pet identity repair; actual client edge-case retest and other artifact chains remain OPEN.",
+  "cause": "Hati Bond197344 update sets findPet for every controlled non-Hati Creature, including secondary guardians. If the actual primary pet is dismissed while a guardian remains, the existing !findPet cleanup does not run and living Hati persists. The existing missing-Hati summon branch and OnApply explicitly require actual Player::GetPet; cleanup used a weaker substitute. Pinned063ac15fa complete native callback reproduces10 wrong guardian-retention outcomes across all five Hati variants. This is controlled native evidence, not a new attributed client incident.",
+  "repair": "Only set findPet when the actual resolved controlled Creature pointer equals native Player::GetPet. Retain the complete previous update,2s interval,1000ms despawn,100yd cleanup, five entries/custom summon, null/dead/non-Player admission, zero/passive synchronization, apply/remove callbacks and every other spell_hunter.cpp byte. Dead selected primary pet policy is intentionally preserved; this repair concerns absent or different primary identity. No movement/combat command, pet-field mutation, SQL, item/quest grant or character reset.",
+  "sources": [
+    "Local matching197344 full script and actual Player::GetPet: validate Pet GUID, ObjectAccessor lookup and world presence. Unit::SetMinion keeps secondary controlled companions separate from primary and excludes Hati from primary guardian-pet assignment. Existing summon admission and no-primary cleanup establish intended primary dependency without importing modern retail behavior.",
+    "Fresh native26972 DB2 reader/read-only Hotfix+World catalog verifies197344 dummy/self/binding,197388/211145/211146/211147/211148 to100324/106548/106549/106550/106551 through properties3725 and no extra actor AI/script binding. No database changes.",
+    "Prior user report completing BM acquisition and upgrade remains valid as recorded in docs/audits/titanstrike-client-confirmation-2026-10-26.json; it did not individually exercise this dismissal/guardian edge case."
+  ],
+  "checks": [
+    "Test-HatiPrimaryPet.ps1 run1 and canonical2 -VerifyReleaseBinary:76 ASAN contexts plus145 retained reaction cases. Five variants x absent/living/dead selected primary x no/living/stale/dead guardian; timing1999+1; missing Hati summon with/without primary; real removal/10 repeated no-pet polls/recall/custom211147/new Hati passive synchronization; different controlled Pet object not selected primary.10 pinned063ac15fa expected logical mismatches are paired with the passing repair.",
+    "Retained Test-HatiOwner12 contexts with actual AuraScript::_Load/native update/Player::GetPet plus separately owned pinnedee6b845e4 ASAN null-this counterfactual, explicitly ExpectedCounterfactual=true.145 retained reaction contexts include20 expected old zero-value mismatches/105 controls. GUID storage, ObjectAccessor/world presence and other Unit services are controlled endpoints; no claim of full native world execution or production dump layout.",
+    "Exact full-source differential allows only actual-primary equality condition against063ac15fa. Owner scope check certifies the successor then retains its own exact pre-owner differential; reaction test compiles the actual current callback. No prior test assertion or native behavior dropped.",
+    "PetFollowFormation -AddressSanitizer, PetLoadSelection, HunterPetAuras and fresh HatiReaction -VerifyNativeCatalog pass. Compiler warnings are retained in evidence, including native GetPet local/member shadow and existing Scepter signed/narrowing warnings; no unexplained runtime diagnostics.",
+    "Original-path scripts.lib Release/x64 rebuilt; original generated final-link dependencies staged separately with canonical EXE hashes unchanged. Selected and canonical PE verify actual factory/vtable/Register/update, strict Player guard, zero-valued reaction transfer, three real Player::GetPet calls, unique findPet flag assignment only after selected controlled-pointer equality, and both summon/cleanup consumers with1000ms cleanup. Linked11 SmartAI retry/cleanup calls/native512 guards retained.",
+    "Offline four-file backup/promotion/source-destination hashes and protected configuration/certificate/DLL hashes verified. Owned worldserver29848 fresh ready -> server shutdown0 -> exit0/empty stderr/gone. Mandatory Test-ScepterLogin -VerifyReleaseBinary and canonical full primary suite pass. No user/unknown server stopped."
+  ],
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "stage": ".codex/hati-primary-release",
+    "backup": ".codex/release-before-hati-primary-2026-11-03",
+    "worldserver_sha256": "74A0641FA0A1DF87ADF1AC2B044AFDA7BDCB4BD71C73C53E35756B157A9502B4",
+    "bnetserver_sha256": "DFD9A1A16B94CFDCF6C3D364BA8FE79B1077F4E242D0E46D17BC6C16FDA8DB28",
+    "owned_worldserver": "PID29848 ready/shutdown0/exit0/gone; stderr empty",
+    "sql_required": false
+  },
+  "diagnostics": "All native/build/link/PE/startup tests had before/after canonical/root/own crash hashes and relevant log lengths/timestamps, with exits/full outputs reviewed. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Retained deliberate non-Player ASAN counterfactual is an expected failure paired with passing repaired regression. Canonical Crashes empty; existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unresolved/unchanged/untruncated. Archive follows focused fix commit and matching deployed checks.",
+  "remaining": [
+    "Actual client dismiss while secondary guardian exists, repeated call/dismiss, dead primary/revive, map/relog, camera/portrait and combat need their own observation. Existing corpse policy, dead-Hati Broken Bond resurrection and full lifecycle are not newly certified by this scoped fix.",
+    "Other Hunter specializations and all36 acquisition variants remain OPEN; preserve the specifically confirmed BM acquisition/upgrade and formation observations. Shared101430/103151 LINK2, WardstoneLINK4, Survival39427 flight, Fu Zan/Yigthregor/original ride, LiLi/Ponshu and older recorded client/sequence findings remain unresolved. Do not guess missing actions, clear mixed logs or reset characters."
+  ],
+  "review": "Final fixture review sets alternative controlled Pet to explicit unrelated entry777 while retaining a distinct selected primary, so this case reaches actual pointer comparison rather than the five-Hati entry branch. Canonical2 native/Release passes. Two explicitly named staging/backup worldserver.map files transparently NTFS LZX-compressed with original/final SHA256 equal; no bytes deleted or runtime/security changes."
+}

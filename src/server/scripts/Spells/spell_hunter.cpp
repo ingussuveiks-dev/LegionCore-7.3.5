@@ -2060,7 +2060,8 @@ class spell_hun_hatis_bond : public SpellScriptLoader
                                     }
                                     break;
                                 default:
-                                    findPet = true;
+                                    if (creature == caster->ToPlayer()->GetPet())
+                                        findPet = true;
                                     break;
                             }
                         }
