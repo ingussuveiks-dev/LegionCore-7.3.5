@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-03",
+  "status": "Verified ignored local fixed archive after repair is in tested canonical binaries and pushed to origin/main.",
+  "fix_commit": "8314d0379290707a996b618ca0d893ac20af3174",
+  "cause_and_checks": "docs/audits/hait-opening-2026-11-03.json",
+  "verification": {
+    "FixCommit": "8314d0379290707a996b618ca0d893ac20af3174",
+    "Archive": "build-extractors/bin/Release/fixed/hait-opening-2026-11-03/verified1",
+    "Sources": 7233,
+    "Payloads": 7235,
+    "ReviewedDiagnosticSets": 579,
+    "ReviewedFailedSets": 21,
+    "ManifestSHA256": "FFE4D0F4135CE4D2F98AAF19EE5D348BA0E216D14D172B2211A2854B6FF752FF",
+    "SourceArchiveSourceVerified": true,
+    "ActiveCrashes": 0,
+    "MixedLogUnchanged": true,
+    "PriorValidationStorageHashesVerified": true,
+    "UnexecutedPreflightSnapshotLimitDisclosed": true
+  },
+  "review": "579 pre/post diagnostic sets reviewed, including21 explicitly failed source/fixture/PE/build-capacity sets paired with passing current native/registered/canonical/Scepter checks. Original source/archive/source and final payload hashes verified. Missing first preflight snapshot is explicitly disclosed.",
+  "snapshot_limit": "Initial run1 preflight could not write diagnostics-before.json because disk was full; that JSON and local log are empty and no after snapshot exists. No native test executed. The tool result reported the failure; this archive does not claim a complete first-run diagnostic capture. All surviving original bytes remain.",
+  "storage": "Named prior validation image/debug products remain byte-verified under D:/LegionCore-validation-archives/hait-opening-2026-11-03; exact original/destination/hash manifests in ignored .codex/hait-opening-prior-stage-storage.json and hait-opening-native-storage.json. Canonical runtime and release-before backups preserved. No security/quarantine boundary bypassed.",
+  "archive_review_diagnostics": ".codex/hait-opening-archive-review/diagnostics-after.json: completed=true, no changed crashes/appended DBErrors/server diagnostics",
+  "runtime": {
+    "worldserver_sha256": "794EAE257A80D4F124290E5EDC2D29FA105F8039FC4BD727D32D5558007AD523",
+    "bnetserver_sha256": "492EF432D0F093CD281E268A66B83CD5F54B413822397A247050E297633AB61B",
+    "owned_server": "31736 ready/graceful shutdown0/exit0/empty stderr/gone",
+    "user_server_stopped": false
+  },
+  "remaining": "No active report removed or error log truncated. Active Crashes empty means only no unresolved reports here. Existing mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged/unresolved. Actual initial98011 death46868/point1/outro, unknown shared LINK2/WardstoneLINK4 and prior client/full943/all36 findings remain OPEN. No reset."
+}

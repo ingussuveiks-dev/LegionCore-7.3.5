@@ -47,6 +47,8 @@
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
     "new_unexplained_runtime_errors": 0,
-    "archive": "Verified ignored archive follows fix commit; no active report removal or mixed-log truncation."
-  }
+    "archive": "Verified build-extractors/bin/Release/fixed/hait-opening-2026-11-03/verified1;7233 original sources/7235 payloads/579 diagnostic sets, manifestSHA256FFE4D0F4135CE4D2F98AAF19EE5D348BA0E216D14D172B2211A2854B6FF752FF. Source/archive/source and final hashes verified. No active removal/mixed-log truncation; unexecuted first preflight snapshot limit disclosed."
+  },
+  "fix_commit": "8314d0379290707a996b618ca0d893ac20af3174",
+  "archive": "docs/audits/hait-opening-archive-2026-11-03.json"
 }
