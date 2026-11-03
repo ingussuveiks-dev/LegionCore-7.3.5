@@ -46,6 +46,8 @@
     "mixed_db_errors_bytes": 6090,
     "mixed_db_errors_sha256": "8B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0",
     "new_unexplained_runtime_errors": 0,
-    "archive": "Verified ignored fixed archive recorded in follow-up archive audit after fix commit; no active report removal or mixed-log truncation."
-  }
+    "archive": "Verified build-extractors/bin/Release/fixed/chen-escort-speech-2026-11-03/verified1;4085 source files/4087 payloads/336 diagnostic sets, manifestSHA256DCB8E943ABF24467B729F50A7F67DF990DFAEEC521820FE2855843515628B428. Source/archive/source plus final payload hashes verified; no active report removal or mixed-log truncation."
+  },
+  "fix_commit": "88789d131b12d6a81d7c104e1a0c42d225dd0221",
+  "archive": "docs/audits/chen-escort-speech-archive-2026-11-03.json"
 }

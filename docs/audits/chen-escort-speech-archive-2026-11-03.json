@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-03",
+  "status": "Verified local archive after focused repair is in tested canonical binaries and pushed to origin/main. No active report removal or log truncation.",
+  "fix_commit": "88789d131b12d6a81d7c104e1a0c42d225dd0221",
+  "cause_and_checks": "docs/audits/chen-escort-speech-2026-11-03.json",
+  "verification": {
+    "FixCommit": "88789d131b12d6a81d7c104e1a0c42d225dd0221",
+    "Archive": "build-extractors/bin/Release/fixed/chen-escort-speech-2026-11-03/verified1",
+    "Sources": 4085,
+    "Payloads": 4087,
+    "ReviewedDiagnosticSets": 336,
+    "ReviewedFailedFixtureOrPESets": 5,
+    "ManifestSHA256": "DCB8E943ABF24467B729F50A7F67DF990DFAEEC521820FE2855843515628B428",
+    "SourceArchiveSourceVerified": true,
+    "ActiveCrashes": 0,
+    "MixedLogUnchanged": true
+  },
+  "review": "336 before/after diagnostic sets reviewed, including5 explicitly failed fixture/PE-shape sets paired with final native51/retained/Nine/registered canonical/Scepter pass. Source/archive/source and final payload hashes verified. Other client/coalesced dialogue and unrelated errors are not classified resolved.",
+  "archive_review_diagnostics": ".codex/chen-escort-speech-archive-review/diagnostics-after.json: completed=true, no changed crashes/appended DBErrors/server diagnostics",
+  "runtime": {
+    "worldserver_sha256": "CB0A11AAC5CCD5EF1C64CBBA19E32B2EC254F486FB28101A3F5B50E2CC7A9F57",
+    "bnetserver_sha256": "C4587FEFF399E4820EB7BE3C436AA1AD3B6864424604729EB5C08222A0A649EF",
+    "owned_server": "13148 ready/graceful shutdown0/exit0/empty stderr/gone",
+    "user_server_stopped": false
+  },
+  "remaining": "Active Crashes empty means no unresolved crash reports here, not whole quest verification. Existing mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged/unresolved/untruncated. Initial Hait lifetime, unknown sharedLINK2/WardstoneLINK4, Survival/Fu Zan/LiLi/Ponshu and actual client/all36 remain OPEN. No new reset."
+}
