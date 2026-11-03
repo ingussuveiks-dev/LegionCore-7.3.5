@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-03",
+  "status": "Verified fixed archive after matching deployed Broken Bond primary-pet admission and regression; actual client edges and other artifact chains remain OPEN.",
+  "issue": "docs/audits/hati-resurrection-2026-11-03.json",
+  "FixCommit": "2eccc78073a53a4c9afbe59f8d893657e326c4de",
+  "Archive": "build-extractors/bin/Release/fixed/hati-resurrection-2026-11-03/verified1",
+  "Sources": 731,
+  "Payloads": 733,
+  "ReviewedDiagnosticSets": 45,
+  "ManifestSHA256": "F0F5D901DEE9FC8BA42990F8847F9BA6B24A72C978B8D2B4DEB6616BC337CE1D",
+  "SourceArchiveSourceVerified": true,
+  "ActiveCrashes": 0,
+  "MixedLogUnchanged": true,
+  "cause": "Native Unit::setDeathState applies211117 to the owner when Hati dies. Matching26972 Broken Bond is a30s dummy aura bound to spell_hun_broken_bond. Its AfterEffectRemove accepts only expiry, checks living caster and five Hati variants, schedules dead-Hati cleanup and casts197344 custom summon if that Bond aura remains. It did not require the ordinary selected primary pet. Dismissing the primary during30s therefore still produces a new Hati, which the ordinary no-primary periodic cleanup removes later. Pinnedfbaa14ff8 full callback/native removal dispatcher reproduces25 unnecessary no-primary summons across five dead Hati entries and five original custom summons. This is controlled native evidence, not an attributed user/client incident.",
+  "repair": "After the original corpse/alive-Hati loop, require actual Player and actual Player::GetPet before examining197344 and issuing its original custom summon. Keeping this guard after the loop preserves dead-Hati cleanup even without a pet. Preserve expiry-only behavior,30000ms native duration,1000ms corpse cleanup, selected-dead-primary policy, living-Hati early return, five variants, equipped Bond lookup/custom data/self-triggered cast and all previous197344/other spell_hunter.cpp bytes. No extra timer, teleport, attack, pet/quest/item grant, SQL or character edit.",
+  "checks": [
+    "Test-HatiResurrection run2 passes96 initial ASAN contexts and fresh catalog; final canonical -VerifyNativeCatalog -VerifyReleaseBinary passes100 native contexts/exit0.25 expected pinned no-primary summon outcomes paired with passing no-cast repair. Covers five entries x five custom summons x absent/living/dead selected primary, all eight other removal modes, wrong effect/non-REAL mode, missing/dead/nonplayer caster, absent Bond, wrong pet GUID kind/missing pet lookup/out-of-world player, live Hati/no Hati/stale controlled GUID, two Hati with living actor in both orders, all-dead cleanup and one summon. Original unrelated companion and state stack/application restoration retained.",
+    "Parent suite retains76 primary/guardian +145 reaction +12 owner ASAN contexts, exact full-file successor certificates and actual GetPet/update consumers. Separately owned pinnedee6b845e4 nonplayer null-this ASAN is an explicitly expected counterfactual with passing repaired matrix, not an ordinary successful run. Previous10 primary-guardian and20 passive expected mismatches/controls retained.",
+    "Original-path scripts Release build/generated final-link dependencies staged separately with canonical EXE unchanged. Selected+canonical PE verify actual211117 loader/factory/vtable/AfterEffectRemove registration and callback; expiry4/living-caster/five entries/alive-Hati return/1000ms corpse cleanup, then actual Player type4/nonnull GetPet dominating197344/custom-data/self-triggered CastSpell. Registered197344 primary/passive/owner and native11-call/512 SmartAI proof retained.",
+    "Offline four-file backup/promotion/source-destination/protected config/cert/DLL hashes verified. Owned worldserver5396 reached fresh ready, received server shutdown0, exit0/empty stderr/gone; no user/unknown server stopped. Canonical Scepter native/Release and final full resurrection/native-catalog/PE suite pass. Prior related PetFollowFormation ASAN/PetLoadSelection/HunterPetAuras checks for this task remain valid; their source paths were not modified."
+  ],
+  "reviewed_iterations": [
+    "Initial run1 fixture registered its normal Pet in the Creature-only lookup with inherited default Hati entry100324. It incorrectly hit the preserved living-Hati early return and failed the corpse-cleanup assertion. Corrected controlled service separation to match native ObjectAccessor GetCreature versus GetPet and gave normal Pet explicit entry1. No production repair changed to satisfy the fixture. Run2 and final100-context canonical suite pass; failed evidence retained and reviewed.",
+    "Named task linker maps and owned primary/resurrection fixture OBJ/PDB files transparently NTFS LZX-compressed to preserve workspace capacity. Every source/final SHA256 equal; explicit path/hash record retained. No bytes deleted, EXE/log/config/crash change, quarantine or security boundary altered.",
+    "Existing native enum-to-uint8, GetPet shadow and Scepter narrowing/signed warnings remain in captured outputs; no unexplained runtime warning/error was hidden."
+  ],
+  "cleanup": "No active crash report required removal. Existing mixed6090 DBErrors unchanged/untruncated and not classified resolved. Expected retained ASAN counterfactuals and reviewed initial fixture assertion are paired with passing repairs. Original evidence retained. No dumps/configs/credentials/character records or EXE/PDB/maps committed; no unrelated server history removed.",
+  "remaining": [
+    "Actual client Hati death30s/cancelled removal, primary dismiss/call/revive during timer, map/relog/unequip, successful/failed summon presentation, camera/pet portrait and combat need separate observations. Native aura removal is normally dispatched once by the core; this scoped callback does not add persistence, queue recovery or certify arbitrary duplicate external dispatcher calls. Missing-Hati regular2s retry remains the existing path; full world-object/cast integration not claimed.",
+    "The existing successful user BM acquisition/upgrade and standing separation reports remain valid in their own audits. Other specializations/all36 variants and shared101430/103151 LINK2, WardstoneLINK4, Survival39427 middle flight, Fu Zan/Yigthregor/original ride, LiLi/Ponshu and recorded early Monk claimant/lifetime sequences remain OPEN. Do not infer missing actions, clear mixed logs or reset characters."
+  ]
+}

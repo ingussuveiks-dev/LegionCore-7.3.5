@@ -32,5 +32,10 @@
   ],
   "review": "Final fixture review sets alternative controlled Pet to explicit unrelated entry777 while retaining a distinct selected primary, so this case reaches actual pointer comparison rather than the five-Hati entry branch. Canonical2 native/Release passes. Two explicitly named staging/backup worldserver.map files transparently NTFS LZX-compressed with original/final SHA256 equal; no bytes deleted or runtime/security changes.",
   "fix_commit": "069d10a873771a5b09c25a24e3c69fadb9bd7972",
-  "closed_archive": "docs/audits/hati-primary-pet-archive-2026-11-03.json"
+  "closed_archive": "docs/audits/hati-primary-pet-archive-2026-11-03.json",
+  "expired_resummon_followup": {
+    "audit": "docs/audits/hati-resurrection-2026-11-03.json",
+    "fix_commit": "2eccc78073a53a4c9afbe59f8d893657e326c4de",
+    "status": "Separate focused expired211117 resummon now requires actual primary;100 native contexts/retained suites/canonical PE and owned startup pass. Full actual death/dismiss/revive/client lifecycle remains separate."
+  }
 }
