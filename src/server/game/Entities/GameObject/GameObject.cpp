@@ -2758,6 +2758,10 @@ void GameObject::SetLootState(LootState state, Unit* unit)
     m_lootState = state;
     AI()->OnStateChanged(state, unit);
     sScriptMgr->OnGameObjectLootStateChanged(this, state, unit);
+    // Door collision follows its physical pose in SetGoState. Applying the
+    // generic loot rule here re-blocks open doors and unblocks closed resets.
+    if (GetGoType() == GAMEOBJECT_TYPE_DOOR)
+        return;
     if (m_model)
     {
         bool collision = false;

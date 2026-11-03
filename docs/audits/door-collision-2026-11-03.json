@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-03",
+  "canonical_hashes": {
+    "worldserver.exe": "62bc30bd413dcb9ada5946f09f729c9be2c7d7251a9b84883f47cd42e8bf57f1",
+    "bnetserver.exe": "93b22fba4bca3a62720cfb589079b20e5a6f3ad85ead94843b4345a3a5554d6a"
+  },
+  "deployment": "Original generated game.lib/scripts.lib Release paths rebuilt; staged final links preserve original game/scripts/shared/Common library inputs, no global OutDir. Selected staged and canonical PE pass. Four EXE/MAP files backed up and promoted offline; protected configurations, certificates and DLL hashes unchanged. No SQL/character changes.",
+  "runtime": "Mandatory Test-ScepterLogin.ps1 -VerifyReleaseBinary passes. Owned canonical worldserver PID2896 reached fresh ready, server shutdown0, exit0, empty stderr and gone. No user server stopped; no task-owned server remains.",
+  "diagnostics": "Every automated/native/build/PE/startup test recorded before/after canonical and own crash/log inventories and inspected exit/stdout/stderr/new server diagnostics. Final ordinary runs clean. No new runtime crash. Existing canonical mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged and unresolved; shared101430/103151 LINK2/Wardstone LINK4 and other previous findings remain OPEN. Empty active Crashes does not certify all quests.",
+  "archive": "Resolved task-owned diagnostic evidence will be hash-verified under ignored Release/fixed after focused fix commits. No canonical mixed log rotation.",
+  "status": "DEPLOYED62BC30BD/93B22FBA: native DOOR collision now follows physical pose. Actual4413 open/reset mesh and24 DOOR/BUTTON state controls pass; canonical selected PE/Scepter/owned startup clean. Client traversal and all36 remain OPEN.",
+  "cause": "GameObject::SetGoState correctly enables collision for READY closed pose and disables it for ACTIVE/ALTERNATIVE. Subsequent SetLootState generic model rule reverses this: native UseDoorOrButton re-enables the open4413 model; ResetDoorOrButton disables the closed model. Both actual native mesh counterfactuals reproduced before repair.",
+  "fix": "After existing AI OnStateChanged/global script callbacks, return for GAMEOBJECT_TYPE_DOOR before generic loot collision writes. SetGoState remains authoritative. Other object types retain the existing generic rule, demonstrated with BUTTON controls. No collision/LOS check disabled globally.",
+  "investigation": "Matching local251053/display4413/type0 data, actual model4413 geometry and native7.3.5 state machine first. Local newer TrinityCore GameObject::SetLootState has the same explicit DOOR exception; treated only as reference, verified against this native pose/loot and collision semantics before adaptation. No external gameplay evidence used.",
+  "checks": [
+    "Test-DoorCollisionNative.ps1 -Baseline: original open mesh still blocks and closed reset becomes nonblocking; explicitly broken counterfactual plus24 original state contexts.",
+    "Test-DoorCollisionNative.ps1: actual native activation/reset and real4413 sampled mesh rays,24 DOOR/BUTTON pose-by-loot contexts pass. ScriptId=0 and type toggles are isolated in-memory fixture setup; no SQL.",
+    "verify_door_collision_release.py: whole GameObject.cpp pinned-source certificate, callbacks then actual type0 early return, authoritative pose writes and retained generic writes in staged/canonical PE.",
+    "New Kingslayers48 native real-door cases also observe open collision disabled; separate70ASAN/shared Althea26 native retained."
+  ],
+  "iterations": [
+    "Initial native fixture omitted LoadPageTexts before LoadGameObjectTemplate, producing private PageText diagnostics. Loaded real PageTexts, then baseline and repaired regressions passed with empty private DBErrors. This was a fixture loader error, not missing live rows.",
+    "Initial baseline reset assertion incorrectly expected the original closed reset to block. The actual original native reset loses collision too; regression now explicitly records this as a second broken counterfactual, paired with repaired closed blocking."
+  ],
+  "limits": [
+    "Actual client door rendering/camera/path/vehicle/pet movement remains OPEN. Native ray sampling and state matrix do not prove every door model or full quest traversal.",
+    "This repairs the shared state rule; quest progression admission is an independent focused change in kingslayers-door-2026-11-03.json."
+  ],
+  "source_sha256": {
+    "src/server/game/Entities/GameObject/GameObject.cpp": "ac09e40099ac17e231a5660d0d6fe429243a08e5a5f00545851b1d38f5af274e",
+    "tools/tests/DoorCollisionNative.cpp": "570ce5b77760c2e837e45dbd72fe3d8d43f58931635444b2f83a3228ce47f511",
+    "tools/tests/Test-DoorCollisionNative.ps1": "74d18357a24d636e58a633c7004b1b818a4ef906f3e6439c4012ed41a9d2a975",
+    "tools/tests/verify_door_collision_release.py": "8bc2b243a2dacb01924d867c883a1512047d2351f43ca2ca23de5a0f49661891"
+  }
+}
