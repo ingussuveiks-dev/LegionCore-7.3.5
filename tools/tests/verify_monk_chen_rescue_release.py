@@ -33,7 +33,7 @@ assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk
 presentation_successor=0x430 in values(allocation) or nine_successor
 jorvinax_successor=0x418 in values(factory) or presentation_successor
 if presentation_successor:
-    assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),(('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
+    assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),(('mov','qword ptr [rsi + 0x428], rbx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateEscortSpeech@State@MonkChenPresentation@@') else ('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
 routes_successor=0x3b8 in values(factory) or jorvinax_successor
 arrival_successor=0x380 in values(factory) or routes_successor
 if arrival_successor:

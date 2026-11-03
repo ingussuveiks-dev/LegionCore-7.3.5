@@ -64,5 +64,5 @@
       "Bytes": 40942
     }
   ],
-  "Pending": "Earlier4s/5s rescue callbacks are instance-owned as recorded in monk-chen-early-presentation-2026-11-02.json. Ordinary first reply now waits for verified4443ms native enUS voice in chen-opening-voice-2026-11-03.json. Actual client listening/playback, other locales and late/coalesced cross-line/route spacing remain OPEN; no global voice queue is inferred."
+  "Pending": "Earlier rescue callbacks are instance-owned. The first ordinary reply waits native4443ms (chen-opening-voice-2026-11-03.json); scoped escort Talk5 now waits actual Talk4 issue plus native2125ms without delaying the8s route (chen-escort-speech-2026-11-03.json). Actual client listening/playback, other locales, shared unscoped late queues and other coalesced dialogue/handoff spacing remain OPEN; no global voice queue is inferred."
 }

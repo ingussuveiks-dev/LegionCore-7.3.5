@@ -1,11 +1,12 @@
 param([switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$ReleaseDirectory='',[string]$OutputDirectory='')
+. "$PSScriptRoot/ChenEscortSpeechPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/chen-opening-voice/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($repo,$out) -Test {
  function Shape([string]$s){(($s -replace '(?s)/\*.*?\*/','') -replace '//[^\n]*','') -replace '\s',''}
  $paths=@('src/server/scripts/Scenario/Artifacts/Monk/Intro/monk_intro_scenario.cpp','src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_presentation.h')
  $changes=@(@('if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4443,','if (!MonkChenRescue::Source(me)) _presentationFunctions.AddDelayedEvent(4000,'),@('elapsed >= 4443','elapsed >= 4000'))
- for($i=0;$i -lt 2;++$i){$current=Get-Content "$repo/$($paths[$i])" -Raw;$old=(& git -C $repo show "8b9ea7da4:$($paths[$i])") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-voice source missing'};if(([regex]::Matches($current,[regex]::Escape($changes[$i][0]))).Count -ne 1 -or (Shape $current.Replace($changes[$i][0],$changes[$i][1])) -cne (Shape $old)){throw 'Only the shared Chen reply deadline may change; full actor/header retained'}}
+ for($i=0;$i -lt 2;++$i){$current=Get-Content "$repo/$($paths[$i])" -Raw;$current=Get-ChenPreEscortSource $paths[$i] $current;$old=(& git -C $repo show "8b9ea7da4:$($paths[$i])") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-voice source missing'};if(([regex]::Matches($current,[regex]::Escape($changes[$i][0]))).Count -ne 1 -or (Shape $current.Replace($changes[$i][0],$changes[$i][1])) -cne (Shape $old)){throw 'Only the shared Chen reply deadline may change; full actor/header retained'}}
  if($ScopeOnly){'PASS exact two native4000->4443 reply deadlines; all other actor/state/timing/route/credit behavior unchanged';return}
  $context=Get-Content "$PSScriptRoot/ChenOpeningVoiceOriginal.json" -Raw|ConvertFrom-Json
  $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')

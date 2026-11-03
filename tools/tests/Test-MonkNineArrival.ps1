@@ -1,4 +1,5 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[switch]$VerifyNativeCatalog,[string]$OutputDirectory='')
+. "$PSScriptRoot/ChenEscortSpeechPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-nine-arrival"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence/$(Get-Date -Format yyyyMMdd-HHmmss-fff)" -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
@@ -16,7 +17,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
  if($instances.Contains('MonkNineRescue::State')){$instances=PriorInitial $path}
  $normal=$instances.Replace('#include "../../Monk/Intro/nine_czi_arrival.h"','').Replace(', nineArrival(&chenRescue)','').Replace('MonkNineArrival::State nineArrival;','').Replace(' nineArrival.Observe(actor);','').Replace('if (type == MonkNineArrival::RequestData) nineArrival.Request(value);','').Replace('nineArrival.Update(diff); ','')
  if((Shape $normal) -cne (Shape $oldInstances)){throw 'Other instance/base/Chen/Jorvinax behavior changed'}
- foreach($name in @('chen_rescue.h','chen_arrival.h','chen_routes.h','chen_presentation.h','jorvinax_defeat.h','monk_fel_stone.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$name";$currentHeader=Get-Content "$repo/$path" -Raw;if($name -eq 'chen_presentation.h' -and $currentHeader.Contains('elapsed >= 4443')){& "$PSScriptRoot/Test-ChenOpeningVoice.ps1" -ScopeOnly;$currentHeader=$currentHeader.Replace('elapsed >= 4443','elapsed >= 4000')};if((Shape $currentHeader) -cne (Shape (Prior $path))){throw 'Prior receipt/presentation/route/victory/Fel Stone changed'}}
+ foreach($name in @('chen_rescue.h','chen_arrival.h','chen_routes.h','chen_presentation.h','jorvinax_defeat.h','monk_fel_stone.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$name";$currentHeader=Get-ChenPreEscortSource $path (Get-Content "$repo/$path" -Raw);if($name -eq 'chen_presentation.h' -and $currentHeader.Contains('elapsed >= 4443')){& "$PSScriptRoot/Test-ChenOpeningVoice.ps1" -ScopeOnly;$currentHeader=$currentHeader.Replace('elapsed >= 4443','elapsed >= 4000')};if((Shape $currentHeader) -cne (Shape (Prior $path))){throw 'Prior receipt/presentation/route/victory/Fel Stone changed'}}
  if($ScopeOnly){'PASS exact late362252 actual LOS visitor bridge and appended instance state; entire initial Nine/unscoped/Chen/Hait/native taxi and all previous controllers/instances retained';return}
  & "$PSScriptRoot/Test-MonkChenEarlyPresentation.ps1" -ExportOnly -OutputDirectory $out
  if(!$?){throw 'Actual native Nine arrival host export failed'}

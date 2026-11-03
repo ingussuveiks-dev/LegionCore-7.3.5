@@ -17,18 +17,21 @@ valid_name=valid_names[0];valid=ins(valid_name)
 at,=sites(n,dispatch,pres('UpdateRescue'));late=sites(n,dispatch,pres('Update'))
 assert at<late[0]<sites(n,dispatch,ctx('Update'))[0]<late[1]
 assert (('lea','rcx, [rdi + 0x418]' if n.get('monk_initial_successor') else 'rcx, [rbx + 0x418]') if p['nine_successor'] else ('add','rcx, 0x418')) in pairs(dispatch[:at])
-assert ('mov','dword ptr [rsi + 0x428], ebx') in pairs(factory)
+escort_speech=p['escort_speech']
+assert (('mov','qword ptr [rsi + 0x428], rbx') if escort_speech else ('mov','dword ptr [rsi + 0x428], ebx')) in pairs(factory)
 needs(early,ctx('Progress'),ctx('Actor'),ctx('Leaf'),ctx('Retained'),'?GetCurrentStep@Scenario@@',
       '?ShouldHideFor@WorldObject@@','?getMSTime@@','?GetCreatureListWithEntryInGrid@WorldObject@@',
       pres('Student'),'?GetCreature@Map@@','??8ObjectGuid@@','?urand@@','?MoveFollow@MotionMaster@@','?SendChat@CreatureTextMgr@@',valid_name)
-assert {('cmp','byte ptr [rcx + 0x13], 0'),('mov','qword ptr [r12 + 8], rdx'),
-        ('mov','byte ptr [r12 + 0x10], 0'),('mov','byte ptr [r12 + 0x12], 0'),
-        ('cmp','byte ptr [r12 + 0x12], 3'),('cmp','byte ptr [rcx + 0x71], 0'),
-        ('cmp','byte ptr [rcx + 0x93], 0'),('cmp','byte ptr [rcx + 0x95], 0'),
-        ('mov','byte ptr [r12 + 0x12], 3'),('mov','byte ptr [rsi], 1'),('mov','byte ptr [rsi], 0'),
+assert {('cmp','byte ptr [rcx + 0x13], 0'),('mov','byte ptr [rsi], 1'),('mov','byte ptr [rsi], 0'),
         ('mov','ebx, dword ptr [rbx + 0xc0]'),('lea','edi, [rcx - 1]'),('cmovbe','edi, ecx'),
         ('cmp','eax, 4'),('movups','xmm0, xmmword ptr [rbx + 8]'),
         ('movups','xmmword ptr [rdx], xmm0'),('add','qword ptr [rbp - 0x71], 0x10')}<=set(pairs(early))
+assert ({('mov','qword ptr [rcx + 8], rax'),('mov','byte ptr [rcx + 0x10], 0'),('mov','byte ptr [rcx + 0x12], 0'),
+         ('and','al, 3'),('cmp','al, 3'),('cmp','byte ptr [rdx + 0x71], 0'),('cmp','byte ptr [rdx + 0x93], 0'),
+         ('cmp','byte ptr [rdx + 0x95], 0'),('or','r8b, 2'),('mov','byte ptr [rcx + 0x12], r8b')}
+        if escort_speech else {('mov','qword ptr [r12 + 8], rdx'),('mov','byte ptr [r12 + 0x10], 0'),
+         ('mov','byte ptr [r12 + 0x12], 0'),('cmp','byte ptr [r12 + 0x12], 3'),('cmp','byte ptr [rcx + 0x71], 0'),
+         ('cmp','byte ptr [rcx + 0x93], 0'),('cmp','byte ptr [rcx + 0x95], 0'),('mov','byte ptr [r12 + 0x12], 3')})<=set(pairs(early))
 assert {4443,5000,98074}<=values(early) and 70.0 in floats(n,early)
 chats=sites(n,early,'?SendChat@CreatureTextMgr@@');follow,=sites(n,early,'?MoveFollow@MotionMaster@@')
 maps=sites(n,early,'?GetCreature@Map@@');students=sites(n,early,pres('Student'));valids=sites(n,early,valid_name)

@@ -1,4 +1,5 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[string]$OutputDirectory='')
+. "$PSScriptRoot/ChenEscortSpeechPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-chen-presentation"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence/$(Get-Date -Format yyyyMMdd-HHmmss-fff)" -RuntimeDirectories @($repo,$out) -Test {
@@ -16,7 +17,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
   $normal=$normal.Replace($prefix,"_presentationFunctions.AddDelayedEvent($deadline,")
  }
  if((Shape $normal) -cne (Shape $oldActor) -or (Shape $source.Replace($actor,$oldActor)) -cne (Shape $prior)){throw 'Other original Chen/Monk actors, timers, text, routes or progression changed'}
- foreach($header in @('chen_rescue.h','jorvinax_defeat.h','monk_fel_stone.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$header";if((Shape (Get-Content "$repo/$path" -Raw)) -cne (Shape (Prior $path))){throw 'Original context/victory/Fel Stone changed'}}
+ foreach($header in @('chen_rescue.h','jorvinax_defeat.h','monk_fel_stone.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$header";if((Shape (Get-ChenPreEscortSource $path (Get-Content "$repo/$path" -Raw))) -cne (Shape (Prior $path))){throw 'Original context/victory/Fel Stone changed'}}
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$instances=Get-Content "$repo/$path" -Raw;$oldInstances=Prior $path
  if($hasEarly){$instances=(& git -C $repo show "8d66b5e09:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-early instance missing'}}
  $normal=$instances.Replace('#include "../../Monk/Intro/chen_presentation.h"','').Replace(', chenPresentation(&chenRescue)','').Replace('MonkChenPresentation::State chenPresentation;','').Replace('chenPresentation.Update(diff); ','').Replace(' chenPresentation.Update(diff, true);','')

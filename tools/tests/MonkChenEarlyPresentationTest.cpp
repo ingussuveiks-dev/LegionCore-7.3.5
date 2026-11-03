@@ -120,7 +120,7 @@ uint32 RunEarlyPresentationCases()
     {
         Run r;r.Death();if(deadAI)assert(r.chen.AIM_Destroy());std::vector<uint32> order;
         r.chen.onTalk=[&]{order.push_back(r.chen.talks.back().first);};for(auto kid:Kids(r)){kid->motion.onFollow=[&]{order.push_back(100);};kid->onTalk=[&]{order.push_back(200);};}
-        r.Tick(8000);assert(order==(std::vector<uint32>{4,100,200,100,200,100,200,100,200,5,100}));assert(r.state().routeIssued);++cases;
+        r.Tick(8000);assert(order==(std::vector<uint32>{4,100,200,100,200,100,200,100,200,100}));assert(r.state().routeIssued&&Count(r.chen,5)==0);r.Tick(2124);assert(Count(r.chen,5)==0);r.Tick(1);assert(Count(r.chen,5)==1);++cases;
     }
     // An already-issued route retires an overdue scold/follow rather than
     // ordering students back after the original8s transition.

@@ -28,6 +28,7 @@ def reachable(body,start):
     return seen
 
 allocation,factory,nine_successor=construction(n)
+escort_speech=bool(sites(n,ins('?Update@instance_monk_intro@@'),presentation('UpdateEscortSpeech')))
 vt,raw=table('??_7instance_monk_intro@@6B@',140)
 loader,lraw=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
 assert vt in refs(factory) and loader in refs(ins('?AddSC_instance_class_art_scenarios@@'))
@@ -35,7 +36,7 @@ assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk
 assert (0x498 if n.get('monk_initial_successor') else 0x490 if nine_successor else 0x430) in values(allocation)
 assert {('lea','rdi, [rsi + 0x2e0]'),('mov','qword ptr [rsi + 0x3b8], rdi'),
         ('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),
-        (('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
+        (('mov','qword ptr [rsi + 0x428], rbx') if escort_speech else ('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
 dispatch=ins('?Update@instance_monk_intro@@')
 assert n['symbol']('?Update@instance_monk_intro@@') in resolved(raw)
 before,after=sites(n,dispatch,presentation('Update'))

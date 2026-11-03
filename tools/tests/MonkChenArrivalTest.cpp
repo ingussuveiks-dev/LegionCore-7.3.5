@@ -8,7 +8,7 @@
 
 struct Escort:Run
 {
- void Begin(){Death(&guardian);Started();Tick(8000);assert(state().routeIssued);assert(chen.GetCurrentWaypointID()==uint32(-1));}
+ void Begin(){Death(&guardian);Started();Tick(4443);Tick(3557);assert(state().routeIssued);assert(chen.GetCurrentWaypointID()==uint32(-1));}
  void Endpoint(){auto const& p=waypointMgr.data.back();chen.x=p.x;chen.y=p.y;chen.z=p.z;chen.spline.done=true;chen.motion.waypoint.Node(5);}
  void Arrive(){Endpoint();chen.motion.waypoint.OnArrived(chen);}
  void Finished(){assert(state().arrivalDone&&state().arrivalClaim.IsEmpty()&&state().arrivalPlayer.IsEmpty());assert(scenario.step==5&&scenario.progress[29070].Counter==1);assert(actor()->_arrivalStarted);assert(player.credits==(std::vector<uint32>{46956,46947}));}

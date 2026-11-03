@@ -16,6 +16,7 @@ struct State
     bool updating = false;
     uint8 rescueIssued = 0;
     bool rescueUpdating = false;
+    uint32 rescueSpokenAt = 0;
 
     Player* Owner(MonkChenRescue::Member const& member) const
     {
@@ -97,10 +98,10 @@ struct State
     {
         if (rescueUpdating) return;
         if (epoch != context->epoch) { epoch = context->epoch; issued = 0; rescueIssued = 0; }
-        if (rescueIssued == 3 || !context->started) return;
+        if ((rescueIssued & 3) == 3 || !context->started) return;
         // Do not replay early scolding/follow attempts after the acknowledged
         // ordinary escort has already begun. Missing actors are not replaced.
-        if (context->routeIssued || context->arrivalDone) { rescueIssued = 3; return; }
+        if (context->routeIssued || context->arrivalDone) { rescueIssued |= 2; return; }
         auto progress = context->Progress();
         Creature* actor = context->Actor();
         if (!progress || progress->GetCurrentStep() != 4 || !context->Leaf() || !actor) return;
@@ -123,7 +124,7 @@ struct State
                 MonkChenRoutes::Dispatch dispatch(rescueUpdating);
                 uint32 elapsed = GetMSTimeDiffToNow(context->escortStartedAt);
                 if (!(rescueIssued & 1) && elapsed >= 4443)
-                { rescueIssued |= 1; sCreatureTextMgr->SendChat(actor, 4); }
+                { rescueIssued |= 1; rescueSpokenAt = getMSTime(); sCreatureTextMgr->SendChat(actor, 4); }
                 if (!valid()) return;
                 if (!(rescueIssued & 2) && elapsed >= 5000)
                 {
@@ -147,6 +148,29 @@ struct State
                         if (!valid()) return;
                     }
                 }
+                return;
+            }
+    }
+
+    void UpdateEscortSpeech(uint32 /*diff*/)
+    {
+        if (rescueUpdating) return;
+        if (epoch != context->epoch) { epoch = context->epoch; issued = 0; rescueIssued = 0; }
+        if ((rescueIssued & 4) || !context->started || !context->escortSpoken) return;
+        // Optional speech must never hold the essential native8s route. Use
+        // the actual previous issue time when a late frame coalesces timers.
+        if (context->arrivalDone) { rescueIssued |= 4; return; }
+        if ((rescueIssued & 1) && GetMSTimeDiffToNow(rescueSpokenAt) < 2125) return;
+        auto scenario = context->Progress();
+        Creature* actor = context->Actor();
+        if (!scenario || scenario->GetCurrentStep() != 4 || !context->Leaf() || !actor) return;
+        auto original = context->members;
+        for (auto const& member : original)
+            if (Player* player = context->Current(member))
+            {
+                rescueIssued |= 4;
+                MonkChenRoutes::Dispatch dispatch(rescueUpdating);
+                sCreatureTextMgr->SendChat(actor, 5, player->GetGUID());
                 return;
             }
     }

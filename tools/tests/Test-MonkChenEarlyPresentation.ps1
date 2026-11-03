@@ -1,4 +1,5 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[string]$OutputDirectory='')
+. "$PSScriptRoot/ChenEscortSpeechPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-chen-early"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence/$(Get-Date -Format yyyyMMdd-HHmmss-fff)" -RuntimeDirectories @($repo,$out) -Test {
@@ -19,12 +20,12 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk
   $normal=$normal.Replace($prefix,"_presentationFunctions.AddDelayedEvent($deadline,")
  }
  if((Shape $normal) -cne (Shape $oldActor) -or (Shape $source.Replace($actor,$oldActor)) -cne (Shape $prior)){throw 'Other original actor, late outro, route, text, combat or progress changed'}
- $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_presentation.h';$header=Get-Content "$repo/$path" -Raw;$oldHeader=Prior $path
+ $path='src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_presentation.h';$header=Get-Content "$repo/$path" -Raw;$header=Get-ChenPreEscortSource $path $header;$oldHeader=Prior $path
  $normal=$header.Replace('#include "ScriptedCreature.h"','').Replace('uint8 rescueIssued = 0;','').Replace('bool rescueUpdating = false;','')
  foreach($method in @('bool Student(','void UpdateRescue(')){$normal=$normal.Replace((Block $header $method),'')}
  $normal=$normal.Replace(' rescueIssued = 0;','')
  if((Shape $normal) -cne (Shape $oldHeader)){throw 'Existing late presentation ownership, timing or payload changed'}
- foreach($name in @('chen_rescue.h','jorvinax_defeat.h','monk_fel_stone.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$name";if((Shape (Get-Content "$repo/$path" -Raw)) -cne (Shape (Prior $path))){throw 'Original receipt/route/victory/Fel Stone changed'}}
+ foreach($name in @('chen_rescue.h','jorvinax_defeat.h','monk_fel_stone.h')){$path="src/server/scripts/Scenario/Artifacts/Monk/Intro/$name";if((Shape (Get-ChenPreEscortSource $path (Get-Content "$repo/$path" -Raw))) -cne (Shape (Prior $path))){throw 'Original receipt/route/victory/Fel Stone changed'}}
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/instance_class_art_scenarios.cpp';$instances=Get-Content "$repo/$path" -Raw;$oldInstances=Prior $path
  if($hasNine){$instances=(& git -C $repo show "f67c49e3b:$path") -join "`n";if($LASTEXITCODE){throw 'Certified pre-Nine instance missing'}}
  if(([regex]::Matches($instances,[regex]::Escape('chenPresentation.UpdateRescue(diff); '))).Count -ne 1 -or (Shape $instances.Replace('chenPresentation.UpdateRescue(diff); ','')) -cne (Shape $oldInstances)){throw 'Only native early update before existing instance calls required'}

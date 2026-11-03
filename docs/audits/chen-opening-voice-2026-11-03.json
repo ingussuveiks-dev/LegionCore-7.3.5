@@ -1,4 +1,5 @@
 {
+  "followup_late_escort_spacing": "docs/audits/chen-escort-speech-2026-11-03.json repairs only the subsequently verified scoped Talk4/Talk5 coalescence; other client/late handoff limits remain OPEN.",
   "date": "2026-11-03",
   "status": "DEPLOYED focused minimum first-Chen-voice deadline; actual client audio/late coalesced delivery/full943/all36 remain OPEN.",
   "cause": "Matching native26972 Broadcast99965/SoundKit62031/FileDataID1384167 enUS voice is4443ms by full hashed Vorbis decode. Scoped instance-owned rescue reply4 and existing shared/unscoped actor queue both scheduled it4000ms after the initial Talk3,443ms before that verified first voice ends. Pinned8b9ea7da4 complete controller/native-clock counterfactual demonstrates the premature next-line request. This is a source/asset deadline mismatch, not a captured client clipping or listening claim.",

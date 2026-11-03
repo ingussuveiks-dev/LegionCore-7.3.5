@@ -202,7 +202,7 @@ struct instance_monk_intro : public InstanceScript
         if (type == MonkNineArrival::RequestData) nineArrival.Request(value);
         if (type == MonkNineRescue::RequestData) nineRescue->Request(value);
     }
-    void Update(uint32 diff) override { nineRescue->Update(diff); nineArrival.Update(diff); chenPresentation.UpdateRescue(diff); chenPresentation.Update(diff); chenRescue.Update(diff); jorvinax.Update(diff); chenPresentation.Update(diff, true); }
+    void Update(uint32 diff) override { nineRescue->Update(diff); nineArrival.Update(diff); chenPresentation.UpdateRescue(diff); chenPresentation.Update(diff); chenRescue.Update(diff); chenPresentation.UpdateEscortSpeech(diff); jorvinax.Update(diff); chenPresentation.Update(diff, true); }
 };
 
 //116849

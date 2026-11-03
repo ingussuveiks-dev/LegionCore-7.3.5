@@ -1,4 +1,5 @@
 param([switch]$ScopeOnly,[switch]$ExportOnly,[string]$OutputDirectory='')
+. "$PSScriptRoot/ChenEscortSpeechPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/monk-jorvinax"};$out=[IO.Path]::GetFullPath($OutputDirectory)
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence/$(Get-Date -Format yyyyMMdd-HHmmss-fff)" -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
@@ -22,7 +23,7 @@ if (MonkChenRoutes::Source(me))
  if((Shape $arrival) -cne (Shape ('if (id == 8) {'+$bridge+$body+'}'))){throw 'Hait native final-node bridge changed'}
  if((Shape $actor.Replace($arrival,$oldArrival)) -cne (Shape $previous)){throw 'Other Hait gameplay, native text, combat, clocks or initial actor changed'}
  if((Shape $source.Replace($actor,$previous).Replace('#include "jorvinax_defeat.h"','')) -cne (Shape $old)){throw 'Other Monk actors changed'}
- $hp='src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h';$header=(Get-Content "$repo/$hp" -Raw).Replace("`r",'');$prior=Prior $hp
+ $hp='src/server/scripts/Scenario/Artifacts/Monk/Intro/chen_rescue.h';$header=(Get-Content "$repo/$hp" -Raw).Replace("`r",'');$header=Get-ChenPreEscortSource $hp $header;$prior=Prior $hp
  $h=$header.Replace('bool genuineBossDefeat = false;','').Replace('genuineBossDefeat = false;','').Replace((Block $header 'bool EscortStage('),'')
  $h=$h.Replace('(scenario->GetCurrentStep() > 5 && !EscortStage(scenario))','scenario->GetCurrentStep() > 5').Replace('if (EscortStage(scenario) && EscortLeaf()','if (scenario->GetCurrentStep() == 5 && EscortLeaf()').Replace('bool handoff = handoffPending && EscortStage(scenario) && EscortLeaf()','bool handoff = handoffPending && lastStep == 5 && EscortLeaf()').Replace('(escort ? progress->GetCurrentStep() != 4 : !EscortStage(progress))','progress->GetCurrentStep() != (escort ? 4u : 5u)')
  if((Shape $h) -cne (Shape $prior)){throw 'Other original Chen receipt or authored route behavior changed'}

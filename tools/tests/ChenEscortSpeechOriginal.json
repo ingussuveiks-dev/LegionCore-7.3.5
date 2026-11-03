@@ -1,0 +1,36 @@
+[
+  {
+    "CreatureID": 103148,
+    "GroupID": 4,
+    "ID": 0,
+    "Text": "Дети! Ведите себя хорошо!",
+    "Type": 14,
+    "Language": 0,
+    "Probability": 100,
+    "Emote": 0,
+    "Duration": 0,
+    "Sound": 0,
+    "BroadcastTextID": 99966,
+    "MinTimer": 0,
+    "MaxTimer": 0,
+    "SpellID": 0,
+    "comment": "Чэнь Буйный Портер to Player"
+  },
+  {
+    "CreatureID": 103148,
+    "GroupID": 5,
+    "ID": 0,
+    "Text": "Идемте, дети мои. Скорее в храм. $n, нужна твоя помощь. Тут повсюду отродья тьмы.",
+    "Type": 12,
+    "Language": 0,
+    "Probability": 100,
+    "Emote": 0,
+    "Duration": 0,
+    "Sound": 0,
+    "BroadcastTextID": 100187,
+    "MinTimer": 0,
+    "MaxTimer": 0,
+    "SpellID": 0,
+    "comment": "Чэнь Буйный Портер to Player"
+  }
+]

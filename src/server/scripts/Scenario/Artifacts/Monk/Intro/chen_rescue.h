@@ -312,14 +312,7 @@ struct State
                 if (!escortWarned) TC_LOG_WARN("scripts", "Monk intro: original Chen9859005 route unavailable; retaining the genuine rescue handoff");
                 escortWarned = true; return;
             }
-            if (!escortSpoken)
-            {
-                escortSpoken = true;
-                auto original = members;
-                for (auto const& member : original)
-                    if (Player* player = Current(member))
-                    { sCreatureTextMgr->SendChat(actor, 5, player->GetGUID()); break; }
-            }
+            escortSpoken = true;
             if (!valid()) return;
             if (!escortFollowed)
             {

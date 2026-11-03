@@ -1,19 +1,33 @@
 """Verify actual instance-owned authored8s/15s route handoffs in linked PE."""
 from pathlib import Path
-import runpy,json,hashlib
+import runpy,json,hashlib,re
 from sharasdal_erunak_entry_pe import sites,values,fields,floats
 
 p=runpy.run_path(str(Path(__file__).with_name('verify_monk_chen_arrival_release.py')))
 n,ins,state,actor,instance,pairs,needs,reachable=(p[k] for k in ('n','ins','state','actor','instance','pairs','needs','reachable'))
 assert p['routes_successor'],'Previous arrival binary cannot certify persistent routes'
 routes=ins(state('UpdateRoutes'));request=ins(instance('SetGuidData'));created=ins(instance('OnCreatureCreate'))
+escort_speech=bool(sites(n,ins(instance('Update')),'?UpdateEscortSpeech@State@MonkChenPresentation@@'))
+native_pairs=pairs
+if escort_speech:
+    actual=native_pairs(routes)
+    assert ('mov','rdi, rcx') in actual
+    source,=sites(n,routes,state('Actor'));guide_at,=sites(n,routes,'?GetCreature@Map@@')
+    assert actual[source+1]==('mov','r13, rax') and actual[guide_at+1]==('mov','r15, rax')
+    route_addresses={o.address for o in routes}
+    def pairs(body):
+        if not body or not all(o.address in route_addresses for o in body):return native_pairs(body)
+        # The two actual definitions above prove the context/guide aliases;
+        # call addresses, control flow and original instructions stay intact.
+        return [(a,re.sub(r'\b(rdi|r15)\b',lambda m:{'rdi':'rsi','r15':'rdi'}[m[0]],b)) for a,b in native_pairs(body)]
 assert {94348,94349}<=values(request)
 needs(request,state('UpdateRoutes'),'??8ObjectGuid@@')
 assert sites(n,request,'??8ObjectGuid@@')[-1]<sites(n,request,state('UpdateRoutes'))[0]
 assert {97778,362271,1014}<=values(created) and ('movups','xmmword ptr [rsi + 0x37d], xmm0' if n.get('monk_initial_successor') else 'xmmword ptr [rdi + 0x37d], xmm0') in pairs(created)
-needs(routes,state('Progress'),state('Retained'),state('Current'),state('Leaf'),state('EscortLeaf'),state('Actor'),state('Cancel'),
+needs(routes,state('Progress'),state('Retained'),state('Leaf'),state('EscortLeaf'),state('Actor'),state('Cancel'),
       '?getMSTime@@','?GetCreature@Map@@','?FindNearestCreature@WorldObject@@','?IsInWorld@Object@@','?IsPreDelete@Object@@',
       '?SendChat@CreatureTextMgr@@','?MoveFollow@MotionMaster@@','?MovePath@MotionMaster@@',state('Routed'))
+if not escort_speech:needs(routes,state('Current'))
 assert {8000,15000,2000,9859005,9859006,97778,362271,98074,1014}<=values(routes)
 assert 50.0 in floats(n,routes)
 assert {('cmp','byte ptr [rcx + 0xcd], 0'),('cmp','byte ptr [rcx + 0x93], 0'),
@@ -29,9 +43,11 @@ paths=sites(n,routes,'?MovePath@MotionMaster@@');assert len(paths)==2
 for at,path in zip(paths,(9859005,9859006)):
  assert ('mov',f'edx, {path:#x}') in pairs(routes[at-3:at])
  assert ('xor','r8d, r8d') in pairs(routes[at-4:at])
-chat=sites(n,routes,'?SendChat@CreatureTextMgr@@');assert len(chat)==3
-assert [pairs(routes)[i-3] for i in chat]==[('mov','r8b, 5'),('mov','r8b, 0xc'),('mov','r8b, 0xd')]
-assert chat[0]<paths[0]<chat[1]<chat[2]<paths[1]
+chat=sites(n,routes,'?SendChat@CreatureTextMgr@@');assert len(chat)==(2 if escort_speech else 3)
+assert [pairs(routes)[i-3] for i in chat]==([('mov','r8b, 0xc'),('mov','r8b, 0xd')] if escort_speech else [('mov','r8b, 5'),('mov','r8b, 0xc'),('mov','r8b, 0xd')])
+if escort_speech:chat=[None]+chat
+else:assert chat[0]<paths[0]
+assert paths[0]<chat[1]<chat[2]<paths[1]
 assert ('movups','xmm0, xmmword ptr [rsi + 0xad]') in pairs(routes[chat[1]-20:chat[1]])
 assert ('movups','xmm0, xmmword ptr [rsi + 0xad]') in pairs(routes[chat[2]-20:chat[2]])
 # Actual weak quest snapshot is copied before either external text callback;
@@ -62,9 +78,9 @@ else:
  issued=routes[paths[1]+1:]
  needs(issued,'?GetMotionSlot@MotionMaster@@','?GetPathScript@WaypointMgr@@')
  assert {('sub','rax, 0x18c'),('cmp','rax, 0x2c'),('cmp','al, 2')}<=set(pairs(issued))
- consumed=next(op.address for op in issued if (op.mnemonic,op.op_str)==('mov','byte ptr [rsi + 0xce], 0'))
+ consumed=next(op.address for op,pair in zip(issued,pairs(issued)) if pair==('mov','byte ptr [rsi + 0xce], 0'))
  for condition in ('dword ptr [r12 + 0x2c], 0x966fbe','dword ptr [r12 + 0x18], 0','dword ptr [rdi + 0x3b1c], -1'):
-  at=next(i for i,op in enumerate(issued) if (op.mnemonic,op.op_str)==('cmp',condition))
+  at=next(i for i,pair in enumerate(pairs(issued)) if pair==('cmp',condition))
   assert issued[at+1].mnemonic=='jne' and consumed not in reachable(issued,issued[at+1].operands[0].imm)
 for kind,number in (('SetData',3),('MovementInform',5)):
  name=next(key for key in n['symbols'] if key.startswith('?_Do_call@') and '??'+kind+'@npc_monk_chen_porterAI@npc_monk_chen_porter@@' in key and '<lambda_'+str(number)+'>' in key)
