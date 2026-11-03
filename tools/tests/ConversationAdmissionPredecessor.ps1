@@ -1,4 +1,6 @@
+. "$PSScriptRoot/ConversationActorResolverPredecessor.ps1"
 function Get-PreConversationWorldAdmissionSource([string]$source) {
+ $source=Get-PreConversationActorResolverSource $source
  if(!$source.Contains('// AddToMap owns the grid entry')){return $source}
  $path='src/server/game/Entities/Conversation/Conversation.cpp'
  $before=(& git -C $repo show "1bf86bb41:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Conversation admission predecessor missing'}

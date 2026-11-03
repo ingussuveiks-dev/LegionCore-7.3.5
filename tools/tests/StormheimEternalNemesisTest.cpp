@@ -32,6 +32,8 @@ std::vector<Conversation*> created;bool failConversation=false;uint32 attempts=0
 struct Conversation {
     std::map<uint8,ConversationDynamicFieldActors> actors;std::map<uint8,ConversationDynamicFieldLines> lines;Player* owner=nullptr;uint32 duration=0;
     float GetPositionX(){return 0;}float GetPositionY(){return 0;}void SetActor(ConversationDynamicFieldActors* p,uint8 i,bool){actors[i]=*p;}void SetLine(ConversationDynamicFieldLines* p,uint8 i,bool){lines[i]=*p;}void SetCreature(ConversationDynamicFieldCreatures*,uint8,bool){assert(false);}
+    // Default resolver boundary; scoped overrides are exercised by Althea native tests.
+    Creature* FindCreatureActor(uint32,uint32 entry,WorldObject* searcher){return searcher->FindNearestCreature(entry,searcher->GetVisibilityRange());}
     bool GenerateDynamicFieldData(uint32,WorldObject*,uint32&);
     bool CreateConversation(uint64,uint32 id,Unit* caster,SpellInfo const*,Position const&){++attempts;assert(caster&&caster->ToPlayer()&&caster->ToPlayer()->GetQuestStatus(39857)==QUEST_STATUS_COMPLETE);owner=caster->ToPlayer();if(failConversation||!GenerateDynamicFieldData(id,caster,duration))return false;created.push_back(this);return true;}
 };

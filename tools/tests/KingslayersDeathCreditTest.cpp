@@ -36,6 +36,7 @@ struct WorldObject
 {
     Map* map=nullptr;ObjectGuid objectGuid;bool inWorld=true,preDelete=false;
     Map* GetMap()const{return map;}
+    ObjectGuid GetGUID()const{return objectGuid;}
     bool IsInWorld()const{return inWorld;}
     bool IsPreDelete()const{return preDelete;}
 };
@@ -129,7 +130,7 @@ struct Conversation
     inline static std::vector<std::unique_ptr<Conversation>> owned;
     inline static std::vector<Unit*> casters;
     inline static bool fail=false;inline static uint32 live=0;
-    Conversation(){++live;}~Conversation(){--live;}
+    Conversation(){++live;}virtual ~Conversation(){--live;}
     bool CreateConversation(uint64,uint32 id,Unit* caster,void*,Unit const& anchor)
     {
         bool valid=id==2448;
@@ -141,6 +142,13 @@ struct Conversation
         owned.emplace_back(this);return true;
     }
 };
+#ifdef ALTHEA_REGRESSION
+// Factory/scope boundaries are controlled here; actual bound resolver is linked in native tests.
+struct AltheaDeathConversation:Conversation{
+    inline static std::vector<ObjectGuid> sources;
+    explicit AltheaDeathConversation(ObjectGuid actor){sources.push_back(actor);}
+};
+#endif
 struct Merlis:ScriptedAI
 {
     SummonList summons;explicit Merlis(Creature* actor):ScriptedAI(actor){}

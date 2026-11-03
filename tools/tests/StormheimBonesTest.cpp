@@ -34,7 +34,9 @@ struct ConversationDynamicFieldLines {uint32 id,textId,unk1,unk2;};
 struct Conversation {
  uint32 count=0;float GetPositionX(){return 0;}float GetPositionY(){return 0;}
  void SetActor(ConversationDynamicFieldActors*,uint32,bool){}void SetCreature(ConversationDynamicFieldCreatures*,uint32,bool){}void SetLine(ConversationDynamicFieldLines*,uint32,bool){++count;}
- bool GenerateDynamicFieldData(uint32,WorldObject*,uint32&);
+ // Default resolver boundary; scoped overrides are exercised by Althea native tests.
+    Creature* FindCreatureActor(uint32,uint32 entry,WorldObject* searcher){return searcher->FindNearestCreature(entry,searcher->GetVisibilityRange());}
+    bool GenerateDynamicFieldData(uint32,WorldObject*,uint32&);
  uint32 Lifetime(){uint32 triggerEntry=2247;WorldObject object;auto caster=&object;
 #include "ConversationLifetime.inc"
  return duration;}

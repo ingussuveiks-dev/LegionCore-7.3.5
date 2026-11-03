@@ -59,6 +59,8 @@ struct Conversation {
     uint32 GetUInt32Value(uint32 field)const{assert(field==7);return deadline;}
     void SetDuration(int32 value){assert(value>0);lifetime=value;}uint32 GetDuration()const{return lifetime;}
     bool IsQuestObjectExpired(){return questExpired;}void Remove(){removed=true;}
+    // Default resolver boundary; scoped overrides are exercised by Althea native tests.
+    Creature* FindCreatureActor(uint32,uint32 entry,WorldObject* searcher){return searcher->FindNearestCreature(entry,searcher->GetVisibilityRange());}
     bool GenerateDynamicFieldData(uint32,WorldObject*,uint32&);
     bool CanNeverSee2(WorldObject const*)const;
     bool Start(Unit* caster){uint32 triggerEntry=entry;

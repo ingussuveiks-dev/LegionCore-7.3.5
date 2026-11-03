@@ -385,6 +385,42 @@ public:
     }
 };
 
+// Conversation 2431 is requested by JustDied, when the original Althea is
+// already dead. Keep its real creature actor instead of searching for a live
+// duplicate. The Player/owner remains the caster and personal/group recipient.
+class AltheaDeathConversation final : public Conversation
+{
+public:
+    explicit AltheaDeathConversation(ObjectGuid actor) : _actor(actor) { }
+
+    void AddToWorld() override
+    {
+        // The conversation now has its own GUID. Register that GUID in the
+        // source attempt before publishing it, so cancellation removes it too.
+        Creature* actor = ObjectAccessor::GetCreature(*this, _actor);
+        if (actor && InheritQuestObjectScope(actor))
+            Conversation::AddToWorld();
+    }
+
+protected:
+    Creature* FindCreatureActor(uint32 index, uint32 entry, WorldObject* searcher) override
+    {
+        if (index != 0 || entry != 108218 || !searcher || searcher->GetMapId() != 1620)
+            return nullptr;
+        Creature* actor = ObjectAccessor::GetCreature(*searcher, _actor);
+        if (!actor || actor->GetEntry() != entry || !actor->IsInWorld() || actor->IsPreDelete() ||
+            actor->IsQuestObjectExpired() || searcher->IsQuestObjectExpired() ||
+            !searcher->IsWithinDistInMap(actor, searcher->GetVisibilityRange()) ||
+            !searcher->InSamePhase(actor) || !searcher->InSamePhaseId(actor) ||
+            !actor->CanTargetQuestObject(searcher) || !searcher->CanTargetQuestObject(actor))
+            return nullptr;
+        return actor;
+    }
+
+private:
+    ObjectGuid const _actor;
+};
+
 // 108218
 class npc_sister_althea_ebonlocke : public CreatureScript
 {
@@ -436,7 +472,7 @@ public:
                 pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51613);
             if (speaker)
             {
-                Conversation* conversation = new Conversation;
+                Conversation* conversation = new AltheaDeathConversation(me->GetGUID());
                 if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2431, speaker, NULL, *speaker))
                     delete conversation;
             }

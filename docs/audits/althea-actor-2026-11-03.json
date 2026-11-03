@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-03",
+  "status": "DEPLOYED311771B2/699D6267: focused original2431 death actor binding repaired. 36hook+21resolver ASAN,9 native exact-actor contexts,8 retained native world-admission contexts,93 shared lifetime ASAN, actual selected/retained/canonical PE, live Garona voice/TEMP regressions, Scepter and owned startup pass. Actual client/full1123/all36 remain OPEN.",
+  "cause": "Althea108218/360870 JustDied requests2431 after native Unit::Kill has entered JUST_DIED. The ordinary Conversation producer searches nearest108218 with alive=true. Original native living control succeeds and the same dead source refuses. Nearby living duplicates can replace the intended dead speaker. This is a native actor-admission defect; no original live-server crash is asserted.",
+  "fix": "Append protected virtual FindCreatureActor to Conversation, preserving its original living-nearest default and existing factory ABI/data layout. Only2431 death hook allocates AltheaDeathConversation, capturing the full original me GUID. Its resolver admits only authored slot0/108218 on1620, resolves that GUID through native ObjectAccessor and checks world/predelete/expiry/range/phase-ID/phase and reciprocal quest scope. No fallback to another Althea. In AddToWorld, inherit the original actor attempt after creation of the conversation GUID and before publication; a missing/cancelled source refuses through the existing caller-owned factory cleanup. Original Player/owner caster, group/personal visibility, nearest-player51613 credit,5150 payload/6800 budget, Garona5s2432/5s despawn, all other actors and SQL retained.",
+  "checks": {
+    "asan": "Actual exported complete JustDied:36 direct/null/owner/pet/guardian/charm/unresolved owner/map/predelete/NPC, factory failure and missing Garona contexts, now asserting the captured original full source GUID. Actual exported complete scoped subclass:21 strict GUID-high+low/slot/entry/map/null/lifetime/phase/range/reciprocal-scope and pre-publication cancellation contexts. Native owner/accessor fragments retained; factory/map/timers and scoped host services controlled. Retained actual Merlis regression passes.",
+    "native": "Actual Release game.lib/scripts.lib and real InstanceMap1620, original DB metadata and real actors: ordinary living2431 succeeds and dead2431 refuses as the broken counterfactual; production scoped subtype binds the exact original JUST_DIED then CORPSE actor despite a living duplicate. Nine success/refusal contexts cover wrong-entry/missing GUID/phase/range/cancelled source, real accessor/world/grid/allocation cleanup. Actual source scope is inherited and Cancel returns the real conversation GUID. Native2432 retains19164/start10693 and survives real caster removal. Actor/session/bootstrap state is controlled; no authenticated Player, full combat/native AI kill traversal or client claim.",
+    "retained": "Eight native predecessor/repaired absent/admitted model+creature factory contexts pass; caller retains failed allocation and grid/accessor cleanup.93 actual producer/viewer/lifetime ASAN contexts pass. Full pinned Conversation predecessor certificates normalize only the exact new default resolver indirection, then still compare all other factory/loader/lifetime bodies. Controlled hosts for previous producer suites expose the same default resolver boundary.",
+    "garona": "Fresh native26972 audio catalog, three full matching-enUS decodes/hashes, actual installed2432 data, TEMP-only denied-persistent-write migration regression with16custom refusals and2partial retries, actual producer/padding/late-viewer ASAN pass. No live migration or audio change.",
+    "release": "Original game.lib and scripts.lib rebuilt without OutDir override; staged final links retain generated library inputs. Existing whole Althea death/registered AI/native Kill/owner/nearest51613/Garona PE chain and NPC producer/padding/viewer/removal PE pass. New selected proof checks actual hook installing scoped vtable, appended0x180 resolver dispatch, all preceding non-overridden slots, full GUID at0x508, all exact-actor predicates, alive-only default and source-scope admission before publication. Canonical selected proof repeats against matching deployed bytes.",
+    "canonical": "Offline four EXE/MAP backup and hash-verified promotion; protected configs/certificates/DLLs unchanged. Mandatory Test-ScepterLogin -VerifyReleaseBinary passes. Owned worldserver30300 reached fresh ready, graceful shutdown0/exit0, empty stderr/gone. No user process stopped; no task server remains."
+  },
+  "iterations": [
+    "Four exploratory native runs terminated ACCESS_VIOLATION after the first repaired binding/removal succeeded, when the expanded fixture entered native JUST_DIED on a plain Map for instance-only1620. Captured fault and symbolized Unit::setDeathState stack are retained. WorldObject::GetInstanceScript requires a real InstanceMap on this map; corrected fixture uses MapInstanced/InstanceMap and the normal ALIVE->JUST_DIED->CORPSE ordering. The repaired native regression exits0 with all9cases. This is a test-fixture repair, not a reproduced live-server crash or an unexplained failure moved to fixed.",
+    "First retained world-admission invocation failed PowerShell parsing because a new dot-source preceded param(). Moved param first; corrected full native8 regression passes. No production change to bypass failure.",
+    "An ignored setup helper initially treated TitanstrikeHandoffTest's controlled inline generator as an exported full generator declaration. It stopped at that assertion; excluded that unrelated mock and completed the precise host updates. No production test or server failure."
+  ],
+  "limits": [
+    "Actual client Althea voice/actor visibility, Garona voice/actor continuity after original5s despawn, both-faction/group/pet/reconnect/reentry and full1123 remain unverified. Native corpse endpoints and controlled hook tests are not a full client or actual native kill-chain traversal.",
+    "Original nearest-player51613 recipient admission is deliberately unchanged, including eligible participant/GM/group priority findings. Trace matching native1123 criteria and original actor/quest scope before a separate progression repair; do not grant blanket credit.",
+    "No quest/item grants, character reset, SQL changes, blanket dead-nearest lookup or static conversation activation. Existing unrelated static DB-spawn/LINK findings and all36 whole acquisition chains remain OPEN."
+  ],
+  "diagnostics": "Before/after canonical and own crash/log inventories, stdout/stderr/exit status and appended DBErrors/server diagnostics reviewed for all runs. Four fixture faults are explicit failed exploratory runs paired with the corrected native pass; no crash report files were produced. Successful final tests/build/link/promotion/startup have no new/changed crashes, appended DBErrors or unexplained server warning/error/assertion. Existing compiler warnings in unchanged code remain visible. Mixed6090-byte DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 remains unchanged/unresolved. No logs truncated.",
+  "canonical_hashes": {
+    "worldserver.exe": "311771b262bf02a84ae10eb135d221ce88ae79c518d5118d9d95c34668d3fe89",
+    "bnetserver.exe": "699d626742b85e3c27a8a1991137e2dc09f4c8c254fa87914a91cef15979ca44"
+  },
+  "archive": {
+    "status": "Resolved current diagnostics will be hash-verified under ignored fixed after the focused fix commit. Earlier unrelated/open evidence remains untouched."
+  },
+  "source_sha256": {
+    "src/server/game/Entities/Conversation/Conversation.cpp": "0cf25687c2318ad770e155060f29e81a91b5a0977d381ec8a6730170acc85c81",
+    "src/server/game/Entities/Conversation/Conversation.h": "23b07e9cf549364bc4c725f7ebc8e8fa53e27192128efbe168859b4c06e9a845",
+    "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "b8711d6d01f8fb978a72529f73b3eebc3f36f119a561ba3c0f80ca2f80129f86",
+    "tools/tests/AltheaConversationNative.cpp": "792bd71a7c979db92b81b8c6ba78ad644cb532315dfe26250694d7f3b82573e0",
+    "tools/tests/AltheaDeathTest.cpp": "cef48613182cf5daad8428e0184d4a1801b919ec65e2fedeef09a556dcf727a2",
+    "tools/tests/ConversationAdmissionPredecessor.ps1": "ea0de68f0eefc21216b5ef6cf2b1e563e2761c992e0aeaff022c6e29fa006066",
+    "tools/tests/ConversationFarewellTest.cpp": "9e1b88615139b58de7c664f154579dc8586ddb6f795e167e230403dace4c3f1c",
+    "tools/tests/FireIcebornConversationTest.cpp": "d35832c984bb1f2459df93c99aa82aa8883c3be70d3280f0b74c1f676a27d699",
+    "tools/tests/KingslayersDeathCreditTest.cpp": "ab3d2222834c0e1372b53852f5022812256680bde8b31d25894e799e3bbf709b",
+    "tools/tests/MarksmanshipOrestesTest.cpp": "4911e5342d63009b1696e029e0f94f5d27662689d7a365d49b7724b715b47a69",
+    "tools/tests/SharasdalFinaleVoiceTest.cpp": "724d73d2e479453619260433dc99afcc72667a111553396a082242e186db1ad0",
+    "tools/tests/SmartInvokerPlayerTest.cpp": "9a20eb53cf548df98a795229a333d1acbffb0c1c66079de18941282ff4621936",
+    "tools/tests/SothozzConversationTest.cpp": "af6d04181ec98ea8caf1625d7a9cf94fafdc1168cc8a6c7581d13fa77031d1fe",
+    "tools/tests/StormheimBonesTest.cpp": "38e0b2375a1f15660db8ccabe552e5ed2870f391da14ed0ead84c20dd5b72df7",
+    "tools/tests/StormheimEternalNemesisTest.cpp": "ab10a3fb4f9ecc47ab4812a419d8ba9b61fbbe54c19bdb3d6becf19f9ed4fe9d",
+    "tools/tests/StormheimEternalVictoryTest.cpp": "c67cc9fd4fe2856790f6c52cf300b5741c58e5246d6c3c5f05f5c1e7c0604d7f",
+    "tools/tests/StormheimLifebloodTest.cpp": "fd22a6d2d3a47c0e2cf745a9e6b8a1171c05d7704cfc46332160f534e30b67fe",
+    "tools/tests/Test-AltheaConversationNative.ps1": "699fe4ecba8e1e441e18ae098041c3036ce3cf42e60a136984185edb2e9c31cb",
+    "tools/tests/Test-AltheaDeath.ps1": "62046d41c3d92e625ddf0d8227523e3845540a3935bf21908f7874c57b44579e",
+    "tools/tests/Test-ConversationNpcLifetime.ps1": "174d1578e14077fedc18f1d1e9f743120d9f0a3c7a5364d102c63a42702ff320",
+    "tools/tests/Test-ConversationWorldAdmissionNative.ps1": "06723c4719a6798ff84bf80b0a87542305cb03e98260dcb96db6d13926918683",
+    "tools/tests/verify_althea_death_release.py": "a81328de63eb1a33c224ff35b532f7d4f3c2877f284d09288c6955323f588ef8",
+    "tools/tests/AltheaActorResolverTest.cpp": "be6f2d9351c430976c7c4370b28cc72c5206dddfea151304e914087198cc11eb",
+    "tools/tests/ConversationActorResolverPredecessor.ps1": "d83beec74b152f058c6d5a1d410063f56b49e9edc6f1491bbb1167e84fcc3bad",
+    "tools/tests/verify_althea_actor_release.py": "c0e86caf27096770d78228ff96b0f79ba4d98867de1e6967fd43b1d671ba3e62"
+  }
+}

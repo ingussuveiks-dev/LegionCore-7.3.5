@@ -419,6 +419,11 @@ void Conversation::SetLine(ConversationDynamicFieldLines const* lineInfo, uint8 
     SetDynamicStructuredValue(CONVERSATION_DYNAMIC_FIELD_LINES, index, lineInfo);
 }
 
+Creature* Conversation::FindCreatureActor(uint32 /*index*/, uint32 entry, WorldObject* searcher)
+{
+    return searcher->FindNearestCreature(entry, searcher->GetVisibilityRange());
+}
+
 bool Conversation::GenerateDynamicFieldData(uint32 triggerEntry, WorldObject* sercher, uint32& duration)
 {
     std::vector<ConversationData> const* conversationData = sConversationDataStore->GetConversationData(triggerEntry);
@@ -458,7 +463,7 @@ bool Conversation::GenerateDynamicFieldData(uint32 triggerEntry, WorldObject* se
 
             if (itr.creatureId)
             {
-                Creature* creature = sercher->FindNearestCreature(itr.creatureId, sercher->GetVisibilityRange());
+                Creature* creature = FindCreatureActor(itr.id, itr.creatureId, sercher);
                 if (!creature)
                 {
                     TC_LOG_DEBUG("misc", "Conversation not created. Suggested coordinates (X: %f Y: %f). Can't find npc entry %u", GetPositionX(), GetPositionY(),

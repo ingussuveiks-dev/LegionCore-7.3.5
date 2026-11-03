@@ -68,6 +68,8 @@ struct Conversation {
     void SetLine(ConversationDynamicFieldLines* value,uint8 index,bool){lines[index]=*value;}
     void SetCreature(ConversationDynamicFieldCreatures*,uint8,bool){assert(false);}
     void AddPlayerInPersonnalVisibilityList(ObjectGuid guid){visibility.insert(guid.unit);}
+    // Default resolver boundary; scoped overrides are exercised by Althea native tests.
+    Creature* FindCreatureActor(uint32,uint32 entry,WorldObject* searcher){return searcher->FindNearestCreature(entry,searcher->GetVisibilityRange());}
     bool GenerateDynamicFieldData(uint32,WorldObject*,uint32&);
     bool CreateConversation(uint64,uint32 id,Unit* caster,SpellInfo const*,Position const&){
         ++attempts;

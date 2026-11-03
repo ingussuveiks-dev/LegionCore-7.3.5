@@ -1,4 +1,5 @@
 param()
+. "$PSScriptRoot/ConversationActorResolverPredecessor.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/conversation-world-admission/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
@@ -14,7 +15,7 @@ try{
  Push-Location "$repo/build-extractors/bin/Release"
  try{
   & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
-   $path='src/server/game/Entities/Conversation/Conversation.cpp';$current=Get-Content "$repo/$path" -Raw
+   $path='src/server/game/Entities/Conversation/Conversation.cpp';$current=Get-PreConversationActorResolverSource (Get-Content "$repo/$path" -Raw)
    $factory=Block $current 'bool Conversation::CreateConversation('
    $a=$factory.IndexOf('    // AddToMap owns');$b=$factory.IndexOf('    return true;', $a)
    if($a -lt 0 -or $b -lt 0){throw 'Missing bounded world-admission repair'}

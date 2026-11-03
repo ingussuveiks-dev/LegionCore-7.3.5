@@ -116,6 +116,10 @@ class TC_GAME_API Conversation : public WorldObject, public GridObject<Conversat
         void SetLine(ConversationDynamicFieldLines const* lineInfo, uint8 index, bool createIfMissing = false);
 
     protected:
+        // Scripts may bind an authored creature slot to an exact source actor.
+        // The ordinary resolver deliberately continues to require a living NPC.
+        virtual Creature* FindCreatureActor(uint32 index, uint32 entry, WorldObject* searcher);
+
         Unit* _caster;
         uint32 _spellId;
         uint32 _duration;
