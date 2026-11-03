@@ -27,9 +27,11 @@
     "owned_worldserver": "PID22156 ready/shutdown0/exit0/gone; stderr empty",
     "sql_required": false
   },
-  "diagnostics": "Before/after canonical/root/own crash hashes and log lengths/timestamps, native exits/full stdout+stderr captured/reviewed. Explicit logical baseline and reviewed fixture/inspector errors paired with final repaired passing runs. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Existing compiler shadow/signed/narrowing warnings retained. Canonical Crashes empty; mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged/unresolved/untruncated. Verified fixed archive follows focused fix commit/deployed regression.",
+  "diagnostics": "Before/after canonical/root/own crash hashes and log lengths/timestamps, native exits/full stdout+stderr captured/reviewed. Explicit logical baseline and reviewed fixture/inspector errors paired with final repaired passing runs. No new/changed runtime crash, appended DBErrors or unexplained server warning/error/assertion. Existing compiler shadow/signed/narrowing warnings retained. Canonical Crashes empty; mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged/unresolved/untruncated. Verified fixed archive follows focused fix commit/deployed regression. Verified ignored archive:290 sources/292 payloads/17 reviewed diagnostic sets, manifestB25B1422737F36312C51BCB9A900E81F5BF72B61BBF92580DF97796595EFDB62; source/archive/source plus final hashes verified. No active removal or mixed-log truncation.",
   "remaining": [
     "Actual client short/full text placement, query refresh and dialog/log/locale variants remain separate. No quest/item/progression reset authorized. Monk12103 still has old default Grizzly Hills texts and an empty localized completion-log fallback; repair that separately using verified current Legion locale/context rather than changing global empty-string fallback.",
     "Other acquisition/claimant/lifetime/full-client/all36 findings and unknown shared101430/103151 LINK2/WardstoneLINK4, Survival39427 flight, Fu Zan/Yigthregor/ride, LiLi/Ponshu remain OPEN. Prior specifically recorded successful BM acquisition/upgrade and formation observations remain valid."
-  ]
+  ],
+  "fix_commit": "b0c128ae6a9e8adc8861125a378c7bacd7fd3254",
+  "closed_archive": "docs/audits/quest-description-load-archive-2026-11-03.json"
 }

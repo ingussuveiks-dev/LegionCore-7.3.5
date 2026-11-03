@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-03",
+  "status": "Verified fixed archive after actual deployed two-field constructor repair/native regression; separate stale Monk defaults/client/all36 remain OPEN.",
+  "issue": "docs/audits/quest-description-load-2026-11-03.json",
+  "FixCommit": "b0c128ae6a9e8adc8861125a378c7bacd7fd3254",
+  "Archive": "build-extractors/bin/Release/fixed/quest-description-2026-11-03/verified1",
+  "Sources": 290,
+  "Payloads": 292,
+  "ReviewedDiagnosticSets": 17,
+  "ManifestSHA256": "B25B1422737F36312C51BCB9A900E81F5BF72B61BBF92580DF97796595EFDB62",
+  "SourceArchiveSourceVerified": true,
+  "ActiveCrashes": 0,
+  "MixedLogUnchanged": true,
+  "cause": "QuestDataStoreMgr::LoadQuests projects LogTitle,LogDescription,QuestDescription in that order. Quest::Quest(Field*) consumed title,full QuestDescription,short LogDescription instead. Native fields108/109 therefore landed in opposite members. Nonempty locale overlays can mask the base defect; no overlay, missing locale and empty localized fields retain swapped fallbacks. This is independent of Monk12103 retaining unrelated old default English texts.",
+  "repair": "Swap only the two adjacent constructor destination assignments to match the existing SQL projection. Retain every other QuestDef.cpp byte, all native SQL/locale/packet selection behavior, numeric fields/64-bit race mask/trailing fields, objectives, rewards, admission and saves. No SQL, ScriptName, character edit, packet format, truncation or forced localization fallback.",
+  "checks": [
+    "Before rebuilding, pinnedfcd85ecb4 native game.lib A04EFCD439DEE06A30C3B4172DD5A426AC72974D39CA0A251A3B445EC6638134 reproduces176 reversed fallback fields in28 complete Quest constructors/140 selection contexts:8 with original records and168 in read-only distinct/long/NULL SELECT controls. Full locale overlays are retained passing controls. Explicit expected counterfactual, no production crash claim.",
+    "Rebuilt real native constructor runs the same28/140 with0 mismatches. All nine text roles, no/complete/absent/empty localized overlays, long UTF-8 and NULL storage, native Field size24/text start107, all nine actual member offsets, unchanged ID/64-bit race mask/scaling/start/complete script reads pass. Source exporter certifies exact two-assignment swap against the complete pinned file. Native component is real Release-linked execution; no whole-core ASAN claim.",
+    "Original-path game.lib Release/x64 rebuild and original generated final-link dependencies staged separately; canonical EXE hashes unchanged until offline promotion. Selected and canonical PE require actual LoadQuests SQL literal reference and constructor call, nine successive Field::GetString and common string assignment, correct summary504/detail536 destinations and other seven measured offsets. Existing native11-call/512 SmartAI checks retained.",
+    "QuestDetailsDelivery and QuestTurnInMarkers pass under before/after diagnostics. Offline four-file backup/promoted hashes/protected configuration/certificate/DLL hashes pass. Owned worldserver22156 fresh ready -> server shutdown0 -> exit0/empty stderr/gone; no user/unknown server stopped. Canonical full native/PE and mandatory Scepter native/Release pass."
+  ],
+  "reviewed_iterations": [
+    "Initial native fixture compilation omitted prerequisites normally supplied by the game precompiled header; added Common/DB2Structure/ObjectMgr and removed unused QuestData include. Second compilation exposed actual native Query(char const*) API; use a retained query string and c_str. Baseline3 then proved original data mismatch; baseline4 added distinct/long/NULL controls. No production change made to satisfy these fixture errors.",
+    "First PE inspector incorrectly assumed AreaDescription/CompletionLog immediately followed the first three strings. Actual Quest has OfferRewardText and RequestItemsText between them. Inspected real header/assembly and independently measured all nine native offsets; exact final selected/canonical proof passes. No field check was dropped.",
+    "Five specifically named old/task linker maps were transparently NTFS LZX-compressed to retain build capacity, with original/final SHA256 equal. No bytes deleted or EXE/config/log/crash/security changes."
+  ],
+  "cleanup": "No active crash report required removal. Existing mixed6090 DBErrors unchanged/untruncated and unresolved. Initial fixture/compiler/inspector failures and expected logical counterfactual are reviewed and paired with final repaired regression. Original evidence retained; no runtime configs/credentials/dumps/character records or EXE/PDB/maps committed.",
+  "remaining": [
+    "Actual client short/full text placement, query refresh and dialog/log/locale variants remain separate. No quest/item/progression reset authorized. Monk12103 still has old default Grizzly Hills texts and an empty localized completion-log fallback; repair that separately using verified current Legion locale/context rather than changing global empty-string fallback.",
+    "Other acquisition/claimant/lifetime/full-client/all36 findings and unknown shared101430/103151 LINK2/WardstoneLINK4, Survival39427 flight, Fu Zan/Yigthregor/ride, LiLi/Ponshu remain OPEN. Prior specifically recorded successful BM acquisition/upgrade and formation observations remain valid."
+  ]
+}
