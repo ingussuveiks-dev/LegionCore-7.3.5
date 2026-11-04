@@ -35,7 +35,14 @@
     "bnetserver.exe": "eac924e0dbd956818d23e757bc37bd5bc613c0b2c60c2feef59749053e781543"
   },
   "archive": {
-    "status": "Resolved guard diagnostics follow focused fix commit and hash-verified archive. Mixed canonical/unrelated open evidence remains active."
+    "audit": "docs/audits/althea-guards-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/althea-guards-2026-11-04",
+    "manifest_sha256": "629e52010c88996eed1df38a036906c3e664017ac6dbbf6c30a4bf9736cad331",
+    "files": 312,
+    "bytes": 456453,
+    "fix_commit": "855d499653fa9bc96aa8e68da390da0c92642b34",
+    "verified": "Original bytes and source/archive/source SHA256; credentials/configs/binaries/character data excluded",
+    "logs_truncated": 0
   },
   "source_sha256": {
     "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "bcbc501416c537e1bf9cfb07fd7264a35d7ecb4bb11e39fb55f6b6dbb301595d",
@@ -56,5 +63,6 @@
     "tools/tests/Test-KingslayersDoor.ps1": "40c8201e3a79f03c01f6446d1d4ef1e8f19a83b605ae51561bec8277970d4b03",
     "tools/research/AltheaGuardRangeProbe.cpp": "a32f4d090aff0d61cfc34aae680e36225b27f720aea59a5df17cd9415cb716ee",
     "tools/research/Probe-AltheaGuardRange.ps1": "593221962d6c12e1d2238149f4975019daea9caf89c02f5c7e8e6a20aba108b3"
-  }
+  },
+  "fix_commit": "855d499653fa9bc96aa8e68da390da0c92642b34"
 }

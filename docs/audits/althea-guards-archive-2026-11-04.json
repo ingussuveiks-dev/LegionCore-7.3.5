@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED resolved guard-range/death diagnostics archived after deployed fix, paired native counterfactual/repaired regression, ASAN/canonical PE/Scepter and owned startup. Client/full original combat/full1123/all36 remain OPEN.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/althea-guards-2026-11-04",
+    "manifest_sha256": "629e52010c88996eed1df38a036906c3e664017ac6dbbf6c30a4bf9736cad331",
+    "files": 312,
+    "bytes": 456453,
+    "fix_commit": "855d499653fa9bc96aa8e68da390da0c92642b34",
+    "verified": "Original bytes and source/archive/source SHA256; credentials/configs/binaries/character data excluded",
+    "logs_truncated": 0
+  },
+  "cause_fix_checks": "docs/audits/althea-guards-2026-11-04.json",
+  "review": "Original negative native fixture exit/SEH trace retained: Map removal reset the test actor Map, then fixture failed to restore it before AddToMap/Kill. Test now restores ownership and checks in-world/exact Map;26 repaired native cases clean. No crash report file generated, trace preserved. Native relocation-queue and ASAN compiler/fixture iterations also reviewed. Final ordinary diagnostics clean; retained explicit fault WARNs remain visibly identified.",
+  "canonical": "Mixed6090 DBErrors SHA2568B4637972778B62DCFBBD8C7BF86644C87E7127C56CC365D53846B2D01EDCAD0 unchanged/unresolved. No new canonical crash, no active error log cleared. No task server remains.",
+  "limits": "Native registration/attack/movement endpoints are controlled where stated. Original client guard combat/voice/aura startup and all36 remain OPEN; empty active Crashes certifies only reviewed issues."
+}
