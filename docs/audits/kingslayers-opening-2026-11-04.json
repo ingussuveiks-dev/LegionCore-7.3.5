@@ -37,5 +37,15 @@
     "tools/tests/KingslayersOpeningCertificate.ps1": "1d0bf039fc5b5143f598ba0754230bb1e1c7f6e55f219f74cec426871a7f0f33",
     "tools/tests/verify_kingslayers_intro_release.py": "08742d98a421c65d7dca0b5de5584e8fc9c25eb583ce7ea79e1c924499f0ec64",
     "tools/research/KingslayersOpeningReadOnly.sql": "9680da1ea2e655b4a21add2747bd674e7a3aa490bcaaa665b2a5b87161aa5fb5"
+  },
+  "fix_commit": "d18cc8bbf436b061775722ab723cf8461673a606",
+  "archive": {
+    "audit": "docs/audits/kingslayers-opening-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/kingslayers-opening-2026-11-04",
+    "manifest_sha256": "2091024491010159969730be26122081030bd4b400a6fb038dbd794d4ab4b84e",
+    "files": 386,
+    "bytes": 470747,
+    "fix_commit": "d18cc8bbf436b061775722ab723cf8461673a606",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. No active log cleared: private DBErrors empty, canonical mixed6090 and informative Server history retained."
   }
 }

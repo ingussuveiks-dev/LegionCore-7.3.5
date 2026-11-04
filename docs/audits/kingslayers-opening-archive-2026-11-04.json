@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED after canonicalC03E03DC/999B8D36 deployment and checks; task servers gone.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/kingslayers-opening-2026-11-04",
+    "manifest_sha256": "2091024491010159969730be26122081030bd4b400a6fb038dbd794d4ab4b84e",
+    "files": 386,
+    "bytes": 470747,
+    "fix_commit": "d18cc8bbf436b061775722ab723cf8461673a606",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. No active log cleared: private DBErrors empty, canonical mixed6090 and informative Server history retained."
+  },
+  "cause_fix_checks": "docs/audits/kingslayers-opening-2026-11-04.json",
+  "review": "Preserves6 actual old GM/wrong-class/questless first-visitor counterfactuals,45 full current opening/EventMap/native-lookup ASAN,32 ordinary actual native cases and2 explicit native receipt-refusal/recovery cases with exactly2 bounded WARNs, fresh catalog/readonly World data, retained Althea/Merlis/Garona checks, selected stage/canonical proofs/Scepter and owned27240 ready/shutdown0/exit0. Initial PE counter-register assumption paired with passing native counter/dataflow/control-flow proof. No crash report/DBError/unexplained runtime failure. Readonly conversation metadata is context, not a fixed presentation claim; its audio/player-clock review remains OPEN.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client full opening/path/voice/rendering,108057/2384 receiver visibility, camera/pet/group/reconnect and all36 full chains remain OPEN. Native world removal/return and seeded group/scope endpoints are not authenticated relog or physical client traversal. AI retirement loses pending clocks and a new loaded actor can start again only at legitimately eligible native stage0; no serialized actor-state reconstruction was added.",
+    "Presentation metadata needs separate investigation: current2361 actor-duration sum plus native5000 padding is16700ms while last line textId is28500;2377 is19600 versus last24250. These are read-only metadata bounds, not proof of actual heard/rendered truncation. No audio decode/client playback or authored retail timing claimed; optional presentation does not gate this focused progression repair.",
+    "Merlis source/grid/instance reconstruction, original Althea214873 protection and unknown shared101430/103151 LINK2/WardstoneLINK4 remain OPEN. No missing payload invented."
+  ]
+}
