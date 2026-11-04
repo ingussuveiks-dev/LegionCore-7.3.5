@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED after9DBED7C6/56C5C0C8 deployment; owned11612 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/kingslayers-smoke-2026-11-04",
+    "manifest_sha256": "04282e2018b5812cbd5743848303c552946b274c13b05807b6d311c2b9a4433b",
+    "files": 668,
+    "bytes": 1010265,
+    "fix_commit": "298b72ce6b972efbe9d5fb06dc3d628d0fed107b",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/kingslayers-smoke-2026-11-04.json",
+  "review": "Preserves6 pinned actual native counterfactuals paired28clean ASAN and34actual native endpoints (26ordinary triggered casts/8controlled effect endpoints), actual11NPC native conversations/panic effects, native26972 typed catalog/read-only bindings and adjacent criteria. Retained53gate/53opening ASAN,8native phase/32native admission plus Althea/Merlis/Garona pass. Sequential original-input Release and selected/canonical PE/Scepter, owned11612 ready/graceful0/exit0/gone. Catalog/query/fixture compilation/assertion and PE inherited-symbol/inline/index assumptions retained with corrected passing evidence. No unexplained new runtime crash/error/DBError.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client smoke input/cast result/visual/audio, physical Clay/panic movement, group visibility, pet presentation, abandonment/retry/re-entry/relog and full1123/all36 remain OPEN. Native controlled endpoints do not certify full physical or authenticated client traversal.",
+    "Native Player owns this spell event; Pet/Guardian must not become an owner-attributed Rogue cast. Owner/pet kill-credit changes are outside this noncombat event. Original eligible-group/native scenario rules unchanged.",
+    "Missing native receipt suppresses optional presentation; no synthetic credit or persistent latch is saved. Once actual event accepted, optional presentation failure does not roll back progression. Original actor/conversation failures and client recovery remain separate checks.",
+    "Original Althea214873 startup/protection, Merlis corpse/AI/grid/instance reconstruction, unknown shared101430/103151 LINK2 and Wardstone LINK4 remain OPEN. No missing action guessed or log cleared."
+  ]
+}

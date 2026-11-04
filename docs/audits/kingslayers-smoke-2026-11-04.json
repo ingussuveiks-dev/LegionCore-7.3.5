@@ -45,5 +45,15 @@
     "tools/tests/Test-KingslayersSmoke.ps1": "101c1c4891bc29004b362da0cfd8fe13369305e5f2a308d5f775ee8b22b31b57",
     "tools/tests/Test-KingslayersSmokeNative.ps1": "6084c39531f1d725f6d8a55df613d9ff99ecff28b79a9670985cd9b66cb75c15",
     "tools/tests/verify_kingslayers_smoke_release.py": "7c341618b72a17da4d6db28a247c3874d8972d7a59ca7a85b20dbbf2ff2a83e7"
+  },
+  "fix_commit": "298b72ce6b972efbe9d5fb06dc3d628d0fed107b",
+  "archive": {
+    "audit": "docs/audits/kingslayers-smoke-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/kingslayers-smoke-2026-11-04",
+    "manifest_sha256": "04282e2018b5812cbd5743848303c552946b274c13b05807b6d311c2b9a4433b",
+    "files": 668,
+    "bytes": 1010265,
+    "fix_commit": "298b72ce6b972efbe9d5fb06dc3d628d0fed107b",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
   }
 }
