@@ -1,6 +1,6 @@
 {
   "date": "2026-11-03",
-  "status": "OPEN: native GM-first Althea intro consumption reproduced; no production fix or client/full1123 claim. Keep all evidence active, outside fixed archives.",
+  "status": "HISTORICAL counterfactual: original GM-first intro admission failure is repaired by59a68ec1e and its diagnostics are archived. Client/full1123/all36 and separate guard lifetime/range checks remain OPEN.",
   "scope": "Original108218/360870 map1620, first55-yard intro2422/51549. Separate35-yard2424/guard fight and later2425 release are next sequence checks.",
   "cause": "The complete current Althea MoveInLineOfSight accepts any Player, sends51549 through that Player and sets introDone=true regardless of native criteria acceptance or conversation creation. Native Scenario achievement admission rejects a GM-mode reference. A GM reaching the original55-yard trigger first therefore consumes the shared one-shot flag without48577 progress. A later otherwise eligible Rogue is skipped by introDone and cannot deliver this event through this actor.",
   "local_evidence": {
@@ -36,6 +36,8 @@
   },
   "resolution": {
     "audit": "docs/audits/althea-intro-2026-11-04.json",
-    "status": "Focused admission repair deployed; old reproduction retained as an explicitly pinned counterfactual. Client/full1123/all36 and separate guard lifetime/range checks remain OPEN."
+    "status": "Focused admission repair deployed; old reproduction retained as an explicitly pinned counterfactual. Client/full1123/all36 and separate guard lifetime/range checks remain OPEN.",
+    "fix_commit": "59a68ec1e70342e994114eff4fc3d6cd4b42f2f1",
+    "archive": "docs/audits/althea-intro-archive-2026-11-04.json"
   }
 }

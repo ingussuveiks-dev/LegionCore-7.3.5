@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED resolved focused Althea admission/receipt/voice diagnostics archived after deployed fix, native/ASAN/canonical PE/Scepter and owned startup. Client/full1123/all36 and separate guard-range/death investigation remain OPEN.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/althea-intro-2026-11-04",
+    "manifest_sha256": "fa882aff3318173d5052987800036e40ec5b9988815b0e8a468bb417aadef771",
+    "files": 355,
+    "bytes": 601055,
+    "fix_commit": "59a68ec1e70342e994114eff4fc3d6cd4b42f2f1",
+    "verified": "Original bytes, source/archive/source SHA256 and immediate pre-maintenance recheck; credentials/configs/binaries/character data excluded",
+    "private_DBErrors_recreated_empty": 1
+  },
+  "cause_fix_checks": "docs/audits/althea-intro-2026-11-04.json",
+  "diagnostics": "18 wholly reviewed private missing108218-loot fixture entries resolved by actual union loader; expected injected WARNs explicitly reviewed and paired with recovery; parse/compiler failures preserved. No new crash. Canonical mixed6090 DBErrors unchanged/unresolved; no user/unknown server stopped or log rotated.",
+  "excluded_open_evidence": "Any separate guard-range/death investigation remains outside this fixed archive; empty active Crashes does not certify the whole quest."
+}

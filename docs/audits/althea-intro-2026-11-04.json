@@ -35,7 +35,14 @@
     "bnetserver.exe": "a9bee099bbdf2fec0a92a3984f73628c66a1caae220ea7dcd05b1b027048d9ff"
   },
   "archive": {
-    "status": "Verified resolved diagnostic archive follows the focused fix commit. Separate guard-range/lifetime investigation remains active outside fixed."
+    "audit": "docs/audits/althea-intro-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/althea-intro-2026-11-04",
+    "manifest_sha256": "fa882aff3318173d5052987800036e40ec5b9988815b0e8a468bb417aadef771",
+    "files": 355,
+    "bytes": 601055,
+    "fix_commit": "59a68ec1e70342e994114eff4fc3d6cd4b42f2f1",
+    "verified": "Original bytes, source/archive/source SHA256 and immediate pre-maintenance recheck; credentials/configs/binaries/character data excluded",
+    "private_DBErrors_recreated_empty": 1
   },
   "source_sha256": {
     "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "2b453b2e9e20d4391feec0bc8b194e6c16f72bae1c1183337a308530eb4e42b5",
@@ -48,5 +55,6 @@
     "tools/tests/verify_althea_intro_release.py": "c5f76070b27c7aabd9102709a8ac07c74c0f787702354e78b3ba867a951a812c",
     "tools/research/AltheaIntroAdmissionProbe.cpp": "3020722b69b249cd4b2a4252ad3a618ecf991034e8f885d811779f1ff078b1ff",
     "tools/research/Probe-AltheaIntroAdmission.ps1": "09fd2ab203f63cb5266556df67c1317e5718f863944ec26c5ad63ec51fdf61e8"
-  }
+  },
+  "fix_commit": "59a68ec1e70342e994114eff4fc3d6cd4b42f2f1"
 }
