@@ -32,7 +32,9 @@ try{
  # accept/quest/actors remain byte-equivalent to the pre-admission source.
  $previous=(& git -C $repo show "0d5a1628e:$path") -join "`n"
  if($LASTEXITCODE){throw 'Pinned opening source unavailable'}
- if(!$Baseline -and (($source.Replace((Block $source $marker),(Block $previous $marker))-replace '\s','') -cne ($previous-replace '\s',''))){throw 'Only full opening AI may change'}
+ . "$PSScriptRoot/KingslayersGateOrderCertificate.ps1"
+ $boundary=Restore-KingslayersGateOrderBoundary $source
+ if(!$Baseline -and (($boundary.Replace((Block $boundary $marker),(Block $previous $marker))-replace '\s','') -cne ($previous-replace '\s',''))){throw 'Only full opening AI may change'}
  if($Baseline){$source=$pinned}
  [IO.File]::WriteAllText("$out/GaronaIntro.inc",(Block $source $marker)+';')
  $header=Get-Content "$repo/src/server/game/AI/EventMap.h" -Raw -Encoding UTF8

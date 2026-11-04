@@ -48,6 +48,7 @@ struct WorldObject
     uint32 GetMapId()const{return map?map->id:0;}uint32 GetInstanceId()const{return 1;}
     bool InSamePhase(WorldObject const* other) const{return phase==other->phase;}
 };
+struct Creature;struct ScriptedAI;
 struct Player;
 struct Unit:WorldObject
 {
@@ -63,6 +64,9 @@ struct Player:Unit
     std::function<void(uint32)> creditHook;
     std::vector<uint32> criteria;
     Player(){type=TYPEID_PLAYER;}
+    Creature* remoteGeneral=nullptr;
+    float GetVisibilityRange()const{return 170;}
+    Creature* FindNearestCreature(uint32,float,bool);
     bool CanContact() const{return contact;}
     bool isGameMaster()const{return gm;}bool HasPendingTeleport()const{return pending;}uint32 getClass()const{return klass;}bool GetQuestRewardStatus(uint32 id)const{return id==quest&&rewarded;}uint32 GetQuestStatus(uint32 id)const{return id==quest?status:0;}
     void UpdateAchievementCriteria(uint32 kind,uint32 asset){assert(kind==92);criteria.push_back(asset);if(creditHook)creditHook(asset);if(map&&!gm&&((asset==51418&&grantFirst)||(asset==52672&&grantSecond))){auto& scene=map->scenario;scene.progress[asset==51418?48526:49374].Counter=1;if(scene.progress[48526].Counter&&scene.progress[49374].Counter)scene.stage=1;}}
@@ -89,6 +93,7 @@ struct MotionMaster
 };
 struct Creature:Unit
 {
+    bool IsAIEnabled=true;ScriptedAI* activeAI=nullptr;ScriptedAI* AI(){return activeAI;}
     uint32 entry=108015,despawn=0,baseUpdates=0,removedAura=0;
     float distance=1;
     bool walk=false;
@@ -110,7 +115,9 @@ struct ScriptedAI
     virtual ~ScriptedAI()=default;
     virtual void MoveInLineOfSight(Unit*){}
     virtual void UpdateAI(uint32){++me->baseUpdates;}
+    virtual void SetGUID(ObjectGuid const&,int32_t=0){}
 };
+Creature* Player::FindNearestCreature(uint32 entry,float range,bool alive){assert(entry==108057&&range==170&&alive);return remoteGeneral;}
 void GetCreatureListWithEntryInGrid(std::list<Creature*>& output,Creature* center,uint32 entry,float range)
 {
     assert(range==70.0f);
@@ -140,6 +147,9 @@ struct Conversation
     }
     static void Clear(){while(!live.empty())delete *live.begin();delivered.clear();failedEntry=0;attempts=0;durations.clear();}
 };
+// The opening test isolates its native GUID bridge. The complete recipient
+// controller/factory/retry is separately covered by gate-order ASAN/native tests.
+struct GeneralBridge:ScriptedAI{using ScriptedAI::ScriptedAI;uint32 requests=0;void SetGUID(ObjectGuid const& guid,int32_t id)override{assert(id==2384);++requests;auto player=ObjectAccessor::GetPlayer(*me,guid);assert(player&&player->GetGUID()==guid);auto speech=new Conversation;if(!speech->CreateConversation(1,2384,player,nullptr,*player))delete speech;}};
 #include "GaronaIntro.inc"
 using Garona=npc_garona_halforcenAI;
 void Advance(Garona& script,uint32 milliseconds){script.UpdateAI(milliseconds);script.me->functions.Update(milliseconds);}
@@ -147,14 +157,15 @@ struct Fixture
 {
     inline static uint32 contexts=0;
     Map original,other;
-    Creature garona,first,second,unrelated;
+    Creature garona,first,second,unrelated,general;
     Player player,secondPlayer;
-    Garona script;
-    Fixture():script(&garona)
+    Garona script;GeneralBridge bridge;
+    Fixture():script(&garona),bridge(&general)
     {
         ++contexts;
         Conversation::Clear();garona.map=&original;player.map=&original;secondPlayer.map=&original;
         scenarioManager.current=&original.scenario;warnings=0;
+        general.map=&original;general.entry=108057;general.activeAI=&bridge;player.remoteGeneral=secondPlayer.remoteGeneral=&general;
         secondPlayer.guid.low=2;
         HashMapHolder<Player>::_objectVector.assign(32,nullptr);
         HashMapHolder<Player>::_objectVector[1]=&player;HashMapHolder<Player>::_objectVector[2]=&secondPlayer;
@@ -213,7 +224,7 @@ int main()
     }
     {
         Fixture fixture;fixture.Start();HashMapHolder<Player>::_objectVector[1]=nullptr;Advance(fixture.script,15000);
-        Player reconnected;reconnected.map=&fixture.original;HashMapHolder<Player>::_objectVector[1]=&reconnected;
+        Player reconnected;reconnected.map=&fixture.original;reconnected.remoteGeneral=&fixture.general;HashMapHolder<Player>::_objectVector[1]=&reconnected;
         Advance(fixture.script,15000);assert(reconnected.criteria.empty() && !fixture.garona.despawn);Advance(fixture.script,15000);assert(reconnected.criteria.size()==2 && fixture.player.criteria.empty() && Conversation::delivered.size()==3);
     }
     {

@@ -45,5 +45,9 @@
     "bytes": 614254,
     "fix_commit": "63d02450950ef2785be44087039887dd548a02d7",
     "verified": "Every available source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. No active logs cleared; private DBErrors empty, mixed canonical6090 unresolved and informative Server history retained. Initial overwritten full build log limitation explicitly documented; tool-output note is not represented as original bytes."
+  },
+  "gate_order_followup": {
+    "audit": "docs/audits/kingslayers-gate-order-2026-11-04.json",
+    "status": "Original2384 source admission/duplicate/factory retry and actual three Clay roles now investigated and repaired/deployed separately. Client playback/full-chain limits remain."
   }
 }

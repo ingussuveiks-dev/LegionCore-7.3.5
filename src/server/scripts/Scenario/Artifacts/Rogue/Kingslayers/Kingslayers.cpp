@@ -197,11 +197,9 @@ public:
                         me->SetWalk(true);
                         me->DespawnOrUnsummon(4000);
                         if (Player* player = GetRecipient())
-                        {
-                            Conversation* conversation = new Conversation;
-                            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2384, player, NULL, *player))
-                                delete conversation;
-                        }
+                            if (Creature* general = player->FindNearestCreature(108057, player->GetVisibilityRange(), true))
+                                if (general->IsAIEnabled && general->AI())
+                                    general->AI()->SetGUID(player->GetGUID(), 2384);
                         break;
                     }
                 }
@@ -236,6 +234,122 @@ public:
         bool introDone;
         uint32 timer;
         bool check;
+        ObjectGuid gateOrderRecipient;
+        uint32 gateOrderRetry = 0;
+        bool gateOrderBusy = false, gateOrderWarning = false;
+
+        // Both authored callers share the actual Clay actor's one-shot receipt.
+        class GateConversation final : public Conversation
+        {
+        public:
+            explicit GateConversation(ObjectGuid actor) : _actor(actor) { }
+            void AddToWorld() override
+            {
+                Creature* actor = ObjectAccessor::GetCreature(*this, _actor);
+                if (actor && actor->GetGUID() == _actor && actor->GetEntry() == 108057 && actor->GetMapId() == 1620 &&
+                    actor->IsInWorld() && !actor->IsPreDelete() && actor->IsAlive() && !actor->IsQuestObjectExpired() &&
+                    InheritQuestObjectScope(actor))
+                    Conversation::AddToWorld();
+            }
+        protected:
+            Creature* FindCreatureActor(uint32 index, uint32 entry, WorldObject* searcher) override
+            {
+                if (index != 0 || entry != 108057 || !searcher || searcher->GetMapId() != 1620)
+                    return nullptr;
+                Creature* actor = ObjectAccessor::GetCreature(*searcher, _actor);
+                if (!actor || actor->GetGUID() != _actor || actor->GetEntry() != entry || !actor->IsInWorld() ||
+                    actor->IsPreDelete() || !actor->IsAlive() || actor->IsQuestObjectExpired() || searcher->IsQuestObjectExpired() ||
+                    !searcher->IsWithinDistInMap(actor, searcher->GetVisibilityRange()) ||
+                    !searcher->InSamePhase(actor) || !searcher->InSamePhaseId(actor) ||
+                    !actor->CanTargetQuestObject(searcher) || !searcher->CanTargetQuestObject(actor))
+                    return nullptr;
+                return actor;
+            }
+        private:
+            ObjectGuid const _actor;
+        };
+
+        Player* GatePlayer(Player* player) const
+        {
+            if (me->GetEntry() != 108057 || me->GetMapId() != 1620 || !me->IsInWorld() || me->IsPreDelete() ||
+                !me->IsAlive() || me->IsQuestObjectExpired() || !player || !player->IsInWorld() || player->IsPreDelete() ||
+                !player->IsAlive() || !player->CanContact() || player->isGameMaster() || player->getClass() != CLASS_ROGUE ||
+                player->HasPendingTeleport() || player->GetMap() != me->GetMap() || !player->InSamePhase(me) ||
+                !player->InSamePhaseId(me) || !player->IsWithinDistInMap(me, player->GetVisibilityRange()) ||
+                player->IsQuestObjectExpired() || !me->CanTargetQuestObject(player) || !player->CanTargetQuestObject(me))
+                return nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1123)
+                return nullptr;
+            for (uint32 quest : {42504u, 42627u})
+                if (!player->GetQuestRewardStatus(quest) &&
+                    (player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(quest) == QUEST_STATUS_COMPLETE))
+                    return player;
+            return nullptr;
+        }
+
+        Player* GateRecipient() const
+        {
+            if (!me->IsInWorld() || gateOrderRecipient.IsEmpty())
+                return nullptr;
+            Player* player = ObjectAccessor::GetPlayer(*me, gateOrderRecipient);
+            return player && player->GetGUID() == gateOrderRecipient ? GatePlayer(player) : nullptr;
+        }
+
+        void RequestGateOrder(Player* player)
+        {
+            if (introDone || gateOrderBusy || !GatePlayer(player))
+                return;
+            if (Player* pending = GateRecipient())
+                player = pending;
+            else
+                gateOrderRecipient = player->GetGUID();
+            if (gateOrderRetry)
+                return;
+            gateOrderBusy = true;
+            struct Release { bool& flag; ~Release() { flag = false; } } release{gateOrderBusy};
+            Conversation* conversation = new GateConversation(me->GetGUID());
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2384, player, nullptr, *player))
+            {
+                delete conversation;
+                gateOrderRetry = 1000;
+                if (!gateOrderWarning)
+                    TC_LOG_WARN("scripts", "Kingslayers gate order: native2384 not admitted; retain qualified actor-owned retry");
+                gateOrderWarning = true;
+                return;
+            }
+            introDone = true;
+            gateOrderRecipient.Clear();
+            me->SetReactState(REACT_AGGRESSIVE);
+        }
+
+        void SetGUID(ObjectGuid const& guid, int32 id = 0) override
+        {
+            if (id == 2384 && me->GetEntry() == 108057 && me->GetMapId() == 1620)
+            {
+                Player* player = ObjectAccessor::GetPlayer(*me, guid);
+                if (player && player->GetGUID() == guid)
+                    RequestGateOrder(player);
+                return;
+            }
+            ScriptedAI::SetGUID(guid, id);
+        }
+
+        void UpdateGateOrder(uint32 diff)
+        {
+            if (me->GetEntry() != 108057 || me->GetMapId() != 1620 || introDone || gateOrderBusy)
+                return;
+            if (gateOrderRetry > diff)
+            {
+                gateOrderRetry -= diff;
+                return;
+            }
+            gateOrderRetry = 0;
+            if (Player* player = GateRecipient())
+                RequestGateOrder(player);
+            else
+                gateOrderRecipient.Clear();
+        }
 
         void MoveInLineOfSight(Unit* who) override
         {
@@ -289,6 +403,11 @@ public:
                     delete conversation;
             }
 
+            if (me->GetEntry() == 108057 && me->GetMapId() == 1620)
+            {
+                RequestGateOrder(who->ToPlayer());
+                return;
+            }
             introDone = true;
             if (me->GetEntry() == 108057)
             {
@@ -325,6 +444,7 @@ public:
         void UpdateAI(uint32 diff) override
         {
             ScriptedAI::UpdateAI(diff);
+            UpdateGateOrder(diff);
 
             if (me->GetEntry() == 108177 && !check)
             {
