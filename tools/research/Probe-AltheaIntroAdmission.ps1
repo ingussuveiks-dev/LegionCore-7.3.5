@@ -19,7 +19,9 @@ if(!$query){throw 'Actual native quest query missing'}
 [IO.File]::WriteAllText("$out/NativeAltheaQuest.inc",$query+' " WHERE ID IN(42504,42627)"')
 $configPath="$repo/build-extractors/bin/Release/worldserver.conf";$hash=(Get-FileHash $configPath).Hash;$config=Get-Content $configPath -Raw
 $config=[regex]::Replace($config,'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$out.Replace('\','/')+'/logs"'));[IO.File]::WriteAllText("$out/worldserver.conf",$config)
-[IO.File]::WriteAllText("$out/AltheaIntro.inc",(Block $source 'class npc_sister_althea_ebonlocke : public CreatureScript')+';')
+$beforeIntro=(& git -C $repo show '9303d0c59:src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned complete intro baseline missing'}
+$beforeIntro=(Block $beforeIntro 'class npc_sister_althea_ebonlocke : public CreatureScript').Replace('class npc_sister_althea_ebonlocke :','class npc_sister_althea_ebonlocke_before :').Replace('npc_sister_althea_ebonlocke() :','npc_sister_althea_ebonlocke_before() :')
+[IO.File]::WriteAllText("$out/AltheaIntro.inc",$beforeIntro+';')
 $previous=$env:LEGION_DIALOGUE_CONFIG;$previousCompiler=$env:CL;$previousLink=$env:_LINK_
 $inputs=@("$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp","$repo/tools/research/AltheaIntroAdmissionProbe.cpp","$repo/build-extractors/src/server/game/Release/game.lib","$repo/build-extractors/src/server/scripts/Release/scripts.lib")
 # Reusable MSBuild workers can remain idle after completion. Certify the actual

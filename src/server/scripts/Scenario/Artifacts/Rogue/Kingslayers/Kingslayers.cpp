@@ -532,6 +532,99 @@ public:
         bool introDone, introDone2, checkdies;
         uint32 timerforcheck;
         EventMap events;
+        bool introBusy = false, introReleased = false;
+        bool introVoices[3] = {}, introWarnings[3] = {};
+        uint32 introRetries[3] = {};
+        uint32 introCreditRetry = 0;
+        bool introCreditWarning = false;
+
+        bool IntroLeaf(Scenario* scenario, uint32 id) const
+        {
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto found = progress->find(id);
+            return found != progress->end() && found->second.Counter;
+        }
+
+        Player* IntroPlayer(Unit* who, float range) const
+        {
+            Player* player = who ? who->ToPlayer() : nullptr;
+            if (!me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || me->GetEntry() != 108218 ||
+                me->GetMapId() != 1620 || me->IsQuestObjectExpired() || !player || !player->IsInWorld() ||
+                player->IsPreDelete() || !player->IsAlive() || !player->CanContact() || player->isGameMaster() ||
+                player->getClass() != CLASS_ROGUE || player->HasPendingTeleport() || player->GetMap() != me->GetMap() ||
+                !player->InSamePhase(me) || me->GetExactDist2d(player) > range || player->IsQuestObjectExpired() ||
+                !me->CanTargetQuestObject(player) || !player->CanTargetQuestObject(me))
+                return nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1123 ||
+                (!scenario->CanUpdateCriteria(48577) && !scenario->CanUpdateCriteria(48585)) || IntroLeaf(scenario, 48585))
+                return nullptr;
+            for (uint32 quest : {42504u, 42627u})
+                if (!player->GetQuestRewardStatus(quest) &&
+                    (player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(quest) == QUEST_STATUS_COMPLETE))
+                    return player;
+            return nullptr;
+        }
+
+        Player* IntroOpponent() const
+        {
+            std::list<Player*> players;
+            me->GetPlayerListInGrid(players, 50.0f);
+            for (Player* player : players)
+                if (IntroPlayer(player, 50.0f))
+                    return player;
+            return nullptr;
+        }
+
+        void IntroVoice(Player* player, uint32 slot)
+        {
+            if (introVoices[slot] || introRetries[slot])
+                return;
+            introRetries[slot] = 1000;
+            uint32 const entries[3] = {2422, 2424, 2425};
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), entries[slot], player, NULL, *player))
+            {
+                delete conversation;
+                if (!introWarnings[slot])
+                    TC_LOG_WARN("scripts", "Althea intro: conversation %u unavailable; retain bounded-rate presentation retry independently of progression", entries[slot]);
+                introWarnings[slot] = true;
+                return;
+            }
+            introVoices[slot] = true;
+        }
+
+        void UpdateIntro(uint32 diff)
+        {
+            if (introBusy)
+                return;
+            for (uint32& retry : introRetries)
+                retry = retry > diff ? retry - diff : 0;
+            introCreditRetry = introCreditRetry > diff ? introCreditRetry - diff : 0;
+            introBusy = true;
+            struct Release { bool& busy; ~Release() { busy = false; } } release{introBusy};
+            if (checkdies)
+            {
+                if (timerforcheck > diff)
+                    timerforcheck -= diff;
+                else
+                {
+                    timerforcheck = 1000;
+                    if (!me->FindNearestCreature(108216, 40.0f, true) && !me->FindNearestCreature(108217, 40.0f, true))
+                        if (Player* player = IntroOpponent())
+                        {
+                            checkdies = false;
+                            introReleased = true;
+                            me->GetMotionMaster()->MoveJump(-8614.58f, 403.17f, 102.92f, me->GetOrientation(), 5.0f, 5.0f);
+                            me->RemoveAura(214873);
+                            me->AI()->AttackStart(player);
+                        }
+                }
+            }
+            if (introReleased && !introVoices[2] && !introRetries[2])
+                if (Player* player = IntroOpponent())
+                    IntroVoice(player, 2);
+        }
 
         void Reset() override
         {
@@ -618,66 +711,59 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
-
-            if (who->GetTypeId() != TYPEID_PLAYER)
+            Player* player = IntroPlayer(who, 55.0f);
+            if (!player || introBusy)
                 return;
-
-            if (me->GetExactDist2d(who) <= 55.0f)
-                if (!introDone)
+            introBusy = true;
+            struct Release { bool& busy; ~Release() { busy = false; } } release{introBusy};
+            if (!introDone)
+            {
+                Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+                if (scenario->CanUpdateCriteria(48577) && !IntroLeaf(scenario, 48577))
                 {
-                    who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51549);
-                    Conversation* conversation = new Conversation;
-                    if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2422, who, NULL, *who))
-                        delete conversation;
-                    introDone = true;
+                    if (introCreditRetry)
+                        return;
+                    introCreditRetry = 1000;
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51549);
                 }
-            if (me->GetExactDist2d(who) <= 35.0f)
-                if (!introDone2)
+                if (!IntroPlayer(player, 55.0f))
+                    return;
+                scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+                if (!IntroLeaf(scenario, 48577))
                 {
-                    introDone2 = true;
-                    Conversation* conversation = new Conversation;
-                    if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2424, who, NULL, *who))
-                        delete conversation;
-
-                    if (Creature* garona = me->FindNearestCreature(108214, 60.0f, true))
-                    {
-                        std::list<Creature*> adds;
-                        GetCreatureListWithEntryInGrid(adds, me, 108216, 30.0f);
-                        GetCreatureListWithEntryInGrid(adds, me, 108217, 30.0f);
-                        if (!adds.empty())
-                            for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
-                            {
-                                (*itr)->AI()->AttackStart(garona);
-                            }
-                        timerforcheck = 1000;
-                        checkdies = true;
-                    }
+                    if (!introCreditWarning)
+                        TC_LOG_WARN("scripts", "Althea intro: native51549 not acknowledged; retain bounded-rate progression retry");
+                    introCreditWarning = true;
+                    return;
                 }
+                introDone = true; // Only actual native51549 acknowledgement consumes progression.
+            }
+            IntroVoice(player, 0); // Optional presentation cannot block native progression.
+            if (!IntroPlayer(player, 35.0f))
+                return;
+            if (!introDone2)
+            {
+                Creature* garona = me->FindNearestCreature(108214, 60.0f, true);
+                if (!garona || !garona->AI() || !garona->CanTargetQuestObject(player) || !player->CanTargetQuestObject(garona))
+                    return; // A missing mandatory companion must not consume the guard handoff.
+                std::list<Creature*> adds;
+                GetCreatureListWithEntryInGrid(adds, me, 108216, 30.0f);
+                GetCreatureListWithEntryInGrid(adds, me, 108217, 30.0f);
+                for (Creature* guard : adds)
+                    if (!guard->AI() || !guard->CanTargetQuestObject(player) || !player->CanTargetQuestObject(guard))
+                        return;
+                introDone2 = true;
+                timerforcheck = 1000;
+                checkdies = true;
+                for (Creature* guard : adds)
+                    guard->AI()->AttackStart(garona);
+            }
+            IntroVoice(player, 1);
         }
 
         void UpdateAI(uint32 diff) override
         {
-            if (checkdies)
-                if (timerforcheck <= diff)
-                {
-                    if (!me->FindNearestCreature(108216, 40.0f, true) && !me->FindNearestCreature(108217, 40.0f, true))
-                    {
-                        checkdies = false;
-                        me->GetMotionMaster()->MoveJump(-8614.58f, 403.17f, 102.92f, me->GetOrientation(), 5.0f, 5.0f);
-                        me->RemoveAura(214873);
-                        if (Player* pl = me->FindNearestPlayer(50.0f))
-                        {
-                            me->AI()->AttackStart(pl);
-                            Conversation* conversation = new Conversation;
-                            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2425, pl, NULL, *pl))
-                                delete conversation;
-                        }
-                    }
-                    else
-                        timerforcheck = 1000;
-                }
-                else
-                    timerforcheck -= diff;
+            UpdateIntro(diff);
 
             if (!UpdateVictim())
                 return;

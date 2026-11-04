@@ -10,6 +10,12 @@ function Block([string]$source,[string]$start){$a=$source.IndexOf($start);if($a 
  # Door activation has its own complete source/native regression. Normalize
  # only that isolated class before retaining the earlier whole-file certificate.
  $door=Block $source 'class go_kingslayers_door : public GameObjectScript';$oldDoor=Block $old 'class go_kingslayers_door : public GameObjectScript';$source=$source.Replace($door,$oldDoor).Replace('#include "ScriptsData.h"','')
+ # The dedicated intro suite certifies its full helpers/LOS/update boundary.
+ # Retain this death certificate over every other body and all combat events.
+ $intro=Block $source 'struct npc_sister_althea_ebonlockeAI : ScriptedAI';$priorIntro=Block $old 'struct npc_sister_althea_ebonlockeAI : ScriptedAI'
+ $a=$intro.IndexOf('        bool introBusy =');$b=$intro.IndexOf('        void Reset()',$a);if($a -lt 0 -or $b -lt 0){throw 'Actual intro boundary missing'};$normalized=$intro.Remove($a,$b-$a)
+ foreach($name in @('void MoveInLineOfSight(','void UpdateAI(')){$normalized=$normalized.Replace((Block $intro $name),(Block $priorIntro $name))}
+ $source=$source.Replace($intro,$normalized)
  $current=Block (Block $source 'struct npc_sister_althea_ebonlockeAI : ScriptedAI') 'void JustDied(Unit* who) override'
  $victory=Block (Block $source 'struct npc_sister_althea_ebonlockeAI : ScriptedAI') 'Player* GetVictoryPlayer('
  [IO.File]::WriteAllText("$out/AltheaVictory.inc",$victory);$source=$source.Replace($victory,'')

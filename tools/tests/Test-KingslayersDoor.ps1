@@ -5,6 +5,12 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$current=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "a9e86af7b:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned door predecessor missing'}
  $door=Block $current 'class go_kingslayers_door : public GameObjectScript';$prior=Block $old 'class go_kingslayers_door : public GameObjectScript'
+ # New Althea intro has its own whole-source/ASAN/native certificate. Restore
+ # only those helpers and dispatch before retaining this earlier door boundary.
+ $intro=Block $current 'struct npc_sister_althea_ebonlockeAI : ScriptedAI';$priorIntro=Block $old 'struct npc_sister_althea_ebonlockeAI : ScriptedAI'
+ $a=$intro.IndexOf('        bool introBusy =');$b=$intro.IndexOf('        void Reset()',$a);if($a -lt 0 -or $b -lt 0){throw 'Actual intro boundary missing'};$normalized=$intro.Remove($a,$b-$a)
+ foreach($name in @('void MoveInLineOfSight(','void UpdateAI(')){$normalized=$normalized.Replace((Block $intro $name),(Block $priorIntro $name))}
+ $current=$current.Replace($intro,$normalized)
  if(($current.Replace($door,$prior).Replace('#include "ScriptsData.h"','')-replace '\s','') -cne ($old-replace '\s','')){throw 'Only isolated door and native ScriptsData declaration may change'}
  [IO.File]::WriteAllText("$out/DoorAI.inc",(Block $door 'struct go_kingslayers_doorAI : public GameObjectAI')+';')
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

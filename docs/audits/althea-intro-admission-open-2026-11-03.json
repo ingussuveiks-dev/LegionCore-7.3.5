@@ -33,5 +33,9 @@
     "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "84d0e475975ee2e8bdf293e865f32b39ae73eb753be9f67cff2246a28c80737c",
     "tools/research/AltheaIntroAdmissionProbe.cpp": "481bf054b4d554d04bf5074da376ce6c2548dd7367dfa8dd7f45316a27f05097",
     "tools/research/Probe-AltheaIntroAdmission.ps1": "89268f040d76cf0f92315e3a424b6a0633cb551c794d0041cf160eca52a75543"
+  },
+  "resolution": {
+    "audit": "docs/audits/althea-intro-2026-11-04.json",
+    "status": "Focused admission repair deployed; old reproduction retained as an explicitly pinned counterfactual. Client/full1123/all36 and separate guard lifetime/range checks remain OPEN."
   }
 }
