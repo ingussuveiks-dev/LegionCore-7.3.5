@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED resolved issue/fixture/counterfactual diagnostics archived after both deployed fixes and passing regressions. No active log truncated; mixed canonical6090 preserved.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/teleport-return-2026-11-04",
+    "manifest_sha256": "2fbf177081de7610e94949b90edeb484b9987fcbe095df7d7567165efc63edd4",
+    "files": 396,
+    "bytes": 677025,
+    "fix_commits": {
+      "transport": "1e322cd44e4dec8ce0b3902e52862830c5d938ea",
+      "return": "e2e61d6b89b46040f3cf46421261033c3ec70fd1"
+    },
+    "checks": "Source/archive/source SHA256 checked, credential scan, no conf/binaries/PDB/character data; all sources rechecked immediately after archive. No crash file generated in canonical or own runtimes. No user/unknown server running.",
+    "logs_truncated": 0
+  },
+  "causes_and_regressions": [
+    "docs/audits/transport-passenger-iteration-2026-11-04.json",
+    "docs/audits/teleport-return-2026-11-04.json"
+  ],
+  "review": "Preserves real old far/near ASAN iterator heap-use-after-free, paired final79 clean instrumented contexts, old actual32 native false-success and repaired32, retained native Sheilun/Merlis, Release builds/PE/startup. Also retains INVALID first ASAN load exitC0000135/empty stderr (not baseline pass), repaired fixture null post-check failure (not production failure), initial native private-access compile failure and their corrected runs. Six Merlis injected WARNs explicitly enumerated and recovered; separate from clean ordinary cases.",
+  "canonical": "58C77CA6/D95FA477; owned19988 ready/shutdown0/exit0/stderr empty/gone. Crashes empty, mixed DBErrors6090/SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved. No active error file cleared.",
+  "limits": "Actual client/full1123/all36, camera/pet/audio/reconnect, original Althea214873 startup and shared LINK findings remain OPEN. Archive does not certify those."
+}
