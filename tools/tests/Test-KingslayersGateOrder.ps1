@@ -4,6 +4,8 @@ $out="$repo/build-extractors/runtime-test/kingslayers-gate-order-asan/$(Get-Date
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$source=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "ff238f715:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned gate predecessor missing'}
+ . "$PSScriptRoot/KingslayersSmokeOfferCertificate.ps1"
+ $source=Restore-KingslayersSmokeOfferBoundary $source
  $marker='class npc_kingslayers_small_events : public CreatureScript';$body=Block $source $marker;$prior=Block $old $marker
  $opening='struct npc_garona_halforcenAI : ScriptedAI'
  . "$PSScriptRoot/KingslayersSmokeCertificate.ps1"

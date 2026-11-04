@@ -237,6 +237,7 @@ public:
         ObjectGuid gateOrderRecipient;
         uint32 gateOrderRetry = 0;
         bool gateOrderBusy = false, gateOrderWarning = false;
+        bool smokeOfferWarning = false;
 
         // Both authored callers share the actual Clay actor's one-shot receipt.
         class GateConversation final : public Conversation
@@ -441,12 +442,58 @@ public:
             me->SetReactState(REACT_AGGRESSIVE);
         }
 
+        void UpdateSmokeOffer(uint32 diff)
+        {
+            if (timer > diff)
+            {
+                timer -= diff;
+                return;
+            }
+            timer = 1000;
+            if (!me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || me->IsQuestObjectExpired())
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1123 || !scenario->CanUpdateCriteria(48533))
+                return;
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto receipt = progress->find(48533);
+            if (receipt != progress->end() && receipt->second.Counter)
+                return;
+            std::list<Player*> players;
+            me->GetPlayerListInGrid(players, 15.0f);
+            for (Player* player : players)
+            {
+                if (!player || !player->IsInWorld() || player->IsPreDelete() || !player->IsAlive() || !player->CanContact() ||
+                    player->isGameMaster() || player->getClass() != CLASS_ROGUE || player->HasPendingTeleport() ||
+                    player->GetMap() != me->GetMap() || !player->InSamePhase(me) || !player->IsWithinDistInMap(me, 15.0f) ||
+                    player->IsQuestObjectExpired() || !player->CanTargetQuestObject(me) || !me->CanTargetQuestObject(player) ||
+                    player->HasAura(227061))
+                    continue;
+                bool quest = false;
+                for (uint32 id : {42504u, 42627u})
+                    if (!player->GetQuestRewardStatus(id) &&
+                        (player->GetQuestStatus(id) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(id) == QUEST_STATUS_COMPLETE))
+                        quest = true;
+                if (!quest)
+                    continue;
+                player->AddAura(227061, player);
+                player->CastSpell(player, 227061);
+                if (!player->HasAura(227061) && !smokeOfferWarning)
+                {
+                    TC_LOG_WARN("scripts", "Kingslayers smoke offer: native227061 missing after grant; retain1s eligible-player retry");
+                    smokeOfferWarning = true;
+                }
+            }
+        }
+
         void UpdateAI(uint32 diff) override
         {
             ScriptedAI::UpdateAI(diff);
             UpdateGateOrder(diff);
 
-            if (me->GetEntry() == 108177 && !check)
+            if (me->GetEntry() == 108177 && me->GetMapId() == 1620 && me->GetDBTableGUIDLow() == 360801)
+                UpdateSmokeOffer(diff);
+            else if (me->GetEntry() == 108177 && !check)
             {
                 if (timer <= diff)
                 {

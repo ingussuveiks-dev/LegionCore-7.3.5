@@ -4,6 +4,8 @@ $out="$repo/build-extractors/runtime-test/kingslayers-smoke-asan/$(Get-Date -For
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$source=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "81c43cc8c:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned gate predecessor missing'}
+ . "$PSScriptRoot/KingslayersSmokeOfferCertificate.ps1"
+ $source=Restore-KingslayersSmokeOfferBoundary $source
  $marker='class spell_kingslayers_smoke_bomb : public SpellScriptLoader';$body=Block $source $marker;$prior=Block $old $marker
  if(($source.Replace($body,$prior)-replace '\s','') -cne ($old-replace '\s','')){throw 'Only smoke SpellScript may change'}
  [IO.File]::WriteAllText("$out/SmokeAI.inc",(Block $body 'class spell_kingslayers_smoke_bomb_SpellScript : public SpellScript')+';')
