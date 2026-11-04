@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED for installed data repair only; original15/30s caller and client presentation remain OPEN",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/kingslayers-opening-voice-2026-11-04",
+    "manifest_sha256": "5197177d404615bf21292ff0c01cc4f9dd0d7f53dab8fa21cd7aeec9a59b9af7",
+    "files": 324,
+    "bytes": 3154153,
+    "fix_commit": "fc10c30ce6320fbae7bfa0823a61485b41a0e55b",
+    "verified": "Source/archive/source SHA256 and credential scans verified. Configs/binaries/PDB/audio/character data excluded. No active logs cleared; canonical mixed6090 unresolved log and informative server history retained."
+  },
+  "audit": "docs/audits/kingslayers-opening-voice-2026-11-04.json",
+  "review": "Original native Player-clock/payload counterfactual paired with4shadow/4installed actual core contexts, ASAN producer/player-clock repair,10 full hashed voice decodes,80partial SQL retries/32custom preservations, actual updater/readback and owned2476 ready/shutdown0/exit0/gone. Initial new inspector ID-versus-idx assertion paired with corrected passing original/repaired checks. No new crash/DBError/unexplained runtime failure.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "The original opening caller still requests2377 at15s and mandatory progression/2384/departure at30s, moving/despawning98094/108058 at15+6s and Garona at30+4s. This separately reproduced sequencing problem is NOT fixed by data budgets; next repair must retain full native presentation before actor removal while preserving failure recovery and exactly-once real receipts.",
+    "Actual client playback/start scheduling/actor visibility/movement, silent2384/108057 visibility, full1123 and all36 chains remain OPEN. No authored retail timing invented.",
+    "Native Player-owned conversation lifetime follows the caster playback key, so an independently late group viewer can lose its tail. Source departure preserves the conversation object but does not certify retained actor rendering. Cancelled/abandoned/re-entered actor state and shared107979 acceptance remain separate boundaries."
+  ]
+}

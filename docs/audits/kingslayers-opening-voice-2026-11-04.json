@@ -35,5 +35,15 @@
     "tools/tests/Test-KingslayersOpeningVoice.ps1": "76cd91b615ede22bd5e0655d51a34bde2d3b582118b49a006bb32419c6b88e8f",
     "tools/tests/Test-KingslayersOpeningVoiceAudio.ps1": "a49fd3925d7c588d369a17405c1b06f5f5994e72fcaf929dddbbbf3c2842a890",
     "tools/tests/Test-KingslayersOpeningVoiceNative.ps1": "d074c9c6b502540275a9b2fb84299985877e0f19e0d012c399b0332f88771a6a"
+  },
+  "fix_commit": "fc10c30ce6320fbae7bfa0823a61485b41a0e55b",
+  "archive": {
+    "audit": "docs/audits/kingslayers-opening-voice-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/kingslayers-opening-voice-2026-11-04",
+    "manifest_sha256": "5197177d404615bf21292ff0c01cc4f9dd0d7f53dab8fa21cd7aeec9a59b9af7",
+    "files": 324,
+    "bytes": 3154153,
+    "fix_commit": "fc10c30ce6320fbae7bfa0823a61485b41a0e55b",
+    "verified": "Source/archive/source SHA256 and credential scans verified. Configs/binaries/PDB/audio/character data excluded. No active logs cleared; canonical mixed6090 unresolved log and informative server history retained."
   }
 }
