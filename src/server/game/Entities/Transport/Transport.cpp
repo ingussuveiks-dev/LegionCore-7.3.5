@@ -36,6 +36,8 @@
 #include "Vehicle.h"
 #include "ZoneScript.h"
 #include <G3D/Vector3.h>
+#include <utility>
+#include <vector>
 
 Transport::Transport() : GameObject(),
     _transportInfo(nullptr), _isMoving(true), _pendingStop(false),
@@ -613,6 +615,14 @@ float Transport::CalculateSegmentPos(float now)
 bool Transport::TeleportTransport(uint32 newMapid, float x, float y, float z, float o)
 {
     Map* oldMap = GetMap();
+    // Travel/removal callbacks can erase this passenger and its controlled
+    // units, or retire/rebind another actor. Keep no live-set iterator across
+    // callbacks and revalidate the original full identity before dereferencing.
+    std::vector<std::pair<WorldObject*, ObjectGuid>> passengers;
+    passengers.reserve(_passengers.size());
+    for (WorldObject* passenger : _passengers)
+        if (passenger)
+            passengers.emplace_back(passenger, passenger->GetGUID());
 
     if (oldMap->GetId() != newMapid)
     {
@@ -620,10 +630,10 @@ bool Transport::TeleportTransport(uint32 newMapid, float x, float y, float z, fl
         Relocate(x, y, z, o);
         oldMap->RemoveFromMap<Transport>(this, false);
 
-        for (PassengerSet::iterator itr = _passengers.begin(); itr != _passengers.end(); ++itr)
+        for (auto const& passenger : passengers)
         {
-            WorldObject* obj = *itr;
-            if (!obj)
+            WorldObject* obj = passenger.first;
+            if (_passengers.find(obj) == _passengers.end() || obj->GetGUID() != passenger.second)
                 continue;
 
             float destX, destY, destZ, destO;
@@ -658,20 +668,23 @@ bool Transport::TeleportTransport(uint32 newMapid, float x, float y, float z, fl
     else
     {
         // Teleport players, they need to know it
-        for (PassengerSet::iterator itr = _passengers.begin(); itr != _passengers.end(); ++itr)
+        for (auto const& passenger : passengers)
         {
-            if ((*itr)->IsPlayer())
+            WorldObject* obj = passenger.first;
+            if (_passengers.find(obj) == _passengers.end() || obj->GetGUID() != passenger.second)
+                continue;
+            if (obj->IsPlayer())
             {
                 // will be relocated in UpdatePosition of the vehicle
-                if (Unit* veh = (*itr)->ToUnit()->GetVehicleBase())
+                if (Unit* veh = obj->ToUnit()->GetVehicleBase())
                     if (veh->GetTransport() == this)
                         continue;
 
                 float destX, destY, destZ, destO;
-                (*itr)->m_movementInfo.transport.Pos.GetPosition(destX, destY, destZ, destO);
+                obj->m_movementInfo.transport.Pos.GetPosition(destX, destY, destZ, destO);
                 TransportBase::CalculatePassengerPosition(destX, destY, destZ, &destO, x, y, z, o);
 
-                (*itr)->ToUnit()->NearTeleportTo(destX, destY, destZ, destO);
+                obj->ToUnit()->NearTeleportTo(destX, destY, destZ, destO);
             }
         }
 

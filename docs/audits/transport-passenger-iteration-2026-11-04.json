@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-04",
+  "status": "DEPLOYED focused transport passenger iteration repair; modeled exact-source ASAN and selected Release proofs pass; real client ship crossings remain OPEN.",
+  "cause": "Both TeleportTransport branches held a live std::set iterator across callbacks that erase its node. Cross-map NPC removal directly invalidates itr; rejected player travel can remove the owner plus controlled pet/guardian; same-map NearTeleportTo may also remove a passenger. Incrementing the erased iterator is heap-use-after-free. Correcting the separate shared TeleportTo false-success contract makes an additional existing removal path reachable.",
+  "implementation": "Capture pointer/full128-bit ObjectGuid snapshot before callbacks. Traverse independent vector; find pointer in current passenger set before dereference, then compare complete original GUID. Skip retired/rebound future members; do not process newly joined actors during an already-started transfer. No live set iterator spans travel/removal. Original map removal/admission, coordinates/rotation, flags, resurrection, vehicle deferral, dynamic/area removal, owner-controlled removal and true-crossmap/false-samemap convention retained.",
+  "investigation": "Local matching Transport, Player.SafeTeleport/TeleportTo, Object.SetTratsport and RemovePassenger traced first. Newer local TrinityCore crossmap copies its passenger set, supporting independent traversal only as a reference; schema/API/behavior not imported. No external gameplay claims.",
+  "checks": {
+    "counterfactual": "Pinned fe118183d complete TeleportTransport in final ASAN fixture exits1 heap-use-after-free at std::_Tree_const_iterator::operator++ for each far and near branch. Captured stderr retained, not an ordinary pass.",
+    "repaired": "79 assertion-enabled MSVC ASAN contexts execute complete production TeleportTransport, unchanged RemovePassenger and actual coordinate helper against real standard containers. Both branches/three rotations: accepted/refused/change-map/dead players, owner+pet+guardian, future removal/deletion, same-pointer changed HIGH GUID, late join, empty set, dynamic/area, owned vehicle deferral, callback self/all removal. Full XYZO/flags/counts/cleanup asserted.",
+    "limits": "Engine map/script/travel/lifetime endpoints controlled; these are extracted complete production routines with real containers, not an ASAN-instrumented full native core or actual client ship crossing.",
+    "release": "Original game.vcxproj Release static output rebuilt without OutDir override. Staged final link uses original libraries; selected and canonical PE proves both 24-byte pointer/fullGUID traversals, all set-membership rejection edges before GetGuidValue, fullGUID inequality skip to vector advance, rejected native travel removing passenger. Canonical Scepter and retained map arrival/transport visibility/scenario checkpoint checks pass. Shared return native and Sheilun/Merlis coverage recorded in teleport-return audit."
+  },
+  "fixture_iterations": [
+    "First baseline executable could not locate the ASAN DLL: exitC0000135/empty stderr. Initial baseline matcher incorrectly accepted null stderr; corrected runner calls vcvars64 for execution and requires nonempty matching ASAN heap-use-after-free. Genuine far/near baselines then reproduce, and final fixture repeats both. Original invalid run retained, not counted as a baseline success.",
+    "Initial repaired fixture post-check dereferenced an intentionally deleted future unique_ptr, causing address0x50 ASAN failure in test main. Corrected post-check to skip deliberately retired objects; production retained full delete/rebind coverage. Final79 passes with empty stderr."
+  ],
+  "canonical_hashes": {
+    "worldserver.exe": "58c77ca652fc1881c70beaeabbc84273fed88298779583bf962ed9d8f00b92bd",
+    "bnetserver.exe": "d95fa47788c3586d365d1823c678a840a701219e6f1c7b483f27985222a3cb83"
+  },
+  "diagnostics": "Before/after canonical and own-runtime crashes/log lengths/timestamps, exits/stdout/stderr/appended server and DBErrors checked. Ordinary final runs clean. Expected ASAN counterfactuals separately labeled. Canonical Crashes empty; mixed DBErrors6090 bytes/SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged and OPEN. Owned canonical PID19988 ready/shutdown0/exit0/stderr empty/gone; no user server stopped or task server left running.",
+  "archive": "docs/audits/teleport-return-archive-2026-11-04.json (fix commit hashes recorded there after implementation commits)",
+  "open": [
+    "Actual route-map crossing, client camera/seat/pet/guardian/reconnect and full artifact chains/all36 remain OPEN.",
+    "Independent original Althea214873 startup/presentation and shared LINK diagnostics remain OPEN; active mixed error log preserved."
+  ]
+}
