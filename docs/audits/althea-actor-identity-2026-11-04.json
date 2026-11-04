@@ -35,5 +35,15 @@
     "tools/tests/Test-AltheaConversationNative.ps1": "e2b6f888e400e91e298b635b491874e870e0c90460b9b1ff3b7e58ca166bedfe",
     "tools/tests/AltheaActorIdentityCertificate.ps1": "8ec02c9ef12148bd2a1a8e4175c6897e725dde3bea7d8fa1fb664362aafd7c07",
     "tools/tests/verify_althea_actor_release.py": "3f15dc4b77868003718301004b622abb5ae02d5fdf57cc4bb06cf3f6aacb4f76"
+  },
+  "fix_commit": "cf314fbf72b8052d1284aad0e51014187ab7c18d",
+  "archive": {
+    "audit": "docs/audits/althea-actor-identity-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/althea-actor-identity-2026-11-04",
+    "manifest_sha256": "9d07b7518df1b848a50713e9915bca73e832546de7713360dac3f73ae8334da8",
+    "files": 434,
+    "bytes": 465418,
+    "fix_commit": "cf314fbf72b8052d1284aad0e51014187ab7c18d",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. No active log cleared: private DBErrors empty; canonical mixed6090 and informative Server history retained."
   }
 }

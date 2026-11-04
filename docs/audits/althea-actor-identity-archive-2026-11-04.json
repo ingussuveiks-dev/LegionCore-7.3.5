@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED after canonicalC32891DB/E1D72292 and passing checks; all task servers gone.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/althea-actor-identity-2026-11-04",
+    "manifest_sha256": "9d07b7518df1b848a50713e9915bca73e832546de7713360dac3f73ae8334da8",
+    "files": 434,
+    "bytes": 465418,
+    "fix_commit": "cf314fbf72b8052d1284aad0e51014187ab7c18d",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. No active log cleared: private DBErrors empty; canonical mixed6090 and informative Server history retained."
+  },
+  "cause_fix_checks": "docs/audits/althea-actor-identity-2026-11-04.json",
+  "review": "Preserves two controlled same-index old identity admissions, final distinct-name717261c1a baseline versus current explicit refusals,27 ASAN/9 retained native corpse cases/Garona continuation,26 native victory/44intro/16reveal,36+64death/84intro/70door/22ledger and Merlis27/138/124/16/Garona36 ASAN, staged/canonical proofs/Scepter and owned34348 ready/shutdown0/exit0. Preserves stale death/guard certificate failures and exact repaired normalization, initial getter/null-test inspector assumptions and passing native field/control-flow checks. No natural/client GUID collision or whole-chain completion inferred. No crash report or DBError generated.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "No natural GUID collision, client bug, audible/rendered2431, whole combat/scaling/movement/reconnect/pet/camera/full1123 or all36 completion claimed. Direct publication refusal controls are defensive API endpoints, not normal factory traversal.",
+    "Other low-index accessor callers require separate actual contract review; no global accessor rewrite. Original Althea214873 startup/protection, source/grid/instance reconstruction, unknown shared101430/103151 LINK2 and WardstoneLINK4 remain OPEN."
+  ]
+}
