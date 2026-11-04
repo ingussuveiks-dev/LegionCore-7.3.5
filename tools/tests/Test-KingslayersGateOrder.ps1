@@ -6,7 +6,8 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$source=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "ff238f715:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned gate predecessor missing'}
  $marker='class npc_kingslayers_small_events : public CreatureScript';$body=Block $source $marker;$prior=Block $old $marker
  $opening='struct npc_garona_halforcenAI : ScriptedAI'
- $normalized=$source.Replace($body,$prior).Replace((Block $source $opening),(Block $old $opening))
+ . "$PSScriptRoot/KingslayersSmokeCertificate.ps1"
+ $normalized=(Restore-KingslayersSmokeBoundary $source).Replace($body,$prior).Replace((Block $source $opening),(Block $old $opening))
  if(($normalized -replace '\s','') -cne ($old -replace '\s','')){throw 'Only gate AI and opening bridge may change'}
  # Certify every pre-existing shared small-events statement after subtracting
  # the independently exercised scoped controller and its two dispatch points.

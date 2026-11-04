@@ -482,16 +482,58 @@ public:
     {
         PrepareSpellScript(spell_kingslayers_smoke_bomb_SpellScript);
 
+        bool smokeAdmitted = false;
+        ObjectGuid smokeCaster;
+
+        Player* SmokePlayer(bool beforeEvent) const
+        {
+            Unit* unit = GetCaster();
+            Player* player = unit ? unit->ToPlayer() : nullptr;
+            if (!player || !player->IsInWorld() || player->IsPreDelete() || !player->IsAlive() || !player->CanContact() ||
+                player->isGameMaster() || player->getClass() != CLASS_ROGUE || player->HasPendingTeleport() ||
+                player->IsQuestObjectExpired() || player->GetMapId() != 1620 || player->GetAreaId() != 8228 ||
+                player->GetExactDist2d(-8822.94f, 657.59f) >= 13.0f)
+                return nullptr;
+            bool quest = false;
+            for (uint32 id : {42504u, 42627u})
+                if (!player->GetQuestRewardStatus(id) &&
+                    (player->GetQuestStatus(id) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(id) == QUEST_STATUS_COMPLETE))
+                    quest = true;
+            Scenario* scenario = quest ? sScenarioMgr->GetScenario(player->GetInstanceId()) : nullptr;
+            if (!scenario || scenario->GetScenarioId() != 1123)
+                return nullptr;
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto leaf = progress->find(48533);
+            bool const received = leaf != progress->end() && leaf->second.Counter;
+            return (beforeEvent ? !received && scenario->CanUpdateCriteria(48533) : received) ? player : nullptr;
+        }
+
+        SpellCastResult CheckSmoke()
+        {
+            return SmokePlayer(true) ? SPELL_CAST_OK : SPELL_FAILED_NOT_HERE;
+        }
+
+        void GuardSmokeEvent(SpellEffIndex index)
+        {
+            // Native effect61 awards51437 before AfterCast. Protect that real
+            // dispatch as well as normal cast admission; never replace credit.
+            Player* player = SmokePlayer(true);
+            if (smokeAdmitted || !player)
+            {
+                PreventHitDefaultEffect(index);
+                return;
+            }
+            smokeCaster = player->GetGUID();
+            smokeAdmitted = true;
+        }
+
         void HandleAfterCast()
         {
-            if (Unit* caster = GetCaster())
+            if (Player* caster = SmokePlayer(false))
             {
-                if (caster->GetTypeId() != TYPEID_PLAYER)
+                if (!smokeAdmitted || caster->GetGUID() != smokeCaster)
                     return;
-                if (caster->GetMapId() != 1620 || caster->GetAreaId() != 8228)
-                    return;
-                if (caster->GetExactDist2d(-8822.94f, 657.59f) >= 13.0f)
-                    return;
+                smokeAdmitted = false;
 
                 caster->CastSpell(caster, 214683);
                 caster->CastSpell(caster, 214734);
@@ -531,6 +573,8 @@ public:
 
         void Register() override
         {
+            OnCheckCast += SpellCheckCastFn(spell_kingslayers_smoke_bomb_SpellScript::CheckSmoke);
+            OnEffectHit += SpellEffectFn(spell_kingslayers_smoke_bomb_SpellScript::GuardSmokeEvent, EFFECT_0, SPELL_EFFECT_SEND_EVENT);
             AfterCast += SpellCastFn(spell_kingslayers_smoke_bomb_SpellScript::HandleAfterCast);
         }
     };

@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-04",
+  "status": "DEPLOYED9DBED7C6/56C5C0C8: native Smoke Bomb214645 admission before actual SEND_EVENT51437;28ASAN and34native endpoints pass. Client/full1123/all36 remain OPEN.",
+  "scope": "Only the existing Kingslayers smoke SpellScript. Original ScriptName/native effect/AfterCast presentation retained; no SQL, quest grant, item grant, character edit or bypass.",
+  "evidence": {
+    "sources": "Matching local26972 typed DB2/hotfix, actual MariaDB bindings/conditions/conversations and native Spell/Scenario source first. Local newer Trinity and fetched origin history reviewed as references; no external behavior copied or unseen client/video traversal claimed.",
+    "native_catalog": "214645 effect0 SEND_EVENT61/misc51437/targets0,0;1123 stage2 root48532 ->leaf48533/criterion30447/type92/asset51437/amount1. Adjacent stage1 event51435 and stage3 leaves49471/52832,49472/52801 retained. No214645 ItemEffect row found.214683 effect179/AT7295;214734 effect219/conversation2409;214304 effect6/aura4. No selected linked-spell/target-position/source-condition rules; actual30447 extra criteria data empty.",
+    "presentation": "Original2409 actor0/108107/4651401/duration1750/line5114;2412 actor0/108057/4651523/duration4450/line5120. Native valid pose(-8822.94,657.59,96.5) resolves actual area8228; earlier opening pose resolves8225/distance375.522. No actor, line, SoundKit, destination or phase invented."
+  },
+  "cause": "The old script checked map/area/radius only in AfterCast. Native effect61 had already dispatched51437 and updated criteria73/92. Six full pinned81c43cc8c actual old casts advanced1123 from2 to3 outside the original area, including wrong-class and questless casters, before AfterCast refused presentation.",
+  "repair": "OnCheckCast requires a live contactable in-world non-GM actual Rogue Player with active unrewarded42504/42627, original map1620/area8228/<13-yard pose, actual1123, missing leaf48533 and native CanUpdateCriteria admission. Effect0 rechecks immediately before native dispatch and PreventHitDefaultEffect rejects changed/invalid/duplicate contexts. Capture the full actual caster GUID. AfterCast requires the native leaf receipt and same full caster identity, then consumes its per-cast latch before original214683/214734/sound15003, Clay movement/optional2412 and ten NPC214304 panic effects. No manual credit or exact later-stage assumption.",
+  "checks": {
+    "baseline": "6 actual native pinned81c43cc8c counterfactual casts, both quests: wrong location/class/quest consume real event2->3. Expected-broken evidence, not ordinary successful gameplay.",
+    "asan": "28 whole extracted production SpellScript contexts, assertions enabled, AddressSanitizer.19 admission refusals, both quests INCOMPLETE/COMPLETE, missing native receipt, full caster change, repeated event/AfterCast, failed optional2412 and all ten original panic actors. Engine services/receipt/registration modeled; final host warning removed by renaming only its fake caster field, clean rerun passes.",
+    "native": "34 actual registered native endpoints:26 ordinary triggered casts plus8 explicitly controlled native Spell dispatch endpoints. Both quests, wrong location/class/quest/GM/stage/death, active COMPLETE, existing receipt, actual Pet/Guardian casts. Controlled endpoints change location/quest/GM after native CheckCast, then invoke real HandleEffects; invalid default prevented, valid native receipt exactly1, repeated actual effect/AfterCast cannot replay. Actual11 NPCs yield both original2409/2412 and all ten214304 auras. Release source/library hashes stable during final native run. Earlier quest/stage/poses and clocks seeded; neither authenticated client traversal nor ordinary untriggered input scheduling certified.",
+    "retained": "53gate ASAN;53opening ASAN,8native accepted phase timing and32native admission; Althea27identity/84intro/36death, Merlis27death/138intro/124handoff/16combat, Garona36reveal pass. Independent older certificates restore the separately tested smoke boundary before their own comparisons; new whole-file certificate allows only the smoke class production delta.",
+    "release": "Original scripts.vcxproj Release/original final-link library paths; separate stage, selected PE registration/factory/Register hook dataflow, positive predicates/full GUID, native receipt and no manual progression. Actual native HandleEffects inlines effect-hook dispatch; linked slot0x120/hook6 invokes handler then checks prevention bit before SpellEffects[61] actual SEND_EVENT pointer. Offline four-file EXE/MAP backup/hash promotion with protected config/cert/DLL hashes. Canonical smoke/gate/intro, Merlis death/Althea identity/pickup/return PE and mandatory Scepter -VerifyReleaseBinary pass.",
+    "runtime": "Owned worldserver PID11612 fresh ready, graceful server shutdown0, exit0, empty stderr, gone. No user server stopped or hidden task server left running. No updater dependency."
+  },
+  "iterations": [
+    "Typed catalog initially used nonexistent EffectApplyAuraName; corrected from actual SpellEffectEntry to EffectAura. One exploratory read-only query assumed creature_template_wdb.id; corrected to actual schema. Original failures retained; no persistent DML/server DBErrors.",
+    "Expanded native host initially rewrote a valid-mode assertion and repeated setup after cast; actual valid cast progressed correctly. Fixed host,22/26/34 contexts pass. Controlled effect fixture initially assumed raw trigger flags/private direct CheckSmoke; corrected to actual TriggerCastData and native dispatcher. ASAN host initially lacked Creature forward declaration; corrected and28pass.",
+    "PE inspector initially assumed Player.PlayDirectSound and standalone CallScriptEffectHandlers; actual inherited WorldObject sound and inlined native effect dispatcher verified from disassembly. Corrected a branch-index assumption to follow actual prevention branch. Failed inspector artifacts paired with passing selected/canonical evidence; no production changes to satisfy inspectors."
+  ],
+  "diagnostics": "Every test/build has before/after canonical and own crash/log length/timestamp evidence, inspected exit/stdout/stderr/new warnings/errors/assertions/DBErrors. Passing runs clean. Canonical Crashes empty; mixed DBErrors6090 SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved and not cleared. Private empty DBErrors and informative history preserved. Hash-verified resolved archive follows focused fix commit.",
+  "canonical_hashes": {
+    "worldserver.exe": "9dbed7c6b3406843109ee6ffec5dd6561b4538159f5ff7ab2f4549ce81bc249c",
+    "bnetserver.exe": "56c5c0c8a6f67637e3b737c3d490ea511b3cc71d5c48f88e33b7a4a916b05919"
+  },
+  "limits": [
+    "Actual client smoke input/cast result/visual/audio, physical Clay/panic movement, group visibility, pet presentation, abandonment/retry/re-entry/relog and full1123/all36 remain OPEN. Native controlled endpoints do not certify full physical or authenticated client traversal.",
+    "Native Player owns this spell event; Pet/Guardian must not become an owner-attributed Rogue cast. Owner/pet kill-credit changes are outside this noncombat event. Original eligible-group/native scenario rules unchanged.",
+    "Missing native receipt suppresses optional presentation; no synthetic credit or persistent latch is saved. Once actual event accepted, optional presentation failure does not roll back progression. Original actor/conversation failures and client recovery remain separate checks.",
+    "Original Althea214873 startup/protection, Merlis corpse/AI/grid/instance reconstruction, unknown shared101430/103151 LINK2 and Wardstone LINK4 remain OPEN. No missing action guessed or log cleared."
+  ],
+  "next": "Continue an independently evidenced artifact admission/lifetime repair, including original Althea214873 sequence or shared-link investigation only with actual missing-action evidence. Preserve client/full1123/all36 and reconstruction limits.",
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "22997a4e1aea5db83cc31a47659c228adc207455b174386546e119b9348f011a",
+    "tools/research/KingslayersSmokeCatalog.cpp": "511904af16aafa3cbe9b42d1dba238ca05181bf6562054c5e922a3c422747e12",
+    "tools/tests/KingslayersGateOrderCertificate.ps1": "a524f3cf040cdaab85fbebb1ec56d473ba72745dd10a322dc162e3020d6f69db",
+    "tools/tests/KingslayersSmokeCertificate.ps1": "080128786ccca3efc98af7319b2c7a501e14adcd2005c751a8c516c84dc90d8c",
+    "tools/tests/KingslayersSmokeNative.cpp": "fb0e8307c4dc83b934e8c0d8343371bce4903e2f677bb1e22c5d62e7434c8af2",
+    "tools/tests/KingslayersSmokeTest.cpp": "1d4932c62bd15f17c414ea84584273af36773ee3d2b9dfd46359e15f6b9d6ba0",
+    "tools/tests/Test-KingslayersGateOrder.ps1": "c7848a393bcdf25d53f54cf3d2e202a060b6922dcff6e294c3b6849dd42fe009",
+    "tools/tests/Test-KingslayersSmoke.ps1": "101c1c4891bc29004b362da0cfd8fe13369305e5f2a308d5f775ee8b22b31b57",
+    "tools/tests/Test-KingslayersSmokeNative.ps1": "6084c39531f1d725f6d8a55df613d9ff99ecff28b79a9670985cd9b66cb75c15",
+    "tools/tests/verify_kingslayers_smoke_release.py": "7c341618b72a17da4d6db28a247c3874d8972d7a59ca7a85b20dbbf2ff2a83e7"
+  }
+}
