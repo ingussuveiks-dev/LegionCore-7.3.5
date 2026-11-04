@@ -1005,6 +1005,55 @@ public:
             UpdateOutro(diff);
         }
 
+        uint32 combatVoiceDelay = 0, combatVoiceGeneration = 0;
+        bool combatVoicePending = false, combatVoiceBusy = false, combatVoiceWarning = false;
+
+        void ResetCombatVoice()
+        {
+            ++combatVoiceGeneration;
+            combatVoiceDelay = 0;
+            combatVoicePending = combatVoiceWarning = false;
+        }
+
+        void UpdateCombatVoice(uint32 diff)
+        {
+            if (combatVoiceBusy)
+                return;
+            combatVoiceDelay = combatVoiceDelay > diff ? combatVoiceDelay - diff : 0;
+            if (!combatVoicePending || combatVoiceDelay || convid < 2442 || convid >= 2448 ||
+                !me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || !me->isInCombat() ||
+                me->GetEntry() != 107831 || me->GetMapId() != 1620 || me->IsQuestObjectExpired())
+                return;
+            combatVoiceBusy = true;
+            struct Release { bool& flag; ~Release() { flag = false; } } release{combatVoiceBusy};
+            uint32 const generation = combatVoiceGeneration;
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), convid, me, NULL, *me))
+            {
+                delete conversation;
+                if (generation != combatVoiceGeneration)
+                    return;
+                combatVoiceDelay = 1000;
+                if (!combatVoiceWarning)
+                    TC_LOG_WARN("scripts", "Merlis combat: conversation %u unavailable; retain bounded-rate same-line retry independently of combat", convid);
+                combatVoiceWarning = true;
+                return;
+            }
+            if (generation != combatVoiceGeneration)
+                return; // A reset during admission must not consume a new attempt.
+            // Use the admitted native conversation's complete published lifetime,
+            // including its padding. Spell/add timers continue independently.
+            combatVoiceDelay = conversation->GetDuration();
+            combatVoicePending = false;
+            ++convid;
+        }
+
+        void RequestCombatVoice()
+        {
+            combatVoicePending = convid >= 2442 && convid < 2448;
+            UpdateCombatVoice(0);
+        }
+
         bool IntroReceipt() const
         {
             Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
@@ -1185,10 +1234,12 @@ public:
         {
             events.Reset();
             summons.DespawnAll();
+            ResetCombatVoice();
         }
 
         void EnterCombat(Unit* who) override
         {
+            ResetCombatVoice();
             events.RescheduleEvent(EVENT_1, 5000); // 15 218359 + 218356 + summon
             events.RescheduleEvent(EVENT_3, 25000);
             convid = 2442;
@@ -1233,6 +1284,7 @@ public:
             if (!UpdateVictim())
                 return;
 
+            UpdateCombatVoice(diff);
             events.Update(diff);
 
             if (me->HasUnitState(UNIT_STATE_CASTING) || me->HasUnitState(UNIT_STATE_STUNNED))
@@ -1246,23 +1298,11 @@ public:
                         DoCast(218359);
                         events.RescheduleEvent(EVENT_1, 18000);
                         events.RescheduleEvent(EVENT_2, 4000);
-                        if (convid != 2448)
-                        {
-                            Conversation* conversation = new Conversation;
-                            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), convid, me, NULL, *me))
-                                delete conversation;
-                            ++convid;
-                        }
+                        RequestCombatVoice();
                         break;
                     case EVENT_2:
                         DoCast(218356);
-                        if (convid != 2448)
-                        {
-                            Conversation* conversation = new Conversation;
-                            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), convid, me, NULL, *me))
-                                delete conversation;
-                            ++convid;
-                        }
+                        RequestCombatVoice();
                         break;
                     case EVENT_3:
                         for (int i = 0; i < 6; ++i)
@@ -1272,14 +1312,8 @@ public:
                                 add->GetMotionMaster()->MoveJump(me->GetPositionX() + irand(-5, 5), me->GetPositionY() + irand(-5, 5), me->GetPositionZ(), add->GetOrientation(), 5.0f, 5.0f);
                                 add->CastSpell(add, 158342);
                             }
-                            if (convid != 2448)
-                            {
-                                Conversation* conversation = new Conversation;
-                                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), convid, me, NULL, *me))
-                                    delete conversation;
-                                ++convid;
-                            }
                         }
+                        RequestCombatVoice(); // One request for the wave, not one per add.
                         events.RescheduleEvent(EVENT_3, 25000);
                         break;
                 }

@@ -1,0 +1,71 @@
+{
+  "Build": 26972,
+  "Payloads": [
+    {
+      "VoiceMs": 1935,
+      "Bytes": 16422,
+      "SHA256": "6A9BAF012420D5894E281423EB92A0EF24501A97F105179F6492C08C05183B67",
+      "FileDataID": 1392006,
+      "Conversation": 2442,
+      "Line": 5165,
+      "Broadcast": 113687,
+      "SoundKit": 63592,
+      "PublishedLifetimeMs": 7150
+    },
+    {
+      "VoiceMs": 5132,
+      "Bytes": 34690,
+      "SHA256": "82D0197EA10F5469E017C96AAE04D33ECDF085983AAE6E76FE25C8766BD340D1",
+      "FileDataID": 1392007,
+      "Conversation": 2443,
+      "Line": 5166,
+      "Broadcast": 113691,
+      "SoundKit": 63593,
+      "PublishedLifetimeMs": 8400
+    },
+    {
+      "VoiceMs": 5056,
+      "Bytes": 35328,
+      "SHA256": "35905785F60C03F960430098C2EE0D45576C91B9B8A38C509264B4D164FF01FF",
+      "FileDataID": 1392008,
+      "Conversation": 2444,
+      "Line": 5167,
+      "Broadcast": 113692,
+      "SoundKit": 63594,
+      "PublishedLifetimeMs": 9150
+    },
+    {
+      "VoiceMs": 5229,
+      "Bytes": 36846,
+      "SHA256": "2060EC6F70D63E06A14DC655FBD349D50F1F43CCE277B30CD45C51C73DCFC881",
+      "FileDataID": 1392009,
+      "Conversation": 2445,
+      "Line": 5168,
+      "Broadcast": 113693,
+      "SoundKit": 63595,
+      "PublishedLifetimeMs": 7850
+    },
+    {
+      "VoiceMs": 2616,
+      "Bytes": 19701,
+      "SHA256": "482E8E020B69D878F11734283D1CEA2EF9EF89CB90FE4C850BB57BFDFCDCA4B9",
+      "FileDataID": 1392010,
+      "Conversation": 2446,
+      "Line": 5169,
+      "Broadcast": 113694,
+      "SoundKit": 63596,
+      "PublishedLifetimeMs": 7600
+    },
+    {
+      "VoiceMs": 8328,
+      "Bytes": 54682,
+      "SHA256": "0944ABE8A749F79B8148C6892242092269AE3BB26EF8B6F17E7418E401E9F0C4",
+      "FileDataID": 1392011,
+      "Conversation": 2447,
+      "Line": 5170,
+      "Broadcast": 113695,
+      "SoundKit": 63597,
+      "PublishedLifetimeMs": 9200
+    }
+  ]
+}

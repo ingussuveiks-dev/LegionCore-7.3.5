@@ -7,6 +7,8 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory $out -RuntimeDirectories @("$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp'
  $source=Get-Content "$repo/$path" -Raw -Encoding UTF8
+ . "$PSScriptRoot/MerlisCombatVoiceCertificate.ps1"
+ $source=Restore-MerlisCombatVoiceBoundary $source
  $pinned=(& git -C $repo show "ab20ad22:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned baseline unavailable'}
  $currentAI=Block $source 'struct npc_merlis_malaganAI : ScriptedAI';$oldAI=Block $pinned 'struct npc_merlis_malaganAI : ScriptedAI'
  $marker='void JustDied(Unit* who) override';$currentDeath=Block $currentAI $marker;$oldDeath=Block $oldAI $marker

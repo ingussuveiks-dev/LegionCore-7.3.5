@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-04",
+  "status": "DEPLOYED06113D04/D4860D82: focused Merlis six combat conversations serialized; same-line admission retry. Automated/native/PE checks separate from actual client playback/full1123/all36.",
+  "scope": "Only original Merlis107831/1620 combat2442..2447. Original six108324 summons/158342/jumps,218359/218356 and5/18/4/25s schedules retained. No SQL/new ScriptName/quest or item grant; death2448 and subsequent Garona path remain independent.",
+  "cause": "Original six-add loop contained dialogue creation/++convid for each summon. Exact pinned d8c85e9fe combat tail executes2445/2446/2447 at the same25s tick after earlier2442/2443/2444. Failed factories also unconditionally consumed all six lines. Adjacent ordinary events could overlap prior full voice; merely moving the block outside the loop would not fix that.",
+  "local_evidence": "Read-only MariaDB conversation_data2442..2447 each one line5165..5170, one Merlis107831 actor, no virtual actors; original published lifetimes7150/8400/9150/7850/7600/9200ms from2150/3400/4150/2850/2600/4200 plus native5000 padding. Matching26972/hotfix-aware typed ConversationLine/BroadcastText/SoundKit/SoundKitEntry map to1392006..1392011. All six native Vorbis files fully decoded with hashes/index hashes retained; voices1935/5132/5056/5229/2616/8328ms all fit published lifetimes. No listening/gameplay/client playback claimed. No external donor needed.",
+  "implementation": "One pending request per wave/ability; duplicate requests coalesce while previous accepted native conversation remains within its complete published lifetime. UpdateCombatVoice runs only after native UpdateVictim and before casting/stun return, keeping optional retries independent of combat events. Advance2442..2447 only after real successful CreateConversation; failures retain same ID with1s bounded retry and one warning per combat attempt. Native admitted GetDuration supplies the delay, not guessed audio constants. No retained raw conversation/player pointer. Source world/predelete/alive/combat/entry/map/quest-scope gates, RAII reentry guard and reset generation prevent old factory callbacks from consuming a new attempt. Reset clears pending speech/warning/delay and EnterCombat restores original2442. Original death/outro methods unchanged.",
+  "checks": {
+    "counterfactual": "Exact pinned original Reset/EnterCombat/UpdateAI compiled beside current code: three distinct lines at25s wave tick; separately refused factories still consume all six without admitted audio. These are explicit passing assertions of old broken behavior, not normal repaired runs.",
+    "asan": "16 meaningful exact production-helper/combat/reset/entry contexts; normal/missing summons/refused factory recovery/casting/stun/reset and seven inactive source guards plus reset/reentrant callbacks. Six full lines ordered, each previous published lifetime respected, no duplicate/same-tick overlap, one bounded warning. Differential spell/summon action timestamps identical to original across6 timelines. Engine/EventMap services controlled; not full-core ASAN.",
+    "native": "6 ordinary actual native full-class contexts across Human42504/Orc42627: actual Map/Conversation/CreateConversation/native published payloads/full actor GUIDs, repeated requests, exact delay boundary, six-line endpoint, reset/re-entry and stopped-combat suppression.2 explicit in-memory missing2442 conversation_data faults preserve ID and recover after999+1ms with exactly2 reviewed bounded WARNs; no DBErrors/crashes/other diagnostic. Earlier stage/combat admission/helper clock seeded, not actual full combat/client.",
+    "audio": "Test-MerlisCombatVoiceAudio: fresh26972 typed/hotfix mapping;6 complete hashed Vorbis decodes and full-voice/native-lifetime bounds pass. Native CASC indexes unchanged before/after read-only exports. No assets committed.",
+    "retained": "138 Merlis intro ASAN,124 whole handoff ASAN,36 Garona reveal ASAN; original native owner/accessor/charmer/pet/guardian/null/death regression with native26972 catalog;6 actual native player/pet/guardian kills to51615 and Garona reveal pass. Existing certificates restore only independently certified combat block/reset/entry/update; new whole-file certificate proves this focused delta.",
+    "pe": "Staged/canonical selected proof verifies registered Merlis UpdateAI, six unrolled native summons before one wave request, tick/ability dispatch, actual factory accepted branch before line advance, native Conversation duration field -> delay,1s retry, reset/generation/source/combat guards and no dialogue progression. Retained handoff/Garona/shared SmartAI and intro/pickup/return/teleport proofs; mandatory canonical Scepter -VerifyReleaseBinary.",
+    "build_runtime": "Original scripts.vcxproj Release and actual original scripts/game/shared/common final-link libraries, no global OutDir. Separate staged EXE/MAP then hash-verified offline backup/promotion to canonical Release; configs/certs/DLLs retained. Owned PID32732 fresh ready/graceful shutdown0/exit0/stderr empty/gone. No user server stopped, no task server remains, no manual character change."
+  },
+  "fixture_iterations": [
+    "Initial local Python invocation encountered Windows Store alias before file generation; rerun explicit installed Python. No production executable/test ran from that command.",
+    "Private PE dumper first named inspect.py shadowed Python stdlib inspect while importing Capstone; renamed pe-dump.py. Next dump requested two fully inlined helper names absent from the map; inspect their actual inlined callers instead. Final selected control-flow proof passes; no production checks disabled.",
+    "Initial private promotion helper was copied into a nested task directory while retaining parent-root calculation; stage-path guard failed before backup/promotion. Corrected explicit two-parent root; offline protected-hash backup/promotion and startup pass."
+  ],
+  "canonical_hashes": {
+    "worldserver.exe": "06113d046166444d83df7f431895f5c507cb8546108e95b02c279389ca9b7078",
+    "bnetserver.exe": "d4860d8253ed72e42af32d20a00e71189917ebcbbb904b498a2191317eb3453c"
+  },
+  "diagnostics": "Before/after canonical+own crash/log snapshots, exits/stdout/stderr/appended DBErrors/server warnings/errors/assertions reviewed for each run. Ordinary checks/startup clean;2 deliberate native refusal warnings separately classified. Canonical Crashes empty; mixed DBErrors6090 bytes/SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved. Compiler unused-parameter/sign warnings belong to retained extracted fixtures, not new server diagnostics. Final archive recorded separately.",
+  "limits": [
+    "Actual client voice/bubbles/cadence and combat traversal/scaling/movement, optional last-combat/death2448/outro cross-sequence audio remain OPEN. Serialization here concerns original six combat lines only; source death can interrupt optional combat presentation without blocking progression.",
+    "Unowned NPC killer personal credit policy, persistent recovery after actual Merlis/AI/grid/instance destruction, Althea214873 startup/shield, shared101430/103151 LINK2 and WardstoneLINK4 remain OPEN.",
+    "Native earlier scenario/quest/combat state and clock endpoints seeded; no full client1123 or all36 completion certification."
+  ],
+  "next": "Continue independent instance/grid-lifetime or native Merlis combat investigation; preserve client/full1123/all36 and unknown LINK payloads. Do not manufacture NPC-only player credit or initial Althea protection without evidence.",
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "dbe77d7bfd83ba002a1170f802c1f7bad7c1556266f8c7339443105e848eab8f",
+    "tools/tests/MerlisCombatVoiceAudio.json": "c89478201371b4a27b7157bc8945fa786ccc29c87590add545ad4a1b8a1acc4c",
+    "tools/tests/MerlisCombatVoiceCertificate.ps1": "e7e75f004fc22c50309c4211a521d95916df2fa76c226721a21d373d62e4da08",
+    "tools/tests/MerlisCombatVoiceNative.cpp": "3a80901db87614b907ad3b98deabe30cc74699bc6fc6c9d8981e50ab60526669",
+    "tools/tests/MerlisCombatVoiceTest.cpp": "0e03b729c6548fddb0e7d4ca7d284a870e80e6d58bea78b6af78acf1564372e0",
+    "tools/tests/Test-MerlisCombatVoice.ps1": "c3850b3648aee3417221b9d627cab841bb19372c83ae9345d86aa557f44bdb35",
+    "tools/tests/Test-MerlisCombatVoiceAudio.ps1": "0157169fc36c9543cbbbef58d95170fdb1897f2db53b3ffdb14aa0254cffac41",
+    "tools/tests/Test-MerlisCombatVoiceNative.ps1": "aeba1323778aa2e639b2ecc73efaff8472b6fdc19e8242adc19fc28467f60d24",
+    "tools/tests/verify_merlis_combat_voice_release.py": "0af1ae89761767f22877e624dc7e2383c17ccabbf03798d204ceade3c79f6276",
+    "tools/research/MerlisCombatVoiceCatalog.cpp": "694dd0681c14ad45b95715ec3ffdf527bfc8ed5c227ad50fa9bd2b3c2b9329cc"
+  }
+}

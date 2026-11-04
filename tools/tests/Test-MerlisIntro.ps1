@@ -4,6 +4,8 @@ $out="$repo/build-extractors/runtime-test/merlis-intro-asan/$(Get-Date -Format y
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$current=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "686d4d730:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Merlis predecessor missing'}
+ . "$PSScriptRoot/MerlisCombatVoiceCertificate.ps1"
+ $current=Restore-MerlisCombatVoiceBoundary $current
  # Garona reveal has its own whole-source/ASAN/native certificate.
  $current=$current.Replace((Block $current 'class npc_garona_halforcen_outro : public CreatureScript'),(Block $old 'class npc_garona_halforcen_outro : public CreatureScript'))
  $ai=Block $current 'struct npc_merlis_malaganAI : ScriptedAI';$prior=Block $old 'struct npc_merlis_malaganAI : ScriptedAI'

@@ -3,7 +3,8 @@ $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../.."
 $out="$repo/build-extractors/runtime-test/merlis-handoff-asan/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
- $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp" -Raw;$ai=Block $source 'struct npc_merlis_malaganAI : ScriptedAI'
+ . "$PSScriptRoot/MerlisCombatVoiceCertificate.ps1"
+ $source=Restore-MerlisCombatVoiceBoundary (Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp" -Raw);$ai=Block $source 'struct npc_merlis_malaganAI : ScriptedAI'
  $pinned=(& git -C $repo show 'cf1f7a103:src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned handoff source certificate missing'}
  $prior=Block $pinned 'struct npc_merlis_malaganAI : ScriptedAI'
  $garona=Block $source 'class npc_garona_halforcen_outro :';$receipt=Block $garona 'uint32 GetData('
