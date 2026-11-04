@@ -1,6 +1,6 @@
 {
   "date": "2026-11-04",
-  "status": "OPEN reproduced native admission defect; no production repair/deployment. Pinned broken controls are not a repaired regression.",
+  "status": "HISTORICAL pinned native counterfactual; focused admission/travel repair now deployed, see resolution. Client/full1123/all36 and unrelated findings remain OPEN.",
   "scope": "Original Merlis107831/360963 map1620, native1123 stage6/step2561/root48586/leaf48587, event51614. Both original42504/42627 quests; separate stage7 boss death51615 and later51616 unchanged.",
   "cause": "Original full Merlis UpdateAI polls FindNearestPlayer(70), immediately sets actor introDone=true without class/quest/GM/stage admission, creates2484 on that player and schedules its five-second transition on that player. The flag persists. An ineligible first-arriving GM or questless Rogue can consume this actor; a later eligible Rogue gets neither its scene nor its delayed callback.",
   "native_evidence": {
@@ -39,5 +39,9 @@
     "tools/research/MerlisIntroAdmissionProbe.cpp": "e4ca78bfa3d58677cd6291e7de6b2035ddbd714519244d4678abd35bc6d97e5d",
     "tools/research/MerlisIntroReadOnly.sql": "748ef042f52a3805db36606c12d2bea535c6551a2f0df1db322d1bcf6af442a4",
     "tools/research/Probe-MerlisIntroAdmission.ps1": "a413c62754054d88a036a903b075a11744af8576ffe871b426635847d10dc2d9"
+  },
+  "resolution": {
+    "audit": "docs/audits/merlis-intro-2026-11-04.json",
+    "status": "DEPLOYED B3C6E014/F9C02E9D: focused Merlis intro admission/accepted-travel/native51614 repair. Automated/native/selected/canonical checks pass; actual client/full encounter/all36 remain OPEN."
   }
 }

@@ -8,6 +8,8 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  [IO.File]::WriteAllText("$out/GuardLedger.inc",$helpers)
  if(($current.Remove($a,$b-$a).Replace('#include "KingslayersGuardProgress.h"','').Replace('#include "Map.h"','')-replace '\s','') -cne ($old-replace '\s','')){throw 'Original instance graveyard/update/constructor changed outside dedicated guard ledger'}
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$current=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "b1fc9b11d:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned guard consumer predecessor missing'}
+ # Merlis intro has its own whole-source/ASAN/native certificate.
+ $current=$current.Replace((Block $current 'class npc_merlis_malagan : public CreatureScript'),(Block $old 'class npc_merlis_malagan : public CreatureScript'))
  $ai=Block $current 'struct npc_sister_althea_ebonlockeAI : ScriptedAI';$before=Block $old 'struct npc_sister_althea_ebonlockeAI : ScriptedAI';$normalized=$ai
  foreach($name in @('void UpdateIntro(','void MoveInLineOfSight(')){$normalized=$normalized.Replace((Block $ai $name),(Block $before $name))}
  if(($current.Replace($ai,$normalized).Replace('#include "KingslayersGuardProgress.h"','')-replace '\s','') -cne ($old-replace '\s','')){throw 'Only Althea tracked-guard handoff/query and dedicated declaration may change'}

@@ -889,6 +889,187 @@ public:
         EventMap events;
         SummonList summons;
 
+        ObjectGuid introRecipient, introCompanions[2];
+        uint32 introDelay = 0, introRetry = 0, introSceneRetry = 0;
+        bool introBusy = false, introArriving = false, introVoice = false, introScene = false;
+        uint8 introWarnings = 0;
+
+        bool IntroReceipt() const
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1123)
+                return false;
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto found = progress->find(48587);
+            return found != progress->end() && found->second.Counter;
+        }
+
+        Player* IntroPlayer(Player* player, bool pending = false, bool admission = true) const
+        {
+            if (!me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || me->GetEntry() != 107831 ||
+                me->GetMapId() != 1620 || me->IsQuestObjectExpired() || !player || !player->IsInWorld() ||
+                player->IsPreDelete() || !player->IsAlive() || !player->CanContact() || player->isGameMaster() ||
+                player->getClass() != CLASS_ROGUE || (!pending && player->HasPendingTeleport()) ||
+                player->GetMap() != me->GetMap() || !player->InSamePhase(me) || me->GetExactDist(player) > 70.0f ||
+                player->IsQuestObjectExpired() || !me->CanTargetQuestObject(player) || !player->CanTargetQuestObject(me))
+                return nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1123 ||
+                (admission && (!scenario->CanUpdateCriteria(48587) || IntroReceipt())))
+                return nullptr;
+            for (uint32 quest : {42504u, 42627u})
+                if (!player->GetQuestRewardStatus(quest) &&
+                    (player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(quest) == QUEST_STATUS_COMPLETE))
+                    return player;
+            return nullptr;
+        }
+
+        bool IntroDestination(Player* player) const
+        {
+            auto const& destination = player->GetTeleportDest();
+            return destination.GetMapId() == 1620 && destination.GetExactDist(-8342.62f, 271.15f, 155.34f) < 0.1f;
+        }
+
+        void IntroCancel()
+        {
+            introRecipient.Clear();
+            for (auto& guid : introCompanions)
+                guid.Clear();
+            introArriving = introVoice = introScene = false;
+            introDelay = introRetry = introSceneRetry = 0;
+            timer = 1000;
+        }
+
+        void IntroPresentation(Player* player)
+        {
+            if (introRetry)
+                return;
+            introRetry = 1000;
+            if (!introVoice)
+            {
+                Conversation* conversation = new Conversation;
+                if (conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2484, player, NULL, *player))
+                    introVoice = true;
+                else
+                {
+                    delete conversation;
+                    if (!(introWarnings & 1))
+                        TC_LOG_WARN("scripts", "Merlis intro: conversation2484 unavailable; retry presentation independently of travel");
+                    introWarnings |= 1;
+                }
+            }
+        }
+
+        void IntroScene(Player* player)
+        {
+            if (introScene || introSceneRetry)
+                return;
+            introSceneRetry = 1000;
+            introScene = player->HasAura(214942) || player->CastSpell(player, 214942) == SPELL_CAST_OK;
+            if (!introScene && !(introWarnings & 8))
+            {
+                TC_LOG_WARN("scripts", "Merlis intro: optional214942 scene cast refused; travel remains independent");
+                introWarnings |= 8;
+            }
+        }
+
+        void IntroCommit(Player* player)
+        {
+            if (!IntroDestination(player) || (!player->HasPendingTeleport() &&
+                player->GetExactDist(-8342.62f, 271.15f, 155.34f) > 2.0f)) { IntroCancel(); return; }
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51614);
+            if (!IntroReceipt())
+            {
+                if (!(introWarnings & 4))
+                    TC_LOG_WARN("scripts", "Merlis intro: native51614 not acknowledged after queued travel; retain bounded-rate retry");
+                introWarnings |= 4;
+                return;
+            }
+            introDone = true;
+            player = IntroPlayer(ObjectAccessor::GetPlayer(*me, introRecipient), true, false);
+            uint32 const companionEntries[2] = {108333, 64367};
+            if (player && IntroDestination(player))
+                for (uint32 i = 0; i < 2; ++i)
+                    if (Creature* actor = ObjectAccessor::GetCreature(*me, introCompanions[i]))
+                        if (actor->GetEntry() == companionEntries[i] && actor->IsInWorld() && actor->IsAlive() &&
+                            !actor->IsPreDelete() && !actor->IsQuestObjectExpired() && actor->InSamePhase(player) &&
+                            actor->CanTargetQuestObject(player) && player->CanTargetQuestObject(actor))
+                            actor->DespawnOrUnsummon();
+            IntroCancel();
+        }
+
+        void UpdateIntro(uint32 diff)
+        {
+            if (introBusy || introDone)
+                return;
+            introBusy = true;
+            struct Release { bool& busy; ~Release() { busy = false; } } release{introBusy};
+            introRetry = introRetry > diff ? introRetry - diff : 0;
+            introSceneRetry = introSceneRetry > diff ? introSceneRetry - diff : 0;
+            if (IntroReceipt())
+            {
+                introDone = true;
+                IntroCancel();
+                return; // Another legitimate native delivery already completed this shared step.
+            }
+            if (!introRecipient)
+            {
+                if (timer > diff) { timer -= diff; return; }
+                timer = 1000;
+                std::list<Player*> players;
+                me->GetPlayerListInGrid(players, 70.0f);
+                for (Player* candidate : players)
+                    if (IntroPlayer(candidate))
+                    {
+                        introRecipient = candidate->GetGUID();
+                        introDelay = 5000;
+                        IntroPresentation(candidate);
+                        break;
+                    }
+                return;
+            }
+            Player* player = IntroPlayer(ObjectAccessor::GetPlayer(*me, introRecipient), introArriving);
+            if (!player) { IntroCancel(); return; }
+            IntroPresentation(player);
+            if (introDelay > diff) { introDelay -= diff; return; }
+            introDelay = 1000;
+            uint32 const companionEntries[2] = {108333, 64367};
+            if (introArriving)
+            {
+                if (!IntroDestination(player)) { IntroCancel(); return; }
+                IntroScene(player);
+                player = IntroPlayer(ObjectAccessor::GetPlayer(*me, introRecipient), true);
+                if (!player) { IntroCancel(); return; }
+                IntroCommit(player); // Retry a refused native event, never reissue the accepted travel.
+                return;
+            }
+            IntroScene(player);
+            // Cast/factory callbacks may change admission. Re-resolve the full GUID.
+            player = IntroPlayer(ObjectAccessor::GetPlayer(*me, introRecipient));
+            if (!player) { IntroCancel(); return; }
+            for (uint32 i = 0; i < 2; ++i)
+            {
+                introCompanions[i].Clear();
+                if (Creature* actor = player->FindNearestCreature(companionEntries[i], 50.0f, true))
+                    if (actor->InSamePhase(player) && actor->CanTargetQuestObject(player) && player->CanTargetQuestObject(actor))
+                        introCompanions[i] = actor->GetGUID();
+            }
+            bool accepted = player->TeleportTo(1620, -8342.62f, 271.15f, 155.34f, 0.0f);
+            player = IntroPlayer(ObjectAccessor::GetPlayer(*me, introRecipient), true);
+            if (!player) { IntroCancel(); return; }
+            if (accepted && player->HasPendingTeleport() && IntroDestination(player))
+            {
+                introArriving = true;
+                IntroCommit(player); // Keep stage7 available to a pet/guardian killing blow before client ACK.
+            }
+            else
+            {
+                if (!(introWarnings & 2))
+                    TC_LOG_WARN("scripts", "Merlis intro: native travel not queued; retain bounded-rate retry without progress or cleanup");
+                introWarnings |= 2;
+            }
+        }
+
         void Reset() override
         {
             events.Reset();
@@ -936,63 +1117,9 @@ public:
                 }
         }
 
-        /* void MoveInLineOfSight(Unit* who)
-         {
-
-             if (who->GetTypeId() != TYPEID_PLAYER)
-                 return;
-
-             if ((me->GetExactDist2d(who) <= 67.0f) && !introDone)
-             {
-                 introDone = true;
-                 Conversation* conversation = new Conversation;
-                 if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2484, who, NULL, *who))
-                     delete conversation;
-
-                 who->AddDelayedEvent(5000, [who]() -> void
-                 {
-                     who->CastSpell(who, 214942);
-                     if(Creature* add = who->FindNearestCreature(108333, 50.0f))
-                         add->DespawnOrUnsummon();
-                     if(Creature* add = who->FindNearestCreature(64367, 50.0f))
-                         add->DespawnOrUnsummon();
-                     who->ToPlayer()->TeleportTo(1620, -8342.62f, 271.15f, 155.34f, 0.0f);
-                     who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51614);
-                 });
-             }
-
-         } */
-
         void UpdateAI(uint32 diff) override
         {
-            if (!introDone)
-            {
-                if (timer <= diff)
-                {
-                    if (Player* who = me->FindNearestPlayer(70.0f))
-                    {
-                        introDone = true;
-                        Conversation* conversation = new Conversation;
-                        if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2484, who, NULL, *who))
-                            delete conversation;
-
-                        who->AddDelayedEvent(5000, [who]() -> void
-                        {
-                            who->CastSpell(who, 214942);
-                            if (Creature* add = who->FindNearestCreature(108333, 50.0f))
-                                add->DespawnOrUnsummon();
-                            if (Creature* add = who->FindNearestCreature(64367, 50.0f))
-                                add->DespawnOrUnsummon();
-                            who->ToPlayer()->TeleportTo(1620, -8342.62f, 271.15f, 155.34f, 0.0f);
-                            who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51614);
-                        });
-                    }
-
-                    timer = 1000;
-                }
-                else
-                    timer -= diff;
-            }
+            UpdateIntro(diff);
 
             if (!UpdateVictim())
                 return;

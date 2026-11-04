@@ -23,10 +23,15 @@ tables = []
 for entry in factory:
     if entry.mnemonic == 'lea' and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP:
         address = entry.address + entry.size + entry.operands[1].mem.disp
-        slots = struct.unpack_from('<80Q', native['binary'], native['offset'](address))
-        if slots[0x18 // 8] == native['symbol']('?UpdateAI@' + scope) and slots[0x270 // 8] == native['symbol']('?MoveInLineOfSight@' + scope):
+        slots = struct.unpack_from('<82Q', native['binary'], native['offset'](address))
+        targets = [native['resolve'](value) for value in slots]
+        if native['symbol']('?UpdateAI@' + scope) in targets and native['symbol']('?MoveInLineOfSight@' + scope) in targets:
             tables.append(slots)
 assert len(tables) == 1, 'Factory does not select repaired LOS and UpdateAI'
+for method, caller in [('UpdateAI', '?Update@Creature@@'), ('MoveInLineOfSight', '?MoveInLineOfSight_Safe@CreatureAI@@')]:
+    slot, = [i for i, value in enumerate(tables[0]) if native['resolve'](value) == native['symbol']('?' + method + '@' + scope)]
+    assert any(entry.mnemonic in ('call', 'jmp') and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == slot * 8
+               for entry in instructions(caller)), 'Native dispatcher does not use actual Garona callback slot'
 assert any(entry.op_str == 'ecx, 0x70' for entry in factory)
 schedule = sites(los, '?ScheduleEvent@EventMap@@QEAAXII')
 assert len(schedule) == 2
@@ -54,4 +59,4 @@ for position, criterion in zip(credits, ('r8d, 0xc8da', 'r8d, 0xcdc0')):
     assert all(any(entry.op_str == operand for entry in update[position - 8:position])
                for operand in (criterion, 'edx, 0x5c', 'rcx, rdi'))
 assert {2377, 2384}.issubset({operand.imm for entry in update for operand in entry.operands if operand.type == CS_OP_IMM})
-print('PASS selected Garona factory/LOS270/Update18: full128-bit recipient GUID, AI-owned EventMap50 with15000/30000ms, repeated event drain and two fresh native player lookups with full-GUID/contact/map/phase guards before personal conversation/51418/52672. Not deployed unless the supplied path is canonical; no client, quest-attempt, loot/equip or VFX certification.')
+print('PASS selected Garona factory and actual native LOS/update vtable dispatch: full128-bit recipient GUID, AI-owned EventMap50 with15000/30000ms, repeated event drain and two fresh native player lookups with full-GUID/contact/map/phase guards before personal conversation/51418/52672. Not deployed unless the supplied path is canonical; no client, quest-attempt, loot/equip or VFX certification.')

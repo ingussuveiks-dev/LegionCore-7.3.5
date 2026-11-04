@@ -4,6 +4,8 @@ $out="$repo/build-extractors/runtime-test/kingslayers-door-asan/$(Get-Date -Form
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$current=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "a9e86af7b:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned door predecessor missing'}
+ # Merlis intro has its own whole-source/ASAN/native certificate.
+ $current=$current.Replace((Block $current 'class npc_merlis_malagan : public CreatureScript'),(Block $old 'class npc_merlis_malagan : public CreatureScript'))
  $door=Block $current 'class go_kingslayers_door : public GameObjectScript';$prior=Block $old 'class go_kingslayers_door : public GameObjectScript'
  # New Althea intro has its own whole-source/ASAN/native certificate. Restore
  # only those helpers and dispatch before retaining this earlier door boundary.

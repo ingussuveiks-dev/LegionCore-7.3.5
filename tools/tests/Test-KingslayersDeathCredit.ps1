@@ -11,7 +11,12 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  $currentAI=Block $source 'struct npc_merlis_malaganAI : ScriptedAI';$oldAI=Block $pinned 'struct npc_merlis_malaganAI : ScriptedAI'
  $marker='void JustDied(Unit* who) override';$currentDeath=Block $currentAI $marker;$oldDeath=Block $oldAI $marker
  # Other Kingslayers actors and the pickup have independent regression suites.
- if(($currentAI.Replace($currentDeath,$oldDeath) -replace '\s','') -cne ($oldAI -replace '\s','')){throw 'Unreviewed change elsewhere in Merlis AI'}
+ # Dedicated Merlis intro suite certifies its helpers/update boundary.
+ $unrelated=$currentAI;$a=$unrelated.IndexOf('        ObjectGuid introRecipient,');$b=$unrelated.IndexOf('        void Reset()',$a)
+ if($a -lt 0 -or $b -lt 0){throw 'Actual dedicated Merlis intro boundary missing'}
+ $unrelated=$unrelated.Remove($a,$b-$a).Replace((Block $currentAI 'void UpdateAI('),(Block $oldAI 'void UpdateAI('))
+ $priorUnrelated=[regex]::Replace($oldAI,'(?s)/\* void MoveInLineOfSight.*?\*/','')
+ if(($unrelated.Replace($currentDeath,$oldDeath) -replace '\s','') -cne ($priorUnrelated -replace '\s','')){throw 'Unreviewed change elsewhere in Merlis AI'}
  [IO.File]::WriteAllText("$out/MerlisDeath.inc",$(if($Baseline){$oldDeath}else{$currentDeath}))
  [IO.File]::WriteAllText("$out/OwnerGuid.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw -Encoding UTF8) 'ObjectGuid GetCharmerOrOwnerGUID() const'))
  [IO.File]::WriteAllText("$out/OwnerPlayer.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw -Encoding UTF8) 'Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const'))
