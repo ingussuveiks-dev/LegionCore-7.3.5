@@ -23,12 +23,23 @@
     "bnetserver.exe": "f9aefbc23fe6671d3b9e5a6480254a850514e6d0f7cf6aee8b719e5597fb9350"
   },
   "diagnostics": "All automated/native/ASAN/build/PE/startup before/after canonical+own crash/log snapshots, exits/stdout/stderr, appended Server/DBErrors reviewed. Final ordinary runs clean; explicit original/current faults separated above. Canonical Crashes empty; mixed DBErrors6090 bytes/SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved. No canonical log truncated.",
-  "archive": "docs/audits/garona-reveal-archive-2026-11-04.json (focused implementation commit/hash and reviewed private fault-log cleanup recorded after commit)",
+  "archive": {
+    "audit": "docs/audits/garona-reveal-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/garona-reveal-2026-11-04",
+    "manifest_sha256": "d6e52be386d6ecfc7ad311da6df1147d9c8b5e6e7cd5298aa6ede902ddb713c4",
+    "files": 376,
+    "bytes": 638612,
+    "fix_commit": "fed48fd4815bb33e0ce25e75ef9f2993a6a73341",
+    "verified": "Original source/archive/source SHA256 and credential scan; configs/binaries/PDB/character data excluded. Archive hashes reverified after three exclusive private-log rechecks/zeroing; all other source hashes unchanged.",
+    "logs_truncated": 3,
+    "private_error_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
   "limits": [
     "Real client model/appearance/voice overlap, original combat/scaling, movement, acquisition/paired equip/camera/pet/guardian/reentry/reconnect and full1123/all36 remain OPEN.",
     "Earlier victory/current native stage seeded; this is not an authenticated end-to-end Merlis kill/pickup/return client traversal. Old optional2449/2450 presentation failures remain independent; reveal does not manufacture dialogue acknowledgement.",
     "Repair is for one accepted reveal actor. Merlis death failing to create108222 itself and actual instance restart recovery are separate source-creation/restart boundaries, not certified by successful downstream retry.",
     "Original Althea214873 startup/shield and shared LINK2/LINK4 unknown payload diagnostics remain OPEN."
   ],
-  "next": "Continue local native Merlis combat/real death-to108222 creation handoff, especially a refused initial108222 summon, before changing source-owned recovery. Preserve client/full1123/all36 and Althea/shared LINK findings."
+  "next": "Continue local native Merlis combat/real death-to108222 creation handoff, especially a refused initial108222 summon, before changing source-owned recovery. Preserve client/full1123/all36 and Althea/shared LINK findings.",
+  "fix_commit": "fed48fd4815bb33e0ce25e75ef9f2993a6a73341"
 }

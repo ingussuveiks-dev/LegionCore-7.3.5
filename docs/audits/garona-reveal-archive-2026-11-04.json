@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED resolved diagnostics archived after deployed focused fix and passing regressions. Three wholly reviewed private injected-error logs exclusively rechecked/recreated empty; canonical mixed log retained.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/garona-reveal-2026-11-04",
+    "manifest_sha256": "d6e52be386d6ecfc7ad311da6df1147d9c8b5e6e7cd5298aa6ede902ddb713c4",
+    "files": 376,
+    "bytes": 638612,
+    "fix_commit": "fed48fd4815bb33e0ce25e75ef9f2993a6a73341",
+    "verified": "Original source/archive/source SHA256 and credential scan; configs/binaries/PDB/character data excluded. Archive hashes reverified after three exclusive private-log rechecks/zeroing; all other source hashes unchanged.",
+    "logs_truncated": 3,
+    "private_error_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "cause_fix_checks": "docs/audits/garona-reveal-2026-11-04.json",
+  "review": "Preserves pinned whole-source/native no-retry/duplicate counterfactuals and paired repaired36ASAN/16native ordinary/2native fault cases, retained native52Merlis and earlier ASAN, builds/selected+canonical proofs/startup. Initial research wrapper over-strictly rejected two known SQL errors mirrored to Server; exact rows inspected, final runner classifies only those messages. Original retained pickup compile failure/added native0 DOOR fixture constant and passing rerun preserved. Every native intentional error is labeled, not an ordinary clean result. No new canonical/private crash report.",
+  "canonical": "BD45D87D/F9AEFBC2; owned21864 fresh ready/shutdown0/exit0/stderr empty/gone. Crashes empty; mixedDBErrors6090/SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved. No canonical active error log cleared.",
+  "limits": "Actual client/full1123/all36, real encounter/movement/voice/camera/pet/reconnect, initial108222 creation/restart boundary, Althea214873 and shared LINK findings remain OPEN."
+}
