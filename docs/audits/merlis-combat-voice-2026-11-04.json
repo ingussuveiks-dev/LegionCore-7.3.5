@@ -41,5 +41,15 @@
     "tools/tests/Test-MerlisCombatVoiceNative.ps1": "aeba1323778aa2e639b2ecc73efaff8472b6fdc19e8242adc19fc28467f60d24",
     "tools/tests/verify_merlis_combat_voice_release.py": "0af1ae89761767f22877e624dc7e2383c17ccabbf03798d204ceade3c79f6276",
     "tools/research/MerlisCombatVoiceCatalog.cpp": "694dd0681c14ad45b95715ec3ffdf527bfc8ed5c227ad50fa9bd2b3c2b9329cc"
+  },
+  "fix_commit": "3ca15b909f3af7335c556c4218f5617845e84b2e",
+  "archive": {
+    "audit": "docs/audits/merlis-combat-voice-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/merlis-combat-voice-2026-11-04",
+    "manifest_sha256": "5e902d732a1b1f379e5adc4b34afba69ff0d8ecf6843687687e077741d53ec66",
+    "files": 318,
+    "bytes": 565652,
+    "fix_commit": "3ca15b909f3af7335c556c4218f5617845e84b2e",
+    "verified": "Every original/archive/original SHA256 verified, credential scan, no configs/binaries/PDB/audio/character data. No active error log cleared: private DBErrors already empty; canonical mixed6090 retained; informative Server history retained."
   }
 }

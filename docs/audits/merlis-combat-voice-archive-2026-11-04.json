@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED after final canonical06113D04/D4860D82 deployment and passing regressions. All task servers gone.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/merlis-combat-voice-2026-11-04",
+    "manifest_sha256": "5e902d732a1b1f379e5adc4b34afba69ff0d8ecf6843687687e077741d53ec66",
+    "files": 318,
+    "bytes": 565652,
+    "fix_commit": "3ca15b909f3af7335c556c4218f5617845e84b2e",
+    "verified": "Every original/archive/original SHA256 verified, credential scan, no configs/binaries/PDB/audio/character data. No active error log cleared: private DBErrors already empty; canonical mixed6090 retained; informative Server history retained."
+  },
+  "cause_fix_checks": "docs/audits/merlis-combat-voice-2026-11-04.json",
+  "review": "Preserves exact pinned old simultaneous/skipped-line counterfactuals,16 current ASAN contexts,6 ordinary/2 explicit native failure/recovery contexts with exactly2 bounded WARNs,6 fully hashed audio decodes/native map/index hashes, retained138/124/36 and owner/catalog/6native death cases, build/final link, selected stage/canonical proofs/Scepter and owned32732 ready/shutdown0/exit0. Initial local PE inspection and promotion-root helper errors paired with corrected passing checks; no core failure/crash hidden.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client voice/bubbles/cadence and combat traversal/scaling/movement, optional last-combat/death2448/outro cross-sequence audio remain OPEN. Serialization here concerns original six combat lines only; source death can interrupt optional combat presentation without blocking progression.",
+    "Unowned NPC killer personal credit policy, persistent recovery after actual Merlis/AI/grid/instance destruction, Althea214873 startup/shield, shared101430/103151 LINK2 and WardstoneLINK4 remain OPEN.",
+    "Native earlier scenario/quest/combat state and clock endpoints seeded; no full client1123 or all36 completion certification."
+  ]
+}
