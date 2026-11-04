@@ -28,10 +28,11 @@ try{
  $pinned=(& git -C $repo show "3eadb186:$path") -join "`n"
  if($LASTEXITCODE){throw 'Pinned Kingslayers baseline unavailable'}
  $marker='struct npc_garona_halforcenAI : ScriptedAI'
- # Pin the repaired introduction itself; Merlis/pickup now have separate suites.
- $repaired=(& git -C $repo show "8cb3e9cb:$path") -join "`n"
- if($LASTEXITCODE){throw 'Pinned repaired Garona introduction unavailable'}
- if(((Block $source $marker) -replace '\s','') -cne ((Block $repaired $marker) -replace '\s','')){throw 'Unreviewed change in Garona introduction AI'}
+ # The dedicated opening delta may alter only this full AI; all other
+ # accept/quest/actors remain byte-equivalent to the pre-admission source.
+ $previous=(& git -C $repo show "0d5a1628e:$path") -join "`n"
+ if($LASTEXITCODE){throw 'Pinned opening source unavailable'}
+ if(!$Baseline -and (($source.Replace((Block $source $marker),(Block $previous $marker))-replace '\s','') -cne ($previous-replace '\s',''))){throw 'Only full opening AI may change'}
  if($Baseline){$source=$pinned}
  [IO.File]::WriteAllText("$out/GaronaIntro.inc",(Block $source $marker)+';')
  $header=Get-Content "$repo/src/server/game/AI/EventMap.h" -Raw -Encoding UTF8

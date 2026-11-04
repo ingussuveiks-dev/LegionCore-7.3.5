@@ -20,7 +20,7 @@ using Milliseconds=std::chrono::milliseconds;
 #include "EventMapClass.inc"
 #include "EventMapMethods.inc"
 #include "FunctionProcessor.inc"
-enum {TYPEID_PLAYER=4,CRITERIA_TYPE_SCRIPT_EVENT_2=92};
+enum {TYPEID_PLAYER=4,CRITERIA_TYPE_SCRIPT_EVENT_2=92,CLASS_ROGUE=4,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1};
 enum class HighGuid {Conversation};
 struct ObjectGuid
 {
@@ -28,17 +28,23 @@ struct ObjectGuid
     uint32 GetGUIDLow() const{return uint32(low);}
     bool operator==(ObjectGuid const& other) const{return high==other.high && low==other.low;}
 };
-struct Map {};
+struct Progress{uint64 Counter=0;};
+struct Scenario{uint32 id=1123,stage=0;std::map<uint32,Progress> progress;uint32 GetScenarioId()const{return id;}auto& GetAchievementMgr(){return *this;}auto GetCriteriaProgressMap()const{return &progress;}bool CanUpdateCriteria(uint32 leaf)const{auto at=progress.find(leaf);return stage==0&&(at==progress.end()||!at->second.Counter);}};
+struct ScenarioManager{Scenario* current=nullptr;Scenario* GetScenario(uint32){return current;}}scenarioManager;
+auto sScenarioMgr=&scenarioManager;
+struct Map {uint32 id=1620;Scenario scenario;};
 struct WorldObject
 {
     Map* map=nullptr;
-    bool inWorld=true,preDelete=false;
+    bool inWorld=true,preDelete=false,alive=true,expired=false,scope=true;
     uint32 phase=1;
     ObjectGuid guid;
     Map* GetMap() const{return map;}
     ObjectGuid GetGUID() const{return guid;}
     bool IsInWorld() const{return inWorld;}
     bool IsPreDelete() const{return preDelete;}
+    bool IsAlive()const{return alive;}bool IsQuestObjectExpired()const{return expired;}bool CanTargetQuestObject(WorldObject const* other)const{return scope&&other->scope;}
+    uint32 GetMapId()const{return map?map->id:0;}uint32 GetInstanceId()const{return 1;}
     bool InSamePhase(WorldObject const* other) const{return phase==other->phase;}
 };
 struct Player;
@@ -52,10 +58,13 @@ struct Unit:WorldObject
 struct Player:Unit
 {
     bool contact=true;
+    bool gm=false,pending=false,rewarded=false,grantFirst=true,grantSecond=true;uint32 klass=CLASS_ROGUE,quest=42504,status=QUEST_STATUS_INCOMPLETE;
+    std::function<void(uint32)> creditHook;
     std::vector<uint32> criteria;
     Player(){type=TYPEID_PLAYER;}
     bool CanContact() const{return contact;}
-    void UpdateAchievementCriteria(uint32 kind,uint32 asset){assert(kind==92);criteria.push_back(asset);}
+    bool isGameMaster()const{return gm;}bool HasPendingTeleport()const{return pending;}uint32 getClass()const{return klass;}bool GetQuestRewardStatus(uint32 id)const{return id==quest&&rewarded;}uint32 GetQuestStatus(uint32 id)const{return id==quest?status:0;}
+    void UpdateAchievementCriteria(uint32 kind,uint32 asset){assert(kind==92);criteria.push_back(asset);if(creditHook)creditHook(asset);if(map&&!gm&&((asset==51418&&grantFirst)||(asset==52672&&grantSecond))){auto& scene=map->scenario;scene.progress[asset==51418?48526:49374].Counter=1;if(scene.progress[48526].Counter&&scene.progress[49374].Counter)scene.stage=1;}}
 };
 Player* Unit::ToPlayer(){return type==TYPEID_PLAYER?static_cast<Player*>(this):nullptr;}
 template<class T>struct HashMapHolder
@@ -110,6 +119,8 @@ struct Generator {uint64 Generate(){return 1;}};
 struct ObjectManager {Generator generator;template<HighGuid>Generator* GetGenerator(){return &generator;}};
 ObjectManager manager;
 ObjectManager* sObjectMgr=&manager;
+static uint32 warnings=0;
+#define TC_LOG_WARN(...) (++warnings)
 struct Conversation
 {
     inline static std::set<Conversation*> live;
@@ -130,13 +141,16 @@ using Garona=npc_garona_halforcenAI;
 void Advance(Garona& script,uint32 milliseconds){script.UpdateAI(milliseconds);script.me->functions.Update(milliseconds);}
 struct Fixture
 {
+    inline static uint32 contexts=0;
     Map original,other;
     Creature garona,first,second,unrelated;
     Player player,secondPlayer;
     Garona script;
     Fixture():script(&garona)
     {
+        ++contexts;
         Conversation::Clear();garona.map=&original;player.map=&original;secondPlayer.map=&original;
+        scenarioManager.current=&original.scenario;warnings=0;
         secondPlayer.guid.low=2;
         HashMapHolder<Player>::_objectVector.assign(32,nullptr);
         HashMapHolder<Player>::_objectVector[1]=&player;HashMapHolder<Player>::_objectVector[2]=&secondPlayer;
@@ -144,7 +158,7 @@ struct Fixture
         garona.neighbors={&first,&second,&unrelated};
     }
     void Start(){script.MoveInLineOfSight(&player);}
-    ~Fixture(){Conversation::Clear();}
+    ~Fixture(){Conversation::Clear();scenarioManager.current=nullptr;}
 };
 void CheckCleanup(Fixture const& fixture)
 {
@@ -190,17 +204,17 @@ int main()
             case 8:fixture.secondPlayer.guid={2,1};HashMapHolder<Player>::_objectVector[1]=&fixture.secondPlayer;break;
             case 9:fixture.player.guid.high=2;break;
         }
-        Advance(fixture.script,30000);assert(fixture.player.criteria.empty() && fixture.secondPlayer.criteria.empty() && Conversation::delivered.size()==1);CheckCleanup(fixture);
+        Advance(fixture.script,30000);assert(fixture.player.criteria.empty() && fixture.secondPlayer.criteria.empty() && Conversation::delivered.size()==1);assert(!fixture.garona.despawn);
     }
     {
         Fixture fixture;fixture.Start();HashMapHolder<Player>::_objectVector[1]=nullptr;Advance(fixture.script,15000);
         Player reconnected;reconnected.map=&fixture.original;HashMapHolder<Player>::_objectVector[1]=&reconnected;
-        Advance(fixture.script,15000);assert(reconnected.criteria.size()==2 && fixture.player.criteria.empty() && Conversation::delivered.size()==2);
+        Advance(fixture.script,15000);assert(reconnected.criteria.size()==2 && fixture.player.criteria.empty() && Conversation::delivered.size()==3);
     }
     {
         Fixture fixture;auto player=std::make_unique<Player>();player->map=&fixture.original;HashMapHolder<Player>::_objectVector[1]=player.get();
         fixture.script.MoveInLineOfSight(player.get());HashMapHolder<Player>::_objectVector[1]=nullptr;player.reset();Advance(fixture.script,30000);
-        assert(Conversation::delivered.size()==1);CheckCleanup(fixture);
+        assert(Conversation::delivered.size()==1 && !fixture.garona.despawn);
     }
     {
         Fixture fixture;auto oldScript=std::make_unique<Garona>(&fixture.garona);oldScript->MoveInLineOfSight(&fixture.player);
@@ -217,6 +231,20 @@ int main()
         Fixture fixture;fixture.garona.entry=107979;fixture.Start();Advance(fixture.script,60000);
         assert(!fixture.script.introDone && fixture.player.criteria.empty() && Conversation::delivered.empty() && fixture.garona.motion.points.empty());
     }
-    std::cout<<"PASS actual Garona AI/native EventMap/Player lookup and low-GUID Find: timings, actual actors, one-shot recipient, absent/destructed/relocated/predelete/contact/phase/full-GUID rejection, reconnect, missing actors/conversation failure and shared107979 preserved. No real client/quest-attempt/group eligibility or pickup/VFX proof\n";
+    for(uint32 mode=0;mode<18;++mode){Fixture f;
+        switch(mode){case 0:f.player.gm=true;break;case 1:f.player.klass=1;break;case 2:f.player.status=0;break;case 3:f.player.rewarded=true;break;case 4:f.player.alive=false;break;case 5:f.player.pending=true;break;case 6:f.player.expired=true;break;case 7:f.player.scope=false;break;case 8:f.garona.expired=true;break;case 9:f.garona.scope=false;break;case 10:f.garona.alive=false;break;case 11:f.garona.preDelete=true;break;case 12:f.original.id=1;break;case 13:f.original.scenario.id=1;break;case 14:f.original.scenario.stage=1;break;case 15:f.player.inWorld=false;break;case 16:f.player.contact=false;break;case 17:f.player.phase=2;break;}
+        f.Start();Advance(f.script,60000);assert(!f.script.introDone&&f.player.criteria.empty()&&Conversation::delivered.empty()&&!f.garona.despawn&&f.garona.motion.points.empty());
+    }
+    for(uint32 mode=0;mode<5;++mode){Fixture f;f.player.quest=mode==0?42627:42504;if(mode==1)f.player.status=QUEST_STATUS_COMPLETE;f.Start();
+        if(mode==2)f.player.grantFirst=false;if(mode==3)f.player.grantSecond=false;if(mode==4)f.player.grantFirst=f.player.grantSecond=false;
+        Advance(f.script,30000);if(mode<2){CheckCleanup(f);continue;}
+        assert(!f.garona.despawn&&warnings==1);auto first=f.original.scenario.progress[48526].Counter,second=f.original.scenario.progress[49374].Counter;
+        Advance(f.script,999);assert(warnings==1&&!f.garona.despawn);f.player.grantFirst=f.player.grantSecond=true;Advance(f.script,1);CheckCleanup(f);
+        assert(f.original.scenario.stage==1&&f.player.criteria.size()==(first&&second?2:first||second?3:4));
+    }
+    {Fixture f;f.Start();f.player.status=0;Advance(f.script,30000);assert(!f.garona.despawn&&f.player.criteria.empty());f.script.MoveInLineOfSight(&f.secondPlayer);Advance(f.script,1000);assert(f.secondPlayer.criteria.size()==2&&f.player.criteria.empty());CheckCleanup(f);}
+    {Fixture f;f.Start();f.player.creditHook=[&](uint32){Advance(f.script,60000);};Advance(f.script,30000);assert(f.player.criteria.size()==2);CheckCleanup(f);}
+    {Fixture f;f.Start();f.player.creditHook=[&](uint32 asset){if(asset==51418)f.player.status=0;};Advance(f.script,30000);assert(f.player.criteria.size()==1&&!f.garona.despawn&&warnings==1);f.player.status=QUEST_STATUS_INCOMPLETE;f.player.creditHook={};Advance(f.script,1000);assert(f.player.criteria.size()==2);CheckCleanup(f);}
+    std::cout<<"PASS "<<Fixture::contexts<<" exact opening AI/native EventMap/native lookup ASAN contexts: original15/30s/actors/optional voices, qualified first and delayed recipients,18 admission refusals, both quests, complete quest, three native-ack failures/recovery, no repeated acknowledged leaf, abandonment/rebinding/reconnect, reentrant/abandoning credit, no departure without both receipts and shared107979 preserved. Native services otherwise controlled; no client traversal claim\n";
 #endif
 }

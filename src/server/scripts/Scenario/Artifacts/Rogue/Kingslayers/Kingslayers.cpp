@@ -50,28 +50,63 @@ public:
         bool introDone;
         ObjectGuid recipientGuid;
         EventMap events;
+        bool openingMiddle = false, openingComplete = false, openingBusy = false, openingWarning = false;
+
+        bool OpeningLeaf(uint32 leaf) const
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1123)
+                return false;
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto found = progress->find(leaf);
+            return found != progress->end() && found->second.Counter;
+        }
+
+        Player* OpeningPlayer(Player* player) const
+        {
+            if (!me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || me->GetEntry() != 108015 ||
+                me->GetMapId() != 1620 || me->IsQuestObjectExpired() || !player || !player->IsInWorld() ||
+                player->IsPreDelete() || !player->IsAlive() || !player->CanContact() || player->isGameMaster() ||
+                player->getClass() != CLASS_ROGUE || player->HasPendingTeleport() || player->GetMap() != me->GetMap() ||
+                !player->InSamePhase(me) || player->IsQuestObjectExpired() ||
+                !me->CanTargetQuestObject(player) || !player->CanTargetQuestObject(me))
+                return nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1123)
+                return nullptr;
+            for (uint32 quest : {42504u, 42627u})
+                if (!player->GetQuestRewardStatus(quest) &&
+                    (player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(quest) == QUEST_STATUS_COMPLETE))
+                    return player;
+            return nullptr;
+        }
 
         Player* GetRecipient()
         {
             if (!me->IsInWorld())
                 return nullptr;
             Player* player = ObjectAccessor::GetPlayer(*me, recipientGuid);
-            return player && player->GetGUID() == recipientGuid && player->IsInWorld() && player->CanContact() &&
-                player->GetMap() == me->GetMap() && player->InSamePhase(me) ? player : nullptr;
+            return player && player->GetGUID() == recipientGuid ? OpeningPlayer(player) : nullptr;
         }
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (me->GetEntry() != 108015)
-                return;
-
-            if (who->GetTypeId() != TYPEID_PLAYER)
-                return;
-
-            if (me->GetExactDist2d(who) >= 20.0f)
+            Player* player = OpeningPlayer(who ? who->ToPlayer() : nullptr);
+            if (!player || me->GetExactDist2d(player) >= 20.0f || openingBusy)
                 return;
 
             if (introDone)
+            {
+                // Preserve the current qualified recipient. If that player
+                // leaves/abandons, a legitimate visitor can resume this same
+                // shared opening without restarting its world events.
+                if (!openingComplete && !GetRecipient())
+                    recipientGuid = player->GetGUID();
+                return;
+            }
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if ((!scenario->CanUpdateCriteria(48526) && !scenario->CanUpdateCriteria(49374)) ||
+                (OpeningLeaf(48526) && OpeningLeaf(49374)))
                 return;
 
             introDone = true;
@@ -89,6 +124,10 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            if (openingBusy)
+                return;
+            openingBusy = true;
+            struct Release { bool& flag; ~Release() { flag = false; } } release{openingBusy};
             ScriptedAI::UpdateAI(diff);
             events.Update(diff);
             while (uint32 eventId = events.ExecuteEvent())
@@ -97,6 +136,12 @@ public:
                 {
                     case EVENT_1:
                     {
+                        if (!GetRecipient())
+                        {
+                            events.ScheduleEvent(EVENT_1, 1000);
+                            break;
+                        }
+                        openingMiddle = true;
                         std::list<Creature*> adds;
                         GetCreatureListWithEntryInGrid(adds, me, 98094, 70.0f);
                         GetCreatureListWithEntryInGrid(adds, me, 108058, 70.0f);
@@ -118,13 +163,31 @@ public:
                     }
                     case EVENT_2:
                     {
+                        Player* player = GetRecipient();
+                        if (!openingMiddle || !player)
+                        {
+                            events.ScheduleEvent(EVENT_2, 1000);
+                            break;
+                        }
+                        if (!OpeningLeaf(48526))
+                            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51418);
+                        player = GetRecipient();
+                        if (player && !OpeningLeaf(49374))
+                            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 52672);
+                        if (!OpeningLeaf(48526) || !OpeningLeaf(49374))
+                        {
+                            if (!openingWarning)
+                                TC_LOG_WARN("scripts", "Kingslayers opening: native51418/52672 not acknowledged; retain bounded retry before departure");
+                            openingWarning = true;
+                            events.ScheduleEvent(EVENT_2, 1000);
+                            break;
+                        }
+                        openingComplete = true;
                         me->GetMotionMaster()->MovePoint(0, -9074.46f, 427.19f, 92.07f);
                         me->SetWalk(true);
                         me->DespawnOrUnsummon(4000);
                         if (Player* player = GetRecipient())
                         {
-                            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51418);
-                            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 52672);
                             Conversation* conversation = new Conversation;
                             if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2384, player, NULL, *player))
                                 delete conversation;

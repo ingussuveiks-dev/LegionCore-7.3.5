@@ -32,31 +32,61 @@ for method, caller in [('UpdateAI', '?Update@Creature@@'), ('MoveInLineOfSight',
     slot, = [i for i, value in enumerate(tables[0]) if native['resolve'](value) == native['symbol']('?' + method + '@' + scope)]
     assert any(entry.mnemonic in ('call', 'jmp') and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == slot * 8
                for entry in instructions(caller)), 'Native dispatcher does not use actual Garona callback slot'
-assert any(entry.op_str == 'ecx, 0x70' for entry in factory)
-schedule = sites(los, '?ScheduleEvent@EventMap@@QEAAXII')
-assert len(schedule) == 2
-for position, delay in zip(schedule, ('r8d, 0x3a98', 'r8d, 0x7530')):
-    assert any(entry.op_str == delay for entry in los[position - 6:position])
-    assert any(entry.op_str == 'rcx, [rbx + 0x50]' for entry in los[position - 6:position])
-assert any(entry.mnemonic == 'movups' and entry.op_str == 'xmmword ptr [rbx + 0x39], xmm0' for entry in los)
-assert not sites(los, '?AddDelayedEvent@FunctionProcessor@@')
-execute = sites(update, '?ExecuteEvent@EventMap@@')
-assert len(execute) == 2 and any(entry.mnemonic == 'jne' and entry.operands[0].type == CS_OP_IMM
-                                 and entry.operands[0].imm < entry.address for entry in update[execute[-1]:])
-lookup = sites(update, '?GetPlayer@ObjectAccessor@@')
-assert len(lookup) == 2
-for index, position in enumerate(lookup):
-    end = lookup[index + 1] if index + 1 < len(lookup) else len(update)
-    segment = update[position:end]
-    for prefix in ('??8ObjectGuid@@', '?CanContact@Player@@', '?InSamePhase@WorldObject@@'):
-        check, = sites(segment, prefix)
-        assert segment[check + 1].op_str == 'al, al' and segment[check + 2].mnemonic == 'je'
-    assert any(entry.op_str == 'qword ptr [rdi + 8], rax' and entry.mnemonic == 'cmp' for entry in segment)
-    assert any(entry.op_str == 'xmm0, xmmword ptr [rsi + 0x39]' for entry in update[position - 7:position])
-credits = sites(update, '?UpdateAchievementCriteria@Player@@')
-assert len(credits) == 2
-for position, criterion in zip(credits, ('r8d, 0xc8da', 'r8d, 0xcdc0')):
-    assert all(any(entry.op_str == operand for entry in update[position - 8:position])
-               for operand in (criterion, 'edx, 0x5c', 'rcx, rdi'))
-assert {2377, 2384}.issubset({operand.imm for entry in update for operand in entry.operands if operand.type == CS_OP_IMM})
-print('PASS selected Garona factory and actual native LOS/update vtable dispatch: full128-bit recipient GUID, AI-owned EventMap50 with15000/30000ms, repeated event drain and two fresh native player lookups with full-GUID/contact/map/phase guards before personal conversation/51418/52672. Not deployed unless the supplied path is canonical; no client, quest-attempt, loot/equip or VFX certification.')
+
+from sharasdal_erunak_entry_pe import sites as linked_sites, values, floats
+from merlis_intro_pe import reachable
+method=lambda name:'?'+name+'@'+scope
+eligible=instructions(method('OpeningPlayer'));recipient=instructions(method('GetRecipient'));leaf=instructions(method('OpeningLeaf'))
+pairs=lambda rows:{(x.mnemonic,x.op_str) for x in rows}
+assert any(entry.op_str=='ecx, 0x78' for entry in factory)
+assert {108015,1620,1123,42504,42627}<=values(eligible)
+for prefix,count in [('?IsInWorld@Object@@',2),('?IsPreDelete@Object@@',2),('?IsQuestObjectExpired@WorldObject@@',2),('?CanContact@Player@@',1),('?InSamePhase@WorldObject@@',1),('?CanTargetQuestObject@WorldObject@@',2),('?GetQuestRewardStatus@Player@@',1),('?GetQuestStatus@Player@@',2)]:
+ assert len(linked_sites(native,eligible,prefix))==count,prefix
+assert {('test','byte ptr [rbx + 0x4ff0], 1'),('cmp','al, 4'),('cmp','qword ptr [rbx + 8], rax'),('cmp','byte ptr [rbx + 0x6848], 0'),('cmp','byte ptr [rbx + 0x6849], 0'),('cmp','byte ptr [rbx + 0x6851], 0')}<=pairs(eligible)
+lookup,=linked_sites(native,recipient,'?GetPlayer@ObjectAccessor@@');identity,=linked_sites(native,recipient,'??8ObjectGuid@@');qualified,=linked_sites(native,recipient,method('OpeningPlayer'))
+assert lookup<identity<qualified and recipient[qualified].mnemonic=='jmp'
+assert recipient[identity+1].op_str=='al, al' and recipient[identity+2].mnemonic=='je'
+assert recipient[qualified].address not in reachable(recipient,recipient[identity+2].operands[0].imm)
+assert ('movups','xmm0, xmmword ptr [rbx + 0x39]') in pairs(recipient)
+assert {1123}<=values(leaf) and linked_sites(native,leaf,'?GetCriteriaProgressMap@')
+assert ('cmp','qword ptr [rax + 0x28], 0') in pairs(leaf)
+assert linked_sites(native,los,method('OpeningPlayer'))[0]<linked_sites(native,los,'?CanUpdateCriteria@Scenario@@')[0]
+assert {48526,49374,15000,30000}<=values(los) and 20.0 in floats(native,los)
+assert len(linked_sites(native,los,'?ScheduleEvent@EventMap@@QEAAXII'))==2
+assert not linked_sites(native,los,'?AddDelayedEvent@FunctionProcessor@@')
+assert ('movups','xmmword ptr [rdi + 0x39], xmm0') in pairs(los)
+execute,=linked_sites(native,update,'?ExecuteEvent@EventMap@@')
+credits=linked_sites(native,update,'?UpdateAchievementCriteria@Player@@');assert len(credits)==2
+checks=linked_sites(native,update,method('OpeningLeaf'));assert len(checks)==4
+receivers=linked_sites(native,update,method('GetRecipient'));assert len(receivers)==4
+assert checks[0]<credits[0]<receivers[1]<checks[1]<credits[1]<checks[2]<checks[3]
+for at,asset in zip(credits,(51418,52672)):
+ assert {asset,92}<=values(update[at-9:at])
+ assert update[checks[credits.index(at)]+2].mnemonic=='jne'
+remove=[at for at in linked_sites(native,update,'?DespawnOrUnsummon@Creature@@') if 4000 in values(update[max(0,at-7):at])]
+assert len(remove)==1 and checks[3]<remove[0]
+# Bound the current event iteration at the next ExecuteEvent call; the actual
+# native scheduler separately proves that a scheduled1s retry is not due now.
+def iteration(start):
+ indexed={x.address:i for i,x in enumerate(update)};seen=set();todo=[start];stop=update[execute].address
+ while todo:
+  at=todo.pop()
+  if at in seen or at not in indexed or at==stop:continue
+  seen.add(at);i=indexed[at];op=update[i]
+  if op.mnemonic.startswith('ret') or op.mnemonic in ('int3','ud2'):continue
+  if op.mnemonic.startswith('j') and op.operands[0].type==CS_OP_IMM:
+   todo.append(op.operands[0].imm)
+   if op.mnemonic=='jmp':continue
+  if i+1<len(update):todo.append(update[i+1].address)
+ return seen
+retry=linked_sites(native,update,'?ScheduleEvent@EventMap@@QEAAXII')
+assert 1000 in values(update) and retry
+for at in checks[2:]:
+ assert update[at+1].op_str=='al, al' and update[at+2].mnemonic=='je'
+ rejected=iteration(update[at+2].operands[0].imm)
+ assert update[remove[0]].address not in rejected
+ assert any(update[i].address in rejected for i in retry)
+assert {('lea','rax, [rcx + 0x72]'),('mov','byte ptr [rax], 1'),('mov','byte ptr [rax], 0'),('mov','byte ptr [rsi + 0x71], 1')}<=pairs(update)
+for prefix in ('?AddItem@Player@@','?CompleteQuest@Player@@'):
+ assert not linked_sites(native,update,prefix)
+print('PASS registered opening Garona: qualified native Rogue/quest/scenario/source admission before one-shot; fullGUID fresh recipient plus delayed eligibility; original15/30s EventMap and actors; missing-only51418/52672 and actual native counters before4s departure,1s no-receipt retry/current-iteration cleanup exclusion, safe reentry and no item/quest shortcut. Native/client clock and whole-chain boundaries remain separate.')
