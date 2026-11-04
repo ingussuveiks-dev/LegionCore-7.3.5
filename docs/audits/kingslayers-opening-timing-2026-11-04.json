@@ -35,5 +35,15 @@
     "tools/tests/KingslayersOpeningTimingNative.cpp": "ceae5ee8d0167887cc9ab18be1b4fd31b1fdc00bb62878bb642750d9088d2f4f",
     "tools/tests/Test-KingslayersOpeningTimingNative.ps1": "dc9203f6c808d6c904d3295b1a18910c3055a587def1a79a3e7a988b68b94722",
     "tools/tests/verify_kingslayers_intro_release.py": "513c677da000722ae9d8182928b52b01d1549d8e587150353a329c7dd0fbdea9"
+  },
+  "fix_commit": "63d02450950ef2785be44087039887dd548a02d7",
+  "archive": {
+    "audit": "docs/audits/kingslayers-opening-timing-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/kingslayers-opening-timing-2026-11-04",
+    "manifest_sha256": "f4c940dfad1ddabba2d5805349cc36307afbe6b692e3538c6d2f9f666a79d9c2",
+    "files": 399,
+    "bytes": 614254,
+    "fix_commit": "63d02450950ef2785be44087039887dd548a02d7",
+    "verified": "Every available source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. No active logs cleared; private DBErrors empty, mixed canonical6090 unresolved and informative Server history retained. Initial overwritten full build log limitation explicitly documented; tool-output note is not represented as original bytes."
   }
 }

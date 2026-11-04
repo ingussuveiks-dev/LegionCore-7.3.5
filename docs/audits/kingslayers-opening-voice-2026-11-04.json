@@ -48,6 +48,7 @@
   },
   "caller_followup": {
     "audit": "docs/audits/kingslayers-opening-timing-2026-11-04.json",
-    "status": "The original15/30s caller recorded as OPEN at the data-fix checkpoint is now separately repaired/deployed. Historical data checks/archive remain valid; client/full-chain/late-viewer limits remain."
+    "status": "The original15/30s caller recorded as OPEN at the data-fix checkpoint is now separately repaired/deployed. Historical data checks/archive remain valid; client/full-chain/late-viewer limits remain.",
+    "fix_commit": "63d02450950ef2785be44087039887dd548a02d7"
   }
 }

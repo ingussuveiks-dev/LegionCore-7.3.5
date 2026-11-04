@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED after B8607F0E/00A51360 deployment; task server31160 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/kingslayers-opening-timing-2026-11-04",
+    "manifest_sha256": "f4c940dfad1ddabba2d5805349cc36307afbe6b692e3538c6d2f9f666a79d9c2",
+    "files": 399,
+    "bytes": 614254,
+    "fix_commit": "63d02450950ef2785be44087039887dd548a02d7",
+    "verified": "Every available source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. No active logs cleared; private DBErrors empty, mixed canonical6090 unresolved and informative Server history retained. Initial overwritten full build log limitation explicitly documented; tool-output note is not represented as original bytes."
+  },
+  "audit": "docs/audits/kingslayers-opening-timing-2026-11-04.json",
+  "review": "Preserves two actual pinned15/30s counterfactuals paired with53ASAN/8focused actual timing/32actual admission and2explicit native receipt-refusal/recovery cases, exactly2reviewed WARNs; retained Althea/Merlis/Garona checks, original-input successful sequential build/staged+canonical PE, Scepter and owned31160 ready/shutdown0/exit0. Initial shared-library concurrency conflict resolved serially; initial native failure logs and labeled overwritten-build-log note retained. No unresolved newly introduced runtime error/crash/DBError.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client audio/rendering, full opening movement/camera/pet/group/reconnect and all36 full chains remain OPEN. Native seeded clocks/Unit world removal do not prove authenticated client traversal or heard lines.",
+    "Native Player-caster conversation playback can start after factory creation and lifetime follows its caster key; this script uses the accepted full budget including native5000ms padding, without fabricating a client completion ACK. Arbitrarily late/group viewers and source rendering after independent visibility changes remain separate. Optional factory refusal deliberately retains progression with its original15s phase minimum; it does not certify presentation for a missing actor.",
+    "Original2384 uses108057, whose local source is much farther from opening players, and native113208 has no SoundKit. Actual receiver/role visibility and intended silent presentation need separate local evidence before any alteration. No missing voice/payload invented.",
+    "Merlis pending corpse/AI/grid/instance reconstruction, original Althea214873 startup/protection and shared101430/103151 LINK2/WardstoneLINK4 remain OPEN."
+  ]
+}
