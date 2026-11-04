@@ -39,5 +39,15 @@
     "tools/tests/verify_merlis_death_release.py": "ee7db104d47bc10a32ed3787386ca7ee165c5a03739a941448b3b1b614ee150c",
     "tools/research/MerlisDeathCatalog.cpp": "44fed4a251009d555880485a4be7d0404cf79fd535512559956625a61cc4c54d",
     "tools/research/MerlisDeathReadOnly.sql": "582e742e77efeab25ffea6e48e6326ce07e3c90674dbf454f868ea9d0e7d433b"
+  },
+  "fix_commit": "86bbc363bc76f19c1ffe3a420346cc71abc3e268",
+  "archive": {
+    "audit": "docs/audits/merlis-death-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/merlis-death-2026-11-04",
+    "manifest_sha256": "b7b45bcfa7e12621280974d05d21d6b98641b3578a8d605bb2633d0d90e012ab",
+    "files": 429,
+    "bytes": 639899,
+    "fix_commit": "86bbc363bc76f19c1ffe3a420346cc71abc3e268",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. No active error log cleared: private DBErrors already empty, canonical mixed6090 and informative Server history retained."
   }
 }

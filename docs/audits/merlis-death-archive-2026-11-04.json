@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED after final canonicalDF587703/F425B31B deployment and passing regressions; task servers gone.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/merlis-death-2026-11-04",
+    "manifest_sha256": "b7b45bcfa7e12621280974d05d21d6b98641b3578a8d605bb2633d0d90e012ab",
+    "files": 429,
+    "bytes": 639899,
+    "fix_commit": "86bbc363bc76f19c1ffe3a420346cc71abc3e268",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. No active error log cleared: private DBErrors already empty, canonical mixed6090 and informative Server history retained."
+  },
+  "cause_fix_checks": "docs/audits/merlis-death-2026-11-04.json",
+  "review": "Preserves two six-case pinned native counterfactual runs, final six native real player/pet/guardian deaths and78 direct native binding/refusal/cancellation cases, final27ASAN (earlier21/25 are not final collision coverage), retained138/124/16/36/native owner+catalog, typed data/read-only query, build/staged/canonical proofs/Scepter and owned3648 startup. Initial private ObjectGuid constructor compile failure and initially unguarded high-word native refusal failure preserved with paired repaired passes. Intermediate C8368C71/0C013F7B stage was never canonical and is not final fullGUID coverage. No crash report generated, no DBErrors or unexplained server failures.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client death voice/bubble, cross-sequence combat2442..2447/death2448/Garona2449..2450 audio scheduling, movement/visibility/camera/pet/reconnect and full1123/all36 remain OPEN. Preserving original authored timings does not certify simultaneous different-NPC playback.",
+    "Persistent recovery after source/AI/grid/instance destruction, unowned NPC killer progression policy, Althea214873 startup/shield and unknown shared101430/103151 LINK2/WardstoneLINK4 remain OPEN.",
+    "Native lower32-bit lookup finding is handled locally here; earlier Althea scoped resolver and other fullGUID caller assumptions require their own real-native collision/control review. No blanket shared accessor change or prior whole-chain certification inferred."
+  ]
+}
