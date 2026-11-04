@@ -26,7 +26,17 @@
     "bnetserver.exe": "f35eb0dfaa6c00c9121efb895fd1493e1d91a32eb1aa288e91f598774870f362"
   },
   "diagnostics": "Every native/ASAN/build/PE/startup reviewed canonical+own crash and log snapshots, exits/stdout/stderr/appended warnings/errors/assertions/DBErrors. Final ordinary checks clean; injected SQL/WARNs separated above. Canonical Crashes empty; mixed DBErrors6090 bytes/SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged and unresolved; never cleared. Reviewed injected private logs archived/zeroed only after deployed final repair and verified byte hashes (archive audit follows).",
-  "archive": "docs/audits/merlis-handoff-archive-2026-11-04.json (focused implementation hash and final archive verification recorded after commit)",
+  "archive": {
+    "audit": "docs/audits/merlis-handoff-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/merlis-handoff-2026-11-04",
+    "manifest_sha256": "2b4d7b78bfc2b7f077dd01175f77ba6d2d8d4b3b3ef3a78ff8896a2b610d6f51",
+    "files": 814,
+    "bytes": 1529761,
+    "fix_commit": "d8c85e9fee21de28e5520f54745a1bdce6652719",
+    "verified": "Original source/archive/source SHA256 and credential scan, configs/binaries/PDB/character data excluded. Archive hashes reverified after7 exclusive private-log rechecks/zeroing; every other source unchanged.",
+    "logs_truncated": 7,
+    "private_error_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
   "limits": [
     "Retry belongs to the original loaded dead Merlis AI, including native corpse/dead-state processing while that WorldObject remains in the map. It does not retain pending work after the source object/AI/instance is destroyed. Retirement/revival/foreign map or identity cancels pending work and cleans only its unaccepted candidate. Persistent instance-owned recovery after actual object/grid removal or restart remains OPEN; accepted actors are not recreated after deliberate removal/consumption.",
     "Full real client1123 combat/scaling/movement, optional2448/2449/2450 playback/voice overlap, actual loot/equipment/camera/pet/guardian/reconnect and all36 full acquisitions remain OPEN. Earlier scenario/player context and explicit source revival are seeded endpoints in native probes.",
@@ -42,5 +52,6 @@
     "tools/tests/Test-MerlisHandoffNative.ps1": "4f15cb07062eee11d3560fad19faf2751be6e46aa692c11892634d5bb19b8928",
     "tools/tests/verify_merlis_handoff_release.py": "acbfd8c4788f5c32f0836fe9954c42433afe33de9155f161446c70ebf5b75ba4",
     "tools/research/MerlisHandoffReadOnly.sql": "8845c4bf26359f8de091d0539ead1ecc8d45468edbc19f34e534d7a1afb37da2"
-  }
+  },
+  "fix_commit": "d8c85e9fee21de28e5520f54745a1bdce6652719"
 }

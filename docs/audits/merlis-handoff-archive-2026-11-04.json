@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED resolved diagnostics archived after final deployed focused fix and passing regressions. Seven wholly reviewed private injected-error logs exclusively rechecked/recreated empty; canonical mixed log retained.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/merlis-handoff-2026-11-04",
+    "manifest_sha256": "2b4d7b78bfc2b7f077dd01175f77ba6d2d8d4b3b3ef3a78ff8896a2b610d6f51",
+    "files": 814,
+    "bytes": 1529761,
+    "fix_commit": "d8c85e9fee21de28e5520f54745a1bdce6652719",
+    "verified": "Original source/archive/source SHA256 and credential scan, configs/binaries/PDB/character data excluded. Archive hashes reverified after7 exclusive private-log rechecks/zeroing; every other source unchanged.",
+    "logs_truncated": 7,
+    "private_error_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "cause_fix_checks": "docs/audits/merlis-handoff-2026-11-04.json",
+  "review": "Preserves pinned12 whole native expected-broken controls/failures, repaired124ASAN/6native ordinary/18native explicit template/AI/revived-source cases, retained regressions, all selected/final canonical proofs and final owned5948 startup. Also preserves wrapper parser error, first unclassified baseline diagnostic rejection, fixture double-role cleanup assertionC0000409, native missing MapManager include compilation failure and corrected runs. Inspector wrong inherited-method prefix and3-call assumption repaired from exact local declaration/control-flow inspection; final proof validates each rejected-context path. Intermediate9F9E/7A34 and owned32960 evidence is not final cancellation certification. Only known6-line missing108222-template logs are eligible for private cleanup; current injected WARNs separately matched by runner. No crash report generated in canonical or own runtimes.",
+  "canonical": "8C67C433/F35EB0DF; owned5948 fresh ready/shutdown0/exit0/stderr empty/gone, intermediate32960 also gone. Crashes empty; mixedDBErrors6090/SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved. No canonical active error log cleared.",
+  "limits": "Persistent recovery after actual source object/grid/instance destruction, actual client/full1123/all36/combat/voice/camera/pet/reconnect, Althea214873 and shared LINK findings remain OPEN. Archive covers the focused loaded-source handoff/cleanup repair only."
+}
