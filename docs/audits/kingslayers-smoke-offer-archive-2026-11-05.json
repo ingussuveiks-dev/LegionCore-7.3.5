@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED after1AC68BBF/97F3A621 deployment; owned27208 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/kingslayers-smoke-offer-2026-11-05",
+    "manifest_sha256": "a43fa41b13c0dfda9a708cc1b5e3de4acc57509ef46945097b4a457573befcc3",
+    "files": 461,
+    "bytes": 928657,
+    "fix_commit": "1ca7a398a24642ddecc9039b0db1be6f026c290b",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/kingslayers-smoke-offer-2026-11-05.json",
+  "review": "Preserves6 pinned original first-visitor aura-consumption counterfactuals paired36actual whole-source native offer contexts including two integrated offer/214645/native51437 endpoints and2separate immunity refusals/recovery with exactly2expected warnings. Matching26972 catalog/readonly original Craggle binding, retained50native gate/34native Smoke plus28smoke/53gate/53opening ASAN. Sequential original-input Release/staged+canonical PE/Scepter, owned27208 ready/graceful0/exit0/gone. Initial Windows far macro/nearest-helper fixture assumption/fault variable placement and private inspect.py shadowing/shared-map-compare PE assumptions retained with corrected passing evidence. No unexplained new runtime crash/error/DBError",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client extra-action button input/display, original smoke cast feedback/visual/audio, physical NPC/panic movement and full1123/all36 remain OPEN. Actual group/client reconnect, quest abandonment/reacceptance and instance/AI reconstruction are not inferred from controlled native endpoints.",
+    "Offer requires an actual eligible Player; pets/guardians are not recipients and grant no owner progression. Nearby separate actual eligible Players both receive their own aura; native group/scenario credit rules unchanged. Combat killer attribution is separate from this noncombat delivery.",
+    "No new aura removal/visual cleanup is invented on abandonment or completion; previously owned aura and native client lifetime remain original. Scope intentionally retains shared/noncanonical old behavior. Existing per-actor optional voices and actor/instance lifetime limits remain separate.",
+    "Original Althea214873 producer/visual/protection intent, Merlis corpse/AI/grid/instance reconstruction and unknown shared101430/103151 LINK2/WardstoneLINK4 remain OPEN; no missing action or immunity guessed."
+  ]
+}
