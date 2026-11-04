@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-04",
+  "status": "OPEN reproduced native admission defect; no production repair/deployment. Pinned broken controls are not a repaired regression.",
+  "scope": "Original Merlis107831/360963 map1620, native1123 stage6/step2561/root48586/leaf48587, event51614. Both original42504/42627 quests; separate stage7 boss death51615 and later51616 unchanged.",
+  "cause": "Original full Merlis UpdateAI polls FindNearestPlayer(70), immediately sets actor introDone=true without class/quest/GM/stage admission, creates2484 on that player and schedules its five-second transition on that player. The flag persists. An ineligible first-arriving GM or questless Rogue can consume this actor; a later eligible Rogue gets neither its scene nor its delayed callback.",
+  "native_evidence": {
+    "pinned": "Complete Merlis class exported from committedfc5a667e3 under a distinct outer C++ name to avoid ODR mixing with linked current scripts. Original class body/ScriptName unchanged. Actual linked game/scripts Release libraries, current real InstanceMap/Scenario/Player/Conversation and scheduler queues.",
+    "criteria": "Actual matching26972/readonly Hotfix leaf48587 parent48586 amount1 ->30474/type92/asset51614 asserted; real Scenario1123 stage6 CanUpdateCriteria48587 asserted before every case.",
+    "controls": "Two eligible-first native Rogue controls, one per quest, own original2484 and one pending5s callback.",
+    "counterfactuals": "Four explicitly broken contexts, GM-first and questless-Rogue-first for each quest. Sole first-arrival search endpoint asserted through the actual helper; ineligible player owns accepted2484 and exactly one extra pending callback. Move that visitor outside native search visibility and place eligible Rogue at10 yards, assert helper now finds eligible Rogue, then repeat UpdateAI: introDone remains consumed, eligible Rogue has no scene/callback.",
+    "important_boundary": "Stop before original5s callback. Inspect real FunctionProcessor.Size+SizeQueue and actual Conversation casterGUID; cancel only owned unpersisted fixture queues at cleanup. Does NOT execute/claim actual teleport,214942 cast,cleanup,51614 delivery or client failure. This is sufficient evidence of wrong admission/one-shot consumption, not complete delayed-path verification.",
+    "searcher": "Source WorldObject.FindNearestPlayer is misnamed here: uses first-match PlayerSearcher/AnyPlayerInObjectRangeCheck with GetVisibilityRange; supplied alive parameter is ignored. A closer actor is not guaranteed to win grid iteration. Explicitly qualify desired range/alive/context in the scoped repair; do not assume a global helper fix or expand this task blindly.",
+    "isolation": "Readonly World/Hotfix/Login/Character sessions; native bootstrap uses empty connection-local Login account shadows to prevent session cleanup touching persistent accounts. No server process, character save, canonical executable change or production SQL update. Real accepted quest and scenario stage, actor creation/notification endpoints and arrival positions are controlled; no authenticated client traversal."
+  },
+  "world": "Read-only MerlisIntroReadOnly.sql confirms original Merlis360963(-8321.93,287.852,156.916), outro108222/360965,108333/360962,64367/360894 and original2484 line5269 requiring real108397 actor. Native fixture includes actual nearby108397/360610 pose(-8360.25,252.679,155.43); original conversation payload untouched.",
+  "iterations": [
+    "First probe omitted original2484 required real108397 actor. Native admission queue was created but scene assertion failed; added the actor using actual World360610 pose. No production row/payload/log check changed; retained failed stdout/stderr outside fixed.",
+    "Second probe assumed the closer GM would win FindNearestPlayer while eligible Rogue was already present. Source/actual helper shows first-match rather than nearest selection. Corrected arrival control and asserts actual helper result both before consumption and after later eligible arrival. No GM exclusion was invented; final four broken cases reproduced cleanly."
+  ],
+  "diagnostics": {
+    "final_run": "build-extractors/runtime-test/merlis-intro-native-open/20261104-090122-719",
+    "result": "Final6 controls/counterfactual contexts exit0 with expected OPEN semantic failures; before/after canonical/private crashes,stdout/stderr/appended Server/DBErrors inspected. No new or changed crash or unexplained diagnostic. No task server remains. Canonical mixed DBErrors6090 bytes unchanged; existing shared LINK findings remain OPEN. All unresolved research evidence kept active, no fixed archive/truncation.",
+    "canonical_db_errors_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0"
+  },
+  "evidence": {
+    "native_tsv_sha256": "d2ff2f106bef6d5d83dfae6a9f7169a772c94c9e623c0565b796ef102a6b9d10",
+    "native_inputs_sha256": "ff8661c95716381562c60eb465b57394f0664cd1b2fa9ee3963de869ac9ae826",
+    "diagnostics_after_sha256": "2adb488b70474261e30df9dae9b7df22229e931250c5989052f78d3b73a07054",
+    "world_tsv_sha256": "ef3600d40a4fccebd0d5e92600b16d703ac31e04f1e21d1f8f4556ad7ecd36b4"
+  },
+  "reference_order": "This project source, actual World records and matching26972 native/hotfix data establish admission cause. No incompatible newer implementation copied, no video viewed or claimed.",
+  "next": "Repair the original Merlis intro admission and delayed transition as a separate focused fix. Qualify actual alive/contactable nonGM Rogue, active unrewarded42504/42627, exact map/phase/scope/range and actual1123 stage6/48587. Do not consume for an ineligible first arrival or missing mandatory context. Trace original2484 actor108397, actual214942 cast, five-second delay,108333/64367 cleanup, native teleport success/failure and51614 acknowledgement before choosing retry/commit semantics. Revalidate abandonment/reentry/map/phase/source lifetime at execution, prevent duplicate callbacks/credit and preserve pet/guardian/Garona combat/victory, native next-stage requirements, optional presentation and unrelated shared actors. Keep all modeled/native/client evidence distinct; no nearest-player/blanket group/item/quest grants.",
+  "limits": [
+    "Full deferred51614/teleport failure/retry/cleanup path remains OPEN and must be traced before a fix is called complete.",
+    "Original Althea214873 startup/presentation remains OPEN; see althea-startup-2026-11-04.json. Current deployed guard/intro/victory/door fixes unchanged.",
+    "Full client1123/all36, group/faction/pet/guardian combat, reconnect/reentry and later pickup/equipment/voice/VFX remain separate checks."
+  ],
+  "source_sha256": {
+    "tools/research/MerlisIntroAdmissionProbe.cpp": "e4ca78bfa3d58677cd6291e7de6b2035ddbd714519244d4678abd35bc6d97e5d",
+    "tools/research/MerlisIntroReadOnly.sql": "748ef042f52a3805db36606c12d2bea535c6551a2f0df1db322d1bcf6af442a4",
+    "tools/research/Probe-MerlisIntroAdmission.ps1": "a413c62754054d88a036a903b075a11744af8576ffe871b426635847d10dc2d9"
+  }
+}
