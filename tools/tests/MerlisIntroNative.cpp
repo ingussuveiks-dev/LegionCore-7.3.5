@@ -159,7 +159,7 @@ int main(int argc, char** argv)
                 sScenarioMgr->RemoveScenario(map.GetInstanceId());++cases;
             }
 #ifdef MERLIS_NATIVE_FAULTS
-        std::cout<<"PASS "<<cases<<" explicit native failure/recovery contexts:2484 actor refusal, actual expansion-refused SafeTeleport behind successful TeleportTo return, actual51614 rejection. Reviewed WARNs expected; separate from ordinary clean run\n";
+        std::cout<<"PASS "<<cases<<" explicit native failure/recovery contexts:2484 actor refusal, actual expansion-refused native travel, actual51614 rejection. Reviewed WARNs expected; separate from ordinary clean run\n";
 #else
         std::cout<<"PASS "<<cases<<" native whole Merlis cases: ineligible/GM/pet/guardian first visits, group shared progress, original5s/2484/214942 scene launch, real accepted near travel/51614 and independent ACK, actual player/pet/guardian boss kills before ACK, abandonment/phase/range/retry/Reset, foreign transfer, missing actor and exactly-once native51614; earlier quest/stage/arrival endpoints controlled, no authenticated client/full combat claim\n";
 #endif

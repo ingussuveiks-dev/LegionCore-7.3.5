@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-04",
+  "status": "DEPLOYED focused shared TeleportTo delegated-return repair; native/Release/canonical regressions pass; full client chains remain OPEN.",
+  "cause": "Scalar Player.TeleportTo discarded SafeTeleport boolean and returned true unconditionally after delegation. Real native expansion refusal and missing sWorld session thus appeared accepted to bool callers. Scoped Merlis had already guarded actual pending destination independently.",
+  "implementation": "Only replace tail SafeTeleport(...); return true; with return SafeTeleport(...). All earlier eligibility/log/transfer-abort branches and existing no-session/logout compatibility return true remain unchanged. All Position/WorldLocation/WorldSafeLocs overloads already forward; no changes to SafeTeleport scheduling/packets/admission/position/save/pets/vehicles/arrival, no SQL or character changes. Preserve Merlis pending-state/exact-destination guard and queued51614 before ACK; update current diagnostic wording only.",
+  "caller_review": {
+    "transport": "False now reaches RemovePassenger as intended; independently reproduced/repaired both live-iterator hazards first. See transport-passenger-iteration audit.",
+    "quest_scenario": "Broken Shore and Dark Riders login exits retain checkpoint on refusal; Valsharah cleanup/reward and Draenor seismic success actions require true; Highmountain/Ritual/Stormheim/Devourer preserve authored retry/failure paths. No pet/guardian progression assigned to nonPlayer.",
+    "other": "LFG area-trigger bool permits authored fallback when first destination refused; BG-entry spectator removal only on success; cs_go reports refusal. Ignored-result callers unchanged. No new quest/item/credit/completion grants."
+  },
+  "checks": {
+    "native_counterfactual": "Before rebuilding original game.lib,32 native contexts run actual linked Player scalar/three overloads.16 real SafeTeleport expansion/missing-world-session refusals returned true. Explicit expected-broken counterfactual, not a successful ordinary run; baseline source/library hashes retained.",
+    "native_repaired": "After rebuilding original game.lib, same32 actual native cases:16 refusals false and unchanged position/no pending state,16 accepted near/deferred cases true with exact destination, real deserialized CMSG_MOVE_TELEPORT_ACK and no pending state afterward. Human/Orc; missing safe location false. SafeLoc5779 copied/temporarily retargeted in probe memory/restored; actual client and far accepted traversal not claimed by this isolated probe.",
+    "source_certificate": "Entire Player.cpp compared with pinned fe118183d after restoring only scalar body; expected scalar body differs only in delegated return. Prechecks, compatibility path, SafeTeleport and overloads unchanged.",
+    "retained_native": "Sheilun -VerifyLiveData:10 native acquisition cases,8 actual two-map return/boarding/spline/cancel cases,1 completed-outro rejoin,2 before-logout memory-save cases. Actual accepted far transfer/worldport ACK/owned player+TakTak boarding and landing, seeded earlier stages/no character saves. Merlis52 ordinary plus6 explicit fault/recovery contexts: true refusal prevents receipt/cleanup and recovers; actual player/pet/guardian boss kills before ACK retain stage7. Six expected diagnostic WARNs individually reviewed by existing runner, not ordinary clean-run results.",
+    "canonical": "Staged and canonical selected PE proves exact SafeTeleport result reaches scalar return unchanged, all3 overloads forward, compatibility early-success remains separate. Retained Merlis/Althea/door/guard/death registered PE chain and canonical Test-ScepterLogin -VerifyReleaseBinary pass; extracted map-arrival/transport visibility/scenario checkpoint checks pass.",
+    "build": "Player.cpp/Transport.cpp rebuilt via original game.vcxproj Release; original final-link libraries verified and EXE/MAP staged then offline backup/hash-verified promotion of both binaries/maps. Configuration/certificates/DLL hashes unchanged; no SQL needed."
+  },
+  "fixture_iterations": [
+    "First new probe build attempted private teleport-delay methods. Corrected fixture with narrowly scoped member-pointer access, no production visibility change. Initial compile failure and clean diagnostic snapshots retained."
+  ],
+  "canonical_hashes": {
+    "worldserver.exe": "58c77ca652fc1881c70beaeabbc84273fed88298779583bf962ed9d8f00b92bd",
+    "bnetserver.exe": "d95fa47788c3586d365d1823c678a840a701219e6f1c7b483f27985222a3cb83"
+  },
+  "diagnostics": "Before/after canonical and own-runtime crashes/log lengths/timestamps, exits/stdout/stderr/appended server and DBErrors checked. Ordinary final runs clean. Expected ASAN counterfactuals separately labeled. Canonical Crashes empty; mixed DBErrors6090 bytes/SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged and OPEN. Owned canonical PID19988 ready/shutdown0/exit0/stderr empty/gone; no user server stopped or task server left running.",
+  "archive": "docs/audits/teleport-return-archive-2026-11-04.json (both focused implementation hashes recorded after commits)",
+  "next": "Continue independently evidenced original Merlis combat/outro/return or Althea startup repair after local native sequence review. Do not claim full1123/all36 or client camera/pet/audio/reconnect verified.",
+  "limits": [
+    "Existing no-session/logout early true remains intentionally compatible; a bool success is not proof of client arrival or pending state in every compatibility path.",
+    "Full native-core ASAN not established: only complete transport routines instrumented in controlled harness. Native core probes link actual Release libraries.",
+    "All36 whole acquisitions, full actual client encounter/traversal/appearance/audio/equipment/camera/pet/reconnect remain OPEN. Shared LINK2/LINK4 unknown payload findings and Althea214873 startup remain OPEN."
+  ]
+}

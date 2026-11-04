@@ -86,9 +86,9 @@ def verify(n):
     assert tick[later_destination + 1].mnemonic == 'test' and tick[later_destination + 2].mnemonic == 'je'
     denied = tick[later_destination + 2].operands[0].imm
     assert tick[arriving].address not in reachable(tick, denied) and tick[commits[1]].address not in reachable(tick, denied)
-    # The wrapper can return true after SafeTeleport refused. Actual pending
-    # flags, freshly re-resolved qualified Player and our exact destination
-    # must therefore intervene before the accepted-queue receipt/commit.
+    # Retain actual pending flags, freshly re-resolved qualified Player and
+    # our exact destination before the accepted-queue receipt/commit, including
+    # compatibility wrapper early-success paths that never delegate travel.
     assert sites(n, tick[teleport:later_destination], method('IntroPlayer'))
     assert sites(n, tick[teleport:later_destination], '?GetPlayer@ObjectAccessor@@')
     for offset in (0x6848, 0x6849, 0x6851):

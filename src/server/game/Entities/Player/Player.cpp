@@ -2054,9 +2054,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     if (!InBattleground() && mEntry->IsBattlegroundOrArena())
         return false;
 
-    SafeTeleport(mapid, x, y, z, orientation, options, spellID);
-
-    return true;
+    return SafeTeleport(mapid, x, y, z, orientation, options, spellID);
 }
 
 bool Player::TeleportTo(uint32 mapid, Position const* pos, uint32 options, uint32 spellID)
