@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED after A8FAFBD6/4F0CABD0 deployment; owned33516 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/kingslayers-gate-order-2026-11-04",
+    "manifest_sha256": "252872e4a36e4c64e8733d7406de5cb2560d65883ea7e08aaa3d28b72b30d9e9",
+    "files": 637,
+    "bytes": 1023276,
+    "fix_commit": "dc836f1d6d2cc83a3c38fb4173f6619883823302",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/kingslayers-gate-order-2026-11-04.json",
+  "review": "Preserves10 pinned original native counterfactuals paired with53gate+53opening ASAN,50ordinary actual native and8separate explicit refusal/recovery contexts with exactly8reviewed warnings; retained8native phase/32native admission and Althea/Merlis/Garona checks, fresh26972 silent5063 mapping and native local three-actor context. Sequential original-input Release/stage+canonical virtual-dispatch/receipt/subtype/identity/dataflow proofs/Scepter and owned33516 ready/shutdown0/exit0. Initial readonly query schema assumptions/new ASAN != model/PE inline-multiple-table-indirect-call assumptions retained and paired with actual corrected evidence. No unexplained new runtime error/crash/DBError.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client playback/bubbles/visibility for original2384 and all three Clay actors, full movement/voice/camera/pet/group/reconnect, full1123/all36 remain OPEN. No full client path or continuous gameplay reviewed. No missing SoundKit invented.",
+    "One receipt belongs to each actual living Clay AI, matching original per-actor one-shot scope. Distinct authored Clay spawns retain their own behavior; no quest-global suppression or serialized actor state was invented. AI/grid/instance reconstruction can legitimately create a fresh actor controller and is not persistent checkpoint coverage. Native AI replacement/earlier quest or clock endpoints do not prove authenticated reconnect.",
+    "Player-owned conversation lifetime and arbitrarily late group viewers remain native limitations recorded in earlier voice/timing audits. Visible original roles are retained; no actor moved or world visibility enlarged. Optional failure cannot block mandatory opening progress.",
+    "Merlis pending corpse/AI/grid/instance reconstruction, original Althea214873 startup/protection and unknown shared101430/103151 LINK2/WardstoneLINK4 remain OPEN."
+  ]
+}

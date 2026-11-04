@@ -48,6 +48,7 @@
   },
   "gate_order_followup": {
     "audit": "docs/audits/kingslayers-gate-order-2026-11-04.json",
-    "status": "Original2384 source admission/duplicate/factory retry and actual three Clay roles now investigated and repaired/deployed separately. Client playback/full-chain limits remain."
+    "status": "Original2384 source admission/duplicate/factory retry and actual three Clay roles now investigated and repaired/deployed separately. Client playback/full-chain limits remain.",
+    "fix_commit": "dc836f1d6d2cc83a3c38fb4173f6619883823302"
   }
 }

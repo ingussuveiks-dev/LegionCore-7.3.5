@@ -34,7 +34,7 @@
   "next": "Continue independent shared101430/103151 LINK2 and Wardstone LINK4 or another recorded artifact acquisition repair from native local script/data evidence. Keep actual client/full1123/all36, original Althea startup and lifetime reconstruction limits visible.",
   "source_sha256": {
     "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "626dfd53189f1e94e4f402283dafc063b6f92cdf77d024a28e410169515f6bb0",
-    "tools/tests/KingslayersGateOrderNative.cpp": "60342b314454b4193b68e13c417579aab6f6d0bf3958bd2b1cc7e8d777346f34",
+    "tools/tests/KingslayersGateOrderNative.cpp": "64030ac4156f215184c076323d59120decb6a9b530ece8376b8ce6268dc11dd3",
     "tools/tests/KingslayersGateOrderTest.cpp": "bfcd1d9d02e85223147ade38eefd372c82de17fa72844b82b2ea19dd7abbdae7",
     "tools/tests/Test-KingslayersGateOrder.ps1": "7d31a96b2deaf86914eab3d96678117be4ad4bef101e67712def9dfbf039aed5",
     "tools/tests/Test-KingslayersGateOrderNative.ps1": "41d4a4c7cf185c418cb61619fde8fbaf0a120076fa5bf8361318675d8d031d05",
@@ -44,5 +44,16 @@
     "tools/tests/Test-KingslayersIntroLifetime.ps1": "257c91e320f4583f9b016f1155808667e9510b3d094195076920139bfef2429d",
     "tools/tests/verify_kingslayers_gate_order_release.py": "7fac21519f77cc2b233baa178ddde49b2819ad0aca9689f0aa7a64a8240c6fef",
     "tools/research/KingslayersGateOrderReadOnly.sql": "a84aaa252b00004955c190b193b882a029558b1a22bf2050db8d6d931e68ca0f"
+  },
+  "post_check_cleanup": "Removed one trailing-whitespace-only blank line in the native regression source after staged diff check reported it; no executable/test behavior change. Final diff check clean.",
+  "fix_commit": "dc836f1d6d2cc83a3c38fb4173f6619883823302",
+  "archive": {
+    "audit": "docs/audits/kingslayers-gate-order-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/kingslayers-gate-order-2026-11-04",
+    "manifest_sha256": "252872e4a36e4c64e8733d7406de5cb2560d65883ea7e08aaa3d28b72b30d9e9",
+    "files": 637,
+    "bytes": 1023276,
+    "fix_commit": "dc836f1d6d2cc83a3c38fb4173f6619883823302",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
   }
 }

@@ -4,7 +4,7 @@
 #include "GaronaOpening.inc"
 int main(int argc,char** argv) { try {
     InitializeAltheaGuardsNative(argc,argv);uint32 cases=0;
-    
+
 #ifdef KINGSLAYERS_GATE_ORDER_BASELINE
     uint32 modes=5;
 #else
