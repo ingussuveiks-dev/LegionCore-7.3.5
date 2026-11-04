@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-04",
+  "status": "INVESTIGATED / OPEN intended startup presentation and full encounter. Research only; no production code/data/executable changed.",
+  "scope": "Original Althea108218/360870 and original Garona108214/360859 plus guards108216/360869+360872 and108217/360871, map1620/native1123, both42504/42627.",
+  "findings": {
+    "native_spell": "Matching26972 client+read-only Hotfix:214873 Burning Bond, infinite duration21/-1, one effect6 APPLY_AURA / aura4 DUMMY / self target1 / no trigger spell. Aura description says Immune to all damage, but is not a native school/damage-immunity effect. Scan of all typed SpellEffect parent trigger fields finds0 references to214873. A description alone does not establish server immunity.",
+    "world": "Actual readonly World query: no relevant spawn/template addon rows, no global addon214873 aura rows, no authored214873 SmartAI cast, no linked/area/script-name producer found by the recorded query. Four templates have no default spells. Original Althea flags32768, no protected attack flag. All8 original guard/Garona SmartAI rows retained. No matching queried source22/spell13/17 conditions.",
+    "actual_source": "Project src/updates search finds only Althea RemoveAura214873; no apply/handler for214873. The current source keeps legitimate alternative real boss kills independently of guard-release choreography. No blanket immunity/addon/new aura or progression grant was invented.",
+    "native_startup": "Two fresh native InstanceMap/current complete Althea AI contexts, one per active quest: aura absent, physical and Shadow IsImmunedToDamage false. Separate explicitly labeled manual AddAura control remains physically/Shadow nonimmune. Actor Create and real template/native AI initialization are exercised; shared Actor bypasses Creature AddToWorld addon/lifecycle producers. World no-addon evidence is separate; this is not a complete canonical grid-spawn/client-startup proof.",
+    "authored_guards": "Actual synchronous-connection temporary shadow copies exactly8 live SmartAI rows, then READ ONLY before actual SmartAIMgr loader and all actor operations. All3 scripts/8 rows accepted. Full original SmartAI installed instead of attack observers: caster OOC195898 real aura/channel appears, actual combat handoff interrupts it. All3 guards acquire Garona and enter combat in both quest contexts; first100ms update retains targets without evade.",
+    "combat_45s": "450 controlled100ms native Unit movement/spell and actual SmartAI updates from original poses, actual map relocation queue. All3 guards and Garona remain alive after45s, guards move to within3.64..8.37 yards, no false death receipts/boss release. One guard later changes target; this is not claimed as complete player-assisted combat, all authored spell-hit fidelity or intended gameplay. No forced kills, death receipts or progress added by this probe."
+  },
+  "iterations": [
+    "First fixture attempted temporary DDL/INSERT inside READ ONLY and MariaDB rejected4 statements (8 error lines), exit1. Native harness now switches only its owned synchronous connection to READ WRITE for explicit temporary setup, restores/asserts READ ONLY before any loader/actor operation. No persistent writes. Original DBErrors retained outside fixed; corrected final runs have none.",
+    "Two early fixture assertions combined COUNT(*) and @@session.transaction_read_only in one table query, which reports0 in this MariaDB context even though a separate query reports1 before and after. Reproduced with the native connector AND independent mysql CLI using the same temporary smart_scripts schema (CLI single-before1/combined8,0/single-after1). This is not evidence that native session protection was lost, nor a core field conversion fix. Authoritative independent session query now remains asserted; combined raw/bool control retained visibly. The exact server-expression semantics remain unproven and are not used for gameplay changes."
+  ],
+  "diagnostics": {
+    "final_native": "build-extractors/runtime-test/althea-startup-native-open/20261104-085254-472",
+    "result": "Final two-context/45s probe exit0, no new/changed canonical or private crashes, no appended server diagnostics/DBErrors; startup catalog and SQL probes likewise pass diagnostic review. No worldserver/bnetserver launched. Canonical mixed DBErrors6090 bytes unchanged; old shared LINK findings OPEN. Research/compiler/fixture evidence remains active outside fixed; no log truncation or archive.",
+    "canonical_db_errors_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0"
+  },
+  "evidence": {
+    "catalog_sha256": "6d3314467db5763d54bfe0619fda0d6c7c0d048b2bfb3cc56210659724661972",
+    "world_sha256": "cac8e7863e20fb598f5f5451143d168bbd1a08554c2887c0bae80327d1c3a4c8",
+    "native_sha256": "d685db956d783f984f8c57fd22be2929168dfa25bd70bdd8890f4b5bebdad375",
+    "native_diagnostics_sha256": "8d8c9f1468a0740f94a089152828f42c346f90963130b5e46633988312f326fa",
+    "schema_control_sha256": "b61a65b3c8dca8be49bd70a5c7d0ee12b804facb75389e550ec39eb69adbf5ea"
+  },
+  "references": "Local newer TrinityCore15e0ed76e2 current tree and available Kingslayers paths/history did not provide a matching alternative startup. Project origin fetched/clean at1570591ea before work; project history214873 traces to initial implementations. GitHub search/raw upstream request yielded no usable new implementation. No video watched or claimed, no external implementation copied.",
+  "limits": [
+    "Intended original214873 startup/shield visual, real damage behavior at actual grid spawn and whether an additional authored producer is missing remain OPEN. These observations do not justify manufacturing protection.",
+    "Full original guard/Althea combat rotation/scaling, client path/voice/visibility, group/pet/guardian/faction/reentry/reconnect and full1123/all36 remain separate checks. Prior guard death/intro/death/door repairs remain deployed."
+  ],
+  "next": "Investigate the independent original Merlis107831 UpdateAI nearest-player one-shot and its delayed51614/teleport callback at native1123 stage6 before changing it. Keep actual startup visual OPEN and preserve existing legitimate boss kills, independent victory/door and shared unresolved diagnostics.",
+  "source_sha256": {
+    "tools/research/AltheaStartupCatalog.cpp": "1571e8444012872110af752c45193fdccb70df6209d2ad29cfaf89e1cfd3a865",
+    "tools/research/AltheaStartupNative.cpp": "83484e9fda040ab8e49cac4d265e7570a2d6f6ec2320c81329802dc3bebd6dc4",
+    "tools/research/AltheaStartupReadOnly.sql": "2ae9db09e7af9400c003a2e80bbdfdee7295539db5e4c1a68be8f9738092a83c",
+    "tools/research/Probe-AltheaStartup.ps1": "d551c28a05fb9fd4df35974873556ab8a4810a7c5fc45779b4e5f97a7c072af6"
+  }
+}

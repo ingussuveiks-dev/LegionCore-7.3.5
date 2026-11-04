@@ -1,0 +1,10 @@
+SET SESSION TRANSACTION READ ONLY;
+SELECT 'template',entry,AIName,ScriptName,faction,unit_flags,unit_flags2,unit_flags3,flags_extra,spell1,spell2,spell3,spell4,spell5,spell6,spell7,spell8 FROM creature_template WHERE entry IN(108214,108216,108217,108218) ORDER BY entry;
+SELECT 'template_addon',a.* FROM creature_template_addon a WHERE entry IN(108214,108216,108217,108218) OR FIND_IN_SET('214873',REPLACE(auras,' ',','));
+SELECT 'spawn_addon',a.* FROM creature_addon a WHERE guid IN(360859,360869,360872,360871,360870) OR FIND_IN_SET('214873',REPLACE(auras,' ',','));
+SELECT 'smart',s.* FROM smart_scripts s WHERE entryorguid IN(108214,108216,108217,108218,-360859,-360869,-360872,-360871,-360870) OR (action_type IN(11,85,86,97) AND action_param1=214873) ORDER BY entryorguid,source_type,id;
+SELECT 'linked',s.* FROM spell_linked_spell s WHERE ABS(spell_trigger)=214873 OR ABS(spell_effect)=214873;
+SELECT 'area',s.* FROM spell_area s WHERE spell=214873 OR ABS(aura_spell)=214873;
+SELECT 'script',s.* FROM spell_script_names s WHERE spell_id=214873;
+SELECT 'conditions',c.* FROM conditions c WHERE (SourceTypeOrReferenceId=22 AND SourceEntry IN(108214,108216,108217,108218)) OR (SourceTypeOrReferenceId IN(13,17) AND SourceEntry IN(214873,183928,183934,128044,195898,183345,79852,10022,60195));
+SELECT 'EOF','read-world';
