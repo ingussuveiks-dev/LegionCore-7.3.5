@@ -7,6 +7,13 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  # Garona reveal has its own whole-source/ASAN/native certificate.
  $current=$current.Replace((Block $current 'class npc_garona_halforcen_outro : public CreatureScript'),(Block $old 'class npc_garona_halforcen_outro : public CreatureScript'))
  $ai=Block $current 'struct npc_merlis_malaganAI : ScriptedAI';$prior=Block $old 'struct npc_merlis_malaganAI : ScriptedAI'
+ # The independent source handoff suite certifies these corpse helpers and
+ # summon/death changes; preserve the earlier intro/combat boundary exactly.
+ $start=$ai.IndexOf('        ObjectGuid outroActor,');$tail=Block $ai 'void UpdateLifecycle(';$end=$ai.IndexOf($tail,$start)+$tail.Length
+ if($start -lt 0 -or $end -lt 0){throw 'Certified handoff boundary missing'}
+ $normalizedHandoff=$ai.Remove($start,$end-$start)
+ foreach($name in @('void JustSummoned(','void JustDied(')){$normalizedHandoff=$normalizedHandoff.Replace((Block $ai $name),(Block $prior $name))}
+ $current=$current.Replace($ai,$normalizedHandoff);$ai=$normalizedHandoff
  $a=$ai.IndexOf('        ObjectGuid introRecipient,');$b=$ai.IndexOf('        void Reset()',$a);if($a -lt 0 -or $b -lt 0){throw 'Dedicated Merlis intro boundary missing'}
  [IO.File]::WriteAllText("$out/MerlisHelpers.inc",$ai.Substring($a,$b-$a))
  $normalized=$ai.Remove($a,$b-$a);$update=Block $ai 'void UpdateAI('; $oldUpdate=Block $prior 'void UpdateAI('

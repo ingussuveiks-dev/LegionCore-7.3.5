@@ -24,7 +24,9 @@ $instanceSource=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/K
 [IO.File]::WriteAllText("$out/KingslayersInstance.inc",(Block $instanceSource 'class instance_kingslayers : public InstanceMapScript')+';')
 $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$pinned=(& git -C $repo show "afe0e3c37:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned reveal baseline missing'}
 $reveal=Block $source 'class npc_garona_halforcen_outro : public CreatureScript';$before=Block $pinned 'class npc_garona_halforcen_outro : public CreatureScript'
-if(($source.Replace($reveal,$before)-replace '\s','') -cne ($pinned-replace '\s','')){throw 'Unreviewed change outside original reveal actor'}
+ # Merlis source handoff has its own whole-source/ASAN/native certificate.
+ $sourceForReveal=$source.Replace((Block $source 'class npc_merlis_malagan : public CreatureScript'),(Block $pinned 'class npc_merlis_malagan : public CreatureScript'))
+if(($sourceForReveal.Replace($reveal,$before)-replace '\s','') -cne ($pinned-replace '\s','')){throw 'Unreviewed change outside original reveal actor'}
 if($Baseline){$reveal=$before}
 $reveal=$reveal.Replace('class npc_garona_halforcen_outro :','class npc_garona_before_reveal :').Replace('npc_garona_halforcen_outro() :','npc_garona_before_reveal() :')
 [IO.File]::WriteAllText("$out/GaronaReveal.inc",$reveal+';')

@@ -894,6 +894,117 @@ public:
         bool introBusy = false, introArriving = false, introVoice = false, introScene = false;
         uint8 introWarnings = 0;
 
+        ObjectGuid outroActor, outroPrevious, outroSource;
+        uint32 outroRetry = 0, outroInstance = 0;
+        bool outroPending = false, outroCaptured = false, outroComplete = false, outroBusy = false;
+        uint8 outroWarnings = 0;
+
+        bool OutroContext() const
+        {
+            return me->IsInWorld() && !me->IsPreDelete() && !me->IsAlive() &&
+                me->GetEntry() == 107831 && me->GetMapId() == 1620 && me->GetGUID() == outroSource &&
+                me->GetInstanceId() == outroInstance && !me->IsQuestObjectExpired();
+        }
+
+        bool OutroActor(Creature* actor) const
+        {
+            return actor && actor->IsInWorld() && !actor->IsPreDelete() && actor->IsAlive() &&
+                actor->GetEntry() == 108222 && actor->GetMap() == me->GetMap() &&
+                !actor->IsQuestObjectExpired() && actor->InSamePhase(me) &&
+                actor->CanTargetQuestObject(me) && me->CanTargetQuestObject(actor);
+        }
+
+        void CancelOutro()
+        {
+            outroPending = false;
+            Map* map = me->GetMap();
+            if (!map || map->GetId() != 1620 || map->GetInstanceId() != outroInstance)
+                map = sMapMgr->FindMap(1620, outroInstance);
+            if (map)
+                if (Creature* actor = map->GetCreature(outroActor))
+                    if (!actor->IsPreDelete() && actor->GetEntry() == 108222 && actor->ToTempSummon() &&
+                        actor->ToTempSummon()->GetSummonerGUID() == outroSource)
+                    {
+                        // A callback may have accepted the reveal before the
+                        // source context changed. Keep that earned actor; only
+                        // an unaccepted summon belongs to this cancellation.
+                        if (actor->AI() && actor->AI()->GetData(108222))
+                            outroComplete = true;
+                        else
+                            actor->DespawnOrUnsummon();
+                    }
+            outroActor.Clear();
+        }
+
+        void UpdateOutro(uint32 diff)
+        {
+            if (!outroPending || outroBusy)
+                return;
+            if (!OutroContext()) { CancelOutro(); return; }
+            if (outroRetry > diff) { outroRetry -= diff; return; }
+            outroRetry = 2000;
+            outroBusy = true;
+            struct Release { bool& flag; ~Release() { flag = false; } } release{outroBusy};
+            if (!outroCaptured)
+            {
+                outroCaptured = true;
+                if (Creature* previous = me->FindNearestCreature(108222, 60.0f, true))
+                    if (OutroActor(previous))
+                        outroPrevious = previous->GetGUID();
+            }
+            Creature* actor = ObjectAccessor::GetCreature(*me, outroActor);
+            if (!OutroActor(actor))
+            {
+                outroActor.Clear();
+                if (Creature* created = me->SummonCreature(108222, -8310.60f, 284.40f, 156.83f))
+                    outroActor = created->GetGUID();
+                if (!OutroContext()) { CancelOutro(); return; }
+                actor = ObjectAccessor::GetCreature(*me, outroActor);
+            }
+            if (!OutroActor(actor) || !actor->IsAIEnabled || !actor->AI())
+            {
+                if (!(outroWarnings & 1))
+                    TC_LOG_WARN("scripts", "Merlis outro: native108222 unavailable; retain old actor and bounded-rate retry");
+                outroWarnings |= 1;
+                return;
+            }
+            actor->AI()->DoAction(true);
+            if (!OutroContext()) { CancelOutro(); return; }
+            actor = ObjectAccessor::GetCreature(*me, outroActor);
+            if (!OutroActor(actor) || !actor->IsAIEnabled || !actor->AI() || !actor->AI()->GetData(108222))
+            {
+                if (!(outroWarnings & 2))
+                    TC_LOG_WARN("scripts", "Merlis outro: native108222 did not acknowledge reveal; retain same-actor retry");
+                outroWarnings |= 2;
+                return;
+            }
+            outroPending = false;
+            outroComplete = true;
+            actor->SetVisible(true);
+            if (Creature* previous = ObjectAccessor::GetCreature(*me, outroPrevious))
+                if (previous->GetGUID() != outroActor && OutroActor(previous))
+                    previous->DespawnOrUnsummon();
+        }
+
+        void StartOutro()
+        {
+            if (outroPending || outroComplete)
+                return;
+            outroPending = true;
+            outroCaptured = false;
+            outroActor.Clear();
+            outroPrevious.Clear();
+            outroSource = me->GetGUID();
+            outroInstance = me->GetInstanceId();
+            outroRetry = 0;
+            UpdateOutro(0);
+        }
+
+        void UpdateLifecycle(uint32 diff) override
+        {
+            UpdateOutro(diff);
+        }
+
         bool IntroReceipt() const
         {
             Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
@@ -1085,6 +1196,10 @@ public:
 
         void JustSummoned(Creature* summon) override
         {
+            // The earned friendly outro outlives this corpse/combat AI. Do not
+            // enroll it in the boss's combat-add cleanup or force it to fight.
+            if (outroPending && !me->IsAlive() && summon->GetEntry() == 108222)
+                return;
             summons.Summon(summon);
             DoZoneInCombat(summon, 150.0f);
         }
@@ -1093,13 +1208,7 @@ public:
         {
             Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             summons.DespawnAll();
-            if (Creature* oldgarona = me->FindNearestCreature(108222, 60.0f, true))
-                oldgarona->DespawnOrUnsummon();
-            if (Creature* garona = me->SummonCreature(108222, -8310.60f, 284.40f, 156.83f))
-            {
-                garona->AI()->DoAction(true);
-                garona->SetVisible(true);
-            }
+            StartOutro();
             if (player)
             {
                 player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51615);
@@ -1206,6 +1315,11 @@ public:
         EventMap events;
         bool artifactReady = false, visualReady = false, revealMoved = false;
         uint8 revealWarnings = 0;
+
+        uint32 GetData(uint32 type) const override
+        {
+            return type == 108222 && introDone;
+        }
 
         void Reset() override
         {

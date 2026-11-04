@@ -5,7 +5,9 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$source=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "afe0e3c37:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned reveal predecessor missing'}
  $body=Block $source 'class npc_garona_halforcen_outro : public CreatureScript';$prior=Block $old 'class npc_garona_halforcen_outro : public CreatureScript'
- if(($source.Replace($body,$prior)-replace '\s','') -cne ($old-replace '\s','')){throw 'Unreviewed change outside original Garona reveal actor'}
+ # Merlis source handoff has its own whole-source/ASAN/native certificate.
+ $sourceForReveal=$source.Replace((Block $source 'class npc_merlis_malagan : public CreatureScript'),(Block $old 'class npc_merlis_malagan : public CreatureScript'))
+ if(($sourceForReveal.Replace($body,$prior)-replace '\s','') -cne ($old-replace '\s','')){throw 'Unreviewed change outside original Garona reveal actor'}
  [IO.File]::WriteAllText("$out/GaronaReveal.inc",$body+';')
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/GaronaRevealTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b %errorlevel%`ncd /d `"$out`"`n`"$out/test.exe`"`nexit /b %errorlevel%`n")

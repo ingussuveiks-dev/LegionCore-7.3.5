@@ -25,11 +25,13 @@ assert owner < despawn < credit < conversation, 'Resolve killer before cleanup c
 assert any(entry.op_str == 'rdx, rdx' and entry.mnemonic == 'test'
            and body[i + 1].mnemonic == 'je' and body[i + 1].operands[0].imm > body[owner].address
            for i, entry in enumerate(body[:owner])), 'Missing null-killer guard'
-assert body[owner + 1].op_str == 'rdi, rax', 'Native resolved player must own progression and speech'
-guard = next(i for i, entry in enumerate(body[despawn:credit], despawn) if entry.mnemonic == 'test' and entry.op_str == 'rdi, rdi')
+assert body[owner + 1].mnemonic == 'mov' and body[owner + 1].op_str.endswith(', rax')
+recipient = body[owner + 1].op_str.split(',')[0]
+assert recipient in {'rbx', 'rsi', 'rdi', 'r12', 'r13', 'r14', 'r15'}, 'Resolved owner must survive cleanup calls in a native nonvolatile register'
+guard = next(i for i, entry in enumerate(body[despawn:credit], despawn) if entry.mnemonic == 'test' and entry.op_str == f'{recipient}, {recipient}')
 assert body[guard + 1].mnemonic == 'je' and body[guard + 1].operands[0].imm > body[conversation].address
-assert all(any(entry.op_str == operand for entry in body[guard:credit]) for operand in ('edx, 0x5c', 'r8d, 0xc99f', 'rcx, rdi'))
-assert all(any(entry.op_str == operand for entry in body[credit:conversation]) for operand in ('r9, rdi', 'r8d, 0x990', 'rbx, [rdi + 0xd0]'))
+assert all(any(entry.op_str == operand for entry in body[guard:credit]) for operand in ('edx, 0x5c', 'r8d, 0xc99f', f'rcx, {recipient}'))
+assert all(any(entry.op_str == operand for entry in body[credit:conversation]) for operand in (f'r9, {recipient}', 'r8d, 0x990', f'rbx, [{recipient} + 0xd0]'))
 assert any(entry.mnemonic == 'test' and entry.op_str == 'al, al' and body[i + 1].mnemonic == 'jne'
            for i, entry in enumerate(body[conversation + 1:], conversation + 1)), 'Failed conversation must keep its cleanup branch'
 assert sites('?GetCreatureListWithEntryInGrid@WorldObject@@')[0] > conversation, 'Add cleanup must survive absent player'

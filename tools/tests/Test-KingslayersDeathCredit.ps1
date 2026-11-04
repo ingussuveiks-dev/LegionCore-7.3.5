@@ -12,12 +12,24 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  $marker='void JustDied(Unit* who) override';$currentDeath=Block $currentAI $marker;$oldDeath=Block $oldAI $marker
  # Other Kingslayers actors and the pickup have independent regression suites.
  # Dedicated Merlis intro suite certifies its helpers/update boundary.
- $unrelated=$currentAI;$a=$unrelated.IndexOf('        ObjectGuid introRecipient,');$b=$unrelated.IndexOf('        void Reset()',$a)
+ # Remove only the independently certified source handoff before retaining
+ # this older owner-selection boundary; the native suite runs the full actor.
+ $unrelated=$currentAI
+ $start=$unrelated.IndexOf('        ObjectGuid outroActor,');$tail=Block $unrelated 'void UpdateLifecycle(';$end=$unrelated.IndexOf($tail,$start)+$tail.Length
+ if($start -lt 0 -or $end -le $start){throw 'Certified source handoff boundary absent'}
+ $unrelated=$unrelated.Remove($start,$end-$start).Replace((Block $currentAI 'void JustSummoned('),(Block $oldAI 'void JustSummoned('))
+ $a=$unrelated.IndexOf('        ObjectGuid introRecipient,');$b=$unrelated.IndexOf('        void Reset()',$a)
  if($a -lt 0 -or $b -lt 0){throw 'Actual dedicated Merlis intro boundary missing'}
  $unrelated=$unrelated.Remove($a,$b-$a).Replace((Block $currentAI 'void UpdateAI('),(Block $oldAI 'void UpdateAI('))
  $priorUnrelated=[regex]::Replace($oldAI,'(?s)/\* void MoveInLineOfSight.*?\*/','')
  if(($unrelated.Replace($currentDeath,$oldDeath) -replace '\s','') -cne ($priorUnrelated -replace '\s','')){throw 'Unreviewed change elsewhere in Merlis AI'}
- [IO.File]::WriteAllText("$out/MerlisDeath.inc",$(if($Baseline){$oldDeath}else{$currentDeath}))
+ # Normalize only the independently tested StartOutro call back to its old
+ # source effects for this legacy owner/accessor harness, not a handoff test.
+ $begin=$oldDeath.IndexOf('            if (Creature* oldgarona');$end=$oldDeath.IndexOf('            if (Player*',$begin)
+ if($end -lt 0){$end=$oldDeath.IndexOf('            if (player)',$begin)}
+ if($begin -lt 0 -or $end -lt 0){throw 'Pinned source effects absent'}
+ $ownerDeath=$currentDeath.Replace('            StartOutro();',$oldDeath.Substring($begin,$end-$begin))
+ [IO.File]::WriteAllText("$out/MerlisDeath.inc",$(if($Baseline){$oldDeath}else{$ownerDeath}))
  [IO.File]::WriteAllText("$out/OwnerGuid.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw -Encoding UTF8) 'ObjectGuid GetCharmerOrOwnerGUID() const'))
  [IO.File]::WriteAllText("$out/OwnerPlayer.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw -Encoding UTF8) 'Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const'))
  $accessor=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw -Encoding UTF8
