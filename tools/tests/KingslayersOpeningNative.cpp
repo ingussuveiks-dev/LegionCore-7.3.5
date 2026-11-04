@@ -3,6 +3,7 @@
 #define ALTHEA_INTRO_NATIVE_SUPPORT_ONLY
 #include "AltheaIntroNative.cpp"
 #include "GaronaOpening.inc"
+static uint32 OpeningStoryDuration(Map& map,uint32 entry){for(auto story:*Access(StoriesTag{}))if(story&&story->GetMap()==&map&&story->GetEntry()==entry)return story->GetDuration()>15000?uint32(story->GetDuration()):15000;return 15000;}
 static uint64 OpeningCount(Scenario* scenario,uint32 leaf){auto rows=scenario->GetAchievementMgr().GetCriteriaProgressMap();auto at=rows->find(leaf);return at==rows->end()?0:at->second.Counter;}
 int main(int argc,char** argv){try{
  InitializeAltheaGuardsNative(argc,argv);uint32 cases=0;
@@ -39,13 +40,15 @@ int main(int argc,char** argv){try{
    if(mode==9){rogue.SetQuestStatus(quest,QUEST_STATUS_NONE);visitor.SetGameMaster(false);party=std::make_unique<CreditParty>(&rogue,&visitor);}
    if(mode==12)ai->Reset();
    if(mode==15)scope->Cancel();
-   ai->UpdateAI(14999);Require(OpeningCount(scenario,48526)==(mode==10?1u:0u),"Opening progressed before original30s");ai->UpdateAI(1);
+   uint32 firstDelay=OpeningStoryDuration(map,2361);
+   ai->UpdateAI(firstDelay-1);Require(!ai->openingMiddle&&!ai->openingComplete&&OpeningCount(scenario,48526)==(mode==10?1u:0u),"Opening crossed first accepted payload early");ai->UpdateAI(1);
+   uint32 secondDelay=OpeningStoryDuration(map,2377);
    if(mode==11)rogue.SetQuestStatus(quest,QUEST_STATUS_NONE);
    if(mode==16)scenario->SetCurrentStep(1);
-   ai->UpdateAI(14999);Require(OpeningCount(scenario,48526)==(mode==10?1u:0u),"Opening shortened30s deadline");ai->UpdateAI(1);
+   ai->UpdateAI(secondDelay-1);Require(OpeningCount(scenario,48526)==(mode==10?1u:0u),"Opening shortened second accepted payload");ai->UpdateAI(1);
    if(mode==8||mode==9||mode==11||mode==15||mode==16){Require(!ai->openingComplete&&!OpeningCount(scenario,49374),"Unqualified/unacknowledged opening departed or progressed");
     if(mode==8)rogue.Unit::AddToWorld();if(mode==9)ai->MoveInLineOfSight(&visitor);if(mode==11)rogue.SetQuestStatus(quest,QUEST_STATUS_INCOMPLETE);if(mode==16)scenario->SetCurrentStep(0);
-    if(mode!=15)ai->UpdateAI(1000);
+    if(mode!=15){bool middle=ai->openingMiddle;ai->UpdateAI(1000);if(!middle){Require(ai->openingMiddle&&!ai->openingComplete,"Recovered middle phase did not retain its own speech window");ai->UpdateAI(OpeningStoryDuration(map,2377));}}
    }
    if(mode!=15){Require(ai->openingComplete&&OpeningCount(scenario,48526)==1&&OpeningCount(scenario,49374)==1&&scenario->GetCurrentStep()==1,"Actual51418/52672 did not advance opening");ai->MoveInLineOfSight(&rogue);ai->UpdateAI(60000);Require(OpeningCount(scenario,48526)==1&&OpeningCount(scenario,49374)==1,"Opening repeated native leaves");}
    Require(!rogue.HasItemCount(128870,1)&&!visitor.HasItemCount(128870,1),"Opening granted artifact");

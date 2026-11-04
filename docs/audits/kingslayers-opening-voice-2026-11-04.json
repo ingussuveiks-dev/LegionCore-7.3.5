@@ -45,5 +45,9 @@
     "bytes": 3154153,
     "fix_commit": "fc10c30ce6320fbae7bfa0823a61485b41a0e55b",
     "verified": "Source/archive/source SHA256 and credential scans verified. Configs/binaries/PDB/audio/character data excluded. No active logs cleared; canonical mixed6090 unresolved log and informative server history retained."
+  },
+  "caller_followup": {
+    "audit": "docs/audits/kingslayers-opening-timing-2026-11-04.json",
+    "status": "The original15/30s caller recorded as OPEN at the data-fix checkpoint is now separately repaired/deployed. Historical data checks/archive remain valid; client/full-chain/late-viewer limits remain."
   }
 }

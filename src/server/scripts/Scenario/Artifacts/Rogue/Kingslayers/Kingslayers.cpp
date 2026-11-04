@@ -111,15 +111,19 @@ public:
 
             introDone = true;
             recipientGuid = who->GetGUID();
+            uint32 openingDelay = 15000;
             Conversation* conversation = new Conversation;
             if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2361, who, NULL, *who))
                 delete conversation;
+            else if (conversation->GetDuration() > 0)
+                openingDelay = std::max(openingDelay, uint32(conversation->GetDuration()));
 
             me->GetMotionMaster()->MovePoint(0, -9091.40f, 414.15f, 92.11f);
             me->RemoveAura(132653);
 
-            events.ScheduleEvent(EVENT_1, 15000);
-            events.ScheduleEvent(EVENT_2, 30000);
+            // The accepted native payload owns its full voice/gap budget.
+            // A refused optional conversation retains the original minimum.
+            events.ScheduleEvent(EVENT_1, openingDelay);
         }
 
         void UpdateAI(uint32 diff) override
@@ -153,12 +157,18 @@ public:
                                 (*itr)->DespawnOrUnsummon(6000);
                             }
 
+                        uint32 departureDelay = 15000;
                         if (Player* player = GetRecipient())
                         {
                             Conversation* conversation = new Conversation;
                             if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2377, player, NULL, *player))
                                 delete conversation;
+                            else if (conversation->GetDuration() > 0)
+                                departureDelay = std::max(departureDelay, uint32(conversation->GetDuration()));
                         }
+                        // Start this phase from the actual middle event, even
+                        // after recipient recovery or a coarse server tick.
+                        events.ScheduleEvent(EVENT_2, departureDelay);
                         break;
                     }
                     case EVENT_2:

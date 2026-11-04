@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <atomic>
 #include <cassert>
 #include <chrono>
@@ -126,15 +127,18 @@ struct Conversation
     inline static std::set<Conversation*> live;
     inline static std::vector<std::pair<uint32,ObjectGuid>> delivered;
     inline static uint32 failedEntry=0,attempts=0;
+    inline static std::map<uint32,int32_t> durations;
+    int32_t duration=0;
+    int32_t GetDuration() const{return duration;}
     Conversation(){live.insert(this);}
     ~Conversation(){live.erase(this);}
     bool CreateConversation(uint64,uint32 entry,Unit* recipient,std::nullptr_t,WorldObject& position)
     {
         assert(recipient==&position);++attempts;
         if(entry==failedEntry)return false;
-        delivered.emplace_back(entry,recipient->GetGUID());return true;
+        duration=durations[entry];delivered.emplace_back(entry,recipient->GetGUID());return true;
     }
-    static void Clear(){while(!live.empty())delete *live.begin();delivered.clear();failedEntry=0;attempts=0;}
+    static void Clear(){while(!live.empty())delete *live.begin();delivered.clear();failedEntry=0;attempts=0;durations.clear();}
 };
 #include "GaronaIntro.inc"
 using Garona=npc_garona_halforcenAI;
@@ -160,6 +164,7 @@ struct Fixture
     void Start(){script.MoveInLineOfSight(&player);}
     ~Fixture(){Conversation::Clear();scenarioManager.current=nullptr;}
 };
+void Finish(Garona& script){Advance(script,15000);Advance(script,15000);}
 void CheckCleanup(Fixture const& fixture)
 {
     assert(fixture.garona.despawn==4000 && fixture.garona.walk && fixture.garona.motion.points.size()==2);
@@ -209,7 +214,7 @@ int main()
     {
         Fixture fixture;fixture.Start();HashMapHolder<Player>::_objectVector[1]=nullptr;Advance(fixture.script,15000);
         Player reconnected;reconnected.map=&fixture.original;HashMapHolder<Player>::_objectVector[1]=&reconnected;
-        Advance(fixture.script,15000);assert(reconnected.criteria.size()==2 && fixture.player.criteria.empty() && Conversation::delivered.size()==3);
+        Advance(fixture.script,15000);assert(reconnected.criteria.empty() && !fixture.garona.despawn);Advance(fixture.script,15000);assert(reconnected.criteria.size()==2 && fixture.player.criteria.empty() && Conversation::delivered.size()==3);
     }
     {
         Fixture fixture;auto player=std::make_unique<Player>();player->map=&fixture.original;HashMapHolder<Player>::_objectVector[1]=player.get();
@@ -224,7 +229,7 @@ int main()
     }
     for(uint32 failed:{0u,2361u,2377u,2384u})
     {
-        Fixture fixture;Conversation::failedEntry=failed;fixture.garona.neighbors.clear();fixture.Start();Advance(fixture.script,60000);
+        Fixture fixture;Conversation::failedEntry=failed;fixture.garona.neighbors.clear();fixture.Start();Finish(fixture.script);
         assert(fixture.player.criteria.size()==2 && Conversation::attempts==3 && Conversation::delivered.size()==(failed?2u:3u));CheckCleanup(fixture);
     }
     {
@@ -237,14 +242,32 @@ int main()
     }
     for(uint32 mode=0;mode<5;++mode){Fixture f;f.player.quest=mode==0?42627:42504;if(mode==1)f.player.status=QUEST_STATUS_COMPLETE;f.Start();
         if(mode==2)f.player.grantFirst=false;if(mode==3)f.player.grantSecond=false;if(mode==4)f.player.grantFirst=f.player.grantSecond=false;
-        Advance(f.script,30000);if(mode<2){CheckCleanup(f);continue;}
+        Finish(f.script);if(mode<2){CheckCleanup(f);continue;}
         assert(!f.garona.despawn&&warnings==1);auto first=f.original.scenario.progress[48526].Counter,second=f.original.scenario.progress[49374].Counter;
         Advance(f.script,999);assert(warnings==1&&!f.garona.despawn);f.player.grantFirst=f.player.grantSecond=true;Advance(f.script,1);CheckCleanup(f);
         assert(f.original.scenario.stage==1&&f.player.criteria.size()==(first&&second?2:first||second?3:4));
     }
-    {Fixture f;f.Start();f.player.status=0;Advance(f.script,30000);assert(!f.garona.despawn&&f.player.criteria.empty());f.script.MoveInLineOfSight(&f.secondPlayer);Advance(f.script,1000);assert(f.secondPlayer.criteria.size()==2&&f.player.criteria.empty());CheckCleanup(f);}
-    {Fixture f;f.Start();f.player.creditHook=[&](uint32){Advance(f.script,60000);};Advance(f.script,30000);assert(f.player.criteria.size()==2);CheckCleanup(f);}
-    {Fixture f;f.Start();f.player.creditHook=[&](uint32 asset){if(asset==51418)f.player.status=0;};Advance(f.script,30000);assert(f.player.criteria.size()==1&&!f.garona.despawn&&warnings==1);f.player.status=QUEST_STATUS_INCOMPLETE;f.player.creditHook={};Advance(f.script,1000);assert(f.player.criteria.size()==2);CheckCleanup(f);}
-    std::cout<<"PASS "<<Fixture::contexts<<" exact opening AI/native EventMap/native lookup ASAN contexts: original15/30s/actors/optional voices, qualified first and delayed recipients,18 admission refusals, both quests, complete quest, three native-ack failures/recovery, no repeated acknowledged leaf, abandonment/rebinding/reconnect, reentrant/abandoning credit, no departure without both receipts and shared107979 preserved. Native services otherwise controlled; no client traversal claim\n";
+    {Fixture f;f.Start();f.player.status=0;Finish(f.script);assert(!f.garona.despawn&&f.player.criteria.empty());f.script.MoveInLineOfSight(&f.secondPlayer);Advance(f.script,1000);assert(f.secondPlayer.criteria.empty()&&!f.garona.despawn);Advance(f.script,15000);assert(f.secondPlayer.criteria.size()==2&&f.player.criteria.empty());CheckCleanup(f);}
+    {Fixture f;f.Start();f.player.creditHook=[&](uint32){Advance(f.script,60000);};Finish(f.script);assert(f.player.criteria.size()==2);CheckCleanup(f);}
+    {Fixture f;f.Start();f.player.creditHook=[&](uint32 asset){if(asset==51418)f.player.status=0;};Finish(f.script);assert(f.player.criteria.size()==1&&!f.garona.despawn&&warnings==1);f.player.status=QUEST_STATUS_INCOMPLETE;f.player.creditHook={};Advance(f.script,1000);assert(f.player.criteria.size()==2);CheckCleanup(f);}
+    for(uint32 mode=0;mode<8;++mode){Fixture f;Conversation::durations={{2361,40840},{2377,47679}};
+        if(mode==1)Conversation::failedEntry=2361;if(mode==2)Conversation::failedEntry=2377;
+        if(mode==3)Conversation::durations={{2361,1},{2377,1}};
+        if(mode==4)Conversation::durations={{2361,-1},{2377,-1}};
+        f.Start();uint32 first=mode==1||mode==3||mode==4?15000:40840,second=mode==2||mode==3||mode==4?15000:47679;
+        if(mode==5){Advance(f.script,200000);assert(f.script.openingMiddle&&!f.script.openingComplete&&f.player.criteria.empty());}
+        else{Advance(f.script,first-1);assert(!f.script.openingMiddle&&!f.first.despawn&&f.player.criteria.empty());
+            if(mode==6)f.player.status=0;Advance(f.script,1);
+            if(mode==6){assert(!f.script.openingMiddle&&!f.first.despawn);f.script.MoveInLineOfSight(&f.secondPlayer);Advance(f.script,1000);}
+            assert(f.script.openingMiddle&&f.first.despawn==6000&&f.second.despawn==6000&&!f.garona.despawn);
+        }
+        if(mode==7)f.player.grantSecond=false;
+        Advance(f.script,second-1);assert(!f.script.openingComplete&&!f.garona.despawn&&f.player.criteria.empty()&&f.secondPlayer.criteria.empty());Advance(f.script,1);
+        if(mode==7){assert(!f.script.openingComplete&&warnings==1&&!f.garona.despawn);f.player.grantSecond=true;Advance(f.script,1000);}
+        assert(f.script.openingComplete&&f.original.scenario.stage==1);CheckCleanup(f);
+        assert(Conversation::attempts==3&&Conversation::delivered.size()==(mode==1||mode==2?2u:3u));
+        Advance(f.script,200000);assert(Conversation::attempts==3);
+    }
+    std::cout<<"PASS "<<Fixture::contexts<<" exact opening AI/native EventMap/native lookup ASAN contexts: minimum15+15s/actors/optional voices;8 accepted-payload timing/coarse/refusal/recovery contexts, qualified first and delayed recipients,18 admission refusals, both quests, complete quest, three native-ack failures/recovery, no repeated acknowledged leaf, abandonment/rebinding/reconnect, reentrant/abandoning credit, no departure without both receipts and shared107979 preserved. Native services otherwise controlled; no client traversal claim\n";
 #endif
 }

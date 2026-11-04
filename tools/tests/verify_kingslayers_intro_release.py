@@ -51,9 +51,19 @@ assert ('movups','xmm0, xmmword ptr [rbx + 0x39]') in pairs(recipient)
 assert {1123}<=values(leaf) and linked_sites(native,leaf,'?GetCriteriaProgressMap@')
 assert ('cmp','qword ptr [rax + 0x28], 0') in pairs(leaf)
 assert linked_sites(native,los,method('OpeningPlayer'))[0]<linked_sites(native,los,'?CanUpdateCriteria@Scenario@@')[0]
-assert {48526,49374,15000,30000}<=values(los) and 20.0 in floats(native,los)
-assert len(linked_sites(native,los,'?ScheduleEvent@EventMap@@QEAAXII'))==2
+assert {48526,49374,15000}<=values(los) and 20.0 in floats(native,los)
+assert len(linked_sites(native,los,'?ScheduleEvent@EventMap@@QEAAXII'))==1
 assert not linked_sites(native,los,'?AddDelayedEvent@FunctionProcessor@@')
+# Actual accepted duration -> max(original15s floor, native duration) -> first
+# EventMap argument; a refused/invalid payload cannot replace the floor.
+created,=linked_sites(native,los,'?CreateConversation@Conversation@@')
+assert los[created+1].op_str=='al, al' and los[created+2].mnemonic=='jne'
+read,=[op for op in los if (op.mnemonic,op.op_str)==('mov','eax, dword ptr [r15 + 0x4dc]')]
+assert read.address==los[created+2].operands[0].imm
+assert read.address not in reachable(los,los[created+3].address)
+assert {('mov','esi, 0x3a98'),('test','eax, eax'),('cmp','eax, esi'),('cmova','esi, eax'),('mov','r8d, esi')}<=pairs(los)
+first,=linked_sites(native,los,'?ScheduleEvent@EventMap@@QEAAXII')
+assert {1}<=values(los[first-5:first]) and 30000 not in values(los)
 assert ('movups','xmmword ptr [rdi + 0x39], xmm0') in pairs(los)
 execute,=linked_sites(native,update,'?ExecuteEvent@EventMap@@')
 credits=linked_sites(native,update,'?UpdateAchievementCriteria@Player@@');assert len(credits)==2
@@ -86,7 +96,20 @@ for at in checks[2:]:
  rejected=iteration(update[at+2].operands[0].imm)
  assert update[remove[0]].address not in rejected
  assert any(update[i].address in rejected for i in retry)
+# The second timer is scheduled by the actual middle event, after its
+# optional factory; this prevents a coarse tick/recovered recipient from
+# consuming both speech phases in one update.
+created=[i for i in linked_sites(native,update,'?CreateConversation@Conversation@@') if 2377 in values(update[i-10:i])]
+assert len(created)==1
+at=created[0];assert update[at+1].op_str=='al, al' and update[at+2].mnemonic=='jne'
+read,=[op for op in update if (op.mnemonic,op.op_str)==('mov','eax, dword ptr [r14 + 0x4dc]')]
+assert read.address==update[at+2].operands[0].imm
+assert read.address not in iteration(update[at+3].address)
+assert {('mov','r15d, 0x3a98'),('test','eax, eax'),('cmp','eax, r15d'),('cmova','r15d, eax'),('mov','r8d, r15d')}<=pairs(update)
+second=[i for i in retry if ('mov','r8d, r15d') in pairs(update[max(0,i-6):i])]
+assert len(second)==1 and {2}<=values(update[second[0]-6:second[0]])
+assert update[second[0]].address in iteration(update[at+3].address)
 assert {('lea','rax, [rcx + 0x72]'),('mov','byte ptr [rax], 1'),('mov','byte ptr [rax], 0'),('mov','byte ptr [rsi + 0x71], 1')}<=pairs(update)
 for prefix in ('?AddItem@Player@@','?CompleteQuest@Player@@'):
  assert not linked_sites(native,update,prefix)
-print('PASS registered opening Garona: qualified native Rogue/quest/scenario/source admission before one-shot; fullGUID fresh recipient plus delayed eligibility; original15/30s EventMap and actors; missing-only51418/52672 and actual native counters before4s departure,1s no-receipt retry/current-iteration cleanup exclusion, safe reentry and no item/quest shortcut. Native/client clock and whole-chain boundaries remain separate.')
+print('PASS registered opening Garona: qualified native Rogue/quest/scenario/source admission before one-shot; fullGUID fresh recipient plus delayed eligibility; accepted native2361/2377 durations with15s phase floors; second EventMap starts only from actual middle/failure recovery; original actors; missing-only51418/52672 and actual native counters before4s departure,1s no-receipt retry/current-iteration cleanup exclusion, safe reentry and no item/quest shortcut. Native/client clock and whole-chain boundaries remain separate.')
