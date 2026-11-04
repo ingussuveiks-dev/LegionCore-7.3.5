@@ -3,18 +3,27 @@
 #define ALTHEA_CREDIT_NATIVE_SUPPORT_ONLY
 #include "AltheaCreditNative.cpp"
 #include "MoveSpline.h"
+#include "../../src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/KingslayersGuardProgress.h"
+#include "KingslayersInstance.inc"
 #include "AltheaIntro.inc"
 static uint64 IntroCounter(Scenario* scenario){auto rows=scenario->GetAchievementMgr().GetCriteriaProgressMap();auto found=rows->find(48577);return found==rows->end()?0:found->second.Counter;}
 struct IntroGuardAI:NullCreatureAI{using NullCreatureAI::NullCreatureAI;uint32 attacks=0;ObjectGuid target;void AttackStart(Unit* who)override{++attacks;target=who->GetGUID();}};
 static uint32 Stories(Map& map,uint32 id){uint32 count=0;for(auto story:*Access(StoriesTag{}))if(story&&story->GetMap()==&map&&story->GetEntry()==id)++count;return count;}
-struct Guard:Actor{using Actor::Actor;void AddToWorld()override{Actor::AddToWorld();Require(AIM_Initialize(new IntroGuardAI(this)),"Native observed guard AI missing");}IntroGuardAI* Observed(){return static_cast<IntroGuardAI*>(AI());}};
-int main(int argc,char** argv){try{
+struct AltheaGuardDbTag{using Type=uint64 Creature::*;friend Type Access(AltheaGuardDbTag);};
+template struct FixtureAccess<AltheaGuardDbTag,&Creature::m_DBTableGuid>;
+struct Guard:Actor{using Actor::Actor;void Bind(uint32 spawn){this->*Access(AltheaGuardDbTag{})=spawn;}void AddToWorld()override{Actor::AddToWorld();Require(AIM_Initialize(new IntroGuardAI(this)),"Native observed guard AI missing");if(auto script=GetInstanceScript())script->OnCreatureCreateForScript(this);}void RemoveFromWorld()override{if(auto script=GetInstanceScript())script->OnCreatureRemoveForScript(this);Actor::RemoveFromWorld();}IntroGuardAI* Observed(){return static_cast<IntroGuardAI*>(AI());}};
+static void InitializeAltheaGuardsNative(int argc,char** argv){
  InitializeAltheaNative(argc,argv);
  // Use the actual native loot links when Unit::Kill dispatches these guards.
  std::string loot="108218";for(uint32 id:{108216u,108217u}){auto info=sObjectMgr->GetCreatureTemplate(id);Require(info,"Native guard template missing");if(info->lootid)loot+=","+std::to_string(info->lootid);}
  // LoadLootTable clears its store: reload the UNION, retaining Althea's loot.
  auto& lootName=LootTemplates_Creature.*Access(LootNameTag{});auto originalName=lootName;lootName+=" WHERE Entry IN("+loot+") ORDER BY Entry,Item";auto loaded=(LootTemplates_Creature.*Access(LootLoadTag{}))();lootName=originalName;Require(loaded&&LootTemplates_Creature.HaveLootFor(108218),"Actual encounter loot union failed");
  for(uint32 id:{108216u,108217u}){auto info=sObjectMgr->GetCreatureTemplate(id);Require(!info->lootid||LootTemplates_Creature.HaveLootFor(info->lootid),"Actual native guard loot absent");}
+ sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());new instance_kingslayers;sScriptMgr->SwapScriptContext(true);
+}
+#ifndef ALTHEA_INTRO_NATIVE_SUPPORT_ONLY
+int main(int argc,char** argv){try{
+ InitializeAltheaGuardsNative(argc,argv);
  uint32 cases=0;
 #ifdef ALTHEA_INTRO_FAULTS
  std::vector<uint32> modes={30,31,32,33};
@@ -22,7 +31,7 @@ int main(int argc,char** argv){try{
  std::vector<uint32> modes={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
 #endif
  for(uint32 quest:{42504u,42627u})for(uint32 mode:modes){
-  MapInstanced parent(1620,300);InstanceMap map(1620,300,9995000+cases++,DIFFICULTY_N_SCENARIO,&parent);auto scenario=sScenarioMgr->AddScenario(&map,1123);scenario->SetCurrentStep(4);auto first=Session(),second=Session();
+  MapInstanced parent(1620,300);InstanceMap map(1620,300,9995000+cases++,DIFFICULTY_N_SCENARIO,&parent);map.CreateInstanceData(nullptr);Require(dynamic_cast<instance_kingslayers::instance_kingslayers_InstanceMapScript*>(map.GetInstanceScript()),"Actual registered Kingslayers instance factory missing");auto scenario=sScenarioMgr->AddScenario(&map,1123);scenario->SetCurrentStep(4);auto first=Session(),second=Session();
   {
    Position position{-8607.59f,394.141f,110.255f,0};Position visitor=position;visitor.m_positionX+=mode<12?50:30;
    NativePlayer player(first,map,101,visitor),gm(second,map,102,visitor);for(auto p:{&player,&gm}){p->SetByteValue(UNIT_FIELD_BYTES_0,0,quest==42504?RACE_HUMAN:RACE_ORC);p->SetByteValue(UNIT_FIELD_BYTES_0,1,CLASS_ROGUE);p->setFactionForRace(p->getRace());p->SetQuestStatus(quest,QUEST_STATUS_INCOMPLETE);p->SetQuestSlot(0,quest);}gm.SetGameMaster(true);
@@ -30,6 +39,7 @@ int main(int argc,char** argv){try{
    auto addGarona=[&]{garona=std::make_unique<Actor>(&map,108214,17002,Position{-8643.02f,421.559f,102.051f,0});Require(map.AddToMap(static_cast<Creature*>(garona.get())),"Original Garona admission failed");};
    Require(map.AddToMap(static_cast<Creature*>(&source)),"Original Althea admission failed");if(mode!=30)addGarona();
    Guard a(&map,108216,17003,{-8616.6f,409.425f,103.058f,0}),b(&map,108216,17004,{-8620.01f,406.714f,103.058f,0}),c(&map,108217,17005,{-8616.99f,397.823f,103.011f,0});
+   a.Bind(360869);b.Bind(360872);c.Bind(360871);
    for(auto g:{&a,&b,&c})Require(map.AddToMap(static_cast<Creature*>(g)),"Native original guard admission failed");
    auto ai=new npc_sister_althea_ebonlocke::npc_sister_althea_ebonlockeAI(&source);Require(source.AIM_Initialize(ai),"Complete native Althea AI missing");
    source.AddAura(214873,&source);Require(source.HasAura(214873),"Native release aura control missing");
@@ -86,3 +96,4 @@ int main(int argc,char** argv){try{
  #endif
  std::cout.flush();CloseAltheaNative();
 }catch(std::exception const& error){std::cerr<<error.what()<<'\n';return 1;}}
+#endif

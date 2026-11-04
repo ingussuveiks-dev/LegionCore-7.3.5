@@ -13,7 +13,8 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
   [IO.File]::WriteAllText("$out/$filename",$body)
   $normalized=$normalized.Replace($body,(Block $prior $name))
  }
- if(($current.Replace($ai,$normalized)-replace '\s','') -cne ($old-replace '\s','')){throw 'Only Althea intro helpers/LOS and UpdateIntro dispatch may change'}
+ if(($current.Replace($ai,$normalized).Replace('#include "KingslayersGuardProgress.h"','')-replace '\s','') -cne ($old-replace '\s','')){throw 'Only Althea intro helpers/LOS, dedicated guard declaration and UpdateIntro dispatch may change'}
+ [IO.File]::WriteAllText("$out/GuardIds.inc",([IO.File]::ReadAllText("$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/KingslayersGuardProgress.h").Replace('#include "Define.h"','')))
  $update=Block $ai 'void UpdateAI(';$oldUpdate=Block $prior 'void UpdateAI('
  $expected='void UpdateAI(uint32 diff) override { UpdateIntro(diff);'+$oldUpdate.Substring($oldUpdate.IndexOf('if (!UpdateVictim())'))
  if(($update-replace '\s','') -cne ($expected-replace '\s','')){throw 'Original combat UpdateAI tail changed'}

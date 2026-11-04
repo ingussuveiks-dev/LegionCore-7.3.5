@@ -9,7 +9,7 @@ function Block([string]$source,[string]$start){$a=$source.IndexOf($start);if($a 
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$source=Get-Content "$repo/$path" -Raw;$bound=Block $source 'class AltheaDeathConversation final : public Conversation';[IO.File]::WriteAllText("$out/AltheaActor.inc",$bound+';');$source=$source.Replace($bound+';','');$old=(& git -C $repo show "21ace0503:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Althea source missing'}
  # Door activation has its own complete source/native regression. Normalize
  # only that isolated class before retaining the earlier whole-file certificate.
- $door=Block $source 'class go_kingslayers_door : public GameObjectScript';$oldDoor=Block $old 'class go_kingslayers_door : public GameObjectScript';$source=$source.Replace($door,$oldDoor).Replace('#include "ScriptsData.h"','')
+ $door=Block $source 'class go_kingslayers_door : public GameObjectScript';$oldDoor=Block $old 'class go_kingslayers_door : public GameObjectScript';$source=$source.Replace($door,$oldDoor).Replace('#include "ScriptsData.h"','').Replace('#include "KingslayersGuardProgress.h"','')
  # The dedicated intro suite certifies its full helpers/LOS/update boundary.
  # Retain this death certificate over every other body and all combat events.
  $intro=Block $source 'struct npc_sister_althea_ebonlockeAI : ScriptedAI';$priorIntro=Block $old 'struct npc_sister_althea_ebonlockeAI : ScriptedAI'

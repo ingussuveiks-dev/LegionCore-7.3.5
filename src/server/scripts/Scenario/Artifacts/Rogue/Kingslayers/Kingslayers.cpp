@@ -14,6 +14,7 @@
 #include "TemporarySummon.h"
 #include "MapManager.h"
 #include "ScriptsData.h"
+#include "KingslayersGuardProgress.h"
 
 // 107979 108015
 class npc_garona_halforcen : public CreatureScript
@@ -610,7 +611,8 @@ public:
                 else
                 {
                     timerforcheck = 1000;
-                    if (!me->FindNearestCreature(108216, 40.0f, true) && !me->FindNearestCreature(108217, 40.0f, true))
+                    InstanceScript* data = me->GetInstanceScript();
+                    if (data && data->GetData(KingslayersGuards::AllDefeated))
                         if (Player* player = IntroOpponent())
                         {
                             checkdies = false;
@@ -746,19 +748,52 @@ public:
                 Creature* garona = me->FindNearestCreature(108214, 60.0f, true);
                 if (!garona || !garona->AI() || !garona->CanTargetQuestObject(player) || !player->CanTargetQuestObject(garona))
                     return; // A missing mandatory companion must not consume the guard handoff.
-                std::list<Creature*> adds;
-                GetCreatureListWithEntryInGrid(adds, me, 108216, 30.0f);
-                GetCreatureListWithEntryInGrid(adds, me, 108217, 30.0f);
-                for (Creature* guard : adds)
-                    if (!guard->AI() || !guard->CanTargetQuestObject(player) || !player->CanTargetQuestObject(guard))
+                InstanceScript* data = me->GetInstanceScript();
+                if (!data)
+                    return;
+                std::vector<std::pair<uint32, ObjectGuid>> adds;
+                for (uint32 i = 0; i < 3; ++i)
+                {
+                    uint32 spawn = KingslayersGuards::Spawns[i];
+                    ObjectGuid guid = data->GetGuidData(spawn);
+                    Creature* guard = ObjectAccessor::GetCreature(*me, guid);
+                    if (guard && guard->IsInWorld() && guard->IsAlive())
+                    {
+                        if (guard->GetEntry() != KingslayersGuards::Entries[i] || guard->GetDBTableGUIDLow() != spawn ||
+                            !guard->AI() || !guard->InSamePhase(player) ||
+                            !guard->CanTargetQuestObject(player) || !player->CanTargetQuestObject(guard))
+                            return;
+                        adds.emplace_back(spawn, guid);
+                    }
+                    else if (!data->GetData(spawn))
                         return;
+                }
                 introDone2 = true;
                 timerforcheck = 1000;
                 checkdies = true;
-                for (Creature* guard : adds)
+                ObjectGuid companion = garona->GetGUID();
+                for (auto const& actor : adds)
+                {
+                    garona = ObjectAccessor::GetCreature(*me, companion);
+                    if (!IntroPlayer(player, 35.0f) || !garona || !garona->IsInWorld() || !garona->IsAlive() ||
+                        !garona->CanTargetQuestObject(player) || !player->CanTargetQuestObject(garona))
+                    {
+                        introDone2 = checkdies = false;
+                        return;
+                    }
+                    Creature* guard = ObjectAccessor::GetCreature(*me, actor.second);
+                    if (!guard || !guard->IsInWorld() || !guard->IsAlive() || !guard->AI())
+                    {
+                        if (data->GetData(actor.first))
+                            continue; // A real synchronous death already satisfies this guard.
+                        introDone2 = checkdies = false;
+                        return; // Retry a retired/missing actor instead of calling its old AI.
+                    }
                     guard->AI()->AttackStart(garona);
+                }
             }
-            IntroVoice(player, 1);
+            if (IntroPlayer(player, 35.0f))
+                IntroVoice(player, 1);
         }
 
         void UpdateAI(uint32 diff) override

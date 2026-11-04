@@ -4,6 +4,8 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "KingslayersGuardProgress.h"
+#include "Map.h"
 
 
 class instance_kingslayers : public InstanceMapScript
@@ -19,6 +21,77 @@ public:
     struct instance_kingslayers_InstanceMapScript : public InstanceScript
     {
         instance_kingslayers_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
+
+        struct GuardState
+        {
+            ObjectGuid guid;
+            bool defeated = false;
+        };
+        mutable GuardState altheaGuards[3];
+
+        uint32 GuardSlot(Creature* creature) const
+        {
+            if (creature && instance->GetId() == 1620 && creature->GetMap() == instance)
+                for (uint32 i = 0; i < 3; ++i)
+                    if (creature->GetDBTableGUIDLow() == KingslayersGuards::Spawns[i] && creature->GetEntry() == KingslayersGuards::Entries[i])
+                        return i;
+            return 3;
+        }
+
+        void OnCreatureCreateForScript(Creature* creature) override
+        {
+            InstanceScript::OnCreatureCreateForScript(creature);
+            uint32 slot = GuardSlot(creature);
+            if (slot < 3)
+            {
+                altheaGuards[slot].guid = creature->GetGUID();
+                if (creature->IsAlive())
+                    altheaGuards[slot].defeated = false;
+            }
+        }
+
+        void OnCreatureRemoveForScript(Creature* creature) override
+        {
+            uint32 slot = GuardSlot(creature);
+            if (slot < 3 && altheaGuards[slot].guid == creature->GetGUID() && creature->IsAlive())
+                altheaGuards[slot].defeated = false;
+            InstanceScript::OnCreatureRemoveForScript(creature);
+        }
+
+        void CreatureDiesForScript(Creature* creature, Unit* killer) override
+        {
+            // Unit::Kill delivers this even when a guard's current AI is absent.
+            // Disappearance, a spatial query and arbitrary SetData are not death.
+            uint32 slot = GuardSlot(creature);
+            if (slot < 3 && altheaGuards[slot].guid == creature->GetGUID() && !creature->IsAlive())
+                altheaGuards[slot].defeated = true;
+            InstanceScript::CreatureDiesForScript(creature, killer);
+        }
+
+        ObjectGuid GetGuidData(uint32 type) const override
+        {
+            for (uint32 i = 0; i < 3; ++i)
+                if (type == KingslayersGuards::Spawns[i])
+                    return altheaGuards[i].guid;
+            return InstanceScript::GetGuidData(type);
+        }
+
+        uint32 GetData(uint32 type) const override
+        {
+            bool all = true;
+            for (uint32 i = 0; i < 3; ++i)
+            {
+                if (Creature* creature = instance->GetCreature(altheaGuards[i].guid))
+                    if (creature->IsAlive())
+                        altheaGuards[i].defeated = false; // Same-GUID native respawn is a new living guard.
+                if (type == KingslayersGuards::Spawns[i])
+                    return altheaGuards[i].defeated;
+                all = all && altheaGuards[i].defeated;
+            }
+            if (type == KingslayersGuards::AllDefeated)
+                return all;
+            return InstanceScript::GetData(type);
+        }
         
         WorldLocation loc_res_pla;  // for respawn
 

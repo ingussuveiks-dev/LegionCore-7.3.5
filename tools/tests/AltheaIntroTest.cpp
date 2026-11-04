@@ -7,16 +7,18 @@
 #include <memory>
 #include <vector>
 using uint32=uint32_t;using uint64=uint64_t;
+using ObjectGuid=uint64;
+#include "GuardIds.inc"
 enum{CLASS_ROGUE=4,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,CRITERIA_TYPE_SCRIPT_EVENT_2=92};
 struct Player;struct Creature;struct Unit;struct Conversation;
 struct Progress{uint64 Counter=0;};
 struct Scenario{uint32 id=1123,stage=4;std::map<uint32,Progress> progress;auto& GetAchievementMgr(){return *this;}auto GetCriteriaProgressMap()const{return &progress;}uint32 GetScenarioId()const{return id;}bool CanUpdateCriteria(uint32 leaf)const{return stage==4?leaf==48577:stage==5?(leaf==48585||leaf==48597):false;}};
 struct ScenarioMgr{Scenario* value;Scenario* GetScenario(uint32){return value;}} manager;auto sScenarioMgr=&manager;
-struct Map{};
+struct InstanceScript;struct Map{InstanceScript* script=nullptr;};
 struct Unit{virtual ~Unit()=default;virtual Player* ToPlayer(){return nullptr;}};
-struct World:Unit{Map* map=nullptr;bool world=true,preDelete=false,alive=true,expired=false,scope=true;uint32 entry=108218,mapId=1620;bool IsInWorld()const{return world;}bool IsPreDelete()const{return preDelete;}bool IsAlive()const{return alive;}bool IsQuestObjectExpired()const{return expired;}bool CanTargetQuestObject(World const*)const{return scope;}Map* GetMap()const{return map;}uint32 GetMapId()const{return mapId;}uint32 GetEntry()const{return entry;}uint32 GetInstanceId()const{return 1;}};
+struct World:Unit{Map* map=nullptr;bool world=true,preDelete=false,alive=true,expired=false,scope=true,phase=true;uint32 entry=108218,mapId=1620;bool IsInWorld()const{return world;}bool IsPreDelete()const{return preDelete;}bool IsAlive()const{return alive;}bool IsQuestObjectExpired()const{return expired;}bool CanTargetQuestObject(World const*)const{return scope;}bool InSamePhase(World const* other)const{return phase&&other->phase;}Map* GetMap()const{return map;}uint32 GetMapId()const{return mapId;}uint32 GetEntry()const{return entry;}uint32 GetInstanceId()const{return 1;}};
 struct Player:World{
- bool contact=true,gm=false,teleport=false,phase=true,reward=false,failCredit=false;uint32 klass=4,quest=42504,status=3,events=0;float distance=30;std::function<void()> onCredit;
+ bool contact=true,gm=false,teleport=false,reward=false,failCredit=false;uint32 klass=4,quest=42504,status=3,events=0;float distance=30;std::function<void()> onCredit;
  Player* ToPlayer()override{return this;}bool CanContact()const{return contact;}bool isGameMaster()const{return gm;}uint32 getClass()const{return klass;}bool HasPendingTeleport()const{return teleport;}bool InSamePhase(World*)const{return phase;}
  bool GetQuestRewardStatus(uint32 q)const{return q==quest&&reward;}uint32 GetQuestStatus(uint32 q)const{return q==quest?status:0;}
  void UpdateAchievementCriteria(uint32 kind,uint32 event){assert(kind==92&&event==51549);++events;if(!failCredit&&manager.value->CanUpdateCriteria(48577)){++manager.value->progress[48577].Counter;manager.value->stage=5;}if(onCredit)onCredit();}
@@ -25,11 +27,17 @@ struct Motion{uint32 jumps=0;void MoveJump(float x,float y,float z,float,float s
 struct AIBase{virtual ~AIBase()=default;uint32 attacks=0;Unit* target=nullptr;std::function<void()> onAttack;virtual void AttackStart(Unit* who){++attacks;target=who;if(onAttack)onAttack();}};
 struct Creature:World{
  AIBase* ai=nullptr;Creature* garona=nullptr;std::vector<Creature*> guards;std::list<Player*> players;Motion motion;uint32 removals=0;
+ ObjectGuid guid=0;ObjectGuid GetGUID()const{return guid;}uint64 GetDBTableGUIDLow()const{return guid;}InstanceScript* GetInstanceScript()const{return map?map->script:nullptr;}
  AIBase* AI()const{return ai;}float GetExactDist2d(Player* p)const{return p->distance;}float GetOrientation()const{return 0;}void GetPlayerListInGrid(std::list<Player*>& out,float r){assert(r==50);out=players;}
  Creature* FindNearestCreature(uint32 id,float range,bool living){assert(living);if(id==108214){assert(range==60);return garona&&garona->world&&garona->alive?garona:nullptr;}assert(range==40&&(id==108216||id==108217));for(auto g:guards)if(g->entry==id&&g->world&&g->alive)return g;return nullptr;}
  Motion* GetMotionMaster(){return &motion;}void RemoveAura(uint32 id){assert(id==214873);++removals;}
 };
-static void GetCreatureListWithEntryInGrid(std::list<Creature*>& out,Creature* source,uint32 entry,float range){assert(range==30);for(auto g:source->guards)if(g->world&&g->entry==entry)out.push_back(g);}
+struct InstanceScript{
+ std::map<uint32,Creature*> actors;std::map<uint32,bool> deaths;
+ ObjectGuid GetGuidData(uint32 key)const{auto at=actors.find(key);return at==actors.end()?0:at->second->guid;}
+ uint32 GetData(uint32 key)const{if(key==KingslayersGuards::AllDefeated){for(auto id:KingslayersGuards::Spawns){auto at=deaths.find(id);if(at==deaths.end()||!at->second)return 0;}return 1;}auto at=deaths.find(key);return at!=deaths.end()&&at->second;}
+};
+namespace ObjectAccessor{static Creature* GetCreature(Creature const& source,ObjectGuid guid){auto data=source.GetInstanceScript();if(data)for(auto const& at:data->actors)if(at.second->guid==guid&&at.second->world)return at.second;return nullptr;}}
 struct ScriptedAI:AIBase{Creature* me;explicit ScriptedAI(Creature* c):me(c){}virtual void MoveInLineOfSight(Unit*){}};
 struct EventMap{};
 enum class HighGuid{Conversation};struct Generator{uint32 Generate(){return 1;}};struct ObjectMgr{Generator generator;template<HighGuid>Generator* GetGenerator(){return &generator;}} objects;auto sObjectMgr=&objects;
@@ -43,10 +51,10 @@ struct Intro:ScriptedAI{
 #include "MoveInLineOfSight.inc"
 };
 struct Run{
- Map map;Scenario scenario;Creature source,garona,a,b,c;Player player,gm;AIBase garonaAI,aAI,bAI,cAI;Intro ai{&source};
- Run(uint32 quest=42504){service=Services{};manager.value=&scenario;source.ai=&ai;source.map=&map;source.garona=&garona;source.guards={&a,&b,&c};source.players={&gm,&player};player.map=gm.map=garona.map=a.map=b.map=c.map=&map;player.quest=gm.quest=quest;gm.gm=true;gm.distance=10;garona.entry=108214;garona.ai=&garonaAI;a.entry=b.entry=108216;c.entry=108217;a.ai=&aAI;b.ai=&bAI;c.ai=&cAI;}
+ Map map;Scenario scenario;InstanceScript instance;Creature source,garona,a,b,c;Player player,gm;AIBase garonaAI,aAI,bAI,cAI;Intro ai{&source};
+ Run(uint32 quest=42504){service=Services{};manager.value=&scenario;map.script=&instance;source.ai=&ai;source.map=&map;source.garona=&garona;source.guards={&a,&b,&c};source.players={&gm,&player};player.map=gm.map=garona.map=a.map=b.map=c.map=&map;player.quest=gm.quest=quest;gm.gm=true;gm.distance=10;garona.entry=108214;garona.ai=&garonaAI;a.entry=b.entry=108216;c.entry=108217;a.ai=&aAI;b.ai=&bAI;c.ai=&cAI;garona.guid=999;a.guid=360869;b.guid=360872;c.guid=360871;instance.actors={{999,&garona},{360869,&a},{360872,&b},{360871,&c}};}
  ~Run(){service.conversations.clear();}
- void Start(){ai.MoveInLineOfSight(&player);}void Dead(){a.alive=b.alive=c.alive=false;}
+ void Start(){ai.MoveInLineOfSight(&player);}void Dead(){a.alive=b.alive=c.alive=false;for(auto id:KingslayersGuards::Spawns)instance.deaths[id]=true;}
 };
 int main(){uint32 cases=0;
  for(uint32 quest:{42504u,42627u}){

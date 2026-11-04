@@ -25,15 +25,13 @@ assert {('cmp','dword ptr [rcx + 0xa18], 0'),('cmp','dword ptr [rbx + 0xa18], 0'
 for offset in (0x6848,0x6849,0x6851):assert ('cmp',f'byte ptr [rbx + {hex(offset)}], 0') in pairs(eligible)
 assert ('cmp','qword ptr [rbx + 8], rax') in pairs(eligible)
 award,=sites(n,los,'?UpdateAchievementCriteria@Player@@');checks=sites(n,los,method('IntroPlayer'));leaves=sites(n,los,method('IntroLeaf'));voices=sites(n,los,method('IntroVoice'))
-assert len(checks)==3 and len(leaves)==2 and len(voices)==2 and checks[0]<leaves[0]<award<checks[1]<leaves[1]<voices[0]<checks[2]<voices[1]
-assert {51549,92,48577,1000,108214,108216,108217}<=values(los) and {55.0,35.0,60.0,30.0}<=floats(n,los)
-checkpoint,=[x for x in los if (x.mnemonic,x.op_str)==('mov','byte ptr [r14 + 0x38], 1')]
+assert len(checks)>=3 and len(leaves)==2 and len(voices)==2 and checks[0]<leaves[0]<award<checks[1]<leaves[1]<voices[0]<checks[2]<voices[1]
+assert {51549,92,48577,1000,108214}<=values(los) and {55.0,35.0,60.0}<=floats(n,los)
+checkpoint,=[x for x in los if x.mnemonic=='mov' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==0x38 and x.operands[1].type==CS_OP_IMM and x.operands[1].imm==1]
 last=leaves[1];assert pairs(los[last+1:last+3])==[('test','al, al'),('jne',los[last+2].op_str)] and los[last+2].operands[0].imm==checkpoint.address
 assert checkpoint.address not in reachable(los,los[last+3].address),'Rejected native receipt must not consume introDone'
 garona,=sites(n,los,'?FindNearestCreature@WorldObject@@');assert checks[2]<garona<voices[1]
-assert len(sites(n,los,'?CanTargetQuestObject@WorldObject@@'))==4
-assert ('mov','word ptr [r14 + 0x39], 0x101') in pairs(los),'Guard handoff/check timer checkpoint absent'
-assert len(sites(n,los,'?GetCreatureListWithEntryInGrid@WorldObject@@'))==2
+assert len(sites(n,los,'?CanTargetQuestObject@WorldObject@@'))>=4
 create,=sites(n,voice,'?CreateConversation@Conversation@@');assert {2422,2424,2425,1000}<=values(voice)
 assert voice[create+1].mnemonic=='test' and voice[create+2].mnemonic=='jne'
 accepted=voice[create+2].operands[0].imm
@@ -43,9 +41,9 @@ assert ('call','qword ptr [rax]') in pairs(voice[create+3:]),'False factory must
 assert ('mov','dword ptr [rcx + rdi*4 + 0x68], 0x3e8') in pairs(voice[:create])
 assert len(sites(n,opponent,method('IntroPlayer')))==1 and sites(n,opponent,'?GetPlayerListInGrid@WorldObject@@') and 50.0 in floats(n,opponent)
 assert not sites(n,opponent,'?FindNearestPlayer@WorldObject@@')
-guards=sites(n,tick,'?FindNearestCreature@WorldObject@@');pick=sites(n,tick,method('IntroOpponent'));jump,=sites(n,tick,'?MoveJump@MotionMaster@@');remove,=sites(n,tick,'?RemoveAura@Unit@@');outro,=sites(n,tick,method('IntroVoice'))
-assert len(guards)==2 and len(pick)==2 and guards[1]<pick[0]<jump<remove<pick[1]<outro
-assert {108216,108217,214873,1000}<=values(tick) and {40.0,-8614.58,403.17,102.92,5.0}<=floats(n,tick)
+pick=sites(n,tick,method('IntroOpponent'));jump,=sites(n,tick,'?MoveJump@MotionMaster@@');remove,=sites(n,tick,'?RemoveAura@Unit@@');outro,=sites(n,tick,method('IntroVoice'))
+assert len(pick)==2 and pick[0]<jump<remove<pick[1]<outro
+assert {214873,1000}<=values(tick) and {-8614.58,403.17,102.92,5.0}<=floats(n,tick)
 assert tick[pick[0]+2].mnemonic=='test' and tick[pick[0]+3].mnemonic=='je'
 assert tick[jump].address not in reachable(tick,tick[pick[0]+3].operands[0].imm),'No eligible opponent must retain guard poll without releasing movement/protection'
 assert ('call','qword ptr [rax + 0x10]') in pairs(tick[remove:outro]),'Actual AI AttackStart handoff absent'
@@ -62,4 +60,6 @@ slots=struct.unpack_from('<82Q',n['binary'],n['offset'](address))
 for name,caller in [('MoveInLineOfSight','?MoveInLineOfSight_Safe@CreatureAI@@'),('UpdateAI','?Update@Creature@@')]:
  slot,=[i for i,v in enumerate(slots) if n['resolve'](v)==n['symbol'](method(name))]
  assert any(x.mnemonic in ('call','jmp') and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==slot*8 for x in ins(caller)),(name,slot)
-print('PASS actual registered Althea LOS/update vtable, qualified Player/quest/native1123 gates, sole51549 followed by actual counter acknowledgement, mandatory Garona/AI handoff, independent bounded-rate2422/2424/2425 retries and diagnostics; both40-yard guard polls precede eligible50-yard selection, original jump/protection/attack and combat-tail dispatch retained. Native death/door proofs remain separate and retained; no client/full combat/traversal claim.')
+from althea_guard_progress_pe import verify
+verify(n)
+print('PASS actual registered Althea LOS/update vtable, qualified Player/quest/native1123 gates, sole51549 followed by actual counter acknowledgement, mandatory exact guard/Garona handoff, independent bounded-rate2422/2424/2425 retries and diagnostics; instance-owned real guard deaths precede eligible50-yard selection, original jump/protection/attack and combat-tail dispatch retained. Native death/door proofs remain separate and retained; no client/full combat/traversal claim.')
