@@ -58,5 +58,17 @@
     "tools/tests/Test-AltheaIntro.ps1": "38b0212dc587e1aa35783cba3c11a1569de8edf9ca2c81509a708fe01a95c7cd",
     "tools/tests/Test-KingslayersDeathCredit.ps1": "33d80ad69712650c7bfc9d1cb3264ea820eba57baaa69a7c70929aef95eb993e",
     "tools/tests/Test-KingslayersDoor.ps1": "e85a69a911639d14cacf21baaea71d9a30d58104ca57a3dbd07b27b8a2f4815b"
+  },
+  "fix_commit": "bbb53728966b36b3fb552c87f3023fc015e656bc",
+  "archive": {
+    "audit": "docs/audits/merlis-intro-archive-2026-11-04.json",
+    "path": "build-extractors/bin/Release/fixed/merlis-intro-2026-11-04",
+    "manifest_sha256": "7e3f3488cd17b7b8af1e3c450b9179fdd24b9fbcf49a18f427160f3ec3d6a7cd",
+    "files": 516,
+    "bytes": 730494,
+    "fix_commit": "bbb53728966b36b3fb552c87f3023fc015e656bc",
+    "verified": "Original bytes and source/archive/source SHA256, credential scan; configs/binaries/PDBs/character data excluded",
+    "logs_truncated": 1,
+    "private_error_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }

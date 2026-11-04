@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-04",
+  "status": "VERIFIED resolved diagnostics archived after deployed focused fix and passing final regressions. One wholly reviewed private819 error log exclusively rechecked and recreated empty; canonical mixed log retained.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/merlis-intro-2026-11-04",
+    "manifest_sha256": "7e3f3488cd17b7b8af1e3c450b9179fdd24b9fbcf49a18f427160f3ec3d6a7cd",
+    "files": 516,
+    "bytes": 730494,
+    "fix_commit": "bbb53728966b36b3fb552c87f3023fc015e656bc",
+    "verified": "Original bytes and source/archive/source SHA256, credential scan; configs/binaries/PDBs/character data excluded",
+    "logs_truncated": 1,
+    "private_error_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "cause_fix_checks": "docs/audits/merlis-intro-2026-11-04.json",
+  "review": "Preserves pinned original admission counterfactuals, native fixture negative exits/SEH trace, missing-string14-line log, serialized fixture-file-lock evidence, retained obsolete-vtable inspector failure and paired final passing checks. No canonical/own-runtime crash report was generated. Provisional client-ACK gating evidence is intermediate, not the final repaired regression; final52 native contexts retain original event order and real player/pet/guardian death before ACK. Intentional6 native WARNs are explicitly labeled and recovered.",
+  "canonical": "Canonical mixed6090 DBErrors unchanged/unresolved, no active canonical error log cleared, canonical Crashes empty and no task server remains.",
+  "limits": "Client/full1123/all36, actual combat/voice/camera/pet traversal, Althea214873 and shared LINK/API findings remain OPEN; copied resolved evidence does not certify them."
+}
