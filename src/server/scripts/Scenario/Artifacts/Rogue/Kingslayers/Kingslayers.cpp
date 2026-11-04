@@ -1204,14 +1204,22 @@ public:
         bool introDone;
         uint32 convid;
         EventMap events;
+        bool artifactReady = false, visualReady = false, revealMoved = false;
+        uint8 revealWarnings = 0;
 
         void Reset() override
         {
-            events.Reset();
+            // This friendly actor owns an earned reveal. An incidental reset
+            // must not cancel its remaining delay or accepted factory results.
+            if (!introDone)
+                events.Reset();
         }
 
         void DoAction(int32 const action) override
         {
+            if (introDone)
+                return;
+            introDone = true;
             me->RemoveAura(214940);
             me->GetMotionMaster()->MovePoint(0, -8316.88f, 283.96f, 156.83f);
             Conversation* conversation = new Conversation;
@@ -1241,9 +1249,27 @@ public:
                     }
                     break;
                     case EVENT_2:
-                        me->SummonCreature(108325, -8318.08f, 283.807f, 156.916f, 6.26344f);
-                        me->SummonGameObject(251107, -8318.08f, 283.807f, 156.833f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, DAY);
-                        me->GetMotionMaster()->MovePoint(0, -8312.67f, 284.65f, 156.83f);
+                        if (!visualReady)
+                        {
+                            visualReady = me->SummonCreature(108325, -8318.08f, 283.807f, 156.916f, 6.26344f) != nullptr;
+                            if (!visualReady && !(revealWarnings & 1))
+                                TC_LOG_WARN("scripts", "Kingslayers reveal: native108325 creation refused; retain bounded-rate retry");
+                            if (!visualReady) revealWarnings |= 1;
+                        }
+                        if (!artifactReady)
+                        {
+                            artifactReady = me->SummonGameObject(251107, -8318.08f, 283.807f, 156.833f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, DAY) != nullptr;
+                            if (!artifactReady && !(revealWarnings & 2))
+                                TC_LOG_WARN("scripts", "Kingslayers reveal: native251107 creation refused; retain bounded-rate retry");
+                            if (!artifactReady) revealWarnings |= 2;
+                        }
+                        if (artifactReady && !revealMoved)
+                        {
+                            revealMoved = true;
+                            me->GetMotionMaster()->MovePoint(0, -8312.67f, 284.65f, 156.83f);
+                        }
+                        if (!artifactReady || !visualReady)
+                            events.RescheduleEvent(EVENT_2, 2000);
                         break;
                 }
             }

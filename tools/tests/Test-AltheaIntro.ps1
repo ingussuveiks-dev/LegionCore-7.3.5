@@ -4,6 +4,8 @@ $out="$repo/build-extractors/runtime-test/althea-intro-asan/$(Get-Date -Format y
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';$current=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "9303d0c59:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned intro predecessor missing'}
+ # Garona reveal has its own whole-source/ASAN/native certificate.
+ $current=$current.Replace((Block $current 'class npc_garona_halforcen_outro : public CreatureScript'),(Block $old 'class npc_garona_halforcen_outro : public CreatureScript'))
  # Merlis intro has its own whole-source/ASAN/native certificate.
  $current=$current.Replace((Block $current 'class npc_merlis_malagan : public CreatureScript'),(Block $old 'class npc_merlis_malagan : public CreatureScript'))
  $ai=Block $current 'struct npc_sister_althea_ebonlockeAI : ScriptedAI';$prior=Block $old 'struct npc_sister_althea_ebonlockeAI : ScriptedAI'
