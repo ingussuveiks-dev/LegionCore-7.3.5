@@ -1,0 +1,317 @@
+{
+  "Build": "7.3.5.26972",
+  "Source": "Matching local typed DB2/hotfix mapping and complete hashed read-only CASC Vorbis decodes. No listening/client claim.",
+  "Payloads": [
+    {
+      "VoiceMs": 1874,
+      "SHA256": "7D7E9009132377FF0FCCBC53F082AE87377EE786A093B38F91B4004FF700C8C3",
+      "FileDataID": 1391977,
+      "Bytes": 15181
+    },
+    {
+      "VoiceMs": 2637,
+      "SHA256": "3156E7ED5CAC2C3D5B9A1A4268CBD43B97C379CE217C9CB04056C2F632483C0C",
+      "FileDataID": 1391978,
+      "Bytes": 19847
+    },
+    {
+      "VoiceMs": 5352,
+      "SHA256": "2A5438686A4D6653E7C100D5525F46382A235DF3BB448A08B42A128E8F3FEED0",
+      "FileDataID": 1391979,
+      "Bytes": 37049
+    },
+    {
+      "VoiceMs": 5488,
+      "SHA256": "8440DBD7804ABDF7C0287E70CC61C06939B02516F6E3CF29CE1351E7D167763D",
+      "FileDataID": 1391980,
+      "Bytes": 38492
+    },
+    {
+      "VoiceMs": 4513,
+      "SHA256": "E62B3BC57430C41D0788FD37AAD752D60FAF68505D4C9A2C225ADA88BFA6EC8A",
+      "FileDataID": 1391981,
+      "Bytes": 31743
+    },
+    {
+      "VoiceMs": 2476,
+      "SHA256": "FEB06D927BFAEBF66C16A98C8EC76477B4933B5F7ECB417060ACF926E9694707",
+      "FileDataID": 1391982,
+      "Bytes": 19201
+    },
+    {
+      "VoiceMs": 9307,
+      "SHA256": "BC64CEB606C7D7D741BFED78070D3AE76B7820D6CE410204A3857A72C930EEE5",
+      "FileDataID": 1391983,
+      "Bytes": 58264
+    },
+    {
+      "VoiceMs": 10389,
+      "SHA256": "E0A75CC0579E025962E5F8F6838827BF57DC2B271544603DD7839F3937A23063",
+      "FileDataID": 1391984,
+      "Bytes": 68741
+    },
+    {
+      "VoiceMs": 9414,
+      "SHA256": "619BE9C9BB6AEF28BD51AFF479BF675D5AC1CBB17A4943B95C0FFF1DB7D37291",
+      "FileDataID": 1391985,
+      "Bytes": 63887
+    },
+    {
+      "VoiceMs": 5569,
+      "SHA256": "9C4AF9D5177EFFBAE530E8AB9DB2F0AC16503B22862700309A3E0A8E7FB83E87",
+      "FileDataID": 1399787,
+      "Bytes": 38778
+    }
+  ],
+  "Conversations": [
+    {
+      "Conversation": 2361,
+      "Lines": [
+        {
+          "Line": 5016,
+          "Index": 0,
+          "Broadcast": 113131,
+          "SoundKit": 63563,
+          "FileDataID": 1391977,
+          "VoiceMs": 1874,
+          "AdditionalMs": 4000,
+          "Next": 5007,
+          "StartMs": 0,
+          "OriginalStartMs": 0,
+          "Flags": 4229220032,
+          "Packed": 0
+        },
+        {
+          "Line": 5007,
+          "Index": 1,
+          "Broadcast": 113116,
+          "SoundKit": 63564,
+          "FileDataID": 1391978,
+          "VoiceMs": 2637,
+          "AdditionalMs": 3000,
+          "Next": 5013,
+          "StartMs": 5874,
+          "OriginalStartMs": 4650,
+          "Flags": 4229220032,
+          "Packed": 1
+        },
+        {
+          "Line": 5013,
+          "Index": 2,
+          "Broadcast": 113117,
+          "SoundKit": 63565,
+          "FileDataID": 1391979,
+          "VoiceMs": 5352,
+          "AdditionalMs": 2000,
+          "Next": 5017,
+          "StartMs": 11511,
+          "OriginalStartMs": 9550,
+          "Flags": 4229220032,
+          "Packed": 0
+        },
+        {
+          "Line": 5017,
+          "Index": 3,
+          "Broadcast": 113132,
+          "SoundKit": 63566,
+          "FileDataID": 1391980,
+          "VoiceMs": 5488,
+          "AdditionalMs": 1000,
+          "Next": 5018,
+          "StartMs": 18863,
+          "OriginalStartMs": 16450,
+          "Flags": 4229220032,
+          "Packed": 1
+        },
+        {
+          "Line": 5018,
+          "Index": 4,
+          "Broadcast": 113133,
+          "SoundKit": 63567,
+          "FileDataID": 1391981,
+          "VoiceMs": 4513,
+          "AdditionalMs": 3000,
+          "Next": 5021,
+          "StartMs": 25351,
+          "OriginalStartMs": 23300,
+          "Flags": 4229220032,
+          "Packed": 1
+        },
+        {
+          "Line": 5021,
+          "Index": 5,
+          "Broadcast": 113141,
+          "SoundKit": 63568,
+          "FileDataID": 1391982,
+          "VoiceMs": 2476,
+          "AdditionalMs": 500,
+          "Next": 0,
+          "StartMs": 32864,
+          "OriginalStartMs": 28500,
+          "Flags": 4229220032,
+          "Packed": 1
+        }
+      ],
+      "RequiredActorSumMs": 35840,
+      "LifetimeMs": 40840,
+      "LastActorDurationMs": 26090
+    },
+    {
+      "Conversation": 2377,
+      "Lines": [
+        {
+          "Line": 5037,
+          "Index": 0,
+          "Broadcast": 113161,
+          "SoundKit": 63569,
+          "FileDataID": 1391983,
+          "VoiceMs": 9307,
+          "AdditionalMs": 3000,
+          "Next": 5040,
+          "StartMs": 0,
+          "OriginalStartMs": 0,
+          "Flags": 4229237488,
+          "Packed": 0
+        },
+        {
+          "Line": 5040,
+          "Index": 1,
+          "Broadcast": 113166,
+          "SoundKit": 63570,
+          "FileDataID": 1391984,
+          "VoiceMs": 10389,
+          "AdditionalMs": 2000,
+          "Next": 5048,
+          "StartMs": 12307,
+          "OriginalStartMs": 7250,
+          "Flags": 4229237488,
+          "Packed": 0
+        },
+        {
+          "Line": 5048,
+          "Index": 2,
+          "Broadcast": 113167,
+          "SoundKit": 63571,
+          "FileDataID": 1391985,
+          "VoiceMs": 9414,
+          "AdditionalMs": 2000,
+          "Next": 5962,
+          "StartMs": 24696,
+          "OriginalStartMs": 17100,
+          "Flags": 4229237488,
+          "Packed": 0
+        },
+        {
+          "Line": 5962,
+          "Index": 3,
+          "Broadcast": 115746,
+          "SoundKit": 64453,
+          "FileDataID": 1399787,
+          "VoiceMs": 5569,
+          "AdditionalMs": 1000,
+          "Next": 0,
+          "StartMs": 36110,
+          "OriginalStartMs": 24250,
+          "Flags": 4229237488,
+          "Packed": 0
+        }
+      ],
+      "RequiredActorSumMs": 42679,
+      "LifetimeMs": 47679,
+      "LastActorDurationMs": 31729
+    }
+  ],
+  "OriginalCreatures": [
+    [
+      2361,
+      0,
+      108015,
+      0,
+      0,
+      0,
+      1950
+    ],
+    [
+      2361,
+      1,
+      98094,
+      4650992,
+      0,
+      0,
+      1950
+    ],
+    [
+      2361,
+      2,
+      108015,
+      0,
+      0,
+      0,
+      1950
+    ],
+    [
+      2361,
+      3,
+      98094,
+      4650992,
+      0,
+      0,
+      1950
+    ],
+    [
+      2361,
+      4,
+      98094,
+      4650992,
+      0,
+      0,
+      1950
+    ],
+    [
+      2361,
+      5,
+      98094,
+      4650992,
+      0,
+      0,
+      1950
+    ],
+    [
+      2377,
+      0,
+      108015,
+      4651076,
+      0,
+      0,
+      3650
+    ],
+    [
+      2377,
+      1,
+      108015,
+      4651076,
+      0,
+      0,
+      3650
+    ],
+    [
+      2377,
+      2,
+      108015,
+      4651076,
+      0,
+      0,
+      3650
+    ],
+    [
+      2377,
+      3,
+      108015,
+      4651076,
+      0,
+      0,
+      3650
+    ]
+  ],
+  "OriginalActors": []
+}

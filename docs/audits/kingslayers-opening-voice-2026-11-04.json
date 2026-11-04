@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-04",
+  "status": "DATA REPAIRED AND INSTALLED: native2361/2377 timelines retain complete matching26972 enUS voice payloads and authored gaps. Original15/30s caller, client rendering/audio and full1123/all36 remain OPEN.",
+  "scope": "Only ten exact cells:2361 last actor duration plus five line starts;2377 last actor duration plus three line starts. Original actor roles/GUID hints/packed flags/line IDs,2384 and all progression code preserved. No executable change required.",
+  "cause": "Native GenerateDynamicFieldData sums actor durations, then CreateConversation adds5000 and publishes that same budget. Original2361 duration16700 precedes line starts23300/28500;2377 duration19600 precedes24250. Eight native line starts also disagree with cumulative complete enUS voices plus matching ConversationLine.AdditionalDuration. Actual Player-caster CanNeverSee2/Update removal repeats this failure.",
+  "local_evidence": "Fresh typed26972 DB2/hotfix mapping: ten original lines -> BroadcastText -> correct male/female SoundKit -> ten actual FileDataIDs. Local matching client .build.info and full read-only CASC Vorbis exports/ffprobe/full ffmpeg decode; hashes in fixture. All client index hashes unchanged. No listening, video or actual client playback claim. Newer local Trinity Conversation reviewed as a field-semantics reference only; no modern API/schema copied. Local project code/payload/actual player-clock proof resolves this defect without external donor implementation.",
+  "implementation": "Derive each next line start from full previous voice plus authored native additional gap.2361 content35840/published40840,2377 content42679/published47679. Only last actor duration absorbs missing budget, retaining all other actor cells and native5000 padding. Per-conversation exact full-definition guards accept original/canonical partial changed cells and decline unknown custom states. No quest/item/scenario shortcut.",
+  "checks": {
+    "audio": "Fresh mapping,10 whole hashed payload decodes, unchanged client indexes.",
+    "sql": "Denied-persistent-write TEMP reader, all unrelated columns/counts preserved, twice idempotent, all80 original/canonical partial permutations,32 custom definitions preserved. Live exact data readback.",
+    "asan": "Actual extracted native dynamic producer/factory-budget/visibility/update bodies, original two-conversation counterfactual paired with repaired two-conversation proof; all10 line/voice/end/gap endpoints, normal player-clock expiry, missing actors and cancelled scope. Controlled engine host, not whole-core ASAN.",
+    "native": "4 original,4 repaired shadow and4 installed actual core factory/payload/Player visibility/removal contexts across Human42504/Orc42627. Full bound actor GUIDs and flags, source removal/real accessor, required phase-hidden actor refusal, no progression/inventory change. Earlier actor poses and playback-clock endpoints seeded; not authenticated client traversal.",
+    "updater": "Canonical unchanged C03E03DC/999B8D36 binaries, owned PID2476 fresh ready and graceful shutdown0/exit0/empty stderr/gone. Actual updater RELEASED F3B4640F1A640C7EE14C04879B1C947934B8633A; installed definitions verified. Protected runtime hashes retained. No user server stopped."
+  },
+  "iterations": [
+    "New ASAN inspector initially iterated SQL ORDER BY id as playback order;2361 IDs differ from idx. Corrected inspector to sort by actual idx. Initial assertion/log preserved and paired with passing original/repaired checks. Production timing was not altered to satisfy the inspector."
+  ],
+  "diagnostics": "Each check snapshots canonical/own crashes/log lengths/timestamps and inspects exit/stdout/stderr/new server warnings/errors/assertions/DBErrors. No new/changed crashes or runtime errors. Canonical mixed6090 DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved; never cleared. Task server gone. Fixed archive follows focused commit.",
+  "canonical_hashes": {
+    "worldserver.exe": "c03e03dc3369701bc4fc57987eb5654b9e93d49fc84fef7a64a06b50fc1c9bc6",
+    "bnetserver.exe": "999b8d367e74ba70dd78e6acf39320ec1bdd630f137c82ed4cb9b11f67ada47a"
+  },
+  "limits": [
+    "The original opening caller still requests2377 at15s and mandatory progression/2384/departure at30s, moving/despawning98094/108058 at15+6s and Garona at30+4s. This separately reproduced sequencing problem is NOT fixed by data budgets; next repair must retain full native presentation before actor removal while preserving failure recovery and exactly-once real receipts.",
+    "Actual client playback/start scheduling/actor visibility/movement, silent2384/108057 visibility, full1123 and all36 chains remain OPEN. No authored retail timing invented.",
+    "Native Player-owned conversation lifetime follows the caster playback key, so an independently late group viewer can lose its tail. Source departure preserves the conversation object but does not certify retained actor rendering. Cancelled/abandoned/re-entered actor state and shared107979 acceptance remain separate boundaries."
+  ],
+  "next": "Repair and test original108015 caller against actual accepted2361/2377 GetDuration before middle/own departure. Optional factory failure must retain native progression without permanent wait; audit late-viewer/client limits separately.",
+  "sources": {
+    "sql/updates/world/2026_11_04_01_kingslayers_opening_voice.sql": "890a103205b379cc8cd86f95c70abeaf8fe119ac445dac743a1470e080363d3a",
+    "tools/research/KingslayersOpeningAudioCatalog.cpp": "dceacbc95e64e22b58fe2e5c01a2deda53c7cde43515c8d27610e76c0d662c66",
+    "tools/tests/KingslayersOpeningVoiceAudio.json": "4d340fe176582a4be4af4134e29308d31c106975da3dacf43d7a10e358a4bead",
+    "tools/tests/KingslayersOpeningVoiceTest.cpp": "5de44d2caa3bbb2f8a394543fb51e4f4cc1ff331e98c47362e5fe7ddda73b21c",
+    "tools/tests/KingslayersOpeningVoiceNative.cpp": "8d6e4ba3c23c7b5e56c59d9cf74912c16bce8e9540a5aa39792655d6de7d29ba",
+    "tools/tests/Test-KingslayersOpeningVoice.ps1": "76cd91b615ede22bd5e0655d51a34bde2d3b582118b49a006bb32419c6b88e8f",
+    "tools/tests/Test-KingslayersOpeningVoiceAudio.ps1": "a49fd3925d7c588d369a17405c1b06f5f5994e72fcaf929dddbbbf3c2842a890",
+    "tools/tests/Test-KingslayersOpeningVoiceNative.ps1": "d074c9c6b502540275a9b2fb84299985877e0f19e0d012c399b0332f88771a6a"
+  }
+}
