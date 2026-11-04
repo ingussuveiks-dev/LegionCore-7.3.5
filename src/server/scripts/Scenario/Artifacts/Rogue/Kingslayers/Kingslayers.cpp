@@ -486,7 +486,8 @@ public:
         // The conversation now has its own GUID. Register that GUID in the
         // source attempt before publishing it, so cancellation removes it too.
         Creature* actor = ObjectAccessor::GetCreature(*this, _actor);
-        if (actor && InheritQuestObjectScope(actor))
+        if (actor && actor->GetGUID() == _actor && actor->GetEntry() == 108218 &&
+            actor->IsInWorld() && !actor->IsPreDelete() && InheritQuestObjectScope(actor))
             Conversation::AddToWorld();
     }
 
@@ -496,7 +497,7 @@ protected:
         if (index != 0 || entry != 108218 || !searcher || searcher->GetMapId() != 1620)
             return nullptr;
         Creature* actor = ObjectAccessor::GetCreature(*searcher, _actor);
-        if (!actor || actor->GetEntry() != entry || !actor->IsInWorld() || actor->IsPreDelete() ||
+        if (!actor || actor->GetGUID() != _actor || actor->GetEntry() != entry || !actor->IsInWorld() || actor->IsPreDelete() ||
             actor->IsQuestObjectExpired() || searcher->IsQuestObjectExpired() ||
             !searcher->IsWithinDistInMap(actor, searcher->GetVisibilityRange()) ||
             !searcher->InSamePhase(actor) || !searcher->InSamePhaseId(actor) ||

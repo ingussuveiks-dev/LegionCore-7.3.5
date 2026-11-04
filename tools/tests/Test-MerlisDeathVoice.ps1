@@ -4,6 +4,8 @@ $out="$repo/build-extractors/runtime-test/merlis-death-voice/$(Get-Date -Format 
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp" -Raw
+ . "$PSScriptRoot/AltheaActorIdentityCertificate.ps1"
+ $source=Restore-AltheaActorIdentityBoundary $source
  $pinned=(& git -C $repo show '3ca15b909:src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned original Merlis death source missing'}
  $actor=Block $source 'class DeathConversation final : public Conversation'
  [IO.File]::WriteAllText("$out/MerlisDeathActor.inc",$actor+';')

@@ -7,6 +7,8 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  $body=Block $source 'class npc_garona_halforcen_outro : public CreatureScript';$prior=Block $old 'class npc_garona_halforcen_outro : public CreatureScript'
  # Merlis source handoff has its own whole-source/ASAN/native certificate.
  $sourceForReveal=$source.Replace((Block $source 'class npc_merlis_malagan : public CreatureScript'),(Block $old 'class npc_merlis_malagan : public CreatureScript'))
+ . "$PSScriptRoot/AltheaActorIdentityCertificate.ps1"
+ $sourceForReveal=Restore-AltheaActorIdentityBoundary $sourceForReveal
  if(($sourceForReveal.Replace($body,$prior)-replace '\s','') -cne ($old-replace '\s','')){throw 'Unreviewed change outside original Garona reveal actor'}
  [IO.File]::WriteAllText("$out/GaronaReveal.inc",$body+';')
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

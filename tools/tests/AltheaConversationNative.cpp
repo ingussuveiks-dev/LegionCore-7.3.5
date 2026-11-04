@@ -7,6 +7,9 @@
 #include <filesystem>
 #include <cstdlib>
 #include "AltheaActor.inc"
+#ifdef ALTHEA_IDENTITY_BASELINE
+using AltheaDeathConversation = AltheaIdentityBaselineConversation;
+#endif
 static LONG WINAPI AltheaTrace(EXCEPTION_POINTERS* error){
  std::cerr<<"ALTHEA NATIVE FAULT rva="<<std::hex<<(error->ContextRecord->Rip-reinterpret_cast<uintptr_t>(GetModuleHandle(nullptr)))<<" target="<<error->ExceptionRecord->ExceptionInformation[1]<<std::dec<<'\n';
  return CrashTrace(error);
@@ -32,6 +35,19 @@ int main(int argc,char**argv){try{
  althea.Unit::setDeathState(JUST_DIED);Require(!althea.IsAlive(),"Controlled immediate-death endpoint failed");
  auto dead=new Conversation;Require(!dead->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(),2431,&garona,nullptr,garona),"Current dead actor refusal changed");Require(!dead->IsInWorld()&&!dead->IsInGrid(),"Refused native actor retains ownership");delete dead;
  uint32 cases=0;ObjectGuid lastBound;std::cout<<"TRACE ordinary living/corpse controls passed"<<std::endl;
+ // The real accessor uses a lower32-bit vector index. A captured GUID with a
+ // different high/upper-low word must not admit the indexed actor by accident.
+ bool actorBaseline=std::getenv("ALTHEA_ACTOR_BASELINE")!=nullptr;
+ auto exact=althea.GetGUID(),otherHigh=exact,upperLow=exact;
+ otherHigh.SetRawValue(exact.GetHighPart()^1,exact.GetLowPart());upperLow.SetRawValue(exact.GetHighPart(),exact.GetLowPart()^(uint64(1)<<40));
+ for(auto wrong:{otherHigh,upperLow}){
+  Conversation* value=new AltheaDeathConversation(wrong);bool created=value->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(),2431,&garona,nullptr,garona);
+  Require(created==actorBaseline,"Scoped Althea full-GUID collision contract differs");
+  if(created){Require(value->GetCreatures().size()==1&&value->GetCreatures()[0]->GuidLow==exact.GetLowPart()&&value->GetCreatures()[0]->GuidHight==exact.GetHighPart(),"Pinned collision no longer binds actual conflicting actor");value->Remove();map.RemoveAllObjectsInRemoveList();}
+  else{Require(!value->IsInWorld()&&!value->IsInGrid(),"Refused identity retained grid/world ownership");value->AddToWorld();Require(!value->IsInWorld(),"Publication accepted a mismatched source GUID");delete value;}
+  Require(objectCountInWorld[uint8(HighGuid::Conversation)]==count,"Identity control leaked native conversation");
+ }
+ std::cout<<(actorBaseline?"COUNTERFACTUAL two captured GUIDs with different high/upper-low words admit the lower32-bit indexed corpse; controlled identity collision, not a client incident\n":"PASS two native high/upper-low same-index identity refusals at resolution and direct publication, no grid/world/allocation leak\n");
  auto bound=[&](ObjectGuid guid,bool expected){
   std::cout<<"TRACE bound case "<<cases<<" expected="<<expected<<std::endl;
   Conversation* result=new AltheaDeathConversation(guid);auto key=sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate();

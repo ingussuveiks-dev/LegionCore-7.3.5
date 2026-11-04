@@ -26,6 +26,8 @@ $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp';
 $reveal=Block $source 'class npc_garona_halforcen_outro : public CreatureScript';$before=Block $pinned 'class npc_garona_halforcen_outro : public CreatureScript'
  # Merlis source handoff has its own whole-source/ASAN/native certificate.
  $sourceForReveal=$source.Replace((Block $source 'class npc_merlis_malagan : public CreatureScript'),(Block $pinned 'class npc_merlis_malagan : public CreatureScript'))
+ . "$PSScriptRoot/AltheaActorIdentityCertificate.ps1"
+ $sourceForReveal=Restore-AltheaActorIdentityBoundary $sourceForReveal
 if(($sourceForReveal.Replace($reveal,$before)-replace '\s','') -cne ($pinned-replace '\s','')){throw 'Unreviewed change outside original reveal actor'}
 if($Baseline){$reveal=$before}
 $reveal=$reveal.Replace('class npc_garona_halforcen_outro :','class npc_garona_before_reveal :').Replace('npc_garona_halforcen_outro() :','npc_garona_before_reveal() :')
