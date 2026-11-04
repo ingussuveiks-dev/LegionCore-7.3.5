@@ -4,6 +4,8 @@ $out="$repo/build-extractors/runtime-test/merlis-combat-voice/$(Get-Date -Format
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp" -Raw
+ . "$PSScriptRoot/MerlisDeathVoiceCertificate.ps1"
+ $source=Restore-MerlisDeathVoiceBoundary $source
  $pinned=(& git -C $repo show 'd8c85e9fe:src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned combat source missing'}
  $ai=Block $source 'struct npc_merlis_malaganAI : ScriptedAI';$prior=Block $pinned 'struct npc_merlis_malaganAI : ScriptedAI'
  $start=$ai.IndexOf('        uint32 combatVoiceDelay');$last=Block $ai 'void RequestCombatVoice(';$end=$ai.IndexOf($last,$start)+$last.Length

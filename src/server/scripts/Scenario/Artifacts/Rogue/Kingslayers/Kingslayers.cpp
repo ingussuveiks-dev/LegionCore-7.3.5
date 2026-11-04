@@ -1255,6 +1255,40 @@ public:
             DoZoneInCombat(summon, 150.0f);
         }
 
+        // Native actor lookup searches for a living creature. JustDied must
+        // retain this actual dead Merlis, not a nearby living duplicate.
+        class DeathConversation final : public Conversation
+        {
+        public:
+            explicit DeathConversation(ObjectGuid actor) : _actor(actor) { }
+
+            void AddToWorld() override
+            {
+                Creature* actor = ObjectAccessor::GetCreature(*this, _actor);
+                if (actor && actor->GetGUID() == _actor && actor->GetEntry() == 107831 &&
+                    actor->IsInWorld() && !actor->IsPreDelete() && InheritQuestObjectScope(actor))
+                    Conversation::AddToWorld();
+            }
+
+        protected:
+            Creature* FindCreatureActor(uint32 index, uint32 entry, WorldObject* searcher) override
+            {
+                if (index != 0 || entry != 107831 || !searcher || searcher->GetMapId() != 1620)
+                    return nullptr;
+                Creature* actor = ObjectAccessor::GetCreature(*searcher, _actor);
+                if (!actor || actor->GetGUID() != _actor || actor->GetEntry() != entry || !actor->IsInWorld() || actor->IsPreDelete() ||
+                    actor->IsQuestObjectExpired() || searcher->IsQuestObjectExpired() ||
+                    !searcher->IsWithinDistInMap(actor, searcher->GetVisibilityRange()) ||
+                    !searcher->InSamePhase(actor) || !searcher->InSamePhaseId(actor) ||
+                    !actor->CanTargetQuestObject(searcher) || !searcher->CanTargetQuestObject(actor))
+                    return nullptr;
+                return actor;
+            }
+
+        private:
+            ObjectGuid const _actor;
+        };
+
         void JustDied(Unit* who) override
         {
             Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
@@ -1263,7 +1297,7 @@ public:
             if (player)
             {
                 player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51615);
-                Conversation* conversation = new Conversation;
+                Conversation* conversation = new DeathConversation(me->GetGUID());
                 if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2448, player, NULL, *player))
                     delete conversation;
             }
