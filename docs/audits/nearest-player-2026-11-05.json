@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-05",
+  "status": "DEPLOYED9AE10E79/BD3FF659: WorldObject.FindNearestPlayer now selects nearest within requested native radius and honors optional live-only admission; existing Creature selector remains live-only.98ASAN/24native,12pinned counterfactuals,120retained native, actual canonical PE/Scepter/owned10464 pass. Whole callers/client/full36 remain OPEN.",
+  "scope": "Only WorldObject.FindNearestPlayer plus existing NearestPlayerInObjectRangeCheck constructor/operator and optional default-true flag. Same native map/phase/grid visitation and distance metric. No SQL/character/quest/scenario/item edits or caller eligibility changes.",
+  "cause": "Pinned2316b3592 helper used AnyPlayerInObjectRangeCheck(GetVisibilityRange()) with first PlayerSearcher and ignored its alive parameter. A grid visit covers whole cells, so visiting a requested radius did not enforce that radius. First matching container order was not nearest, requests larger than visibility were truncated by the predicate, and alive=false still excluded dead Players.",
+  "evidence": {
+    "local": "Existing project Creature.SelectNearestPlayer already uses the native shrinking NearestPlayerInObjectRangeCheck and PlayerLastSearcher. AnyPlayer reqAlive=false means no life restriction. Preserve those native distance/contact semantics and existing map/phase rules; add optional reqAlive=true to nearest predicate rather than copying a modern implementation.",
+    "history": "Origin fetched/checked, prior focused commits2316b3592/1ca7a398a and local Object.cpp history consulted. Helper history traces initial/base imports. Local newer Trinity SelectNearestPlayer has the same shrinking/last-searcher design, used only as a reference after matching local native implementation. No external implementation/DB2 behavior copied and no client/video evidence claimed.",
+    "callers": "Initial textual inventory137 references excluding declaration/definition; stripping comments/string literals gives136 potential code call sites across72 files:75default,60explicittrue,1explicitfalse,25artifact references. No dynamic second-argument expressions. Exact false caller is Headless Horseman intro at boss_headless_horseman.cpp:519, selecting a Player for a conversation/emote, with no quest grant. False now admits both living/dead Players, matching existing optional reqAlive convention. Conditional compilation variants are potential callers, not a claim that every path runs in this build.",
+    "caller_contract": "Combat, appearance/arrival, aura, trap, dialogue and progression callers continue to own eligibility, LOS, class, quest, owner/group and admission. Generic selector does not exclude GM, require active quests, convert pets/guardians, award credit or change visibility. Equal-distance tie identity is unspecified. All136 gameplay paths were not executed."
+  },
+  "repair": "Use existing nearest predicate with actual range/alive and PlayerLastSearcher. Predicate defaults reqAlive=true for unchanged two-argument Creature.SelectNearestPlayer, tests life only when requested, and retains original IsWithinDistInMap/GetDistance/shrinking-range behavior. Native World-object visitor and phase-mask admission unchanged. No static Player cache, new state persistence or manual progression.",
+  "checks": {
+    "baseline": "24 native controlled contexts with pinned full old helper body against real WorldObject/Player/grid/predicate services.12 actual counterfactual mismatches across Human/Orc: first farther Player, out-of-request radius, beyond visibility but within requested radius, closer dead Player with alive=false, all-dead false search, and vertical out-of-range first visitor. Remaining controls retained. Counterfactuals are expected-broken evidence, not ordinary successful gameplay.",
+    "asan": "98 assertion-enabled actual extracted helper/predicate/class/PlayerLastSearcher::Visit ASAN contexts:96 order/map/phase/3D/radius/life combinations across all six candidate visit permutations, plus unchanged2-argument live-only predicate and Player-self selection. Geometry/cells modeled explicitly. Whole-file certificates allow only the selected function/class/constructor/operator changes in three production files.",
+    "native": "24 contexts execute actual repaired WorldObject method from stable final Release game.lib, native grid visitors, Player life state and independent Creature selector. Same targeted selection variants plus wrong phase, default live-only/GM-neutral control, equal-distance tie, Player self, actual second Map exclusion, native grid removal/reinsertion. Actual cells/grids reindexed after controlled placements; no authenticated client movement/reconnect claim. No character saves or quest rewards.",
+    "retained": "Current-source Kingslayers36offer/50gate/34smoke native contexts pass against final stable libraries, including actual offer->214645->native51437 and noncanonical old-source control. Their earlier ASAN/presentation/client limitations remain in separate audits.",
+    "release": "Sequential original game.vcxproj and scripts.vcxproj Release, original final-link library paths, separate stage and offline four-file EXE/MAP hash-backed promotion. Protected configs/certs/DLLs unchanged. Actual PE proves incoming alive/radius passed to predicate state, native Cell/Map last-searcher call chain reaches repaired shrinking predicate, life/radius refusals cannot update minimum and existing Creature explicitly passes true. Linked identical Any/Nearest constructors are folded; actual concrete visitor/predicate path distinguishes semantics. Canonical nearest/gate/intro/smoke/offer, Merlis death/Althea identity/pickup/return and mandatory Scepter -VerifyReleaseBinary pass.",
+    "runtime": "Owned worldserver PID10464 fresh ready, graceful server shutdown0/exit0/empty stderr/gone. No user process stopped or hidden task server left running. No SQL updater dependency."
+  },
+  "iterations": [
+    "Native export initially lacked ObjectVisitors.hpp defining the native Trinity visitor; added actual production include and24-case pinned baseline passes. No production build failure or runtime crash.",
+    "New ASAN wrapper initially had one extra array parenthesis; parser refused before runtime execution. Corrected parser and98ASAN pass with before/after diagnostic snapshots.",
+    "Initial PE debug assumed constructor unwind bounds; actual leaf has none, so bound it by next public symbol with128-byte cap. Initial negative Any-constructor assertion failed because linker folds identical Any/Nearest constructors; retained positive radius/life state proof and traced concrete native last-searcher-to-predicate chain. Passing staged/canonical proofs paired with initial inspector evidence, no production changes to satisfy inspector.",
+    "Initial137 textual call count includes one commented reference; lexically filtered136 potential code calls/72files recorded separately. Compiler warnings in unchanged source retained; no newly introduced Object/GridNotifiers warnings."
+  ],
+  "diagnostics": "Canonical/own before-after crash and log lengths/timestamps, exit/stdout/stderr and new server warnings/errors/assertions/DBErrors reviewed for every executing test/build. Final ordinary runs clean. Canonical Crashes empty; mixed DBErrors6090 SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved, not cleared. Resolved diagnostics archive follows focused fix commit; informative server history retained.",
+  "canonical_hashes": {
+    "worldserver.exe": "9ae10e79e8545306ecd3695d63b010c3816292248274c0d648735238992608d4",
+    "bnetserver.exe": "bd3ff65922ab9895e7cfb7372839c604fc78f21229d2b4ceec61c4feb1312102"
+  },
+  "limits": [
+    "Whole136 call-site gameplay and actual client quests/combat/UI/voice/camera/pets/groups/reconnect are not certified by helper contract tests. Full artifact chains/all36 remain OPEN. Native seeded poses/life/grid endpoints and ASAN modeled geometry are separately identified.",
+    "Life=false includes living and dead; it is not dead-only. Default true and existing Creature selector remain live-only. Generic range retains native contact/size and3D behavior, not a new center-distance or LOS/visibility requirement. Native transport/radius metrics are delegated unchanged; real moving-ship/client traversal not newly exercised.",
+    "No pet/guardian kill credit, scaling, faction admission, group awards or exactly-once quest progress is implemented here. Existing callers must still resolve actual eligible owners/group recipients; nearest alone never proves progression eligibility.",
+    "Original Althea214873 startup/protection intent, Merlis corpse/AI/grid reconstruction and unknown shared101430/103151 LINK2/WardstoneLINK4 remain OPEN. Existing mixed DBErrors retained."
+  ],
+  "next": "Continue independently reproducing artifact callers that combine nearest selection with one-shot progression, including Devourer.cpp current stage4 entrance50404/50299 admission/acknowledgement. Verify matching native scenario/quest/actors and alternative arrivals before changing it. Keep unresolved LINK payloads and client/full36 boundaries visible.",
+  "source_sha256": {
+    "src/server/game/Entities/Object/Object.cpp": "76fd91111cb2a9af27c17806eb7bc0ddde4828ca83c0f428dc89390eada42992",
+    "src/server/game/Grids/Notifiers/GridNotifiers.cpp": "439690750755e8781fdb03bbdd74012697004c814d6bfa45c63311128abf9adb",
+    "src/server/game/Grids/Notifiers/GridNotifiers.h": "6d6a52c61642e0d59b9b8c81bf540ea34c4dde523f383c38fb9fb3e5782aedfd",
+    "tools/tests/NearestPlayerNative.cpp": "5dc76f6717a2623f3a9d8ac5bbb5f5d2a81a4bea81bbef643a5ba19e49668336",
+    "tools/tests/NearestPlayerTest.cpp": "646abb7e417a1086a6223273a19b84342a1725656f546a88263c2d97274e7667",
+    "tools/tests/Test-NearestPlayerNative.ps1": "18369d9507661027ace3e48056cb3972d18a17b9cb89770ee278a00ae2b5eb3a",
+    "tools/tests/Test-NearestPlayer.ps1": "5a3a907ba9cc03559c719c549bef0128400323620d555fa315fe0f4fd1d1ada7",
+    "tools/tests/verify_nearest_player_release.py": "fe457591feded57c6489706e0fb086cd6dbb091ac6f4bc80f0501e382130fe40"
+  },
+  "inventory_sha256": {
+    "callers.json": "97f8c9ef6b7efd55bb174326f9f93ef43d574c473226072110fca2f5e98cf4f6",
+    "active-callers.json": "6e9f5bbf2ac3c5a6c8d6f9425779bd9da566c704dac661402d7e0fea98289667"
+  }
+}

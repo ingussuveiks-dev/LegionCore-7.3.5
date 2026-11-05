@@ -3122,11 +3122,11 @@ GameObject* WorldObject::FindNearestGameObject(uint32 entry, float range) const
     return go;
 }
 
-Player* WorldObject::FindNearestPlayer(float range, bool /*alive*/)
+Player* WorldObject::FindNearestPlayer(float range, bool alive)
 {
     Player* player = nullptr;
-    Trinity::AnyPlayerInObjectRangeCheck check(this, GetVisibilityRange());
-    Trinity::PlayerSearcher<Trinity::AnyPlayerInObjectRangeCheck> searcher(this, player, check);
+    Trinity::NearestPlayerInObjectRangeCheck check(this, range, alive);
+    Trinity::PlayerLastSearcher<Trinity::NearestPlayerInObjectRangeCheck> searcher(this, player, check);
     Trinity::VisitNearbyWorldObject(this, range, searcher);
     return player;
 }

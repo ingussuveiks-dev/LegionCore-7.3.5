@@ -53,5 +53,6 @@
     "bytes": 928657,
     "fix_commit": "1ca7a398a24642ddecc9039b0db1be6f026c290b",
     "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
-  }
+  },
+  "nearest_player_followup": "docs/audits/nearest-player-2026-11-05.json"
 }

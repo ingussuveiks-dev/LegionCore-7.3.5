@@ -968,13 +968,13 @@ bool AnyPlayerInObjectRangeCheck::operator()(Player* u)
     return true;
 }
 
-NearestPlayerInObjectRangeCheck::NearestPlayerInObjectRangeCheck(WorldObject const* obj, float range) : i_obj(obj), i_range(range)
+NearestPlayerInObjectRangeCheck::NearestPlayerInObjectRangeCheck(WorldObject const* obj, float range, bool reqAlive) : i_obj(obj), i_range(range), i_reqAlive(reqAlive)
 {
 }
 
 bool NearestPlayerInObjectRangeCheck::operator()(Player* u)
 {
-    if (u->IsAlive() && i_obj->IsWithinDistInMap(u, i_range))
+    if ((!i_reqAlive || u->IsAlive()) && i_obj->IsWithinDistInMap(u, i_range))
     {
         i_range = i_obj->GetDistance(u);
         return true;

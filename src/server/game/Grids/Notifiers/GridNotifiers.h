@@ -1043,11 +1043,12 @@ namespace Trinity
     class NearestPlayerInObjectRangeCheck
     {
     public:
-        NearestPlayerInObjectRangeCheck(WorldObject const* obj, float range);
+        NearestPlayerInObjectRangeCheck(WorldObject const* obj, float range, bool reqAlive = true);
         bool operator()(Player* u);
     private:
         WorldObject const* i_obj;
         float i_range;
+        bool i_reqAlive;
 
         NearestPlayerInObjectRangeCheck(NearestPlayerInObjectRangeCheck const&) = delete;
     };
