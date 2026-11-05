@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED after4232EF1B/289E6BE6 canonical deployment; owned9768 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/devourer-claim-2026-11-05",
+    "manifest_sha256": "8e49c1269f8442025d1c918dc0f77634f5bde8402928fc594f0177f376333ebd",
+    "files": 435,
+    "bytes": 814220,
+    "fix_commit": "f394bc5970b5aa3a6538b4af7ecd1f967c5faedb",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded; native metadata producer source preserved. Private DBErrors empty; canonical mixed6090 remains unresolved, informative server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/devourer-claim-2026-11-05.json",
+  "review": "4 expected-broken actual native lookup/receipt ASAN controls paired25current claim contexts;16pinned native contexts paired16current whole registered class/native Item/Player/GO/Map/receipt/accepted209816/50301/1948 including real group and pet/guardian loot rejection. Prior controls/final group-expanded pairs both preserved. Owned parent/child/equipped pair and earlier stage/victory/poses explicitly seeded, not delayed native equip/client proof. Retained27invalid/fullbag/storage/cast/15s/retry/no-grant pickup suite and50Zirus ASAN; original Release library paths/staged/canonical actual0x38 claim AI/fullGUID/current receipt/starting guard/pair/latch/once/1948 and full prior registered paths/mandatory Scepter pass. Owned9768 ready/graceful0/exit0/stderr empty/gone; mixed6090 unchanged. Fresh26972 typed4096/108765/63747/1392466 full5788ms decode shows original1948 virtual11150 lifetime already sufficient, no presentation data altered. Native default-argument/expected changed caster/visual-versus-loot state and ASAN const/vector fixture iterations retained with passing regression. No unexplained new runtime error/crash/DBError.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual loot UI/open-kneeling/full bags, native delayed209819->209818 equip/scene1257/animation/client paired blades/1948 audio/rendering, retake/reconnect/re-entry/return and whole1078/all36 chains remain OPEN. Native earlier quest/stage/death leaf/inventory/equip/poses are explicit seeded boundaries, not full traversal.",
+    "Cancellation prevents stale50301; existing owned artifact and native equipment/scene effects are retained. This patch does not delete a legitimately looted item, reset a character/scenario or claim to reconstruct full acquisition checkpoints.",
+    "Shared missing81040 DEBUG edge, unknown105332/101430/103151 LINK payloads/Wardstone LINK4 and existing mixed errors remain unresolved. No fabricated spell/LINK action, new item/quest grant or log suppression."
+  ]
+}

@@ -62,5 +62,15 @@
     "pe-retained.log": "52dd8627b038ca7457298437fee87b3b632737b1d96df382aa448f4fa0e91389",
     "pe-canonical.log": "2d8750ba83150c5d08b9392af7e2d89f197c353af5179a7cf1e75dd9c318b74e",
     "scepter.log": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+  },
+  "fix_commit": "f394bc5970b5aa3a6538b4af7ecd1f967c5faedb",
+  "archive": {
+    "audit": "docs/audits/devourer-claim-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/devourer-claim-2026-11-05",
+    "manifest_sha256": "8e49c1269f8442025d1c918dc0f77634f5bde8402928fc594f0177f376333ebd",
+    "files": 435,
+    "bytes": 814220,
+    "fix_commit": "f394bc5970b5aa3a6538b4af7ecd1f967c5faedb",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded; native metadata producer source preserved. Private DBErrors empty; canonical mixed6090 remains unresolved, informative server history retained. No active log cleared."
   }
 }
