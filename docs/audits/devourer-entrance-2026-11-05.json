@@ -55,5 +55,15 @@
     "catalog-final.tsv": "12eb093b7e022c2be55d30e89d98fd134ee22d38243a4bd0dd613e05c0da2af2",
     "scene.tsv": "141ff8696ce1b6b7435927ad1f4cb98e941365936d8e4f82b73e1e30fb55706a",
     "phase-real.tsv": "b56b815a7fb1270de8b4379f0aaf611e47b7deb8261cb6a4bb2ce8fc65bbd5bc"
+  },
+  "fix_commit": "c6b0f63d45fa714d51ee24ac3c0c935686df730c",
+  "archive": {
+    "audit": "docs/audits/devourer-entrance-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/devourer-entrance-2026-11-05",
+    "manifest_sha256": "0edf7e6f7bc9545d5188b4e5686a04030f85236bcafb2b57c9cf7827ca977ca8",
+    "files": 614,
+    "bytes": 1224869,
+    "fix_commit": "c6b0f63d45fa714d51ee24ac3c0c935686df730c",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
   }
 }
