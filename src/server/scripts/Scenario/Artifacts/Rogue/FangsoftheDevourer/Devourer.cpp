@@ -711,13 +711,64 @@ public:
             }
         }
 
+        uint32 combatVoiceDelay = 0, combatVoiceGeneration = 0;
+        bool combatVoicePending = false, combatVoiceBusy = false, combatVoiceWarning = false;
+
+        void ResetCombatVoice()
+        {
+            ++combatVoiceGeneration;
+            combatVoiceDelay = 0;
+            combatVoicePending = combatVoiceWarning = false;
+        }
+
+        void UpdateCombatVoice(uint32 diff)
+        {
+            if (combatVoiceBusy)
+                return;
+            combatVoiceDelay = combatVoiceDelay > diff ? combatVoiceDelay - diff : 0;
+            if (!combatVoicePending || combatVoiceDelay || convers < 1943 || convers >= 1947 ||
+                !me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || !me->isInCombat() ||
+                me->GetEntry() != 105660 || me->GetMapId() != 1607 || me->IsQuestObjectExpired())
+                return;
+            combatVoiceBusy = true;
+            struct Release { bool& flag; ~Release() { flag = false; } } release{combatVoiceBusy};
+            uint32 const generation = combatVoiceGeneration;
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), convers, me, NULL, *me))
+            {
+                delete conversation;
+                if (generation != combatVoiceGeneration)
+                    return;
+                combatVoiceDelay = 1000;
+                if (!combatVoiceWarning)
+                    TC_LOG_WARN("scripts", "Akaari combat: conversation %u unavailable; retain bounded-rate same-line retry independently of combat", convers);
+                combatVoiceWarning = true;
+                return;
+            }
+            if (generation != combatVoiceGeneration)
+                return; // A reset during admission must not consume a new attempt.
+            // Use the admitted native conversation's complete published lifetime,
+            // including its padding. Spell/add timers continue independently.
+            combatVoiceDelay = conversation->GetDuration();
+            combatVoicePending = false;
+            ++convers;
+        }
+
+        void RequestCombatVoice()
+        {
+            combatVoicePending = convers >= 1943 && convers < 1947;
+            UpdateCombatVoice(0);
+        }
+
         void Reset() override
         {
+            ResetCombatVoice();
             events.Reset();
         }
 
         void EnterCombat(Unit* who) override
         {
+            ResetCombatVoice();
             events.RescheduleEvent(EVENT_1, 42000);
             events.RescheduleEvent(EVENT_2, 11000);
             events.RescheduleEvent(EVENT_3, 14000);
@@ -797,6 +848,8 @@ public:
             if (!UpdateVictim())
                 return;
 
+            UpdateCombatVoice(diff);
+
             events.Update(diff);
 
             if (me->HasUnitState(UNIT_STATE_CASTING) || me->HasUnitState(UNIT_STATE_STUNNED))
@@ -816,13 +869,7 @@ public:
                         break;
                     case EVENT_3:
                         DoCast(209233);
-                        convers++;
-                        if (convers < 1947)
-                        {
-                            Conversation* conversation = new Conversation;
-                            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), convers, me, NULL, *me))
-                                delete conversation;
-                        }
+                        RequestCombatVoice();
                         events.RescheduleEvent(EVENT_3, 14000);
                         break;
                 }

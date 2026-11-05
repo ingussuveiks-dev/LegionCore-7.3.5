@@ -31,7 +31,7 @@ factory = code('?GetAI@npc_akaari_shadowgore_last@@')
 callbacks = {n['symbol'](method(x)) for x in ('UpdateAI', 'JustDied', 'Reset', 'EnterCombat')}
 selected = [a for a in refs(factory) if callbacks <= set(struct.unpack_from('<82Q', n['binary'], n['offset'](a)))]
 assert len(selected) == 1
-assert {('mov', 'ecx, 0x98'), ('mov', 'qword ptr [rsi + 0x80], rbp'),
+assert {('mov', 'ecx, 0xa0'), ('mov', 'qword ptr [rsi + 0x80], rbp'),
         ('mov', 'dword ptr [rsi + 0x90], ebp')} <= pairs(factory)
 eligible, recipient, entry, update = [code(method(x)) for x in ('EntryPlayer', 'EntryRecipient', 'UpdateEntry', 'UpdateAI')]
 assert {105660, 1607, 1078, 41924, 53045, 47367} <= values(eligible)

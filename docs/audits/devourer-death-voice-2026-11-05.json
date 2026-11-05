@@ -60,5 +60,6 @@
     "bytes": 660934,
     "fix_commit": "849a3f8e4b23d6197c000169b5e239e25e9835dc",
     "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
-  }
+  },
+  "followup_periodic_combat": "docs/audits/devourer-combat-2026-11-05.json: separately restores periodic1943..1946 acceptance/retry/full clip. Original1942 owner/source and client/full1078/all36 remain OPEN."
 }
