@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED after4CDBCCE4/49DA8E07 deployment; owned33336 gone",
+  "audit": "docs/audits/akaari-opening-2026-11-05.json",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/akaari-opening-2026-11-05",
+    "manifest_sha256": "5d56f8ec730fb33187068d46721bf18cb1e1aebf29986c5c381c1c53155b03c4",
+    "files": 384,
+    "bytes": 670841,
+    "fix_commit": "f4691cf6b8b58e8fc6ca71612be465215b505d6d",
+    "verified": "Every source/archive/source SHA256 and actual local credential scan verified. Configs/binaries/PDB/character data excluded; task scripts and emitted disassembly retained. Counterfactual/fault and verifier/query development iterations paired with final ordinary passing checks. Private DBErrors empty; canonical mixed6090 unresolved unchanged. No active log cleared."
+  },
+  "review": "49 extracted callback ASAN contexts,12 pinned native counterfactuals paired40 ordinary whole-current AI/native contexts,4 explicit missing-data factory failures/exact4 warnings with999+1ms recovery and abandon/reaccept; matching26972 line3952/broadcast108429/sound63708/file1392427 checked. Native original virtual actor52510/105536/display69142/3952/109/0/published9500 retained. Actual Player-only admission, both factions/group/pet+guardian negative, source/state/quest/phase/floor guards, nearest eligible versus closer GM, once/Reset and no progress grants verified.8 actual retained capture contexts and16 capture ASAN controls pass; source certificate normalizes only the reviewed intro while preserving combat/owner/lease/helper/transfer source. Original scripts.lib/final-link paths, stage/canonical registration/acknowledgement/fullGUID/current receipt/generation/control-flow/1s retry PE, previous shared abort/escape/door/claim/death and mandatory canonical Scepter pass. Four-file offline backup/protected hashes and owned33336 ready/shutdown0/exit0/stderr empty/gone verified. Initial private CLI/inlining/leaf/override/register/timer verifier assumptions, optional next-clone query column failure and predecessor Scepter lacking dedicated wrapper retained honestly in main audit; final correct diagnostics pair them. No SQL/character mutation. Canonical6090 mixed diagnostics remain OPEN and unchanged.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual opening line/audio/rendering, native clone combat, real movement/capture/arrival/pet/camera/reconnect and full1078/client acquisition remain OPEN.",
+    "All36 whole artifact chains are not certified by this focused repair or empty active crash directory. Known late vehicle charm and shared81040/101430+103151 mixed diagnostics remain OPEN."
+  ]
+}
