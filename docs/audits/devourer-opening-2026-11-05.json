@@ -52,5 +52,15 @@
     "world.tsv": "2b80fe4f6f571eced8b1bc7db5198a6364f7b374ef5b0d49d9c31d2e9653f5f4",
     "catalog.tsv": "529c4ddf2bf58846618188afa5b2079959551d63fcd4cef1ca4815be687aa0df",
     "next-zirus-1890.tsv": "b47855a1c84c30a4fd000aa0494e4d17cfa82223560e1c598452523324c95667"
+  },
+  "fix_commit": "bc14554ccfb55861b58f2d8f3fd64b18b2fb9bb9",
+  "archive": {
+    "audit": "docs/audits/devourer-opening-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/devourer-opening-2026-11-05",
+    "manifest_sha256": "0bdaadba72883dc0f3d5c4f714fcf5da64b368956078930d42ac6063d95ae5fa",
+    "files": 669,
+    "bytes": 1413421,
+    "fix_commit": "bc14554ccfb55861b58f2d8f3fd64b18b2fb9bb9",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
   }
 }
