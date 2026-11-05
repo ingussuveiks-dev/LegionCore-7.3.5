@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED afterD52C3FDE/2F9392C1 canonical deployment; owned29564 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/event-processor-abort-2026-11-05",
+    "manifest_sha256": "15af77fecffbc917e76cbbc1280681b6b8b1a689eaa038f4652727c8d7db6712",
+    "files": 435,
+    "bytes": 737506,
+    "fix_commit": "eef8a0a197a3f6e6801a61685042e179b6fc31ab",
+    "verified": "Every source/archive/source SHA256 and actual local credential scan verified. Configs/binaries/PDB/character data excluded; private whole capture observer/wrapper preserved; public regression sources committed. Counterfactual/fixture iterations and final repaired native/ASAN/regression evidence retained. Private DBErrors empty; canonical mixed6090 remains unresolved, informative server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/event-processor-abort-2026-11-05.json",
+  "review": "10 pinned/current ASAN EventProcessor lifetime cases, including32 held events, pair actual8 pinned/current native captures. Strict counterfactual exactly8 portal189170 premature-delete errors and no other diagnostics; baseline MAP records main-object pinned event methods. Repaired actual helper clocks preserve native portal/Drain Soul/9s removal/10s accepted transfer/constructed ACK/50261 once, player/pet/guardian native one-hit owner and group/both factions. No SpellEvent logger suppression or BasicEvent ABI/timer/quest changes. Retained12 native Wardstone+typed data,16 capture lease ASAN variants,208 pending/135 join controls and Warlock pass; pre-existing late-charm failure stays OPEN. Selected staged/canonical common dispatch, Spell/Vehicle vtables, default true leaf, unit event-before-spell order and vehicle false-requeue/native cleanup PE plus canonical Scepter pass. Initial incomplete helper clock/discovered error and PE leaf/register assumptions/staged trailing EOF review retained, final passing checks pair them. Original COMMON library/final-link paths, offline4file backup/protected hashes and owned29564 ready/shutdown0/exit0/stderr empty/gone verified. No SQL or character save. Mixed6090 DBErrors unchanged/unresolved; no active log cleared.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Native transfer is credited on accepted request, as before; constructed ACK handling/arrival verified, not actual client transport/network/visual rendering. Earlier quest/stage0/pose/health/attack/update clock controlled, clone AI/real combat/scaling balance/full path not traversed. Native Player/pet/guardian one-hit owner paths and group/shared criteria checked, not all client variants.",
+    "Actual opening1864 conversation admission/playback, portal/Drain Soul/screen/audio, cave movement, complete1078/client abandon/re-entry/reconnect and all36 whole chains remain OPEN. No item/progression grant or client visual shortcut added.",
+    "Existing135 vehicle controls still identify late charm failure as OPEN; this fix preserves normal deletable join behavior and does not claim to repair that separate issue. Mixed6090 DBErrors/shared81040/101430+103151 diagnostics remain unresolved."
+  ]
+}

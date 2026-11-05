@@ -62,5 +62,15 @@
     "scepter.log": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be",
     "build-result.log": "4cd3eef588c229af9751123a2e4009587d031d444b0982689c62750ad03bcb11",
     "startup-evidence/diagnostics-after.json": "33fb860ead885a2291a90566925b8a6088f0cb5e8cfc3ef51ccdca031fa12820"
+  },
+  "fix_commit": "eef8a0a197a3f6e6801a61685042e179b6fc31ab",
+  "archive": {
+    "audit": "docs/audits/event-processor-abort-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/event-processor-abort-2026-11-05",
+    "manifest_sha256": "15af77fecffbc917e76cbbc1280681b6b8b1a689eaa038f4652727c8d7db6712",
+    "files": 435,
+    "bytes": 737506,
+    "fix_commit": "eef8a0a197a3f6e6801a61685042e179b6fc31ab",
+    "verified": "Every source/archive/source SHA256 and actual local credential scan verified. Configs/binaries/PDB/character data excluded; private whole capture observer/wrapper preserved; public regression sources committed. Counterfactual/fixture iterations and final repaired native/ASAN/regression evidence retained. Private DBErrors empty; canonical mixed6090 remains unresolved, informative server history retained. No active log cleared."
   }
 }
