@@ -69,5 +69,15 @@
     "pe-retained.log": "1c82cd6fc04a515c1afcf23b80bfed7ddcdd5a13a742540ea8ebf5ea52b4ff6a",
     "scepter.log": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be",
     "startup-evidence/diagnostics-after.json": "021331e7773a7e58aee10fd87462c485a82791208585abf4e3aa79f5ada8271e"
+  },
+  "fix_commit": "2d4c99d0cb312ede84ff3c44c6fdbdfea4589d21",
+  "archive": {
+    "audit": "docs/audits/devourer-escape-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/devourer-escape-2026-11-05",
+    "manifest_sha256": "aeab4c777b39ce8241587172b161f81d85eb9bb6983289096cf9cb2c85173d1e",
+    "files": 654,
+    "bytes": 1053917,
+    "fix_commit": "2d4c99d0cb312ede84ff3c44c6fdbdfea4589d21",
+    "verified": "Every source/archive/source SHA256 and actual local credential scan verified. Configs/binaries/PDB/character data excluded; private exploratory native producer source/wrapper preserved; typed26972 producers remain in prior verified door archive. Counterfactual/fixture iterations and final repaired native/ASAN/regression evidence retained. Private DBErrors empty; canonical mixed6090 remains unresolved, informative server history retained. No active log cleared."
   }
 }
