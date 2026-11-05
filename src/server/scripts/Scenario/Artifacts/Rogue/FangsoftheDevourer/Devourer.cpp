@@ -11,6 +11,7 @@
 #include "Item.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
+#include "CombatAI.h"
 
 namespace DevourerAcquisition
 {
@@ -48,40 +49,138 @@ class npc_valzuun : public CreatureScript
 public:
     npc_valzuun() : CreatureScript("npc_valzuun") { }
 
+    struct OpeningAI : AnyPetAI
+    {
+        ObjectGuid recipient;
+        std::shared_ptr<bool> opened;
+        OpeningAI(Creature* actor, ObjectGuid owner, std::shared_ptr<bool> acknowledgement) :
+            AnyPetAI(actor), recipient(owner), opened(std::move(acknowledgement)) { }
+        void SpellHitTarget(Unit* target, SpellInfo const* spell) override
+        {
+            if (spell->Id == 209056 && target && target->GetGUID() == recipient)
+                *opened = true;
+        }
+    };
+
+    static bool Active(Player* player)
+    {
+        return player && player->IsInWorld() && !player->IsPreDelete() && player->IsAlive() && player->CanContact() &&
+            !player->isGameMaster() && !player->HasPendingTeleport() && player->getClass() == CLASS_ROGUE &&
+            !player->GetQuestRewardStatus(41924) &&
+            (player->GetQuestStatus(41924) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(41924) == QUEST_STATUS_COMPLETE);
+    }
+
+    static Player* Owner(Creature* actor, ObjectGuid guid, std::shared_ptr<QuestCancellationReceipt const> const& receipt)
+    {
+        if (!actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() || actor->GetEntry() != 105488 ||
+            actor->GetMapId() != 1502 || actor->IsQuestObjectExpired() || !receipt || receipt->load(std::memory_order_acquire))
+            return nullptr;
+        Player* player = ObjectAccessor::GetPlayer(*actor, guid);
+        auto scope = actor->GetQuestObjectScope().lock();
+        return Active(player) && player->GetGUID() == guid && player->GetMap() == actor->GetMap() &&
+            player->InSamePhase(actor) && player->InSamePhaseId(actor) && scope && scope->Owner == guid &&
+            actor->CanTargetQuestObject(player) && player->CanTargetQuestObject(actor) &&
+            player->GetQuestCancellationReceipt(41924) == receipt ? player : nullptr;
+    }
+
+    static void Start(Player* player, Creature* me)
+    {
+        if (!Active(player) || player->GetQuestStatus(41924) != QUEST_STATUS_INCOMPLETE ||
+            !me || !me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || me->GetEntry() != 105464 ||
+            me->GetMapId() != 1502 || player->GetMap() != me->GetMap() || !player->InSamePhase(me) ||
+            !player->InSamePhaseId(me) || !player->IsWithinDistInMap(me, INTERACTION_DISTANCE) || !player->IsWithinLOSInMap(me))
+            return;
+        auto receipt = player->GetQuestCancellationReceipt(41924);
+        ObjectGuid const guid = player->GetGUID();
+        // Repeated gossip/acceptance must reuse this quest attempt's live work.
+        auto owned = [guid, receipt](WorldObject* object)
+        {
+            auto scope = object->GetQuestObjectScope().lock();
+            return object->IsInWorld() && !object->IsPreDelete() && !object->IsQuestObjectExpired() && scope &&
+                scope->Owner == guid && scope->CancellationReceipt() == receipt;
+        };
+        std::list<Creature*> actors;
+        GetCreatureListWithEntryInGrid(actors, me, 105488, 100.0f);
+        for (Creature* actor : actors)
+            if (actor->IsAlive() && owned(actor))
+                return;
+        std::list<GameObject*> portals;
+        GetGameObjectListWithEntryInGrid(portals, me, 248901, 100.0f);
+        for (GameObject* portal : portals)
+            if (portal->isSpawned() && owned(portal))
+                return;
+        player->SetScenarioId(1078); // Select the native scenario; never advance it here.
+        // The native viewer argument is installed before AddToMap. Bind the
+        // attempt before the first delayed action; descendants inherit it.
+        Creature* actor = me->SummonCreature(105488, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(),
+            me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 30000, guid);
+        if (!actor)
+        {
+            TC_LOG_WARN("scripts", "Devourer portal: Valzuun105488 summon failed; retain gossip retry");
+            return;
+        }
+        player->BindQuestObject(41924, actor);
+        auto opened = std::make_shared<bool>(false);
+        if (!actor->AIM_Initialize(new OpeningAI(actor, guid, opened)))
+        {
+            TC_LOG_WARN("scripts", "Devourer portal: opening observer initialization failed; retain gossip retry");
+            actor->DespawnOrUnsummon();
+            return;
+        }
+        if (!Owner(actor, guid, receipt))
+        {
+            actor->DespawnOrUnsummon();
+            return;
+        }
+        actor->AI()->Talk(3, guid); // Native108249: acceptance.
+        actor->AddDelayedEvent(1000, [actor, guid, receipt]()
+        {
+            if (!Owner(actor, guid, receipt)) { actor->DespawnOrUnsummon(); return; }
+            actor->SetWalk(true);
+            actor->GetMotionMaster()->MovePoint(0, -848.85f, 4405.71f, 716.94f);
+        });
+        auto accepted = std::make_shared<bool>(false);
+        actor->AddDelayedEvent(4000, [actor, guid, receipt, accepted]()
+        {
+            Player* owner = Owner(actor, guid, receipt);
+            if (!owner) { actor->DespawnOrUnsummon(); return; }
+            actor->AI()->Talk(0, guid); // Native108250: incantation.
+            // Native209056 owns105435 credit and209055 camera presentation.
+            // TARGET_UNIT_SELECTED92 must resolve the actual quest player.
+            *accepted = actor->CastSpell(owner, 209056) == SPELL_CAST_OK;
+        });
+        actor->AddDelayedEvent(11500, [actor, guid, receipt, accepted, opened]()
+        {
+            Player* owner = Owner(actor, guid, receipt);
+            if (!owner) { actor->DespawnOrUnsummon(); return; }
+            if (!*accepted || !*opened || !owner->GetQuestObjectiveData(41924, 105435))
+            {
+                TC_LOG_WARN("scripts", "Devourer portal: native209056 opening not acknowledged; retain gossip retry");
+                actor->DespawnOrUnsummon();
+                return;
+            }
+            GameObject* portal = actor->SummonGameObject(248901, -846.23f, 4409.01f, 716.97f, 1.8675f,
+                0.0f, 0.0f, 0.0f, 0.0f, 300);
+            if (!portal)
+                TC_LOG_WARN("scripts", "Devourer portal: native248901 creation failed; retain gossip retry");
+            else
+                actor->AI()->Talk(2, guid); // Native108257: the way is open.
+            actor->GetMotionMaster()->MovePoint(0, -851.50f, 4403.76f, 716.94f);
+            actor->DespawnOrUnsummon(6000); // Let the closing voice finish.
+        });
+    }
+
     bool OnQuestAccept(Player* player, Creature* me, Quest const* quest) override
     {
-        if (quest->GetQuestId() == 41924)
-        {
-            player->SetScenarioId(1078);
-            if (Creature* targ = me->SummonCreature(105488, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation()))
-            {
-                ObjectGuid guid = player->GetGUID();
-                targ->AddPlayerInPersonnalVisibilityList(guid);
-                targ->AddDelayedEvent(1000, [targ]() -> void
-                {
-                    targ->AI()->Talk(0);
-                    targ->SetWalk(true);
-                    targ->GetMotionMaster()->MovePoint(0, -848.85f, 4405.71f, 716.94f);
-                });
-
-                targ->AddDelayedEvent(4000, [targ]() -> void
-                {
-                    targ->AI()->Talk(1);
-                    targ->CastSpell(targ, 209056);
-                });
-
-                targ->AddDelayedEvent(11500, [targ, guid]() -> void
-                {
-                    targ->AI()->Talk(2);
-                    targ->GetMotionMaster()->MovePoint(0, -851.50f, 4403.76f, 716.94f);
-                    if (GameObject* go = targ->SummonGameObject(248901, -846.23f, 4409.01f, 716.97f, 1.8675f, 0.0f, 0.0f, 0.0f, 0.0f, 300))
-                        go->AddPlayerInPersonnalVisibilityList(guid);
-                    targ->DespawnOrUnsummon(3000);
-                });
-            }
-        }
-
+        if (quest && quest->GetQuestId() == 41924)
+            Start(player, me);
         return true;
+    }
+
+    bool OnGossipHello(Player* player, Creature* me) override
+    {
+        Start(player, me); // Missing actor/portal recovery for this active quest.
+        return false; // Preserve the ordinary questgiver menu.
     }
 
 };
@@ -661,8 +760,40 @@ public:
             return true;
         }
 
+        bool PortalPlayer(Player* player) const
+        {
+            if (!go->IsInWorld() || go->IsPreDelete() || !go->isSpawned() || go->IsQuestObjectExpired() ||
+                go->GetEntry() != 248901 || go->GetMapId() != 1502 || !player || !player->IsInWorld() ||
+                player->IsPreDelete() || !player->IsAlive() || !player->CanContact() || player->isGameMaster() ||
+                player->getClass() != CLASS_ROGUE || player->HasPendingTeleport() || player->GetQuestRewardStatus(41924) ||
+                (player->GetQuestStatus(41924) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41924) != QUEST_STATUS_COMPLETE) ||
+                player->GetMap() != go->GetMap() || !player->InSamePhase(go) || !player->InSamePhaseId(go) ||
+                !player->canSeeOrDetect(go) ||
+                !player->IsWithinDistInMap(go, go->GetInteractionDistance()) || !player->CanTargetQuestObject(go) ||
+                !go->CanTargetQuestObject(player))
+                return false;
+            if (!player->IsWithinLOSInMap(go))
+            {
+                // The gateway's own model can occlude its center. Admit its
+                // visible near surface only; retain other models/static walls.
+                DynamicTreeCallback hit;
+                float x, y, z;
+                float const eye = player->GetPositionZ() + 2.0f;
+                if (!go->GetMap()->getObjectHitPos(player->GetPhases(), true, player->GetPositionX(), player->GetPositionY(), eye,
+                    go->GetPositionX(), go->GetPositionY(), go->GetPositionZ() + 2.0f, x, y, z, -0.1f, &hit) || hit.go != go ||
+                    !go->GetMap()->isInLineOfSight(player->GetPositionX(), player->GetPositionY(), eye, x, y, z,
+                        player->GetPhases(), VMAP::ModelIgnoreFlags::Nothing))
+                    return false;
+            }
+            auto scope = go->GetQuestObjectScope().lock();
+            return scope && scope->Owner == player->GetGUID() &&
+                scope->CancellationReceipt() == player->GetQuestCancellationReceipt(41924);
+        }
+
         bool GossipUse(Player* player) override
         {
+            if (go->GetEntry() == 248901)
+                return !PortalPlayer(player); // Keep native GO credit/209066.
             if (go->GetEntry() == 249390)
                 return OpenDoor(player, true);
             return !DevourerEscape::CanUse(player, go); // Keep the admitted native spell path.

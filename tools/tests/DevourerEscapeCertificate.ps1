@@ -1,5 +1,7 @@
 # Only independently tested native cage/cache admission and cast guards differ.
 function Restore-DevourerEscapeBoundary([string]$source){
+ . "$PSScriptRoot/DevourerPortalCertificate.ps1"
+ $source=Restore-DevourerPortalBoundary $source
  . "$PSScriptRoot/AkaariOpeningCertificate.ps1"
  $source=Restore-AkaariOpeningBoundary $source
  $old=(& git -C $repo show '47b792254:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"

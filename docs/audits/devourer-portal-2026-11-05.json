@@ -1,0 +1,106 @@
+{
+  "date": "2026-11-05",
+  "status": "DEPLOYED DE6034A2/CB0A3ADB +World03: Valzuun41924 now uses the actual player for native209056 personal105435 credit/camera, acknowledges this cast hit, owns finite actor/portal through the current quest attempt, deduplicates and recovers via ordinary gossip. Native248901 use retains original209066 credit/transfer with owner/current-receipt admission and visible-surface collision.44 clean native,8 pinned controls,6 explicit cast faults, typed26972/SQL replay, retained46 escape/24 door/22 clones/49+16 ASAN and stage/canonical PE/Scepter pass. Owned15556 ready/shutdown0/exit0/gone. Full client/all36 and known/new unrelated diagnostics OPEN.",
+  "scope": "Only Valzuun105464 accepted41924/temporary Valzuun105488 opening and the248901 native-use gate, matching three text rows/binding. Existing cage/cache/door/combat/capture/loot/progression implementations certified unchanged.105488 is Valzuun, correcting the earlier handoff Carllana label.",
+  "cause": "Original NPC self-cast209056 uses native TARGET_UNIT_SELECTED92: effect90 requires a Player, so105435 credit and player camera were lost. Four-second callback asked missing text1, ready text2 absent, and manual248901 appeared even after abandonment. Raw summon had no quest scope or finite initial timeout; repeated accept produced duplicate actors/portals. Native CMSG_GAME_OBJ_USE only resolves a GUID then calls Use; private visibility alone did not reject an unrelated eligible Rogue packet. Native PlayerCondition39597 is absent in matching26972/hotfix and generic goober Use does not enforce Data22.",
+  "implementation": "Qualify actual live Rogue/current41924 and source105464/map1502/range/LOS/phase. Native viewer GUID before AddToMap; bind finite30s105488 to native quest scope before callbacks. Keep original walk/cast/portal/home poses and1/4/11.5s clocks. Derived AnyPetAI preserves the selected native summon AI, observes209056 hit on the original fullGUID, and pairs current-hit acknowledgement with CastSpell acceptance and actual105435 quest data. Earlier credit cannot stand in for a failed current cast. Revalidate fullGUID/scope/current cancellation receipt every delayed action; abandon removes descendants; reaccept gets a fresh attempt. Deduplicate live same-attempt actors/portals and recover missing/failed work through ordinary gossip. Native300s GO inherits scope before publication. Closing cleanup6s covers native3960ms voice. Scoped248901 gate keeps native KillCreditGO and209066; no manual credit/item/teleport. Require real owner/current scope/receipt, alive/class/map/phase/visibility/3D native interaction range. Portal model occludes its own center: native dynamic first hit must be this actual GO, then native static+dynamic LOS must reach its near surface. Other model/static wall denial remains; no collision/diagnostic checks disabled.",
+  "sources": {
+    "local": "Matching26972 DB2+hotfix209056/209055/209065/209066, BroadcastText/SoundKitEntry; local105464/105488/template/text/41924 objectives/248901 GO and target-position records. Native Spell effects90/140/64/227, quest scopes, summon AddToMap viewer handling, CreatureAI/AnyPetAI, CreatureTextMgr, GameObject.Use and both use/report opcodes traced. Native effect90 is personal, not effect134 eligible-group reward: grouped member receives neither opening nor foreign-owner use credit.",
+    "native": "41924 objectives283167(Type14/Object47334),283171(Type0/storage1/Object105435),283179(Type2/storage2/Object248901).209056 cast5000ms, effect0 personal90/105435/selected92, effect1 force140/209055/selected92, effect2 trigger64/209065.248901 GOOBER10/display33093/size0.8/Data10=209066/Data22=39597/Data23=1; no static spawns.209066 effect90/116918 plus227 to actual target-position1607/1854.86,1426.75,92.75,4.71274. Missing39597 is recorded and retained, not fabricated or cleared.",
+    "history": "Local/origin45360fd90/f73d6f4ae/c48f300b0 history reviewed and origin fetched. Newer C:/wamp64/www/TrinityCore inventory/history has no matching implementation; not copied as version-compatible code.",
+    "behavioral_text": [
+      "https://warcraft.wiki.gg/wiki/Fangs_of_the_Devourer_%28quest%29",
+      "https://www.wowhead.com/quest=41924/fangs-of-the-devourer"
+    ],
+    "review_limit": "External text corroborates thank-you/walk/chant/gateway/ready/home and abandon/reaccept; no YouTube footage watched or claimed. Actual client traversal/playback remains OPEN."
+  },
+  "audio": {
+    "broadcast_sound_file": [
+      [
+        108249,
+        63731,
+        1392450
+      ],
+      [
+        108250,
+        63732,
+        1392451
+      ],
+      [
+        108257,
+        63733,
+        1392452
+      ]
+    ],
+    "payloads": [
+      {
+        "VoiceMs": 2393,
+        "FileDataID": 1392450,
+        "SHA256": "F31C76890817CA150DE12CF9BFBF3A940B5D828C8705C46E7C5ED2EABF1D6C26",
+        "Bytes": 17987
+      },
+      {
+        "VoiceMs": 5017,
+        "FileDataID": 1392451,
+        "SHA256": "C6A640ECC0816462A2D2060588F16A2C9841B24F4CEEF4963E274FE502B7467E",
+        "Bytes": 33655
+      },
+      {
+        "VoiceMs": 3960,
+        "FileDataID": 1392452,
+        "SHA256": "C3A3B8B8FCFD142A4367245AF29F5670589DE9C4CCD54D23EEED2C61F64ED4D4",
+        "Bytes": 28036
+      }
+    ],
+    "verification": "Read-only matching7.3.5.26972 CASC export and full ffmpeg decode; index SHA256 before/after unchanged. No audio bytes committed; no listening/client playback claim. Acceptance2393ms, chant5017ms, closing3960ms; actor retained6s after closing line."
+  },
+  "validation": {
+    "native": "44 whole real production callbacks/native Map/Player/Quest/Spell/TempSummon/GO/use packet contexts, Human+Orc x22, with current world/library inputs. Includes native5s pending cast/credit at10s/no early portal/11.5s appearance/closing actor at16s/finite cleanup20s, owner/group personal credit, duplicate accept/gossip, immediate/pending abandon, cancel/retake/current-receipt replacement, destroyed actor/portal recovery, forged foreign Rogue and wrong class/GM/dead/phase/range/quest/reward/upper-floor, report/Hello without Use, portal self-occlusion and actual intervening249391 model denial followed by removal/retry. Uses actual native session registry/LFG/instance map creation for209066 far request; actual worldport ACK/client traversal not covered. Initial accepted quest/poses/source clocks controlled; no character saves.",
+    "counterfactual": "8 whole pinned45360fd90 contexts: native NPC self-cast no105435, duplicate2 portals, abandoned quest still publishes an unscoped portal, unrelated Rogue native packet grants GO counter and far request. Explicit in-memory pre-migration empty248901 ScriptId pins historical data after deployment; other templates/native effects unchanged. Not ordinary successful quest traversal.",
+    "faults": "6 explicit native controls (both factions x3): interrupt initial209056, interrupt retry after a prior genuinely completed native opening, private OnCheckCast refusal (rawNOT_READY normalized by native prepare). Exactly6 expected opening-not-acknowledged WARNs retained and reviewed, no new crash/DBError/other diagnostic; no portal/extra credit; restored ordinary gossip retry succeeds. Separate from clean44.",
+    "data": "Typed matching26972+readonly hotfix assertions and native voice identities pass. Actual migration replayed twice in TEMP-only tables; sibling ID7, other group1, other actor999999 and custom unrelated ScriptName preserved; missing native39597 retained. Native template/text loaders consume projected TEMP migration before deployment, then actual live migration. Updater readback219F184F9E6248CE15045C1A23F485DAC506AE0F RELEASED.",
+    "retained": "46 native cage/cache/escape,24 native Wardstone door and22 native clone/capture lifecycle cases pass against whole current shared GO/root source;49 intro and16 capture extracted ASAN pass. Native core uses Release libraries, not full-core ASAN. Stage/canonical selected PE chains retain earlier death/pickup/claim/door/escape/shared abort/Akaari opening+clone reset and certify registered Valzuun accept/gossip/observer/fullGUID/cancellation/cast receipt/native GO gate. Mandatory canonical Scepter -VerifyReleaseBinary passes.",
+    "deployment": "Original generated scripts.lib paths rebuilt; separate final link without OutDir. Offline4file backup/hash promotion preserved configuration/certificates/DLLs. SQL stayed outside live updater until matching DE6034A2 executable was promoted. Owned15556 fresh ready/graceful shutdown0/exit0/empty stderr/gone. Canonical startup appended no DBErrors/WARN/ERROR/assert, no changed crashes; protected hashes unchanged.",
+    "development": "Preserved failed fixture iterations: wrong AreaTrigger header/GetScriptId string compile hypotheses corrected; first foreign transfer lacked scenario selector then LFG loader and native session registry. LFG-less counterfactual produced native ACCESS_VIOLATION trace (no dump), repaired by actual startup LFG/AreaTrigger loaders; initial instance allocator0 produced AddInstanceSave warning, repaired with InitInstanceIds. MariaDB readonly TEMP DDL caused1792: prepare only verified TEMP shadows under read/write, fail if SHOW CREATE TABLE is not TEMP, then restore/readback readonly before native execution. Full loader from failed TEMP prep also exposed unrelated214862 linked-trap mismatch; this mixed run remains unresolved outside fixed. Wrong group-credit assumption corrected to actual native effect90 personal behavior. No production core/log suppression added.",
+    "evidence_runs": {
+      "20261105-231205-328": "COUNTERFACTUAL 8 pinned native opening contexts:209056 targetsNPC/no105435 credit, duplicate actors, abandoned quest still publishes unscoped portal, unrelated player can use it. Pair repaired run; not ordinary success",
+      "20261105-231321-289": "COUNTERFACTUAL 8 pinned native opening contexts:209056 targetsNPC/no105435 credit, duplicate actors, abandoned quest still publishes unscoped portal, unrelated player can use it. Pair repaired run; not ordinary success",
+      "20261105-232022-007": "PASS 42 whole callback/native quest/actor/spell/GO scope contexts, both factions/group, actual105435 hit and native248901 use/209066 far request, cancel/retake/duplicate/recovery and invalid recipient/phase/floor guards. Quest admission/poses/clocks controlled; full far ACK/client traversal/audio remain separate",
+      "20261105-232111-955": "CONTROL explicit6 refusal/interruption contexts: no portal from failed current cast or earlier native credit; ordinary gossip retry succeeds. Expected6 warnings reviewed separately",
+      "20261105-232440-642": "PASS 44 whole callback/native quest/actor/spell/GO scope contexts, both factions/group, actual105435 hit and native248901 use/209066 far request, cancel/retake/duplicate/recovery and invalid recipient/phase/floor guards. Quest admission/poses/clocks controlled; full far ACK/client traversal/audio remain separate",
+      "20261105-233039-618": "PASS 44 whole callback/native quest/actor/spell/GO scope contexts, both factions/group, actual105435 hit and native248901 use/209066 far request, cancel/retake/duplicate/recovery and invalid recipient/phase/floor guards. Quest admission/poses/clocks controlled; full far ACK/client traversal/audio remain separate",
+      "20261105-233059-123": "CONTROL explicit6 refusal/interruption contexts: no portal from failed current cast or earlier native credit; ordinary gossip retry succeeds. Expected6 warnings reviewed separately",
+      "20261105-233118-860": "COUNTERFACTUAL 8 pinned native opening contexts:209056 targetsNPC/no105435 credit, duplicate actors, abandoned quest still publishes unscoped portal, unrelated player can use it. Pair repaired run; not ordinary success"
+    }
+  },
+  "canonical_hashes": {
+    "worldserver.exe": "de6034a2e6c9e55bdfe8d25eead0c78070f367e9bce37949f391e34e8ceb0a2b",
+    "bnetserver.exe": "cb0a3adbe15c681851b5fda2fd5f919f2b01847e0a91b63f3d2fec4fe9495ef8"
+  },
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp": "a6fabf24bc27c2f9e9930b7092a2f7bfb369c1bddfc0ec61a97c02aeef80c17c",
+    "sql/updates/world/2026_11_05_03_devourer_portal.sql": "d056d0d8926adb88b99a93c8560ee37a863dcb64bfc5dc3b03cd59026efc7f03",
+    "tools/tests/DevourerEscapeCertificate.ps1": "a51ddade1168303cbdecd86e5172ef128d66ced3c74af607fef53af4384c9117",
+    "tools/tests/DevourerPortalCertificate.ps1": "6a42da38123de7588bb8ee40765e84e10ed6466158aee429419f2a475e31cc06",
+    "tools/tests/DevourerPortalCatalog.cpp": "fe96722d56aca4b7d3949bbf57f36fc2e054af231bc4c1c92f5819b7ca36c1f0",
+    "tools/tests/DevourerPortalNative.cpp": "139a26142fb1d9dfde190c0434de53363f2dcedc39924f17d83ecca5b123ad5a",
+    "tools/tests/Test-DevourerPortalNative.ps1": "f3dd0a279bdcfb80a36ec3b1b0139ad3554fd9eea059b92d9f33cf08058b344b",
+    "tools/tests/Test-DevourerPortalData.ps1": "be6b2fe81bdd41dc2aa4101907eda5078e96ab42b4ab0c3357318337e0360b26",
+    "tools/tests/verify_devourer_portal_release.py": "31b6c024f9627ca398b1f1af17241608312fbd5f787fb2c4f3157cdb1b2a730a"
+  },
+  "diagnostics": {
+    "canonical_active_crashes": 0,
+    "canonical_mixed_log_bytes": 6090,
+    "canonical_mixed_log_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "mixed_log_retained": true,
+    "resolved_fixture_trace": "build-extractors/runtime-test/devourer-portal-native/20261105-230450-061/catalog.log",
+    "unresolved_mixed_run": "build-extractors/runtime-test/devourer-portal-native/20261105-231341-007",
+    "unresolved": "Hatchling Poop214862/214863 linked-trap type mismatch remains OPEN; retain entire mixed run outside fixed. Known late vehicle charm/shared81040/101430+103151 and canonical mixed6090 remain OPEN."
+  },
+  "client_open": [
+    "Real quest acceptance/visibility/phase, full walk/chant/voice and gateway appearance",
+    "Native209055 camera, actual209066 worldport ACK/instance entry/full1078 route, pet/reconnect/group independent portals",
+    "Full combat/scenario/loot/turn-in/return and all36 complete chains are not certified"
+  ],
+  "next": "Investigate newly exposed unrelated Hatchling Poop214862 chest Data7=214863 linked-trap/type3 mismatch: initial loader misses forward reference; failed TEMP shadow caused second whole loader and surfaced it. Keep entire mixed diagnostic run20261105-231341-007 outside fixed until matching26972/local schema/Trinity reference establishes cause and repair; no blind clearing/type change. Continue remaining artifact native entry/whole-chain gaps and client checks. Known late-charm/shared81040/101430+103151/canonical mixed6090 remain OPEN."
+}
