@@ -62,5 +62,6 @@
     "bytes": 1413421,
     "fix_commit": "bc14554ccfb55861b58f2d8f3fd64b18b2fb9bb9",
     "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
-  }
+  },
+  "followup_zirus_dialogue": "docs/audits/zirus-dialogue-2026-11-05.json:1890 uses virtual actors, not dead-creature lookup. Separately repairs full native voices/gaps/lifetime; original owner50298/seven doors unchanged. Client/full1078/all36 remain OPEN."
 }

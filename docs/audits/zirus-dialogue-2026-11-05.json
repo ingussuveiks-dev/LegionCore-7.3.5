@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-05",
+  "status": "DEPLOYED data via canonical updater/owned31956: Zirus1890 second line11974 and published20157 preserve full matching26972 enUS voices/native6000/1000 gaps/5000 padding. Two exact SQL cells only; actor roles/flags/owner50298/seven doors unchanged. TEMP denied-write/4partial/20custom/ASAN/native original-shadow-live-failure/audio checks pass. Actual client/full1078/all36 remain OPEN.",
+  "scope": "Only conversation_actor1890/id1 duration2600->12557 and conversation_data1890/4018 start8600->11974, protected by complete original/partially repaired definition guard. No C++/ScriptName/AI/phase/quest/reward/character/loot/door change. Existing canonical87FE6FD5/68C3300D Release unchanged; no unnecessary server rebuild/promotion.",
+  "cause": "Actual native source prioritizes conversation_actor over creature rows.1890 uses two virtual templates, so no dead-creature lookup repair applies. Original actor budget2600+2600+5000=10200; original final line starts8600 and full voice2183 extends to10783, beyond the object deadline. First full voice5974 plus matching ConversationLine AdditionalDuration6000 also requires next start11974, not8600. Pinned original-data ASAN/native player and NPC clock removal demonstrates the early disappearance; no actual client clipping observation claimed.",
+  "evidence": {
+    "world": "Readonly original1890 virtual slots0 actor52523/105542/display69190 and1 actor52490/105464/display69095, original0/1/0 flags, duration2600 each; original3999 index0/start0/627/0 and4018 index1/start8600/107/1. No conversation_creature1890 rows. Original Zirus105542/spawn361051/map1607/phase7000 at1854.8,1327.93,66.22. Seven original nearby GOs of four entries248983/248984/248910/249028 retained.",
+    "native26972": "Fresh typed hotfix-aware catalog:3999/Broadcast108503/SoundKit63760/File1392479 has5974ms full Vorbis voice, AdditionalDuration6000/Next4018;4018/Broadcast108578/SoundKit63746/File1392465 has2183ms voice, AdditionalDuration1000/Next0. Full decodes, bytes/SHA256 and native CASC index hashes before/after verified readonly. Unchanged intro3989/108474/63756/1392475 also fully decoded4912ms; its2500+5000 budget fits voice+1000gap. No listening, video or rendered-client claim.",
+    "timing": "3999 starts0, full5974+6000 ->4018 starts11974, full2183+1000 ->content15157. Preserve original actor0 duration2600; last actor12557 makes sum15157 and unchanged core padding5000 publishes20157. Both voices, complete native gaps and padding are included. No timer guessed from text length.",
+    "references": "Matching local data/assets/core reviewed first. Existing same-core Warrior/Garona/Kingslayers voice repairs validate the same legacy fields/padding/typed audio workflow. Newer local Trinity accumulates BroadcastText duration plus AdditionalDuration but its newer API/schema were not copied. Origin fetched/history checked; no external code/video/audio listening claimed."
+  },
+  "checks": {
+    "audio": "Three complete matching26972 Vorbis exports/decode/hash checks, fresh typed line/BroadcastText/SoundKit/FileData mapping; actual affected2line starts/15157content/20157published derived from voice+native gaps. Index hashes unchanged, audio bytes ignored/not committed.",
+    "sql": "Restricted temporary SQL reader grants only SELECT/CREATE TEMPORARY TABLES; controlled persistent DELETE WHERE0 is denied1142 and temporary account dropped. Original all3conversation tables copied to TEMP shadows; only2permitted cells may differ, every other column/row count preserved. Twice idempotent,4mixed original/repaired retries,20custom or missing/extra/alternate actor-kind definitions unchanged. Guard accepts original/ready cells only. Live readback matches exact fixed payload.",
+    "asan": "Actual original GenerateDynamicFieldData, native budget fragment, Update and CanNeverSee2 extracted and executed under assertion-enabled ASAN from TEMP-selected data. Both Player and NPC caster clocks: original10200 removal while original final voice is unfinished and shortened native gap; repaired original virtual actor/line/opaque payloads, all voice/gap boundaries,5000padding/exact expiry, absent real creatures unnecessary, missing data refusal and scope cancellation. Engine/map/clock services modeled, not full-core ASAN/client.",
+    "native": "10 original-data counterfactual contexts,10repaired in-memory shadows,10installed-data and10installed missing-presentation controls: Human/Orc each direct scaled one-hit/actual Player-owned Pet/Guardian/self-kill plus explicitly seeded final CORPSE/null callback endpoint. Whole unchanged original Zirus AI/native Unit.Kill/accessors/Scenario/Conversation and all7real GO objects at actual readonly DB poses. Eligible native50298 once advances3->4; null/unowned no fabricated Player progress; seven native active/phase4 door endpoints preserved even when conversation_data is temporarily absent. Native personal/group audience, both original virtual actor slots/full opaque fields, exact2line starts/end field and real Player/NPC expiry clocks checked. Repeat native Kill after finalized death cannot replay1890 or credit; no artifact/quest grant. Earlier stage/quest/poses/playback keys seeded; actual null endpoint is not a native null-Kill claim.",
+    "deployment": "Canonical owned31956 restart auto-applied2026_11_05_01_zirus_death_voice.sql as RELEASED, SHA1 23D0D630F145B2417807181181FC05D33C84D85A matches local file. Native live loader/default tests use actual updated World data after restart, TEMP/live/audio/ASAN rerun pass. Existing actual registered Zirus/Akaari death130/owner bridge/original door payload/Unit.Kill dispatcher PE and mandatory wrapped Scepter pass. Release executables unchanged, configs/certs/DLLs protected.",
+    "runtime": "Owned worldserver31956 fresh ready/graceful shutdown0/exit0/stderr empty/gone. No user server stopped or task server remains. No new C++ binding/updater dependency."
+  },
+  "iterations": [
+    "Private SQL-test generator initially searched old two-entry marker after narrowing it to1890; generation stopped before writing the test, corrected marker. No production run affected.",
+    "First native fixture called unsupported DynamicFieldStructuredView.empty; used its actual size API. Next zero-creature-view assertion was incorrect: GetActors/GetCreatures are two typed views over the same dynamic field. Kept actual selected virtual actor/opaque-field checks and World actor precedence; native original/shadow/live passes. No production API workaround.",
+    "Added repeat-kill assertion exposed a fixture issue in the explicit null endpoint: Unit.JUST_DIED is transient and isDead(false) recognizes finalized CORPSE/DEAD. Seeding finalized CORPSE matches native Creature death completion, then the explicit null callback and repeated native Kill preserve once-only behavior. Original failure retained with corrected installed10/failure10 pass; no production Kill guard changed.",
+    "New ASAN host variable shadow warning corrected by renaming the local line-audio value. Existing extracted native Update unused-parameter/member-shadow warnings retained without disabling warnings."
+  ],
+  "diagnostics": "Before/after own+canonical crash inventories/log lengths/timestamps, exit/stdout/stderr/new server warnings/errors/assertions and appended DBErrors reviewed. Original data runs explicitly counterfactual; optional missing-presentation controls separately labeled. Final ordinary/native/updater startup clean; controlled fixture/compiler failures paired with repaired pass. Canonical Crashes empty; mixed6090 DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved, never cleared. Resolved issue archive follows focused commit.",
+  "canonical_hashes": {
+    "worldserver.exe": "87fe6fd53b02ec4f551efc1d4ec88373478d7d25084896c20b245dd787ef2593",
+    "bnetserver.exe": "68c3300dda5effbbe9004f8100530c373923546be98fbdeb2be38894ccdb74c8"
+  },
+  "limits": [
+    "Actual client dialogue bubbles/audio/virtual actor animation, death-to-Ascension1254 cross-sequence scheduling/camera, physical door traversal/loot/group/reconnect/full1078/all36 remain OPEN. Metadata/full decoding/native delivery clocks do not prove playback.",
+    "Only matching26972 enUS assets measured; other locale timing remains separate. Native Player conversation still uses its original caster clock/late-group-viewer policy; no shared lifetime or admission behavior changed.",
+    "Zirus1884 one-shot admission/factory acknowledgement and later source/AI/grid/instance recovery, unowned companion credit policy, unknown105332/shared101430/103151 LINK2/WardstoneLINK4/pickup81040 DEBUG edge and existing mixed errors remain independent OPEN work."
+  ],
+  "next": "Independently reproduce original Zirus1884 MoveInLineOfSight one-shot admission/success acknowledgement: original actor remains visible in earlier7000 stages, raw Player within25 horizontal yards can consume introDone even if factory fails.1884 has a preferred virtual actor and its4912 voice+1000gap fits unchanged7500 budget; do not invent a dead-actor or duration repair. Preserve client/full1078/all36 and unknown LINK findings.",
+  "source_sha256": {
+    "sql/updates/world/2026_11_05_01_zirus_death_voice.sql": "46aa9da2f9880283c284ffbb6863319039342a0018a1d66582b29eb76299f0a8",
+    "tools/research/ZirusDialogueCatalog.cpp": "f04d71787339c598c97effa2739c50d3b758e6b6aaee2dbe600f2d547afa85b0",
+    "tools/tests/ZirusDialogueAudio.json": "cec760118348e12df2b7afdbb7a617f48f7436c500645d0397cc7b8038b659f5",
+    "tools/tests/ZirusDialogueTest.cpp": "1df66ee90b8e98694df855909888429ab7ae5d07428ae1070a2d0a523227d96c",
+    "tools/tests/ZirusDialogueNative.cpp": "6ea97d5947e68107a7a56c51b6118c31cb146932ae4190c26c91f67bda31588b",
+    "tools/tests/Test-ZirusDialogue.ps1": "427df635a6472d15776d0f55ffcd9eb96d7118f7406d1372a9e50add9db1db69",
+    "tools/tests/Test-ZirusDialogueAudio.ps1": "c6a26dbef5f6f15037dd3dea88062062068b4b1e384ba5478eb67c2476bb5469",
+    "tools/tests/Test-ZirusDialogueNative.ps1": "e7b0976ba152fa849723711dd70237cca06ea033cd6d3786960084e3ad24d124"
+  },
+  "evidence_sha256": {
+    "world.tsv": "33be4beaed59f1fe52d2d8a19825051bdba945bdd38958401994bec96ee75d22",
+    "catalog.tsv": "fd5f0f1defd4f138707e3a6fe79ef88570b102baa43984cab391fe794d0420d0",
+    "actors.tsv": "ea568405a86923d8eed4b684a31021f9fc86d2e94b496632374ee4239d197855",
+    "live-after-updater.tsv": "a49651f0eede08f7dc2f5c7527fb2b310301b603b640924ad7c0c876168fee5f",
+    "audio/payloads.json": "08cab61362f82f6c1aee374671dc6c5cb6d4a3fc6784f7d918fa481695ec7279",
+    "audio/indexes-before.json": "0d4f8f612596ef00146a52fb85283bf8ec350622b6190ab3d509e03b653495bf",
+    "audio/indexes-after.json": "0d4f8f612596ef00146a52fb85283bf8ec350622b6190ab3d509e03b653495bf"
+  }
+}

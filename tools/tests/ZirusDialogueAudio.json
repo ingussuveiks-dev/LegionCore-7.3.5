@@ -1,0 +1,86 @@
+{
+  "Build": 26972,
+  "Payloads": [
+    {
+      "SHA256": "729547B1D9255B7FB444DB528EAB50BBD8A116DEB3156BC83B9C7700ED40896D",
+      "VoiceMs": 2183,
+      "Bytes": 17442,
+      "FileDataID": 1392465
+    },
+    {
+      "SHA256": "44888DA9A8AC3115CE6D8F02537CF6E818B577E735EF15264631A026D07D528E",
+      "VoiceMs": 4912,
+      "Bytes": 33558,
+      "FileDataID": 1392475
+    },
+    {
+      "SHA256": "2C62FF47C01489C04D6AB77A08035C4954443C56194EA9CA7FE35D49EFEF18DE",
+      "VoiceMs": 5974,
+      "Bytes": 39840,
+      "FileDataID": 1392479
+    }
+  ],
+  "OriginalActors": [
+    [
+      1890,
+      0,
+      52523,
+      105542,
+      69190,
+      0,
+      1,
+      0,
+      2600
+    ],
+    [
+      1890,
+      1,
+      52490,
+      105464,
+      69095,
+      0,
+      1,
+      0,
+      2600
+    ]
+  ],
+  "OriginalCreatures": [],
+  "Conversations": [
+    {
+      "Conversation": 1890,
+      "RequiredActorSumMs": 15157,
+      "LifetimeMs": 20157,
+      "LastActorDurationMs": 12557,
+      "Lines": [
+        {
+          "Line": 3999,
+          "Index": 0,
+          "OriginalStartMs": 0,
+          "StartMs": 0,
+          "Flags": 627,
+          "Packed": 0,
+          "Broadcast": 108503,
+          "SoundKit": 63760,
+          "FileDataID": 1392479,
+          "VoiceMs": 5974,
+          "AdditionalMs": 6000,
+          "Next": 4018
+        },
+        {
+          "Line": 4018,
+          "Index": 1,
+          "OriginalStartMs": 8600,
+          "StartMs": 11974,
+          "Flags": 107,
+          "Packed": 1,
+          "Broadcast": 108578,
+          "SoundKit": 63746,
+          "FileDataID": 1392465,
+          "VoiceMs": 2183,
+          "AdditionalMs": 1000,
+          "Next": 0
+        }
+      ]
+    }
+  ]
+}
