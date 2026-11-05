@@ -27,9 +27,11 @@ $config=[regex]::Replace($config,'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$out.Repla
 $instanceSource=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/instance_kingslayers.cpp" -Raw
 [IO.File]::WriteAllText("$out/KingslayersInstance.inc",(Block $instanceSource 'class instance_kingslayers : public InstanceMapScript')+';')
 $devourer=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp" -Raw
+ . "$PSScriptRoot/ZirusIntroCertificate.ps1"
+ $certified=Restore-ZirusIntroBoundary $devourer
 $body=Block $devourer 'class npc_devourer_zirus : public CreatureScript'
 $prior=(& git -C $repo show '206d6a094:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"
-if($LASTEXITCODE -or ($body-replace '\s','') -cne ((Block $prior 'class npc_devourer_zirus : public CreatureScript')-replace '\s','')){throw 'Production Zirus AI changed outside data-only repair'}
+if($LASTEXITCODE -or ((Block $certified 'class npc_devourer_zirus : public CreatureScript')-replace '\s','') -cne ((Block $prior 'class npc_devourer_zirus : public CreatureScript')-replace '\s','')){throw 'Production Zirus AI changed outside separately certified1884 repair'}
 $body=$body.Replace('class npc_devourer_zirus :','class npc_zirus_probe :').Replace('npc_devourer_zirus() :','npc_zirus_probe() :')
 [IO.File]::WriteAllText("$out/Zirus.inc",$body+';')
 $instance=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/instance_devourer.cpp" -Raw

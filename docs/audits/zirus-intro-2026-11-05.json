@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-05",
+  "status": "DEPLOYED61FC76D6/6427AC0A: Zirus1884 requires an eligible actual Rogue/41924/1078-step3; native successful publication plus fresh fullGUID/current quest receipt before one-shot. Qualified stationary1s retry, original3989/virtual actor/7500 and8/11s combat/owner50298/seven doors retained.12pinned counterfactual/control,36native/4explicit recovery/50ASAN plus retained checks; owned31200 ready/shutdown0/gone. Client/full1078/all36 remain OPEN.",
+  "scope": "Only npc_devourer_zirus1884 admission/acknowledgement/retry. No SQL, actor subtype, virtual actor/audio/phase/quest/progression/item/loot/death-door changes. Accepted per-source one-shot still survives Reset; no pet/guardian may impersonate a Player for introduction.",
+  "cause": "Original MoveInLineOfSight accepts every raw Player within25 horizontal yards and consumes introDone even when native1884 factory refuses. GM/wrong class/no quest/earlier scenario stage consume it; no stationary retry exists. Real spawn361051 remains in phase7000 in earlier stages. Matching1884 has a preferred virtual actor, and published7500 already fits full4912ms enUS voice plus native1000 gap; no live-actor/death-speaker or duration repair applies.",
+  "evidence": {
+    "local": "Readonly actor1884/id0/52523/105542/display69190/flags0,1,0/duration2500, line3989/index0/start0; actor table takes precedence over alternate creature row7947845. Actual105542/spawn361051/map1607/phase7000/mask1 at1854.8,1327.93,66.22. Matching1078 stage3 uses root47364/leaf47365/event50298, next stage4 Ascension; phase7000 spans earlier stages as well.",
+    "references": "Matching local26972/runtime World/core and previous full-audio Zirus audit reviewed first; native CreatureAI MoveInLineOfSight_Safe only reentrancy-locks the callback. Newer local Trinity has no matching donor; origin fetched and pinned Git history used. No copied modern API, external video, listening or client playback claim.",
+    "bindings": "Actual World ScriptName binding only105542. Next readonly1948 inspection finds virtual Valzuun52490/105464/display69095/duration6150 and line4096/start0, no real creature row. No1948 defect or repair inferred yet."
+  },
+  "repair": "Admission checks live exact source/map/instance, actual alive contactable non-GM Rogue, active unrewarded41924 including COMPLETE, native same map/both phases/3d+original2d25/LOS/reciprocal unexpired quest scopes and1078 step3. Capture original fullGUID/generation/native cancellation receipt; after successful original Player-cast1884 refresh recipient and recheck fullGUID/current receipt/eligibility. Stale accepted conversation removed without latch. Actor-owned1s poll selects nearest qualified Player independently of combat/victim; failed factory retains warning-once and retry. Reentry guarded; Reset invalidates a pending attempt without replaying an accepted intro.",
+  "checks": {
+    "counterfactual": "12 pinned2cd89325a whole-class native contexts: Human/Orc x6,10 broken GM/class/no quest/stage2/refused1884 and2 eligible controls. After consumption later legitimate stationary Player/LOS cannot recover. Explicit expected-broken counterfactual, not ordinary success.",
+    "native": "36 whole current Zirus AI/native Player/Map/Scenario/Conversation contexts, Human/Orc x18. GM/class/quest/stage, closest GM versus farther eligible Rogue, dead Player, phase, upper floor, reward history, later stage, active COMPLETE,26yd, dead/wrong source/no instance, Player-owned pet/NPC/null LOS rejection, actual group fixture, Reset/no replay and stationary recovery. Original virtual52523/105542/display69190/full flags/3989/start0/published7500 checked. Earlier quest/stage/poses/direct LOS/clock endpoints controlled.",
+    "faults": "4 separate explicit faults, Human/Orc x2: in-memory native1884 line removed -> factory refusal, exactly4 expected warnings, no other diagnostics; restore original data and999+1ms stationary retry. One variant abandons/reaccepts before new legitimate poll. Persistent World data untouched.",
+    "asan": "50 assertion-enabled ASAN contexts execute extracted actual IntroPlayer/TryIntro/UpdateIntro/Reset/LOS/EnterCombat/UpdateAI, actual native EventMap and QuestCancellationReceipt/QuestObjectScope.30 invalid admission cases, null/pet/NPC/GM, active COMPLETE,1s repeat refusal warning/rate/recovery,12 factory-callback reset/cancel/reaccept/lookup/fullGUID/map/current-receipt/source/stage/transfer/LOS/scope/death changes, nested reentry;4 x100000 ticks differential against pinned original combat, including no-victim/casting/stunned/factory refusal. Every194519/three210157 request and melee count remains identical at each tick. Map/Conversation/geometry services modeled; not full-core ASAN or client.",
+    "retained": "10 whole current native Zirus death contexts: player/scaled one-hit/Pet/Guardian/unowned self and explicit finalized CORPSE/null endpoint across Human/Orc, native50298/seven real door objects/repaired1890 payload/lifetime unchanged.22 ASAN whole final-Akaari opening/native EventMap/current receipts pass through exact source-boundary certification; shared pickup/death/entry and earlier canonical proofs retained.",
+    "release": "Original generated Release scripts.lib build then isolated world/bnet link with actual original final-link library paths; no global OutDir override. Selected PE proves AddSC registration/GetAI/actual0xd8 AI callback table, emitted source/Player/quest/scenario/scope/phase/LOS25 predicate,1884 Player factory accepted before only latch, full128-bit recipient/current receipt/cancellation/generation rejection/Remove,1s nearest-qualified poll before victim/unchanged8/11s ability code, accepted no replay on Reset and no intro progression grant. Prior final-Akaari/nearest/entry/death/pickup paths pass. Mandatory canonical Test-ScepterLogin -VerifyReleaseBinary passes.",
+    "deployment": "Offline predecessor87FE6FD5/68C3300D four EXE/MAP files backed up with hashes, new61FC76D6/6427AC0A copied to canonical build-extractors/bin/Release, hashes/protected configs/certs/DLLs verified. No live SQL updater dependency. Owned worldserver31200 fresh ready/graceful shutdown0/exit0/stderr empty/gone; no user process stopped. Canonical same selected PE passes."
+  },
+  "iterations": [
+    "First readonly metadata query used nonexistent UnitFlags column; corrected snakecase unit_flags; original SQL stderr retained, no database mutation.",
+    "First baseline native fixture used Windows far macro as variable; renamed distantPose; pinned12 then pass.",
+    "First repaired native run included2 deliberate missing-data warnings in ordinary matrix. These were explained injected refusals, not a clean ordinary success. Split refusal into dedicated4-warning fault mode; final ordinary36 with actual group is clean.",
+    "First ASAN host attempted equality between incomplete Player* and Unit* in an unused copied GetTypeId; removed that unused method. Cleaned unrelated scene/progression host stubs, final50 pass. Existing actual native EventMap narrowing/unused callback argument compiler warnings remain visible.",
+    "First private PE dump selected wrong runpy dictionary key after all retained checks passed; corrected key. New positive proof initially indexed the conditional2 rather than3 instructions before Remove, overlooking mov rcx,r15 argument setup; exact disassembly preserved, corrected strict branch+argument check, stage/canonical proof pass. No production behavior weakened."
+  ],
+  "diagnostics": "Mandatory own/canonical before+after crash inventories/log lengths/timestamps, exit/stdout/stderr, appended warnings/errors/assertions and DBErrors inspected for every test/build/startup. No new unexplained crash/error/DBError. Deliberate pinned failures/injected warnings and fixture/proof errors retained and paired with passing repairs. Canonical Crashes empty; mixed6090 DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 remains unchanged/unresolved and is never cleared. Resolved fixed archive follows focused commit.",
+  "canonical_hashes": {
+    "worldserver.exe": "61fc76d6f58a73b74a03cf69290777f88887ab906518a5e90712db937ac67c7d",
+    "bnetserver.exe": "6427ac0a396aba7b283f6322f8752a82991d76b724017a535a1c26da56e9adc9"
+  },
+  "limits": [
+    "Actual client LOS/physical movement, visible virtual actor/bubbles/enUS audio/7500 scheduling, group/phase/reconnect/grid/re-entry and complete1078 chain remain separate checks. Native seeded endpoints and ASAN mocks do not prove a full client traversal.",
+    "Once accepted, introduction remains once per actual source lifetime, including Reset, as before. This patch does not reconstruct full scene checkpoints across source despawn/grid reload/instance recreation or certify all36 acquisition chains.",
+    "Unowned companion progression policy, original1948/return/exit, unknown105332/shared101430/103151 LINK2/WardstoneLINK4/pickup81040 DEBUG edge and existing mixed errors remain independent OPEN investigations."
+  ],
+  "next": "Continue independently evidenced Devourer acquisition presentation/return/re-entry, including native1948 actor/voice/caller acknowledgement against actual local26972 data before proposing a repair. Preserve unresolved source/LINK payload findings and real client/full1078/all36 boundaries; no inferred completion or character resets.",
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp": "fbc60a4b5d30a7fe2442195717a10abaf23030b992ef98e88457999843edd355",
+    "tools/tests/ZirusIntroCertificate.ps1": "4f43072102bb11d6198b8758ac7c225ff649ece17b4f55d76df408a06ea54de1",
+    "tools/tests/DevourerOpeningCertificate.ps1": "9381f70010403dc659aeec203ecd958ee2b26dce2d4bd96cdecb07c9fb3030ac",
+    "tools/tests/Test-ZirusIntro.ps1": "1db1d49eb36493003eaaa02712e668a828a091e53ae932361bca1a015915c565",
+    "tools/tests/ZirusIntroTest.cpp": "0fca16b8696d6eab4576328d20d6ecc5c5d59441f548fd1c3af324e9d1f4e29e",
+    "tools/tests/Test-ZirusIntroNative.ps1": "7e43e9e8051cdfa6964539db20ed62f7fbbc21dba43baf818210c78b558642aa",
+    "tools/tests/ZirusIntroNative.cpp": "341342cc4b3cbca9e1aafe2369372a5d7129cba6ed82467867e49f99f8199e05",
+    "tools/tests/Test-ZirusDialogueNative.ps1": "9c0a989c0ace4ac37bcde31aa1aa3d998d71b3c91832c46a92cc37afbea995a1",
+    "tools/tests/verify_zirus_intro_release.py": "28cf468839a248c884c306099fcde699547defdf7d885924e69e69e1ce2292b4"
+  },
+  "evidence_sha256": {
+    "world.tsv": "84d035a5ca9c9d1d060d4ccb3341a2cec3a5fc2818a3aca5fa69296040db611d",
+    "source-phase.tsv": "54f07fdaa24951dc3aaf6a565cae63fcc908410f4dfa4563ed7ef774ddf508a3",
+    "baseline-final.log": "6c13dfb0db05c65393728684ac54c8fa41eaf8eb87442226b37242b5ca790dc2",
+    "native-group-final.log": "c36dcaee9628b43b0495371adb6dc4da1631e239cbda6154ec9df1e086d5ee24",
+    "fault-final.log": "486dcc96cf30982ff873a9ac9c53ba635562c6722389618ef07ea7e8e37e1275",
+    "asan-clean-final.log": "be62d58c4d007315490d58a4312006c952e0ea46b8681dac0729e5975d2bf56b",
+    "opening-retained.log": "75566f9cc88c9b7ae91872f48ccedf00eccbc99dd8e92eed6ff9a1bb14fb0678",
+    "death-retained.log": "e5a6cea2662ffa92bf2a0cd8186078118846d550ec0cf4aa7767b97872734929",
+    "pe-stage-final.log": "5cb2caebb095cc19562e84962711d1b49a7f459ef5e779c5f2f8bdf413688bf3",
+    "pe-canonical.log": "5cb2caebb095cc19562e84962711d1b49a7f459ef5e779c5f2f8bdf413688bf3",
+    "scepter.log": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be",
+    "bindings-next.tsv": "83cfe4a796bfd7b516643c1e84635059282bc04d5884fce2f273827b99e8daa4"
+  }
+}
