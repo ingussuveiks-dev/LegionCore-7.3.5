@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED after18F8473E/58F46667 deployment; owned1968 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/devourer-combat-2026-11-05",
+    "manifest_sha256": "b9018718a4c5fdf5b082f195b4d946b3be7d0aa039ec0856621d3d1f32a317ce",
+    "files": 390,
+    "bytes": 709813,
+    "fix_commit": "fbc3a89a1305681353909421162b148ca648c0cf",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/devourer-combat-2026-11-05.json",
+  "review": "Preserves6pinned native periodic counterfactuals paired24actual callback/native EventMap ASAN,6ordinary actual native payload and6explicit in-memory refusal/recovery contexts (exactly6expected warnings), original matching26972 four line/text/sound metadata and fresh World rows. Whole combat ability-call timestamps unchanged in4ASAN differential controls; native earlier state/victim/clock/spell endpoints explicitly controlled. Retained39entrance/27death actor/16owner/pickup ASAN,8whole-source native real deaths+104binding controls; stage/canonical registration/new0xa0AI/acceptance-before-cursor/native-duration/retry/generation/reset/reentry/source guards/inline EventMap clock and earlier entry/nearest/Kingslayers/death/capture/pickup proofs. Original scripts Release, offline promotion and mandatory wrapped Scepter; owned1968 ready/graceful0/exit0/gone. Fixture clock-name/overload and uint64 compile failures, explicitly terminated owned CPU-heavy baseline27840/exit-1 and exact historical source-boundary iteration preserved with corrected passing runs. No unexplained new runtime crash/error/DBError",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client speech/bubbles/audio/native playback clocks, full actual combat/ability effects,scene1254/route/loot/equip/pet/reconnect/full1078/all36 remain OPEN. Native payload with controlled clock/spell endpoints is not client traversal or full combat simulation.",
+    "Original EnterCombat1942 still uses raw Unit invoker; owner/group audience and exact source identity need a separate native review. No opening1942 lifetime/ownership repair inferred from this periodic change. Death1947 remains independently covered.",
+    "Voice pending state belongs to this AI; reset/re-entry starts a new native combat attempt, not durable source/grid/instance reconstruction. Unknown105332/shared101430/103151 LINK2/WardstoneLINK4, pickup81040 DEBUG edge, Althea startup and mixed DBErrors remain OPEN."
+  ]
+}
