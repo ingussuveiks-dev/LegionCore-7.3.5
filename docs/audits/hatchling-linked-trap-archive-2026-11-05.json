@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED World04 RELEASED, native cold/warm projection+live pass and owned524 gone",
+  "audit": "docs/audits/hatchling-linked-trap-2026-11-05.json",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/hatchling-linked-trap-2026-11-05",
+    "manifest_sha256": "bc20f090a3c7d145b999f5a08bfd673bf6c2f34d9bc02ad227173a0dc408c27a",
+    "files": 182,
+    "bytes": 274932,
+    "fix_commit": "d848ff7987c6b7437762e0063f9ca44a11cfe4c1",
+    "cleared_private_db_logs": [
+      {
+        "path": "build-extractors/runtime-test/devourer-portal-native/20261105-231341-007/logs/DBErrors.log",
+        "archived_sha256": "b8a2d17d73b79cd32cdfb17b0efc54d477404dfe7f3d9417277bf1d8b3920758",
+        "active_bytes": 0
+      },
+      {
+        "path": "build-extractors/runtime-test/hatchling-linked-trap/20261105-234200-556/logs/DBErrors.log",
+        "archived_sha256": "96ef8e5cfda0922a99d9e1d8ddc64609265b45d5387ae1d7418eef93d631472c",
+        "active_bytes": 0
+      },
+      {
+        "path": "build-extractors/runtime-test/hatchling-linked-trap/20261105-234243-172/logs/DBErrors.log",
+        "archived_sha256": "eb4051b668205f38b2f3c829a86a8738d2380b390782a3fd5beccb4180484205",
+        "active_bytes": 0
+      },
+      {
+        "path": "build-extractors/runtime-test/hatchling-linked-trap/20261105-234500-356/logs/DBErrors.log",
+        "archived_sha256": "992f1eb9db98f567c57d9ac4054b7d40d7c6d88d128e100102e74adb47f9b98b",
+        "active_bytes": 0
+      }
+    ],
+    "verified": "Source/archive/source hashes and local credential scan verified before cleanup, archive hashes and unaffected sources reverified after. Only exact reviewed private DBErrors truncated after adjacent recheck; informative Server history retained. Canonical mixed6090 and active Crashes unchanged. Configs/binaries/PDB/character data excluded; previously deferred mixed1792/214862 run now preserved under both actual fixes."
+  },
+  "review": "214862 incorrectly linked another type3 chest as a trap. Guarded Data7=0 agrees with local official Trinity historical delete/reinsert omitted-field0 and parsed current TDB corroboration, while preserving all actual Legion fields/loot/size/lock/quest/spawns. Native26972 DB2+hotfix absence explicit; no modern behavior copied. Actual full loader twice passes before and after updater; TEMP guard/repeat/type/custom-link controls pass. Pinned old relation emits exactly1 expected warm-loader error, separately paired with clean repaired runs. Previously deferred Devourer mixed run has only11 readonly1792/11 matching errno lines plus1 relation error; both specific causes now repaired and paired. All original bytes copied/hash verified before clearing only wholly reviewed private DBErrors; canonical mixed6090 still OPEN. No validation/log suppression, GO type/loot/quest/item grant or executable change.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual31704/31716 gathering/loot/turn-in and all36 artifact whole-chain/client traversal remain unverified.",
+    "Known late-charm/shared81040/101430+103151 and canonical mixed6090 remain OPEN; next independent artifact diagnostics work continues."
+  ]
+}

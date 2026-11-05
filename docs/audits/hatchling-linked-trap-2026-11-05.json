@@ -46,5 +46,37 @@
     "Actual daily31704/31716 client gathering, quest-required loot eligibility, visible variants and delivery remain unverified; only the data contract/native loader and unchanged native loot path are certified.",
     "All36 artifact whole-chain/client checks and known late-charm/shared81040/101430+103151/canonical mixed6090 remain OPEN. Full native core ASAN not claimed or required by this one-field SQL repair."
   ],
-  "next": "Continue the saved all-class artifact invitation findings: inspect actual shared NPC101430/103151 LINK2 diagnostics in retained canonical mixed6090, matching native data/full SmartAI roots/links/timed caller flow, old local Trinity then GitHub evidence. Prove the intended sequence and failure/retry/recipient before changing links; preserve active Hunter testing and all client/full-chain limits. Shared81040/late-charm also remain OPEN."
+  "next": "Continue the saved all-class artifact invitation findings: inspect actual shared NPC101430/103151 LINK2 diagnostics in retained canonical mixed6090, matching native data/full SmartAI roots/links/timed caller flow, old local Trinity then GitHub evidence. Prove the intended sequence and failure/retry/recipient before changing links; preserve active Hunter testing and all client/full-chain limits. Shared81040/late-charm also remain OPEN.",
+  "fix_commit": "d848ff7987c6b7437762e0063f9ca44a11cfe4c1",
+  "archive": {
+    "audit": "docs/audits/hatchling-linked-trap-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/hatchling-linked-trap-2026-11-05",
+    "manifest_sha256": "bc20f090a3c7d145b999f5a08bfd673bf6c2f34d9bc02ad227173a0dc408c27a",
+    "files": 182,
+    "bytes": 274932,
+    "fix_commit": "d848ff7987c6b7437762e0063f9ca44a11cfe4c1",
+    "cleared_private_db_logs": [
+      {
+        "path": "build-extractors/runtime-test/devourer-portal-native/20261105-231341-007/logs/DBErrors.log",
+        "archived_sha256": "b8a2d17d73b79cd32cdfb17b0efc54d477404dfe7f3d9417277bf1d8b3920758",
+        "active_bytes": 0
+      },
+      {
+        "path": "build-extractors/runtime-test/hatchling-linked-trap/20261105-234200-556/logs/DBErrors.log",
+        "archived_sha256": "96ef8e5cfda0922a99d9e1d8ddc64609265b45d5387ae1d7418eef93d631472c",
+        "active_bytes": 0
+      },
+      {
+        "path": "build-extractors/runtime-test/hatchling-linked-trap/20261105-234243-172/logs/DBErrors.log",
+        "archived_sha256": "eb4051b668205f38b2f3c829a86a8738d2380b390782a3fd5beccb4180484205",
+        "active_bytes": 0
+      },
+      {
+        "path": "build-extractors/runtime-test/hatchling-linked-trap/20261105-234500-356/logs/DBErrors.log",
+        "archived_sha256": "992f1eb9db98f567c57d9ac4054b7d40d7c6d88d128e100102e74adb47f9b98b",
+        "active_bytes": 0
+      }
+    ],
+    "verified": "Source/archive/source hashes and local credential scan verified before cleanup, archive hashes and unaffected sources reverified after. Only exact reviewed private DBErrors truncated after adjacent recheck; informative Server history retained. Canonical mixed6090 and active Crashes unchanged. Configs/binaries/PDB/character data excluded; previously deferred mixed1792/214862 run now preserved under both actual fixes."
+  }
 }

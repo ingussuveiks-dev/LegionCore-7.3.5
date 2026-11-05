@@ -115,6 +115,8 @@
   },
   "related_diagnostic_resolution": {
     "audit": "docs/audits/hatchling-linked-trap-2026-11-05.json",
-    "status": "World04 RELEASED; actual cold/warm native loaders clean, previously deferred214862 error resolved. Reviewed mixed run awaits its hash archive; canonical mixed6090 remains unresolved."
+    "archive": "docs/audits/hatchling-linked-trap-archive-2026-11-05.json",
+    "fix_commit": "d848ff7987c6b7437762e0063f9ca44a11cfe4c1",
+    "status": "World04 native live cold/warm regression passes. Previously deferred mixed1792/214862 original bytes now hash-archived under specific fixes; reviewed private DBErrors zero. Original earlier archive manifest describes the historical deferral and is unchanged. Canonical mixed6090 remains OPEN."
   }
 }
