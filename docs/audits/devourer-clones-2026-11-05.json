@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-05",
+  "status": "DEPLOYED760CAE49/9A8DD082: first Akaari Reset now retires only its own native105609 mirror images from209233..235 before resetting combat/owner state. Prevents actual AnyPetAI reaggro and unintended recapture after evade/home.22 native lifecycle contexts,2 pinned counterfactuals,2 explicit native cast-refusal controls,8 retained captures,49 intro+16 capture ASAN, matching26972 data and stage/canonical PE/Scepter pass. Owned30508 ready/shutdown0/exit0/gone. Full client/all36 and known mixed diagnostics OPEN.",
+  "scope": "Only first-Akaari ResetClones helper/call and TemporarySummon include. No AI fields, spell timings, summon producers, loot, credit, SQL, generic AnyPetAI/TempSummon/core or registry changes. Tests tick real clones and correct earlier105535 assumption.",
+  "cause": "Native209231 triggers209233 ->209234+209235, creating3 actual105609 TempSummons via properties61 for10s. Old tests mistakenly searched105535 and ticked only source/helper, leaving real clone AI unexercised. Actual AnyPetAI can call owner.SetInCombatWith when its live owner is no longer in combat. First Akaari Reset clears events/participant but leaves its native images alive. After native evade at the controlled home pose, images reaggro the returned owner and bind a nearby eligible Player. The original12+11+10s state machine can then emit50261/transfer with no new player attack. This is reproduced by whole pinnedc48f300b0 AI and repaired by retiring the scoped images during Reset.",
+  "implementation": "Find existing native tempSummonList[105609] without creating a key; copy full GUID list before any callback. Resolve each actual Creature via native accessor; require TempSummon type, returned fullGUID, actual105609 entry, exact full128 summoner GUID and native created-by209233/209234/209235 before zero-delay UnSummon. Reset calls it before intro generation/EventMap/participant cleanup. Native original fanout/AnyPetAI and10s normal duration retained. Foreign-owner stale-index GUID and a same-entry own summon from another producer are preserved. No nearest-area sweep, progression grant or blanket AI change.",
+  "sources": {
+    "matching26972": "Typed DB2+hotfix:209231 self stealth18/screen81/trigger209233;209233 triggers209234+209235; all3 summon105609/properties61/radius15 at native back48/right49/left50. Vanish and3 producers each10000ms. Properties61 flags2/control1/title2/faction0/slot0. Assertions use matching native structures and readonly hotfix scope.",
+    "world": "Readonly105536/105609 both faction14/110 and valid98..110 scaling;105609 flags32768/2048, no AIName/ScriptName/template spells/pet_stats/source0SmartAI/selected spell bindings/conditions. Native factory chooses AnyPetAI. No creature/quest/character data altered.",
+    "core": "Reviewed UnitAI.DoCast, Spell trigger fanout/EffectSummonType, Map/WorldObject native summon creation/indexing, TempSummon lifecycle/UnSummon, CreatureAI evade/reset and AnyPetAI.InitializeAI/UpdateAI owner-combat propagation. Actual native lifecycle confirms ordinary victim acquisition and natural removal.",
+    "history": "c48f300b0/f4691cf6b/eef8a0a19 local+origin history reviewed; origin main remainedc48f300b0. Prior handoff/cleanup105535 is corrected here; that ID is not the matching native209231 clone. Newer TrinityCore inventory has no matching FangsoftheDevourer implementation; local data/native sequence resolved this issue without an external/video inference."
+  },
+  "validation": {
+    "native": "22 whole current AI/native Player/Map/Scenario/Spell/TempSummon/AnyPetAI contexts (Human/Orc x11). Player/pet/guardian/scaled source one-hit owner, group, real3 producer GUIDs/owner/creator/faction/scaling/timers/actual victims, player one-clone kill and pet/guardian all-clone one-hit kills without progress; natural10s expiry/accessor+owner-index removal before23s capture; native evade/no reaggro/fresh retry, complete source deletion then actual clone timer cleanup, foreign fullGUID stale-index control and same-entry other-producer control. Native22 final run uses final source and rebuilt original libraries. Earlier quest/stage/pose/source Unit+AI clock and returned-home endpoint controlled; not client combat/path traversal.",
+    "counterfactual": "2 pinnedc48f300b0 whole AI/native cases (Human/Orc): original3 live clones survive native evade, reaggro returned-home owner, rebind nearby Player, then original native50261/transfer occurs without fresh player attack. Constructed actual ACK handled for that unintended capture. Explicit expected-broken functional counterfactual, not successful ordinary gameplay. Paired current22 requires no owner combat/participant/progress before a new controlled native combat engagement.",
+    "refusal": "2 separate explicit-fault contexts install a private test-only native OnCheckCast hook for209231, only after asserting no production209231 binding. It returns NOT_READY88; actual native prepare reports DONT_REPORT30 and no images are created. At least4 hook calls prove both explicit probes and actual AI attempts traverse native rejection. The normal23s capture/10s transfer still occurs once. No persistent binding/data/core logging change; ordinary22 run has no refusal hook.",
+    "retained": "8 complete current capture native contexts now tick actual105609 TempSummon.Update/AnyPetAI in addition to source/helper, preserving player/pet/guardian owner/scaled one-hit, group/factions,12/11/5/9/10s, portal189170/DrainSoul/accepted transfer/constructedACK/50261 once. Retained8-event baseline still requires exactly8 explained189170 errors and no other diagnostics, paired clean8 current. This pinned old EventProcessor counterfactual is already repaired by deployed eef8a0a19.49 intro ASAN and16 capture ASAN controls pass; exact source certificate normalizes only native clone retirement for those retained scopes. Clone helper itself is covered by actual native22 and PE, not full-core ASAN.",
+    "pe": "Original generated scripts.vcxproj rebuild (only Devourer.cpp) and separate world/bnet link with original library paths, no OutDir override. Selected stage/canonical registered0xa0 first-Akaari vtable/Reset calls actual ResetClones before original event/participant reset; exact native105609 owner-index snapshot/full128 returned identity+summoner/entry/type and209233..235 range gates before zero-delay native TempSummon.UnSummon slot0x2b8. No area sweep/progression/AI replacement. Retained opening admission/receipt/retry proof updated only for actual rbx Reset frame after new first call; shared abort/escape/door/claim/death proofs and canonical mandatory Scepter pass.",
+    "deployment": "Offline4 EXE/MAP predecessor4CDBCCE4/49DA8E07 backed up under .codex/release-before-devourer-clones-2026-11-05; promoted760CAE49/9A8DD082 to canonical build-extractors/bin/Release with matching copied hashes and protected configs/certs/DLL hashes. Owned worldserver30508 fresh ready/graceful shutdown0/exit0/stderr empty/gone; no user process stopped. No SQL/character mutation."
+  },
+  "iterations": [
+    "First optional template query included nonexistent creature_template_addon.spellid; preserved readonly stderr and corrected to actual template/scaling columns, no database mutation.",
+    "Initial private observer and fresh native tests correct105535 to actual105609 and advance real TempSummon.Update. Ordinary first7 contexts pass, then optional-cast fixture hypotheses (NPC cooldown and Fear/raw result) did not meet their assertions and were not counted as production failures or final ordinary success.",
+    "Explicit native test-only CheckCast hook returns88 but native prepare normalizes the public result to30. Initial exact88 assertion was corrected to actual30, retaining required native hook invocation count/no-clone/unchanged capture assertions. No production logger/check suppressed or bypassed.",
+    "First direct retry fixture omitted actual new combat state; corrected to controlled returned-home plus native SetInCombatWith/Attack. This exposed the real earlier reaggro/nearby-player capture, which is independently pinned in2 expected-broken native cases. Current22 now requires empty participant/no combat/no progress until a fresh engagement.",
+    "Retained intro ASAN extraction now stops before ResetClones and strips only that separately native-covered call from the intro Reset prefix. Source certificate checks all other original capture/reset code remains exact.49 intro and16 capture ASAN retained, not presented as full-core ASAN.",
+    "Selected opening PE old Reset rcx-store assumptions changed to actual rbx frame after first ResetClones call; original generation/cooldown/warning/latch assertions retained. New helper PE checks actual compiled GUID/type/producer gates and native virtual UnSummon."
+  ],
+  "canonical_hashes": {
+    "worldserver.exe": "760cae49ce0b5cfee3d76d920ab6e321c966476f1a546661983b3843faf6b9e6",
+    "bnetserver.exe": "9a8dd0825d46debf614e59ff6deda83e26a287b676b34309a920c3d1a0d7ab16"
+  },
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp": "ffa56babd5dbeb9067079475c72851f9e5ded84f64f18a39fd273b8164d79162",
+    "tools/tests/DevourerCaptureNative.cpp": "4107cc268002ad68f73d746d8777c5793c44216991ced220c77bc8c847c48e7a",
+    "tools/tests/DevourerClonesNative.cpp": "c06871bcc34233ce386969af659bbcab052d674c4f198292109aae6382d388d4",
+    "tools/tests/Test-DevourerClonesNative.ps1": "aefe46d6d6e7b68faa531fb2852deb636c5bfdb024d5aca6b639b1b30d86c263",
+    "tools/research/DevourerClonesCatalog.cpp": "37bf6997ea1a3146a8dd9466389168f1a303e778c38b672f61bf7424c4de58cf",
+    "tools/tests/DevourerCloneResetCertificate.ps1": "70d007648100989f52b98c904d2e9eace885f0e6d8456cb1e9b1db5d4ff0b77d",
+    "tools/tests/AkaariOpeningCertificate.ps1": "108e94a327f9a3ba878c2b098f150b89722f1b2259c2cceba47501de949e7dc0",
+    "tools/tests/Test-AkaariOpening.ps1": "c59469e8fde93e211a74bdf9691051ad5c329b20d530e2d6c01dd08f83b653d8",
+    "tools/tests/verify_akaari_opening_release.py": "38bfe7565878f52ca490502f6dd2dd8e723f33721994e60318aae31af9199698",
+    "tools/tests/verify_devourer_clones_release.py": "2c123e740701fedd3e75da60894d39937e85bfffdd064f8e7cfb68fed8f869e9"
+  },
+  "diagnostics": {
+    "post_test": "All final ordinary native/ASAN/build/link/stage/canonical/owned-startup checks completed with no new/changed crashes, appended DBErrors or unexplained warnings/errors/assertions. Explicit failed hypotheses/faults/functional and old-event counterfactuals preserved and paired passing final regressions.",
+    "canonical_crashes": 0,
+    "servers_running": 0,
+    "mixed_unresolved": {
+      "bytes": 6090,
+      "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+      "retained": true
+    },
+    "archive": "Pending after focused fix commit; only closed reviewed task diagnostics, no active logs cleared."
+  },
+  "limits": [
+    "Actual client clone appearance/combat/voice, source return-home movement, capture/cell arrival/camera/pet/reconnect and whole1078 acquisition remain OPEN. Native source clock/returned-home endpoints are controlled; full client/all36 are not certified.",
+    "Known late vehicle charm and shared81040/101430+103151/canonical mixed6090 diagnostics remain OPEN and visible. No user character or live server changed."
+  ],
+  "next": "Review Valzuun105464 acceptance41924/Carllana105488 ->209056/private248901 entrance lifecycle and actual209066/PlayerCondition39597 admission/travel to1607/1078. Readonly data:105488 has no explicitAI/ScriptName;248901 is GOOBER10 with native209066 and PlayerCondition39597, no GO ScriptName. Earlier native capture tests begin at controlled accepted41924/map1607/stage0 and do not prove this entrance. Trace matching26972 prerequisites, failed summons/casts/GO, abandon/reaccept/re-entry and normal client use before proposing changes. Full client1078/all36, movement/audio/camera/pet and known late-charm/shared81040/101430+103151/mixed6090 remain OPEN."
+}

@@ -10,6 +10,7 @@
 #include "ScenarioMgr.h"
 #include "Item.h"
 #include "SpellScript.h"
+#include "TemporarySummon.h"
 
 namespace DevourerAcquisition
 {
@@ -265,6 +266,25 @@ public:
                 introTimer = 1000;
         }
 
+        void ResetClones()
+        {
+            // AnyPetAI can put its owner back in combat after reaching home.
+            // Retire only this attempt's native mirror images before resetting.
+            auto found = me->tempSummonList.find(105609);
+            if (found == me->tempSummonList.end())
+                return;
+            auto guids = found->second;
+            for (ObjectGuid guid : guids)
+                if (Creature* clone = ObjectAccessor::GetCreature(*me, guid))
+                    if (TempSummon* summon = clone->ToTempSummon())
+                        if (summon->GetGUID() == guid && summon->GetEntry() == 105609 && summon->GetSummonerGUID() == me->GetGUID())
+                        {
+                            uint32 spell = summon->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL);
+                            if (spell == 209233 || spell == 209234 || spell == 209235)
+                                summon->UnSummon();
+                        }
+        }
+
         void PresentCapture()
         {
             Talk(3);
@@ -306,6 +326,7 @@ public:
 
         void Reset() override
         {
+            ResetClones();
             ++introGeneration;
             introTimer = 0;
             introWarning = false;

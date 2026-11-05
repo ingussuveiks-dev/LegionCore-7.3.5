@@ -57,7 +57,9 @@ assert {('movups','xmm0, xmmword ptr [rax]'),('movaps','xmmword ptr [rsp + 0x70]
 remove, = sites(n,attempt,'?Remove@Conversation@@')
 assert attempt[remove-3].op_str=='r12b, r12b' and attempt[remove-2].mnemonic=='je' and attempt[remove-2].operands[0].imm==latch
 assert (attempt[remove-1].mnemonic,attempt[remove-1].op_str)==('mov','rcx, r15')
-assert {('inc','dword ptr [rcx + 0x98]'),('mov','dword ptr [rcx + 0x94], r14d'),('mov','byte ptr [rcx + 0x9d], r14b')} <= pairs(reset)
+assert {('inc','dword ptr [rbx + 0x98]'),('mov','dword ptr [rbx + 0x94], r14d'),('mov','byte ptr [rbx + 0x9d], r14b')} <= pairs(reset)
+clones,=sites(n,reset,method('ResetClones'))
+assert clones<sites(n,reset,'?Reset@EventMap@@')[0]
 assert not any(x.mnemonic=='mov' and x.op_str.startswith('byte ptr [') and '+ 0x38]' in x.op_str for x in reset)
 assert sites(n,reset,'?Reset@EventMap@@')
 # UpdateIntro is inlined before the unchanged native combat dispatcher.

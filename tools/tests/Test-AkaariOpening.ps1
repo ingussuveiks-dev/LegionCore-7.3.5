@@ -8,9 +8,10 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  [void](Restore-AkaariOpeningBoundary $source)
  $ai=Block (Block $source 'class npc_akaari_shadowgore :') 'struct npc_akaari_shadowgoreAI :'
  $selected='struct AkaariOpeningIntroAI : ScriptedAI { explicit AkaariOpeningIntroAI(Creature* c):ScriptedAI(c){} bool introDone=false,capturePending=false,captureComplete=false;'
- $selected+=$ai.Substring($ai.IndexOf('uint32 introTimer'),$ai.IndexOf('void PresentCapture(')-$ai.IndexOf('uint32 introTimer'))
+ $selected+=$ai.Substring($ai.IndexOf('uint32 introTimer'),$ai.IndexOf('void ResetClones(')-$ai.IndexOf('uint32 introTimer'))
+ # Clone retirement is native-tested separately; this host executes intro state.
  $reset=Block $ai 'void Reset('
- $selected+=$reset.Substring(0,$reset.IndexOf('events.Reset();'))+'}'
+ $selected+=$reset.Substring(0,$reset.IndexOf('events.Reset();')).Replace('ResetClones();','')+'}'
  $selected+=Block $ai 'void MoveInLineOfSight('
  $update=Block $ai 'void UpdateAI('
  $selected+=$update.Substring(0,$update.IndexOf('if (captureComplete)'))+'} };'

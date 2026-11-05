@@ -1,5 +1,7 @@
 # Only independently covered opening1864 admission/publication/retry may differ.
 function Restore-AkaariOpeningBoundary([string]$source){
+ . "$PSScriptRoot/DevourerCloneResetCertificate.ps1"
+ $source=Restore-DevourerCloneResetBoundary $source
  $old=(& git -C $repo show '48c20d9c6:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"
  if($LASTEXITCODE){throw 'Pinned Akaari opening source missing'}
  $marker='class npc_akaari_shadowgore :';$body=Block $source $marker;$prior=Block $old $marker
