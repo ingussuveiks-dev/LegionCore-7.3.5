@@ -56,5 +56,15 @@
     "build-extractors/runtime-test/devourer-wardstone-native/20261105-185143-388/metadata.tsv": "6d21710e800351a51a5461ae8a0844e7384219081c46fee4c6623f1cd0ea8e60",
     "build-extractors/runtime-test/devourer-wardstone-native/20261105-185143-388/native-inputs.json": "4972715876fc71be51f6f3ab361d13c421db29d815c73ead788898762960aa73",
     "build-extractors/runtime-test/devourer-wardstone-native/20261105-185143-388/evidence/diagnostics-after.json": "f9cbd73c534c5258fbf693cf23e5eceee450ee0a90ee2c259b200a0b57e6dad0"
+  },
+  "fix_commit": "a7d498b636c71516020849b1950840345f804de0",
+  "archive": {
+    "audit": "docs/audits/devourer-wardstone-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/devourer-wardstone-2026-11-05",
+    "manifest_sha256": "8cb71fe9057bccaad553dae83ef69cbb7f3c42ada3a7970bebbc178c12c0329e",
+    "files": 355,
+    "bytes": 624166,
+    "fix_commit": "a7d498b636c71516020849b1950840345f804de0",
+    "verified": "Every source/archive/source SHA256 and actual local credential scan verified. Configs/binaries/PDB/character data excluded; both private exploratory Wardstone producers and wrapper preserved; public native26972 reader/test sources committed. Exploratory bootstrap/compiler/precondition failures and final native/typed/retained regression evidence preserved. Private DBErrors empty; canonical mixed6090 remains unresolved. Informative server history retained and no active log cleared."
   }
 }

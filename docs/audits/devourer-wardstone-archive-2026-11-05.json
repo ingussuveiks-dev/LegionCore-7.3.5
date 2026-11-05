@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED native coverage on unchanged8101B35A/CB0E839A; no production binary/SQL deployment or server launch",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/devourer-wardstone-2026-11-05",
+    "manifest_sha256": "8cb71fe9057bccaad553dae83ef69cbb7f3c42ada3a7970bebbc178c12c0329e",
+    "files": 355,
+    "bytes": 624166,
+    "fix_commit": "a7d498b636c71516020849b1950840345f804de0",
+    "verified": "Every source/archive/source SHA256 and actual local credential scan verified. Configs/binaries/PDB/character data excluded; both private exploratory Wardstone producers and wrapper preserved; public native26972 reader/test sources committed. Exploratory bootstrap/compiler/precondition failures and final native/typed/retained regression evidence preserved. Private DBErrors empty; canonical mixed6090 remains unresolved. Informative server history retained and no active log cleared."
+  },
+  "audit": "docs/audits/devourer-wardstone-2026-11-05.json",
+  "review": "12 actual Human/Orc native acquisition contexts, no seeded key: root26 and real Stealth1784/Pick Pocket921 fill actual105580 table, native decoded loot-container packet receives136802, actual obtain5 supplies210097,54824 advances1->2 and original cage/cache/door finish3 once. Full bag/close/reopen/free slot preserves exact loot GUID and key, repeated slot cannot duplicate. Actual group/glyph/registered921, pet/guardian rejection, unstealthed refusal and remaining Cheap Shot block/expiry tested. Typed26972/hotfix item/auras/root alternatives verified;46 retained native escape cases pass after test-only initializer extraction. Captured test-probe c0000005 caused by omitted proc-event bootstrap is resolved by actual LoadSpellProcEvents/LoadSpellProcs/linked initialization, paired final12/native typed passes; no production fault/repair claimed. Initial guessed schema/inventory field/Stealth prerequisite/direct-store exploratory evidence retained, final uses actual autostore packet. Earlier capture/quest/stage1/pose/backpack/root/disarm are controlled boundaries, full client/all36 OPEN. No new unexplained final errors/crashes/DBErrors, mixed6090 remains unresolved and retained. No active log cleared.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Full preceding Akaari105536 combat, accepted teleport/actual ACK/client arrival and capture helper timing not traversed. Earlier active41924/stage1, root/disarm, location and16-slot backpack are seeded; Cheap Shot remaining timer is controlled. Source uses actual template/loot/pose with the native fixture NullAI; actual passive NPC detection, phase7000/client rendering, terrain/path walk, learned client action buttons and audiovisual presentation remain OPEN.",
+    "Tests manually relocate the eligible player between cell/cache/door after native release, not a client movement/collision path. Native group uses actual Group/shared scenario dispatch, not all member/race/class/visibility/client variants. Logout/re-entry/fresh instance and full1078/all36 chains remain OPEN.",
+    "Mixed6090 DBErrors/shared81040 and101430/103151 LINK2 remain unresolved. No new production fix, binary deployment or SQL migration is claimed."
+  ]
+}
