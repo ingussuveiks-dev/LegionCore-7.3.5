@@ -81,5 +81,15 @@
     "pe-canonical.log": "683c2705ce226ccdb00376d97ea33c6fba4d9a994b1fa0ee8e6f8288fd893489",
     "scepter.log": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be",
     "startup-evidence/diagnostics-after.json": "1245c52ef7b4b5ad8a805385ebff83ad5d13b217a5bc31ec67b4164bea0174bb"
+  },
+  "fix_commit": "928e522a93019d01e71b291a931eda78f96485be",
+  "archive": {
+    "audit": "docs/audits/devourer-door-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/devourer-door-2026-11-05",
+    "manifest_sha256": "f4beaec63236354bc5eb01c09b165b90bead36b07e6d341525b7ac17a8b8fbdd",
+    "files": 698,
+    "bytes": 1302951,
+    "fix_commit": "928e522a93019d01e71b291a931eda78f96485be",
+    "verified": "Every source/archive/source SHA256 and actual local credential scan verified. Configs/binaries/PDB/character data excluded; all four typed native DB2 metadata producer sources preserved. Counterfactual/fixture iterations and final repaired native/ASAN/regression evidence retained. Private DBErrors empty; canonical mixed6090 remains unresolved, informative server history retained. No active log cleared."
   }
 }

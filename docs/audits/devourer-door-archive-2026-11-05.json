@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED afterFF165A95/42E206AA canonical deployment; owned32944 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/devourer-door-2026-11-05",
+    "manifest_sha256": "f4beaec63236354bc5eb01c09b165b90bead36b07e6d341525b7ac17a8b8fbdd",
+    "files": 698,
+    "bytes": 1302951,
+    "fix_commit": "928e522a93019d01e71b291a931eda78f96485be",
+    "verified": "Every source/archive/source SHA256 and actual local credential scan verified. Configs/binaries/PDB/character data excluded; all four typed native DB2 metadata producer sources preserved. Counterfactual/fixture iterations and final repaired native/ASAN/regression evidence retained. Private DBErrors empty; canonical mixed6090 remains unresolved, informative server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/devourer-door-2026-11-05.json",
+  "review": "Pinned4 ASAN/16 whole-native counterfactual contexts demonstrate destructive premature Hello, missing normal Use50536 and phase-filtered249391 miss. Repaired53 ASAN/24 actual native Human/Orc contexts plus4 separate deliberate missing-actor/criterion-refusal controls pass. Final24 include native211687 actual BE_SPELL_TARGET28/direct Scenario dispatch, ordinary GO.Use after pet/guardian nonplayer use, group, real earned checkpoint/no-key recreated actors and normal Opening3365 refusal13/triggered30 without consumption. Earlier quest/key/pose/cage endpoint explicit seeds. Native fixture map-only seed/wrong29/direct Player28/refusal mapping failures preserved and paired correct native producer/final passing regressions, no production guard weakened. Exact2actor+2credit bounded fault warnings accounted, no ordinary new warnings/DBErrors/crash. Retained25claim/50Zirus ASAN, selected staged/canonical registered0x18 AI/actual guarded cleanup and full earlier PE proofs, mandatory canonical Scepter pass. Original final-link paths and backup/protected hashes verified; owned32944 ready/graceful shutdown0/exit0/stderr empty/gone. No new unexplained runtime diagnostic; mixed6090 unchanged. Desmond105332 already repaired4af46d6f3; Talonclaw Wardstone LINK4 is separate.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client pickpocket/control click/cage and cache UI/spell completion, physical barrier collision/rendering/fear movement/audio, live grid unload/re-entry/reconnect/retry, full1078 and all36 whole acquisition chains remain OPEN. Native tests use controlled earlier endpoints and seeded poses, not complete client traversal.",
+    "Earned48004 stage3..7 actor recreation is tested as an explicit native endpoint, not proof of complete instance persistence or fresh-instance resume. No automatic key grant, forced opening cast, quest/scenario shortcut or character reset added.",
+    "Native cage/cache Use remains original211689/211687; their legacy Hello/earlier admission/cancellation acknowledgement behavior remains a separate review. Mixed canonical DBErrors, shared81040 and101430/103151 LINK2 are unresolved. No logs suppressed or unknown LINK actions fabricated."
+  ]
+}
