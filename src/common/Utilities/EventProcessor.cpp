@@ -62,7 +62,13 @@ void EventProcessor::Update(uint32 p_time)
         else
         {
             Event->Abort(m_time);
-            delete Event;
+            // A canceled spell can still be referenced by its unit until
+            // _UpdateSpells runs after this processor. Keep the aborted event
+            // alive until that reference is released; never execute it again.
+            if (Event->IsDeletable())
+                delete Event;
+            else
+                AddEvent(Event, CalculateTime(1), false);
         }
     }
 }

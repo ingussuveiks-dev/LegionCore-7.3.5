@@ -59,14 +59,20 @@ assert not any('ptr [r14 + 0x58]' in entry.op_str for entry in abort), 'Unavaila
 assert b'Passenger GuidLow: %u, Entry: %u, board on unavailable vehicle GuidLow: %u cancelled' in native['binary']
 
 queue = instructions('?Update@EventProcessor@@')
-event = locate(queue, 'rbx, qword ptr [rax + 0x28]', 'mov')
-abort_flag = locate(queue, 'byte ptr [rbx + 8], 0', 'cmp')
+event = locate(queue, 'rdi, qword ptr [rax + 0x28]', 'mov')
+abort_flag = locate(queue, 'byte ptr [rdi + 8], 0', 'cmp')
 dispatch = locate(queue, 'qword ptr [rax + 8]', 'call')
 abort_dispatch = locate(queue, 'qword ptr [rax + 0x18]', 'call')
 destroy = locate(queue, 'qword ptr [rax]', 'call')
-assert event < abort_flag < dispatch < abort_dispatch < destroy
+deletable = locate(queue, 'qword ptr [rax + 0x10]', 'call')
+destroy_abort = next(i for i in range(deletable + 1, len(queue)) if queue[i].mnemonic == 'call' and queue[i].op_str == 'qword ptr [rax]')
+assert event < abort_flag < dispatch < destroy < abort_dispatch < deletable < destroy_abort
 assert sum(entry.mnemonic == 'call' for entry in queue[event:abort_flag]) == 2, 'Due node must be erased/freed before Execute'
 assert queue[dispatch + 1].op_str == 'al, al' and queue[dispatch + 2].mnemonic == 'je'
-assert queue[dispatch + 2].operands[0].imm == queue[destroy + 1].address, 'False must still skip destruction for explicitly requeued events'
-assert queue[destroy - 2].op_str == 'edx, 1' and queue[destroy - 1].op_str == 'rcx, rbx'
-print('PASS: selected native Execute sends the six world/kit/aura/count rejection edges through existing virtual Abort(eventTime), returns true, and native EventProcessor destroys once; caster-scoped aura/accessory cleanup, saved-GUID diagnostic without Seat dereference and generic false/requeue semantics retained. Foreign admission is checked separately; other late charm failures and actual world/client boarding remain OPEN.')
+assert queue[destroy + 1].mnemonic == 'jmp'
+assert queue[dispatch + 2].operands[0].imm == queue[destroy + 1].operands[0].imm, 'False must still skip destruction for explicitly requeued events'
+assert queue[destroy - 2].op_str == 'edx, 1' and queue[destroy - 1].op_str == 'rcx, rdi'
+assert queue[deletable + 1].op_str == 'al, al' and queue[deletable + 2].mnemonic == 'je'
+assert queue[deletable + 2].operands[0].imm > queue[destroy_abort].address
+assert previous['slots'][2] == native['symbol']('?IsDeletable@BasicEvent@@'), 'Vehicle join must retain immediate deletability'
+print('PASS: selected native Execute sends six world/kit/aura/count rejection edges through Abort(eventTime), returns true, and native EventProcessor destroys once. Externally aborted joins use the real default IsDeletable gate; held spell events defer separately. Caster-scoped aura/accessory cleanup, saved-GUID diagnostic and generic false/requeue semantics retained. Foreign admission is separate; late charm failures and actual world/client boarding remain OPEN.')
