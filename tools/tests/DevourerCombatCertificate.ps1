@@ -1,5 +1,7 @@
 # Original final-Akaari combat changed only by this separately tested voice lane.
 function Restore-DevourerCombatBoundary([string]$source){
+ . "$PSScriptRoot/DevourerOpeningCertificate.ps1"
+ $source=Restore-DevourerOpeningBoundary $source
  $old=(& git -C $repo show '48ec2ea80:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"
  if($LASTEXITCODE){throw 'Pinned combat source missing'}
  $marker='class npc_akaari_shadowgore_last :';$body=Block $source $marker;$before=Block $old $marker

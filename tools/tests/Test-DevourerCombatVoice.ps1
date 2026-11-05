@@ -4,6 +4,8 @@ $out="$repo/build-extractors/runtime-test/devourer-combat-voice/$(Get-Date -Form
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp" -Raw
+ . "$PSScriptRoot/DevourerOpeningCertificate.ps1"
+ $source=Restore-DevourerOpeningBoundary $source
  . "$PSScriptRoot/DevourerCombatCertificate.ps1"
  [void](Restore-DevourerCombatBoundary $source)
  $pinned=(& git -C $repo show '48ec2ea80:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned combat source missing'}

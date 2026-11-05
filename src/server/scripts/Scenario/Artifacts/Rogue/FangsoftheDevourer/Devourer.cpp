@@ -714,9 +714,94 @@ public:
         uint32 combatVoiceDelay = 0, combatVoiceGeneration = 0;
         bool combatVoicePending = false, combatVoiceBusy = false, combatVoiceWarning = false;
 
+        ObjectGuid combatOpener;
+        std::shared_ptr<QuestCancellationReceipt const> combatOpeningReceipt;
+
+        Unit* OpeningCaster(bool& cancelled) const
+        {
+            cancelled = combatOpeningReceipt && combatOpeningReceipt->load(std::memory_order_acquire);
+            if (cancelled)
+                return nullptr;
+            if (combatOpener.IsEmpty())
+                return me; // An unowned NPC or absent invoker retains an NPC audience.
+            Player* player = ObjectAccessor::GetPlayer(*me, combatOpener);
+            if (!player || player->GetGUID() != combatOpener || !player->IsInWorld() || player->IsPreDelete() ||
+                !player->CanContact() || player->GetMap() != me->GetMap() || player->IsQuestObjectExpired() ||
+                !player->IsWithinDistInMap(me, player->GetVisibilityRange()) ||
+                !player->InSamePhase(me) || !player->InSamePhaseId(me) ||
+                !player->CanTargetQuestObject(me) || !me->CanTargetQuestObject(player))
+                return nullptr;
+            if (combatOpeningReceipt && player->GetQuestCancellationReceipt(41924) != combatOpeningReceipt)
+            {
+                cancelled = true;
+                return nullptr;
+            }
+            return player;
+        }
+
+        class OpeningConversation final : public Conversation
+        {
+        public:
+            OpeningConversation(ObjectGuid actor, std::shared_ptr<QuestCancellationReceipt const> receipt) : _actor(actor), _receipt(receipt) { }
+            void Update(uint32 diff) override
+            {
+                if (_receipt && _receipt->load(std::memory_order_acquire))
+                {
+                    Remove();
+                    return;
+                }
+                Unit* caster = ObjectAccessor::GetUnit(*this, GetCasterGUID());
+                if (!caster || caster->GetGUID() != GetCasterGUID() || !caster->IsInWorld() || caster->IsPreDelete())
+                {
+                    Remove();
+                    return;
+                }
+                // Player conversations otherwise wait forever for a playback
+                // key if the recipient leaves before seeing their first create.
+                uint32 const now = getMSTime();
+                uint32 const duration = GetDuration();
+                if (duration && now - _createdAt > duration && playing.find(GetCasterGUID()) == playing.end())
+                {
+                    for (auto const& viewer : playing)
+                        if (now - viewer.second <= duration)
+                            return; // Let each already admitted group viewer finish.
+                    Remove();
+                    return;
+                }
+                Conversation::Update(diff);
+            }
+            void AddToWorld() override
+            {
+                Creature* actor = ObjectAccessor::GetCreature(*this, _actor);
+                if ((!_receipt || !_receipt->load(std::memory_order_acquire)) && actor && actor->GetGUID() == _actor &&
+                    actor->GetEntry() == 105660 && actor->IsInWorld() && !actor->IsPreDelete() && actor->IsAlive() &&
+                    InheritQuestObjectScope(actor))
+                    Conversation::AddToWorld();
+            }
+        protected:
+            Creature* FindCreatureActor(uint32 index, uint32 entry, WorldObject* searcher) override
+            {
+                if (index != 0 || entry != 105660 || !searcher || searcher->GetMapId() != 1607)
+                    return nullptr;
+                Creature* actor = ObjectAccessor::GetCreature(*searcher, _actor);
+                if (!actor || actor->GetGUID() != _actor || actor->GetEntry() != entry || !actor->IsInWorld() || actor->IsPreDelete() ||
+                    !actor->IsAlive() || actor->IsQuestObjectExpired() || searcher->IsQuestObjectExpired() ||
+                    !searcher->IsWithinDistInMap(actor, searcher->GetVisibilityRange()) ||
+                    !searcher->InSamePhase(actor) || !searcher->InSamePhaseId(actor) ||
+                    !actor->CanTargetQuestObject(searcher) || !searcher->CanTargetQuestObject(actor))
+                    return nullptr;
+                return actor;
+            }
+        private:
+            ObjectGuid const _actor;
+            std::shared_ptr<QuestCancellationReceipt const> const _receipt;
+        };
+
         void ResetCombatVoice()
         {
             ++combatVoiceGeneration;
+            combatOpener.Clear();
+            combatOpeningReceipt.reset();
             combatVoiceDelay = 0;
             combatVoicePending = combatVoiceWarning = false;
         }
@@ -726,15 +811,38 @@ public:
             if (combatVoiceBusy)
                 return;
             combatVoiceDelay = combatVoiceDelay > diff ? combatVoiceDelay - diff : 0;
-            if (!combatVoicePending || combatVoiceDelay || convers < 1943 || convers >= 1947 ||
+            if (!combatVoicePending || combatVoiceDelay || convers < 1942 || convers >= 1947 ||
                 !me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || !me->isInCombat() ||
                 me->GetEntry() != 105660 || me->GetMapId() != 1607 || me->IsQuestObjectExpired())
                 return;
             combatVoiceBusy = true;
             struct Release { bool& flag; ~Release() { flag = false; } } release{combatVoiceBusy};
             uint32 const generation = combatVoiceGeneration;
-            Conversation* conversation = new Conversation;
-            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), convers, me, NULL, *me))
+            bool const opening = convers == 1942;
+            bool cancelled = false;
+            Unit* caster = opening ? OpeningCaster(cancelled) : me;
+            if (generation != combatVoiceGeneration)
+                return;
+            if (cancelled)
+            {
+                // Drop only this abandoned presentation, without inventing a
+                // successful launch or blocking the original later NPC lines.
+                combatOpener.Clear();
+                combatOpeningReceipt.reset();
+                convers = 1943;
+                combatVoicePending = false;
+                return;
+            }
+            if (!caster)
+            {
+                combatVoiceDelay = 1000;
+                if (!combatVoiceWarning)
+                    TC_LOG_WARN("scripts", "Akaari opening: original recipient unavailable; retain same-owner retry");
+                combatVoiceWarning = true;
+                return;
+            }
+            Conversation* conversation = opening ? static_cast<Conversation*>(new OpeningConversation(me->GetGUID(), combatOpeningReceipt)) : new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), convers, caster, NULL, *caster))
             {
                 delete conversation;
                 if (generation != combatVoiceGeneration)
@@ -746,7 +854,31 @@ public:
                 return;
             }
             if (generation != combatVoiceGeneration)
+            {
+                if (opening)
+                    conversation->Remove();
                 return; // A reset during admission must not consume a new attempt.
+            }
+            if (opening)
+            {
+                caster = OpeningCaster(cancelled);
+                if (!caster)
+                {
+                    conversation->Remove();
+                    if (cancelled)
+                    {
+                        combatOpener.Clear();
+                        combatOpeningReceipt.reset();
+                        convers = 1943;
+                        combatVoicePending = false;
+                    }
+                    else
+                        combatVoiceDelay = 1000;
+                    return;
+                }
+                combatOpener.Clear();
+                combatOpeningReceipt.reset();
+            }
             // Use the admitted native conversation's complete published lifetime,
             // including its padding. Spell/add timers continue independently.
             combatVoiceDelay = conversation->GetDuration();
@@ -756,7 +888,7 @@ public:
 
         void RequestCombatVoice()
         {
-            combatVoicePending = convers >= 1943 && convers < 1947;
+            combatVoicePending = convers >= 1942 && convers < 1947;
             UpdateCombatVoice(0);
         }
 
@@ -772,10 +904,14 @@ public:
             events.RescheduleEvent(EVENT_1, 42000);
             events.RescheduleEvent(EVENT_2, 11000);
             events.RescheduleEvent(EVENT_3, 14000);
-            Conversation* conversation = new Conversation;
-            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1942, who, NULL, *who))
-                delete conversation;
-            convers = 1943;
+            if (Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)
+            {
+                combatOpener = player->GetGUID();
+                if (player->GetQuestStatus(41924) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(41924) == QUEST_STATUS_COMPLETE)
+                    combatOpeningReceipt = player->GetQuestCancellationReceipt(41924);
+            }
+            convers = 1942;
+            RequestCombatVoice();
         }
 
         // The original1947 speaker is this Akaari, already dead in JustDied.

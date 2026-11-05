@@ -31,7 +31,7 @@ factory = code('?GetAI@npc_akaari_shadowgore_last@@')
 callbacks = {n['symbol'](method(x)) for x in ('UpdateAI', 'JustDied', 'Reset', 'EnterCombat')}
 selected = [a for a in refs(factory) if callbacks <= set(struct.unpack_from('<82Q', n['binary'], n['offset'](a)))]
 assert len(selected) == 1
-assert {('mov', 'ecx, 0xa0'), ('mov', 'qword ptr [rsi + 0x80], rbp'),
+assert {('mov', 'ecx, 0xc0'), ('mov', 'qword ptr [rsi + 0x80], rbp'),
         ('mov', 'dword ptr [rsi + 0x90], ebp')} <= pairs(factory)
 eligible, recipient, entry, update = [code(method(x)) for x in ('EntryPlayer', 'EntryRecipient', 'UpdateEntry', 'UpdateAI')]
 assert {105660, 1607, 1078, 41924, 53045, 47367} <= values(eligible)
@@ -56,11 +56,17 @@ credits = sites(n, entry, '?UpdateAchievementCriteria@Player@@')
 receivers = sites(n, entry, method('EntryRecipient'))
 assert len(scenes) == len(credits) == 2 and receivers[0] < cast < scenes[0] < scenes[1] < receivers[1] < credits[0] < credits[1]
 assert {209626, 1254, 50404, 50299, 53045, 47367, 1000} <= values(entry)
-assert {('mov', 'dword ptr [rsp + 0x70], 1'), ('mov', 'dword ptr [rsp + 0xc0], 3'),
+assert {('mov', 'dword ptr [rsp + 0x90], 1'), ('mov', 'dword ptr [rsp + 0x40], 3'),
         ('mov', 'byte ptr [r15 + 0x91], 1'), ('mov', 'byte ptr [r15 + 0x91], 0'),
         ('mov', 'dword ptr [rcx + 0x6c], 0x3e8')} <= pairs(entry)
 assert sites(n, entry, '?GetPlayerListInGrid@WorldObject@@') and sites(n, entry, '?GetQuestCancellationReceipt@Player@@')
-assert len(sites(n, entry, '?GetPlayer@ObjectAccessor@@')) == len(sites(n, entry, '??8ObjectGuid@@')) == 2
+inline_lookups=sites(n, entry, '?GetPlayer@ObjectAccessor@@')
+inline_identities=sites(n, entry, '??8ObjectGuid@@')
+# This build retains a different number of out-of-line EntryRecipient calls.
+# Account for all four fresh resolutions, with a full-GUID check per inline one.
+assert len(inline_lookups)==len(inline_identities) and len(inline_lookups)+len(receivers)==4
+for i,lookup in enumerate(inline_lookups):
+    assert lookup<inline_identities[i]<(inline_lookups[i+1] if i+1<len(inline_lookups) else len(entry))
 leaves = sites(n, entry, method('EntryLeaf'))
 assert len(leaves) == 4 and leaves[-2] > credits[-1]
 latch, = [x for x in entry if (x.mnemonic, x.op_str) == ('mov', 'byte ptr [rax + 0x40], 1')]
