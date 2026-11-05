@@ -4,6 +4,8 @@ $out="$repo/build-extractors/runtime-test/devourer-door-asan/$(Get-Date -Format 
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp" -Raw
+ . "$PSScriptRoot/DevourerEscapeCertificate.ps1"
+ $source=Restore-DevourerEscapeBoundary $source
  $old=(& git -C $repo show 'a8d3bb692:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"
  if($LASTEXITCODE){throw 'Pinned door baseline missing'}
  if($Baseline){$source=$old}else{. "$PSScriptRoot/DevourerDoorCertificate.ps1";if(((Restore-DevourerDoorBoundary $source)-replace '\s','') -cne ($old-replace '\s','')){throw 'Unreviewed change outside final door'}}

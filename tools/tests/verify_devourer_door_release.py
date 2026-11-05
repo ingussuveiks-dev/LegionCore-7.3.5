@@ -30,7 +30,9 @@ assert len(selected)==1 and {('mov','ecx, 0x18'),('mov','dword ptr [rax + 0x10],
 use,hello,context,actor,opening=[ins(method(x)) for x in ('GossipUse','GossipHello','DoorContext','DoorActor','OpenDoor')]
 assert 249390 in values(use) and 249390 in values(hello)
 assert sites(n,use,method('OpenDoor')) and sites(n,hello,method('OpenDoor'))
-assert ('xor','al, al') in pairs(use) and ('mov','r8b, 1') in pairs(use)
+assert ('mov','r8b, 1') in pairs(use)
+# The separately certified cage/cache use branch may reject native admission.
+assert ('xor','al, al') in pairs(use) or sites(n,use,'?CanUse@DevourerEscape@@')
 assert {249390,1607,1078,41924,48002,48005,48004,2,3,4} <= values(context)
 for target,count in [('?IsInWorld@Object@@',2),('?IsPreDelete@Object@@',2),('?IsQuestObjectExpired@WorldObject@@',2),('?CanTargetQuestObject@WorldObject@@',2),('?GetQuestStatus@Player@@',2),('?GetQuestRewardStatus@Player@@',1),('?GetInstanceScript@WorldObject@@',1),('?CanContact@Player@@',1),('?InSamePhase@WorldObject@@',1),('?InSamePhaseId@WorldObject@@Q',1),('?IsWithinLOSInMap@WorldObject@@',1),('?canSeeOrDetect@WorldObject@@',1),('?GetInteractionDistance@GameObject@@',1),('?IsWithinDistInMap@WorldObject@@',1)]:
     assert len(sites(n,context,target))==count,target

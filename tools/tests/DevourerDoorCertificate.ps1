@@ -1,5 +1,7 @@
 # Only the independently tested final door may differ from the original class.
 function Restore-DevourerDoorBoundary([string]$source){
+ . "$PSScriptRoot/DevourerEscapeCertificate.ps1"
+ $source=Restore-DevourerEscapeBoundary $source
  $old=(& git -C $repo show 'a8d3bb692:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"
  if($LASTEXITCODE){throw 'Pinned Wardstone door source missing'}
  $marker='class go_devourer_misc';$body=Block $source $marker;$prior=Block $old $marker

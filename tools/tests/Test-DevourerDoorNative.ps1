@@ -30,6 +30,8 @@ if($Baseline){$devourer=$pinned}else{
  . "$PSScriptRoot/DevourerDoorCertificate.ps1"
  if(((Restore-DevourerDoorBoundary $devourer)-replace '\s','') -cne ($pinned-replace '\s','')){throw 'Unreviewed change outside scoped door callbacks'}
 }
+. "$PSScriptRoot/DevourerEscapeCertificate.ps1"
+$devourer=Restore-DevourerEscapeBoundary $devourer
 $body=(Block $devourer 'class go_devourer_misc')+';'
 $body=$body.Replace('class go_devourer_misc','class go_devourer_door_probe').Replace('go_devourer_misc()','go_devourer_door_probe()')
 [IO.File]::WriteAllText("$out/DoorAI.inc",$body)

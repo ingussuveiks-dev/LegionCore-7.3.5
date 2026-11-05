@@ -9,6 +9,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "Item.h"
+#include "SpellScript.h"
 
 namespace DevourerAcquisition
 {
@@ -386,6 +387,74 @@ public:
     };
 };
 
+namespace DevourerEscape
+{
+    bool CanUse(Player* player, GameObject* object)
+    {
+        if (!player || !object || !player->IsInWorld() || player->IsPreDelete() || !player->IsAlive() ||
+            !player->CanContact() || player->isGameMaster() || player->getClass() != CLASS_ROGUE ||
+            player->HasPendingTeleport() || !object->IsInWorld() || object->IsPreDelete() || !object->isSpawned() ||
+            object->IsQuestObjectExpired() || player->IsQuestObjectExpired() || object->GetMapId() != 1607 ||
+            !object->GetInstanceScript() || (object->GetEntry() != 249809 && object->GetEntry() != 248992) ||
+            object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) || player->GetMap() != object->GetMap() ||
+            !player->InSamePhase(object) || !player->InSamePhaseId(object) || !player->canSeeOrDetect(object) ||
+            !player->IsWithinLOSInMap(object) || !player->IsWithinDistInMap(object, object->GetInteractionDistance()) ||
+            !player->CanTargetQuestObject(object) || !object->CanTargetQuestObject(player) ||
+            player->GetQuestRewardStatus(41924) || !player->HasItemCount(136802, 1) ||
+            (player->GetQuestStatus(41924) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41924) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(object->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1078 && scenario->GetCurrentStep() == 2;
+    }
+}
+
+// Native211689 cage release and211687 two-second weapons reclaim. CheckCast
+// runs again before a timed cast hits, before native scenario criteria dispatch.
+class spell_devourer_escape : public SpellScriptLoader
+{
+public:
+    spell_devourer_escape() : SpellScriptLoader("spell_devourer_escape") { }
+
+    class spell_devourer_escape_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_devourer_escape_SpellScript);
+        ObjectGuid recipient, source;
+        std::shared_ptr<QuestCancellationReceipt const> receipt;
+
+        bool Load() override
+        {
+            if (Player* player = GetCaster()->ToPlayer())
+            {
+                recipient = player->GetGUID();
+                receipt = player->GetQuestCancellationReceipt(41924);
+                uint32 entry = GetSpellInfo()->Id == 211689 ? 249809 : 248992;
+                if (GameObject* object = player->FindNearestGameObject(entry, 10.0f))
+                    source = object->GetGUID();
+            }
+            return true; // Non-player casts must run the rejecting check too.
+        }
+
+        SpellCastResult CheckEscape()
+        {
+            Player* player = GetCaster()->ToPlayer();
+            if (!player || player->GetGUID() != recipient || !receipt || receipt->load(std::memory_order_acquire) ||
+                player->GetQuestCancellationReceipt(41924) != receipt)
+                return SPELL_FAILED_NOT_HERE;
+            GameObject* object = ObjectAccessor::GetGameObject(*player, source);
+            uint32 entry = GetSpellInfo()->Id == 211689 ? 249809 : 248992;
+            return object && object->GetGUID() == source && object->GetEntry() == entry &&
+                DevourerEscape::CanUse(player, object) ? SPELL_CAST_OK : SPELL_FAILED_NOT_HERE;
+        }
+
+        void Register() override
+        {
+            OnCheckCast += SpellCheckCastFn(spell_devourer_escape_SpellScript::CheckEscape);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override { return new spell_devourer_escape_SpellScript(); }
+};
+
 // 249809 248992 249390
 class go_devourer_misc : public GameObjectScript
 {
@@ -507,7 +576,9 @@ public:
 
         bool GossipUse(Player* player) override
         {
-            return go->GetEntry() == 249390 ? OpenDoor(player, true) : false;
+            if (go->GetEntry() == 249390)
+                return OpenDoor(player, true);
+            return !DevourerEscape::CanUse(player, go); // Keep the admitted native spell path.
         }
 
         uint32 GetData(uint32) override { return doorDone; }
@@ -516,27 +587,7 @@ public:
         {
             if (go->GetEntry() == 249390)
                 return OpenDoor(player, isUse);
-            if (!isUse)
-                return true;
-
-            if (player->HasItemCount(136802, 1))
-            {
-                uint32 criteria = 0;
-                switch (go->GetEntry())
-                {
-                    case 249809:
-                        criteria = 50908;
-                        player->RemoveAura(211684);
-                        break;
-                }
-                if (criteria != 0)
-                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, criteria);
-
-                go->SetPhaseMask(4, true); // hide
-
-                return true;
-            }
-            return false;
+            return true; // A report/Hello is not the native release or reclaim hit.
         }
 
     };
@@ -1314,6 +1365,7 @@ void AddSC_Devourer()
     new npc_devourer_small_events();
     new npc_akaari_shadowgore();
     new go_devourer_misc();
+    new spell_devourer_escape();
     new npc_devourer_zirus();
     new npc_akaari_shadowgore_last();
 
