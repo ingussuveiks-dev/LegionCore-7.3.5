@@ -269,7 +269,7 @@ public:
                 }
             }
             Talk(0);
-            events.RescheduleEvent(EVENT_1, 12000); // Clons 209231 and talk 
+            events.RescheduleEvent(EVENT_1, 12000); // Clons 209231 and talk
         }
 
 
@@ -396,8 +396,126 @@ public:
     {
         go_devourer_miscAI(GameObject* go) : GameObjectAI(go) {}
 
+        bool doorDone = false, doorBusy = false, doorActorWarning = false, doorCreditWarning = false;
+
+        bool DoorLeaf(Scenario* scenario, uint32 id) const
+        {
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto found = progress->find(id);
+            return found != progress->end() && found->second.Counter;
+        }
+
+        Scenario* DoorContext(Player* player) const
+        {
+            if (!go->IsInWorld() || go->IsPreDelete() || !go->isSpawned() || go->IsQuestObjectExpired() ||
+                go->GetEntry() != 249390 || go->GetMapId() != 1607 || !go->GetInstanceScript() ||
+                go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) || !player ||
+                !player->IsInWorld() || player->IsPreDelete() || !player->IsAlive() || !player->CanContact() ||
+                player->isGameMaster() || player->getClass() != CLASS_ROGUE || player->HasPendingTeleport() ||
+                player->GetMap() != go->GetMap() || !player->InSamePhase(go) || !player->InSamePhaseId(go) ||
+                !player->canSeeOrDetect(go) || !player->IsWithinLOSInMap(go) ||
+                !player->IsWithinDistInMap(go, go->GetInteractionDistance()) || player->IsQuestObjectExpired() ||
+                !player->CanTargetQuestObject(go) || !go->CanTargetQuestObject(player) ||
+                player->GetQuestRewardStatus(41924) ||
+                (player->GetQuestStatus(41924) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41924) != QUEST_STATUS_COMPLETE))
+                return nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1078 || !DoorLeaf(scenario, 48002) || !DoorLeaf(scenario, 48005))
+                return nullptr;
+            uint32 step = scenario->GetCurrentStep();
+            return step == 2 || (step >= 3 && step <= 7 && DoorLeaf(scenario, 48004)) ? scenario : nullptr;
+        }
+
+        bool DoorActor(GameObject* barrier) const
+        {
+            return barrier && barrier->IsInWorld() && !barrier->IsPreDelete() && barrier->GetEntry() == 249391 &&
+                barrier->GetMap() == go->GetMap() && !barrier->IsQuestObjectExpired() &&
+                go->InSamePhase(barrier) && go->InSamePhaseId(barrier) && go->IsWithinDistInMap(barrier, 10.0f) &&
+                go->CanTargetQuestObject(barrier) && barrier->CanTargetQuestObject(go);
+        }
+
+        bool OpenDoor(Player* player, bool isUse)
+        {
+            if (!isUse || doorDone || doorBusy)
+                return true;
+            Scenario* scenario = DoorContext(player);
+            if (!scenario)
+                return true;
+            bool const unlock = scenario->GetCurrentStep() == 2;
+            if (unlock && !player->HasItemCount(136802, 1))
+                return true;
+            // Find the actual barrier while this control is still in its phase.
+            GameObject* barrier = go->FindNearestGameObject(249391, 10.0f);
+            if (!DoorActor(barrier))
+            {
+                if (!doorActorWarning)
+                    TC_LOG_WARN("scripts", "Devourer door: barrier249391 unavailable; retain Wardstone and50536 retry");
+                doorActorWarning = true;
+                return true;
+            }
+            doorActorWarning = false;
+            doorBusy = true;
+            struct Release { bool& flag; ~Release() { flag = false; } } release{doorBusy};
+            ObjectGuid const recipient = player->GetGUID(), barrierGuid = barrier->GetGUID();
+            auto receipt = player->GetQuestCancellationReceipt(41924);
+            if (!receipt || receipt->load(std::memory_order_acquire))
+                return true;
+            if (unlock)
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50536);
+            player = go->IsInWorld() ? ObjectAccessor::GetPlayer(*go, recipient) : nullptr;
+            if (!player || player->GetGUID() != recipient || receipt->load(std::memory_order_acquire) ||
+                player->GetQuestCancellationReceipt(41924) != receipt || DoorContext(player) != scenario)
+                return true;
+            if (!DoorLeaf(scenario, 48004) || scenario->GetCurrentStep() < 3)
+            {
+                if (!doorCreditWarning)
+                    TC_LOG_WARN("scripts", "Devourer door: native50536 not acknowledged; retain Wardstone and barrier for retry");
+                doorCreditWarning = true;
+                return true;
+            }
+            barrier = ObjectAccessor::GetGameObject(*go, barrierGuid);
+            if (!DoorActor(barrier) || barrier->GetGUID() != barrierGuid)
+            {
+                if (!doorActorWarning)
+                    TC_LOG_WARN("scripts", "Devourer door: barrier249391 unavailable; retain Wardstone and50536 retry");
+                doorActorWarning = true;
+                return true;
+            }
+            doorDone = true;
+            go->SetPhaseMask(4, true);
+            barrier->SetPhaseMask(4, true);
+            if (unlock)
+                player->DestroyItemCount(136802, 1, true);
+            std::list<Creature*> adds;
+            GetCreatureListWithEntryInGrid(adds, player, 105538, 90.0f);
+            GetCreatureListWithEntryInGrid(adds, player, 105537, 90.0f);
+            if (!adds.empty())
+                for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
+                {
+                    if ((*itr)->HasAura(209349))
+                    {
+                        (*itr)->GetMotionMaster()->MoveRandom(15.0f);
+                        (*itr)->DespawnOrUnsummon(5000);
+                        if ((*itr)->GetEntry() == 105538)
+                            (*itr)->AI()->Talk(0);
+
+                    }
+                }
+
+            return true;
+        }
+
+        bool GossipUse(Player* player) override
+        {
+            return go->GetEntry() == 249390 ? OpenDoor(player, true) : false;
+        }
+
+        uint32 GetData(uint32) override { return doorDone; }
+
         bool GossipHello(Player* player, bool isUse) override
         {
+            if (go->GetEntry() == 249390)
+                return OpenDoor(player, isUse);
             if (!isUse)
                 return true;
 
@@ -410,36 +528,12 @@ public:
                         criteria = 50908;
                         player->RemoveAura(211684);
                         break;
-                    case 249390:
-                        criteria = 50536;
-                        break;
                 }
                 if (criteria != 0)
                     player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, criteria);
 
                 go->SetPhaseMask(4, true); // hide
-                if (go->GetEntry() == 249390)
-                {
-                    if (GameObject* doors = go->FindNearestGameObject(249391, 10.0f))
-                        doors->SetPhaseMask(4, true);
-                    player->DestroyItemCount(136802, 1, true); // last go. del quest item ?
 
-                    std::list<Creature*> adds;
-                    GetCreatureListWithEntryInGrid(adds, player, 105538, 90.0f);
-                    GetCreatureListWithEntryInGrid(adds, player, 105537, 90.0f);
-                    if (!adds.empty())
-                        for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
-                        {
-                            if ((*itr)->HasAura(209349))
-                            {
-                                (*itr)->GetMotionMaster()->MoveRandom(15.0f);
-                                (*itr)->DespawnOrUnsummon(5000);
-                                if ((*itr)->GetEntry() == 105538)
-                                    (*itr)->AI()->Talk(0);
-
-                            }
-                        }
-                }
                 return true;
             }
             return false;
@@ -560,7 +654,7 @@ public:
 
         void EnterCombat(Unit* who) override
         {
-            events.RescheduleEvent(EVENT_1, 8000); // 194519 
+            events.RescheduleEvent(EVENT_1, 8000); // 194519
             events.RescheduleEvent(EVENT_2, 11000);
         }
 

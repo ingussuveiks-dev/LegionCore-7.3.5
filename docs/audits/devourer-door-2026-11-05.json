@@ -1,0 +1,85 @@
+{
+  "date": "2026-11-05",
+  "status": "DEPLOYED FF165A95/42E206AA: Devourer Wardstone door249390 now handles actual native Use, captures barrier249391 before changing phases, and requires eligible41924/1078/cage48002/cache48005 plus actual50536/48004/native root acknowledgement before consuming136802 or hiding either actor. FullGUID/current receipt/reentry and earned-checkpoint retry retained.53 ASAN/24 native/4 explicit native fault contexts pass; pinned4 ASAN/16 native counterfactuals reproduce original failures. Owned32944 ready/shutdown0/exit0/gone; client/full1078/all36 OPEN.",
+  "scope": "Only go_devourer_misc door249390 use/hello admission, acknowledgement and cleanup. Existing ScriptName; no SQL, shared GO/Spell/criteria dispatch, cage249809/cache248992 native Use, item grant, forced cast, actor/voice data or scenario-step setter changed. Two pre-existing comment trailing spaces trimmed.",
+  "causes": [
+    "GameObject::Use invokes GameObjectAI::GossipUse before ordinary door handling; original script supplied only GossipHello. Real direct Use therefore never sent50536. Report-use Hello(false) intentionally remains non-completing. Generic Opening3365 cannot replace this route: native lock0 CheckCast refuses BAD_TARGETS13, mapped to DONT_REPORT30 by triggered full-mask prepare. These validation failures are retained, not bypassed.",
+    "Original Hello changed control249390 to phase4 before FindNearestGameObject249391. Native search filters against the source phase, so the phase1 barrier was not found. Pinned whole-native tests reproduce primary hidden/key destroyed/barrier still phase1.",
+    "Original Hello consumed Wardstone and hid the control for a key holder regardless of actual class/quest/stage/prerequisite admission or accepted50536. Rejected native progression could lose the only key. New path retains the real key and actors until qualified native progression and both real actor identities are confirmed."
+  ],
+  "evidence": {
+    "order": "Matching local26972 hotfix-aware DB2, live world data, original runtime/core/dispatch searched first. Local newer Trinity has no matching go_devourer_misc implementation. Origin history/current a8d3bb692 pinned source consulted. No modern donor/video/client behavior copied or claimed.",
+    "actors": "249390/spawn134076/map1607/phaseMask1/phaseId7000 at1854.51,1296.27,62.1306; type0/flags0/lock0/go_devourer_misc. Paired249391/spawn134091/phase1+7000 at1855.38,1292.18,62.5271, type0/flags16/empty ScriptName. Source and actual native lookup reproduce their phase boundary. Only249809/249390/248992 use go_devourer_misc.",
+    "criteria": "1078 stage1 root47360 operator8/amount1 has loot-item42/136802 leaf47377; optional54243/54824 flags2. Stage2 root48001 operator4 ALL has exactly48002 criterion30082 type92/50908,48004 criterion29820 type92/50536,48005 criterion30083 type28 BE_SPELL_TARGET/211687. Stage3 root47364 then Zirus50298. Fresh typed leaf/root/all-child tables retained.",
+    "spells": "Cage249809 GOOBER Data2 event50908 and Data10 spell211689; native211689 removes211684 effect164 and sends50908 effect61. Cache248992 SPELLCASTER native211687 removes211686 effect164 and actual Spell::DoSpellHitOnUnit directly updates Scenario BE_SPELL_TARGET28. Player::UpdateAchievementCriteria on that group criterion alone returns early; neither type29 CAST_SPELL nor an isolated progress-map seed represents this producer. Both chain auras infinite; no invented expiry/credit used.",
+    "key": "136802 is actual100% pickpocketing_loot_template105580, not ordinary kill/chest/spell loot; no SmartAI105580 rows found. Native tests explicitly seed an Item.Create Wardstone in owned inventory rather than claiming actual pickpocket traversal. Door Data7 is PlayerCondition39659, not an opening spell.",
+    "followup": "Live Desmond105332 row0 event62/menu19470 closes gossip and LINK1 casts native208755 from actual Player. Already repaired by commit4af46d6f3 and migration2026_10_29_15_desmond_native_search.sql. The separate Talonclaw migration2026_10_30_01_talonclaw_wardstone_admission.sql owns the older Wardstone LINK4 limitation. Existing101430/103151 LINK2 and shared81040 diagnostics remain separate/unresolved."
+  },
+  "repair": "GossipUse routes only249390 to OpenDoor; other two GOs return native defaultfalse. DoorContext requires live/spawned actual1607 actors, real contactable alive Rogue with active unrewarded41924, same map/phases/visibility/LOS/native distance and reciprocal native quest scope,1078 and actual prior48002/48005. Admit current stage2 with actual136802, or earned48004 stage3..7 for no-key actor recreation cleanup. Resolve and validate actual249391 before any phase change. RAII guard blocks reentry. Capture full128 Player/barrier GUIDs and actual native41924 cancellation receipt; send original50536 only on fresh stage2, refresh Player through native lookup and validate full identity/current receipt/cancel/scope/sameScenario. Require48004 and stage>=3. Refresh and validate exact barrier before latch. Only then hide both via original SetPhaseMask4 and consume one key on fresh unlock. Missing actor/denied acknowledgement retain actors/key and warn once per issue; restored native retry succeeds. Earned checkpoint hides recreated actors without another key or event. Preserve original frightened105538/105537 cleanup requests,209349 filter/90yd search/15yd random move/5s despawn/105538 Talk0. Existing cage/cache Hello payload unchanged.",
+  "checks": {
+    "pinned": "Pinned a8d3bb692 whole original class:4 assertion-enabled ASAN contexts and16 actual native Human/Orc contexts demonstrate missing real Use50536, destructive premature/wrong-class/no-quest/stage-rejected Hello and original phase-filter barrier miss. Expected-broken counterfactuals, not ordinary successful gameplay. Reportfalse and Opening native refusal controls retained.",
+    "asan": "53 assertion-enabled MSVC AddressSanitizer contexts export entire production class plus actual native lookup Find/GetObjectInWorld/GetObjectInMap/GetPlayer/GetGameObject bodies and QuestCancellationReceipt/QuestObjectScope. Cover30 invalid guards, report/null, valid INCOMPLETE/COMPLETE/once, missing barrier/refused criteria retry, full128 Player/barrier lookup collision, receipt cancellation/replacement and post-credit scope/world/map/source changes, nested credit/Destroy reentry, earned checkpoint without another key, original frightened-add requests and unchanged other GO callbacks. Cast/geometry/criteria services modeled, not full-core ASAN.",
+    "native": "24 Human/Orc x12 contexts compile whole exported door AI against actual native Player/Item/Map/GO/Scenario/Spell/lookup/quest receipt and actual instance_devourer. Key/earlier quest/stage/pose and50908 endpoint explicitly seeded; actual211687 self cast supplies48005 through Spell direct Scenario dispatch. Modes: ordinary GO.Use after real pet+guardian nonplayer use (no Player progression); missing both prior leaves; missing cache; wrong stage; wrong class; no quest; real nontriggered Opening3365 refusal13 plus triggered refusal30, followed by independent legitimate GO.Use; reportfalse; real group; real native earned50536 checkpoint with recreated actors/no key; active COMPLETE/Hello; no key. Legitimate root48001 advances2->3 exactly once, bothphase4 and native key destruction verified; invalid contexts retain state. Readonly DB pools/no character writes and empty temporary account shadows for both session connections. No claim of whole cage/cache/pickpocket traversal or client input scheduling.",
+    "faults": "Four separate deliberate Human/Orc x missing actual barrier or temporarily changed in-memory criterion29820 Asset. Two uses retain Wardstone/control/barrier/no50536; restoring exact actor/native criterion permits once-only native retry. Strict diagnostic review accepts exactly2 bounded missing-barrier and2 bounded rejected50536 warnings, completed testtrue/no crash/no DBErrors/no other warnings. Explicit faults separated from clean24 ordinary contexts.",
+    "retained": "25 prior pickup fullGUID/receipt/cast-boundary ASAN and50 Zirus entry/dialogue/death/pickup ASAN/native EventMap contexts pass through strict independently scoped whole-source certificates. Existing pickup/native pair/owner death and full prior registered PE paths retained.",
+    "release": "Original generated Release scripts.lib and original actual final-link library paths used; world/bnet linked into separate .codex/devourer-door-release. Staged+canonical PE proves actual registered0x18 AI/vtable GossipUse/Hello/GetData, all guards/leafs/50536 acknowledgement, captured barrier before phase update, fullGUID/current receipt, exact phase+collision virtual dispatch, key/once latch and original frightened add requests. Full retained registered Zirus/Akaari/nearest/entry/death/pickup PE chain passes; canonical mandatory Test-ScepterLogin.ps1 -VerifyReleaseBinary passes. Existing compiler signedness/conversion/unused native debug variable warnings remain visible; no new unexplained runtime diagnostic.",
+    "deployment": "Offline predecessor4232EF1B/289E6BE6 four EXE/MAP backup hashes verified; promoted FF165A95/42E206AA to canonical build-extractors/bin/Release. Protected configs/certificates/DLL hashes unchanged; no SQL/updater changes. Owned worldserver PID32944 reached ready, graceful shutdown0, exit0, stderr empty and process gone. No user server stopped."
+  },
+  "iterations": [
+    "First baseline assumed both actors hid; native result proved original primary phase4 prevents finding phase1 barrier. Corrected counterfactual expectation to actual phase1 barrier and added production capture-before-phase fix; final pinned16 paired current24.",
+    "Initial native isolated _criteriaProgress seed did not populate native array/completed flags. Wrong CAST_SPELL29, then direct Player BE_SPELL_TARGET28 endpoints also failed to represent actual native cache producer. Retained refusal warnings/failed checks, traced typed28 and native group-criteria return/direct Spell Scenario dispatch, then used actual211687 self cast. Final ordinary24 and separate nativefault4 pass; no production acknowledgement guard weakened.",
+    "Exploratory Opening3365 fixture initially expected success, then expected13 for a full-triggered cast. Actual lock0 CheckCast properly refuses13 and prepare maps full-triggered refusal to30. Final control checks both failures/no consumption before separate native Use; no cast validation bypass.",
+    "Readonly search initially guessed absent newer Trinity scripts/Scenario directory; broader checkout/history review found no matching donor. No runtime effect. All test iterations and diagnostic evidence retained with final passing regressions."
+  ],
+  "diagnostics": "Before/after every automated/native/build/PE/owned runtime test recorded canonical+own crash inventories and log lengths/timestamps, exit/stdout/stderr and appended server warnings/errors/assertions/DBErrors. No new unexplained crash/error/DBError. Explicit faulty criterion/missing actor bounded warnings and incomplete controlled-fixture acknowledgement refusals preserved/classified, paired passing final regressions. Canonical Crashes empty and all servers gone. Mixed canonical6090-byte DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged and unresolved, not cleared/archived as fixed. Fixed archive follows implementation commit.",
+  "canonical_hashes": {
+    "worldserver.exe": "ff165a954fd3c16f37fdd8a33780f0b4156f8bcc78b29a985eacabf944c0b75e",
+    "bnetserver.exe": "42e206aa5942efba764a8dba66674977706f1349ccfa7aae8bbd7222731a98a3"
+  },
+  "limits": [
+    "Actual client pickpocket/control click/cage and cache UI/spell completion, physical barrier collision/rendering/fear movement/audio, live grid unload/re-entry/reconnect/retry, full1078 and all36 whole acquisition chains remain OPEN. Native tests use controlled earlier endpoints and seeded poses, not complete client traversal.",
+    "Earned48004 stage3..7 actor recreation is tested as an explicit native endpoint, not proof of complete instance persistence or fresh-instance resume. No automatic key grant, forced opening cast, quest/scenario shortcut or character reset added.",
+    "Native cage/cache Use remains original211689/211687; their legacy Hello/earlier admission/cancellation acknowledgement behavior remains a separate review. Mixed canonical DBErrors, shared81040 and101430/103151 LINK2 are unresolved. No logs suppressed or unknown LINK actions fabricated."
+  ],
+  "next": "Continue independent native admission/completion review of Devourer cage249809/cache248992, Wardstone136802 actual105580 pickpocket producer and entry/re-entry endpoints. Preserve native211689/211687 and distinguish player-target211687 criterion28 from cast29. Desmond105332 LINK1 was already repaired by4af46d6f3; old Wardstone LINK4 belongs to separate Talonclaw reconstruction. Mixed101430/103151 LINK2 and81040 remain unresolved. Actual client/full1078/all36 remain OPEN.",
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp": "a551e53dff0d80796061d0a25ce3ac0adfa2472bbbbdc7b26114191c5eaa5da2",
+    "tools/tests/DevourerClaimCertificate.ps1": "0f36360ac7ed508c8d0be32f3da84ca9774003473c905f6914be8cc89ee3bd38",
+    "tools/tests/DevourerDoorCertificate.ps1": "9946b1eddede8b36cf35262e6eaaa494faf77e0e28b3d3de8c698c86e4332a5b",
+    "tools/tests/DevourerDoorTest.cpp": "31ae3d68df667833febef84cfd368069bc19647c3b99813280a475131635faae",
+    "tools/tests/DevourerDoorNative.cpp": "a8a344f768c760b4534ff2ca187d6a7f05e205c30391f3a26cce958996ed9770",
+    "tools/tests/DevourerDoorFaultNative.cpp": "d2d98a83bf244c1b21a6edcc45aa50364856caea1a923277cda9eff44a8edb1e",
+    "tools/tests/Test-DevourerDoor.ps1": "0ffb8c18542f4a26e4d4b693878cfd047f321e46f923a0be27bf163b8f28b826",
+    "tools/tests/Test-DevourerDoorNative.ps1": "0285f4588f67a2bfb5b05eb00469b88f3878a79c19d78dd31f43dc259d8f5ace",
+    "tools/tests/verify_devourer_door_release.py": "c3ff294be4f1e69f4e00ca5c4265de4e7745f33764ce3eb5702b6825940df5d4"
+  },
+  "evidence_sha256": {
+    "Catalog.cpp": "af921693231cc84c524ac82ce789d54e0f662e1577c56232629878f4f5c9eec1",
+    "Trees.cpp": "0fef735f542f5404f7ec4ecd99999d2b6b2a18b3a0cae5a5e8e7b701b89000d4",
+    "AllTrees.cpp": "0aa1824f717d6709c284bc2c26e5173bdf7f9fdf3072eacb018a6cc8faf450f7",
+    "Spells.cpp": "b227e6e659689537801581fe7f3ab118026cf63df072a7c9269c669d201f908a",
+    "catalog.tsv": "6e6f5337e1c07e7432bf80e2779effe032d7d1a1825b672c493673a0e844ef2d",
+    "trees.tsv": "09cfd12d036f53be9c4b63f9a1d93e065f37f690fa979ad6cb7c5a371fe6ceda",
+    "all-trees.tsv": "5ee579aac65ad8ad0f81e281b9cab4269d9bc2db81c3f4c625fe499ab18e4870",
+    "spells.tsv": "0aeb64fae767093a02838b1dd33c97ebbd9fc32c21767bfbc164daf0be0ac7e9",
+    "world.tsv": "d0fa2bea6f39fd288bb2d13e1e9ecdb4dea7a276f99c0ba50001d12ef643236e",
+    "details.tsv": "bdfc19062cf3b7387fcfde5abf35fcb3b443a552ba24c07b63f7ec65a398358a",
+    "native-routes.tsv": "78966ed393c79a3ab153682b0ed2dee236b6381f707df760315ffdb26ce2020d",
+    "item-route.tsv": "bb97f4972b1a6ba1c76cec9bc0bbd74fdd6a2dd3eff583911c2dc1c841ac4196",
+    "wardstone-route.tsv": "d58732888a69ae3e3b8afaaa7dbc163b4a71078ce66e90f2066043d3b03fa9c2",
+    "followup-smart.tsv": "6c25f1dc23c9507786bb2d1fd4b4ff20c4b70a18e7d975016e8b3e18a6aecc0a",
+    "asan-baseline.log": "eab96d9b7abc07bd674507be7ac6286534da267deefa11c7ec13af1b1bfdae20",
+    "asan-final.log": "8f34ea41c64348a1b012dd097bfb2a796121aac0ecf3bb78d4e26aa0ce29002a",
+    "native-baseline-release-final.log": "68582b7c751a31395778a2182d87c997d159d3b817a63ebf0a2b9933dfddf459",
+    "native-release-final.log": "2346b3ede8f6059cb7e4eea9034720cf8dc75e7001ff3390d80355cb5119fa17",
+    "door-native-faults.log": "a86225b5f1c581d6fe1173db9ae91791e0aaf5902611bee700cc64453a870c28",
+    "claim-retained.log": "e4aad43f9a95893bb26534e3c2137fd14872e2b6ee0f0026bf5105969f89b4d5",
+    "zirus-retained.log": "67444df1d1f35c1b35c40e72623492276e5eeeceab8b9eb6e27c11d5155fb8db",
+    "build-result.log": "4cd3eef588c229af9751123a2e4009587d031d444b0982689c62750ad03bcb11",
+    "pe-stage.log": "683c2705ce226ccdb00376d97ea33c6fba4d9a994b1fa0ee8e6f8288fd893489",
+    "pe-retained.log": "b0ade3a0d042956c997f37d8383322e40eaf744f011119cff98ee99ac20e3c0b",
+    "pe-canonical.log": "683c2705ce226ccdb00376d97ea33c6fba4d9a994b1fa0ee8e6f8288fd893489",
+    "scepter.log": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be",
+    "startup-evidence/diagnostics-after.json": "1245c52ef7b4b5ad8a805385ebff83ad5d13b217a5bc31ec67b4164bea0174bb"
+  }
+}
