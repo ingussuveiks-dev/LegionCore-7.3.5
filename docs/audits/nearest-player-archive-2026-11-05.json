@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED after9AE10E79/BD3FF659 deployment; owned10464 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/nearest-player-2026-11-05",
+    "manifest_sha256": "6abfe145ef18087df247c3802d171a738ba67d5848c85005a23868c116de32c6",
+    "files": 286,
+    "bytes": 864949,
+    "fix_commit": "eb256de2c07f3987598cc86c9f83fdd256067603",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/nearest-player-2026-11-05.json",
+  "review": "Preserves24pinned native contexts with12expected-broken first/radius/visibility/life counterfactuals paired98ASAN actual extracted helper/check/visitor contexts and24actual final native method/grid/Creature compatibility contexts. Retained36offer/50gate/34smoke native pass; source inventories137textual/136potential code sites and explicit false Headless Horseman caller. Sequential original game/scripts Release/final-link libraries, selected/canonical concrete Cell-Map-last-searcher-to-predicate/radius/life proofs and Scepter. Owned10464 ready/graceful0/exit0/gone. Missing native ObjectVisitors include, extra ASAN parser parenthesis and leaf-bound/identical-constructor-fold PE assumptions preserved with passing corrected evidence. No unexplained new runtime crash/error/DBError",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Whole136 call-site gameplay and actual client quests/combat/UI/voice/camera/pets/groups/reconnect are not certified by helper contract tests. Full artifact chains/all36 remain OPEN. Native seeded poses/life/grid endpoints and ASAN modeled geometry are separately identified.",
+    "Life=false includes living and dead; it is not dead-only. Default true and existing Creature selector remain live-only. Generic range retains native contact/size and3D behavior, not a new center-distance or LOS/visibility requirement. Native transport/radius metrics are delegated unchanged; real moving-ship/client traversal not newly exercised.",
+    "No pet/guardian kill credit, scaling, faction admission, group awards or exactly-once quest progress is implemented here. Existing callers must still resolve actual eligible owners/group recipients; nearest alone never proves progression eligibility.",
+    "Original Althea214873 startup/protection intent, Merlis corpse/AI/grid reconstruction and unknown shared101430/103151 LINK2/WardstoneLINK4 remain OPEN. Existing mixed DBErrors retained."
+  ]
+}

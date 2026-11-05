@@ -49,5 +49,15 @@
   "inventory_sha256": {
     "callers.json": "97f8c9ef6b7efd55bb174326f9f93ef43d574c473226072110fca2f5e98cf4f6",
     "active-callers.json": "6e9f5bbf2ac3c5a6c8d6f9425779bd9da566c704dac661402d7e0fea98289667"
+  },
+  "fix_commit": "eb256de2c07f3987598cc86c9f83fdd256067603",
+  "archive": {
+    "audit": "docs/audits/nearest-player-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/nearest-player-2026-11-05",
+    "manifest_sha256": "6abfe145ef18087df247c3802d171a738ba67d5848c85005a23868c116de32c6",
+    "files": 286,
+    "bytes": 864949,
+    "fix_commit": "eb256de2c07f3987598cc86c9f83fdd256067603",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
   }
 }
