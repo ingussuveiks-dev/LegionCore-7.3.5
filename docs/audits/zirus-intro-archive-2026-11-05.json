@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED after61FC76D6/6427AC0A canonical deployment; owned31200 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/zirus-intro-2026-11-05",
+    "manifest_sha256": "1eacc5a2f1ecef3e1351c85c9ccfce4df2b7501b3553848eed6283df293dda86",
+    "files": 353,
+    "bytes": 735399,
+    "fix_commit": "267b48553e17128bb1fd2d48e2d488ae77776381",
+    "verified": "Every source/archive/source SHA256 and local credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 remains unresolved, informative server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/zirus-intro-2026-11-05.json",
+  "review": "12 pinned native expected-broken/control contexts paired36ordinary whole-class native/4separate restored-data retry contexts/50ASAN actual callback+EventMap+receipt contexts, including100000-tick combat differential. Earlier mixed ordinary2injected warnings retained as non-clean run paired clean ordinary36 and explicitly classified4warning fault run. Retained10native death/owner/seven doors/1890 and22ASAN final-Akaari opening; original library paths/build/isolated link, selected stage/canonical registration/fullGUID/current receipt/latch/retry/native combat PE, mandatory Scepter and owned31200 ready/shutdown0/exit0/stderr empty/gone pass. Initial readonly field, native Windows far macro, unused copied fixture pointer comparison and private PE dictionary/index errors retained with corrected passing evidence. Native/ASAN geometry/seeded quest/stage/poses/direct LOS and controlled clocks distinct from actual client. No unexplained new runtime crash/error/DBError.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client LOS/physical movement, visible virtual actor/bubbles/enUS audio/7500 scheduling, group/phase/reconnect/grid/re-entry and complete1078 chain remain separate checks. Native seeded endpoints and ASAN mocks do not prove a full client traversal.",
+    "Once accepted, introduction remains once per actual source lifetime, including Reset, as before. This patch does not reconstruct full scene checkpoints across source despawn/grid reload/instance recreation or certify all36 acquisition chains.",
+    "Unowned companion progression policy, original1948/return/exit, unknown105332/shared101430/103151 LINK2/WardstoneLINK4/pickup81040 DEBUG edge and existing mixed errors remain independent OPEN investigations."
+  ]
+}

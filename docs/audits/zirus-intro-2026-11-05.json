@@ -60,5 +60,15 @@
     "pe-canonical.log": "5cb2caebb095cc19562e84962711d1b49a7f459ef5e779c5f2f8bdf413688bf3",
     "scepter.log": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be",
     "bindings-next.tsv": "83cfe4a796bfd7b516643c1e84635059282bc04d5884fce2f273827b99e8daa4"
+  },
+  "fix_commit": "267b48553e17128bb1fd2d48e2d488ae77776381",
+  "archive": {
+    "audit": "docs/audits/zirus-intro-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/zirus-intro-2026-11-05",
+    "manifest_sha256": "1eacc5a2f1ecef3e1351c85c9ccfce4df2b7501b3553848eed6283df293dda86",
+    "files": 353,
+    "bytes": 735399,
+    "fix_commit": "267b48553e17128bb1fd2d48e2d488ae77776381",
+    "verified": "Every source/archive/source SHA256 and local credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 remains unresolved, informative server history retained. No active log cleared."
   }
 }
