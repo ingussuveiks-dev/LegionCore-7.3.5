@@ -102,5 +102,15 @@
     "Native209055 camera, actual209066 worldport ACK/instance entry/full1078 route, pet/reconnect/group independent portals",
     "Full combat/scenario/loot/turn-in/return and all36 complete chains are not certified"
   ],
-  "next": "Investigate newly exposed unrelated Hatchling Poop214862 chest Data7=214863 linked-trap/type3 mismatch: initial loader misses forward reference; failed TEMP shadow caused second whole loader and surfaced it. Keep entire mixed diagnostic run20261105-231341-007 outside fixed until matching26972/local schema/Trinity reference establishes cause and repair; no blind clearing/type change. Continue remaining artifact native entry/whole-chain gaps and client checks. Known late-charm/shared81040/101430+103151/canonical mixed6090 remain OPEN."
+  "next": "Investigate newly exposed unrelated Hatchling Poop214862 chest Data7=214863 linked-trap/type3 mismatch: initial loader misses forward reference; failed TEMP shadow caused second whole loader and surfaced it. Keep entire mixed diagnostic run20261105-231341-007 outside fixed until matching26972/local schema/Trinity reference establishes cause and repair; no blind clearing/type change. Continue remaining artifact native entry/whole-chain gaps and client checks. Known late-charm/shared81040/101430+103151/canonical mixed6090 remain OPEN.",
+  "fix_commit": "7d3cd3e611fc77f2104b263e0baaec3c63947585",
+  "archive": {
+    "audit": "docs/audits/devourer-portal-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/devourer-portal-2026-11-05",
+    "manifest_sha256": "67b894af68906c53d221b9274f135969cc257ecd64d042eef3a118fb4627c9be",
+    "files": 1001,
+    "bytes": 2605118,
+    "fix_commit": "7d3cd3e611fc77f2104b263e0baaec3c63947585",
+    "verified": "Every source/archive/source SHA256 and local credential scan verified. Configs/binaries/PDB/character data excluded. Resolved LFG-less native fixture crash trace/instance allocator/MariaDB TEMP-preparation/compile/query iterations paired with clean repaired regressions. Entire mixed214862/1792 run excluded and original hashes preserved. No active logs truncated or user server stopped."
+  }
 }

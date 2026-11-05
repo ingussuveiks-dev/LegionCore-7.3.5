@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED afterDE6034A2/CB0A3ADB canonical deployment and World03 readback; owned15556 gone",
+  "audit": "docs/audits/devourer-portal-2026-11-05.json",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/devourer-portal-2026-11-05",
+    "manifest_sha256": "67b894af68906c53d221b9274f135969cc257ecd64d042eef3a118fb4627c9be",
+    "files": 1001,
+    "bytes": 2605118,
+    "fix_commit": "7d3cd3e611fc77f2104b263e0baaec3c63947585",
+    "verified": "Every source/archive/source SHA256 and local credential scan verified. Configs/binaries/PDB/character data excluded. Resolved LFG-less native fixture crash trace/instance allocator/MariaDB TEMP-preparation/compile/query iterations paired with clean repaired regressions. Entire mixed214862/1792 run excluded and original hashes preserved. No active logs truncated or user server stopped."
+  },
+  "review": "44 actual native opening/use contexts,8 pinned expected-broken controls and6 explicit refused/interrupted cast controls all pass with actual source/native libraries and final live data. Earlier real105435 credit cannot substitute for current209056 hit. Native90 personal credit preserved for grouped owner; no group grant invented. Native portal model self-occludes its center: first-hit actual GO surface and intervening249391 barrier/removal controls verify retained collision. Three matching BroadcastText/SoundKit/FileData and read-only full CASC/ffmpeg durations retained. Idempotent TEMP SQL preserves unrelated rows/custom script and missing39597. Retained46 escape/24 door/22 clones/49intro+16capture ASAN, original static-library final link, selected stage/canonical registered PE chains and Scepter pass. Offline promotion before updater exposure/World03 RELEASED and protected runtime/owned graceful shutdown verified. Development native crash cause was absent actual LFG startup data, not a production core patch; repaired allocator/session prerequisites retain native transfer endpoint. Failed TEMP preparation also exposed unrelated214862 Data7 linked-trap/type3 mismatch: mixed diagnostics stay outside fixed, next independent investigation. Canonical mixed6090/late-charm/shared findings and actual client/full1078/all36 remain OPEN.",
+  "deferred_unresolved": {
+    "path": "build-extractors/runtime-test/devourer-portal-native/20261105-231341-007",
+    "files_preserved": 27,
+    "reason": "Mixed1792 TEMP-preparation errors and newly exposed214862/214863 linked-trap mismatch; no mixed log cleared, no unexplained diagnostic archived as fixed."
+  },
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Native accepted-quest/poses/clocks are controlled; no authenticated client or actual far worldport ACK/gameplay/audio/camera/pet/reconnect/full1078/all36 claim.",
+    "Full native-core ASAN not established; retained extracted ASAN scopes described separately."
+  ]
+}
