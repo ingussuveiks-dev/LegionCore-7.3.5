@@ -10,7 +10,7 @@ template struct FixtureAccess<EscapeCheckTag,&Spell::CheckCast>;
 static uint64 EscapeLeaf(Scenario* scenario,uint32 id){auto p=scenario->GetAchievementMgr().GetCriteriaProgressMap();auto f=p->find(id);return f==p->end()?0:f->second.Counter;}
 static void EscapeTick(Player& player,uint32 ms){for(uint32 t=0;t<ms;t+=100)player.Unit::Update(std::min(uint32(100),ms-t));}
 static void EscapeRetry(Player& player,GameObject& cache){player.GetGlobalCooldownMgr().CancelGlobalCooldown(sSpellMgr->GetSpellInfo(211687));cache.Use(&player);EscapeTick(player,2500);}
-int main(int argc,char**argv){try{
+static void InitializeEscapeNative(int argc,char**argv){
  InitializeDoorNative(argc,argv);
 #ifndef DEVOURER_ESCAPE_BASELINE
  auto& names=const_cast<ObjectMgr::ScriptNameContainer&>(sObjectMgr->GetAllScriptNames());
@@ -28,6 +28,10 @@ int main(int argc,char**argv){try{
 #endif
  }
 #endif
+}
+#ifndef DEVOURER_ESCAPE_SUPPORT_ONLY
+int main(int argc,char**argv){try{
+ InitializeEscapeNative(argc,argv);
  auto reclaim=sSpellMgr->GetSpellInfo(211687);Require(reclaim&&reclaim->CalcCastTime()==2000,"Native two-second reclaim time changed");
  uint32 cases=0;
  for(uint32 race:{uint32(RACE_HUMAN),uint32(RACE_ORC)})for(uint32 mode=0;mode<23;++mode){
@@ -85,3 +89,5 @@ int main(int argc,char**argv){try{
 #endif
  CloseAltheaNative();return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}
+
+#endif

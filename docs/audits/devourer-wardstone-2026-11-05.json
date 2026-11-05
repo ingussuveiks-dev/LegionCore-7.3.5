@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-05",
+  "status": "NATIVE VERIFIED unchanged8101B35A/CB0E839A: actual rooted Rogue Stealth1784/Pick Pocket921 on real Soulkeeper105580 loot, native LOOT_ITEM packet storage136802, obtain5/210097 and54824 progress1->2, original cage211689/cache211687/door50536 through3 once.12 Human/Orc full-bag/reopen/duplicate/group/glyph/pet/guardian/Cheap Shot expiry contexts +typed26972/hotfix +retained46 live escape pass. No production/data defect found in this bounded path; tests/shared fixture only, no binary/SQL deployment. Full native capture/client/all36 OPEN.",
+  "scope": "Verification/regression coverage for actual Wardstone pickup and native stage1->3 escape. Production Devourer.cpp, Rogue spell code, core and world data unchanged. Shared native escape initialization extracted behind SUPPORT_ONLY solely for reuse; retained46 native escape contexts pass.",
+  "findings": [
+    "Live361049/105580 Soulkeeper at1849.74,1255.91,57.6275, map1607/phase1+7000, humanoid type7/passive AI, actual pickpocketloot105580. Item136802 has100% pickpocket row; real source is within4.5yd of scripted cell pose1847.77,1259.92,57.09. Actual full pickpocket loot table rows retained; native test uses original drop table, no synthetic key or replacement grant.",
+    "Earlier prose/source comments called211684 a stun. Matching DB2 effect aura26 and actual SpellAuraDefines/Unit flags prove it is MOD_ROOT, while MOD_STUN is12. Previous numeric211684 behavior is retained; this audit corrects terminology. Root allows normal native Stealth1784, whose native form30 admits ordinary921. Unstealthed921 is properly refused ONLY_SHAPESHIFT112 without generating loot.",
+    "Actual ItemEffect136802->210097 uses native trigger5 ON_NO_DELAY_USE/on obtain. Real native packet storage applies Cell Door Key aura and real key destruction removes it. No script aura grant/removal was needed. Correctly initialized real backpack/full-bag refusal preserves the same loot GUID/unlooted count/key row; ordinary close/recast921/reopen/free slot/packet retry succeeds.",
+    "Native stage1 root47360 operator8/amount1 has47377 type42/136802 plus54243 type92/54824 flags2. Existing project Player.SendNewItem136802 emits54824 before StoreLootItem dispatches LOOT_ITEM42. Final actual runs advance1->2 through54243 once;47377 remains0 because its stage is already over. Both alternatives are typed-verified; do not claim the loot42 leaf itself advanced, invent the meaning of flags2, or delete the existing54824 helper based on that ordering.",
+    "Ordinary case, full backpack/reopen/retry, unstealthed refusal then success, actual group, actual glyph63268/registered921 BeforeCast and real pet/guardian nonplayer rejection each run for Human+Orc. Additional real209238 Cheap Shot is advanced10s, blocks native Stealth while still stunned, then expires through native Unit.Update after another11s, retaining independent211684 root and allowing ordinary pickup. This is a controlled remaining-aura endpoint, not the whole preceding capture encounter."
+  ],
+  "checks": {
+    "native": "12 current whole native acquisition contexts use real Player/Item/Map/Scenario/Spell/loot/packet decoder and handler. No key seeded: normal1784->921 fills original105580 loot; actual SMSG LootResponse container GUID verified registered, one-based CMSG_LOOT_ITEM decoded and passed to actual HandleAutostoreLootItemOpcode. Full-bag attempt changes no item/aura/progress/loot count; native release and ordinary repeat921 retain same loot GUID, free only a controlled backpack placeholder, then actual packet receives exactly one key. Replayed slot cannot duplicate it. Real obtain210097 and existing54824 reach2; no48002/48005/50536 until actual subsequent cage Use,2s cache cast and door Use. Both phases4, original key/210097 gone, actual root48001 advances2->3 once. Live spell_devourer_escape registrations required by shared native initializer; actual whole registered921 class exported with only outer probe type renamed. Actual proc event/proc/linked loaders used. No forced Player cast/GCD cancellation, AddItem or manual progression in these tests; pet/guardian negative controls alone use triggered native casts.",
+    "source_guards": "Fresh readonly world records and public native query assert no currently omitted source8/105580 loot conditions, source13/17 spell conditions or spell_area rows for all affected spells/glyph. Actual bindings921/211687/211689 selected; any new unknown binding for other affected spells fails explicitly rather than silently skipping it. Real linked Stealth rows loaded. Character/Login/World/Hotfix pools readonly, account session cleanup shadows temporary on both login connections, no character/account saves.",
+    "typed": "DevourerWardstoneCatalog.cpp loads matching26972 stores with readonly hotfix overlay: Pick Pocket71/target25, root26 versus stun12, disarm67/254, obtain5/210097, original164 removal+61/50908, native2116872000ms and real stage1 ANY/loot42/54824 alternatives. Typed test is content evidence, actual gameplay supplied separately by12 native contexts.",
+    "retained": "46 actual live native escape contexts pass after InitializeEscapeNative extraction/SUPPORT_ONLY main guard. No production code/data changed; canonical hashes unchanged from verified prior2d4c99d0c deployment, which already has registered PE/Scepter/ASAN evidence in devourer-escape-2026-11-05.json. A new Release build/startup was unnecessary; no hidden server launched or left running."
+  },
+  "iterations": [
+    "Initial readonly creature query guessed newer-core name field in creature_template. Actual Legion schema keeps Name/Type in creature_template_wdb; corrected readonly query preserved. No schema/data mutation.",
+    "First native observation used nonexistent PLAYER_FIELD_BYTES; corrected to native inventory field, then proper SetInventorySlotCount16 so its cached end slot is initialized too. Initial normal921 refused112 because no actual Stealth form was set; native ordinary1784 supplies it, rather than bypassing shape validation.",
+    "First actual Stealth->921 probe crashed c0000005 at SpellMgr.GetSpellProcEvent: minimal prior bootstrap had no proc-event vector initialization. Repaired the native fixture by calling the actual LoadSpellProcEvents/LoadSpellProcs (and linked loader) as canonical startup already does. Captured stderr/stack/exit retained; final12 native/metadata and retained46 pass. Production already initializes those tables: no engine guard suppression or claimed production crash repair.",
+    "Exploratory direct StoreLootItem observation was replaced in public regression by the actual decoded autostore packet/container lookup/handler. Ten initial successful contexts extended to12 for the specific remaining Cheap Shot concern. No passing result substituted for failed iterations."
+  ],
+  "diagnostics": "Before/after every automated/native/typed test: canonical+own crashes and log lengths/timestamps, exit/stdout/stderr, appended server warnings/errors/assertions/DBErrors checked. One explained bootstrap-only failed probe above paired final repaired12 and retained46. No new unexplained diagnostic in final runs; canonical Crashes empty and mixed6090 DBErrors SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved, never cleared. No worldserver/bnetserver launched this turn.",
+  "canonical_hashes": {
+    "worldserver.exe": "8101b35af2659c485ec1ad9b4a600ed3ea6e54a6f8e4c54215629640a23e8afc",
+    "bnetserver.exe": "cb0e839aa5f7a1503a3d896829d313334808e460779c6920ec0a401a20b3c318"
+  },
+  "limits": [
+    "Full preceding Akaari105536 combat, accepted teleport/actual ACK/client arrival and capture helper timing not traversed. Earlier active41924/stage1, root/disarm, location and16-slot backpack are seeded; Cheap Shot remaining timer is controlled. Source uses actual template/loot/pose with the native fixture NullAI; actual passive NPC detection, phase7000/client rendering, terrain/path walk, learned client action buttons and audiovisual presentation remain OPEN.",
+    "Tests manually relocate the eligible player between cell/cache/door after native release, not a client movement/collision path. Native group uses actual Group/shared scenario dispatch, not all member/race/class/visibility/client variants. Logout/re-entry/fresh instance and full1078/all36 chains remain OPEN.",
+    "Mixed6090 DBErrors/shared81040 and101430/103151 LINK2 remain unresolved. No new production fix, binary deployment or SQL migration is claimed."
+  ],
+  "next": "Trace native opening Akaari105536 whole timed capture, accepted near teleport and actual ACK/arrival, remaining209238 Cheap Shot/helper209264 plus211684 root/211686 disarm/50261 ordering. Wardstone acquisition now exercised from actual105580 loot instead of a seeded key. Preserve actual1078 event50261 then real item/54824 progression. Real combat/one-hit/pet/guardian/abandon/re-entry and client route remain separate, no credit or item grant shortcut. Mixed6090 DBErrors/shared81040/101430+103151 LINK2 unresolved.",
+  "source_sha256": {
+    "tools/tests/DevourerEscapeNative.cpp": "3322ba7dcd1944765655b0bc2573677874ff2b5f463008553a2b6b2bf18b8d9f",
+    "tools/tests/DevourerWardstoneNative.cpp": "98a4d8d1dd73fdd225b4b73548a633662eeae4c1dc45565b21c93ca94e04b9c4",
+    "tools/tests/Test-DevourerWardstoneNative.ps1": "6debadd2ebeb0f53cd3be9bfc21e83fadcdc352de593a2af4b6391cbce3ec8bc",
+    "tools/research/DevourerWardstoneCatalog.cpp": "5d51b380dbce3df1934c6ba8424d7251ce677515fd96e9bbfe0025e5c1de8dc3",
+    "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp": "906002f1e5a12c82666a9d653e1bbcc9c180eadbe61af7af1733caf859c3faf6",
+    "src/server/scripts/Spells/spell_rogue.cpp": "7a5451c5950dc43a9941ec9c367923ccdaa4e84730a45d30d47da48f420fe532"
+  },
+  "evidence_sha256": {
+    "Catalog.cpp": "03e93a50c1756d5cfac2fac5ae9ef855fdebe9f3f6798c01488d8ab0c1d9c556",
+    "catalog.tsv": "5792c7f04f7a34e1013be6376750b21db82d2a99ca9766966cb6e78a380c8dc7",
+    "world-reviewed.tsv": "8ebc0075d8df38c06f6f527f0b432892357790535a23fef769909457bf850795",
+    "conditions.tsv": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bindings.tsv": "7f91908ec64912719a0efeb5de1fa2f4cbab6997328a6fcba11c530262d50be6",
+    "spell-area.tsv": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linked.tsv": "72d474ec77f745654bfb99cde3cd6a3713fed40b55e8e197dfba8c0886dd6c96",
+    "native-capture-aura.log": "033944f84ad0949b572ed9ab3b339a2a21cbacf376368085215721e9a13fdb8d",
+    "escape-retained.log": "72d0e028995eec11342c350df9720a87f466b27738dc669858fd3d81760a742b"
+  },
+  "latest_native_evidence": {
+    "build-extractors/runtime-test/devourer-wardstone-native/20261105-185143-388/native.tsv": "5fc3501cf4092f39ce1320cae98848ffe772dfcd33d8a3b2f53413ae5545f1e8",
+    "build-extractors/runtime-test/devourer-wardstone-native/20261105-185143-388/metadata.tsv": "6d21710e800351a51a5461ae8a0844e7384219081c46fee4c6623f1cd0ea8e60",
+    "build-extractors/runtime-test/devourer-wardstone-native/20261105-185143-388/native-inputs.json": "4972715876fc71be51f6f3ab361d13c421db29d815c73ead788898762960aa73",
+    "build-extractors/runtime-test/devourer-wardstone-native/20261105-185143-388/evidence/diagnostics-after.json": "f9cbd73c534c5258fbf693cf23e5eceee450ee0a90ee2c259b200a0b57e6dad0"
+  }
+}
