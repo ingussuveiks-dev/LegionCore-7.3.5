@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED after9B152D06/12D9D3CD deployment; owned30092 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/devourer-death-voice-2026-11-05",
+    "manifest_sha256": "5545f369bcbef0473b0f1e28b0542ac065cd1fbf1ba9ba8fac0b52320488c1e7",
+    "files": 353,
+    "bytes": 660934,
+    "fix_commit": "849a3f8e4b23d6197c000169b5e239e25e9835dc",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/devourer-death-voice-2026-11-05.json",
+  "review": "Preserves6pinned whole-AI native death counterfactuals paired27ASAN/8native deaths/104native exact binding, fullGUID/duplicate/phase/range/slot/entry/source-scope/cancellation/allocation controls. Native8 includes2explicit invalid actor factories with independent successful50300. Original26972 death4095/108764/SoundKit63723/FileData1392442 plus World actor/opaque payload7350; no client audio claim. Retained39entranceASAN/48entranceNative,16capture/16owner death and pickup storage/27refusal/equip ASAN, stage/canonical derived virtual dispatch/fullGUID/source-scope/default alive guard and previous entrance/nearest/Kingslayers/capture/death/pickup PE, mandatory wrapped Scepter. Original-input scripts Release, offline promotion and owned30092 ready/graceful0/exit0/gone. Wrong readonly schema guesses, private UTF8 script refusal/untouched-original test failure and native host duplicate declaration retained with repaired passing evidence. No unexplained new runtime crash/error/DBError",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client death voice/bubble, scene1254 rendering/audio/camera and full combat/route/loot/equip/reconnect/full1078/all36 remain OPEN. Real native payload/launch does not certify playback.",
+    "Native tests seed earlier quest/stage/pose/actor admission. Scope cancellation endpoint is explicit, not a full abandonment/re-entry/client traversal. Source/grid/AI/instance reconstruction and persistent recovery need independent coverage.",
+    "Original combat1942 raw Unit caster and1943..1946 scheduling/actor identity remain separate; no silent timer/dialogue repair inferred. Existing pickup81040 DEBUG edge,105332/shared101430/103151 LINK2/WardstoneLINK4, Althea startup and mixed DBErrors remain OPEN."
+  ]
+}

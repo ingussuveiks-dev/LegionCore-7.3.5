@@ -50,5 +50,15 @@
     "world-real.tsv": "39fb52d211eb7ed144caa094b2cb42c6dbcb1612fdf0147963eb9aa6513ada67",
     "schema-real.tsv": "c5bc0320331a071d9991123fb5bfc788dcfa24f4e01d2debe31a8eeca0f0b97e",
     "catalog.tsv": "529c4ddf2bf58846618188afa5b2079959551d63fcd4cef1ca4815be687aa0df"
+  },
+  "fix_commit": "849a3f8e4b23d6197c000169b5e239e25e9835dc",
+  "archive": {
+    "audit": "docs/audits/devourer-death-voice-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/devourer-death-voice-2026-11-05",
+    "manifest_sha256": "5545f369bcbef0473b0f1e28b0542ac065cd1fbf1ba9ba8fac0b52320488c1e7",
+    "files": 353,
+    "bytes": 660934,
+    "fix_commit": "849a3f8e4b23d6197c000169b5e239e25e9835dc",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
   }
 }
