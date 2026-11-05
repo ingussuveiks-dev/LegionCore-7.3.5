@@ -1090,12 +1090,25 @@ class go_art_devourer : public GameObjectScript
     {
         explicit AI(GameObject* object) : GameObjectAI(object) { }
         ObjectGuid claimant;
+        std::shared_ptr<QuestCancellationReceipt const> claimReceipt;
         uint32 elapsed = 0;
         bool finished = false;
+        bool starting = false;
 
         void Cancel()
         {
             claimant.Clear();
+            claimReceipt.reset();
+        }
+
+        Player* ClaimantPlayer() const
+        {
+            Player* player = go->IsInWorld() ? ObjectAccessor::GetPlayer(*go, claimant) : nullptr;
+            // The native player registry indexes the low32 bits of a GUID.
+            if (!player || player->GetGUID() != claimant || !claimReceipt ||
+                claimReceipt->load(std::memory_order_acquire) || player->GetQuestCancellationReceipt(41924) != claimReceipt)
+                return nullptr;
+            return player;
         }
 
         bool GossipHello(Player* player, bool) override
@@ -1106,27 +1119,39 @@ class go_art_devourer : public GameObjectScript
         uint32 GetData(uint32) override { return finished; }
         void SetGUID(ObjectGuid const& guid, int32 = 0) override
         {
-            if (finished || !claimant.IsEmpty())
+            if (finished || starting || !claimant.IsEmpty())
                 return;
             Player* player = ObjectAccessor::GetPlayer(*go, guid);
-            if (!DevourerAcquisition::CanTake(player, go) || !player->GetItemByEntry(128476))
+            if (!player || player->GetGUID() != guid || !DevourerAcquisition::CanTake(player, go) || !player->GetItemByEntry(128476))
                 return;
+            starting = true;
+            struct Release { bool& flag; ~Release() { flag = false; } } release{starting};
             // Native209816 starts scene1257 and209819; the latter equips the
             // real looted parent/child through209818 at its native2000ms tick.
             claimant = guid;
+            claimReceipt = player->GetQuestCancellationReceipt(41924);
             elapsed = 0;
+            if (!claimReceipt || claimReceipt->load(std::memory_order_acquire))
+            {
+                Cancel();
+                return;
+            }
             SpellCastResult result = player->CastSpell(player, 209816, true);
             if (result != SPELL_CAST_OK)
             {
                 Cancel();
                 TC_LOG_WARN("scripts", "Devourer pickup: native scene209816 failed with result %u; retain looted item and object for retry", uint32(result));
+                return;
             }
+            player = ClaimantPlayer();
+            if (!DevourerAcquisition::CanTake(player, go) || !player->GetItemByEntry(128476))
+                Cancel();
         }
         void UpdateAI(uint32 diff) override
         {
-            if (claimant.IsEmpty() || finished)
+            if (starting || claimant.IsEmpty() || finished)
                 return;
-            Player* player = ObjectAccessor::GetPlayer(*go, claimant);
+            Player* player = ClaimantPlayer();
             if (!DevourerAcquisition::CanTake(player, go) || !player->GetItemByEntry(128476))
             {
                 Cancel();
@@ -1146,6 +1171,7 @@ class go_art_devourer : public GameObjectScript
             }
             finished = true;
             claimant.Clear();
+            claimReceipt.reset();
             // This is the native final step's real pickup event. Let Scenario
             // award completion; never issue a duplicate COMPLETE_SCENARIO.
             player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50301);

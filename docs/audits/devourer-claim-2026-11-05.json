@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-05",
+  "status": "DEPLOYED4232EF1B/289E6BE6: Devourer249347 pending pickup binds full128-bit Player identity and actual41924 cancellation receipt before209816 and delayed50301, refreshes after cast and blocks synchronous reentry. Owned real parent/child, native loot/equip/15s retry, original1948 and death/intro retained.4ASAN/16native counterfactual contexts paired25ASAN/16native current incl actual group/pet/guardian rejection; owned9768 ready/shutdown0/gone. Client/full1078/all36 remain OPEN.",
+  "scope": "Only go_art_devourer pending claim identity/quest-attempt/accepted-cast boundary. No SQL, shared ObjectAccessor/quest scope, native209816->209819->209818, inventory grants, actor/voice/GO lock/loot/phase/return policy changed.",
+  "cause": "Native ObjectAccessor delegates to HashMapHolder.Find, indexing only GetGUIDLow32. Existing SetGUID accepted a same-index different fullGUID and stored that identity; delayed UpdateAI likewise did not compare the resolved fullGUID. It also retained no native41924 cancellation receipt, so a controlled active retake or replacement scope at the retained stage6 could receive stale50301. Synchronous cast callbacks could enter UpdateAI before the cast result was accepted. Old test fixture represented GUIDs as uint32 and resolved an exact map key, concealing the actual lookup boundary. Controlled GUID collision evidence is not a claim of an observed exploit or normal client-login collision.",
+  "evidence": {
+    "local": "Live249347/spawn134111/map1607/phase7001/mask1 at1854.05,1275.41,91.7165,1.52036; type3/display9806/flags2113536/lock43/loot249347/ScriptName go_art_devourer. Matching1078 final stage6 requires real prior Akaari47369/50300 and actual pickup47371/50301. Original full class and actual GameObject.SetLootState/ScriptMgr dispatch, native inventory, Player.GetQuestCancellationReceipt/SetQuestStatus and ObjectAccessor bodies reviewed.",
+    "presentation": "Fresh typed26972/hotfix catalog4096 ->Broadcast108765 ->SoundKit63747 ->File1392466, AdditionalDuration1000/Next0. Whole readonly CASC Vorbis file41404 bytes/SHA256c10b6b7a1e68ee065382fe107a080e9a656c2ed6398b582ecc90136ea42cb0ef fully decodes5788ms; client index hashes unchanged. Existing virtual Valzuun actor52490/105464/display69095/duration6150 and original4096/start0 publish11150ms, enough for voice+native gap. No1948 actor or timing repair warranted. No listening or client playback claim.",
+    "references": "Matching local data/runtime/core first; newer local Trinity contains no corresponding go_art_devourer implementation. Origin fetched/current history and pinned d8973a49b inspected. No modern donor/video behavior copied."
+  },
+  "repair": "Store original native quest cancellation receipt with the full claimant GUID. Reject a fullGUID mismatch before native209816. A shared ClaimantPlayer helper refreshes the recipient through native lookup and rejects different fullGUID, canceled/missing/changed receipt. Revalidate native admission/real item after CastSpell returns, before leaving the pending state, and again before delayed native pair confirmation/50301. starting RAII guard blocks nested SetGUID/UpdateAI until the cast result is accepted. Cancel clears GUID+receipt, retaining original real item and GO_READY retry; completion clears receipt before original once-only50301/1948/model/GO cleanup. No shared lookup API or progression shortcut changed.",
+  "checks": {
+    "counterfactual": "4 assertion-enabled ASAN pinned d8973a49b cases reproduce wrong fullGUID admission, changed pending identity, cancel/reaccept and replacement receipt with stale50301. Actual native Find/GetPlayer fragments and cancellation receipt classes used. Separate16 whole-class native Human/Orc x8 controls reproduce10 broken contexts and6 eligible/refusal controls; expected-broken evidence, not an ordinary success.",
+    "asan": "25 current contexts using actual original native Find/GetObjectInWorld/GetObjectInMap/GetPlayer, QuestCancellationReceipt/QuestObjectScope and whole exported pickup handlers. Wrong high/upper-low/mixed GUIDs before cast;9 pending identity/cancel/current-scope/replacement Player/predelete/world/map/lookup changes;9 synchronous cast-callback invalidations; nested completion/reentry on successful/failed casts, explicit fresh retake retry and active COMPLETE. Fresh real loot/storage/child pair path preserved; fixture inventory/equip/cast services controlled, not native full-core ASAN.",
+    "native": "16 whole current registered pickup class contexts, Human/Orc x8. Actual native Player/Map/GameObject/Item/lookup/quest receipts/209816 accepted casts/achievement/Scenario/Conversation. Actual GO state dispatch starts the good INCOMPLETE/COMPLETE paths; malformed fullGUID endpoints and retained phase6 cancel/reaccept/scope replacement/changed playerGUID are controlled. Real Item.Create128476/128479 and owned inventory slots seeded, exact equipped pair moved into native slots as an explicit earlier endpoint; actual2s equip spell tick is not claimed. Canceled claims retain original native item/GO_READY and allow explicit fresh claim; native50301 advances6->7 once. Pet and guardian loot targets cannot start the Player claim. Actual group preserves1948 member audience, virtual52490/105464/display69095,4096/start0 and11150 lifetime. No character/account rows saved: pools readonly; both native session cleanup connections use empty TEMP account shadows.",
+    "retained": "Existing ASAN native storage/consume/isLooted/release/SetLootState whole pickup suite passes27 invalid admission contexts, real victory leaf, full-bag/null-store and cast/15s retry, bank-only, child GUID and once-only/no grant. Typed actual209816/1257/15000,209819/2000,209818/249/128476/child128479 retained.50 Zirus intro ASAN/native EventMap/receipts/combat differential contexts pass through strict full-source normalization; native Zirus/Akaari owner deaths and all earlier registered PE paths retained.",
+    "release": "Original generated Release scripts.lib and actual original final-link library paths used for isolated world/bnet link. Selected stage/canonical PE proves registered0x38 pickup AI/vtable slots1/6/7/9/16, full128 identity before209816, fullGUID/current receipt/cancellation flag helper used after cast and before50301, starting early return, cancellation clears owner+receipt, real parent/child branch before latch/50301,15s timeout/original1948/model cleanup and no AddItem/explicit1078 reward. Existing full Zirus/Akaari/nearest/entry/death/pickup checks and mandatory canonical Scepter binary proof pass.",
+    "deployment": "Offline predecessor61FC76D6/6427AC0A EXE/MAP backup hashes verified; promoted4232EF1B/289E6BE6 to canonical build-extractors/bin/Release, protected configs/certs/DLLs unchanged. No SQL/updater dependency. Owned worldserver9768 fresh ready/graceful shutdown0/exit0/stderr empty/gone, no user process stopped."
+  },
+  "iterations": [
+    "Initial ASAN fixture needed const GetMap for actual ObjectAccessor signature. Its first map-backed registry could not accept native volatile uint32 index; replaced it with native-style vector storage, retaining clear-as-remove-all fixture semantics. Native Find body remains verbatim. Both compiler failures retained and paired with passing baseline/current. Existing native unused debug _sizeV warning remains visible.",
+    "First native fixture relied on defaults declared only in derived AI, while GameObjectAI interface requires explicit id0; corrected probe calls. No production API changed.",
+    "Initial native baseline payload assertion incorrectly required the original exact caster even in the deliberately changed pending-Player GUID counterfactual. Capture actual completion caster for that old-code case; current code rejects it and uses the real GUID only on fresh retry.",
+    "Native GO Create GO_STATE_READY is visual state, while completed-loot GO_READY is a separate state. Correctly seed native loot readiness for direct AI endpoints and exercise real GO_JUST_DEACTIVATED dispatch for valid Player paths; old fixture expectation failure retained. Final paired16 include actual group and pet/guardian targets. No production state bypass or logger suppression."
+  ],
+  "diagnostics": "Every automated/native/build/runtime/PE test includes canonical+own crash inventories and log offsets/timestamps before/after, exit/stdout/stderr, appended warnings/errors/assertions and DBErrors review. No new unexplained crash/error/DBError. All controlled counterfactual/fixture failures paired with repaired pass. Canonical Crashes empty; mixed6090 DBErrors hash8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved, never cleared. Fixed archive follows focused commit.",
+  "canonical_hashes": {
+    "worldserver.exe": "4232ef1b86e939e98410974848a0a407e7eb5ab53c5040b7e5392346d543c71e",
+    "bnetserver.exe": "289e6be6c887585258f3c0c7deb6efffb4ee7932d5043b7b72059d275a598f37"
+  },
+  "limits": [
+    "Actual loot UI/open-kneeling/full bags, native delayed209819->209818 equip/scene1257/animation/client paired blades/1948 audio/rendering, retake/reconnect/re-entry/return and whole1078/all36 chains remain OPEN. Native earlier quest/stage/death leaf/inventory/equip/poses are explicit seeded boundaries, not full traversal.",
+    "Cancellation prevents stale50301; existing owned artifact and native equipment/scene effects are retained. This patch does not delete a legitimately looted item, reset a character/scenario or claim to reconstruct full acquisition checkpoints.",
+    "Shared missing81040 DEBUG edge, unknown105332/101430/103151 LINK payloads/Wardstone LINK4 and existing mixed errors remain unresolved. No fabricated spell/LINK action, new item/quest grant or log suppression."
+  ],
+  "next": "Independently reproduce native Wardstone136802 go_devourer_misc249809/249390/248992 use admission and50908/50536 acknowledgement against matching scenario1078/data and actual GO dispatch before proposing a repair. Preserve unknown Wardstone LINK4/other missing actions, native loot/equip/81040 diagnostics and client/full1078/all36 boundaries.",
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp": "1f558618080c32bf237e2deae215d5d901f5df3223b2ec835626164586059876",
+    "tools/tests/DevourerClaimCertificate.ps1": "202f90e3e740f43d93d8424a7da42f5d35f6e36272477e972a5bc0c507424e7c",
+    "tools/tests/DevourerOpeningCertificate.ps1": "9e9637feb6bc0a5c72b6271a2d96c1bca372962c8b4b4b6b784791d995349d3e",
+    "tools/tests/DevourerPickupTest.cpp": "73cb5b6614bc5938f4c99051c89ee38d418a45694050e1acb3a1c662298f8b13",
+    "tools/tests/Test-DevourerPickup.ps1": "c0cfd4b263e3d59e342e244fa5782b7145223f6903371678dc4a29ee5900d90f",
+    "tools/tests/DevourerClaimTest.cpp": "833669612e9c7ddaed899bbe38efc64d2b7e83036fd55e16721b8e7c85540c34",
+    "tools/tests/DevourerClaimNative.cpp": "736f49217172cf9379540cecedbaa0a6a4a5f7f8c171797194f0479991ce9054",
+    "tools/tests/Test-DevourerClaimNative.ps1": "bf552768754a172f0aedca3a5512c2cb667fb3de2191ecff7d8dab1eba2092dc",
+    "tools/tests/verify_devourer_claim_release.py": "95cc0a0be1c620505dee202f900e42e606c46bcc6642f0b401924ba19c85f5b9"
+  },
+  "evidence_sha256": {
+    "Catalog.cpp": "c2bc4c813f70f40fd1d54124eff119ca18e15fd1c374b5b6fc6834c199ac096e",
+    "catalog.tsv": "db773b346ba688a023d9b4f3a12c183718080f5a0a1fad6f65b709c84469ea09",
+    "world.tsv": "8ed803d014efb07b1a60b9db8a7b6cb744c77c3374539f14c03aace3ff559b42",
+    "audio/payloads.json": "5e7d9757addbdf7ff60957490d501f8cf4ca8efa89bf256f572fe42d79ed1820",
+    "audio/indexes-before.json": "0d4f8f612596ef00146a52fb85283bf8ec350622b6190ab3d509e03b653495bf",
+    "audio/indexes-after.json": "0d4f8f612596ef00146a52fb85283bf8ec350622b6190ab3d509e03b653495bf",
+    "claim-baseline-passing.log": "84140c504876f369a68278503e6fe56ed945af4dd027e3a55b6844b5af6a6332",
+    "claim-current.log": "a45f43f7f17d9f103dd85de52e1878b28e0de4a6d2dee37d43ae60fffb21e4fa",
+    "native-baseline-group-final.log": "e0b7cbe69f13fa8ddb4f6a85e85825aa6fe07700aa54c7a7f988f4898fa5a86c",
+    "native-group-final.log": "c153034f2aa1fc4a1e58f3cd7066492d62b1f6b677de29953c8fc8b5c832d2e0",
+    "pickup-retained.log": "553b957c7199110af96287f6d7f6228575730778ed30e37f09ad5cafb3b37621",
+    "zirus-retained.log": "07a5ce32c4ae2ead14381b938a514f856091b7130bf90a4461abd8bbc9166c96",
+    "pe-stage.log": "2d8750ba83150c5d08b9392af7e2d89f197c353af5179a7cf1e75dd9c318b74e",
+    "pe-retained.log": "52dd8627b038ca7457298437fee87b3b632737b1d96df382aa448f4fa0e91389",
+    "pe-canonical.log": "2d8750ba83150c5d08b9392af7e2d89f197c353af5179a7cf1e75dd9c318b74e",
+    "scepter.log": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+  }
+}

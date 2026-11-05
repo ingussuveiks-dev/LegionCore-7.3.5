@@ -1,10 +1,13 @@
+#include <algorithm>
 #include <cassert>
+#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <set>
+#include <shared_mutex>
 #include <vector>
 using uint8=uint8_t;using uint16=uint16_t;using uint32=uint32_t;using int32=int32_t;
 using LootState=uint32;using SpellCastResult=uint32;struct ItemPosCountVec:std::vector<uint32>{void emplace_back(std::uint16_t,uint32){assert(false);}};
@@ -14,7 +17,8 @@ enum {CLASS_ROGUE=4,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,GO_READY=1
 #include "CriteriaTypes.inc"
 uint32 warnings=0;
 #define TC_LOG_WARN(...) (++warnings)
-struct ObjectGuid{uint32 value=0;bool IsEmpty()const{return !value;}void Clear(){value=0;}bool operator==(ObjectGuid b)const{return value==b.value;}bool operator<(ObjectGuid b)const{return value<b.value;}};
+struct ObjectGuid{uint64_t value=0,high=0;bool IsEmpty()const{return !value&&!high;}void Clear(){value=high=0;}uint32 GetGUIDLow()const{return uint32(value);}bool operator==(ObjectGuid b)const{return value==b.value&&high==b.high;}bool operator!=(ObjectGuid b)const{return !(*this==b);}bool operator<(ObjectGuid b)const{return value==b.value?high<b.high:value<b.value;}};
+#include "QuestScope.inc"
 struct Position{float x,y,z,o;};struct Map{} liveMap,otherMap;
 struct Player;struct GameObject;
 struct Unit{virtual Player* ToPlayer(){return nullptr;}virtual ~Unit()=default;virtual uint32 GetTypeId(){return 3;}ObjectGuid guid{1};ObjectGuid GetGUID()const{return guid;}uint32 CastSpell(Unit*,uint32,bool);};
@@ -33,13 +37,16 @@ struct Loot{uint32 objGuid=0;LootItem item;uint32 gold=0,unlootedCount=1;
 struct GameObject;struct Unit;
 struct ScriptMgr{ template<class... Args> bool CanAutoEquipLoot(Args&&...){return false;}void OnGameObjectLootStateChanged(GameObject* g,uint32 s,Unit* u);}scripts;auto* sScriptMgr=&scripts;
 struct Player:Unit{
- bool world=true,contact=true,alive=true,teleport=false,rewarded=false,owned=false,bank=false,paired=false,room=true,storage=true,phase=true,visible=true,los=true;
+ bool world=true,preDelete=false,contact=true,alive=true,teleport=false,rewarded=false,owned=false,bank=false,paired=false,room=true,storage=true,phase=true,visible=true,los=true;
+ std::shared_ptr<QuestObjectScope> scope;std::function<void()> castHook;
+ auto GetQuestCancellationReceipt(uint32 id){assert(id==41924);if(!status)return std::shared_ptr<QuestCancellationReceipt const>{};if(!scope){scope=std::make_shared<QuestObjectScope>();scope->Owner=guid;}return scope->CancellationReceipt();}
+ void Abandon(){status=0;if(scope)scope->Cancel();scope.reset();}bool IsPreDelete()const{return preDelete;}
  uint32 klass=4,status=3,instance=42,casts=0,castResult=0,events=0,explicitRewards=0,grants=0,errors=0,mapId=1607;float distance=1;Map* map=&liveMap;
  Item parent,child{128479,{22},{}};
  struct Phase{uint32 changes=0;void SetCustomPhase(uint32 phase){assert(phase==1);++changes;}}phases;
  Player* ToPlayer()override{return this;}uint32 GetTypeId()override{return 4;}
  bool IsInWorld(){return world;}bool CanContact(){return contact;}bool IsAlive(){return alive;}bool IsBeingTeleported(){return teleport;}uint32 getClass(){return klass;}
- Map* GetMap(){return map;}uint32 GetInstanceId(){return instance;}bool InSamePhase(GameObject*){return phase;}bool canSeeOrDetect(GameObject*){return visible;}
+ Map* GetMap()const{return map;}uint32 GetInstanceId(){return instance;}bool InSamePhase(GameObject*){return phase;}bool canSeeOrDetect(GameObject*){return visible;}
  bool IsWithinLOSInMap(GameObject*){return los;}bool IsWithinDistInMap(GameObject*,float r){return distance<=r;}
  bool GetQuestRewardStatus(uint32 id){assert(id==41924);return rewarded;}uint32 GetQuestStatus(uint32 id){assert(id==41924);return status;}
  bool HasItemCount(uint32 id,uint32=1,bool withBank=false){assert(id==128476);return owned||withBank&&bank;}
@@ -56,13 +63,14 @@ struct Player:Unit{
 #include "ConsumeLoot.inc"
  }
 };
-uint32 Unit::CastSpell(Unit* target,uint32 spell,bool triggered){assert(target==this&&spell==209816&&triggered);auto* p=ToPlayer();assert(p);++p->casts;return p->castResult;}
+uint32 Unit::CastSpell(Unit* target,uint32 spell,bool triggered){assert(target==this&&spell==209816&&triggered);auto* p=ToPlayer();assert(p);++p->casts;if(auto hook=p->castHook)hook();return p->castResult;}
 struct Creature{ObjectGuid guid;bool removed=false;uint32 entry=0;ObjectGuid viewer;ObjectGuid GetGUID(){return guid;}uint32 delay=0;void DespawnOrUnsummon(uint32 value=0){delay=value;removed=true;}void AddPlayerInPersonnalVisibilityList(ObjectGuid g){viewer=g;}void SetPhaseMask(uint32 phase,bool){assert(phase==1);}};
-static std::map<ObjectGuid,Creature> actors;static std::map<ObjectGuid,Player*> players;static uint32 serial=100;
+struct PlayerRegistry:std::vector<Player*>{PlayerRegistry():std::vector<Player*>(1024,nullptr){}void clear(){std::fill(begin(),end(),nullptr);}};
+static std::map<ObjectGuid,Creature> actors;static PlayerRegistry players;static uint32 serial=100;
 struct GameObjectAI;
 struct GameObject{
  bool world=true,spawned=true,notSelectable=false;uint32 entry=249347,mapId=1607,instance=42,m_lootState=GO_READY,failEntry=0,spawnCount=0;Map* map=&liveMap;GameObjectAI* ai=nullptr;
- bool IsInWorld(){return world;}bool isSpawned(){return spawned;}uint32 GetEntry(){return entry;}uint32 GetMapId(){return mapId;}Map* GetMap(){return map;}uint32 GetInstanceId(){return instance;}
+ bool IsInWorld(){return world;}bool isSpawned(){return spawned;}uint32 GetEntry(){return entry;}uint32 GetMapId(){return mapId;}Map* GetMap()const{return map;}uint32 GetInstanceId(){return instance;}
  float GetInteractionDistance(){return 5;}bool HasFlag(uint32,uint32){return notSelectable;}uint32 getLootState(){return m_lootState;}GameObjectAI* AI(){return ai;}
  void SetLootState(LootState,Unit* =nullptr);uint32 GetGoType(){return 3;}
  Creature* SummonCreature(uint32 id,Position){if(id==failEntry)return nullptr;auto& c=actors[{++serial}];c.guid={serial};c.entry=id;++spawnCount;return &c;}
@@ -73,7 +81,14 @@ struct GameObjectAI{GameObject* go;explicit GameObjectAI(GameObject* g):go(g){}v
 struct GameObjectScript{explicit GameObjectScript(char const*){}virtual ~GameObjectScript()=default;virtual GameObjectAI* GetAI(GameObject* g)const{return new GameObjectAI(g);}virtual bool OnGossipHello(Player*,GameObject*){return false;}virtual void OnLootStateChanged(GameObject*,uint32,Unit*){}};
 GameObjectScript* currentScript;
 void ScriptMgr::OnGameObjectLootStateChanged(GameObject* g,uint32 s,Unit* u){currentScript->OnLootStateChanged(g,s,u);}
-struct ObjectAccessor{static Player* GetPlayer(GameObject&,ObjectGuid id){auto i=players.find(id);return i==players.end()?nullptr:i->second;}static Creature* GetCreature(GameObject&,ObjectGuid id){auto i=actors.find(id);return i==actors.end()||i->second.removed?nullptr:&i->second;}};
+using WorldObject=GameObject;
+template<class T>struct HashMapHolder{inline static bool _checkLock=false;inline static uint32 _size=1024;inline static std::shared_mutex i_lockVector;inline static auto& _objectVector=players;
+#include "PlayerFind.inc"
+};
+struct ObjectAccessor{
+#include "PlayerLookup.inc"
+static Creature* GetCreature(GameObject&,ObjectGuid id){auto i=actors.find(id);return i==actors.end()||i->second.removed?nullptr:&i->second;}};
+#include "PlayerLookupMethod.inc"
 enum class HighGuid{Conversation};
 struct Generator{uint32 Generate(){return 1;}}generator;
 struct ObjectMgr{template<HighGuid>Generator* GetGenerator(){return &generator;}}objects;auto* sObjectMgr=&objects;
@@ -84,8 +99,9 @@ struct Conversation{bool CreateConversation(uint32,uint32 id,Unit*,void*,Unit&){
 bool CompletedLoot(Loot* loot,GameObject* go){
 #include "CompleteLoot.inc"
 }
-struct Fixture{Player p;GameObject go;go_art_devourer script;std::unique_ptr<GameObjectAI> ai;Fixture(){manager={};actors.clear();players.clear();p.guid={1};players[p.guid]=&p;currentScript=&script;ai.reset(script.GetAI(&go));go.ai=ai.get();}void LootWeapon(){Loot loot;p.StoreLootItem(&loot);if(CompletedLoot(&loot,&go))go.SetLootState(GO_JUST_DEACTIVATED,&p);}void Finish(){p.paired=true;ai->UpdateAI(2000);}};
+struct Fixture{Player p;GameObject go;go_art_devourer script;std::unique_ptr<GameObjectAI> ai;Fixture(){manager={};actors.clear();players.clear();p.guid={1};players[p.guid.GetGUIDLow()]=&p;currentScript=&script;ai.reset(script.GetAI(&go));go.ai=ai.get();}void LootWeapon(){Loot loot;p.StoreLootItem(&loot);if(CompletedLoot(&loot,&go))go.SetLootState(GO_JUST_DEACTIVATED,&p);}void Finish(){p.paired=true;ai->UpdateAI(2000);}};
 
+#ifndef DEVOURER_PICKUP_SUPPORT_ONLY
 int main(){
 #ifdef BASELINE
  Fixture f;f.p.room=false;f.go.SetLootState(GO_ACTIVATED,&f.p);
@@ -104,3 +120,4 @@ int main(){
  std::cout<<"PASS native storage/loot consumption/release/GO state and actual Devourer pickup handlers:27 invalid contexts/real Akaari leaf, full-bag/null-store retry, no activation credit/grant/explicit completion, native scene/equipped linked pair, optional model after success, cast/timeouts, bank-only, stale claimant and repeat guards. Actual native spell scheduling/scene/client are separate.\n";
 #endif
 }
+#endif

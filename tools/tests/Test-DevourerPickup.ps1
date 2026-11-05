@@ -1,15 +1,24 @@
-param([switch]$Baseline,[switch]$AddressSanitizer,[switch]$VerifyNativeCatalog)
+param([switch]$Baseline,[switch]$AddressSanitizer,[switch]$VerifyNativeCatalog,[switch]$ClaimTests,[switch]$ClaimBaseline)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/devourer-pickup"
+if($ClaimBaseline -and (!$ClaimTests -or $Baseline)){throw 'ClaimBaseline requires separate ClaimTests'}
+if($ClaimTests){$out="$repo/build-extractors/runtime-test/devourer-claim/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"}
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline){'baseline'}else{'current'})" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp'
  $source=Get-Content "$repo/$path" -Raw
  if($Baseline){$source=(& git -C $repo show "342930f1:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pickup baseline missing'}}
+ if($ClaimBaseline){$source=(& git -C $repo show "d8973a49b:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned claimant baseline missing'}}
  [IO.File]::WriteAllText("$out/Acquisition.inc",$(if($Baseline){''}else{Block $source 'namespace DevourerAcquisition'}))
  [IO.File]::WriteAllText("$out/Callback.inc",(Block $source 'class go_art_devourer')+';')
  [IO.File]::WriteAllText("$out/CriteriaTypes.inc",(Block (Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw) 'enum CriteriaTypes')+';')
+ $scope=Get-Content "$repo/src/server/game/Entities/Object/QuestObjectScope.h" -Raw
+ [IO.File]::WriteAllText("$out/QuestScope.inc",(Block $scope 'class QuestCancellationReceipt')+';'+(Block $scope "`nstruct QuestObjectScope")+';')
+ $accessor=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
+ [IO.File]::WriteAllText("$out/PlayerFind.inc",(Block $accessor 'static T* Find(ObjectGuid guid)'))
+ [IO.File]::WriteAllText("$out/PlayerLookup.inc",(Block $accessor 'static Player* GetObjectInWorld(ObjectGuid guid, Player*')+(Block $accessor 'template<class T> static T* GetObjectInMap(')+'static Player* GetPlayer(WorldObject const&,ObjectGuid);')
+ [IO.File]::WriteAllText("$out/PlayerLookupMethod.inc",(Block (Get-Content "$repo/src/server/game/Globals/ObjectAccessor.cpp" -Raw) 'Player* ObjectAccessor::GetPlayer('))
  $native=Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.cpp" -Raw
  $first=$native.IndexOf('void GameObject::SetLootState(');$last=$native.IndexOf('    if (m_model)',$first)
  [IO.File]::WriteAllText("$out/SetLootState.inc",$native.Substring($first,$last-$first)+"}`n")
@@ -25,7 +34,9 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  [IO.File]::WriteAllText("$out/CompleteLoot.inc",'return '+$predicate.Groups[1].Value+';')
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  $definition=if($Baseline){'/DBASELINE'}else{''};if($AddressSanitizer){$definition+=' /fsanitize=address /Zi'}
- [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/DevourerPickupTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
+ if($ClaimBaseline){$definition+=' /DCLAIM_BASELINE'}
+ $hostFile=if($ClaimTests){'DevourerClaimTest.cpp'}else{'DevourerPickupTest.cpp'}
+ [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/$hostFile`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Devourer pickup regression failed'}
  if($VerifyNativeCatalog){
   $previous=$env:LEGION_DIALOGUE_CONFIG

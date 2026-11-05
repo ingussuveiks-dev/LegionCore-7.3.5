@@ -1,5 +1,7 @@
 # The exact1942 source/owner/pending state is independently covered here.
 function Restore-DevourerOpeningBoundary([string]$source){
+ . "$PSScriptRoot/DevourerClaimCertificate.ps1"
+ $source=Restore-DevourerClaimBoundary $source
  . "$PSScriptRoot/ZirusIntroCertificate.ps1"
  $source=Restore-ZirusIntroBoundary $source
  $old=(& git -C $repo show 'c000a548d:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"
