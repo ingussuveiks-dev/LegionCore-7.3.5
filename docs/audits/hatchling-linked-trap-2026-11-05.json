@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-05",
+  "status": "World04 RELEASED8FDCC577: remove only chest214862 Data7=214863 invalid non-trap relation. Both actual chest/loot43369+43370/lock1852/size/quest/open-text preserved. Native full cold+warm loaders and TEMP idempotence/wrong-row/type/custom-link guards pass projected and live; pinned warm-loader exact error paired repaired clean run. Matching26972 absent-client-template recorded, historical+current Trinity data corroborated without copying modern fields. Owned524 ready/shutdown0/exit0/gone, no new canonical errors/crashes. Existing DE6034A2/CB0A3ADB unchanged; client31704/31716/all36/known mixed6090 remain OPEN.",
+  "scope": "One guarded UPDATE of214862/type3/Data7=214863 to0. No core validation/log change, target chest conversion, loot/item/quest/spawn/progression mutation or executable deployment.",
+  "cause": "Matching local base16357/live214862 chest points Data7 linkedTrap at214863, which is another chest, not type6 trap.214862/214863 are size0.5/1 variants with separate loot43369/43370 for native item objectives89052/89053. The invalid cross-chest relation reaches native TriggeringLinkedGameObject, which correctly refuses a non-trap. Initial loader only checks already-loaded linked templates; cold forward reference did not expose the invalid target. A second full template load in a failed Devourer TEMP-preparation test resolved214863 and emitted the real error. This is a data defect, not a request to suppress the check.",
+  "sources": {
+    "matching": "Actual7.3.5 GameObjects.db2+readonly hotfix have neither214862 nor214863; this absence is explicit, not an invented client reference. Local base/live records and native GameObjectData.h chest Data7 schema, CheckGOLinkedTrapId, Spell.EffectOpenLock and TriggeringLinkedGameObject traced. Native lock1852/open text66863, loot/drop/quest rows,16 original214862 static870 spawns and no relevant GO SmartAI/conditions/questgiver rows reviewed.31704 item89052x5 and31716 item89053x5 retain original native collection.",
+    "trinity_history": {
+      "path": "C:/wamp64/www/TrinityCore/sql/old/6.x/world/00_2014_10_19/2014_10_26_02_world.sql",
+      "history_commit": "5be0cf7120",
+      "sha256": "4902ada3eb6e236739d2355c125469de7a7b1b4b5e7ba74d969e5fe36a0b5b56",
+      "evidence": "2014 INSERT explicitly supplies only entry/type/display/name/data0/data1/data2/data3/size/VerifiedBuild; delete/reinsert leaves omitted Data7 at0 for both. Both are chest3/display9572/lock1852/loot43369+43370/restock30/consumable1/size0.5+1/build-18019."
+    },
+    "newer_reference": "Local official TrinityCore15e0ed76e20cac5f0c73a030452aacaf4d0444d0 plus extracted TDB12.1.0.26091(2026-09-09): parsed actual CREATE TABLE column order and both214862/214863 tuples; type3, Data1=43369/43370, Data7=0, VerifiedBuild=-18019. It is a newer schema and corroboration only; no modern columns or other values copied into Legion. Preserve native66863 instead of replacing it with modern0.",
+    "github": "Legion origin/upstream/local git history reviewed: bad Data7 already exists in original base;2024_11_15 chest-loot migration only normalizes loot entries43369/43370. Local Trinity origin is official github.com/TrinityCore/TrinityCore and its available history supplies the primary reference. Narrow external GitHub searches yielded no additional implementation and raw fetch cache missed; no web/video/gameplay evidence claimed."
+  },
+  "implementation": "Clear exactly the known invalid relation guarded by entry214862/type3/currentData7=214863. Preserve all other data slots, display/name/flags/quest items/spawns/loot rules and214863 type3/size1 variant. Keep native linked-trap validation/early-return and native lock/open/loot/progression. No new C++ behavior; current canonical DE6034A2/CB0A3ADB retained.",
+  "validation": {
+    "native": "Actual full native DB2+hotfix/SpellInfo/PageText/ScriptName and GameObjectTemplate loader runs cold and warm, both with projected twice-applied private TEMP migration and after actual live updater. Full synchronous TEMP shadow is verified with SHOW CREATE TABLE before UPDATE, runtime restored/readback readonly; async/Hotfix readonly and no Login/Character database or Player session. Both actual chest templates remain type3/display9572/size0.5+1/lock1852/loot43369+43370/restock30/consumable1/questItem89052/openText66863; linkedTrap fields0. Every loader exit0; no new crashes/DBErrors/server warnings/errors/assertions in repaired runs.",
+    "counterfactual": "Explicit private TEMP snapshot pins old214862 Data7=214863 even after deployment. Cold loader has no target yet; warm loader emits exactly one non-trap error in its private DBErrors and diagnostic evidence, no other diagnostics/crash. Native exit0 and assertions alone are not called an ordinary successful run. Paired clean projected/live cold+warm regressions pass.",
+    "guards": "SQL migration applied twice in private TEMP tables; only exact source/type/link changes. Other214863 row and999999 sentinel retain Data7=214863; source type6 and custom Data7=12345 remain unchanged. Live native readback Data7=0/loot43369/openText66863 and World04 hash8FDCC5778FE792F5F05084B26C711BB0ECCE7F76 RELEASED.",
+    "deployment": "Offline current binary hash check before exposing SQL to updater, then owned canonical524 fresh ready/graceful server shutdown0/exit0/empty stderr/gone. Configuration/certificates/DLL hashes unchanged. No world/bnet build/copy or character edits. Prior mandatory Scepter/registered PE checks retain the same actual canonical binary hashes.",
+    "development": "Private catalog source-path join initially produced compile-only C1083; corrected relative source path and matching typed lookup passed with both IDs explicitly absent. Standalone native test needed its own unordered_set include; corrected without a core patch. First baseline expected duplicate server diagnostics; actual SQL channel writes one DBErrors line, so exact1 error/content/exit/completion/crash requirements now match the actual native logger, and paired current run is clean. Initial failed expectation and evidence retained."
+  },
+  "source_sha256": {
+    "sql/updates/world/2026_11_05_04_hatchling_linked_trap.sql": "ba45bb55b8136fabe7312e84e9a41631375a74efe53025cd06476ff4b721c488",
+    "tools/tests/HatchlingLinkedTrapNative.cpp": "5019c02108a1aeea668382385c77cecce2c0d34f728bfa85c20ab9474e8ef737",
+    "tools/tests/Test-HatchlingLinkedTrap.ps1": "02184d7fdd0592e1558f7667e2035b7475380a3b2a40d8ab2417eaf8b78c2f9e",
+    "src/server/game/Globals/ObjectMgr.cpp": "0789ffee753fd8ec9c89b0a1e6a159a54602ac11f727c16e8f3f6d1493a991d4",
+    "src/server/game/Entities/GameObject/GameObjectData.h": "dd752d9a294cd20454bc3d7087bd939138392561fb29cc8f71e47fb1f204a79d",
+    "src/server/game/Entities/GameObject/GameObject.cpp": "ac09e40099ac17e231a5660d0d6fe429243a08e5a5f00545851b1d38f5af274e",
+    "src/server/game/Spells/SpellEffects.cpp": "45a11978346b53fd59f30545ee6db3847135f3c1104fb896f0f6b0866c35959b"
+  },
+  "canonical_hashes": {
+    "worldserver.exe": "de6034a2e6c9e55bdfe8d25eead0c78070f367e9bce37949f391e34e8ceb0a2b",
+    "bnetserver.exe": "cb0a3adbe15c681851b5fda2fd5f919f2b01847e0a91b63f3d2fec4fe9495ef8"
+  },
+  "diagnostics": {
+    "canonical_crashes": 0,
+    "canonical_mixed_bytes": 6090,
+    "canonical_mixed_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true,
+    "related_resolved": "Devourer mixed run20261105-231341-007 has reviewed1792 TEMP-preparation errors (repaired by verified TEMP preparation/read-only runtime in7d3cd3e61) and214862 relation error (repaired by this World04). It can be hash-archived only after this live regression; never discard its original bytes. Canonical mixed6090 is separate and remains OPEN."
+  },
+  "limits": [
+    "Actual daily31704/31716 client gathering, quest-required loot eligibility, visible variants and delivery remain unverified; only the data contract/native loader and unchanged native loot path are certified.",
+    "All36 artifact whole-chain/client checks and known late-charm/shared81040/101430+103151/canonical mixed6090 remain OPEN. Full native core ASAN not claimed or required by this one-field SQL repair."
+  ],
+  "next": "Continue the saved all-class artifact invitation findings: inspect actual shared NPC101430/103151 LINK2 diagnostics in retained canonical mixed6090, matching native data/full SmartAI roots/links/timed caller flow, old local Trinity then GitHub evidence. Prove the intended sequence and failure/retry/recipient before changing links; preserve active Hunter testing and all client/full-chain limits. Shared81040/late-charm also remain OPEN."
+}
