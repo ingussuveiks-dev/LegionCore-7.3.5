@@ -52,5 +52,15 @@
     "audio/payloads.json": "08cab61362f82f6c1aee374671dc6c5cb6d4a3fc6784f7d918fa481695ec7279",
     "audio/indexes-before.json": "0d4f8f612596ef00146a52fb85283bf8ec350622b6190ab3d509e03b653495bf",
     "audio/indexes-after.json": "0d4f8f612596ef00146a52fb85283bf8ec350622b6190ab3d509e03b653495bf"
+  },
+  "fix_commit": "2fd36615c1cfb8e0e5f151b9cff34de341c7d145",
+  "archive": {
+    "audit": "docs/audits/zirus-dialogue-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/zirus-dialogue-2026-11-05",
+    "manifest_sha256": "00eb756561a6302a8616770a9f57c32f53f2ba9a9d2418f6523883220ce09738",
+    "files": 450,
+    "bytes": 951578,
+    "fix_commit": "2fd36615c1cfb8e0e5f151b9cff34de341c7d145",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
   }
 }

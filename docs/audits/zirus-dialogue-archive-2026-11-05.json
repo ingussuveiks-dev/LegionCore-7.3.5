@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED canonical SQL updater/unchanged87FE6FD5/68C3300D; owned31956 gone",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/zirus-dialogue-2026-11-05",
+    "manifest_sha256": "00eb756561a6302a8616770a9f57c32f53f2ba9a9d2418f6523883220ce09738",
+    "files": 450,
+    "bytes": 951578,
+    "fix_commit": "2fd36615c1cfb8e0e5f151b9cff34de341c7d145",
+    "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
+  },
+  "audit": "docs/audits/zirus-dialogue-2026-11-05.json",
+  "review": "Preserves full hashed matching26972 three Vorbis decodes/native mapping/readonly CASC index checks, original1890 player+NPC ASAN early-expiry counterfactual paired repaired20157 lifetime/full6000+1000 native gaps and exact virtual actor/line fields,20custom definition/4partial retry/TEMP denied persistent-write/full unrelated-table/idempotence checks. Native10original/10shadow plus final10installed and10optional data-failure contexts retain unchanged whole Zirus AI, native player scaled one-hit/pet/guardian/self kills plus explicit finalized-CORPSE/null callback endpoint,50298 once/stage3->4 and all7real native GO state/phase cleanup independently of presentation. Canonical owned31956 updater RELEASED23D0D630/live payload/SQL hash/native loader/readback, original registered death130 owner/door/Kill PE and mandatory Scepter pass; existing Release87FE6FD5/68C3300D unchanged, no C++ build or executable promotion. Private test-generator marker, structured-view empty API, same-field virtual actor/creature view and null fixture transient JUST_DIED iteration retained with corrected passing live tests. Ordinary final diagnostics clean, no unexplained crash/error/DBError; client/full1078/all36 remain open",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client dialogue bubbles/audio/virtual actor animation, death-to-Ascension1254 cross-sequence scheduling/camera, physical door traversal/loot/group/reconnect/full1078/all36 remain OPEN. Metadata/full decoding/native delivery clocks do not prove playback.",
+    "Only matching26972 enUS assets measured; other locale timing remains separate. Native Player conversation still uses its original caster clock/late-group-viewer policy; no shared lifetime or admission behavior changed.",
+    "Zirus1884 one-shot admission/factory acknowledgement and later source/AI/grid/instance recovery, unowned companion credit policy, unknown105332/shared101430/103151 LINK2/WardstoneLINK4/pickup81040 DEBUG edge and existing mixed errors remain independent OPEN work."
+  ],
+  "installed_data_archive_guard": {
+    "before_after_equal": true,
+    "sha256": "d18193d4ccf06c10080dced4a1a6dd14f8ed027b6bfacf0beac3a253d49b52d4"
+  }
+}
