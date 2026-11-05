@@ -727,13 +727,47 @@ public:
             convers = 1943;
         }
 
+        // The original1947 speaker is this Akaari, already dead in JustDied.
+        // Keep the owner's personal/group audience and the exact corpse actor.
+        class DeathConversation final : public Conversation
+        {
+        public:
+            explicit DeathConversation(ObjectGuid actor) : _actor(actor) { }
+
+            void AddToWorld() override
+            {
+                Creature* actor = ObjectAccessor::GetCreature(*this, _actor);
+                if (actor && actor->GetGUID() == _actor && actor->GetEntry() == 105660 &&
+                    actor->IsInWorld() && !actor->IsPreDelete() && InheritQuestObjectScope(actor))
+                    Conversation::AddToWorld();
+            }
+
+        protected:
+            Creature* FindCreatureActor(uint32 index, uint32 entry, WorldObject* searcher) override
+            {
+                if (index != 0 || entry != 105660 || !searcher || searcher->GetMapId() != 1607)
+                    return nullptr;
+                Creature* actor = ObjectAccessor::GetCreature(*searcher, _actor);
+                if (!actor || actor->GetGUID() != _actor || actor->GetEntry() != entry || !actor->IsInWorld() || actor->IsPreDelete() ||
+                    actor->IsQuestObjectExpired() || searcher->IsQuestObjectExpired() ||
+                    !searcher->IsWithinDistInMap(actor, searcher->GetVisibilityRange()) ||
+                    !searcher->InSamePhase(actor) || !searcher->InSamePhaseId(actor) ||
+                    !actor->CanTargetQuestObject(searcher) || !searcher->CanTargetQuestObject(actor))
+                    return nullptr;
+                return actor;
+            }
+
+        private:
+            ObjectGuid const _actor;
+        };
+
         void JustDied(Unit* who) override
         {
             Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             if (!player)
                 return;
 
-            Conversation* conversation = new Conversation;
+            Conversation* conversation = new DeathConversation(me->GetGUID());
             if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1947, player, NULL, *player))
                 delete conversation;
 

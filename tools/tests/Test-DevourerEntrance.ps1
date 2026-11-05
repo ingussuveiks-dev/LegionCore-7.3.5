@@ -4,6 +4,8 @@ $out="$repo/build-extractors/runtime-test/devourer-entrance-asan/$(Get-Date -For
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp" -Raw
+ . "$PSScriptRoot/DevourerDeathVoiceCertificate.ps1"
+ $source=Restore-DevourerDeathVoiceBoundary $source
  . "$PSScriptRoot/DevourerEntranceCertificate.ps1"
  $restored=Restore-DevourerEntranceBoundary $source;$old=(& git -C $repo show '698d34495:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"
  if($LASTEXITCODE -or ($restored-replace '\s','') -cne ($old-replace '\s','')){throw 'Unreviewed change outside original entrance'}

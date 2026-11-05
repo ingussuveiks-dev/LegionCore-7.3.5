@@ -1,6 +1,8 @@
 # The entrance delta has its own full-class native/ASAN coverage. Preserve the
 # original death/rotation/Reset and earlier independent capture certificates.
 function Restore-DevourerEntranceBoundary([string]$source){
+ . "$PSScriptRoot/DevourerDeathVoiceCertificate.ps1"
+ $source=Restore-DevourerDeathVoiceBoundary $source
  $old=(& git -C $repo show '698d34495:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"
  if($LASTEXITCODE){throw 'Pinned Devourer entrance boundary absent'}
  $marker='class npc_akaari_shadowgore_last :';$body=Block $source $marker;$prior=Block $old $marker

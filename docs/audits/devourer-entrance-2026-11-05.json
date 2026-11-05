@@ -65,5 +65,6 @@
     "bytes": 1224869,
     "fix_commit": "c6b0f63d45fa714d51ee24ac3c0c935686df730c",
     "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
-  }
+  },
+  "followup_death_voice": "docs/audits/devourer-death-voice-2026-11-05.json: separately resolves original1947 dead-speaker factory. Combat1942/1943..1946 and client/full1078/all36 remain OPEN."
 }

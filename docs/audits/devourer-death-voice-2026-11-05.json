@@ -1,0 +1,54 @@
+{
+  "date": "2026-11-05",
+  "status": "DEPLOYED9B152D06/12D9D3CD: final Akaari105660 death1947 uses exact corpse fullGUID with source scope; native Player/pet/guardian owner50300 and original payload/audience retained.27ASAN/8native deaths+104binding controls,6pinned counterfactuals, retained entrance/capture/death/pickup/PE/Scepter/owned30092 pass. Client/full1078/all36 remain OPEN.",
+  "scope": "Only a nested final-Akaari DeathConversation subtype and JustDied1947 allocation. Whole-file/class certificate proves constructor/Reset/entrance/EnterCombat/rotation/pickup and owner50300 unchanged. No SQL, character, item/reward or shared Conversation resolver change.",
+  "cause": "Pinned0deb4788b whole final AI:6 actual native Human/Orc Player scaled one-hit/pet/guardian deaths. Living1947 control creates4095/7350; after real Unit.Kill the original alive-only FindNearestCreature cannot resolve dead105660, so1947 factory fails while50300 already correctly reaches stage6. Existing earlier owner-credit mock accepted any Conversation factory and did not prove the native actor payload.",
+  "evidence": {
+    "world": "Readonly actual conversation_creature1947 slot0/105660, recorded capture GUID7948051 (not a current runtime identity), flags0/48/duration2350. conversation_data1947 line4095/index0/text0/opaque1646290021/0. No conversation_actor rows for1942..1947. Actual source105660/spawn361053/map1607/phase7002 at1854.15,1275.45,91.7998.",
+    "native26972": "Typed readonly matching26972 ConversationLine4095 ->BroadcastText108764, female original death reply, SoundKit63723/FileData1392442. AdditionalDuration1000,Next0. Native World2350 plus shared5000 publishes7350. Catalog additionally resolves original1942..1946/4090..4094 text/sound; no audio listening/client playback claimed.",
+    "references": "Matching local data/core/real-native reproduction determine the cause. Same-core tested Althea/Merlis exact-source pattern checked and scoped to1607/105660. Newer local Trinity has no matching donor; origin fetched/history checked. No external implementation copied or unseen gameplay/video claimed."
+  },
+  "repair": "Bind original authored creature slot0 to the captured full128-bit source GUID. Resolve actual same-map creature and explicitly compare fullGUID (native accessor alone indexes lower32 bits); guard expected1607/105660, live world membership/not predelete, expiry, native visibility distance, both phase APIs and reciprocal quest scope. Deliberately allow that exact source corpse. Before publication re-resolve fullGUID and inherit/register actual source attempt scope while the conversation has its own GUID. Keep resolved native Player/charmer/owner caster and personal/group audience, actual7350 duration/4095/opaque fields, independent50300 and ordinary failed-factory cleanup. No nearest dead-NPC fallback, fabricated actor/timing/credit or direct artifact grant.",
+  "checks": {
+    "asan": "27 assertion-enabled ASAN contexts execute actual entire nested subtype/resolver/AddToWorld: exact/fullGUID upper/high/low and missing lookup, slot/entry/map/null source/world/predelete/expiry, caller expiry/range/phase/phaseID/reciprocal scope, source cancellation and publication refusal. Services modeled; not full native-core ASAN.",
+    "native": "8 whole final-AI native death contexts: Human/Orc direct scaled lethal damage, real player-owned pet/guardian Unit.Kill, plus2 explicitly invalid in-memory slot1 factories.6 ordinary corpse conversations retain actual fullGUID/4095/7350/opaque actor0,48 and line0,1646290021,0. Real owner50300/stage6 remains for all8, original accepted quest/no artifact grants, repeat Kill/Reset once-only, native legitimate-group personal visibility and unrelated exclusion. Earlier quest/stage/poses seeded; no client traversal.",
+    "native_bindings": "104 real-native exact binding/refusal/cancellation contexts after deaths, including closer live duplicate; same lower32-bit index with changed high/upper-low word, missing low index, wrong GUID type/entry, phase/range, mutated in-memory slot/entry restored, foreign scope and actual Cancel. Exact source used, refused factory leaves no allocation/grid ownership, conversation GUID registered before publication and removed by native Update(0) after cancellation. Original database remains readonly; TEMP account/session cleanup isolated.",
+    "retained": "39 whole entrance AI/native EventMap/receipt ASAN and48 ordinary native entrance contexts;16 capture sequence and16 owner death variants ASAN, actual pickup storage/27invalid/equip/retry/once matrix pass. Independent death subtype certificate subtracted before earlier entrance/capture/death boundary checks; entrance modeled host uses prior independently certified class while native entrance runs actual current whole class.",
+    "release": "Original scripts.vcxproj Release and original final-link library paths, separate stage; selected actual registration/GetAI/JustDied/Unit.Kill and derived Conversation vtable proven. Full128-bit capture/store, explicit equality before resolution/publication, actual source scope before AddToWorld, original default alive-only resolver and all other inherited virtual slots preserved. Stage/canonical entrance/nearest/Kingslayers and capture damage/visual/death/pickup proofs pass. Offline EXE/MAP backup/promotion with protected config/cert/DLL hashes, mandatory canonical Scepter verified.",
+    "runtime": "Owned canonical worldserver PID30092 fresh ready, graceful server shutdown0/exit0/stderr empty/gone. No user server stopped or task background server left. No updater/SQL dependency."
+  },
+  "iterations": [
+    "Initial readonly research guessed absent conversation_actor_template/creature_template tables twice; actual native/schema uses conversation_actor/conversation_creature, corrected queries succeed. Query failures preserved privately, no persistent mutation or server DBErrors.",
+    "First private implementation script used Python default cp1252 and failed to read existing UTF8 source before editing. An ordinary probe was then mistakenly launched against untouched old source and reproduced missing1947; explicit6-case baseline and subsequent repaired8-case pass retained. Fixed private Python decoding with UTF8, no damaged source.",
+    "Expanded native host initially redeclared actors/original in same scope; compiler refusal paired with corrected passing104binding run. Native additional opaque payload checks and stable final Release-library rerun retained.",
+    "Mandatory Scepter was initially invoked directly with captured clean output; repeated under explicit canonical+own before/after diagnostics so required own-runtime coverage is available. Existing EventMap uint16->uint8 and Scepter signed/unsigned compiler warnings retained; no suppression."
+  ],
+  "diagnostics": "Before/after canonical+own crash inventory/log lengths/timestamps, exit/stdout/stderr/new server warnings/errors/assertions and DBErrors reviewed. Ordinary final/native/startup clean, explicit invalid1947 factories are labeled and preserve progress, no unexplained runtime failure/crash. Canonical Crashes empty. Mixed6090-byte DBErrors/SHA2568b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0 unchanged/unresolved; not cleared or archived as resolved. Issue evidence archive follows focused commit.",
+  "canonical_hashes": {
+    "worldserver.exe": "9b152d0605ee213e1e28bd9bdf1980149dcc914cfcf82bb5b79cc2f1d793f220",
+    "bnetserver.exe": "12d9d3cdae8d3b2f8143b81c4adc4cf4fcdfed068b7d4ab499570e4550449917"
+  },
+  "limits": [
+    "Actual client death voice/bubble, scene1254 rendering/audio/camera and full combat/route/loot/equip/reconnect/full1078/all36 remain OPEN. Real native payload/launch does not certify playback.",
+    "Native tests seed earlier quest/stage/pose/actor admission. Scope cancellation endpoint is explicit, not a full abandonment/re-entry/client traversal. Source/grid/AI/instance reconstruction and persistent recovery need independent coverage.",
+    "Original combat1942 raw Unit caster and1943..1946 scheduling/actor identity remain separate; no silent timer/dialogue repair inferred. Existing pickup81040 DEBUG edge,105332/shared101430/103151 LINK2/WardstoneLINK4, Althea startup and mixed DBErrors remain OPEN."
+  ],
+  "next": "Independently reproduce original EnterCombat1942 raw Unit caster/actor selection and periodic1943..1946 schedule against native actor/text roles before changing them. Preserve native combat timers/spells/owner progression, actual client scene/combat/loot/full1078/all36 and unknown LINK findings.",
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp": "5b8cb8deba96cfca601c392a99c0b8b499b254ae8dc823cf9d966d86b5bc766e",
+    "tools/research/DevourerDeathVoiceCatalog.cpp": "575a769e4f033978761baf942afeaaf04829640daa1494ca0a3ba4957ec491e1",
+    "tools/tests/DevourerDeathActorTest.cpp": "e5aa43372d2ea8b3f3049ec9ce215e9815c67c574af454000014c2fa3518fa46",
+    "tools/tests/DevourerDeathVoiceCertificate.ps1": "8cf7d30484cc4a13ba009bdb257e22be5bb903ea435305d4f3e01ea1a9a4aecb",
+    "tools/tests/DevourerDeathVoiceNative.cpp": "6f237090d29965400ca1f69b8c2b93945c740846878d0215d4e080cfe7b2d619",
+    "tools/tests/Test-DevourerDeathVoice.ps1": "2191cec41bfbdb4ab3eb732f8e32134b3d7846f1fbb8656f198e40a606ad3e1b",
+    "tools/tests/Test-DevourerDeathVoiceNative.ps1": "07332f40e9473d34d915891560592622523ef596f91fe1b008ed2905b57e6357",
+    "tools/tests/verify_devourer_death_voice_release.py": "a894b94c2d2e856b1764e4de743d3e7384f96361e97253ed1c55b9ca8efecf8d",
+    "tools/tests/DevourerEntranceCertificate.ps1": "4f3a324d5ddb91fd9666f802e339319f698b89e8835d23c37501e9959551bbe2",
+    "tools/tests/Test-DevourerEntrance.ps1": "472eaa6d49650655475711d5cb255e3d1fba472bfaa35230b663635f4188d293"
+  },
+  "evidence_sha256": {
+    "world-real.tsv": "39fb52d211eb7ed144caa094b2cb42c6dbcb1612fdf0147963eb9aa6513ada67",
+    "schema-real.tsv": "c5bc0320331a071d9991123fb5bfc788dcfa24f4e01d2debe31a8eeca0f0b97e",
+    "catalog.tsv": "529c4ddf2bf58846618188afa5b2079959551d63fcd4cef1ca4815be687aa0df"
+  }
+}
