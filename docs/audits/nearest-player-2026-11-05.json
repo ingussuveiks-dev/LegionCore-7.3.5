@@ -59,5 +59,6 @@
     "bytes": 864949,
     "fix_commit": "eb256de2c07f3987598cc86c9f83fdd256067603",
     "verified": "Every source/archive/source SHA256 and credential scan verified. Configs/binaries/PDB/audio/character data excluded. Private DBErrors empty; canonical mixed6090 unresolved and informative Server history retained. No active log cleared."
-  }
+  },
+  "devourer_entrance_followup": "docs/audits/devourer-entrance-2026-11-05.json"
 }

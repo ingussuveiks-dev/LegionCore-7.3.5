@@ -602,6 +602,115 @@ public:
         uint32 convers;
         uint32 checktimer;
 
+        ObjectGuid entryPlayer;
+        std::shared_ptr<QuestCancellationReceipt const> entryReceipt;
+        bool entryBusy = false, entryVisual = false, entryWarning = false, entryCreditWarning = false;
+
+        bool EntryLeaf(Scenario* scenario, uint32 leaf) const
+        {
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto found = progress->find(leaf);
+            return found != progress->end() && found->second.Counter;
+        }
+
+        Player* EntryPlayer(Player* player, bool advanced) const
+        {
+            if (!me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || me->GetEntry() != 105660 ||
+                me->GetMapId() != 1607 || !me->GetInstanceScript() || me->IsQuestObjectExpired() ||
+                !player || !player->IsInWorld() || player->IsPreDelete() || !player->IsAlive() || !player->CanContact() ||
+                player->isGameMaster() || player->getClass() != CLASS_ROGUE || player->HasPendingTeleport() ||
+                player->GetMap() != me->GetMap() || !player->InSamePhase(me) || player->GetPositionZ() < 91.0f ||
+                !player->IsWithinDistInMap(me, 25.0f) || player->IsQuestObjectExpired() ||
+                !player->CanTargetQuestObject(me) || !me->CanTargetQuestObject(player) || player->GetQuestRewardStatus(41924) ||
+                (player->GetQuestStatus(41924) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41924) != QUEST_STATUS_COMPLETE))
+                return nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1078)
+                return nullptr;
+            return ((scenario->GetCurrentStep() == 4 &&
+                (scenario->CanUpdateCriteria(53045) || scenario->CanUpdateCriteria(47367))) ||
+                (advanced && scenario->GetCurrentStep() == 5 && EntryLeaf(scenario, 53045) && EntryLeaf(scenario, 47367))) ? player : nullptr;
+        }
+
+        Player* EntryRecipient() const
+        {
+            if (entryPlayer.IsEmpty() || !entryReceipt || entryReceipt->load(std::memory_order_acquire) || !me->IsInWorld())
+                return nullptr;
+            Player* player = ObjectAccessor::GetPlayer(*me, entryPlayer);
+            return player && player->GetGUID() == entryPlayer && EntryPlayer(player, true) &&
+                player->GetQuestCancellationReceipt(41924) == entryReceipt ? player : nullptr;
+        }
+
+        void UpdateEntry(uint32 diff)
+        {
+            if (entryBusy)
+                return;
+            if (checktimer > diff)
+            {
+                checktimer -= diff;
+                return;
+            }
+            checktimer = 1000;
+            entryBusy = true;
+            struct Release { bool& busy; ~Release() { busy = false; } } release{entryBusy};
+            Player* player = EntryRecipient();
+            if (!player)
+            {
+                entryPlayer.Clear();
+                entryReceipt.reset();
+                if (introDone)
+                    return;
+                entryVisual = false;
+                std::list<Player*> players;
+                me->GetPlayerListInGrid(players, 25.0f);
+                for (Player* candidate : players)
+                    if (EntryPlayer(candidate, false) && (!player || me->GetDistance(candidate) < me->GetDistance(player)))
+                        player = candidate;
+                if (!player)
+                    return;
+                entryReceipt = player->GetQuestCancellationReceipt(41924);
+                entryPlayer = player->GetGUID();
+            }
+            if (!entryVisual)
+            {
+                SpellCastResult result = player->CastSpell(player, 209626);
+                entryVisual = result == SPELL_CAST_OK && player->HasSceneStatus(1254, SCENE_LAUNCH) &&
+                    !player->HasSceneStatus(1254, SCENE_COMPLETE);
+                if (!entryVisual && !entryWarning)
+                {
+                    TC_LOG_WARN("scripts", "Devourer entrance: native1254 not launched; retain1s qualified presentation retry independently of progression");
+                    entryWarning = true;
+                }
+            }
+            player = EntryRecipient();
+            if (!player)
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (scenario->CanUpdateCriteria(53045) && !EntryLeaf(scenario, 53045))
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50404);
+            player = EntryRecipient();
+            if (!player)
+                return;
+            scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (scenario->CanUpdateCriteria(47367) && !EntryLeaf(scenario, 47367))
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50299);
+            player = EntryRecipient();
+            if (!player)
+                return;
+            scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            introDone = EntryLeaf(scenario, 53045) && EntryLeaf(scenario, 47367);
+            if (!introDone && !entryCreditWarning)
+            {
+                TC_LOG_WARN("scripts", "Devourer entrance: native50404/50299 not acknowledged; retain1s missing-only progression retry");
+                entryCreditWarning = true;
+            }
+            if (introDone && entryVisual)
+            {
+                entryPlayer.Clear();
+                entryReceipt.reset();
+            }
+        }
+
         void Reset() override
         {
             events.Reset();
@@ -649,27 +758,7 @@ public:
          */
         void UpdateAI(uint32 diff) override
         {
-            if (instance->getScenarionStep() == 4)
-            {
-                if (!introDone)
-                {
-                    if (checktimer <= diff)
-                    {
-                        if (Player* pl = me->FindNearestPlayer(25.0f, true))
-                        {
-                            if (pl->GetPositionZ() < 91.0f)
-                                return;
-
-                            pl->CastSpell(pl, 209626);
-                            pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50404);
-                            pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50299);
-                            introDone = true;
-                        }
-                        checktimer = 1000;
-                    }
-                    else checktimer -= diff;
-                }
-            }
+            UpdateEntry(diff);
 
             if (!UpdateVictim())
                 return;

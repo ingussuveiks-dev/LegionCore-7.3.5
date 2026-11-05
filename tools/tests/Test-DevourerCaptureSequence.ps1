@@ -6,6 +6,8 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline){'baseline'}else{'current'})" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp'
  $current=Get-Content "$repo/$path" -Raw
+ . "$PSScriptRoot/DevourerEntranceCertificate.ps1"
+ $current=Restore-DevourerEntranceBoundary $current
  $old=(& git -C $repo show "e4e4fe2f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned capture baseline unavailable'}
  $class=Block $current 'class npc_akaari_shadowgore :';$oldClass=Block $old 'class npc_akaari_shadowgore :'
  if(($current.Replace($class,'')-replace '\s','') -cne ($old.Replace($oldClass,'')-replace '\s','')){throw 'Unexpected change to another Devourer actor/pickup'}

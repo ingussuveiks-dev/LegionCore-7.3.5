@@ -6,6 +6,8 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline){'baseline'}else{'current'})" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp'
  $source=Get-Content "$repo/$path" -Raw
+ . "$PSScriptRoot/DevourerEntranceCertificate.ps1"
+ $source=Restore-DevourerEntranceBoundary $source
  $old=(& git -C $repo show "728285dc:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Devourer baseline unavailable'}
  foreach($pair in @(@('Zirus','class npc_devourer_zirus :'),@('Akaari','class npc_akaari_shadowgore_last :'))){
   $scope=Block $source $pair[1];$pinned=Block $old $pair[1];$death=Block $scope 'void JustDied(';$oldDeath=Block $pinned 'void JustDied('
