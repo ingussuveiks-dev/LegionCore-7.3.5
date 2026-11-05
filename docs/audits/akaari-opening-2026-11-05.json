@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-05",
+  "status": "DEPLOYED 4CDBCCE4/49DA8E07: opening Akaari105536/Conversation1864 now requires an actual eligible Rogue41924 at scenario1078/step0 and accepts the native factory before consuming introDone. Failed publication retains qualified1s stationary retry; fullGUID/current quest receipt/generation checked after publication.49 ASAN,40 native,12 pinned counterfactual,4 explicit factory faults,8 retained captures and16 capture ASAN pass. Selected stage/canonical PE, typed26972/audio references and canonical Scepter pass. Owned33336 ready/shutdown0/exit0/gone. Full client/all36 and known mixed diagnostics remain OPEN.",
+  "scope": "Only first Akaari opening1864 admission/publication/retry and three Reset fields plus UpdateIntro before original capture dispatcher. Exact certificate restores the original48c20d9c6 capture class after removing scoped changes; broader retained cage/cache and capture tests consume that certificate. No SQL, native conversation data, combat timing, summon, spell/quest/credit, pet or shared core changes.",
+  "cause": "Original Player-only 25yd2D LOS one-shot unconditionally set introDone after CreateConversation, including any GM/wrong-class/no-quest/wrong-stage visitor and a false factory result. A later legitimate participant could never retry. 2D radius also admitted an unrelated floor. Eligibility and accepted native creation must precede consumption.",
+  "implementation": "Source must be alive/live105536 in1607 with instance and current1078/step0; Player alive/live/contactable actual nonGM Rogue with active INCOMPLETE unrewarded41924, same map/both phases,25yd2D+3D and native LOS, reciprocal quest-object scopes, no pending transfer. Pending/complete capture cannot start the optional intro. Native Player caster retains personal/group policy and virtual actor, no progression. Busy gate,1s cooldown, nearest qualified candidate (ignores closer GM), generation/full128GUID/current cancellation receipt revalidation remove stale accepted publication. Failure logs once per reset and retries at1s while stationary. Reset cancels stale attempts but preserves accepted introDone; original capture owner/lease/cleanup/clocks untouched.",
+  "sources": {
+    "local_world": "Readonly conversation_actor1864 role52510/105536/display69142 flags0,1,0 duration4500; conversation_data line3952/start0/unk1=109,unk2=0; no conversation_creature rows. Native factory adds5000 padding, publishes9500; native actor is virtual payload, not required nearest-creature lookup.",
+    "matching26972": "Typed DB2+hotfix reader: ConversationLine3952 -> BroadcastText108429/additional1000/no next; SoundKit63708 -> FileData1392427. Exact metadata checked; reference resolution is not evidence of client audio playback.",
+    "code": "Native Conversation.CreateConversation false preserves caller ownership, true means AddToMap and IsInWorld accepted. Existing native quest receipt/scope API and already-tested Zirus retry pattern adapted to actual stage0/capture guards. No modern schema/API/target assumptions.",
+    "history": "Local Git48c20d9c6/eef8a0a19 reviewed; git fetch origin main confirmed matching remote predecessor. Local newer TrinityCore file inventory has no matching FangsoftheDevourer scenario implementation; no external/video evidence needed or claimed."
+  },
+  "validation": {
+    "asan": "49 assertion-enabled MSVC ASAN cases:33 ineligible source/player/quest/phase/floor/LOS/instance/stage/pending-capture guards, actual-player-only/null/pet/GM, accepted once/reset, bounded repeated refusal with retained diagnostic,12 factory-callback abandon/reaccept/reset/registry/fullGUID/map/receipt/stage/transfer/LOS/scope/death mutations and nested reentry. Actual intro/LOS callbacks and UpdateAI/Reset prefixes extracted; native QuestCancellationReceipt/QuestObjectScope. Geometry/Map/factory services modeled; full Reset/combat tested separately native. Not full-core ASAN.",
+    "counterfactual": "12 whole pinned48c20d9c6 native AI contexts (Human/Orc x6): GM/class/absent quest/wrong step/missing in-memory1864 lines and ordinary acceptance. Original consumes introDone even on false factory and denies later legitimate stationary arrival. Expected-broken evidence, not a passing ordinary gameplay run.",
+    "native": "40 whole current AI/native Player/Map/Scenario/Conversation contexts (Human/Orc x20), actual party and pet+guardian/NPC/null rejection, complete/rewarded/dead/phase/floor/out-of-range/source/instance/stage/capture guards, nearest eligible versus closer GM, stationary recovery and Reset/no replay. Native role/payload/3952/109/0/9500 checked; no scenario/item grants. Earlier quest/stage/poses/clock/direct LOS are controlled endpoints, not a client traversal.",
+    "faults": "4 explicit missing-line1864 native factory faults: exactly4 explained refusal warnings, no other diagnostics; restore original in-memory data,999+1ms stationary recovery, one variant abandons/reaccepts before fresh retry. Persistent World data unchanged; separate clean40 ordinary native run.",
+    "retained": "8 whole current native captures: player/pet/guardian native scaled one-hit guard/owner and actual group/both factions;12s+11s, portal189170/helper105540 actual9s removal,5s209264 toPlayer,10s accepted near transfer/constructed ACK/211684+211686/50261 once.16 separately retained extracted capture ASAN contexts normalize only reviewed opening changes and exercise original owner/lease/reset/helpers/failed transfer/reentry. No clone combat/client certification.",
+    "release": "Original generated scripts.vcxproj Release build, only Devourer.cpp rebuilt into original scripts.lib. Isolated world/bnet links use actual original library paths, no OutDir override. Selected stage/canonical PE verifies actual registration/GetAI/0xa0 AI vtable, precise qualified predicate/zero-stage/capture flags, native1864 Player factory result before only latch, fullGUID/current receipt/generation/remove, reset no replay and inlined qualified1s poll before original combat. Retained capture PE plus previous EventProcessor/escape/door/claim/death checks pass. Mandatory Test-ScepterLogin -VerifyReleaseBinary repeated on promoted canonical with dedicated runtime diagnostics.",
+    "deployment": "Offline original4 EXE/MAP hashes backed up at .codex/release-before-akaari-opening-2026-11-05, stage hashes/copied canonical hashes and protected configs/certs/DLLs verified. Owned worldserver33336 fresh ready, graceful server shutdown0,exit0,stderr empty,gone. No user server stopped, no SQL/character mutation."
+  },
+  "iterations": [
+    "First private PE dump invocation used an unsupported --release flag; corrected positional CLI. Actual retained PE checks passed; dump then found expected compiler-inlined UpdateIntro and tiny leaf LOS without unwind. Final verifier decodes the bounded LOS tail jump and checks the inlined poll.",
+    "Adapted PE inspector initially expected a Zirus JustDied override (Akaari inherits it), literal-zero reset stores (actual r14 zero register), and12s in Update (it belongs only to EnterCombat). Corrected each against actual emitted instructions; retained all applicable native admission/publication/receipt/control-flow and capture assertions. Final stage/canonical passes.",
+    "First optional next-clone metadata query requested a nonexistent creature_template.name column. Preserved readonly SQL stderr; corrected query omits it and succeeds. No database mutation.",
+    "Initial predecessor Scepter run lacked a dedicated diagnostic wrapper; not used as final certification. Mandatory check repeated after promotion inside explicit before/after canonical diagnostics, alongside selected PE."
+  ],
+  "canonical_hashes": {
+    "worldserver.exe": "4cdbcce48730cc8436f418302ca072f2f62ee8bbc8a3b0e1c1c86edd8787e5f9",
+    "bnetserver.exe": "49da8e07360e0bd9341358b6341585a2b93d6623c86916b2b1996bd21e98c9ba"
+  },
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp": "5f5f9a9ef8471bcd2c1e46d560a65a3ff4154b5e963e9312ac53eae950fd9291",
+    "tools/tests/AkaariOpeningCertificate.ps1": "05af6fbf6a4a3f2c25ebcfca35f2c0f308aae62775f35677259c629a9acff4cb",
+    "tools/tests/AkaariOpeningNative.cpp": "55a0cb20cb7121566148c8b2ca0c932faa520c507063d15a939b3c7b9d3c3801",
+    "tools/tests/AkaariOpeningTest.cpp": "9aa5aaa4a34c4aee331385e44990a26c1af25f6943949ddf55297776169721a3",
+    "tools/tests/Test-AkaariOpeningNative.ps1": "c67443926a4c28a2afe323bfc7c0fdf2b7974cffae0a8f0ae1a8ce9eea74151b",
+    "tools/tests/Test-AkaariOpening.ps1": "13c3379604262663b6cff31a354a5285225a4fb73ca2687d7a064b978a53d113",
+    "tools/tests/DevourerEscapeCertificate.ps1": "b08d4fec2705d37197190bd1031cf36235dd362e2e837d339ad6fbbd85575fda",
+    "tools/research/AkaariOpeningCatalog.cpp": "0083ef10c5ab34a8a663394f30aa8c8bf46a6eaf284581017bad227db974ccbd",
+    "tools/tests/verify_akaari_opening_release.py": "ac7a50de7d73f1d2465d9b992f0b85a9e904a57c1c24208216ff2002eb50c0af"
+  },
+  "diagnostics": {
+    "post_test": "All final ordinary ASAN/native/build/link/stage/canonical/owned-startup checks: no changed crash files, no appended DBErrors or unexplained server warning/error/assertion; owned exit/stdout/stderr reviewed. Explicit counterfactual/fault diagnostics classified separately.",
+    "canonical_crashes": 0,
+    "servers_running": 0,
+    "mixed_unresolved": {
+      "bytes": 6090,
+      "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+      "retained": true
+    },
+    "archive": "Pending after focused fix commit; closed reviewed diagnostics only. No active logs cleared."
+  },
+  "limits": [
+    "Actual opening line/audio/rendering, native clone combat, real movement/capture/arrival/pet/camera/reconnect and full1078/client acquisition remain OPEN.",
+    "All36 whole artifact chains are not certified by this focused repair or empty active crash directory. Known late vehicle charm and shared81040/101430+103151 mixed diagnostics remain OPEN."
+  ],
+  "next": "Review native209231 mirror clones105535 combat/admission/lifetime through actual matching26972 spell data and native summon/AI selection. Readonly live template has empty AIName/ScriptName, flags0/0; no105535 source0 SmartAI or209231 spell bindings. Existing capture test ticks source Unit+AI/helper Creature, not real clone combat. Preserve12/11/5/9/10s capture, owner/pet/guardian credit and original default AI unless a specific defect is demonstrated. Actual client opening/capture/playback and full1078/all36 remain OPEN; known late-charm/shared81040/101430+103151/mixed6090 retained."
+}

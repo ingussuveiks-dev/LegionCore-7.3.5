@@ -192,6 +192,79 @@ public:
                 scenario->GetCurrentStep() == 0;
         }
 
+        uint32 introTimer = 0, introGeneration = 0;
+        bool introBusy = false, introWarning = false;
+
+        Player* IntroPlayer(Player* player) const
+        {
+            if (capturePending || captureComplete || !me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() || me->GetEntry() != 105536 ||
+                me->GetMapId() != 1607 || !me->GetInstanceScript() || me->IsQuestObjectExpired() ||
+                !player || !player->IsInWorld() || player->IsPreDelete() || !player->IsAlive() || !player->CanContact() ||
+                player->isGameMaster() || player->getClass() != CLASS_ROGUE || player->HasPendingTeleport() ||
+                player->GetMap() != me->GetMap() || !player->InSamePhase(me) || !player->InSamePhaseId(me) ||
+                me->GetExactDist2d(player) > 25.0f || !player->IsWithinDistInMap(me, 25.0f) || !player->IsWithinLOSInMap(me) ||
+                player->IsQuestObjectExpired() || !player->CanTargetQuestObject(me) || !me->CanTargetQuestObject(player) ||
+                player->GetQuestRewardStatus(41924) ||
+                player->GetQuestStatus(41924) != QUEST_STATUS_INCOMPLETE)
+                return nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 1078 && scenario->GetCurrentStep() == 0 ? player : nullptr;
+        }
+
+        void TryIntro(Player* player)
+        {
+            if (introDone || introBusy || introTimer || !IntroPlayer(player))
+                return;
+            introBusy = true;
+            struct Release { bool& flag; ~Release() { flag = false; } } release{introBusy};
+            introTimer = 1000;
+            uint32 const generation = introGeneration;
+            ObjectGuid const recipient = player->GetGUID();
+            auto receipt = player->GetQuestCancellationReceipt(41924);
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1864, player, NULL, *player))
+            {
+                delete conversation;
+                if (generation == introGeneration && !introWarning)
+                {
+                    TC_LOG_WARN("scripts", "Akaari opening: native1864 unavailable; retain qualified1s retry");
+                    introWarning = true;
+                }
+                return;
+            }
+            player = me->IsInWorld() ? ObjectAccessor::GetPlayer(*me, recipient) : nullptr;
+            if (generation != introGeneration || !receipt || receipt->load(std::memory_order_acquire) ||
+                !player || player->GetGUID() != recipient || !IntroPlayer(player) ||
+                player->GetQuestCancellationReceipt(41924) != receipt)
+            {
+                conversation->Remove();
+                return;
+            }
+            introDone = true;
+        }
+
+        void UpdateIntro(uint32 diff)
+        {
+            if (introDone || introBusy)
+                return;
+            if (introTimer > diff)
+            {
+                introTimer -= diff;
+                return;
+            }
+            introTimer = 0;
+            Player* player = nullptr;
+            std::list<Player*> players;
+            me->GetPlayerListInGrid(players, 25.0f);
+            for (Player* candidate : players)
+                if (IntroPlayer(candidate) && (!player || me->GetDistance(candidate) < me->GetDistance(player)))
+                    player = candidate;
+            if (player)
+                TryIntro(player);
+            else
+                introTimer = 1000;
+        }
+
         void PresentCapture()
         {
             Talk(3);
@@ -233,6 +306,9 @@ public:
 
         void Reset() override
         {
+            ++introGeneration;
+            introTimer = 0;
+            introWarning = false;
             events.Reset();
             if (Player* player = ObjectAccessor::GetPlayer(*me, capturePlayer))
                 if (player->GetGUID() == capturePlayer)
@@ -293,22 +369,12 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
-
-            if (who->GetTypeId() != TYPEID_PLAYER)
-                return;
-
-            if (me->GetExactDist2d(who) <= 25.0f)
-                if (!introDone)
-                {
-                    Conversation* conversation = new Conversation;
-                    if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1864, who, NULL, *who))
-                        delete conversation;
-                    introDone = true;
-                }
+            TryIntro(who ? who->ToPlayer() : nullptr);
         }
 
         void UpdateAI(uint32 diff) override
         {
+            UpdateIntro(diff);
 
             if (captureComplete)
                 return;
