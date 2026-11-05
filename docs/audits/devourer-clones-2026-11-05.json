@@ -51,11 +51,21 @@
       "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
       "retained": true
     },
-    "archive": "Pending after focused fix commit; only closed reviewed task diagnostics, no active logs cleared."
+    "archive": "build-extractors/bin/Release/fixed/devourer-clones-2026-11-05; manifest/hash verification complete; no active logs cleared."
   },
   "limits": [
     "Actual client clone appearance/combat/voice, source return-home movement, capture/cell arrival/camera/pet/reconnect and whole1078 acquisition remain OPEN. Native source clock/returned-home endpoints are controlled; full client/all36 are not certified.",
     "Known late vehicle charm and shared81040/101430+103151/canonical mixed6090 diagnostics remain OPEN and visible. No user character or live server changed."
   ],
-  "next": "Review Valzuun105464 acceptance41924/Carllana105488 ->209056/private248901 entrance lifecycle and actual209066/PlayerCondition39597 admission/travel to1607/1078. Readonly data:105488 has no explicitAI/ScriptName;248901 is GOOBER10 with native209066 and PlayerCondition39597, no GO ScriptName. Earlier native capture tests begin at controlled accepted41924/map1607/stage0 and do not prove this entrance. Trace matching26972 prerequisites, failed summons/casts/GO, abandon/reaccept/re-entry and normal client use before proposing changes. Full client1078/all36, movement/audio/camera/pet and known late-charm/shared81040/101430+103151/mixed6090 remain OPEN."
+  "next": "Review Valzuun105464 acceptance41924/Carllana105488 ->209056/private248901 entrance lifecycle and actual209066/PlayerCondition39597 admission/travel to1607/1078. Readonly data:105488 has no explicitAI/ScriptName;248901 is GOOBER10 with native209066 and PlayerCondition39597, no GO ScriptName. Earlier native capture tests begin at controlled accepted41924/map1607/stage0 and do not prove this entrance. Trace matching26972 prerequisites, failed summons/casts/GO, abandon/reaccept/re-entry and normal client use before proposing changes. Full client1078/all36, movement/audio/camera/pet and known late-charm/shared81040/101430+103151/mixed6090 remain OPEN.",
+  "fix_commit": "f73d6f4ae36b1e4811ce203293b769915b34bb24",
+  "archive": {
+    "audit": "docs/audits/devourer-clones-archive-2026-11-05.json",
+    "path": "build-extractors/bin/Release/fixed/devourer-clones-2026-11-05",
+    "manifest_sha256": "08ff44a37ef5ed09c75b817ca7de4efbe3f1257fe3ec63910ba16f2bb8297531",
+    "files": 569,
+    "bytes": 1524031,
+    "fix_commit": "f73d6f4ae36b1e4811ce203293b769915b34bb24",
+    "verified": "Every source/archive/source SHA256 and actual local credential scan verified. Configs/binaries/PDB/character data excluded; task scripts and emitted disassembly retained. Counterfactual/fault and verifier/query development iterations paired with final ordinary passing checks. Private DBErrors empty; canonical mixed6090 unresolved unchanged. No active log cleared."
+  }
 }

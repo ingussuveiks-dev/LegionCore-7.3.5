@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-05",
+  "status": "VERIFIED after760CAE49/9A8DD082 canonical deployment; owned30508 gone",
+  "audit": "docs/audits/devourer-clones-2026-11-05.json",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/devourer-clones-2026-11-05",
+    "manifest_sha256": "08ff44a37ef5ed09c75b817ca7de4efbe3f1257fe3ec63910ba16f2bb8297531",
+    "files": 569,
+    "bytes": 1524031,
+    "fix_commit": "f73d6f4ae36b1e4811ce203293b769915b34bb24",
+    "verified": "Every source/archive/source SHA256 and actual local credential scan verified. Configs/binaries/PDB/character data excluded; task scripts and emitted disassembly retained. Counterfactual/fault and verifier/query development iterations paired with final ordinary passing checks. Private DBErrors empty; canonical mixed6090 unresolved unchanged. No active log cleared."
+  },
+  "review": "Corrected prior105535 assumption to native105609/209233..235/properties61.22 whole current native lifecycle cases across Human/Orc include actual AnyPetAI/Spell/TempSummon clocks,3 native producer GUIDs/owner/victims/scaling, player/pet/guardian killing blows without progression, normal10s expiry, native evade/no reaggro/fresh retry, source deletion, foreign fullGUID stale-index and other-producer preservation.2 pinnedc48f300b0 expected-broken native cases prove actual images reaggro a returned-home owner and cause50261/capture without a new player attack; paired repaired22 disallows this.2 explicit native test-only CheckCast rejection controls require at least4 hook calls; raw88 maps to native prepare30, no clones, normal capture still once. Retained8 full capture runs now tick correct native clones;8 pinned old-event captures require exactly8 explained portal189170 errors, already repaired by deployed eef8a0a19, and pair clean8 current.49 intro/16 capture extracted ASAN retained with exact scoped source certificate; no full-core ASAN or client combat claim. Initial optional SQL column/cast-fixture hypotheses, missing fresh combat state, actual reaggro discovery, and old PE Reset frame assumptions retained honestly in the main audit. Matching26972 fanout/props/targets/10s metadata and final native source/library hash checks pass. Original scripts.lib/final-link paths, stage/canonical registered Reset helper/full128/type/producer/native UnSummon PE plus retained opening/shared abort/escape/door/claim/death and canonical mandatory Scepter pass. Offline4file backup/protected hashes and owned30508 ready/shutdown0/exit0/stderr empty/gone verified. No SQL/character mutation; mixed6090 retained OPEN; no active log cleared.",
+  "canonical_mixed_unresolved": {
+    "bytes": 6090,
+    "sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "retained": true
+  },
+  "limits": [
+    "Actual client clone appearance/combat/voice, source return-home movement, capture/cell arrival/camera/pet/reconnect and whole1078 acquisition remain OPEN. Native source clock/returned-home endpoints are controlled; full client/all36 are not certified.",
+    "Known late vehicle charm and shared81040/101430+103151/canonical mixed6090 diagnostics remain OPEN and visible. No user character or live server changed."
+  ]
+}
