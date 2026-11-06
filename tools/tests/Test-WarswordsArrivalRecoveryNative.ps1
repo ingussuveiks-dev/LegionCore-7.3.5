@@ -1,5 +1,5 @@
 # Real native Fury load/hold/descent/finish/impact; no persistent character writes.
-param([switch]$SpellDiagnostics)
+param([switch]$SpellDiagnostics,[switch]$CompletedSpline)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/warswords-arrival-recovery-native/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
@@ -40,7 +40,7 @@ try{
  $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:CL="$previousCompiler /DNDEBUG /Zi /I`"$out`" /I`"$repo/src/server/scripts/Legion`""
 
 
- $env:_LINK_="$previousLink /DEBUG /PDB:`"$out/native.pdb`" /MAP:`"$out/native.map`""
+ if($CompletedSpline){$env:CL+=' /DCOMPLETED_SPLINE'};$env:_LINK_="$previousLink /DEBUG /PDB:`"$out/native.pdb`" /MAP:`"$out/native.map`""
  Push-Location "$repo/build-extractors/bin/Release"
  try{& "$repo/tools/tests/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
   & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ../tests/WarswordsArrivalRecoveryNative.cpp -ProbeName WarswordsArrivalRecoveryNative -OutputFile "$out/native.tsv" *> "$out/catalog.log"

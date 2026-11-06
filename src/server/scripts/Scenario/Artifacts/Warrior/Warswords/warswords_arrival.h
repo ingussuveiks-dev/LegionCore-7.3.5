@@ -71,7 +71,9 @@ namespace WarswordsArrivalRecovery
             if (finishing)
             {
                 auto destination=player->movespline->FinalDestination();
-                if (player->movespline->GetId()!=spline && !player->HasAura(189695) &&
+                bool arrivedOnOriginal=player->movespline->GetId()==spline && player->movespline->Finalized() &&
+                    std::fabs(player->GetPositionX()-3386.46f)<1 && std::fabs(player->GetPositionY()-1406.94f)<1 && std::fabs(player->GetPositionZ()-68.94f)<1;
+                if ((player->movespline->GetId()!=spline || arrivedOnOriginal) && !player->HasAura(189695) &&
                     std::fabs(destination.x-3386.46f)<0.1f && std::fabs(destination.y-1406.94f)<0.1f && std::fabs(destination.z-68.94f)<0.1f)
                 { player->CreateConversation(838); return false; }
                 acknowledgement-=std::min(acknowledgement,diff);

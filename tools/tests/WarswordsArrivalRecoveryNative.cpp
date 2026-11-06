@@ -52,18 +52,26 @@ int main(int argc,char**argv){try{
   auto landing=player.movespline->FinalDestination();Require(std::fabs(landing.x-3386.46f)<0.1f&&std::fabs(landing.z-68.94f)<0.1f,"Native descent destination differs");
   player.movespline->updateState(4999);auto point=player.movespline->ComputePosition();player.Relocate(point.x,point.y,point.z,point.orientation);
   observer.OnUpdate(&player,4999);Require(player.movespline->GetId()==first,"Native finish preceded5000ms");
+#ifdef COMPLETED_SPLINE
+  player.movespline->updateState(player.movespline->Duration());point=player.movespline->ComputePosition();player.Relocate(point.x,point.y,point.z,point.orientation);
+#endif
   observer.OnUpdate(&player,1);player.m_Events.Update(1000);(player.*Access(EntryClockTag{})).Update(10);observer.OnUpdate(&player,1);
   std::cout<<"TRACE native finish spline="<<first<<"->"<<player.movespline->GetId()<<" aura="<<player.HasAura(189695)<<" pending="<<WarswordsArrivalRecoveryNative::entries.size()<<std::endl;
-  Require(player.movespline->GetId()!=first&&!player.HasAura(189695)&&WarswordsArrivalRecoveryNative::entries.empty(),"Real205744 native finish/spline/aura acknowledgement failed");
+  Require(!player.HasAura(189695)&&WarswordsArrivalRecoveryNative::entries.empty(),"Real205744 native finish/spline/aura acknowledgement failed");
+#ifdef COMPLETED_SPLINE
+  Require(player.movespline->GetId()==first&&player.movespline->Finalized(),"Already-arrived native finish invented a new movement");uint32 expectedImpact=0;
+#else
+  Require(player.movespline->GetId()!=first,"Native finish did not start its actual landing");uint32 expectedImpact=1;
+#endif
   Require(Stories(map,838)==1&&!impact->impacts,"Native838 missing or impact fired before actual arrival");
   player.movespline->updateState(player.movespline->Duration());point=player.movespline->ComputePosition();player.Relocate(point.x,point.y,point.z,point.orientation);
   player.GetMotionMaster()->UpdateMotion(1);player.GetMotionMaster()->UpdateMotion(1);
-  Require(impact->impacts==1,"Actual arrived native191477 did not execute exactly once on its Player");
+  Require(impact->impacts==expectedImpact,"Actual arrived native191477 count differs; zero-distance cannot invent movement/impact");
   player.GetMotionMaster()->MoveJump(3400,1410,70,0,3,3);
-  EffectMovementGenerator interrupted(205744,191477,player.GetGUID(),1511);Require(interrupted.Update(player,1),"Interrupted movement was already finalized");interrupted.Finalize(player);Require(impact->impacts==1,"Interrupted native landing emitted impact");
+  EffectMovementGenerator interrupted(205744,191477,player.GetGUID(),1511);Require(interrupted.Update(player,1),"Interrupted movement was already finalized");interrupted.Finalize(player);Require(impact->impacts==expectedImpact,"Interrupted native landing emitted impact");
   player.movespline->updateState(player.movespline->Duration());
-  EffectMovementGenerator foreign(205744,191477,player.GetGUID(),1495);foreign.Update(player,1);foreign.Finalize(player);Require(impact->impacts==1,"Native landing ignored original map");
-  player.Unit::setDeathState(CORPSE);EffectMovementGenerator dead(205744,191477,player.GetGUID(),1511);dead.Update(player,1);dead.Finalize(player);Require(impact->impacts==1,"Dead native landing emitted impact");player.Unit::setDeathState(ALIVE);player.SetHealth(player.GetMaxHealth());
+  EffectMovementGenerator foreign(205744,191477,player.GetGUID(),1495);foreign.Update(player,1);foreign.Finalize(player);Require(impact->impacts==expectedImpact,"Native landing ignored original map");
+  player.Unit::setDeathState(CORPSE);EffectMovementGenerator dead(205744,191477,player.GetGUID(),1511);dead.Update(player,1);dead.Finalize(player);Require(impact->impacts==expectedImpact,"Dead native landing emitted impact");player.Unit::setDeathState(ALIVE);player.SetHealth(player.GetMaxHealth());
   std::cout<<"PASS real native loading >3s, pre-self-create gravity/root hold, actual8s loading ACK grace, CanContact-ready189695/205534 and original spline, real205744 finish/movement/aura acknowledgement; only838 after accepted finish. Earlier quest/stage and clock/ACK controlled, not rendered client flight\n";
   player.GetMotionMaster()->Clear();observer.OnBeforeLogout(&player);
   for(auto guid:data->helpers)if(auto actor=map.GetCreature(guid))actor->DespawnOrUnsummon();map.RemoveAllObjectsInRemoveList();CleanStories(map);
