@@ -43,6 +43,8 @@ struct Item {
     uint32 GetEntry() const { return entry; }
     ItemTemplate const* GetTemplate() const { static ItemTemplate proto; return &proto; }
     uint16 GetPos() const { return position; }
+    uint32 GetBagSlot() const { return position >> 8; }
+    uint32 GetSlot() const { return position & 255; }
     bool IsEquipped() const { return position ==
 #ifdef EARTHWARDER_PRESENTATION_TEST
         0xFF10;
@@ -194,6 +196,16 @@ struct Player : Unit {
 #endif
     }
     void SendEquipError(InventoryResult result, Item* item) { assert(result != EQUIP_ERR_OK && item == &artifact); ++equipErrors; }
+    void EquipChildItem(uint32 bag, uint32 slot, Item* item) {
+        assert(bag == INVENTORY_SLOT_BAG_0 && item == &artifact && slot == (artifact.position & 255));
+#ifdef EARTHWARDER_PRESENTATION_TEST
+        paired.position = 0xFF0F; mainhand = &paired;
+#elif defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST)
+        paired.position = 0xFF10; offhand = &paired;
+#else
+        assert(false);
+#endif
+    }
     void SwapItem(uint16 source, uint16 destination, bool mailOffhand = false) {
         assert(!mailOffhand);
 #ifdef EARTHWARDER_PRESENTATION_TEST

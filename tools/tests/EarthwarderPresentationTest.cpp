@@ -134,7 +134,7 @@ int main() {
         pickup.player.offhand = &pickup.player.artifact; pickup.player.artifact.position = 0xFF10;
         pickup.player.mainhand = nullptr;
         pickup.Finish();
-        assert(pickup.player.swaps == 0 && pickup.player.offhand == &pickup.player.artifact && !pickup.player.mainhand && warnings == 1);
+        assert(pickup.player.swaps == 0 && pickup.player.offhand == &pickup.player.artifact && pickup.player.mainhand == &pickup.player.paired && warnings == 0);
     }
     std::cout << "PASS: actual scene/packet lifecycle -> scoped1215/1575 callback -> native208562 effect; existing offhand shield/mainhand child swap, completed/cancelled/forged/stale/repeated/abandoned context and failed equip; native208562 progression/group/ability effects are source-traced separately, not executed by this host\n";
 #endif
