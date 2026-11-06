@@ -1,4 +1,30 @@
 {
+  "latest_hruthnir_start_recovery_2026_11_06": {
+    "audit": "docs/audits/hruthnir-start-recovery-2026-11-06.json",
+    "status": "DEPLOYED0807A57E/525CA0D8: Protection original owner/quest receipt, acknowledged497/original6s cue and actual Magnar1062; same1s missing/declined endpoint retry without replay; shared warm-entry receipt adoption and scoped first-phase reserve destructor.",
+    "fix_commit": "a673194f6",
+    "checks": "60 new ASAN contexts including actual AI deletion;14 actual native Human/Orc start/receipt/shared-entry/AI-replacement cases;24 retained player/pet/guardian native Kill progressions; real497 lifecycle, full selected Hruthnir/intro/timer certificate chain and all9 canonical retained groups including Scepter/Fury pass. Owned8236 ready/shutdown0/exit0/gone, stderr empty and no new crash/DBErrors/server warning/error/assertion. Separate verification repairs41a806a76/b3062a53b.",
+    "next": "No pending code/data promotion. User can start the canonical server visibly and retest Fury/Protection. Full client path/render/audio/combat/scaling/re-entry/wipe/reoffer/final-phase AI replacement/equipment/manual return/camera/pet and all36 chains remain OPEN; earlier shared101430/103151 LINK2/mixed7111 and Slaghammer handoff evidence untouched. No character progress/gear/health edits.",
+    "cleanup": {
+      "archive": "build-extractors/bin/Release/fixed/hruthnir-start-recovery-2026-11-06",
+      "manifest_sha256": "adbfb63fc68d7e18bdb9e4cb4af99841fe441799d90f67d2bd7d5d425f6709eb",
+      "original_files": 1119,
+      "fix_commits": [
+        "a673194f6",
+        "41a806a76",
+        "b3062a53b"
+      ],
+      "removed_files": 353,
+      "logical_removed_bytes": 1690107860,
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-hruthnir-start-recovery-2026-11-06",
+        ".codex/release-before-magnar-ai-readiness-2026-11-06"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "verification": "Rechecked every original archived SHA256 and manifest after exact absolute file/hash/reparse/ownership validated deletion. Canonical binaries/config/cert/DLLs, two recovery generations, empty active Crashes, unchanged mixed7111 and unresolved Slaghammer handoff directory/cache hashes verified. Required shared build libraries/assets, regression source/tools and personal character/database backups preserved. Owned canonical8236 is gone, no user process stopped; no redundant staging executable remains for this completed fix."
+    }
+  },
   "latest_magnar_ai_readiness_2026_11_06": {
     "audit": "docs/audits/magnar-ai-readiness-2026-11-06.json",
     "status": "DEPLOYED34EB779D/D9BAEBCB: Magnar full selected batch registered before callbacks; actual selected/companion AI readiness and same-actor1s activation retry, full-GUID recovery and generation cancellation. Native original2/2/1/2/3/auxiliaries/owner-first46427 retained.",

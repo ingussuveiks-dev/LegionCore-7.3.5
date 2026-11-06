@@ -35,5 +35,24 @@
   ],
   "preservation": "Canonical configurations/certificates/DLLs/extracted data and existing active mixed diagnostics retained. Original497 dialogue can continue beyond the6s combat cue. No user/unknown process stopped, no personal backups removed.",
   "limits": "Full client Protection travel, rendered497/audio, actual combat/scaling/timing, native player movement and wipe/re-entry/reoffer routing remain separate client checks. Complete final-phase AI replacement/reset behavior is outside this first-phase start fix. Whole Arms/Fury/Protection and all36 artifact chains are not certified by source/native/PE checks. Earlier101430/103151 LINK2 remains OPEN; mixed7111 DBErrors SHA256 FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 remains unchanged and untruncated.",
-  "archive_cleanup": "PENDING verified evidence archival and exact redundant build cleanup; fixed cause, matching canonical binary, relevant regressions and clean startup are established."
+  "archive_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-start-recovery-2026-11-06",
+    "manifest_sha256": "adbfb63fc68d7e18bdb9e4cb4af99841fe441799d90f67d2bd7d5d425f6709eb",
+    "original_files": 1119,
+    "fix_commits": [
+      "a673194f6",
+      "41a806a76",
+      "b3062a53b"
+    ],
+    "removed_files": 353,
+    "logical_removed_bytes": 1690107860,
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-hruthnir-start-recovery-2026-11-06",
+      ".codex/release-before-magnar-ai-readiness-2026-11-06"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "verification": "Rechecked every original archived SHA256 and manifest after exact absolute file/hash/reparse/ownership validated deletion. Canonical binaries/config/cert/DLLs, two recovery generations, empty active Crashes, unchanged mixed7111 and unresolved Slaghammer handoff directory/cache hashes verified. Required shared build libraries/assets, regression source/tools and personal character/database backups preserved. Owned canonical8236 is gone, no user process stopped; no redundant staging executable remains for this completed fix."
+  },
+  "fix_commit": "a673194f6"
 }
