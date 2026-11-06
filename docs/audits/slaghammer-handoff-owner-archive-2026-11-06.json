@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-06",
+  "fix_commit": "e9201b0e9b189fbfd9d7f2e8ab54aef8c3b303c0",
+  "status": "VERIFIED resolved late-handoff evidence and redundant output cleanup after canonical startup/regressions",
+  "archive": {
+    "audit": "docs/audits/slaghammer-handoff-owner-archive-2026-11-06.json",
+    "path": "build-extractors/bin/Release/fixed/slaghammer-handoff-owner-2026-11-06",
+    "manifest_sha256": "e7531fcb0474cf606a5d22a5f654140e7f33258b376c7ae5e0da3b9894edc86e",
+    "archived_files": 697,
+    "archived_bytes": 1791621,
+    "cleanup": {
+      "deleted_files": 344,
+      "logical_bytes_removed": 3846443292,
+      "observed_free_bytes_gain": 3846094848,
+      "free_bytes_after": 133936541696,
+      "removed_directories": [
+        ".codex/slaghammer-handoff-release",
+        ".codex/kingslayers-lucas-release"
+      ],
+      "retained_recoveries": [
+        ".codex/release-before-slaghammer-handoff-2026-11-06",
+        ".codex/release-before-silver-hand-instance-scope-2026-11-06"
+      ],
+      "local_manifest": ".codex/slaghammer-handoff-2026-11-06/cleanup-deleted.json",
+      "local_manifest_sha256": "2bea4ded62a33615b5f0ec740593bce9c0e1b51f31429401d80fb9ce15523e59",
+      "deferred": "Keep latest exact OPEN admitted-intro probe executable and its full runtime/symbol/config/evidence;all OPEN raw logs/inputs remain outside fixed. Original late-handoff-only observational probe outputs now resolved and redundant binary outputs removed after archival. MissingLINK2 donor/source research retained. Shared data/build libraries/personal backups untouched."
+    }
+  },
+  "verification": "All697original archive hashes verified after cleanup;all344planned files and2obsolete stage/third-generation rollback dirs absent. Canonical binary/config/cert/DLL hashes preserved,two recent recovery generations retained. Canonical Crashes empty,mixed6090 unchanged;only two fully reviewed offline private connection-refusal DBErrors logs reset after verified archive,no mixed/unresolved log truncated.",
+  "safety": "Exact absolute workspace/runtime/cache paths,size/mtime/hash checked;symlink/junction ancestors rejected;native PowerShell Remove-Item LiteralPath only,no recursive or cross-shell deletion. No running user/unknown/task server,compiler or probe deleted. Regression sources/tools,shared extracted data,required build libraries,personal backups and quarantine boundaries retained.",
+  "unresolved": {
+    "path": "build-extractors/runtime-test/slaghammer-handoff-native/20261106-121715-172",
+    "exe": "build-extractors/runtime-test/legion-legendary-catalog/SlaghammerHandoffNative.exe",
+    "exe_sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "DBErrors_sha256": "6646c0c66261b4cb56ea25209da680a3366bbda16b4bb08546fb0e18b7c7c6b6",
+    "status": "Initial actual101430/103151 missingLINK2 remains OPEN. All ObserveOpenIntro logs/inputs remain outside fixed;latest exact executable/runtime/symbols/config retained for concrete investigation. Older duplicate generated symbols/configs removed;no unresolved log deleted/truncated. Full client/whole36 and companion after-death visual/recovery checks remain separate."
+  },
+  "recovery": "Previous canonical binaries need prior empty101430 ScriptName restored before use because they lack new registration. Manual offline rollback-binding.sql/RECOVERY.json stored in newest recovery;not executed. Returning to current binary requires explicit guarded03 reapply/readback because updater is already RELEASED.",
+  "resolved_private_error_logs_reset": [
+    {
+      "Path": "build-extractors/runtime-test/slaghammer-handoff-native/20261106-114832-259/logs/DBErrors.log",
+      "OriginalSHA256": "17f7fbdac1fa5db011532302849bbc409dae79f51e67adf0e8fadda82803debb",
+      "ActiveBytes": 0,
+      "OriginalBytes": 140,
+      "Reason": "User started MariaDB; ordinary native36 and canonical ready passed; original verified archive retained"
+    },
+    {
+      "Path": "build-extractors/runtime-test/slaghammer-handoff-native/20261106-114911-485/logs/DBErrors.log",
+      "OriginalSHA256": "ceda8b4b586cd28980fbc96168cdeb7a4727694f434f15041772f365defd152f",
+      "ActiveBytes": 0,
+      "OriginalBytes": 140,
+      "Reason": "User started MariaDB; ordinary native36 and canonical ready passed; original verified archive retained"
+    }
+  ]
+}

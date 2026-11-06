@@ -47,6 +47,30 @@
     "tools/tests/SilverHandHandoffScope.ps1": "6debc92ca1f6f361eaef6128790801803ac6e931ab3ed48aa3d40560938c5ef0"
   },
   "process_ownership": "Owned canonical14148 gracefully gone;no task world/bnet server left. MariaDB was started by user and is left running. No user/unknown server stopped.",
-  "archive_cleanup": "Pending separate post-fix archive/cleanup audit;retain current OPEN intro symbols/logs and reusable regression source. Two recent rollback generations only after verified cleanup.",
-  "client_pending": "Full Priest40710 approach/cultist combat and one-hit/pet/guardian killing blows,movement/voice/camera/barrier/companion visual/follow,death/reconnect after actual companion creation,whole acquisition and all36 chains remain client checks. Live-instance receipt is not serialized exact-stage recovery after server restart."
+  "archive_cleanup": {
+    "audit": "docs/audits/slaghammer-handoff-owner-archive-2026-11-06.json",
+    "path": "build-extractors/bin/Release/fixed/slaghammer-handoff-owner-2026-11-06",
+    "manifest_sha256": "e7531fcb0474cf606a5d22a5f654140e7f33258b376c7ae5e0da3b9894edc86e",
+    "archived_files": 697,
+    "archived_bytes": 1791621,
+    "cleanup": {
+      "deleted_files": 344,
+      "logical_bytes_removed": 3846443292,
+      "observed_free_bytes_gain": 3846094848,
+      "free_bytes_after": 133936541696,
+      "removed_directories": [
+        ".codex/slaghammer-handoff-release",
+        ".codex/kingslayers-lucas-release"
+      ],
+      "retained_recoveries": [
+        ".codex/release-before-slaghammer-handoff-2026-11-06",
+        ".codex/release-before-silver-hand-instance-scope-2026-11-06"
+      ],
+      "local_manifest": ".codex/slaghammer-handoff-2026-11-06/cleanup-deleted.json",
+      "local_manifest_sha256": "2bea4ded62a33615b5f0ec740593bce9c0e1b51f31429401d80fb9ce15523e59",
+      "deferred": "Keep latest exact OPEN admitted-intro probe executable and its full runtime/symbol/config/evidence;all OPEN raw logs/inputs remain outside fixed. Original late-handoff-only observational probe outputs now resolved and redundant binary outputs removed after archival. MissingLINK2 donor/source research retained. Shared data/build libraries/personal backups untouched."
+    }
+  },
+  "client_pending": "Full Priest40710 approach/cultist combat and one-hit/pet/guardian killing blows,movement/voice/camera/barrier/companion visual/follow,death/reconnect after actual companion creation,whole acquisition and all36 chains remain client checks. Live-instance receipt is not serialized exact-stage recovery after server restart.",
+  "fix_commit": "e9201b0e9b189fbfd9d7f2e8ab54aef8c3b303c0"
 }
