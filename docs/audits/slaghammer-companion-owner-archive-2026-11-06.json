@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-06",
+  "status": "ARCHIVED,HASH VERIFIED AND TEMPORARY OUTPUTS REMOVED",
+  "fix_commit": "47cbe1fb12d33be4819abfeedcf5c76dc76cf783",
+  "archive_path": "build-extractors/bin/Release/fixed/slaghammer-companion-owner-2026-11-06",
+  "manifest_sha256": "b1e62903c23483b5f9846bc773f5a151d7b212c2015cdd0db79a68c10b3e4ec9",
+  "archived_files": 324,
+  "archived_bytes": 1348663,
+  "review": "Original324diagnostic/source-snapshot/SQL-guard/baseline/projected/live/startup receipts archived with source/archive/source hashes and credential scan. All324archive hashes reverified after cleanup. Classified loader-fixture missing251349and81PageText errors paired clean real-loader regressions;original bytes preserved before2privateDBErrors reset to0. Expected14native wrong-follow counterfactual and12custom SQL refusal cases retained separately from normal successful checks. Canonical mixed6090 and unresolvedsharedLINK2research excluded from resolution/cleanup and retained active.",
+  "cleanup": {
+    "files_deleted": 25,
+    "logical_bytes_removed": 1243417303,
+    "observed_free_bytes_gain": 1243242496,
+    "free_bytes_after": 132355489792,
+    "local_manifest": ".codex/shared-crypt-links-2026-11-06/cleanup-deleted.json",
+    "local_manifest_sha256": "4201c8ead5f475f6c5147adaf9895013addfa72aaca9a9c8c495e06c4ca3a75c",
+    "removed": "Task-owned native executable/object/ILK/PDB/map and8private copied configs;no recursive directory removal. Exact absolute task/cache filenames,size/mtime/hash,junction guards and no-active-process checks before deletion. Sources,regression tools,evidence,canonicalruntime,buildlibraries,personaldata and existing recoverycopies retained.",
+    "deferred": "No test server/companion-native compiled output or private runtime config retained for this completed initial-follow fix. Pending actual client/whole-chain and unrelatedLINK2research use canonicalruntime/source and retained evidence."
+  },
+  "post_cleanup": "Canonical world/bnet executables and both configurations retain predeployment hashes. Crashes empty;canonicalDBErrors6090/SHA unchanged;no new server warnings/errors/assertions. Owned25992 already gracefully stopped with exit0,no user server stopped. All cleanup diagnostics clean;no new build/runtime test needed after generated-output deletion."
+}

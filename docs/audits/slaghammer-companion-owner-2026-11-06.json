@@ -40,5 +40,21 @@
     "Full40710/991 sequence,both barriers,ritualists/finalboss,pickup,turnin,pet/guardian final blows,abandonment/reentry/reconnect and later101899LOS/201321/cleanup are separate checks;only initial follow recipient is repaired here."
   ],
   "next": "Shared101430/103151 missingLINK2 remains unresolved: original200165/conversation1031 and202014->202015 do not establish either missing payload. Review original history/donor evidence before editing; retain canonical mixed6090 and all unresolved sources. Independently review later101899 stage7 LOS/TALK4/201321 recipient and cleanup using actual native data/acknowledgement; this commit certifies only initial summoned follow ownership. Known shared81040/late-charm and all36/client checks remain OPEN.",
-  "archive_cleanup": "Pending implementation commit:hash-archive only this resolved companion/fixture evidence,retain unresolvedsharedLINK2research outsidefixed,then remove no-longer-needed native executable/object/ILK/PDB/map/privateconfig outputs per new AGENTS requirement;canonicalruntime and recoverycopies retained."
+  "archive_cleanup": {
+    "audit": "docs/audits/slaghammer-companion-owner-archive-2026-11-06.json",
+    "path": "build-extractors/bin/Release/fixed/slaghammer-companion-owner-2026-11-06",
+    "manifest_sha256": "b1e62903c23483b5f9846bc773f5a151d7b212c2015cdd0db79a68c10b3e4ec9",
+    "archived_files": 324,
+    "cleanup": {
+      "files_deleted": 25,
+      "logical_bytes_removed": 1243417303,
+      "observed_free_bytes_gain": 1243242496,
+      "free_bytes_after": 132355489792,
+      "local_manifest": ".codex/shared-crypt-links-2026-11-06/cleanup-deleted.json",
+      "local_manifest_sha256": "4201c8ead5f475f6c5147adaf9895013addfa72aaca9a9c8c495e06c4ca3a75c",
+      "removed": "Task-owned native executable/object/ILK/PDB/map and8private copied configs;no recursive directory removal. Exact absolute task/cache filenames,size/mtime/hash,junction guards and no-active-process checks before deletion. Sources,regression tools,evidence,canonicalruntime,buildlibraries,personaldata and existing recoverycopies retained.",
+      "deferred": "No test server/companion-native compiled output or private runtime config retained for this completed initial-follow fix. Pending actual client/whole-chain and unrelatedLINK2research use canonicalruntime/source and retained evidence."
+    }
+  },
+  "fix_commit": "47cbe1fb12d33be4819abfeedcf5c76dc76cf783"
 }
