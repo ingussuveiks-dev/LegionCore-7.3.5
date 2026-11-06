@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-06",
+  "status": "AUTHORIZED scoped offline Stromkar reset committed and fully reconciled;actual next login/client traversal pending.",
+  "authorization": "User requested weapon/progress removal,then explicitly chose Stromkar from scenario entrance rather than artifact selection. This supersedes the earlier consumed no-reset boundary for this one operation only. New one-use authorization is consumed;no standing permission to repeat or reset other characters/quests.",
+  "scope": "Reviewed same previously tested offline Warrior;one equipped128910/count1. Other two artifact weapons/scenarios absent. Current completed41105 restored as active INCOMPLETE3/timer0;five native storage indices0..4/data0 inserted. Remove only its one rewarded41105 row. Keep40579/40582 selection and39530/39192 follow-ups plus all unrelated class-hall/quest/reward rows. Native41105 RewardNextQuest=0 confirmed;no future-chain admission bypass added.",
+  "weapon": "Remove exactly one owned128910 and its matching inventory/artifact-XP/24power rows;remove only matching child GUID/refund/trade/relic/gem/modifier/transmog references when present. No other item,appearance/account unlock,currency,level,spell,character or character-aura change. Mainhand cache triple only cleared,retaining all other69-token cache positions.",
+  "entrance": "Native203920 map1539 pose1966.66/2494.39/133.152/0.147302,instance0 and version1 scenario1037/instance0/boot0 entrance receipt. This explicitly requests a fresh native run and prevents the earlier position-only login rejection. Other character fields preserved;no resurrection or transport cleanup needed.",
+  "backup": "15full scoped mysqldump hex-blob primary-ordered backups with SHA256 manifest before mutation. Fixed original owned-item GUID sets retain orphan visibility after deletion. Independent15-table dump readback matches original backup bytes immediately before reset. Private raw/BLOB snapshots,SQL,identity,original/after character rows and backup data are ignored local only;none committed.",
+  "verification": "One locked transaction gates full15-table SHA256 fingerprints and exact reviewed offline identity/item/state plus no account-global41105 reward. Item/quest/status/objective/character row-count receipts and explicit COMMIT sentinel verified. Read-only after snapshot uses binary-as-hex and per-table counts;every field/row across15tables equals the exact allowed transformation.15backup hashes rechecked. Mutation attempt/commit/verified markers block replay. No reward/item/quest overwrite beyond authorized scope.",
+  "native_regression": "Test-ScenarioResume -VerifyReleaseBinary compiles actual source handler/packet/model adapters,including actual1539/1037 fresh entrance receipt,consumed selector,wrong991/closed context/boot/instance reuse. Canonical recovery markers pass. World/map services controlled;not actual client login or whole chain. Existing source conversion warnings retained.",
+  "development": "Initial read-only query assumed instance instead of actual instance_id;later metadata query put AllowableClasses on main template rather than addon. Both failed before any mutation and were corrected against actual schema. Raw binary GUID fields require mysql --binary-as-hex for unambiguous TSV reconciliation;mysqldump backups already used --hex-blob. Current artifact appearance cache differs from old reset display;native cache serialization reviewed and only actual current mainhand triple cleared. Guarded preflight and complete read-only reconciliation passed;no failed mutation or hidden symptom.",
+  "diagnostics": "Canonical/own before/after crash hashes and log offsets,exits/stdout/stderr reviewed for preflight/regression/reset/reconciliation:no new crash,DBErrors or unexplained server warning/error/assertion. Canonical Crashes empty;original mixed6090 and unknown101430/103151 LINK2 log/hash untouched. No log truncated.",
+  "runtime": {
+    "world_sha256": "96645857bb182026beaf80039b15e806d4ff168e68d97194b90b106e71f3b94c",
+    "bnet_sha256": "abaf20661107884277c31a3a29952a439052d6894db62c781043824ab8b49449",
+    "processes": "No worldserver/bnetserver/client process was running at initial review;server absence rechecked before mutation/postcheck. No user/unknown process stopped and no server launched. Executables/configurations unchanged. User starts own server/client."
+  },
+  "private_evidence": ".codex/warrior-retest-2026-11-06;15backup/manifest.json,immutable snapshot/fingerprint guards,attempted/committed/verified markers,result.json. Personal recovery files retained;do not replay old reset helpers.",
+  "archive": "build-extractors/bin/Release/fixed/warrior-stromkar-retest-2026-11-06",
+  "archive_manifest_sha256": "702f8e4fdb339046c95b78e7bf201c601ead73fcd9beaa8c520d3a2d82a20653",
+  "archive_files": 24,
+  "cleanup": {
+    "deleted_generated_files": 5,
+    "bytes_removed": 1082622,
+    "manifest": ".codex/warrior-retest-2026-11-06/cleanup-deleted.json",
+    "manifest_sha256": "5e1a490d8f5b9af9a48004eaa23c405309a399a5abad7d16e6cdbfe446fc7e60",
+    "verification": "All24original diagnostic/regression archive hashes and15private backup hashes rechecked after exact-path PowerShell deletion. Canonical binaries/mixed6090/Crashes unchanged. Private personal recovery/state/SQL files retained. No test server/staging copy created;no runtime deployment or startup required for this offline character operation."
+  },
+  "remaining": "Actual next login and full fresh Stromkar movement/combat/visual/loot/equip/return/client path remain user-owned checks. Earlier LINK2,visual and other Warrior/Fury/Protection/full36 findings remain open. No further reset authorized."
+}
