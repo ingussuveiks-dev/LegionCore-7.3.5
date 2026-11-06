@@ -69,6 +69,7 @@ if($hasStart){foreach($name in @('void CancelMagnarStart(','void RejoinMagnarSta
 [IO.File]::WriteAllText("$out/StartRecovery.inc",$startMethods)
 $pillik=''
 if($source.Contains('void QueuePillikHandoff(')){foreach($name in @('bool IsPillikContext(','bool IsPillikPlayer(','void QueuePillikHandoff(','bool ArmPillikHandoff(','void UpdatePillikHandoff(','void TryPillikHandoff(','void ContinuePillikHandoff(')){$pillik+=Block $source $name}}
+if($source.Contains('void TryPillikEntry(')){$pillik+=Block $source 'void TryPillikEntry('}
 [IO.File]::WriteAllText("$out/PillikRecovery.inc",$pillik)
 Copy-Item -LiteralPath "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h" -Destination "$out/PillikHeader.inc"
 Copy-Item -LiteralPath "$PSScriptRoot/HruthnirPillikCases.inc" -Destination "$out/PillikCases.inc"

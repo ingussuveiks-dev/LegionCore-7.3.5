@@ -11,8 +11,12 @@ instructions = previous['instructions']
 positions = previous['positions']
 suffix = '@npc_hrutnirAI@npc_hrutnir@@'
 context_name = '?IsMagnarOfferContext' + suffix
-callback = '??R<lambda_5>@?BL@??MovementInform' + suffix
-bridge = '?_Do_call@?$_Func_impl_no_alloc@V<lambda_5>@?BL@??MovementInform' + suffix
+def offer_symbol(prefix):
+    matches = [name for name in native['symbols'] if name.startswith(prefix) and '??MovementInform' + suffix in name]
+    assert len(matches) == 1, 'Expected the unique native point6 offer lambda'
+    return matches[0]
+callback = offer_symbol('??R<lambda_5>')
+bridge = offer_symbol('?_Do_call@?$_Func_impl_no_alloc@V<lambda_5>')
 
 def verify_endpoint(entries, owner_operand, radius_register, load_radius=True, retain_home_x=False, swapped_xy=False):
     expected = [
@@ -82,7 +86,8 @@ assert any(entry.op_str == f'byte ptr [rcx], {zero_register}b' for entry in move
 assert any(entry.mnemonic == 'lea' and entry.op_str == 'rcx, [rbx + 0x78]' for entry in movement[context:queue])
 assert any(entry.mnemonic == 'lock inc' and entry.op_str == 'dword ptr [rdi + 0xc]' for entry in movement[context:queue]), 'Offer queue does not capture a weak owner'
 assert any(entry.op_str == 'r12d, dword ptr [r15 + 0x3b8]' for entry in movement[context:queue])
-assert any(entry.op_str == ('dword ptr [rbp - 0x58], r12d' if zero_register == 'r15' else 'dword ptr [rbp - 0x48], r12d') for entry in movement[context:queue])
+capture = 'dword ptr [rbp - 0x68], r12d' if any(name.startswith('?TryPillikEntry' + suffix) for name in native['symbols']) else ('dword ptr [rbp - 0x58], r12d' if zero_register == 'r15' else 'dword ptr [rbp - 0x48], r12d')
+assert any(entry.op_str == capture for entry in movement[context:queue])
 assert any(entry.op_str == 'rcx, 0x36a0' for entry in movement[context:queue])
 assert any(entry.op_str == 'dl, 0xf' for entry in movement[context:queue]), 'Native Talk15 was lost'
 tables = [entry.address + entry.size + entry.operands[1].mem.disp for entry in movement[context:queue]

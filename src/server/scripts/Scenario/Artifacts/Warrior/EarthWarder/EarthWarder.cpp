@@ -135,6 +135,8 @@ public:
             uint32 instance = 0, epoch = 0, retry = 0;
             bool queued = false, approached = false, voiceSent = false, moveRequested = false;
             bool complete = false, busy = false, failureReported = false;
+            uint32 entryRetry = 0;
+            bool entryComplete = false, entryBusy = false, entryFailureReported = false;
         };
         std::shared_ptr<PillikProgress> pillikProgress = std::make_shared<PillikProgress>();
 
@@ -207,6 +209,50 @@ public:
             pillikProgress->queued = true;
             pillikProgress->instance = me->GetInstanceId();
             pillikProgress->epoch = epoch;
+        }
+
+        void TryPillikEntry(uint32 diff = 0)
+        {
+            auto state = pillikProgress;
+            if (!state->queued || state->entryComplete || state->entryBusy)
+                return;
+            if (state->entryRetry > diff)
+            {
+                state->entryRetry -= diff;
+                return;
+            }
+            state->entryRetry = 500;
+            if (!IsPillikContext() || state->instance != me->GetInstanceId() ||
+                state->epoch != me->GetInstanceScript()->GetData(1060))
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(state->instance);
+            if (scenario->GetCurrentStep() != 0)
+            {
+                state->entryComplete = true;
+                return;
+            }
+            Player* player = nullptr;
+            for (auto const& reference : me->GetMap()->GetPlayers())
+                if (IsPillikPlayer(reference.getSource()) && reference.getSource()->IsAlive() &&
+                    (!player || me->GetDistance(reference.getSource()) < me->GetDistance(player)))
+                    player = reference.getSource();
+            if (!player)
+                return;
+            Creature* companion = me;
+            state->entryBusy = true;
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46288);
+            // The criterion can re-enter or destroy this AI. Release only the
+            // captured state before checking the current controller identity.
+            state->entryBusy = false;
+            if (companion->AI() != this || pillikProgress != state || !IsPillikContext() ||
+                state->instance != me->GetInstanceId() || state->epoch != me->GetInstanceScript()->GetData(1060))
+                return;
+            state->entryComplete = sScenarioMgr->GetScenario(state->instance)->GetCurrentStep() != 0;
+            if (!state->entryComplete && !state->entryFailureReported)
+            {
+                TC_LOG_WARN("scripts", "Pillik approach: event46288 did not advance scenario909 in instance %u; actual waypoint retained for retry", state->instance);
+                state->entryFailureReported = true;
+            }
         }
 
         bool ArmPillikHandoff()
@@ -774,8 +820,7 @@ public:
                                 }
                         }
                     });
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46288);
+                    TryPillikEntry();
                 }
             }
             if (type == POINT_MOTION_TYPE)
@@ -913,6 +958,9 @@ public:
         void UpdateAI(uint32 diff) override
         {
             Creature* companion = me;
+            TryPillikEntry(diff);
+            if (companion->AI() != this || !companion->IsInWorld())
+                return;
             UpdatePillikHandoff(diff);
             if (companion->AI() != this || !companion->IsInWorld())
                 return;

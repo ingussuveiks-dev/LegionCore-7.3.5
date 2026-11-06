@@ -42,8 +42,9 @@ if current_start:
  assert sites(n,destroy,'??1npc_hrutnirAI@npc_hrutnir@@')
  destroy=ins('??1npc_hrutnirAI@npc_hrutnir@@')
 current_pillik=any(name.startswith(method('TryPillikHandoff')) for name in n['symbols'])
-if current_pillik:
- assert sites(n,factory,'??0npc_hrutnirAI@npc_hrutnir@@')
+if current_pillik and sites(n,factory,'??0npc_hrutnirAI@npc_hrutnir@@'):
+ # Follow an actually selected outlined constructor; otherwise retain the
+ # inline factory body and prove the same vtable/fields/clock allocation.
  factory+=ins('??0npc_hrutnirAI@npc_hrutnir@@')
 assert actor in refs(factory) and script in refs(ins('?AddSC_EarthWarder@@'))
 assert n['symbol']('?GetAI@npc_hrutnir@@') in resolved(script_raw)

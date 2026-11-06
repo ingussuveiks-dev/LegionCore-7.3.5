@@ -23,6 +23,16 @@ def check(native, instructions):
         return list(decoder.disasm(native['binary'][native['offset'](start):native['offset'](end)], start))
 
     update = instructions('?UpdateAI' + hr)
+    entry_poll = calls(update, '?TryPillikEntry' + hr)
+    assert len(entry_poll) == 1, 'Actual update does not retry the recorded approach'
+    movement = instructions('?MovementInform' + hr)
+    assert calls(movement, '?TryPillikEntry' + hr), 'Actual waypoint does not attempt native entry'
+    entry = instructions('?TryPillikEntry' + hr)
+    assert {500, 46288, 92, 1060} <= values(entry), 'Native entry criterion/retry/epoch missing'
+    for dependency in ('?IsPillikContext' + hr, '?IsPillikPlayer' + hr, '?UpdateAchievementCriteria@Player@@'):
+        assert calls(entry, dependency), 'Missing selected entry admission/criterion: ' + dependency
+    for dependency in ('?KilledMonsterCredit@Player@@', '?AddItem@Player@@', '?CompleteQuest@Player@@', '?TeleportTo@Player@@', '?NearTeleportTo@'):
+        assert not calls(entry, dependency), 'Approach fabricates progress outside the native criterion'
     attempt = calls(update, '?TryPillikHandoff' + hr)
     if not attempt:
         poll = calls(update, '?UpdatePillikHandoff' + hr)
@@ -30,6 +40,7 @@ def check(native, instructions):
         attempt = poll
         assert calls(instructions('?UpdatePillikHandoff' + hr), '?TryPillikHandoff' + hr)
     assert attempt[0] < calls(update, '?UpdateMagnarIntro' + hr)[0] < calls(update, '?UpdateVictim@CreatureAI@@')[0]
+    assert entry_poll[0] < attempt[0], 'Entry retry occurs after the death handoff'
     assert 500 in values(update + (instructions('?UpdatePillikHandoff' + hr) if any(name.startswith('?UpdatePillikHandoff' + hr) for name in native['symbols']) else []))
     begin = instructions('?TryPillikHandoff' + hr)
     assert calls(begin, '?ContinuePillikHandoff' + hr), 'Selected poll does not reach the real continuation'

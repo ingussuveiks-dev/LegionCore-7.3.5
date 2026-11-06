@@ -17,6 +17,11 @@ function TimerMethods([string]$selected){
  foreach($case in @('case 6:','case 7:')){$movement=$movement.Replace((Block $movement $case),'')}
  $evade=Block $selected 'void EnterEvadeMode('
  $evade=$evade.Replace((Block $evade 'if (secondfighting)'), '')
+ if($selected.Contains('void TryPillikEntry(')){
+  # The entry retry is verified by actual-method/native entry regressions.
+  # This comparison retains the original six presentation callback bodies.
+  $movement=$movement.Replace('TryPillikEntry();','if (Player* pl = me->FindNearestPlayer(100.0f)) pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46288);')
+ }
  if($selected.Contains('void QueuePillikHandoff(')){
   $movement=$movement.Replace('if (!(*itr)->InSamePhase(targ))'+"`n"+'                                        continue;','')
   $movement=$movement.Replace('QueuePillikHandoff();','').Replace('[this, weak = std::weak_ptr<PillikProgress>(pillikProgress)]','[this]')

@@ -313,6 +313,7 @@ public:
     uint32 playerClass = 1, instance = 42, status = 3, faction = 0, genericCalls = 0;
     bool IsInWorld() const { return world; }
     bool CanContact() const { return contact; }
+    bool IsAlive() const { return alive; }
     uint32 getClass() const { return playerClass; }
     uint32 GetInstanceId() const { return instance; }
     Map* GetMap() const { return map; }
@@ -333,8 +334,8 @@ public:
     void RemoveAurasByType(uint32) { }
     void OnGossipSelect(Creature*, uint32, uint32) { ++genericCalls; }
     void OnGossipSelect(GameObject*, uint32, uint32) { ++genericCalls; }
-    uint32 pillikArrivals=0,pillikCredits=0;bool pillikCreditWorks=true;std::function<void()> onPillikCredit;
-    void UpdateAchievementCriteria(uint32 type,uint32 id){assert(type==92);if(id==46288){++pillikArrivals;scenarioManager.scenario.step=1;return;}assert(id==46289);++pillikCredits;if(pillikCreditWorks)scenarioManager.scenario.step=2;if(onPillikCredit)onPillikCredit();}
+    uint32 pillikArrivals=0,pillikCredits=0;bool pillikCreditWorks=true,pillikEntryWorks=true;std::function<void()> onPillikCredit,onPillikEntry;
+    void UpdateAchievementCriteria(uint32 type,uint32 id){assert(type==92);if(id==46288){++pillikArrivals;if(pillikEntryWorks)scenarioManager.scenario.step=1;if(onPillikEntry)onPillikEntry();return;}assert(id==46289);++pillikCredits;if(pillikCreditWorks)scenarioManager.scenario.step=2;if(onPillikCredit)onPillikCredit();}
 };
 Player* Creature::FindNearestPlayer(float range){
 #ifdef PILLIK_ONLY

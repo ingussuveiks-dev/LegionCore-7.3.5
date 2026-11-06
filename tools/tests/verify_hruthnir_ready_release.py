@@ -70,7 +70,9 @@ query = next(index for index, entry in enumerate(hello) if entry.mnemonic == 'ca
 assert hello[query - 1].op_str == 'edx, 0x425' and query < clear < close
 tables = previous['previous']['previous']['previous']['previous']['selected_tables']
 assert len(tables('?GetAI@npc_hrutnir@@', ((0x50, '?GetData' + suffix), (0xc8, '?sGossipSelect' + suffix)))) == 1
-callback = instructions('??R<lambda_5>@?BL@??MovementInform' + suffix)
+offer_callbacks = [name for name in native['symbols'] if name.startswith('??R<lambda_5>') and '??MovementInform' + suffix in name]
+assert len(offer_callbacks) == 1
+callback = instructions(offer_callbacks[0])
 publish = next(index for index, entry in enumerate(callback) if entry.op_str == 'byte ptr [rcx + 0xac], 1')
 flag = positions(callback, '?SetFlag@Object@@')[0]
 assert positions(callback, '?Talk@CreatureAI@@QEAAXEVObjectGuid@@@Z')[0] < positions(callback, '?HasMagnarChamberRequest' + suffix)[1] < publish == flag - 4

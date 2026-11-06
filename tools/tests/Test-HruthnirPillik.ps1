@@ -1,13 +1,18 @@
 # Native Protection entrance/real Pillik death -> Hruthnir's authored handoff.
-param([switch]$Baseline,[switch]$AddressSanitizer,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$EntryBaseline,[switch]$AddressSanitizer,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Pinned counterfactual cannot certify the installed executable'}
+if(($Baseline -or $EntryBaseline) -and $VerifyReleaseBinary){throw 'Pinned counterfactual cannot certify the installed executable'}
+if($Baseline -and $EntryBaseline){throw 'Choose one pinned counterfactual'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/hruthnir-pillik-check/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force $out|Out-Null
 $roots=@('hruthnir-pillik','hruthnir-pillik-native','legion-legendary-catalog')|ForEach-Object {"$repo/build-extractors/runtime-test/$_"}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories $roots -Test {
- if($Baseline){
+ if($EntryBaseline){
+  & "$PSScriptRoot/Test-MagnarReadinessNative.ps1" -EntryBaseline *> "$out/counterfactual.log"
+  if(!$?){throw "Pinned native entry counterfactual failed: $out/counterfactual.log"}
+  'COUNTERFACTUAL 7dc957758: six actual out-of-range waypoint/returned-player cases stay at step0; expected broken baseline'
+ }elseif($Baseline){
   & "$PSScriptRoot/Test-MagnarReadinessNative.ps1" -PillikBaseline *> "$out/counterfactual.log"
   if(!$?){throw "Pinned native Pillik counterfactual failed: $out/counterfactual.log"}
   'COUNTERFACTUAL cb1300a9f: six actual early-death/AI-owned5s cases remain stuck; expected broken baseline'

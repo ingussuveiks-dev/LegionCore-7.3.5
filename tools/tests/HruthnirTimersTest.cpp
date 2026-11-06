@@ -55,6 +55,8 @@ struct Hruthnir:CreatureAI {
 // ASAN and native Kill suites. This fixture observes the six native clocks.
 #include "PillikFields.inc"
  void QueuePillikHandoff(){} bool ArmPillikHandoff(){return true;} void TryPillikHandoff(){}
+ // Controlled admission boundary: the actual retry has its own ASAN/native suite.
+ void TryPillikEntry(){if(auto player=me->FindNearestPlayer(100))player->UpdateAchievementCriteria(92,46288);}
 #include "Methods.inc"
 };
 struct Run {

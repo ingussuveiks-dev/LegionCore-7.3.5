@@ -1,5 +1,7 @@
 # Real native Protection wave readiness and Kill/owner progression; no persistent character writes.
-param([switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline)
+param([switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline)
+if($EntryBaseline){$Pillik=$true}
+if($EntryBaseline -and $PillikBaseline){throw 'Choose one pinned Pillik counterfactual'}
 if($PillikBaseline){$Pillik=$true}
 if($StartRecovery -and $Pillik){throw "Choose start recovery or the earlier Pillik handoff"}
 if($Baseline -and ($StartRecovery -or $Pillik)){throw "Pinned counterfactual is separate from current start recovery"}
@@ -32,7 +34,7 @@ $instance=Get-Content "$repo/$instancePath" -Raw
 if(!$instance){throw 'Actual/pinned shared instance source missing'}
 [IO.File]::WriteAllText("$out/SilverHandInstance.inc",(Block $instance 'class instance_silver_hand : public InstanceMapScript')+';')
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
-$source=if($PillikBaseline){(& git -C $repo show "cb1300a9f:$path") -join "`n"}elseif($Baseline){(& git -C $repo show "fb01c9a6a:$path") -join "`n"}else{Get-Content "$repo/$path" -Raw};if(!$source){throw 'Actual Magnar source missing'}
+$source=if($EntryBaseline){(& git -C $repo show "7dc957758:$path") -join "`n"}elseif($PillikBaseline){(& git -C $repo show "cb1300a9f:$path") -join "`n"}elseif($Baseline){(& git -C $repo show "fb01c9a6a:$path") -join "`n"}else{Get-Content "$repo/$path" -Raw};if(!$source){throw 'Actual Magnar source missing'}
 [IO.File]::WriteAllText("$out/MagnarNative.inc",(Block $source 'Position const trashPos[12]')+';'+(Block $source 'class npc_magnar_icebreaker : public CreatureScript')+';')
 if($StartRecovery -or $Pillik){
  [IO.File]::WriteAllText("$out/HruthnirNative.inc",(Block $source 'namespace HruthnirGossip')+(Block $source 'class npc_hrutnir : public CreatureScript')+';'+(Block $source 'void MagnarStart::Rejoin('))
@@ -54,6 +56,7 @@ try{
 
 
  if($PillikBaseline){$env:CL+=" /DHRUTHNIR_PILLIK_BASELINE"}
+ if($EntryBaseline){$env:CL+=" /DHRUTHNIR_ENTRY_BASELINE"}
  if($Baseline){$env:CL+=' /DMAGNAR_READINESS_BASELINE'};$env:_LINK_="$previousLink /DEBUG /PDB:`"$out/native.pdb`" /MAP:`"$out/native.map`""
  Push-Location "$repo/build-extractors/bin/Release"
  try{& "$repo/tools/tests/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {

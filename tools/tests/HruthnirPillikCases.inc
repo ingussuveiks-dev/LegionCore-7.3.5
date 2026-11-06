@@ -95,4 +95,57 @@
         f.ai.UpdateAI(500);assert(f.player.pillikCredits==uint32(mode!=2)&&f.actor.motion.moves==uint32(mode!=2));++cases;
     }
     {Fixture f;prepare(f);f.player.alive=false;f.ai.TryPillikHandoff();assert(f.player.pillikCredits==1&&f.ai.pillikProgress->complete);++cases;}
-    std::cout<<"PASS "<<cases<<" ASAN actual Pillik handoff contexts: recorded real death/current instance and original companion, native phase/quest/player admission and owner preference, stage0/1/2,500ms refused-credit retry, paused/suspended cue, exactly-once/reentrant movement/text and AI deletion. Service endpoints/earlier approach clock controlled; real Kill/criterion/route data tested separately, not client traversal.\n";
+    for(uint32 faction:{0u,1u})for(uint32 status:{1u,3u})for(uint32 fault=0;fault<18;++fault){
+        Fixture f;prepare(f);scenarioManager.scenario.step=0;f.player.faction=faction;f.player.status=status;CreatureAI temporary;
+        switch(fault){
+        case 0:f.player.startDistance=101;break;case 1:f.player.alive=false;break;
+        case 2:f.player.status=0;break;case 3:f.player.rewarded=true;break;case 4:f.player.playerClass=2;break;
+        case 5:f.actor.phase=false;break;case 6:f.player.contact=false;break;case 7:f.player.teleport=true;break;
+        case 8:f.player.world=false;break;case 9:f.player.map=&otherMap;break;case 10:f.player.instance=43;break;
+        case 11:f.actor.IsAIEnabled=false;break;case 12:f.actor.ai=&temporary;f.actor.disabledAI=&f.ai;break;
+        case 13:++f.actor.request.generation;break;case 14:scenarioManager.scenario.identity=1068;break;
+        case 15:f.actor.request.pillikCompanion={99,1};break;case 16:scenarioManager.available=false;break;
+        case 17:f.ai.pillikProgress->queued=false;break;
+        }
+        f.ai.TryPillikEntry();assert(!f.player.pillikArrivals&&scenarioManager.scenario.step==0);
+        f.player.startDistance=1;f.player.alive=f.player.contact=f.player.world=true;f.player.status=status;
+        f.player.rewarded=f.player.teleport=false;f.player.playerClass=1;f.player.map=&instanceMap;f.player.instance=42;
+        f.actor.phase=f.actor.IsAIEnabled=true;f.actor.ai=&f.ai;f.actor.disabledAI=nullptr;
+        f.actor.request.generation=1;f.actor.request.pillikCompanion=f.actor.GetGUID();scenarioManager.available=true;scenarioManager.scenario.identity=909;
+        f.ai.pillikProgress->queued=true;f.ai.TryPillikEntry(500);f.ai.TryPillikEntry(30000);
+        assert(f.player.pillikArrivals==1&&scenarioManager.scenario.step==1&&!f.player.pillikCredits);++cases;
+    }
+    {
+        Fixture f;prepare(f);scenarioManager.scenario.step=0;f.player.pillikEntryWorks=false;auto warnings=pillikWarnings;
+        f.player.onPillikEntry=[&]{f.ai.TryPillikEntry(500);};
+        f.ai.TryPillikEntry();assert(f.player.pillikArrivals==1&&pillikWarnings==warnings+1);
+        f.ai.TryPillikEntry(499);assert(f.player.pillikArrivals==1);f.ai.TryPillikEntry(1);
+        assert(f.player.pillikArrivals==2&&pillikWarnings==warnings+1&&!f.ai.pillikProgress->entryComplete);
+        f.player.pillikEntryWorks=true;f.ai.TryPillikEntry(500);f.ai.TryPillikEntry(30000);
+        assert(f.player.pillikArrivals==3&&f.ai.pillikProgress->entryComplete);++cases;
+    }
+    {
+        Fixture f;prepare(f);scenarioManager.scenario.step=0;auto live=std::make_unique<HruthnirAI>(&f.actor);
+        f.actor.ai=live.get();live->QueuePillikHandoff();auto state=live->pillikProgress;
+        f.player.onPillikEntry=[&]{f.actor.ai=nullptr;live.reset();};live->UpdateAI(0);
+        assert(!live&&!state->entryBusy&&f.player.pillikArrivals==1);++cases;
+    }
+    for(uint32 revoke=0;revoke<3;++revoke){
+        Fixture f;prepare(f);scenarioManager.scenario.step=0;auto old=f.ai.pillikProgress;
+        f.player.onPillikEntry=[&]{if(revoke==0)++f.actor.request.generation;if(revoke==1)f.ai.pillikProgress=std::make_shared<HruthnirAI::PillikProgress>();if(revoke==2)f.actor.world=false;};
+        f.ai.TryPillikEntry();assert(!old->entryBusy&&!old->entryComplete&&f.player.pillikArrivals==1);++cases;
+    }
+    {
+        Fixture f;prepare(f);scenarioManager.scenario.step=0;f.ai.pillikProgress=std::make_shared<HruthnirAI::PillikProgress>();
+        f.player.startDistance=101;f.ai.MovementInform(WAYPOINT_MOTION_TYPE,6);assert(!f.player.pillikArrivals);
+        f.ai._presentationFunctions.Update(4999);f.ai.UpdateAI(500);assert(!f.player.pillikCredits);
+        f.player.startDistance=1;f.ai.UpdateAI(499);assert(!f.player.pillikArrivals);f.ai.UpdateAI(1);
+        assert(f.player.pillikArrivals==1&&!f.player.pillikCredits);f.ai._presentationFunctions.Update(1);f.ai.UpdateAI(500);
+        assert(f.player.pillikCredits==1&&f.ai.texts==std::vector<uint32>({18,5}));++cases;
+    }
+    {
+        Fixture f;prepare(f);scenarioManager.scenario.step=0;Player ineligible;ineligible.playerClass=2;ineligible.startDistance=0.1f;
+        instanceMap.players={{&ineligible},{&f.player}};f.ai.TryPillikEntry();
+        assert(!ineligible.pillikArrivals&&f.player.pillikArrivals==1);++cases;
+    }
+    std::cout<<"PASS "<<cases<<" ASAN actual Pillik handoff/entry contexts: real waypoint pending retry, living eligible player admission, stage0/1/2,500ms refused-credit retry, current identity/epoch and AI deletion/reentry; original5s approach and death/movement/text guards retained. Service endpoints controlled; real Kill/native criterion/route tested separately, not client traversal.\n";
