@@ -30,6 +30,8 @@ namespace WarswordsArrival
     }
 }
 
+#include "warswords_waves.h"
+
 class instance_warswords : public InstanceMapScript
 {
 public:
@@ -42,21 +44,19 @@ public:
 
     struct instance_warswords_InstanceMapScript : public InstanceScript
     {
-        instance_warswords_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
+        instance_warswords_InstanceMapScript(InstanceMap* map) : InstanceScript(map), waves(map) {}
 
         uint32 outrotimer;
         bool jump;
         std::map<uint32, ObjectGuid> objects;
-        uint32 count;
-        uint32 count_wave;
+        WarswordsWaves::State waves;
         bool myscenario;
 
         void Initialize() override
         {
             outrotimer = 5000;
             jump = true;
-            count = 0;
-            count_wave = 0;
+            waves.Reset();
             myscenario = false;
         }
 
@@ -98,7 +98,7 @@ public:
             switch (newStep)
             {
                 case 1:
-                    DoSummonAdds(count_wave++);
+                    waves.Start();
                     break;
                 case 4:
                 {
@@ -122,57 +122,11 @@ public:
             }
         }
 
-        void DoSummonAdds(uint32 wave)
-        {
-            Map::PlayerList const &PlList = instance->GetPlayers();
-
-            if (PlList.isEmpty())
-                return;
-
-            for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
-                if (Player* player = i->getSource()) // needed player for summon and etc
-                {
-                    if (wave <= 2)
-                    {
-                        uint32 main_add = 0;
-                        switch (wave)
-                        {
-                            case 0:
-                            case 1:
-                                main_add = 97992;
-                                break;
-                            case 2:
-                                main_add = 97994;
-                                break;
-                        }
-                        if (main_add)
-                        {
-                            if (Creature* creat = player->SummonCreature(main_add, 3427.55f + irand(-5, 5), 1486.10f + irand(-5, 5), 57.40f))
-                                creat->AI()->AttackStart(player);
-                        }
-                        for (uint8 i = 0; i < 2; ++i)
-                            if (Creature* creat = player->SummonCreature(98069, 3427.55f + irand(-7, 7), 1486.10f + irand(-7, 7), 57.40f))
-                                creat->AI()->AttackStart(player);
-                    }
-                    else if (wave == 3)
-                    {
-                        player->SummonCreature(97649, 3363.17f, 1469.68f, 57.40f);
-                    }
-                }
-        }
-
         void OnCreatureCreate(Creature* creature) override
         {
             if (creature->GetEntry() == 98007 || creature->GetEntry() == 98602)
                 objects[creature->GetEntry()] = creature->GetGUID();
-            if (!myscenario)
-                return;
 
-            if (getScenarionStep() != 1)
-                return;
-
-            if (Player* pl = creature->FindNearestPlayer(100.0f, true))
-                creature->AI()->AttackStart(pl);
         }
 
         void OnCreatureRemove(Creature* creature) override
@@ -192,21 +146,9 @@ public:
             {
                 case 98069: // dogs
                 case 97994: // rune
-                case 97992: // harpun
-                    if (getScenarionStep() != 1)
-                        return;
-                    count++;
-                    if (count >= 3)
-                    {
-                        updateCriteriaForPlayers(47289);
-                        count = 0;
-                        DoSummonAdds(count_wave++);
-                    }
-                    break;
-                case 97649: // pret
-                    updateCriteriaForPlayers(46804);
-                    if (Player* pl = creature->FindNearestPlayer(100.0f))
-                        pl->CreateConversation(837);
+                case 97992: // harpoon
+                case 97649: // tracked leader, after the three actual waves
+                    waves.Death(creature);
                     break;
                 case 98892:
                     if (getScenarionStep() != 2)
@@ -234,6 +176,7 @@ public:
 
         void Update(uint32 diff) override
         {
+            waves.Update(diff);
             if (!myscenario)
                 return;
 

@@ -77,6 +77,7 @@ struct InstanceScript
 #include "Policy.inc"
 struct Instance : InstanceScript
 {
+    struct Waves { void Reset() { } void Update(uint32) { } } waves;
     uint32 outrotimer = 0, count = 0, count_wave = 0;
     bool jump = false, myscenario = false;
     explicit Instance(InstanceMap* map) : InstanceScript(map) { Initialize(); }
