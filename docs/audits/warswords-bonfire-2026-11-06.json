@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-06",
+  "status": "DEPLOYED focused source/native/canonical/startup checks pass; actual client bonfire retest pending",
+  "report": "User clicks the matching Mysterious Bonfire at stage0 Into the Mists, but Light the bonfire remains0/1. The clicked object and action are correct.",
+  "cause": "Native26972 bonfire245188/spawn134117 on1511 is GOOBER10 with Lock2474 type3/key spell198513. Lighting Bonfire198513 has native OpenLock33. After CanOpenLock, EffectOpenLock calls SendLoot; its GOOBER branch calls GameObject::Use and returns before GossipHello(true). Use calls GossipUse, whose base implementation returns false; bonfire AI only implements GossipHello and rejects report-use false. Therefore the authored47272 event never reaches scenario944. Native original Game library reproduces successful198513 with zero45849/stage0; the post-lock CanOpenLock/SendLoot control remains reproducible after repair.",
+  "implementation": "Add one exact198513/245188/134117/1511/GOOBER/2474/go_mystic_bonfire completed-hit dispatch after native CanOpenLock success, before SendLoot. Other GOOBER and lock behavior unchanged. Bonfire AI now admits an alive contactable active unrewarded Warrior40043 in the actual same map/instance/script/phase and visible LOS/interaction range, on scenario944 step0 with a spawned/selectable/nonbusy object. Reentrant latch claims before native47272; native scenario transition owns once-only progression. Only after actual same-scenario stage1 acknowledgement retain original nearby244751/45yd phase4 fog cleanup. No accepted-cast recursion, default-template change, item/quest/teleport/forced stage or manual character credit.",
+  "checks": {
+    "asan": "39 actual production AI/post-lock dispatch cases with controlled engine endpoints: active INCOMPLETE/COMPLETE quest, report-use/failed-lock,27 invalid admission cases, seven dispatch mismatches, duplicate/reentrant once-only and replaced scenario cleanup refusal.",
+    "native": "Actual linked core Player, Spell, CanOpenLock, GameObject/AI factory and Scenario/AchievementMgr with real DB2/World input: Human/Orc race fields, invalid native3365 cannot open Lock2474, report-use no credit, real198513 gives native45849=1 and stage0->1 exactly once, repeated hit/report no extra credit. No character save; World/Hotfix/Character readonly, Login private TEMP account on both connections. Triggered cast/earlier quest and noncombat test instance controlled; not rendered client casting or full route.",
+    "counterfactual": "Initial original-Game198513 native cast reproduces missing event. Retained -Baseline explicitly executes the actual native CanOpenLock+SendLoot GOOBER path from pinned9c2a31417 after lock success and observes stage0/no credit; not an ordinary passing encounter.",
+    "catalogue": "Actual26972 Lock2474 slot1/type3/198513; native198513 OpenLock33/misc5/target23 and scenario1888/root45848/leaf45849/Criterion29136 type92/event47272. Live template/binding readback unchanged, no SQL migration.",
+    "canonical": "Selected actual bonfire GetAI vtable/GossipHello slot, guarded native event and post-advance fog slot; exact post-CanOpenLock/pre-SendLoot tuple and true dispatch in deployed PE. Retained50 arrival ASAN/native metadata/PE and required Scepter login Release checks pass; Tuure contact native dispatch/ASAN/TEMP checks pass.",
+    "startup": "Owned16644 canonical fresh ready/shutdown0/exit0/gone; captured stderr empty. Before/after canonical/runtime diagnostics: no new or changed crash, appended DBErrors, server warning/error/assertion. No user/unknown server stopped."
+  },
+  "canonical_sha256": {
+    "bnetserver": "674A82901B2D153E8FD4BACC1437DEED81C4267FC301296DDD60205C15BD13BD",
+    "worldserver": "D2108AED3DBB3738543BAE51C958DD534EAE2774E2A24B6070153FE134684753"
+  },
+  "prototype_review": [
+    "First readonly schema lookup queried nonexistent gameobject_template_addon (1146), corrected to actual template/spawn/conditions tables; no mutation.",
+    "First native fixture used modern goober.lockId field and bool flags overload incorrectly; compile failed, corrected to actual GetLockId and bool true.",
+    "Initial native process reproduced the bug, then crashed while unloading because the fixture deleted a GO still in the grid. RemoveFromWorld plus normal RemoveFromGrid before deletion repairs fixture ownership. Original nonzero stack output preserved, paired with clean complete normal/counterfactual native processes; no production grid cleanup bypass.",
+    "Draft PE checks assumed a direct virtual call and public data-vtable symbols. Actual code loads GossipHello slot0x48 intoR9 and SetPhaseMask uses native GameObject constructor slot0xa0; verifier follows these selected instructions instead. Final deployed proof passes.",
+    "Combined final PowerShell wrapper mistakenly interpreted a retained expected mysql refusal exit as Tuure test failure, despite successful own diagnostics. Corrected file-based wrapper checks the throwing PowerShell script result; full retained check rerun passes. Failed wrapper completion remains visible.",
+    "Original SpellEffects Release compile retains pre-existing C5055 enum/floating expression warning in unchanged code; no new warning in repaired dispatch."
+  ],
+  "preservation": "No character progress/health/gear/checkpoint edits or SQL updates. Runtime configurations/certs/DLLs/extracted data preserved; actual matching binaries deployed from original game/scripts final-link paths, no global OutDir.",
+  "unresolved": "Canonical mixed7111 DBErrors SHA256FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged; earlier101430/103151 LINK2 remains OPEN and untouched. Full client Fury/Protection/Arms, fog rendering/audio/pet/camera and whole36 chains remain separate checks.",
+  "next": "User can restart canonical server and retry native bonfire. Resume Protection Magnar missing-AI readiness work separately: unfinished own source diff saved as ignored .codex/warswords-bonfire-2026-11-06/protection-unfinished.patch, restored out of build before this fix. Patch untested/unapplied; do not treat it as completed or deploy it without regressions.",
+  "pending_protection_patch_sha256": "4f845cbfabe14ddd17bb026267aa23bd00564e90ae2aba64ccfa5c8fbab70b30",
+  "archive_cleanup": "Pending original-byte/hash archive and redundant test/stage cleanup after the clean canonical startup; private pending Protection patch retained outside fixed."
+}

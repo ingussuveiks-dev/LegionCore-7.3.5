@@ -3677,6 +3677,16 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
         return;
     }
 
+    // Lighting Bonfire's goober also bypasses SendLoot's GossipHello(true).
+    // Credit only its completed native cast after the ordinary lock check;
+    // report-use and direct GameObject::Use are not a successful ignition.
+    if (gameObjTarget && m_spellInfo->Id == 198513 && gameObjTarget->GetMapId() == 1511 &&
+        gameObjTarget->GetEntry() == 245188 && gameObjTarget->GetDBTableGUIDLow() == 134117 &&
+        gameObjTarget->GetGoType() == GAMEOBJECT_TYPE_GOOBER && lockId == 2474 &&
+        sObjectMgr->GetScriptName(gameObjTarget->GetScriptId()) == "go_mystic_bonfire" &&
+        gameObjTarget->AI()->GossipHello(player, true))
+        return;
+
     // Tuure's native goober bypasses SendLoot's GossipHello(true) dispatch.
     // Admit only the completed Opening hit after the ordinary lock check.
     if (gameObjTarget && m_spellInfo->Id == 3365 && gameObjTarget->GetMapId() == 1489 &&

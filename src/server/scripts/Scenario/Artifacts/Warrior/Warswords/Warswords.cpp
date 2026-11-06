@@ -23,26 +23,38 @@ public:
     struct go_mystic_bonfireAI : public GameObjectAI
     {
         go_mystic_bonfireAI(GameObject* go) : GameObjectAI(go) {}
+        bool igniting = false;
 
         bool GossipHello(Player* player, bool isUse) override
         {
             if (!isUse)
                 return true;
-
-            if (InstanceScript* script = go->GetInstanceScript())
-                if (script->getScenarionStep() == 0)
-                {
-                    // player->CastSpell(player, 198513);
-                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47272);
-                    // delete smoge
-                    std::list<GameObject*> goList;
-                    go->GetGameObjectListWithEntryInGrid(goList, 244751, 45.0f);
-                    if (!goList.empty())
-                        for (std::list<GameObject*>::const_iterator itr = goList.begin(); itr != goList.end(); ++itr)
-                            (*itr)->SetPhaseMask(4, true);
-                    return true;
-                }
-            return false;
+            if (igniting || !player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+                player->IsBeingTeleported() || player->getClass() != CLASS_WARRIOR ||
+                !go->IsInWorld() || !go->isSpawned() || go->GetEntry() != 245188 || go->GetMapId() != 1511 ||
+                go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) ||
+                !player->GetMap() || player->GetMap() != go->GetMap() || player->GetInstanceId() != go->GetInstanceId() ||
+                !player->InSamePhase(go) || !player->canSeeOrDetect(go) || !player->IsWithinLOSInMap(go) ||
+                !player->IsWithinDistInMap(go, go->GetInteractionDistance()) ||
+                !go->GetInstanceScript() || player->GetInstanceScript() != go->GetInstanceScript() ||
+                player->GetQuestRewardStatus(40043) ||
+                (player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40043) != QUEST_STATUS_COMPLETE))
+                return true;
+            Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 944 || scenario->GetCurrentStep() != 0)
+                return true;
+            // This is reached only from the completed native Lighting Bonfire
+            // hit. Report-use/direct GO Use cannot stand in for that cast.
+            igniting = true;
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47272);
+            igniting = false;
+            if (sScenarioMgr->GetScenario(go->GetInstanceId()) != scenario || scenario->GetCurrentStep() != 1)
+                return true;
+            std::list<GameObject*> fog;
+            go->GetGameObjectListWithEntryInGrid(fog, 244751, 45.0f);
+            for (GameObject* object : fog)
+                object->SetPhaseMask(4, true);
+            return true;
         }
 
     };
