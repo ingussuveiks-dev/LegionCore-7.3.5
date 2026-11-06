@@ -1,4 +1,27 @@
 {
+  "latest_hruthnir_entry_2026_11_06": {
+    "audit": "docs/audits/hruthnir-entry-retry-2026-11-06.json",
+    "status": "DEPLOYED9F3C8AE8/D514512F: Protection actual waypoint6 event46288 remains pending if no eligible living Warrior is present;native500ms retry after return/revive/quest readmission,then real Pillik death/full5s46289 handoff.",
+    "fix_commit": "715b24177434c2bb0a18208f64307e1d5aa6f6d7",
+    "checks": "172 ASAN actual-method cases;114 linked-core Human/Orc player/pet/guardian cases including actual eligible group and nearer ineligible Mage;6 pinned expected-broken controls;14 retained native start/24 readiness;100 original-clock lifecycle contexts;full selected PE and9 retained canonical groups including Scepter/Fury pass. Owned15120 fresh ready/shutdown0/exit0/gone,empty stderr,no newly appended unexplained runtime failure.",
+    "next": "No pending promotion. Full client Fury/Protection/Arms route/door/audio/VFX/combat/equipment/manual return/camera/pet/re-entry and all36 chains remain OPEN. Review separate permanently stopped escort/fresh-AI route recovery;this live cue is not a persisted cold-restart checkpoint. Earlier101430/103151 LINK2,mixed7111 and unrelated unresolved Slaghammer evidence unchanged. No character progress/gear/health edits.",
+    "cleanup": {
+      "archive": "build-extractors/bin/Release/fixed/hruthnir-entry-retry-2026-11-06",
+      "manifest_sha256": "e246052fc390bcd537ebba4499df8fda4d3ded7989a2b4dcd7352fcc5594df3a",
+      "original_files": 1216,
+      "cleanup_manifest_sha256": "518667c53206cdbf8c163eab8c01ab72be2469fe8e3470b98d78dc4e77331ac0",
+      "removed_files": 352,
+      "logical_removed_bytes": 2186791301,
+      "local_deletion_manifest": ".codex/hruthnir-entry-2026-11-06/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-hruthnir-entry-2026-11-06",
+        ".codex/release-before-hruthnir-pillik-2026-11-06"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "postcheck": "PASS canonical9F3C8AE8/D514512F;protected configurations/certificates/DLLs unchanged;two recovery generations verified;no owned world/bnet process;active Crashes empty;mixed7111 and unresolved Slaghammer bytes unchanged"
+    }
+  },
   "latest_hruthnir_pillik_2026_11_06": {
     "audit": "docs/audits/hruthnir-pillik-handoff-2026-11-06.json",
     "status": "DEPLOYED907CE801/09058027: real Pillik94714 early death cannot strand Protection909 step1 after Hruthnir original5s approach; typed native owner/participant46289 retry and phase-scoped96571 cleanup.",

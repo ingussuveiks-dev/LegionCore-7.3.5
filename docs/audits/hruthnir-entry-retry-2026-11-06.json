@@ -20,9 +20,26 @@
   "database": "No migration/live DML or personal character progress/gear/health edits. Native readonly connections and TEMP/shadow inputs; synthetic Players/Group/Map only.",
   "prototype_review": "Selected offer lambda lexical scope and stack capture changed, and the compiler inlined the real Hruthnir constructor. Verifiers follow the unique selected lambda/bridge and actual inline-or-called constructor, retaining installed vtable, immutable captured instance, phase/admission, full delays and lifecycle assertions. Original failed certificates retained and paired with final passing composed certificates. No prototype runtime crash or new server diagnostic occurred in this task.",
   "limits": "No full client traversal, physical route/door/audio/VFX/equipment/full bags/manual return/camera/pet/reconnect/all36 claim. Pending entry cue is in a live controller, not a persisted cold-restart route checkpoint; fresh-AI route restoration remains separate. Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer evidence remain OPEN. No user/unknown server may be stopped.",
-  "archive_cleanup": "PENDING after canonical regression/startup and focused fix commit",
+  "archive_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-entry-retry-2026-11-06",
+    "manifest_sha256": "e246052fc390bcd537ebba4499df8fda4d3ded7989a2b4dcd7352fcc5594df3a",
+    "original_files": 1216,
+    "cleanup_manifest_sha256": "518667c53206cdbf8c163eab8c01ab72be2469fe8e3470b98d78dc4e77331ac0",
+    "removed_files": 352,
+    "logical_removed_bytes": 2186791301,
+    "local_deletion_manifest": ".codex/hruthnir-entry-2026-11-06/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-hruthnir-entry-2026-11-06",
+      ".codex/release-before-hruthnir-pillik-2026-11-06"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonical9F3C8AE8/D514512F;protected configurations/certificates/DLLs unchanged;two recovery generations verified;no owned world/bnet process;active Crashes empty;mixed7111 and unresolved Slaghammer bytes unchanged"
+  },
   "canonical_sha256": {
     "worldserver": "9F3C8AE85BE1E57B19B916B8FB2258BB049258698CCB8B16C63DC29046CDEE59",
     "bnetserver": "D514512F183EA1903FA6D857E6D538213EC3608DBD256D44B62FECBC2008834A"
-  }
+  },
+  "fix_commit": "715b24177434c2bb0a18208f64307e1d5aa6f6d7",
+  "preservation": "Canonical configuration/certificates/DLLs/extracted data, original required build libraries, personal backups and unresolved evidence retained. No user/unknown process stopped. Two newest rollback generations remain;task-owned temporary executables/symbols/generated outputs/private configuration and obsolete stage/third rollback removed only after fresh canonical verification and original-byte archive hash checks."
 }
