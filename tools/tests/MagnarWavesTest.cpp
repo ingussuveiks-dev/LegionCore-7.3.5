@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstdint>
 #include <functional>
@@ -228,6 +229,7 @@ struct Magnar : CreatureAI
 #include "Update.inc"
 #include "Launch.inc"
 #include "Summon.inc"
+#include "Reserve.inc"
 };
 struct Fixture
 {
@@ -238,13 +240,15 @@ struct Fixture
     Unit pet, guardian;
     Magnar ai{&actor};
     std::vector<std::unique_ptr<TempSummon>> summons;
+    uint32 failSpawns = 0;
     explicit Fixture(bool start = true)
     {
         scenarioManager = {}; player.map = &map; pet.owner = guardian.owner = &player;
         map.players = {{nullptr}, {&player}};
         actor.entry = 96034; actor.map = &map; actor.ai = &ai; actor.player = &player; actor.ally = &ally;
         ally.ai = &allyAI;
-        actor.spawn = [&](uint32 identity, Position const&) {
+        actor.spawn = [&](uint32 identity, Position const&) -> Creature* {
+            if (failSpawns) { --failSpawns; return nullptr; }
             auto summon = std::make_unique<TempSummon>(); summon->entry = identity;
             summon->guid = {uint32(summons.size() + 1)}; summon->summoner = &actor; summon->map = &map;
             summon->ai = &allyAI;
@@ -326,7 +330,58 @@ int main()
     for (uint32 frame = 0; frame < 6; ++frame) fixture.ai.UpdateAI(frame ? 1 : 33000);
     assert(fixture.ai.wave == 8 && fixture.ai.stop_combat && fixture.actor.motion.jumps == 1 && fixture.ai.count_dies == 0);
     std::cout << "BASELINE: pinnedf91fbfc7 final-duel re-entry re-arms first-phase33000ms transition, jumps/protects the boss and advances nonexistent wave7 to8 with no tracked opponent able to release it. Controlled combat/event services, not a live client replay.\n";
+#elif defined(RESERVE_BASELINE)
+    Fixture fixture(false); fixture.failSpawns = 11; fixture.ai.DoAction(1);
+    assert(fixture.summons.size() == 1); fixture.BeginWaves(); fixture.Die(0);
+    fixture.failSpawns = 0; fixture.ai.UpdateAI(60000);
+    assert(fixture.summons.size() == 1 && fixture.ai.count_dies == 1 && fixture.ai.wave == 2 && !fixture.player.credits);
+    std::cout << "COUNTERFACTUAL pinned a2073e254: one successful reserve spawn and eleven failures permanently leaves wave1 waiting for an opponent that does not exist; repairing spawn availability cannot retry the original roster. Not a passing ordinary encounter.\n";
 #else
+    {
+        Fixture fixture(false); fixture.failSpawns = 11; fixture.ai.DoAction(1);
+        assert(fixture.summons.size() == 1); fixture.failSpawns = 100; fixture.BeginWaves();
+        assert(fixture.ai.pendingWave == 1 && fixture.ai.activeWave.empty() && fixture.ai.count_dies == 2);
+        fixture.failSpawns = 100; fixture.ai.UpdateAI(0);
+        assert(fixture.summons.size() == 1 && fixture.ai.pendingWave == 1 && !fixture.player.credits);
+        fixture.failSpawns = 0; fixture.ai.UpdateAI(999); assert(fixture.summons.size() == 1);
+        fixture.ai.UpdateAI(1); assert(fixture.summons.size() == 12 && !fixture.ai.pendingWave && fixture.ai.activeWave.size() == 2);
+        for (uint32 index = 0; index < 10; ++index) fixture.Die(index, &fixture.guardian);
+        assert(fixture.player.credits == 1 && fixture.ai.wave == 7 && scenarioManager.scenario.step == 4);
+    }
+    {
+        Fixture fixture; fixture.BeginWaves(); auto old = fixture.summons[0]->guid;
+        fixture.map.actors.erase(old); fixture.ai.UpdateAI(1000);
+        assert(fixture.summons.size() == 13 && fixture.ai.activeWave.count(fixture.summons[12]->guid) && !fixture.ai.activeWave.count(old));
+        assert(fixture.ai.count_dies == 2 && !fixture.player.credits && fixture.summons[12]->flags == 0);
+        fixture.Die(0); assert(fixture.ai.count_dies == 2);
+        fixture.Die(12, &fixture.pet); fixture.Die(1, &fixture.guardian);
+        for (uint32 index = 2; index < 10; ++index) fixture.Die(index);
+        assert(fixture.player.credits == 1 && fixture.ai.wave == 7);
+    }
+    {
+        Fixture fixture; fixture.BeginWaves(); fixture.actor.IsAIEnabled = false;
+        fixture.Die(0, &fixture.pet); assert(fixture.ai.count_dies == 2);
+        fixture.actor.IsAIEnabled = true; fixture.ai.UpdateAI(1000);
+        assert(fixture.ai.count_dies == 1 && fixture.ai.reserveDeaths[0] && fixture.summons.size() == 12);
+        for (uint32 index = 1; index < 10; ++index) fixture.Die(index);
+        assert(fixture.player.credits == 1 && fixture.ai.wave == 7);
+    }
+    {
+        Fixture fixture; fixture.map.actors.erase(fixture.summons[0]->guid);
+        fixture.player.contact = false; fixture.ai.UpdateAI(1000); assert(fixture.summons.size() == 12);
+        fixture.player.contact = true; fixture.ai.UpdateAI(0); assert(fixture.summons.size() == 13 && !fixture.player.credits);
+        fixture.ai.Reset(); fixture.ai.UpdateAI(60000); assert(fixture.summons.size() == 13 && !fixture.ai.pendingWave);
+    }
+    {
+        Fixture fixture; fixture.BeginWaves(); for (uint32 i=0;i<7;++i) fixture.Die(i);
+        assert(fixture.ai.wave==6 && fixture.ai.count_dies==3);
+        fixture.map.actors.erase(fixture.summons[9]->guid); fixture.map.actors.erase(fixture.summons[10]->guid);
+        fixture.ai.UpdateAI(1000); assert(fixture.summons.size()==13 && fixture.summons[12]->casts==1);
+        assert(fixture.ai.activeWave.count(fixture.summons[12]->guid) && fixture.ai.count_dies==3);
+        fixture.Die(7); fixture.Die(8); fixture.Die(12); assert(fixture.player.credits==1);
+        fixture.ai.UpdateAI(60000); assert(fixture.summons.size()==13);
+    }
+    std::cout << "PASS: actual reserve retry retains original12 entry/pose slots, delays incomplete batches, replaces only missing active GUID without death credit, rejects stale old death, recovers exact corpse after disabled-parent callback, defers absent participant and cancels on Reset. Partial failures followed by retry finish native2/2/1/2/3 and exactly one46427. Controlled native map/spawn/criteria services.\n";
     {
         Fixture fixture(false);
         fixture.ai.first_phase = false; fixture.ai.wave = 7;

@@ -14,6 +14,7 @@
 #include "FunctionProcessor.h"
 #include <memory>
 #include <set>
+#include <array>
 
 Position const trashPos[12] =
 {
@@ -739,6 +740,11 @@ public:
         uint32 finaleInstanceId = 0;
         bool finalePending = false;
         bool finaleDeparting = false;
+        std::array<ObjectGuid, 12> reserveGUIDs{};
+        std::array<bool, 12> reserveDeaths{};
+        uint32 pendingWave = 0;
+        uint32 reserveRetry = 0;
+        bool restoringReserve = false;
 
         void Reset() override
         {
@@ -768,6 +774,9 @@ public:
             if (first_phase)
             {
                 wave = 1;
+                reserveGUIDs = {};
+                reserveDeaths = {};
+                pendingWave = reserveRetry = 0;
                 trashList.clear();
                 summons.DespawnAll();
             }
@@ -969,6 +978,9 @@ public:
         {
             if (!summon || summon->IsAlive())
                 return;
+            for (uint32 slot = 0; slot < reserveGUIDs.size(); ++slot)
+                if (reserveGUIDs[slot] == summon->GetGUID())
+                    reserveDeaths[slot] = true;
             summons.Despawn(summon);
             trashList.remove(summon->GetGUID());
             if (!activeWave.erase(summon->GetGUID()) || !count_dies)
@@ -979,7 +991,7 @@ public:
 
         void AdvanceWaveIfReady(Unit* killer = nullptr)
         {
-            if (!releasingWave && !count_dies && first_phase && stop_combat && wave > 1 && wave <= 6)
+            if (!releasingWave && !restoringReserve && !count_dies && first_phase && stop_combat && wave > 1 && wave <= 6)
             {
                 if (wave < 6)
                     LaunchEventWave(wave++);
@@ -1024,6 +1036,7 @@ public:
             UpdateFinale(diff);
             if (finaleStarted)
                 return;
+            UpdateReserve(diff);
             if (wave == 6)
                 AdvanceWaveIfReady();
 
@@ -1099,6 +1112,20 @@ public:
                     return;
             }
 
+            // Do not consume a partial batch: retain the authored wave request
+            // until its actual living reserve can supply all opponents.
+            pendingWave = wave;
+            uint32 available = 0;
+            for (auto guid : trashList)
+                if (Creature* actor = me->GetMap()->GetCreature(guid))
+                    if (actor->IsAlive() && actor->IsInWorld())
+                        ++available;
+            if (available < count)
+            {
+                count_dies = count;
+                return;
+            }
+            pendingWave = 0;
             count_dies = count;
             activeWave.clear();
             releasingWave = true;
@@ -1148,15 +1175,70 @@ public:
 
         void SummonTrash()
         {
-            for (uint8 i = 0; i < 4; ++i)
-                me->SummonCreature(97123, trashPos[i]);
-            me->SummonCreature(94707, trashPos[4]);
-            for (uint8 i = 5; i < 9; ++i)
-                me->SummonCreature(97123, trashPos[i]);
-            me->SummonCreature(94707, trashPos[9]);
+            // Retain each original entry/pose and full GUID. Missing is not
+            // dead: replace only a missing, uncredited owned reserve slot.
+            if (restoringReserve)
+                return;
+            restoringReserve = true;
+            for (uint32 slot = 0; slot < reserveGUIDs.size(); ++slot)
+            {
+                if (reserveDeaths[slot])
+                    continue;
+                ObjectGuid old = reserveGUIDs[slot];
+                // The fifth release intentionally sends the remaining reserve
+                // away. Only a still-counted opponent can need recovery then.
+                if (wave == 6 && !pendingWave && !activeWave.count(old))
+                    continue;
+                if (Creature* actor = me->GetMap()->GetCreature(old))
+                    if (actor->IsInWorld())
+                        continue;
+                uint32 entry = slot >= 10 ? 94813 : slot == 4 || slot == 9 ? 94707 : 97123;
+                if (Creature* actor = me->SummonCreature(entry, trashPos[slot]))
+                {
+                    reserveGUIDs[slot] = actor->GetGUID();
+                    trashList.remove(old);
+                    if (activeWave.erase(old))
+                    {
+                        activeWave.insert(actor->GetGUID());
+                        actor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                        actor->SetReactState(REACT_DEFENSIVE);
+                        actor->RemoveAura(191821);
+                        if (Creature* companion = me->FindNearestCreature(96468, 100.0f, true))
+                            if (actor->IsAIEnabled && actor->AI())
+                                actor->AI()->AttackStart(companion);
+                        if (wave == 6)
+                        {
+                            if (Creature* marker = actor->FindNearestCreature(64367, 30.0f, true))
+                                actor->GetMotionMaster()->MoveJump(marker->GetPositionX(), marker->GetPositionY(), marker->GetPositionZ(), actor->GetOrientation(), 5.0f, 5.0f);
+                            actor->CastSpell(actor, 191032);
+                        }
+                    }
+                }
+            }
+            restoringReserve = false;
+            AdvanceWaveIfReady();
+        }
 
-            me->SummonCreature(94813, trashPos[10]);
-            me->SummonCreature(94813, trashPos[11]);
+        void UpdateReserve(uint32 diff)
+        {
+            if (!encounterStarted || !first_phase || releasingWave || restoringReserve ||
+                !me->IsInWorld() || !me->IsAlive() || me->IsDespawn() ||
+                me->GetEntry() != 96034 || me->GetMapId() != 1495 || !GetEncounterPlayer(nullptr, 3))
+                return;
+            if (reserveRetry > diff) { reserveRetry -= diff; return; }
+            reserveRetry = 1000;
+            // A disabled parent AI can miss the native summon death callback.
+            // Recover only from that same real dead object, never from absence.
+            for (uint32 slot = 0; slot < reserveGUIDs.size(); ++slot)
+                if (!reserveDeaths[slot])
+                    if (Creature* actor = me->GetMap()->GetCreature(reserveGUIDs[slot]))
+                        if (!actor->IsAlive())
+                            SummonedCreatureDies(actor, nullptr);
+            if (!first_phase || !GetEncounterPlayer(nullptr, 3))
+                return;
+            SummonTrash();
+            if (pendingWave)
+                LaunchEventWave(pendingWave);
         }
 
     };

@@ -180,8 +180,19 @@ assert not positions(handoff_body, '?Remove@Conversation@@'), 'Normal departure 
 reset_body = instructions('?Reset' + suffix)
 retire = positions(reset_body, '?Remove@Conversation@@')[0]
 assert positions(reset_body, '?GetConversation@ObjectAccessor@@')[0] < retire < positions(reset_body, '?Reset@EventMap@@')[0]
-assert any(entry.op_str == 'word ptr [rbx + 0x118], ax' for entry in reset_body[:retire]), 'Reset leaves a pending/removal timer active'
-assert any(entry.op_str == 'qword ptr [rbx + 0x110], rax' for entry in reset_body[:retire]), 'Reset leaves timer/instance state active'
+def zero_store(decoded, destination):
+    # The larger reserve Reset keeps zero in EBP; earlier links used EAX.
+    for index, entry in enumerate(decoded):
+        if entry.mnemonic == 'mov' and entry.op_str.startswith(destination + ', '):
+            source = entry.op_str.split(', ')[-1]
+            if source == '0':
+                return True
+            root = {'ax':'eax','rax':'eax','bp':'ebp','rbp':'ebp','bpl':'ebp'}.get(source)
+            if root and any(previous.mnemonic == 'xor' and previous.op_str == f'{root}, {root}' for previous in decoded[:index]):
+                return True
+    return False
+assert zero_store(reset_body[:retire], 'word ptr [rbx + 0x118]'), 'Reset leaves a pending/removal timer active'
+assert zero_store(reset_body[:retire], 'qword ptr [rbx + 0x110]'), 'Reset leaves timer/instance state active'
 assert any(entry.op_str == 'r8d, 0x2000180' for entry in reset_body[retire:]), 'Finale cancellation does not restore native duel flags while retaining NPC immunity'
 react = positions(reset_body, '?SetReactState@Creature@@')[0]
 assert [entry.op_str for entry in reset_body[react - 2:react]] == ['r8d, r8d', 'dl, 1'], 'Cancelled passive surrender does not restore defensive final duel'
@@ -230,7 +241,11 @@ for gate_body, player_register, step_register in ((instructions(eligible), 'rbx'
     assert any(struct.unpack_from('<f', native['binary'], native['offset'](entry.address + entry.size + entry.operands[1].mem.disp))[0] == 100.0 for entry in ranges)
 
 tables = []
-for entry in instructions('?GetAI@npc_magnar_icebreaker@@'):
+factory_body = instructions('?GetAI@npc_magnar_icebreaker@@')
+constructor = '??0npc_magnar_icebreakerAI@npc_magnar_icebreaker@@'
+if any(name.startswith(constructor) and native['resolve'](address) in native['calls']('?GetAI@npc_magnar_icebreaker@@') for name,address in native['symbols'].items()):
+    factory_body += instructions(constructor)
+for entry in factory_body:
     for operand in entry.operands:
         if entry.mnemonic == 'lea' and operand.type == CS_OP_MEM and operand.mem.base == X86_REG_RIP:
             offset = native['offset'](entry.address + entry.size + operand.mem.disp)
@@ -238,7 +253,7 @@ for entry in instructions('?GetAI@npc_magnar_icebreaker@@'):
                 tables.append(offset)
 assert len(tables) == 1, 'Actual Magnar factory omits post-scaling policy'
 assert struct.unpack_from('<Q', native['binary'], tables[0] + 0xa0)[0] == native['symbol']('?DamageTaken@UnitAI@@'), 'Old pre-scaling override remains installed'
-assert any(entry.op_str == 'byte ptr [rbx + 0xd2], 0' for entry in instructions('?Reset' + suffix)), 'Reset does not clear scoped finale claim'
+assert zero_store(reset_body, 'byte ptr [rbx + 0xd2]'), 'Reset does not clear scoped finale claim'
 runpy.run_path(str(Path(__file__).with_name('damage_scaling_release_check.py')))['check'](native, instructions)
 assert b'npc_magnar_icebreaker' in native['binary']
 print('PASS: canonical Magnar post-slot retains scaled/owner-first policy and acknowledged504; snapshots four-line handoff/recipient/instance without immediate credit/despawn. Surrender executes native passive/victim/delayed-cast/active-motion stop, then epoch-guarded idle/Penta-Strike removal; Reset restores defensive admission. Pending clock,45784/actual909/5/cancellable6000ms removal and scoped504 cleanup retained. Client speech/departure VFX remain separate.')

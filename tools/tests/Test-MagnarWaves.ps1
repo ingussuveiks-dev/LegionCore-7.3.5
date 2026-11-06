@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$CreditBaseline,[switch]$StartBaseline,[switch]$ResetBaseline,[switch]$RetryBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$CreditBaseline,[switch]$StartBaseline,[switch]$ResetBaseline,[switch]$RetryBaseline,[switch]$ReserveBaseline,[switch]$AddressSanitizer,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $CreditBaseline -or $StartBaseline -or $ResetBaseline -or $RetryBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot certify deployed waves'}
-if(@($Baseline,$CreditBaseline,$StartBaseline,$ResetBaseline,$RetryBaseline | Where-Object {$_}).Count -gt 1){throw 'Choose only one pinned baseline'}
+if(($Baseline -or $CreditBaseline -or $StartBaseline -or $ResetBaseline -or $RetryBaseline -or $ReserveBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot certify deployed waves'}
+if(@($Baseline,$CreditBaseline,$StartBaseline,$ResetBaseline,$RetryBaseline,$ReserveBaseline | Where-Object {$_}).Count -gt 1){throw 'Choose only one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/magnar-waves"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -13,11 +13,13 @@ if($CreditBaseline){$source=(& git -C $repo show "c0f8efce:$path") -join "`n";if
 if($StartBaseline){$source=(& git -C $repo show "5d5a1f24:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned start source unavailable'}}
 if($ResetBaseline){$source=(& git -C $repo show "6eb208cf:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned reset source unavailable'}}
 if($RetryBaseline){$source=(& git -C $repo show "f91fbfc7:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned final-duel retry source unavailable'}}
+if($ReserveBaseline){$source=(& git -C $repo show "a2073e254:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned missing-reserve baseline unavailable'}}
 [IO.File]::WriteAllText("$out/Positions.inc",(Block $source 'Position const trashPos[12]')+';')
 $source=$source.Substring($source.IndexOf('struct npc_magnar_icebreakerAI :'))
 $first=$source.IndexOf('        SummonList summons;');$last=$source.IndexOf('        void Reset()',$first)
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
 [IO.File]::WriteAllText("$out/Handoff.inc",$(if($source.Contains('void UpdateFinale(')){Block $source 'void UpdateFinale('}else{''}))
+[IO.File]::WriteAllText("$out/Reserve.inc",$(if($source.Contains('void UpdateReserve(')){Block $source 'void UpdateReserve('}else{''}))
 foreach($entry in @(@('Reset','void Reset()'),@('EnterCombat','void EnterCombat('),@('JustSummoned','void JustSummoned('),@('Death','void SummonedCreatureDies('),@('Start','void DoAction('),@('Update','void UpdateAI('),@('Launch','void LaunchEventWave('),@('Summon','void SummonTrash('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]))}
 [IO.File]::WriteAllText("$out/Advance.inc",$(if($Baseline){''}else{Block $source 'void AdvanceWaveIfReady('}))
 [IO.File]::WriteAllText("$out/Eligible.inc",$(if($Baseline -or $CreditBaseline){''}else{(Block $source 'bool IsEncounterPlayer(')+(Block $source 'Player* GetEncounterPlayer(')}))
@@ -31,8 +33,9 @@ $source=Get-Content "$repo/src/server/game/AI/ScriptedAI/ScriptedCreature.cpp" -
 $source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw
 [IO.File]::WriteAllText("$out/UnitTypeMask.inc",(Block $source 'enum UnitTypeMask')+';')
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($CreditBaseline){'/DCREDIT_BASELINE'}elseif($StartBaseline){'/DSTART_BASELINE'}elseif($ResetBaseline){'/DRESET_BASELINE'}elseif($RetryBaseline){'/DRETRY_BASELINE'}else{''}
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/MagnarWavesTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
+$definition=if($Baseline){'/DBASELINE'}elseif($CreditBaseline){'/DCREDIT_BASELINE'}elseif($StartBaseline){'/DSTART_BASELINE'}elseif($ResetBaseline){'/DRESET_BASELINE'}elseif($RetryBaseline){'/DRETRY_BASELINE'}elseif($ReserveBaseline){'/DRESERVE_BASELINE'}else{''}
+$instrument=if($AddressSanitizer){'/fsanitize=address /Zi'}else{''}
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition $instrument /I`"$out`" `"$PSScriptRoot/MagnarWavesTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`" /link /INCREMENTAL:NO`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Magnar wave regression failed'}
 if($VerifyReleaseBinary){
  & "$PSScriptRoot/Test-MagnarFinale.ps1" -VerifyReleaseBinary

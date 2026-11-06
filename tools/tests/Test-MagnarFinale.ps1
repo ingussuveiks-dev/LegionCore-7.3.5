@@ -23,7 +23,7 @@ $first=$source.IndexOf('        SummonList summons;');$last=$source.IndexOf('   
 [IO.File]::WriteAllText("$out/Handoff.inc",$(if($source.Contains('void UpdateFinale(')){(Block $source 'uint32 GetFinaleHandoffDelay(')+(Block $source 'void UpdateFinale(')}else{''}))
 $source=Get-Content "$PSScriptRoot/WarswordsRetreatTest.cpp" -Raw
 $header=$source.Substring(0,$source.IndexOf('struct FirstBoss :'))
-$header="#include <set>`n"+$header.Replace('bool IsPlayer() const;','bool IsPlayer() const; bool operator<(ObjectGuid const& other) const { return std::less<Unit*>{}(unit,other.unit); }')
+$header="#include <array>`n#include <set>`n"+$header.Replace('bool IsPlayer() const;','bool IsPlayer() const; bool operator<(ObjectGuid const& other) const { return std::less<Unit*>{}(unit,other.unit); }')
 $header=$header.Replace('uint32 Deal(Creature* victim, uint32 damage);','uint32 Deal(Creature* victim, uint32 damage); void CreateConversation(uint32 identity);')
 $header=$header.Replace('bool IsPlayer() const;', 'void Clear() { unit = nullptr; } bool IsPlayer() const;')
 $header=$header.Replace('ObjectGuid GetCharmerOrOwnerGUID() const', 'ObjectGuid GetGUID() const { return {const_cast<Unit*>(this)}; } ObjectGuid GetCharmerOrOwnerGUID() const')
