@@ -1,0 +1,9 @@
+{
+  "date": "2026-11-06",
+  "cause": "The current Magnar readiness selector ran its new certificate and raised SystemExit(0). Direct invocation passed, but runpy composition exited before executing the importing Hruthnir verifier. Earlier wave PASS records do not establish that the subsequent Hruthnir certificates ran.",
+  "fix": "Use an ordinary else for the retained historical wave certificate so the selected current certificate returns normally. Add a reusable outer runner that rejects every premature SystemExit, including zero, while preserving the original traceback; new Hruthnir coordinator checks will use it.",
+  "regression": "Test-ReleaseVerifierComposition.ps1 proves ordinary nested Python exit0 returns process success without executing its parent continuation, then verifies the outer runner rejects exactly that case and accepts a fully returning parent. Expected rejected output is preserved as a counterfactual, not an ordinary passing verifier.",
+  "real_chain": "Current staged worldserver 0807A57E29660B86177408421D52C433F5D5A58B65DF3CC23018B894A2D29701 executes the actual Hruthnir gossip/cue/offer/home/request/ready/creation/cleanup certificate chain after the selected Magnar readiness proof. Newly exposed compiler-layout expectations were investigated and are adapted separately with the coordinator implementation.",
+  "diagnostics": "Composition regression pre/post: no changed crashes or appended DBErrors/server warnings/errors/assertions. No runtime game behavior or user data changed. Initial empty counterfactual stdout handling in the new PowerShell fixture was corrected before passing; failed fixture diagnostics retained with the current task evidence.",
+  "limits": "This repairs verification control flow; it does not establish full client gameplay or resolve earlier LINK2 diagnostics."
+}
