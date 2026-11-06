@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-06",
+  "fix_commit": "ada78f344596a87227c78449dd13cdfcf64c7ce5",
+  "status": "VERIFIED local resolved-evidence archive and completed generated-output cleanup after deployed canonical startup/native regression. No active log truncated.",
+  "archive": {
+    "audit": "docs/audits/slaghammer-finale-owner-archive-2026-11-06.json",
+    "path": "build-extractors/bin/Release/fixed/slaghammer-finale-owner-2026-11-06",
+    "manifest_sha256": "fc9f64a00d04550302d0d9b5c6ee5883d7ed21d37a33022502439e75b24c6475",
+    "archived_files": 817,
+    "archived_bytes": 3942821,
+    "cleanup": {
+      "files_deleted": 89,
+      "logical_bytes_removed": 3928753030,
+      "observed_free_bytes_gain": 3688714240,
+      "free_bytes_after": 132659609600,
+      "removed_directories": [
+        ".codex/slaghammer-finale-release",
+        ".codex/release-before-kingslayers-lucas-2026-11-06",
+        ".codex/release-before-devourer-portal-2026-11-05"
+      ],
+      "retained_recoveries": [
+        ".codex/kingslayers-lucas-release",
+        ".codex/devourer-portal-release"
+      ],
+      "manifest": ".codex/slaghammer-finale-2026-11-06/cleanup-deleted.json",
+      "manifest_sha256": "7629cb8df239c83a240303f744906bd3eb2e16515582c3c076f9de7b8022dfca"
+    }
+  },
+  "checks": "All817archived originals match hashes after cleanup;89planned files absent;threeobsolete directories absent;canonical788285F0/CFF66559 and previous0526DE51/6B561472 recovery retained. Main configuration/certificates/DLLs and sources/tools retained. No new crash/server/DBErrors;canonical mixed6090 hash unchanged.",
+  "safety": "Native Remove-Item LiteralPath on individually validated absolute files,size/mtime/hash and non-junction ancestors;no recursive delete or cross-shell deletion. No active world/bnet/native/compiler/link processes before/through cleanup. Existing two previous recovery generations remain;private copied configs removed without committing their bytes. Native data tests used TEMP session tables only;no character backups deleted.",
+  "scope_limits": "Actual client40710/991,rendering/audio/camera/pet/reconnect/recovery summon and full36 remain open. Shared101430/103151 LINK2 and all unrelated unresolved evidence kept outside fixed. No private error log needed clearing;canonical mixed history not archived as resolved or truncated."
+}

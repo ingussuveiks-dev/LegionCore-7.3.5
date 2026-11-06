@@ -56,6 +56,28 @@
   ],
   "next": "Continue original101430/103151 missingLINK2 provenance; do not invent actions or clear mixed6090. Current201004 companion follow and stage7 recipient/lifetime are repaired independently. Native death removes the companion; the test resummons201004 under controlled recovery,not a verified client retry route. Actual40710/991 full traversal,scene rendering/audio/camera/return/pet/reconnect and all36 remain client/open; known shared81040/late-charm work remains separate.",
   "archive_cleanup": {
-    "status": "Pending hash-verified local archive and removal of obsolete task outputs after focused commit."
-  }
+    "audit": "docs/audits/slaghammer-finale-owner-archive-2026-11-06.json",
+    "path": "build-extractors/bin/Release/fixed/slaghammer-finale-owner-2026-11-06",
+    "manifest_sha256": "fc9f64a00d04550302d0d9b5c6ee5883d7ed21d37a33022502439e75b24c6475",
+    "archived_files": 817,
+    "archived_bytes": 3942821,
+    "cleanup": {
+      "files_deleted": 89,
+      "logical_bytes_removed": 3928753030,
+      "observed_free_bytes_gain": 3688714240,
+      "free_bytes_after": 132659609600,
+      "removed_directories": [
+        ".codex/slaghammer-finale-release",
+        ".codex/release-before-kingslayers-lucas-2026-11-06",
+        ".codex/release-before-devourer-portal-2026-11-05"
+      ],
+      "retained_recoveries": [
+        ".codex/kingslayers-lucas-release",
+        ".codex/devourer-portal-release"
+      ],
+      "manifest": ".codex/slaghammer-finale-2026-11-06/cleanup-deleted.json",
+      "manifest_sha256": "7629cb8df239c83a240303f744906bd3eb2e16515582c3c076f9de7b8022dfca"
+    }
+  },
+  "fix_commit": "ada78f344596a87227c78449dd13cdfcf64c7ce5"
 }
