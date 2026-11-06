@@ -14723,6 +14723,8 @@ InventoryResult Player::CanEquipChildItem(Item* parentItem) const
         return EQUIP_ERR_OK;
 
     Item* dstItem = GetItemByPos(INVENTORY_SLOT_BAG_0, childEquipement->ChildItemEquipSlot);
+    if (dstItem == childItem)
+        return EQUIP_ERR_OK;
     if (!dstItem)
         return EQUIP_ERR_OK;
 
@@ -14747,7 +14749,7 @@ InventoryResult Player::CanEquipChildItem(Item* parentItem) const
             msg = CanBankItem(NULL_BAG, NULL_SLOT, dest, dstItem, true);
     }
     else if (IsEquipmentPos(src))
-        return EQUIP_ERR_CANT_SWAP;
+        msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, dstItem, false);
 
     return msg;
 }
@@ -16007,7 +16009,6 @@ void Player::EquipChildItem(uint8 parentBag, uint8 parentSlot, Item* parentItem)
 
                     // check dest->src move possibility but try to store currently equipped item in the bag where the parent item is
                     ItemPosCountVec sSrc;
-                    uint16 eSrc = 0;
                     if (IsInventoryPos(parentBag, parentSlot))
                     {
                         msg = CanStoreItem(parentBag, NULL_SLOT, sSrc, dstItem, true);
@@ -16022,9 +16023,9 @@ void Player::EquipChildItem(uint8 parentBag, uint8 parentSlot, Item* parentItem)
                     }
                     else if (IsEquipmentPos(parentBag, parentSlot))
                     {
-                        msg = CanEquipItem(parentSlot, eSrc, dstItem, true);
-                        if (msg == EQUIP_ERR_OK)
-                            msg = CanUnequipItem(eSrc, true);
+                        // The parent is already equipped. Its slot is not a
+                        // destination for the displaced child-slot item.
+                        msg = CanStoreItem(NULL_BAG, NULL_SLOT, sSrc, dstItem, false);
                     }
 
                     if (msg != EQUIP_ERR_OK)
@@ -16046,7 +16047,7 @@ void Player::EquipChildItem(uint8 parentBag, uint8 parentSlot, Item* parentItem)
                     else if (IsBankPos(parentBag, parentSlot))
                         BankItem(sSrc, dstItem, true);
                     else if (IsEquipmentPos(parentBag, parentSlot))
-                        EquipItem(eSrc, dstItem, true);
+                        StoreItem(sSrc, dstItem, true);
 
                     AutoUnequipOffhandIfNeed();
                 }

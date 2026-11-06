@@ -9313,8 +9313,24 @@ void Spell::EffectForceEquipItem(SpellEffIndex effIndex)
         return;
 
     Item* item = player->GetItemByEntry(m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue);
-    if (!item || item->IsEquipped())
+    if (!item)
         return;
+
+    // An earlier equip can leave the existing linked artifact child in its
+    // hidden inventory slot. Replaying the native presentation must still
+    // finish that pair, without replacing or granting either item.
+    if (item->IsEquipped())
+    {
+        if (!item->GetChildItem().IsEmpty())
+        {
+            InventoryResult result = player->CanEquipChildItem(item);
+            if (result != EQUIP_ERR_OK)
+                player->SendEquipError(result, item);
+            else
+                player->EquipChildItem(item->GetBagSlot(), item->GetSlot(), item);
+        }
+        return;
+    }
 
     uint16 destination;
     ItemTemplate const* proto = item->GetTemplate();

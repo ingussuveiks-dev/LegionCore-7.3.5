@@ -23,6 +23,8 @@ struct Item
     bool IsEquipped() const { return equipped; }
     ChildGuid GetChildItem() const { return child; }
     uint16 GetPos() const { return position; }
+    uint8_t GetBagSlot() const { return uint8_t(position >> 8); }
+    uint8_t GetSlot() const { return uint8_t(position); }
 };
 struct Player
 {
@@ -41,6 +43,7 @@ struct Player
         return equipResult;
     }
     InventoryResult CanEquipChildItem(Item* item) { assert(item == artifact); ++childChecks; return childResult; }
+    void EquipChildItem(uint8_t, uint8_t, Item* item) { assert(item == artifact && item->IsEquipped()); }
     void SendEquipError(InventoryResult result, Item* item) { assert(item == artifact); ++errors; lastError = result; }
     void SwapItem(uint16 source, uint16 target, bool mailOffhand = false)
     {
