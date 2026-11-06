@@ -2960,9 +2960,10 @@ TempSummon* WorldObject::SummonCreature(uint32 entry, const Position &pos, TempS
     return nullptr;
 }
 
-void WorldObject::BindQuestObjectScope(std::shared_ptr<QuestObjectScope> const& scope)
+void WorldObject::BindQuestObjectScope(std::shared_ptr<QuestObjectScope> const& scope, bool restrictTargets)
 {
     _questObjectBound = true;
+    _questObjectRestrictTargets = restrictTargets;
     _questObjectScope = scope;
     scope->Register(GetGUID());
     sLootMgr->BindQuestObjectLoots(this);
@@ -2976,7 +2977,7 @@ bool WorldObject::InheritQuestObjectScope(WorldObject const* source)
     auto scope = source->_questObjectScope.lock();
     if (!scope || scope->Cancelled)
         return false;
-    BindQuestObjectScope(scope);
+    BindQuestObjectScope(scope, source->_questObjectRestrictTargets);
     return true;
 }
 
@@ -2995,7 +2996,7 @@ bool WorldObject::CanTargetQuestObject(WorldObject const* target) const
     auto scope = _questObjectScope.lock();
     if (!target || !scope || scope->Cancelled)
         return false;
-    return target->GetGUID() == scope->Owner || target->_questObjectScope.lock() == scope;
+    return !_questObjectRestrictTargets || target->GetGUID() == scope->Owner || target->_questObjectScope.lock() == scope;
 }
 
 GameObject* WorldObject::SummonGameObject(uint32 entry, Position pos, float ang, float rotation0, float rotation1, float rotation2, float rotation3, uint32 respawnTime, ObjectGuid viewerGuid /*= ObjectGuid::Empty*/, GuidUnorderedSet* viewersList /*= nullptr*/, bool hasCreator /*= true*/)

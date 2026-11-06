@@ -187,6 +187,9 @@ enum RelationType
     RELATION_OWNED_BY,
     RELATION_PASSENGER_OF,
     RELATION_CREATED_BY,
+    // Ordinary TempSummon keeps its source outside UNIT_FIELD_SUMMONED_BY.
+    // Preserve the legacy OWNED_BY/CREATED_BY field predicates above.
+    RELATION_SUMMONED_BY,
     RELATION_MAX
 };
 

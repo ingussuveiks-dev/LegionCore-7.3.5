@@ -43,6 +43,7 @@
 #include "ObjectMgr.h"
 #include "OutdoorPvPMgr.h"
 #include "ScenarioMgr.h"
+#include "Scenario.h"
 #include "BrokenShoreClassRoute.h"
 #include "ScriptMgr.h"
 #include "StringFormat.h"
@@ -4397,6 +4398,20 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         if (owner->getClass() == CLASS_MONK && !owner->isGameMaster() && !owner->IsQuestRewarded(41003) &&
             (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE))
             owner->BindQuestObject(41003, summon);
+    }
+
+    // Slaghammer must expire with this accepted quest attempt, including
+    // across AI replacement. His authored finale still targets the shared
+    // ward101461 and barrier251349, so retain ordinary map target selection.
+    if (entry == 101899 && spellId == 201004 && GetId() == 1539 && summoner && summoner->IsPlayer())
+    {
+        Player* owner = summoner->ToPlayer();
+        Scenario* scenario = sScenarioMgr->GetScenario(GetInstanceId());
+        QuestStatus status = owner->GetQuestStatus(40710);
+        if (owner->getClass() == CLASS_PRIEST && scenario && scenario->GetScenarioId() == 991 &&
+            !owner->GetQuestRewardStatus(40710) &&
+            (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE))
+            owner->BindQuestObject(40710, summon, false);
     }
 
     summon->SetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL, spellId);

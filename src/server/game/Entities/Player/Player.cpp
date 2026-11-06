@@ -20675,7 +20675,7 @@ void Player::AddQuestDelayedEvent(uint32 questId, uint64 delay, std::function<vo
     });
 }
 
-void Player::BindQuestObject(uint32 questId, WorldObject* object)
+void Player::BindQuestObject(uint32 questId, WorldObject* object, bool restrictTargets)
 {
     QuestStatusData* status = getQuestStatus(questId);
     if (!object || !status || status->Status == QUEST_STATUS_NONE)
@@ -20685,7 +20685,7 @@ void Player::BindQuestObject(uint32 questId, WorldObject* object)
         status->ScriptObjects = std::make_shared<QuestObjectScope>();
         status->ScriptObjects->Owner = GetGUID();
     }
-    object->BindQuestObjectScope(status->ScriptObjects);
+    object->BindQuestObjectScope(status->ScriptObjects, restrictTargets);
 }
 
 std::shared_ptr<QuestCancellationReceipt const> Player::GetQuestCancellationReceipt(uint32 questId)

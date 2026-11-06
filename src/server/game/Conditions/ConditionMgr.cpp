@@ -34,6 +34,7 @@
 #include "QuestData.h"
 #include "GlobalFunctional.h"
 #include "GossipData.h"
+#include "TemporarySummon.h"
 
 ConditionSourceInfo::ConditionSourceInfo(WorldObject* target0, WorldObject* target1, WorldObject* target2)
 {
@@ -345,6 +346,10 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo)
                             break;
                         case RELATION_CREATED_BY:
                             condMeets = unit->GetOwnerGUID() == toUnit->GetGUID();
+                            break;
+                        case RELATION_SUMMONED_BY:
+                            if (TempSummon* summon = unit->ToTempSummon())
+                                condMeets = summon->GetSummonerGUID() == toUnit->GetGUID();
                             break;
                         default:
                             break;

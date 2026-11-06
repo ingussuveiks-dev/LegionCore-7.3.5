@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-06",
+  "status": "DEPLOYED788285F0/CFF66559+World2026_11_06_02: Slaghammer101899 stage7 admits its actual alive Priest40710 summoner, publishes native201321/1182/1551 to that owner and retains5s speech/shared ward/barrier/hide/removal. Accepted-attempt lifetime survives AI replacement; ordinary target restrictions remain default,shared targets explicitly retained for this native actor.46projected+46live,8original-data controls,14SQL refusal variants,14retained follow and92native loot checks,typed26972,PE/Scepter and owned6996 ready/shutdown0/exit0/gone pass. No new diagnostics. Actual client/full-chain and existingLINK2 remain OPEN.",
+  "cause": "Native one-shot OOC_LOS id8 targeted its invoker without owner/type/quest checks. A foreign Player consumes TALK4 and receives the nearest-player INVOKER_CAST85/201321; a pet/NPC can consume the root with a different talker entry,preventing native TEXT_OVER4/101899 cleanup. Baseline proves foreign scene and pet stall. The companion was not tied to an accepted quest attempt.",
+  "repair": {
+    "data": "Exactly4cells on id9: CROSS_CAST86, caster selector23 and target23/0, preserving spell201321/flags0, all14actions/links/5s/TALK/criteria and shared ward101461/GO251349 cleanup. Add6ANDed source22 group9 conditions: actualPlayer31,alive36,incomplete40710/9,Priest15,map1539/22,actual TempSummon relation33/6. Original actor991/stage7 and initial stage3 remain. No item or manual progression grants.",
+    "native_relation": "Add RELATION_SUMMONED_BY6 using actual TempSummon::GetSummonerGUID. Preserve legacy RELATION_OWNED_BY3 and CREATED_BY5 fields. Native evidence shows ordinary101899 has empty UNIT_FIELD_SUMMONED_BY but actual full Player summoner GUID. Readonly predeployment query found zero existing relation>=6 users. Native controls retain legacy ordinary-unit field behavior and reject non-TempSummon for6.",
+    "lifetime": "Map binds only101899 from201004/map1539/scenario991/active unrewarded Priest40710 before AddToMap/AI. Creature-owned weak quest scope persists across AIM_Initialize and cancels before delayed events/AI. BindQuestObject/BindQuestObjectScope gain restrictTargets=true default. Only this binding passesfalse; privacy,loot ownership,cancellation/expiry remain. Inheritance copies the mode. Expired or cancelled scopes still reject targets before the optional shared-target branch."
+  },
+  "sources": {
+    "local": "Matching26972 DB2 typed Spell201321=Aura430/Misc1182/self,scene1182/package1551/flags25,duration0/NULLScriptName/no events;scenario991/stage7 entry2099/tree46620;native104477/Sound63443. Full14Smart rows/2original conditions,templates,owners,Script/GetTargets/CROSS_CAST/LOS/text timing/ward and GO loaders,SceneHandler/Player::TrigerScene,TempSummon::Update,quest scope cancellation and AI replacement traced. Scene has no server trigger/binding or credit dependency; authored cleanup remains independent of cosmetic cast success.",
+    "history": "Fetched origin/main at ccdc4db08; preceding47cbe1fb1 follow repair,da42f12f5 admission and retained Oct29/Nov1 source provenance reviewed. Local newer TrinityCore/history and prior GitHub donor research remain references; no donor action invented or modern code copied.",
+    "limits": "No new video or client footage reviewed. Typed data/native scene publication does not verify rendering,voice,camera or complete traversal."
+  },
+  "validation": {
+    "native": "46projected and46live contexts,Human/BloodElf. Actual native Map/TempSummon/properties3747,SmartAI/condition/text/scene/ward/GO loaders;owner publication count1182,strict5s talk,real ward aura removal/GO activation and hide+5s map removal. Includes foreign/questless/group/wrong-class Player,pet/guardian/friendly NPC,complete/dead/phase/far/wrong-stage owner,cast immunity/no publication but ordinary cleanup,missing actors,repeat arrivals,changed global invoker,abandon/retake and AI replacement before/after cancellation. Default target restriction and inherited explicit shared-target mode asserted. Earlier quest/stage/poses,arrival callbacks/clocks and death recovery summon controlled;native Release,not full-core ASAN.",
+    "counterfactual": "8original-data TEMP cases reconstruct original85/nearestPlayer and stage-only condition after either live state;current lifetime binding intentionally retained. Both races:foreign Player receives1182,pet consumes/stalls;owner and immunity controls retain native cleanup. Expected counterfactual,not a successful quest run.",
+    "data": "Full-schema TEMP actual migration twice idempotent:only4scene cells+6conditions,all other14actions/8finalconditions,shared101430/103151,foreign actor/timed list,templates,bindings and scene records preserved.14expected1644/45000 customized/partial variants leave all tables unchanged even mysql--force. Live86/23/23/0 and8conditions verified.",
+    "retained": "14whole native initial follow/48306 cases pass with new core. Intro full-schema idempotence/12refusals and extracted-production ASAN pass;known missingLINK2 remains explicitly modeled OPEN.92native quest-object loot packet/storage/privacy/cancel/retake/expiry checks pass. Selected staged+canonical PE verifies nativeMap guards,false shared-target flag,scope/inheritance and distinct relation6 switch arm/full16byte summoner GUID while legacy3/5 remain distinct. Mandatory Test-ScepterLogin -VerifyReleaseBinary passes.",
+    "deployment": "Built game/scripts at original final-link inputs and worldserver compilation;staged original Release link,no global OutDir. Exact EXE/map copy to canonical only while no user/unknown server running. Existing .codex/kingslayers-lucas-release matches both prior EXEs and is the rollback. Protected conf/certificate/DLL files unchanged. Matching SQL moved from pending only after new EXE copied. Owned6996 freshready,shutdown0,exit0,empty stderr,gone. Updater RELEASED617747EBE18386BD750C283E28F6BCF90022EFB1(normalizedLF SHA1).",
+    "iterations": "Preserved failed hypotheses and fixtures: full-scope targeting initially blocked unscoped ward (caught before deployment;explicit shared-target option passes);AI-owned receipt draft discarded in favor of creature scope;legacy relation3 cannot inspect ordinary TempSummon (all other predicates passed;new explicit6 repairs it without redefining3). Native LOS timer1..5ms,text strict<diff and hide/removal5s clocks modeled. Actual death removes companion and owner phase changes propagate to it:tests now use actual death cleanup plus controlled fresh summon,and explicitly separate phase mismatch. SetQuestStatus NONE already cancels/retire actor:expect fresh actor on retry. SQL partial fixture initially mutated an already-applied follow cell;corrected to finale id9. Catalog step typo2114->actual2099,PE expected an out-of-line inherited bind but compiler inlines it (verified actual mode copy),PS5 invocation rejected PS7-only SQL helper,missing capstone/Python path corrected. A premature link omitted rebuilding scripts after API signature change;complete original-input rebuild/link passes. Deployment preflight expected nonexistent ReleasePDB (/DEBUG absent) and refused before mutation;corrected to actual EXE/map artifacts. No active runtime failure suppressed."
+  },
+  "canonical_hashes": {
+    "bnetserver.exe": "cff665598f3b70a11a8d7c4f1b87caccde195dba662913088d04064e6076f24e",
+    "worldserver.exe": "788285f0deb1940d4e506d441dcd849da1295d3d66b86db0558fbd72a03c9819"
+  },
+  "source_sha256": {
+    "src/server/game/Conditions/ConditionMgr.cpp": "19b1dfa37d54463a60a54867e362562dee032670a5da276c9ad03c68b257d4cb",
+    "src/server/game/Conditions/ConditionMgr.h": "56c5116d827595a3424df5657e83c9b8738f1c2aaeaa2c43e802a7faf6a688b4",
+    "src/server/game/Entities/Object/Object.cpp": "3ad7d83025c529b2b42e543eef4d94e9809ffd61d1072540e05ddea7adc90ec1",
+    "src/server/game/Entities/Object/Object.h": "ed6f9c9f2e088ebb63a8a355a54b963f3e66b897e3f273bbfd3159d42415bdff",
+    "src/server/game/Entities/Player/Player.cpp": "6fb848d25c41726308c7d487c3db9bfc4301c5259394b1e743c3b34e25c879f9",
+    "src/server/game/Entities/Player/Player.h": "6651ed82b9c6434e6aa9b0a94b551598698c9379011cace329387db5c7dfb8a2",
+    "src/server/game/Maps/Map.cpp": "c6fbb6c3016bc2f42670642dffa3480c38d84f3d4437ebcd46bb7033182628ce",
+    "sql/updates/world/2026_11_06_02_slaghammer_finale_owner.sql": "639bae06d7740aa577c2382f1929bd437db6402f1fd6618d1dbc39a22c37b472",
+    "tools/tests/SlaghammerCompanionNative.cpp": "2812b1c0d0c9c9f0cff6f2a8cf5b2b5cf0d4f18558afd14b7e6a211a93e5e24e",
+    "tools/tests/SlaghammerFinaleNative.cpp": "c9134d1e65b8046dffa3d8e34e03221ee24d47f6de8bf5164653eeee401512d3",
+    "tools/tests/SlaghammerFinaleOriginal.json": "129aada64d95f3d8ced037302a9f2714fb4407a3a8dcffdccdd7392ed3eccc26",
+    "tools/tests/Test-SlaghammerFinaleData.ps1": "ae9eefdc0ed48308c50ac70bb55f664389fd7b967e29a8e1219f0d774b982980",
+    "tools/tests/Test-SlaghammerFinaleNative.ps1": "1db677527c058976583a2fc2e61080728be556f428de1d719c629292ef66e9de",
+    "tools/tests/verify_slaghammer_finale_release.py": "e627a18bbff24790750e3eaf44ab8417eef2ff4137e0f069267bf22fad8a5d32",
+    "tools/research/SlaghammerFinaleCatalog.cpp": "7198f64731f365e0e24229ba65d0a527cd197e9e0f2cd0cbdbbeb4b5bb778ee6"
+  },
+  "diagnostics": {
+    "canonical_active_crashes": 0,
+    "canonical_mixed_DBErrors_bytes": 6090,
+    "canonical_mixed_DBErrors_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "new_unexplained_crash_or_server_error": false,
+    "unresolved": "Existing101430/103151 LINK2 mixed history retained unchanged. Empty new diagnostics do not certify allquests/client/all36."
+  },
+  "client_open": [
+    "Actual40710/991 prerequisites through final boss,pickup,return and turn-in;earlier LINK2 remains unresolved.",
+    "Actual scene1551 appearance/audio/camera,pet portrait,movement and whole client sequence for both factions/groups.",
+    "Actual death/re-entry/reconnect acquisition of a replacement companion;native test deliberately resummons201004 and does not claim client recovery is repaired.",
+    "Shared81040/late-charm and all36 whole chains remain independent open work."
+  ],
+  "next": "Continue original101430/103151 missingLINK2 provenance; do not invent actions or clear mixed6090. Current201004 companion follow and stage7 recipient/lifetime are repaired independently. Native death removes the companion; the test resummons201004 under controlled recovery,not a verified client retry route. Actual40710/991 full traversal,scene rendering/audio/camera/return/pet/reconnect and all36 remain client/open; known shared81040/late-charm work remains separate.",
+  "archive_cleanup": {
+    "status": "Pending hash-verified local archive and removal of obsolete task outputs after focused commit."
+  }
+}

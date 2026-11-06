@@ -24,6 +24,7 @@ static uint64 FollowCredit(Scenario* scenario) {
     }
     return count;
 }
+#ifndef SLAGHAMMER_COMPANION_SUPPORT_ONLY
 int main(int argc,char**argv) {try {
     InitializeAltheaGuardsNative(argc,argv);
     sObjectMgr->LoadPageTexts();sObjectMgr->LoadGameObjectTemplate();
@@ -89,3 +90,4 @@ int main(int argc,char**argv) {try {
 #endif
     CloseAltheaNative();return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}
+#endif

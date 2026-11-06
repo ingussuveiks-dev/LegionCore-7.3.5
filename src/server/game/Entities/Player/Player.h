@@ -1983,7 +1983,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SetQuestStatus(uint32 quest_id, QuestStatus status);
         void RemoveActiveQuest(uint32 quest_id);
         void AddQuestDelayedEvent(uint32 questId, uint64 delay, std::function<void()>&& action);
-        void BindQuestObject(uint32 questId, WorldObject* object);
+        void BindQuestObject(uint32 questId, WorldObject* object, bool restrictTargets = true);
         std::shared_ptr<QuestCancellationReceipt const> GetQuestCancellationReceipt(uint32 questId);
         bool AdoptQuestCancellationReceipt(uint32 questId, std::shared_ptr<QuestCancellationReceipt const> const& receipt);
         void CancelQuestObjects(uint32 questId);
