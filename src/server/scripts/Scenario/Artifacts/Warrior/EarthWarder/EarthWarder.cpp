@@ -12,6 +12,8 @@
 #include "ScenarioMgr.h"
 #include "SpellMgr.h"
 #include "FunctionProcessor.h"
+#include "MoveSpline.h"
+#include "WaypointMovementGenerator.h"
 #include "QuestObjectScope.h"
 #include "magnar_start.h"
 #include "hruthnir_pillik.h"
@@ -163,6 +165,7 @@ public:
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             player->PlayerTalkClass->ClearMenus();
             player->CLOSE_GOSSIP_MENU();
+            ScheduleMagnarApproach();
             me->GetMotionMaster()->MovePoint(7, 4720.80f, 347.91f, -37.71f);
         }
 
@@ -373,6 +376,73 @@ public:
                 !player->GetQuestRewardStatus(39191) &&
                 (player->GetQuestStatus(39191) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(39191) == QUEST_STATUS_COMPLETE))
                 player->AdoptQuestCancellationReceipt(39191, magnarStartAttempt);
+        }
+
+        void ScheduleMagnarApproach()
+        {
+            if (!magnarStartToken || *magnarStartToken || !magnarArrivalPending || magnarStartReached || magnarStartPresented)
+                return;
+            std::weak_ptr<bool> weak = magnarStartToken;
+            Creature* companion = me;
+            auto* expectedAI = this;
+            me->AddDelayedEvent(1000, [weak, companion, expectedAI]()
+            {
+                auto token = weak.lock();
+                if (!token || *token || (companion->AI() != expectedAI && companion->GetDisabledAI() != expectedAI))
+                    return;
+                if (expectedAI->magnarStartToken == token)
+                    expectedAI->RetryMagnarApproach(token);
+            });
+        }
+
+        void RetryMagnarApproach(std::shared_ptr<bool> const& token)
+        {
+            if (magnarStartToken != token || *token || !magnarArrivalPending || magnarStartReached || magnarStartPresented)
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(magnarStartInstance);
+            if (!magnarStartAttempt || magnarStartAttempt->load() || !me->IsInWorld() || !me->IsAlive() ||
+                me->IsDespawn() || me->GetEntry() != 96468 || me->GetMapId() != 1495 ||
+                me->GetInstanceId() != magnarStartInstance || !scenario || scenario->GetScenarioId() != 909 ||
+                scenario->GetCurrentStep() != 3 || !HasMagnarChamberRequest())
+            {
+                CancelMagnarStart();
+                RemoveMagnarConversation();
+                return;
+            }
+            Player* owner = ObjectAccessor::GetPlayer(*me, magnarStartOwner);
+            if (!me->IsAIEnabled || me->AI() != this || !owner || !owner->IsInWorld() || !owner->CanContact() ||
+                owner->IsBeingTeleported() || owner->getClass() != CLASS_WARRIOR || owner->GetMap() != me->GetMap() ||
+                owner->GetInstanceId() != magnarStartInstance || !owner->InSamePhase(me))
+            {
+                ScheduleMagnarApproach();
+                return;
+            }
+            if (owner->GetQuestRewardStatus(39191) ||
+                (owner->GetQuestStatus(39191) != QUEST_STATUS_INCOMPLETE && owner->GetQuestStatus(39191) != QUEST_STATUS_COMPLETE) ||
+                owner->GetQuestCancellationReceipt(39191) != magnarStartAttempt)
+            {
+                CancelMagnarStart();
+                RemoveMagnarConversation();
+                return;
+            }
+            // Queue before MovePoint: replacing a generator can invoke native
+            // callbacks that revoke the request or destroy this controller.
+            ScheduleMagnarApproach();
+            if (!owner->IsAlive() || !owner->IsWithinDistInMap(me, 100.0f) || me->isInCombat() ||
+                me->HasUnitState(UNIT_STATE_NOT_MOVE) || me->IsMovementPreventedByCasting() ||
+                !me->movespline->Finalized())
+                return;
+            MotionMaster* motion = me->GetMotionMaster();
+            if (motion->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+            {
+                // MovePath installs the authored escort in the idle slot. A
+                // finished non-repeating route can remain under the point move.
+                auto* route = dynamic_cast<WaypointMovementGenerator<Creature>*>(motion->top());
+                if (!route || route->GetPathId() != 9859004 || !route->IsPathComplete())
+                    return;
+            }
+            me->GetMotionMaster()->MovePoint(7, 4720.80f, 347.91f, -37.71f);
+            // Only the actual arrival callback may acknowledge this movement.
         }
 
         void ScheduleMagnarStart(uint32 delay, bool cue = false)

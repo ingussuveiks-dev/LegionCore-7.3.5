@@ -31,7 +31,8 @@ function TimerMethods([string]$selected){
 }
 $normalized=(TimerMethods $actor).Replace('_presentationFunctions.AddDelayedEvent(', 'me->AddDelayedEvent(').Replace('sCreatureTextMgr->SendChat(targ, 5);','targ->AI()->Talk(5);')
 if((Shape $normalized) -cne (Shape (TimerMethods $oldActor))){throw 'Authored escort/timer callback behavior changed'}
-if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -ne 6 -or ([regex]::Matches($actor,'me->AddDelayedEvent\(')).Count -ne 2){throw 'Exactly six owned callbacks and two existing guarded Unit callbacks required'}
+$unitTimers=if($actor.Contains('void ScheduleMagnarApproach(')){3}else{2}
+if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -ne 6 -or ([regex]::Matches($actor,'me->AddDelayedEvent\(')).Count -ne $unitTimers){throw 'Exactly six owned callbacks and the selected guarded Unit callbacks required'}
 if($ScopeOnly){'PASS exact six Hruthnir AI-owned callbacks/native target text/ALIVE-CORPSE clock; earlier escort methods match pinned native bodies; chamber/start policies verified separately';return}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/hruthnir-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $selected=if($Baseline){$oldActor}else{$actor}

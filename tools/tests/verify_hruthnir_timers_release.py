@@ -70,13 +70,14 @@ for body,expected in zip(parents,[[(0xc0,5000)],movement_queues,[(0xc0,5000)]]):
   owner=('lea','rcx, [rbx + 0xc0]') if member==0xc0 else ('add','rcx, 0x36a0')
   assert owner in window and ('mov',f'edx, {delay:#x}') in window,(member,delay,window)
 callbacks=[name for name in n['symbols'] if name.startswith('?_Do_call@') and 'npc_hrutnirAI@' in name]
-assert len(callbacks)==8
+current_approach=any(name.startswith(method('ScheduleMagnarApproach')) for name in n['symbols'])
+assert len(callbacks)==(9 if current_approach else 8)
 for callback in callbacks:
  name='??_7'+callback[len('?_Do_call@'):].removesuffix('EEAAXXZ')+'6B@'
  address,slots=table(name,7)
- parent=ins(method('ScheduleMagnarStart')) if '??ScheduleMagnarStart' in callback else parents[0] if '??EnterEvadeMode' in callback else parents[2] if '??MoveInLineOfSight' in callback else parents[1]
+ parent=ins(method('ScheduleMagnarApproach')) if '??ScheduleMagnarApproach' in callback else ins(method('ScheduleMagnarStart')) if '??ScheduleMagnarStart' in callback else parents[0] if '??EnterEvadeMode' in callback else parents[2] if '??MoveInLineOfSight' in callback else parents[1]
  assert address in refs(parent) and n['symbol'](callback) in resolved(slots),('Actual callback vtable not installed by its parent',callback)
-owned=[name for name in callbacks if '??ScheduleMagnarStart' not in name and not any(f'<lambda_{index}>' in name and '??MovementInform' in name for index in (5,6))]
+owned=[name for name in callbacks if '??ScheduleMagnarApproach' not in name and '??ScheduleMagnarStart' not in name and not any(f'<lambda_{index}>' in name and '??MovementInform' in name for index in (5,6))]
 assert len(owned)==6
 def callback_body(name):
  body=ins(name)
@@ -102,4 +103,4 @@ for body in bodies:
 # cleanup verifiers, including their original field offsets and both Unit timers.
 runpy.run_path(str(Path(__file__).with_name('verify_hruthnir_cleanup_release.py')))
 print('PASS actual registered Hruthnir factory/vtable/lifecycle110/constructor-destructorc0, six owned5/5/4/15/2/5s callback vtables/native ALIVE-CORPSE clock; guarded13/6s Unit timers and original field offsets/497/death cleanup retained. Exact94714 native text without transient AI, ordinary AttackStart/scenery kill/route and movement requests preserved; no direct progression grants. Client/full909 remains separate.')
-print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'owned_callbacks':6,'guarded_unit_callbacks':2}))
+print(json.dumps({'exe_sha256':hashlib.sha256(n['binary']).hexdigest(),'owned_callbacks':6,'guarded_unit_callbacks':3 if current_approach else 2}))

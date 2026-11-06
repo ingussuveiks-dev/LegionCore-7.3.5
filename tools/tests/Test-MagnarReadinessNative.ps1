@@ -1,13 +1,16 @@
 # Real native Protection wave readiness and Kill/owner progression; no persistent character writes.
-param([switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline)
+param([switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline)
+if($ApproachBaseline){$Approach=$true}
+if($Approach -and ($StartRecovery -or $Pillik -or $PillikBaseline -or $EntryBaseline -or $Baseline)){throw 'Choose only the approach native scope'}
+if($Approach){$StartRecovery=$true}
 if($EntryBaseline){$Pillik=$true}
 if($EntryBaseline -and $PillikBaseline){throw 'Choose one pinned Pillik counterfactual'}
 if($PillikBaseline){$Pillik=$true}
 if($StartRecovery -and $Pillik){throw "Choose start recovery or the earlier Pillik handoff"}
 if($Baseline -and ($StartRecovery -or $Pillik)){throw "Pinned counterfactual is separate from current start recovery"}
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$family=if($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
-$probe=if($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
+$family=if($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
+$probe=if($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
 $out="$repo/build-extractors/runtime-test/$family/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing actual $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
@@ -34,7 +37,7 @@ $instance=Get-Content "$repo/$instancePath" -Raw
 if(!$instance){throw 'Actual/pinned shared instance source missing'}
 [IO.File]::WriteAllText("$out/SilverHandInstance.inc",(Block $instance 'class instance_silver_hand : public InstanceMapScript')+';')
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
-$source=if($EntryBaseline){(& git -C $repo show "7dc957758:$path") -join "`n"}elseif($PillikBaseline){(& git -C $repo show "cb1300a9f:$path") -join "`n"}elseif($Baseline){(& git -C $repo show "fb01c9a6a:$path") -join "`n"}else{Get-Content "$repo/$path" -Raw};if(!$source){throw 'Actual Magnar source missing'}
+$source=if($ApproachBaseline){(& git -C $repo show "58134ab60:$path") -join "`n"}elseif($EntryBaseline){(& git -C $repo show "7dc957758:$path") -join "`n"}elseif($PillikBaseline){(& git -C $repo show "cb1300a9f:$path") -join "`n"}elseif($Baseline){(& git -C $repo show "fb01c9a6a:$path") -join "`n"}else{Get-Content "$repo/$path" -Raw};if(!$source){throw 'Actual Magnar source missing'}
 [IO.File]::WriteAllText("$out/MagnarNative.inc",(Block $source 'Position const trashPos[12]')+';'+(Block $source 'class npc_magnar_icebreaker : public CreatureScript')+';')
 if($StartRecovery -or $Pillik){
  [IO.File]::WriteAllText("$out/HruthnirNative.inc",(Block $source 'namespace HruthnirGossip')+(Block $source 'class npc_hrutnir : public CreatureScript')+';'+(Block $source 'void MagnarStart::Rejoin('))
@@ -47,6 +50,7 @@ $inputs=@("$repo/tools/tests/SlaghammerCompanionNative.cpp","$repo/src/server/ga
 # source and final-link library bytes before/after the sequential native run.
 $inputs+=@("$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_start.h")
 if($StartRecovery -or $Pillik){$inputs+=@("$repo/tools/tests/HruthnirStartNative.cpp","$repo/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp","$repo/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.h","$repo/src/server/game/Entities/Object/QuestObjectScope.h")}
+if($Approach){$inputs+=@("$repo/tools/tests/HruthnirApproachNative.cpp","$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.h")}
 if($Pillik){$inputs+=@("$repo/tools/tests/HruthnirPillikNative.cpp")}
 if($StartRecovery -or $Pillik){$inputs+=@("$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h","$out/HruthnirNative.inc","$out/ShieldsNative.inc")}
 $inputs+=@("$out/MagnarNative.inc")
@@ -55,6 +59,7 @@ try{
  $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:CL="$previousCompiler /DNDEBUG /Zi /Fd`"$out/compiler.pdb`" /I`"$out`" /I`"$repo/src/server/scripts/Legion`""
 
 
+ if($ApproachBaseline){$env:CL+=" /DHRUTHNIR_APPROACH_BASELINE"}
  if($PillikBaseline){$env:CL+=" /DHRUTHNIR_PILLIK_BASELINE"}
  if($EntryBaseline){$env:CL+=" /DHRUTHNIR_ENTRY_BASELINE"}
  if($Baseline){$env:CL+=' /DMAGNAR_READINESS_BASELINE'};$env:_LINK_="$previousLink /DEBUG /PDB:`"$out/native.pdb`" /MAP:`"$out/native.map`""

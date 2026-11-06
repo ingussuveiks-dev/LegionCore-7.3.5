@@ -7,6 +7,7 @@
 #include "FunctionProcessor.h"
 #include "ScriptedGossip.h"
 #include "CreatureTextMgr.h"
+#include "WaypointMovementGenerator.h"
 #include "HruthnirNative.inc"
 namespace ShieldsFixture {
 #include "../../src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.h"

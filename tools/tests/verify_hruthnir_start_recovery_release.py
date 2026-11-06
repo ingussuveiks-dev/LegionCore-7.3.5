@@ -4,6 +4,8 @@ Native/source matrices separately exercise branches. This certificate binds
 those endpoints to the installed factories, scheduler and shared entry hook.
 """
 import struct
+from pathlib import Path
+import runpy
 from capstone import CS_OP_IMM, CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 
@@ -92,4 +94,6 @@ def check(native, instructions):
     assert calls(instructions('??_Gnpc_hrutnirAI@npc_hrutnir@@'), '??1npc_hrutnirAI@npc_hrutnir@@')
     for name in ('?Reset' + hr, '??1npc_hrutnirAI@npc_hrutnir@@', '?DoAction' + hr):
         assert calls(instructions(name), '?CancelMagnarStart' + hr), 'Old request survives lifecycle/epoch reset'
+    if any(name.startswith('?ScheduleMagnarApproach' + hr) for name in native['symbols']):
+        runpy.run_path(str(Path(__file__).with_name('verify_hruthnir_approach_release.py')))['check'](native, instructions)
     print('PASS selected Hruthnir retry: acknowledged497 -> original6000ms cue, weak Unit queue/1000ms retry, original GUID/quest receipt/current-or-suspended identity, same-boss native1062 before claim, re-entry receipt adoption and first-phase owned-reserve destructor. No recovery progress/item/teleport grants; source/native matrices and client traversal remain separate.')

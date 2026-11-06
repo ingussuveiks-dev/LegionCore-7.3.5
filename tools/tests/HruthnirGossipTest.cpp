@@ -22,7 +22,8 @@ enum { CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1
     UNIT_STATE_DIED = 1, SPELL_AURA_FEIGN_DEATH = 2, UNIT_STATE_CASTING = 4, UNIT_STATE_STUNNED = 8,
     UNIT_STATE_ROAMING = 16, UNIT_STATE_ROAMING_MOVE = 32, POINT_MOTION_TYPE = 8, WAYPOINT_MOTION_TYPE = 2,
     CRITERIA_TYPE_SCRIPT_EVENT_2 = 92,
-    EVENT_1 = 1, EVENT_2, EVENT_3, EVENT_4, EVENT_5, EVENT_6 };
+    EVENT_1 = 1, EVENT_2, EVENT_3, EVENT_4, EVENT_5, EVENT_6,
+    IDLE_MOTION_TYPE = 0, UNIT_STATE_NOT_MOVE = 64 };
 #include "FunctionsClass.inc"
 #include "Functions.inc"
 struct InspectableFunctions : FunctionProcessor
@@ -187,15 +188,28 @@ struct ScenarioMgr
     Scenario* GetScenario(uint32 instance) { return available && instance == 42 ? &scenario : nullptr; }
 } scenarioManager;
 ScenarioMgr* sScenarioMgr = &scenarioManager;
+struct MovementGenerator { virtual ~MovementGenerator() = default; };
+template<class T> struct WaypointMovementGenerator : MovementGenerator
+{
+    uint32 id=9859004; bool complete=true;
+    uint32 GetPathId() const { return id; }
+    bool IsPathComplete() const { return complete; } // Native getter separately exercised.
+};
 struct MotionMaster
 {
     uint32 moves = 0;
+    uint32 type = IDLE_MOTION_TYPE;
+    uint32 GetCurrentMovementGeneratorType() const { return type; }
+    MovementGenerator* current=nullptr;
+    MovementGenerator* top() const { return current; }
     std::function<void()> reenter;
     void MovePoint(uint32 point, float positionX, float positionY, float positionZ)
     {
         assert((point == 2 && positionX == 4809.14f && positionY == 164.68f && positionZ == -11.20f) || (point == 7 && positionX == 4720.80f && positionY == 347.91f && positionZ == -37.71f) ||
             (point == 6 && positionX == 4763.73f && positionY == 340.87f && positionZ == -37.19f));
         ++moves;
+        type = POINT_MOTION_TYPE;
+        current = nullptr;
         if (reenter) { auto callback = std::move(reenter); callback(); }
     }
 };
@@ -223,6 +237,9 @@ public:
     Spline* movespline = &spline;
     struct Info { uint32 ScriptID = 7; } info;
     bool world = true, alive = true, despawn = false, phase = true, visible = true, los = true;
+    bool combat = false, prevented = false;
+    bool isInCombat() const { return combat; }
+    bool IsMovementPreventedByCasting() const { return prevented; }
     bool controlled = false, hostile = false;
     bool IsAIEnabled = true;
     uint32 state = 0, conversations = 0;
@@ -511,7 +528,9 @@ struct Fixture
 };
 int main()
 {
-#if defined(PILLIK_ONLY)
+#if defined(APPROACH_ONLY)
+#include "ApproachCases.inc"
+#elif defined(PILLIK_ONLY)
 #include "PillikCases.inc"
 #elif defined(START_RECOVERY_BASELINE)
     {
@@ -1378,9 +1397,23 @@ int main()
         HruthnirAI replacement(&fixture.actor);
         if (invalid == 12) fixture.actor.ai = &replacement;
         fixture.ai.Arrive(); fixture.Tick(6000);
+#ifdef CURRENT_APPROACH
+        if (invalid <= 10)
+            assert(!fixture.actor.conversations && !fixture.bossAI.starts && !fixture.ai.magnarArrivalPending && !fixture.ai.magnarStartToken);
+        else
+#endif
         assert(!fixture.actor.conversations && !fixture.bossAI.starts && fixture.ai.magnarArrivalPending && fixture.ai.magnarStartToken && !*fixture.ai.magnarStartToken);
         scenarioManager = {}; fixture.actor.world = fixture.actor.alive = fixture.actor.IsAIEnabled = true;
         fixture.actor.despawn = false; fixture.actor.entry = 96468; fixture.actor.mapId = 1495; fixture.actor.instance = 42; fixture.actor.ai = &fixture.ai;
+#ifdef CURRENT_APPROACH
+        if (invalid <= 10)
+        {
+            // The new request monitor revoked terminal context, so a fresh
+            // accepted offer is required rather than reviving its stale claim.
+            fixture.ai.magnarOfferReady=true;fixture.ai.magnarOfferToken=std::make_shared<bool>(true);
+            fixture.actor.flags|=UNIT_NPC_FLAG_GOSSIP;fixture.player.talk.menu._menuItems[0]={};fixture.Select(false);
+        }
+#endif
         fixture.ai.Arrive(); fixture.Tick(5999);
         assert(fixture.actor.conversations == 1 && !fixture.bossAI.starts);
         fixture.Tick(1); assert(fixture.bossAI.starts == 1);
