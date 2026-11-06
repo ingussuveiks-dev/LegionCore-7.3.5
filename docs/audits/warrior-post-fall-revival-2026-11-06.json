@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-06",
+  "scope": "One-use user-requested recovery from death after the previously repaired Fury re-entry fall; not a progress reset or a new gameplay fix.",
+  "operation": "Private exact SQL backups made while canonical servers absent. Task-owned canonical worldserver used native administrator revive command for the offline target, then graceful shutdown0. Native offline branch converts/removes the target corpse; actual Player::LoadCorpse performs normal half-health resurrection at next login.",
+  "verification": "Target resurrectable corpse absent after native command. Private deterministic backup/readback verifies quests/objectives/rewards/inventory/auras unchanged byte-for-byte. Every characters field including position/scenarioResume unchanged except native startup cleanup of an unbound stale instance_id, traced to InstanceSaveMgr.cpp:330. Initial overly strict whole-row assertion detected that legitimate startup change; it was investigated, not overwritten.",
+  "diagnostics": "Owned13380 fresh ready/shutdown0/exit0/gone; captured stderr empty. No new/changed canonical crash, appended DBErrors or server warning/error/assertion. Canonical binaries/config unchanged. Prior mixed7111/LINK2 remains unresolved/untouched.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/warrior-post-fall-revival-2026-11-06",
+    "manifest_sha256": "1579ac75743f06bd6e9ba4230e1c98c9f9230958f213e39f4906ba37f69c0352",
+    "files": 11,
+    "verification": "Every original copied with SHA256 equality; private character backups/readback excluded."
+  },
+  "cleanup": "No temporary runtime, new executable or regenerable compiler output created. Only canonical server was launched; task-owned process gracefully stopped, no user/unknown server stopped. Private recovery backups retained locally.",
+  "limits": "Actual client login/alive state and subsequent scenario descent still require user confirmation. Existing repaired loading/landing behavior does not itself resurrect a previously dead character. No quest/item/bonfire/progression credit granted.",
+  "code_references": [
+    "src/server/scripts/Commands/cs_misc.cpp:974",
+    "src/server/game/Entities/Player/Player.cpp:23729",
+    "src/server/game/Instances/InstanceSaveMgr.cpp:330"
+  ]
+}
