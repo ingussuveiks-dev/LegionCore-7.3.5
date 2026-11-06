@@ -3,6 +3,7 @@
 #define MAGNAR_READINESS_SUPPORT_ONLY
 #include "MagnarReadinessNative.cpp"
 #include "QuestObjectScope.h"
+#include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
 #include "FunctionProcessor.h"
 #include "ScriptedGossip.h"
 #include "CreatureTextMgr.h"
@@ -21,6 +22,7 @@ struct HruthnirActor:Actor {
  void Tick(uint32 diff){(this->*Access(StartFunctionsTag{})).Update(diff);}
 };
 static uint32 StartStories(Map& map){uint32 n=0;for(auto story:*Access(StoriesTag{}))if(story&&story->GetMap()==&map&&story->GetEntry()==497)++n;return n;}
+#ifndef HRUTHNIR_START_SUPPORT_ONLY
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);
  sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());new ShieldsFixture::instance_shields_rest;sScriptMgr->SwapScriptContext(true);
@@ -82,3 +84,4 @@ int main(int argc,char**argv){try{
  }
  std::cout<<"PASS native Hruthnir start completed cases="<<cases<<std::endl;CloseAltheaNative();return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}
+#endif

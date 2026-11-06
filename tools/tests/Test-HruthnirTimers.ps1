@@ -15,7 +15,14 @@ if((Shape $life) -cne (Shape $expectedLife)){throw 'Native ALIVE/CORPSE clock ch
 function TimerMethods([string]$selected){
  $movement=Block $selected 'void MovementInform('
  foreach($case in @('case 6:','case 7:')){$movement=$movement.Replace((Block $movement $case),'')}
- return ((Block $selected 'void EnterEvadeMode(')+$movement+(Block $selected 'void MoveInLineOfSight(')+(Block $selected 'void DamageTaken('))
+ $evade=Block $selected 'void EnterEvadeMode('
+ $evade=$evade.Replace((Block $evade 'if (secondfighting)'), '')
+ if($selected.Contains('void QueuePillikHandoff(')){
+  $movement=$movement.Replace('if (!(*itr)->InSamePhase(targ))'+"`n"+'                                        continue;','')
+  $movement=$movement.Replace('QueuePillikHandoff();','').Replace('[this, weak = std::weak_ptr<PillikProgress>(pillikProgress)]','[this]')
+  $movement=$movement.Replace('auto state = weak.lock();','').Replace('if (!state || pillikProgress != state || !ArmPillikHandoff())'+"`n"+'                            return;','')
+ }
+ return ($evade+$movement+(Block $selected 'void MoveInLineOfSight(')+(Block $selected 'void DamageTaken('))
 }
 $normalized=(TimerMethods $actor).Replace('_presentationFunctions.AddDelayedEvent(', 'me->AddDelayedEvent(').Replace('sCreatureTextMgr->SendChat(targ, 5);','targ->AI()->Talk(5);')
 if((Shape $normalized) -cne (Shape (TimerMethods $oldActor))){throw 'Authored escort/timer callback behavior changed'}
@@ -23,6 +30,8 @@ if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -
 if($ScopeOnly){'PASS exact six Hruthnir AI-owned callbacks/native target text/ALIVE-CORPSE clock; earlier escort methods match pinned native bodies; chamber/start policies verified separately';return}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/hruthnir-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $selected=if($Baseline){$oldActor}else{$actor}
+$first=$actor.IndexOf('        struct PillikProgress');$last=$actor.IndexOf('        void sGossipSelect(',$first)
+[IO.File]::WriteAllText("$out/PillikFields.inc",$actor.Substring($first,$last-$first))
 $movement=Block $selected 'void MovementInform('
 # Later guarded chamber branches are independently retained by HruthnirGossip.
 # Compile the complete earlier movement branches without replacing their bodies.

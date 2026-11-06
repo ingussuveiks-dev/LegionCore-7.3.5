@@ -9,6 +9,7 @@
 #include "ScenarioMgr.h"
 #include <array>
 #include "../../Warrior/EarthWarder/magnar_start.h"
+#include "../../Warrior/EarthWarder/hruthnir_pillik.h"
 
 
 
@@ -62,6 +63,9 @@ public:
             magnarGuardsDelivered = false;
             magnarGuardDispatching = false;
             ++magnarGuardGeneration;
+            pillikGUID.Clear();
+            pillikRecipient.Clear();
+            pillikDied = false;
         }
 
         void OnPlayerEnter(Player* player) override
@@ -71,6 +75,14 @@ public:
 
         void OnCreatureCreate(Creature* creature) override
         {
+            if (creature->GetEntry() == 94714 && creature->GetDBTableGUIDLow() == 361361)
+            {
+                bool recordedDeath = pillikDied && !creature->IsAlive();
+                pillikGUID = creature->GetGUID();
+                pillikDied = recordedDeath;
+                if (!recordedDeath)
+                    pillikRecipient.Clear();
+            }
             if (creature->GetEntry() == 96455)
                 for (uint32 slot = 0; slot < magnarGuardGUIDs.size(); ++slot)
                     if (creature->GetDBTableGUIDLow() == 361412 + slot)
@@ -125,6 +137,9 @@ public:
 
             switch (unit->GetEntry())
             {
+                case 94714:
+                    RegisterPillikDeath(unit);
+                    break;
                 case NPC_INNA_THE_CRYPTSTALKER:
                 case NPC_DRAKE_SHAE:
                 {
@@ -179,6 +194,43 @@ public:
                     RegisterMagnarGuardDeath(unit);
                     break;
             }
+        }
+
+        void RegisterPillikDeath(Unit* unit)
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!unit || unit->GetEntry() != 94714 || !unit->IsInWorld() || unit->IsAlive() || unit->GetMap() != instance ||
+                unit->GetGUID() != pillikGUID || !scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() > 1)
+                return;
+            pillikDied = true;
+            if (Creature* creature = unit->ToCreature())
+            {
+                if (Player* player = creature->GetLootRecipient())
+                    pillikRecipient = player->GetGUID();
+                // The normal approach removes these authored scenery actors.
+                // An early victory must retain that cleanup even if the living
+                // Pillik lookup in Hruthnir's later cue can no longer find him.
+                std::list<Creature*> nearby;
+                GetCreatureListWithEntryInGrid(nearby, creature, 96571, 50.0f);
+                std::list<ObjectGuid> cleanup;
+                for (Creature* actor : nearby)
+                    if (actor->IsAlive() && actor->InSamePhase(creature))
+                        cleanup.push_back(actor->GetGUID());
+                uint32 epoch = magnarGuardGeneration;
+                for (ObjectGuid guid : cleanup)
+                {
+                    Creature* actor = instance->GetCreature(guid);
+                    if (!actor || !actor->IsAlive())
+                        continue;
+                    actor->Kill(actor);
+                    if (epoch != magnarGuardGeneration)
+                        return;
+                    if (Creature* remaining = instance->GetCreature(guid))
+                        remaining->DespawnOrUnsummon(1000);
+                }
+            }
+            // A genuine death is evidence, not credit or a fabricated arrival.
+            // Hruthnir consumes it only after his real five-second approach cue.
         }
 
         void RegisterMagnarGuardDeath(Unit* unit)
@@ -307,6 +359,8 @@ public:
         {
             switch (type)
             {
+                case PillikHandoff::Death:
+                    return pillikDied;
                 case 1059:
                     return magnarGuardCreditSent;
                 case 1060:
@@ -322,6 +376,12 @@ public:
         {
             switch (type)
             {
+                case PillikHandoff::Actor:
+                    return pillikGUID;
+                case PillikHandoff::Recipient:
+                    return pillikRecipient;
+                case PillikHandoff::Companion:
+                    return magnarCompanionGUID;
                 case 0:
                 default:
                     return ObjectGuid::Empty;
@@ -377,6 +437,9 @@ public:
         }
 
         uint32 hunterWindTimer = 0;
+        ObjectGuid pillikGUID;
+        ObjectGuid pillikRecipient;
+        bool pillikDied = false;
         void Update(uint32 diff) override
         {
             if (hunterWindTimer > diff) { hunterWindTimer -= diff; return; }

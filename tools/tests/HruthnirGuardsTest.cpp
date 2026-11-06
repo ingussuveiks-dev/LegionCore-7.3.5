@@ -1,4 +1,5 @@
 #include <array>
+#include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>

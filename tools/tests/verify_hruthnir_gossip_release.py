@@ -11,6 +11,8 @@ native = previous['native']
 
 def instructions(name):
     body = previous['instructions'](name)
+    if name.startswith('?GetAI@npc_hrutnir@@') and any(symbol.startswith('??0npc_hrutnirAI@npc_hrutnir@@') for symbol in native['symbols']) and any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol']('??0npc_hrutnirAI@npc_hrutnir@@') for entry in body):
+        body += previous['instructions']('??0npc_hrutnirAI@npc_hrutnir@@')
     if name.startswith('?MovementInform@npc_hrutnirAI@npc_hrutnir@@'):
         body = body[:max(index for index, entry in enumerate(body) if entry.mnemonic == 'ret') + 1]
     return body

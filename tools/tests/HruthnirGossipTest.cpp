@@ -81,6 +81,7 @@ struct ObjectGuid
 ObjectGuid const ObjectGuid::Empty{0,0};
 #include "QuestScope.inc"
 #include "StartHeader.inc"
+#include "PillikHeader.inc"
 class Player;
 static std::vector<Player*> startPlayers;
 class Player;
@@ -92,6 +93,8 @@ enum class HighGuid { Conversation };
 struct GuidGenerator { uint64 current = 0; uint64 Generate() { return ++current; } } guidGenerator;
 struct ObjectManager { template<HighGuid> GuidGenerator* GetGenerator() { return &guidGenerator; } } objectManager;
 auto* sObjectMgr = &objectManager;
+uint32 pillikWarnings=0;
+#define TC_LOG_WARN(...) (++pillikWarnings)
 struct Conversation;
 struct ConversationPool
 {
@@ -158,13 +161,17 @@ struct GameObject
 };
 struct InstanceScript
 {
-    bool credit = true;
+    bool credit = true, pillikDead = false;
+    ObjectGuid pillikActor{2,1}, pillikOwner = ObjectGuid::Empty, pillikCompanion{1,1};
+    ObjectGuid GetGuidData(uint32 type) const { if(type==PillikHandoff::Actor)return pillikActor;if(type==PillikHandoff::Recipient)return pillikOwner;assert(type==PillikHandoff::Companion);return pillikCompanion; }
     uint32 generation = 1;
-    uint32 GetData(uint32 identity) const { assert(identity == 1059 || identity == 1060); return identity == 1059 ? uint32(credit) : generation; }
+    uint32 GetData(uint32 identity) const { if(identity==PillikHandoff::Death)return pillikDead;assert(identity == 1059 || identity == 1060); return identity == 1059 ? uint32(credit) : generation; }
     void HandleGameObject(ObjectGuid, bool) { assert(false); }
 };
 struct Map
 {
+    struct Ref { Player* player; Player* getSource() const {return player;} };
+    std::vector<Ref> players; auto const& GetPlayers() const {return players;}
     GameObject* GetGameObject(ObjectGuid) { return nullptr; }
 } instanceMap, otherMap;
 struct Scenario
@@ -186,7 +193,7 @@ struct MotionMaster
     std::function<void()> reenter;
     void MovePoint(uint32 point, float positionX, float positionY, float positionZ)
     {
-        assert((point == 7 && positionX == 4720.80f && positionY == 347.91f && positionZ == -37.71f) ||
+        assert((point == 2 && positionX == 4809.14f && positionY == 164.68f && positionZ == -11.20f) || (point == 7 && positionX == 4720.80f && positionY == 347.91f && positionZ == -37.71f) ||
             (point == 6 && positionX == 4763.73f && positionY == 340.87f && positionZ == -37.19f));
         ++moves;
         if (reenter) { auto callback = std::move(reenter); callback(); }
@@ -205,6 +212,8 @@ public:
         }
     } m_homePosition;
     std::array<float,4> pose{10.0f,20.0f,30.0f,1.25f};
+    float GetDistance(Player*) const;
+    bool InSamePhase(Creature* other) const {return phase&&other->phase;}
     float GetPositionX() const { return pose[0]; }
     float GetPositionY() const { return pose[1]; }
     float GetPositionZ() const { return pose[2]; }
@@ -247,7 +256,7 @@ public:
     GameObject* FindNearestGameObject(uint32, float) { assert(false); return nullptr; }
     InstanceScript* GetInstanceScript() const { return instanceScript; }
     void StopAttack() { }
-    Player* FindNearestPlayer(float) { assert(false); return nullptr; }
+    Player* FindNearestPlayer(float);
     void Kill(Creature*) { assert(false); }
     void DespawnOrUnsummon(uint32) { assert(false); }
     float GetExactDistSq(float positionX, float positionY, float positionZ) const
@@ -261,6 +270,9 @@ public:
     void ClearUnitState(uint32 mask) { state &= ~mask; }
     Creature* FindNearestCreature(uint32 expected, float range, bool living)
     {
+        #ifdef PILLIK_ONLY
+        if(expected==94714){assert(range==85&&living);return boss&&boss->world&&boss->alive?boss:nullptr;}
+#endif
         assert(expected == 96034 && range == 60.0f && living);
         return boss && boss->world && boss->alive && boss->distance <= range && boss->phase &&
             boss->map == map && boss->instance == instance ? boss : nullptr;
@@ -321,8 +333,17 @@ public:
     void RemoveAurasByType(uint32) { }
     void OnGossipSelect(Creature*, uint32, uint32) { ++genericCalls; }
     void OnGossipSelect(GameObject*, uint32, uint32) { ++genericCalls; }
-    template<typename... Args> void UpdateAchievementCriteria(Args...) { assert(false); }
+    uint32 pillikArrivals=0,pillikCredits=0;bool pillikCreditWorks=true;std::function<void()> onPillikCredit;
+    void UpdateAchievementCriteria(uint32 type,uint32 id){assert(type==92);if(id==46288){++pillikArrivals;scenarioManager.scenario.step=1;return;}assert(id==46289);++pillikCredits;if(pillikCreditWorks)scenarioManager.scenario.step=2;if(onPillikCredit)onPillikCredit();}
 };
+Player* Creature::FindNearestPlayer(float range){
+#ifdef PILLIK_ONLY
+ assert(range==100);for(auto p:startPlayers)if(p->world&&p->map==map&&p->startDistance<=range)return p;return nullptr;
+#else
+ assert(false);return nullptr;
+#endif
+}
+float Creature::GetDistance(Player* player) const {return player->startDistance;}
 void GetCreatureListWithEntryInGrid(std::list<Creature*>&, Creature*, uint32, float) { assert(false); }
 // Earlier escort callbacks execute in HruthnirTimersTest. This retained
 // chamber/gossip fixture must fail loudly if it enters that separate boundary.
@@ -393,6 +414,7 @@ struct HruthnirAI : CreatureAI
     void AttackStart(Creature*) { assert(false); }
 #include "AIFields.inc"
 #include "StartRecovery.inc"
+#include "PillikRecovery.inc"
 #include "AISelect.inc"
 #include "AIReset.inc"
 #include "AIDeath.inc"
@@ -488,7 +510,9 @@ struct Fixture
 };
 int main()
 {
-#if defined(START_RECOVERY_BASELINE)
+#if defined(PILLIK_ONLY)
+#include "PillikCases.inc"
+#elif defined(START_RECOVERY_BASELINE)
     {
         Fixture f;f.Select();f.ai.Arrive();f.boss.IsAIEnabled=false;f.Tick(6000);f.boss.IsAIEnabled=true;f.Tick(60000);
         assert(!f.bossAI.starts && *f.ai.magnarStartToken);

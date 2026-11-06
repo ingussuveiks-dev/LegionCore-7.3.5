@@ -77,7 +77,7 @@ for section in range(struct.unpack_from('<H', binary, pe + 6)[0]):
         break
 assert zero_filled, 'Factory identity does not load16 bytes of native PE zero-initialized storage'
 has_owned_escort_clock = any(name.startswith('?UpdateLifecycle@npc_hrutnirAI@npc_hrutnir@@') for name in native['symbols'])
-allocation = 'ecx, 0x168' if current_start else ('ecx, 0x140' if has_owned_escort_clock else 'ecx, 0xc0')
+allocation = 'ecx, 0x178' if any(name.startswith('?TryPillikHandoff' + suffix) for name in native['symbols']) else ('ecx, 0x168' if current_start else ('ecx, 0x140' if has_owned_escort_clock else 'ecx, 0xc0'))
 assert any(entry.op_str == allocation for entry in factory[:store])
 if has_owned_escort_clock:
     assert any(entry.op_str == 'rcx, [rsi + 0xc0]' for entry in factory[store:])
@@ -104,3 +104,6 @@ assert len(selection['selected_tables']('?GetAI@npc_hrutnir@@', ((0x130, death_n
 kill = instructions('?Kill@Unit@@')
 assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x130 for entry in kill)
 print('PASS: selected Hruthnir AI initializes an empty128-bit owned497 identity and publishes only successful creation. Reset, new1060 epoch and actual deleting destructor copy/clear before native map-local lookup and remove only the found object; empty/missing/foreign-map/predeleted guards and native Clear verified. Native Unit::Kill slot130 selects the new killer-independent death hook, which tail-dispatches this selected Reset slot28. Successful6000ms cue does not cut dialogue short. Disabled-AI death, implicit owner abandonment/map-unload and client playback remain separate.')
+
+if any(name.startswith('?TryPillikHandoff' + suffix) for name in native['symbols']):
+    runpy.run_path(str(Path(__file__).with_name('verify_hruthnir_pillik_release.py')))['check'](native, instructions)

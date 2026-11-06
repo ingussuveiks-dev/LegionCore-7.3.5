@@ -14,6 +14,7 @@
 #include "FunctionProcessor.h"
 #include "QuestObjectScope.h"
 #include "magnar_start.h"
+#include "hruthnir_pillik.h"
 #include <memory>
 #include <set>
 #include <array>
@@ -129,6 +130,13 @@ public:
         bool magnarStartCueDue = false;
         bool magnarStartRetryQueued = false;
         bool magnarStartBusy = false;
+        struct PillikProgress
+        {
+            uint32 instance = 0, epoch = 0, retry = 0;
+            bool queued = false, approached = false, voiceSent = false, moveRequested = false;
+            bool complete = false, busy = false, failureReported = false;
+        };
+        std::shared_ptr<PillikProgress> pillikProgress = std::make_shared<PillikProgress>();
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -165,6 +173,140 @@ public:
             magnarOfferReady = false;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             RemoveMagnarConversation();
+        }
+
+        bool IsPillikContext(bool active = true) const
+        {
+            if (!me->IsInWorld() || !me->IsAlive() || me->IsDespawn() || me->GetEntry() != 96468 ||
+                me->GetMapId() != 1495 || !me->GetMap() ||
+                (active ? (!me->IsAIEnabled || me->AI() != this) : (me->AI() != this && me->GetDisabledAI() != this)))
+                return false;
+            InstanceScript* instance = me->GetInstanceScript();
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return instance && instance->GetGuidData(PillikHandoff::Companion) == me->GetGUID() &&
+                scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() <= 2;
+        }
+
+        bool IsPillikPlayer(Player* player) const
+        {
+            return player && player->IsInWorld() && player->CanContact() && !player->IsBeingTeleported() &&
+                player->getClass() == CLASS_WARRIOR && player->GetMap() == me->GetMap() &&
+                player->GetInstanceId() == me->GetInstanceId() && player->InSamePhase(me) &&
+                player->IsWithinDistInMap(me, 100.0f) && !player->GetQuestRewardStatus(39191) &&
+                (player->GetQuestStatus(39191) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(39191) == QUEST_STATUS_COMPLETE);
+        }
+
+        void QueuePillikHandoff()
+        {
+            if (!IsPillikContext(false) || sScenarioMgr->GetScenario(me->GetInstanceId())->GetCurrentStep() > 1)
+                return;
+            uint32 epoch = me->GetInstanceScript()->GetData(1060);
+            if (pillikProgress->queued && pillikProgress->epoch == epoch)
+                return;
+            pillikProgress = std::make_shared<PillikProgress>();
+            pillikProgress->queued = true;
+            pillikProgress->instance = me->GetInstanceId();
+            pillikProgress->epoch = epoch;
+        }
+
+        bool ArmPillikHandoff()
+        {
+            auto state = pillikProgress;
+            if (!state->queued || !IsPillikContext(false) || state->instance != me->GetInstanceId() ||
+                state->epoch != me->GetInstanceScript()->GetData(1060))
+                return false;
+            state->approached = true;
+            return true;
+        }
+
+        void UpdatePillikHandoff(uint32 diff)
+        {
+            auto state = pillikProgress;
+            if (!state->approached || state->complete || state->busy)
+                return;
+            if (state->retry > diff)
+            {
+                state->retry -= diff;
+                return;
+            }
+            state->retry = 500;
+            TryPillikHandoff();
+        }
+
+        void TryPillikHandoff()
+        {
+            auto state = pillikProgress;
+            if (!state->approached || state->complete || state->busy)
+                return;
+            state->busy = true;
+            ContinuePillikHandoff(state);
+            // The callback may destroy this AI. This local shared state remains
+            // valid, and no post-callback member access is needed to release it.
+            state->busy = false;
+        }
+
+        void ContinuePillikHandoff(std::shared_ptr<PillikProgress> const& state)
+        {
+            Creature* companion = me;
+            InstanceScript* instance = me->GetInstanceScript();
+            auto current = [this, companion, instance, state]()
+            {
+                return companion->AI() == this && pillikProgress == state && IsPillikContext() &&
+                    me->GetInstanceScript() == instance && me->GetInstanceId() == state->instance &&
+                    instance->GetData(1060) == state->epoch && instance->GetData(PillikHandoff::Death);
+            };
+            if (!current())
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(state->instance);
+            if (scenario->GetCurrentStep() == 0)
+                return;
+            if (Creature* boss = ObjectAccessor::GetCreature(*me, instance->GetGuidData(PillikHandoff::Actor)))
+                if (boss->IsAlive())
+                    return;
+            Player* player = ObjectAccessor::GetPlayer(*me, instance->GetGuidData(PillikHandoff::Recipient));
+            if (!IsPillikPlayer(player))
+            {
+                player = nullptr;
+                for (auto const& reference : me->GetMap()->GetPlayers())
+                    if (IsPillikPlayer(reference.getSource()) &&
+                        (!player || me->GetDistance(reference.getSource()) < me->GetDistance(player)))
+                        player = reference.getSource();
+            }
+            if (!player)
+                return;
+            ObjectGuid recipientGuid = player->GetGUID();
+            if (!state->voiceSent)
+            {
+                state->voiceSent = true;
+                secondfighting = false;
+                Talk(5);
+                if (!current())
+                    return;
+            }
+            if (!state->moveRequested)
+            {
+                state->moveRequested = true;
+                me->GetMotionMaster()->MovePoint(2, 4809.14f, 164.68f, -11.20f);
+                if (!current())
+                    return;
+            }
+            scenario = sScenarioMgr->GetScenario(state->instance);
+            if (scenario->GetCurrentStep() == 1)
+            {
+                player = ObjectAccessor::GetPlayer(*me, recipientGuid);
+                if (!IsPillikPlayer(player))
+                    return;
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46289);
+                if (!current())
+                    return;
+                scenario = sScenarioMgr->GetScenario(state->instance);
+            }
+            state->complete = scenario->GetCurrentStep() == 2;
+            if (!state->complete && !state->failureReported)
+            {
+                TC_LOG_WARN("scripts", "Pillik handoff: event46289 did not advance scenario909 in instance %u; native handoff retained for retry", state->instance);
+                state->failureReported = true;
+            }
         }
 
         void CancelMagnarStart()
@@ -524,11 +666,7 @@ public:
             }
             if (secondfighting) // demons
             {
-                // secondfighting = false;
-                Talk(5);
-                me->GetMotionMaster()->MovePoint(2, 4809.14f, 164.68f, -11.20f);
-                if (Player* pl = me->FindNearestPlayer(100.0f))
-                    pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46289);
+                TryPillikHandoff();
             }
             if (thirdfighting) // electrify balls
             {
@@ -612,9 +750,13 @@ public:
             {
                 if (id == 6)
                 {
+                    QueuePillikHandoff();
                     Talk(18);
-                    _presentationFunctions.AddDelayedEvent(5000, [this]() -> void
+                    _presentationFunctions.AddDelayedEvent(5000, [this, weak = std::weak_ptr<PillikProgress>(pillikProgress)]() -> void
                     {
+                        auto state = weak.lock();
+                        if (!state || pillikProgress != state || !ArmPillikHandoff())
+                            return;
                         if (Creature* targ = me->FindNearestCreature(94714, 85.0f, true))
                         {
                             sCreatureTextMgr->SendChat(targ, 5);
@@ -625,6 +767,8 @@ public:
                             if (!adds.empty())
                                 for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
                                 {
+                                    if (!(*itr)->InSamePhase(targ))
+                                        continue;
                                     (*itr)->Kill((*itr));
                                     (*itr)->DespawnOrUnsummon(1000);
                                 }
@@ -768,6 +912,10 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            Creature* companion = me;
+            UpdatePillikHandoff(diff);
+            if (companion->AI() != this || !companion->IsInWorld())
+                return;
             UpdateMagnarIntro(diff);
             if (!UpdateVictim())
                 return;

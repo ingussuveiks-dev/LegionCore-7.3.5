@@ -30,23 +30,28 @@ for method in ('?OnCreatureCreate', '?OnGameObjectCreate', '?OnUnitDeath', '?Ini
 
 
 create = instructions('?OnCreatureCreate' + suffix)
-assert find(create, 'rdi, [rbx + 0xa18]', 'lea') < find(create, 'qword ptr [rbx + 0x3a88], 0x583c4', 'cmp')
-for spawn, guid, death, flag in ((361412, 0x314, 0x334, 'bpl'), (361413, 0x324, 0x335, 'dil')):
+current_pillik = any(name.startswith('?TryPillikHandoff@npc_hrutnirAI@npc_hrutnir@@') for name in native['symbols'])
+owner_register, alive_register, second_flag = ('rdi', 'rsi', 'sil') if current_pillik else ('rsi', 'rdi', 'dil')
+alive_pointer = find(create, f'{alive_register}, [rbx + 0xa18]', 'lea')
+assert alive_pointer < find(create, f'dword ptr [{alive_register}], 0', 'cmp')
+for spawn, guid, death, flag in ((361412, 0x314, 0x334, 'bpl'), (361413, 0x324, 0x335, second_flag)):
     gate = find(create, f'qword ptr [rbx + 0x3a88], {hex(spawn)}', 'cmp')
-    store = find(create, f'byte ptr [rsi + {hex(death)}], {flag}', 'mov')
-    assert gate < store and create[gate + 1].mnemonic == 'jne'
+    store = find(create, f'byte ptr [{owner_register} + {hex(death)}], {flag}', 'mov')
+    branch = next(entry for entry in create[gate + 1:gate + 4] if entry.mnemonic.startswith('j'))
+    assert gate < store and branch.mnemonic == 'jne' and branch.operands[0].imm > create[store].address
     segment = create[gate:store]
-    old = find(segment, f'byte ptr [rsi + {hex(death)}], 0', 'cmp')
-    clear = segment[old + 1].operands[0].imm
-    assert segment[old + 1].mnemonic == 'je'
-    alive = find(segment, 'dword ptr [rdi], 0', 'cmp')
+    old = find(segment, f'byte ptr [{owner_register} + {hex(death)}], 0', 'cmp')
+    condition = next(entry for entry in segment[old + 1:old + 4] if entry.mnemonic.startswith('j'))
+    clear = condition.operands[0].imm
+    assert condition.mnemonic == 'je'
+    alive = find(segment, f'dword ptr [{alive_register}], 0', 'cmp')
     assert segment[alive + 1].mnemonic == 'je' and segment[alive + 1].operands[0].imm == clear
     assert segment[alive + 2].op_str == f'{flag}, 1'
     assert next(entry for entry in segment if entry.address == clear).op_str == f'{flag}, {flag}'
     assert len(positions(segment, '?GetGuidValue@Object@@')) == 1
-    assert segment[-1].op_str == f'xmmword ptr [rsi + {hex(guid)}], xmm0'
+    assert segment[-1].op_str == f'xmmword ptr [{owner_register} + {hex(guid)}], xmm0'
 assert find(create, 'eax, 0x178c7', 'cmp') < find(create, 'qword ptr [rbx + 0x3a88], 0x583c4', 'cmp')
-assert find(create, 'eax, 0x178d4', 'cmp') < find(create, 'qword ptr [rbx + 0x3a88], 0x5835a', 'cmp') < find(create, 'xmmword ptr [rsi + 0x336], xmm0', 'movups')
+assert find(create, 'eax, 0x178d4', 'cmp') < find(create, 'qword ptr [rbx + 0x3a88], 0x5835a', 'cmp') < find(create, f'xmmword ptr [{owner_register} + 0x336], xmm0', 'movups')
 objects = instructions('?OnGameObjectCreate' + suffix)
 assert find(objects, 'eax, 0x3b8b9', 'cmp') < find(objects, 'rax, 0x20c1a', 'cmp') < find(objects, 'xmmword ptr [rdi + 0x346], xmm0', 'movups')
 
@@ -123,7 +128,7 @@ assert retry < find(update, 'eax, 0x42c', 'cmp')
 address = native['symbol']('?GetData' + suffix)
 assert slots[0xb0 // 8] == address
 following = min(value for value in native['symbols'].values() if value > address)
-assert 0 < following - address <= 64, 'Unbounded leaf GetData'
+assert 0 < following - address <= (96 if current_pillik else 64), 'Unbounded leaf GetData'
 decoder = Cs(CS_ARCH_X86, CS_MODE_64)
 decoder.detail = True
 leaf = list(decoder.disasm(native['binary'][native['offset'](address):native['offset'](address) + following - address], address))
@@ -133,4 +138,8 @@ assert leaf[4].op_str == 'edx, 1' and leaf[5].mnemonic == 'je'
 for branch, operand in ((1, 'eax, byte ptr [rcx + 0x312]'), (3, 'eax, byte ptr [rcx + 0x356]'), (5, 'eax, dword ptr [rcx + 0x35c]')):
     target = next(index for index, entry in enumerate(leaf) if entry.address == leaf[branch].operands[0].imm)
     assert leaf[target].op_str == operand and leaf[target + 1].mnemonic == 'ret'
-print('PASS: installed shared instance retains actual guard GUID/death/admission/500ms epoch retry, arms Hruthnir at909/2, requires current same-AI1059 readiness before46358 and observed3 before barrier/chamber. Actual GetData vtable publishes only credit-attempt1059/epoch1060 and retains Paladin6. No Hunter mutation/client traversal certificate.')
+if current_pillik:
+    assert leaf[6].op_str == 'edx, 3' and leaf[7].mnemonic == 'je'
+    target = next(index for index, entry in enumerate(leaf) if entry.address == leaf[7].operands[0].imm)
+    assert leaf[target].op_str == 'eax, byte ptr [rcx + 0x384]' and leaf[target + 1].mnemonic == 'ret'
+print('PASS: installed shared instance retains actual guard GUID/death/admission/500ms epoch retry, arms Hruthnir at909/2, requires current same-AI1059 readiness before46358 and observed3 before barrier/chamber. Actual GetData vtable retains credit-attempt1059/epoch1060 and Paladin6; new Pillik1063 is checked separately when present. No Hunter mutation/client traversal certificate.')

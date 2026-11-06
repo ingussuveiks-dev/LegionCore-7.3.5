@@ -1,9 +1,10 @@
-param([switch]$StartBaseline,[switch]$StartRecoveryOnly,[switch]$AddressSanitizer,[switch]$Baseline,[switch]$CueBaseline,[switch]$OfferBaseline,[switch]$StageBaseline,[switch]$VoiceBaseline,[switch]$ArrivalBaseline,[switch]$OfferArrivalBaseline,[switch]$HomeBaseline,[switch]$RequestBaseline,[switch]$ReadyBaseline,[switch]$ConversationBaseline,[switch]$CleanupBaseline,[switch]$DeathBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$PillikOnly,[switch]$StartBaseline,[switch]$StartRecoveryOnly,[switch]$AddressSanitizer,[switch]$Baseline,[switch]$CueBaseline,[switch]$OfferBaseline,[switch]$StageBaseline,[switch]$VoiceBaseline,[switch]$ArrivalBaseline,[switch]$OfferArrivalBaseline,[switch]$HomeBaseline,[switch]$RequestBaseline,[switch]$ReadyBaseline,[switch]$ConversationBaseline,[switch]$CleanupBaseline,[switch]$DeathBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
 if(($Baseline -or $CueBaseline -or $OfferBaseline -or $StageBaseline -or $VoiceBaseline -or $ArrivalBaseline -or $OfferArrivalBaseline -or $HomeBaseline -or $RequestBaseline -or $ReadyBaseline -or $ConversationBaseline -or $CleanupBaseline -or $DeathBaseline -or $StartBaseline) -and $VerifyReleaseBinary){throw 'Pinned gossip baseline cannot verify installed code'}
 if(@($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline,$ArrivalBaseline,$OfferArrivalBaseline,$HomeBaseline,$RequestBaseline,$ReadyBaseline,$ConversationBaseline,$CleanupBaseline,$DeathBaseline,$StartBaseline | Where-Object {$_}).Count -gt 1){throw 'Select only one pinned baseline'}
+if($PillikOnly -and @($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline,$ArrivalBaseline,$OfferArrivalBaseline,$HomeBaseline,$RequestBaseline,$ReadyBaseline,$ConversationBaseline,$CleanupBaseline,$DeathBaseline,$StartBaseline | Where-Object {$_}).Count){throw 'Pillik source checks require the current implementation; use Test-HruthnirPillik -Baseline for the pinned native counterfactual'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$out="$repo/build-extractors/runtime-test/hruthnir-gossip"
+$out="$repo/build-extractors/runtime-test/$(if($PillikOnly){'hruthnir-pillik'}else{'hruthnir-gossip'})"
 New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
@@ -66,6 +67,11 @@ if($first -lt 0 -or $last -le $first){throw 'Native point7 branch missing'}
 $startMethods=''
 if($hasStart){foreach($name in @('void CancelMagnarStart(','void RejoinMagnarStart(','void ScheduleMagnarStart(','void TryMagnarStart(','void ContinueMagnarStart(')){$startMethods+=Block $source $name}}
 [IO.File]::WriteAllText("$out/StartRecovery.inc",$startMethods)
+$pillik=''
+if($source.Contains('void QueuePillikHandoff(')){foreach($name in @('bool IsPillikContext(','bool IsPillikPlayer(','void QueuePillikHandoff(','bool ArmPillikHandoff(','void UpdatePillikHandoff(','void TryPillikHandoff(','void ContinuePillikHandoff(')){$pillik+=Block $source $name}}
+[IO.File]::WriteAllText("$out/PillikRecovery.inc",$pillik)
+Copy-Item -LiteralPath "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h" -Destination "$out/PillikHeader.inc"
+Copy-Item -LiteralPath "$PSScriptRoot/HruthnirPillikCases.inc" -Destination "$out/PillikCases.inc"
 $native=Get-Content "$repo/src/server/game/Movement/MovementGenerators/PointMovementGenerator.cpp" -Raw
 [IO.File]::WriteAllText("$out/PointFinalize.inc",'template<class T>'+(Block $native 'void PointMovementGenerator<T>::DoFinalize('))
 [IO.File]::WriteAllText("$out/PointInform.inc",'template<>'+(Block $native 'void PointMovementGenerator<Creature>::MovementInform('))
@@ -93,6 +99,7 @@ if($source.Contains('bool IsMagnarOfferReady(')){$definition+=' /DCURRENT_READY'
 if($hasStart){$definition+=' /DCURRENT_START_RECOVERY'}
 if($StartBaseline){$definition+=' /DSTART_RECOVERY_BASELINE'}
 if($StartRecoveryOnly){$definition+=' /DSTART_RECOVERY_ONLY'}
+if($PillikOnly){$definition+=' /DPILLIK_ONLY'}
 $instrument=if($AddressSanitizer){'/fsanitize=address /Zi'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition $instrument /I`"$out`" `"$PSScriptRoot/HruthnirGossipTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/compiler.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd"

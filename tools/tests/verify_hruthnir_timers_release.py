@@ -41,6 +41,10 @@ current_start=any(name.startswith(method('ContinueMagnarStart')) for name in n['
 if current_start:
  assert sites(n,destroy,'??1npc_hrutnirAI@npc_hrutnir@@')
  destroy=ins('??1npc_hrutnirAI@npc_hrutnir@@')
+current_pillik=any(name.startswith(method('TryPillikHandoff')) for name in n['symbols'])
+if current_pillik:
+ assert sites(n,factory,'??0npc_hrutnirAI@npc_hrutnir@@')
+ factory+=ins('??0npc_hrutnirAI@npc_hrutnir@@')
 assert actor in refs(factory) and script in refs(ins('?AddSC_EarthWarder@@'))
 assert n['symbol']('?GetAI@npc_hrutnir@@') in resolved(script_raw)
 assert resolved(raw)[0x110//8]==n['symbol'](method('UpdateLifecycle'))
@@ -50,7 +54,7 @@ assert (factory[construct-1].mnemonic,factory[construct-1].op_str)==('lea','rcx,
 assert (destroy[destruct-1].mnemonic,destroy[destruct-1].op_str)==('lea','rcx, [rsi + 0xc0]' if current_start else 'rcx, [rdi + 0xc0]')
 assert sites(n,destroy,method('CancelMagnarIntro'))[0]<destruct
 assert sites(n,destroy,'?Remove@Conversation@@')[0]<destruct
-assert (0x168 if current_start else 0x140) in values(factory) and {0x68,0x78,0x80,0xad}<=fields(factory)
+assert (0x178 if current_pillik else (0x168 if current_start else 0x140)) in values(factory) and {0x68,0x78,0x80,0xad}<=fields(factory)
 verify_clock(n,method('UpdateLifecycle'),0xc0)
 assert not sites(n,ins(method('UpdateAI')),'?Update@FunctionProcessor@@')
 assert not sites(n,ins(method('Reset')),'?KillAllFunctions@FunctionProcessor@@')
@@ -73,7 +77,14 @@ for callback in callbacks:
  assert address in refs(parent) and n['symbol'](callback) in resolved(slots),('Actual callback vtable not installed by its parent',callback)
 owned=[name for name in callbacks if '??ScheduleMagnarStart' not in name and not any(f'<lambda_{index}>' in name and '??MovementInform' in name for index in (5,6))]
 assert len(owned)==6
-bodies=[ins(name) for name in owned]
+def callback_body(name):
+ body=ins(name)
+ if current_pillik and '<lambda_1>' in name and '??MovementInform' in name:
+  selected=[key for key in n['symbols'] if key.startswith(('??$invoke@','??R<lambda_1>')) and '<lambda_1>' in key and '??MovementInform'+suffix in key]
+  assert len(selected)==1 and sites(n,body,selected[0]), 'Installed weak callback does not dispatch its actual native body'
+  body+=ins(selected[0])
+ return body
+bodies=[callback_body(name) for name in owned]
 assert sum(len(sites(n,body,'?Talk@CreatureAI@@')) for body in bodies)==6
 fight,=[body for body in bodies if sites(n,body,'?SendChat@CreatureTextMgr@@')]
 assert {94714,96571,1000,5}<=values(fight)

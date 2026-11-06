@@ -28,6 +28,7 @@ struct Creature:Unit {
  void SetHomePosition(float,float,float,float){++homes;}float GetPositionX(){return 1;}float GetPositionY(){return 2;}float GetPositionZ(){return 3;}float GetOrientation(){return 4;}
  Creature*FindNearestCreature(uint32 id,float radius,bool alive){assert(alive);assert((id==94714&&radius==85)||(id==96443&&radius==70));return target;}
  Player*FindNearestPlayer(float radius){assert(radius==100);return nearest;}GameObject*FindNearestGameObject(uint32 id,float r){assert(id==243522&&r==30);return door;}Instance*GetInstanceScript(){return instance;}
+ bool InSamePhase(Creature*) const{return true;}
  bool IsWithinDistInMap(Unit*,float radius){assert(radius==20);return inRange;}Motion*GetMotionMaster(){return &motion;}
  void Kill(Creature*p){assert(p==this);++kills;}void DespawnOrUnsummon(uint32 delay){assert(delay==1000);++despawns;}
  void AddDelayedEvent(uint64 delay,std::function<void()>&&f){functions.AddDelayedEvent(delay,std::move(f));}
@@ -50,6 +51,10 @@ void Creature::Lifecycle(uint32 diff){
 void GetCreatureListWithEntryInGrid(std::list<Creature*>&out,Creature*p,uint32 id,float r){assert(id==96571&&r==50);out.assign(p->adds.begin(),p->adds.end());}
 struct Hruthnir:CreatureAI {
  using CreatureAI::CreatureAI;bool firstfighting=false,secondfighting=false,thirdfighting=false,fourfighting=false,_introDone=false;
+// The independent real Pillik coordinator is exercised by the actual-method
+// ASAN and native Kill suites. This fixture observes the six native clocks.
+#include "PillikFields.inc"
+ void QueuePillikHandoff(){} bool ArmPillikHandoff(){return true;} void TryPillikHandoff(){}
 #include "Methods.inc"
 };
 struct Run {
@@ -78,7 +83,7 @@ int main(){_set_abort_behavior(0,_CALL_REPORTFAULT);std::cout<<std::unitbuf;
  {Run r;r.actor.nearest=nullptr;r.Begin(1);r.Tick(5000);assert(r.actor.attacks==1&&r.player.credits.empty());++cases;}
  {Run r;r.actor.door=nullptr;r.Begin(2);r.Tick(4000);assert(!r.instance.opens&&r.actor.attacks==1);++cases;}
  {Run r;r.actor.instance=nullptr;r.Begin(2);r.Tick(4000);assert(!r.instance.opens&&r.actor.attacks==1);++cases;}
- {Run r;r.Content()->secondfighting=true;r.Content()->EnterEvadeMode();assert(r.actor.talks==std::vector<uint8>{5}&&r.actor.motion.points==std::vector<uint32>{2}&&r.player.credits==std::vector<uint32>{46289});r.Content()->secondfighting=false;r.Content()->thirdfighting=true;r.Content()->EnterEvadeMode();assert(r.actor.motion.points.back()==4&&!r.Content()->thirdfighting);r.Content()->fourfighting=true;r.Content()->EnterEvadeMode();assert(r.actor.motion.points.back()==5&&r.actor.talks.back()==11&&!r.Content()->fourfighting);++cases;}
+ {Run r;r.Content()->secondfighting=true;r.Content()->EnterEvadeMode();assert(r.actor.talks.empty()&&r.actor.motion.points.empty()&&r.player.credits.empty());r.Content()->secondfighting=false;r.Content()->thirdfighting=true;r.Content()->EnterEvadeMode();assert(r.actor.motion.points.back()==4&&!r.Content()->thirdfighting);r.Content()->fourfighting=true;r.Content()->EnterEvadeMode();assert(r.actor.motion.points.back()==5&&r.actor.talks.back()==11&&!r.Content()->fourfighting);++cases;}
  {Run r;Unit pet;r.Content()->MoveInLineOfSight(&pet);assert(r.actor.talks.empty());r.actor.inRange=false;r.Begin(5);assert(r.actor.talks.empty());r.actor.inRange=true;r.Begin(5);r.Begin(5);r.Tick(5000);r.Done(5);uint32 damage=0xffffffff;r.Content()->DamageTaken(&pet,damage,0);assert(!damage);++cases;}
  {Run r;r.Begin(1);r.Begin(1);assert(r.Content()->_presentationFunctions.SizeQueue()==2);assert(r.actor.AIM_Destroy());r.Tick(30000);assert(r.actor.attacks==0&&r.target.talks.empty());++cases;}
  assert(!diagnostics);std::cout<<"PASS "<<cases<<" ASAN contexts: six actual earlier Hruthnir callback/evade/movement/LOS bodies with real FunctionProcessor/typed DeathState/locked lifecycle/AIM_Destroy/native Talk forwarding. Exact5/5/4/15/2/5s, destruction/replacement/suspended/null/alias/late clocks, ALIVE-CORPSE versus DEAD/transient, original route/point/spell/text/flags/credit endpoints and absent actor/AI/door/instance cases retained. Later point6/7 branches covered separately by retained Gossip suite; world/combat/movement/credit endpoints controlled, no full909/client claim.\n";
