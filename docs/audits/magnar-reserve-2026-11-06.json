@@ -13,5 +13,6 @@
   "staged_world_sha256": "5c0dfac3041cfa26de16a5789c7a373845b4b1ac4b552aaf2e2596e1d7912af4",
   "runtime": "Canonical remains96645857; no user server stopped. Current queries show no world/bnet processes, recheck before promotion. Existing mixed6090 DBErrors/sharedLINK2 unresolved and untouched.",
   "evidence": ".codex/magnar-reserve-2026-11-06; runtime-test/magnar-waves and magnar-finale. Private logs/config/binaries not committed.",
-  "next": "Finish common Fury/Protection pickup-scene/equipment acknowledgement/retry and scoped manual return. Canonical promotion/Scepter/startup and resolved diagnostic archival/redundant output cleanup deferred for final deployment. Whole chains/client rendering/audio/camera/groups remain separate."
+  "next": "Finish common Fury/Protection pickup-scene/equipment acknowledgement/retry and scoped manual return. Canonical promotion/Scepter/startup and resolved diagnostic archival/redundant output cleanup deferred for final deployment. Whole chains/client rendering/audio/camera/groups remain separate.",
+  "deployment_update_2026_11_06": "Deployed/hash-verified and canonical selected PE/Scepter/startup20404 clean. See warrior-runtime-2026-11-06.json for archive560 files/hash manifest and142 generated files/0.89GiB cleanup, two rollback generations and corrected mixed6815 OPEN user-runtime LINK2 evidence. Original STAGED text documents the state at implementation commit, superseded here; whole chains/return controller remain OPEN."
 }

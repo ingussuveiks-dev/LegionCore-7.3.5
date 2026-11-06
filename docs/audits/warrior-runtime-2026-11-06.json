@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-06",
+  "status": "DEPLOYED paired-equipment/Fury-wave/Protection-reserve fixes; whole client chains and pickup/return controller work remain OPEN",
+  "commits": [
+    "d473ec251",
+    "df670b57e",
+    "a2073e254",
+    "d8def730d"
+  ],
+  "canonical_sha256": {
+    "bnetserver": "095E15F3B77EB55DC72B9148544C754684659DE076B071D11CC5D632DAA86F2B",
+    "worldserver": "5C0DFAC3041CFA26DE16A5789C7A373845B4B1AC4B552AAF2E2596E1D7912AF4"
+  },
+  "deployment": "Rechecked no running user/unknown world/bnet before each copy. Preserved configurations/certificates/DLLs and saved/hash-verified prior canonical runtime. No live SQL/character changes.",
+  "checks": "20 actual-method ASAN equipped-pair contexts plus pinned20 counterfactual,12 real linked core Player/Item/inventory/spell contexts, retained55-record/39-item effect249 and Fury/Protection native scene lifecycle;24 Fury wave ASAN contexts/native26972 criteria/pinned actual two-player counterfactual; Protection original-method ASAN full retained matrix plus5 reserve-fault/recovery contexts and pinned partial-spawn counterfactual. Selected canonical PE proofs for paired equipment/Fury waves/Protection reserve+retained Magnar finale/scaled damage and mandatory Test-ScepterLogin -VerifyReleaseBinary pass. Controlled services/native probes are distinct from full client combat/audio/camera.",
+  "startup": "Task-owned canonical world20404 reached fresh ready; server shutdown0, exit0, stderr empty, process gone. Before/after diagnostics contain no new crash or appended DBErrors/server warnings/errors/assertions. No user server stopped.",
+  "unresolved": "Corrected stale inherited6090-byte log assumption: five user-runtime103151 missingLINK2 entries at13:45:34..13:46:19 already existed before current tests/startup. Current canonical DBErrors6815 bytes/SHA256 28a795108495681512dbca7224de60c3f6653ea3ea2ea7aa329137a80cdec5f4 remains mixed and OPEN, untouched/excluded from fixed. Earlier101430/103151 intro probe/evidence remains OPEN. Clean startup does not fix those interaction errors.",
+  "archive": {
+    "path": "build-extractors/bin/Release/fixed/warrior-equipment-waves-2026-11-06",
+    "manifest_sha256": "4dce6f81df6ed3c070504a85f39ff47e17eb83a14c8a6498140aabe801534fa1",
+    "files": 560,
+    "verified": "Every archived file original bytes/SHA256 checked before and after cleanup. Includes184FATAL native fixture item-world teardown prototype paired with repaired clean12 run, source fault/PE prototypes correctly labeled; no unresolved mixed log/report archived as fixed."
+  },
+  "cleanup": {
+    "manifest": ".codex/warrior-runtime-2026-11-06/cleanup-deleted.json",
+    "removed_files": 142,
+    "reclaimed_bytes": 958618004,
+    "reclaimed_GiB": 0.893,
+    "removed_families": "Redundant stage EXE/PDB/maps/link outputs, generated test executables/objects/symbols/includes and isolated native config; obsolete pre-Silver-Hand rollback. Exact absolute whitelist/hash verification, no reparse-point ancestors, no running server/compiler/test before each deletion. Original shared libs/extracted data/regression sources/reusable tools/private character backups untouched.",
+    "retained": [
+      ".codex/release-before-warrior-runtime-2026-11-06",
+      ".codex/release-before-slaghammer-handoff-2026-11-06"
+    ],
+    "deferred": "Warswords native catalog cache retained for concrete ongoing pickup/return native-data investigation; unresolved Slaghammer intro and all personal character backups remain untouched."
+  },
+  "post_cleanup": "Canonical binary/protected runtime/rollback/archived hashes rechecked; active Crashes empty, mixed6815 unchanged. No task-owned background server remains.",
+  "next": "Continue actual earned pickup -> real scene completion -> native equipment acknowledgement/retry -> scoped manual Val'kyr/custom11869/215997 return. Both legacy12-second auto departures remain unchanged; do not certify either full quest. Do not reset user Warrior again."
+}
