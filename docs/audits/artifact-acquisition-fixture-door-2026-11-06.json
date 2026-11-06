@@ -4,5 +4,10 @@
   "cause": "The actual GameObject::SetLootState preamble now preserves physical door collision by returning for native GAMEOBJECT_TYPE_DOOR. The acquisition fixture copies that preamble but omitted the door enum, so compilation stopped with C2065 before any assertions.",
   "fix": "Add the matching native GAMEOBJECT_TYPE_DOOR=0 adapter constant. Preserve the extracted complete preamble and existing loot/ownership/progression assertions; no removal of the door branch.",
   "verification": "Retained Test-EarthwarderRealLootData.ps1 -VerifyReleaseBinary passes on canonical34EB779D, including the shared Test-ArtifactAcquisition native handler and guarded real-loot/14 condition/idempotence/custom-data controls. No character or live World data modified.",
-  "archive_cleanup": "Failed compiler output and passing rerun are part of parent magnar-ai-readiness-2026-11-06 diagnostics; its final audit records the original-byte archive and generated-output cleanup. No executable change required by this fixture fix."
+  "archive_cleanup": {
+    "parent_audit": "docs/audits/magnar-ai-readiness-2026-11-06.json",
+    "archive": "build-extractors/bin/Release/fixed/magnar-ai-readiness-2026-11-06",
+    "manifest_sha256": "0f37713c7ecb954873e3dbdc90426487f8a4ad32fdbd14a2509c5ed278e73278",
+    "status": "Original timestamped failed compiler output and passing retained run archived/hash-verified with parent. Generated fixture EXE/objects/includes removed; regression source retained."
+  }
 }

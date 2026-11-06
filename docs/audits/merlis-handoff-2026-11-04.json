@@ -1,4 +1,30 @@
 {
+  "latest_magnar_ai_readiness_2026_11_06": {
+    "audit": "docs/audits/magnar-ai-readiness-2026-11-06.json",
+    "status": "DEPLOYED34EB779D/D9BAEBCB: Magnar full selected batch registered before callbacks; actual selected/companion AI readiness and same-actor1s activation retry, full-GUID recovery and generation cancellation. Native original2/2/1/2/3/auxiliaries/owner-first46427 retained.",
+    "fix_commit": "6ebb0874f",
+    "checks": "69 new ASAN contexts plus original owner/start/reserve/reset/finale matrices;24 actual native Human/Orc player/pet/guardian Kill sequences advance3->4 once after four AI faults, explicit component counterfactuals, all9 retained canonical groups including Scepter/Fury bonfire/arrival pass. Owned30772 ready/shutdown0/exit0/gone, stderr empty and no new crash/DBErrors/server warning/error/assertion. Two stale retained fixtures fixed separately04da73012/222a340b3.",
+    "next": "Protection readiness saved draft is consumed/superseded; no pending code/data deployment. User restarts canonical server and tests real Fury/Protection chains. Actual combat/path/fog/audio/gossip/wipe/re-entry/equipment/manual return/camera/pet and all36 whole chains remain OPEN. Existing shared101430/103151 LINK2/mixed7111 untouched. No character progress/gear/health edits.",
+    "cleanup": {
+      "archive": "build-extractors/bin/Release/fixed/magnar-ai-readiness-2026-11-06",
+      "manifest_sha256": "0f37713c7ecb954873e3dbdc90426487f8a4ad32fdbd14a2509c5ed278e73278",
+      "original_files": 663,
+      "fix_commits": [
+        "6ebb0874f",
+        "04da73012",
+        "222a340b3"
+      ],
+      "removed_files": 219,
+      "logical_removed_bytes": 1111791374,
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-magnar-ai-readiness-2026-11-06",
+        ".codex/release-before-warswords-bonfire-2026-11-06"
+      ],
+      "deferred": "Saved Protection draft is superseded by deployed6ebb0874f; retain that small source history, unresolved Slaghammer intro probe/cache, mixed7111 and personal backups. No staging executable needed for pending client checks.",
+      "verification": "All archived original SHA256 values and manifest rechecked after exact output-family/reparse/file-hash validated deletion. Canonical binaries/protected runtime/two recovery generations, empty active Crashes, unchanged mixed7111 and unresolved Slaghammer intro evidence/cache verified. Shared build libraries/assets, source/regression tools and personal character/database backups preserved. No redundant staging/runtime/compiler image remains for this completed fix; no task-owned server remains."
+    }
+  },
   "latest_warswords_bonfire_2026_11_06": {
     "audit": "docs/audits/warswords-bonfire-2026-11-06.json",
     "status": "DEPLOYED D2108AED/674A8290: exact native Lighting Bonfire198513/Lock2474 completed-hit dispatch to guarded bonfire AI; actual944/1888/tree45849 event47272 now advances0->1 once. Original goober SendLoot/Use bypass reproduced, not user misuse.",

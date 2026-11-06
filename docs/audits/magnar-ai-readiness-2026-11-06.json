@@ -33,5 +33,24 @@
   ],
   "unresolved": "Earlier shared101430/103151 LINK2 remains OPEN; canonical mixed7111 DBErrors SHA256FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged/untruncated. Active Crashes empty. Client combat/path/visual/audio/timing, wipe/re-entry/gossip routing, artifact equipment/return/pet/camera and all36 full chains are not certified by these focused checks.",
   "continuation": "Consumes and supersedes ignored warswords-bonfire-2026-11-06/protection-unfinished.patch. No untested saved Protection patch remains pending for deployment. User can retest Fury then Protection against the canonical executable; continue later independent failures from actual evidence.",
-  "archive_cleanup": "Pending hash-verified original diagnostic archive and removal of redundant test/stage binaries after the clean canonical startup."
+  "archive_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/magnar-ai-readiness-2026-11-06",
+    "manifest_sha256": "0f37713c7ecb954873e3dbdc90426487f8a4ad32fdbd14a2509c5ed278e73278",
+    "original_files": 663,
+    "fix_commits": [
+      "6ebb0874f",
+      "04da73012",
+      "222a340b3"
+    ],
+    "removed_files": 219,
+    "logical_removed_bytes": 1111791374,
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-magnar-ai-readiness-2026-11-06",
+      ".codex/release-before-warswords-bonfire-2026-11-06"
+    ],
+    "deferred": "Saved Protection draft is superseded by deployed6ebb0874f; retain that small source history, unresolved Slaghammer intro probe/cache, mixed7111 and personal backups. No staging executable needed for pending client checks.",
+    "verification": "All archived original SHA256 values and manifest rechecked after exact output-family/reparse/file-hash validated deletion. Canonical binaries/protected runtime/two recovery generations, empty active Crashes, unchanged mixed7111 and unresolved Slaghammer intro evidence/cache verified. Shared build libraries/assets, source/regression tools and personal character/database backups preserved. No redundant staging/runtime/compiler image remains for this completed fix; no task-owned server remains."
+  },
+  "fix_commit": "6ebb0874f"
 }

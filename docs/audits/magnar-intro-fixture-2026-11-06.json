@@ -4,5 +4,10 @@
   "cause": "Production Hruthnir has an AI-owned FunctionProcessor since the November2 timer repair. The intro test copied that field but did not declare its real type, so the retained C++ build failed with C3646/C4430 before exercising the intro.",
   "fix": "Compile the exact native FunctionProcessor class and implementation through a generated include, using the same extraction as retained Hruthnir timer tests. Add its standard container/mutex headers and uint64 alias. No empty scheduler stub or removal of the copied production field.",
   "verification": "Test-MagnarIntro.ps1 -VerifyReleaseBinary passes against canonical34EB779D as part of the Protection readiness retained run. Existing real scene/admission/acknowledgement assertions and selected Release proof remain active. Canonical pre/post diagnostics are collected by the parent task; client traversal remains separate.",
-  "archive_cleanup": "Original failed compiler output and passing rerun are retained in the parent .codex/magnar-ai-readiness-2026-11-06 evidence; final archive/cleanup recorded in that issue audit. No executable deployment or character data change required by this fixture-only fix."
+  "archive_cleanup": {
+    "parent_audit": "docs/audits/magnar-ai-readiness-2026-11-06.json",
+    "archive": "build-extractors/bin/Release/fixed/magnar-ai-readiness-2026-11-06",
+    "manifest_sha256": "0f37713c7ecb954873e3dbdc90426487f8a4ad32fdbd14a2509c5ed278e73278",
+    "status": "Original timestamped failed compiler output and passing retained run archived/hash-verified with parent. Generated fixture EXE/objects/includes removed; regression source retained."
+  }
 }
