@@ -1,5 +1,7 @@
 # Restore only the separately certified map1620 Craggle offer delta.
 function Restore-KingslayersSmokeOfferBoundary([string]$source) {
+ . "$PSScriptRoot/KingslayersLucasCertificate.ps1"
+ $source=Restore-KingslayersLucasBoundary $source
  $old=(& git -C $repo show 'e7c890b41:src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp') -join "`n"
  if($LASTEXITCODE){throw 'Pinned smoke-offer boundary missing'}
  $marker='class npc_kingslayers_small_events : public CreatureScript'

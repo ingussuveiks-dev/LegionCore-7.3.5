@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-06",
+  "status": "DEPLOYED 0526DE51/6B561472: Lucas108399 now owns its5s follow-up in its AI EventMap instead of a Creature FunctionProcessor callback capturing a destructible AI.16 extracted ASAN contexts plus freed-AI pinned counterfactual,12 whole native cases,50gate/36offer/34smoke and Garona intro/catalog retained checks; stage/canonical registered PE and mandatory Scepter pass. Owned20936 ready/shutdown0/exit0/gone, no new diagnostics. Client/all36 and existing mixed6090 remain OPEN.",
+  "scope": "Finish the existing uncommitted Lucas lifetime repair found after origin/main fetch at3cf03e7a9. Only shared npc_kingslayers_small_eventsAI owns a new separate event queue; existing gate/smoke fields, branches and other roles stay identical. No SQL, item, quest, character or protocol changes.",
+  "cause": "Native Creature::AIM_Initialize invokes AIM_Destroy while the Creature Unit::m_Functions survives. Original Lucas LOS schedules a5s lambda capturing this, then reads the freed AI to create2476 and move. The pinned exact production LOS slice/native FunctionProcessor under AddressSanitizer reports heap-use-after-free after AI destruction. This is a reproducible lifetime defect; no claim that it caused a particular historical user dump.",
+  "repair": "Schedule event1 at5000ms on AI-owned EventMap lucasEvents. Registered UpdateAI updates/executes that queue before the unchanged ScriptedAI/gate/smoke logic. On dispatch retain actual Conversation2476 factory and independent MovePoint0 to(-8527.94,442,106.01), even if optional conversation refuses. Native AI destruction destroys the queue. An ordinary Reset preserves the same authored one-shot; a fresh replacement AI can receive fresh LOS. Original2483,130-yard admission and5s timing retained.",
+  "sources": {
+    "history": "git fetch origin succeeded; local HEAD and origin/main both3cf03e7a9 with0/0 divergence. Existing uncommitted Kingslayers.cpp/certificate and3Lucas regression files reviewed and completed. Latest GitHub fixes were Devourer portal and Hatchling linked-trap; local latest handoff points to sharedLINK2. No web page contents inferred from the unavailable browser fetch.",
+    "local": "Native Creature::AIM_Initialize/AIM_Destroy, Unit::m_Functions, FunctionProcessor, EventMap, selected shared AI, matching26972 Conversation native loader and actual world rows. Lucas108399/spawn360913/map1620 is hostile faction14;108376 is Stormwind Royal Guard, not Garona. Both2476/2483 use native conversation_data5257/5268. Conversation publication and motion are exercised with controlled source/player poses, real native templates/data and no invented actor."
+  },
+  "validation": {
+    "asan": "Test-KingslayersLucasLifetime.ps1:16 extracted exact LOS/update/native EventMap+FunctionProcessor contexts with accepted/refused modeled factories, repeated LOS,4900/5000 clocks,130/130.01 boundary,coarse tick,AI destruction/replacement/despawn and another shared role; separate destroy mode exits0 without follow-up. Baseline pinned3cf03e7a9:8 ordinary retained checks and explicit destroy mode reproduces heap-use-after-free; counterfactual, not successful ordinary run.",
+    "native": "Test-KingslayersLucasNative.ps1 final12 whole-source native cases:both42504/42627 and real2483/2476 publication,MoveSpline endpoint/exactly-once,AI replacement through native AIM_Initialize at0/4900/4999ms followed by old Creature function queue advancement and fresh LOS recovery,ordinary Reset,10s coarse tick. Actual scenario stays at seeded7 with empty progress. Core uses Release libraries, not full-core ASAN; source quest/stage/pose/LOS/clocks controlled; no real client traversal or full combat claim.",
+    "retained": "50 whole-source gate-order,36 native Craggle aura offers,34 native smoke SpellScript endpoints; Garona intro extracted regression plus matching26972 map1620/1123 catalog pass. Certificate normalizes only independently certified Lucas ownership change before earlier full-source boundaries. Gate PE expected new128-byte allocation and observed register allocation updated without dropping previous behavior checks.",
+    "release": "Original generated scripts/Release/scripts.lib rebuilt; original final-link inputs linked separately to .codex/kingslayers-lucas-release without global OutDir. Registered selected-vtable PE verifies new queue initialization,LOS schedule,event/time guard,native2476->MovePoint independent of factory refusal,and map destruction in actual scalar destructor. Retained gate/smoke/opening and previous PE chain pass. Offline hash-verified4file predecessor backup/promotion to canonical runtime,configs/certs/DLLs retained; canonical Lucas PE and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass.",
+    "startup": "Owned PID20936 fresh canonical ready,server shutdown0,exit0,empty stderr and process gone. Post-test snapshot reports Completed=true,ChangedCrashes=[],AppendedDBErrors=[],ServerDiagnostics=[],Servers=[]. No user/unknown server stopped.",
+    "fixture_iterations": "First native fixture put hostile Lucas at the player position; unchanged melee update could replace observed MovePoint. Corrected controlled visitor distance10yards, paired passing regression; no production combat change. C++ assertion message initially used std::string with const-char Require; corrected compile error. Removed unneeded108376 guard after checking its real identity. Initial PE dump expected out-of-line UpdateLucas/destructor; reviewed actual inlining/scalar destructor instead. Read-only schema probes corrected nonexistent name to creature_template_wdb.Name1; no persistent data mutation. These are fixture/research corrections, not repaired client symptoms."
+  },
+  "canonical_hashes": {
+    "worldserver.exe": "0526de51b6780aed6ca0e0f6213dd7ae09420bdcce785da97d8e44d78106e8cd",
+    "bnetserver.exe": "6b5614726dc3bf63ffdc100b04989646479457d9ec5fa30081c1765fef6cd14d"
+  },
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp": "35c03cf07438528b4c7da8599630fda990aabcd3d45e5cc9326852438b388517",
+    "tools/tests/KingslayersSmokeOfferCertificate.ps1": "3c161c8c7af777a6a9abc714a37ebf99dccefdaed7b9a9f30bc99d69c4a541e7",
+    "tools/tests/KingslayersLucasCertificate.ps1": "a6bec72fe28e895171b9968fd174e8b36071363a50486d5794fb51babf1bfc58",
+    "tools/tests/KingslayersLucasLifetimeTest.cpp": "5dc8f9dec9f386e0d1a4409d1e34bc1a18b42f8fff51846befe954013e19e82f",
+    "tools/tests/KingslayersLucasNative.cpp": "abc3492b1e9af19b57dd34d7e66da3178226ed58bc6f68b84f97c504ba20e8fb",
+    "tools/tests/Test-KingslayersLucasLifetime.ps1": "2cbf611a23ec647201b80864554d72f27482010facbe409f9db83fa06406bcf6",
+    "tools/tests/Test-KingslayersLucasNative.ps1": "88f5ca43df8f515a0436b13cfac19b9ddd428fe5e35191358513b6d1814aebcd",
+    "tools/tests/verify_kingslayers_lucas_release.py": "3a81ee9c5b4485dfee29473525eaec655eb5ae9365c4c6e765aa2c26a8db3d94",
+    "tools/tests/verify_kingslayers_gate_order_release.py": "202990b1f532f63f8bfb6868b306886b1a26f70d380ece85f09acbff879527bf"
+  },
+  "diagnostics": {
+    "canonical_active_crashes": 0,
+    "canonical_mixed_log_bytes": 6090,
+    "canonical_mixed_log_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "unresolved": "Existing101430/103151 missingLINK2 mixed6090 retained unchanged. Known shared81040/late-charm are not certified repaired. No unresolved newly introduced server error or new crash in this issue."
+  },
+  "client_open": [
+    "Actual Lucas approach/speech/voice/movement/arrival and full Kingslayers1123 traversal for both factions,combat/death/pet/camera/reconnect remain client checks.",
+    "Original LOS admission consumes introDone for a nearby Player and optional factory refusal has no presentation retry; those original behaviors are retained and not certified correct by this lifetime fix.",
+    "No progression is added by this change;player/pet/guardian killing blows/group/faction admission for other shared roles retained via boundary/retained regression,not full-chain combat certification."
+  ],
+  "next": "Continue saved shared101430/103151 LINK2 investigation. Current live rows confirm101430 is Shadowlord Slaghammer: root48121 then200165 and missing2;103151 Effects Bunny:DATA1/1 removes auras then202014 and missing2. Existing slaghammer-intro-admission-2026-10-29.json and SharedCryptLinkCatalog.cpp already establish different native producers and unknown payloads. Trace full matching26972 conditions/callers/202014->202015, local old Trinity and GitHub history before any repair; do not delete links to suppress errors. Known shared81040/late-charm and whole chains/client checks remain OPEN.",
+  "archive": "Resolved diagnostic archival pending the implementation commit; preserve expected baseline ASAN report and corrected fixture iterations with hashes. Canonical mixedDBErrors must remain active."
+}

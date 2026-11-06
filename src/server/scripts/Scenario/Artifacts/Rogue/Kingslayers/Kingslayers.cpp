@@ -238,6 +238,7 @@ public:
         uint32 gateOrderRetry = 0;
         bool gateOrderBusy = false, gateOrderWarning = false;
         bool smokeOfferWarning = false;
+        EventMap lucasEvents;
 
         // Both authored callers share the actual Clay actor's one-shot receipt.
         class GateConversation final : public Conversation
@@ -381,14 +382,9 @@ public:
                 if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2483, who, NULL, *who))
                     delete conversation;
 
-                me->AddDelayedEvent(5000, [this]() -> void
-                {
-                    Conversation* conversation = new Conversation;
-                    if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2476, me, NULL, *me))
-                        delete conversation;
-                    me->GetMotionMaster()->MovePoint(0, -8527.94f, 442.00f, 106.01f);
-
-                });
+                // This cue belongs to this AI, which native AIM_Initialize can
+                // destroy while the Creature's delayed-function queue survives.
+                lucasEvents.ScheduleEvent(1, 5000);
                 return;
             }
 
@@ -442,6 +438,17 @@ public:
             me->SetReactState(REACT_AGGRESSIVE);
         }
 
+        void UpdateLucas(uint32 diff)
+        {
+            lucasEvents.Update(diff);
+            if (lucasEvents.ExecuteEvent() != 1)
+                return;
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2476, me, NULL, *me))
+                delete conversation;
+            me->GetMotionMaster()->MovePoint(0, -8527.94f, 442.00f, 106.01f);
+        }
+
         void UpdateSmokeOffer(uint32 diff)
         {
             if (timer > diff)
@@ -488,6 +495,7 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            UpdateLucas(diff);
             ScriptedAI::UpdateAI(diff);
             UpdateGateOrder(diff);
 

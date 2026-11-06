@@ -39,9 +39,11 @@ for address in refs(factory):
     if all(value in raw for value in targets.values()):
         tables.append(raw)
 assert len(tables) == 1, 'Actual factory must select all three controller callbacks'
-assert ('mov', 'ecx, 0x60') in pairs(factory)
-assert {('mov', 'dword ptr [rdi + 0x54], 0'), ('mov', 'word ptr [rdi + 0x58], 0'),
-        ('mov', 'byte ptr [rdi + 0x38], 0')} <= pairs(factory)
+# Lucas's AI-owned EventMap adds32 bytes; native factory initializes the
+# retained gate receipt fields and the independent queue in the same object.
+assert ('mov', 'ecx, 0x80') in pairs(factory)
+assert {('mov', 'dword ptr [rsi + 0x54], ebp'), ('mov', 'word ptr [rsi + 0x58], bp'),
+        ('mov', 'byte ptr [rsi + 0x38], bpl')} <= pairs(factory)
 for name, caller in [('UpdateAI', '?Update@Creature@@'), ('MoveInLineOfSight', '?MoveInLineOfSight_Safe@CreatureAI@@')]:
     slot, = [i for i, value in enumerate(tables[0]) if n['resolve'](value) == targets[name]]
     assert any(op.mnemonic in ('call', 'jmp') and op.operands[0].type == CS_OP_MEM and op.operands[0].mem.disp == slot * 8 for op in ins(caller))
@@ -84,9 +86,9 @@ assert {('cmp', 'byte ptr [rcx + 0x38], 0'), ('lea', 'rbx, [rcx + 0x58]'),
 # UpdateGateOrder is inlined by Release. Certify its actual counter, fresh
 # recipient/cancellation path and retry call in the registered UpdateAI.
 assert {108057, 1620} <= values(update)
-assert {('cmp', 'byte ptr [rbx + 0x38], sil'), ('cmp', 'byte ptr [rbx + 0x58], sil'),
-        ('mov', 'eax, dword ptr [rbx + 0x54]'), ('cmp', 'eax, edi'), ('sub', 'eax, edi'),
-        ('mov', 'dword ptr [rbx + 0x54], eax'), ('mov', 'dword ptr [rbx + 0x54], esi')} <= pairs(update)
+assert {('cmp', 'byte ptr [rdi + 0x38], 0'), ('cmp', 'byte ptr [rdi + 0x58], 0'),
+        ('mov', 'eax, dword ptr [rdi + 0x54]'), ('cmp', 'eax, esi'), ('sub', 'eax, esi'),
+        ('mov', 'dword ptr [rdi + 0x54], eax'), ('mov', 'dword ptr [rdi + 0x54], ebp')} <= pairs(update)
 assert sites(n, update, method('GateRecipient'))[0] < sites(n, update, method('RequestGateOrder'))[0]
 assert sites(n, update, '??$_Clear@ObjectGuid@@') or sites(n, update, '?Clear@ObjectGuid@@')
 assert sites(n, los, method('RequestGateOrder')) and {108057, 1620} <= values(los)
