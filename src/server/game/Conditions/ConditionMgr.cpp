@@ -2012,18 +2012,21 @@ bool ConditionMgr::isSourceTypeValid(Condition* cond)
         case CONDITION_SOURCE_TYPE_AREATRIGGER_ACTION:
         {
             AreaTriggerInfo const* info = sAreaTriggerDataStore->GetAreaTriggerInfo(cond->SourceGroup);
-            if (!info || info->actions.empty())
+            AreaTriggerInfo const* custom = sAreaTriggerDataStore->GetAreaTriggerInfoByEntry(cond->SourceGroup);
+            if ((!info || info->actions.empty()) && (!custom || custom->actions.empty()))
             {
                 TC_LOG_ERROR("sql.sql", "Source group %u for `CONDITION_SOURCE_TYPE_AREATRIGGER_ACTION` is not valid because there is no areatrigger actions associated.", cond->SourceGroup);
                 return false;
             }
             bool found = false;
-            for (AreaTriggerActionList::const_iterator itr = info->actions.begin(); itr != info->actions.end(); ++itr)
-                if (itr->id == cond->SourceEntry)
-                {
-                    found = true;
-                    break;
-                }
+            // Runtime dispatch uses GetEntry() for both native and custom
+            // triggers. A customEntry can share a numeric ID with a native
+            // trigger while having its own action list (e.g.11869 leave1).
+            for (AreaTriggerInfo const* candidate : {info, custom})
+                if (candidate)
+                    for (auto const& action : candidate->actions)
+                        if (action.id == cond->SourceEntry)
+                            found = true;
             if (!found)
             {
                 TC_LOG_ERROR("sql.sql", "Source group %u for `CONDITION_SOURCE_TYPE_AREATRIGGER_ACTION` has entry %u - action id that does not exist.", cond->SourceGroup, cond->SourceEntry);
