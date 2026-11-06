@@ -43,6 +43,28 @@
   ],
   "next": "OPEN shared101430/103151 LINK2 still has no recovered payload. New native late101430 handoff research proves nearest foreign Player can receive48160/advance991to3 while original invoker is far/missing and201004 creates no companion. Need instance-owned original accepted-owner/receipt,pending admission and actual summon acknowledgement/retry before retiring actor;do not guess LINK2 or grant a companion/credit bypass. Evidence .codex/shared-crypt-followup-2026-11-06 and runtime-test/slaghammer-handoff-probe remains outside fixed. Actual Paladin/Warrior/Priest full client and all36 remain separate.",
   "archive_cleanup": {
-    "status": "Pending verified local resolved-evidence archive and generated-output cleanup after focused commit."
-  }
+    "audit": "docs/audits/silver-hand-instance-scope-archive-2026-11-06.json",
+    "path": "build-extractors/bin/Release/fixed/silver-hand-instance-scope-2026-11-06",
+    "manifest_sha256": "f9beb8efc665e009250e443afe7b4d35230c253a773cdb5ef39df158c6515bd3",
+    "archived_files": 296,
+    "archived_bytes": 552413,
+    "cleanup": {
+      "deleted_files": 130,
+      "logical_bytes_removed": 1059506253,
+      "observed_free_bytes_gain": 1058979840,
+      "free_bytes_after": 132259897344,
+      "removed_directories": [
+        ".codex/silver-hand-instance-scope-release",
+        ".codex/devourer-portal-release"
+      ],
+      "retained_recoveries": [
+        ".codex/release-before-silver-hand-instance-scope-2026-11-06",
+        ".codex/kingslayers-lucas-release"
+      ],
+      "local_manifest": ".codex/silver-hand-instance-scope-2026-11-06/cleanup-deleted.json",
+      "local_manifest_sha256": "c315cc5f791f6fa6ee6592c4d1703c94a852dffd0f25b9e95fa1fc8a932b5dcf",
+      "deferred": "Open lateSlaghammerhandoff native research executable/symbols/config/evidence retained with concrete outstanding reproduction purpose;none moved to fixed. Shared data/build libraries and personal backups untouched."
+    }
+  },
+  "fix_commit": "f14908135fb43febde96649f1362784ecaa901a6"
 }

@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-06",
+  "fix_commit": "f14908135fb43febde96649f1362784ecaa901a6",
+  "status": "VERIFIED resolved local evidence archive and temporary cleanup after canonical startup/selected regressions",
+  "archive": {
+    "audit": "docs/audits/silver-hand-instance-scope-archive-2026-11-06.json",
+    "path": "build-extractors/bin/Release/fixed/silver-hand-instance-scope-2026-11-06",
+    "manifest_sha256": "f9beb8efc665e009250e443afe7b4d35230c253a773cdb5ef39df158c6515bd3",
+    "archived_files": 296,
+    "archived_bytes": 552413,
+    "cleanup": {
+      "deleted_files": 130,
+      "logical_bytes_removed": 1059506253,
+      "observed_free_bytes_gain": 1058979840,
+      "free_bytes_after": 132259897344,
+      "removed_directories": [
+        ".codex/silver-hand-instance-scope-release",
+        ".codex/devourer-portal-release"
+      ],
+      "retained_recoveries": [
+        ".codex/release-before-silver-hand-instance-scope-2026-11-06",
+        ".codex/kingslayers-lucas-release"
+      ],
+      "local_manifest": ".codex/silver-hand-instance-scope-2026-11-06/cleanup-deleted.json",
+      "local_manifest_sha256": "c315cc5f791f6fa6ee6592c4d1703c94a852dffd0f25b9e95fa1fc8a932b5dcf",
+      "deferred": "Open lateSlaghammerhandoff native research executable/symbols/config/evidence retained with concrete outstanding reproduction purpose;none moved to fixed. Shared data/build libraries and personal backups untouched."
+    }
+  },
+  "verification": "All296original archive hashes verified after cleanup;130planned files absent;two obsolete stage directories absent. Current canonical EXE/maps/configuration/certificates/DLLs and two previous recovery versions retained. Canonical Crashes empty,mixed6090 unchanged,no new runtime diagnostics,no log truncated.",
+  "safety": "Absolute exact task/runtime/cache paths checked,size/mtime/hash rechecked,junction/symlink ancestors rejected;native PowerShell Remove-Item LiteralPath only,no recursive or cross-shell deletion. No running user/unknown/task server,compiler or native probe deleted. Source/reusable regression tools retained;no shared extracted data,buildlibraries,private backups or quarantined files touched.",
+  "unresolved": "OPEN shared101430/103151 LINK2 and new lateSlaghammerhandoff original evidence/executable/symbols/config retained outside fixed for concrete outstanding reproduction. Actual client actor visibility/ritual/finale/whole36 remain separate."
+}
