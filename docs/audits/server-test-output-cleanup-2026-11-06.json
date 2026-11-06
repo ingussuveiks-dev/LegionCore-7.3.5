@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-06",
+  "status": "COMPLETED AND VERIFIED",
+  "authorization": "User explicitly requested removal of old unnecessary server test backups.",
+  "deleted_files": 1277,
+  "obsolete_audited_release_directories": 222,
+  "server_outputs": 888,
+  "test_compiler_linker_scratch": 389,
+  "logical_bytes_deleted": 48986798458,
+  "allocated_bytes_selected": 44049835799,
+  "free_bytes_before": 88334553088,
+  "free_bytes_after": 132385447936,
+  "observed_free_space_gain": 44050894848,
+  "protected_files_sha256_verified": 263,
+  "retained_release_generations": [
+    "devourer-portal-release",
+    "kingslayers-lucas-release",
+    "release-before-devourer-portal-2026-11-05",
+    "release-before-kingslayers-lucas-2026-11-06"
+  ],
+  "additional_uncertain_or_referenced_release_directories_retained": 26,
+  "selection": "Only direct ignored .codex/*-release or release-before-* worldserver/bnetserver outputs with worldserver SHA256 found in committed audits; retain latest two stage/rollback generations and any repository-tool references or unaudited hashes. Runtime-test deletion limited to regenerable.obj/.ilk files. No recursive directory deletion.",
+  "preserved": "Canonical build-extractors/bin/Release executables/maps/configuration/certificates/DLLs/logs/extracted assets; original build libraries and objects outside runtime-test; all test executable/map/PDB/log/config/crash evidence; complete fixed archives; personal/character/SQL backups and other research/build folders. Diagnostic scripts/manifests left in old Release directories.",
+  "safety": "Every absolute path validated within the exact allowed workspace roots; ordinary files only, no symlink/junction ancestors; length/mtime rechecked immediately before native PowerShell Remove-Item -LiteralPath. All targets confirmed ignored by Git. No worldserver/bnetserver/compiler/linker running; no process stopped or task server launched.",
+  "verification": "All1277 planned outputs absent.263 protected file hashes unchanged, including current/recent Release and rollback files, active logs and archive manifests. Tracked workspace unchanged before adding this audit. Pre/post diagnostic wrapper clean: no new/changed crashes or appended DBErrors/server warnings/errors/assertions. No server behavior test/rebuild needed for generated-output deletion.",
+  "unresolved": "Existing canonical6090-byte DBErrors mixed101430/103151 LINK2 remains unchanged and unresolved; known shared81040/late-charm and client/whole-chain limits remain open. Cleanup makes no gameplay verification claim.",
+  "local_receipts": {
+    "plan": ".codex/server-test-cleanup-2026-11-06/plan.json",
+    "plan_sha256": "7e4a0a3963c6e776468e1a3a9144f46378971ed9dd50014e36ee59baaebf10cb",
+    "deleted": ".codex/server-test-cleanup-2026-11-06/deleted.json",
+    "deleted_sha256": "cdad361299c35ea20f5f070ac7f8e3382d20e7bf6ff10c2efa14f9b81637ead3",
+    "protected_before": ".codex/server-test-cleanup-2026-11-06/protected-before.json",
+    "protected_before_sha256": "7fc74fb0244225ec1601208b016dadfed3fad6d5190b0cef67eb63d8858879cd"
+  }
+}
