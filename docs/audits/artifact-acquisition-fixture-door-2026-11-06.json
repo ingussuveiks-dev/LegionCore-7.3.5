@@ -1,0 +1,8 @@
+{
+  "date": "2026-11-06",
+  "scope": "Shared artifact-acquisition regression fixture only; production unchanged.",
+  "cause": "The actual GameObject::SetLootState preamble now preserves physical door collision by returning for native GAMEOBJECT_TYPE_DOOR. The acquisition fixture copies that preamble but omitted the door enum, so compilation stopped with C2065 before any assertions.",
+  "fix": "Add the matching native GAMEOBJECT_TYPE_DOOR=0 adapter constant. Preserve the extracted complete preamble and existing loot/ownership/progression assertions; no removal of the door branch.",
+  "verification": "Retained Test-EarthwarderRealLootData.ps1 -VerifyReleaseBinary passes on canonical34EB779D, including the shared Test-ArtifactAcquisition native handler and guarded real-loot/14 condition/idempotence/custom-data controls. No character or live World data modified.",
+  "archive_cleanup": "Failed compiler output and passing rerun are part of parent magnar-ai-readiness-2026-11-06 diagnostics; its final audit records the original-byte archive and generated-output cleanup. No executable change required by this fixture fix."
+}
