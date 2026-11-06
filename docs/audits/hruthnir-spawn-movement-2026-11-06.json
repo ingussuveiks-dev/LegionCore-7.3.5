@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-06",
+  "status": "DEPLOYED data-only native spawn initialization repair; client traversal remains OPEN",
+  "scope": "Protection Hruthnir96468/spawn361306/map1495/phase6999 default movement",
+  "cause": "Matching actual World spawn has MovementType2 but no creature_addon/creature_template_addon path. Creature::LoadCreatureFromDB overrides templateMovement0 with that2; actual ScriptName/AIM_Initialize/Motion_Initialize selects an empty Waypoint/path0 and calls the native warning. Earlier Actor fixtures used Create/template0 and could not certify this DB-load branch. New real-load controls at909 stages0/3 reproduce it without a player or client.",
+  "repair": "Migration06 changes only guid361306/id96468/map1495/phase6999/MovementType2/spawndist0 with actual npc_hrutnir and effective addon path0 to idle0. Preserve custom path metadata, other spawn IDs, original ScriptName/pose/phase/texts and seven-node explicit9859004. The script still launches its original intro/path; do not invent a default route, suppress a warning, grant progress or alter character state.",
+  "checks": {
+    "native": "Actual ObjectMgr::LoadCreatures,Creature::LoadCreatureFromDB(false),native registered ScriptName factory/AIM_Initialize/Motion initialize at scenario909 stages0/3,then real explicit MovePath9859004 launch; no story/criterion/quest grant. Map publication, initial client LOS/physical route and rendering remain separate. Current original Release libraries used;not whole-core ASAN.",
+    "migration": "Actual SQL executed twice on private TEMP shadow target. Native readback0,unrelated actual-row clone remains2; custom nonzero addon path causes target2 to remain untouched. Scoped source identity validated; normal World/read-only Character and TEMP Login account boundaries retained. Live target0 verified separately before TEMP changes.",
+    "counterfactual": "Test-HruthnirSpawn -Baseline pins only the original2 inside TEMP. Two real-load contexts emit exactly two native path0 WARN entries. Inner diagnostics deliberately reject them; public baseline accepts only Completed=true,no new crash,exact two matching server-diagnostic lines and one own DBErrors delta with those same two lines. Expected failing controls, not ordinary success. Final paired live positive has no diagnostic delta.",
+    "visibility": "Original canonical sql.sql logger is ERROR5,so initial structural control did not capture WARN4. Raise sql.sql to WARN4 only inside the isolated native process after shared bootstrap,retain original appenders and inspect DBErrors too. Canonical/user configuration unchanged;positive passes at that stricter visibility. Earlier structural-only output retained and not treated as proof of captured warning.",
+    "retained": "100 original escort-clock/lifecycle ASAN contexts pass. Canonical executable remains previously verifiedAACEC722/9FDCCE03; no production C++ change/rebuild or new ScriptName. Existing complete Protection/Fury/Scepter/PE evidence is historical and not claimed rerun for this one-row data-only change.",
+    "startup": "Owned canonical32332 fresh ready/shutdown0/exit0/gone,empty stderr,protected configuration/cert/DLL hashes unchanged. Actual updater registers migration06 RELEASED with normalized SQL content SHA1 4B2E6568D9730E62316DD06564F69C96C8AAFA80. Native Windows ifstream text input normalizes CRLF; raw-file SHA256 recorded separately. No newly appended canonical DBErrors/server diagnostic/crash;mixed7111 preserved."
+  },
+  "deployment": {
+    "Before": [
+      "361306\t96468\t1495\t6999\t2\t0\tnpc_hrutnir\t0\t0"
+    ],
+    "UTC": "2026-11-06T20:07:40.6511555Z",
+    "SQL": "C3300BEF29B0D73BB8DCE576504A6EABDBD4ACDAB900A43C667AA2B548BE4ABE",
+    "Canonical": {
+      "World": "AACEC722327AA20FA48C126E2756298117595F8FD84A9021C668AA5B68702604",
+      "Bnet": "9FDCCE0300917CC48A5C5E0140771F0265D11BE3347D5AAB6D3B4C6F37F40DCD"
+    },
+    "After": [
+      "361306\t96468\t1495\t6999\t0\t0\tnpc_hrutnir\t0\t0"
+    ]
+  },
+  "sql_sha256": "e36a26afaf9c3f66d0be7a3e577ef5a563b74ab73b0c57edec4dec9850501691",
+  "prototype_review": [
+    "Initial structural control ran with inherited ERROR5 and therefore lacked warning evidence; scoped WARN4 control supplies actual original warning bytes without changing user logging. First baseline diagnostic classifier assumed server-only lines,but the diagnostic tool also classifies DBErrors severities; match exact known two entries across both views,retaining the rejection and paired repaired run.",
+    "C++ adapter originally expected DirectExecute to return bool and omitted explicit bool(QueryResult); corrected to actual void API plus SQL readback/diagnostic validation. Deployment preflight initially received one scalar row and inspected its first character; rejected before DML,then fixed explicit array collection. No live unexpected data overwritten."
+  ],
+  "preservation": "No character progress/gear/health edits;no user/unknown process stopped. Canonical binaries remainAACEC722/9FDCCE03 and prior two rollback generations retained. Unresolved mixed7111/LINK2 and Slaghammer original bytes untouched.",
+  "limits": "All three Warrior/all36 whole client chains remain unverified. This closes the DB-load/path0 initialization issue only. Real map publication/initial LOS/start timing/full physical route, cold fresh-AI routing/reoffer after terminal cancellation, audio/VFX/equipment/camera/pet/reconnect and earlier101430/103151 LINK2/unrelated Slaghammer findings remain OPEN.",
+  "archive_cleanup": "PENDING original diagnostic hash archive,reviewed private counterfactual warning-log reset and redundant test-output cleanup after focused fix commit"
+}
