@@ -16,12 +16,15 @@ elseif($DiscoveryBaseline){$source=(& git -C $repo show "52cd603c:$path") -join 
 elseif($Baseline){$source=$pinned}else{
  # Admit only the actual Paladin scenario before the retained callback.
  $scopedSource=$source
+ . "$PSScriptRoot/SilverHandHandoffScope.ps1"
+ $source=Remove-SilverHandHandoffScope $source
  $scope='            // This map also hosts the Priest and Warrior artifact scenarios.
             Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
             if (!scenario || scenario->GetScenarioId() != 1092)
                 return;
 
 '
+ $scope=$scope.Replace("`r",'')
  if(!$source.Contains($scope.Replace("`n",[Environment]::NewLine)) -and !$source.Contains($scope)){throw 'Exact shared-map scenario admission missing'}
  $source=$source.Replace($scope.Replace("`n",[Environment]::NewLine),'').Replace($scope,'')
  # Retain the later, separately tested instance death observer while comparing

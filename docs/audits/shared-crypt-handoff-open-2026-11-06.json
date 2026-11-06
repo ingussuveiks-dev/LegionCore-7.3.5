@@ -1,6 +1,6 @@
 {
   "date": "2026-11-06",
-  "status": "OPEN research; late101430 handoff remains unrepaired. Passing research process means observations captured,not a successful ordinary quest.",
+  "status": "Historical failing late-handoff observations retained;focused late handoff repaired/deployed in slaghammer-handoff-owner-2026-11-06.json. Initial101430/103151 missingLINK2 and full client chain remain OPEN.",
   "finding": "Current static101430 DATA1/1 -> native waypoint101430/TALK0 and nearestPlayer48160 ->8s/TALK1->10s/shared ward/barrier/201004/despawn requests. Native cached original invoker remains owner for201004;nearer foreign/group Player is selected for48160. With original owner100yards away or cached invoker absent,the foreign Player still advances991from2to3 while no101899companion is created. Both races reproduce this independently of missingLINK2. Do not describe it as a foreign companion ownership defect:when owner remains nearby,the actual caster/summon owner stays correct.",
   "observations": [
     {
@@ -51,7 +51,7 @@
     "sha256": "6c0840c2e35d0880816d5bd01870c9fd6bde9f6103451aa387b8db1e45f32c4b",
     "review": "Fetched entireSQL/read-only numeric scan,no gameplay code copied,no new video/audio reviewed."
   },
-  "next": "Repair as a separate focused change using the actual admitted original owner/current quest-cancellation receipt retained with existing instance1539 object,not a nearest-player fallback or raw stored Player pointer. Retain native waypoint,8s+10s speeches,48160-before48306 order and legitimate shared/group rules. Defer pending DATA1/1 until eligible owner is present;acknowledge actual native201004/3747 creation and retry failed casts without duplicate credit/companions before source retirement. Cover owner departure/death/phase/reset/AI replacement/reconnect/retake,missing actors/pet/guardian producer and both factions. Never bootstrap missing earlier intro/LINK2 by granting progress or a companion.",
+  "next": "Continue initial101430/103151 missingLINK2 provenance and actual client path. Do not invent/delete unknown actions. Late101430 owner/receipt/acknowledgement repair and its separate OPEN native intro capture are recorded in docs/audits/slaghammer-handoff-owner-2026-11-06.json.",
   "diagnostics": "Source/read-only/native capture exit/stdout/stderr and canonical/own pre/post diagnostics inspected:no new crash,DBErrors or server warning/error/assertion. Original canonical mixed6090 retained. Native probe/source/config/symbols/evidence remain ignored local OPEN artifacts with concrete reproduction purpose;none archived as fixed. Versioned observational tool repeated cleanly against current9B5320FA/library state;latest10contexts retained separately,not moved to fixed.",
   "evidence": {
     ".codex/shared-crypt-followup-2026-11-06/HandoffProbe.cpp": "657c9beeb2f894f7af8230b2df3bb57cbb561b6ba71aac62c6864a2e70d8fc83",
@@ -68,5 +68,6 @@
   },
   "resolved_independent_issue": "While tracing this shared map,completed separately f14908135 Silver Hand instance scenario1092 callback admission. That fix does not close this handoff or either LINK2 gap.",
   "tool_iteration": "Historical extraction completed/saved rows;printing a Cyrillic metadata row to cp1252 failed once. A later ASCII-safe rendering confirmed matching Smart rows. No SQL was executed from donor files.",
-  "reproduction": "tools/research/Test-SlaghammerHandoffProbe.ps1 compiles actual current SmartAI/Map/criteria/summon behavior with controlled earlier accepted-intro state;asserts101430 remains original unboundSmartAI before observing.20total observations (10initial+10current after independent scope deployment) reproduce the same pattern. This tool returns PASS only for completed capture,not fixed gameplay."
+  "reproduction": "tools/research/Test-SlaghammerHandoffProbe.ps1 compiles actual current SmartAI/Map/criteria/summon behavior with controlled earlier accepted-intro state;asserts101430 remains original unboundSmartAI before observing.20total observations (10initial+10current after independent scope deployment) reproduce the same pattern. This tool returns PASS only for completed capture,not fixed gameplay.",
+  "late_handoff_followup": "docs/audits/slaghammer-handoff-owner-2026-11-06.json"
 }

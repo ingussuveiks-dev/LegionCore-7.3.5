@@ -30,7 +30,7 @@ talk, = sites(admission, '?Talk@CreatureAI@@QEAAXEVObjectGuid@@@Z')
 for getter, insert, effect, skip in ((guid_gets[0], insert_sites[0], talk, talk + 1), (guid_gets[1], insert_sites[1], invoke, invoke + 1)):
     assert getter < insert < effect
     assert admission[getter - 3].op_str == 'edx, edx' and admission[getter - 3].mnemonic == 'xor'
-    assert admission[getter + 1].op_str == 'rcx, [r13 + 0x2f8]' and admission[getter + 2].op_str == 'r8, rax'
+    assert admission[getter + 1].op_str == 'rcx, [r13 + 0x340]' and admission[getter + 2].op_str == 'r8, rax'
     assert admission[insert + 1].op_str == 'byte ptr [rax + 8], sil' and admission[insert + 2].mnemonic == 'je'
     assert admission[insert + 2].operands[0].imm == admission[skip].address
 insert_body = instructions(insert_name)
@@ -46,7 +46,7 @@ assert [entry.op_str for entry in guid_order[:2]] == ['rax, qword ptr [rdx + 8]'
 assert [entry.op_str for entry in guid_order[-4:]] == ['rax, qword ptr [rdx]', 'qword ptr [rcx], rax', 'al', '']
 factory = instructions('?GetInstanceScript@instance_silver_hand@@')
 assert all(any(entry.op_str == operands for entry in factory) for operands in (
-    'ecx, 0x310', 'qword ptr [rdi + 0x2f8], rsi', 'qword ptr [rdi + 0x300], rsi', 'qword ptr [rdi + 0x2f8], rax', 'byte ptr [rdi + 0x308], sil'))
+    'ecx, 0x358', 'qword ptr [rsi + 0x340], rbp', 'qword ptr [rsi + 0x348], rbp', 'qword ptr [rsi + 0x340], rax', 'byte ptr [rsi + 0x350], bpl'))
 helper = instructions(helper_name)
 cast, = sites(helper, '?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@IW4TriggerCastFlags@@PEAVItem@@PEBVAuraEffect@@VObjectGuid@@@Z')
 flags, = sites(helper, '?SetFlag@Object@@')
@@ -114,7 +114,7 @@ erase_names = [name for name in native['symbols'] if name.startswith('?_Erase@')
 erase_calls = [(name, index) for name in erase_names for index in sites(callback, name)]
 assert len(erase_calls) == 1 and len(sites(callback, '??MObjectGuid@@')) == 3
 erase = erase_calls[0][1]
-assert callback[erase - 1].op_str == 'rcx, [r12 + 0x2f8]' and callback[erase].address > deny
+assert callback[erase - 1].op_str == 'rcx, [r12 + 0x340]' and callback[erase].address > deny
 delay = leaf('?AddDelayedEvent@InstanceScript@@', 12)
 assert delay[0].op_str == 'rcx, 0x130' and delay[1].mnemonic == 'jmp' and native['resolve'](delay[1].operands[0].imm) == native['symbol']('?AddDelayedEvent@FunctionProcessor@@')
 update = instructions('?UpdateForScript@InstanceScript@@')
@@ -122,7 +122,7 @@ drain, = sites(update, '?Update@FunctionProcessor@@')
 assert update[drain - 1].op_str == 'rcx, 0x130'
 assert len(sites(instructions('?Update@InstanceMap@@'), '?UpdateForScript@InstanceScript@@')) == 1
 destroy = instructions('??_Ginstance_silver_hand_InstanceMapScript@')
-assert len(sites(destroy, '??1InstanceScript@@')) == 1 and any(entry.op_str == 'edx, 0x310' for entry in destroy)
+assert len(sites(destroy, '??1InstanceScript@@')) == 1 and any(entry.op_str == 'edx, 0x358' for entry in destroy)
 base_destroy = instructions('??1InstanceScript@@')
 release, = sites(base_destroy, '??1FunctionProcessor@@')
 assert base_destroy[release - 1].op_str == 'rcx, [rdi + 0x130]'
@@ -134,4 +134,4 @@ for body, message in ((helper, b'Silver Hand finale: Blinding Light failed with 
     for method in ('?AddDelayedEvent@Unit@@', '?UpdateAchievementCriteria@Player@@', '?KilledMonsterCredit@Player@@', '?AddItem@Player@@'):
         assert not sites(body, method)
 assert not sites(callback, '?AddDelayedEvent@InstanceScript@@')
-print('PASS selected1539 factory0x310/full128-bit GUID set2f8 admits both finale speech/cast before reentry through native insert/128-bit comparator/copy; original nontriggered self215260/protection flags retained. Result0 returns before1000ms instance queue130; closure/table/thunk retains instance+full GUID. After native Map lookup, explicit native24-byte inequality compares both GUID halves against captured identity before live106719/1539/same-map/1092/exact10 checks and retry. Same-low alias follows unchanged stale erase/log/drop without replacement cast/flags or self-requeue. Native queue dispatch/destruction retained; no forced casts, Player credit or items. Accepted cast is not client aura/VFX/arrival verification.')
+print('PASS selected1539 factory0x358/full128-bit GUID set340 admits both finale speech/cast before reentry through native insert/128-bit comparator/copy; original nontriggered self215260/protection flags retained. Result0 returns before1000ms instance queue130; closure/table/thunk retains instance+full GUID. After native Map lookup, explicit native24-byte inequality compares both GUID halves against captured identity before live106719/1539/same-map/1092/exact10 checks and retry. Same-low alias follows unchanged stale erase/log/drop without replacement cast/flags or self-requeue. Native queue dispatch/destruction retained; no forced casts, Player credit or items. Accepted cast is not client aura/VFX/arrival verification.')

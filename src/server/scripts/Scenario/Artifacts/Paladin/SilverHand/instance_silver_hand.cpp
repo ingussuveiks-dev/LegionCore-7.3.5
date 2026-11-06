@@ -7,6 +7,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "silver_hand_first_fight.h"
+#include "../../Priest/slaghammer_handoff.h"
 
 
 class instance_silver_hand : public InstanceMapScript
@@ -19,9 +20,14 @@ public:
         return new instance_silver_hand_InstanceMapScript(map);
     }
 
-    struct instance_silver_hand_InstanceMapScript : public InstanceScript
+    struct instance_silver_hand_InstanceMapScript : public InstanceScript, public SlaghammerHandoff::Instance
     {
         instance_silver_hand_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
+
+        void OnPlayerEnter(Player* player) override
+        {
+            slaghammer.Rejoin(player);
+        }
 
         void OnCreatureCreate(Creature* creature) override
         {
@@ -177,7 +183,15 @@ public:
     };
 };
 
+class npc_slaghammer_handoff : public CreatureScript
+{
+public:
+    npc_slaghammer_handoff() : CreatureScript("npc_slaghammer_handoff") { }
+    CreatureAI* GetAI(Creature* creature) const override { return new SlaghammerHandoff::AI(creature); }
+};
+
 void AddSC_instance_silver_hand()
 {
     new instance_silver_hand();
+    new npc_slaghammer_handoff();
 }

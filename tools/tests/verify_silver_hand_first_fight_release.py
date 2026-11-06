@@ -12,8 +12,13 @@ def sites(body,prefix):
 def locate(body,op,mnemonic=None):return next(i for i,x in enumerate(body) if x.op_str==op and (not mnemonic or x.mnemonic==mnemonic))
 def table(factory,callback):
  result=[]
- for x in ins(factory):
+ body=ins(factory)
+ for index,x in enumerate(body):
   if x.mnemonic=='lea' and len(x.operands)==2 and x.operands[1].type==CS_OP_MEM and x.operands[1].mem.base==X86_REG_RIP:
+   # The Priest state adds a secondary polymorphic base. Its adjacent tables
+   # can span the primary callback when read as96slots; select the actual
+   # InstanceScript vptr store, not an overlapping secondary-table window.
+   if factory=='?GetInstanceScript@instance_silver_hand@@' and (body[index+1].mnemonic!='mov' or body[index+1].op_str!='qword ptr [rsi], rax'):continue
    at=x.address+x.size+x.operands[1].mem.disp;slots=struct.unpack_from('<96Q',n['binary'],n['offset'](at))
    if symbol(callback) in slots:result.append(slots)
  assert len(result)==1

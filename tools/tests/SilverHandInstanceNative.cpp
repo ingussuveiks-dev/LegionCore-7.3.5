@@ -2,6 +2,7 @@
 #define SLAGHAMMER_COMPANION_SUPPORT_ONLY
 #include "SlaghammerCompanionNative.cpp"
 #include "../../src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/silver_hand_first_fight.h"
+#include "../../src/server/scripts/Scenario/Artifacts/Priest/slaghammer_handoff.h"
 #include "SilverHandInstance.inc"
 struct ScopeObserver:NullCreatureAI{using NullCreatureAI::NullCreatureAI;uint32 actions=0;void DoAction(int32 action)override{Require(action==1,"Unexpected native ritual action");++actions;}};
 int main(int argc,char**argv){try{

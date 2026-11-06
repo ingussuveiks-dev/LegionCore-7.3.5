@@ -41,7 +41,8 @@ if (id == 18) { if (!_firstFight.Begin(me)) return; Talk(17); SpawnFirstFight();
                 return;
 
 '
- $instanceForComparison=$instance.Replace("`r",'')
+ . "$PSScriptRoot/SilverHandHandoffScope.ps1"
+ $instanceForComparison=(Remove-SilverHandHandoffScope $instance).Replace("`r",'')
  if(!$instanceForComparison.Contains($scope.Replace("`r",''))){throw 'Exact shared-map scenario admission missing'}
  $instanceForComparison=$instanceForComparison.Replace($scope.Replace("`r",''),'')
  $instanceNormalized=$instanceForComparison.Replace((Block $instanceForComparison 'void CreatureDies('),'').Replace('#include "silver_hand_first_fight.h"','')

@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-06",
+  "status": "DEPLOYED focused static101430 late handoff repair; initial missingLINK2 and full client chain remain OPEN.",
+  "cause": "Native DATA1/1 had no Unit invoker; nearestPlayer48160 could advance991/2 to3 for an unrelated visitor while cached original owner was far/missing. Delayed201004 then created no companion, but source retirement was still requested. Cached original invoker remained the real caster when present: this was not foreign companion ownership.",
+  "implementation": [
+    "Shared1539 instance owns full source/owner GUIDs and the actual40710 cancellation receipt after real admitted SmartAI root0/48121, not before or from a nearest-player guess. Static actor is not bound to a personal summon scope. Original intro200165/unknownLINK2 retained.70yd initial admission and50yd late admission remain separate.",
+    "Derived SmartAI intercepts only DATA1/1. Without an accepted original owner it grants nothing. Pending handoff waits for that alive/contactable Priest,active unrewarded40710,same map/phase/range and same accepted receipt. Instance OnPlayerEnter reattaches cancellation receipt for replacement Player; abandon/retake cancels old pending work.",
+    "Native StartPath101430 must accept before speech0/8s/owner48160; speech1 retains10s. Native48160 precedes native201004/properties3747/101899 JUST_SUMMONED48306. Shared ward101461 and all native distance-selected251349 doors remain independent of cast success. No fabricated waypoint,criterion,item or missingLINK action.",
+    "Cast201004 remains ordinary nontriggered owner self-cast. Pending casts are not duplicated; failed/missing creation retains source for5s retry. Actual scoped same-attempt living companion plus real48306 acknowledgement is required before retirement, including synchronous step3->4 transition. Instance checkpoint survives AI reset/replacement; each AI arms native1ms hide/5s static despawn once, including reset/replacement after acknowledgement.",
+    "Paladin1092 callback admission,ritual/first-fight/graveyard behavior and Warrior1037 context retained. Instance layout grew0x310->0x358;selected GUID set moved2f8->340 and discovery byte308->350. PE assertions updated to verified allocation/offsets; first-fight proof now selects actual primary InstanceScript vptr rather than adjacent secondary-table windows."
+  ],
+  "checks": {
+    "native36": "build-extractors/runtime-test/slaghammer-handoff-native/20261106-121106-244",
+    "native36_scope": "Actual registered whole1539 instance plus derived SmartAI/native Map/Players/Scenario/path/text/criteria/native201004/3747/101899 owner/follow/48306/ward/door/hide/5s static despawn. Human/BloodElf; nearer questless Warrior and eligible Priest group member; missing admitted invoker;owner100yd/dead/phase mismatch;cancel+retake;pre/post acknowledgement AI replacement/reset;absent ward/door;actual native cultist JustDied hooks with Player/pet/guardian inputs;replacement Player and mirrored abandonment. Earlier accepted-root endpoint,poses,clocks and JustDied invocation controlled. No one-hit combat damage pipeline or actual client journey claimed.",
+    "fault2": "build-extractors/runtime-test/slaghammer-handoff-native/20261106-121627-486",
+    "fault_scope": "Explicit native Unit::CastSpell cleanup-guard rejection via controlled m_cleanupDone,not real logout. Two expected scripts WARN result35 retained,each paired with cleared-state successful native cast/one companion/48306 and full source retirement. Strict diagnostic classifier accepts only those two enumerated warnings and successful fault output;ordinary suite accepts none. Earlier immunity/ability-flag attempts did not reject201004 and were rejected as invalid witnesses,not misreported as gameplay fixes.",
+    "shared40": "build-extractors/runtime-test/silver-hand-instance-native/20261106-121332-251",
+    "retained": "54 extracted/native-helper ASAN first-fight cases and full retained ritual/entry/controller tests pass;strict historical preservation verifies exact new Priest binding/base/rejoin additions then compares entire retained Paladin source. Canonical selected new handoff/full Silver Hand finale/first-fight/retained Slaghammer lifetime PE and mandatory Scepter -VerifyReleaseBinary pass.",
+    "sql": "Full-schema TEMP replay changes exactly one creature_template.ScriptName cell;idempotent;8 explicit custom graph/unknownLINK2/condition/AI/binding/path/instance/spell-binding refusals leave all tables unchanged. Live binding and actual updater RELEASED LF SHA1 match verified. Other scripts/conditions and unknown101430/103151 links unchanged.",
+    "build": "Original scripts.lib input rebuilt;original-link dependency EXE/maps staged separately,then exact hash promotion to canonical. No global OutDir or final-link library substitution.",
+    "startup": "Owned canonical PID14148 fresh ready,server shutdown0,exit0,stderr empty,gone;no new crash,DBErrors,server warnings/errors/assertions;protected configs/certificates/DLLs unchanged.",
+    "iterations": "DB initially stopped: native connection attempts refused without crash;Windows service ACL denied start,user started MariaDB. Compiler fixture needed PlayerDefines include and Windows near macro rename;initial LOS timer requires >70ms union max,not10ms. New ack test exposed synchronous48306 step advance;repaired before deployment. Ward fixture initially omitted real addon/model bootstrap;restored native bootstrap. Source comparator normalized CRLF after exact-scope removal;selected layout/vtable proofs adapted to actual disassembly. All failed evidence retained and paired;no production check/log suppressed."
+  },
+  "open_intro": {
+    "path": "build-extractors/runtime-test/slaghammer-handoff-native/20261106-121715-172",
+    "result": "Native process exit0 captures actual root0/48121 admission and original owner after pet-first rejection for both races. Strict diagnostic wrapper deliberately exits1:two original101430 Event1->missingLINK2 SQL errors remain. Not a clean ordinary quest test and never archived as fixed.",
+    "limits": "Poses at native waypoint endpoint and LOS/clock invocation controlled;full movement,client phase/appearance/audio/group traversal and missingLINK2 payload not verified.103151 separate missingLINK2 remains OPEN;no new external donor/video claim."
+  },
+  "diagnostics": {
+    "canonical_mixed_bytes": 6090,
+    "canonical_mixed_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "result": "Canonical active Crashes empty;6090-byte mixed DBErrors unchanged and unresolved. Ordinary/native/ASAN/SQL/build/deploy/startup/PE/Scepter pre/post evidence reviewed. Explicit fault warnings classified and retained. OPEN intro errors remain visible outside fixed. Existing compiler fixture type/shadow warnings retained,not confused with server runtime diagnostics."
+  },
+  "deployment": {
+    "bnetserver": "ABAF20661107884277C31A3A29952A439052D6894DB62C781043824AB8B49449",
+    "worldserver": "96645857BB182026BEAF80039B15E806D4FF168E68D97194B90B106E71F3B94C"
+  },
+  "sql_lf_sha1": "31147349286e037a2b129688368b9d78273d1b1d",
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Priest/slaghammer_handoff.h": "3c5a2cda56e5e0422c8b0637b7142d4e50c00f3138846b9d1d9a8b885738f06d",
+    "src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp": "4aa236b4771f498eefc45005b2f854482f74f861a0e65b9dd9bd5e164d38b85d",
+    "sql/updates/world/2026_11_06_03_slaghammer_handoff.sql": "556256707b292e754bb483d6064360db58f049e7b4b565592ce6a642bb613f14",
+    "tools/tests/SlaghammerHandoffNative.cpp": "bc72fe4d3fdb676f27e9ae96daae74f46319a8af2d72d471e96a9bb780fd7b3f",
+    "tools/tests/Test-SlaghammerHandoffNative.ps1": "b42933be032acd89b3d7ddef089b1f28f8368cd46e02c91c5e477c9826a9cc32",
+    "tools/tests/Test-SlaghammerHandoffData.ps1": "211f662dc986a2aa384fd15000eaed345678c33f145aae35a175beccf7f77603",
+    "tools/tests/verify_slaghammer_handoff_release.py": "120a64c96839ba43072bb0c32a91e9427018cace1644c20081b27fdaaf78b08a",
+    "tools/tests/SilverHandHandoffScope.ps1": "6debc92ca1f6f361eaef6128790801803ac6e931ab3ed48aa3d40560938c5ef0"
+  },
+  "process_ownership": "Owned canonical14148 gracefully gone;no task world/bnet server left. MariaDB was started by user and is left running. No user/unknown server stopped.",
+  "archive_cleanup": "Pending separate post-fix archive/cleanup audit;retain current OPEN intro symbols/logs and reusable regression source. Two recent rollback generations only after verified cleanup.",
+  "client_pending": "Full Priest40710 approach/cultist combat and one-hit/pet/guardian killing blows,movement/voice/camera/barrier/companion visual/follow,death/reconnect after actual companion creation,whole acquisition and all36 chains remain client checks. Live-instance receipt is not serialized exact-stage recovery after server restart."
+}
