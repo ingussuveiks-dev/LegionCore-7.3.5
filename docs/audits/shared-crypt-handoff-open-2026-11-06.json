@@ -1,0 +1,72 @@
+{
+  "date": "2026-11-06",
+  "status": "OPEN research; late101430 handoff remains unrepaired. Passing research process means observations captured,not a successful ordinary quest.",
+  "finding": "Current static101430 DATA1/1 -> native waypoint101430/TALK0 and nearestPlayer48160 ->8s/TALK1->10s/shared ward/barrier/201004/despawn requests. Native cached original invoker remains owner for201004;nearer foreign/group Player is selected for48160. With original owner100yards away or cached invoker absent,the foreign Player still advances991from2to3 while no101899companion is created. Both races reproduce this independently of missingLINK2. Do not describe it as a foreign companion ownership defect:when owner remains nearby,the actual caster/summon owner stays correct.",
+  "observations": [
+    {
+      "mode": 0,
+      "label": "owner nearer control",
+      "criterion": "owner",
+      "stage": 3,
+      "owner_companions": 1,
+      "foreign_companions": 0
+    },
+    {
+      "mode": 1,
+      "label": "nearer questless Warrior",
+      "criterion": "foreign",
+      "stage": 3,
+      "owner_companions": 1,
+      "foreign_companions": 0
+    },
+    {
+      "mode": 2,
+      "label": "nearer active Priest group member",
+      "criterion": "foreign",
+      "stage": 3,
+      "owner_companions": 1,
+      "foreign_companions": 0
+    },
+    {
+      "mode": 3,
+      "label": "original owner100yards away",
+      "criterion": "foreign",
+      "stage": 3,
+      "owner_companions": 0,
+      "foreign_companions": 0
+    },
+    {
+      "mode": 4,
+      "label": "missing cached invoker",
+      "criterion": "foreign",
+      "stage": 3,
+      "owner_companions": 0,
+      "foreign_companions": 0
+    }
+  ],
+  "native_scope": "10contexts Human/BloodElf;actual Map/Players/SmartAI loaders,path table/condition/text loaders,DATA1/1,criteria engine,authored8s+10s text timers,delayed cast and real201004summon. Earlier accepted-intro cached invoker,scenario2,actor at path endpoint,poses and clocks controlled. Initial101430root0/unknownLINK2 not traversed;no real player journey or movement traversal,scene rendering,pet/guardian last cultist kill,reconnect or complete static-actor destruction claimed. No persistent DB writes (TEMP shadow tables/read-only normal pools),character pool/save,item/quest grants or process left.",
+  "missing_link2": "Still OPEN. Historical475e79aee world_2025_04_15_243.sql retains original101430/103151 row1->missing2. f8fcb8ad3/1a10df3ab and bounded newer Trinity review provide no missing matching action. External MagicStorm pinned9.2MB SAI file has zero101430/103151 lines;this is bounded negative evidence,not proof no donor exists. No missing action deleted or invented.",
+  "external_source": {
+    "url": "https://raw.githubusercontent.com/welder1976/MagicStorm/e941af4df2f394e7d0e0753ca15c0677271698c1/sql/ashamane/old/world/2018_03_31_02_world_SAI.sql",
+    "sha256": "6c0840c2e35d0880816d5bd01870c9fd6bde9f6103451aa387b8db1e45f32c4b",
+    "review": "Fetched entireSQL/read-only numeric scan,no gameplay code copied,no new video/audio reviewed."
+  },
+  "next": "Repair as a separate focused change using the actual admitted original owner/current quest-cancellation receipt retained with existing instance1539 object,not a nearest-player fallback or raw stored Player pointer. Retain native waypoint,8s+10s speeches,48160-before48306 order and legitimate shared/group rules. Defer pending DATA1/1 until eligible owner is present;acknowledge actual native201004/3747 creation and retry failed casts without duplicate credit/companions before source retirement. Cover owner departure/death/phase/reset/AI replacement/reconnect/retake,missing actors/pet/guardian producer and both factions. Never bootstrap missing earlier intro/LINK2 by granting progress or a companion.",
+  "diagnostics": "Source/read-only/native capture exit/stdout/stderr and canonical/own pre/post diagnostics inspected:no new crash,DBErrors or server warning/error/assertion. Original canonical mixed6090 retained. Native probe/source/config/symbols/evidence remain ignored local OPEN artifacts with concrete reproduction purpose;none archived as fixed. Versioned observational tool repeated cleanly against current9B5320FA/library state;latest10contexts retained separately,not moved to fixed.",
+  "evidence": {
+    ".codex/shared-crypt-followup-2026-11-06/HandoffProbe.cpp": "657c9beeb2f894f7af8230b2df3bb57cbb561b6ba71aac62c6864a2e70d8fc83",
+    ".codex/shared-crypt-followup-2026-11-06/Test-HandoffProbe.ps1": "80032a4c4c577be61ad2d8c737f5fc8f0eac626f0e543723a36bcfca57493111",
+    ".codex/shared-crypt-followup-2026-11-06/handoff.tsv": "22a5478801571647792fbeed35145d6d93c0ad4168eec06ed8482be9a7770173",
+    ".codex/shared-crypt-followup-2026-11-06/historical-matching-rows.json": "dde4db56bb4550b09645a8102b87cd83cfce879392fae8476ab97bd74b982112",
+    ".codex/shared-crypt-followup-2026-11-06/source-scan.json": "df97d34f2c530a9a9e9883fe4b274db83f99ad7c7015cb8e7796dfacef75b77e",
+    "build-extractors/runtime-test/slaghammer-handoff-probe/20261106-103844-842/native.tsv": "2facff5781ef8557c8f760e0f46797ff980e24e0eba6d2dca8f980d1814333d5",
+    "build-extractors/runtime-test/slaghammer-handoff-probe/20261106-103844-842/native-inputs.json": "9ee4879462183cbf51726984b7de004269b67c008d76883b106b155ab4f7176e",
+    "tools/research/SlaghammerHandoffProbe.cpp": "843fbe842891836b79791acda26fe17b675335f05cd36c6806110a9755fdeaa7",
+    "tools/research/Test-SlaghammerHandoffProbe.ps1": "e20fafd25b424029c26a3ae3912f18866d112836dee022a329053b9f6d31fbe2",
+    "build-extractors/runtime-test/slaghammer-handoff-probe/20261106-111432-581/native.tsv": "7ef5852e08f680c745063ef70cdacf49fb87661ea70cb2033421418585deb290",
+    "build-extractors/runtime-test/slaghammer-handoff-probe/20261106-111432-581/native-inputs.json": "ee05563f47a9123ec460d655117022a8bc81beb6b936a19bc2412f7032fc280f"
+  },
+  "resolved_independent_issue": "While tracing this shared map,completed separately f14908135 Silver Hand instance scenario1092 callback admission. That fix does not close this handoff or either LINK2 gap.",
+  "tool_iteration": "Historical extraction completed/saved rows;printing a Cyrillic metadata row to cp1252 failed once. A later ASCII-safe rendering confirmed matching Smart rows. No SQL was executed from donor files.",
+  "reproduction": "tools/research/Test-SlaghammerHandoffProbe.ps1 compiles actual current SmartAI/Map/criteria/summon behavior with controlled earlier accepted-intro state;asserts101430 remains original unboundSmartAI before observing.20total observations (10initial+10current after independent scope deployment) reproduce the same pattern. This tool returns PASS only for completed capture,not fixed gameplay."
+}
