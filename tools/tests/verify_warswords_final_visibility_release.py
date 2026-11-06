@@ -8,6 +8,8 @@ from capstone.x86_const import X86_REG_RIP
 previous = runpy.run_path(str(Path(__file__).with_name('verify_warswords_final_admission_release.py')))
 native = previous['native']
 instructions = previous['instructions']
+arrival=runpy.run_path(str(Path(__file__).with_name('verify_warswords_arrival_release.py')))
+latch=arrival['latch']
 actor = '@npc_vigfus_bladewind_lastAI@npc_vigfus_bladewind_last@@'
 visible = '?CanBeVisibleFor' + actor
 body = instructions(visible)
@@ -45,9 +47,17 @@ for consumer, slot in (('?AddToWorld@Creature@@', 0x18), ('?RemoveFromWorld@Crea
     assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == slot for entry in instructions(consumer)), f'Native lifecycle misses the selected instance callback: {consumer}'
 
 creation = instructions(create)
-registration = next(index for index, entry in enumerate(creation) if entry.mnemonic == 'movups' and entry.op_str == 'xmmword ptr [rax + 0x20], xmm6')
-bootstrap = next(index for index, entry in enumerate(creation) if entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rbp + 0x300], 0')
-assert registration < bootstrap, 'Late bootstrap skips final GUID registration'
+registration = next(index for index, entry in enumerate(creation) if entry.mnemonic == 'movups'
+                    and entry.op_str.startswith('xmmword ptr [rax + 0x20], xmm'))
+assert native['symbol']('?GetGuidValue@Object@@') in native['calls'](create)
+# Creation only registers either boss's full GUID now. The former blanket
+# nearest-player AttackStart/bootstrap block belongs to tracked wave spawning.
+assert not any(entry.mnemonic=='cmp' and entry.op_str in
+               (f'byte ptr [rbp + {hex(latch)}], 0',f'byte ptr [rdi + {hex(latch)}], 0')
+               for entry in creation), 'Boss registration became bootstrap-dependent'
+for forbidden in ('?SelectNearestPlayer@Creature@@','?FindNearestPlayer@WorldObject@@'):
+    assert not any(name.startswith(forbidden) and native['resolve'](address) in native['calls'](create)
+                   for name,address in native['symbols'].items())
 for prefix in (create, remove, step):
     assert any(operand.type == CS_OP_IMM and operand.imm == 98602 for entry in instructions(prefix) for operand in entry.operands), 'Instance registry no longer scopes final98602'
     assert any(operand.type == CS_OP_IMM and operand.imm == 98007 for entry in instructions(prefix) for operand in entry.operands), 'Instance registry no longer scopes first98007'
@@ -59,7 +69,7 @@ lookup = native['symbol']('?GetCreature@Map@@')
 assert lookup in native['calls'](step), 'Visibility refresh does not resolve the tracked actor on its actual instance map'
 refresh = next(index for index, entry in enumerate(transition) if entry.mnemonic == 'mov' and entry.op_str == 'r8, qword ptr [rcx + 0xf0]')
 assert transition[refresh + 1].op_str == 'dl, 1' and transition[refresh + 3].mnemonic == 'call' and transition[refresh + 3].op_str == 'r8', 'Stage transition does not force the real Unit visibility update'
-bootstrap = next(index for index, entry in enumerate(transition) if entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rdi + 0x300], 0')
+bootstrap = next(index for index, entry in enumerate(transition) if entry.mnemonic == 'cmp' and entry.op_str == f'byte ptr [rdi + {hex(latch)}], 0')
 assert refresh < bootstrap, 'Early myscenario gate skips stationary visibility changes'
 assert native['symbol']('?UpdateVisibility@VisibilityUpdateTask@@') in native['calls']('?UpdateObjectVisibility@Unit@@'), 'Forced native Unit refresh is missing'
 assert native['symbol']('?UpdateObjectVisibility@WorldObject@@') in native['calls']('?UpdateVisibility@VisibilityUpdateTask@@'), 'Native refresh does not reach nearby-object visibility'

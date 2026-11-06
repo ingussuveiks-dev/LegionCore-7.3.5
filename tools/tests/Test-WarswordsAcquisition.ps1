@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary)
+param([switch]$VerifyReleaseBinary,[ValidateRange(1,19)][int]$StartAt=1)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/.codex/warswords-acquisition-$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
@@ -24,12 +24,15 @@ $checks=@(
  @{Name='Test-WarswordsReturnSpatial.ps1';Parameters=@{}},
  @{Name='Test-ScepterLogin.ps1';Parameters=@{}}
 )
-for($index=0;$index -lt $checks.Count;++$index){
- $check=$checks[$index]
+for($checkOrdinal=$StartAt-1;$checkOrdinal -lt $checks.Count;++$checkOrdinal){
+ $check=$checks[$checkOrdinal]
  $parameters=$check.Parameters
  if($VerifyReleaseBinary -and $check.Name -ne 'Test-WarswordsHelyaVisualData.ps1'){$parameters.VerifyReleaseBinary=$true}
- $log="$out/$($index+1).log"
+ $log="$out/$($checkOrdinal+1).log"
  $global:LASTEXITCODE=0
- try{& "$PSScriptRoot/$($check.Name)" @parameters *> $log;if(!$? -or $LASTEXITCODE){throw 'Regression returned failure'}}catch{Get-Content $log -Tail 20;throw "Failed $($check.Name): $_"}
- "PASS $($index+1)/$($checks.Count): $($check.Name) named=$($parameters.Keys -join ',') log=$log"
+ $own=($check.Name -replace '^Test-','' -replace '\.ps1$','').ToLowerInvariant()
+ try{& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$($checkOrdinal+1)-evidence" -RuntimeDirectories @("$repo/build-extractors/runtime-test/$own","$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
+  & "$PSScriptRoot/$($check.Name)" @parameters *> $log;if(!$? -or $LASTEXITCODE){throw 'Regression returned failure'}
+ }}catch{Get-Content $log -Tail 20;throw "Failed $($check.Name): $_"}
+ "PASS $($checkOrdinal+1)/$($checks.Count): $($check.Name) named=$($parameters.Keys -join ',') log=$log"
 }

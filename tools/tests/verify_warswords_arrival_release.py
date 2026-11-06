@@ -3,7 +3,7 @@ from pathlib import Path
 import runpy
 import struct
 from capstone import CS_OP_IMM, CS_OP_MEM
-from capstone.x86_const import X86_REG_RIP
+from capstone.x86_const import X86_REG_RIP, X86_REG_RAX
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_warswords_final_credit_release.py')))
 native = previous['native']
@@ -77,8 +77,20 @@ assert admit < land < first_cast
 assert body[admit + 2].mnemonic == body[land + 2].mnemonic == 'je'
 assert body[admit + 2].operands[0].imm > body[first_cast].address and body[land + 2].operands[0].imm > body[first_cast].address
 assert all(any(item.op_str == value for item in body[:admit]) for value in ('r8, qword ptr [rcx + 0x10]', 'edx, dword ptr [rcx + 0x18]', 'rcx, qword ptr [rcx + 8]'))
-assert any(item.op_str == 'byte ptr [rax + 0x300], 1' for item in body[admit:land])
-assert not any(item.op_str == 'byte ptr [rax + 0x300], 0' for item in body)
+latches=[item.operands[0].mem.disp for item in body[admit:land]
+         if item.mnemonic=='mov' and len(item.operands)==2
+         and item.operands[0].type==CS_OP_MEM and item.operands[0].size==1
+         and item.operands[0].mem.base==X86_REG_RAX
+         and item.operands[1].type==CS_OP_IMM and item.operands[1].imm==1]
+assert len(latches)==1
+latch=latches[0]
+# Instance-owned waves change the class layout. Identify the admission latch
+# by its real write and require initialization and next-step use of that field.
+assert any(item.op_str==f'byte ptr [rsi + {hex(latch)}], al' and item.mnemonic=='mov'
+           for item in instructions('?Initialize'+suffix))
+assert any(item.op_str==f'byte ptr [rdi + {hex(latch)}], 0' and item.mnemonic=='cmp'
+           for item in instructions('?onScenarionNextStep'+suffix))
+assert not any(item.op_str==f'byte ptr [rax + {hex(latch)}], 0' for item in body)
 values = {operand.imm for item in body for operand in item.operands if operand.type == CS_OP_IMM}
 assert {205534, 189695, 5000} <= values and native['symbol']('?MoveJump@MotionMaster@@QEAAXMMMMMMI') in native['calls'](timer)
 

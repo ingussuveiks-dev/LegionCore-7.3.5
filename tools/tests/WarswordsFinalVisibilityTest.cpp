@@ -48,8 +48,9 @@ struct Instance : InstanceScript
     explicit Instance(Map* map) : InstanceScript(map) { }
     std::map<uint32, ObjectGuid> objects;
     bool myscenario = false;
-    uint32 count_wave = 0, waves = 0;
-    void DoSummonAdds(uint32 wave) { assert(wave == count_wave - 1); ++waves; }
+    uint32 count_wave = 0, legacyWaveRequests = 0;
+    struct Waves { uint32 starts = 0; void Start() { ++starts; } } waves;
+    void DoSummonAdds(uint32 wave) { assert(wave == count_wave - 1); ++legacyWaveRequests; }
 #include "Create.inc"
 #include "Step.inc"
 #include "Remove.inc"
@@ -129,8 +130,9 @@ int main()
         Map map; Instance instance(&map); instance.myscenario = true;
         Creature unrelated; unrelated.entry = 97992; Player player; unrelated.nearby = &player;
         ScriptedAI ai(&unrelated); instance.OnCreatureCreate(&unrelated);
-        assert(unrelated.attacks == 1 && instance.objects.empty());
-        instance.onScenarionNextStep(1); assert(instance.waves == 1 && instance.count_wave == 1);
+        // Only the wave controller attacks its own tracked summons now.
+        assert(unrelated.attacks == 0 && instance.objects.empty());
+        instance.onScenarionNextStep(1); assert(instance.waves.starts == 1 && !instance.count_wave);
         scenarioManager.scenario.step = 4; map.players.push_back({&player}); instance.onScenarionNextStep(4);
         assert(player.pending.size() == 1 && player.casts == 0); player.pending.front()(); assert(player.casts == 1);
     }
