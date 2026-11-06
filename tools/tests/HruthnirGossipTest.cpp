@@ -1,4 +1,5 @@
 #include <cassert>
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <cstdint>
@@ -71,14 +72,19 @@ struct ObjectGuid
     uint32 identity = 1, kind = 1;
     explicit operator bool() const { return identity != 0; }
     bool operator==(ObjectGuid other) const { return identity == other.identity && kind == other.kind; }
+    bool operator!=(ObjectGuid other) const { return !(*this == other); }
     bool IsCreatureOrVehicle() const { return kind == 1; }
     bool IsGameObject() const { return kind == 2; }
     void Clear() { identity = 0; }
     std::string ToString() const { return std::to_string(identity); }
 };
 ObjectGuid const ObjectGuid::Empty{0,0};
-struct Player;
-struct Creature;
+#include "QuestScope.inc"
+#include "StartHeader.inc"
+class Player;
+static std::vector<Player*> startPlayers;
+class Player;
+class Creature;
 using Unit = Creature;
 enum DamageEffectType { DIRECT_DAMAGE };
 struct Map;
@@ -119,8 +125,9 @@ struct CreatureAI
     virtual void DamageTaken(Unit*, uint32&, DamageEffectType) { }
     virtual void UpdateAI(uint32) { }
     virtual void MovementInform(uint32, uint32) { }
-    virtual uint32 GetData(uint32) const { return 0; }
-    uint32 starts = 0;
+    virtual uint32 GetData(uint32 type) const { return type == MagnarStart::Accepted ? uint32(starts != 0) : 0; }
+    uint32 starts = 0, requests = 0;
+    bool acceptStart = true;
     std::vector<uint32> texts;
     std::function<void()> onTalk;
     void Talk(uint32 text) { texts.push_back(text); auto callback = onTalk; if (callback) callback(); }
@@ -128,7 +135,8 @@ struct CreatureAI
     virtual void DoAction(int32 action)
     {
         assert(action == 1);
-        ++starts;
+        ++requests;
+        if (acceptStart) ++starts;
         if (reenterStart) { auto callback = std::move(reenterStart); callback(); }
     }
     virtual void sGossipSelect(Player*, uint32, uint32) { }
@@ -184,8 +192,9 @@ struct MotionMaster
         if (reenter) { auto callback = std::move(reenter); callback(); }
     }
 };
-struct Creature
+class Creature
 {
+public:
     struct HomeRecord
     {
         std::array<float,4> values{1.0f,2.0f,3.0f,0.5f};
@@ -217,6 +226,8 @@ struct Creature
     uint32 unitFlags = 0x2000380, react = 0;
     Map* map = &instanceMap;
     CreatureAI* ai = nullptr;
+    CreatureAI* disabledAI = nullptr;
+    ObjectGuid guid{1,1};
     Creature* boss = nullptr;
     InstanceScript request;
     InstanceScript* instanceScript = &request;
@@ -229,9 +240,10 @@ struct Creature
     uint32 GetMapId() const { return mapId; }
     uint32 GetInstanceId() const { return instance; }
     Map* GetMap() const { return map; }
-    ObjectGuid GetGUID() const { return {}; }
+    ObjectGuid GetGUID() const { return guid; }
     Info* GetCreatureTemplate() { return &info; }
     CreatureAI* AI() { return ai; }
+    CreatureAI* GetDisabledAI() { return disabledAI; }
     GameObject* FindNearestGameObject(uint32, float) { assert(false); return nullptr; }
     InstanceScript* GetInstanceScript() const { return instanceScript; }
     void StopAttack() { }
@@ -261,8 +273,26 @@ struct Creature
     void SetFlag(uint32 field, uint32 mask) { assert(field == UNIT_FIELD_NPC_FLAGS); flags |= mask; }
     void SetReactState(uint32 reaction) { react = reaction; }
 };
-struct Player
+class Player
 {
+public:
+    inline static uint32 nextIdentity = 100;
+    ObjectGuid ownerGuid{nextIdentity++,4};
+    std::shared_ptr<QuestObjectScope> scope;
+    Player() { startPlayers.push_back(this); }
+    ~Player() { startPlayers.erase(std::remove(startPlayers.begin(),startPlayers.end(),this),startPlayers.end()); }
+    ObjectGuid GetGUID() const { return ownerGuid; }
+    float startDistance = 1;
+    bool teleport = false;
+    bool IsBeingTeleported() const { return teleport; }
+    bool IsWithinDistInMap(Creature*,float range) const { return startDistance <= range; }
+    std::shared_ptr<QuestCancellationReceipt const> GetQuestCancellationReceipt(uint32 q) {
+        assert(q==39191);if(!status)return {};
+        if(!scope){scope=std::make_shared<QuestObjectScope>();scope->Owner=ownerGuid;}
+        return scope->CancellationReceipt();
+    }
+    bool AdoptQuestCancellationReceipt(uint32 q,std::shared_ptr<QuestCancellationReceipt const>const&receipt){if(!GetQuestCancellationReceipt(q))return false;return scope->AdoptCancellationReceipt(receipt);}
+    void CancelAttempt(){if(scope){scope->Cancel();scope.reset();}}
     PlayerMenu talk;
     PlayerMenu* PlayerTalkClass = &talk;
     Creature* actor = nullptr;
@@ -322,6 +352,9 @@ bool Conversation::CreateConversation(uint64 lowGuid, uint32 identity, Creature*
 using WorldObject = Creature;
 struct ObjectAccessor
 {
+    static Player* GetPlayer(Creature const& source,ObjectGuid guid){for(auto p:startPlayers)if(p->GetGUID()==guid&&p->GetMap()==source.map)return p;return nullptr;}
+    static Creature* GetCreature(Creature const& source,ObjectGuid guid){return source.boss&&source.boss->GetGUID()==guid&&source.boss->map==source.map?source.boss:nullptr;}
+
     template<class Target> static Target* GetObjectInWorld(ObjectGuid guid, Target*)
     {
         for (Conversation* conversation : conversationPool.objects)
@@ -359,6 +392,7 @@ struct HruthnirAI : CreatureAI
     void DoMeleeAttackIfReady() { ++melees; }
     void AttackStart(Creature*) { assert(false); }
 #include "AIFields.inc"
+#include "StartRecovery.inc"
 #include "AISelect.inc"
 #include "AIReset.inc"
 #include "AIDeath.inc"
@@ -415,6 +449,7 @@ struct WorldSession
     void HandleGossipSelectOption(WorldPackets::NPC::GossipSelectOption& packet);
 };
 #include "Dispatch.inc"
+#include "StartRejoin.inc"
 struct Fixture
 {
     Creature actor;
@@ -434,7 +469,7 @@ struct Fixture
         ai.magnarIntroInstanceGeneration = actor.request.generation;
 #endif
         actor.boss = &boss;
-        boss.entry = 96034;
+        boss.entry = 96034; boss.guid={2,1};
         boss.ai = &bossAI;
         player.talk.menu._menuItems[0] = {};
     }
@@ -449,11 +484,97 @@ struct Fixture
 #endif
     }
     void Select(bool prepare = true) { if (prepare) PrepareSelection(); session.HandleGossipSelectOption(packet); }
-    void Tick(uint32 diff) { actor.m_Functions.Update(diff); actor.ai->UpdateAI(diff); }
+    void Tick(uint32 diff) { actor.m_Functions.Update(diff); if(actor.ai && actor.IsAIEnabled)actor.ai->UpdateAI(diff); }
 };
 int main()
 {
-#ifdef DEATH_BASELINE
+#if defined(START_RECOVERY_BASELINE)
+    {
+        Fixture f;f.Select();f.ai.Arrive();f.boss.IsAIEnabled=false;f.Tick(6000);f.boss.IsAIEnabled=true;f.Tick(60000);
+        assert(!f.bossAI.starts && *f.ai.magnarStartToken);
+    }
+    {
+        Fixture f;f.Select();f.actor.conversationSucceeds=false;f.ai.Arrive();f.actor.conversationSucceeds=true;f.Tick(60000);
+        assert(!f.actor.conversations && !f.bossAI.starts && f.ai.magnarArrivalPending);
+    }
+    {
+        Fixture f;f.Select();f.ai.Arrive();f.bossAI.acceptStart=false;f.Tick(6000);f.bossAI.acceptStart=true;f.Tick(60000);
+        assert(f.bossAI.requests==1 && !f.bossAI.starts && *f.ai.magnarStartToken);
+    }
+    std::cout<<"COUNTERFACTUAL pinned db9de52af consumes its6s cue before boss admission; temporarily disabled or declining boss never retries. A rejected497 creation also never retries without another movement notification. Not ordinary passing gameplay.\n";
+#elif defined(START_RECOVERY_ONLY)
+    uint32 cases=0;
+    for(uint32 faction:{0u,1u})for(uint32 status:{1u,3u})for(uint32 mode=0;mode<11;++mode){
+        Fixture f;f.player.faction=faction;f.player.status=status;f.Select();f.ai.Arrive();assert(f.actor.conversations==1);
+        CreatureAI suspended;
+        switch(mode){case 0:f.actor.boss=nullptr;break;case 1:f.boss.IsAIEnabled=false;break;case 2:f.boss.ai=nullptr;break;case 3:f.player.contact=false;break;case 4:f.player.world=false;break;case 5:f.player.teleport=true;break;case 6:f.player.startDistance=101;break;case 7:f.bossAI.acceptStart=false;break;case 8:f.actor.IsAIEnabled=false;break;case 9:f.actor.ai=&suspended;f.actor.disabledAI=&f.ai;break;case 10:f.actor.phase=false;break;}
+        f.Tick(5999);assert(!f.bossAI.requests);f.Tick(1);assert(!f.bossAI.starts && !*f.ai.magnarStartToken && f.actor.conversations==1);
+        auto before=f.bossAI.requests;f.actor.boss=&f.boss;f.boss.IsAIEnabled=true;f.boss.ai=&f.bossAI;f.player.contact=f.player.world=true;f.player.teleport=false;f.player.startDistance=1;f.bossAI.acceptStart=true;f.actor.IsAIEnabled=true;f.actor.ai=&f.ai;f.actor.disabledAI=nullptr;f.actor.phase=true;
+        f.Tick(999);assert(!f.bossAI.starts && f.bossAI.requests==before);f.Tick(1);
+        assert(f.bossAI.starts==1 && *f.ai.magnarStartToken && f.actor.conversations==1);
+        f.Tick(60000);assert(f.bossAI.starts==1 && f.bossAI.requests==before+1);++cases;
+    }
+    {
+        Fixture f;f.Select();f.actor.conversationSucceeds=false;auto attempts=Conversation::attempts;f.ai.Arrive();f.ai.Arrive();
+        assert(f.ai.magnarArrivalPending && f.ai.magnarStartReached && Conversation::attempts==attempts+1);
+        f.Tick(999);assert(Conversation::attempts==attempts+1);f.actor.conversationSucceeds=true;f.Tick(1);
+        assert(f.actor.conversations==1 && !f.ai.magnarArrivalPending);f.Tick(5999);assert(!f.bossAI.starts);f.Tick(1);assert(f.bossAI.starts==1);++cases;
+    }
+    {
+        Fixture f;f.Select();f.actor.reenterConversation=[&]{f.ai.TryMagnarStart();};f.ai.Arrive();
+        f.bossAI.reenterStart=[&]{f.ai.TryMagnarStart();};f.Tick(6000);
+        assert(f.actor.conversations==1 && f.bossAI.requests==1 && f.bossAI.starts==1 && *f.ai.magnarStartToken);++cases;
+    }
+    {
+        Fixture f;f.Select();f.ai.Arrive();f.bossAI.starts=1;f.Tick(6000);
+        assert(f.bossAI.requests==0 && *f.ai.magnarStartToken);++cases;
+    }
+    for(uint32 mode=0;mode<5;++mode){
+        Fixture f;f.Select();f.ai.Arrive();
+        if(mode==0)f.player.CancelAttempt();if(mode==1)++f.actor.request.generation;if(mode==2)scenarioManager.scenario.step=4;if(mode==3)f.ai.Reset();if(mode==4){f.actor.alive=false;f.ai.JustDied(&f.boss);}
+        f.Tick(6000);assert(!f.bossAI.starts && !f.ai.magnarStartToken && !conversationPool.objects.back()->world);++cases;
+    }
+    for(uint32 mode=0;mode<3;++mode){
+        Fixture f;f.Select();f.ai.Arrive();auto owner=f.player.GetGUID();auto original=f.ai.magnarStartAttempt;
+        f.player.map=&otherMap;f.Tick(6000);assert(!f.bossAI.starts && !*f.ai.magnarStartToken);
+        Player reloaded;reloaded.ownerGuid=owner;reloaded.contact=false;reloaded.world=false;
+        if(mode==1)f.player.CancelAttempt();
+        MagnarStart::Rejoin(&f.actor,&reloaded);
+        if(mode==0)assert(reloaded.GetQuestCancellationReceipt(39191)==original);
+        if(mode==2)reloaded.CancelAttempt();
+        reloaded.contact=reloaded.world=true;f.Tick(1000);
+        if(mode==0)assert(f.bossAI.starts==1 && *f.ai.magnarStartToken);else assert(!f.bossAI.starts && !f.ai.magnarStartToken);
+        ++cases;
+    }
+    {
+        Fixture f;f.Select();f.ai.Arrive();auto receipt=f.ai.magnarStartAttempt;Player unrelated;
+        MagnarStart::Rejoin(&f.actor,&unrelated);assert(unrelated.GetQuestCancellationReceipt(39191)!=receipt);
+        f.player.alive=false;f.Tick(6000);assert(f.bossAI.starts==1);++cases;
+    }
+    {
+        Fixture f;f.Select();f.ai.Arrive();CreatureAI replacement;
+        f.bossAI.acceptStart=false;f.bossAI.reenterStart=[&]{f.boss.ai=&replacement;};f.Tick(6000);
+        assert(!f.bossAI.starts && !*f.ai.magnarStartToken);f.Tick(1000);assert(replacement.starts==1 && *f.ai.magnarStartToken);++cases;
+    }
+    {
+        Fixture f;f.Select();f.ai.Arrive();f.bossAI.reenterStart=[&]{f.ai.Reset();};f.Tick(6000);
+        assert(!f.ai.magnarStartToken && !f.ai.magnarStartRetryQueued);++cases;
+    }
+    for(uint32 mode=0;mode<2;++mode){
+        Fixture f;
+        auto live=std::make_unique<HruthnirAI>(&f.actor);f.actor.ai=live.get();
+        live->magnarChamberStarted=true;live->magnarIntroInstanceGeneration=f.actor.request.generation;
+        live->magnarOfferReady=true;live->magnarOfferToken=std::make_shared<bool>(true);
+        f.Select(false);assert(live->magnarStartToken);
+        auto removeAI=[&]{f.actor.ai=nullptr;live.reset();};
+        if(!mode)f.actor.reenterConversation=removeAI;
+        live->Arrive();
+        if(mode){f.bossAI.reenterStart=removeAI;f.Tick(6000);}
+        assert(!live && !f.actor.ai && !conversationPool.objects.back()->world);
+        f.Tick(10000);assert(f.actor.m_Functions.SizeQueue()==0);++cases;
+    }
+    std::cout<<"PASS "<<cases<<" production start-recovery/real FunctionProcessor/QuestObjectScope cases: original6s cue,1s missing/declined/paused actor retry, one497/no reentrant duplicates, actual start receipt, warm owner rejoin/cancellation and Reset/death/epoch gates. Engine presentation/admission/actor services controlled, not client playback.\n";
+#elif defined(DEATH_BASELINE)
     Fixture fixture; fixture.Select(); fixture.ai.Arrive();
     auto* owned = conversationPool.objects.back(); auto token = fixture.ai.magnarStartToken;
     fixture.actor.alive = false; fixture.ai.JustDied(&fixture.boss);
@@ -646,7 +767,7 @@ int main()
                     fixture.player.talk.menu._menuItems[0] = {}; fixture.ai.OfferArrive(); fixture.Tick(13000);
                     fixture.Select(false); fixture.ai.Arrive(); fixture.Tick(5999);
                     assert(fixture.bossAI.starts == uint32(phase == 3));
-                    fixture.Tick(1); assert(fixture.bossAI.starts == uint32(phase == 3) + 1);
+                    fixture.Tick(1); assert(fixture.bossAI.starts == 1);
                 }
     std::cout << "PASS death:64 faction/status/offer-or-selected-or-accepted-or-started/killer-label cases retain ordinary zero-damage protection, revoke only owned dialogue/offer/cue on explicit death and preserve unrelated497. Explicitly reissued point6/selection/point7 after projected revival retains full13000/6000ms budgets, not automatic motion or actual boss Reset. Repeated/null/player/pet/guardian-pointer hooks do not credit anyone; killer labels/services controlled, not real native pet-owner combat.\n";
     for (uint32 faction : {0u,1u})
@@ -712,9 +833,10 @@ int main()
             auto token = fixture.ai.magnarStartToken;
             fixture.ai.Arrive(); fixture.ai.Arrive(); fixture.Tick(6000);
             assert(fixture.ai.magnarArrivalPending && fixture.ai.magnarStartToken == token && !*token);
-            assert(!fixture.actor.conversations && !fixture.bossAI.starts && !fixture.actor.m_Functions.SizeQueue() && !fixture.actor.m_Functions.Size());
+            assert(!fixture.actor.conversations && !fixture.bossAI.starts && fixture.actor.m_Functions.SizeQueue()==1);
             assert(Conversation::attempts == attempts + 2 && Conversation::deletions == deleted + 2);
             fixture.actor.conversationSucceeds = true; fixture.ai.Arrive(); fixture.ai.Arrive();
+            fixture.Tick(999);assert(!fixture.actor.conversations);fixture.Tick(1);
             assert(fixture.actor.conversations == 1 && !fixture.ai.magnarArrivalPending && Conversation::attempts == attempts + 3);
             fixture.Tick(5999); assert(!fixture.bossAI.starts);
             fixture.Tick(1); fixture.ai.Arrive(); fixture.Tick(6000);
@@ -735,10 +857,11 @@ int main()
             if (invalid == 6) fixture.ai.magnarStartToken = std::make_shared<bool>(false);
             if (invalid == 7) conversationPool.objects.back()->Remove();
         };
-        fixture.ai.Arrive(); fixture.actor.m_Functions.Update(6000);
-        assert(fixture.ai.magnarArrivalPending == (invalid == 7) && !fixture.bossAI.starts && !conversationPool.objects.back()->world);
+        fixture.ai.Arrive();
+        auto* rejected=conversationPool.objects.back();
+        assert(!fixture.bossAI.starts && !rejected->world);
         assert(Conversation::removals == removed + 1 && Conversation::queued == queued + 1);
-        if (invalid == 7) { fixture.ai.Arrive(); fixture.Tick(6000); assert(fixture.bossAI.starts == 1); }
+        if (invalid == 7) { fixture.Tick(1000);fixture.Tick(6000); assert(fixture.bossAI.starts == 1); }
     }
     {
         Fixture fixture; fixture.Select();
@@ -1245,7 +1368,7 @@ int main()
         if (invalid == 2) scenarioManager.scenario.identity = 1082;
         if (invalid == 3) scenarioManager.scenario.step = 2;
         if (invalid == 4) scenarioManager.scenario.step = 4;
-        fixture.Tick(1); assert(fixture.actor.conversations == 1 && !fixture.bossAI.starts && *fixture.ai.magnarStartToken);
+        fixture.Tick(1); assert(fixture.actor.conversations == 1 && !fixture.bossAI.starts && !fixture.ai.magnarStartToken);
         scenarioManager = {}; fixture.Tick(6000); fixture.ai.Arrive();
         assert(fixture.actor.conversations == 1 && !fixture.bossAI.starts);
     }
@@ -1283,7 +1406,14 @@ int main()
         if (invalid == 15) fixture.boss.instance = 43;
         if (invalid == 16) fixture.actor.IsAIEnabled = false;
         fixture.Tick(6000);
-        assert(!fixture.bossAI.starts && *fixture.ai.magnarStartToken);
+        assert(!fixture.bossAI.starts);
+        if(invalid<6)assert(!fixture.ai.magnarStartToken);else{
+            assert(fixture.ai.magnarStartToken && !*fixture.ai.magnarStartToken);
+            fixture.actor.boss=&fixture.boss;fixture.actor.IsAIEnabled=true;
+            fixture.boss.IsAIEnabled=true;fixture.boss.ai=&fixture.bossAI;fixture.boss.despawn=false;fixture.boss.distance=4;
+            fixture.boss.world=fixture.boss.alive=fixture.boss.phase=true;fixture.boss.map=&instanceMap;fixture.boss.instance=42;
+            fixture.Tick(1000);assert(fixture.bossAI.starts==1 && *fixture.ai.magnarStartToken);
+        }
     }
     Fixture replaced;
     auto oldAI = std::make_unique<HruthnirAI>(&replaced.actor);
@@ -1301,7 +1431,7 @@ int main()
     HruthnirAI temporary(&suspended.actor);
     suspended.actor.ai = &temporary;
     suspended.Tick(6000);
-    assert(!suspended.bossAI.starts && *suspended.ai.magnarStartToken);
+    assert(!suspended.bossAI.starts && !*suspended.ai.magnarStartToken);
     Fixture restored;
     restored.Select(); restored.ai.Arrive();
     HruthnirAI restoredTemporary(&restored.actor);

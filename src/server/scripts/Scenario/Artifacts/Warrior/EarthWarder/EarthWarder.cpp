@@ -12,6 +12,8 @@
 #include "ScenarioMgr.h"
 #include "SpellMgr.h"
 #include "FunctionProcessor.h"
+#include "QuestObjectScope.h"
+#include "magnar_start.h"
 #include <memory>
 #include <set>
 #include <array>
@@ -98,6 +100,7 @@ public:
         ~npc_hrutnirAI() override
         {
             CancelMagnarIntro();
+            CancelMagnarStart();
             RemoveMagnarConversation();
         }
 
@@ -119,6 +122,13 @@ public:
         bool magnarOfferReady = false;
         ObjectGuid magnarConversation = ObjectGuid::Empty;
         FunctionProcessor _presentationFunctions;
+        ObjectGuid magnarStartOwner;
+        std::shared_ptr<QuestCancellationReceipt const> magnarStartAttempt;
+        bool magnarStartReached = false;
+        bool magnarStartPresented = false;
+        bool magnarStartCueDue = false;
+        bool magnarStartRetryQueued = false;
+        bool magnarStartBusy = false;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -129,10 +139,16 @@ public:
             if (menu.GetMenuId() != menuId || !item || item->OptionNpc != GossipOptionNpc::None ||
                 item->Sender != 0 || item->Action != 0 || item->IsCoded || item->BoxMoney != 0)
                 return;
+            auto attempt = player->GetQuestCancellationReceipt(39191);
+            if (!attempt || attempt->load(std::memory_order_acquire))
+                return;
             magnarOfferReady = false;
             magnarOfferToken.reset();
             magnarStartInstance = me->GetInstanceId();
             magnarStartToken = std::make_shared<bool>(false);
+            magnarStartOwner = player->GetGUID();
+            magnarStartAttempt = std::move(attempt);
+            magnarStartReached = magnarStartPresented = magnarStartCueDue = magnarStartRetryQueued = magnarStartBusy = false;
             magnarArrivalPending = true;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             player->PlayerTalkClass->ClearMenus();
@@ -144,13 +160,138 @@ public:
         {
             CancelMagnarIntro();
             events.Reset();
-            magnarArrivalPending = false;
-            magnarStartToken.reset();
-            magnarStartInstance = 0;
+            CancelMagnarStart();
             magnarOfferToken.reset();
             magnarOfferReady = false;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             RemoveMagnarConversation();
+        }
+
+        void CancelMagnarStart()
+        {
+            magnarStartToken.reset();
+            magnarStartOwner.Clear();
+            magnarStartAttempt.reset();
+            magnarStartInstance = 0;
+            magnarArrivalPending = false;
+            magnarStartReached = magnarStartPresented = magnarStartCueDue = magnarStartRetryQueued = magnarStartBusy = false;
+        }
+
+        void RejoinMagnarStart(Player* player)
+        {
+            if (magnarStartToken && !*magnarStartToken && magnarStartAttempt && !magnarStartAttempt->load() &&
+                player && player->GetGUID() == magnarStartOwner && player->getClass() == CLASS_WARRIOR &&
+                player->GetMap() == me->GetMap() && player->GetInstanceId() == magnarStartInstance &&
+                !player->GetQuestRewardStatus(39191) &&
+                (player->GetQuestStatus(39191) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(39191) == QUEST_STATUS_COMPLETE))
+                player->AdoptQuestCancellationReceipt(39191, magnarStartAttempt);
+        }
+
+        void ScheduleMagnarStart(uint32 delay, bool cue = false)
+        {
+            if (!magnarStartToken || *magnarStartToken || magnarStartRetryQueued)
+                return;
+            magnarStartRetryQueued = true;
+            std::weak_ptr<bool> weak = magnarStartToken;
+            Creature* companion = me;
+            auto* expectedAI = this;
+            me->AddDelayedEvent(delay, [weak, companion, expectedAI, cue]()
+            {
+                auto token = weak.lock();
+                if (!token || *token || (companion->AI() != expectedAI && companion->GetDisabledAI() != expectedAI))
+                    return;
+                if (expectedAI->magnarStartToken != token)
+                    return;
+                expectedAI->magnarStartRetryQueued = false;
+                if (cue)
+                    expectedAI->magnarStartCueDue = true;
+                expectedAI->TryMagnarStart();
+            });
+        }
+
+        void TryMagnarStart()
+        {
+            auto token = magnarStartToken;
+            if (!token || *token || !magnarStartReached || magnarStartBusy)
+                return;
+            Creature* companion = me;
+            magnarStartBusy = true;
+            ContinueMagnarStart(token);
+            if ((companion->AI() == this || companion->GetDisabledAI() == this) && magnarStartToken == token)
+                magnarStartBusy = false;
+        }
+
+        void ContinueMagnarStart(std::shared_ptr<bool> const& token)
+        {
+            Creature* companion = me;
+            Scenario* scenario = sScenarioMgr->GetScenario(magnarStartInstance);
+            if (!magnarStartAttempt || magnarStartAttempt->load() || !me->IsInWorld() || !me->IsAlive() ||
+                me->IsDespawn() || me->GetEntry() != 96468 || me->GetMapId() != 1495 ||
+                me->GetInstanceId() != magnarStartInstance || !scenario || scenario->GetScenarioId() != 909 ||
+                scenario->GetCurrentStep() != 3 || !HasMagnarChamberRequest())
+            {
+                CancelMagnarStart();
+                RemoveMagnarConversation();
+                return;
+            }
+            Player* owner = ObjectAccessor::GetPlayer(*me, magnarStartOwner);
+            if (!me->IsAIEnabled || me->AI() != this || !owner || !owner->IsInWorld() || !owner->CanContact() ||
+                owner->IsBeingTeleported() || owner->getClass() != CLASS_WARRIOR || owner->GetMap() != me->GetMap() ||
+                owner->GetInstanceId() != magnarStartInstance || !owner->InSamePhase(me))
+            {
+                ScheduleMagnarStart(1000);
+                return;
+            }
+            if (owner->GetQuestRewardStatus(39191) ||
+                (owner->GetQuestStatus(39191) != QUEST_STATUS_INCOMPLETE && owner->GetQuestStatus(39191) != QUEST_STATUS_COMPLETE) ||
+                owner->GetQuestCancellationReceipt(39191) != magnarStartAttempt)
+            {
+                CancelMagnarStart();
+                RemoveMagnarConversation();
+                return;
+            }
+            if (!magnarStartPresented)
+            {
+                if (!(me->GetExactDistSq(4720.80f, 347.91f, -37.71f) <= 4.0f) || !StartMagnarConversation())
+                {
+                    if ((companion->AI() == this || companion->GetDisabledAI() == this) && magnarStartToken == token)
+                        ScheduleMagnarStart(1000);
+                    return;
+                }
+                magnarStartPresented = true;
+                magnarArrivalPending = false;
+                ScheduleMagnarStart(6000, true);
+                return;
+            }
+            if (!magnarStartCueDue)
+                return;
+            Creature* boss = me->FindNearestCreature(96034, 60.0f, true);
+            if (!boss || boss->IsDespawn() || !boss->IsAIEnabled || !boss->AI() ||
+                !owner->InSamePhase(boss) || !owner->IsWithinDistInMap(boss, 100.0f))
+            {
+                ScheduleMagnarStart(1000);
+                return;
+            }
+            ObjectGuid bossGuid = boss->GetGUID();
+            CreatureAI* expectedBossAI = boss->AI();
+            if (!expectedBossAI->GetData(MagnarStart::Accepted))
+                expectedBossAI->DoAction(1);
+            // DoAction may decline admission or reset its own encounter. Only
+            // the actual same actor/AI's read-only receipt consumes the cue.
+            if ((companion->AI() != this && companion->GetDisabledAI() != this) || magnarStartToken != token)
+                return;
+            if (!magnarStartAttempt || magnarStartAttempt->load())
+            {
+                CancelMagnarStart();
+                RemoveMagnarConversation();
+                return;
+            }
+            boss = ObjectAccessor::GetCreature(*me, bossGuid);
+            if (boss && boss->IsInWorld() && boss->IsAlive() && !boss->IsDespawn() &&
+                boss->AI() == expectedBossAI && boss->IsAIEnabled && expectedBossAI->GetData(MagnarStart::Accepted))
+                *token = true;
+            else
+                ScheduleMagnarStart(1000);
         }
 
         void RemoveMagnarConversation()
@@ -431,9 +572,7 @@ public:
                     {
                         CancelMagnarIntro();
                         magnarOfferToken.reset();
-                        magnarStartToken.reset();
-                        magnarArrivalPending = false;
-                        magnarStartInstance = 0;
+                        CancelMagnarStart();
                         magnarOfferReady = false;
                         me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                         magnarIntroPending = false;
@@ -588,40 +727,12 @@ public:
                     }
                     case 7:
                     {
-                        if (!magnarArrivalPending || !IsMagnarOfferContext(magnarStartInstance) ||
+                        if (!magnarArrivalPending || magnarStartReached || !IsMagnarOfferContext(magnarStartInstance) ||
                             !(me->GetExactDistSq(4720.80f, 347.91f, -37.71f) <= 4.0f))
                             break;
                         me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
-                        magnarArrivalPending = false;
-                        std::weak_ptr<bool> startToken = magnarStartToken;
-                        Creature* companion = me;
-                        uint32 instanceId = magnarStartInstance;
-                        auto* expectedAI = this;
-                        if (!StartMagnarConversation())
-                        {
-                            std::shared_ptr<bool> token = startToken.lock();
-                            if (token && !*token && companion->AI() == expectedAI && expectedAI->magnarStartToken == token &&
-                                expectedAI->IsMagnarOfferContext(instanceId))
-                                expectedAI->magnarArrivalPending = true;
-                            break;
-                        }
-                        me->AddDelayedEvent(6000, [startToken, companion, instanceId, expectedAI]() -> void
-                        {
-                            std::shared_ptr<bool> token = startToken.lock();
-                            if (!token || *token)
-                                return;
-                            *token = true;
-                            if (!companion->IsInWorld() || !companion->IsAlive() || companion->IsDespawn() ||
-                                companion->GetEntry() != 96468 || companion->GetMapId() != 1495 || companion->GetInstanceId() != instanceId)
-                                return;
-                            if (!companion->IsAIEnabled || companion->AI() != expectedAI)
-                                return;
-                            if (!expectedAI->IsMagnarOfferContext(instanceId))
-                                return;
-                            if (Creature* boss = companion->FindNearestCreature(96034, 60.0f, true))
-                                if (boss->IsAIEnabled && boss->AI() && !boss->IsDespawn())
-                                    boss->AI()->DoAction(1);
-                        });
+                        magnarStartReached = true;
+                        TryMagnarStart();
                         break;
                     }
                     default:
@@ -701,6 +812,17 @@ public:
 };
 
 
+void MagnarStart::Rejoin(Creature* companion, Player* player)
+{
+    if (!companion || companion->GetEntry() != 96468 || companion->GetMapId() != 1495)
+        return;
+    if (auto current = dynamic_cast<npc_hrutnir::npc_hrutnirAI*>(companion->AI()))
+        current->RejoinMagnarStart(player);
+    if (auto suspended = dynamic_cast<npc_hrutnir::npc_hrutnirAI*>(companion->GetDisabledAI()))
+        if (suspended != companion->AI())
+            suspended->RejoinMagnarStart(player);
+}
+
 // 96034
 class npc_magnar_icebreaker : public CreatureScript
 {
@@ -719,6 +841,20 @@ public:
             wave = 1;
             count_dies = 0;
             first_phase = true;
+        }
+
+        ~npc_magnar_icebreakerAI() override
+        {
+            // A replaced first-phase AI must not orphan its owned reserve and
+            // let a retried start create a second roster. Despawn is not death.
+            if (first_phase && me->FindMap())
+            {
+                encounterStarted = releasingWave = true;
+                pendingActivation.clear();
+                activeWave.clear();
+                count_dies = 0;
+                summons.DespawnAll();
+            }
         }
 
         SummonList summons;
@@ -787,6 +923,15 @@ public:
             }
             releasingWave = false;
             encounterStarted = false;
+        }
+
+        uint32 GetData(uint32 type) const override
+        {
+            if (type != MagnarStart::Accepted || !encounterStarted || !me->IsInWorld() || !me->IsAlive() ||
+                me->IsDespawn() || me->GetEntry() != 96034 || me->GetMapId() != 1495 || me->AI() != this)
+                return 0;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 3;
         }
 
         void EnterCombat(Unit* who) override

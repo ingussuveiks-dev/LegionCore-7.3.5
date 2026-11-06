@@ -8,6 +8,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include <array>
+#include "../../Warrior/EarthWarder/magnar_start.h"
 
 
 
@@ -61,6 +62,11 @@ public:
             magnarGuardsDelivered = false;
             magnarGuardDispatching = false;
             ++magnarGuardGeneration;
+        }
+
+        void OnPlayerEnter(Player* player) override
+        {
+            MagnarStart::Rejoin(instance->GetCreature(magnarCompanionGUID), player);
         }
 
         void OnCreatureCreate(Creature* creature) override

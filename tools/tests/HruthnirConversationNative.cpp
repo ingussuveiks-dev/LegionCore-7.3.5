@@ -9,6 +9,8 @@
 #include <limits>
 #include <memory>
 
+struct QuestCancellationReceipt;
+
 struct HruthnirConversationOwner
 {
     Creature* me;
@@ -22,6 +24,7 @@ struct HruthnirNativeLifecycle : ScriptedAI
 #include "HruthnirFields.inc"
 #include "HruthnirCleanup.inc"
 #include "HruthnirCancel.inc"
+#include "HruthnirCancelStart.inc"
 #include "HruthnirReset.inc"
 #include "HruthnirDamage.inc"
 };

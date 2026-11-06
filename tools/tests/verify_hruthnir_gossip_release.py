@@ -68,7 +68,7 @@ index = next(index for index, entry in enumerate(body) if entry.op_str == 'r9d, 
 assert body[index + 1].mnemonic == 'jne' and body[index + 1].operands[0].imm > body[movement].address
 assert body[gate + 1].op_str == 'al, al' and body[gate + 2].mnemonic == 'je' and body[gate + 2].operands[0].imm > body[movement].address
 item = positions(body, '?GetItem@GossipMenu@@')[0]
-assert body[item - 3].op_str == 'edx, edx' and body[item - 3].mnemonic == 'xor'
+assert any(entry.op_str == 'edx, edx' and entry.mnemonic == 'xor' for entry in body[item - 3:item])
 for operands, branch in (('eax, 0x4937', 'jne'), ('rdi, rdi', 'je'), ('byte ptr [rdi], 0', 'jne'),
                          ('dword ptr [rdi + 4], 0', 'jne'), ('dword ptr [rdi + 8], 0', 'jne'),
                          ('byte ptr [rdi + 0x50], 0', 'jne'), ('dword ptr [rdi + 0xc], 0', 'jne')):

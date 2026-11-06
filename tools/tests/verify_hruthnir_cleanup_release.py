@@ -25,7 +25,8 @@ def check_cleanup(name, owner):
     assert [entry.op_str for entry in body[clear - 2:clear]] == ['xmm0, xmmword ptr [rcx]', 'xmmword ptr [rsp + 0x20], xmm0']
     assert any(entry.op_str == 'rcx, [' + owner + ' + 0xad]' or entry.op_str == 'rcx, 0xad' for entry in body[:clear])
     assert body[empty - 1].op_str == 'rcx, [rsp + 0x20]'
-    assert body[empty + 1].op_str == 'al, al' and body[empty + 2].mnemonic == 'je' and body[empty + 2].operands[0].imm > body[remove].address
+    test = next(index for index in range(empty + 1, empty + 5) if body[index].mnemonic == 'test' and body[index].op_str == 'al, al')
+    assert body[test + 1].mnemonic == 'je' and body[test + 1].operands[0].imm > body[remove].address
     assert any(entry.op_str == 'xmm0, xmmword ptr [rsp + 0x20]' for entry in body[empty:lookup])
     assert any(entry.op_str == 'xmmword ptr [rsp + 0x30], xmm0' for entry in body[empty:lookup])
     assert any(entry.op_str == 'rdx, [rsp + 0x30]' for entry in body[empty:lookup])
@@ -39,13 +40,20 @@ def check_cleanup(name, owner):
 check_cleanup(cleanup_name, 'rbx')
 reset, clear, remove = check_cleanup('?Reset' + suffix, 'rdi')
 assert positions(reset, '?RemoveFlag@Object@@')[0] < clear
-destructor, clear, remove = check_cleanup('??_Gnpc_hrutnirAI@npc_hrutnir@@', 'rdi')
-assert positions(destructor, '?CancelMagnarIntro' + suffix)[0] < clear
-assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x68]' for entry in destructor[remove:])
+current_start = any(name.startswith('?ContinueMagnarStart' + suffix) for name in native['symbols'])
+if current_start:
+    deleting = instructions('??_Gnpc_hrutnirAI@npc_hrutnir@@')
+    assert positions(deleting, '??1npc_hrutnirAI@npc_hrutnir@@')
+    destructor, clear, remove = check_cleanup('??1npc_hrutnirAI@npc_hrutnir@@', 'rsi')
+    assert positions(destructor, '?CancelMagnarIntro' + suffix)[0] < positions(destructor, '?CancelMagnarStart' + suffix)[0] < clear
+else:
+    destructor, clear, remove = check_cleanup('??_Gnpc_hrutnirAI@npc_hrutnir@@', 'rdi')
+    assert positions(destructor, '?CancelMagnarIntro' + suffix)[0] < clear
+    assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x68]' for entry in destructor[remove:])
 action = instructions('?DoAction' + suffix)
 epoch = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
 assert positions(action, cleanup_name) == [epoch + 1]
-callback = instructions('??R<lambda_6>@?BO@??MovementInform' + suffix)
+callback = instructions('??$invoke@AEAV<lambda_1>@?1??ScheduleMagnarStart' + suffix if current_start else '??R<lambda_6>@?BO@??MovementInform' + suffix)
 assert not positions(callback, lookup_name) and not positions(callback, remove_name)
 
 address = native['symbol'](clear_name)
@@ -69,7 +77,7 @@ for section in range(struct.unpack_from('<H', binary, pe + 6)[0]):
         break
 assert zero_filled, 'Factory identity does not load16 bytes of native PE zero-initialized storage'
 has_owned_escort_clock = any(name.startswith('?UpdateLifecycle@npc_hrutnirAI@npc_hrutnir@@') for name in native['symbols'])
-allocation = 'ecx, 0x140' if has_owned_escort_clock else 'ecx, 0xc0'
+allocation = 'ecx, 0x168' if current_start else ('ecx, 0x140' if has_owned_escort_clock else 'ecx, 0xc0')
 assert any(entry.op_str == allocation for entry in factory[:store])
 if has_owned_escort_clock:
     assert any(entry.op_str == 'rcx, [rsi + 0xc0]' for entry in factory[store:])

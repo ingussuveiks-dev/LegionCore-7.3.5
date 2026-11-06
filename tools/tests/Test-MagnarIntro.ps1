@@ -15,6 +15,7 @@ $first=$source.IndexOf('        bool magnarIntroPending');$last=$source.IndexOf(
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
 [IO.File]::WriteAllText("$out/Context.inc",(Block $source 'bool IsMagnarOfferContext('))
 $intro=(Block $source 'bool IsMagnarIntroPlayer(')+(Block $source 'bool IsMagnarIntroContext(')+(Block $source 'uint32 GetData(').Replace(' override','')+(Block $source 'void CancelMagnarIntro(')+(Block $source 'void UpdateMagnarIntro(')
+if($source.Contains('void CancelMagnarStart(')){$intro+=Block $source 'void CancelMagnarStart('}
 if($source.Contains('bool IsMagnarOfferReady(')){$intro+=(Block $source 'bool IsMagnarOfferReady(')+(Block $source 'bool IsMagnarOfferPosition(')+(Block $source 'bool HasMagnarChamberRequest(')}
 if($Baseline){$source=(& git -C $repo show "8e9a0d6e:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned no-scene source unavailable'};$intro='void UpdateMagnarIntro(uint32){} uint32 GetData(uint32) const { return 0; }'}
 [IO.File]::WriteAllText("$out/Intro.inc",$intro)
@@ -68,5 +69,5 @@ if($VerifyReleaseBinary){
  if($rows -notcontains "live`t1458`t1059`t16`t0`t" -or $rows -notcontains "events`t0"){throw 'Installed intro binding differs'}
  if($rows -notcontains "release`t$hash`tRELEASED"){throw 'Installed intro migration hash differs'}
  $previous=$env:PYTHONPATH
- try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_magnar_intro_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed intro policy differs'}}finally{$env:PYTHONPATH=$previous}
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/run_linked_release_verifier.py" "$PSScriptRoot/verify_magnar_intro_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed intro policy differs'}}finally{$env:PYTHONPATH=$previous}
 }

@@ -149,15 +149,26 @@ for operand, branch in (('dword ptr [rcx + 0xa18], 0', 'jne'), ('byte ptr [rcx +
                         ('eax, 0x38d', 'jne'), ('eax, 3', 'jne')):
     check = next(index for index, entry in enumerate(body) if entry.mnemonic == 'cmp' and entry.op_str == operand)
     assert body[check + 1].mnemonic == branch and body[check + 1].operands[0].imm == deny, f'Missing point6 context {operand}'
-reset = instructions('?Reset' + suffix)
-assert all(any(entry.op_str == f'qword ptr [rdi + {hex(offset)}], rbp' for entry in reset) for offset in (0x78,0x80))
-assert sum(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in reset) == 2
-selection = instructions('?sGossipSelect' + suffix)
-retire = positions(selection, '?reset@?$shared_ptr@_N@std@@')[0]
-assert selection[retire - 2].op_str == 'rcx, [rsi + 0x78]' and selection[retire - 1].op_str == 'byte ptr [rsi + 0xac], 0' and retire < positions(selection, '?RemoveFlag@Object@@')[0]
-destructor = instructions('??_Gnpc_hrutnirAI@npc_hrutnir@@')
-cleanup = positions(destructor, '?CancelMagnarIntro' + suffix)[0]
-assert any(entry.op_str == 'rdi, rcx' for entry in destructor[:cleanup])
-assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x80]' for entry in destructor[cleanup:])
-assert sum(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in destructor) == 2
+current_start = previous['current_start']
+if current_start:
+    reset = instructions('?Reset' + suffix)
+    assert positions(reset, '?CancelMagnarStart' + suffix)
+    assert all(any(entry.op_str == f'qword ptr [rdi + {hex(offset)}], rax' for entry in reset) for offset in (0x78, 0x80))
+    assert any(entry.mnemonic == 'xor' and entry.op_str == 'eax, eax' for entry in reset)
+    selection = instructions('?sGossipSelect' + suffix)
+    assert positions(selection, '?GetQuestCancellationReceipt@Player@@')[0] < positions(selection, '?RemoveFlag@Object@@')[0]
+    destructor = instructions('??1npc_hrutnirAI@npc_hrutnir@@')
+    assert positions(destructor, '?CancelMagnarIntro' + suffix) and positions(destructor, '?CancelMagnarStart' + suffix)
+else:
+    reset = instructions('?Reset' + suffix)
+    assert all(any(entry.op_str == f'qword ptr [rdi + {hex(offset)}], rbp' for entry in reset) for offset in (0x78,0x80))
+    assert sum(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in reset) == 2
+    selection = instructions('?sGossipSelect' + suffix)
+    retire = positions(selection, '?reset@?$shared_ptr@_N@std@@')[0]
+    assert selection[retire - 2].op_str == 'rcx, [rsi + 0x78]' and selection[retire - 1].op_str == 'byte ptr [rsi + 0xac], 0' and retire < positions(selection, '?RemoveFlag@Object@@')[0]
+    destructor = instructions('??_Gnpc_hrutnirAI@npc_hrutnir@@')
+    cleanup = positions(destructor, '?CancelMagnarIntro' + suffix)[0]
+    assert any(entry.op_str == 'rdi, rcx' for entry in destructor[:cleanup])
+    assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x80]' for entry in destructor[cleanup:])
+    assert sum(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in destructor) == 2
 print('PASS: installed point6 ordered3D2-yard endpoint gate precedes offer allocation/Talk15/13000ms queue and repeats before/after Talk16; outside/unordered retires only the same current offer token before release. Actual coordinates/math/branches/weak ownership, live96468/1495/original-instance/AI/909-3/token checks, flags and Reset/destructor/selection retained. Native voice budget separate; automatic motion recovery, request generation and client playback unverified.')

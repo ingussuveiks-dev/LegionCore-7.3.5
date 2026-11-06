@@ -53,7 +53,12 @@ flag = positions(selection, '?RemoveFlag@Object@@')[0]
 assert positions(selection, '?CanStart@HruthnirGossip@@')[0] < gate < menu < retire < flag
 assert selection[gate + 1].op_str == 'al, al' and selection[gate + 2].mnemonic == 'je'
 assert selection[gate + 2].operands[0].imm > selection[positions(selection, '?MovePoint@MotionMaster@@')[0]].address
-assert selection[retire - 1].op_str == 'byte ptr [rsi + 0xac], 0'
+if any(name.startswith('?ContinueMagnarStart' + suffix) for name in native['symbols']):
+    assert selection[retire - 2].op_str == 'byte ptr [rsi + 0xac], al'
+    assert selection[retire - 4].mnemonic == 'test' and selection[retire - 4].op_str == 'al, al'
+    assert selection[retire - 3].mnemonic == 'jne'
+else:
+    assert selection[retire - 1].op_str == 'byte ptr [rsi + 0xac], 0'
 hello = instructions('?OnGossipHello@npc_hrutnir@@')
 clear = positions(hello, '?ClearMenus@PlayerMenu@@')[0]
 close = positions(hello, '?SendCloseGossip@PlayerMenu@@')[0]
@@ -70,13 +75,14 @@ publish = next(index for index, entry in enumerate(callback) if entry.op_str == 
 flag = positions(callback, '?SetFlag@Object@@')[0]
 assert positions(callback, '?Talk@CreatureAI@@QEAAXEVObjectGuid@@@Z')[0] < positions(callback, '?HasMagnarChamberRequest' + suffix)[1] < publish == flag - 4
 reset = instructions('?Reset' + suffix)
-zero = next(index for index, entry in enumerate(reset) if entry.op_str == 'byte ptr [rdi + 0xac], bpl')
-assert any(entry.mnemonic == 'xor' and entry.op_str == 'ebp, ebp' for entry in reset[:zero])
+zero = next(index for index, entry in enumerate(reset) if entry.op_str in ('byte ptr [rdi + 0xac], bpl', 'byte ptr [rdi + 0xac], 0'))
+if reset[zero].op_str.endswith('bpl'):
+    assert any(entry.mnemonic == 'xor' and entry.op_str == 'ebp, ebp' for entry in reset[:zero])
 assert any(entry.op_str == 'edx, 0x7d' for entry in reset[:zero]) and reset[zero - 1].op_str == 'r8d, 1'
 assert len(positions(reset, '?RemoveFlag@Object@@')) == 1 and reset[-1].mnemonic == 'ret'
 action = instructions('?DoAction' + suffix)
 epoch = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
 erase = positions(action, '?RemoveFlag@Object@@')[0]
 assert action[erase - 1].op_str == 'byte ptr [rbx + 0xac], 0' and erase < epoch
-assert any(entry.op_str == 'edx, 0x7d' for entry in action[erase - 6:erase]) and action[erase - 4].op_str == 'r8d, 1'
+assert any(entry.op_str == 'edx, 0x7d' for entry in action[erase - 6:erase]) and any(entry.op_str == 'r8d, 1' for entry in action[erase - 5:erase])
 print('PASS: canonical hello queries actual current enabled AI1061; raw selection rechecks ready authority before menu consumption/move. Actual ready/token/claim/live-context/current-epoch/ordered endpoint guards, late publication, exactly-once consumption and gossip-only Reset/epoch clearing verified. Same-epoch physical movement identity,497 ownership and rendered client remain open.')

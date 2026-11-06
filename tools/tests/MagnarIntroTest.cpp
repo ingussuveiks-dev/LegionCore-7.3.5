@@ -10,6 +10,7 @@
 using uint32 = uint32_t;
 using uint64 = uint64_t;
 #include "Functions.inc"
+class QuestCancellationReceipt;
 struct ObjectGuid
 {
     static ObjectGuid const Empty;

@@ -4,7 +4,7 @@ import hashlib
 import json
 import runpy
 import struct
-from capstone import CS_OP_MEM
+from capstone import CS_OP_MEM, Cs, CS_ARCH_X86, CS_MODE_64
 from capstone.x86_const import X86_REG_RDX,X86_REG_RIP
 from sharasdal_erunak_entry_pe import sites,values,fields
 from monk_intro_clock_pe import verify_clock
@@ -30,27 +30,35 @@ def ins(prefix):
  targets=struct.unpack_from('<'+str(count)+'I',n['binary'],n['offset'](address))
  assert all(n['base']+target in {op.address for op in code} for target in targets)
  last_ret=max(op.address+op.size for op in code if op.mnemonic=='ret')
- assert set(n['binary'][n['offset'](last_ret):n['offset'](address)])<={0x90,0xcc}
+ padding=n['binary'][n['offset'](last_ret):n['offset'](address)]
+ alignment=list(Cs(CS_ARCH_X86,CS_MODE_64).disasm(padding,last_ret))
+ assert sum(op.size for op in alignment)==len(padding) and all(op.mnemonic in ('nop','int3') for op in alignment)
  return code
 actor,raw=table('??_7npc_hrutnirAI@npc_hrutnir@@6B@',82)
 script,script_raw=table('??_7npc_hrutnir@@6BScriptObject@@@',16)
 factory=ins('?GetAI@npc_hrutnir@@');destroy=ins('??_Gnpc_hrutnirAI@npc_hrutnir@@')
+current_start=any(name.startswith(method('ContinueMagnarStart')) for name in n['symbols'])
+if current_start:
+ assert sites(n,destroy,'??1npc_hrutnirAI@npc_hrutnir@@')
+ destroy=ins('??1npc_hrutnirAI@npc_hrutnir@@')
 assert actor in refs(factory) and script in refs(ins('?AddSC_EarthWarder@@'))
 assert n['symbol']('?GetAI@npc_hrutnir@@') in resolved(script_raw)
 assert resolved(raw)[0x110//8]==n['symbol'](method('UpdateLifecycle'))
 assert resolved(raw)[0]==n['symbol']('??_Gnpc_hrutnirAI@npc_hrutnir@@')
 construct,=sites(n,factory,'??0FunctionProcessor@@');destruct,=sites(n,destroy,'??1FunctionProcessor@@')
 assert (factory[construct-1].mnemonic,factory[construct-1].op_str)==('lea','rcx, [rsi + 0xc0]')
-assert (destroy[destruct-1].mnemonic,destroy[destruct-1].op_str)==('lea','rcx, [rdi + 0xc0]')
+assert (destroy[destruct-1].mnemonic,destroy[destruct-1].op_str)==('lea','rcx, [rsi + 0xc0]' if current_start else 'rcx, [rdi + 0xc0]')
 assert sites(n,destroy,method('CancelMagnarIntro'))[0]<destruct
 assert sites(n,destroy,'?Remove@Conversation@@')[0]<destruct
-assert 0x140 in values(factory) and {0x68,0x78,0x80,0xad}<=fields(factory)
+assert (0x168 if current_start else 0x140) in values(factory) and {0x68,0x78,0x80,0xad}<=fields(factory)
 verify_clock(n,method('UpdateLifecycle'),0xc0)
 assert not sites(n,ins(method('UpdateAI')),'?Update@FunctionProcessor@@')
 assert not sites(n,ins(method('Reset')),'?KillAllFunctions@FunctionProcessor@@')
 
 parents=[ins(method(name)) for name in ('EnterEvadeMode','MovementInform','MoveInLineOfSight')]
-for body,expected in zip(parents,[[(0xc0,5000)],[(0xc0,5000),(0xc0,4000),(0xc0,15000),(0xc0,2000),(0x36a0,13000),(0x36a0,6000)],[(0xc0,5000)]]):
+movement_queues=[(0xc0,5000),(0xc0,4000),(0xc0,15000),(0xc0,2000),(0x36a0,13000)]
+if not current_start:movement_queues.append((0x36a0,6000))
+for body,expected in zip(parents,[[(0xc0,5000)],movement_queues,[(0xc0,5000)]]):
  queued=sites(n,body,'?AddDelayedEvent@FunctionProcessor@@');assert len(queued)==len(expected)
  for at,(member,delay) in zip(queued,expected):
   window=[(op.mnemonic,op.op_str) for op in body[max(0,at-12):at]]
@@ -61,9 +69,9 @@ assert len(callbacks)==8
 for callback in callbacks:
  name='??_7'+callback[len('?_Do_call@'):].removesuffix('EEAAXXZ')+'6B@'
  address,slots=table(name,7)
- parent=parents[0] if '??EnterEvadeMode' in callback else parents[2] if '??MoveInLineOfSight' in callback else parents[1]
+ parent=ins(method('ScheduleMagnarStart')) if '??ScheduleMagnarStart' in callback else parents[0] if '??EnterEvadeMode' in callback else parents[2] if '??MoveInLineOfSight' in callback else parents[1]
  assert address in refs(parent) and n['symbol'](callback) in resolved(slots),('Actual callback vtable not installed by its parent',callback)
-owned=[name for name in callbacks if not any(f'<lambda_{index}>' in name and '??MovementInform' in name for index in (5,6))]
+owned=[name for name in callbacks if '??ScheduleMagnarStart' not in name and not any(f'<lambda_{index}>' in name and '??MovementInform' in name for index in (5,6))]
 assert len(owned)==6
 bodies=[ins(name) for name in owned]
 assert sum(len(sites(n,body,'?Talk@CreatureAI@@')) for body in bodies)==6

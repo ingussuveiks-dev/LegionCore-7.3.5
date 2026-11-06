@@ -40,12 +40,17 @@ epoch = find(action, 'dword ptr [rbx + 0xa8], eax', 'cmp')
 cancel = positions(action, cancel_name)[0]
 epoch_store = find(action, 'dword ptr [rbx + 0xa8], esi', 'mov')
 assert action[generation + 1].op_str == 'esi, eax'
-retirements = positions(action, '?reset@?$shared_ptr@_N@std@@')
-assert len(retirements) == 2 and cancel < retirements[0] < retirements[1] < epoch_store
-assert action[retirements[0] - 1].op_str == 'rcx, [rbx + 0x78]'
-assert action[retirements[1] - 1].op_str == 'rcx, [rbx + 0x60]'
-assert cancel < find(action, 'byte ptr [rbx + 0x5d], 0', 'mov') < epoch_store
-assert cancel < find(action, 'dword ptr [rbx + 0x70], 0', 'mov') < epoch_store
+if any(name.startswith('?ContinueMagnarStart' + suffix) for name in native['symbols']):
+    retirements = positions(action, '?reset@?$shared_ptr@_N@std@@')
+    assert len(retirements) == 1 and cancel < retirements[0] < positions(action, '?CancelMagnarStart' + suffix)[0] < epoch_store
+    assert action[retirements[0] - 1].op_str == 'rcx, [rbx + 0x78]'
+else:
+    retirements = positions(action, '?reset@?$shared_ptr@_N@std@@')
+    assert len(retirements) == 2 and cancel < retirements[0] < retirements[1] < epoch_store
+    assert action[retirements[0] - 1].op_str == 'rcx, [rbx + 0x78]'
+    assert action[retirements[1] - 1].op_str == 'rcx, [rbx + 0x60]'
+    assert cancel < find(action, 'byte ptr [rbx + 0x5d], 0', 'mov') < epoch_store
+    assert cancel < find(action, 'dword ptr [rbx + 0x70], 0', 'mov') < epoch_store
 assert generation < epoch < cancel < epoch_store < positions(action, offer_name)[0] < handoff < chamber < talk < move < admit < claim
 assert action[epoch + 1].mnemonic == 'je'
 assert find(action, 'byte ptr [rbx + 0xa5], 0', 'mov') < epoch_store
@@ -129,7 +134,8 @@ lookup = positions(body, '?GetPlayer@ObjectAccessor@@')[0]
 remove = positions(body, '?RemoveAurasDueToSpell@Unit@@')[0]
 assert clear < find(body, 'dword ptr [rbx + 0xa0]', 'inc') < lookup < remove
 assert body[remove - 3].op_str == 'edx, 0x2e519'
-for name in ('?Reset' + suffix, '??_Gnpc_hrutnirAI@npc_hrutnir@@'):
+destructor_name = '??1npc_hrutnirAI@npc_hrutnir@@' if any(name.startswith('?ContinueMagnarStart' + suffix) for name in native['symbols']) else '??_Gnpc_hrutnirAI@npc_hrutnir@@'
+for name in ('?Reset' + suffix, destructor_name):
     assert len(positions(instructions(name), cancel_name)) == 1
 body = instructions('?GetData' + suffix)
 for operand, branch in (('edx, 0x423', 'jne'), ('byte ptr [rcx + 0x89], 0', 'je'), ('byte ptr [rcx + 0xa5], 0', 'jne')):

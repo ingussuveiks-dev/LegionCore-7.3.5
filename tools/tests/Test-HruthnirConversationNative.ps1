@@ -5,7 +5,7 @@ $out="$repo/build-extractors/runtime-test/hruthnir-conversation-native/$(Get-Dat
 New-Item -ItemType Directory -Force $out|Out-Null
 $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp" -Raw
 function Block([string]$text,[string]$start){$first=$text.IndexOf($start);if($first -lt 0){throw "Native Hruthnir block missing: $start"};$last=$text.IndexOf('{',$first)+1;$depth=1;while($depth){if($text[$last] -eq '{'){++$depth};if($text[$last] -eq '}'){--$depth};++$last};$text.Substring($first,$last-$first)}
-foreach($entry in @(@('HruthnirCleanup','void RemoveMagnarConversation('),@('HruthnirReset','void Reset()'),@('HruthnirCancel','void CancelMagnarIntro('),@('HruthnirDeath','void JustDied('),@('HruthnirDamage','void DamageTaken('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]))}
+foreach($entry in @(@('HruthnirCleanup','void RemoveMagnarConversation('),@('HruthnirReset','void Reset()'),@('HruthnirCancel','void CancelMagnarIntro('),@('HruthnirCancelStart','void CancelMagnarStart('),@('HruthnirDeath','void JustDied('),@('HruthnirDamage','void DamageTaken('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]))}
 $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void sGossipSelect(',$first)
 if($first -lt 0 -or $last -le $first){throw 'Native Hruthnir lifecycle fields missing'}
 [IO.File]::WriteAllText("$out/HruthnirFields.inc",$source.Substring($first,$last-$first))

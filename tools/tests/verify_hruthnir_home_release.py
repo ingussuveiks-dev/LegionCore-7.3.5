@@ -30,7 +30,9 @@ for index in homes:
         assert body[index - 5].op_str == 'xmm0, dword ptr [rcx + 0xdc]'
     assert all(entry.mnemonic == 'movss' for entry in body[index - 4:index])
 contexts = positions(body, '?IsMagnarOfferContext@npc_hrutnirAI@npc_hrutnir@@')
-assert len(contexts) == 3 and legacy < contexts[0] < offer < contexts[1] < arrival < contexts[2]
+assert len(contexts) == (2 if previous['current_start'] else 3) and legacy < contexts[0] < offer < contexts[1] < arrival
+if not previous['current_start']:
+    assert arrival < contexts[2]
 assert len(positions(instructions('?StartMagnarConversation@npc_hrutnirAI@npc_hrutnir@@'), '?IsMagnarOfferContext@npc_hrutnirAI@npc_hrutnir@@')) == 1
 for context, home in zip(contexts[:2], (offer, arrival)):
     comparison = next(index for index, entry in enumerate(body) if index > context and entry.mnemonic == 'comiss')

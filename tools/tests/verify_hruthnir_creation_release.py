@@ -67,23 +67,28 @@ assert deletion in failure and false_result in failure and guid + 3 not in failu
 assert false_result in reachable(body, remove - 1) and guid + 3 not in reachable(body, remove - 1)
 assert guid + 3 in reachable(body, success)
 
-body = instructions('?MovementInform' + suffix)
-creation = positions(body, '?StartMagnarConversation' + suffix)[0]
-queue = next(index for index in positions(body, '?AddDelayedEvent@FunctionProcessor@@') if body[index - 1].op_str == 'edx, 0x1770')
-assert body[creation - 1].op_str == 'rcx, rbx'
-assert body[creation + 1].op_str == 'al, al' and body[creation + 2].mnemonic == 'jne'
-accepted = next(index for index, entry in enumerate(body) if entry.address == body[creation + 2].operands[0].imm)
-restore = next(index for index, entry in enumerate(body) if entry.op_str == 'byte ptr [rbx + 0x5d], 1')
-contexts = positions(body, '?IsMagnarOfferContext' + suffix)
-assert len(contexts) == 3 and creation < contexts[2] < restore < accepted < queue
-for operand in ('rax, rax', 'byte ptr [rax], 0', 'qword ptr [r14 + 0x9c0], rbx', 'qword ptr [rbx + 0x60], rax'):
-    check = max(index for index, entry in enumerate(body[:contexts[2]]) if entry.mnemonic in ('cmp', 'test') and entry.op_str == operand)
-    branch = 'je' if operand == 'rax, rax' else 'jne'
-    assert body[check + 1].mnemonic == branch and body[check + 1].operands[0].imm == body[restore + 1].address
-assert body[contexts[2] - 2].op_str == 'edx, r15d'
-assert body[contexts[2] + 1].op_str == 'al, al' and body[contexts[2] + 2].mnemonic == 'je' and body[contexts[2] + 2].operands[0].imm == body[restore + 1].address
-assert any(entry.mnemonic == 'lock cmpxchg' and entry.op_str == 'dword ptr [rdi + 8], ecx' for entry in body[creation:restore])
-assert restore in reachable(body, creation + 3) and queue not in reachable(body, creation + 3)
-assert queue in reachable(body, accepted)
-assert not positions(body, '?CreateConversation@Unit@@')
-print('PASS: installed native497 helper snapshots actor/instance/strong unconsumed token, checks real factory bool and deletes a failed allocation. Current AI/token/context/created-world gates precede publishing only its real GUID and true result; native Remove rollback returns false. Actual caller branches on acknowledgement, failure CFG cannot reach6000ms queue and weak same-token/current-context recovery restores only the original claim. Automatic retry/client delivery remain separate.')
+if any(name.startswith('?ContinueMagnarStart' + suffix) for name in native['symbols']):
+    # New caller retry/queue/acceptance certificate ran through cue -> offer.
+    body = instructions('?ContinueMagnarStart' + suffix)
+    assert positions(body, '?StartMagnarConversation' + suffix) and positions(body, '?ScheduleMagnarStart' + suffix)
+else:
+    body = instructions('?MovementInform' + suffix)
+    creation = positions(body, '?StartMagnarConversation' + suffix)[0]
+    queue = next(index for index in positions(body, '?AddDelayedEvent@FunctionProcessor@@') if body[index - 1].op_str == 'edx, 0x1770')
+    assert body[creation - 1].op_str == 'rcx, rbx'
+    assert body[creation + 1].op_str == 'al, al' and body[creation + 2].mnemonic == 'jne'
+    accepted = next(index for index, entry in enumerate(body) if entry.address == body[creation + 2].operands[0].imm)
+    restore = next(index for index, entry in enumerate(body) if entry.op_str == 'byte ptr [rbx + 0x5d], 1')
+    contexts = positions(body, '?IsMagnarOfferContext' + suffix)
+    assert len(contexts) == 3 and creation < contexts[2] < restore < accepted < queue
+    for operand in ('rax, rax', 'byte ptr [rax], 0', 'qword ptr [r14 + 0x9c0], rbx', 'qword ptr [rbx + 0x60], rax'):
+        check = max(index for index, entry in enumerate(body[:contexts[2]]) if entry.mnemonic in ('cmp', 'test') and entry.op_str == operand)
+        branch = 'je' if operand == 'rax, rax' else 'jne'
+        assert body[check + 1].mnemonic == branch and body[check + 1].operands[0].imm == body[restore + 1].address
+    assert body[contexts[2] - 2].op_str == 'edx, r15d'
+    assert body[contexts[2] + 1].op_str == 'al, al' and body[contexts[2] + 2].mnemonic == 'je' and body[contexts[2] + 2].operands[0].imm == body[restore + 1].address
+    assert any(entry.mnemonic == 'lock cmpxchg' and entry.op_str == 'dword ptr [rdi + 8], ecx' for entry in body[creation:restore])
+    assert restore in reachable(body, creation + 3) and queue not in reachable(body, creation + 3)
+    assert queue in reachable(body, accepted)
+    assert not positions(body, '?CreateConversation@Unit@@')
+print('PASS: installed native497 helper snapshots actor/instance/strong unconsumed token, checks real factory bool and deletes a failed allocation. Current AI/token/context/created-world gates precede publishing only its real GUID and true result; native Remove rollback returns false. Actual caller branches on acknowledgement, failure CFG cannot reach6000ms queue and weak same-token/current-context recovery restores only the original claim. Automatic retry is covered by the selected current start certificate when present; client delivery remains separate.')

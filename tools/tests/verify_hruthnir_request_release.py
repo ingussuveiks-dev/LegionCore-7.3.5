@@ -26,16 +26,26 @@ failure = next(index for index, entry in enumerate(body) if entry.address == den
 assert body[failure + 1].op_str == 'al, al' and body[failure + 4].mnemonic == 'ret'
 action = instructions('?DoAction' + suffix)
 cancel = positions(action, '?CancelMagnarIntro' + suffix)[0]
-retirements = positions(action, '?reset@?$shared_ptr@_N@std@@')
-assert len(retirements) == 2 and cancel < retirements[0] < retirements[1]
-assert [action[index - 1].op_str for index in retirements] == ['rcx, [rbx + 0x78]', 'rcx, [rbx + 0x60]']
-epoch_store = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
-for operand in ('byte ptr [rbx + 0x5d], 0', 'dword ptr [rbx + 0x70], 0', 'byte ptr [rbx + 0xa5], 0', 'byte ptr [r15], 0'):
-    assert any(entry.mnemonic == 'mov' and entry.op_str == operand for entry in action[retirements[1]:epoch_store])
-epoch_compare = next(index for index, entry in enumerate(action) if entry.mnemonic == 'cmp' and entry.op_str == 'dword ptr [rbx + 0xa8], eax')
-assert epoch_compare < cancel < epoch_store < positions(action, '?IsMagnarOfferContext' + suffix)[0]
-assert action[epoch_compare + 1].mnemonic == 'je' and action[epoch_compare + 1].operands[0].imm == action[epoch_store + 3].address
-cleanup = positions(action, '?RemoveMagnarConversation' + suffix)[0]
-assert cleanup == epoch_store + 1 and action[epoch_store + 2].mnemonic == 'jmp'
-assert action[epoch_store + 2].operands[0].imm == action[epoch_store + 4].address
+if previous['previous']['current_start']:
+    epoch_store = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
+    retire = positions(action, '?CancelMagnarStart' + suffix)[0]
+    assert cancel < retire < epoch_store < positions(action, '?RemoveMagnarConversation' + suffix)[0]
+    retired = instructions('?CancelMagnarStart' + suffix)
+    assert positions(retired, '?Clear@ObjectGuid@@')
+    for operand in ('ebp, ebp', 'qword ptr [rcx + 0x60], rbp', 'qword ptr [rcx + 0x68], rbp', 'qword ptr [rbx + 0x150], rbp', 'qword ptr [rbx + 0x158], rbp', 'dword ptr [rbx + 0x161], ebp', 'byte ptr [rbx + 0x160], bpl'):
+        assert any(entry.op_str == operand for entry in retired)
+    assert sum(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rdi + 8], eax' for entry in retired) == 2
+else:
+    retirements = positions(action, '?reset@?$shared_ptr@_N@std@@')
+    assert len(retirements) == 2 and cancel < retirements[0] < retirements[1]
+    assert [action[index - 1].op_str for index in retirements] == ['rcx, [rbx + 0x78]', 'rcx, [rbx + 0x60]']
+    epoch_store = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
+    for operand in ('byte ptr [rbx + 0x5d], 0', 'dword ptr [rbx + 0x70], 0', 'byte ptr [rbx + 0xa5], 0', 'byte ptr [r15], 0'):
+        assert any(entry.mnemonic == 'mov' and entry.op_str == operand for entry in action[retirements[1]:epoch_store])
+    epoch_compare = next(index for index, entry in enumerate(action) if entry.mnemonic == 'cmp' and entry.op_str == 'dword ptr [rbx + 0xa8], eax')
+    assert epoch_compare < cancel < epoch_store < positions(action, '?IsMagnarOfferContext' + suffix)[0]
+    assert action[epoch_compare + 1].mnemonic == 'je' and action[epoch_compare + 1].operands[0].imm == action[epoch_store + 3].address
+    cleanup = positions(action, '?RemoveMagnarConversation' + suffix)[0]
+    assert cleanup == epoch_store + 1 and action[epoch_store + 2].mnemonic == 'jmp'
+    assert action[epoch_store + 2].operands[0].imm == action[epoch_store + 4].address
 print('PASS: installed point6 and both offer callbacks require the acknowledged native chamber request/current1060 epoch. Actual helper rejects absent claim/instance/1059 credit/epoch mismatch; epoch transition retires both weak queue owners and arrival snapshot before rearming. Same-epoch movement identity, created497 cleanup and client traversal remain separate.')
