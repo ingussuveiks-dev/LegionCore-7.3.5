@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-06",
+  "status": "DEPLOYED focused readiness/credit/retained/startup checks pass; real client full Protection traversal remains OPEN",
+  "scope": "Protection39191/scenario909/Magnar96034/map1495: interrupted reserve activation and unavailable opponent/companion AI. Independent continuation, not a claim this fault occurred in the user client.",
+  "causes": [
+    "LaunchEventWave preflight counted living actors but not whether the selected NPC or companion had usable AI. The release invoked both AI pointers without readiness checks. Pinned native disabled-AI controls release opponents prematurely; a null-pointer dereference is traced but not deliberately crashed.",
+    "The release registered selected GUIDs one actor at a time, after preflight. If another selected actor and remaining reserve disappear during activation, only the first death is tracked; restored actors are unselected and the remaining count has no opponent. Pinned actual-method counterfactual reproduces that stuck state.",
+    "Callbacks during flag/aura/attack/summon activation can reset or start another encounter generation. Continuing the old activation/outer start/Event4 would write into the replacement attempt."
+  ],
+  "implementation": "Preserve original2/2/1/2/3 counted waves and two auxiliary windshapers. Retain the authored roster order and full batch pending while its selected living opponents or actual96468 companion lack an enabled non-null AI or same-world/map/instance admission. Register every selected full GUID before any release callback. Track pending activation separately from actual death, retry every native1s on the same actor, and remap only a genuinely missing owned reserve slot through existing replacement logic. Activation claims before callbacks and re-resolves the actual full GUID after flags/aura/AttackStart; unavailable endpoints retain retry. Reset increments a separate reserve generation and clears pending work before cleanup; activation/start/roster/update/Event4/final release reject stale generations. Native threat, movement, Windwall,80pct health and once-only owner-first46427/step3->4 handling retained. No forced kill, teleport, item/quest grant, invented death or group-credit fanout.",
+  "checks": {
+    "source": "69 new assertion-enabled ASAN actual-method readiness contexts including48 faction/status/player-pet-guardian full sequences, null/disabled and nine world/instance guards, same1s retry, mid-release missing actors, callback disappearance, high-GUID identity, Reset/new-attempt/spawn/final-auxiliary cancellation. Existing40 owner preference/19 readmission/28 start/40 reset and reserve/finale matrices pass; service endpoints controlled.",
+    "native": "24 actual linked-core Player/Creature/TempSummon/AI/Scenario cases: Human/Orc race/faction, actual player/pet/guardian Kill, selected/companion disabled or null AI. Real native1s retry preserves identical12 full GUIDs; ten real Unit::Kill deaths plus repeat Kill advance actual909 step3->4 with one46427. Actual SmartAI94813/addons and loot inputs loaded from local data. World uses connection-local TEMP shadows for its scoped input loaders then restores readonly; Character/Hotfix readonly and private TEMP Login account on both connections. Actual matching46427 criterion has no omitted World criteria-data rules. Earlier quest/stage/wave clock and companion NullAI are controlled, no character saves, Release/native not full-core ASAN.",
+    "counterfactual": "Pinned fb01c9a6a source-method counterfactual proves disabled AI dispatch and lost selected roster with count1/no active actor after replacement. Four real native old-class/actual-core disabled-AI controls reproduce premature release; not successful ordinary gameplay.",
+    "retained": "All nine intended check groups pass across timestamped continuations: canonical waves/scaled finale/metadata/PE; intro; Hruthnir gossip; Earthwarder real loot; return; paired pickup/manual-return controller; required Scepter Release; Fury bonfire and loading/descent. Native/helper/TEMP/source/PE evidence remains separate from client traversal.",
+    "binary": "Original game/scripts Release libraries/final-link inputs, no global OutDir. Selected factory/death/DoAction/update and actual readiness helper,1s recovery before victim gating, four full-GUID resolutions around flag/aura/two-sided AttackStart and reset-generation refusals. Actual killer R8 survives GUID accounting into native AdvanceWaveIfReady RDX. Recovery contains no direct item/quest/progression/teleport grants.",
+    "startup": "Owned30772 canonical fresh ready/shutdown0/exit0/gone; stderr empty. Pre/post diagnostics show no new/changed crash or appended DBErrors/server warning/error/assertion. No user/unknown process stopped."
+  },
+  "canonical_sha256": {
+    "bnetserver": "D9BAEBCB3EF8B3343C495CA04B6CD721B7424F2C86CB1BF9B29B0A830CC03BF2",
+    "worldserver": "34EB779D7C64FDE1AB70E5C3D6E4EAB9AF2D29D3BDA4804B0A2501BCDC121054"
+  },
+  "preservation": "Configurations/certificates/DLLs/extracted data preserved. No user character health/progress/gear/checkpoint edits and no live migration. Shared1495 Paladin progression and original HR scenes/pickup-return behavior retained.",
+  "related_fixture_commits": [
+    "04da73012",
+    "222a340b3"
+  ],
+  "prototype_review": [
+    "Draft source-fixture expectations and original overwritten scratch-output limitation recorded explicitly in private prototype-notes.txt; repaired timestamped assertions pass.",
+    "Retained intro fixture lacked the real November2 FunctionProcessor type; fixed separately in04da73012 with native class/body, no scheduler stub.",
+    "Retained artifact-acquisition fixture omitted native door0 required by current SetLootState preamble; fixed separately in222a340b3 without removing the production branch.",
+    "Old PE checks assumed RCX remained this through Reset and the finale flag test immediately followed UpdateFinale. They now follow actual nonvolatile this aliases and retain the guarded early-return proof. New out-of-line reserve helper also required the existing wave-certificate selector to select the new actual activation path; new certificate preserves killer forwarding and callback-generation checks. Original timestamped failures retained, not ordinary passing runs."
+  ],
+  "unresolved": "Earlier shared101430/103151 LINK2 remains OPEN; canonical mixed7111 DBErrors SHA256FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged/untruncated. Active Crashes empty. Client combat/path/visual/audio/timing, wipe/re-entry/gossip routing, artifact equipment/return/pet/camera and all36 full chains are not certified by these focused checks.",
+  "continuation": "Consumes and supersedes ignored warswords-bonfire-2026-11-06/protection-unfinished.patch. No untested saved Protection patch remains pending for deployment. User can retest Fury then Protection against the canonical executable; continue later independent failures from actual evidence.",
+  "archive_cleanup": "Pending hash-verified original diagnostic archive and removal of redundant test/stage binaries after the clean canonical startup."
+}

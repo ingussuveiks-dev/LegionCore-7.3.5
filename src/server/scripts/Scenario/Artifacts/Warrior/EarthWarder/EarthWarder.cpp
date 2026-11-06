@@ -745,9 +745,14 @@ public:
         uint32 pendingWave = 0;
         uint32 reserveRetry = 0;
         bool restoringReserve = false;
+        std::set<ObjectGuid> pendingActivation;
+        uint32 reserveGeneration = 0;
 
         void Reset() override
         {
+            ++reserveGeneration;
+            pendingActivation.clear();
+            restoringReserve = false;
             ++finaleGeneration;
             ObjectGuid conversationGuid = finaleConversation;
             finaleConversation.Clear();
@@ -978,6 +983,7 @@ public:
         {
             if (!summon || summon->IsAlive())
                 return;
+            pendingActivation.erase(summon->GetGUID());
             for (uint32 slot = 0; slot < reserveGUIDs.size(); ++slot)
                 if (reserveGUIDs[slot] == summon->GetGUID())
                     reserveDeaths[slot] = true;
@@ -1022,7 +1028,10 @@ public:
                 return;
             encounterStarted = true;
             trashList.clear();
+            uint32 generation = reserveGeneration;
             SummonTrash();
+            if (generation != reserveGeneration || !encounterStarted)
+                return;
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
             me->SetReactState(REACT_DEFENSIVE);
             me->setFaction(14);
@@ -1033,10 +1042,13 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            uint32 generation = reserveGeneration;
             UpdateFinale(diff);
-            if (finaleStarted)
+            if (generation != reserveGeneration || finaleStarted)
                 return;
             UpdateReserve(diff);
+            if (generation != reserveGeneration)
+                return;
             if (wave == 6)
                 AdvanceWaveIfReady();
 
@@ -1076,6 +1088,8 @@ public:
                             targ->AttackStop();
                         me->GetMotionMaster()->MoveJump(4686.67f, 354.12f, -27.10f, me->GetOrientation(), 5.0f, 5.0f);
                         LaunchEventWave(wave++);
+                        if (generation != reserveGeneration)
+                            return;
                         events.RescheduleEvent(EVENT_5, 1000);
                         break;
                     case EVENT_5:
@@ -1084,6 +1098,65 @@ public:
                 }
             }
             DoMeleeAttackIfReady();
+        }
+
+        Creature* GetWaveCompanion() const
+        {
+            Creature* companion = me->FindNearestCreature(96468, 100.0f, true);
+            return companion && companion->IsInWorld() && companion->IsAlive() && !companion->IsDespawn() &&
+                companion->GetMap() == me->GetMap() && companion->GetInstanceId() == me->GetInstanceId() &&
+                companion->IsAIEnabled && companion->AI() ? companion : nullptr;
+        }
+
+        bool IsWaveActorReady(Creature* actor) const
+        {
+            return actor && actor->IsInWorld() && actor->IsAlive() && !actor->IsDespawn() &&
+                actor->GetMap() == me->GetMap() && actor->GetInstanceId() == me->GetInstanceId() &&
+                actor->IsAIEnabled && actor->AI();
+        }
+
+        void ActivateWaveActor(ObjectGuid guid)
+        {
+            if (!pendingActivation.count(guid) || !activeWave.count(guid))
+                return;
+            Map* map = me->GetMap();
+            Creature* actor = map->GetCreature(guid);
+            Creature* companion = GetWaveCompanion();
+            if (!IsWaveActorReady(actor) || !companion)
+                return;
+            uint32 generation = reserveGeneration;
+            // Claim before callbacks. A missing AI retains this exact actor,
+            // rather than consuming a release or creating another opponent.
+            pendingActivation.erase(guid);
+            actor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+            if (generation != reserveGeneration || me->GetMap() != map || !activeWave.count(guid))
+                return;
+            actor = map->GetCreature(guid);
+            if (!IsWaveActorReady(actor) || GetWaveCompanion() != companion)
+            {
+                pendingActivation.insert(guid);
+                return;
+            }
+            actor->SetReactState(REACT_DEFENSIVE);
+            actor->RemoveAura(191821);
+            if (generation != reserveGeneration || me->GetMap() != map || !activeWave.count(guid))
+                return;
+            actor = map->GetCreature(guid);
+            if (!IsWaveActorReady(actor) || GetWaveCompanion() != companion)
+            {
+                pendingActivation.insert(guid);
+                return;
+            }
+            actor->AI()->AttackStart(companion);
+            if (generation != reserveGeneration || me->GetMap() != map || !activeWave.count(guid))
+                return;
+            actor = map->GetCreature(guid);
+            if (!IsWaveActorReady(actor) || GetWaveCompanion() != companion)
+            {
+                pendingActivation.insert(guid);
+                return;
+            }
+            companion->AI()->AttackStart(actor);
         }
 
         void LaunchEventWave(uint32 wave)
@@ -1115,41 +1188,44 @@ public:
             // Do not consume a partial batch: retain the authored wave request
             // until its actual living reserve can supply all opponents.
             pendingWave = wave;
-            uint32 available = 0;
+            count_dies = count;
+            if (!GetWaveCompanion())
+                return;
+            std::list<ObjectGuid> selected;
             for (auto guid : trashList)
                 if (Creature* actor = me->GetMap()->GetCreature(guid))
                     if (actor->IsAlive() && actor->IsInWorld())
-                        ++available;
-            if (available < count)
-            {
-                count_dies = count;
+                    {
+                        // Preserve the original roster order: do not skip a
+                        // temporarily disabled selected AI for a later entry.
+                        if (!IsWaveActorReady(actor))
+                            return;
+                        selected.push_back(guid);
+                        if (selected.size() == count)
+                            break;
+                    }
+            if (selected.size() < count)
                 return;
-            }
             pendingWave = 0;
             count_dies = count;
             activeWave.clear();
+            pendingActivation.clear();
             releasingWave = true;
             auto pendingTrash = trashList;
-
-            for (auto trashGuid : pendingTrash)
+            uint32 generation = reserveGeneration;
+            // Register the complete selected roster before any actor callback.
+            // An actor disappearing during another activation still belongs to
+            // this wave and can be replaced without inventing a death.
+            for (auto guid : selected)
             {
-                if (!count)
-                    break;
-                if (Creature* summon = me->GetMap()->GetCreature(trashGuid))
-                {
-                    if (!summon->IsAlive())
-                        continue;
-                    activeWave.insert(trashGuid);
-                    summon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                    summon->SetReactState(REACT_DEFENSIVE);
-                    summon->RemoveAura(191821);
-                    if (Creature* targ = summon->FindNearestCreature(96468, 100.0f, true))
-                    {
-                        summon->AI()->AttackStart(targ);
-                        targ->AI()->AttackStart(summon);
-                    }
-                    count--;
-                }
+                activeWave.insert(guid);
+                pendingActivation.insert(guid);
+            }
+            for (auto guid : selected)
+            {
+                ActivateWaveActor(guid);
+                if (generation != reserveGeneration)
+                    return;
             }
 
             if (end)
@@ -1161,9 +1237,16 @@ public:
                         if (!summon->IsAlive())
                             continue;
                         summon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                        if (generation != reserveGeneration)
+                            return;
+                        summon = me->GetMap()->GetCreature(trashGuid);
+                        if (!summon || !summon->IsInWorld() || !summon->IsAlive())
+                            continue;
                         if (Creature* targ = summon->FindNearestCreature(64367, 30.0f, true))
                             summon->GetMotionMaster()->MoveJump(targ->GetPositionX(), targ->GetPositionY(), targ->GetPositionZ(), summon->GetOrientation(), 5.0f, 5.0f);
                         summon->CastSpell(summon, 191032);
+                        if (generation != reserveGeneration)
+                            return;
                     }
                 }
                 trashList.clear();
@@ -1179,6 +1262,7 @@ public:
             // dead: replace only a missing, uncredited owned reserve slot.
             if (restoringReserve)
                 return;
+            uint32 generation = reserveGeneration;
             restoringReserve = true;
             for (uint32 slot = 0; slot < reserveGUIDs.size(); ++slot)
             {
@@ -1193,21 +1277,26 @@ public:
                     if (actor->IsInWorld())
                         continue;
                 uint32 entry = slot >= 10 ? 94813 : slot == 4 || slot == 9 ? 94707 : 97123;
-                if (Creature* actor = me->SummonCreature(entry, trashPos[slot]))
+                Creature* actor = me->SummonCreature(entry, trashPos[slot]);
+                if (generation != reserveGeneration)
+                    return;
+                if (actor)
                 {
                     reserveGUIDs[slot] = actor->GetGUID();
                     trashList.remove(old);
                     if (activeWave.erase(old))
                     {
                         activeWave.insert(actor->GetGUID());
-                        actor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                        actor->SetReactState(REACT_DEFENSIVE);
-                        actor->RemoveAura(191821);
-                        if (Creature* companion = me->FindNearestCreature(96468, 100.0f, true))
-                            if (actor->IsAIEnabled && actor->AI())
-                                actor->AI()->AttackStart(companion);
+                        pendingActivation.erase(old);
+                        pendingActivation.insert(actor->GetGUID());
+                        ActivateWaveActor(actor->GetGUID());
+                        if (generation != reserveGeneration)
+                            return;
                         if (wave == 6)
                         {
+                            actor = me->GetMap()->GetCreature(reserveGUIDs[slot]);
+                            if (!actor || !actor->IsInWorld() || !actor->IsAlive())
+                                continue;
                             if (Creature* marker = actor->FindNearestCreature(64367, 30.0f, true))
                                 actor->GetMotionMaster()->MoveJump(marker->GetPositionX(), marker->GetPositionY(), marker->GetPositionZ(), actor->GetOrientation(), 5.0f, 5.0f);
                             actor->CastSpell(actor, 191032);
@@ -1227,18 +1316,34 @@ public:
                 return;
             if (reserveRetry > diff) { reserveRetry -= diff; return; }
             reserveRetry = 1000;
+            uint32 generation = reserveGeneration;
             // A disabled parent AI can miss the native summon death callback.
             // Recover only from that same real dead object, never from absence.
             for (uint32 slot = 0; slot < reserveGUIDs.size(); ++slot)
                 if (!reserveDeaths[slot])
                     if (Creature* actor = me->GetMap()->GetCreature(reserveGUIDs[slot]))
                         if (!actor->IsAlive())
+                        {
                             SummonedCreatureDies(actor, nullptr);
+                            if (generation != reserveGeneration)
+                                return;
+                        }
             if (!first_phase || !GetEncounterPlayer(nullptr, 3))
                 return;
             SummonTrash();
+            if (generation != reserveGeneration)
+                return;
             if (pendingWave)
                 LaunchEventWave(pendingWave);
+            if (generation != reserveGeneration)
+                return;
+            auto pending = pendingActivation;
+            for (auto guid : pending)
+            {
+                ActivateWaveActor(guid);
+                if (generation != reserveGeneration)
+                    return;
+            }
         }
 
     };

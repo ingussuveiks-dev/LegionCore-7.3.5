@@ -25,10 +25,11 @@ struct ObjectGuid
 {
     uint32 identity = 0;
     Unit* unit = nullptr;
+    uint32 high = 0;
     bool IsPlayer() const;
-    void Clear() { identity = 0; unit = nullptr; }
-    bool operator==(ObjectGuid const& other) const { return identity == other.identity; }
-    bool operator<(ObjectGuid const& other) const { return identity < other.identity; }
+    void Clear() { identity = 0; unit = nullptr; high = 0; }
+    bool operator==(ObjectGuid const& other) const { return identity == other.identity && high == other.high; }
+    bool operator<(ObjectGuid const& other) const { return high < other.high || (high == other.high && identity < other.identity); }
 };
 struct Position { float positionX, positionY, positionZ, orientation; };
 #include "Positions.inc"
@@ -37,6 +38,8 @@ struct TempSummon;
 struct Unit;
 struct CreatureAI
 {
+    uint32 attacks = 0;
+    std::function<void()> onAttack;
     virtual ~CreatureAI() = default;
     virtual void Reset() { }
     virtual void EnterCombat(Unit*) { }
@@ -44,7 +47,7 @@ struct CreatureAI
     virtual void SummonedCreatureDies(Creature*, Unit*) { }
     virtual void DoAction(int32) { }
     virtual void UpdateAI(uint32) { }
-    virtual void AttackStart(Unit*) { }
+    virtual void AttackStart(Unit*) { ++attacks; if (onAttack) onAttack(); }
 };
 struct Unit
 {
@@ -225,6 +228,7 @@ struct Magnar : CreatureAI
 #include "Death.inc"
 #include "Advance.inc"
 #include "Eligible.inc"
+#include "Readiness.inc"
 #include "Start.inc"
 #include "Update.inc"
 #include "Launch.inc"
@@ -246,7 +250,7 @@ struct Fixture
         scenarioManager = {}; player.map = &map; pet.owner = guardian.owner = &player;
         map.players = {{nullptr}, {&player}};
         actor.entry = 96034; actor.map = &map; actor.ai = &ai; actor.player = &player; actor.ally = &ally;
-        ally.ai = &allyAI;
+        ally.ai = &allyAI; ally.map = &map; ally.entry = 96468;
         actor.spawn = [&](uint32 identity, Position const&) -> Creature* {
             if (failSpawns) { --failSpawns; return nullptr; }
             auto summon = std::make_unique<TempSummon>(); summon->entry = identity;
@@ -336,7 +340,106 @@ int main()
     fixture.failSpawns = 0; fixture.ai.UpdateAI(60000);
     assert(fixture.summons.size() == 1 && fixture.ai.count_dies == 1 && fixture.ai.wave == 2 && !fixture.player.credits);
     std::cout << "COUNTERFACTUAL pinned a2073e254: one successful reserve spawn and eleven failures permanently leaves wave1 waiting for an opponent that does not exist; repairing spawn availability cannot retry the original roster. Not a passing ordinary encounter.\n";
+#elif defined(READINESS_BASELINE)
+    for (bool companion : {false, true}) {
+        Fixture fixture;
+        if(companion)fixture.ally.IsAIEnabled=false;else fixture.summons[0]->IsAIEnabled=false;
+        fixture.BeginWaves();
+        assert(fixture.ai.activeWave.size()==2 && fixture.allyAI.attacks==4);
+    }
+    {
+        Fixture fixture;bool removed=false;
+        fixture.summons[0]->onActivation=[&](Creature*){if(!removed){removed=true;for(uint32 i=1;i<12;++i)fixture.map.actors.erase(fixture.summons[i]->guid);}};
+        fixture.BeginWaves();fixture.Die(0);fixture.ai.UpdateAI(1000);
+        assert(fixture.ai.count_dies==1 && fixture.ai.activeWave.empty() && fixture.summons.size()==23 && !fixture.player.credits);
+    }
+    std::cout<<"COUNTERFACTUAL pinned fb01c9a6a dispatches AttackStart through disabled selected/companion AI; a selected actor disappearing during another activation is replaced as unselected, leaving count1 with no tracked opponent. Not an ordinary successful encounter. Null AI risk is traced statically, not crashed deliberately.\n";
 #else
+    uint32 readinessCases=0;
+    for(bool alliance:{false,true})for(uint32 status:{1u,3u})for(uint32 killer=0;killer<3;++killer)for(uint32 mode=0;mode<4;++mode){
+        Fixture fixture;fixture.player.alliance=alliance;fixture.player.status=status;
+        if(mode==0)fixture.summons[0]->IsAIEnabled=false;
+        if(mode==1)fixture.summons[0]->ai=nullptr;
+        if(mode==2)fixture.ally.IsAIEnabled=false;
+        if(mode==3)fixture.ally.ai=nullptr;
+        fixture.BeginWaves();
+        assert(fixture.ai.pendingWave==1 && fixture.ai.activeWave.empty() && fixture.allyAI.attacks==0 && fixture.summons.size()==12);
+        fixture.summons[0]->IsAIEnabled=true;fixture.summons[0]->ai=&fixture.allyAI;
+        fixture.ally.IsAIEnabled=true;fixture.ally.ai=&fixture.allyAI;
+        fixture.ai.UpdateAI(999);assert(fixture.ai.pendingWave==1);
+        fixture.ai.UpdateAI(1);assert(!fixture.ai.pendingWave && fixture.ai.activeWave.size()==2 && fixture.ai.pendingActivation.empty() && fixture.allyAI.attacks==4);
+        fixture.ai.UpdateAI(1000);assert(fixture.allyAI.attacks==4);
+        Unit* owner=killer==0?static_cast<Unit*>(&fixture.player):killer==1?&fixture.pet:&fixture.guardian;
+        for(uint32 i=0;i<10;++i)fixture.Die(i,owner);
+        assert(fixture.player.credits==1 && fixture.ai.wave==7 && fixture.ai.pendingActivation.empty());++readinessCases;
+    }
+    for(uint32 mode=0;mode<9;++mode){
+        Fixture fixture;Map other;
+        switch(mode){case 0:fixture.actor.ally=nullptr;break;case 1:fixture.ally.world=false;break;case 2:fixture.ally.alive=false;break;case 3:fixture.ally.despawning=true;break;case 4:fixture.ally.map=&other;break;case 5:fixture.ally.instance=43;break;case 6:fixture.summons[0]->despawning=true;break;case 7:fixture.summons[0]->map=&other;break;case 8:fixture.summons[0]->instance=43;break;}
+        fixture.BeginWaves();assert(fixture.ai.pendingWave==1 && fixture.ai.activeWave.empty() && !fixture.player.credits);
+        fixture.actor.ally=&fixture.ally;fixture.ally.world=fixture.ally.alive=true;fixture.ally.despawning=false;fixture.ally.map=&fixture.map;fixture.ally.instance=42;
+        fixture.summons[0]->despawning=false;fixture.summons[0]->map=&fixture.map;fixture.summons[0]->instance=42;
+        fixture.ai.UpdateAI(1000);assert(!fixture.ai.pendingWave && fixture.ai.activeWave.size()==2);
+        for(uint32 i=0;i<10;++i)fixture.Die(i);assert(fixture.player.credits==1);++readinessCases;
+    }
+    for(uint32 mode=0;mode<3;++mode){
+        Fixture fixture;bool changed=false;auto old=fixture.summons[1]->guid;
+        fixture.summons[0]->onActivation=[&](Creature*){if(changed)return;changed=true;if(mode==0)fixture.summons[1]->IsAIEnabled=false;else if(mode==1)fixture.summons[1]->ai=nullptr;else fixture.map.actors.erase(old);};
+        fixture.BeginWaves();assert(fixture.ai.count_dies==2 && fixture.ai.activeWave.size()==2 && fixture.ai.pendingActivation.count(old));
+        assert(fixture.allyAI.attacks==2);
+        fixture.summons[1]->IsAIEnabled=true;fixture.summons[1]->ai=&fixture.allyAI;fixture.ai.UpdateAI(1000);
+        assert(fixture.ai.pendingActivation.empty() && fixture.ai.count_dies==2 && fixture.allyAI.attacks==4);
+        fixture.Die(0);if(mode==2){fixture.Die(1);assert(fixture.ai.count_dies==1);fixture.Die(12);}else fixture.Die(1);
+        for(uint32 i=2;i<10;++i)fixture.Die(i);assert(fixture.player.credits==1);++readinessCases;
+    }
+    {
+        Fixture fixture;bool removed=false;fixture.summons[0]->onActivation=[&](Creature*){if(removed)return;removed=true;for(uint32 i=1;i<12;++i)fixture.map.actors.erase(fixture.summons[i]->guid);};
+        fixture.BeginWaves();assert(fixture.ai.activeWave.size()==2 && fixture.ai.pendingActivation.count(fixture.summons[1]->guid));
+        fixture.Die(0);fixture.ai.UpdateAI(1000);assert(fixture.summons.size()==23 && fixture.ai.count_dies==1 && fixture.ai.activeWave.count(fixture.summons[12]->guid));
+        fixture.Die(1);assert(fixture.ai.count_dies==1);for(uint32 i=12;i<21;++i)fixture.Die(i,&fixture.guardian);assert(fixture.player.credits==1);++readinessCases;
+    }
+    for(bool restart:{false,true}){
+        Fixture fixture;bool once=false;
+        fixture.summons[0]->onActivation=[&](Creature*){if(once)return;once=true;fixture.ai.Reset();if(restart)fixture.ai.DoAction(1);};
+        fixture.ai.events.events.clear();fixture.ai.events.RescheduleEvent(EVENT_4,0);fixture.ai.UpdateAI(0);
+        assert(fixture.ai.wave==1 && !fixture.ai.count_dies && fixture.ai.activeWave.empty() && fixture.ai.pendingActivation.empty() && !fixture.ai.releasingWave && !fixture.ai.restoringReserve && !fixture.player.credits);
+        assert(!fixture.ai.events.events.count(EVENT_5));
+        if(restart){assert(fixture.summons.size()==24 && fixture.ai.events.events.at(EVENT_4)==33000);fixture.BeginWaves();for(uint32 i=12;i<22;++i)fixture.Die(i);assert(fixture.player.credits==1);}++readinessCases;
+    }
+    for(bool restart:{false,true}){
+        Fixture fixture(false);bool once=false;auto spawn=fixture.actor.spawn;
+        fixture.actor.spawn=[&](uint32 id,Position const&p){auto actor=spawn(id,p);if(!once){once=true;fixture.ai.Reset();if(restart)fixture.ai.DoAction(1);}return actor;};
+        fixture.ai.DoAction(1);assert(fixture.ai.wave==1 && !fixture.ai.restoringReserve && fixture.ai.pendingActivation.empty());
+        assert(fixture.actor.motion.jumps==(restart?1u:0u));
+        if(restart){assert(fixture.summons.size()==13 && fixture.ai.trashList.size()==12);fixture.BeginWaves();for(uint32 i=1;i<11;++i)fixture.Die(i);assert(fixture.player.credits==1);}else assert(fixture.ai.trashList.empty() && fixture.ai.events.events.empty());++readinessCases;
+    }
+    {
+        Fixture fixture;fixture.BeginWaves();TempSummon other;other.guid=fixture.summons[0]->guid;other.guid.high=1;other.alive=false;
+        fixture.ai.SummonedCreatureDies(&other,&fixture.player);assert(fixture.ai.count_dies==2 && fixture.ai.activeWave.size()==2);++readinessCases;
+    }
+    {
+        Fixture fixture;bool removed=false;auto old=fixture.summons[0]->guid;
+        fixture.summons[0]->onActivation=[&](Creature*){if(!removed){removed=true;fixture.map.actors.erase(old);}};
+        fixture.BeginWaves();assert(fixture.ai.pendingActivation.count(old) && fixture.ai.activeWave.count(old) && fixture.ai.count_dies==2);
+        fixture.ai.UpdateAI(1000);assert(!fixture.ai.pendingActivation.count(old) && fixture.ai.pendingActivation.empty() && fixture.ai.activeWave.count(fixture.summons[12]->guid));
+        fixture.Die(12);fixture.Die(1);for(uint32 i=2;i<10;++i)fixture.Die(i);assert(fixture.player.credits==1);++readinessCases;
+    }
+    {
+        Fixture fixture;bool once=false;
+        fixture.allyAI.onAttack=[&]{if(!once){once=true;fixture.ally.IsAIEnabled=false;}};
+        fixture.BeginWaves();assert(fixture.ai.pendingActivation.size()==2 && fixture.allyAI.attacks==1 && fixture.ai.count_dies==2);
+        fixture.ally.IsAIEnabled=true;fixture.ai.UpdateAI(1000);
+        assert(fixture.ai.pendingActivation.empty() && fixture.allyAI.attacks==5);
+        for(uint32 i=0;i<10;++i)fixture.Die(i);assert(fixture.player.credits==1);++readinessCases;
+    }
+    {
+        Fixture fixture;bool once=false;
+        fixture.summons[10]->onActivation=[&](Creature*){if(once)return;once=true;fixture.ai.Reset();};
+        fixture.BeginWaves();for(uint32 i=0;i<7;++i)fixture.Die(i);
+        assert(once && fixture.ai.wave==1 && fixture.ai.pendingActivation.empty() && !fixture.ai.restoringReserve && !fixture.ai.releasingWave && !fixture.player.credits && fixture.actor.health==100);
+        assert(!fixture.summons[10]->casts && !fixture.summons[11]->casts);++readinessCases;
+    }
+    std::cout<<"PASS "<<readinessCases<<" readiness/activation cases: disabled/null selected or companion AI retains original batch; same-actor1s retry,48 faction/status/player-pet-guardian full waves, scope refusals, mid-release lost/disabled actor, full GUID, Reset and new-attempt callback cancellation; no fabricated death/progress. Controlled engine endpoints.\n";
     {
         Fixture fixture(false); fixture.failSpawns = 11; fixture.ai.DoAction(1);
         assert(fixture.summons.size() == 1); fixture.failSpawns = 100; fixture.BeginWaves();
@@ -494,6 +597,7 @@ int main()
     for (uint32 invalid = 0; invalid < 19; ++invalid)
     {
         Fixture fixture; Map unrelated;
+        fixture.BeginWaves(); for(uint32 i=0;i<9;++i)fixture.Die(i,&fixture.pet);
         if (invalid == 0) fixture.player.world = false;
         if (invalid == 1) fixture.player.contact = false;
         if (invalid == 2) fixture.player.playerClass = 2;
@@ -513,7 +617,7 @@ int main()
         if (invalid == 16) fixture.actor.entry = 96035;
         if (invalid == 17) fixture.actor.mapId = 1220;
         if (invalid == 18) fixture.actor.instance = 43;
-        fixture.FinishWaves(&fixture.pet);
+        fixture.Die(9,&fixture.pet);
         assert(!fixture.player.credits && fixture.ai.first_phase && fixture.ai.stop_combat && fixture.ai.wave == 6 && !fixture.ai.count_dies);
         assert((fixture.actor.flags & UNIT_FLAG_IMMUNE_TO_PC) && (fixture.actor.flags & UNIT_FLAG_NOT_SELECTABLE));
         fixture.actor.victim = false; fixture.actor.unitState = UNIT_STATE_CASTING | UNIT_STATE_STUNNED;

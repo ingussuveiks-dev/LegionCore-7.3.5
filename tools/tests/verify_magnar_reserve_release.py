@@ -1,9 +1,14 @@
 """Verify selected native reserve recovery, keeping the finale proof separate."""
 import struct
+from pathlib import Path
+import runpy
 from capstone import CS_OP_IMM, CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 
 def check(native, instructions):
+    if any(name.startswith('?ActivateWaveActor@npc_magnar_icebreakerAI@npc_magnar_icebreaker@@') for name in native['symbols']):
+        runpy.run_path(str(Path(__file__).with_name('verify_magnar_readiness_release.py')))['check'](native,instructions)
+        return
     suffix='@npc_magnar_icebreakerAI@npc_magnar_icebreaker@@'
     def calls(prefix, dependency):
         targets={native['resolve'](address) for name,address in native['symbols'].items() if name.startswith(dependency)}

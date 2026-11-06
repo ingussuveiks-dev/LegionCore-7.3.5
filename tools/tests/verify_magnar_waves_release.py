@@ -9,7 +9,7 @@ previous = runpy.run_path(str(Path(__file__).with_name('verify_magnar_finale_rel
 native = previous['native']
 instructions = previous['instructions']
 suffix = '@npc_magnar_icebreakerAI@npc_magnar_icebreaker@@'
-if any(name.startswith('?SummonTrash' + suffix) and native['resolve'](address) in native['calls']('?UpdateAI' + suffix) for name,address in native['symbols'].items()):
+if any(name.startswith('?ActivateWaveActor' + suffix) for name in native['symbols']) or any(name.startswith('?SummonTrash' + suffix) and native['resolve'](address) in native['calls']('?UpdateAI' + suffix) for name,address in native['symbols'].items()):
     runpy.run_path(str(Path(__file__).with_name('verify_magnar_reserve_release.py')))['check'](native, instructions)
     # Older binaries retain their exact original disassembly certificate below.
     # The new controller is covered by selected dependencies and actual ASAN

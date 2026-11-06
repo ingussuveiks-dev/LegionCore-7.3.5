@@ -2,7 +2,7 @@
 from pathlib import Path
 import runpy
 import struct
-from capstone import CS_OP_IMM, CS_OP_MEM
+from capstone import CS_OP_IMM, CS_OP_MEM, CS_OP_REG
 from capstone.x86_const import X86_REG_RIP
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_warswords_final_credit_release.py')))
@@ -118,7 +118,22 @@ assert [entry.op_str for entry in creation_body[revalidate - 3:revalidate]] == [
 assert creation_body[revalidate + 2].operands[0].imm == cancel_address
 assert creation_body[remove + 1].op_str == 'r14d, dword ptr [rdi + 0xec]' and creation_body[remove + 2].mnemonic == 'jne'
 assert creation_body[remove + 3].op_str == 'byte ptr [rdi + 0xd2], 0' and creation_body[remove + 4].op_str == 'al, al', 'Cancellation lost epoch-guarded retry rollback/false result'
-assert any(entry.mnemonic == 'inc' and entry.op_str == 'dword ptr [rcx + 0xec]' for entry in instructions('?Reset' + suffix)), 'Reset does not invalidate an in-flight creation'
+reset_this = {'rcx'}
+invalidates_creation = False
+for entry in instructions('?Reset' + suffix):
+    if entry.mnemonic == 'inc' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].size == 4 and entry.operands[0].mem.disp == 0xec:
+        invalidates_creation |= entry.reg_name(entry.operands[0].mem.base) in reset_this
+    if entry.mnemonic == 'mov' and entry.operands[0].type == CS_OP_REG:
+        destination = entry.reg_name(entry.operands[0].reg)
+        if entry.operands[1].type == CS_OP_REG and entry.reg_name(entry.operands[1].reg) in reset_this:
+            reset_this.add(destination)
+        else:
+            reset_this.discard(destination)
+    elif entry.mnemonic in ('add', 'lea', 'xor') and entry.operands[0].type == CS_OP_REG:
+        reset_this.discard(entry.reg_name(entry.operands[0].reg))
+    elif entry.mnemonic == 'call':
+        reset_this -= {'rax', 'rcx', 'rdx', 'r8', 'r9', 'r10', 'r11'}
+assert invalidates_creation, 'Reset does not invalidate an in-flight creation on its actual this pointer'
 factory = instructions('?CreateConversation@Conversation@@')
 for dependency in ('?GenerateDynamicFieldData@Conversation@@', '??$AddToMap@VConversation@@@Map@@'):
     call = positions(factory, dependency)[0]
@@ -199,7 +214,12 @@ assert [entry.op_str for entry in reset_body[react - 2:react]] == ['r8d, r8d', '
 updated = instructions('?UpdateAI' + suffix)
 tick = positions(updated, handoff)[0]
 victim = positions(updated, '?UpdateVictim@CreatureAI@@')[0]
-assert tick < victim and updated[tick + 1].op_str == 'byte ptr [rbx + 0xd2], 0' and updated[tick + 2].mnemonic == 'jne', 'Victim/evade can cancel a still-running finale'
+finale_gate = next(index for index in range(tick + 1, victim) if updated[index].op_str == 'byte ptr [rbx + 0xd2], 0')
+assert tick < finale_gate < victim and updated[finale_gate + 1].mnemonic == 'jne', 'Victim/evade can cancel a still-running finale'
+exit_address = updated[finale_gate + 1].operands[0].imm
+exit_body = [entry for entry in updated if entry.address >= exit_address]
+exit_ret = next(index for index, entry in enumerate(exit_body) if entry.mnemonic == 'ret')
+assert exit_address > updated[victim].address and not any(entry.mnemonic == 'call' for entry in exit_body[:exit_ret]), 'Pending finale reaches combat callbacks before returning'
 
 selection_body = instructions(recipient)
 owner = positions(selection_body, '?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@')[0]
