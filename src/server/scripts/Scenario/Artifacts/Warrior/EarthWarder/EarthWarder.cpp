@@ -1263,21 +1263,6 @@ namespace EarthwarderAcquisition
     }
 }
 
-namespace EarthwarderReturn
-{
-    bool CanReturn(Player* player, uint32 instanceId)
-    {
-        if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
-            player->IsBeingTeleported() || player->getClass() != CLASS_WARRIOR || !player->GetMap() ||
-            player->GetMapId() != 1495 || player->GetInstanceId() != instanceId || player->GetQuestRewardStatus(39191) ||
-            (player->GetQuestStatus(39191) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(39191) != QUEST_STATUS_COMPLETE) ||
-            !player->HasItemCount(128289, 1, true))
-            return false;
-        Scenario* scenario = sScenarioMgr->GetScenario(instanceId);
-        return scenario && scenario->GetScenarioId() == 909 && scenario->IsCompleted(false);
-    }
-}
-
 // 248831
 class go_art_earthwarder : public GameObjectScript
 {
@@ -1322,17 +1307,13 @@ public:
 
                 target->ToPlayer()->KilledMonsterCredit(94851);
 
-                Player* player = target->ToPlayer();
-                uint32 instanceId = go->GetInstanceId();
-                target->AddDelayedEvent(12000, [player, instanceId]() -> void
-                {
-                    if (EarthwarderReturn::CanReturn(player, instanceId))
-                        player->CastSpell(player, 192085);
-                });
+
             }
         }
     }
 };
+
+#include "../../../../Legion/ClassHalls/warrior_pickup_return_api.h"
 
 namespace EarthwarderPresentation
 {
@@ -1348,6 +1329,8 @@ namespace EarthwarderPresentation
             return true;
         Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
         if (!scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() < 5 || scenario->GetCurrentStep() > 6)
+            return true;
+        if (WarriorPickupReturn::Complete(player, 1215))
             return true;
         SpellCastResult result = player->CastSpell(player, 208562, true);
         if (result != SPELL_CAST_OK)

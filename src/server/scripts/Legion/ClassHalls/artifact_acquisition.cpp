@@ -2168,6 +2168,7 @@ public:
     }
 };
 
+#include "warrior_pickup_return.h"
 #include "stromkar_return.h"
 
 struct npc_stromkar_thoradin : SmartAI
@@ -2237,6 +2238,8 @@ struct npc_stromkar_thoradin : SmartAI
 
 void AddSC_artifact_acquisition()
 {
+    new player_warrior_pickup_return();
+    new condition_warrior_pickup_return();
     RegisterCreatureAI(npc_stromkar_illusionist);
     RegisterSpellScript(spell_stromkar_split_transport);
     new npc_stromkar_valkyr();

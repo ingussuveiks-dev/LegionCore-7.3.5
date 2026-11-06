@@ -7,6 +7,9 @@ struct PairPlayer : NativePlayer {
  ~PairPlayer(){for(uint8 slot=PLAYER_SLOT_START;slot<PLAYER_SLOT_END;++slot)if(Item* item=GetItemByPos(INVENTORY_SLOT_BAG_0,slot))if(item->IsInWorld())item->RemoveFromWorld();}
 };
 static Item* MakeItem(Player& player,uint32 entry){auto item=Item::CreateItem(entry,1,&player);Require(item,"Native item creation failed");return item;}
+namespace OffSpecNative {
+#include "WarriorOffSpec.inc"
+}
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);
  CharacterDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
@@ -33,6 +36,12 @@ int main(int argc,char**argv){try{
    if(mode==2){Require(child->GetPos()==childBefore&&player.GetItemByPos(childPos)==previous,"Full bags moved/lost native items");player.DestroyItem(INVENTORY_SLOT_BAG_0,INVENTORY_SLOT_ITEM_START,true);Require(player.CastSpell(&player,entry==128908?194201:208562,true)==SPELL_CAST_OK,"Native free-space retry rejected");player.Unit::Update(250);}
    Require(player.GetItemByPos(childPos)==child,"Native249 did not equip existing linked child");if(previous)Require(!previous->IsEquipped()&&player.GetItemByGuid(previous->GetGUID())==previous,"Native displaced weapon not retained in inventory");
    auto stable=child->GetPos();Require(player.CastSpell(&player,entry==128908?194201:208562,true)==SPELL_CAST_OK,"Native repeated equip rejected");player.Unit::Update(250);Require(child->GetPos()==stable&&player.GetItemByPos(parentPos)==item,"Native repeated complete pair changed slots");
+   OffSpecNative::Mode context{1511,944,40043,entry,native->ChildItemID,parentSlot,native->ChildItemEquipSlot,1218,205443,194201,98033,849};
+   player.SetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID,entry==128908?72:73);Require(!OffSpecNative::StoredOffSpec(&player,context),"Native same-spec artifact incorrectly accepted storage fallback");
+   player.SetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID,71);Require(OffSpecNative::StoredOffSpec(&player,context),"Native Arms acquisition of Fury/Protection pair lacks legitimate storage path");
+   auto childOwner=child->GetOwnerGUID();child->SetOwnerGUID(ObjectGuid::Empty);Require(!OffSpecNative::StoredOffSpec(&player,context),"Native storage fallback accepted unowned child");child->SetOwnerGUID(childOwner);
+   for(uint32 badSpec:{0u,65u}){player.SetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID,badSpec);Require(!OffSpecNative::StoredOffSpec(&player,context),"Native missing/foreign-class specialization accepted storage fallback");}
+   player.SetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID,entry==128908?72:73);Require(item->GetGUID()==parentGuid&&child->GetGUID()==childGuid&&child->GetPos()==stable,"Native spec admission changed item identity/position");
    std::cout<<"CASE native-pair parent="<<entry<<" race="<<race<<" mode="<<mode<<" native-spell/linked-child/displaced-identity verified\n";CleanStories(map);
   }session->SetPlayer(nullptr);delete session;++cases;
  }

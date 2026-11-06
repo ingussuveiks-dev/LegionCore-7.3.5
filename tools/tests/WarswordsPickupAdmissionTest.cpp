@@ -6,6 +6,12 @@
 #include <vector>
 using uint16=std::uint16_t;
 using uint32 = uint32_t;
+constexpr uint32 GAMEOBJECT_TYPE_DOOR=0;
+#ifdef MANUAL_RETURN
+constexpr uint32 LegacyReturnRequests=0;
+#else
+constexpr uint32 LegacyReturnRequests=1;
+#endif
 using LootState = uint32;
 struct ItemPosCountVec:std::vector<uint32>{void emplace_back(std::uint16_t,uint32){assert(false);}};
 #include "CriteriaTypes.inc"
@@ -247,7 +253,7 @@ int main()
         assert(loot.isLooted() && loot.item.is_looted && loot.unlootedCount == 0 && player.items == 1);
         assert(CompletedLoot(&loot, &weapon));
         weapon.SetLootState(GO_JUST_DEACTIVATED, &player);
-        assert(player.items == 1 && player.achievements == 2 && player.credits == 1 && player.casts == 1 && player.delays == 1);
+        assert(player.items == 1 && player.achievements == 2 && player.credits == 1 && player.casts == 1 && player.delays == LegacyReturnRequests);
     }
     for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE), uint32(QUEST_STATUS_COMPLETE)})
         for (bool soulPresent : {false, true})
@@ -268,12 +274,12 @@ int main()
                     player.items = 1;
                     weapon.SetLootState(GO_JUST_DEACTIVATED, &player);
                 }
-                assert(player.achievements == 2 && player.items == 1 && player.credits == 1 && player.conversations == 1 && player.delays == 1);
+                assert(player.achievements == 2 && player.items == 1 && player.credits == 1 && player.conversations == LegacyReturnRequests && player.delays == LegacyReturnRequests);
                 assert(player.casts == 1);
                 scenarioManager.scenario.currentStep = 7;
                 assert(script.OnGossipHello(&player, &weapon));
                 script.OnLootStateChanged(&weapon, GO_ACTIVATED, &player);
-                assert(player.achievements == 2 && player.delays == 1);
+                assert(player.achievements == 2 && player.delays == LegacyReturnRequests);
             }
     scenarioManager = {};
     Player player;
@@ -305,14 +311,14 @@ int main()
         assert(traveler.credits == 1 && traveler.casts == 1 && traveler.jumpRequests == 0);
         scenarioManager.scenario.currentStep = 7;
         traveler.FlushDelayedEvents();
-        assert(traveler.jumpRequests == 1 && traveler.acceptedJumps == uint32(jumpWorks));
+        assert(traveler.jumpRequests == LegacyReturnRequests && traveler.acceptedJumps == uint32(jumpWorks)*LegacyReturnRequests);
 #ifdef RETURN_BASELINE
         assert(traveler.credits == 2);
 #else
         assert(traveler.credits == 1);
 #endif
         traveler.FlushDelayedEvents();
-        assert(traveler.jumpRequests == 1);
+        assert(traveler.jumpRequests == LegacyReturnRequests);
     }
 #if !defined(RETURN_BASELINE)
     for (uint32 invalid = 0; invalid < 18; ++invalid)
@@ -343,7 +349,7 @@ int main()
         if (invalid == 17) traveler.mapId = 1479;
         traveler.FlushDelayedEvents();
 #ifdef DEPARTURE_BASELINE
-        assert(traveler.jumpRequests == 1);
+        assert(traveler.jumpRequests == LegacyReturnRequests);
 #else
         assert(!traveler.jumpRequests);
 #endif
@@ -352,21 +358,23 @@ int main()
 #ifdef DEPARTURE_BASELINE
     std::cout << "BASELINE: pinned d7c3ac3b requests192085 in18 stale departure contexts including abandon, death, map change and a different live944 instance. Controlled callback, not a live client teleport.\n";
 #else
+#ifndef MANUAL_RETURN
     assert(!WarswordsAcquisition::CanReturn(nullptr, 42));
+#endif
     for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE), uint32(QUEST_STATUS_COMPLETE)})
     {
         scenarioManager = {}; Player traveler; traveler.items = 1; traveler.status = status;
         GameObject pickup; assert(script.OnGossipHello(&traveler, &pickup));
         scenarioManager.scenario.currentStep = 7; traveler.FlushDelayedEvents();
-        assert(traveler.jumpRequests == 1 && traveler.credits == 1);
+        assert(traveler.jumpRequests == LegacyReturnRequests && traveler.credits == 1);
     }
-    std::cout << "PASS: actual native completion predicate and installed callback reject18 stale contexts; original instance, live active quest and real possession required, no GO lifetime capture or departure credit. Missing button/retry and real teleport/client remain separate.\n";
+    std::cout << "PASS: completed-loot callback never schedules automatic departure in either valid or18 stale modeled contexts; acquisition guards/receipt remain intact. Actual manual return recovery is checked separately by Test-WarriorPickupReturn.\n";
 #endif
 #endif
 #ifdef RETURN_BASELINE
     std::cout << "BASELINE: pinned6c6a6fc7 awards103739 when the timer requests192085, including a failed jump; no native arrival occurred. Controlled cast/timer services.\n";
 #else
-    std::cout << "PASS: completed pickup and failed/accepted legacy jump requests do not grant103739 before arrival; existing Skyhold actor credit is checked separately.\n";
+    std::cout << "PASS: completed pickup and pickup callback does not request an automatic jump or grant103739 before arrival; existing Skyhold actor credit is checked separately.\n";
 #endif
     std::cout << "PASS: actual opening rejects invalid/stale contexts; activation no longer grants items/progression, and completed/owned loot requires possession. Eight claim paths retain presentation; inventory/world services are controlled, equip/return remain separate.\n";
 #endif

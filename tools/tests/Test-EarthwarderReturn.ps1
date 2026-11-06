@@ -12,7 +12,7 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline -or $PickupBaseline -or $LootBaseline){$revision=if($LootBaseline){'61117f3c'}elseif($PickupBaseline){'3a38903e'}else{'b5c32cab'};$source=(& git -C $repo show "${revision}:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Earthwarder source unavailable'}}
-[IO.File]::WriteAllText("$out/Policy.inc",$(if($Baseline){''}else{Block $source 'namespace EarthwarderReturn'}))
+[IO.File]::WriteAllText("$out/Policy.inc",$(if($source.Contains('namespace EarthwarderReturn')){Block $source 'namespace EarthwarderReturn'}else{''}))
 [IO.File]::WriteAllText("$out/PickupPolicy.inc",$(if($source.Contains('namespace EarthwarderAcquisition')){Block $source 'namespace EarthwarderAcquisition'}else{''}))
 [IO.File]::WriteAllText("$out/Callback.inc",(Block $source 'class go_art_earthwarder')+';')
 $shared=Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw
@@ -21,7 +21,7 @@ $scenario=Get-Content "$repo/src/server/game/Scenarios/Scenario.cpp" -Raw
 [IO.File]::WriteAllText("$out/Completed.inc",(Block $scenario 'bool Scenario::IsCompleted('))
 [IO.File]::WriteAllText("$out/Count.inc",(Block $scenario 'uint8 Scenario::GetStepCount('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline -or $PickupBaseline -or $LootBaseline){'/DBASELINE'}else{''}
+$definition=if($Baseline -or $PickupBaseline -or $LootBaseline){'/DBASELINE'}else{'/DMANUAL_RETURN'}
 if($PickupAdmission){$definition+=' /DPICKUP_ADMISSION'}
 if($RealLoot){$definition+=' /DREAL_LOOT'}
 $native=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw

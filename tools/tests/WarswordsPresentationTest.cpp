@@ -129,6 +129,10 @@ int main() {
         pickup.Finish();
         assert(pickup.player.swaps == 1 && pickup.player.mainhand == &pickup.player.artifact && warnings == 1);
     }
+    {
+        Pickup pickup; pickup.player.preserveOffSpec = true; pickup.Finish();
+        assert(pickup.player.casts.empty() && pickup.player.swaps == 0 && warnings == 0);
+    }
     std::cout << "PASS: actual scene/packet lifecycle -> scoped1218/1580 callback -> native194201 effect; existing blade/child swap, completed/cancelled/forged/stale/repeated/abandoned context and failed equip; native194201 progression/group effects are source-traced separately, not executed by this host\n";
 #endif
 }

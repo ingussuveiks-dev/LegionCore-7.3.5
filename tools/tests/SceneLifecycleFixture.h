@@ -133,6 +133,7 @@ struct ScriptManager {
 } scriptManager;
 auto* sScriptMgr = &scriptManager;
 struct Player : Unit {
+    bool preserveOffSpec = false;
     std::unordered_map<uint32, uint32> m_sceneInstanceID;
     std::map<uint32, SceneEventStatus> m_sceneStatus;
     uint32 sceneInstanceID = 0;
@@ -311,3 +312,4 @@ struct WorldSession {
     void HandleSceneTriggerEvent(WorldPackets::Scene::SceneTriggerEvent&);
 };
 #include "Handlers.inc"
+namespace WarriorPickupReturn { inline bool Complete(Player* player, unsigned int) { return player && player->preserveOffSpec; } }

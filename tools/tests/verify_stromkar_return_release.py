@@ -48,8 +48,12 @@ assert {93819,104307,1539,1037,10} <= values(owner)
 needs(owner,'?GetSummoner@TempSummon@@')
 needs(owner,'?GetCurrentStep@Scenario@@')
 needs(signal,'?GetCurrentStep@Scenario@@')
+thoradin_tick=ins('?UpdateAI@npc_stromkar_thoradin@@')
+state_offsets={x.operands[1].mem.disp for x in thoradin_tick if x.mnemonic=='lea' and x.op_str.startswith('r8, [') and x.operands[1].type==CS_OP_MEM}
+assert len(state_offsets)==1, 'Actual Thoradin update no longer passes its owned return state'
+state_offset=next(iter(state_offsets))
 assert any(x.mnemonic == 'mov' and x.operands[0].type == CS_OP_MEM and x.operands[0].size == 1
-           and x.operands[0].mem.disp == 0x208 and x.operands[-1].imm == 1 for x in ins(signal)), 'Actual final-speech state latch missing'
+           and x.operands[0].mem.disp == state_offset and x.operands[-1].imm == 1 for x in ins(signal)), 'Actual final-speech latch does not set the same owned state consumed by Update'
 needs('?UpdateAI@npc_stromkar_thoradin@@',update)
 needs('?UpdateAI@npc_stromkar_thoradin@@','?UpdateAI@SmartAI@@')
 assert {3,1,9,10,104307,1539,1037} <= values(signal)

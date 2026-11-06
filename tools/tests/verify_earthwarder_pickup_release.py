@@ -85,9 +85,20 @@ gate = next(index for index, item in enumerate(callback) if item.mnemonic == 'ca
             and native['resolve'](item.operands[0].imm) == native['symbol'](helper))
 assert callback[gate + 1].op_str == 'al, al' and callback[gate + 2].mnemonic == 'je'
 rejected = callback[gate + 2].operands[0].imm
+def returns_without_effects(address):
+    # Shortened manual-return callback has an early epilogue before RSI was
+    # saved and a later epilogue restoring it; both must reach RET, never a call.
+    by_address={item.address:index for index,item in enumerate(callback)}
+    index=by_address[address]
+    for _ in range(24):
+        item=callback[index]
+        if item.mnemonic=='ret': return True
+        if item.mnemonic=='call' or item.mnemonic.startswith('j') and item.mnemonic!='jmp': return False
+        index=by_address[item.operands[0].imm] if item.mnemonic=='jmp' else index+1
+    return False
 for operands in ('r8d, 3', 'eax, 3'):
     position = next(index for index, item in enumerate(callback[:gate]) if item.mnemonic == 'cmp' and item.op_str == operands)
-    assert callback[position + 1].mnemonic == 'jne' and callback[position + 1].operands[0].imm == rejected
+    assert callback[position + 1].mnemonic == 'jne' and returns_without_effects(callback[position + 1].operands[0].imm)
 owned = next(index for index, item in enumerate(callback) if item.mnemonic == 'call' and item.operands[0].type == CS_OP_IMM
              and native['resolve'](item.operands[0].imm) == native['symbol']('?HasItemCount@Player@@'))
 assert callback[owned + 1].op_str == 'al, al' and callback[owned + 2].mnemonic == 'je' and callback[owned + 2].operands[0].imm == rejected

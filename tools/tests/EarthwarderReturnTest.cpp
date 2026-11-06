@@ -6,6 +6,12 @@
 #include <vector>
 using uint16=std::uint16_t;
 using uint32 = uint32_t;
+constexpr uint32 GAMEOBJECT_TYPE_DOOR=0;
+#ifdef MANUAL_RETURN
+constexpr uint32 LegacyReturnRequests=0;
+#else
+constexpr uint32 LegacyReturnRequests=1;
+#endif
 using uint8 = uint8_t;
 using LootState = uint32;
 #include "CriteriaTypes.inc"
@@ -199,7 +205,7 @@ void Begin(Player& player, bool missingActor = false)
     player.ownsWeapon = true;
     weapon.SetLootState(GO_JUST_DEACTIVATED, &player);
 #endif
-    assert(player.pending.size() == 1 && player.scenes == 1 && player.pickupCredits == 1 && player.scriptEvents == 1 && player.scenarioEvents == 1);
+    assert(player.pending.size() == LegacyReturnRequests && player.scenes == 1 && player.pickupCredits == 1 && player.scriptEvents == 1 && player.scenarioEvents == 1);
 }
 #if !defined(PICKUP_ADMISSION) && !defined(REAL_LOOT)
 int main()
@@ -230,7 +236,7 @@ int main()
         }
         player.Flush();
 #ifdef BASELINE
-        assert(player.jumps == 1 && player.arrivalCredits == 1);
+        assert(player.jumps == LegacyReturnRequests && player.arrivalCredits == 1);
 #else
         assert(!player.jumps && !player.arrivalCredits);
 #endif
@@ -240,7 +246,7 @@ int main()
     {
         manager = {}; Player player; player.status = status; player.castWorks = accepted; player.ownsWeapon = owned;
         Begin(player, missingActor); player.Flush(); player.Flush();
-        assert(player.jumps == 1);
+        assert(player.jumps == LegacyReturnRequests);
 #ifdef BASELINE
         assert(player.storeRequests == uint32(!owned));
         assert(player.arrivalCredits == 1);
@@ -253,7 +259,7 @@ int main()
         manager = {}; Player player; player.storeWorks = false;
 #ifdef BASELINE
         Begin(player); assert(!player.ownsWeapon); player.Flush();
-        assert(player.jumps == 1 && player.arrivalCredits == 1);
+        assert(player.jumps == LegacyReturnRequests && player.arrivalCredits == 1);
         assert(player.pickupCredits == 1);
 #else
         GameObject weapon; go_art_earthwarder script; manager.scenario.currentStep = 5;
@@ -272,7 +278,7 @@ int main()
 #ifdef BASELINE
     std::cout << "BASELINE: pinnedb5c32cab attempts jump and grants103739 for18 stale contexts, failed casts and failed storage; not a real arrival.\n";
 #else
-    std::cout << "PASS: actual full Earthwarder callback/native Scenario completion reject18 stale returns and unowned completed loot;16 live active-status/cast-result/owned/missing-actor paths retain one native jump request and no103739. No GO lifetime capture or script grant; client/equip/arrival remain unverified.\n";
+    std::cout << "PASS: actual full Earthwarder callback/native Scenario completion reject18 stale returns and unowned completed loot;16 live active-status/cast-result/owned/missing-actor paths retain no automatic transfer or103739 in the current manual-return callback. No GO lifetime capture or script grant; client/equip/arrival remain unverified.\n";
 #endif
 }
 #elif defined(PICKUP_ADMISSION)
@@ -318,7 +324,7 @@ int main()
         delete ai;
 #ifdef BASELINE
         script.OnLootStateChanged(&weapon, GO_ACTIVATED, &player);
-        assert(!rejected && !report && !opening && player.storeRequests == 1 && player.pickupCredits == 1 && player.pending.size() == 1);
+        assert(!rejected && !report && !opening && player.storeRequests == 1 && player.pickupCredits == 1 && player.pending.size() == LegacyReturnRequests);
 #else
         player.ownsWeapon = invalid != 16;
         weapon.m_lootState = invalid == 26 ? 1 : GO_JUST_DEACTIVATED;
@@ -372,7 +378,7 @@ int main()
         weapon.SetLootState(GO_ACTIVATED, &player);
 #ifdef BASELINE
         assert(!player.ownsWeapon && player.storeRequests == 1);
-        assert(player.pickupCredits == 1 && player.scriptEvents == 1 && player.scenes == 1 && player.pending.size() == 1);
+        assert(player.pickupCredits == 1 && player.scriptEvents == 1 && player.scenes == 1 && player.pending.size() == LegacyReturnRequests);
 #else
         player.StoreLootItem(&loot);
         assert(!loot.isLooted() && !loot.item.is_looted && loot.unlootedCount == 1 && !player.ownsWeapon);
@@ -384,7 +390,7 @@ int main()
         player.StoreLootItem(&loot);
         assert(loot.isLooted() && loot.item.is_looted && !loot.unlootedCount && player.ownsWeapon && CompletedLoot(&loot, &weapon));
         weapon.SetLootState(GO_JUST_DEACTIVATED, &player);
-        assert(player.pickupCredits == 1 && player.scriptEvents == 1 && player.scenes == 1 && player.pending.size() == 1 && !player.storeRequests);
+        assert(player.pickupCredits == 1 && player.scriptEvents == 1 && player.scenes == 1 && player.pending.size() == LegacyReturnRequests && !player.storeRequests);
         weapon.SetLootState(GO_JUST_DEACTIVATED, &player);
         assert(player.pickupCredits == 1);
 #endif

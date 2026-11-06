@@ -4414,6 +4414,20 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
             owner->BindQuestObject(40710, summon, false);
     }
 
+    // These personal return actors must bypass93819's ordinary Dalaran RESET
+    // from their first AI initialization, and expire with this quest attempt.
+    if (entry == 93819 && (GetId() == 1511 || GetId() == 1495) && summoner && summoner->IsPlayer())
+    {
+        Player* owner = summoner->ToPlayer();
+        uint32 questId = GetId() == 1511 ? 40043 : 39191;
+        uint32 scenarioId = GetId() == 1511 ? 944 : 909;
+        Scenario* scenario = sScenarioMgr->GetScenario(GetInstanceId());
+        QuestStatus status = owner->GetQuestStatus(questId);
+        if (owner->getClass() == CLASS_WARRIOR && !owner->GetQuestRewardStatus(questId) &&
+            (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_COMPLETE) && scenario && scenario->GetScenarioId() == scenarioId)
+            owner->BindQuestObject(questId, summon);
+    }
+
     summon->SetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL, spellId);
     if (summoner)
     {

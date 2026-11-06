@@ -33,7 +33,7 @@ $predicate=[regex]::Match($native,'else if \((loot->isLooted\(\) \|\| go->GetGoT
 if(!$predicate.Success -or !$native.Contains('go->SetLootState(GO_JUST_DEACTIVATED, static_cast<Unit*>(player));')){throw 'Missing native completed-loot release'}
 [IO.File]::WriteAllText("$out/NativeCompleteLoot.inc",'return '+$predicate.Groups[1].Value+';')
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$baselineArgument=if($DepartureBaseline){' /DDEPARTURE_BASELINE'}elseif($ReturnBaseline){' /DRETURN_BASELINE'}elseif($LootBaseline){' /DBASELINE /DLOOT_BASELINE'}elseif($Baseline){' /DBASELINE'}else{''}
+$baselineArgument=if($DepartureBaseline){' /DDEPARTURE_BASELINE'}elseif($ReturnBaseline){' /DRETURN_BASELINE'}elseif($LootBaseline){' /DBASELINE /DLOOT_BASELINE'}elseif($Baseline){' /DBASELINE'}else{' /DMANUAL_RETURN'}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4$baselineArgument /I`"$out`" `"$PSScriptRoot/WarswordsPickupAdmissionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Warswords native pickup admission failed'}
 if($VerifyReleaseBinary){

@@ -101,6 +101,7 @@ struct AreaTrigger {
  void UpdateAffectedList(uint32,AreaTriggerActionMoment);
  float GetPositionX(){return pos.x;}float GetPositionY(){return pos.y;}float GetPositionZ(){return pos.z;}
 };
+namespace WarriorPickupReturn { inline CreatureAI* CreateAI(Creature*) { return nullptr; } }
 #include "ReturnController.inc"
 std::vector<std::unique_ptr<TempSummon>>summons;
 Creature*Creature::SummonCreature(uint32 id,Position const&p,uint32 type,uint32 duration){

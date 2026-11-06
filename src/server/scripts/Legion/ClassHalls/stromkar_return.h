@@ -181,6 +181,8 @@ public:
     npc_stromkar_valkyr() : CreatureScript("npc_stromkar_valkyr") { }
     CreatureAI* GetAI(Creature* actor) const override
     {
+        if (CreatureAI* ai = WarriorPickupReturn::CreateAI(actor))
+            return ai;
         if (StromkarReturn::Owner(actor))
             return new StromkarReturn::ValkyrAI(actor);
         return new SmartAI(actor); // retain all ordinary93819 data/event behavior
