@@ -39,9 +39,17 @@ calls = [index for index, entry in enumerate(body) if entry.mnemonic == 'call' a
          entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == target]
 assert len(calls) == 1 and calls[0] > lift_index + 2
 arguments = body[calls[0] - 25:calls[0]]
-for expected in (f'r8, qword ptr [{spell_this} + 0x180]', 'xmm3, dword ptr [r8 + 8]',
-                 'xmm1, dword ptr [r8]', 'xmm2, dword ptr [r8 + 4]'):
+reloads=[entry for entry in arguments if entry.mnemonic=='mov' and len(entry.operands)==2
+         and entry.operands[1].type==CS_OP_MEM and entry.operands[1].mem.disp==0x180
+         and entry.reg_name(entry.operands[1].mem.base)==spell_this]
+assert len(reloads)==1, 'Native movement does not reload actual Spell destination'
+destination=reloads[0].reg_name(reloads[0].operands[0].reg)
+for expected in (f'xmm3, dword ptr [{destination} + 8]',
+                 f'xmm1, dword ptr [{destination}]', f'xmm2, dword ptr [{destination} + 4]'):
     assert any(entry.mnemonic in ('mov', 'movss') and entry.op_str == expected for entry in arguments), f'Movement does not consume destination: {expected}'
+assert not any(entry.address>reloads[0].address and entry.operands and
+               entry.operands[0].type!=CS_OP_MEM and entry.operands[0].reg==reloads[0].operands[0].reg
+               for entry in arguments), 'Reloaded destination register overwritten before native movement'
 assert not any(entry.mnemonic.startswith('mov') and entry.operands[0].type == CS_OP_MEM and
                entry.op_str.startswith('dword ptr [rcx + 8]') for entry in body[lift_index + 3:calls[0]]), 'Destination Z overwritten before movement'
 motion = instructions(movement)

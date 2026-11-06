@@ -1,0 +1,8 @@
+{
+  "date": "2026-11-06",
+  "scope": "Retained shared pet-credit/Skyhold movement verification; no production changes",
+  "cause": "SmartAI validation extraction now includes linked-cast retry admission, but the pet-credit host omitted native SMART_EVENT_LINK/SMART_TARGET_SELF. Jump PE proof assumed r8 for the actual Spell destination; current native code uses rdx after the legitimate landing branches.",
+  "repair": "Extract both endpoint numbers from actual SmartScriptMgr.h into the host rather than inventing values. Derive the actual native Spell::destTarget reload register, require its XYZ loads and reject overwrites before MoveJump, retaining the192085-only real Z+20 write, other-spell skip and actual spline destination checks. No guard removed.",
+  "checks": "Canonical CCDD656C Test-WarswordsReturnCredit and ReturnAdmission pass with pre/post clean diagnostics: source pet/guardian/owner/group/raw-invoker/cast/validation matrix and actual SmartAI PE bridges; native jump/delay216016/actual-arrival refusal matrix and PE XYZ/spline dataflow; original Skyhold103739 receiver/base phase/action33/destination30.98yd retained. Earlier compile/register-schedule proof failures are fixture errors, not successful runs or server crashes. Captured compiler conversion/unused-parameter warnings in unchanged controlled/source snippets remain visible; not hidden runtime diagnostics.",
+  "limits": "Physical ascent/arrival/phase visibility, rendered client button/camera/pet and whole quests remain separate. Full retained19 and original-byte diagnostic archive/cleanup recorded in warrior-pickup-return-2026-11-06.json."
+}

@@ -30,6 +30,12 @@ $s=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 Extract $s 'Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const' 'Player* Unit::GetAffectingPlayer() const' 'OwnerPlayer'
 $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.h" -Raw
 Extract $s 'enum SmartCastFlags' '// one line in DB' 'CastFlags'
+$endpointIds=foreach($nativeId in @('SMART_EVENT_LINK','SMART_TARGET_SELF')){
+ $match=[regex]::Match($s,('\b'+$nativeId+'\s*=\s*(\d+)'))
+ if(!$match.Success){throw "Missing native SmartAI endpoint:$nativeId"}
+ "constexpr int $nativeId=$($match.Groups[1].Value);"
+}
+[IO.File]::WriteAllLines("$out/NativeEndpointIds.inc",[string[]]$endpointIds)
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $rowArgument=if($InvokerCastRowsPath){' "'+[IO.Path]::GetFullPath($InvokerCastRowsPath)+'"'}else{''}
 if($BaselineInvokerCastRowsPath){if(!$InvokerCastRowsPath){throw 'Baseline tuple requires a repaired tuple'};$rowArgument+=' "'+[IO.Path]::GetFullPath($BaselineInvokerCastRowsPath)+'"'}
