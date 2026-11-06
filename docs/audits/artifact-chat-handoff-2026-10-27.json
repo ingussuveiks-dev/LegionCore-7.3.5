@@ -1,4 +1,28 @@
 {
+  "latest_hruthnir_spawn_2026_11_06": {
+    "audit": "docs/audits/hruthnir-spawn-movement-2026-11-06.json",
+    "status": "DEPLOYED data-only migration06: actual361306/96468 no-addon spawn initializes idle0 instead of empty automatic path0;original scripted9859004 remains native.",
+    "fix_commit": "b586890cd05b69e3c66d54d71e3a98b39aa1a8c5",
+    "checks": "Actual native LoadCreatures/LoadCreatureFromDB(false)/registered ScriptName/AIM/Motion at909 stages0/3;actual SQL twice,TEMP custom addon guard/unrelated clone,strict own SQL WARN4 visibility and paired two original missing-path controls pass;live0 readback and updater06 RELEASED normalized4B2E6568D9730E62316DD06564F69C96C8AAFA80 verified.100 retained clocks pass. Owned32332 ready/shutdown0/exit0/gone;no ordinary new diagnostics. CanonicalAACEC722/9FDCCE03 unchanged;no C++ rebuild or character edits.",
+    "next": "No pending deployment/archive. Initial DB path0 issue is closed;real map publication/initial LOS/full client route and all three Warrior/all36 chains remain unverified. Fresh-AI/cold routing and ready reoffer after cancellation remain OPEN;earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer retained. Continue server-side work without requiring the user at the PC;do not claim client traversal from native probes.",
+    "cleanup": {
+      "archive": "build-extractors/bin/Release/fixed/hruthnir-spawn-movement-2026-11-06",
+      "manifest_sha256": "b6dfbb6154e487f14dffbbe4a709a949a475af7ab8b73828e6e5c3168847a720",
+      "original_files": 236,
+      "cleanup_manifest_sha256": "0f38157c31e4c15c1ccb050038baaeb9fc6154544a7c832bc3512bfdfb22baeb",
+      "removed_files": 125,
+      "logical_removed_bytes": 1239939566,
+      "local_deletion_manifest": ".codex/hruthnir-spawn-2026-11-06/cleanup-deleted.json",
+      "inactive_resolved_private_warning_logs_reset": 2,
+      "canonical_mixed_log_reset": false,
+      "retained": [
+        ".codex/release-before-hruthnir-approach-2026-11-06",
+        ".codex/release-before-hruthnir-entry-2026-11-06"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "postcheck": "PASS unchanged canonicalAACEC722/9FDCCE03/protected configuration/two rollback generations;no owned process;active Crashes empty;mixed7111 and unrelated unresolved bytes preserved;reviewed counterfactual warning originals hash-archived before private-log reset"
+    }
+  },
   "latest_hruthnir_approach_2026_11_06": {
     "audit": "docs/audits/hruthnir-approach-recovery-2026-11-06.json",
     "status": "DEPLOYEDAACEC722/9FDCCE03: Protection accepted point7 resumes the original native path after genuine stopped-short motion;idle or exactly completed9859004 only,original owner/receipt/epoch and real endpoint/497/full6s retained.",

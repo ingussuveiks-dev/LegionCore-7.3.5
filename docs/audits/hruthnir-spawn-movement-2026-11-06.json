@@ -33,5 +33,22 @@
   ],
   "preservation": "No character progress/gear/health edits;no user/unknown process stopped. Canonical binaries remainAACEC722/9FDCCE03 and prior two rollback generations retained. Unresolved mixed7111/LINK2 and Slaghammer original bytes untouched.",
   "limits": "All three Warrior/all36 whole client chains remain unverified. This closes the DB-load/path0 initialization issue only. Real map publication/initial LOS/start timing/full physical route, cold fresh-AI routing/reoffer after terminal cancellation, audio/VFX/equipment/camera/pet/reconnect and earlier101430/103151 LINK2/unrelated Slaghammer findings remain OPEN.",
-  "archive_cleanup": "PENDING original diagnostic hash archive,reviewed private counterfactual warning-log reset and redundant test-output cleanup after focused fix commit"
+  "archive_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-spawn-movement-2026-11-06",
+    "manifest_sha256": "b6dfbb6154e487f14dffbbe4a709a949a475af7ab8b73828e6e5c3168847a720",
+    "original_files": 236,
+    "cleanup_manifest_sha256": "0f38157c31e4c15c1ccb050038baaeb9fc6154544a7c832bc3512bfdfb22baeb",
+    "removed_files": 125,
+    "logical_removed_bytes": 1239939566,
+    "local_deletion_manifest": ".codex/hruthnir-spawn-2026-11-06/cleanup-deleted.json",
+    "inactive_resolved_private_warning_logs_reset": 2,
+    "canonical_mixed_log_reset": false,
+    "retained": [
+      ".codex/release-before-hruthnir-approach-2026-11-06",
+      ".codex/release-before-hruthnir-entry-2026-11-06"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS unchanged canonicalAACEC722/9FDCCE03/protected configuration/two rollback generations;no owned process;active Crashes empty;mixed7111 and unrelated unresolved bytes preserved;reviewed counterfactual warning originals hash-archived before private-log reset"
+  },
+  "fix_commit": "b586890cd05b69e3c66d54d71e3a98b39aa1a8c5"
 }
