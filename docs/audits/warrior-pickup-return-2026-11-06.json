@@ -1,6 +1,6 @@
 {
   "date": "2026-11-06",
-  "status": "DEPLOYED focused/native/retained canonical checks pass; actual client/whole-chain checks remain OPEN",
+  "status": "DEPLOYED and focused/native/retained canonical checks pass; actual client/whole Fury/Protection/Arms chains remain OPEN",
   "causes": [
     "Both pickup hooks scheduled a one-shot automatic192085 after12 seconds. This neither acknowledged the real pickup scene/equipment nor provided recovery after a rejected cast/bag problem. Fury also created849 without observing actual viewer publication.",
     "Native effect249 correctly rejects another specialization's artifact. Requiring successful equipment of every newly acquired artifact therefore blocks a legitimate Warrior collecting all three while retaining Arms. Native linked child placement is restricted to equipment/hidden child storage, not ordinary inventory bags.",
@@ -14,7 +14,7 @@
     "native_inventory": "12 actual linked core Player/Item/effect249 contexts for Fury and Protection, two races, hidden linked child/occupied slot/free-space retry/repeat and displaced item identity. Each additionally executes extracted production StoredOffSpec against actual native CanUseItem/ChrSpecialization data: Arms71 preserves the pair; correct72/73, missing/foreign spec and invalid child owner reject fallback. No saved character/persistent DB writes.",
     "native_publication": "Three actual native849/Player/Conversation contexts: publication admission/real22800 budget, no viewer or large diff cannot acknowledge, early removal cannot acknowledge, expired consumer safely retires. Viewer age controlled, no audio/rendering claim.",
     "sql": "Connection-local MariaDB TEMP shadows, repeated migration/idempotency, all old Stromkar predicates byte-hashed unchanged, actual six native objective rows, explicit expected45000 rejection of foreign custom enter/leave/visual mutation. Live before/after raw shared rows unchanged by tests; actual updater readback separately verified.",
-    "retained": "All19 canonical Fury checks pass across153535(1..8),154209(9..15),154826(16..19) runs; each has pre/post crash/log snapshots and captured output/exit. Includes mandatory canonical Scepter, original first/final fights, native dialogue/channel/visual, pickup/return/real receiver. Earlier compiler/PE fixture failures corrected independently in9ce863c69/087c8a3a9 and retained as failed prototypes. Protection native scene/real loot/pickup/return, paired native inventory and Stromkar ASAN pass. These are controlled source/native/PE checks, not full rendered client traversal.",
+    "retained": "All19 retained Fury checks against canonical CCDD656C pass:1..8 in153535 run,9..15 in154209 and16..19 in the final continuation, after correcting obsolete wave fixture/PE assumptions; each has pre/post diagnostics and captured exit/output. Native first/final fights/arrival/849-related843 dialogue/visual/channel/credit/pickup/return/real receiver/mandatory Scepter included as controlled regressions, not full client traversal. Retained Protection scene/real loot/pickup/return, paired native inventory and Stromkar ASAN pass. Earlier failing fixture/compiler/PE runs remain labeled and archived, not successful ordinary results.",
     "selected_binary": "Canonical proofs for manual controller/scenes/off-spec storage/registration/ready-marked shared factory/manual area/pre-save cleanup, paired equipment, native-tree Fury waves, Magnar reserves and Protection real pickup/return pass. PE verification retains old pinned automatic-departure proofs for historical binaries and selects the new manual controller on new binaries. Arrival/final visibility derive the real instance admission field through its write/init/step use because the new instance wave state changes class layout.",
     "build": "Original game/scripts Release project libraries, BuildProjectReferences=false/no global OutDir, actual original final-link dependencies. Seven pre-existing signed/unsigned warnings in unchanged ConditionMgr branches retained; no new warning at repaired area-action code and no runtime diagnostic suppression."
   },
@@ -26,5 +26,31 @@
   },
   "withdrawn_research": "Ordinary-bag linked-child hypothesis was invalid: native ITEM_FLAG_CHILD storage explicitly rejects ordinary bags and uses hidden child slots. Experimental Player.cpp bag scan fully reverted before final original-path build/native inventory run/deployment; GetChildItemByGuid unchanged. Private source44/old36 modeled invalid placements are withdrawn research, not a passing gameplay repair. No character mutations resulted.",
   "limits": "Full real client combat/scaling/one-hit/pet/guardian final blows, rendered pickup scenes/849 audio, equipment appearance, exact retail exit pose, manual button/flight/camera/portrait/arrival receiver, logout/re-entry and whole Fury/Protection/Arms chains remain client checks. Recovery pose is conservative, not claimed retail exact. Native publication budget is not actual playback acknowledgement. User's Warrior test progress/gear untouched during this task. Earlier shared intro LINK2 remains OPEN and is not masked by clean startup.",
-  "archive_cleanup": "Original bytes/hash archive and redundant generated artifact cleanup to be recorded after retained suite completes; preserve two recent rollback generations and unresolved/personal data."
+  "archive_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/warrior-pickup-return-2026-11-06",
+    "manifest_sha256": "f206d2aa097c017f3f7372337cd17b1f9861f413aad58051a08dc75e4bb04bcc",
+    "original_files": 2279,
+    "fix_commits": [
+      "a6a93ec3c",
+      "9473ba818",
+      "9ce863c69",
+      "087c8a3a9",
+      "10908045fdda0f1306ad6307e89765b051139b7d"
+    ],
+    "removed_files": 634,
+    "reclaimed_bytes": 2363431681,
+    "reclaimed_GiB": 2.201,
+    "deletion_manifest": ".codex/warrior-pickup-return-2026-11-06/cleanup-deleted.json",
+    "retained": [
+      ".codex/release-before-warrior-pickup-return-2026-11-06",
+      ".codex/release-before-warrior-runtime-2026-11-06"
+    ],
+    "deferred": "Unresolved Slaghammer intro probe/cache and personal character backups retained; actual client checks use canonical runtime, not redundant probes.",
+    "verification": "Every original archive SHA256 verified before/after cleanup; exact absolute whitelist/all reparse ancestors/each target hash checked and only task-owned generated files deleted. Canonical EXE/config/certs/DLLs/two recent rollbacks/empty active Crashes/mixed7111 hash rechecked; original6815 OPEN prefix preserved. Canonical mixed log untouched; two wholly reviewed inactive historical test logs reset only after verified archive. No character or database backups removed.",
+    "resolved_historical_logs": {
+      "maintenance": "build-extractors/bin/Release/fixed/warrior-pickup-return-2026-11-06/maintenance.json",
+      "sha256": "075752bed3930421550eb1cb34c820521a0d4d81ad7652ca4abce5859eedc34a",
+      "review": "Original October24 native bubble TEMP1792/1066 setup errors565 bytes resolved by a617a973a; original native inventory fixture184 destructor FATAL lines resolved by d473ec251. Prior audits and current clean native regressions identify exact causes/fixes. Both original files archived byte/hash-identically; only these inactive wholly reviewed test logs reset to zero after writer/process/reparse/concurrent-append checks. Current canonical mixed7111 untouched; no unrelated history/log cleared."
+    }
+  }
 }

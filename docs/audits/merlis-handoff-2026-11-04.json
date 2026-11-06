@@ -1,4 +1,18 @@
 {
+  "latest_warrior_pickup_return_2026_11_06": {
+    "audit": "docs/audits/warrior-pickup-return-2026-11-06.json",
+    "status": "DEPLOYED CCDD656C/9855C046 + World04: native-tree Fury waves and real owned pickup/manual-return recovery for Fury/Protection, including legitimate off-spec storage, scene/equip retry and owned gaze; custom area-action source validator fixed. Actual native progress/inventory/publication/stores,51+27ASAN, retained19 canonical Fury/Protection/Stromkar and Scepter pass. Owned22132 ready/shutdown0/exit0/gone; no new diagnostics after repairs.",
+    "next": "User can retest Fury then Protection. Actual client combat/scene/audio/equipment/manual button/flight/camera/pet/arrival/re-entry and all36 whole chains remain OPEN. Exact exit pose not established. Mixed7111 contains original6815 OPEN101430/103151 LINK2 plus296 resolved startup bytes; retain mixed log and unrelated open intro evidence. Warrior progress/gear untouched during this work.",
+    "fix_commits": [
+      "a6a93ec3c",
+      "9473ba818",
+      "9ce863c69",
+      "087c8a3a9",
+      "10908045fdda0f1306ad6307e89765b051139b7d"
+    ],
+    "archive": "build-extractors/bin/Release/fixed/warrior-pickup-return-2026-11-06",
+    "cleanup": "634 generated files removed; 2363431681 bytes reclaimed; two recent rollback generations and personal/unresolved evidence retained; two fully resolved historical native-test logs reset only after verified archive (details in audit)."
+  },
   "date": "2026-11-04",
   "status": "DEPLOYED8C67C433/F35EB0DF: focused Merlis corpse-owned108222 creation/receipt handoff repaired.124 extracted-code ASAN,6 native ordinary/18 explicit native failure-recovery-cancellation cases and retained/canonical checks pass. Actual client/full1123/all36 remain OPEN.",
   "scope": "Original Merlis107831/360963 map1620/native1123 death -> Garona108222. Preserve native owner resolution before cleanup,51615/2448, native stage7/48588 and shared scenario progression, adds108397 cleanup and downstream2449/2450/23+11s/108325/251107 reveal. No SQL/new ScriptName/player data or direct item/quest grants.",
