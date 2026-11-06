@@ -111,6 +111,14 @@ int main(int argc, char** argv)
     if (!maps.Load(argv[1], 0))
         return 11;
     maps.LoadFromDB();
+    DB2Storage<MapDifficultyEntry> mapDifficulties("MapDifficulty.db2", MapDifficultyLoadInfo::Instance());
+    if (!mapDifficulties.Load(argv[1], 0))
+        return 23;
+    mapDifficulties.LoadFromDB();
+    for (auto difficulty : mapDifficulties)
+        if (difficulty->MapID == 1511 || difficulty->MapID == 1495)
+            std::cout << "ARTIFACT_MAP_DIFFICULTY\t" << difficulty->MapID << '\t' << unsigned(difficulty->DifficultyID)
+                << '\t' << unsigned(difficulty->MaxPlayers) << '\t' << unsigned(difficulty->Flags) << '\n';
     DB2Storage<WorldMapAreaEntry> worldAreas("WorldMapArea.db2", WorldMapAreaLoadInfo::Instance());
     if (!worldAreas.Load(argv[1], 0))
         return 22;
@@ -283,8 +291,11 @@ int main(int argc, char** argv)
                 if (!tree)
                     return 6;
                 if (auto criterion = criteria.LookupEntry(tree->CriteriaID))
+                {
                     std::cout << "CRITERION\t" << unsigned(step->OrderIndex) << '\t' << criterion->ID << '\t'
                         << unsigned(criterion->Type) << '\t' << criterion->Asset << '\t' << tree->Amount << '\n';
+                    std::cout << "CRITERION_TREE\t" << unsigned(step->OrderIndex) << '\t' << tree->ID << '\t' << criterion->ID << '\t' << tree->Amount << '\n';
+                }
                 for (auto descendant : trees)
                     if (uint32(descendant->Parent) == identity)
                         pending.insert(descendant->ID);

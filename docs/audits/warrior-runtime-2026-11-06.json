@@ -1,5 +1,6 @@
 {
   "date": "2026-11-06",
+  "native_progress_correction": "Phase1 Fury wave acknowledgement claim is withdrawn: native progress uses CriteriaTree45974/45861, whereas a2073e254 and its earlier model used Criteria29100/29055 keys. Repaired production and fixture with real-native baseline/regression in warswords-native-progress-2026-11-06.json; subsequent pickup-return deployment supersedes phase1 binary. Original archive bytes/history remain preserved.",
   "status": "DEPLOYED paired-equipment/Fury-wave/Protection-reserve fixes; whole client chains and pickup/return controller work remain OPEN",
   "commits": [
     "d473ec251",

@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-06",
+  "status": "REPAIRED and staged; canonical deployment recorded in subsequent warrior-pickup-return audit",
+  "cause": "The a2073e254 wave controller searched native Scenario progress by Criteria.ID29100/29055. Actual AchievementMgr stores CriteriaTree.ID45974/45861. The earlier controlled fixture used the same incorrect keys, hiding the mismatch. Phase1 canonical5C0DFAC3 therefore did not establish working native wave acknowledgement; that claim is withdrawn.",
+  "repair": "Resolve each actual progress tree through the matching native CriteriaTree store and compare its CriteriaID; read the actual Counter. Preserve full-GUID death membership, three authored waves, independent real leader and native script-event dispatch.",
+  "checks": [
+    "24 ASAN actual-controller contexts now use native-shaped tree keys and typed tree lookup. Pinned a2073e254 wrong-key counterfactual reproduces repeated credit for the same dead wave.",
+    "Real linked Player/Scenario/AchievementMgr: actual TempSummon actors, three controlled three-death notifications yield45974=1/2/3; real97649 controlled death yields45861=1 and actual stage1->2. Duplicate death/update no extra credit. No progress table injection, character save or persistent DB writes.",
+    "Separate real-native pinned counterfactual confirms old state.wave stays0 despite real tree45974 credit, repeatedly dispatching the retained death receipt. Explicit expected-broken baseline, not a successful ordinary run.",
+    "Matching26972 native reader confirms tree45974/criterion29100/event47289 amount3 and tree45861/criterion29055/event46804 amount1. Map1511/difficulty12 is authored solo MaxPlayers1; synthetic multiple-player fixtures do not certify legitimate party admission.",
+    "Original Release libraries/final link, no global OutDir. Selected staged4A1F6578EB3DD5850B80900049A532B655Bcb70C7E76A2E53F93B4B02A72511D proof requires actual CriteriaTree store loads, native CriteriaID comparison, maximum Counter and real instance hooks. First proof prototype omitted data symbols from its function-only parser; direct map data-symbol selection repaired that verification tool."
+  ],
+  "diagnostics": "Pre/post canonical and own runtime crash/log snapshots for source/native baseline and repaired runs/build/link: exit0, no new crash or appended DBErrors/warnings/errors/assertions. Existing mixed canonical6815-byte LINK2 evidence remains OPEN and untouched.",
+  "limits": "Quest acceptance and earlier stage1 controlled, dead-state/notification endpoints controlled rather than actual damage/combat. Pet/guardian final blow eligibility follows instance death membership independent of killer; real client combat/scaling/timing/audio/whole chain remain separate checks. No claim of rendered client traversal.",
+  "evidence": "build-extractors/runtime-test/warswords-waves-native and warswords-waves; original byte/hash archives and canonical startup recorded by subsequent deployment audit"
+}

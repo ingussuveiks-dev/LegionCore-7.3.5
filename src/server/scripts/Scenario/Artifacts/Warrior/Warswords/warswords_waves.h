@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include "DB2Stores.h"
 
 namespace WarswordsWaves
 {
@@ -35,8 +36,13 @@ namespace WarswordsWaves
             if (!scenario)
                 return 0;
             auto const* records = scenario->GetAchievementMgr().GetCriteriaProgressMap();
-            auto found = records->find(id);
-            return found == records->end() ? 0 : found->second.Counter;
+            uint64 counter = 0;
+            // Scenario progress is keyed by CriteriaTree.ID, not Criteria.ID.
+            for (auto const& record : *records)
+                if (CriteriaTreeEntry const* tree = sCriteriaTreeStore.LookupEntry(record.first))
+                    if (tree->CriteriaID == id)
+                        counter = std::max(counter, record.second.Counter);
+            return counter;
         }
 
         Player* Participant() const
