@@ -43,5 +43,13 @@
     "No progression is added by this change;player/pet/guardian killing blows/group/faction admission for other shared roles retained via boundary/retained regression,not full-chain combat certification."
   ],
   "next": "Continue saved shared101430/103151 LINK2 investigation. Current live rows confirm101430 is Shadowlord Slaghammer: root48121 then200165 and missing2;103151 Effects Bunny:DATA1/1 removes auras then202014 and missing2. Existing slaghammer-intro-admission-2026-10-29.json and SharedCryptLinkCatalog.cpp already establish different native producers and unknown payloads. Trace full matching26972 conditions/callers/202014->202015, local old Trinity and GitHub history before any repair; do not delete links to suppress errors. Known shared81040/late-charm and whole chains/client checks remain OPEN.",
-  "archive": "Resolved diagnostic archival pending the implementation commit; preserve expected baseline ASAN report and corrected fixture iterations with hashes. Canonical mixedDBErrors must remain active."
+  "archive": {
+    "audit": "docs/audits/kingslayers-lucas-lifetime-archive-2026-11-06.json",
+    "path": "build-extractors/bin/Release/fixed/kingslayers-lucas-lifetime-2026-11-06",
+    "manifest_sha256": "182894bf626d03a26ed85e8fb4f741bc0ebe2145558a03e2e9aa68deb80ba2ab",
+    "files": 410,
+    "bytes": 907721,
+    "review": "Specific production freed-AI cause fixed and deployed. Pinned baseline ASAN UAF is explicitly counterfactual and paired with16current extracted/12whole native passes. Earlier20261105 missing Milliseconds compile fixed by current chrono alias. Two earlier empty-output hosts reexecuted under current vcvars environment both pass8, resolving the old recordedSTATUS_DLL_NOT_FOUND(-1073741515) host setup; first old run has no recorded exit and no stronger historical assertion is made. Reviewed new native fixture melee/pose and const-char assertion compile iterations are paired with final clean native12. Failed initial PE symbol hypotheses resolved through real inlined body/scalar destructor inspection. No suppressed production diagnostic, security boundary change or user server stop. No new crash. Canonical mixed6090 is unresolved and retained; activeCrashes already empty. Test stdout/stderr/history retained; private server DBErrors already zero; no mixed log truncated. Configs,binaries,PDB and character data excluded."
+  },
+  "fix_commit": "c0895e73c226359cc37f313f2b2e5362f43c02e8"
 }
