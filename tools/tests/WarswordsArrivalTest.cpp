@@ -107,6 +107,13 @@ void Invalidate(Player& player, InstanceScript* alternative, uint32 variant)
 }
 int main()
 {
+#ifdef LOADING_BASELINE
+    manager = {}; InstanceMap map; Instance instance(&map); Player player; player.script=&instance; player.contact=false;
+    map.players.push_back({&player});instance.OnPlayerEnter(&player);player.Flush();player.contact=true;instance.Update(30000);
+    assert(player.jumps==0&&player.spells.empty()&&instance.jump&&!instance.myscenario);
+    std::cout<<"COUNTERFACTUAL pinned85469a518 arrival drops its only callback while CanContact is false at3s; later readiness/30s update never starts descent. No hold or retry; not a successful ordinary run.\n";
+    return 0;
+#endif
     for (uint32 variant = 0; variant < 14; ++variant)
     {
         manager = {}; InstanceMap map; Instance instance(&map), alternative(&map); Player player; player.script = &instance;

@@ -31,6 +31,7 @@ namespace WarswordsArrival
 }
 
 #include "warswords_waves.h"
+#include "warswords_arrival.h"
 
 class instance_warswords : public InstanceMapScript
 {
@@ -46,40 +47,33 @@ public:
     {
         instance_warswords_InstanceMapScript(InstanceMap* map) : InstanceScript(map), waves(map) {}
 
-        uint32 outrotimer;
-        bool jump;
         std::map<uint32, ObjectGuid> objects;
         WarswordsWaves::State waves;
         bool myscenario;
 
         void Initialize() override
         {
-            outrotimer = 5000;
-            jump = true;
             waves.Reset();
             myscenario = false;
         }
 
         void OnPlayerEnter(Player* player) override
         {
-            if (!player)
-                return;
+            WarswordsArrivalRecovery::Enter(player);
+        }
 
-            uint32 instanceId = instance->GetInstanceId();
-            player->AddDelayedEvent(3000, [player, this, instanceId]() -> void
+        void OnPlayerLeave(Player* player) override
+        {
+            WarswordsArrivalRecovery::Forget(player);
+        }
+
+        void SetData(uint32 type,uint32 value) override
+        {
+            if (type==WarswordsArrivalRecovery::Ready && value==1)
             {
-                if (!WarswordsArrival::IsParticipant(player, instanceId, this))
-                    return;
-                myscenario = true;
-                if (!WarswordsArrival::CanLand(player, instanceId, this))
-                    return;
-
-                player->CastSpell(player, 205534);
-                player->CastSpell(player, 189695);
-                player->GetMotionMaster()->MoveJump(3386.46f, 1406.94f, 68.94f, player->GetOrientation(), 3.0f, 3.0f);
-                outrotimer = 5000;
-                jump = false;
-            });
+                myscenario=true;
+                if (getScenarionStep()==1) waves.Start();
+            }
         }
 
 
@@ -177,29 +171,6 @@ public:
         void Update(uint32 diff) override
         {
             waves.Update(diff);
-            if (!myscenario)
-                return;
-
-            if (!jump)
-                if (outrotimer <= diff)
-                {
-                    Map::PlayerList const &PlList = instance->GetPlayers();
-
-                    if (PlList.isEmpty())
-                        return;
-
-                    for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
-                        if (Player* player = i->getSource())
-                        {
-                            if (!WarswordsArrival::CanLand(player, instance->GetInstanceId(), this))
-                                continue;
-                            player->CastSpell(3386.46f, 1406.94f, 68.94f, 205744);
-                            player->CreateConversation(838);
-                        }
-                    jump = true;
-                }
-                else
-                    outrotimer -= diff;
         }
     };
 };
@@ -207,4 +178,5 @@ public:
 void AddSC_instance_warswords()
 {
     new instance_warswords();
+    new player_warswords_arrival_recovery();
 }

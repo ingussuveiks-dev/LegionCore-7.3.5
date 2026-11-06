@@ -1,125 +1,63 @@
-"""Verify selected, installed Warswords entrance and late-landing admission."""
+"""Select the installed per-entry Fury loading/descent/finish controller."""
 from pathlib import Path
-import runpy
-import struct
-from capstone import CS_OP_IMM, CS_OP_MEM
-from capstone.x86_const import X86_REG_RIP, X86_REG_RAX
-
-previous = runpy.run_path(str(Path(__file__).with_name('verify_warswords_final_credit_release.py')))
-native = previous['native']
-instructions = previous['instructions']
-participant = '?IsParticipant@WarswordsArrival@@'
-suffix = '@instance_warswords_InstanceMapScript@instance_warswords@@'
-entry = '?OnPlayerEnter' + suffix
-update = '?Update' + suffix
-timer = '?_Do_call@?$_Func_impl_no_alloc@V<lambda_1>@?1??OnPlayerEnter' + suffix
-
-
-def sites(body, prefix):
-    return [index for index, item in enumerate(body) if item.mnemonic in ('call', 'jmp')
-            and item.operands[0].type == CS_OP_IMM and native['resolve'](item.operands[0].imm) == native['symbol'](prefix)]
-
-
-body = instructions(participant)
-rejected = body[next(index for index, item in enumerate(body) if item.op_str == 'rcx, rcx' and item.mnemonic == 'test') + 1].operands[0].imm
-
-
-def rejection(decoded, position, branch, destination):
-    assert decoded[position + 1].mnemonic == branch and decoded[position + 1].operands[0].imm == destination, 'Rejected entrance can continue into arrival'
-
-
-for operands, branch in (('dword ptr [rbx + 0xa18], 0', 'jne'), ('byte ptr [rbx + 0x6848], 0', 'jne'),
-                         ('byte ptr [rbx + 0x6849], 0', 'jne'), ('qword ptr [rbx + 8], 0', 'je'),
-                         ('dword ptr [rbx + 0xe0], 0x5e7', 'jne'), ('dword ptr [rbx + 0x3b8], edi', 'jne')):
-    position = next(index for index, item in enumerate(body) if item.op_str == operands and item.mnemonic == 'cmp')
-    rejection(body, position, branch, rejected)
-for prefix, branch in (('?IsInWorld@Object@@', 'je'), ('?CanContact@Player@@', 'je'), ('?GetQuestRewardStatus@Player@@', 'jne')):
-    position = sites(body, prefix)[0]
-    assert body[position + 1].op_str == 'al, al'
-    rejection(body, position + 1, branch, rejected)
-script = sites(body, '?GetInstanceScript@WorldObject@@')[0]
-assert body[script + 1].op_str == 'rax, rsi'
-rejection(body, script + 1, 'jne', rejected)
-klass = sites(body, '?GetByteValue@Object@@')[0]
-assert any(item.op_str == 'edx, 0x35' for item in body[klass - 3:klass]) and any(item.op_str == 'r8b, 1' for item in body[klass - 3:klass])
-assert body[klass + 1].op_str == 'al, 1'
-rejection(body, klass + 1, 'jne', rejected)
-statuses = sites(body, '?GetQuestStatus@Player@@')
-assert len(statuses) == 2 and all(any(item.op_str == 'edx, 0x9c6b' for item in body[index - 3:index]) for index in statuses)
-assert body[statuses[0] + 1].op_str == 'eax, 3' and body[statuses[0] + 2].mnemonic == 'je'
-assert body[statuses[1] + 1].op_str == 'eax, 1'
-rejection(body, statuses[1] + 1, 'jne', rejected)
-identity = sites(body, '?GetScenarioId@Scenario@@')[0]
-assert body[identity + 1].op_str == 'eax, 0x3b0'
-rejection(body, identity + 1, 'jne', rejected)
-assert any(item.op_str == 'edx, edi' for item in body[sites(body, '?GetScenario@ScenarioMgr@@')[0] - 3:identity])
-assert any(item.address >= rejected and item.op_str == 'al, al' and item.mnemonic == 'xor' for item in body)
-
-def verify_landing(decoded, cast):
-    admit = sites(decoded, participant)[-1]
-    scenario = sites(decoded, '?GetScenario@ScenarioMgr@@')[0]
-    stage = sites(decoded, '?GetCurrentStep@Scenario@@')[0]
-    assert admit < scenario < stage < cast and not sites(decoded, '?HasItemCount@Player@@'), 'Fresh owned-item replay is blocked or native stage admission is missing'
-    assert decoded[stage + 1].op_str == 'eax, eax' and decoded[stage + 1].mnemonic == 'test'
-    rejected = decoded[stage + 2].operands[0].imm
-    assert rejected > decoded[cast].address
-    rejection(decoded, stage + 1, 'jne', rejected)
-    rejection(decoded, admit + 1, 'je', rejected)
-    assert decoded[scenario + 1].op_str == 'rax, rax'
-    rejection(decoded, scenario + 1, 'je', rejected)
-    return admit
-
-body = instructions(timer)
-admit = sites(body, participant)[0]
-first_cast = sites(body, '?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@IW4TriggerCastFlags@@')[0]
-land = verify_landing(body, first_cast)
-assert admit < land < first_cast
-assert body[admit + 2].mnemonic == body[land + 2].mnemonic == 'je'
-assert body[admit + 2].operands[0].imm > body[first_cast].address and body[land + 2].operands[0].imm > body[first_cast].address
-assert all(any(item.op_str == value for item in body[:admit]) for value in ('r8, qword ptr [rcx + 0x10]', 'edx, dword ptr [rcx + 0x18]', 'rcx, qword ptr [rcx + 8]'))
-latches=[item.operands[0].mem.disp for item in body[admit:land]
-         if item.mnemonic=='mov' and len(item.operands)==2
-         and item.operands[0].type==CS_OP_MEM and item.operands[0].size==1
-         and item.operands[0].mem.base==X86_REG_RAX
-         and item.operands[1].type==CS_OP_IMM and item.operands[1].imm==1]
-assert len(latches)==1
-latch=latches[0]
-# Instance-owned waves change the class layout. Identify the admission latch
-# by its real write and require initialization and next-step use of that field.
-assert any(item.op_str==f'byte ptr [rsi + {hex(latch)}], al' and item.mnemonic=='mov'
-           for item in instructions('?Initialize'+suffix))
-assert any(item.op_str==f'byte ptr [rdi + {hex(latch)}], 0' and item.mnemonic=='cmp'
-           for item in instructions('?onScenarionNextStep'+suffix))
-assert not any(item.op_str==f'byte ptr [rax + {hex(latch)}], 0' for item in body)
-values = {operand.imm for item in body for operand in item.operands if operand.type == CS_OP_IMM}
-assert {205534, 189695, 5000} <= values and native['symbol']('?MoveJump@MotionMaster@@QEAAXMMMMMMI') in native['calls'](timer)
-
-registration = instructions(entry)
-assert any(item.op_str == 'edx, 0xbb8' for item in registration)
-assert all(any(item.op_str == value for item in registration) for value in ('qword ptr [rsp + 0x48], rbx', 'qword ptr [rsp + 0x50], rdi', 'dword ptr [rsp + 0x58], eax'))
-tables = []
-for item in registration:
-    if item.mnemonic == 'lea' and len(item.operands) == 2 and item.operands[1].type == CS_OP_MEM and item.operands[1].mem.base == X86_REG_RIP:
-        address = item.address + item.size + item.operands[1].mem.disp
-        table = native['offset'](address)
-        if struct.unpack_from('<Q', native['binary'], table + 0x10)[0] == native['symbol'](timer):
-            tables.append(address)
-assert len(tables) == 1 and native['symbol']('?AddDelayedEvent@FunctionProcessor@@') in native['calls'](entry)
-
-body = instructions(update)
-cast = sites(body, '?CastSpell@Unit@@QEAA?AW4SpellCastResult@@MMMIW4TriggerCastFlags@@')[0]
-gate = verify_landing(body, cast)
-conversation = sites(body, '?CreateConversation@Unit@@')[0]
-assert gate < cast < conversation and body[gate + 2].mnemonic == 'je' and body[gate + 2].operands[0].imm > body[conversation].address
-assert any(item.op_str == 'dword ptr [rsp + 0x20], 0x323b0' for item in body[gate:cast])
-assert any(item.op_str == 'edx, 0x346' for item in body[cast:conversation])
-
-selected = []
-for item in instructions('?GetInstanceScript@instance_warswords@@'):
-    if item.mnemonic == 'lea' and len(item.operands) == 2 and item.operands[1].type == CS_OP_MEM and item.operands[1].mem.base == X86_REG_RIP:
-        table = native['offset'](item.address + item.size + item.operands[1].mem.disp)
-        slots = struct.unpack_from('<80Q', native['binary'], table)
-        if native['symbol'](entry) in slots and native['symbol'](update) in slots:
-            selected.append(table)
-assert len(selected) == 1, 'Actual instance factory does not select guarded arrival callbacks'
-print('PASS: canonical instance factory and installed3000ms closure retain original Player/script/instance capture, live participation before bootstrap, fresh-step0 landing before native casts/jump without blocking owned-item replay, and independent live admission before205744/838; unrelated entrants cannot clear the instance. No real flight, retry, aura cleanup or client rendering proof.')
+import runpy,struct,re
+from capstone import CS_OP_IMM,CS_OP_MEM
+from capstone.x86_const import X86_REG_RIP
+n=runpy.run_path(str(Path(__file__).with_name('verify_warswords_final_credit_release.py')))
+native,instructions=n['native'],n['instructions']
+if not any(name.startswith('?Tick@State@WarswordsArrivalRecovery@@') for name in native['symbols']):
+    historical=runpy.run_path(str(Path(__file__).with_name('verify_warswords_arrival_legacy_release.py')))
+    latch=historical['latch']
+else:
+    def needs(caller,dependency):
+        assert any(name.startswith(dependency) and native['resolve'](address) in native['calls'](caller)
+                   for name,address in native['symbols'].items()),caller+' missing '+dependency
+    suffix='@instance_warswords_InstanceMapScript@instance_warswords@@'
+    tick='?Tick@State@WarswordsArrivalRecovery@@'
+    for caller,dependencies in (
+        ('?OnPlayerEnter'+suffix,('?Enter@WarswordsArrivalRecovery@@',)),
+        ('?OnPlayerLeave'+suffix,('?Forget@WarswordsArrivalRecovery@@',)),
+        ('?OnUpdate@player_warswords_arrival_recovery@@',(tick,)),
+        (tick,('?Valid@State@WarswordsArrivalRecovery@@','?CanContact@Player@@','?IsMapObjectArrivalProtected@Player@@','?CastSpell@Unit@@','?MoveJump@MotionMaster@@QEAAXMMMMMM','?CreateConversation@Unit@@','?SetUnitTarget@SpellCastTargets@@')),
+        ('?Enter@WarswordsArrivalRecovery@@',('?Context@WarswordsArrivalRecovery@@','?BeginMapObjectArrival@Player@@')),
+        ('?Valid@State@WarswordsArrivalRecovery@@',('?Context@WarswordsArrivalRecovery@@','?GetQuestCancellationReceipt@Player@@')),
+        ('?AirEntrance@WarswordsArrivalRecovery@@',('?GetHeight@Map@@',)),
+        ('?OnBeforeLogout@player_warswords_arrival_recovery@@',('?Forget@WarswordsArrivalRecovery@@',))):
+        for dependency in dependencies:needs(caller,dependency)
+    calls=native['calls'](tick)
+    for forbidden in ('?TeleportTo@Player@@','?AddItem@Player@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?RewardQuest@Player@@'):
+        assert not any(name.startswith(forbidden) and native['resolve'](address) in calls for name,address in native['symbols'].items())
+    values={v.imm for x in instructions(tick) for v in x.operands if v.type==CS_OP_IMM}
+    assert {205534,189695,205744,838,5000,2000,1000,0x574152} <= values
+    ready=instructions('?SetData'+suffix)
+    writes=[x for x in ready if x.mnemonic=='mov' and len(x.operands)==2 and x.operands[0].type==CS_OP_MEM
+            and x.operands[0].size==1 and x.operands[0].mem.disp>=0x200]
+    assert len(writes)==1 and any(x.op_str=='r8d, 1' and x.mnemonic=='cmp' for x in ready)
+    assert any(x.op_str=='edx, 0x574152' and x.mnemonic=='cmp' for x in ready)
+    latch=writes[0].operands[0].mem.disp
+    needs('?SetData'+suffix,'?Start@State@WarswordsWaves@@')
+    step=instructions('?onScenarionNextStep'+suffix)
+    assert any(x.mnemonic=='cmp' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp==latch for x in step)
+    selected=[]
+    for x in instructions('?GetInstanceScript@instance_warswords@@'):
+        for v in x.operands:
+            if x.mnemonic=='lea' and v.type==CS_OP_MEM and v.mem.base==X86_REG_RIP:
+                offset=native['offset'](x.address+x.size+v.mem.disp);table=struct.unpack_from('<90Q',native['binary'],offset)
+                if all(native['symbol']('?'+method+suffix) in table for method in ('OnPlayerEnter','OnPlayerLeave','SetData','Update')):selected.append(table)
+    assert len(selected)==1
+    maptext=(native['args'].release/'worldserver.map').read_text(errors='replace')
+    # Player::CanFly is a virtual call; Unit's declaration is pure virtual.
+    flight=native['symbol']('?CanFly@Player@@')
+    flight_slots=[]
+    for address in re.findall(r'\s+\w+:\w+\s+\?\?_7Player@@\S+\s+([0-9a-fA-F]{16})',maptext):
+        offset=native['offset'](int(address,16));table=struct.unpack_from('<128Q',native['binary'],offset)
+        flight_slots += [i*8 for i,value in enumerate(table) if native['resolve'](value)==flight]
+    assert flight in native['calls']('?AirEntrance@WarswordsArrivalRecovery@@') or any(
+        x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp in flight_slots
+        for x in instructions('?AirEntrance@WarswordsArrivalRecovery@@'))
+    tables=re.findall(r'\s+\w+:\w+\s+\?\?_7player_warswords_arrival_recovery@@6B@\s+([0-9a-fA-F]{16})',maptext)
+    assert len(tables)==1
+    offset=native['offset'](int(tables[0],16));slots=struct.unpack_from('<45Q',native['binary'],offset)
+    assert native['resolve'](slots[44])==native['symbol']('?OnBeforeLogout@player_warswords_arrival_recovery@@')
+    assert native['symbol']('?OnUpdate@player_warswords_arrival_recovery@@') in slots
+    print('PASS selected native Fury instance queues per-entry recovery, pre-create bounded native hold, real CanContact/receipt/spline/finish acknowledgement and explicit self+destination; registered PlayerScript updates/pre-save cleanup and late wave bootstrap retained. No teleport/progression/item grants. Source/native/client evidence separate.')

@@ -555,9 +555,11 @@ void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, f
     bool stromkarRecoil = arrivalCast && id == 206360 && arrivalCast->SpellId == 206361 &&
         _owner->IsPlayer() && _owner->GetMapId() == 1539;
     bool skyholdReturn = arrivalCast && id == 192085 && arrivalCast->SpellId == 216016 && _owner->IsPlayer();
+    bool warswordsLanding = arrivalCast && id == 205744 && arrivalCast->SpellId == 191477 &&
+        _owner->IsPlayer() && _owner->GetMapId() == 1511;
     bool sharasdalAcquisition = arrivalCast && id == 209683 && arrivalCast->SpellId == 209684 &&
         _owner->IsPlayer() && _owner->GetMapId() == 1600;
-    if (duration <= 0 && ((id == 94954 && arrivalCast && arrivalCast->SpellId == 52174) || skyholdDeparture || stromkarExecution || stromkarRecoil || skyholdReturn || sharasdalAcquisition))
+    if (duration <= 0 && ((id == 94954 && arrivalCast && arrivalCast->SpellId == 52174) || skyholdDeparture || stromkarExecution || stromkarRecoil || skyholdReturn || sharasdalAcquisition || warswordsLanding))
     {
         _owner->ClearUnitState(UNIT_STATE_LONG_JUMP);
         return;
@@ -572,7 +574,7 @@ void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, f
     }
 
     Mutate(new EffectMovementGenerator(id, arrivalSpellId, arrivalSpellTargetGuid,
-        (skyholdReturn || sharasdalAcquisition) ? _owner->GetMapId() : uint32(-1)), MOTION_SLOT_CONTROLLED);
+        (skyholdReturn || sharasdalAcquisition || warswordsLanding) ? _owner->GetMapId() : uint32(-1)), MOTION_SLOT_CONTROLLED);
 }
 
 void MotionMaster::MoveFall(uint32 id/*=0*/)

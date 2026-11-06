@@ -2006,7 +2006,9 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
         m_spellInfo->Id == 206360 && arrivalCast.SpellId == 206361;
     bool sharasdalAcquisition = m_caster->GetMapId() == 1600 &&
         m_spellInfo->Id == 209683 && arrivalCast.SpellId == 209684;
-    if (m_caster->IsPlayer() && (skyholdDeparture || stromkarExecution || stromkarRecoil || sharasdalAcquisition))
+    bool warswordsLanding = m_caster->GetMapId() == 1511 &&
+        m_spellInfo->Id == 205744 && arrivalCast.SpellId == 191477;
+    if (m_caster->IsPlayer() && (skyholdDeparture || stromkarExecution || stromkarRecoil || sharasdalAcquisition || warswordsLanding))
         arrivalCast.Target = m_caster->GetGUID();
     if (!arrivalCast.SpellId && delayCast)
     {

@@ -1,19 +1,10 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
-$ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Choose baseline without current Release verification'}
-$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$LoadingBaseline)
+$ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+if($Baseline -or $LoadingBaseline){if($VerifyReleaseBinary){throw 'A pinned counterfactual cannot certify current Release'};& "$PSScriptRoot/Test-WarswordsArrivalLegacy.ps1" -Baseline:$Baseline -LoadingBaseline:$LoadingBaseline;return}
+& "$PSScriptRoot/Test-WarswordsArrivalRecovery.ps1"
+if(!$? -or $LASTEXITCODE){throw 'Fury arrival recovery failed'}
 $out="$repo/build-extractors/runtime-test/warswords-arrival"
 New-Item -ItemType Directory -Force $out|Out-Null
-function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
-$path='src/server/scripts/Scenario/Artifacts/Warrior/Warswords/instance_warswords.cpp'
-$source=Get-Content "$repo/$path" -Raw
-if($Baseline){$source=(& git -C $repo show "9fe2be7b:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned arrival baseline'}}
-foreach($name in @('Initialize','OnPlayerEnter','Update')){[IO.File]::WriteAllText("$out/$name.inc",(Block $source "void $name("))}
-[IO.File]::WriteAllText("$out/Policy.inc",$(if($Baseline){''}else{Block $source 'namespace WarswordsArrival'}))
-$vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}else{''}
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/WarswordsArrivalTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
-& "$out/run.cmd";if($LASTEXITCODE){throw 'Actual Warswords arrival callback regression failed'}
 if($VerifyReleaseBinary){
  $previous=$env:LEGION_DIALOGUE_CONFIG
  try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile WarswordsCreditCatalog.cpp -ProbeName WarswordsCreditCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$? -or $LASTEXITCODE){throw 'Native arrival catalogue failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
