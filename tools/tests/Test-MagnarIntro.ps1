@@ -5,6 +5,9 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/magnar-intro"
 New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
+$functionsHeader=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw
+$functionsSource=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
+[IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $functionsHeader 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$functionsSource.Substring($functionsSource.IndexOf('FunctionProcessor::FunctionProcessor()')))
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
 $source=Get-Content "$repo/$path" -Raw
 $source=$source.Substring(0,$source.IndexOf('class npc_magnar_icebreaker'))

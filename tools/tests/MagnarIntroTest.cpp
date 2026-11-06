@@ -4,8 +4,12 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <map>
+#include <mutex>
 #include <vector>
 using uint32 = uint32_t;
+using uint64 = uint64_t;
+#include "Functions.inc"
 struct ObjectGuid
 {
     static ObjectGuid const Empty;
