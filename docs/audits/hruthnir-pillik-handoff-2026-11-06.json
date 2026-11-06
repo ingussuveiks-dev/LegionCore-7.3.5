@@ -29,7 +29,23 @@
     "Prototype ran a retained uninstalled controller with no suspended identity; corrected native case to actual disabled current AI. Source separately covers current/suspended/uninstalled identity. No native condition bypass.",
     "Ordinary-combat scenery witness exposed old live-approach cross-phase kill. Preserve failure and repair that original predicate too. Source adapter placement and PE register/outlined-constructor/operator/new-getter expectations corrected while retaining all real admission/ownership/lifecycle checks."
   ],
-  "preservation": "Canonical configs/certs/DLLs/extracted data and required build libraries preserved. No user/unknown server stopped. Temporary cleanup follows final canonical verification.",
+  "preservation": "Canonical configurations/certificates/DLLs/extracted data, original required build libraries, personal backups, two newest rollback generations and all unresolved evidence preserved. No user/unknown process stopped. Task-owned temporary outputs removed after verified deployment/startup.",
   "limits": "Full Protection/Fury/Arms/all36 client path/door arrival/audio/VFX/camera/pet portrait/combat/scaling/cold re-entry/new-AI route restoration remain separate. This fix waits for real46288 and does not recover its native nearest-player one-shot when nobody is present at the waypoint; review that earlier owner-range admission separately. Earlier101430/103151 LINK2 and unrelated Slaghammer evidence remain OPEN. Mixed7111 DBErrors SHA256 FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged/untruncated.",
-  "archive_cleanup": "PENDING verified original diagnostic archive and exact redundant build cleanup after this fix commit."
+  "archive_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-pillik-handoff-2026-11-06",
+    "manifest_sha256": "36f719da5ee9d7ca161f17ffd43416692f65a509e256c12cfad0ad2609d59f0e",
+    "original_files": 1415,
+    "cleanup_manifest_sha256": "5f3efeb079804378c4bab9032a7abf079c361ca91458b825d0068edfbfc5d6ec",
+    "removed_files": 528,
+    "logical_removed_bytes": 3999132215,
+    "local_deletion_manifest": ".codex/warrior-next-review-2026-11-06/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-hruthnir-pillik-2026-11-06",
+      ".codex/release-before-hruthnir-start-recovery-2026-11-06"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonical907CE801/09058027; protected configs/cert/DLLs unchanged; two recovery generations verified; no owned world/bnet process; active Crashes empty; mixed7111 and unresolved Slaghammer bytes unchanged"
+  },
+  "fix_commit": "767f6e2f467f0668eb33ed717d4e8ef037eefeec"
 }

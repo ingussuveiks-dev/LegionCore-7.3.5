@@ -1,4 +1,27 @@
 {
+  "latest_hruthnir_pillik_2026_11_06": {
+    "audit": "docs/audits/hruthnir-pillik-handoff-2026-11-06.json",
+    "status": "DEPLOYED907CE801/09058027: real Pillik94714 early death cannot strand Protection909 step1 after Hruthnir original5s approach; typed native owner/participant46289 retry and phase-scoped96571 cleanup.",
+    "fix_commit": "767f6e2f467f0668eb33ed717d4e8ef037eefeec",
+    "checks": "93 ASAN actual-method cases;78 linked-core Human/Orc player/pet/guardian cases;6 pinned expected-broken controls;14 retained native start/24 readiness;full selected PE/six escort clocks/all9 retained canonical groups pass. Owned22100 ready/shutdown0/exit0/gone,empty stderr,no newly appended unexplained server warnings/errors/assertions/DBErrors or crash report.",
+    "next": "No pending promotion. Full client Fury/Protection/Arms path/door/audio/VFX/combat/equipment/manual return/camera/pet/re-entry and all36 chains remain OPEN. Review separate earlier46288 nearest-player prerequisite when owner absent at waypoint; this fix never invents it. Earlier101430/103151 LINK2,mixed7111 and unresolved Slaghammer evidence untouched. No character progress/gear/health edits.",
+    "cleanup": {
+      "archive": "build-extractors/bin/Release/fixed/hruthnir-pillik-handoff-2026-11-06",
+      "manifest_sha256": "36f719da5ee9d7ca161f17ffd43416692f65a509e256c12cfad0ad2609d59f0e",
+      "original_files": 1415,
+      "cleanup_manifest_sha256": "5f3efeb079804378c4bab9032a7abf079c361ca91458b825d0068edfbfc5d6ec",
+      "removed_files": 528,
+      "logical_removed_bytes": 3999132215,
+      "local_deletion_manifest": ".codex/warrior-next-review-2026-11-06/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-hruthnir-pillik-2026-11-06",
+        ".codex/release-before-hruthnir-start-recovery-2026-11-06"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "postcheck": "PASS canonical907CE801/09058027; protected configs/cert/DLLs unchanged; two recovery generations verified; no owned world/bnet process; active Crashes empty; mixed7111 and unresolved Slaghammer bytes unchanged"
+    }
+  },
   "latest_hruthnir_start_recovery_2026_11_06": {
     "audit": "docs/audits/hruthnir-start-recovery-2026-11-06.json",
     "status": "DEPLOYED0807A57E/525CA0D8: Protection original owner/quest receipt, acknowledged497/original6s cue and actual Magnar1062; same1s missing/declined endpoint retry without replay; shared warm-entry receipt adoption and scoped first-phase reserve destructor.",
