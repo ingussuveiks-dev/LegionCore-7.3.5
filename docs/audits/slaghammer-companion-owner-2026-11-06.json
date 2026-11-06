@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-06",
+  "status": "DEPLOYED World2026_11_06_01 on unchanged0526DE51/6B561472. Native Slaghammer101899/201004 now follows its actual summoner through SmartAI OWNER_OR_SUMMONER23 instead of nearest Player21. Exactly2cells,14actions/2conditions retained;14native projected+14live,14pinned counterfactual,12SQL custom/partial refusals,idempotence,retained intro ASAN/data/typed26972 pass. Owned25992 ready/shutdown0/exit0/gone,no new diagnostics. Shared101430/103151 LINK2 and full client/whole-chain remain OPEN.",
+  "scope": "Only101899/source0/id1 target_type21->23 and target_param1100->0. No C++ core/script change,new registration,spell change,manual progression/item grant,actor pose/faction/scaling,sharedLINK2 mutation or character/database reset.",
+  "cause": "Full shared-crypt caller trace reached native201004 personal101899. JUST_SUMMONED action29 used CLOSEST_PLAYER21/100yards. Native SelectNearestPlayer checks map/phase/range/life,not summoner identity/private audience/class/quest/GM. A real TempSummon with known Player summoner can therefore follow a nearer unrelated Player. Native12initial then14final paired contexts reproduce10controlled wrong-follow cases across both factions. This is independently demonstrated adjacent behavior; it does not explain or repair either missingLINK2.",
+  "repair": "Use existing native OWNER_OR_SUMMONER23,which resolves TempSummon::GetSummoner through GetAnyOwner. Preserve existing SmartAI SetFollow,original1->2->13 dialogue/48306 credit and later combat/TALK/DATA/barrier/despawn actions. Conditional migration fingerprints all14original or applied action rows and both stage conditions,requires nativeSmartAI/emptyScriptName and no custom201004binding. Every write rechecks safe/original state,so even mysql --force after a refused guard cannot overwrite customized rows.",
+  "sources": {
+    "local": "Current matching26972 spell201004 effect28/101899/properties3747,target142,duration-1;native201004 self-cast actually creates one owned summon. Actual world14Smart rows,2source22 actor991/stage3 andstage7 conditions,creature templates/texts/summon ownership,SmartAI::IsSummonedBy/GetTargets/SetFollow,Creature::SelectNearestPlayer/GridNotifiers and Unit::GetAnyOwner traced. Full live unchanged1031/101430/103151 payloads/callers read; prior Oct29/Oct30/Nov1 audits reviewed.",
+    "history": "Fetched origin/main at a92364d75 and confirmed0/0 divergence; prior focused Slaghammer admission da42f12f5 and current cleanup/Lucas history reviewed. Local newer TrinityCore15e0ed76e2 and old7world files supply verification/metadata rows,not missingSmartAI actions.",
+    "external": "Read GitHub recursive tree metadata for welder1976/MagicStorm at e941af4df2f394e7d0e0753ca15c0677271698c1 and LegacyProjectArchive/MagicStormTeam-Legion master; no lostLINK2 payload established. Numeric web search mostly irrelevant and excluded. No external implementation copied,no new YouTube footage/audio reviewed; prior Nov1 partial-video limits retained."
+  },
+  "validation": {
+    "native": "Test-SlaghammerCompanionNative:14whole native projected and14live cases,Human/BloodElfPriests:actual Map/TempSummon/properties3747,real SmartAI table loader/condition/text loaders/GetTargets/SetFollow;10controlled nearer ordinary/GM/wrong-class/questless/group visitors,2positive farther controls and2actual201004self-casts. Native48306 count remains1,including repeated JS;full source14rows/2conditions preserved. Quest/stage3,poses/direct factory witnesses controlled;native Release libraries,not full-coreASAN. Actual client movement not claimed.",
+    "counterfactual": "14native baseline cases reconstruct only original21/100 in TEMP after either live state;10controlled nearer visitors take follow. Actual201004 self-casts and owner-nearest controls retained. Counterfactual,not successful ordinary quest traversal.",
+    "data": "Full native-schema TEMP-only actual migration replay twice:one row/two cells only. All14actions/2gates,shared101430/103151 unknownLINK2,foreign actor,source9timed list,binding and full template preserved.12expected1644/45000 custom/partial refusal cases reviewed;all tables unchanged even under mysql --force. Live23/0 readback passes.",
+    "retained": "Test-SlaghammerIntroData -VerifyLiveData passes original12conditions/admission actions,full-schema idempotence and12custom guards. Test-SlaghammerIntro -VerifyNativeCatalog passes extractedASAN production condition/LOS/LINK dispatch and actual26972991/1->2/1031 catalog. Its intentionally modeled known missingLINK2 counter remains explicitly OPEN;no server diagnostic suppressed.",
+    "deployment": "Data-only migration promoted after tests with no user/unknown server running. Current canonical world/bnet exe and configuration hashes unchanged. OwnedPID25992 applied updater RELEASED06691EF2591B73B1FC5A2E0E7B0657F8A1B49D79(normalizedLF SHA1),freshready,graceful shutdown0,exit0,empty stderr,gone. No hidden server remains.",
+    "fixture_corrections": "Preserved initial compile failure from passing std::string to native const-char DB methods;corrected c_str. First native loader lacked GO251349 before SmartAI admission,paired with real GO loader. Next GO loader lacked native PageText preload,emitting81page diagnostics;all81classified as this missing fixture dependency and paired with LoadPageTexts plus clean baseline/projected/live. Initial SQL template fixture omitted requiredWorldEffects;fixed by preserving actual complete template seed. Readonly research used creature_text.entry instead of actualCreatureID;schema inspected and corrected. No persistent test data or production log suppression."
+  },
+  "canonical_hashes": {
+    "worldserver.exe": "0526de51b6780aed6ca0e0f6213dd7ae09420bdcce785da97d8e44d78106e8cd",
+    "bnetserver.exe": "6b5614726dc3bf63ffdc100b04989646479457d9ec5fa30081c1765fef6cd14d"
+  },
+  "source_sha256": {
+    "sql/updates/world/2026_11_06_01_slaghammer_companion_owner.sql": "56311ac2538cc5723fdce6c2691e80f593f409d55643dfbdc068e343c8c4fed7",
+    "tools/tests/SlaghammerCompanionNative.cpp": "e358c93ae21dc52a1b3bb635738fda2c4a830b4c6ff6bdb0ffb86a1f11afdb38",
+    "tools/tests/SlaghammerCompanionOriginal.json": "474ddb2b6851bd37fe45decb987a2d1437f5bec3cb0b7655bf9e043ba14a2619",
+    "tools/tests/Test-SlaghammerCompanionData.ps1": "94e1664d2fb847c5eadaee6c5b29bda51f315ed3619188e402dd33fac1d7b453",
+    "tools/tests/Test-SlaghammerCompanionNative.ps1": "fdbbddbac3fe4cd4c4a6b5f9ff8a8825afb5b4e4589fd28db82de28b9296e88b"
+  },
+  "diagnostics": {
+    "canonical_active_crashes": 0,
+    "canonical_mixed_DBErrors_bytes": 6090,
+    "canonical_mixed_DBErrors_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "new_crash_or_server_DB_error": false,
+    "unresolved": "Old canonical mixed6090 containing101430/103151 LINK2 retained unchanged. These payloads,shared81040/late-charm,full client/whole36 and later companion recipient/lifecycle checks remain OPEN."
+  },
+  "client_open": [
+    "Actual native Slaghammer spawn/follow/movement/path/voice with both factions,groups and nearby players.",
+    "Full40710/991 sequence,both barriers,ritualists/finalboss,pickup,turnin,pet/guardian final blows,abandonment/reentry/reconnect and later101899LOS/201321/cleanup are separate checks;only initial follow recipient is repaired here."
+  ],
+  "next": "Shared101430/103151 missingLINK2 remains unresolved: original200165/conversation1031 and202014->202015 do not establish either missing payload. Review original history/donor evidence before editing; retain canonical mixed6090 and all unresolved sources. Independently review later101899 stage7 LOS/TALK4/201321 recipient and cleanup using actual native data/acknowledgement; this commit certifies only initial summoned follow ownership. Known shared81040/late-charm and all36/client checks remain OPEN.",
+  "archive_cleanup": "Pending implementation commit:hash-archive only this resolved companion/fixture evidence,retain unresolvedsharedLINK2research outsidefixed,then remove no-longer-needed native executable/object/ILK/PDB/map/privateconfig outputs per new AGENTS requirement;canonicalruntime and recoverycopies retained."
+}
