@@ -1,4 +1,36 @@
 {
+  "latest_warswords_reentry_descent_2026_11_06": {
+    "audit": "docs/audits/warswords-reentry-descent-2026-11-06.json",
+    "status": "DEPLOYED1189AEA8/393BA331 +World05: slow-loading/re-entry Fury944 descent now has bounded native precreate hold and retry, explicit native205744 destination/self and deferred real-landing acknowledgement; native191477 self/map/completion guard. Already-completed first spline is accepted only at real authored landing.",
+    "fix_commits": [
+      "b99f89064",
+      "fde23be7c"
+    ],
+    "checks": "50 controller ASAN, separate actual linked native normal/completed-spline cases and interruption/death/map controls; TEMP/live SQL, retained movement/Warrior/canonical PE/Scepter pass. Owned5828/4340 ready/shutdown0/exit0/gone; no new ordinary diagnostics. No user server stopped or character health/progress/gear edited.",
+    "next": "User confirms actual cold/warm/repeated client entry and landing. Full Fury/Protection/Arms/client rendering/audio/camera/pet and all36 chains remain OPEN. Existing shared101430/103151 LINK2 remains OPEN; canonical mixed7111 unchanged and never truncated.",
+    "cleanup": {
+      "rounds": [
+        {
+          "archive": "build-extractors/bin/Release/fixed/warswords-reentry-descent-2026-11-06",
+          "manifest_sha256": "22967f8c884b2fe07461224849d512a02d7e68e7d60b14ebb1aa36e76e33e489",
+          "archived_files": 860,
+          "removed_files": 341,
+          "removed_bytes": 2531308084,
+          "resolved_inactive_logs_reset": 4
+        },
+        {
+          "archive": "build-extractors/bin/Release/fixed/warswords-reentry-completed-spline-2026-11-06",
+          "manifest_sha256": "a33c6aa3350b49308e9cde04fadb258f0c0bbbc26441df9c6200bbd3b80d3b2b",
+          "archived_files": 769,
+          "removed_files": 60,
+          "removed_bytes": 721835743,
+          "resolved_inactive_logs_reset": 0
+        }
+      ],
+      "accounting": "Logical removed bytes across two cleanup rounds; follow-up regenerated some same paths, so this is not net C: free-space growth.",
+      "retained": "Two recent rollback generations, canonical/shared assets/libraries, personal backups and unresolved Slaghammer intro evidence/cache preserved; staging/test executables removed."
+    }
+  },
   "latest_warrior_pickup_return_2026_11_06": {
     "audit": "docs/audits/warrior-pickup-return-2026-11-06.json",
     "status": "DEPLOYED CCDD656C/9855C046 + World04: native-tree Fury waves and real owned pickup/manual-return recovery for Fury/Protection, including legitimate off-spec storage, scene/equip retry and owned gaze; custom area-action source validator fixed. Actual native progress/inventory/publication/stores,51+27ASAN, retained19 canonical Fury/Protection/Stromkar and Scepter pass. Owned22132 ready/shutdown0/exit0/gone; no new diagnostics after repairs.",

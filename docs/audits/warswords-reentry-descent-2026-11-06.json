@@ -22,12 +22,50 @@
     "startup": "Task-owned5828 fresh ready/shutdown0/exit0/gone, stderr empty; no new crash or appended DBErrors/warning/error/assertion. Original user processes were observed gone before promotion, rechecked before copies; no user server stopped. Protected config/certs/DLLs/extracted data preserved. Follow-up task-owned4340 also fresh ready/shutdown0/exit0/gone, stderr empty and clean post-diagnostics after completed-spline ACK repair.",
     "unresolved": "Earlier shared101430/103151 LINK2 remains OPEN. Canonical mixed7111-byte DBErrors SHA256FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged; no truncation. Active canonical Crashes empty."
   },
-  "prototype_review": "Native scaffold first asserted because a PlayerScript was registered outside a script context; register its heap-owned observer with actual ScriptMgr context. A later actual finalizer asserted because the synthetic Player skipped normal idle MotionMaster initialization; initialize the fixture normally. Both nonzero native processes/stack diagnostics are failed prototypes, not successful runs or game-server crashes, paired with clean complete native regressions. Initial no-row/recipient/range/early-ack warnings remain original evidence paired with the repaired native path. Metadata query initially used nonexistent orientation instead of actual target_orientation; read-only query corrected, no DB mutation. No runtime check disabled and no log suppressed.",
+  "prototype_review": "Native scaffold first asserted because a PlayerScript was registered outside a script context; register its heap-owned observer with actual ScriptMgr context. A later actual finalizer asserted because the synthetic Player skipped normal idle MotionMaster initialization; initialize the fixture normally. Both nonzero native processes/stack diagnostics are failed prototypes, not successful runs or game-server crashes, paired with clean complete native regressions. Initial no-row/recipient/range/early-ack warnings remain original evidence paired with the repaired native path. Metadata query initially used nonexistent orientation instead of actual target_orientation; read-only query corrected, no DB mutation. No runtime check disabled and no log suppressed. A final ad-hoc PowerShell command wrapper lost quoting around its PASS text after the underlying Scepter check; wrapper exit failed and was retained as infrastructure evidence. Corrected file-based wrapper reran the actual canonical Scepter regression and passed with clean post-diagnostics.",
   "limits": "Actual cold/warm/repeated client entry, render/audio/camera/pet and real landing require user confirmation. Bounded native load grace is not proof all client collision has streamed. Corridor is conservative around this native entrance/original descent, not a claim of retail timing. Other distant air poses are not forcibly moved. Native fog/aura/summon duration policies remain; whole Fury/Protection/Arms and all36 chains remain OPEN. Character health/progress/gear/checkpoint were not edited; user death is not silently repaired by modifying saved data.",
-  "archive_cleanup": "Original-byte/hash evidence/archive and removal of redundant test/stage binaries to be recorded after final checks; private character readback stays outside fixed/commits.",
+  "archive_cleanup": {
+    "rounds": [
+      {
+        "archive": "build-extractors/bin/Release/fixed/warswords-reentry-descent-2026-11-06",
+        "manifest_sha256": "22967f8c884b2fe07461224849d512a02d7e68e7d60b14ebb1aa36e76e33e489",
+        "archived_files": 860,
+        "removed_files": 341,
+        "removed_bytes": 2531308084,
+        "resolved_inactive_logs_reset": 4
+      },
+      {
+        "archive": "build-extractors/bin/Release/fixed/warswords-reentry-completed-spline-2026-11-06",
+        "manifest_sha256": "a33c6aa3350b49308e9cde04fadb258f0c0bbbc26441df9c6200bbd3b80d3b2b",
+        "archived_files": 769,
+        "removed_files": 60,
+        "removed_bytes": 721835743,
+        "resolved_inactive_logs_reset": 0
+      }
+    ],
+    "total_removed_files": 401,
+    "logical_removed_bytes": 3253143827,
+    "accounting": "Logical removed bytes across two cleanup rounds; follow-up regenerated some same paths, so this is not net C: free-space growth.",
+    "retained_rollback_hashes": {
+      ".codex/release-before-warswords-reentry-descent-2026-11-06": {
+        "worldserver": "ccdd656c04c32d0fdfa7dc4c332b17b569f6e8de887278925b0a452110da4cd3",
+        "bnetserver": "9855c046e0236256b1ee4f8cbfc701cd405d391f75ff15acbf3fcc8d774ed276"
+      },
+      ".codex/release-before-warrior-pickup-return-2026-11-06": {
+        "worldserver": "5c0dfac3041cfa26de16a5789c7a373845b4b1ac4b552aaf2e2596e1d7912af4",
+        "bnetserver": "095e15f3b77eb55dc72b9148544c754684659de076b071d11cc5d632daa86f2b"
+      }
+    },
+    "deferred": "Actual client re-entry/landing still pending; no separate stage is needed. Preserve canonical mixed7111, unresolved Slaghammer initial LINK2 runtime/cache, shared build libraries/extracted data, personal character backups and private readback. No user/unknown process stopped; no task-owned server left running.",
+    "post_cleanup": "Both archive manifests and every archived original hash verified. Canonical EXEs/protected config/certs/DLLs, two recent rollback EXEs and unresolved evidence rechecked; active canonical Crashes empty, mixed log unchanged7111. No stage or redundant generated test images retained."
+  },
   "completed_spline_followup": {
     "cause": "If the original descent already finalized before finish processing, native zero-distance205744 correctly creates no new spline/impact. Requiring a changed spline ID forever would leave acknowledgement pending.",
     "repair": "Accept only the actual original spline finalized at the authored landing with its actual native189695 removal; retain destination, pose, instance, receipt and readiness checks. Cast acceptance or a fake no-motion endpoint away from the landing still cannot acknowledge.",
     "checks": "50 source ASAN pass; separate real-native normal and CompletedSpline variants pass with three impact refusal controls. Completed variant preserves the original completed spline, real838 once and zero invented movement/impact. Source/shared Game library unchanged; current selected compiled controller proof, canonical4340 startup and final Scepter pass."
-  }
+  },
+  "fix_commits": [
+    "b99f89064",
+    "fde23be7c"
+  ]
 }
