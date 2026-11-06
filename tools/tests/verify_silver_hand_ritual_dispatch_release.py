@@ -17,7 +17,21 @@ for entry in factory:
         if struct.unpack_from('<Q', native['binary'], native['offset'](address) + 0x118)[0] == native['symbol'](callback):
             tables.append(address)
 assert len(tables) == 1
-assert any(entry.op_str == 'edx, 8' and entry.mnemonic == 'cmp' for entry in body[:16])
+# Calls needed for shared-map admission require preserving the incoming step.
+scenario_calls=[i for i,x in enumerate(body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_IMM and native['resolve'](x.operands[0].imm)==native['symbol']('?GetScenario@ScenarioMgr@@')]
+assert len(scenario_calls)==1
+scenario_call=scenario_calls[0]
+assert body[scenario_call+1].op_str=='rax, rax' and body[scenario_call+1].mnemonic=='test'
+assert body[scenario_call+2].mnemonic=='je'
+identity_calls=[i for i,x in enumerate(body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_IMM and native['resolve'](x.operands[0].imm)==native['symbol']('?GetScenarioId@Scenario@@')]
+assert len(identity_calls)==1
+identity=identity_calls[0]
+assert body[identity+1].mnemonic=='cmp' and body[identity+1].op_str=='eax, 0x444'
+assert body[identity+2].mnemonic=='jne' and body[identity+2].operands[0].imm==body[scenario_call+2].operands[0].imm
+assert any(x.mnemonic=='mov' and x.op_str=='edi, edx' for x in body[:scenario_call])
+assert any(x.mnemonic=='cmp' and x.op_str=='edi, 8' for x in body[identity+3:identity+8])
+refused=next(i for i,x in enumerate(body) if x.address==body[identity+2].operands[0].imm)
+assert any(x.mnemonic=='ret' for x in body[refused:refused+10]) and not any(x.mnemonic=='call' for x in body[refused:refused+10])
 find = native['symbol']('?FindNearestCreature@WorldObject@@')
 lookups = [index for index, entry in enumerate(body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM
            and native['resolve'](entry.operands[0].imm) == find]
@@ -43,8 +57,8 @@ assert [(entry.mnemonic, entry.op_str) for entry in body[dispatch:dispatch + 4]]
     ('mov', 'rcx, qword ptr [rax + 0x9c0]'), ('mov', 'edx, 1'), ('mov', 'rax, qword ptr [rcx]'), ('call', 'qword ptr [rax + 0x48]')]
 assert body[dispatch + 4].mnemonic == 'jmp'
 exit_index = next(index for index, entry in enumerate(body) if entry.address == body[dispatch + 4].operands[0].imm)
-assert body[exit_index].op_str == 'rbx, qword ptr [rsp + 0x98]'
-assert any(entry.mnemonic == 'ret' for entry in body[exit_index:])
+assert any(entry.mnemonic == 'ret' for entry in body[exit_index:exit_index+12])
+assert not any(entry.mnemonic == 'call' for entry in body[exit_index:exit_index+12])
 third = '?DoAction@npc_travar_thirdAI@npc_travar_third@@'
 selected = []
 for entry in instructions('?GetAI@npc_travar_third@@'):
@@ -55,4 +69,4 @@ for entry in instructions('?GetAI@npc_travar_third@@'):
 assert len(selected) == 1
 for method in ('?SetCurrentStep@Scenario@@', '?UpdateCurrentStep@Scenario@@'):
     assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x118 for entry in instructions(method))
-print('PASS: canonical1539 instance factory selects step callback0x118; actual step8 live70yd106676 lookup null fallthrough advances to next participant and loops through CanContact/search, success calls selected third-AI DoAction0x48(1) then exits once. Both native Scenario transition paths dispatch slot0x118. Actor-all-missing replay, step10 search, downstream credit and client traversal remain separate.')
+print('PASS: canonical1539 instance factory selects step callback0x118; actual1092/null admission returns before actor lookup for other scenarios; actual step8 live70yd106676 lookup null fallthrough advances to next participant and loops through CanContact/search, success calls selected third-AI DoAction0x48(1) then exits once. Both native Scenario transition paths dispatch slot0x118. Actor-all-missing replay, step10 search, downstream credit and client traversal remain separate.')

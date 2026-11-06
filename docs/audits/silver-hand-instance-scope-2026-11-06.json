@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-06",
+  "status": "DEPLOYED9B5320FA shared1539 instance callback now admits only actual Paladin scenario1092 before step8/10 actor lookup,ritual dispatch,finale speech/cast/flags or discovery. Priest991,Warrior1037 and absent scenario remain untouched.40native current+12pinned counterfactual,retained full ritual/admission/typed data,54first-fight method/lifecycle cases and selected deployed PE/Scepter pass. Owned20156ready/shutdown0/exit0/gone,no new diagnostics. Actual client/full chains and prior mixed6090 remain OPEN.",
+  "cause": "Map1539 is bound to instance_silver_hand for all three artifact scenarios991/1037/1092. Initial onScenarionNextStep handled numeric8/10 without reading scenario identity;only delayed discovery/cast callbacks already checked1092. With visible Paladin actors a Priest/Warrior step8 reaches106676 DoAction1;an out-of-context direct step10 callback reaches106777Talk3/106719CastBlindingLight+protection flags. Actor visibility is controlled in the native witness,not proof every ordinary Priest/Warrior phase sees those actors. Existing phase conditions do not establish instance callback admission.",
+  "repair": "Exactly5C++lines at callback entry:query current actual instance scenario;return on absent/non1092. Preserve original step8 participant search/fallthrough and native third-AI dispatch,step10 independent actors,fullGUID speech/cast deduplication,nontriggered215260,flags,instance-owned failure/discovery retries,graveyard and first-fight death observer. No SQL,ScriptName,quest criteria,item,player or phase changes.",
+  "sources": {
+    "local": "Fresh live instance_template1539=instance_silver_hand;matching26972 scenario_data991/Priest5,1037/Warrior1,1092/Paladin2 retained by full live first-fight/ritual tests;actual Scenario::SetCurrentStep/UpdateCurrentStep virtualslot118 and full existing instance class reviewed. Local source suffices for this admission cause;no new external implementation copied.",
+    "history": "Fetched origin/main at5705bea91;reviewed prior instance callback/discovery/identity/first-fight commits ee5d4b981/aa841984 and exact source deltas. Adjacent LINK2 research reviewed older475e79aee smart rows (both stillmissing2),f8fcb8ad3,1a10df3ab and newer Trinity references;GitHub MagicStorm9.2MB SAI source has neither NPC row. No new footage/audio reviewed."
+  },
+  "validation": {
+    "native": "40whole native registered instance contexts,current class compiled from actual source with actual1539 factory/binding,real Maps/Players/actor grid and native Scenario::SetCurrentStep for existing steps. Human/BloodElf;1092 positive8/10,991/1037/absent negative8/10 with visible actors,missing actors or missing players. Invalid step10 callbacks are deliberately direct because those shared scenarios have no native step10. Third AI DoAction endpoint observed;native finale casting/flags/state real. Recycled numeric instance IDs start fresh. Not full gameplay,client phases or persisted actor state.",
+    "counterfactual": "12whole native pinned5705bea91 instance contexts,all actors/players present:both races,991/1037/1092,step8/10. Expected eight wrong-scenario dispatches and four1092controls;no warning suppression or unexplained log. Earlier source/pose/visibility controlled;not an ordinary passing quest traversal.",
+    "retained": "Test-SilverHandRitualDispatch -VerifyReleaseBinary passes full extracted callback/third-handler/native queue,missing-first actor/split participants/missing actor/uncontactable/failure/retry/once contexts;26invalid delayed/initial admission,lifecycle/destruction/reset cases and typed pickup/finale26972 checks plus live1539/path binding. Test-SilverHandFirstFight54extracted controller/InitSummon/death delivery/native FunctionProcessor lifecycle cases pass;actual deployed first-fight factory/fullGUID/instance death fallback PE remains. Mandatory Scepter -VerifyReleaseBinary and retained Slaghammer final-lifetime/relation6 PE pass.",
+    "linked": "Original scripts.lib rebuilt at actual final-link input;staged EXE/map copied exactly to canonical after checking no server. Full selected Silver Hand PE family verifies vtable callback118,both native Scenario transition dispatches,new null/1092guard failure returning before actor lookup,retained independent70yd actors,speech/cast/dedup/flags/queues/deferred fullGUID checks and actual old first-fight bridge. New guard changes MSVC callback register allocation;affected literal register assertions adapted to actual disassembly,checks retained.",
+    "deployment": "No SQL. Prior known-good788285F0/CFF66559 saved with hashes to .codex/release-before-silver-hand-instance-scope-2026-11-06. Exact newworld/bnet EXE/maps canonical;config/certificates/DLLs unchanged. Owned20156 freshready,graceful shutdown0,exit0,empty stderr,gone.",
+    "iterations": "Old ritual preservation precheck had not admitted the later first-fight death observer;verified exact bridge and exclude it plus exact new5line scope from historical comparisons,then restore full current callback for compilation. First-fight scope comparator initially mixed CRLF extracted death block with LF-normalized source;matched newline normalization and paired clean54rerun. Selected old PE assertions expected preguard edx/r12b/r15 receiver/old stack;actual new callback saves step edi,uses r15b/r14b flags,r13 instance and new epilogue;updated only affected assertions. Failed prechecks/PE and passing reruns retained. No production error hidden."
+  },
+  "canonical_hashes": {
+    "bnetserver.exe": "2a2073e10b0b197aa9a0dd421038732d845829abbae965143e28b741fa66bb5f",
+    "worldserver.exe": "9b5320fa7a44e206456fabb91c2ec678aa3f7ab129cbf69e14ee221a43d2968e"
+  },
+  "source_sha256": {
+    "src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp": "e5a65e054e0d3d5a96feb131952076d96a0f37b621cc19ea159b664ddbd22270",
+    "tools/tests/SilverHandInstanceNative.cpp": "c9bc09b73221e94ed063de453d6246102010e01483266aacc2b55a02e0781ca1",
+    "tools/tests/Test-SilverHandInstanceNative.ps1": "ebfb5df777c43977a693caeb1e7f8d758c48466e73d685b30f6befca5a9b13b3",
+    "tools/tests/Test-SilverHandRitualDispatch.ps1": "6638cae542e043a52edda0ce294911420e4ecba66c9383d7fd10dc31e70b1f7e",
+    "tools/tests/Test-SilverHandFirstFight.ps1": "4e869b9833ab56ada62fcabf85db1ed95e105e48d75f7b2551dec5911095c22b",
+    "tools/tests/verify_silver_hand_ritual_dispatch_release.py": "93baae76b346de0992cc47137df7757c373b223f20f9b5e87176425864300e43",
+    "tools/tests/verify_silver_hand_final_dispatch_release.py": "bc3d5c6bc619bcd7a615a3d41fc64579a17b835cf99d84a39f0dfe16c334a0e3",
+    "tools/tests/verify_silver_hand_final_cast_release.py": "4760d2d5b30914d1ef442f75c281b251b17ad15c1bf5844647d49f2511a0adf7"
+  },
+  "diagnostics": {
+    "canonical_crashes": 0,
+    "mixed_DBErrors_bytes": 6090,
+    "mixed_DBErrors_sha256": "8b4637972778b62dcfbbd8c7bf86644c87e7127c56cc365d53846b2d01edcad0",
+    "new_unexplained_crash_warning_error_assertion": false,
+    "unresolved": "Original101430/103151 LINK2 mixed6090 retained unchanged,outside fixed. Adjacent newly proven handoff research is OPEN and not certified by this repair."
+  },
+  "client_open": [
+    "Real1092ritual/finale movement,voice,215260 aura/VFX,actor visibility and full pickup/return.",
+    "Actual991/1037phases and full chains,including open lateSlaghammerhandoff and missingLINK2.",
+    "Full36quests,pet/camera/reconnect and persisted attempt behavior remain independent."
+  ],
+  "next": "OPEN shared101430/103151 LINK2 still has no recovered payload. New native late101430 handoff research proves nearest foreign Player can receive48160/advance991to3 while original invoker is far/missing and201004 creates no companion. Need instance-owned original accepted-owner/receipt,pending admission and actual summon acknowledgement/retry before retiring actor;do not guess LINK2 or grant a companion/credit bypass. Evidence .codex/shared-crypt-followup-2026-11-06 and runtime-test/slaghammer-handoff-probe remains outside fixed. Actual Paladin/Warrior/Priest full client and all36 remain separate.",
+  "archive_cleanup": {
+    "status": "Pending verified local resolved-evidence archive and generated-output cleanup after focused commit."
+  }
+}

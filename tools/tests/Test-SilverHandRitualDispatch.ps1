@@ -14,6 +14,22 @@ elseif($FinalBaseline){$source=(& git -C $repo show "7680556f:$path") -join "`n"
 elseif($FinalCastBaseline){$source=(& git -C $repo show "8a7c56b5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned final-cast baseline unavailable'}}
 elseif($DiscoveryBaseline){$source=(& git -C $repo show "52cd603c:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned discovery baseline unavailable'}}
 elseif($Baseline){$source=$pinned}else{
+ # Admit only the actual Paladin scenario before the retained callback.
+ $scopedSource=$source
+ $scope='            // This map also hosts the Priest and Warrior artifact scenarios.
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1092)
+                return;
+
+'
+ if(!$source.Contains($scope.Replace("`n",[Environment]::NewLine)) -and !$source.Contains($scope)){throw 'Exact shared-map scenario admission missing'}
+ $source=$source.Replace($scope.Replace("`n",[Environment]::NewLine),'').Replace($scope,'')
+ # Retain the later, separately tested instance death observer while comparing
+ # this callback with its older pinned discovery/identity implementations.
+ $death=Block $source 'void CreatureDies('
+ $expectedDeath='void CreatureDies(Creature* creature, Unit* /*killer*/) override { SilverHandFirstFight::DeliverDeath(creature); }'
+ if(($death -replace '\s','') -cne ($expectedDeath -replace '\s','')){throw 'Existing native first-fight death observer changed'}
+ $source=$source.Replace($death,'').Replace('#include "silver_hand_first_fight.h"','')
  $identityPinned=(& git -C $repo show "aa841984:$path") -join "`n"
  if($LASTEXITCODE){throw 'Pinned identity preservation source unavailable'}
  $withIdentity=$source
@@ -44,7 +60,7 @@ elseif($Baseline){$source=$pinned}else{
  $newFinal=Block $current 'if (newStep == 10)'
  if(($current.Replace($newFinal,$oldFinal) -replace '\s','') -cne (($original -replace '\s','').Replace(($before -replace '\s',''),($after -replace '\s','')))){throw 'Unrelated step8 callback behavior changed'}
  if(($restored.Replace($current,$original) -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unrelated instance script behavior changed'}
- $source=$withIdentity
+ $source=$scopedSource
 }
 [IO.File]::WriteAllText("$out/Dispatch.inc",(Block $source 'void onScenarionNextStep(').Replace(' override',''))
 [IO.File]::WriteAllText("$out/FinalCast.inc",$(if($source.Contains('void CastBlindingLight(')){('GuidSet '+$(if($DiscoveryBaseline){'_blindingLightStarted'}else{'_finaleActorsStarted'})+';')+(Block $source 'void CastBlindingLight(')}else{''}))

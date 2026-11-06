@@ -30,7 +30,7 @@ talk, = sites(admission, '?Talk@CreatureAI@@QEAAXEVObjectGuid@@@Z')
 for getter, insert, effect, skip in ((guid_gets[0], insert_sites[0], talk, talk + 1), (guid_gets[1], insert_sites[1], invoke, invoke + 1)):
     assert getter < insert < effect
     assert admission[getter - 3].op_str == 'edx, edx' and admission[getter - 3].mnemonic == 'xor'
-    assert admission[getter + 1].op_str == 'rcx, [r15 + 0x2f8]' and admission[getter + 2].op_str == 'r8, rax'
+    assert admission[getter + 1].op_str == 'rcx, [r13 + 0x2f8]' and admission[getter + 2].op_str == 'r8, rax'
     assert admission[insert + 1].op_str == 'byte ptr [rax + 8], sil' and admission[insert + 2].mnemonic == 'je'
     assert admission[insert + 2].operands[0].imm == admission[skip].address
 insert_body = instructions(insert_name)
@@ -40,7 +40,7 @@ assert insert_body[comparisons[-1] + 1].op_str == 'al, al' and insert_body[compa
 duplicate = next(index for index, entry in enumerate(insert_body) if entry.address == insert_body[comparisons[-1] + 2].operands[0].imm)
 assert insert_body[duplicate].op_str == 'qword ptr [r14], rdi' and insert_body[duplicate + 1].op_str == 'byte ptr [r14 + 8], al'
 assert all(any(entry.op_str == operands for entry in insert_body[:duplicate]) for operands in ('rbp, r8', 'xmm0, xmmword ptr [rbp]', 'xmmword ptr [rax + 0x1a], xmm0', 'al, 1'))
-assert admission[invoke - 2].op_str == 'rdx, rdi' and admission[invoke - 1].op_str == 'rcx, r15'
+assert admission[invoke - 2].op_str == 'rdx, rdi' and admission[invoke - 1].op_str == 'rcx, r13'
 guid_order = leaf('??MObjectGuid@@', 28)
 assert [entry.op_str for entry in guid_order[:2]] == ['rax, qword ptr [rdx + 8]', 'qword ptr [rcx + 8], rax']
 assert [entry.op_str for entry in guid_order[-4:]] == ['rax, qword ptr [rdx]', 'qword ptr [rcx], rax', 'al', '']

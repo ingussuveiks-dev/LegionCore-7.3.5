@@ -35,7 +35,16 @@ if (id == 18) { if (!_firstFight.Begin(me)) return; Talk(17); SpawnFirstFight();
  $instancePath='src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp'
  $instance=Get-Content "$repo/$instancePath" -Raw
  $instancePinned=(& git -C $repo show "ee5d4b981:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Pinned instance scope unavailable'}
- $instanceNormalized=$instance.Replace((Block $instance 'void CreatureDies('),'').Replace('#include "silver_hand_first_fight.h"','')
+ $scope='            // This map also hosts the Priest and Warrior artifact scenarios.
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1092)
+                return;
+
+'
+ $instanceForComparison=$instance.Replace("`r",'')
+ if(!$instanceForComparison.Contains($scope.Replace("`r",''))){throw 'Exact shared-map scenario admission missing'}
+ $instanceForComparison=$instanceForComparison.Replace($scope.Replace("`r",''),'')
+ $instanceNormalized=$instanceForComparison.Replace((Block $instanceForComparison 'void CreatureDies('),'').Replace('#include "silver_hand_first_fight.h"','')
  if(($instanceNormalized -replace '\s','') -cne ($instancePinned -replace '\s','')){throw 'Unrelated instance ritual/phase/arrival changed'}
 }
 if($ScopeOnly){'PASS exact first-fight-only class scope; entrance/admission/heal/reset/other route actions retained';return}

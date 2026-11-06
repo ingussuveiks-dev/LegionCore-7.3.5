@@ -107,6 +107,11 @@ public:
 
         void onScenarionNextStep(uint32 newStep) override
         {
+            // This map also hosts the Priest and Warrior artifact scenarios.
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1092)
+                return;
+
             if (newStep == 8)
             {
                 Map::PlayerList const &PlList = instance->GetPlayers();
