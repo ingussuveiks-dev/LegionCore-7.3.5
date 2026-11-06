@@ -81,4 +81,3 @@ def check(native, instructions):
 if __name__ == '__main__':
     previous = runpy.run_path(str(Path(__file__).with_name('verify_hruthnir_cleanup_release.py')))
     check(previous['native'], previous['instructions'])
-

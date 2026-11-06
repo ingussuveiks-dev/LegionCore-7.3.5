@@ -1,4 +1,27 @@
 {
+  "latest_hruthnir_approach_2026_11_06": {
+    "audit": "docs/audits/hruthnir-approach-recovery-2026-11-06.json",
+    "status": "DEPLOYEDAACEC722/9FDCCE03: Protection accepted point7 resumes the original native path after genuine stopped-short motion;idle or exactly completed9859004 only,original owner/receipt/epoch and real endpoint/497/full6s retained.",
+    "fix_commit": "0d64d66649c65af23136ccb883faedaafa430528",
+    "checks": "69 ASAN actual approach/packet/Unit queue contexts;24 linked-core stopped-point/deferral/warm-owner/cancellation/completed-route contexts;2 pinned expected-broken controls;60 retained start-source/14 native start/24 readiness,172 source/114 native Pillik,100 presentation clocks,complete selected PE and9 canonical groups including Scepter/Fury pass. Owned13196 fresh ready/shutdown0/exit0/gone,empty stderr,no new unexplained runtime diagnostic.",
+    "next": "No pending promotion. Full client Fury/Protection/Arms route/door/audio/VFX/combat/loot/equipment/manual return/camera/pet/re-entry/all36 remain OPEN. Fresh-AI/cold route and usable reoffer after terminal cancellation remain separate. Review initial DB361306 defaultMovement2/path0 via actual spawn;no initial warning reproduced or suppressed here. Earlier101430/103151 LINK2,mixed7111 and unrelated unresolved Slaghammer evidence unchanged. No character progress/gear/health edits.",
+    "cleanup": {
+      "archive": "build-extractors/bin/Release/fixed/hruthnir-approach-recovery-2026-11-06",
+      "manifest_sha256": "5ced26625501aca478db847f681ed3e29c861a3dac5d02562575f7b2b17a8246",
+      "original_files": 1692,
+      "cleanup_manifest_sha256": "269b17e1abfdbd9b54ce5de7ed3cef55bce7c3252a708814f48f6646bc075e81",
+      "removed_files": 497,
+      "logical_removed_bytes": 3428879025,
+      "local_deletion_manifest": ".codex/hruthnir-approach-2026-11-06/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-hruthnir-approach-2026-11-06",
+        ".codex/release-before-hruthnir-entry-2026-11-06"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "postcheck": "PASS canonicalAACEC722/9FDCCE03;protected configurations/certificates/DLLs unchanged;two recovery generations verified;no owned world/bnet process;active Crashes empty;mixed7111 and unresolved Slaghammer bytes unchanged"
+    }
+  },
   "latest_hruthnir_entry_2026_11_06": {
     "audit": "docs/audits/hruthnir-entry-retry-2026-11-06.json",
     "status": "DEPLOYED9F3C8AE8/D514512F: Protection actual waypoint6 event46288 remains pending if no eligible living Warrior is present;native500ms retry after return/revive/quest readmission,then real Pillik death/full5s46289 handoff.",

@@ -26,9 +26,26 @@
   ],
   "database": "No migrations/live DML or personal character changes. Native readonly connections/TEMP account/scoped bootstrap; actual Waypoint manager reads original World rows, no fabricated progress/character save.",
   "limits": "Full client physical route/doors/audio/VFX/camera/pet/equipment/manual return and all36 remain OPEN. Fresh-AI/cold route checkpoint restoration and earlier initial spawn/default route admission remain separate; actual Creature::LoadFromDB was not exercised by Actor fixtures. Initial World361306 MovementType2 has no addon path row, so its path0 provenance needs a separate real-spawn check; no initial-path warning reproduced or suppressed here. Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer evidence remain OPEN/untouched. Automatic fresh ready offer after a terminally canceled request is not certified here; the regression explicitly supplies a new accepted-offer boundary.",
-  "archive_cleanup": "PENDING after final canonical checks and focused fix commit",
+  "archive_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-approach-recovery-2026-11-06",
+    "manifest_sha256": "5ced26625501aca478db847f681ed3e29c861a3dac5d02562575f7b2b17a8246",
+    "original_files": 1692,
+    "cleanup_manifest_sha256": "269b17e1abfdbd9b54ce5de7ed3cef55bce7c3252a708814f48f6646bc075e81",
+    "removed_files": 497,
+    "logical_removed_bytes": 3428879025,
+    "local_deletion_manifest": ".codex/hruthnir-approach-2026-11-06/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-hruthnir-approach-2026-11-06",
+      ".codex/release-before-hruthnir-entry-2026-11-06"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonicalAACEC722/9FDCCE03;protected configurations/certificates/DLLs unchanged;two recovery generations verified;no owned world/bnet process;active Crashes empty;mixed7111 and unresolved Slaghammer bytes unchanged"
+  },
   "canonical_sha256": {
     "worldserver": "AACEC722327AA20FA48C126E2756298117595F8FD84A9021C668AA5B68702604",
     "bnetserver": "9FDCCE0300917CC48A5C5E0140771F0265D11BE3347D5AAB6D3B4C6F37F40DCD"
-  }
+  },
+  "fix_commit": "0d64d66649c65af23136ccb883faedaafa430528",
+  "preservation": "Canonical configuration/certificates/DLLs/extracted data, original required build libraries, personal backups and unresolved evidence retained. No user/unknown process stopped. Two newest rollback generations remain;task-owned temporary executables/symbols/generated outputs/private configurations and obsolete stage/third rollback removed after fresh canonical verification and original-byte archive hashes."
 }
