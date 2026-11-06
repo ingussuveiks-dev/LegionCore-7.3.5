@@ -1,4 +1,26 @@
 {
+  "latest_warswords_bonfire_2026_11_06": {
+    "audit": "docs/audits/warswords-bonfire-2026-11-06.json",
+    "status": "DEPLOYED D2108AED/674A8290: exact native Lighting Bonfire198513/Lock2474 completed-hit dispatch to guarded bonfire AI; actual944/1888/tree45849 event47272 now advances0->1 once. Original goober SendLoot/Use bypass reproduced, not user misuse.",
+    "fix_commit": "da75c27a2",
+    "checks": "39 source ASAN, real native Human/Orc normal plus wrong3365/report/repeat controls, explicit native legacy CanOpenLock/SendLoot counterfactual,26972 metadata, selected deployed PE,50 arrival/Scepter and retained Tuure pass. Owned16644 ready/shutdown0/exit0/gone and no new crash/DBErrors/server warning/error/assertion.",
+    "next": "User restarts canonical server and retests actual bonfire/fog/second stage. Client screenshot is alive at the correct object; no further character reset/revival done. Resume Protection missing-AI readiness separately from ignored .codex/warswords-bonfire-2026-11-06/protection-unfinished.patch; it is untested/unapplied and excluded from this binary. Existing101430/103151 LINK2/mixed7111 and full client chains remain OPEN.",
+    "cleanup": {
+      "archive": "build-extractors/bin/Release/fixed/warswords-bonfire-2026-11-06",
+      "manifest_sha256": "dbd1029400c926ce95965787e893dc7b2935d3a10603a68cc2afa3b6b62cb047",
+      "original_files": 374,
+      "fix_commit": "da75c27a2",
+      "removed_files": 145,
+      "logical_removed_bytes": 1497494446,
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-warswords-bonfire-2026-11-06",
+        ".codex/release-before-warswords-reentry-descent-2026-11-06"
+      ],
+      "deferred": "Pending untested Protection source patch retained outside fixed; unresolved Slaghammer intro probe/cache, mixed7111 and personal character backups retained. No staging image needed for client re-click.",
+      "verification": "Every original archived file and manifest SHA256 rechecked after deletion. Exact absolute output-family targets and reparse ancestors/file hashes validated; canonical EXEs and protected files, two recovery generations, empty active Crashes and untouched mixed7111 rechecked. Required shared libraries/assets and unresolved evidence retained. No task-owned server remains. No character or database backup removed."
+    }
+  },
   "latest_warswords_reentry_descent_2026_11_06": {
     "audit": "docs/audits/warswords-reentry-descent-2026-11-06.json",
     "status": "DEPLOYED1189AEA8/393BA331 +World05: slow-loading/re-entry Fury944 descent now has bounded native precreate hold and retry, explicit native205744 destination/self and deferred real-landing acknowledgement; native191477 self/map/completion guard. Already-completed first spline is accepted only at real authored landing.",

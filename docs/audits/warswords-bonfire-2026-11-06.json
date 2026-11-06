@@ -28,5 +28,21 @@
   "unresolved": "Canonical mixed7111 DBErrors SHA256FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1 unchanged; earlier101430/103151 LINK2 remains OPEN and untouched. Full client Fury/Protection/Arms, fog rendering/audio/pet/camera and whole36 chains remain separate checks.",
   "next": "User can restart canonical server and retry native bonfire. Resume Protection Magnar missing-AI readiness work separately: unfinished own source diff saved as ignored .codex/warswords-bonfire-2026-11-06/protection-unfinished.patch, restored out of build before this fix. Patch untested/unapplied; do not treat it as completed or deploy it without regressions.",
   "pending_protection_patch_sha256": "4f845cbfabe14ddd17bb026267aa23bd00564e90ae2aba64ccfa5c8fbab70b30",
-  "archive_cleanup": "Pending original-byte/hash archive and redundant test/stage cleanup after the clean canonical startup; private pending Protection patch retained outside fixed."
+  "archive_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/warswords-bonfire-2026-11-06",
+    "manifest_sha256": "dbd1029400c926ce95965787e893dc7b2935d3a10603a68cc2afa3b6b62cb047",
+    "original_files": 374,
+    "fix_commit": "da75c27a2",
+    "removed_files": 145,
+    "logical_removed_bytes": 1497494446,
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-warswords-bonfire-2026-11-06",
+      ".codex/release-before-warswords-reentry-descent-2026-11-06"
+    ],
+    "deferred": "Pending untested Protection source patch retained outside fixed; unresolved Slaghammer intro probe/cache, mixed7111 and personal character backups retained. No staging image needed for client re-click.",
+    "verification": "Every original archived file and manifest SHA256 rechecked after deletion. Exact absolute output-family targets and reparse ancestors/file hashes validated; canonical EXEs and protected files, two recovery generations, empty active Crashes and untouched mixed7111 rechecked. Required shared libraries/assets and unresolved evidence retained. No task-owned server remains. No character or database backup removed."
+  },
+  "fix_commit": "da75c27a2",
+  "user_evidence": "The supplied client screenshot shows the player alive beside the correct bonfire with stage0/0of1. This confirms reaching the object alive after the preceding recovery, not exact descent animation/timing or successful bonfire interaction."
 }
