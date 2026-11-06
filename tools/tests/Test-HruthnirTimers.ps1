@@ -12,10 +12,15 @@ void UpdateLifecycle(uint32 diff) override {
 }
 '@
 if((Shape $life) -cne (Shape $expectedLife)){throw 'Native ALIVE/CORPSE clock changed'}
-$normalized=$source.Replace('#include "FunctionProcessor.h"','').Replace('FunctionProcessor _presentationFunctions;','').Replace($life,'').Replace('_presentationFunctions.AddDelayedEvent(', 'me->AddDelayedEvent(').Replace('sCreatureTextMgr->SendChat(targ, 5);','targ->AI()->Talk(5);')
-if((Shape $normalized) -cne (Shape $old)){throw 'Other Hruthnir/Magnar/gameplay/guarded callback behavior changed'}
+function TimerMethods([string]$selected){
+ $movement=Block $selected 'void MovementInform('
+ foreach($case in @('case 6:','case 7:')){$movement=$movement.Replace((Block $movement $case),'')}
+ return ((Block $selected 'void EnterEvadeMode(')+$movement+(Block $selected 'void MoveInLineOfSight(')+(Block $selected 'void DamageTaken('))
+}
+$normalized=(TimerMethods $actor).Replace('_presentationFunctions.AddDelayedEvent(', 'me->AddDelayedEvent(').Replace('sCreatureTextMgr->SendChat(targ, 5);','targ->AI()->Talk(5);')
+if((Shape $normalized) -cne (Shape (TimerMethods $oldActor))){throw 'Authored escort/timer callback behavior changed'}
 if(([regex]::Matches($actor,'_presentationFunctions.AddDelayedEvent\(')).Count -ne 6 -or ([regex]::Matches($actor,'me->AddDelayedEvent\(')).Count -ne 2){throw 'Exactly six owned callbacks and two existing guarded Unit callbacks required'}
-if($ScopeOnly){'PASS exact six Hruthnir AI-owned callbacks/native target text/ALIVE-CORPSE clock; all admission, combat, Magnar tokens/scene and other actors unchanged';return}
+if($ScopeOnly){'PASS exact six Hruthnir AI-owned callbacks/native target text/ALIVE-CORPSE clock; earlier escort methods match pinned native bodies; chamber/start policies verified separately';return}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/hruthnir-timers$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $selected=if($Baseline){$oldActor}else{$actor}
 $movement=Block $selected 'void MovementInform('

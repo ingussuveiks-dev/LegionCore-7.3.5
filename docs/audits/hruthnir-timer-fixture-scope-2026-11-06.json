@@ -1,0 +1,8 @@
+{
+  "date": "2026-11-06",
+  "cause": "The retained six-callback timer fixture compared the entire EarthWarder.cpp against e4a7e933a after normalizing only the timer/text changes. Later legitimate independent chamber/start fixes made that whole-file equality stale.",
+  "fix": "Compare the actual earlier EnterEvadeMode, MovementInform excluding independently checked point6/7, MoveInLineOfSight and DamageTaken bodies after the same six-timer/native-text normalization. Preserve the exact ALIVE/CORPSE UpdateLifecycle check and actual callback count. Chamber/intro/start policies remain separately covered by their actual-method source and selected Release certificates.",
+  "checks": "Actual native FunctionProcessor and lifecycle/AI-destruction assertion-enabled ASAN matrices pass. The installed 0807A57E29660B86177408421D52C433F5D5A58B65DF3CC23018B894A2D29701 selected vtable/constructor/destructor/six original callback delays, owned clock and both guarded Unit timers pass separately through the full composed PE runner.",
+  "diagnostics": "Timestamped source and final PE pre/post checks: no new/changed crash, DBErrors or server warning/error/assertion. Compiler alignment/register/outlined-destructor certificate changes accompany the start implementation separately; no production timer was removed or changed here.",
+  "limits": "Source/native/PE scope is separate from full client escort motion, rendered dialogue and scenario traversal."
+}
