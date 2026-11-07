@@ -11,7 +11,8 @@ class SummonList;
 namespace MagnarCombat
 {
     // Instance lifetime, actual original boss full GUID and guard epoch only.
-    // Prepared by ten real owned deaths before native46427 can call scripts;
+    // Track actual owned reserves for removal; only ten real owned deaths
+    // prepare the earned receipt before native46427 can call scripts;
     // restoration additionally requires the observed native combat step4.
     struct State
     {

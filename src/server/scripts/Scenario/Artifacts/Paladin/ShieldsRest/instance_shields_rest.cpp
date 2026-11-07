@@ -12,6 +12,7 @@
 #include "../../Warrior/EarthWarder/hruthnir_pillik.h"
 #include "../../Warrior/EarthWarder/magnar_combat.h"
 #include "TemporarySummon.h"
+#include <set>
 
 
 
@@ -69,6 +70,7 @@ public:
             pillikRecipient.Clear();
             pillikDied = false;
             magnarRouteCursor = 0;
+            magnarRemovedBosses.clear();
             MagnarCombat::Reset(instance, magnarCombat);
         }
 
@@ -133,6 +135,16 @@ public:
         void OnCreatureRemove(Creature* creature) override
         {
             InstanceScript::OnCreatureRemove(creature);
+            // Publish before owned despawns can reenter the map. Intermediate
+            // original recreations remain a chain until the one real companion
+            // consumes its own old acknowledged GUID. Initialize clears it.
+            if (creature->GetEntry() == 96034 && creature->GetDBTableGUIDLow() == 361400 &&
+                creature->GetMap() == instance && creature->GetPhases().count(6999) &&
+                magnarCombat.actor == creature->GetGUID() && magnarCombat.epoch == magnarGuardGeneration &&
+                magnarGuardCreditSent && magnarGuardsDelivered && !magnarCombat.earned)
+                if (Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))
+                    if (scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 3)
+                        magnarRemovedBosses.insert(creature->GetGUID());
             MagnarCombat::Remove(instance, magnarCombat, creature);
         }
 
@@ -538,6 +550,7 @@ public:
         bool pillikDied = false;
         uint32 magnarRouteCursor = 0;
         MagnarCombat::State magnarCombat;
+        std::set<ObjectGuid> magnarRemovedBosses;
         void Update(uint32 diff) override
         {
             if (hunterWindTimer > diff) { hunterWindTimer -= diff; return; }
@@ -564,6 +577,30 @@ public:
         }
     };
 };
+
+bool MagnarStart::ConsumeRecreation(Creature* companion, CreatureAI const* expected,
+    Creature* boss, ObjectGuid const& previous)
+{
+    if (!companion || !boss || previous.IsEmpty() || previous == boss->GetGUID() ||
+        !companion->IsInWorld() || !companion->IsAlive() || companion->IsDespawn() ||
+        !companion->IsAIEnabled || companion->AI() != expected ||
+        companion->GetEntry() != 96468 || companion->GetDBTableGUIDLow() != 361306 ||
+        companion->GetMap() != boss->GetMap() || !companion->GetPhases().count(6999) || !boss->AI())
+        return false;
+    auto instance = dynamic_cast<instance_shields_rest::instance_shields_rest_InstanceMapScript*>(companion->GetInstanceScript());
+    if (!instance || instance->magnarCompanionGUID != companion->GetGUID() ||
+        MagnarCombat::Find(boss, boss->AI()) != &instance->magnarCombat || instance->magnarCombat.earned ||
+        !instance->magnarRemovedBosses.count(previous))
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(companion->GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() != 3)
+        return false;
+    if (Creature* old = companion->GetMap()->GetCreature(previous))
+        if (old->IsInWorld())
+            return false;
+    instance->magnarRemovedBosses.clear();
+    return true;
+}
 
 void MagnarCombat::Reset(InstanceMap* map, State& state)
 {
@@ -642,11 +679,14 @@ void MagnarCombat::Remember(Creature* actor, CreatureAI const* expected,
                 return;
         }
     }
-    if (count == 10)
+    if (count <= 10)
     {
         state->roster = roster;
         state->deaths = deaths;
-        state->earned = true;
+        // Provisional ownership also survives native RemoveFromMap, which
+        // clears the Creature's Map before its AI destructor can despawn it.
+        // Only the original ten real deaths prepare combat restoration.
+        state->earned = count == 10;
     }
 }
 

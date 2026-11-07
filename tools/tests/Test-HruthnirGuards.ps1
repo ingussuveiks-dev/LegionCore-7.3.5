@@ -18,6 +18,7 @@ $first=$source.IndexOf('        std::list<GameObject*> goDoorList;');$last=$sour
 $fields=$source.Substring($first,$last-$first)
 if($source.IndexOf('        ObjectGuid pillikGUID;') -gt $last){$fields+=[regex]::Match($source,'(?s)        ObjectGuid pillikGUID;.*?bool pillikDied = false;(?:\s*uint32 magnarRouteCursor = 0;)?').Value}
 if($source.Contains("MagnarCombat::State magnarCombat;")){$fields+="MagnarCombat::State magnarCombat;"}
+if($source.Contains("std::set<ObjectGuid> magnarRemovedBosses;")){$fields+="std::set<ObjectGuid> magnarRemovedBosses;"}
 [IO.File]::WriteAllText("$out/Fields.inc",$fields)
 foreach($entry in @(@('Initialize','void Initialize()'),@('Create','void OnCreatureCreate('),@('Object','void OnGameObjectCreate('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]).Replace(' override',''))}
 $death=Block $source 'void OnUnitDeath('

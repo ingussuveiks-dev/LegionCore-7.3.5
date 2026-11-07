@@ -3,6 +3,8 @@
 
 class Creature;
 class Player;
+class CreatureAI;
+class ObjectGuid;
 
 namespace MagnarStart
 {
@@ -18,6 +20,10 @@ namespace MagnarStart
     // Called only after the acknowledged first-phase boss finishes Reset.
     // Release that start claim; the ordinary point6 offer still gates retries.
     void ResetOffer(Creature* companion, Creature* boss);
+    // Consume only a same-epoch original boss removal observed by the actual
+    // instance. This releases an old start claim, never combat or progression.
+    bool ConsumeRecreation(Creature* companion, CreatureAI const* expected,
+        Creature* boss, ObjectGuid const& previous);
 }
 
 #endif

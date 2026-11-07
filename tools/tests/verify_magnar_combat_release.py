@@ -42,17 +42,22 @@ def check(n, ins):
                         casts.append(o)
     assert len(casts) == 1, 'Combat state must belong to the actual shared instance'
 
+    recreation = any(name.startswith('?ConsumeRecreation@MagnarStart@@') for name in n['symbols'])
     remember = ins('?Remember@MagnarCombat@@')
     assert len(sites(remember, '?Find@MagnarCombat@@')) == 1
     has(remember, 'byte ptr [rdi + 0x14], 0', 'eax, 0x38d', 'eax, 3',
         'byte ptr [r13 + rdi], 0', 'r15d', 'edi, 0xc', 'r15d, 0xa',
         'byte ptr [rax + 0x30e8], 1', 'xmm0, xmmword ptr [rax + 0x3b64]',
         'esi, 0x1725d', 'esi, 0x171f3', 'esi, 0x17b63', 'eax, esi',
-        'dword ptr [rbx + 0xa18], 0', 'byte ptr [rcx + 0x14], 1')
+        'dword ptr [rbx + 0xa18], 0', 'byte ptr [rcx + 0x14], al' if recreation else 'byte ptr [rcx + 0x14], 1')
     assert sites(remember, '?IsEmpty@ObjectGuid@@') and sites(remember, '??9ObjectGuid@@')
     count = find(remember, 'r15d, 0xa', 'cmp')
-    assert remember[count + 1].mnemonic == 'jne'
-    assert count < find(remember, 'xmmword ptr [rcx + 0x15], xmm0', 'movups') < find(remember, 'byte ptr [rcx + 0x14], 1', 'mov')
+    assert remember[count + 1].mnemonic == ('ja' if recreation else 'jne')
+    store = find(remember, 'byte ptr [rcx + 0x14], al' if recreation else 'byte ptr [rcx + 0x14], 1', 'mov')
+    assert count < find(remember, 'xmmword ptr [rcx + 0x15], xmm0', 'movups') < store
+    if recreation:
+        assert remember[store-1].mnemonic == 'sete' and remember[store-1].op_str == 'al'
+        assert all(o.mnemonic in ('mov','movups','movsd') for o in remember[count+2:store-1]), 'Provisional ownership must not change the exact10 earned predicate'
 
     restore = ins('?Restore@MagnarCombat@@')
     assert len(sites(restore, '?Find@MagnarCombat@@')) == 1
@@ -94,8 +99,8 @@ def check(n, ins):
     base, = sites(remove, '?OnCreatureRemove@InstanceScript@@')
     clear, = sites(remove, '?Reset@MagnarCombat@@')
     assert base < clear
-    has(remove, 'rdi, [rbx + 0x38c]', 'rbx, [rdi + 0x15]', 'rdi, [rbx + 0xc0]')
-    assert sites(remove, '?Clear@ObjectGuid@@') and len(sites(remove, '??8ObjectGuid@@')) == 2
+    has(remove, *(['rbx, [rdi + 0x38c]', 'rbx, 0x15', 'rdi, [rbx + 0xc0]'] if recreation else ['rdi, [rbx + 0x38c]', 'rbx, [rdi + 0x15]', 'rdi, [rbx + 0xc0]']))
+    assert sites(remove, '?Clear@ObjectGuid@@') and len(sites(remove, '??8ObjectGuid@@')) == (3 if recreation else 2)
     initialize = ins('?Initialize' + shared)
     assert sites(initialize, '?Reset@MagnarCombat@@')
     has(initialize, 'rdx, [rdi + 0x38c]')
@@ -113,7 +118,7 @@ def check(n, ins):
         for forbidden in ('?SummonCreature@', '?Kill@Unit@@', '?UpdateAchievementCriteria@Player@@',
                           '?CompleteQuest@Player@@', '?AddItem@Player@@', '?NearTeleportTo@'):
             assert not sites(body, forbidden), 'Combat recovery must not manufacture progression or actors'
-    print('PASS selected earned Magnar combat: actual typed instance/fullGUID/epoch/guard/phase context, exactly10 native death stamps before46427, step4-only owned roster adoption, combat timer rearm/player surrender-mask cleanup with original NPC immunity preserved, original504 retirement, newGUID/epoch/removal cleanup. Native60 and source37 cover behavior separately; full client traversal remains pending.')
+    print('PASS selected earned Magnar combat: actual typed instance/fullGUID/epoch/guard/phase context, exactly10 native death stamps before46427, step4-only owned roster adoption, combat timer rearm/player surrender-mask cleanup with original NPC immunity preserved, original504 retirement, newGUID/epoch/removal cleanup. Native60 and the source bridge matrix cover behavior separately; full client traversal remains pending.')
 
 
 if __name__ == '__main__':

@@ -67,8 +67,9 @@ struct PlayerMenu
     void ClearMenus() { menu.ClearMenu(); }
     void SendCloseGossip() { ++closes; }
 };
-struct ObjectGuid
+class ObjectGuid
 {
+public:
     using LowType = uint64;
     static ObjectGuid const Empty;
     uint32 identity = 1, kind = 1;
@@ -83,6 +84,12 @@ struct ObjectGuid
 ObjectGuid const ObjectGuid::Empty{0,0};
 #include "QuestScope.inc"
 #include "StartHeader.inc"
+// This instance-free fixture cannot supply a real removal receipt. The typed
+// production bridge and native DB recreation have their own focused scopes.
+bool recreationReceipt=false;
+// Admission is controlled here; actual typed receipt predicates are covered by
+// MagnarCombatStateTest and native LoadCreatureFromDB replacement.
+bool MagnarStart::ConsumeRecreation(Creature*,CreatureAI const*,Creature*,ObjectGuid const&) { return recreationReceipt; }
 #include "PillikHeader.inc"
 class Player;
 static std::vector<Player*> startPlayers;
@@ -122,8 +129,9 @@ struct Conversation
 #include "ConversationRemove.inc"
 };
 ConversationPool::~ConversationPool() { for (auto* conversation : objects) delete conversation; }
-struct CreatureAI
+class CreatureAI
 {
+public:
     virtual ~CreatureAI() = default;
     virtual void Reset() { }
     virtual void JustDied(Unit*) { }

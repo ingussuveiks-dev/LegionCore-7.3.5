@@ -1,4 +1,23 @@
 {
+  "latest_magnar_recreation_2026_11_07": {
+    "audit": "docs/audits/magnar-recreation-2026-11-07.json",
+    "status": "DEPLOYED; original first-phase DB boss recreation/owned cleanup source/native72/selected Release/retained regressions and owned startup pass; full client and whole-map restart separate",
+    "fix_commit": "PENDING focused commit; filled during verified cleanup",
+    "checks": "ASAN bridge66/caller125,wave/finale/guard scopes;native actual DB recreation72(48 admitted,24 scoped refusal including6 known pending genuine4 controls);2 pinned counterfactuals;8 installed PE;retained combat60/reoffer16/Reset16/start14/waves24,real loot/return/Scepter. Owned worldserver PID=24328\nPASS owned PID=24328 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "runtime_sha256": {
+      "bnetserver": "B1B91AE99158D9F6D3B7A53DAAF966E6EAA744E2F71769ADF06749F7AF188EAE",
+      "worldserver": "21FC59C5AE39A6FE5F0646AD71B9C4B97E10C3987FB11A1EF74C0ED6FD5D7A45"
+    },
+    "cleanup": {
+      "status": "PENDING focused commit and verified archive/temporary cleanup; relevant final regressions and owned startup passed"
+    },
+    "unresolved": [
+      "Actual full client Arms/Fury/Protection and all36 chains,combat/wipes/failed movement,camera/pet/reconnect,audio/VFX,equipment/return remain separate. Controlled receipts/endpoints and selected binary evidence do not certify whole quest chains.",
+      "Genuinely earned stage4 full Creature/newGUID and whole-map/server-restart recovery remain OPEN. First-phase removal is now observed and repairable;do not infer combat victory from coordinates,new GUID or a persisted step4. Native72 includes real phase4 removal refusals as scope/known pending controls,not a claim that phase4 recreation gameplay is repaired.",
+      "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff remain OPEN/untouched. Active Crashes empty means only no unresolved crash file there."
+    ],
+    "next": "Keep original native first-phase observed-removal authority. Investigate genuine earned4 whole-Creature removal and whole-map/server restart without duplicate46427/45784,identity guessing or automatic items. Full client/all3 Warrior and all36 remain pending."
+  },
   "latest_magnar_combat_replacement_2026_11_07": {
     "audit": "docs/audits/magnar-combat-replacement-2026-11-07.json",
     "status": "DEPLOYED; focused source/native60/selected canonical Release/retained regressions and owned canonical startup pass; full client traversal separate",

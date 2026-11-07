@@ -10,9 +10,10 @@
 using uint32=uint32_t;
 class ObjectGuid{public:unsigned value=0;bool IsEmpty()const{return !value;}void Clear(){value=0;}bool operator==(ObjectGuid a)const{return value==a.value;}bool operator!=(ObjectGuid a)const{return value!=a.value;}bool operator<(ObjectGuid a)const{return value<a.value;}};
 #include "CombatHeader.inc"
+#include "StartHeader.inc"
 class CreatureAI{};
 class InstanceScript{public:virtual ~InstanceScript()=default;};
-class instance_shields_rest{public:class instance_shields_rest_InstanceMapScript:public InstanceScript{public:bool magnarGuardCreditSent=true,magnarGuardsDelivered=true;unsigned magnarGuardGeneration=1;MagnarCombat::State magnarCombat;};};
+class instance_shields_rest{public:class instance_shields_rest_InstanceMapScript:public InstanceScript{public:bool magnarGuardCreditSent=true,magnarGuardsDelivered=true;unsigned magnarGuardGeneration=1;MagnarCombat::State magnarCombat;ObjectGuid magnarCompanionGUID;std::set<ObjectGuid> magnarRemovedBosses;};};
 using Script=instance_shields_rest::instance_shields_rest_InstanceMapScript;
 class InstanceMap{public:std::map<ObjectGuid,Creature*> actors;Creature* GetCreature(ObjectGuid id){auto i=actors.find(id);return i==actors.end()?nullptr:i->second;}};
 class TempSummon;
@@ -41,5 +42,12 @@ int main(){unsigned cases=0;
  {Fixture f;f.Remember();auto id=f.members[0]->id;MagnarCombat::Remove(&f.map,f.State(),f.members[0].get());assert(f.State().roster[0].IsEmpty()&&f.State().earned);MagnarCombat::Remove(&f.map,f.State(),&f.boss);assert(!f.State().earned&&f.State().actor.IsEmpty()&&!f.members[0]->removed&&f.members[1]->removed==1);assert(f.map.GetCreature(id)==f.members[0].get());++cases;}
  {Fixture f;f.Remember();Creature next;next.id={2};next.map=&f.map;f.members[0]->onRemove=[&]{MagnarCombat::Bind(&f.map,f.State(),&next,2);};MagnarCombat::Reset(&f.map,f.State());assert(f.State().actor==next.id&&f.State().epoch==2&&!f.State().earned);for(auto const&m:f.members)assert(m->removed==1);++cases;}
  {Fixture f;f.Remember();Creature next;next.id={2};next.map=&f.map;MagnarCombat::Bind(&f.map,f.State(),&next,2);assert(f.State().actor==next.id&&f.State().epoch==2&&!f.State().earned);for(auto const&m:f.members)assert(m->removed==1);++cases;}
+ {Fixture f;f.deaths={};for(auto const&m:f.members)m->alive=true;f.Remember();assert(!f.State().earned&&f.State().roster==f.roster);MagnarCombat::Reset(&f.map,f.State());for(auto const&m:f.members)assert(m->removed==1);++cases;}
+ {Fixture f;f.deaths={};f.roster[11]={};f.Remember();assert(!f.State().earned);MagnarCombat::Reset(&f.map,f.State());for(unsigned i=0;i<12;++i)assert(f.members[i]->removed==unsigned(i<11));++cases;}
+ for(unsigned fault=0;fault<26;++fault){Fixture f;Creature companion,old;InstanceMap foreignMap;companion.id={2};companion.entry=96468;companion.db=361306;companion.map=&f.map;companion.script=&f.script;companion.ai=&f.other;f.script.magnarCompanionGUID=companion.id;f.script.magnarRemovedBosses={{7},{8}};ObjectGuid previous{7};Creature* c=&companion;Creature* b=&f.boss;
+  switch(fault){case 0:c=nullptr;break;case 1:b=nullptr;break;case 2:previous={};break;case 3:previous=f.boss.id;break;case 4:companion.world=false;break;case 5:companion.alive=false;break;case 6:companion.despawn=true;break;case 7:companion.IsAIEnabled=false;break;case 8:companion.ai=&f.ai;break;case 9:companion.entry=1;break;case 10:companion.db=1;break;case 11:companion.map=&foreignMap;break;case 12:companion.phases.clear();break;case 13:f.boss.ai=nullptr;break;case 14:companion.script=&f.foreign;break;case 15:f.script.magnarCompanionGUID={99};break;case 16:f.State().earned=true;break;case 17:f.State().actor={99};break;case 18:++f.script.magnarGuardGeneration;break;case 19:f.script.magnarGuardsDelivered=false;break;case 20:scenarioMgr.exists=false;break;case 21:scenarioMgr.scenario.id=1137;break;case 22:scenarioMgr.scenario.step=4;break;case 23:old.id=previous;f.map.actors[old.id]=&old;break;case 24:f.script.magnarRemovedBosses={{8}};break;case 25:companion.script=nullptr;break;}
+  auto before=f.script.magnarRemovedBosses;assert(!MagnarStart::ConsumeRecreation(c,&f.other,b,previous)&&before==f.script.magnarRemovedBosses);++cases;
+ }
+ {Fixture f;Creature companion;companion.id={2};companion.entry=96468;companion.db=361306;companion.map=&f.map;companion.script=&f.script;companion.ai=&f.other;f.script.magnarCompanionGUID=companion.id;f.script.magnarRemovedBosses={{7},{8}};assert(MagnarStart::ConsumeRecreation(&companion,&f.other,&f.boss,{7})&&f.script.magnarRemovedBosses.empty());assert(!MagnarStart::ConsumeRecreation(&companion,&f.other,&f.boss,{7}));++cases;}
  std::cout<<"PASS actual Magnar combat state cases="<<cases<<": original actor/AI/map/phase/earned guard/epoch,10 owned death stamps,observed step4,real ownership-only adoption,scoped cleanup and reentrant bind; map/summon services controlled,full native lifecycle separate\n";
 }

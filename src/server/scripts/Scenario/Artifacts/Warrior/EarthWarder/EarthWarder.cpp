@@ -859,7 +859,7 @@ public:
 
         void UpdateMagnarReoffer(uint32 diff)
         {
-            if (!magnarChamberStarted || magnarArrivalPending || magnarStartToken ||
+            if (!magnarChamberStarted || magnarArrivalPending || (magnarStartToken && !*magnarStartToken) ||
                 (magnarRoutePoint && magnarRoutePoint <= 12))
                 return;
             if (magnarOfferToken && !(magnarOfferReady && *magnarOfferToken && !IsMagnarOfferPosition()))
@@ -878,6 +878,17 @@ public:
             Creature* boss = me->FindNearestCreature(96034, 60.0f, true);
             if (!boss || boss->IsDespawn() || !boss->IsAIEnabled || !boss->AI() || boss->AI()->GetData(MagnarStart::Accepted))
                 return;
+            if (magnarStartToken)
+            {
+                if (!MagnarStart::ConsumeRecreation(me, this, boss, magnarStartedBoss))
+                    return;
+                CancelMagnarStart();
+                magnarReofferTimer = 0;
+                // Actual removal may reenter or destroy this controller.
+                // The next update must take the ordinary point6/13s offer.
+                RemoveMagnarConversation();
+                return;
+            }
             bool participant = false;
             for (auto const& reference : me->GetMap()->GetPlayers())
                 if (IsMagnarIntroPlayer(reference.getSource()))
@@ -2013,6 +2024,7 @@ public:
                 }
             }
             restoringReserve = false;
+            MagnarCombat::Remember(me, this, reserveGUIDs, reserveDeaths);
             AdvanceWaveIfReady();
         }
 
