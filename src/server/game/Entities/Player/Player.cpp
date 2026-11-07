@@ -23033,7 +23033,8 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     // A new entrance-only Hunter recovery has no receipt proving ownership of
     // an existing group/solo-bound scenario. Do not inherit that run or place
     // the player behind its current stage; retain normal login rejection.
-    if (map && getClass() == CLASS_HUNTER && mapId == 1511 && m_scenarioLoginId == 973 &&
+    if (map && getClass() == CLASS_HUNTER &&
+        ((mapId == 1511 && m_scenarioLoginId == 973) || (mapId == 1489 && m_scenarioLoginId == 972)) &&
         !m_scenarioResume.instance && !m_scenarioResume.boot && sScenarioMgr->GetScenario(map->GetInstanceId()))
     {
         m_scenarioResume = {};

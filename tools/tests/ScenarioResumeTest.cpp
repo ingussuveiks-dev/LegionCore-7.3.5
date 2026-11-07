@@ -75,7 +75,7 @@ struct Player {
     bool IsPositionValid()const{return validPosition;}
     void _LoadQuestStatus(int status){questStatus=status;++loads;}
     bool earlyWarrior();void normalQuest(bool scenarioQuestStatusLoaded);
-    uint32 GetTeam()const{return team;}uint32 getClass()const{return cls;}int GetQuestStatus(int id)const{return (!acceptedQuest||acceptedQuest==id)&&(id==39191||id==40043||id==41105||id==40385)?questStatus:0;}bool GetQuestRewardStatus(int)const{return rewarded;}
+    uint32 GetTeam()const{return team;}uint32 getClass()const{return cls;}int GetQuestStatus(int id)const{return (!acceptedQuest||acceptedQuest==id)&&(id==39191||id==40043||id==41105||id==40385||id==40419)?questStatus:0;}bool GetQuestRewardStatus(int)const{return rewarded;}
     unsigned GetQuestObjectiveData(uint32,int)const{return claim;}
     // The real owned-item/native-objective predicate is independently compiled
     // and exercised by Test-SheilunLogin; this host controls only its admission result.

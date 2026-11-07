@@ -1,4 +1,4 @@
-"""Bind four acquisition routes and the earned-owner fallback to linked x64 code.
+"""Bind five acquisition routes and the earned-owner fallback to linked x64 code.
 
 This verifies selected machine-code paths, not full Character LoadFromDB, group
 binding selection, asynchronous teleport arrival, or actual client traversal.
@@ -36,13 +36,24 @@ z = min(v for v in n['symbols'].values() if v > a)
 decoder = Cs(CS_ARCH_X86, CS_MODE_64)
 decoder.detail = True
 leaf = [o for o in decoder.disasm(n['binary'][n['offset'](a):n['offset'](z)], a) if o.mnemonic != 'int3']
-assert [o.mnemonic for o in leaf] == ['cmp', 'jne', 'lea', 'lea', 'cmp', 'je', 'add', 'cmp', 'jne', 'xor', 'ret', 'cmp', 'jne', 'cmp', 'jne', 'lea', 'ret']
+marksman = None
+if len(leaf) == 21:
+    assert [o.mnemonic for o in leaf] == ['cmp', 'jne', 'lea', 'lea', 'cmp', 'je', 'add', 'cmp', 'jne', 'xor', 'ret', 'cmp', 'jne', 'cmp', 'jne', 'lea', 'ret', 'cmp', 'jne', 'lea', 'ret']
+    assert leaf[13].op_str == 'ecx, 0x5d1' and leaf[14].operands[0].imm == leaf[17].address
+    assert leaf[17].op_str == 'ecx, 0x5e7' and leaf[18].operands[0].imm == leaf[9].address
+    marksman, hunter = rip(leaf[15]), rip(leaf[19])
+    assert struct.unpack_from('<4I', n['binary'], n['offset'](marksman)) == (1489, 972, 40419, 201674)
+else:
+    assert [o.mnemonic for o in leaf] == ['cmp', 'jne', 'lea', 'lea', 'cmp', 'je', 'add', 'cmp', 'jne', 'xor', 'ret', 'cmp', 'jne', 'cmp', 'jne', 'lea', 'ret']
+    assert leaf[13].op_str == 'ecx, 0x5e7' and leaf[14].operands[0].imm == leaf[9].address
+    hunter = rip(leaf[15])
 assert leaf[0].op_str == 'edx, 1' and leaf[1].operands[0].imm == leaf[11].address
 assert leaf[4].op_str == 'dword ptr [rax], ecx' and leaf[6].op_str == 'rax, 0x10'
 assert leaf[8].operands[0].imm == leaf[4].address and leaf[9].op_str == 'eax, eax'
-assert leaf[11].op_str == 'edx, 3' and leaf[13].op_str == 'ecx, 0x5e7'
-assert all(leaf[i].operands[0].imm == leaf[9].address for i in (12, 14))
-table, end, hunter = rip(leaf[2]), rip(leaf[3]), rip(leaf[15])
+assert leaf[11].op_str == 'edx, 3' and leaf[12].operands[0].imm == leaf[9].address
+assert leaf[5].operands[0].imm == leaf[10].address
+assert leaf[7].op_str == 'rax, rdx'
+table, end = rip(leaf[2]), rip(leaf[3])
 assert end - table == 48
 assert struct.unpack_from('<12I', n['binary'], n['offset'](table)) == (1495, 909, 39191, 187803, 1511, 944, 40043, 193335, 1539, 1037, 41105, 203920)
 assert struct.unpack_from('<4I', n['binary'], n['offset'](hunter)) == (1511, 973, 40385, 198950)
@@ -94,7 +105,23 @@ create = sites(load, '?CreateMap@MapManager@@')[0]
 binding = find(load, 'al, 3', create, 'cmp')
 scenario_lookup = next(i for i in sites(load, '?GetScenario@ScenarioMgr@@') if i > binding)
 assert create < binding < scenario_lookup < normal
-for text in ('ebx, 0x5e7', 'dword ptr [rax], 0x3cd', 'dword ptr [r12 + 0x6bb8], 0', 'qword ptr [r12 + 0x6bc0], 0'):
+if marksman:
+    m1 = find(load, 'ebx, 0x5e7', binding, 'cmp')
+    s1 = find(load, 'dword ptr [rax], 0x3cd', m1, 'cmp')
+    m2 = find(load, 'ebx, 0x5d1', s1, 'cmp')
+    s2 = find(load, 'dword ptr [rax], 0x3cc', m2, 'cmp')
+    common = find(load, 'dword ptr [r12 + 0x6bb8], 0', s2, 'cmp')
+    skip_binding = load[common + 1].operands[0].imm
+    assert binding < m1 < s1 < m2 < s2 < common < scenario_lookup
+    assert load[m1 + 1].mnemonic == 'jne' and load[m1 + 1].operands[0].imm == load[m2].address
+    assert load[s1 + 1].mnemonic == 'je' and load[s1 + 1].operands[0].imm == load[common].address
+    assert load[s1 + 2].mnemonic == 'jmp' and load[s1 + 2].operands[0].imm == skip_binding
+    for at in (m2, s2):
+        assert load[at + 1].mnemonic == 'jne' and load[at + 1].operands[0].imm == skip_binding
+    tests = ('dword ptr [r12 + 0x6bb8], 0', 'qword ptr [r12 + 0x6bc0], 0')
+else:
+    tests = ('ebx, 0x5e7', 'dword ptr [rax], 0x3cd', 'dword ptr [r12 + 0x6bb8], 0', 'qword ptr [r12 + 0x6bc0], 0')
+for text in tests:
     at = find(load, text, binding, 'cmp')
     assert at < scenario_lookup and load[at + 1].mnemonic == 'jne' and load[at + 1].operands[0].imm > load[scenario_lookup].address
 clear = find(load, 'word ptr [r12 + 0x6ba8], r13w', scenario_lookup, 'mov')
@@ -105,6 +132,7 @@ prepare = ins('?PrepareScenarioLogin@Player@@')
 admit = ins('?CanResumeScenarioLogin@Player@@')
 for body in (prepare, admit):
     assert ref(body, table) and ref(body, hunter)
+    if marksman: assert ref(body, marksman)
 bad = find(prepare, 'ecx, dword ptr [rax + 4]', 0, 'cmp')
 assert prepare[bad + 1].mnemonic == 'je'
 assert bad < find(prepare, 'qword ptr [rsi + 0x6bd8], 0', bad, 'mov') < find(prepare, 'word ptr [rsi + 0x6ba8], di', bad, 'mov')
@@ -116,12 +144,27 @@ reject = admit[scenario + 1].operands[0].imm
 assert scenario < quest < statuses[0] < statuses[1]
 assert admit[quest + 2].operands[0].imm == reject
 assert admit[statuses[0] + 1].op_str == 'eax, 3' and admit[statuses[1] + 1].op_str == 'eax, 1' and admit[statuses[1] + 2].operands[0].imm == reject
-claim, = sites(admit, '?GetQuestObjectiveData@Player@@')
+claims = sites(admit, '?GetQuestObjectiveData@Player@@')
+assert len(claims) == (2 if marksman else 1)
+claim = claims[0]
 for text in ('dword ptr [rbx + 4], 0x3cd', 'dword ptr [rdi + 0x6bdc], 0'):
     at = find(admit, text, statuses[-1], 'cmp')
     assert at < claim and admit[at + 1].mnemonic == 'jne' and admit[at + 1].operands[0].imm == admit[claim + 3].address
 assert admit[claim - 3].op_str == 'edx, 0x9dc1' and admit[claim - 2].op_str == 'r8d, 0x18710'
 assert admit[claim + 1].op_str == 'eax, 1' and admit[claim + 2].mnemonic == 'jge' and admit[claim + 2].operands[0].imm == reject
+
+if marksman:
+    bow = claims[1]
+    for text in ('dword ptr [rbx + 4], 0x3cc', 'dword ptr [rdi + 0x6bb8], 0', 'qword ptr [rdi + 0x6bc0], 0'):
+        at = find(admit, text, claim, 'cmp')
+        assert at < bow and admit[at + 1].mnemonic == 'jne' and admit[at + 1].operands[0].imm == admit[bow + 3].address
+    assert admit[bow - 3].op_str == 'edx, 0x9de3' and admit[bow - 2].op_str == 'r8d, 0x19442'
+    assert admit[bow + 1].op_str == 'eax, 1' and admit[bow + 2].mnemonic == 'jge' and admit[bow + 2].operands[0].imm == reject
+    # This is the zero-instance+boot seed only: an existing live/fresh receipt
+    # still reaches native resume and owned bow replay with its native return.
+    for forbidden in ('?KilledMonsterCredit@Player@@', '?CompleteQuest@Player@@', '?TeleportTo@Player@@', '?CastSpell@Unit@@', '?AddItem@Player@@'):
+        assert not sites(admit, forbidden)
+    print('PASS linked Marksmanship empty-checkpoint login:1489/972/40419/201674 fifth route and selected-map guard;actual late unrecorded-seed103490 refusal only at zero receipt instance+boot;recorded live/fresh claims retain native admission. No return102548/item/teleport grant. Source68/native64 and full character/group/client/earned-return remain separate.')
 
 exit_body = ins('?ExitCompletedTalonclawLogin@Player@@')
 inventory, = sites(exit_body, '?GetItemByEntry@Player@@')

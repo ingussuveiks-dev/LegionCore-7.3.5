@@ -1,5 +1,8 @@
 # Real native Protection wave readiness and Kill/owner progression; no persistent character writes.
-param([switch]$MarksmanshipEntranceBaseline,[switch]$MarksmanshipEntranceLive,[switch]$MarksmanshipEntrance,[switch]$HunterRecoveryBaseline,[switch]$HunterRecovery,[switch]$SurvivalEntranceBaseline,[switch]$SurvivalEntranceLive,[switch]$SurvivalEntrance,[switch]$SurvivalGraveyardBaseline,[switch]$SurvivalGraveyard,[switch]$FuryGraveyardBaseline,[switch]$FuryGraveyard,[switch]$WarriorRecoveryBaseline,[switch]$WarriorRecovery,[switch]$WarriorLoginBaseline,[switch]$WarriorLogin,[switch]$LoginBaseline,[switch]$LoginLiveData,[switch]$LoginRecovery,[switch]$DuelDeferredBaseline,[switch]$DuelRecreation,[switch]$DuelRecreationBaseline,[switch]$Recreation,[switch]$RecreationBaseline,[switch]$CombatReplacement,[switch]$CombatBaseline,[switch]$PrimaryApproach,[switch]$PrimaryBaseline,[switch]$Cursor,[switch]$CursorBaseline,[switch]$Replacement,[switch]$ReplacementBaseline,[switch]$ColdRoute,[switch]$ColdRouteBaseline,[switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+param([switch]$MarksmanRecoveryBaseline,[switch]$MarksmanRecovery,[switch]$MarksmanshipEntranceBaseline,[switch]$MarksmanshipEntranceLive,[switch]$MarksmanshipEntrance,[switch]$HunterRecoveryBaseline,[switch]$HunterRecovery,[switch]$SurvivalEntranceBaseline,[switch]$SurvivalEntranceLive,[switch]$SurvivalEntrance,[switch]$SurvivalGraveyardBaseline,[switch]$SurvivalGraveyard,[switch]$FuryGraveyardBaseline,[switch]$FuryGraveyard,[switch]$WarriorRecoveryBaseline,[switch]$WarriorRecovery,[switch]$WarriorLoginBaseline,[switch]$WarriorLogin,[switch]$LoginBaseline,[switch]$LoginLiveData,[switch]$LoginRecovery,[switch]$DuelDeferredBaseline,[switch]$DuelRecreation,[switch]$DuelRecreationBaseline,[switch]$Recreation,[switch]$RecreationBaseline,[switch]$CombatReplacement,[switch]$CombatBaseline,[switch]$PrimaryApproach,[switch]$PrimaryBaseline,[switch]$Cursor,[switch]$CursorBaseline,[switch]$Replacement,[switch]$ReplacementBaseline,[switch]$ColdRoute,[switch]$ColdRouteBaseline,[switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+if($MarksmanRecoveryBaseline){$MarksmanRecovery=$true}
+if($MarksmanRecovery){if($HunterRecovery -or $HunterRecoveryBaseline -or $MarksmanshipEntrance -or $MarksmanshipEntranceBaseline -or $MarksmanshipEntranceLive -or $WarriorRecoveryBaseline){throw 'Choose only Marksmanship login recovery'};$SurvivalGraveyard=$true}
+
 if($MarksmanshipEntranceBaseline -and $MarksmanshipEntranceLive){throw 'Choose TEMP missing baseline or live data'}
 if($MarksmanshipEntranceBaseline -or $MarksmanshipEntranceLive){$MarksmanshipEntrance=$true}
 if($MarksmanshipEntrance){if($HunterRecovery -or $HunterRecoveryBaseline -or $SurvivalEntrance -or $SurvivalEntranceBaseline -or $SurvivalEntranceLive){throw 'Choose only Marksmanship entrance'};$SurvivalGraveyard=$true}
@@ -64,8 +67,8 @@ if($PillikBaseline){$Pillik=$true}
 if($StartRecovery -and $Pillik){throw "Choose start recovery or the earlier Pillik handoff"}
 if($Baseline -and ($StartRecovery -or $Pillik)){throw "Pinned counterfactual is separate from current start recovery"}
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$family=if($MarksmanshipEntrance){"marksmanship-entrance-native"}elseif($HunterRecovery){"survival-login-recovery-native"}elseif($SurvivalEntrance){"survival-entrance-native"}elseif($SurvivalGraveyard){"survival-graveyard-native"}elseif($FuryGraveyard){"warswords-graveyard-native"}elseif($WarriorRecovery){"warrior-login-recovery-native"}elseif($WarriorLogin){"warrior-scenario-resume-native"}elseif($LoginRecovery){"magnar-login-native"}elseif($DuelRecreation){"magnar-duel-recreation-native"}elseif($Recreation){"magnar-recreation-native"}elseif($CombatReplacement){"magnar-combat-native"}elseif($PrimaryApproach){"hruthnir-primary-native"}elseif($Cursor){"hruthnir-cursor-native"}elseif($Replacement){"magnar-replacement-native"}elseif($ColdRoute){"hruthnir-cold-route-native"}elseif($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
-$probe=if($MarksmanshipEntrance){"MarksmanshipEntranceNative"}elseif($HunterRecovery){"SurvivalLoginRecoveryNative"}elseif($SurvivalEntrance){"SurvivalEntranceNative"}elseif($SurvivalGraveyard){"SurvivalGraveyardNative"}elseif($FuryGraveyard){"WarswordsGraveyardNative"}elseif($WarriorRecovery){"WarriorLoginRecoveryNative"}elseif($WarriorLogin){"WarriorScenarioResumeNative"}elseif($LoginRecovery){"MagnarLoginNative"}elseif($DuelRecreation){"MagnarDuelRecreationNative"}elseif($Recreation){"MagnarRecreationNative"}elseif($CombatReplacement){"MagnarCombatReplacementNative"}elseif($PrimaryApproach){"HruthnirPrimaryApproachNative"}elseif($Cursor){"HruthnirCursorNative"}elseif($Replacement){"MagnarReplacementNative"}elseif($ColdRoute){"HruthnirColdRouteNative"}elseif($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
+$family=if($MarksmanRecovery){"marksmanship-login-recovery-native"}elseif($MarksmanshipEntrance){"marksmanship-entrance-native"}elseif($HunterRecovery){"survival-login-recovery-native"}elseif($SurvivalEntrance){"survival-entrance-native"}elseif($SurvivalGraveyard){"survival-graveyard-native"}elseif($FuryGraveyard){"warswords-graveyard-native"}elseif($WarriorRecovery){"warrior-login-recovery-native"}elseif($WarriorLogin){"warrior-scenario-resume-native"}elseif($LoginRecovery){"magnar-login-native"}elseif($DuelRecreation){"magnar-duel-recreation-native"}elseif($Recreation){"magnar-recreation-native"}elseif($CombatReplacement){"magnar-combat-native"}elseif($PrimaryApproach){"hruthnir-primary-native"}elseif($Cursor){"hruthnir-cursor-native"}elseif($Replacement){"magnar-replacement-native"}elseif($ColdRoute){"hruthnir-cold-route-native"}elseif($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
+$probe=if($MarksmanRecovery){"MarksmanshipLoginRecoveryNative"}elseif($MarksmanshipEntrance){"MarksmanshipEntranceNative"}elseif($HunterRecovery){"SurvivalLoginRecoveryNative"}elseif($SurvivalEntrance){"SurvivalEntranceNative"}elseif($SurvivalGraveyard){"SurvivalGraveyardNative"}elseif($FuryGraveyard){"WarswordsGraveyardNative"}elseif($WarriorRecovery){"WarriorLoginRecoveryNative"}elseif($WarriorLogin){"WarriorScenarioResumeNative"}elseif($LoginRecovery){"MagnarLoginNative"}elseif($DuelRecreation){"MagnarDuelRecreationNative"}elseif($Recreation){"MagnarRecreationNative"}elseif($CombatReplacement){"MagnarCombatReplacementNative"}elseif($PrimaryApproach){"HruthnirPrimaryApproachNative"}elseif($Cursor){"HruthnirCursorNative"}elseif($Replacement){"MagnarReplacementNative"}elseif($ColdRoute){"HruthnirColdRouteNative"}elseif($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
 $out="$repo/build-extractors/runtime-test/$family/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing actual $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
@@ -82,7 +85,7 @@ $quest=Get-Content "$repo/src/server/game/Globals/QuestData.cpp" -Raw
 $query=[regex]::Match($quest,'(?s)void QuestDataStoreMgr::LoadQuests\(\).*?WorldDatabase.Query\(("SELECT ".*?" FROM quest_template")\);').Groups[1].Value
 if(!$query){throw 'Actual native quest query missing'}
 $questIds=if($SurvivalGraveyard){'40710,42504,42627,40043,39191,41105,40385'}elseif($WarriorLogin){'40710,42504,42627,40043,39191,41105'}else{'40710,42504,42627,40043,39191'}
-if($MarksmanshipEntrance){$questIds+=',40419'}
+if($MarksmanshipEntrance -or $MarksmanRecovery){$questIds+=',40419'}
 [IO.File]::WriteAllText("$out/NativeAltheaQuest.inc",$query+' " WHERE ID IN('+$questIds+')"')
 $configPath="$repo/build-extractors/bin/Release/worldserver.conf";$hash=(Get-FileHash $configPath).Hash;$config=Get-Content $configPath -Raw
 $config=[regex]::Replace($config,'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$out.Replace('\','/')+'/logs"'));[IO.File]::WriteAllText("$out/worldserver.conf",$config)
@@ -154,10 +157,15 @@ if($LoginRecovery){
  $inputs+=@($migration,"$out/MagnarLoginMigration.inc")
 }
 if($WarriorRecovery){
- $earlySource=if($HunterRecoveryBaseline){(& git -C $repo show '0af584162:src/server/game/Entities/Player/Player.cpp') -join "`n"}elseif($WarriorRecoveryBaseline){(& git -C $repo show '5ec346c8e:src/server/game/Entities/Player/Player.cpp') -join "`n"}else{Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw}
+ $earlySource=if($MarksmanRecoveryBaseline){(& git -C $repo show '387b8a385:src/server/game/Entities/Player/Player.cpp') -join "`n"}elseif($HunterRecoveryBaseline){(& git -C $repo show '0af584162:src/server/game/Entities/Player/Player.cpp') -join "`n"}elseif($WarriorRecoveryBaseline){(& git -C $repo show '5ec346c8e:src/server/game/Entities/Player/Player.cpp') -join "`n"}else{Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw}
  $a=$earlySource.IndexOf('    // Restore before the stale-transport fallback');$b=$earlySource.IndexOf('    if(m_atLoginFlags & AT_LOGIN_UNLOCK)',$a)
  if($a -lt 0 -or $b -le $a){throw 'Native early capsule missing'}
- $early=$earlySource.Substring($a,$b-$a);if($WarriorRecoveryBaseline){$early='bool warriorQuestStatusLoaded=false;'+"`n"+$early}
+ if($MarksmanRecoveryBaseline){
+  $pinned=(& git -C $repo show '387b8a385:src/server/game/Scenarios/AcquisitionScenarioRoute.h') -join "`n";if($LASTEXITCODE){throw 'Pinned route dependency missing'}
+  [IO.File]::WriteAllText("$out/PinnedAcquisitionRoute.inc",$pinned.Replace('ACQUISITION_SCENARIO_ROUTE_H','PINNED_ACQUISITION_SCENARIO_ROUTE_H').Replace('namespace AcquisitionScenarioRoute','namespace PinnedAcquisitionScenarioRoute'))
+  $inputs+="$out/PinnedAcquisitionRoute.inc"
+ }
+ $early=$earlySource.Substring($a,$b-$a);if($MarksmanRecoveryBaseline){$early=$early.Replace('AcquisitionScenarioRoute::','PinnedAcquisitionScenarioRoute::')};if($WarriorRecoveryBaseline){$early='bool warriorQuestStatusLoaded=false;'+"`n"+$early}
  [IO.File]::WriteAllText("$out/WarriorEarlyNative.inc",$early)
  $a=$earlySource.IndexOf('    if (!scenarioQuestStatusLoaded)');$b=$earlySource.IndexOf('    _LoadQuestStatusObjectives(',$a)
  [IO.File]::WriteAllText("$out/WarriorNormalQuestNative.inc",$earlySource.Substring($a,$b-$a))
@@ -176,6 +184,12 @@ if($SurvivalEntrance){
  [IO.File]::WriteAllText("$out/SurvivalEntranceMigration.inc",'R"HUNTER_SQL('+[IO.File]::ReadAllText($migration)+')HUNTER_SQL"')
  $inputs+=@("$repo/tools/tests/SurvivalEntranceNative.cpp",$migration,"$out/SurvivalEntranceMigration.inc")
 }
+if($MarksmanRecovery){
+ $a=$earlySource.IndexOf('    // A new entrance-only Hunter recovery');$b=$earlySource.IndexOf('    if (!map)',$a);if($a -lt 0 -or $b -le $a){throw 'Actual selected-map guard missing'}
+ [IO.File]::WriteAllText("$out/MarksmanshipBindingNative.inc",$earlySource.Substring($a,$b-$a))
+ $inputs+=@("$repo/tools/tests/MarksmanshipLoginRecoveryNative.cpp","$out/MarksmanshipBindingNative.inc")
+}
+
 if($MarksmanshipEntrance){
  $migration="$repo/sql/pending/world/2026_11_07_02_marksmanship_resume_entrance.sql";if(!(Test-Path $migration)){$migration="$repo/sql/updates/world/2026_11_07_02_marksmanship_resume_entrance.sql"}
  [IO.File]::WriteAllText("$out/MarksmanshipEntranceMigration.inc",'R"MARK_SQL('+[IO.File]::ReadAllText($migration)+')MARK_SQL"')
@@ -199,6 +213,7 @@ try{
  $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:CL="$previousCompiler /DNDEBUG /Zi /Fd`"$out/compiler.pdb`" /I`"$out`" /I`"$repo/src/server/scripts/Legion`""
 
 
+ if($MarksmanRecoveryBaseline){$env:CL+=" /DMARKSMAN_LOGIN_BASELINE"}
  if($MarksmanshipEntranceBaseline){$env:CL+=" /DMARKSMANSHIP_ENTRANCE_BASELINE"};if($MarksmanshipEntranceLive){$env:CL+=" /DMARKSMANSHIP_ENTRANCE_LIVE"}
  if($HunterRecoveryBaseline){$env:CL+=" /DSURVIVAL_LOGIN_BASELINE"}
  if($SurvivalEntranceBaseline){$env:CL+=" /DSURVIVAL_ENTRANCE_BASELINE"};if($SurvivalEntranceLive){$env:CL+=" /DSURVIVAL_ENTRANCE_LIVE"}

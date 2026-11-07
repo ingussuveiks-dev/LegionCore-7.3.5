@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED: active unclaimed Marksmanship40419 without a usable checkpoint seeds native201674/1489/972 before saved-transport and map selection. Source68 ASAN/native64/required fifth-route PE,explicit pinned route and old-EXE counterfactuals,retained Hunter/Warrior/return/Scepter/data and canonical startup pass. No MM earned-return grant or full client certification.",
+  "cause": "The1162 entrance data repair lets a live Marksmanship run record future checkpoints,but the early acquisition helper still recognized only Warrior3 and Survival1511/973. Thus an empty/invalid older Hunter1489 receipt did not select972 before map construction. Re-entry must use the native start rather than a later saved combat pose or recycled numeric instance.",
+  "scope": "Only Hunter1489/972/40419/201674 early acquisition recovery,matching selected-live-map protection and late admission. Preserve existing native three Warrior routes,Survival route and legitimate recorded live/fresh/complete/claimed Marksmanship receipts. No SQL migration,new script registration,Player layout change,character reset,item/quest/kill/return credit or direct transfer.",
+  "implementation": [
+    "AcquisitionScenarioRoute adds exactly1489/972/40419/201674 beside unchanged Warrior3 and Survival. Existing Prepare first,active INCOMPLETE accepted quest rows load once before native target/transport/map selection. Require real matching nonzero finite source,seed zero old instance+boot and call actual Prepare(map,0). Normal and Warlock load flags and later rewarded/objective loading order stay intact.",
+    "Existing selected-map Hunter guard now admits either1511/973 or1489/972,still only with zero receipt instance+boot. An entrance-only seed cannot inherit an already live group/solo-bound Scenario. Actual real recorded receipts remain admitted at that endpoint;no group unbind or old-instance adoption.",
+    "Prepare rejects a foreign scenario receipt for this class/map. Final CanResume rechecks actual972,active INCOMPLETE/COMPLETE40419 and unrewarded status. Only a Marksmanship receipt with BOTH instance0 and boot0 is denied on actual persisted103490 bow claim. Existing real live and fresh/old-boot receipts keep owned replay/normal native return behavior. Item ownership alone is not treated as quest completion.",
+    "Native205040 return includes252 teleport plus90/102548 acknowledgement and the scoped real Vereesa caster/accepted-pending-transfer guards. This repair adds no alternate cast/credit,exit,actor or dialogue. An already claimed bow without a legitimate checkpoint remains a separate recovery design;no invented return receipt or new combat run.",
+    "No combat/killer callback changed. Player/pet/guardian/group progression rules remain native;the new path changes admission/entrance only. Source and native fixtures explicitly control accepted quest parser,saved transport/position validity and selected-map endpoint. Actual native quest/objective/Prepare/CanResume/Map/Scenario components do not establish full persisted-character/group/client traversal."
+  ],
+  "local_evidence": {
+    "matching": "Reused actual26972 LFG1162/map1489/scenario972/diff12/flags75795458 and201674 native effect0/227 + destination from the verified entrance repair. Actual40419 has six independent native-world objectives;103490 is manual bow claim at storage5. Real972 steps0..7/completed sentinel8 and native205040 return were traced in preceding audits.",
+    "history": "Fetched origin;main387b8a385 matched origin before work. Consulted current MM entrance/objective/return audits,actual local quest/script/DB2 and original consumer code. Matching local data resolves this early-selector defect;no modern-core or unseen-video implementation imported."
+  },
+  "checks": {
+    "counterfactual": "Pinned387b8a385 route dependency and early/normal/Prepare/CanResume source68 ASAN reproduce absent missing-entry selection. Native early capsule62 uses pinned inline route under a distinct namespace so it cannot replace actual current game COMDATs;current native Prepare/CanResume support is explicitly retained. Not a historical whole binary or successful gameplay baseline.",
+    "source68": "Both teams x34 actual extracted early/normal/Prepare/CanResume/selected-map cases:missing/malformed/foreign/map/NaN receipts,one accepted quest load,live/fresh/complete preservation,source/map/class/unlock/position/missing-data refusals,late reward/abandon/claim and live-binding guards. Existing claimed real live/fresh receipt remains allowed;only unrecorded zero-instance+boot seed refuses claim.",
+    "native64": "Human+Orc early62 and destroyed-map/recycled-ID/native1162 constructors2. Actual world40419 template/objectives/claim storage,Player quest helpers/Prepare/CanResume/Map/Scenario;current201674 target data,faulted native target cases and restored source. Explicit one accepted-row load,no item/quest/return grant,step unchanged except fresh constructor0. Parser/transport/position/binding endpoints controlled;full LoadFromDB/SaveToDB/group/client/earned-return separate.",
+    "linked": "Exact fifth route1489/972/40419/201674,class/map dispatch,actual early slot6/quest/target/transport order;both selected-map Hunter branches and zero receipt proof;actual late status/reward and103490 refusal only with zero receipt instance+boot. Strict composed verifier also retains Warrior/Survival/Talonclaw owner exit and actual rejected-login caller checks. New MM wrapper REQUIRES the fifth route.",
+    "stale_EXE": "Hash-verified previous four-route recovery executable passes the full retained PE chain and is then rejected specifically for missing fifth Marksmanship route. New canonical executable passes. Explicit counterfactual guards against stale-library/EXE false success;old executable was read,not launched.",
+    "retained": "Canonical Survival source68/native120/PE,Warrior source132/native138/PE,live MM entrance full-schema TEMP16/native30/RELEASED hash/linked Recorder,MM ReturnCaster+ReturnAdmission source/TEMP/selected PE,ScenarioResume source/linked,mandatory Scepter -VerifyReleaseBinary,TEMP checkpoint schema/SELECT/UPDATE and New Blood login all pass.",
+    "build": "Original game and scripts Release targets at their original final-link library paths,then staged final link;no global OutDir. Header affects Player.cpp/PlayerScenario.cpp,Player fields/layout unchanged. Exact stage-to-canonical EXE/map copies and protected configs/certs/DLL hashes checked;Bnet relink retained existing implementation.",
+    "startup": "Owned worldserver PID=7520\nPASS owned PID=7520 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "preservation": "All original non1028/1162/1178/1384 LFG rows and whole spell target/scenario route table fingerprints unchanged;1162/1178/1384 and live updater previously installed data retained. Matching canonical EXEs/protected runtime/mixed7111/empty Crashes verified."
+  },
+  "diagnostics": {
+    "result": "Before/after crash/log snapshots for build/source/native/TEMP/PE/expected counterfactual and owned canonical startup;exits/stdout/stderr/appended diagnostics reviewed. No new/changed crash or unexplained appended server warning/error/assertion/DBErrors. Owned startup reached fresh ready,graceful shutdown0/exit0/gone,stderr empty;no user/unknown server stopped.",
+    "canonical_crashes": "empty",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "Unresolved shared LINK2 mixed log retained byte-for-byte;no truncation.",
+    "fixture_warning": "Existing extracted-host uint32-to-uint16 LFG overload warning remains visible. Native linked production/API verification and the passing component cases are separate;no warning/check suppression."
+  },
+  "unresolved": [
+    "Claimed-bow saves without a legitimate recorded receipt still need scoped earned-return recovery. Native205040 must retain actual accepted-transfer102548 semantics and Vereesa/quest/ownership provenance;this patch deliberately neither restarts that acquisition nor grants return credit. Completed/rewarded/abandoned and owned item alone do not authorize a new unrecorded run.",
+    "Actual full persisted-character LoadFromDB/SaveToDB,automatic group/solo binding selection,client cold/re-entry/relog/pet/guardian/vehicle/camera/scene/equipment/bank and whole972 progression/return remain client/native-full-sequence checks. Component selected-map/constructor tests do not certify them.",
+    "Survival39427,other shared1489 route entrance provenance,Stromkar visuals,all36 whole chains and shared LINK2/Slaghammer/mixed7111 remain OPEN. Original unresolved reproduction/cache/research preserved."
+  ],
+  "runtime_sha256": {
+    "bnetserver": "704d949e6cd7c1574d0b11d5e5a5fd656dce58e0aa7ffae683f26528c2e7481e",
+    "worldserver": "5522ed1e84b7b66e92f389cd689515d5c63fd6f544a95687508a6c49b76585c7"
+  },
+  "cleanup": {
+    "status": "PENDING verified archive and exact generated/stage/oldest rollback cleanup after focused fix commit",
+    "retain": [
+      ".codex/release-before-marksmanship-login-recovery-2026-11-07",
+      ".codex/release-before-survival-login-recovery-2026-11-07"
+    ]
+  }
+}

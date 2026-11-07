@@ -11,6 +11,9 @@ inline Entry const* Find(std::uint32_t map, std::uint32_t playerClass)
 {
     if (playerClass == 1)
         return WarriorScenarioRoute::Find(map);
+    static Entry const marksmanship = {1489, 972, 40419, 201674};
+    if (playerClass == 3 && map == marksmanship.map)
+        return &marksmanship;
     static Entry const survival = {1511, 973, 40385, 198950};
     return playerClass == 3 && map == survival.map ? &survival : nullptr;
 }

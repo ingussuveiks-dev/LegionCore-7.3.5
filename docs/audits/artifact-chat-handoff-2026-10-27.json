@@ -1,4 +1,33 @@
 {
+  "latest_marksmanship_login_recovery_2026_11_07": {
+    "audit": "docs/audits/marksmanship-login-recovery-2026-11-07.json",
+    "status": "DEPLOYED: active unclaimed Marksmanship40419 without a usable checkpoint seeds native201674/1489/972 before saved-transport and map selection. Source68 ASAN/native64/required fifth-route PE,explicit pinned route and old-EXE counterfactuals,retained Hunter/Warrior/return/Scepter/data and canonical startup pass. No MM earned-return grant or full client certification.",
+    "runtime_sha256": {
+      "bnetserver": "704d949e6cd7c1574d0b11d5e5a5fd656dce58e0aa7ffae683f26528c2e7481e",
+      "worldserver": "5522ed1e84b7b66e92f389cd689515d5c63fd6f544a95687508a6c49b76585c7"
+    },
+    "diagnostics": {
+      "result": "Before/after crash/log snapshots for build/source/native/TEMP/PE/expected counterfactual and owned canonical startup;exits/stdout/stderr/appended diagnostics reviewed. No new/changed crash or unexplained appended server warning/error/assertion/DBErrors. Owned startup reached fresh ready,graceful shutdown0/exit0/gone,stderr empty;no user/unknown server stopped.",
+      "canonical_crashes": "empty",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "Unresolved shared LINK2 mixed log retained byte-for-byte;no truncation.",
+      "fixture_warning": "Existing extracted-host uint32-to-uint16 LFG overload warning remains visible. Native linked production/API verification and the passing component cases are separate;no warning/check suppression."
+    },
+    "unresolved": [
+      "Claimed-bow saves without a legitimate recorded receipt still need scoped earned-return recovery. Native205040 must retain actual accepted-transfer102548 semantics and Vereesa/quest/ownership provenance;this patch deliberately neither restarts that acquisition nor grants return credit. Completed/rewarded/abandoned and owned item alone do not authorize a new unrecorded run.",
+      "Actual full persisted-character LoadFromDB/SaveToDB,automatic group/solo binding selection,client cold/re-entry/relog/pet/guardian/vehicle/camera/scene/equipment/bank and whole972 progression/return remain client/native-full-sequence checks. Component selected-map/constructor tests do not certify them.",
+      "Survival39427,other shared1489 route entrance provenance,Stromkar visuals,all36 whole chains and shared LINK2/Slaghammer/mixed7111 remain OPEN. Original unresolved reproduction/cache/research preserved."
+    ],
+    "cleanup": {
+      "status": "PENDING verified archive and exact generated/stage/oldest rollback cleanup after focused fix commit",
+      "retain": [
+        ".codex/release-before-marksmanship-login-recovery-2026-11-07",
+        ".codex/release-before-survival-login-recovery-2026-11-07"
+      ]
+    },
+    "checks": "Pinned route source68/native62 counterfactual;positive source68 ASAN/native64,required fifth-route PE and rejected stale four-route EXE;retained Survival120/Warrior138/live MM30/return/Scepter/checkpoint TEMP/New Blood;canonical ready/shutdown0/exit0."
+  },
   "latest_marksmanship_resume_entrance_2026_11_07": {
     "audit": "docs/audits/marksmanship-resume-entrance-2026-11-07.json",
     "status": "DEPLOYED SQL-only through canonical updater: native Marksmanship1162/map1489/972 resume entrance restored. Full-schema TEMP16 refusals/idempotence/preservation,native baseline22 vs repaired30 and live RELEASED hash/linked Recorder/Scepter/retained arrival+return+Survival/canonical startup pass. Existing EXEs unchanged;client/full-character traversal remains separate.",

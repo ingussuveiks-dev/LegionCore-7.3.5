@@ -115,6 +115,12 @@ bool Player::CanResumeScenarioLogin(uint32 scenarioId) const
         // instance must not replay an acquisition whose artifact was claimed.
         if (route->scenario == 973 && !m_scenarioLoginInstance && GetQuestObjectiveData(40385, 100112) >= 1)
             return false;
+        // An entrance-only Marksmanship seed must not replay an earned bow.
+        // Preserve existing real live/fresh receipts, including owned replay;
+        // that path still uses Vereesa's native return cast and acknowledgement.
+        if (route->scenario == 972 && !m_scenarioResume.instance && !m_scenarioResume.boot &&
+            GetQuestObjectiveData(40419, 103490) >= 1)
+            return false;
     }
     return m_scenarioLoginId && m_scenarioLoginId == scenarioId &&
         m_scenarioResume.map == GetMapId() && Resumable(GetMap()->GetEntry(),scenarioId);
