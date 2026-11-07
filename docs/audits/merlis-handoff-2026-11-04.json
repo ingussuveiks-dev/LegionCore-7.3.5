@@ -2,18 +2,32 @@
   "latest_magnar_duel_recreation_2026_11_07": {
     "audit": "docs/audits/magnar-duel-recreation-2026-11-07.json",
     "status": "DEPLOYED; genuinely earned stage4 Magnar full Creature/newGUID recovery, health and presentation cleanup pass source/native132/selected Release/retained regressions and owned canonical startup; client and whole-map/server restart remain separate",
-    "fix_commit": "PENDING focused commit; filled during verified cleanup",
+    "fix_commit": "ab6bd38d641e0a43f098fd77ec66950f9d9168df",
     "checks": "ASAN bridge110/7 actual HP callbacks,retained waves/finale/guard matrices;native earned4 recreation132,pinned6 and modeled deferred6;9 staged/selected canonical PE;retained first-phase72/combat60/reoffer16/Reset16/start14/waves24,loot/return/Scepter. Owned worldserver PID=16120\nPASS owned PID=16120 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
     "runtime_sha256": {
       "worldserver": "03c89d8ff4a23e5e9b6c958e8e8c47b8178f8344eebe7180ce8c6baea9048113",
       "bnetserver": "b04ddd7ade3f6a5e01eb02cc11eb9d982d312ac61e28da880da841f95ea0dc9b"
     },
     "cleanup": {
-      "status": "PENDING verified fixed archive and generated/private outputs cleanup after focused commit",
-      "retain": [
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/magnar-duel-recreation-2026-11-07",
+      "manifest_sha256": "392e869b081526c554f544a6f84f7421e394123abc96197d01b27703e8e796a8",
+      "original_files": 5848,
+      "cleanup_manifest_sha256": "bf19e99e249f8db2455e7a1f3e04100c122c88752ec92b083838010376a9a0c8",
+      "removed_files": 559,
+      "logical_removed_bytes": 5792341831,
+      "local_deletion_manifest": ".codex/magnar-duel-recreation-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
         ".codex/release-before-magnar-duel-recreation-2026-11-07",
         ".codex/release-before-magnar-recreation-2026-11-07"
-      ]
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 130026196992,
+      "disk_free_after_bytes": 135792222208,
+      "observed_free_increase_bytes": 5766025216
     },
     "unresolved": [
       "Full actual client Protection39191 traversal, all3 Warrior chains and all36 acquisitions remain unverified; movement/failed actors/casts, combat tuning, camera/pet/reconnect, audio/VFX/equipment and return require client checks.",
