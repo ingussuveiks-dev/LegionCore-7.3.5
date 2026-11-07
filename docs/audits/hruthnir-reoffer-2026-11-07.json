@@ -24,9 +24,26 @@
   ],
   "database": "No SQL or character edits. Native normal pools readonly/TEMP account and scoped original creature_text bootstrap;synthetic Player/Map state,no saves. Existing spawn migration06/readback0 retained.",
   "limits": "Full client Fury/Arms/Protection/all36 path/menu/audio/VFX/combat/scaling/loot/equipment/manual return/camera/pet and reconnect remain unverified. Only warm live chamber/guard state is recovered;fresh-AI/cold checkpoint and completed-start/boss-wipe reoffer are separate. Boss accepted1062 or existing selected token is deliberately preserved;no recovery progression. Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer remain OPEN.",
-  "archive_cleanup": "PENDING after canonical/startup and focused fix commit",
+  "archive_cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-reoffer-2026-11-07",
+    "manifest_sha256": "4beb7222b41b9615b18eaea0e10bbdc73893fc6c238e03f7d242e9896dc7e297",
+    "original_files": 1737,
+    "cleanup_manifest_sha256": "43a6b873c9d59500c88f39c5d0ee80330747f4885930e3ef7dbca0a4ef46d3b7",
+    "removed_files": 441,
+    "logical_removed_bytes": 2772158471,
+    "local_deletion_manifest": ".codex/hruthnir-reoffer-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-hruthnir-reoffer-2026-11-07",
+      ".codex/release-before-hruthnir-approach-2026-11-06"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonical30A3E0D2/4A8BECF9/protected configurations/certs/DLLs/two recovery generations;no owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged"
+  },
   "canonical_sha256": {
     "worldserver": "30A3E0D2F8FA44ADCC256BF25DE05C79BD49AD280F95369A2B73C01E591B98B0",
     "bnetserver": "4A8BECF9B0A11AD18E4045F5AA719F857E566A0F6D3891BDDBEABD2D12659786"
-  }
+  },
+  "fix_commit": "c9af597b20d08a9ca2e5dac0d48ae49250a09206",
+  "preservation": "Canonical configs/certs/DLLs/extracted data,original required build libraries,personal backups,two newest rollback generations and unrelated unresolved evidence retained. No user/unknown process stopped. Task-owned temporary executables/symbols/generated files/private configs and obsolete stage/third rollback removed after canonical tests and verified original diagnostic archives."
 }

@@ -1,4 +1,27 @@
 {
+  "latest_hruthnir_reoffer_2026_11_07": {
+    "audit": "docs/audits/hruthnir-reoffer-2026-11-07.json",
+    "status": "DEPLOYED30A3E0D2/4A8BECF9: Protection warm live ready offer restored after actual canceled selection/Reset or published-offer drift. Reuse real point6/full13s and actual new cached selection/point7/full6s;no synthetic progress.",
+    "fix_commit": "c9af597b20d08a9ca2e5dac0d48ae49250a09206",
+    "checks": "123 ASAN actual reoffer/packet/clock cases;16 linked-core Human/Orc cancellation/Reset/deferral/drift/point6/13s ready cases;4 pinned expected-broken controls. Retained source60 start/native14 start/24 readiness/100 clocks/172 source+114 native Pillik,complete selected PE and9 canonical groups including Scepter/Fury pass. Owned21172 ready/shutdown0/exit0/gone,empty stderr,no new unexplained runtime diagnostic.",
+    "next": "No pending promotion/archive. Full client Fury/Arms/Protection/all36 path/menu/audio/VFX/combat/equipment/manual return/camera/pet and reconnect remain unverified. Fresh-AI/cold route and completed-start/boss-wipe token policy remain OPEN;accepted boss or active selection never overridden. Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer evidence retained. Spawn path0 issue remains repaired via migration06;no character edits.",
+    "cleanup": {
+      "archive": "build-extractors/bin/Release/fixed/hruthnir-reoffer-2026-11-07",
+      "manifest_sha256": "4beb7222b41b9615b18eaea0e10bbdc73893fc6c238e03f7d242e9896dc7e297",
+      "original_files": 1737,
+      "cleanup_manifest_sha256": "43a6b873c9d59500c88f39c5d0ee80330747f4885930e3ef7dbca0a4ef46d3b7",
+      "removed_files": 441,
+      "logical_removed_bytes": 2772158471,
+      "local_deletion_manifest": ".codex/hruthnir-reoffer-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-hruthnir-reoffer-2026-11-07",
+        ".codex/release-before-hruthnir-approach-2026-11-06"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "postcheck": "PASS canonical30A3E0D2/4A8BECF9/protected configurations/certs/DLLs/two recovery generations;no owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged"
+    }
+  },
   "latest_hruthnir_spawn_2026_11_06": {
     "audit": "docs/audits/hruthnir-spawn-movement-2026-11-06.json",
     "status": "DEPLOYED data-only migration06: actual361306/96468 no-addon spawn initializes idle0 instead of empty automatic path0;original scripted9859004 remains native.",
