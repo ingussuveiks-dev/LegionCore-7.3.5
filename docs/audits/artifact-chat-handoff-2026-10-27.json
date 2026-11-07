@@ -1,4 +1,14 @@
 {
+  "latest_magnar_reset_2026_11_07": {
+    "audit": "docs/audits/magnar-reset-reoffer-2026-11-07.json",
+    "status": "DEPLOYED15DD64C5/12303ECE: real acknowledged first-phase Magnar Reset now releases Hruthnir consumed claim; original point6/13s/new selection/point7/497/6s remains.",
+    "fix_commit": "Implementation commit containing this audit; exact hash recorded by cleanup handoff",
+    "checks": "111 ASAN actual-method guard/packet/clock/reentrant cleanup;16 Human/Orc actual start/Reset/roster cleanup/reoffer/reselection/new roster;2 pinned expected-broken controls. Retained native14 start/24 readiness/source60 start/100 clocks/172+114 Pillik/123+16 reoffer/live spawn/complete PE and9 canonical groups including Scepter/Fury pass. Owned worldserver PID=2044\nPASS owned PID=2044 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "next": "No additional SQL/character mutation. Actual client whole chains/wipe/evade/rendering remain OPEN;continue Warrior fresh-AI/cold route and acknowledged boss-AI replacement before moving to other classes. Earlier101430/103151 LINK2,mixed7111 and unrelated Slaghammer evidence retained.",
+    "cleanup": {
+      "status": "Pending verified local archive/temporary-output cleanup after implementation commit; follow-up audit records hashes/removal manifest and two retained rollback generations"
+    }
+  },
   "latest_hruthnir_reoffer_2026_11_07": {
     "audit": "docs/audits/hruthnir-reoffer-2026-11-07.json",
     "status": "DEPLOYED30A3E0D2/4A8BECF9: Protection warm live ready offer restored after actual canceled selection/Reset or published-offer drift. Reuse real point6/full13s and actual new cached selection/point7/full6s;no synthetic progress.",

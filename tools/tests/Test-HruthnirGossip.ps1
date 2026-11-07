@@ -1,11 +1,11 @@
-param([switch]$ReofferOnly,[switch]$ApproachOnly,[switch]$PillikOnly,[switch]$StartBaseline,[switch]$StartRecoveryOnly,[switch]$AddressSanitizer,[switch]$Baseline,[switch]$CueBaseline,[switch]$OfferBaseline,[switch]$StageBaseline,[switch]$VoiceBaseline,[switch]$ArrivalBaseline,[switch]$OfferArrivalBaseline,[switch]$HomeBaseline,[switch]$RequestBaseline,[switch]$ReadyBaseline,[switch]$ConversationBaseline,[switch]$CleanupBaseline,[switch]$DeathBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$ResetOnly,[switch]$ReofferOnly,[switch]$ApproachOnly,[switch]$PillikOnly,[switch]$StartBaseline,[switch]$StartRecoveryOnly,[switch]$AddressSanitizer,[switch]$Baseline,[switch]$CueBaseline,[switch]$OfferBaseline,[switch]$StageBaseline,[switch]$VoiceBaseline,[switch]$ArrivalBaseline,[switch]$OfferArrivalBaseline,[switch]$HomeBaseline,[switch]$RequestBaseline,[switch]$ReadyBaseline,[switch]$ConversationBaseline,[switch]$CleanupBaseline,[switch]$DeathBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(@($ReofferOnly,$ApproachOnly,$PillikOnly,$StartRecoveryOnly | Where-Object {$_}).Count -gt 1){throw 'Choose one focused current Hruthnir scope'}
+if(@($ResetOnly,$ReofferOnly,$ApproachOnly,$PillikOnly,$StartRecoveryOnly | Where-Object {$_}).Count -gt 1){throw 'Choose one focused current Hruthnir scope'}
 if(($Baseline -or $CueBaseline -or $OfferBaseline -or $StageBaseline -or $VoiceBaseline -or $ArrivalBaseline -or $OfferArrivalBaseline -or $HomeBaseline -or $RequestBaseline -or $ReadyBaseline -or $ConversationBaseline -or $CleanupBaseline -or $DeathBaseline -or $StartBaseline) -and $VerifyReleaseBinary){throw 'Pinned gossip baseline cannot verify installed code'}
 if(@($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline,$ArrivalBaseline,$OfferArrivalBaseline,$HomeBaseline,$RequestBaseline,$ReadyBaseline,$ConversationBaseline,$CleanupBaseline,$DeathBaseline,$StartBaseline | Where-Object {$_}).Count -gt 1){throw 'Select only one pinned baseline'}
-if(($ReofferOnly -or $PillikOnly -or $ApproachOnly) -and @($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline,$ArrivalBaseline,$OfferArrivalBaseline,$HomeBaseline,$RequestBaseline,$ReadyBaseline,$ConversationBaseline,$CleanupBaseline,$DeathBaseline,$StartBaseline | Where-Object {$_}).Count){throw 'Focused Pillik/approach source checks require current code; use the corresponding native baseline entry point'}
+if(($ResetOnly -or $ReofferOnly -or $PillikOnly -or $ApproachOnly) -and @($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline,$ArrivalBaseline,$OfferArrivalBaseline,$HomeBaseline,$RequestBaseline,$ReadyBaseline,$ConversationBaseline,$CleanupBaseline,$DeathBaseline,$StartBaseline | Where-Object {$_}).Count){throw 'Focused current source checks require current code; use the corresponding native baseline entry point'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$out="$repo/build-extractors/runtime-test/$(if($ReofferOnly){'hruthnir-reoffer'}elseif($ApproachOnly){'hruthnir-approach'}elseif($PillikOnly){'hruthnir-pillik'}else{'hruthnir-gossip'})"
+$out="$repo/build-extractors/runtime-test/$(if($ResetOnly){'magnar-reset'}elseif($ReofferOnly){'hruthnir-reoffer'}elseif($ApproachOnly){'hruthnir-approach'}elseif($PillikOnly){'hruthnir-pillik'}else{'hruthnir-gossip'})"
 New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
@@ -29,6 +29,8 @@ Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magna
 $hasStart=$source.Contains('void TryMagnarStart(')
 $rejoin=if($hasStart){(Block $source 'void MagnarStart::Rejoin(').Replace('npc_hrutnir::npc_hrutnirAI','HruthnirAI')}else{''}
 [IO.File]::WriteAllText("$out/StartRejoin.inc",$rejoin)
+$resetBridge=if($source.Contains('void MagnarStart::ResetOffer(')){(Block $source 'void MagnarStart::ResetOffer(').Replace('npc_hrutnir::npc_hrutnirAI','HruthnirAI')}else{''}
+[IO.File]::WriteAllText("$out/ResetBridge.inc",$resetBridge)
 $source=$source.Substring(0,$source.IndexOf('class npc_magnar_icebreaker'))
 [IO.File]::WriteAllText("$out/Policy.inc",$(if($Baseline){''}else{Block $source 'namespace HruthnirGossip'}))
 [IO.File]::WriteAllText("$out/Select.inc",(Block $source 'bool OnGossipSelect('))
@@ -68,10 +70,12 @@ if($first -lt 0 -or $last -le $first){throw 'Native point7 branch missing'}
 $startMethods=''
 if($hasStart){foreach($name in @('void CancelMagnarStart(','void RejoinMagnarStart(','void ScheduleMagnarStart(','void TryMagnarStart(','void ContinueMagnarStart(')){$startMethods+=Block $source $name}}
 if($source.Contains('void ScheduleMagnarApproach(')){foreach($name in @('void ScheduleMagnarApproach(','void RetryMagnarApproach(')){$startMethods+=Block $source $name}}
+if($source.Contains('void ResetMagnarOffer(')){$startMethods+=Block $source 'void ResetMagnarOffer('}
 [IO.File]::WriteAllText("$out/StartRecovery.inc",$startMethods)
 $reoffer=if($source.Contains("void UpdateMagnarReoffer(")){(Block $source "bool IsMagnarIntroPlayer(")+(Block $source "void UpdateMagnarReoffer(")}else{""}
 [IO.File]::WriteAllText("$out/Reoffer.inc",$reoffer)
 Copy-Item "$PSScriptRoot/HruthnirReofferCases.inc" "$out/ReofferCases.inc"
+Copy-Item "$PSScriptRoot/MagnarResetCases.inc" "$out/ResetCases.inc"
 $pillik=''
 if($source.Contains('void QueuePillikHandoff(')){foreach($name in @('bool IsPillikContext(','bool IsPillikPlayer(','void QueuePillikHandoff(','bool ArmPillikHandoff(','void UpdatePillikHandoff(','void TryPillikHandoff(','void ContinuePillikHandoff(')){$pillik+=Block $source $name}}
 if($source.Contains('void TryPillikEntry(')){$pillik+=Block $source 'void TryPillikEntry('}
@@ -108,6 +112,7 @@ if($source.Contains('void ScheduleMagnarApproach(')){$definition+=' /DCURRENT_AP
 if($StartBaseline){$definition+=' /DSTART_RECOVERY_BASELINE'}
 if($StartRecoveryOnly){$definition+=' /DSTART_RECOVERY_ONLY'}
 if($ReofferOnly){$definition+=' /DREOFFER_ONLY'}
+if($ResetOnly){$definition+=' /DRESET_ONLY'}
 if($ApproachOnly){$definition+=' /DAPPROACH_ONLY'}
 if($PillikOnly){$definition+=' /DPILLIK_ONLY'}
 $instrument=if($AddressSanitizer){'/fsanitize=address /Zi'}else{''}

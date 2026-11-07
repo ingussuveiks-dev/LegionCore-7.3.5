@@ -5,6 +5,7 @@ if(@($Baseline,$CreationBaseline,$HandoffBaseline,$SurrenderBaseline | Where-Obj
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/magnar-finale"
 New-Item -ItemType Directory -Force $out|Out-Null
+[IO.File]::WriteAllText("$out/StartHeader.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_start.h" -Raw).Replace('class Creature;','struct Creature;').Replace('class Player;','struct Player;'))
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
 $source=Get-Content "$repo/$path" -Raw
@@ -28,15 +29,17 @@ $header=$header.Replace('uint32 Deal(Creature* victim, uint32 damage);','uint32 
 $header=$header.Replace('bool IsPlayer() const;', 'void Clear() { unit = nullptr; } bool IsPlayer() const;')
 $header=$header.Replace('ObjectGuid GetCharmerOrOwnerGUID() const', 'ObjectGuid GetGUID() const { return {const_cast<Unit*>(this)}; } ObjectGuid GetCharmerOrOwnerGUID() const')
 $header=$header.Replace('struct Map { } instanceMap, unrelatedMap;',@'
-struct Player;
+struct Player; struct Creature; struct ObjectGuid;
 struct PlayerReference { Player* player; Player* getSource() const { return player; } };
-struct Map { std::vector<PlayerReference> players; auto const& GetPlayers() const { return players; } } instanceMap, unrelatedMap;
+struct Map { std::vector<PlayerReference> players; auto const& GetPlayers() const { return players; } Creature* GetCreature(ObjectGuid const&) { assert(false); return nullptr; } } instanceMap, unrelatedMap;
 '@)
 $header=$header.Replace('UNIT_FIELD_FLAGS = 0,','UNIT_FIELD_FLAGS = 0, REACT_DEFENSIVE = 1, UNIT_FLAG_NOT_SELECTABLE = 0x2000000,')
 $header=$header.Replace('uint32 identity = 944, step = 4;','uint32 identity = 909, step = 4;')
 $header=$header.Replace('assert(identity == 40043);','assert(identity == 39191);').Replace('identity == 46982','identity == 45784')
 $header=$header.Replace('    bool CanContact() { return contact; }','    bool world = true; uint32 instance = 42; bool IsInWorld() const { return world; } uint32 GetInstanceId() const { return instance; } bool CanContact() { return contact; }')
 $header=$header.Replace('uint32 entry = 98007, mapId = 1511','uint32 entry = 96034, mapId = 1495')
+$header=$header.Replace('CreatureAI* AI() const { return active; }','bool IsAIEnabled = true; CreatureAI* AI() const { return active; } CreatureAI* GetDisabledAI() const { return i_disabledAI; }')
+$header=$header.Replace('struct InstanceScript {','struct InstanceScript { ObjectGuid GetGuidData(uint32) { assert(false); return {}; }')
 $header=$header.Replace('Map* GetMap() const { return &instanceMap; }','Map* map = &instanceMap; Map* GetMap() const { return map; } float GetDistance(Player* player) const { return player->distance; }')
 $header=$header.Replace('void RemoveAura(uint32 identity) { assert(identity == 128264 || identity == 195996 || identity == 205424); if (identity == 128264) ++removed; }','void RemoveAura(uint32 identity) { assert(identity == 128749 || identity == 191883); if (identity == 128749) ++removed; else { ++pentaRemovals; penta = false; auto callback = onPentaRemoval; if (callback) callback(); } }')
 $header=$header.Replace('    std::vector<uint32> points;', '    uint32 clears = 0, idles = 0; bool chase = true; void Clear() { ++clears; chase = false; } void MoveIdle() { ++idles; } std::vector<uint32> points;')

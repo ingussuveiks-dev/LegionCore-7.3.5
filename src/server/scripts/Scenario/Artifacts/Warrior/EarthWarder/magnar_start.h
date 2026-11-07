@@ -10,6 +10,9 @@ namespace MagnarStart
     // Reattach a pending request's original quest receipt before a returning
     // player can abandon/reaccept. This never starts combat during map entry.
     void Rejoin(Creature* companion, Player* player);
+    // Called only after the acknowledged first-phase boss finishes Reset.
+    // Release that start claim; the ordinary point6 offer still gates retries.
+    void ResetOffer(Creature* companion, Creature* boss);
 }
 
 #endif

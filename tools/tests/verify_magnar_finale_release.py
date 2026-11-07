@@ -196,13 +196,13 @@ reset_body = instructions('?Reset' + suffix)
 retire = positions(reset_body, '?Remove@Conversation@@')[0]
 assert positions(reset_body, '?GetConversation@ObjectAccessor@@')[0] < retire < positions(reset_body, '?Reset@EventMap@@')[0]
 def zero_store(decoded, destination):
-    # The larger reserve Reset keeps zero in EBP; earlier links used EAX.
+    # Retained Reset links keep zero in EAX/EBP; callback-safe Reset uses R12.
     for index, entry in enumerate(decoded):
         if entry.mnemonic == 'mov' and entry.op_str.startswith(destination + ', '):
             source = entry.op_str.split(', ')[-1]
             if source == '0':
                 return True
-            root = {'ax':'eax','rax':'eax','bp':'ebp','rbp':'ebp','bpl':'ebp'}.get(source)
+            root = {'ax':'eax','rax':'eax','bp':'ebp','rbp':'ebp','bpl':'ebp','r12w':'r12d','r12':'r12d','r12b':'r12d'}.get(source)
             if root and any(previous.mnemonic == 'xor' and previous.op_str == f'{root}, {root}' for previous in decoded[:index]):
                 return True
     return False

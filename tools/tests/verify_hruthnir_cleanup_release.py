@@ -77,7 +77,7 @@ for section in range(struct.unpack_from('<H', binary, pe + 6)[0]):
         break
 assert zero_filled, 'Factory identity does not load16 bytes of native PE zero-initialized storage'
 has_owned_escort_clock = any(name.startswith('?UpdateLifecycle@npc_hrutnirAI@npc_hrutnir@@') for name in native['symbols'])
-allocation = 'ecx, 0x180' if any(name.startswith('?UpdateMagnarReoffer' + suffix) for name in native['symbols']) else ('ecx, 0x178' if any(name.startswith('?TryPillikHandoff' + suffix) for name in native['symbols']) else ('ecx, 0x168' if current_start else ('ecx, 0x140' if has_owned_escort_clock else 'ecx, 0xc0')))
+allocation = 'ecx, 0x190' if any(name.startswith('?ResetMagnarOffer' + suffix) for name in native['symbols']) else ('ecx, 0x180' if any(name.startswith('?UpdateMagnarReoffer' + suffix) for name in native['symbols']) else ('ecx, 0x178' if any(name.startswith('?TryPillikHandoff' + suffix) for name in native['symbols']) else ('ecx, 0x168' if current_start else ('ecx, 0x140' if has_owned_escort_clock else 'ecx, 0xc0'))))
 assert any(entry.op_str == allocation for entry in factory[:store])
 if has_owned_escort_clock:
     assert any(entry.op_str == 'rcx, [rsi + 0xc0]' for entry in factory[store:])

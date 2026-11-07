@@ -142,6 +142,7 @@ public:
         };
         std::shared_ptr<PillikProgress> pillikProgress = std::make_shared<PillikProgress>();
         uint32 magnarReofferTimer = 0;
+        ObjectGuid magnarStartedBoss;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -362,6 +363,7 @@ public:
         void CancelMagnarStart()
         {
             magnarStartToken.reset();
+            magnarStartedBoss.Clear();
             magnarStartOwner.Clear();
             magnarStartAttempt.reset();
             magnarStartInstance = 0;
@@ -548,9 +550,34 @@ public:
             boss = ObjectAccessor::GetCreature(*me, bossGuid);
             if (boss && boss->IsInWorld() && boss->IsAlive() && !boss->IsDespawn() &&
                 boss->AI() == expectedBossAI && boss->IsAIEnabled && expectedBossAI->GetData(MagnarStart::Accepted))
+            {
+                magnarStartedBoss = bossGuid;
                 *token = true;
+            }
             else
                 ScheduleMagnarStart(1000);
+        }
+
+        void ResetMagnarOffer(Creature* boss)
+        {
+            // A false acceptance receipt alone is not a reset: missing,
+            // replaced or disabled actors must not revoke an accepted start.
+            if (!magnarStartToken || !*magnarStartToken || !boss || magnarStartedBoss != boss->GetGUID() ||
+                !me->IsInWorld() || !me->IsAlive() || me->IsDespawn() || me->GetEntry() != 96468 ||
+                me->GetMapId() != 1495 || (me->AI() != this && me->GetDisabledAI() != this) ||
+                !boss->IsInWorld() || !boss->IsAlive() || boss->IsDespawn() || boss->GetEntry() != 96034 ||
+                boss->GetMap() != me->GetMap() || boss->GetInstanceId() != me->GetInstanceId() ||
+                !boss->IsAIEnabled || !boss->AI() || boss->AI()->GetData(MagnarStart::Accepted) ||
+                !HasMagnarChamberRequest() || !me->GetInstanceScript() ||
+                me->GetInstanceScript()->GetGuidData(PillikHandoff::Companion) != me->GetGUID())
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() != 3)
+                return;
+            CancelMagnarStart();
+            magnarReofferTimer = 0;
+            // Remove may reenter or destroy this AI. Do not touch it afterwards.
+            RemoveMagnarConversation();
         }
 
         void RemoveMagnarConversation()
@@ -1137,6 +1164,16 @@ void MagnarStart::Rejoin(Creature* companion, Player* player)
             suspended->RejoinMagnarStart(player);
 }
 
+void MagnarStart::ResetOffer(Creature* companion, Creature* boss)
+{
+    if (!companion)
+        return;
+    if (auto current = dynamic_cast<npc_hrutnir::npc_hrutnirAI*>(companion->AI()))
+        current->ResetMagnarOffer(boss);
+    else if (auto suspended = dynamic_cast<npc_hrutnir::npc_hrutnirAI*>(companion->GetDisabledAI()))
+        suspended->ResetMagnarOffer(boss);
+}
+
 // 96034
 class npc_magnar_icebreaker : public CreatureScript
 {
@@ -1200,7 +1237,10 @@ public:
 
         void Reset() override
         {
+            Creature* actor = me;
+            bool retryFirstPhase = first_phase && encounterStarted && !releasingWave;
             ++reserveGeneration;
+            uint32 generation = reserveGeneration;
             pendingActivation.clear();
             restoringReserve = false;
             ++finaleGeneration;
@@ -1213,6 +1253,8 @@ public:
             finaleDeparting = false;
             if (Conversation* conversation = ObjectAccessor::GetConversation(*me, conversationGuid))
                 conversation->Remove();
+            if ((actor->AI() != this && actor->GetDisabledAI() != this) || reserveGeneration != generation)
+                return;
             if (finaleStarted && !first_phase)
             {
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
@@ -1235,8 +1277,15 @@ public:
                 trashList.clear();
                 summons.DespawnAll();
             }
+            if ((actor->AI() != this && actor->GetDisabledAI() != this) || reserveGeneration != generation)
+                return;
             releasingWave = false;
             encounterStarted = false;
+            if (retryFirstPhase && actor->IsAIEnabled && actor->AI() == this && actor->IsInWorld() &&
+                actor->IsAlive() && !actor->IsDespawn() && actor->GetEntry() == 96034 && actor->GetMapId() == 1495)
+                if (InstanceScript* instance = actor->GetInstanceScript())
+                    if (Creature* companion = actor->GetMap()->GetCreature(instance->GetGuidData(PillikHandoff::Companion)))
+                        MagnarStart::ResetOffer(companion, actor);
         }
 
         uint32 GetData(uint32 type) const override

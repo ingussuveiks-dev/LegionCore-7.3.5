@@ -1,6 +1,7 @@
 #define SLAGHAMMER_COMPANION_SUPPORT_ONLY
 #include "SlaghammerCompanionNative.cpp"
 #include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_start.h"
+#include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
 #include "MagnarNative.inc"
 using MagnarAI=npc_magnar_icebreaker::npc_magnar_icebreakerAI;
 struct MagnarActor:Actor{
@@ -16,6 +17,9 @@ struct PausedAI{
 };
 static uint64 WaveCredit(Scenario* scenario){uint64 result=0;for(auto const& row:*scenario->GetAchievementMgr().GetCriteriaProgressMap()){auto tree=sCriteriaTreeStore.LookupEntry(row.first);auto c=tree?sCriteriaStore.LookupEntry(tree->CriteriaID):nullptr;if(c&&c->Type==92&&c->Asset==46427)result+=row.second.Counter;}return result;}
 #ifndef MAGNAR_READINESS_SUPPORT_ONLY
+// This older wave fixture deliberately has no shared InstanceScript/Hruthnir
+// controller. The reset-to-offer integration uses MagnarResetNative instead.
+void MagnarStart::ResetOffer(Creature*, Creature*) { Require(false,"Unexpected reset bridge in instance-free wave fixture"); }
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);
  WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");Shadow("smart_scripts","source_type=0 AND entryorguid=94813");Shadow("creature_template_addon","entry IN(96034,96468,97123,94707,94813)");WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");

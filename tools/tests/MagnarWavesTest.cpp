@@ -34,6 +34,12 @@ struct ObjectGuid
 struct Position { float positionX, positionY, positionZ, orientation; };
 #include "Positions.inc"
 struct Creature;
+#include "StartHeader.inc"
+#include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
+// This wave fixture has no shared instance; native reset integration is
+// covered by MagnarResetNative, rather than a fabricated companion here.
+void MagnarStart::ResetOffer(Creature*, Creature*) { assert(false); }
+struct InstanceScript { ObjectGuid GetGuidData(uint32) { assert(false); return {}; } };
 struct TempSummon;
 struct Unit;
 struct CreatureAI
@@ -137,6 +143,8 @@ struct Creature : Unit
     Creature* ToCreature() override { return this; }
     virtual TempSummon* ToTempSummon() { return nullptr; }
     CreatureAI* AI() const { return ai; }
+    CreatureAI* GetDisabledAI() const { return nullptr; }
+    InstanceScript* GetInstanceScript() const { return nullptr; }
     ObjectGuid GetGUID() const { return guid; }
     uint32 GetEntry() const { return entry; }
     uint32 GetMapId() const { return mapId; }
@@ -216,7 +224,7 @@ struct EventMap
 struct Magnar : CreatureAI
 {
     Creature* me;
-    explicit Magnar(Creature* actor) : me(actor), summons(actor) { wave = 1; count_dies = 0; first_phase = true; Reset(); }
+    explicit Magnar(Creature* actor) : me(actor), summons(actor) { actor->ai = this; wave = 1; count_dies = 0; first_phase = true; Reset(); }
     bool UpdateVictim() const { return me->victim; }
     void DoCast(uint32) { }
     void DoMeleeAttackIfReady() { }

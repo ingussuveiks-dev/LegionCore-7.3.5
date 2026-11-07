@@ -42,6 +42,14 @@ def check(n,ins):
  assert any(x.mnemonic in ('cmp','test') and any(o.type==CS_OP_MEM and o.mem.disp==0x9c0 for o in x.operands) for x in readiness),'Actual AI pointer check absent'
  reset_body=ins(reset)
  generations=[o.mem.disp for x in reset_body if x.mnemonic in ('inc','add') for o in x.operands if o.type==CS_OP_MEM and o.size==4 and o.mem.disp>0x1c0]
+ # Reset now keeps the incremented epoch across native cleanup callbacks:
+ # mov r15d,[rcx+208]; inc r15d; mov [rcx+208],r15d.
+ for a,b,c in zip(reset_body,reset_body[1:],reset_body[2:]):
+  if (a.mnemonic=='mov' and len(a.operands)==2 and a.operands[0].type==CS_OP_REG and a.operands[1].type==CS_OP_MEM and a.operands[1].size==4 and a.operands[1].mem.disp>0x1c0
+      and b.mnemonic=='inc' and b.operands[0].type==CS_OP_REG and b.operands[0].reg==a.operands[0].reg
+      and c.mnemonic=='mov' and c.operands[0].type==CS_OP_MEM and c.operands[1].type==CS_OP_REG and c.operands[1].reg==a.operands[0].reg
+      and c.operands[0].mem.base==a.operands[1].mem.base and c.operands[0].mem.disp==a.operands[1].mem.disp):
+   generations.append(a.operands[1].mem.disp)
  assert len(set(generations))==1,'Cannot identify actual reset generation'
  generation=generations[0]
  guards=[i for i,x in enumerate(body) if x.mnemonic=='cmp' and any(o.type==CS_OP_MEM and o.mem.disp==generation for o in x.operands)]

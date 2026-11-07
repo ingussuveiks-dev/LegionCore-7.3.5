@@ -492,6 +492,7 @@ struct WorldSession
 };
 #include "Dispatch.inc"
 #include "StartRejoin.inc"
+#include "ResetBridge.inc"
 struct Fixture
 {
     Creature actor;
@@ -530,7 +531,9 @@ struct Fixture
 };
 int main()
 {
-#if defined(REOFFER_ONLY)
+#if defined(RESET_ONLY)
+#include "ResetCases.inc"
+#elif defined(REOFFER_ONLY)
 #include "ReofferCases.inc"
 #elif defined(APPROACH_ONLY)
 #include "ApproachCases.inc"

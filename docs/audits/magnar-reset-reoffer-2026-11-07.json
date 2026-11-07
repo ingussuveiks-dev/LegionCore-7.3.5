@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED; focused native/source/selected Release, retained checks and owned startup pass; actual client wipe/full chains remain OPEN",
+  "scope": "Protection39191/scenario909/step3: Hruthnir ready offer after the same acknowledged live first-phase Magnar really finishes Reset",
+  "cause": "Hruthnir retains a consumed start token after actual497/full6s/native1062 acceptance. Magnar Reset cleans its reserve and clears encounterStarted, but does not release the companion token. UpdateMagnarReoffer rejects every non-null start token. Pinned4b541a943 Human/Orc real start/Reset therefore cannot offer again after60s.",
+  "implementation": [
+    "Append one128-bit acknowledged boss GUID after the existing reoffer timer, preserving earlier fields/clocks; actual0x17c identity/0x190 allocation certified in the selected PE. Store only after re-resolving the same live enabled boss/AI and its real1062 acceptance, immediately before consuming the selected token. CancelStart clears the identity.",
+    "Only actual first-phase Reset of a previously started non-releasing encounter emits the typed bridge after original reserve cleanup and encounterStarted=false. Capture the real Creature and reset epoch; reject stale/replaced AI or nested-reset generation after conversation/remove and DespawnAll callbacks. Initial/repeated Reset and final-duel Reset do not produce a new first-phase notification.",
+    "Resolve instance1065 original companion full GUID and current-or-suspended actual Hruthnir AI. Require its consumed token and exact acknowledged boss GUID; both actors live/in-world/same map and instance, enabled current real boss not accepted, actual guard receipt/current epoch/original companion and scenario909 step3. Do not infer a reset from a missing/disabled/replaced actor or a false getter alone.",
+    "Release only the old start metadata and owned497; cleanup is last because it may reenter/delete this AI. Existing1s poll waits for an eligible living Warrior and ordinary idle/completed original route, requests real point6 and original full13s offer. Actual fresh cached menu selection/point7/497/full6s/native acknowledgement still starts the new encounter. No direct move, scene, boss action, quest/item/victory grant in the reset release."
+  ],
+  "sources": "Local matching26972/core/shared1495 instance/guard epoch and current origin/main4b541a943/audits. No modern-core port, external behavior claim or video used.",
+  "checks": {
+    "counterfactual": "2 Human/Orc linked-core pinned4b541a943 actual497/5999+1ms/start acknowledgement/12-reserve/real boss Reset/owned cleanup cases retain consumed companion token and no offer after60s. Expected-broken controls, not ordinary successful gameplay; repeated through public Test-MagnarReset.ps1 -Baseline against current game libraries.",
+    "source": "111 assertion-enabled ASAN actual-method cases:100 faction/status refusal combinations for token/boss GUID/actor lifecycle/current AI/guard epoch/scope/scenario/accepted boss;8 current-or-suspended release/reoffer/13s/cached selection/6s cases;null and actual reentrant/AI-deleting497 cleanup. Real FunctionProcessor/packet entry, controlled world/boss services. Not full-core ASAN.",
+    "native": "16 Human/Orc x8 linked-core actual shared instance/controller cases. Actual497/5999+1ms/DoAction1/1062/12-GUID roster, real first-phase Reset/despawn and repeated Reset; disabled companion, dead participant, abandon/reaccept, foreign actual started boss Reset and initial Reset; stale guard epoch/later stage refuse release. Real point6/native finalization/12999+1ms ready then actual native interaction predicates/cached option/sGossipSelect/point7 finalization/497/5999+1ms/new12 distinct GUIDs. Repeated cue does not duplicate roster; second actual Reset removes it; no46427 or quest grants. Earlier guard/chamber/initial menu and endpoint poses controlled. Actual continuous navigation/evade scheduling/rendering remain separate.",
+    "retained": "14 native original-start and24 native readiness/player-pet-guardian Unit::Kill cases;100 ASAN original presentation clocks and60 ASAN original start-source cases;172 source/114 native Pillik and123 source/16 native ready-reoffer with selected PE;native spawn migration06/readback/ScriptName/AIM/movement;9 canonical groups:wave/finale,intro,gossip/497,real loot,return,pickup/manual return,Scepter VerifyReleaseBinary,Fury bonfire and Fury descent/loading. Four prior pinned missing-offer controls retained separately.",
+    "binary": "Original game/scripts Release libraries and final-link inputs, separate staged link, matching canonical EXE/maps. Complete selected reset/1062/13s/6s/497/factory/vtable/guard/GUID certificates and six-owned/three-weak Unit clock chain return through linked-verifier completion. NativeReset vtable28 reaches actual cleanup then generation/current-AI guarded typed companion release; exact RTTI R9 target, GUID storage/cancel and no post-owned-story member access certified.",
+    "diagnostics": "All final ordinary checks record pre/post canonical and own crash inventory/log offsets, test status/stdout/stderr and appended DBErrors/server warnings/errors/assertions. No new/changed crash or unexplained appended diagnostic. Existing mixed7111 remains byte-identical and unresolved evidence preserved.",
+    "startup": "Owned worldserver PID=2044\nPASS owned PID=2044 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "prototype_review": [
+    "PE Reset zero carrier changed EBP/EAX to nonvolatileR12 and incremented reserve epoch is retained via load/inc/store across cleanup callbacks. Added verification of the actual emitted forms; existing checks remain. Real Hruthnir allocation grows0x180->0x190 with old offsets retained.",
+    "RTTI target is a data symbol omitted by the shared code-symbol reader; verify the actual inlined dynamic_cast R9 target type-descriptor bytes, not a missing code-symbol name or fixed literal length.",
+    "Older isolated wave/finale source fixtures lacked newly used reset APIs and installed their AI after constructor Reset. Match native installation order before Reset, add explicit closed no-instance boundaries and retain native integration separately. Header class-key adaptation only matches their struct declarations. Initial failed compiler/PE outputs and passing reruns retained; no production diagnostic/check was disabled."
+  ],
+  "database": "No SQL/updater/character edits. Native pools use readonly/TEMP protections and synthetic unsaved Players; current spawn migration06 remains deployed. No character weapon/progress/health reset in this task.",
+  "runtime": {
+    "worldserver": "15DD64C501BAC17661464115F40718EC1A41CA19CF0E6D3C1E648A052787AFBA",
+    "bnetserver": "12303ECED41C9FF76A67BDCAB2D168D257D377C7842E3747EEEF55B1D24B677C"
+  },
+  "configuration": "Canonical configurations/certificates/DLLs hash-preserved; no user or unknown process stopped. Only recorded task-owned worldserver startup was gracefully stopped; no hidden task server remains.",
+  "cleanup": {
+    "status": "Pending verified local archive/temporary-output cleanup after implementation commit; follow-up audit records hashes/removal manifest and two retained rollback generations"
+  },
+  "unresolved": [
+    "Full client Arms/Fury/Protection/all36 traversal, actual combat/wipe/evade pathing, menu/audio/VFX, real loot/equip/manual return, camera/pet and reconnect remain separate. Native endpoint relocation is not client navigation.",
+    "Fresh Hruthnir AI/cold routing and replacement of an already acknowledged boss AI remain OPEN. This repair covers actual live first-phase Reset, not actor disappearance/replacement or every reset policy.",
+    "Next Warrior investigation: instance TryAdvanceMagnarGuards returns immediately after magnarGuardsDelivered. OnCreatureCreate only rebinds the original companion GUID; fresh Hruthnir starts without chamber receipt. Trace actual AI replacement/grid lifecycle against the same real instance/guard epoch before designing retry; do not fake guard credit or clear client progress.",
+    "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff native evidence remain unresolved/untouched. Empty active Crashes only describes reviewed crash state."
+  ]
+}
