@@ -21,8 +21,27 @@
       "Shared LINK2/Slaghammer intro and mixed7111 remain OPEN;retain raw native reproduction/cache/research unchanged."
     ],
     "cleanup": {
-      "status": "Pending focused commit,verified diagnostic archive and exact owned test/staging cleanup;no task-owned hidden server needs to remain running."
-    }
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/warswords-graveyard-2026-11-07",
+      "manifest_sha256": "1dcfef1ecd3de6d21c28b3d4b037f8cc0981f7acff3763a9403fe4f59d03879f",
+      "original_files": 1791,
+      "cleanup_manifest_sha256": "2286a732139d8ba8010d5b7c90fbd7250b887ddc86d245b356612bc7da6f77d9",
+      "removed_files": 266,
+      "logical_removed_bytes": 2853555277,
+      "local_deletion_manifest": ".codex/warrior-graveyard-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 1,
+      "retained": [
+        ".codex/release-before-warrior-graveyard-2026-11-07",
+        ".codex/release-before-warrior-login-recovery-2026-11-07"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;only the reviewed inactive invalid-step test log was reset after archive. Canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 132859785216,
+      "disk_free_after_bytes": 135709900800,
+      "observed_free_increase_bytes": 2850115584
+    },
+    "fix_commit": "b4a92c62db65a6fa864f08c1d861f94e211e12ef"
   },
   "latest_warrior_login_recovery_2026_11_07": {
     "audit": "docs/audits/warrior-login-recovery-2026-11-07.json",
