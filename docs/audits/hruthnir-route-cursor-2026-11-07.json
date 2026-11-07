@@ -24,13 +24,30 @@
     "bnetserver": "1E8BF759E50F3FB594FE6D8278B7F6780AFB493A06AE6225A1B704E601A7BDDB"
   },
   "cleanup": {
-    "status": "PENDING hash-verified archive and owned temporary-file cleanup after focused implementation commit",
-    "archive": "build-extractors/bin/Release/fixed/hruthnir-cursor-2026-11-07"
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-cursor-2026-11-07",
+    "manifest_sha256": "3ca2b2b0493d286527a914251220de913c0c5dd4cc150e5d7e122e0c819c82bb",
+    "original_files": 4229,
+    "cleanup_manifest_sha256": "783f30fc1c2308ef01396649adc3c05dfaad780839a39934681f9964c7c733e9",
+    "removed_files": 495,
+    "logical_removed_bytes": 3823984259,
+    "local_deletion_manifest": ".codex/hruthnir-cursor-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-hruthnir-cursor-2026-11-07",
+      ".codex/release-before-magnar-replacement-2026-11-07"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 128892071936,
+    "disk_free_after_bytes": 132716355584,
+    "observed_free_increase_bytes": 3824283648
   },
   "unresolved": [
     "Actual client whole Arms/Fury/Protection/all36 navigation,combat,wipes,menu/audio/VFX,pickup/equipment/return/camera/pet/reconnect remain separate;controlled native receipts/player following/endpoints do not certify whole gameplay.",
     "The original DoAction2 point6 approach still has no recorded cold-route cursor before motion;AI replacement during that separate untracked legacy leg is not covered by this repair. Record and regress its actual native movement intent separately.",
     "Later-phase Magnar AI restoration/auxiliary lifecycle and full boss Creature/newGUID recreation with surviving consumed companion remain OPEN. Exact old-boss identity deliberately retained.",
     "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff remain OPEN/untouched;empty active Crashes does not certify every quest."
-  ]
+  ],
+  "fix_commit": "274cedecc8eb1488d1306fd3fc92d27fc144d02c"
 }
