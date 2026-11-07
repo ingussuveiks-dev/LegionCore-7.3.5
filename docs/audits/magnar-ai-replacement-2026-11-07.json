@@ -30,7 +30,21 @@
   "ownership": "Only recorded owned canonical worldserver startup; gracefully shutdown0/exit0/gone,empty stderr; no user/unknown server stopped. Configuration/certificate/DLL hashes preserved.",
   "database": "No repair SQL/schema/updater/new ScriptNames or direct character/health/gear/progress edits. Native regression pools are read-only apart from verified TEMP fixture setup; normal canonical startup retains native housekeeping. Credentials/runtime dumps/logs/configs/character data excluded from Git.",
   "cleanup": {
-    "status": "Pending focused implementation commit,verified diagnostic archive and deletion of redundant task output; follow-up records hashes/two rollback generations"
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/magnar-replacement-2026-11-07",
+    "manifest_sha256": "7ba2897ebc2a0221e874300f151d5ec704717278fb217e1833272f1640f2d95a",
+    "original_files": 3921,
+    "cleanup_manifest_sha256": "e1863e10feb074ce4cfbaf1aad8dc70043e3b1e0f1276c4325362bbc3cd2e625",
+    "removed_files": 495,
+    "logical_removed_bytes": 3734064913,
+    "local_deletion_manifest": ".codex/magnar-replacement-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-magnar-replacement-2026-11-07",
+      ".codex/release-before-hruthnir-route-2026-11-07"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged"
   },
   "unresolved": [
     "Actual client full Arms/Fury/Protection/all36 navigation,combat,wipe/menu/audio/VFX/pickup/equipment/return/camera/pet/reconnect remain separate. Controlled native first-phase receipt/endpoints and retained Kill paths do not certify whole gameplay.",
@@ -38,5 +52,6 @@
     "Actual later-phase boss AI restoration/remaining auxiliary lifecycle remains separate; the stage4 rejection control deliberately changes scenario step while old AI is first phase, and does not model an actual second-phase AI replacement.",
     "Hruthnir AI-only replacement mid-corridor can lose its local cursor: native AIM_Initialize retains the actor physical pose but new cursor0 is outside the entrance5yd guard and may be outside boss60yd. Full DB recreation at the entrance,same-AI interruptions and real epoch retirement are already repaired. Same-instance epoch/full-GUID-owned checkpoint adoption needs its own repair/regression; no new cursor persistence is claimed here.",
     "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff evidence remain OPEN/untouched. Empty active Crashes does not certify every quest or resolve legacy mixed errors."
-  ]
+  ],
+  "fix_commit": "97453184ab0753a2a5ca99c1544da89f54f4e3ff"
 }
