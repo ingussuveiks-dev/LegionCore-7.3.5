@@ -2,11 +2,25 @@
   "latest_hruthnir_chamber_2026_11_07": {
     "audit": "docs/audits/hruthnir-chamber-recovery-2026-11-07.json",
     "status": "DEPLOYED9AD78545/C88527D1: fresh original Hruthnir AI/actor restores actual same-instance guard/delivered receipt; old initial LOS replay suppressed; original nearby point6/full13s/cached option/point7/497/full6s remains.",
-    "fix_commit": "Implementation commit containing this audit; exact hash follows in cleanup handoff",
+    "fix_commit": "d788dea90ea9f69dc831929736c158693017b13c",
     "checks": "110 ASAN actual-method refusal/adoption/packet/clock cases;20 Human/Orc actual new-AI/full-GUID actor/deferral/native coincident point6/13s/new cached selection/6s/real reserve+Reset cases;4 pinned expected-broken controls.100 clocks/source60 start/native14 start/24 readiness/Pillik172+114/reoffer123+16/reset111+16/live spawn/full PE/9 canonical groups including Scepter/Fury pass. Owned worldserver PID=25440\nPASS owned PID=25440 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
     "next": "No SQL/character mutation. Continue Warrior cold far-spawn route/barrier lifecycle and lone boss-AI replacement;actual full client/all36 remain OPEN. Earlier101430/103151 LINK2,mixed7111 and unrelated Slaghammer evidence retained.",
     "cleanup": {
-      "status": "Pending implementation commit then verified local archive and temporary-output cleanup; final handoff records exact hashes/deletion manifest/two rollback generations"
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/hruthnir-chamber-2026-11-07",
+      "manifest_sha256": "6118f04d9b3947a3ec11bbc7f48f7f344eceab0acdb0edb11cca5934deba2f0f",
+      "original_files": 2725,
+      "cleanup_manifest_sha256": "48c780c5db33e5897d599bbd725fd8e89c43008a89df91e459ac3bc298507f3d",
+      "removed_files": 724,
+      "logical_removed_bytes": 4852543289,
+      "local_deletion_manifest": ".codex/hruthnir-chamber-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-hruthnir-chamber-2026-11-07",
+        ".codex/release-before-magnar-reset-2026-11-07"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged"
     }
   },
   "latest_magnar_reset_2026_11_07": {

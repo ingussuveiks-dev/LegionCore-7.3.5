@@ -32,11 +32,26 @@
   },
   "ownership": "Only recorded owned canonical worldserver startup, gracefully shut down; no user/unknown process stopped. Configurations/certs/DLLs preserved by hash.",
   "cleanup": {
-    "status": "Pending implementation commit then verified local archive and temporary-output cleanup; final handoff records exact hashes/deletion manifest/two rollback generations"
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-chamber-2026-11-07",
+    "manifest_sha256": "6118f04d9b3947a3ec11bbc7f48f7f344eceab0acdb0edb11cca5934deba2f0f",
+    "original_files": 2725,
+    "cleanup_manifest_sha256": "48c780c5db33e5897d599bbd725fd8e89c43008a89df91e459ac3bc298507f3d",
+    "removed_files": 724,
+    "logical_removed_bytes": 4852543289,
+    "local_deletion_manifest": ".codex/hruthnir-chamber-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-hruthnir-chamber-2026-11-07",
+      ".codex/release-before-magnar-reset-2026-11-07"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged"
   },
   "unresolved": [
     "Actual full Arms/Fury/Protection/all36 client quest/scenario traversal, combat/evade/motion/menu/audio/VFX, real loot/equip/manual return/camera/pet/reconnect remain unverified; native controlled endpoints do not certify navigation.",
     "Cold grid/instance reload that restores Hruthnir far away at the original entrance still needs authored route/checkpoint investigation. This fix restores same-live-instance receipt and normal nearby reoffer; it does not teleport or fabricate a far route. Companion/barrier cold lifecycle and a lone already-acknowledged boss AI replacement remain separate.",
     "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff native evidence remain OPEN/untouched. Empty active Crashes means no unresolved active crash report, not whole-chain certification."
-  ]
+  ],
+  "fix_commit": "d788dea90ea9f69dc831929736c158693017b13c"
 }
