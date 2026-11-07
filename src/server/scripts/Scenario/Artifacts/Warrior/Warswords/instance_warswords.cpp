@@ -55,19 +55,34 @@ public:
 
         WorldLocation* GetClosestGraveYard(float /*x*/, float /*y*/, float /*z*/) override
         {
-            // This map also hosts the Survival Hunter acquisition. Its native
-            // graveyard policy must remain separate from the Fury scenario.
             Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
-            if (!scenario || scenario->GetScenarioId() != 944)
+            if (!scenario)
                 return nullptr;
 
-            // 193335 enters in mid-air. Releasing a corpse must instead use
-            // the authored, grounded Fury GY1 without advancing the scenario.
-            WorldSafeLocsEntry const* safe = sWorldSafeLocsStore.LookupEntry(5228);
+            uint32 safeId = 0;
+            switch (scenario->GetScenarioId())
+            {
+                case 944:
+                    // 193335 enters in mid-air; corpses use grounded Fury GY1.
+                    safeId = 5228;
+                    break;
+                case 973:
+                    // Native step6 harpoon credit47608 acknowledges crossing
+                    // the wards. Do not strand a later death behind that wall
+                    // or send an earlier death across it.
+                    safeId = scenario->GetCurrentStep() >= 7 ? 5296 : 5295;
+                    break;
+                default:
+                    return nullptr;
+            }
+            WorldSafeLocsEntry const* safe = sWorldSafeLocsStore.LookupEntry(safeId);
             if (!safe || safe->MapID != 1511 || !(safe->Loc.X || safe->Loc.Y || safe->Loc.Z) ||
                 !MapManager::IsValidMapCoord(safe->MapID, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f))
             {
-                TC_LOG_ERROR("scripts", "Fury graveyard: invalid native WorldSafeLocs 5228 for instance %u", instance->GetInstanceId());
+                if (safeId == 5228)
+                    TC_LOG_ERROR("scripts", "Fury graveyard: invalid native WorldSafeLocs 5228 for instance %u", instance->GetInstanceId());
+                else
+                    TC_LOG_ERROR("scripts", "Survival graveyard: invalid native WorldSafeLocs %u for instance %u", safeId, instance->GetInstanceId());
                 return nullptr;
             }
             graveyard.WorldRelocate(safe->MapID, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f);

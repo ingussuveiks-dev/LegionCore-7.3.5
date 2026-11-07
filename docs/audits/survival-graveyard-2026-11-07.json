@@ -1,0 +1,54 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED; Survival973/map1511 stage-aware native graveyards5295/5296 repaired;source58 ASAN/native110 including104 real Ghost release/near ACK/delayed revival,paired native baseline,actual harpoon6->7 acknowledgment,strict PE/retained regressions/canonical startup pass. Full client/corpse/pet/flight and all13 whole stages remain pending.",
+  "cause": "Actual registered shared instance had a Fury-only cemetery override and no native map1511 LFG/area-trigger cemetery. Hunter973 fell through to ObjectMgr outdoor selection. Fresh read-only research finds43 eligible zone7541 links,including both Hunter and Fury locations. Actual baseline release/ACK leaves the Hunter dead with Ghost aura/flag;26 of104 controlled death contexts choose Warrior5228. Outdoor proximity alone also lacks the native barrier checkpoint boundary. This is paired executable evidence,not a claim that every historical client death had the same outcome.",
+  "scope": "Actual973 instance chooses native5295 Surv Hunter Acquisition GY1 before stage7 and native5296 GY2 after real stage6 harpoon credit47608 has advanced to7. All13 valid steps0-12 covered. Fury944 still chooses5228;missing/foreign scenario refuses. No global LFG/graveyard/character/database update or ScriptName.",
+  "implementation": [
+    "Extend only registered shared1511 cemetery callback. Select by actual Scenario ID:944->5228;973 current step0-6->5295,7-12->5296;otherwise nullptr. Never infer progress from death position,proximity,quest completion or an actor cast attempt.",
+    "Retain native source presence/map1511/nonzero/coordinate validation,per-instance persistent WorldLocation and degree-to-radian conversion. Preserve exact Fury diagnostic and add contextual Hunter diagnostic including selected native source ID. Existing Player release,SafeTeleport,MoveTeleportAck,half-health resurrection and Ghost aura cleanup remain native.",
+    "No callback cast,teleport,resurrection,criteria,quest,item or wave progression. Current stage is read only. Preserve all existing instance arrival/actor/wave callbacks and normal class/faction/group admission.",
+    "Add focused source/native/baseline/strict PE regressions;retain Fury native+ASAN checks with a distinct legitimate Hunter cemetery control. Old Fury pinned counterfactual still expects its original absent Hunter handler. No production Player layout/API change."
+  ],
+  "local_evidence": {
+    "native": "Matching26972 WorldSafeLocs5295=(3369.16,1920.99,0.628784,320.087degrees),real floor0.628521;5296=(3593.84,1803.5,2.06259,308.119degrees),floor2.40243. Native SafeTeleport adds2Z. Both floors validated against actual map geometry.",
+    "barrier": "Typed973 has13 steps;stage6 The Wall crossing/Into the Mists uses actual root46222 with descendant46223/criterion29205,type92/asset47608. Current native99431 LINK4 action62 teleports actual owner23 to1511/3601.95/1782.54/1.86404;LINK5 credits47608. Later native5296 is beside this real post-ward destination. Require no additional live achievement_criteria_data for29205 before using native engine acknowledgment in the fixture.",
+    "prior_history": "Prior survival-artifact-sequence-review and talonclaw-harpoon-owner audits consulted;matching local data/current native producers and source suffice. Git main/origin5d3d9312b consulted and fetched0/0 before publication. No modern TrinityCore behavior/external code or unseen video imported.",
+    "limits": "Native13-stage descriptors and selected harpoon producer are data evidence. Only a controlled native credit endpoint is supplied to prove real Scenario6->7 acknowledgment;the actual harpoon cast,flight,companion summons and whole chain are not traversed."
+  },
+  "checks": {
+    "before6": "Original installed instance plus actual native ObjectMgr outdoor links:Human/Orc x Hunter5295/Hunter5296/Fury5228 source positions. All6 actual release+ACK controls remain dead/ghost;Fury position chooses5228. Initial research used a raw ghost flag;final paired104 regression instead uses the real Ghost aura.",
+    "baseline110_release104": "Pin actual whole instance to5d3d9312b with current native support and real templates/data. Human+Orc x13 valid steps x4 positions:5295,5296,actual harpoon destination,Fury5228. Actual Ghost8326 and corpse death state established in memory;real RepopAtGraveyard/ACK leaves104 ghosts;26 useFury5228. Native6->7 still acknowledges but cemetery absent. Fury and missing-scenario controls retained. This is a counterfactual class implementation with current native support,not a historical whole binary or passing ordinary run.",
+    "source58": "Extract actual callback under ASAN:13 stages x2 repeats,distinct native IDs/positions/radians;16 missing/foreign/source/map/zero/nonfinite/out-of-bounds refusals on each side6/7. Validate selected ID and diagnostics,stable borrowed pose,no stale result on refusal. Scenario/data/coordinate/error endpoints controlled;not full native-core ASAN.",
+    "native110_release104": "Same104 contexts with actual registered whole instance,real native Player/Map/Scenario/spells/coordinate guards,actual floor and real same-map release/ACK/delayed half-health revival. Real8326 removal clears Ghost aura/flag;duplicate ACK harmless. Scenario step/criteria,wave fields,quest40385 and absent128808 unchanged. Native criterion29205/47608 actually advances6->7 before later GY unlocks;Fury5228 and no-scenario controls pass. Earlier quest/death/stage and credit delivery are controlled,no character save/corpse DB.",
+    "release": "Original static-library Release build and actual final-link inputs,no OutDir. Strict stage/canonical composed PE selects registered shared override and native dispatch,real scenario/step and coordinate calls,distinct native data/diagnostics. MSVC emits(id-944)==29 for973 and5296-CF after cmp step7 to choose5295/5296;verifier checks that exact data flow and actual table-index read,not absent source literals. Existing Fury/no direct progression guards retained.",
+    "retained": "Fury source18 ASAN/native64 with56 native release/ACK revivals/PE;Warrior login source132+recorder64 ASAN/native138/strictPE;mandatory canonical Scepter;Fury arrival50 ASAN/catalog/binding/PE;Talonclaw harpoon owner TEMP/idempotence/custom-state/native catalog/strict full-chain PE.",
+    "startup": "Owned worldserver PID=22116\nPASS owned PID=22116 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "preservation": "Read-only full table hashes retain all non1028 LFG entrances,whole native spell targets/scenario route tables. Native graveyard loading and selected owner tests do not persist data. Config/certificates/DLLs and deployed executable hashes checked;no user/unknown process stopped."
+  },
+  "development_evidence": [
+    "Private research first omitted PlayerDefines.h for native Ghost flag;compiler rejected it. Included the proper header and retained failed output.",
+    "First native fixture confused harpoon child46223 with stage root46222. Corrected to walk the actual typed parent chain from29205 to the actual stage6 root,recording46222 instead of asserting a guessed root. Repaired baseline and positive native runs pass.",
+    "Initial positive fixture set raw Ghost flag without native8326;resurrection had no aura removal to clear that artificial flag. Replaced the controlled ghost setup with actual8326 cast and native1HP state,retaining the Ghost cleanup assertion. Both final baseline and repaired cases use the real aura;no production flag-clear bypass added.",
+    "Initial PE literal checks missed legitimate compiler arithmetic for973 and5295. Preserved failure/listing and now require exact sub944/cmp29 plus cmp7/sbb/add5296 data flow into native table lookup. No executable guard or diagnostic removed."
+  ],
+  "diagnostics": {
+    "final": "Every native/source/build/PE/canonical run wrapped with pre/post crash/log snapshots. Final tests no new/changed crash,no unexplained appended warning/error/assertion or DBErrors;owned stderr empty,shutdown0/exit0/gone.",
+    "canonical_crashes": "empty",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "Unresolved shared LINK2 mixed log preserved unchanged;not eligible for truncation."
+  },
+  "unresolved": [
+    "Actual client Release Spirit/corpse reclaim,appearance,camera,pet portrait/resummon,combat death,abandon/re-entry/relog/group variants and full harpoon flight/companion chain remain separate. Native fixture uses actual8326/release/ACK but creates no persisted corpse or character session login.",
+    "Native graveyard names,harpoon endpoint and actual stage acknowledgment support this early/late policy;full original Blizzard checkpoint timing and whole13-stage traversal are not certified. No progression granted to make it pass.",
+    "Survival middle blessing39427 and whole acquisition prerequisites remain separate previously open research;Warrior full character/group-bind login and all36 whole artifact chains are not certified.",
+    "Shared LINK2/Slaghammer intro and mixed7111 remain OPEN;preserve raw native reproduction/cache/research unchanged."
+  ],
+  "runtime_sha256": {
+    "worldserver": "c7e8d2ce3c329291f52898b0017e4e05b6ac773bb907560ad359bf3af74c92cb",
+    "bnetserver": "00a90ce39f7a79ed5a0bca6a775a96f14bc51b05d0b23c9dea9f98da2adf4bda"
+  },
+  "cleanup": {
+    "status": "Pending focused commit,verified archive and exact redundant owned temporary outputs cleanup;no hidden server needs to remain running."
+  }
+}

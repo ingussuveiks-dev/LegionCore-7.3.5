@@ -48,10 +48,15 @@ int main(int argc,char** argv){try{
 #endif
    Require(scenario->GetCurrentStep()==step&&scenario->GetAchievementMgr().GetCriteriaProgressMap()->size()==before&&script->waves.wave==waves&&script->waves.active==active,"Graveyard request/release altered scenario or wave progress");++cases;
   }
-  // The same registered map script serves Hunter973. Native fallback remains
-  // exactly absent here; do not assign the Warrior cemetery to another class.
+  // The same registered map script serves Hunter973; its new distinct native
+  // cemetery must never borrow the Warrior position or a prior result.
   sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,973);
+#ifdef FURY_GRAVEYARD_BASELINE
   Require(!map.GetClosestGraveYard(safe->Loc.X,safe->Loc.Y,safe->Loc.Z),"Fury cemetery leaked into shared Hunter scenario");++cases;
+#else
+  auto hunter=sWorldSafeLocsStore.LookupEntry(5295);auto hunterGy=map.GetClosestGraveYard(safe->Loc.X,safe->Loc.Y,safe->Loc.Z);
+  Require(hunter&&hunterGy&&hunterGy->GetExactDist(hunter->Loc.X,hunter->Loc.Y,hunter->Loc.Z)<0.001f,"Shared Hunter cemetery did not retain its distinct native source");++cases;
+#endif
   sScenarioMgr->RemoveScenario(map.GetInstanceId());Require(!map.GetClosestGraveYard(safe->Loc.X,safe->Loc.Y,safe->Loc.Z),"Fury cemetery used without an actual scenario");++cases;
  }
  // Protection's LFG1028 and the actual shared Arms/Priest/Paladin callback are
@@ -67,7 +72,7 @@ int main(int argc,char** argv){try{
 #ifdef FURY_GRAVEYARD_BASELINE
  Require(cases==64&&!releases,"Pinned graveyard counterfactual variant/count changed");std::cout<<"COUNTERFACTUAL pinned c252ae5ee actual instance:56 Fury contexts lack graveyard;8 retained shared/scenario controls;no successful release claimed"<<std::endl;
 #else
- Require(cases==64&&releases==56,"Native graveyard regression variant/count changed");std::cout<<"PASS actual Fury graveyard64/native release56:Human+Orc,steps0-6,four native death locations,repeated lookup/ACK,grounded5228/floor/orientation,real near teleport ACK and delayed half-health revival;shared Hunter/Arms/Priest/Paladin/Protection unchanged;no wave/quest/item credit. Dead/quest/stage state controlled;full client/corpse/reconnect separate"<<std::endl;
+ Require(cases==64&&releases==56,"Native graveyard regression variant/count changed");std::cout<<"PASS actual Fury graveyard64/native release56:Human+Orc,steps0-6,four native death locations,repeated lookup/ACK,grounded5228/floor/orientation,real near teleport ACK and delayed half-health revival;shared Hunter uses distinct5295,Arms/Priest/Paladin/Protection unchanged;no wave/quest/item credit. Dead/quest/stage state controlled;full client/corpse/reconnect separate"<<std::endl;
 #endif
  return 0;
 }catch(std::exception const& e){std::cerr<<e.what()<<std::endl;return 1;}}

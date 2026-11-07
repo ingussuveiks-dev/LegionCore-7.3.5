@@ -1,4 +1,29 @@
 {
+  "latest_survival_graveyard_2026_11_07": {
+    "audit": "docs/audits/survival-graveyard-2026-11-07.json",
+    "status": "DEPLOYED; Survival973/map1511 stage-aware native graveyards5295/5296 repaired;source58 ASAN/native110 including104 real Ghost release/near ACK/delayed revival,paired native baseline,actual harpoon6->7 acknowledgment,strict PE/retained regressions/canonical startup pass. Full client/corpse/pet/flight and all13 whole stages remain pending.",
+    "checks": "Source58 ASAN/native110+104 real Ghost release/ACK/revival,pinned instance native110+104 ghosts/26 wrong Fury controls,native harpoon6->7,strict PE;retained Fury56,Warrior138,Scepter,Fury arrival50 and harpoon owner;owned ready/shutdown0/exit0. Client/corpse/pet/full chain separate.",
+    "runtime_sha256": {
+      "worldserver": "c7e8d2ce3c329291f52898b0017e4e05b6ac773bb907560ad359bf3af74c92cb",
+      "bnetserver": "00a90ce39f7a79ed5a0bca6a775a96f14bc51b05d0b23c9dea9f98da2adf4bda"
+    },
+    "diagnostics": {
+      "final": "Every native/source/build/PE/canonical run wrapped with pre/post crash/log snapshots. Final tests no new/changed crash,no unexplained appended warning/error/assertion or DBErrors;owned stderr empty,shutdown0/exit0/gone.",
+      "canonical_crashes": "empty",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "Unresolved shared LINK2 mixed log preserved unchanged;not eligible for truncation."
+    },
+    "unresolved": [
+      "Actual client Release Spirit/corpse reclaim,appearance,camera,pet portrait/resummon,combat death,abandon/re-entry/relog/group variants and full harpoon flight/companion chain remain separate. Native fixture uses actual8326/release/ACK but creates no persisted corpse or character session login.",
+      "Native graveyard names,harpoon endpoint and actual stage acknowledgment support this early/late policy;full original Blizzard checkpoint timing and whole13-stage traversal are not certified. No progression granted to make it pass.",
+      "Survival middle blessing39427 and whole acquisition prerequisites remain separate previously open research;Warrior full character/group-bind login and all36 whole artifact chains are not certified.",
+      "Shared LINK2/Slaghammer intro and mixed7111 remain OPEN;preserve raw native reproduction/cache/research unchanged."
+    ],
+    "cleanup": {
+      "status": "Pending focused commit,verified archive and exact redundant owned temporary outputs cleanup;no hidden server needs to remain running."
+    }
+  },
   "latest_warswords_graveyard_2026_11_07": {
     "audit": "docs/audits/warswords-graveyard-2026-11-07.json",
     "status": "DEPLOYED; Fury944/map1511 missing instance graveyard repaired with native grounded5228;source18 ASAN/native64 including56 real Player release/near ACK/delayed resurrection cases,strict linked PE/retained regressions/canonical startup pass. Full client death/corpse/reconnect and whole chains remain pending.",
