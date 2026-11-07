@@ -20,13 +20,28 @@
       "Survival39427,other shared1489 route entrance provenance,Stromkar visuals,all36 whole chains and shared LINK2/Slaghammer/mixed7111 remain OPEN. Original unresolved reproduction/cache/research preserved."
     ],
     "cleanup": {
-      "status": "PENDING verified archive and exact generated/stage/oldest rollback cleanup after focused fix commit",
-      "retain": [
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/marksmanship-login-recovery-2026-11-07",
+      "manifest_sha256": "83abd1aba8448cc3f5d88868d48f95ebee3315727512869747e541a024ce8c73",
+      "original_files": 1511,
+      "cleanup_manifest_sha256": "e3a81789501045b2cb933f6a6924c2ddeb254b4b26dceedf9a168e01eb2c9dde",
+      "removed_files": 287,
+      "logical_removed_bytes": 2557453446,
+      "local_deletion_manifest": ".codex/marksmanship-login-recovery-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
         ".codex/release-before-marksmanship-login-recovery-2026-11-07",
         ".codex/release-before-survival-login-recovery-2026-11-07"
-      ]
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 133079257088,
+      "disk_free_after_bytes": 135627481088,
+      "observed_free_increase_bytes": 2548224000
     },
-    "checks": "Pinned route source68/native62 counterfactual;positive source68 ASAN/native64,required fifth-route PE and rejected stale four-route EXE;retained Survival120/Warrior138/live MM30/return/Scepter/checkpoint TEMP/New Blood;canonical ready/shutdown0/exit0."
+    "checks": "Pinned route source68/native62 counterfactual;positive source68 ASAN/native64,required fifth-route PE and rejected stale four-route EXE;retained Survival120/Warrior138/live MM30/return/Scepter/checkpoint TEMP/New Blood;canonical ready/shutdown0/exit0.",
+    "fix_commit": "f7633ca78d06b4646b173169dc80216c67db1863"
   },
   "latest_marksmanship_resume_entrance_2026_11_07": {
     "audit": "docs/audits/marksmanship-resume-entrance-2026-11-07.json",
