@@ -3,6 +3,8 @@
 #include "Harness.inc"
 #include "StartHeader.inc"
 #include "CombatHeader.inc"
+bool MagnarCombat::NeedsReset(Creature*,CreatureAI const*) { return false; }
+bool MagnarCombat::Rebind(Creature*,CreatureAI const*,std::uint64_t&) { return false; }
 bool MagnarCombat::Restore(Creature*, CreatureAI const*, SummonList&, std::array<ObjectGuid,12>&, std::array<bool,12>&) { return false; }
 #include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
 // This duel-only fixture has no shared instance. Real first-phase Reset and

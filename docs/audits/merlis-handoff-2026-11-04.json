@@ -1,4 +1,27 @@
 {
+  "latest_magnar_duel_recreation_2026_11_07": {
+    "audit": "docs/audits/magnar-duel-recreation-2026-11-07.json",
+    "status": "DEPLOYED; genuinely earned stage4 Magnar full Creature/newGUID recovery, health and presentation cleanup pass source/native132/selected Release/retained regressions and owned canonical startup; client and whole-map/server restart remain separate",
+    "fix_commit": "PENDING focused commit; filled during verified cleanup",
+    "checks": "ASAN bridge110/7 actual HP callbacks,retained waves/finale/guard matrices;native earned4 recreation132,pinned6 and modeled deferred6;9 staged/selected canonical PE;retained first-phase72/combat60/reoffer16/Reset16/start14/waves24,loot/return/Scepter. Owned worldserver PID=16120\nPASS owned PID=16120 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "runtime_sha256": {
+      "worldserver": "03c89d8ff4a23e5e9b6c958e8e8c47b8178f8344eebe7180ce8c6baea9048113",
+      "bnetserver": "b04ddd7ade3f6a5e01eb02cc11eb9d982d312ac61e28da880da841f95ea0dc9b"
+    },
+    "cleanup": {
+      "status": "PENDING verified fixed archive and generated/private outputs cleanup after focused commit",
+      "retain": [
+        ".codex/release-before-magnar-duel-recreation-2026-11-07",
+        ".codex/release-before-magnar-recreation-2026-11-07"
+      ]
+    },
+    "unresolved": [
+      "Full actual client Protection39191 traversal, all3 Warrior chains and all36 acquisitions remain unverified; movement/failed actors/casts, combat tuning, camera/pet/reconnect, audio/VFX/equipment and return require client checks.",
+      "Whole-map/server-restart persistence of genuinely earned4 remains OPEN; this ticket intentionally exists only in the original live instance epoch. No reconstruction from a saved step or coordinates. Earlier first-phase recreation and current same-instance earned4 recovery are distinct completed scopes.",
+      "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff remain OPEN/untouched. Retain Slaghammer probe/cache and all personal/character/database backups. Empty active Crashes does not certify every quest or crash."
+    ],
+    "next": "Investigate whole-map/server-restart recovery from legitimate persisted acquisition/encounter authority without guessing victory from a saved4 or generating duplicate46427/45784/items. Continue independent unfinished acquisition repair; actual all3 Warrior/client/all36 remain pending."
+  },
   "latest_magnar_recreation_2026_11_07": {
     "audit": "docs/audits/magnar-recreation-2026-11-07.json",
     "status": "DEPLOYED; original first-phase DB boss recreation/owned cleanup source/native72/selected Release/retained regressions and owned startup pass; full client and whole-map restart separate",

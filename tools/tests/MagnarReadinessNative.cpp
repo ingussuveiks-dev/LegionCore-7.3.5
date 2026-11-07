@@ -20,6 +20,8 @@ static uint64 WaveCredit(Scenario* scenario){uint64 result=0;for(auto const& row
 #ifndef MAGNAR_READINESS_SUPPORT_ONLY
 // The scoped earned-combat fixture uses the actual shared-instance bridge.
 // This original instance-free probe cannot own a recovery receipt.
+bool MagnarCombat::NeedsReset(Creature* c,CreatureAI const*) { Require(!c->GetInstanceScript(),"Unexpected earned binding in instance-free probe");return false; }
+bool MagnarCombat::Rebind(Creature* c,CreatureAI const*,std::uint64_t&) { Require(!c->GetInstanceScript(),"Unexpected retired duel in instance-free probe");return false; }
 void MagnarCombat::Remember(Creature* c, CreatureAI const*, std::array<ObjectGuid,12> const&, std::array<bool,12> const&) { Require(!c->GetInstanceScript(),"Unexpected combat receipt in instance-free fixture"); }
 bool MagnarCombat::Restore(Creature* c, CreatureAI const*, SummonList&, std::array<ObjectGuid,12>&, std::array<bool,12>&) { Require(!c->GetInstanceScript(),"Unexpected combat restore in instance-free fixture");return false; }
 // This older wave fixture deliberately has no shared InstanceScript/Hruthnir

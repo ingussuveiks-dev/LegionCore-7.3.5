@@ -1,5 +1,9 @@
 # Real native Protection wave readiness and Kill/owner progression; no persistent character writes.
-param([switch]$Recreation,[switch]$RecreationBaseline,[switch]$CombatReplacement,[switch]$CombatBaseline,[switch]$PrimaryApproach,[switch]$PrimaryBaseline,[switch]$Cursor,[switch]$CursorBaseline,[switch]$Replacement,[switch]$ReplacementBaseline,[switch]$ColdRoute,[switch]$ColdRouteBaseline,[switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+param([switch]$DuelDeferredBaseline,[switch]$DuelRecreation,[switch]$DuelRecreationBaseline,[switch]$Recreation,[switch]$RecreationBaseline,[switch]$CombatReplacement,[switch]$CombatBaseline,[switch]$PrimaryApproach,[switch]$PrimaryBaseline,[switch]$Cursor,[switch]$CursorBaseline,[switch]$Replacement,[switch]$ReplacementBaseline,[switch]$ColdRoute,[switch]$ColdRouteBaseline,[switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+if($DuelDeferredBaseline -and $DuelRecreationBaseline){throw "Choose one duel counterfactual"}
+if($DuelDeferredBaseline){$DuelRecreation=$true}
+if($DuelRecreationBaseline){$DuelRecreation=$true}
+if($DuelRecreation -and ($Recreation -or $RecreationBaseline -or $CombatReplacement -or $CombatBaseline -or $PrimaryApproach -or $PrimaryBaseline -or $Cursor -or $CursorBaseline -or $Replacement -or $ReplacementBaseline -or $ColdRoute -or $ColdRouteBaseline -or $StartRecovery -or $Baseline -or $Pillik -or $PillikBaseline -or $EntryBaseline -or $Approach -or $ApproachBaseline -or $Reoffer -or $ReofferBaseline -or $ResetRecovery -or $ResetBaseline -or $ChamberRecovery -or $ChamberBaseline -or $Barrier -or $BarrierBaseline)){throw "Choose only earned duel Creature recreation"}
 if($RecreationBaseline){$Recreation=$true}
 if($Recreation -and ($CombatReplacement -or $CombatBaseline -or $PrimaryApproach -or $PrimaryBaseline -or $Cursor -or $CursorBaseline -or $Replacement -or $ReplacementBaseline -or $ColdRoute -or $ColdRouteBaseline -or $StartRecovery -or $Baseline -or $Pillik -or $PillikBaseline -or $EntryBaseline -or $Approach -or $ApproachBaseline -or $Reoffer -or $ReofferBaseline -or $ResetRecovery -or $ResetBaseline -or $ChamberRecovery -or $ChamberBaseline -or $Barrier -or $BarrierBaseline)){throw "Choose only actual Magnar Creature recreation"}
 if($CombatBaseline){$CombatReplacement=$true}
@@ -33,14 +37,15 @@ if($Cursor){$StartRecovery=$true}
 if($PrimaryApproach){$StartRecovery=$true}
 if($CombatReplacement){$StartRecovery=$true}
 if($Recreation){$StartRecovery=$true}
+if($DuelRecreation){$StartRecovery=$true}
 if($EntryBaseline){$Pillik=$true}
 if($EntryBaseline -and $PillikBaseline){throw 'Choose one pinned Pillik counterfactual'}
 if($PillikBaseline){$Pillik=$true}
 if($StartRecovery -and $Pillik){throw "Choose start recovery or the earlier Pillik handoff"}
 if($Baseline -and ($StartRecovery -or $Pillik)){throw "Pinned counterfactual is separate from current start recovery"}
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$family=if($Recreation){"magnar-recreation-native"}elseif($CombatReplacement){"magnar-combat-native"}elseif($PrimaryApproach){"hruthnir-primary-native"}elseif($Cursor){"hruthnir-cursor-native"}elseif($Replacement){"magnar-replacement-native"}elseif($ColdRoute){"hruthnir-cold-route-native"}elseif($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
-$probe=if($Recreation){"MagnarRecreationNative"}elseif($CombatReplacement){"MagnarCombatReplacementNative"}elseif($PrimaryApproach){"HruthnirPrimaryApproachNative"}elseif($Cursor){"HruthnirCursorNative"}elseif($Replacement){"MagnarReplacementNative"}elseif($ColdRoute){"HruthnirColdRouteNative"}elseif($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
+$family=if($DuelRecreation){"magnar-duel-recreation-native"}elseif($Recreation){"magnar-recreation-native"}elseif($CombatReplacement){"magnar-combat-native"}elseif($PrimaryApproach){"hruthnir-primary-native"}elseif($Cursor){"hruthnir-cursor-native"}elseif($Replacement){"magnar-replacement-native"}elseif($ColdRoute){"hruthnir-cold-route-native"}elseif($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
+$probe=if($DuelRecreation){"MagnarDuelRecreationNative"}elseif($Recreation){"MagnarRecreationNative"}elseif($CombatReplacement){"MagnarCombatReplacementNative"}elseif($PrimaryApproach){"HruthnirPrimaryApproachNative"}elseif($Cursor){"HruthnirCursorNative"}elseif($Replacement){"MagnarReplacementNative"}elseif($ColdRoute){"HruthnirColdRouteNative"}elseif($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
 $out="$repo/build-extractors/runtime-test/$family/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing actual $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
@@ -77,7 +82,9 @@ if($CursorBaseline){$source=(& git -C $repo show "a0f4cc39b:$path") -join "`n";i
 if($PrimaryBaseline){$source=(& git -C $repo show "83a8cb6e3:$path") -join "`n";if(!$source){throw "Pinned original approach source missing"}}
 if($CombatBaseline){$source=(& git -C $repo show "26fd47707:$path") -join "`n";if(!$source){throw "Pinned combat replacement source missing"}}
 if($RecreationBaseline){$source=(& git -C $repo show "8ac9eec48:$path") -join "`n";if(!$source){throw "Pinned recreation source missing"}}
-[IO.File]::WriteAllText("$out/MagnarNative.inc",(Block $source 'Position const trashPos[12]')+';'+(Block $source 'class npc_magnar_icebreaker : public CreatureScript')+';')
+if($DuelRecreationBaseline){$source=(& git -C $repo show "89922acab:$path") -join "`n";if(!$source){throw "Pinned duel recreation source missing"}}
+if($DuelDeferredBaseline){$removed=Block $source "if (first_phase && MagnarCombat::NeedsReset(";$source=$source.Replace($removed,"")}
+[IO.File]::WriteAllText("$out/MagnarNative.inc",(Block $source 'Position const trashPos[12]')+';'+(Block $source 'class npc_magnar_icebreaker : public CreatureScript')+';'+$(if($source.Contains('void MagnarCombat::RetirePresentation(')){Block $source 'void MagnarCombat::RetirePresentation('}else{''}))
 if($StartRecovery -or $Pillik){
  $resetBridge=if($source.Contains('void MagnarStart::ResetOffer(')){Block $source 'void MagnarStart::ResetOffer('}else{''}
  [IO.File]::WriteAllText("$out/HruthnirNative.inc",(Block $source 'namespace HruthnirGossip')+(Block $source 'class npc_hrutnir : public CreatureScript')+';'+(Block $source 'void MagnarStart::Rejoin(')+$resetBridge)
@@ -88,8 +95,9 @@ if($StartRecovery -or $Pillik){
  if($PrimaryBaseline){$shared=(& git -C $repo show "83a8cb6e3:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp") -join "`n"}
  if($CombatBaseline){$shared=(& git -C $repo show "26fd47707:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp") -join "`n"}
  if($RecreationBaseline){$shared=(& git -C $repo show '8ac9eec48:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp') -join "`n"}
+ if($DuelRecreationBaseline){$shared=(& git -C $repo show '89922acab:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp') -join "`n"}
  $combatBridge=''
- foreach($name in @('void MagnarCombat::Reset(','void MagnarCombat::Bind(','void MagnarCombat::Remove(','MagnarCombat::State* MagnarCombat::Find(','void MagnarCombat::Remember(','bool MagnarCombat::Restore(','bool MagnarStart::ConsumeRecreation(')){if($shared.Contains($name)){$combatBridge+=Block $shared $name}}
+ foreach($name in @('void MagnarCombat::Reset(','void MagnarCombat::Bind(','void MagnarCombat::Remove(','MagnarCombat::State* MagnarCombat::Find(','void MagnarCombat::Remember(','bool MagnarCombat::Restore(','bool MagnarCombat::Rebind(','bool MagnarCombat::NeedsReset(','bool MagnarStart::ConsumeRecreation(')){if($shared.Contains($name)){$combatBridge+=Block $shared $name}}
  [IO.File]::WriteAllText("$out/MagnarCombatBridge.inc",$combatBridge.Replace('instance_shields_rest::','ShieldsFixture::instance_shields_rest::'))
  [IO.File]::WriteAllText("$out/ShieldsNative.inc",(Block $shared 'class instance_shields_rest : public InstanceMapScript')+';')
 }
@@ -103,6 +111,7 @@ if($Reoffer){$inputs+=@("$repo/tools/tests/HruthnirReofferNative.cpp")}
 if($ResetRecovery){$inputs+=@("$repo/tools/tests/MagnarResetNative.cpp")}
 if($ChamberRecovery){$inputs+=@("$repo/tools/tests/HruthnirChamberNative.cpp")}
 if($Replacement){$inputs+=@("$repo/tools/tests/MagnarReplacementNative.cpp","$repo/src/server/game/Entities/Creature/Creature.cpp")}
+if($DuelRecreation){$inputs+=@("$repo/tools/tests/MagnarDuelRecreationNative.cpp","$repo/tools/tests/MagnarRecreationNative.cpp","$repo/src/server/game/Entities/Creature/Creature.cpp")}
 if($Recreation){$inputs+=@("$repo/tools/tests/MagnarRecreationNative.cpp","$repo/src/server/game/Entities/Creature/Creature.cpp","$repo/src/server/game/Globals/ObjectMgr.cpp")}
 if($CombatReplacement){$inputs+=@("$repo/tools/tests/MagnarCombatReplacementNative.cpp","$repo/src/server/game/Entities/Creature/Creature.cpp")}
 if($PrimaryApproach){$inputs+=@("$repo/tools/tests/HruthnirPrimaryApproachNative.cpp","$repo/tools/tests/HruthnirCursorNative.cpp","$repo/src/server/game/Entities/Creature/Creature.cpp","$repo/src/server/game/Movement/PathGenerator.cpp")}
@@ -123,6 +132,8 @@ try{
  if($ResetBaseline){$env:CL+=" /DMAGNAR_RESET_BASELINE"}
  if($ChamberBaseline){$env:CL+=" /DHRUTHNIR_CHAMBER_BASELINE"}
  if($ReplacementBaseline){$env:CL+=" /DMAGNAR_REPLACEMENT_BASELINE"}
+ if($DuelDeferredBaseline){$env:CL+=" /DMAGNAR_DUEL_DEFERRED_BASELINE"}
+ if($DuelRecreationBaseline){$env:CL+=" /DMAGNAR_DUEL_RECREATION_BASELINE"}
  if($RecreationBaseline){$env:CL+=" /DMAGNAR_RECREATION_BASELINE"}
  if($CombatBaseline){$env:CL+=" /DMAGNAR_COMBAT_BASELINE"}
  if($PrimaryBaseline){$env:CL+=" /DHRUTHNIR_PRIMARY_BASELINE"}

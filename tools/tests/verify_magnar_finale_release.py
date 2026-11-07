@@ -214,7 +214,12 @@ assert [entry.op_str for entry in reset_body[react - 2:react]] == ['r8d, r8d', '
 updated = instructions('?UpdateAI' + suffix)
 tick = positions(updated, handoff)[0]
 victim = positions(updated, '?UpdateVictim@CreatureAI@@')[0]
-finale_gate = next(index for index in range(tick + 1, victim) if updated[index].op_str == 'byte ptr [rbx + 0xd2], 0')
+duel_recreation=any(name.startswith('?Rebind@MagnarCombat@@') for name in native['symbols'])
+duel_resume = any(name.startswith('?NeedsReset@MagnarCombat@@') for name in native['symbols'])
+zero = 'r12b' if duel_resume else 'r14b'
+if duel_recreation:
+    assert any(o.mnemonic == 'xor' and o.op_str == ('r12d, r12d' if duel_resume else 'r14d, r14d') for o in updated[:tick])
+finale_gate = next(index for index in range(tick + 1, victim) if updated[index].op_str == ('byte ptr [rbx + 0xd2], '+zero if duel_recreation else 'byte ptr [rbx + 0xd2], 0'))
 assert tick < finale_gate < victim and updated[finale_gate + 1].mnemonic == 'jne', 'Victim/evade can cancel a still-running finale'
 exit_address = updated[finale_gate + 1].operands[0].imm
 exit_body = [entry for entry in updated if entry.address >= exit_address]

@@ -1761,7 +1761,27 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            Creature* actor = me;
             uint32 generation = reserveGeneration;
+            std::uint64_t recoveredHealth = 0;
+            if (first_phase && MagnarCombat::Rebind(actor, this, recoveredHealth))
+            {
+                actor->SetHealth(recoveredHealth);
+                // Native health-threshold auras can replace/retire this AI.
+                if (actor->AI() != this || !actor->IsAIEnabled || !actor->IsInWorld() || !actor->IsAlive() || actor->IsDespawn())
+                    return;
+                if (first_phase)
+                    Reset();
+                return;
+            }
+            // A health proc may only suspend this controller after the ticket
+            // was bound. Resume that same earned binding without writing HP
+            // again; an already completed reentrant Reset needs no replay.
+            if (first_phase && MagnarCombat::NeedsReset(actor, this))
+            {
+                Reset();
+                return;
+            }
             UpdateFinale(diff);
             if (generation != reserveGeneration || finaleStarted)
                 return;
@@ -2086,6 +2106,40 @@ namespace EarthwarderAcquisition
         Scenario* scenario = sScenarioMgr->GetScenario(weapon->GetInstanceId());
         return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 5;
     }
+}
+
+void MagnarCombat::RetirePresentation(Creature* actor)
+{
+    if (!actor || actor->GetEntry() != 96034 || actor->GetDBTableGUIDLow() != 361400 || actor->GetMapId() != 1495 || !actor->GetMap())
+        return;
+    using AI = npc_magnar_icebreaker::npc_magnar_icebreakerAI;
+    AI* current = dynamic_cast<AI*>(actor->AI());
+    AI* suspended = dynamic_cast<AI*>(actor->GetDisabledAI());
+    Map* map = actor->GetMap();
+    std::array<ObjectGuid, 2> stories{};
+    unsigned slot = 0;
+    for (AI* ai : { current, suspended })
+    {
+        if (ai && (slot == 0 || ai != current))
+        {
+            stories[slot] = ai->finaleConversation;
+            ai->finaleConversation.Clear();
+            ai->finalePlayer.Clear();
+            ++ai->finaleGeneration;
+            ++ai->reserveGeneration;
+            ai->finaleStarted = ai->stop_combat = ai->releasingWave = ai->encounterStarted = true;
+            ai->finalePending = ai->finaleDeparting = false;
+            ai->finaleTimer = ai->finaleInstanceId = 0;
+        }
+        ++slot;
+    }
+    if (stories[1] == stories[0])
+        stories[1].Clear();
+    // All AI fields are retired before native removal can delete either AI.
+    for (ObjectGuid guid : stories)
+        if (!guid.IsEmpty())
+            if (Conversation* story = ObjectAccessor::GetObjectInMap(guid, map, static_cast<Conversation*>(nullptr)))
+                story->Remove();
 }
 
 // 248831

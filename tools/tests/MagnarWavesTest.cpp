@@ -36,8 +36,11 @@ struct Position { float positionX, positionY, positionZ, orientation; };
 struct Creature;
 #include "StartHeader.inc"
 #include "CombatHeader.inc"
+bool duelRebindAdmitted=false,duelResumeReady=false,duelResetAdmitted=false;
+bool MagnarCombat::NeedsReset(Creature*,CreatureAI const*) { return duelResumeReady; }
+bool MagnarCombat::Rebind(Creature*,CreatureAI const*,std::uint64_t& health) { if(!duelRebindAdmitted)return false;duelRebindAdmitted=false;duelResumeReady=true;health=80;return true; }
 void MagnarCombat::Remember(Creature*, CreatureAI const*, std::array<ObjectGuid,12> const&, std::array<bool,12> const&) { }
-bool MagnarCombat::Restore(Creature*, CreatureAI const*, SummonList&, std::array<ObjectGuid,12>&, std::array<bool,12>&) { return false; }
+bool MagnarCombat::Restore(Creature*, CreatureAI const*, SummonList&, std::array<ObjectGuid,12>&, std::array<bool,12>&) { return duelResumeReady; }
 #include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
 // Ordinary wave fixtures have no shared instance. Only the focused Reset
 // notification cases opt into observing the bridge; real consumers are native.
@@ -149,7 +152,7 @@ struct Creature : Unit
     Creature* ToCreature() override { return this; }
     virtual TempSummon* ToTempSummon() { return nullptr; }
     CreatureAI* AI() const { return ai; }
-    bool isInCombat() const { assert(false); return false; } Unit* getVictim() const { assert(false); return nullptr; }
+    bool isInCombat() const { assert(duelResetAdmitted); return false; } Unit* getVictim() const { assert(false); return nullptr; }
     CreatureAI* GetDisabledAI() const { return nullptr; }
     InstanceScript* instanceScript = nullptr;
     InstanceScript* GetInstanceScript() const { return instanceScript; }
@@ -182,7 +185,8 @@ struct Creature : Unit
     void CastSpell(Creature* target, uint32 spell) { assert(target == this && spell == 191032); ++casts; }
     void CreateConversation(uint32 identity) { assert(identity == 498); ++conversations; }
     uint32 CountPctFromMaxHealth(uint32 percent) const { return percent; }
-    void SetHealth(uint32 value) { health = value; }
+    std::function<void()> onSetHealth;
+    void SetHealth(std::uint64_t value) { assert(value<=std::numeric_limits<uint32>::max());health=static_cast<uint32>(value);if(onSetHealth){auto callback=onSetHealth;callback();} }
     Creature* SummonCreature(uint32 identity, Position const& pose) { return spawn(identity, pose); }
 };
 Creature* Unit::GetCreature(Unit const& source, ObjectGuid guid)
@@ -297,6 +301,11 @@ struct Fixture
         for (uint32 index = 0; index < 10; ++index) Die(index, killer);
     }
 };
+static void TestDuelHealthCallbacks()
+{
+    for(unsigned mode=0;mode<7;++mode){duelResumeReady=duelResetAdmitted=false;Fixture fixture;auto live=std::make_unique<Magnar>(&fixture.actor);CreatureAI replacement;auto generation=live->reserveGeneration;unsigned calls=0;fixture.actor.onSetHealth=[&]{++calls;if(mode==0){fixture.actor.ai=nullptr;live.reset();}if(mode==1)fixture.actor.ai=&replacement;if(mode==2)fixture.actor.IsAIEnabled=false;if(mode==3)fixture.actor.world=false;if(mode==4)fixture.actor.alive=false;if(mode==5)fixture.actor.despawning=true;if(mode==6)live->UpdateAI(0);};duelRebindAdmitted=duelResetAdmitted=true;live->UpdateAI(0);assert(calls==1&&!duelRebindAdmitted&&fixture.actor.health==80);if(mode==0)assert(!live);else{if(mode<6)assert(live->reserveGeneration==generation&&live->first_phase);fixture.actor.onSetHealth={};fixture.actor.ai=live.get();fixture.actor.IsAIEnabled=fixture.actor.world=fixture.actor.alive=true;fixture.actor.despawning=false;live->UpdateAI(0);assert(!live->first_phase&&live->wave==7&&live->reserveGeneration==generation+1&&calls==1);live->UpdateAI(0);assert(live->reserveGeneration==generation+1&&calls==1);}fixture.actor.onSetHealth={};duelResumeReady=duelResetAdmitted=false;}
+    std::cout<<"PASS:7 actual UpdateAI health-callback cases stop after AI deletion/replacement/disable/world/death/despawn;readmission resumes once without HP replay,and reentrant same-AI Reset is not repeated. Receipt/ready admission controlled,actual typed bridge separately tested.\n";
+}
 int main()
 {
 #ifdef BASELINE
@@ -371,6 +380,7 @@ int main()
     }
     std::cout<<"COUNTERFACTUAL pinned fb01c9a6a dispatches AttackStart through disabled selected/companion AI; a selected actor disappearing during another activation is replaced as unselected, leaving count1 with no tracked opponent. Not an ordinary successful encounter. Null AI risk is traced statically, not crashed deliberately.\n";
 #else
+    TestDuelHealthCallbacks();
     uint32 readinessCases=0;
     for(bool alliance:{false,true})for(uint32 status:{1u,3u})for(uint32 killer=0;killer<3;++killer)for(uint32 mode=0;mode<4;++mode){
         Fixture fixture;fixture.player.alliance=alliance;fixture.player.status=status;

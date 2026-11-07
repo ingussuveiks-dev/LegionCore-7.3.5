@@ -71,6 +71,7 @@ public:
             pillikDied = false;
             magnarRouteCursor = 0;
             magnarRemovedBosses.clear();
+            magnarRetiredCombat = {};
             MagnarCombat::Reset(instance, magnarCombat);
         }
 
@@ -141,10 +142,19 @@ public:
             if (creature->GetEntry() == 96034 && creature->GetDBTableGUIDLow() == 361400 &&
                 creature->GetMap() == instance && creature->GetPhases().count(6999) &&
                 magnarCombat.actor == creature->GetGUID() && magnarCombat.epoch == magnarGuardGeneration &&
-                magnarGuardCreditSent && magnarGuardsDelivered && !magnarCombat.earned)
+                magnarGuardCreditSent && magnarGuardsDelivered)
                 if (Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))
-                    if (scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 3)
-                        magnarRemovedBosses.insert(creature->GetGUID());
+                    if (scenario->GetScenarioId() == 909)
+                    {
+                        if (!magnarCombat.earned && scenario->GetCurrentStep() == 3)
+                            magnarRemovedBosses.insert(creature->GetGUID());
+                        else if (magnarCombat.earned && scenario->GetCurrentStep() == 4)
+                            magnarRetiredCombat = { creature->GetGUID(), magnarGuardGeneration,
+                                creature->GetHealth(), creature->GetMaxHealth() };
+                    }
+            // Freeze both current/suspended old presentation before callbacks
+            // and before native RemoveFromMap clears the actor's Map.
+            MagnarCombat::RetirePresentation(creature);
             MagnarCombat::Remove(instance, magnarCombat, creature);
         }
 
@@ -551,6 +561,7 @@ public:
         uint32 magnarRouteCursor = 0;
         MagnarCombat::State magnarCombat;
         std::set<ObjectGuid> magnarRemovedBosses;
+        MagnarCombat::Retired magnarRetiredCombat;
         void Update(uint32 diff) override
         {
             if (hunterWindTimer > diff) { hunterWindTimer -= diff; return; }
@@ -650,6 +661,52 @@ MagnarCombat::State* MagnarCombat::Find(Creature* actor, CreatureAI const* expec
         instance->magnarCombat.actor != actor->GetGUID() || instance->magnarCombat.epoch != instance->magnarGuardGeneration)
         return nullptr;
     return &instance->magnarCombat;
+}
+
+bool MagnarCombat::Rebind(Creature* actor, CreatureAI const* expected, std::uint64_t& health)
+{
+    State* state = Find(actor, expected);
+    if (!state || state->earned)
+        return false;
+    auto instance = dynamic_cast<instance_shields_rest::instance_shields_rest_InstanceMapScript*>(actor->GetInstanceScript());
+    Retired old = instance->magnarRetiredCombat;
+    for (unsigned slot = 0; slot < state->roster.size(); ++slot)
+        if (!state->roster[slot].IsEmpty() || state->deaths[slot])
+            return false;
+    if (old.actor.IsEmpty() || old.actor == actor->GetGUID() || old.epoch != instance->magnarGuardGeneration ||
+        !old.health || !old.maximum || old.health > old.maximum || !actor->GetMaxHealth())
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() != 4)
+        return false;
+    if (Creature* previous = actor->GetMap()->GetCreature(old.actor))
+        if (previous->IsInWorld())
+            return false;
+    std::uint64_t maximum = actor->GetMaxHealth();
+    if (old.maximum == maximum)
+        health = old.health;
+    else
+    {
+        // Clamp before converting: on MSVC long double has double precision.
+        long double scaled = static_cast<long double>(maximum) * static_cast<long double>(old.health) / static_cast<long double>(old.maximum);
+        health = scaled >= maximum ? maximum : scaled < 1 ? 1 : static_cast<std::uint64_t>(scaled);
+    }
+    // No callbacks between consuming the old identity and publishing the new
+    // earned binding. Old owned actors have already been retired, not adopted.
+    instance->magnarRetiredCombat = {};
+    state->roster = {};
+    state->deaths = {};
+    state->earned = true;
+    return true;
+}
+
+bool MagnarCombat::NeedsReset(Creature* actor, CreatureAI const* expected)
+{
+    State* state = Find(actor, expected);
+    if (!state || !state->earned)
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 4;
 }
 
 void MagnarCombat::Remember(Creature* actor, CreatureAI const* expected,

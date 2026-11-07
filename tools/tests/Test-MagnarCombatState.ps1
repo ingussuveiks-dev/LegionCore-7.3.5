@@ -6,8 +6,10 @@ $header=(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthW
 [IO.File]::WriteAllText("$out/CombatHeader.inc",$header)
 Copy-Item "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_start.h" "$out/StartHeader.inc"
 $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp" -Raw;$bridge=''
-foreach($name in @('void MagnarCombat::Reset(','void MagnarCombat::Bind(','void MagnarCombat::Remove(','MagnarCombat::State* MagnarCombat::Find(','void MagnarCombat::Remember(','bool MagnarCombat::Restore(','bool MagnarStart::ConsumeRecreation(')){$bridge+=Block $source $name}
+foreach($name in @('void MagnarCombat::Reset(','void MagnarCombat::Bind(','void MagnarCombat::Remove(','MagnarCombat::State* MagnarCombat::Find(','void MagnarCombat::Remember(','bool MagnarCombat::Restore(','bool MagnarCombat::Rebind(','bool MagnarCombat::NeedsReset(','bool MagnarStart::ConsumeRecreation(')){$bridge+=Block $source $name}
 [IO.File]::WriteAllText("$out/CombatBridge.inc",$bridge)
+$ewc=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp" -Raw
+[IO.File]::WriteAllText("$out/Presentation.inc",(Block $ewc "void MagnarCombat::RetirePresentation("))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $instrument=if($AddressSanitizer){'/fsanitize=address /Zi'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $instrument /I`"$out`" `"$PSScriptRoot/MagnarCombatStateTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/compiler.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`nexit /b %errorlevel%`n")

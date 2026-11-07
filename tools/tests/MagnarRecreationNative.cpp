@@ -11,6 +11,7 @@ static void CompleteWaves(LoadedMagnar& boss,Player& player,Unit* killer,Scenari
    boss.Brain().stop_combat=true;boss.Brain().LaunchEventWave(boss.Brain().wave++);unsigned deaths=0;while(boss.Brain().first_phase&&deaths<10){auto active=boss.Brain().activeWave;Require(!active.empty(),"Actual recreated wave stuck");for(auto id:active){auto member=boss.GetMap()->GetCreature(id);Require(member&&member->IsAlive(),"Actual recreated opponent absent");member->SetLootRecipient(&player);member->LowerPlayerDamageReq(uint32(member->GetMaxHealth()));killer->Kill(member,false);killer->Kill(member,false);++deaths;}}
    Require(deaths==10&&WaveCredit(scenario)==1&&scenario->GetCurrentStep()==4,"Actual recreated10 deaths did not advance46427 exactly once");
 }
+#ifndef MAGNAR_RECREATION_SUPPORT_ONLY
 int main(int argc,char** argv){try{
  InitializeAltheaGuardsNative(argc,argv);
  WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
@@ -83,3 +84,4 @@ int main(int argc,char** argv){try{
  }
  std::cout<<"PASS native Magnar recreation cases="<<cases<<std::endl;CloseAltheaNative();return 0;
 }catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}}
+#endif

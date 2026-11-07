@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED; genuinely earned stage4 Magnar full Creature/newGUID recovery, health and presentation cleanup pass source/native132/selected Release/retained regressions and owned canonical startup; client and whole-map/server restart remain separate",
+  "scope": "Warrior Protection39191/scenario909/map1495/original96034/DB361400/phase6999, observed native removal and fresh DB recreation in the SAME live typed instance epoch after ten actual owned deaths and real46427 advance to4. No saved step, coordinates or new GUID alone authorizes recovery.",
+  "cause": "Pinned89922acab native6 controls prove that actual RemoveFromWorld/Map::RemoveFromMap clears the earned combat binding before the AI destructor, then LoadCreatureFromDB makes a different full GUID whose constructor has first_phase=true. Its actual DamageTakenAfterScaling discards a lethal hit without504/45784. Native SetHealth can invoke HP-threshold aura casts; a disabled/replaced/deleted or reentrantly reset AI must not be accessed/reset twice, and a merely suspended controller must resume its already-earned binding without replaying HP.",
+  "implementation": [
+    "Append an instance-owned Retired ticket without moving existing shared fields. Exact original bound DB actor, same Map/6999, current guard generation/delivered receipt, actually earned state and native909-4 are required at native removal. Capture full old GUID/epoch/raw64-bit HP/maxHP before callback-capable cleanup. Initialize clears tickets before owned cleanup.",
+    "RetirePresentation freezes both current and suspended actual Magnar controllers, captures/deduplicates their504/other owned scene GUIDs and Map, clears participant/timers/instance, increments both cancellation generations and stops old wave/finale dispatch before removing scenes. No AI fields are touched after callback-capable scene removal; actual deletion of both AIs is covered by ASAN.",
+    "Rebind requires the current enabled/alive/in-world original typed AI/binding/epoch and a fresh empty roster/death set, old different GUID/positive valid HP/maxHP, native909-4 and no live previous actor. Preserve exact raw HP at equal max, otherwise preserve ratio with lower/upper clamps before uint64 conversion. Consume ticket and publish earned binding without callbacks; no old summon adoption or repeat credit.",
+    "UpdateAI writes recovered HP then checks current AI/enabled/world/alive/despawn before using this again. Reset only if still first_phase, returning immediately after the virtual callback. NeedsReset separately checks the current earned binding/native909-4 and resumes a surviving controller after deferred health callback readmission without another HP write. An already reentrant-completed Reset is not replayed.",
+    "Retain authored balcony spawn4687.01/354.116/-27.1586; it matches the original EVENT4 balcony rather than a missing forced jump. Real native chase reaches melee. Native NPC immunity, player/pet/guardian/faction eligibility, full504 delay/45784 once, actual loot and return remain. No SQL/schema/ScriptNames changes, forced movement, new quest/item grants or global registry."
+  ],
+  "sources": "Matching local26972 DB/templates/scenario/criteria/conversations; Creature::LoadCreatureFromDB/RemoveFromWorld, Map::RemoveFromMap, Unit::SetHealth/Unit::Kill, actual shared instance and Magnar AI; origin/main89922acab pinned source controls. Local data/code resolves the defect; no modern-core adaptation or video traversal claimed.",
+  "checks": {
+    "pinned_counterfactual": "6 Human/Orc x player/pet/guardian real10 owned native kills/46427/4, native original DB boss removal/reload/newGUID and lethal hit with first_phase=true/no504/no45784 on89922acab. Expected-broken baseline, not passing gameplay.",
+    "deferred_counterfactual": "6 modeled controls strip ONLY the actual NeedsReset fallback from current EWC; real earned4/ticket consumed followed by controlled health endpoint disable/re-enable stays first_phase/discards lethal. This is a modeled missing-fallback control, not historical Git source or an actual aura cast.",
+    "source_asan": "110 actual typed combat bridge cases, including fresh ownership/identity/epoch/HP/old-live/invalid admission, exact uint64 and clamped scaled bounds, current/suspended scene callback deletion/dedup, earned3/4/5 query and stale epoch;7 actual UpdateAI health callback cases delete/replace/disable/remove/death/despawn/reentrant Reset, with readmission once/no HP replay. Controlled engine endpoints; not full native-core ASAN. Existing waves/finale/guard actual-method ASAN matrices also pass.",
+    "native": "132 real-core Human/Orc x player/pet/guardian x22 modes:108 admitted/24 strict refusals. Native ObjectMgr DB loader/TEMP shadows, real Creature Add/Remove/Map lifecycle, real10 owned kills/46427, fresh GUID, final native lethal504/full delay/45784 once. Modes include repeated/secondary removals, pending/suspended old504, old/new AI disable/replacement, sameGUID reset, Initialize/unearned/old-live/completed denials, root/abandon/reaccept/far-owner/wrong-phase retry, doubled max/1HP, native nonlethal1+ordinary movement to melee26.491->0.50123 in6 cases, pre-transfer combat timers, deferred earned binding. Earlier receipt/clock endpoints and health-disable endpoint controlled; native pose/chase/combat lifecycle are actual.",
+    "selected_release": "9 strict timestamp/map/PE-linked certificates pass staged final binary, selected public duel/waves/finale/loot/return/Scepter certificates pass canonical final binary; actual Rebind/NeedsReset/removal/presentation and both safe Reset tail paths are present. Original game/scripts libraries built at native final-link paths, no OutDir override.",
+    "retained_final": "Canonical final native first-phase recreation72, combat replacement60, reoffer16, Reset16, start14, waves24; actual wave/finale ASAN and selected PE; real-loot-data/return/Scepter VerifyReleaseBinary. These are automated/native checks, not client traversal.",
+    "canonical_startup": "Owned worldserver PID=16120\nPASS owned PID=16120 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "post_test_diagnostics": "Every source/native/PE/build/runtime test records pre/post log lengths/times/crashes and captured exit/stdout/stderr. Final ordinary runs have no new/changed crashes, appended DBErrors or unexplained server warnings/errors/assertions. Earlier compile/strict certificate assertion failures and expected-broken controls remain preserved as such, not ordinary gameplay passes. Active Crashes empty; mixed7111 unchanged, never cleared."
+  },
+  "runtime_sha256": {
+    "worldserver": "03c89d8ff4a23e5e9b6c958e8e8c47b8178f8344eebe7180ce8c6baea9048113",
+    "bnetserver": "b04ddd7ade3f6a5e01eb02cc11eb9d982d312ac61e28da880da841f95ea0dc9b"
+  },
+  "diagnostics": {
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "private_evidence": ".codex/magnar-duel-recreation-2026-11-07",
+    "active_crashes": "empty"
+  },
+  "cleanup": {
+    "status": "PENDING verified fixed archive and generated/private outputs cleanup after focused commit",
+    "retain": [
+      ".codex/release-before-magnar-duel-recreation-2026-11-07",
+      ".codex/release-before-magnar-recreation-2026-11-07"
+    ]
+  },
+  "unresolved": [
+    "Full actual client Protection39191 traversal, all3 Warrior chains and all36 acquisitions remain unverified; movement/failed actors/casts, combat tuning, camera/pet/reconnect, audio/VFX/equipment and return require client checks.",
+    "Whole-map/server-restart persistence of genuinely earned4 remains OPEN; this ticket intentionally exists only in the original live instance epoch. No reconstruction from a saved step or coordinates. Earlier first-phase recreation and current same-instance earned4 recovery are distinct completed scopes.",
+    "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff remain OPEN/untouched. Retain Slaghammer probe/cache and all personal/character/database backups. Empty active Crashes does not certify every quest or crash."
+  ]
+}
