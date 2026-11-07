@@ -728,6 +728,35 @@ public:
                 magnarRoutePoint = cursor;
         }
 
+        void StartMagnarChamberApproach()
+        {
+            Creature* companion = me;
+            InstanceScript* instance = companion->GetInstanceScript();
+            if (instance && instance->GetData(MagnarStart::ChamberDelivered) &&
+                instance->GetGuidData(PillikHandoff::Companion) == companion->GetGUID() &&
+                companion->GetDBTableGUIDLow() == 361306 && companion->GetPhases().count(6999) &&
+                companion->GetExactDistSq(4884.71f, -77.9149f, 60.9946f) > 25.0f)
+            {
+                // The original point6 is the same destination as route leg12.
+                // Remember its intent even if native movement must defer.
+                magnarRoutePoint = 12;
+                magnarRouteTimer = 0;
+                magnarRouteFailureReported = false;
+                uint32 epoch = magnarIntroInstanceGeneration;
+                instance->SetData(MagnarStart::RouteCursor, epoch);
+                if (companion->AI() != this || !companion->IsInWorld())
+                    return;
+                if (magnarRoutePoint != 12 || magnarIntroInstanceGeneration != epoch ||
+                    !IsMagnarOfferContext(companion->GetInstanceId()) || !HasMagnarChamberRequest() ||
+                    !instance->GetData(MagnarStart::ChamberDelivered) ||
+                    instance->GetGuidData(PillikHandoff::Companion) != companion->GetGUID() ||
+                    !companion->GetPhases().count(6999))
+                    return;
+            }
+            // Preserve the original point6 motion, arrival and offer clocks.
+            companion->GetMotionMaster()->MovePoint(6, 4763.73f, 340.87f, -37.19f);
+        }
+
         bool GetMagnarRoutePoint(float& x, float& y, float& z) const
         {
             switch (magnarRoutePoint)
@@ -1051,7 +1080,7 @@ public:
                         magnarIntroFinished = false;
                         magnarIntroPlayer.Clear();
                         Talk(14);
-                        me->GetMotionMaster()->MovePoint(6, 4763.73f, 340.87f, -37.19f);
+                        StartMagnarChamberApproach();
                         break;
                     }
                     if (magnarIntroPending || magnarIntroFinished || magnarChamberStarted || !IsMagnarIntroContext())
@@ -1072,6 +1101,13 @@ public:
             {
                 OnMagnarRouteArrival();
                 return;
+            }
+            if (type == POINT_MOTION_TYPE && id == 6 && magnarRoutePoint == 12)
+            {
+                Creature* companion = me;
+                OnMagnarRouteArrival();
+                if (companion->AI() != this || !companion->IsInWorld())
+                    return;
             }
             if (type != POINT_MOTION_TYPE || (id != 6 && id != 7))
                 me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());

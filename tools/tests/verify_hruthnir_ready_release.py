@@ -86,7 +86,7 @@ if reset[zero].op_str.endswith('bpl'):
 assert any(entry.op_str == 'edx, 0x7d' for entry in reset[:zero]) and reset[zero - 1].op_str == 'r8d, 1'
 assert len(positions(reset, '?RemoveFlag@Object@@')) == 1 and reset[-1].mnemonic == 'ret'
 action = instructions('?DoAction' + suffix)
-epoch = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
+epoch = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], '+('ebp' if any(name.startswith('?StartMagnarChamberApproach'+suffix) for name in native['symbols']) else 'esi'))
 erase = positions(action, '?RemoveFlag@Object@@')[0]
 assert action[erase - 1].op_str == 'byte ptr [rbx + 0xac], 0' and erase < epoch
 assert any(entry.op_str == 'edx, 0x7d' for entry in action[erase - 6:erase]) and any(entry.op_str == 'r8d, 1' for entry in action[erase - 5:erase])

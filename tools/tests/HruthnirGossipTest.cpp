@@ -254,6 +254,7 @@ public:
     bool coldRouteGeometry = false;
     std::set<uint32> phases{6999};
     auto const& GetPhases() const { return phases; }
+    uint32 dbGuid = 361306; uint32 GetDBTableGUIDLow() const { return dbGuid; }
     uint32 entry = 96468, mapId = 1495, instance = 42, flags = 1, LastUsedScriptID = 7;
     uint32 unitFlags = 0x2000380, react = 0;
     Map* map = &instanceMap;

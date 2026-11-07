@@ -12,20 +12,27 @@ legacy, offer, arrival = homes
 first = legacy - 6
 assert body[first].op_str == 'rcx, qword ptr [rcx + 0x20]'
 cold_route = previous['cold_route']
+primary_approach = previous['primary_approach']
 if cold_route:
     type_gate = next(i for i,entry in enumerate(body[:first]) if entry.mnemonic=='cmp' and entry.op_str=='edx, 8')
     assert body[type_gate+1].mnemonic=='jne' and body[type_gate+1].operands[0].imm==body[first].address
-    gate=body[first-3:first]
-    assert [(entry.mnemonic,entry.op_str) for entry in gate[:2]]==[('lea','eax, [r8 - 6]'),('cmp','eax, 1')]
-    branch=gate[2]
+    if primary_approach:
+        six=next(i for i,e in enumerate(body[:first]) if e.mnemonic=='cmp' and e.op_str=='edi, 6')
+        seven=next(i for i,e in enumerate(body[:first]) if e.mnemonic=='cmp' and e.op_str=='edi, 7')
+        assert body[six+1].mnemonic=='jne' and body[six+1].operands[0].imm==body[seven].address
+        branch=body[seven+1]
+    else:
+        gate=body[first-3:first]
+        assert [(entry.mnemonic,entry.op_str) for entry in gate[:2]]==[('lea','eax, [r8 - 6]'),('cmp','eax, 1')]
+        branch=gate[2]
 else:
     gate = body[first - 5:first]
     assert [(entry.mnemonic, entry.op_str) for entry in (gate[0], gate[2], gate[3])] == [('cmp', 'edx, 8'), ('lea', 'eax, [r8 - 6]'), ('cmp', 'eax, 1')]
     assert gate[1].mnemonic == 'jne' and gate[1].operands[0].imm == body[first].address
     branch=gate[4]
-assert branch.mnemonic=='jbe' and body[legacy].address<branch.operands[0].imm<body[offer].address
+assert branch.mnemonic==('je' if primary_approach else 'jbe') and body[legacy].address<branch.operands[0].imm<body[offer].address
 dispatch=next(i for i,entry in enumerate(body) if entry.address==branch.operands[0].imm)
-id_register='ebx' if cold_route else 'edi'
+id_register='ebx' if cold_route and not primary_approach else 'edi'
 assert body[dispatch].mnemonic=='dec' and body[dispatch].op_str==id_register
 assert body[dispatch+1].op_str==id_register+', 6' and body[dispatch+2].mnemonic=='ja'
 for index in homes:

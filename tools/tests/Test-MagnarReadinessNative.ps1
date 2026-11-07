@@ -1,5 +1,7 @@
 # Real native Protection wave readiness and Kill/owner progression; no persistent character writes.
-param([switch]$Cursor,[switch]$CursorBaseline,[switch]$Replacement,[switch]$ReplacementBaseline,[switch]$ColdRoute,[switch]$ColdRouteBaseline,[switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+param([switch]$PrimaryApproach,[switch]$PrimaryBaseline,[switch]$Cursor,[switch]$CursorBaseline,[switch]$Replacement,[switch]$ReplacementBaseline,[switch]$ColdRoute,[switch]$ColdRouteBaseline,[switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+if($PrimaryBaseline){$PrimaryApproach=$true}
+if($PrimaryApproach -and ($Cursor -or $CursorBaseline -or $Replacement -or $ReplacementBaseline -or $ColdRoute -or $ColdRouteBaseline -or $StartRecovery -or $Baseline -or $Pillik -or $PillikBaseline -or $EntryBaseline -or $Approach -or $ApproachBaseline -or $Reoffer -or $ReofferBaseline -or $ResetRecovery -or $ResetBaseline -or $ChamberRecovery -or $ChamberBaseline -or $Barrier -or $BarrierBaseline)){throw 'Choose only original point6 approach scope'}
 if($CursorBaseline){$Cursor=$true}
 if($Cursor -and ($Replacement -or $ReplacementBaseline -or $ColdRoute -or $ColdRouteBaseline -or $StartRecovery -or $Baseline -or $Pillik -or $PillikBaseline -or $EntryBaseline -or $Approach -or $ApproachBaseline -or $Reoffer -or $ReofferBaseline -or $ResetRecovery -or $ResetBaseline -or $ChamberRecovery -or $ChamberBaseline -or $Barrier -or $BarrierBaseline)){throw 'Choose only cursor scope'}
 if($ReplacementBaseline){$Replacement=$true}
@@ -24,14 +26,15 @@ if($Barrier){$StartRecovery=$true}
 if($ColdRoute){$StartRecovery=$true}
 if($Replacement){$StartRecovery=$true}
 if($Cursor){$StartRecovery=$true}
+if($PrimaryApproach){$StartRecovery=$true}
 if($EntryBaseline){$Pillik=$true}
 if($EntryBaseline -and $PillikBaseline){throw 'Choose one pinned Pillik counterfactual'}
 if($PillikBaseline){$Pillik=$true}
 if($StartRecovery -and $Pillik){throw "Choose start recovery or the earlier Pillik handoff"}
 if($Baseline -and ($StartRecovery -or $Pillik)){throw "Pinned counterfactual is separate from current start recovery"}
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$family=if($Cursor){"hruthnir-cursor-native"}elseif($Replacement){"magnar-replacement-native"}elseif($ColdRoute){"hruthnir-cold-route-native"}elseif($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
-$probe=if($Cursor){"HruthnirCursorNative"}elseif($Replacement){"MagnarReplacementNative"}elseif($ColdRoute){"HruthnirColdRouteNative"}elseif($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
+$family=if($PrimaryApproach){"hruthnir-primary-native"}elseif($Cursor){"hruthnir-cursor-native"}elseif($Replacement){"magnar-replacement-native"}elseif($ColdRoute){"hruthnir-cold-route-native"}elseif($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
+$probe=if($PrimaryApproach){"HruthnirPrimaryApproachNative"}elseif($Cursor){"HruthnirCursorNative"}elseif($Replacement){"MagnarReplacementNative"}elseif($ColdRoute){"HruthnirColdRouteNative"}elseif($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
 $out="$repo/build-extractors/runtime-test/$family/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing actual $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
@@ -65,6 +68,7 @@ if($ReplacementBaseline){$source=(& git -C $repo show "7efbe0828:$path") -join "
 if($ColdRouteBaseline){$source=(& git -C $repo show "05c9445bd:$path") -join "`n";if(!$source){throw 'Pinned cold route source missing'}}
 if($ChamberBaseline){$source=(& git -C $repo show "827bb28aa:$path") -join "`n";if(!$source){throw 'Pinned fresh chamber source missing'}}
 if($CursorBaseline){$source=(& git -C $repo show "a0f4cc39b:$path") -join "`n";if(!$source){throw 'Pinned cursor source missing'}}
+if($PrimaryBaseline){$source=(& git -C $repo show "83a8cb6e3:$path") -join "`n";if(!$source){throw "Pinned original approach source missing"}}
 [IO.File]::WriteAllText("$out/MagnarNative.inc",(Block $source 'Position const trashPos[12]')+';'+(Block $source 'class npc_magnar_icebreaker : public CreatureScript')+';')
 if($StartRecovery -or $Pillik){
  $resetBridge=if($source.Contains('void MagnarStart::ResetOffer(')){Block $source 'void MagnarStart::ResetOffer('}else{''}
@@ -73,6 +77,7 @@ if($StartRecovery -or $Pillik){
  if($ChamberBaseline){$shared=(& git -C $repo show '827bb28aa:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp') -join "`n"}
  if($BarrierBaseline){$shared=(& git -C $repo show '73b0da45c:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp') -join "`n"}
  if($CursorBaseline){$shared=(& git -C $repo show 'a0f4cc39b:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp') -join "`n"}
+ if($PrimaryBaseline){$shared=(& git -C $repo show "83a8cb6e3:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp") -join "`n"}
  [IO.File]::WriteAllText("$out/ShieldsNative.inc",(Block $shared 'class instance_shields_rest : public InstanceMapScript')+';')
 }
 $previous=$env:LEGION_DIALOGUE_CONFIG;$previousCompiler=$env:CL;$previousLink=$env:_LINK_
@@ -85,6 +90,7 @@ if($Reoffer){$inputs+=@("$repo/tools/tests/HruthnirReofferNative.cpp")}
 if($ResetRecovery){$inputs+=@("$repo/tools/tests/MagnarResetNative.cpp")}
 if($ChamberRecovery){$inputs+=@("$repo/tools/tests/HruthnirChamberNative.cpp")}
 if($Replacement){$inputs+=@("$repo/tools/tests/MagnarReplacementNative.cpp","$repo/src/server/game/Entities/Creature/Creature.cpp")}
+if($PrimaryApproach){$inputs+=@("$repo/tools/tests/HruthnirPrimaryApproachNative.cpp","$repo/tools/tests/HruthnirCursorNative.cpp","$repo/src/server/game/Entities/Creature/Creature.cpp","$repo/src/server/game/Movement/PathGenerator.cpp")}
 if($Cursor){$inputs+=@("$repo/tools/tests/HruthnirCursorNative.cpp","$repo/src/server/game/Entities/Creature/Creature.cpp","$repo/src/server/game/Movement/PathGenerator.cpp")}
 if($ColdRoute){$inputs+=@("$repo/tools/tests/HruthnirColdRouteNative.cpp","$repo/src/server/game/Movement/PathGenerator.cpp")}
 if($Barrier){$inputs+=@("$repo/tools/tests/HruthnirBarrierNative.cpp","$repo/src/server/game/Entities/GameObject/GameObject.cpp","$repo/src/common/collision/Models/GameObjectModel.cpp")}
@@ -101,6 +107,7 @@ try{
  if($ResetBaseline){$env:CL+=" /DMAGNAR_RESET_BASELINE"}
  if($ChamberBaseline){$env:CL+=" /DHRUTHNIR_CHAMBER_BASELINE"}
  if($ReplacementBaseline){$env:CL+=" /DMAGNAR_REPLACEMENT_BASELINE"}
+ if($PrimaryBaseline){$env:CL+=" /DHRUTHNIR_PRIMARY_BASELINE"}
  if($CursorBaseline){$env:CL+=" /DHRUTHNIR_CURSOR_BASELINE"}
  if($ColdRouteBaseline){$env:CL+=" /DHRUTHNIR_COLD_BASELINE"}
  if($BarrierBaseline){$env:CL+=" /DHRUTHNIR_BARRIER_BASELINE"}

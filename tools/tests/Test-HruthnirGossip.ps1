@@ -72,7 +72,7 @@ if($hasStart){foreach($name in @('void CancelMagnarStart(','void RejoinMagnarSta
 if($source.Contains('void ScheduleMagnarApproach(')){foreach($name in @('void ScheduleMagnarApproach(','void RetryMagnarApproach(')){$startMethods+=Block $source $name}}
 if($source.Contains('void ResetMagnarOffer(')){$startMethods+=Block $source 'void ResetMagnarOffer('}
 [IO.File]::WriteAllText("$out/StartRecovery.inc",$startMethods)
-[IO.File]::WriteAllText("$out/ColdRoute.inc",$(if($source.Contains('void UpdateMagnarChamberRoute(')){(Block $source 'bool GetMagnarRoutePoint(')+(Block $source 'void UpdateMagnarChamberRoute(')+(Block $source 'void OnMagnarRouteArrival(')}else{''}))
+[IO.File]::WriteAllText("$out/ColdRoute.inc",$(if($source.Contains('void UpdateMagnarChamberRoute(')){$(if($source.Contains('void StartMagnarChamberApproach(')){Block $source 'void StartMagnarChamberApproach('}else{''})+(Block $source 'bool GetMagnarRoutePoint(')+(Block $source 'void UpdateMagnarChamberRoute(')+(Block $source 'void OnMagnarRouteArrival(')}else{''}))
 Copy-Item "$PSScriptRoot/HruthnirColdRouteCases.inc" "$out/HruthnirColdRouteCases.inc"
 $reoffer=if($source.Contains("void UpdateMagnarReoffer(")){(Block $source "bool IsMagnarIntroPlayer(")+(Block $source "void UpdateMagnarReoffer(")}else{""}
 [IO.File]::WriteAllText("$out/Reoffer.inc",$reoffer)

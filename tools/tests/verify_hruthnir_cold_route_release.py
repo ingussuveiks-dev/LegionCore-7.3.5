@@ -43,19 +43,33 @@ def check(n,ins):
     literal={op.operands[-1].imm&0xffffffff for op in getter if op.mnemonic=='mov' and op.operands[-1].type==CS_OP_IMM}
     values=(4864.44,-33.53,48.68,4809.14,164.68,-11.20,4824.81,246.52,-24.29,4822.31,328.56,-30.14,4763.73,340.87,-37.19)
     assert {struct.unpack('<I',struct.pack('<f',v))[0] for v in values}<=literal,'Authored original point1/2/4/5/6 changed'
-    body=ins('?MovementInform'+suffix);home=sites(body,'?SetHomePosition@Creature@@')[0];arrival=body[:home-6]
-    has(arrival,'edx, 8','ebx, edx','dword ptr [rcx + 0x18c], r15d','r8d, 0x429','dword ptr [rcx + 0x1c], 0x1b57',
-        'dword ptr [rdi + 0x18c]','dword ptr [rdi + 0x190], r15d')
+    body=ins('?MovementInform'+suffix);home=sites(body,'?SetHomePosition@Creature@@')[0]
+    primary=any(name.startswith('?StartMagnarChamberApproach'+suffix) for name in n['symbols'])
+    if primary:
+        arrival=ins('?OnMagnarRouteArrival'+suffix)
+        delegates=sites(body,'?OnMagnarRouteArrival'+suffix)
+        assert len(delegates)==2
+        has(body[:delegates[0]],'edx, 8','r8d, edx')
+        assert body[delegates[0]+1].mnemonic=='jmp' and body[delegates[0]+1].operands[0].imm>body[sites(body,'?SetHomePosition@Creature@@')[-1]].address
+        has(arrival,'dword ptr [rcx + 0x18c], 0','r8d, 0x429','dword ptr [rcx + 0x1c], 0x1b57','dword ptr [rdi + 0x190], 0')
+    else:
+        arrival=body[:home-6]
+        has(arrival,'edx, 8','ebx, edx','dword ptr [rcx + 0x18c], r15d','r8d, 0x429','dword ptr [rcx + 0x1c], 0x1b57','dword ptr [rdi + 0x190], r15d')
     assert sites(arrival,'?IsMagnarOfferContext'+suffix) and sites(arrival,'?HasMagnarChamberRequest'+suffix) and sites(arrival,'??9ObjectGuid@@')
     selected,=sites(arrival,'?GetMagnarRoutePoint'+suffix)
     increment=next(i for i,op in enumerate(arrival) if op.mnemonic=='inc' and op.op_str=='dword ptr [rdi + 0x18c]')
     ordered=next(i for i,op in enumerate(arrival) if i>selected and op.mnemonic=='comiss')
     assert selected<ordered<increment and arrival[ordered+1].mnemonic=='jb'
-    assert arrival[ordered+1].operands[0].imm>body[home].address
     assert struct.pack('<f',4.0) in constants(arrival[selected:increment])
     has(arrival[increment:],'edx, 0x42b','r8d, dword ptr [rdi + 0xa8]','r9, qword ptr [rcx + 0xb8]')
-    record=next(i for i,op in enumerate(arrival) if i>increment and op.mnemonic=='call' and op.op_str=='r9')
-    assert arrival[record+1].mnemonic=='jmp' and arrival[record+1].operands[0].imm>body[home].address,'Intermediate arrival falls into old combat/offer hooks or uses AI after receipt callback'
+    if primary:
+        record=next(i for i,op in enumerate(arrival) if i>increment and op.mnemonic=='jmp' and op.op_str=='r9')
+        assert arrival[ordered+1].operands[0].imm>arrival[record].address
+        assert all(op.mnemonic in ('add','pop') for op in arrival[record-2:record]), 'Arrival accesses AI after final receipt'
+    else:
+        assert arrival[ordered+1].operands[0].imm>body[home].address
+        record=next(i for i,op in enumerate(arrival) if i>increment and op.mnemonic=='call' and op.op_str=='r9')
+        assert arrival[record+1].mnemonic=='jmp' and arrival[record+1].operands[0].imm>body[home].address,'Intermediate arrival falls into old combat/offer hooks or uses AI after receipt callback'
     reoffer=ins('?UpdateMagnarReoffer'+suffix)
     has(reoffer[:20],'eax, dword ptr [rcx + 0x18c]','eax, 0xc')
     update=ins('?UpdateAI'+suffix)
@@ -64,7 +78,7 @@ def check(n,ins):
     epoch=next(i for i,op in enumerate(action) if op.mnemonic=='cmp' and op.op_str=='dword ptr [rbx + 0xa8], eax')
     assert action[epoch+1].mnemonic=='je'
     retire,=sites(action,'?RemoveMagnarConversation'+suffix)
-    has(action[epoch:retire],'dword ptr [rbx + 0xa8], esi','qword ptr [rbx + 0x18c], 0','byte ptr [rbx + 0x194], 0')
+    has(action[epoch:retire],'dword ptr [rbx + 0xa8], '+('ebp' if primary else 'esi'),'qword ptr [rbx + 0x18c], 0','byte ptr [rbx + 0x194], 0')
     assert action[epoch+1].operands[0].imm>action[retire].address,'New epoch route retirement also resets the same live attempt'
     for section in (route,arrival):
         for forbidden in ('?NearTeleportTo@','?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?CreateConversation@','?Talk@CreatureAI@@','?DoAction','?MovementInform'):

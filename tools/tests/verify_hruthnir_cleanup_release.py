@@ -51,7 +51,7 @@ else:
     assert positions(destructor, '?CancelMagnarIntro' + suffix)[0] < clear
     assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x68]' for entry in destructor[remove:])
 action = instructions('?DoAction' + suffix)
-epoch = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
+epoch = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], '+('ebp' if any(name.startswith('?StartMagnarChamberApproach'+suffix) for name in native['symbols']) else 'esi'))
 if any(name.startswith('?UpdateMagnarChamberRoute' + suffix) for name in native['symbols']):
     assert [(entry.mnemonic,entry.op_str) for entry in action[epoch+1:epoch+3]] == [
         ('mov','qword ptr [rbx + 0x18c], 0'),('mov','byte ptr [rbx + 0x194], 0')]

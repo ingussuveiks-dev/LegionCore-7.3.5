@@ -26,8 +26,9 @@ failure = next(index for index, entry in enumerate(body) if entry.address == den
 assert body[failure + 1].op_str == 'al, al' and body[failure + 4].mnemonic == 'ret'
 action = instructions('?DoAction' + suffix)
 cancel = positions(action, '?CancelMagnarIntro' + suffix)[0]
+primary=any(name.startswith('?StartMagnarChamberApproach'+suffix) for name in native['symbols'])
 if previous['previous']['current_start']:
-    epoch_store = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
+    epoch_store = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], '+('ebp' if primary else 'esi'))
     retire = positions(action, '?CancelMagnarStart' + suffix)[0]
     assert cancel < retire < epoch_store < positions(action, '?RemoveMagnarConversation' + suffix)[0]
     retired = instructions('?CancelMagnarStart' + suffix)
@@ -39,7 +40,7 @@ else:
     retirements = positions(action, '?reset@?$shared_ptr@_N@std@@')
     assert len(retirements) == 2 and cancel < retirements[0] < retirements[1]
     assert [action[index - 1].op_str for index in retirements] == ['rcx, [rbx + 0x78]', 'rcx, [rbx + 0x60]']
-    epoch_store = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
+    epoch_store = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], '+('ebp' if primary else 'esi'))
     for operand in ('byte ptr [rbx + 0x5d], 0', 'dword ptr [rbx + 0x70], 0', 'byte ptr [rbx + 0xa5], 0', 'byte ptr [r15], 0'):
         assert any(entry.mnemonic == 'mov' and entry.op_str == operand for entry in action[retirements[1]:epoch_store])
     epoch_compare = next(index for index, entry in enumerate(action) if entry.mnemonic == 'cmp' and entry.op_str == 'dword ptr [rbx + 0xa8], eax')

@@ -60,7 +60,8 @@ def verify_endpoint(entries, owner_operand, radius_register, load_radius=True, r
 
 movement = instructions('?MovementInform' + suffix)
 cold_route = any(name.startswith('?UpdateMagnarChamberRoute' + suffix) for name in native['symbols'])
-owner = 'rdi' if cold_route else 'rbx'
+primary_approach = any(name.startswith('?StartMagnarChamberApproach'+suffix) for name in native['symbols'])
+owner = 'rdi' if cold_route and not primary_approach else 'rbx'
 legacy_home = positions(movement, '?SetHomePosition@Creature@@QEAAXMMMM')[0]
 context = next(index for index in positions(movement, context_name) if index > legacy_home)
 queue = next(index for index in positions(movement, '?AddDelayedEvent@FunctionProcessor@@')
@@ -87,9 +88,9 @@ for operand in (f'qword ptr [{owner} + 0x78], {zero_register}', f'byte ptr [{own
     assert movement[check + 1].mnemonic == 'jne' and movement[check + 1].operands[0].imm == deny
 assert any(entry.op_str == f'byte ptr [rcx], {zero_register}b' for entry in movement[context:queue])
 assert any(entry.mnemonic == 'lea' and entry.op_str == f'rcx, [{owner} + 0x78]' for entry in movement[context:queue])
-assert any(entry.mnemonic == 'lock inc' and entry.op_str == ('dword ptr [rbx + 0xc]' if cold_route else 'dword ptr [rdi + 0xc]') for entry in movement[context:queue]), 'Offer queue does not capture a weak owner'
+assert any(entry.mnemonic == 'lock inc' and entry.op_str == ('dword ptr [rbx + 0xc]' if cold_route and not primary_approach else 'dword ptr [rdi + 0xc]') for entry in movement[context:queue]), 'Offer queue does not capture a weak owner'
 assert any(entry.op_str == 'r12d, dword ptr [r15 + 0x3b8]' for entry in movement[context:queue])
-capture = 'dword ptr [rbp - 0x58], r12d' if cold_route else ('dword ptr [rbp - 0x68], r12d' if any(name.startswith('?TryPillikEntry' + suffix) for name in native['symbols']) else ('dword ptr [rbp - 0x58], r12d' if zero_register == 'r15' else 'dword ptr [rbp - 0x48], r12d'))
+capture = 'dword ptr [rbp - 0x68], r12d' if primary_approach else 'dword ptr [rbp - 0x58], r12d' if cold_route else ('dword ptr [rbp - 0x68], r12d' if any(name.startswith('?TryPillikEntry' + suffix) for name in native['symbols']) else ('dword ptr [rbp - 0x58], r12d' if zero_register == 'r15' else 'dword ptr [rbp - 0x48], r12d'))
 assert any(entry.op_str == capture for entry in movement[context:queue])
 assert any(entry.op_str == 'rcx, 0x36a0' for entry in movement[context:queue])
 assert any(entry.op_str == 'dl, 0xf' for entry in movement[context:queue]), 'Native Talk15 was lost'

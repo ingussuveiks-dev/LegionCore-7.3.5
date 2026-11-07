@@ -5,6 +5,7 @@
 #include "DisableMgr.h"
 struct CursorPlayerLink { Player& p; CursorPlayerLink(Player& a,Map& m):p(a){p.GetMapRef().link(&m,&p);} ~CursorPlayerLink(){p.GetMapRef().unlink();} };
 static uint64 CursorCredit(Scenario* s) { uint64 n=0; for(auto const& row:*s->GetAchievementMgr().GetCriteriaProgressMap()){auto t=sCriteriaTreeStore.LookupEntry(row.first);auto c=t?sCriteriaStore.LookupEntry(t->CriteriaID):nullptr;if(c&&c->Type==92&&(c->Asset==46288||c->Asset==46289||c->Asset==46358||c->Asset==46427))n+=row.second.Counter;}return n; }
+#ifndef HRUTHNIR_CURSOR_SUPPORT_ONLY
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);sWaypointMgr->Load();auto path=sWaypointMgr->GetPathScript(9859004);Require(path&&path->size()==7,"Native9859004 missing");
  WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");Shadow("creature_text","CreatureID=96468");WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");sCreatureTextMgr->LoadCreatureTexts();
@@ -57,3 +58,4 @@ int main(int argc,char**argv){try{
  }
  std::cout<<"PASS native cursor cases="<<cases<<std::endl;CloseAltheaNative();return 0;
 }catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}}
+#endif

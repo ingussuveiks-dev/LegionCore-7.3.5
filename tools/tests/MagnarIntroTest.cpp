@@ -21,6 +21,7 @@ struct ObjectGuid
     bool IsEmpty() const { return value == 0; }
     void Clear() { value = 0; }
     bool operator==(ObjectGuid other) const { return value == other.value; }
+    bool operator!=(ObjectGuid other) const { return value != other.value; }
 };
 ObjectGuid const ObjectGuid::Empty{};
 constexpr uint32 CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1;
@@ -36,9 +37,10 @@ struct Creature;
 struct InstanceScript
 {
     ObjectGuid GetGuidData(uint32) const { std::abort(); } // Corridor is a separate native scope.
+    void SetData(uint32, uint32) { std::abort(); }
     bool introCreditSent = false;
     uint32 generation = 1;
-    uint32 GetData(uint32 identity) const { if (identity == 1060) return generation; if (identity != 1059) std::abort(); return introCreditSent; }
+    uint32 GetData(uint32 identity) const { if (identity == MagnarStart::ChamberDelivered) return 0; if (identity == 1060) return generation; if (identity != 1059) std::abort(); return introCreditSent; }
 };
 struct PlayerReference { Player* player; Player* getSource() const { return player; } };
 struct Map
@@ -116,6 +118,7 @@ struct Creature
     void* AI() const { return ai; }
     ObjectGuid GetGUID() const { std::abort(); }
     std::set<uint32> GetPhases() const { std::abort(); }
+    uint32 GetDBTableGUIDLow() const { std::abort(); }
     float GetDistance(Player* player) const { return std::abs(player->position); }
     void StopAttack() { ++stops; }
     void SetReactState(uint32) { }

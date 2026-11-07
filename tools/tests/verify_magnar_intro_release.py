@@ -23,9 +23,11 @@ def find(body, operand, mnemonic=None):
 tables = previous['previous']['previous']['previous']['selected_tables']
 assert len(tables('?GetAI@npc_hrutnir@@', ((0x48, '?DoAction' + suffix), (0x18, '?UpdateAI' + suffix), (0x50, '?GetData' + suffix)))) == 1
 action = instructions('?DoAction' + suffix)
+primary=any(name.startswith('?StartMagnarChamberApproach'+suffix) for name in native['symbols'])
+pending,claim_register,epoch_register=('rsi','r14','ebp') if primary else ('r15','rbp','esi')
 admit = positions(action, context_name)[0]
-claim = find(action, 'byte ptr [rbp], 1', 'mov')
-for operand in ('byte ptr [r15], 0', 'byte ptr [rbx + 0x89], 0', 'byte ptr [rbx + 0xa5], 0'):
+claim = find(action, f'byte ptr [{claim_register}], 1', 'mov')
+for operand in (f'byte ptr [{pending}], 0', 'byte ptr [rbx + 0x89], 0', 'byte ptr [rbx + 0xa5], 0'):
     gate = max(index for index, entry in enumerate(action[:admit]) if entry.mnemonic == 'cmp' and entry.op_str == operand)
     assert gate < admit < claim and action[gate + 1].mnemonic == 'jne'
 assert claim < positions(action, '?StopAttack@Creature@@')[0]
@@ -34,12 +36,12 @@ assert len(instance_reads) == 1
 generation = instance_reads[0]
 handoff = find(action, 'qword ptr [rax + 0xb0]', 'call')
 talk = positions(action, '?Talk@CreatureAI@@QEAAXEVObjectGuid@@@Z')[0]
-move = positions(action, '?MovePoint@MotionMaster@@')[0]
+move = positions(action, '?StartMagnarChamberApproach'+suffix if primary else '?MovePoint@MotionMaster@@')[0]
 chamber = find(action, 'byte ptr [rbx + 0xa5], 1', 'mov')
 epoch = find(action, 'dword ptr [rbx + 0xa8], eax', 'cmp')
 cancel = positions(action, cancel_name)[0]
-epoch_store = find(action, 'dword ptr [rbx + 0xa8], esi', 'mov')
-assert action[generation + 1].op_str == 'esi, eax'
+epoch_store = find(action, 'dword ptr [rbx + 0xa8], '+epoch_register, 'mov')
+assert action[generation + 1].op_str == epoch_register+', eax'
 if any(name.startswith('?ContinueMagnarStart' + suffix) for name in native['symbols']):
     retirements = positions(action, '?reset@?$shared_ptr@_N@std@@')
     assert len(retirements) == 1 and cancel < retirements[0] < positions(action, '?CancelMagnarStart' + suffix)[0] < epoch_store
@@ -54,16 +56,20 @@ else:
 assert generation < epoch < cancel < epoch_store < positions(action, offer_name)[0] < handoff < chamber < talk < move < admit < claim
 assert action[epoch + 1].mnemonic == 'je'
 assert find(action, 'byte ptr [rbx + 0xa5], 0', 'mov') < epoch_store
-assert find(action, 'byte ptr [r15], 0', 'mov') < epoch_store
+assert find(action, f'byte ptr [{pending}], 0', 'mov') < epoch_store
 assert action[handoff - 2].op_str == 'edx, 0x423' and action[handoff + 2].mnemonic == 'je'
 assert any(entry.op_str == 'edx, 0x424' for entry in action[:generation])
 assert action[generation - 2].op_str == 'r8, qword ptr [rcx + 0xb0]'
-assert any(entry.op_str == 'r15, [rbx + 0x88]' for entry in action[:admit])
-assert find(action, 'rbp, r15', 'mov') < admit
+assert any(entry.op_str == pending+', [rbx + 0x88]' for entry in action[:admit])
+assert find(action, claim_register+', '+pending, 'mov') < admit
 assert any(entry.op_str == 'dl, 0xe' for entry in action[chamber:talk])
-assert any(entry.op_str == 'edx, 6' for entry in action[talk:move])
+if primary:
+    approach=instructions('?StartMagnarChamberApproach'+suffix);point=positions(approach,'?MovePoint@MotionMaster@@')[0]
+    movement_arguments=approach[point-12:point]
+else: movement_arguments=action[talk:move]
+assert any(entry.op_str == 'edx, 6' for entry in movement_arguments)
 coordinates = []
-for entry in action[talk:move]:
+for entry in movement_arguments:
     if entry.mnemonic == 'movss' and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP:
         coordinates.append(struct.unpack_from('<f', native['binary'], native['offset'](entry.address + entry.size + entry.operands[1].mem.disp))[0])
 assert len(coordinates) == 3 and sorted(round(value, 2) for value in coordinates) == [-37.19, 340.87, 4763.73]

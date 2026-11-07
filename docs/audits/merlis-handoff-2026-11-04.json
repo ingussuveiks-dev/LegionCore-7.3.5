@@ -1,4 +1,15 @@
 {
+  "latest_hruthnir_primary_approach_2026_11_07": {
+    "audit": "docs/audits/hruthnir-primary-approach-2026-11-07.json",
+    "status": "DEPLOYED; original point6 approach source/native/selected Release/retained regressions and owned canonical startup pass; full client traversal separate",
+    "fix_commit": "Implementation commit containing this audit;exact hash follows cleanup handoff",
+    "checks": "113 ASAN actual route/approach;36 native primary;2 pinned counterfactuals;selected installed PE;retained9 groups/cursor16/replacement40/Reset16/chamber20/cold14/start14/player-pet-guardian24. Owned worldserver PID=31096\nPASS owned PID=31096 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "next": "Warrior actual later-phase Magnar AI/auxiliary ownership and full boss Creature/newGUID identity recovery;full client chains and prior LINK2/Slaghammer remain OPEN.",
+    "cleanup": {
+      "status": "PENDING hash-verified archive and owned temporary cleanup after focused implementation commit",
+      "archive": "build-extractors/bin/Release/fixed/hruthnir-primary-2026-11-07"
+    }
+  },
   "latest_hruthnir_cursor_2026_11_07": {
     "audit": "docs/audits/hruthnir-route-cursor-2026-11-07.json",
     "status": "DEPLOYED; source/native/selected Release/retained checks and owned startup pass; actual client traversal remains separate",
