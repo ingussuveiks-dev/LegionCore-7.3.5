@@ -24,12 +24,29 @@
     "worldserver": "1FBA147026768FD21A2F2CCD613A0824B73E5446DD08B0F99B4DF1D08BE208FB"
   },
   "cleanup": {
-    "status": "PENDING hash-verified archive and owned temporary cleanup after focused implementation commit",
-    "archive": "build-extractors/bin/Release/fixed/hruthnir-primary-2026-11-07"
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-primary-2026-11-07",
+    "manifest_sha256": "05623b9ba5f438076358b6d4fe0c6c9385693b2492e6327ec9f5a1a7c810b3cb",
+    "original_files": 4665,
+    "cleanup_manifest_sha256": "af148b2042c4a5872d635cad2c8ad8963cd44892ff3f1f94f51eda05f51c7503",
+    "removed_files": 565,
+    "logical_removed_bytes": 4871888515,
+    "local_deletion_manifest": ".codex/hruthnir-primary-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-hruthnir-primary-2026-11-07",
+      ".codex/release-before-hruthnir-cursor-2026-11-07"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 127341494272,
+    "disk_free_after_bytes": 132214071296,
+    "observed_free_increase_bytes": 4872577024
   },
   "unresolved": [
     "Full client Arms/Fury/Protection/all36 navigation,combat,wipes,audio/VFX,pickup/equipment/return/camera/pet/reconnect remain separate. Controlled receipts/following/endpoints and compilation do not certify whole chains.",
     "Source-only next finding:not yet a native reproduction:new Magnar AI constructor resets first_phase=true,while DamageTakenAfterScaling zeros a lethal hit before returning from first_phase. A real stage4 replacement after46427 may therefore remain immortal;test actual native waves and summon ownership before designing restoration. Actual later-phase Magnar AI restoration/auxiliary lifecycle and full boss Creature/newGUID recreation with a surviving consumed companion remain OPEN;exact acknowledged old-boss GUID authority deliberately retained.",
     "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff remain OPEN/untouched. Empty active Crashes only means no unresolved report there."
-  ]
+  ],
+  "fix_commit": "a2135d16983fe9367b9d2a363dddf28dbbe8c6b0"
 }

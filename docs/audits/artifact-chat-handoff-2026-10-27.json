@@ -2,12 +2,28 @@
   "latest_hruthnir_primary_approach_2026_11_07": {
     "audit": "docs/audits/hruthnir-primary-approach-2026-11-07.json",
     "status": "DEPLOYED; original point6 approach source/native/selected Release/retained regressions and owned canonical startup pass; full client traversal separate",
-    "fix_commit": "Implementation commit containing this audit;exact hash follows cleanup handoff",
+    "fix_commit": "a2135d16983fe9367b9d2a363dddf28dbbe8c6b0",
     "checks": "113 ASAN actual route/approach;36 native primary;2 pinned counterfactuals;selected installed PE;retained9 groups/cursor16/replacement40/Reset16/chamber20/cold14/start14/player-pet-guardian24. Owned worldserver PID=31096\nPASS owned PID=31096 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
     "next": "Warrior actual later-phase Magnar AI/auxiliary ownership and full boss Creature/newGUID identity recovery;full client chains and prior LINK2/Slaghammer remain OPEN.",
     "cleanup": {
-      "status": "PENDING hash-verified archive and owned temporary cleanup after focused implementation commit",
-      "archive": "build-extractors/bin/Release/fixed/hruthnir-primary-2026-11-07"
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/hruthnir-primary-2026-11-07",
+      "manifest_sha256": "05623b9ba5f438076358b6d4fe0c6c9385693b2492e6327ec9f5a1a7c810b3cb",
+      "original_files": 4665,
+      "cleanup_manifest_sha256": "af148b2042c4a5872d635cad2c8ad8963cd44892ff3f1f94f51eda05f51c7503",
+      "removed_files": 565,
+      "logical_removed_bytes": 4871888515,
+      "local_deletion_manifest": ".codex/hruthnir-primary-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-hruthnir-primary-2026-11-07",
+        ".codex/release-before-hruthnir-cursor-2026-11-07"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 127341494272,
+      "disk_free_after_bytes": 132214071296,
+      "observed_free_increase_bytes": 4872577024
     }
   },
   "latest_hruthnir_cursor_2026_11_07": {
