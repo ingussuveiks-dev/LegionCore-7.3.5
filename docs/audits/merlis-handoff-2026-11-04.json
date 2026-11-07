@@ -2,14 +2,32 @@
   "latest_magnar_combat_replacement_2026_11_07": {
     "audit": "docs/audits/magnar-combat-replacement-2026-11-07.json",
     "status": "DEPLOYED; focused source/native60/selected canonical Release/retained regressions and owned canonical startup pass; full client traversal separate",
-    "fix_commit": "PENDING focused commit; filled during verified cleanup",
+    "fix_commit": "6a49a112aa145f7ebe8d16055675d7c0c166ba4a",
     "checks": "Final rebuilt/deployed binary:ASAN actual bridge37;native combat60 with actual player/pet/guardian Kill/46427/AI replacement/504/full delay45784/step5 and active-duel timer restoration;6 pinned expected-broken controls;all7 selected installed PE;affected wave/finale ASAN and Scepter. Earlier candidate retained9 groups/primary36/cursor16/replacement40/Reset16/chamber20/cold14/start14/waves24;only original NPC-immunity preservation differs,final affected retests pass. Owned worldserver PID=30608\nPASS owned PID=30608 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
     "runtime_sha256": {
       "worldserver": "381122A9651B1C4672A55B75A1DBC34DAC13E31439BF84AB414E483B979D819D",
       "bnetserver": "E1FD4EC7AE7407C05C212339D2C72B1BA4F890DA1A10F0ED33E5766DD9B5AFE0"
     },
     "cleanup": {
-      "status": "PENDING focused implementation commit and verified hash archive/temporary output cleanup; canonical startup and all relevant regressions passed"
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/magnar-combat-2026-11-07",
+      "manifest_sha256": "3427ed34be9429e7a65118e4aa4bdbaa6acc89c8208c7bb5f9b7f7e954467ebb",
+      "original_files": 5254,
+      "cleanup_manifest_sha256": "36efd7cc6fa462d0eb6059f56815e3758724fee43865f2ef8192db6992b778c2",
+      "removed_files": 601,
+      "logical_removed_bytes": 5010452464,
+      "local_deletion_manifest": ".codex/magnar-combat-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-magnar-combat-2026-11-07",
+        ".codex/release-before-hruthnir-primary-2026-11-07"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Initial planner safely rejected an earlier larger appended file left by reused evidence paths;final startup UTC and exact original Server.log byte range select the current run. Earlier evidence files are preserved in the verified archive;no log reset.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 126938882048,
+      "disk_free_after_bytes": 131950202880,
+      "observed_free_increase_bytes": 5011320832
     },
     "unresolved": [
       "Actual full client Arms/Fury/Protection and all36 chains,combat/wipes/failed movement,camera/pet/reconnect,audio/VFX,equipment/return remain separate. Native controlled receipts/endpoints and selected binary evidence do not certify whole quest chains.",
