@@ -19,13 +19,28 @@
       "Other shared1489 native LFG routes and their own entrance provenance remain separate;existing940 missing entrance and1243 coordinates are retained without assuming this Hunter source applies to them. Survival39427,all36 full chains,Stromkar visuals and shared LINK2/Slaghammer/mixed7111 stay OPEN."
     ],
     "cleanup": {
-      "status": "PENDING verified archive/exact generated-file cleanup after focused fix commit",
-      "retain": [
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/marksmanship-resume-entrance-2026-11-07",
+      "manifest_sha256": "06efb713764cb426d8ac6e41a8fac802e0a2c8d18edf3007d9d94de78d4eed6b",
+      "original_files": 1277,
+      "cleanup_manifest_sha256": "ebf1fce7aa98b1f7c228f31a190279742a685e6173a8da84f391b95304d45f63",
+      "removed_files": 233,
+      "logical_removed_bytes": 1696293377,
+      "local_deletion_manifest": ".codex/marksmanship-resume-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 1,
+      "retained": [
         ".codex/release-before-survival-graveyard-2026-11-07",
         ".codex/release-before-survival-login-recovery-2026-11-07"
-      ]
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;one wholly reviewed inactive native fixture-error Server.log reset after verified archival;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 133949607936,
+      "disk_free_after_bytes": 135638364160,
+      "observed_free_increase_bytes": 1688756224
     },
-    "checks": "TEMP16 source/route/custom/nullable refusals+idempotence/preservation;native baseline22 versus repaired/live30 and real floor/completed48210 cleanup;typed26972 catalog,RELEASED hash,strict linked Recorder,Scepter,MM arrival/return,live Survival,two clean canonical startups."
+    "checks": "TEMP16 source/route/custom/nullable refusals+idempotence/preservation;native baseline22 versus repaired/live30 and real floor/completed48210 cleanup;typed26972 catalog,RELEASED hash,strict linked Recorder,Scepter,MM arrival/return,live Survival,two clean canonical startups.",
+    "fix_commit": "888e31ca570fa69f0b6a6fdfe55564dda8c2567b"
   },
   "latest_survival_login_recovery_2026_11_07": {
     "audit": "docs/audits/survival-login-recovery-2026-11-07.json",
