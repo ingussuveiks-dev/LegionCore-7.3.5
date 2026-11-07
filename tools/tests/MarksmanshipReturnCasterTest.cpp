@@ -66,6 +66,7 @@ struct Group { GroupReference* first=nullptr; GroupReference* GetFirstMember(){r
 struct WorldLocation { WorldLocation(uint32,float,float,float,float){} };
 struct Player:Unit {
     uint32 credits=0;
+    void RemoveAurasDueToSpell(uint32 id){assert(id==200279);}
     bool near=true,alive=true,corpse=false,talked=false;
     bool canDelay=false,pendingTeleport=false,teleporting=false,owned=true,phase=true,rewarded=false;
     uint32 classId=CLASS_HUNTER,quest=QUEST_STATUS_INCOMPLETE,m_teleport_options=0;
@@ -198,6 +199,9 @@ template<class Script> EffectHook::Entry MakeEffect(void(Script::*callback)(Spel
 #define PrepareSpellScript(name) public:
 #define SpellCheckCastFn(callback) MakeCheck(&callback)
 #define SpellEffectFn(callback,effect,type) MakeEffect(&callback,effect,type)
+// This retained fixture controls recovery false; the new recovery regression
+// separately executes its actual predicate/controller and owned native items.
+namespace MarksmanshipRecovery { bool Ready(Player*,Unit*){return false;} }
 #include "ReturnState.inc"
 void CheckTransferLifecycle(){
     Unit vereesa;Player original;Spell baseline;baseline.unitTarget=&original;

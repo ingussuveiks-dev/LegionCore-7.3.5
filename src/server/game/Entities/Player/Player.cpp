@@ -22779,7 +22779,8 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
             {
                 _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
                 warriorQuestStatusLoaded = true;
-                if (GetQuestStatus(route->quest) == QUEST_STATUS_INCOMPLETE)
+                if (GetQuestStatus(route->quest) == QUEST_STATUS_INCOMPLETE ||
+                    (route->scenario == 972 && GetQuestStatus(route->quest) == QUEST_STATUS_COMPLETE))
                     if (auto target = sSpellMgr->GetSpellTargetPosition(route->spell))
                         if (target->target_mapId == mapId && (target->target_X || target->target_Y || target->target_Z) &&
                             MapManager::IsValidMapCoord(mapId,target->target_X,target->target_Y,target->target_Z,target->target_Orientation))

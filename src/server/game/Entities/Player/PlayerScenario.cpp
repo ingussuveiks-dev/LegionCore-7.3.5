@@ -115,11 +115,11 @@ bool Player::CanResumeScenarioLogin(uint32 scenarioId) const
         // instance must not replay an acquisition whose artifact was claimed.
         if (route->scenario == 973 && !m_scenarioLoginInstance && GetQuestObjectiveData(40385, 100112) >= 1)
             return false;
-        // An entrance-only Marksmanship seed must not replay an earned bow.
-        // Preserve existing real live/fresh receipts, including owned replay;
-        // that path still uses Vereesa's native return cast and acknowledgement.
+        // A claimed/completed entrance-only seed is return-only recovery. Its
+        // actual owned artifact and all preceding receipts must survive load.
         if (route->scenario == 972 && !m_scenarioResume.instance && !m_scenarioResume.boot &&
-            GetQuestObjectiveData(40419, 103490) >= 1)
+            (GetQuestObjectiveData(40419, 103490) >= 1 || GetQuestStatus(40419) == QUEST_STATUS_COMPLETE) &&
+            !HasEarnedMarksmanshipReturn())
             return false;
     }
     return m_scenarioLoginId && m_scenarioLoginId == scenarioId &&
@@ -331,4 +331,18 @@ bool Player::ExitCompletedDarkRidersLogin()
     SetScenarioId(0);
     TC_LOG_INFO("entities.player", "Dark Riders: completed scenario login returns player %u to outdoor Revil", GetGUIDLow());
     return true;
+}
+
+bool Player::HasEarnedMarksmanshipReturn() const
+{
+    if (GetMapId() != 1489 || getClass() != CLASS_HUNTER || isGameMaster() ||
+        GetQuestRewardStatus(40419) ||
+        (GetQuestStatus(40419) != QUEST_STATUS_INCOMPLETE && GetQuestStatus(40419) != QUEST_STATUS_COMPLETE))
+        return false;
+    for (uint32 objective : {102128u, 103481u, 102129u, 102131u, 103490u})
+        if (GetQuestObjectiveData(40419, objective) < 1)
+            return false;
+    // Loading bag items are deliberately invisible to Bag::GetItemCount.
+    Item* bow = GetItemByEntry(128826, true);
+    return bow && bow->GetOwnerGUID() == GetGUID() && bow->GetCount();
 }

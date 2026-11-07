@@ -17,6 +17,7 @@ struct MarksmanPlayer : RecoveryPlayer {
  (void)map;(void)mapId;(void)m_scenarioResume;(void)m_scenarioLoginId;(void)m_scenarioLoginInstance;
  }
 };
+#ifndef MARKSMAN_LOGIN_SUPPORT_ONLY
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);sAreaTriggerDataStore->LoadAreaTriggerTeleports();sLFGMgr->LoadLFGDungeons();sSpellMgr->LoadSpellTargetPositions();
  auto quest=const_cast<Quest*>(sQuestDataStore->GetQuestTemplate(40419));Require(quest&&quest->GetObjectives().empty(),"Actual40419 bootstrap missing/already populated");auto objectives=WorldDatabase.Query("SELECT ID,QuestID,Type,StorageIndex,ObjectID,Amount,Flags,Flags2,TaskStep,Description,Bugged FROM quest_objectives WHERE QuestID=40419 ORDER BY StorageIndex");Require(bool(objectives),"Actual40419 objective rows missing");do{quest->LoadQuestObjective(objectives->Fetch());}while(objectives->NextRow());Require(quest->GetObjectives().size()==6,"Actual40419 objective count changed");auto& targets=sSpellMgr->*Access(RecoveryTargetsTag{});auto target=targets.at(201674);
@@ -31,12 +32,15 @@ int main(int argc,char**argv){try{
     if(kind==7||kind==8)p.holder.status=QUEST_STATUS_COMPLETE;if(kind==9)p.holder.status=QUEST_STATUS_NONE;if(kind==10)p.SetByteValue(UNIT_FIELD_BYTES_0,1,CLASS_WARLOCK);if(kind==13)p.validInput=false;if(kind==14)targets.erase(201674);if(kind==15)targets.at(201674).target_mapId=1495;if(kind==16){auto& t=targets.at(201674);t.target_X=t.target_Y=t.target_Z=0;}if(kind==17)targets.at(201674).target_X=std::numeric_limits<float>::quiet_NaN();if(kind==18)targets.at(201674).target_Orientation=std::numeric_limits<float>::infinity();if(kind==19)targets.at(201674).target_X=20000;if(kind==20)p.acceptedQuest=40043;if(kind==30){sScenarioMgr->RemoveScenario(instanceId);progress=nullptr;}
     bool loaded=p.Early(kind==11?1539:1489,instanceId,kind==12?AT_LOGIN_UNLOCK:0);p.Normal(loaded);Require(p.loads==1,"Native accepted status was loaded more than once");if(kind==21||kind==26)const_cast<RewardedQuestSet&>(p.getRewardedQuests()).insert(40419u);if(kind==22||kind==27)p.SetQuestStatus(40419,QUEST_STATUS_NONE);if(kind==23||kind==24||kind==25)Objective(p,103490,1);
     bool seeded=kind<=4||kind==21||kind==22||kind==23||kind==28||kind==30;
+#ifndef MARKSMAN_LOGIN_BASELINE
+    seeded=seeded||kind==8;
+#endif
 #ifdef MARKSMAN_LOGIN_BASELINE
     if(seeded)Require(!p.GetScenarioId()&&!loaded,"Pinned early loader unexpectedly recovered Hunter");bool allowed=existing&&kind!=26&&kind!=27;
 #else
     if(seeded){Require(p.GetScenarioId()==972&&!p.GetScenarioLoginInstance()&&!receipt.instance&&!receipt.boot&&p.GetExactDist(target.target_X,target.target_Y,target.target_Z)<0.001f,"Actual early Hunter entrance-only recovery failed");if(!kind)prepared=receipt;}
     if(kind==28||kind==29||kind==30)p.Binding(&map,1489);if(kind==28)Require(!p.GetScenarioId()&&!receipt.scenario&&!p.GetScenarioLoginInstance(),"Empty receipt inherited an already live bound instance");if(kind==29)Require(p.GetScenarioLoginInstance()==instanceId,"Valid exact live receipt blocked by binding guard");
-    bool allowed=(seeded||existing)&&kind!=21&&kind!=22&&kind!=23&&kind!=26&&kind!=27&&kind!=28;
+    bool allowed=(seeded||existing)&&kind!=8&&kind!=21&&kind!=22&&kind!=23&&kind!=26&&kind!=27&&kind!=28;
 #endif
     Require(p.CanResumeScenarioLogin(972)==allowed,"Native late Hunter admission/claim guard differs");if(existing)Require(receipt.x==101,"Existing valid Hunter receipt overwritten");if(!seeded&&!existing)Require(!p.GetScenarioId(),"Refused native source unexpectedly selected a scenario");if(progress)Require(progress->GetCurrentStep()==3,"Recovery granted stage progress");Require(!p.HasItemCount(128826,1,true),"Login granted artifact");p.Relocate(late);targets.insert_or_assign(201674,target);++early;
    }
@@ -54,3 +58,4 @@ int main(int argc,char**argv){try{
 #endif
  CloseAltheaNative();return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<std::endl;return 1;}}
+#endif

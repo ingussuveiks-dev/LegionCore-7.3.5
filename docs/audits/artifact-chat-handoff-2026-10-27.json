@@ -1,4 +1,32 @@
 {
+  "latest_marksmanship_return_recovery_2026_11_07": {
+    "audit": "docs/audits/marksmanship-return-recovery-2026-11-07.json",
+    "status": "DEPLOYED: earned Marksmanship40419 owner re-entry can request native205040 from the real idle Vereesa at fresh972/0. Source67 ASAN/native80/TEMP data12/strict linked PE, retained acquisition and canonical startup pass. No full client-chain certification.",
+    "runtime_sha256": {
+      "worldserver": "c2dd26d6ff5163aa6997433a5c2b546d1e12eb3ed07678bef4ad9e83051020e6",
+      "bnetserver": "e462824db5f7950619498b4487783047e75fce58253151bb5b8208bffa92e109"
+    },
+    "diagnostics": {
+      "result": "Before/after crash/log snapshots for source/native/TEMP/build/PE/explicit counterfactual and owned canonical startup. Exits/stdout/stderr/appended diagnostics inspected;no new/changed crash or unexplained appended server warning/error/assertion/DBErrors. Owned ready/graceful shutdown0/exit0/gone and empty stderr. Full mixed log remains OPEN,not truncated.",
+      "canonical_crashes": "empty",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "development": "Early native fixture compile had duplicate main;support-only guard repaired it and passing native80 retained. Initial source66 had fixture member-shadow warning;renamed member and final67 is clean. PE check development failures reflected selected-register/inlining changes,not successful checks;final strict linked checks pass. Existing retained host LFG uint32->uint16 warning remains visible. Initial private read-only query used absent name column;corrected before using native facts. No production diagnostics suppressed."
+    },
+    "unresolved": [
+      "Actual saved-character LoadFromDB/SaveToDB,client cold/re-entry/relog,both-status normal5s cast/movement interruption/portal arrival,camera,voice,aura/equipment,pets and eligible-group behavior remain client/full-sequence checks. Native components and controlled endpoints do not certify full972 acquisition or all36 chains.",
+      "Missing or ambiguous historic receipts,unowned/bank-only client equipment,missing real actor or a consumed shared intro do not receive fabricated progress. A live consumed intro is deliberately deferred;12 genuine failed/missing attempts emit a warning and retain normal native behavior. Re-entry resets attempt scope;no exact old actor/criteria serialization added.",
+      "Survival39427 and other shared1489 entrance provenance,Stromkar visuals and shared LINK2/Slaghammer remain OPEN. Original unresolved reproduction/cache/research and mixed7111 retained byte-for-byte."
+    ],
+    "cleanup": {
+      "status": "PENDING verified archive/exact generated-stage-oldest rollback cleanup after focused fix commit",
+      "retain": [
+        ".codex/release-before-marksmanship-return-recovery-2026-11-07",
+        ".codex/release-before-marksmanship-login-recovery-2026-11-07"
+      ]
+    },
+    "checks": "Source67 ASAN/native80/TEMP12/strict PE and stale-five-route EXE counterfactual;retained MM64/Survival120/Warrior138/live MM30/native return bridge/Scepter;canonical ready/shutdown0/exit0,live RELEASED binding hash."
+  },
   "latest_marksmanship_login_recovery_2026_11_07": {
     "audit": "docs/audits/marksmanship-login-recovery-2026-11-07.json",
     "status": "DEPLOYED: active unclaimed Marksmanship40419 without a usable checkpoint seeds native201674/1489/972 before saved-transport and map selection. Source68 ASAN/native64/required fifth-route PE,explicit pinned route and old-EXE counterfactuals,retained Hunter/Warrior/return/Scepter/data and canonical startup pass. No MM earned-return grant or full client certification.",

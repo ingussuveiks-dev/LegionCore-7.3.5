@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED: earned Marksmanship40419 owner re-entry can request native205040 from the real idle Vereesa at fresh972/0. Source67 ASAN/native80/TEMP data12/strict linked PE, retained acquisition and canonical startup pass. No full client-chain certification.",
+  "cause": "The preceding entrance/early-login repairs safely refuse an unrecorded claimed bow. An authentic owner with all pre-return receipts nevertheless had no way to recover the native return after losing the nonpersistent scenario. Fresh972 starts at0; the old return demanded8, while entrance Vereesa would replay her one-shot intro. Numeric instance reuse or inventory alone must not authorize completion.",
+  "scope": "Hunter/map1489/quest40419, actual five earned pre-return objectives and owned128826, real static100397/spawn370758/SmartAI and fresh972/0. One managed ConditionScript binding; no gossip flags/menu changes, new actor, stage completion, item/quest/return grant, character reset or Player fields/layout changes.",
+  "implementation": [
+    "HasEarnedMarksmanshipReturn checks map1489,Hunter,nonGM,unrewarded active INCOMPLETE or COMPLETE40419;requires102128/103481/102129/102131/103490 all>=1. Native GetItemByEntry128826 with bank=true scans loading equipment/inventory/bank;actual item owner fullGUID must match and count must be positive. Return102548 is not fabricated or treated as proof.",
+    "Early login may seed the native201674 entrance for either active status only on route972. Final CanResume zero-instance+zero-boot seed demands earned proof for claimed or COMPLETE saves. Other routes and real recorded live/fresh receipts keep their existing behavior;selected live map cannot be adopted by an entrance-only seed. Existing recorded incomplete instances are not converted into completed scenarios.",
+    "One existing source22/1 Player mask condition gains condition_marksmanship_recovered_arrival. Actual Condition::Meets retains its native mask and actual scenario972/0 base-actor gate. Named callback rejects the intro only for full earned proof;missing any receipt or actual owned item admits the original intro. No generic condition semantics or original return-menu/event conditions changed.",
+    "Instance/quest-attempt scoped controller waits1s then polls5s after loading. Finds real entry100397/dbGUID370758 within50yd,ignoring nearer temp clones;requires live/non-predelete/same map+instance+phase,empty ScriptId,SmartAI name and actual SmartAI RTTI. Only within20yd and while original root0 OOC_LOS has not run may idle Vereesa request205040 with triggered=false. Combat,other casts,consumed intro and out-of-range defer without interrupt. Loading/teleport/player combat/vehicle/transport clears state. No fallback credit/transfer;12 actual or missing-actor attempts then one useful warning. Logout/map/quest-attempt change resets state;no mutex crosses the cast callback.",
+    "Original normal972/8+owned-bow return remains. Recovered0 also requires full proof/real caster/unconsumed intro at cast and hit. Native EffectTeleportUnits252 still runs exactly once inside the existing native ScopedTeleportDelay. Capture pending acceptance,then remove only200279 on recovered accepted transfer. Effect90 still uses native RewardPlayerAndGroupAtEvent102548 and the accepted/current/far-transfer guard. No nearest-player credit,personal replacement or pet/guardian progression callback added;native eligible-group rules remain.",
+    "Pending SQL stayed outside live updater until new matching EXE was staged and promoted with no world/bnet process. Fail-closed native-graph migration changes exactly one binding cell,signals/refuses12 altered source/template/objective/binding cases and is idempotent;actual canonical updater installs RELEASED normalized-LF SHA1 and live binding verified."
+  ],
+  "local_evidence": {
+    "history": "Consulted current local Git log/diffs,audits and fetched matching origin/main837d16825 before work. Matching26972 data/native code resolves the defect;no incompatible modern core or unseen video behavior imported.",
+    "native": "LFG1162/map1489/scenario972/diff12/flags75795458;entry201674 effect0/227 at234.68,1950.91,-55.89,0.282743.972 steps0..7/completed sentinel8;no SetCurrentStep8. Quest40419 actual six type0/amount1 goals storage0..5,manual103490 independent from103481.205040 native normal5s/20yd/effect252 then90/102548 target1220 at-837,4330.1,745,6.09993.",
+    "actor": "Native static Vereesa100397/spawn370758 at248.13,1951.7,-54.1707,2.85728/phase5586;templateSmartAI/empty ScriptName/npcflag2/menu19331. Native root0 is one-shot Player OOC_LOS linked original introduction. Existing completed return menu19331/source15 and event59/source22/60 remain untouched. Scope proof suppresses only the earned arrival replay."
+  },
+  "checks": {
+    "source67": "Extracted actual earned helper,condition/controller/Ready/Find and return state under ASAN:both active statuses,all five receipt and item/owner/count failures,context/realcaster guard,nearer decoy,busy/consumed intro,normal untriggered request,failed/pending transfer gating,finite12 retries and reentrant logout/cancellation. Actor cast and transfer endpoints controlled;no actual full native spell/client traversal claimed.",
+    "native80": "Human+Orc x INCOMPLETE/COMPLETE x20 modes:real40419 six objective rows/Player helper/Prepare/CanResume/Map/Scenario,real loading Item and inventory/bank Bag,missing/wrong-owner/wrong-item/zero-count and receipt/status/class/reward/GM refusals. Actual Condition::Meets->ScriptMgr calls exact extracted registered ConditionScript against TEMP native conditions. Original unbound mask is explicit expected-broken counterfactual. Quest rows,poses and parser endpoints controlled;controller/native205040 execution is not certified by this fixture.",
+    "data": "Full native TEMP schemas/scoped graph and unrelated rows;exactly one binding cell,idempotence,12 explicit SIGNAL+no-mutation graph/source/objective refusals;live source unchanged by TEMP tests;post-updater binding/RELEASED hash verified.",
+    "linked": "Actual linked five-goal ownership helper,early both-status gate and inlined late proof,selected Condition slot1/Player OnUpdate33 Logout25 MapChanged31,real spawn/SmartAI RTTI,972/0/20yd/unconsumed root,normal205040 request,12 retry/1s+5s constants and unlock before cast,accepted-pending-only200279 cleanup. Retained return verifier proves single252 handler,native delay-field restore/pending read and native90 eligible-group bridge. Composed strict runner catches SystemExit;old five-route rollback EXE is rejected specifically for missing earned recovery and never launched.",
+    "retained": "Pinned route-dependency source68/native62 counterfactual;current MM early source68/native64,Survival source68/native120,Warrior source132/native138 and selected PE;live MM entrance TEMP16/native30/linked;return caster/admission,ScenarioResume/data,NewBloodLogin and mandatory canonical Scepter -VerifyReleaseBinary pass.",
+    "build": "Original game/scripts Release libraries built at original link input paths;no global OutDir. Frozen latest code built and staged final link,stage/canonical EXE+map hashes match;config/certs/DLLs untouched. No user/unknown server stopped.",
+    "startup": "Owned worldserver PID=25776\nPASS owned PID=25776 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "preservation": "Original unrelated LFG entrances,whole spell target and scenario route fingerprints retained;protected canonical configuration/cert/DLL hashes match,unresolved mixed7111 untouched,no world/bnet process,canonical Crashes empty."
+  },
+  "diagnostics": {
+    "result": "Before/after crash/log snapshots for source/native/TEMP/build/PE/explicit counterfactual and owned canonical startup. Exits/stdout/stderr/appended diagnostics inspected;no new/changed crash or unexplained appended server warning/error/assertion/DBErrors. Owned ready/graceful shutdown0/exit0/gone and empty stderr. Full mixed log remains OPEN,not truncated.",
+    "canonical_crashes": "empty",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "development": "Early native fixture compile had duplicate main;support-only guard repaired it and passing native80 retained. Initial source66 had fixture member-shadow warning;renamed member and final67 is clean. PE check development failures reflected selected-register/inlining changes,not successful checks;final strict linked checks pass. Existing retained host LFG uint32->uint16 warning remains visible. Initial private read-only query used absent name column;corrected before using native facts. No production diagnostics suppressed."
+  },
+  "unresolved": [
+    "Actual saved-character LoadFromDB/SaveToDB,client cold/re-entry/relog,both-status normal5s cast/movement interruption/portal arrival,camera,voice,aura/equipment,pets and eligible-group behavior remain client/full-sequence checks. Native components and controlled endpoints do not certify full972 acquisition or all36 chains.",
+    "Missing or ambiguous historic receipts,unowned/bank-only client equipment,missing real actor or a consumed shared intro do not receive fabricated progress. A live consumed intro is deliberately deferred;12 genuine failed/missing attempts emit a warning and retain normal native behavior. Re-entry resets attempt scope;no exact old actor/criteria serialization added.",
+    "Survival39427 and other shared1489 entrance provenance,Stromkar visuals and shared LINK2/Slaghammer remain OPEN. Original unresolved reproduction/cache/research and mixed7111 retained byte-for-byte."
+  ],
+  "runtime_sha256": {
+    "worldserver": "c2dd26d6ff5163aa6997433a5c2b546d1e12eb3ed07678bef4ad9e83051020e6",
+    "bnetserver": "e462824db5f7950619498b4487783047e75fce58253151bb5b8208bffa92e109"
+  },
+  "cleanup": {
+    "status": "PENDING verified archive/exact generated-stage-oldest rollback cleanup after focused fix commit",
+    "retain": [
+      ".codex/release-before-marksmanship-return-recovery-2026-11-07",
+      ".codex/release-before-marksmanship-login-recovery-2026-11-07"
+    ]
+  }
+}

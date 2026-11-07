@@ -29,6 +29,9 @@ int main(){unsigned cases=0;
   auto loaded=p.earlyWarrior();p.normalQuest(loaded);assert(p.loads==1);
   if(kind==21||kind==26)p.rewarded=true;if(kind==22||kind==27)p.questStatus=0;if(kind==23||kind==24||kind==25)p.claim=1;
   bool seeded=kind<=4||kind==21||kind==22||kind==23||kind==28||kind==30;
+#ifndef MARKSMAN_LOGIN_SOURCE_BASELINE
+    seeded=seeded||kind==8;
+#endif
 #ifdef MARKSMAN_LOGIN_SOURCE_BASELINE
   if(seeded)assert(!p.m_scenarioLoginId&&!loaded);
   if(existing)assert(p.m_scenarioLoginId==972);
@@ -40,7 +43,7 @@ int main(){unsigned cases=0;
   if(kind==28)assert(!p.m_scenarioLoginId&&!p.m_scenarioResume.scenario&&!p.selector);
   if(kind==29)assert(p.m_scenarioLoginId==972&&p.m_scenarioLoginInstance==p.instance);
   if(kind==30)assert(p.m_scenarioLoginId==972&&!p.m_scenarioLoginInstance);
-  bool allowed=(seeded||existing)&&kind!=21&&kind!=22&&kind!=23&&kind!=26&&kind!=27&&kind!=28;
+  bool allowed=(seeded||existing)&&kind!=8&&kind!=21&&kind!=22&&kind!=23&&kind!=26&&kind!=27&&kind!=28;
 #endif
   if(!seeded&&!existing)assert(!p.m_scenarioLoginId);
   assert(p.CanResumeScenarioLogin(972)==allowed&&live.step==3);

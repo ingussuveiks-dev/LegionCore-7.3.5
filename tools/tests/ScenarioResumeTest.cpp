@@ -68,7 +68,8 @@ struct Player {
     Session* GetSession(){return &session;}
     Map* GetMap()const{return const_cast<Map*>(&map);}uint32 GetMapId()const{return map.GetId();}
     uint32 GetGUIDLow(){return 1;}uint32 GetInstanceId(){return instance;}
-    int questStatus=3,acceptedQuest=0;unsigned claim=0;bool rewarded=false;
+    int questStatus=3,acceptedQuest=0;unsigned claim=0;bool rewarded=false,earnedReturn=false;
+    bool HasEarnedMarksmanshipReturn()const{return earnedReturn;}
     unsigned m_atLoginFlags=0,loads=0;bool validPosition=true;
     struct Holder {int status=3;int GetPreparedResult(int){return status;}} holder;
     struct Move {struct Transport {unsigned resets=0;void Reset(){++resets;}} transport;} m_movementInfo;

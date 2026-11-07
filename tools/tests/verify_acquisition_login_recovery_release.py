@@ -11,6 +11,7 @@ from capstone.x86_const import X86_REG_RIP
 
 previous = globals().get('previous') or runpy.run_path(str(Path(__file__).with_name('verify_warrior_scenario_resume_release.py')))
 n, ins = previous['n'], previous['ins']
+earned_marksman = any(k.startswith('?HasEarnedMarksmanshipReturn@Player@@') for k in n['symbols'])
 
 
 def sites(body, prefix):
@@ -28,6 +29,42 @@ def rip(o):
 
 def ref(body, address):
     return any(o.mnemonic == 'lea' and any(a.type == CS_OP_MEM and a.mem.base == X86_REG_RIP for a in o.operands) and rip(o) == address for o in body)
+
+
+def verify_earned(body, start=0, inlined=False):
+    mapping = find(body, f'dword ptr [{"rdi" if inlined else "rcx"} + 0xe0], 0x5d1', start, 'cmp')
+    failure = body[mapping + (1 if inlined else 2)].operands[0].imm
+    cls = find(body, 'al, 3', mapping, 'cmp')
+    gm = find(body, 'byte ptr [rdi + 0x4ff0], 1', cls, 'test')
+    reward = next(i for i in sites(body, '?GetQuestRewardStatus@Player@@') if i > gm)
+    status = next(i for i in sites(body, '?GetQuestStatus@Player@@') if i > reward)
+    assert mapping < cls < gm < reward < status
+    for at in (cls, gm):
+        assert body[at + 1].mnemonic == 'jne' and body[at + 1].operands[0].imm == failure
+    assert body[reward - 2].op_str == 'edx, 0x9de3' and body[reward + 2].operands[0].imm == failure
+    assert body[status + 1].op_str == 'eax, 3' and body[status + 2].mnemonic == 'je'
+    assert status + 5 in sites(body, '?GetQuestStatus@Player@@')
+    assert body[status + 6].op_str == 'eax, 1' and body[status + 7].operands[0].imm == failure
+    goals = ('0x18ef0', '0x19439', '0x18ef1', '0x18ef3', '0x19442')
+    stores = [find(body, f'dword ptr [rsp + {hex(0x30 + j * 4)}], {value}', status, 'mov') for j, value in enumerate(goals)]
+    assert stores == sorted(stores) and body[status + 2].operands[0].imm == body[stores[0]].address
+    goal = next(i for i in sites(body, '?GetQuestObjectiveData@Player@@') if i > stores[-1])
+    assert [o.op_str for o in body[goal - 3:goal]] == ['r8d, dword ptr [rbx]', 'edx, 0x9de3', 'rcx, rdi']
+    assert body[goal + 1].op_str == 'eax, 1' and body[goal + 2].mnemonic == 'jl' and body[goal + 2].operands[0].imm == failure
+    assert [o.op_str for o in body[goal + 3:goal + 6]] == ['rbx, 4', 'rax, [rsp + 0x44]', 'rbx, rax']
+    assert body[goal + 6].mnemonic == 'jne' and body[goal + 6].operands[0].imm == body[goal - 3].address
+    item = next(i for i in sites(body, '?GetItemByEntry@Player@@') if i > goal)
+    owner = next(i for i in sites(body, '?GetOwnerGUID@Item@@') if i > item)
+    equal = next(i for i in sites(body, '??8ObjectGuid@@') if i > owner)
+    count = next(i for i in sites(body, '?GetCount@Item@@') if i > equal)
+    assert item < owner < equal < count and any(o.op_str == 'r8b, 1' for o in body[goal:item])
+    assert body[item - 2].op_str == 'edx, 0x1f73a' and body[item + 2].op_str == 'rax, rax'
+    item_failure = body[item + 3].operands[0].imm
+    assert body[item + 3].mnemonic == 'je'
+    for at in (equal, count):
+        assert body[at + 2].mnemonic == 'je' and body[at + 2].operands[0].imm == item_failure
+    for forbidden in ('?KilledMonsterCredit@Player@@', '?CompleteQuest@Player@@', '?TeleportTo@Player@@', '?CastSpell@Unit@@', '?AddItem@Player@@'):
+        assert not sites(body, forbidden)
 
 
 # Exact leaf boundary; unlike non-leaf methods it has no Windows unwind row.
@@ -65,7 +102,7 @@ early, warlock, normal = sites(load, '?_LoadQuestStatus@Player@@')
 lookup, = [i for i in sites(load, '?GetSpellTargetPosition@SpellMgr@@') if early < i < seed]
 validate, = [i for i in sites(load, '?IsValidMapCoord@MapManager@@') if lookup < i < seed]
 assert first < route < early < lookup < validate < seed < warlock < normal
-unlock = find(load, 'ecx, 8', first - 20, 'bt')
+unlock = find(load, 'edx, 8' if earned_marksman else 'ecx, 8', first - 20, 'bt')
 assert unlock < first and load[unlock + 1].mnemonic == 'jb'
 assert load[first - 3].op_str == 'r8d, dword ptr [rsp + 0x54]'
 login = find(load, 'dword ptr [r12 + 0x6bd8], 0', first, 'cmp')
@@ -76,9 +113,19 @@ assert load[route + 2].op_str == 'rax, rax' and load[route + 3].operands[0].imm 
 assert find(load, 'r8d, 6', route, 'mov') < early
 assert load[early + 1].op_str == 'byte ptr [rsp + 0x50], 1'
 status = find(load, 'eax, 3', early, 'cmp')
-assert status < lookup and load[status + 1].operands[0].imm == skip
-assert find(load, 'edx, dword ptr [r15 + 8]', early) < status
-assert find(load, 'edx, dword ptr [r15 + 0xc]', status) < lookup
+assert status < lookup
+route_register = 'rdi' if earned_marksman else 'r15'
+if earned_marksman:
+    assert load[status + 1].mnemonic == 'je' and load[status + 1].operands[0].imm == load[status + 9].address
+    assert load[status + 2].op_str == 'dword ptr [rsi], 0x3cc'
+    assert load[status + 3].mnemonic == 'jne' and load[status + 3].operands[0].imm == skip
+    assert status + 6 in sites(load, '?GetQuestStatus@Player@@')
+    assert load[status + 7].op_str == 'eax, 1'
+    assert load[status + 8].mnemonic == 'jne' and load[status + 8].operands[0].imm == skip
+else:
+    assert load[status + 1].operands[0].imm == skip
+assert find(load, f'edx, dword ptr [{route_register} + 8]', early) < status
+assert find(load, f'edx, dword ptr [{route_register} + 0xc]', status) < lookup
 null = find(load, 'rax, rax', lookup, 'test')
 mapping = find(load, 'dword ptr [rax], ebx', null, 'cmp')
 assert load[null + 1].operands[0].imm == skip and load[mapping + 1].operands[0].imm == skip
@@ -86,12 +133,13 @@ zero = find(load, 'xmm0, xmm6', mapping, 'ucomiss')
 zero = find(load, 'xmm0, xmm6', zero + 1, 'ucomiss')
 assert load[zero + 2].mnemonic == 'je' and load[zero + 2].operands[0].imm > load[seed].address
 assert load[validate + 2].op_str == 'al, al' and load[validate + 3].mnemonic == 'je' and load[validate + 3].operands[0].imm > load[seed].address
-for text in ('dword ptr [rsp + 0x260], ebx', 'eax, dword ptr [r15 + 4]', 'dword ptr [rsp + 0x268], r13d', 'qword ptr [rsp + 0x270], r13', 'rax, qword ptr [rsp + 0xb0]', 'xmmword ptr [rax], xmm0', 'xmmword ptr [rax + 0x10], xmm2', 'qword ptr [rax + 0x20], xmm4'):
+snapshots = ('dword ptr [rsp + 0x230], ebx', 'eax, dword ptr [rsi]', 'dword ptr [rsp + 0x238], r13d', 'qword ptr [rsp + 0x240], r13', 'xmmword ptr [r12 + 0x6bb0], xmm0', 'xmmword ptr [r12 + 0x6bc0], xmm2', 'qword ptr [r12 + 0x6bd0], xmm4') if earned_marksman else ('dword ptr [rsp + 0x260], ebx', 'eax, dword ptr [r15 + 4]', 'dword ptr [rsp + 0x268], r13d', 'qword ptr [rsp + 0x270], r13', 'rax, qword ptr [rsp + 0xb0]', 'xmmword ptr [rax], xmm0', 'xmmword ptr [rax + 0x10], xmm2', 'qword ptr [rax + 0x20], xmm4')
+for text in snapshots:
     assert validate < find(load, text, validate) < seed
-assert find(load, 'r13d, r13d', validate, 'xor') < find(load, 'dword ptr [rsp + 0x268], r13d', validate)
+assert find(load, 'r13d, r13d', validate, 'xor') < find(load, snapshots[2], validate)
 assert [o.op_str for o in load[seed - 3:seed]] == ['r8d, r8d', 'edx, ebx', 'rcx, r12']
 transport = next(i for i in sites(load, '?Reset@TransportInfo@MovementInfo@@') if seed < i < seed + 24)
-selected = find(load, 'dword ptr [rax], 0', seed, 'cmp')
+selected = find(load, 'dword ptr [r12 + 0x6bd8], 0' if earned_marksman else 'dword ptr [rax], 0', seed, 'cmp')
 assert seed < selected < transport < warlock and load[selected + 1].mnemonic == 'je'
 assert load[selected + 1].operands[0].imm > load[transport].address
 assert load[warlock + 1].op_str == 'byte ptr [rsp + 0x50], 1'
@@ -107,9 +155,10 @@ scenario_lookup = next(i for i in sites(load, '?GetScenario@ScenarioMgr@@') if i
 assert create < binding < scenario_lookup < normal
 if marksman:
     m1 = find(load, 'ebx, 0x5e7', binding, 'cmp')
-    s1 = find(load, 'dword ptr [rax], 0x3cd', m1, 'cmp')
+    selected_field = 'r12 + 0x6bd8' if earned_marksman else 'rax'
+    s1 = find(load, f'dword ptr [{selected_field}], 0x3cd', m1, 'cmp')
     m2 = find(load, 'ebx, 0x5d1', s1, 'cmp')
-    s2 = find(load, 'dword ptr [rax], 0x3cc', m2, 'cmp')
+    s2 = find(load, f'dword ptr [{selected_field}], 0x3cc', m2, 'cmp')
     common = find(load, 'dword ptr [r12 + 0x6bb8], 0', s2, 'cmp')
     skip_binding = load[common + 1].operands[0].imm
     assert binding < m1 < s1 < m2 < s2 < common < scenario_lookup
@@ -126,7 +175,7 @@ for text in tests:
     assert at < scenario_lookup and load[at + 1].mnemonic == 'jne' and load[at + 1].operands[0].imm > load[scenario_lookup].address
 clear = find(load, 'word ptr [r12 + 0x6ba8], r13w', scenario_lookup, 'mov')
 assert load[scenario_lookup + 2].op_str == 'rax, rax' and load[scenario_lookup + 3].mnemonic == 'je' and load[scenario_lookup + 3].operands[0].imm > load[clear].address
-assert scenario_lookup < find(load, 'dword ptr [r12 + 0x6bdc], r13d', scenario_lookup, 'mov') < clear
+assert scenario_lookup < find(load, 'qword ptr [r12 + 0x6bd8], 0' if earned_marksman else 'dword ptr [r12 + 0x6bdc], r13d', scenario_lookup, 'mov') < clear
 
 prepare = ins('?PrepareScenarioLogin@Player@@')
 admit = ins('?CanResumeScenarioLogin@Player@@')
@@ -136,35 +185,48 @@ for body in (prepare, admit):
 bad = find(prepare, 'ecx, dword ptr [rax + 4]', 0, 'cmp')
 assert prepare[bad + 1].mnemonic == 'je'
 assert bad < find(prepare, 'qword ptr [rsi + 0x6bd8], 0', bad, 'mov') < find(prepare, 'word ptr [rsi + 0x6ba8], di', bad, 'mov')
-quest, = sites(admit, '?GetQuestRewardStatus@Player@@')
+rewards = sites(admit, '?GetQuestRewardStatus@Player@@')
+assert len(rewards) == (2 if earned_marksman else 1)
+quest = rewards[0]
 statuses = sites(admit, '?GetQuestStatus@Player@@')
-assert len(statuses) == 2
-scenario = find(admit, 'esi, dword ptr [rbx + 4]', 0, 'cmp')
+assert len(statuses) == (5 if earned_marksman else 2)
+scenario = find(admit, ('ebp' if earned_marksman else 'esi') + ', dword ptr [rbx + 4]', 0, 'cmp')
 reject = admit[scenario + 1].operands[0].imm
 assert scenario < quest < statuses[0] < statuses[1]
 assert admit[quest + 2].operands[0].imm == reject
 assert admit[statuses[0] + 1].op_str == 'eax, 3' and admit[statuses[1] + 1].op_str == 'eax, 1' and admit[statuses[1] + 2].operands[0].imm == reject
 claims = sites(admit, '?GetQuestObjectiveData@Player@@')
-assert len(claims) == (2 if marksman else 1)
+assert len(claims) == (3 if earned_marksman else 2 if marksman else 1)
 claim = claims[0]
 for text in ('dword ptr [rbx + 4], 0x3cd', 'dword ptr [rdi + 0x6bdc], 0'):
-    at = find(admit, text, statuses[-1], 'cmp')
+    at = find(admit, text, statuses[1], 'cmp')
     assert at < claim and admit[at + 1].mnemonic == 'jne' and admit[at + 1].operands[0].imm == admit[claim + 3].address
 assert admit[claim - 3].op_str == 'edx, 0x9dc1' and admit[claim - 2].op_str == 'r8d, 0x18710'
 assert admit[claim + 1].op_str == 'eax, 1' and admit[claim + 2].mnemonic == 'jge' and admit[claim + 2].operands[0].imm == reject
 
 if marksman:
     bow = claims[1]
+    resume = find(admit, 'eax, dword ptr [rdi + 0x6bd8]', bow) if earned_marksman else bow + 3
     for text in ('dword ptr [rbx + 4], 0x3cc', 'dword ptr [rdi + 0x6bb8], 0', 'qword ptr [rdi + 0x6bc0], 0'):
         at = find(admit, text, claim, 'cmp')
-        assert at < bow and admit[at + 1].mnemonic == 'jne' and admit[at + 1].operands[0].imm == admit[bow + 3].address
+        assert at < bow and admit[at + 1].mnemonic == 'jne' and admit[at + 1].operands[0].imm == admit[resume].address
     assert admit[bow - 3].op_str == 'edx, 0x9de3' and admit[bow - 2].op_str == 'r8d, 0x19442'
-    assert admit[bow + 1].op_str == 'eax, 1' and admit[bow + 2].mnemonic == 'jge' and admit[bow + 2].operands[0].imm == reject
+    assert admit[bow + 1].op_str == 'eax, 1' and admit[bow + 2].mnemonic == 'jge'
+    if earned_marksman:
+        proof = bow + 8
+        assert admit[bow + 2].operands[0].imm == admit[proof].address
+        assert bow + 5 in statuses and admit[bow + 6].op_str == 'eax, 1'
+        assert admit[bow + 7].mnemonic == 'jne' and admit[bow + 7].operands[0].imm == admit[resume].address
+        # Actual inlined helper: all five receipts, owned loading-safe bow.
+        verify_start = proof
+        verify_earned(admit, verify_start, inlined=True)
+    else:
+        assert admit[bow + 2].operands[0].imm == reject
     # This is the zero-instance+boot seed only: an existing live/fresh receipt
     # still reaches native resume and owned bow replay with its native return.
     for forbidden in ('?KilledMonsterCredit@Player@@', '?CompleteQuest@Player@@', '?TeleportTo@Player@@', '?CastSpell@Unit@@', '?AddItem@Player@@'):
         assert not sites(admit, forbidden)
-    print('PASS linked Marksmanship empty-checkpoint login:1489/972/40419/201674 fifth route and selected-map guard;actual late unrecorded-seed103490 refusal only at zero receipt instance+boot;recorded live/fresh claims retain native admission. No return102548/item/teleport grant. Source68/native64 and full character/group/client/earned-return remain separate.')
+    print('PASS linked Marksmanship empty-checkpoint login:1489/972/40419/201674 fifth route and selected-map guard;zero instance+boot claim/complete seed admission is earned-proof gated when linked;recorded receipts retain native admission. No return102548/item/teleport grant. Full character/group/client traversal remains separate.')
 
 exit_body = ins('?ExitCompletedTalonclawLogin@Player@@')
 inventory, = sites(exit_body, '?GetItemByEntry@Player@@')

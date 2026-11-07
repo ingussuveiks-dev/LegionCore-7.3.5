@@ -3240,6 +3240,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool ExitCompletedBrokenShoreLogin();
         bool ExitCompletedSheilunLogin();
         bool ExitCompletedTalonclawLogin();
+        bool HasEarnedMarksmanshipReturn() const;
         bool HasPendingSheilunReturn() const;
         uint32 GetScenarioLoginInstance() const { return m_scenarioLoginInstance; }
 

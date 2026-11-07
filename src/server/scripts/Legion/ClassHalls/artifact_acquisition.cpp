@@ -1,5 +1,6 @@
 #include "ScriptMgr.h"
 #include "Player.h"
+#include "WorldSession.h"
 #include "Item.h"
 #include "GameObject.h"
 #include "Scenario.h"
@@ -1314,6 +1315,136 @@ public:
     GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
 };
 
+namespace MarksmanshipRecovery
+{
+bool Context(Player* player)
+{
+    if (!player || !player->IsInWorld() || !player->IsAlive() || !player->HasEarnedMarksmanshipReturn())
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    return scenario && scenario->GetScenarioId() == 972 && scenario->GetCurrentStep() == 0;
+}
+
+bool Native(Creature* actor)
+{
+    return actor && !actor->IsPreDelete() && actor->GetEntry() == 100397 && actor->GetDBTableGUIDLow() == 370758 &&
+        !actor->GetScriptId() && actor->GetCreatureTemplate()->AIName == "SmartAI" &&
+        actor->IsAIEnabled && actor->AI() && dynamic_cast<SmartAI*>(actor->AI());
+}
+
+bool Ready(Player* player, Unit* caster)
+{
+    Creature* actor = caster ? caster->ToCreature() : nullptr;
+    return Context(player) && Native(actor) && actor->IsInWorld() && actor->IsAlive() &&
+        actor->GetMapId() == player->GetMapId() && actor->GetInstanceId() == player->GetInstanceId() &&
+        actor->InSamePhase(player) && actor->IsWithinDistInMap(player, 20.0f) &&
+        !static_cast<SmartAI*>(actor->AI())->GetScript()->HasRunEvent(0, SMART_EVENT_OOC_LOS);
+}
+
+Creature* Find(Player* player)
+{
+    std::list<Creature*> actors;
+    player->GetCreatureListWithEntryInGrid(actors, 100397, 50.0f);
+    for (Creature* actor : actors)
+        if (Native(actor) && actor->IsInWorld() && actor->IsAlive() && !actor->IsPreDelete() &&
+            actor->GetMapId() == player->GetMapId() && actor->GetInstanceId() == player->GetInstanceId() && actor->InSamePhase(player))
+            return actor;
+    return nullptr;
+}
+
+struct State
+{
+    std::weak_ptr<uint8> attempt;
+    uint32 instance = 0, wait = 1000, attempts = 0, result = 0;
+    bool exhausted = false;
+};
+}
+
+class condition_marksmanship_recovered_arrival : public ConditionScript
+{
+public:
+    condition_marksmanship_recovered_arrival() : ConditionScript("condition_marksmanship_recovered_arrival") { }
+    bool OnConditionCheck(Condition*, ConditionSourceInfo& sourceInfo) override
+    {
+        WorldObject* object = sourceInfo.mConditionTargets[0];
+        Player* player = object ? object->ToPlayer() : nullptr;
+        return !player || !player->HasEarnedMarksmanshipReturn();
+    }
+};
+
+class player_marksmanship_return_recovery : public PlayerScript
+{
+    std::mutex mutex;
+    std::unordered_map<ObjectGuid, MarksmanshipRecovery::State> states;
+public:
+    player_marksmanship_return_recovery() : PlayerScript("player_marksmanship_return_recovery") { }
+    void OnLogout(Player* player) override
+    {
+        if (!player) return;
+        std::lock_guard<std::mutex> lock(mutex);
+        states.erase(player->GetGUID());
+    }
+    void OnMapChanged(Player* player) override { OnLogout(player); }
+    void OnUpdate(Player* player, uint32 diff) override
+    {
+        if (!MarksmanshipRecovery::Context(player) || player->IsBeingTeleported() ||
+            !player->GetSession() || player->GetSession()->PlayerLoading() ||
+            player->GetTransport() || player->GetVehicle() || player->isInCombat())
+        {
+            OnLogout(player);
+            return;
+        }
+        QuestStatusData* quest = player->getQuestStatus(40419);
+        if (!quest) return;
+        if (!quest->ScriptLifetime) player->AddQuestDelayedEvent(40419, 0, []() { });
+        auto attempt = quest->ScriptLifetime;
+        if (!attempt) return;
+        uint32 instance = player->GetInstanceId();
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            auto& state = states[player->GetGUID()];
+            if (state.instance != instance || state.attempt.lock() != attempt)
+            {
+                state = {};
+                state.instance = instance;
+                state.attempt = attempt;
+            }
+            if (state.exhausted) return;
+            if (diff < state.wait) { state.wait -= diff; return; }
+            state.wait = 5000;
+        }
+        Creature* actor = MarksmanshipRecovery::Find(player);
+        bool native = MarksmanshipRecovery::Native(actor);
+        // An actual live introduction or another cast owns this actor. Never
+        // interrupt it or turn a shared player's intro into a return cast.
+        if (native && (actor->isInCombat() || actor->IsNonMeleeSpellCast(false) ||
+            static_cast<SmartAI*>(actor->AI())->GetScript()->HasRunEvent(0, SMART_EVENT_OOC_LOS)))
+            return;
+        if (native && !actor->IsWithinDistInMap(player, 20.0f)) return;
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            auto found = states.find(player->GetGUID());
+            if (found == states.end() || found->second.instance != instance || found->second.attempt.lock() != attempt) return;
+            auto& state = found->second;
+            if (state.attempts >= 12)
+            {
+                state.exhausted = true;
+                TC_LOG_WARN("scripts", "Marksmanship return recovery exhausted 12 attempts for player %u (last result %u); no transfer or credit bypass", player->GetGUIDLow(), state.result);
+                return;
+            }
+            ++state.attempts;
+        }
+        // No state mutex across a cast: hooks may synchronously cancel this
+        // quest attempt or change maps. Re-resolve state after the callback.
+        SpellCastResult result = MarksmanshipRecovery::Ready(player, actor) ?
+            actor->CastSpell(player, 205040, false) : SPELL_FAILED_BAD_TARGETS;
+        std::lock_guard<std::mutex> lock(mutex);
+        auto found = states.find(player->GetGUID());
+        if (found != states.end() && found->second.instance == instance && found->second.attempt.lock() == attempt)
+            found->second.result = uint32(result);
+    }
+};
+
 namespace MarksmanshipReturn
 {
 bool Scoped(Unit* caster)
@@ -1327,10 +1458,11 @@ bool Current(Player* player, Unit* caster)
     if (!player || !Scoped(caster) || !caster->IsInWorld() || !caster->IsAlive() || !player->IsInWorld() || !player->IsAlive() ||
         player->getClass() != CLASS_HUNTER || player->GetMapId() != 1489 ||
         player->GetInstanceId() != caster->GetInstanceId() || !player->InSamePhase(caster) ||
-        !ArtifactAcquisition::Active(player, 40419) || !player->HasItemCount(128826, 1, true))
+        !ArtifactAcquisition::Active(player, 40419))
         return false;
     Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
-    return scenario && scenario->GetScenarioId() == 972 && scenario->GetCurrentStep() == 8;
+    return scenario && scenario->GetScenarioId() == 972 &&
+        ((scenario->GetCurrentStep() == 8 && player->HasItemCount(128826, 1, true)) || MarksmanshipRecovery::Ready(player, caster));
 }
 
 struct State
@@ -1343,8 +1475,10 @@ struct State
         if (!Current(player, caster) || player->IsBeingTeleported())
             return;
         Player::ScopedTeleportDelay guard(*player);
+        bool recovered = MarksmanshipRecovery::Ready(player, caster);
         spell->EffectTeleportUnits(effect);
         accepted = guard.IsPending();
+        if (accepted && recovered) player->RemoveAurasDueToSpell(200279);
     }
 
     bool CreditAllowed(Player* player, Unit* caster) const
@@ -2285,6 +2419,8 @@ void AddSC_artifact_acquisition()
     RegisterAuraScript(spell_talonclaw_presentation);
     RegisterAuraScript(spell_marksmanship_presentation);
     RegisterSpellScript(spell_marksmanship_return);
+    new condition_marksmanship_recovered_arrival();
+    new player_marksmanship_return_recovery();
     new player_talonclaw_return();
     new player_talonclaw_departure();
     new go_talonclaw_return_portal();
