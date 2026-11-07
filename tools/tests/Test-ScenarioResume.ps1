@@ -1,9 +1,11 @@
-param([switch]$VerifyReleaseBinary)
+param([switch]$WarriorBaseline,[switch]$AddressSanitizer,[switch]$VerifyReleaseBinary)
+if($WarriorBaseline -and $VerifyReleaseBinary){throw 'Expected-broken source cannot certify Release'}
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $output="$repo/build-extractors/runtime-test/scenario-resume"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
-$source=Get-Content "$repo/src/server/game/Entities/Player/PlayerScenario.cpp" -Raw
+$source=if($WarriorBaseline){(& git -C $repo show '2396b47f7:src/server/game/Entities/Player/PlayerScenario.cpp') -join "`n"}else{Get-Content "$repo/src/server/game/Entities/Player/PlayerScenario.cpp" -Raw}
+if(!$source){throw 'Actual/pinned scenario source missing'}
 $a=$source.IndexOf('namespace');$b=$source.IndexOf('bool Player::ExitCompletedBrokenShoreLogin()', $a)
 [IO.File]::WriteAllText("$output/Resume.inc",$source.Substring($a,$b-$a))
 $player=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
@@ -17,7 +19,9 @@ $block=$access.Substring($a,$b-$a)
 [IO.File]::WriteAllText("$output/Access.inc",$block.Substring(0,$block.LastIndexOf('    }')))
 if(!$access.Contains('activeScenario->GetMap() == player->GetMap()') -or !$access.Contains('player->CanResumeScenarioLogin(activeScenario->GetScenarioId())')){throw 'Post-construction access must use actual live scenario'}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 /I`"$output`" /I`"$repo/src/server/game/Scenarios`" `"$PSScriptRoot/ScenarioResumeTest.cpp`" /Fe`"$output/test.exe`" /Fo`"$output/test.obj`"`r`nif errorlevel 1 exit /b 1`r`n`"$output/test.exe`"`r`n"
+$instrument=if($AddressSanitizer){"/fsanitize=address /Zi /Fd`"$output/compiler.pdb`""}else{''}
+if($WarriorBaseline){$instrument+=' /DWARRIOR_RESUME_BASELINE'}
+$cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 $instrument /I`"$output`" /I`"$repo/src/server/game/Scenarios`" `"$PSScriptRoot/ScenarioResumeTest.cpp`" /Fe`"$output/test.exe`" /Fo`"$output/test.obj`"`r`nif errorlevel 1 exit /b 1`r`n`"$output/test.exe`"`r`n"
 [IO.File]::WriteAllText("$output/run.cmd",$cmd)
 & "$output/run.cmd"
 if($LASTEXITCODE){throw 'Scenario resume production handler tests failed'}

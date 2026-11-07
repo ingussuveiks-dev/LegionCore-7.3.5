@@ -117,9 +117,29 @@ void Player::RecordScenarioEntrance()
         if (GetSession()->PlayerLoading() || progress->GetCurrentStep() || GetTransport() || GetVehicle())
         {
             auto data = ResumeDungeon(this,progress->GetScenarioId(),GetMapId());
-            if (!data || (!data->x && !data->y && !data->z) ||
-                !MapManager::IsValidMapCoord(GetMapId(),data->x,data->y,data->z,data->o)) return;
-            entrance.Relocate(data->x,data->y,data->z,data->o);
+            if (!data) return;
+            // These native LFG rows belong to Hunter/Paladin on the shared
+            // map. Their entry cannot stand in for this Warrior acquisition.
+            uint32 entrySpell = 0;
+            if (getClass() == CLASS_WARRIOR)
+            {
+                if (GetMapId() == 1511 && progress->GetScenarioId() == 944) entrySpell = 193335;
+                if (GetMapId() == 1539 && progress->GetScenarioId() == 1037) entrySpell = 203920;
+            }
+            if (entrySpell)
+            {
+                auto target = sSpellMgr->GetSpellTargetPosition(entrySpell);
+                if (!target || target->target_mapId != GetMapId() ||
+                    (!target->target_X && !target->target_Y && !target->target_Z) ||
+                    !MapManager::IsValidMapCoord(GetMapId(),target->target_X,target->target_Y,target->target_Z,target->target_Orientation)) return;
+                entrance.Relocate(target->target_X,target->target_Y,target->target_Z,target->target_Orientation);
+            }
+            else
+            {
+                if ((!data->x && !data->y && !data->z) ||
+                    !MapManager::IsValidMapCoord(GetMapId(),data->x,data->y,data->z,data->o)) return;
+                entrance.Relocate(data->x,data->y,data->z,data->o);
+            }
         }
         if (!MapManager::IsValidMapCoord(GetMapId(),entrance.GetPositionX(),entrance.GetPositionY(),entrance.GetPositionZ(),entrance.GetOrientation())) return;
         m_scenarioResume.map = GetMapId();

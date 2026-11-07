@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED; Fury/Arms first entrance checkpoint recording on shared maps repaired;source64 ASAN/native56/strict linked PE/retained Protection+Fury arrival+Scepter/canonical startup pass. This is a recorder/rejoin/fresh-map policy repair,not verified whole-client login or an already-empty saved-character recovery.",
+  "scope": "Warrior Fury40043/scenario944/map1511 and Arms41105/scenario1037/map1539,first RecordScenarioEntrance during a late stage,PlayerLoading,transport or vehicle. Existing saved entrances and ordinary first-entry position remain unchanged;native live rejoin keeps its pose and a fresh instance starts at the recorded native entrance/step0.",
+  "cause": "Matching26972 has no native944 or1037 LFG row. ResumeDungeon correctly resolves class routes through1178/973(Hunter) or1249/1092(Paladin),but their USER_TELEPORT_NOT_ALLOWED entrance coordinates are zero. Original RecordScenarioEntrance therefore cannot record a late first checkpoint;giving these shared rows Warrior coordinates would also alter the other classes. Four authentic native Human/Orc x Fury/Arms pre-build observations reproduce the missing checkpoint using the original game.lib. An otherwise valid foreign shared LFG position would also be the wrong class-specific fallback.",
+  "implementation": [
+    "Keep ResumeDungeon/native class/faction/difficulty/dungeon admission first. Only actual Warrior plus1511/944 or1539/1037 chooses193335 Jump to Fury Scenario or203920 Jump to Arms Scenario. Require actual spell_target_position,mapped destination,nonzero XYZ and native MapManager coordinate validation. A missing/invalid native source returns without recording a foreign LFG entrance.",
+    "Copy the native target into the candidate local entrance,then retain existing final coordinate validation and checkpoint storage. Existing matching map/scenario checkpoints bypass coordinate writes;ordinary first arrival still records its actual position. Other classes/maps/scenarios retain the original LFG branch. No movement/cast/quest/item/criteria/SQL/ScriptName change or new Player field/API.",
+    "Add focused source/native/pinned-source/Release checks and isolate source ASAN compiler PDB output under the runtime test directory. The initial ASAN run found an old fixture pointer to the temporary embedded LFG entry after data={} reset;rebind it to the live fixture entry instead of weakening ASAN. The actual core LFG pointer targets persistent DB2 storage;this fixture failure is not attributed to a gameplay/client crash."
+  ],
+  "sources": "Matching local26972 native LFG and SpellEffect/name data,live spell_target_position and scenario_data,actual PlayerScenario.cpp/MapManager/Scenario/LFGMgr APIs.193335->1511/3349.74/1355.64/182.79/0.715585(native air arrival);203920->1539/1966.66/2494.39/133.152/0.147302. Both use native effect1/227. Git main/origin2396b47f7 consulted/pinned. No external behavior copied;Fury native descent remains its existing acknowledged recovery.",
+  "checks": {
+    "native_before4": "Original game.lib,real native Players/DB2/LFG/Scenario and actual Record method;controlled late step3. Human/Orc x944/1037 resolve foreign1178/973 or1249/1092 with zeroXYZ and fail to record. Explicit expected-broken observations;inputs/library hashes retained. Advanced native baseline requires that original library;current public -Baseline uses pinned source,not a mislabeled current native binary.",
+    "source64": "Actual source ASAN64:both routes/teams,late/loading/transport/vehicle,nonzero foreign-LFG priority,24 missing/wrong-map/zero/NaN/infinite/out-of-bounds native-source refusals,preserved existing record despite lost source,ordinary first-entry pose,foreign class/map/scenario controls. Pinned2396b47f7 source has44 expected-broken fallback/source cases and20 retained controls. Getter/route services controlled;not full-core ASAN.",
+    "native56": "Actual linked Player::RecordScenarioEntrance/PrepareScenarioLogin/Write+Read/native LFG constructor for Human/Orc and both routes.16 live/stale-boot/different-instance/full actual Map destruction+numeric-ID reuse cases;4 valid foreign LFG priority cases;24 actual native target-map memory faults;4 existing-checkpoint/source-loss,4 actual first-entry preservation and4 Hunter/Paladin controls. Shared coordinates and target maps are changed only in the disposable probe memory and restored;world DB is readonly. Earlier stage3 and chamber poses are controlled,no real combat or literal character LoadFromDB/SaveToDB claimed. Fresh scenario is the Warrior one,not the native shared-row class,and starts0 without progression grants.",
+    "linked_release": "Selected timestamp/map/PE certificate follows route admission,actual Warrior byte,two exact map/scenario/spell pairs,source null/map/zero/coordinate exits before foreign fallback or writes,validated native/ordinary coordinate snapshots,existing-record coordinate bypass and metadata storage. Forbids teleport/cast/item/quest/credit calls. Stage and final canonical checks pass;original game/scripts libraries rebuilt at final-link paths,not OutDir substituted.",
+    "retained": "Canonical Protection source/native8/live1028 data/updater RELEASED hash and Scepter -VerifyReleaseBinary pass. Fury actual arrival ASAN/native catalog/binding and strict linked PE retain its pre-create hold,loading/cast/real spline acknowledgement and cleanup. Existing generic source retains shared class/faction/difficulty/dungeon,Stromkar reset,Sheilun outro and consumed-selector rules. Prior combat/pet/guardian work is unchanged,not newly traversed in client.",
+    "deployment": "Matching EXE/map hashes copied from staged Release into canonical directory;originals retained before overwrite;protected configs/certs/DLLs preserved. Full live table hashes preserve non1028 LFG entrances,whole spell target and scenario route tables;existing1028 separately verified by its retained live regression. No new SQL or personal character data writes.",
+    "canonical_startup": "Owned worldserver PID=20032\nPASS owned PID=20032 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "diagnostics": "All automated source/native/build/PE/runtime tests have pre/post crash/log evidence,exit/stdout/stderr and appended-error checks. Final ordinary runs have no new/changed crash or unexplained appended server error/warning/assertion/DBErrors. Initial source ASAN stack-use-after-scope is resolved in the fixture and paired with passing64+baseline64 runs;original failed stdout/stderr/evidence copies retained. Explicit /Fd now prevents future vc140.pdb generation in the repository root;the task-owned old PDB is included in exact cleanup. Active canonical Crashes empty;existing mixed7111 remains unchanged/unresolved."
+  },
+  "runtime_sha256": {
+    "worldserver": "8923adc1ee7cc27dcc27d2b3d4077bfd2fd9bbfa038507511a27c7c96a125c3c",
+    "bnetserver": "8abc6dcb8bc09ae0316d04c48ef1a975d19e6527b8c23a0a5e352e3f81106009"
+  },
+  "diagnostics": {
+    "private_evidence": ".codex/warrior-resume-2026-11-07",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "active_crashes": "empty"
+  },
+  "cleanup": {
+    "status": "PENDING verified resolved evidence archive and exact temporary/generated/third rollback cleanup after focused commit",
+    "retained": [
+      ".codex/release-before-warrior-scenario-resume-2026-11-07",
+      ".codex/release-before-magnar-duel-recreation-2026-11-07"
+    ]
+  },
+  "unresolved": [
+    "Actual full character LoadFromDB/SaveToDB and client/server-process restart,loading/arrival/camera/pet/death/abandonment/complete-owned-pickup outro and all3 Warrior/all36 whole chains remain separate. This records a first checkpoint for an admitted player;it does not claim to seed recovery for an already empty/malformed saved checkpoint. Investigate that early-login path separately before changing native quest admission.",
+    "101430/103151 missingLINK2/Slaghammer intro and mixed7111 remain OPEN/untouched. Bounded prior-data/newer-local-Trinity/GitHub follow-up establishes no authentic missing action;unrelated numeric search hits are not behavioral evidence. New read-only research note remains outside fixed at.codex/shared-link2-followup-open-2026-11-07/summary.json;prior raw runtime/cache and all personal backups retained."
+  ]
+}

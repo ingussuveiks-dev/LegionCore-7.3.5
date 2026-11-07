@@ -2,10 +2,14 @@
 #include <cassert>
 #include <iostream>
 #include <map>
+#include <limits>
 using uint32=uint32_t;using uint16=uint16_t;using uint64=uint64_t;
 #define TC_LOG_INFO(...) ((void)0)
 constexpr int SCENARIO_TYPE_CHALLENGE_MODE=1;
-constexpr int QUEST_STATUS_INCOMPLETE=3,ALLIANCE=0,CLASS_WARLOCK=9,CLASS_MONK=10;
+constexpr int QUEST_STATUS_INCOMPLETE=3,ALLIANCE=0,CLASS_WARRIOR=1,CLASS_WARLOCK=9,CLASS_MONK=10;
+struct SpellTargetPosition {uint32 target_mapId;float target_X,target_Y,target_Z,target_Orientation;};
+struct SpellManager {std::map<uint32,SpellTargetPosition> targets;SpellTargetPosition const* GetSpellTargetPosition(uint32 id){auto i=targets.find(id);return i==targets.end()?nullptr:&i->second;}} spellManager;
+auto sSpellMgr=&spellManager;
 struct Position {
     float x=10,y=20,z=30,o=1;
     float GetPositionX()const{return x;}float GetPositionY()const{return y;}
@@ -44,7 +48,7 @@ struct LfgManager {
     lfg::LFGDungeonData data;
     bool missing=false,shared=false;
     lfg::LFGDungeonData const* GetLFGDungeon(uint16 scenario,uint16 map){return missing||shared||scenario!=data.dbc->ScenarioID||map!=data.map?nullptr:&data;}
-    lfg::LFGDungeonData const* GetLFGDungeon(uint32 map,Difficulty,uint32){return missing||!shared||map!=9000?nullptr:&data;}
+    lfg::LFGDungeonData const* GetLFGDungeon(uint32 map,Difficulty,uint32){return missing||!shared||map!=data.map?nullptr:&data;}
 } lfgManager;
 auto sLFGMgr=&lfgManager;
 struct ScenarioData {uint32 ScenarioID=777,Team=1,Class=1,DifficultyID=12,LfgDungeonID=908,MapID=9000;};
@@ -56,13 +60,13 @@ struct MapManager {
 };
 struct Player {
     ScenarioResume m_scenarioResume;
-    uint32 m_scenarioLoginId=0,m_scenarioLoginInstance=0,selector=0,instance=42,cls=1;bool pendingSheilun=false;
+    uint32 m_scenarioLoginId=0,m_scenarioLoginInstance=0,selector=0,instance=42,cls=1,team=1;bool pendingSheilun=false;
     Map map;Position pos;bool inWorld=true,transport=false,vehicle=false,relocated=false;
     struct Session {bool loading=false;bool PlayerLoading(){return loading;}} session;
     Session* GetSession(){return &session;}
     Map* GetMap()const{return const_cast<Map*>(&map);}uint32 GetMapId()const{return map.GetId();}
     uint32 GetGUIDLow(){return 1;}uint32 GetInstanceId(){return instance;}
-    uint32 GetTeam()const{return 1;}uint32 getClass()const{return cls;}int GetQuestStatus(int){return 0;}
+    uint32 GetTeam()const{return team;}uint32 getClass()const{return cls;}int GetQuestStatus(int){return 0;}
     // The real owned-item/native-objective predicate is independently compiled
     // and exercised by Test-SheilunLogin; this host controls only its admission result.
     bool HasPendingSheilunReturn()const{return pendingSheilun;}
@@ -79,6 +83,55 @@ bool allowed(Player* player,uint32 mapid){
     return true;
 }
 ScenarioResume saved(){ScenarioResume r;r.map=9000;r.scenario=777;r.instance=42;r.boot=1000;r.x=100;r.y=200;r.z=300;r.o=2;return r;}
+void SharedWarriorEntrances(){
+    struct Route {uint32 map,scenario,spell,foreign,foreignClass;float x,y,z,o;};
+    unsigned cases=0;
+    for(auto route:{Route{1511,944,193335,973,3,3349.74f,1355.64f,182.79f,0.715585f},Route{1539,1037,203920,1092,2,1966.66f,2494.39f,133.152f,0.147302f}})for(unsigned team:{0u,1u}){
+        auto setup=[&](Player& p,Scenario& live){
+            p=Player{};p.team=team;p.map.entry.ID=route.map;live={&p.map};live.id=route.scenario;live.step=3;
+            scenarios.entries.clear();scenarios.entries[p.instance]=&live;scenarios.missingSteps=false;sMapStore.value.ID=route.map;sMapStore.missing=sScenarioStore.missing=false;sDB2Manager.missing=false;
+            objects.missing=false;objects.data={};objects.data.ScenarioID=route.scenario;objects.data.Team=0;objects.data.Class=CLASS_WARRIOR;objects.data.LfgDungeonID=908;
+            lfgManager.missing=false;lfgManager.shared=true;lfgManager.data={};lfgManager.data.dbc=&lfgManager.data.entry;lfgManager.data.entry.ScenarioID=route.foreign;lfgManager.data.map=route.map;lfgManager.data.x=lfgManager.data.y=lfgManager.data.z=lfgManager.data.o=0;
+            spellManager.targets.clear();spellManager.targets[route.spell]={route.map,route.x,route.y,route.z,route.o};
+        };
+        for(unsigned reason=0;reason<4;++reason){Player p;Scenario live{};setup(p,live);live.step=reason?0:3;p.session.loading=reason==1;p.transport=reason==2;p.vehicle=reason==3;p.RecordScenarioEntrance();
+#ifdef WARRIOR_RESUME_BASELINE
+            assert(!p.m_scenarioResume.scenario);
+#else
+            assert(p.m_scenarioResume.scenario==route.scenario&&p.m_scenarioResume.x==route.x&&p.m_scenarioResume.y==route.y&&p.m_scenarioResume.z==route.z&&p.m_scenarioResume.o==route.o);
+#endif
+            assert(p.pos.x==10&&!p.relocated&&live.step==(reason?0:3));++cases;
+        }
+        {Player p;Scenario live{};setup(p,live);lfgManager.data.x=11;lfgManager.data.y=22;lfgManager.data.z=33;p.RecordScenarioEntrance();
+#ifdef WARRIOR_RESUME_BASELINE
+            assert(p.m_scenarioResume.x==11);
+#else
+            assert(p.m_scenarioResume.x==route.x);
+#endif
+            ++cases;
+        }
+        for(unsigned fault=0;fault<6;++fault){Player p;Scenario live{};setup(p,live);lfgManager.data.x=11;lfgManager.data.y=22;lfgManager.data.z=33;auto& target=spellManager.targets[route.spell];
+            if(fault==0)spellManager.targets.clear();if(fault==1)target.target_mapId=1;if(fault==2)target.target_X=target.target_Y=target.target_Z=0;if(fault==3)target.target_X=std::numeric_limits<float>::quiet_NaN();if(fault==4)target.target_Orientation=std::numeric_limits<float>::infinity();if(fault==5)target.target_X=20000;
+            p.RecordScenarioEntrance();
+#ifdef WARRIOR_RESUME_BASELINE
+            assert(p.m_scenarioResume.scenario==route.scenario&&p.m_scenarioResume.x==11);
+#else
+            assert(!p.m_scenarioResume.scenario);
+#endif
+            assert(!p.relocated&&p.pos.x==10);++cases;
+        }
+        {Player p;Scenario live{};setup(p,live);p.m_scenarioResume={route.map,route.scenario,7,999,123,456,78,2};spellManager.targets.clear();p.RecordScenarioEntrance();assert(p.m_scenarioResume.x==123&&p.m_scenarioResume.instance==42&&p.m_scenarioResume.boot==1000);++cases;}
+        {Player p;Scenario live{};setup(p,live);live.step=0;p.RecordScenarioEntrance();assert(p.m_scenarioResume.x==p.pos.x&&p.m_scenarioResume.z==p.pos.z);++cases;}
+        {Player p;Scenario live{};setup(p,live);p.cls=route.foreignClass;objects.data.Class=route.foreignClass;objects.data.ScenarioID=live.id=route.foreign;lfgManager.data.x=11;lfgManager.data.y=22;lfgManager.data.z=33;p.RecordScenarioEntrance();assert(p.m_scenarioResume.scenario==route.foreign&&p.m_scenarioResume.x==11);++cases;}
+        for(unsigned other=0;other<2;++other){Player p;Scenario live{};setup(p,live);if(!other){objects.data.ScenarioID=live.id=route.scenario+1;}else{objects.data.MapID=p.map.entry.ID=lfgManager.data.map=route.map==1511?1539:1511;sMapStore.value.ID=p.map.entry.ID;}lfgManager.data.x=11;lfgManager.data.y=22;lfgManager.data.z=33;p.RecordScenarioEntrance();assert(p.m_scenarioResume.scenario==live.id&&p.m_scenarioResume.x==11);++cases;}
+    }
+    assert(cases==64);
+#ifdef WARRIOR_RESUME_BASELINE
+    std::cout<<"COUNTERFACTUAL pinned2396b47f7 source64:44 expected-broken Warrior late/source/default-row cases,20 retained controls;native class/terrain/client checks separate\n";
+#else
+    std::cout<<"PASS actual RecordScenarioEntrance source64:Warrior944/1037/both teams/late-loading-transport-vehicle,valid foreign LFG priority,24 invalid native-source refusals,existing checkpoint/real first-entry preservation,foreign class/map/scenario controls;no movement or progress grant. Engine data controlled;native separate\n";
+#endif
+}
 int main()
 {
     ScenarioResume r,original=saved();assert(r.Read(original.Write())&&r.Write()==original.Write());
@@ -118,7 +171,7 @@ int main()
     p.m_scenarioResume=saved();p.map.entry.scenario=false;p.RecordScenarioEntrance();assert(!p.m_scenarioResume.scenario);
     // Shared native LFG metadata must still select this exact faction/class
     // scenario, both for fresh restart and the legacy later-stage entrance.
-    scenarios.entries.clear();lfgManager.data={};lfgManager.shared=true;
+    scenarios.entries.clear();lfgManager.data={};lfgManager.data.dbc=&lfgManager.data.entry;lfgManager.shared=true;
     p=Player{};p.m_scenarioResume=saved();p.PrepareScenarioLogin(9000,42);assert(p.selector==777&&p.relocated&&p.pos.x==100);
     p=Player{};live={&p.map};live.step=4;scenarios.entries[42]=&live;p.RecordScenarioEntrance();assert(p.m_scenarioResume.scenario==777&&p.m_scenarioResume.x==1);
     p=Player{};live.map=&p.map;p.m_scenarioResume=saved();p.PrepareScenarioLogin(9000,42);assert(p.m_scenarioLoginInstance==42&&!p.relocated);
@@ -175,4 +228,5 @@ int main()
     assert(p.m_scenarioResume.Read("1 1541 1007 42 999 -1073 -3143 27 0"));
     live.map=&p.map;p.PrepareScenarioLogin(1541,42);assert(p.relocated&&p.selector==1007&&!p.m_scenarioLoginInstance&&p.pos.x==-1073);
     std::cout<<"PASS: production checkpoint parsing, fresh restart, live rejoin, consumed selector, ID reuse/boot separation, completion, map/type/routing gates, shared faction/class/difficulty/dungeon admission and legacy entrance retention/exit cleanup; actual Stromkar1539/1037 reset rejects empty checkpoint and admits the exact entrance receipt after selector consumption\n";
+    SharedWarriorEntrances();
 }

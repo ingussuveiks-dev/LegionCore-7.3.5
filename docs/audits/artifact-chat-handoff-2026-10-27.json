@@ -1,4 +1,26 @@
 {
+  "latest_warrior_scenario_resume_2026_11_07": {
+    "audit": "docs/audits/warrior-scenario-resume-2026-11-07.json",
+    "status": "DEPLOYED; Fury/Arms first entrance checkpoint recording on shared maps repaired;source64 ASAN/native56/strict linked PE/retained Protection+Fury arrival+Scepter/canonical startup pass. This is a recorder/rejoin/fresh-map policy repair,not verified whole-client login or an already-empty saved-character recovery.",
+    "fix_commit": "PENDING focused commit;filled after verified cleanup",
+    "checks": "Actual pre-build native4 expected-broken;source64 ASAN/pinned64;native56;stage/canonical strict Record PE;retained Protection8/live data/Scepter and Fury arrival ASAN/catalog/linked PE. Owned worldserver PID=20032\nPASS owned PID=20032 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "runtime_sha256": {
+      "worldserver": "8923adc1ee7cc27dcc27d2b3d4077bfd2fd9bbfa038507511a27c7c96a125c3c",
+      "bnetserver": "8abc6dcb8bc09ae0316d04c48ef1a975d19e6527b8c23a0a5e352e3f81106009"
+    },
+    "cleanup": {
+      "status": "PENDING verified resolved evidence archive and exact temporary/generated/third rollback cleanup after focused commit",
+      "retained": [
+        ".codex/release-before-warrior-scenario-resume-2026-11-07",
+        ".codex/release-before-magnar-duel-recreation-2026-11-07"
+      ]
+    },
+    "unresolved": [
+      "Actual full character LoadFromDB/SaveToDB and client/server-process restart,loading/arrival/camera/pet/death/abandonment/complete-owned-pickup outro and all3 Warrior/all36 whole chains remain separate. This records a first checkpoint for an admitted player;it does not claim to seed recovery for an already empty/malformed saved checkpoint. Investigate that early-login path separately before changing native quest admission.",
+      "101430/103151 missingLINK2/Slaghammer intro and mixed7111 remain OPEN/untouched. Bounded prior-data/newer-local-Trinity/GitHub follow-up establishes no authentic missing action;unrelated numeric search hits are not behavioral evidence. New read-only research note remains outside fixed at.codex/shared-link2-followup-open-2026-11-07/summary.json;prior raw runtime/cache and all personal backups retained."
+    ],
+    "next": "Recorder first-checkpoint scope now verified. Investigate actual early login with an already empty/malformed Warrior checkpoint using native quest-load/selector/transport/admission ordering,without inferring eligibility/progress from coordinates. Actual client/all3/all36 remain pending;unknown LINK2 data must remain visible."
+  },
   "latest_earthwarder_resume_2026_11_07": {
     "audit": "docs/audits/earthwarder-resume-2026-11-07.json",
     "status": "DEPLOYED SQL-only; missing native Protection entrance repaired through canonical updater;TEMP data/native8/canonical source+Scepter/live RELEASED hash/startup and unrelated-source preservation pass. Full actual client restart/traversal remains separate.",
