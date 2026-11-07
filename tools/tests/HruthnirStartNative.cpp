@@ -14,6 +14,7 @@ namespace ShieldsFixture {
 #include "../../src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.h"
 #include "ShieldsNative.inc"
 }
+#include "MagnarCombatBridge.inc"
 using HruthnirAI=npc_hrutnir::npc_hrutnirAI;
 struct StartFunctionsTag { using Type=FunctionProcessor Unit::*; friend Type Access(StartFunctionsTag); };
 template struct FixtureAccess<StartFunctionsTag,&Unit::m_Functions>;

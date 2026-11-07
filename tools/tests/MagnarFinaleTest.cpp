@@ -2,6 +2,8 @@
 #include <limits>
 #include "Harness.inc"
 #include "StartHeader.inc"
+#include "CombatHeader.inc"
+bool MagnarCombat::Restore(Creature*, CreatureAI const*, SummonList&, std::array<ObjectGuid,12>&, std::array<bool,12>&) { return false; }
 #include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
 // This duel-only fixture has no shared instance. Real first-phase Reset and
 // Hruthnir notification are covered by MagnarResetNative.
@@ -9,6 +11,7 @@ void MagnarStart::ResetOffer(Creature*, Creature*) { assert(false); }
 struct Magnar : CreatureAI
 {
     Creature* me;
+    void EnterCombat(Unit*) { assert(false); } // Real combat restoration is a native scope.
     explicit Magnar(Creature* actor) : me(actor) { actor->active = this; wave = 1; count_dies = 0; first_phase = true; Reset(); }
 #include "Fields.inc"
 #include "Reset.inc"

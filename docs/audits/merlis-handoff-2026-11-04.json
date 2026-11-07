@@ -1,4 +1,23 @@
 {
+  "latest_magnar_combat_replacement_2026_11_07": {
+    "audit": "docs/audits/magnar-combat-replacement-2026-11-07.json",
+    "status": "DEPLOYED; focused source/native60/selected canonical Release/retained regressions and owned canonical startup pass; full client traversal separate",
+    "fix_commit": "PENDING focused commit; filled during verified cleanup",
+    "checks": "Final rebuilt/deployed binary:ASAN actual bridge37;native combat60 with actual player/pet/guardian Kill/46427/AI replacement/504/full delay45784/step5 and active-duel timer restoration;6 pinned expected-broken controls;all7 selected installed PE;affected wave/finale ASAN and Scepter. Earlier candidate retained9 groups/primary36/cursor16/replacement40/Reset16/chamber20/cold14/start14/waves24;only original NPC-immunity preservation differs,final affected retests pass. Owned worldserver PID=30608\nPASS owned PID=30608 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "runtime_sha256": {
+      "worldserver": "381122A9651B1C4672A55B75A1DBC34DAC13E31439BF84AB414E483B979D819D",
+      "bnetserver": "E1FD4EC7AE7407C05C212339D2C72B1BA4F890DA1A10F0ED33E5766DD9B5AFE0"
+    },
+    "cleanup": {
+      "status": "PENDING focused implementation commit and verified hash archive/temporary output cleanup; canonical startup and all relevant regressions passed"
+    },
+    "unresolved": [
+      "Actual full client Arms/Fury/Protection and all36 chains,combat/wipes/failed movement,camera/pet/reconnect,audio/VFX,equipment/return remain separate. Native controlled receipts/endpoints and selected binary evidence do not certify whole quest chains.",
+      "Full Magnar Creature/newGUID recreation with surviving consumed companion remains OPEN. This fix intentionally refuses unrelated/new boss GUID and new instance epochs;no fresh checkpoint or progression is inferred. Full map-unload/server-restart recovery with a persisted step4 is also OPEN:State is instance-local and an arbitrary step4 is deliberately insufficient.",
+      "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff remain OPEN/untouched. Empty active Crashes means only no unresolved crash file there."
+    ],
+    "next": "Keep earned same-fullGUID authority;investigate full Creature/newGUID recreation separately using actual native lifecycle and original companion consumed-receipt behavior. Full client all3 Warrior chains and all36 remain pending."
+  },
   "latest_hruthnir_primary_approach_2026_11_07": {
     "audit": "docs/audits/hruthnir-primary-approach-2026-11-07.json",
     "status": "DEPLOYED; original point6 approach source/native/selected Release/retained regressions and owned canonical startup pass; full client traversal separate",

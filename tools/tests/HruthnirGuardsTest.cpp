@@ -20,6 +20,7 @@ struct ObjectGuid
     bool operator==(ObjectGuid other) const { return value == other.value; }
     bool operator!=(ObjectGuid other) const { return value != other.value; }
 };
+#include "CombatHeader.inc"
 constexpr uint32 CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1;
 constexpr uint32 CRITERIA_TYPE_SCRIPT_EVENT_2 = 92;
 constexpr uint32 NPC_INVISIBLE_MAN = 1, NPC_ORIK_TRUEHEART_PET = 2, NPC_CATO_PET = 3;
@@ -162,6 +163,9 @@ struct ScenarioManager
 } manager;
 ScenarioManager* sScenarioMgr = &manager;
 uint32 CurrentScenarioStep() { return manager.scenario ? manager.scenario->step : 0; }
+// This guard-only fixture must not silently model an earned Magnar duel.
+void MagnarCombat::Reset(Map*, State& state) { if(state.earned)std::abort();state={}; }
+void MagnarCombat::Bind(Map*, State&, Creature* actor, unsigned) { if(actor->GetEntry()==96034)std::abort(); }
 struct Instance
 {
     Map* instance;

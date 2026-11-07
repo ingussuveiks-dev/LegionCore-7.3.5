@@ -24,7 +24,8 @@ table_load = next(index for index, entry in enumerate(factory)
                   if entry.mnemonic == 'lea' and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP)
 entry = factory[table_load]
 table = entry.address + entry.size + entry.operands[1].mem.disp
-assert factory[table_load + 1].op_str == 'qword ptr [rdi], rax'
+combat_owner=any(name.startswith('?Restore@MagnarCombat@@') for name in native['symbols'])
+assert factory[table_load + 1].op_str == ('qword ptr [rsi], rax' if combat_owner else 'qword ptr [rdi], rax')
 slots = struct.unpack_from('<64Q', native['binary'], native['offset'](table))
 for method in ('?OnCreatureCreate', '?OnGameObjectCreate', '?OnUnitDeath', '?Initialize', '?Update', '?GetData'):
     assert slots.count(native['symbol'](method + suffix)) == 1, f'Factory does not select repaired {method}'
@@ -33,9 +34,10 @@ for method in ('?OnCreatureCreate', '?OnGameObjectCreate', '?OnUnitDeath', '?Ini
 create = instructions('?OnCreatureCreate' + suffix)
 current_pillik = any(name.startswith('?TryPillikHandoff@npc_hrutnirAI@npc_hrutnir@@') for name in native['symbols'])
 owner_register, alive_register, second_flag = ('rdi', 'rsi', 'sil') if current_pillik else ('rsi', 'rdi', 'dil')
-alive_pointer = find(create, f'{alive_register}, [rbx + 0xa18]', 'lea')
-assert alive_pointer < find(create, f'dword ptr [{alive_register}], 0', 'cmp')
-for spawn, guid, death, flag in ((361412, 0x314, 0x334, 'bpl'), (361413, 0x324, 0x335, second_flag)):
+alive_memory='dword ptr [rbx + 0xa18], 0' if combat_owner else f'dword ptr [{alive_register}], 0'
+alive_pointer = find(create, alive_memory, 'cmp') if combat_owner else find(create, f'{alive_register}, [rbx + 0xa18]', 'lea')
+assert combat_owner or alive_pointer < find(create, alive_memory, 'cmp')
+for spawn, guid, death, flag in ((361412, 0x314, 0x334, 'sil' if combat_owner else 'bpl'), (361413, 0x324, 0x335, second_flag)):
     gate = find(create, f'qword ptr [rbx + 0x3a88], {hex(spawn)}', 'cmp')
     store = find(create, f'byte ptr [{owner_register} + {hex(death)}], {flag}', 'mov')
     branch = next(entry for entry in create[gate + 1:gate + 4] if entry.mnemonic.startswith('j'))
@@ -45,7 +47,7 @@ for spawn, guid, death, flag in ((361412, 0x314, 0x334, 'bpl'), (361413, 0x324, 
     condition = next(entry for entry in segment[old + 1:old + 4] if entry.mnemonic.startswith('j'))
     clear = condition.operands[0].imm
     assert condition.mnemonic == 'je'
-    alive = find(segment, f'dword ptr [{alive_register}], 0', 'cmp')
+    alive = find(segment, alive_memory, 'cmp')
     assert segment[alive + 1].mnemonic == 'je' and segment[alive + 1].operands[0].imm == clear
     assert segment[alive + 2].op_str == f'{flag}, 1'
     assert next(entry for entry in segment if entry.address == clear).op_str == f'{flag}, {flag}'

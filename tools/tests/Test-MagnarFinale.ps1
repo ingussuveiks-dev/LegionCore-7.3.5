@@ -6,6 +6,8 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/magnar-finale"
 New-Item -ItemType Directory -Force $out|Out-Null
 [IO.File]::WriteAllText("$out/StartHeader.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_start.h" -Raw).Replace('class Creature;','struct Creature;').Replace('class Player;','struct Player;'))
+$combatHeader=(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_combat.h" -Raw).Replace('#include "ObjectGuid.h"','').Replace('class Creature;','struct Creature;').Replace('class CreatureAI;','struct CreatureAI;').Replace('class SummonList;','struct SummonList;')
+[IO.File]::WriteAllText("$out/CombatHeader.inc",$combatHeader)
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
 $source=Get-Content "$repo/$path" -Raw
@@ -38,6 +40,7 @@ $header=$header.Replace('uint32 identity = 944, step = 4;','uint32 identity = 90
 $header=$header.Replace('assert(identity == 40043);','assert(identity == 39191);').Replace('identity == 46982','identity == 45784')
 $header=$header.Replace('    bool CanContact() { return contact; }','    bool world = true; uint32 instance = 42; bool IsInWorld() const { return world; } uint32 GetInstanceId() const { return instance; } bool CanContact() { return contact; }')
 $header=$header.Replace('uint32 entry = 98007, mapId = 1511','uint32 entry = 96034, mapId = 1495')
+$header=$header.Replace('InstanceScript* GetInstanceScript() { return nullptr; }','bool isInCombat() const { assert(false); return false; } Unit* getVictim() const { assert(false); return nullptr; } InstanceScript* GetInstanceScript() { return nullptr; }')
 $header=$header.Replace('CreatureAI* AI() const { return active; }','bool IsAIEnabled = true; CreatureAI* AI() const { return active; } CreatureAI* GetDisabledAI() const { return i_disabledAI; }')
 $header=$header.Replace('struct InstanceScript {','struct InstanceScript { ObjectGuid GetGuidData(uint32) { assert(false); return {}; }')
 $header=$header.Replace('Map* GetMap() const { return &instanceMap; }','Map* map = &instanceMap; Map* GetMap() const { return map; } float GetDistance(Player* player) const { return player->distance; }')

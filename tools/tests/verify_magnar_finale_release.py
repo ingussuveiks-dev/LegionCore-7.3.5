@@ -202,13 +202,13 @@ def zero_store(decoded, destination):
             source = entry.op_str.split(', ')[-1]
             if source == '0':
                 return True
-            root = {'ax':'eax','rax':'eax','bp':'ebp','rbp':'ebp','bpl':'ebp','r12w':'r12d','r12':'r12d','r12b':'r12d'}.get(source)
+            root = {'ax':'eax','rax':'eax','bp':'ebp','rbp':'ebp','bpl':'ebp','r12w':'r12d','r12':'r12d','r12b':'r12d','r13w':'r13d','r13':'r13d','r13b':'r13d'}.get(source)
             if root and any(previous.mnemonic == 'xor' and previous.op_str == f'{root}, {root}' for previous in decoded[:index]):
                 return True
     return False
 assert zero_store(reset_body[:retire], 'word ptr [rbx + 0x118]'), 'Reset leaves a pending/removal timer active'
 assert zero_store(reset_body[:retire], 'qword ptr [rbx + 0x110]'), 'Reset leaves timer/instance state active'
-assert any(entry.op_str == 'r8d, 0x2000180' for entry in reset_body[retire:]), 'Finale cancellation does not restore native duel flags while retaining NPC immunity'
+assert any(entry.op_str == 'r8d, 0x2000180' for entry in reset_body[retire:]), 'Finale cancellation does not restore native duel flags'
 react = positions(reset_body, '?SetReactState@Creature@@')[0]
 assert [entry.op_str for entry in reset_body[react - 2:react]] == ['r8d, r8d', 'dl, 1'], 'Cancelled passive surrender does not restore defensive final duel'
 updated = instructions('?UpdateAI' + suffix)

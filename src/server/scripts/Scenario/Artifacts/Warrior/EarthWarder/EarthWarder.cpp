@@ -17,6 +17,7 @@
 #include "PathGenerator.h"
 #include "QuestObjectScope.h"
 #include "magnar_start.h"
+#include "magnar_combat.h"
 #include "hruthnir_pillik.h"
 #include <memory>
 #include <set>
@@ -1388,6 +1389,12 @@ public:
                 count_dies = 0;
                 summons.DespawnAll();
             }
+            // An interrupted defeat must not leave its old504 alive while a
+            // replacement restores the earned duel and waits for a new hit.
+            ObjectGuid conversationGuid = finaleConversation;
+            finaleConversation.Clear();
+            if (Conversation* conversation = ObjectAccessor::GetConversation(*me, conversationGuid))
+                conversation->Remove();
         }
 
         SummonList summons;
@@ -1420,6 +1427,12 @@ public:
         void Reset() override
         {
             Creature* actor = me;
+            bool restoredCombat = first_phase && MagnarCombat::Restore(actor, this, summons, reserveGUIDs, reserveDeaths);
+            if (restoredCombat)
+            {
+                first_phase = false;
+                wave = 7;
+            }
             // InitializeAI also resets a replacement that has no local start
             // claim. The companion owns the acknowledged same-boss receipt.
             bool retryFirstPhase = first_phase && !releasingWave;
@@ -1439,7 +1452,7 @@ public:
                 conversation->Remove();
             if ((actor->AI() != this && actor->GetDisabledAI() != this) || reserveGeneration != generation)
                 return;
-            if (finaleStarted && !first_phase)
+            if ((finaleStarted || restoredCombat) && !first_phase)
             {
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
                 me->setFaction(14);
@@ -1465,6 +1478,8 @@ public:
                 return;
             releasingWave = false;
             encounterStarted = false;
+            if (restoredCombat && me->isInCombat() && me->getVictim())
+                EnterCombat(me->getVictim());
             if (retryFirstPhase && actor->IsAIEnabled && actor->AI() == this && actor->IsInWorld() &&
                 actor->IsAlive() && !actor->IsDespawn() && actor->GetEntry() == 96034 && actor->GetMapId() == 1495)
                 if (InstanceScript* instance = actor->GetInstanceScript())
@@ -1705,6 +1720,7 @@ public:
                     stop_combat = false;
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
                     me->SetReactState(REACT_DEFENSIVE);
+                    MagnarCombat::Remember(me, this, reserveGUIDs, reserveDeaths);
                     player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46427);
                 }
             }

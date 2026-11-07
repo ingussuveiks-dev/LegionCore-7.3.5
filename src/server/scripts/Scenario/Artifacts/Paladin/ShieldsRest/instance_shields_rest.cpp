@@ -10,6 +10,8 @@
 #include <array>
 #include "../../Warrior/EarthWarder/magnar_start.h"
 #include "../../Warrior/EarthWarder/hruthnir_pillik.h"
+#include "../../Warrior/EarthWarder/magnar_combat.h"
+#include "TemporarySummon.h"
 
 
 
@@ -67,6 +69,7 @@ public:
             pillikRecipient.Clear();
             pillikDied = false;
             magnarRouteCursor = 0;
+            MagnarCombat::Reset(instance, magnarCombat);
         }
 
         void OnPlayerEnter(Player* player) override
@@ -76,6 +79,7 @@ public:
 
         void OnCreatureCreate(Creature* creature) override
         {
+            MagnarCombat::Bind(instance, magnarCombat, creature, magnarGuardGeneration);
             if (creature->GetEntry() == 94714 && creature->GetDBTableGUIDLow() == 361361)
             {
                 bool recordedDeath = pillikDied && !creature->IsAlive();
@@ -124,6 +128,12 @@ public:
                     eventDoorGUID = go->GetGUID();
                     break;
             }
+        }
+
+        void OnCreatureRemove(Creature* creature) override
+        {
+            InstanceScript::OnCreatureRemove(creature);
+            MagnarCombat::Remove(instance, magnarCombat, creature);
         }
 
         void OnUnitDeath(Unit* unit) override
@@ -527,6 +537,7 @@ public:
         ObjectGuid pillikRecipient;
         bool pillikDied = false;
         uint32 magnarRouteCursor = 0;
+        MagnarCombat::State magnarCombat;
         void Update(uint32 diff) override
         {
             if (hunterWindTimer > diff) { hunterWindTimer -= diff; return; }
@@ -553,6 +564,110 @@ public:
         }
     };
 };
+
+void MagnarCombat::Reset(InstanceMap* map, State& state)
+{
+    State old = state;
+    state = {};
+    // Retire ownership before native despawn callbacks. A reentrant new bind
+    // must survive; only the old boss's exact native TempSummons can be freed.
+    for (ObjectGuid guid : old.roster)
+        if (!guid.IsEmpty())
+            if (Creature* actor = map->GetCreature(guid))
+                if (TempSummon* summon = actor->ToTempSummon())
+                    if (summon->GetSummonerGUID() == old.actor)
+                        actor->DespawnOrUnsummon();
+}
+
+void MagnarCombat::Bind(InstanceMap* map, State& state, Creature* actor, unsigned epoch)
+{
+    if (actor->GetEntry() != 96034 || actor->GetDBTableGUIDLow() != 361400 || actor->GetMap() != map)
+        return;
+    if (state.actor == actor->GetGUID() && state.epoch == epoch)
+        return;
+    State old = state;
+    state = {};
+    state.actor = actor->GetGUID();
+    state.epoch = epoch;
+    Reset(map, old);
+}
+
+void MagnarCombat::Remove(InstanceMap* map, State& state, Creature* actor)
+{
+    if (state.actor == actor->GetGUID())
+        Reset(map, state);
+    else
+        for (ObjectGuid& guid : state.roster)
+            if (guid == actor->GetGUID())
+                guid.Clear();
+}
+
+MagnarCombat::State* MagnarCombat::Find(Creature* actor, CreatureAI const* expected)
+{
+    if (!actor || !actor->IsInWorld() || !actor->IsAlive() || actor->IsDespawn() ||
+        actor->GetMapId() != 1495 || actor->GetEntry() != 96034 || actor->GetDBTableGUIDLow() != 361400 ||
+        !actor->IsAIEnabled || actor->AI() != expected || !actor->GetPhases().count(6999))
+        return nullptr;
+    auto instance = dynamic_cast<instance_shields_rest::instance_shields_rest_InstanceMapScript*>(actor->GetInstanceScript());
+    if (!instance || !instance->magnarGuardCreditSent || !instance->magnarGuardsDelivered ||
+        instance->magnarCombat.actor != actor->GetGUID() || instance->magnarCombat.epoch != instance->magnarGuardGeneration)
+        return nullptr;
+    return &instance->magnarCombat;
+}
+
+void MagnarCombat::Remember(Creature* actor, CreatureAI const* expected,
+    std::array<ObjectGuid, 12> const& roster, std::array<bool, 12> const& deaths)
+{
+    State* state = Find(actor, expected);
+    if (!state)
+        return;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    if (state->earned || !scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() != 3)
+        return;
+    unsigned count = 0;
+    for (unsigned slot = 0; slot < roster.size(); ++slot)
+    {
+        if (deaths[slot])
+        {
+            if (roster[slot].IsEmpty())
+                return;
+            ++count;
+        }
+        if (Creature* member = actor->GetMap()->GetCreature(roster[slot]))
+        {
+            TempSummon* summon = member->ToTempSummon();
+            unsigned entry = slot >= 10 ? 94813 : slot == 4 || slot == 9 ? 94707 : 97123;
+            if (!summon || summon->GetSummonerGUID() != actor->GetGUID() || member->GetEntry() != entry ||
+                (deaths[slot] && member->IsAlive()))
+                return;
+        }
+    }
+    if (count == 10)
+    {
+        state->roster = roster;
+        state->deaths = deaths;
+        state->earned = true;
+    }
+}
+
+bool MagnarCombat::Restore(Creature* actor, CreatureAI const* expected, SummonList& summons,
+    std::array<ObjectGuid, 12>& roster, std::array<bool, 12>& deaths)
+{
+    State* state = Find(actor, expected);
+    if (!state)
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    if (!state->earned || !scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() != 4)
+        return false;
+    roster = state->roster;
+    deaths = state->deaths;
+    for (ObjectGuid guid : roster)
+        if (Creature* member = actor->GetMap()->GetCreature(guid))
+            if (TempSummon* summon = member->ToTempSummon())
+                if (summon->GetSummonerGUID() == actor->GetGUID())
+                    summons.Summon(member);
+    return true;
+}
 
 void AddSC_instance_shields_rest()
 {

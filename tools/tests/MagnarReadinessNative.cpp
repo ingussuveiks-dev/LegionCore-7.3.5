@@ -2,6 +2,7 @@
 #include "SlaghammerCompanionNative.cpp"
 #include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_start.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
+#include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_combat.h"
 #include "MagnarNative.inc"
 using MagnarAI=npc_magnar_icebreaker::npc_magnar_icebreakerAI;
 struct MagnarActor:Actor{
@@ -17,6 +18,10 @@ struct PausedAI{
 };
 static uint64 WaveCredit(Scenario* scenario){uint64 result=0;for(auto const& row:*scenario->GetAchievementMgr().GetCriteriaProgressMap()){auto tree=sCriteriaTreeStore.LookupEntry(row.first);auto c=tree?sCriteriaStore.LookupEntry(tree->CriteriaID):nullptr;if(c&&c->Type==92&&c->Asset==46427)result+=row.second.Counter;}return result;}
 #ifndef MAGNAR_READINESS_SUPPORT_ONLY
+// The scoped earned-combat fixture uses the actual shared-instance bridge.
+// This original instance-free probe cannot own a recovery receipt.
+void MagnarCombat::Remember(Creature* c, CreatureAI const*, std::array<ObjectGuid,12> const&, std::array<bool,12> const&) { Require(!c->GetInstanceScript(),"Unexpected combat receipt in instance-free fixture"); }
+bool MagnarCombat::Restore(Creature* c, CreatureAI const*, SummonList&, std::array<ObjectGuid,12>&, std::array<bool,12>&) { Require(!c->GetInstanceScript(),"Unexpected combat restore in instance-free fixture");return false; }
 // This older wave fixture deliberately has no shared InstanceScript/Hruthnir
 // controller. The reset-to-offer integration uses MagnarResetNative instead.
 void MagnarStart::ResetOffer(Creature*, Creature*) { Require(false,"Unexpected reset bridge in instance-free wave fixture"); }

@@ -44,12 +44,15 @@ def check(n,ins):
  generations=[o.mem.disp for x in reset_body if x.mnemonic in ('inc','add') for o in x.operands if o.type==CS_OP_MEM and o.size==4 and o.mem.disp>0x1c0]
  # Reset now keeps the incremented epoch across native cleanup callbacks:
  # mov r15d,[rcx+208]; inc r15d; mov [rcx+208],r15d.
- for a,b,c in zip(reset_body,reset_body[1:],reset_body[2:]):
-  if (a.mnemonic=='mov' and len(a.operands)==2 and a.operands[0].type==CS_OP_REG and a.operands[1].type==CS_OP_MEM and a.operands[1].size==4 and a.operands[1].mem.disp>0x1c0
-      and b.mnemonic=='inc' and b.operands[0].type==CS_OP_REG and b.operands[0].reg==a.operands[0].reg
-      and c.mnemonic=='mov' and c.operands[0].type==CS_OP_MEM and c.operands[1].type==CS_OP_REG and c.operands[1].reg==a.operands[0].reg
-      and c.operands[0].mem.base==a.operands[1].mem.base and c.operands[0].mem.disp==a.operands[1].mem.disp):
-   generations.append(a.operands[1].mem.disp)
+ for index,inc in enumerate(reset_body):
+  if inc.mnemonic!='inc' or inc.operands[0].type!=CS_OP_REG:continue
+  reg=inc.operands[0].reg
+  for load in reset_body[max(0,index-4):index]:
+   if not (load.mnemonic=='mov' and len(load.operands)==2 and load.operands[0].type==CS_OP_REG and load.operands[0].reg==reg and load.operands[1].type==CS_OP_MEM and load.operands[1].size==4 and load.operands[1].mem.disp>0x1c0):continue
+   middle=[op for op in reset_body[:index] if op.address>load.address]
+   assert not any(op.operands and op.operands[0].type==CS_OP_REG and op.operands[0].reg==reg for op in middle),'Reset generation was overwritten before increment'
+   stores=[op for op in reset_body[index+1:index+3] if op.mnemonic=='mov' and op.operands[0].type==CS_OP_MEM and op.operands[1].type==CS_OP_REG and op.operands[1].reg==reg and op.operands[0].mem.base==load.operands[1].mem.base and op.operands[0].mem.disp==load.operands[1].mem.disp]
+   if stores:generations.append(load.operands[1].mem.disp)
  assert len(set(generations))==1,'Cannot identify actual reset generation'
  generation=generations[0]
  guards=[i for i,x in enumerate(body) if x.mnemonic=='cmp' and any(o.type==CS_OP_MEM and o.mem.disp==generation for o in x.operands)]

@@ -35,6 +35,9 @@ struct Position { float positionX, positionY, positionZ, orientation; };
 #include "Positions.inc"
 struct Creature;
 #include "StartHeader.inc"
+#include "CombatHeader.inc"
+void MagnarCombat::Remember(Creature*, CreatureAI const*, std::array<ObjectGuid,12> const&, std::array<bool,12> const&) { }
+bool MagnarCombat::Restore(Creature*, CreatureAI const*, SummonList&, std::array<ObjectGuid,12>&, std::array<bool,12>&) { return false; }
 #include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
 // Ordinary wave fixtures have no shared instance. Only the focused Reset
 // notification cases opt into observing the bridge; real consumers are native.
@@ -146,6 +149,7 @@ struct Creature : Unit
     Creature* ToCreature() override { return this; }
     virtual TempSummon* ToTempSummon() { return nullptr; }
     CreatureAI* AI() const { return ai; }
+    bool isInCombat() const { assert(false); return false; } Unit* getVictim() const { assert(false); return nullptr; }
     CreatureAI* GetDisabledAI() const { return nullptr; }
     InstanceScript* instanceScript = nullptr;
     InstanceScript* GetInstanceScript() const { return instanceScript; }

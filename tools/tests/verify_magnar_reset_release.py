@@ -22,22 +22,24 @@ def check(n, ins):
     reset = ins('?Reset' + boss)
     cleanup, = sites(reset, '?DespawnAll@SummonList@@')
     notification, = sites(reset, '?ResetMagnarOffer' + hr)
-    has(reset[:cleanup], 'byte ptr [rcx + 0xd1], 0', 'byte ptr [rcx + 0xd5], 0', 'r14b, 1', 'r14b, r14b')
-    first=next(i for i,op in enumerate(reset) if op.mnemonic=='cmp' and op.op_str=='byte ptr [rcx + 0xd1], 0')
-    releasing=next(i for i,op in enumerate(reset) if op.mnemonic=='cmp' and op.op_str=='byte ptr [rcx + 0xd5], 0')
-    false=next(i for i,op in enumerate(reset) if op.mnemonic=='xor' and op.op_str=='r14b, r14b')
+    combat=any(name.startswith('?Restore@MagnarCombat@@') for name in n['symbols'])
+    owner='rbx' if combat else 'rcx';flag='r15b' if combat else 'r14b';zero='r13' if combat else 'r12';generation='r12d' if combat else 'r15d'
+    begin=sites(reset,'?Restore@MagnarCombat@@')[0]+1 if combat else 0
+    has(reset[:cleanup], f'byte ptr [{owner} + 0xd1], 0',f'byte ptr [{owner} + 0xd5], 0',flag+', 1',flag+', '+flag)
+    first=next(i for i,op in enumerate(reset) if i>=begin and op.mnemonic=='cmp' and op.op_str==f'byte ptr [{owner} + 0xd1], 0')
+    releasing=next(i for i,op in enumerate(reset) if i>first and op.mnemonic=='cmp' and op.op_str==f'byte ptr [{owner} + 0xd5], 0')
+    false=next(i for i,op in enumerate(reset) if i>releasing and op.mnemonic=='xor' and op.op_str==flag+', '+flag)
     first_branch=next(op for op in reset[first+1:releasing] if op.mnemonic=='je')
     assert first_branch.operands[0].imm==reset[false].address
     assert reset[releasing+1].mnemonic=='jne' and reset[releasing+1].operands[0].imm==reset[false].address
-    assert not any(v.type==CS_OP_MEM and v.mem.disp==0xe8 for op in reset[:false] for v in op.operands),'Fresh replacement still requires its lost local encounterStarted claim'
-    has(reset[cleanup:notification], 'byte ptr [rbx + 0xd5], r12b', 'byte ptr [rbx + 0xe8], r12b', 'r14b, r14b',
-        'byte ptr [rdi + 0x858], r12b', 'qword ptr [rdi + 0x9c0], rbx', 'dword ptr [rdi + 0xa18], r12d',
-        'byte ptr [rdi + 0x39c5], r12b', 'eax, 0x17722', 'dword ptr [rdi + 0xe0], 0x5d7', 'r8d, 0x429')
-    assert sites(reset[cleanup:notification], '?GetCreature@Map@@'), 'Reset does not resolve the instance-owned companion'
-    guards = [i for i, op in enumerate(reset) if op.mnemonic == 'cmp' and op.op_str == 'dword ptr [rbx + 0x208], r15d']
-    assert len(guards) == 2 and guards[0] < cleanup < guards[1] < notification
-    for index in guards:
-        assert reset[index + 1].mnemonic == 'jne' and reset[index + 1].operands[0].imm > reset[notification].address
+    assert not any(v.type==CS_OP_MEM and v.mem.disp==0xe8 for op in reset[first:false] for v in op.operands),'Fresh replacement still requires its lost local encounterStarted claim'
+    has(reset[cleanup:notification],f'byte ptr [rbx + 0xd5], {zero}b',f'byte ptr [rbx + 0xe8], {zero}b',flag+', '+flag,
+        f'byte ptr [rdi + 0x858], {zero}b','qword ptr [rdi + 0x9c0], rbx',f'dword ptr [rdi + 0xa18], {zero}d',
+        f'byte ptr [rdi + 0x39c5], {zero}b','eax, 0x17722','dword ptr [rdi + 0xe0], 0x5d7','r8d, 0x429')
+    assert sites(reset[cleanup:notification],'?GetCreature@Map@@'),'Reset does not resolve the instance-owned companion'
+    guards=[i for i,op in enumerate(reset) if op.mnemonic=='cmp' and op.op_str=='dword ptr [rbx + 0x208], '+generation]
+    assert len(guards)==2 and guards[0]<cleanup<guards[1]<notification
+    for index in guards:assert reset[index+1].mnemonic=='jne' and reset[index+1].operands[0].imm>reset[notification].address
     # The inlined bridge casts the actual current or suspended AI to Hruthnir.
     # The shared map reader retains code symbols; read the actual RTTI data
     # pointed to by dynamic_cast's R9 target argument instead of a data symbol.
@@ -53,6 +55,9 @@ def check(n, ins):
     assert len(casts) == 2
     has(reset[notification - 2:notification], 'rdx, rdi', 'rcx, rax')
     tail=reset[notification+1:]
+    if combat:
+        assert tail[0].mnemonic=='mov' and tail[0].op_str=='r15, qword ptr [rsp + 0x168]'
+        tail=tail[1:]
     assert [(op.mnemonic,op.op_str) for op in tail[:2]]==[('mov','rcx, qword ptr [rsp + 0x100]'),('xor','rcx, rsp')]
     # The shared symbol reader intentionally indexes C++ names only. Bind the
     # sole C stack-cookie helper from the same timestamp-verified linker map.

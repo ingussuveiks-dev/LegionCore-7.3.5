@@ -7,6 +7,8 @@ $out="$repo/build-extractors/runtime-test/magnar-waves"
 New-Item -ItemType Directory -Force $out|Out-Null
 # Match the fixture's struct class-keys; preserve the real bridge declarations.
 [IO.File]::WriteAllText("$out/StartHeader.inc",(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_start.h" -Raw).Replace('class Creature;','struct Creature;').Replace('class Player;','struct Player;'))
+$combatHeader=(Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_combat.h" -Raw).Replace('#include "ObjectGuid.h"','').Replace('class Creature;','struct Creature;').Replace('class CreatureAI;','struct CreatureAI;').Replace('class SummonList;','struct SummonList;')
+[IO.File]::WriteAllText("$out/CombatHeader.inc",$combatHeader)
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
 $source=Get-Content "$repo/$path" -Raw
