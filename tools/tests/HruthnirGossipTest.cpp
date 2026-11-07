@@ -326,7 +326,8 @@ public:
     PlayerMenu* PlayerTalkClass = &talk;
     Creature* actor = nullptr;
     Map* map = &instanceMap;
-    bool world = true, contact = true, alive = true, flight = false, rewarded = false;
+    bool world = true, contact = true, alive = true, flight = false, rewarded = false, gm = false;
+    bool isGameMaster() const { return gm; }
     uint32 playerClass = 1, instance = 42, status = 3, faction = 0, genericCalls = 0;
     bool IsInWorld() const { return world; }
     bool CanContact() const { return contact; }
@@ -432,6 +433,7 @@ struct HruthnirAI : CreatureAI
     void AttackStart(Creature*) { assert(false); }
 #include "AIFields.inc"
 #include "StartRecovery.inc"
+#include "Reoffer.inc"
 #include "PillikRecovery.inc"
 #include "AISelect.inc"
 #include "AIReset.inc"
@@ -528,7 +530,9 @@ struct Fixture
 };
 int main()
 {
-#if defined(APPROACH_ONLY)
+#if defined(REOFFER_ONLY)
+#include "ReofferCases.inc"
+#elif defined(APPROACH_ONLY)
 #include "ApproachCases.inc"
 #elif defined(PILLIK_ONLY)
 #include "PillikCases.inc"

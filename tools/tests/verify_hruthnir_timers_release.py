@@ -55,7 +55,8 @@ assert (factory[construct-1].mnemonic,factory[construct-1].op_str)==('lea','rcx,
 assert (destroy[destruct-1].mnemonic,destroy[destruct-1].op_str)==('lea','rcx, [rsi + 0xc0]' if current_start else 'rcx, [rdi + 0xc0]')
 assert sites(n,destroy,method('CancelMagnarIntro'))[0]<destruct
 assert sites(n,destroy,'?Remove@Conversation@@')[0]<destruct
-assert (0x178 if current_pillik else (0x168 if current_start else 0x140)) in values(factory) and {0x68,0x78,0x80,0xad}<=fields(factory)
+current_reoffer=any(name.startswith(method('UpdateMagnarReoffer')) for name in n['symbols'])
+assert (0x180 if current_reoffer else (0x178 if current_pillik else (0x168 if current_start else 0x140))) in values(factory) and {0x68,0x78,0x80,0xad}<=fields(factory)
 verify_clock(n,method('UpdateLifecycle'),0xc0)
 assert not sites(n,ins(method('UpdateAI')),'?Update@FunctionProcessor@@')
 assert not sites(n,ins(method('Reset')),'?KillAllFunctions@FunctionProcessor@@')

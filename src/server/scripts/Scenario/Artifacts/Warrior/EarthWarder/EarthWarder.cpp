@@ -141,6 +141,7 @@ public:
             bool entryComplete = false, entryBusy = false, entryFailureReported = false;
         };
         std::shared_ptr<PillikProgress> pillikProgress = std::make_shared<PillikProgress>();
+        uint32 magnarReofferTimer = 0;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -666,6 +667,50 @@ public:
                     player->RemoveAurasDueToSpell(189721);
         }
 
+        void UpdateMagnarReoffer(uint32 diff)
+        {
+            if (!magnarChamberStarted || magnarArrivalPending || magnarStartToken)
+                return;
+            if (magnarOfferToken && !(magnarOfferReady && *magnarOfferToken && !IsMagnarOfferPosition()))
+                return;
+            if (magnarReofferTimer > diff)
+            {
+                magnarReofferTimer -= diff;
+                return;
+            }
+            magnarReofferTimer = 1000;
+            if (!IsMagnarOfferContext(me->GetInstanceId()) || !HasMagnarChamberRequest() ||
+                me->GetInstanceScript()->GetGuidData(PillikHandoff::Companion) != me->GetGUID() ||
+                me->isInCombat() || me->HasUnitState(UNIT_STATE_NOT_MOVE) ||
+                me->IsMovementPreventedByCasting() || !me->movespline->Finalized())
+                return;
+            Creature* boss = me->FindNearestCreature(96034, 60.0f, true);
+            if (!boss || boss->IsDespawn() || !boss->IsAIEnabled || !boss->AI() || boss->AI()->GetData(MagnarStart::Accepted))
+                return;
+            bool participant = false;
+            for (auto const& reference : me->GetMap()->GetPlayers())
+                if (IsMagnarIntroPlayer(reference.getSource()))
+                    participant = true;
+            if (!participant)
+                return;
+            MotionMaster* motion = me->GetMotionMaster();
+            if (motion->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+            {
+                auto* route = dynamic_cast<WaypointMovementGenerator<Creature>*>(motion->top());
+                if (!route || route->GetPathId() != 9859004 || !route->IsPathComplete())
+                    return;
+            }
+            if (magnarOfferToken)
+            {
+                magnarOfferReady = false;
+                magnarOfferToken.reset();
+                me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            }
+            // Reuse real point6 arrival and its complete original13s offer.
+            // MovePoint may revoke/destroy this AI; do not access it afterwards.
+            motion->MovePoint(6, 4763.73f, 340.87f, -37.19f);
+        }
+
         void UpdateMagnarIntro(uint32 diff)
         {
             if ((!magnarIntroPending && !magnarIntroFinished) || magnarChamberStarted || magnarIntroCasting)
@@ -1028,6 +1073,9 @@ public:
         void UpdateAI(uint32 diff) override
         {
             Creature* companion = me;
+            UpdateMagnarReoffer(diff);
+            if (companion->AI() != this || !companion->IsInWorld())
+                return;
             TryPillikEntry(diff);
             if (companion->AI() != this || !companion->IsInWorld())
                 return;
