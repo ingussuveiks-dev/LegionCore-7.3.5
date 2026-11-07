@@ -31,12 +31,27 @@
   },
   "configuration": "Canonical configurations/certificates/DLLs hash-preserved; no user or unknown process stopped. Only recorded task-owned worldserver startup was gracefully stopped; no hidden task server remains.",
   "cleanup": {
-    "status": "Pending verified local archive/temporary-output cleanup after implementation commit; follow-up audit records hashes/removal manifest and two retained rollback generations"
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/magnar-reset-2026-11-07",
+    "manifest_sha256": "d9e32954dc5d8bb5240c5a2972dc2fa8e6160175467e783532552ac94649aafb",
+    "original_files": 2296,
+    "cleanup_manifest_sha256": "78e11c48d2fea3738bd7318cca2f4dbde389a1c6eba92bc6c4956e91e188289b",
+    "removed_files": 553,
+    "logical_removed_bytes": 3760076795,
+    "local_deletion_manifest": ".codex/magnar-reset-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-magnar-reset-2026-11-07",
+      ".codex/release-before-hruthnir-reoffer-2026-11-07"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonical15DD64C5/12303ECE/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged"
   },
   "unresolved": [
     "Full client Arms/Fury/Protection/all36 traversal, actual combat/wipe/evade pathing, menu/audio/VFX, real loot/equip/manual return, camera/pet and reconnect remain separate. Native endpoint relocation is not client navigation.",
     "Fresh Hruthnir AI/cold routing and replacement of an already acknowledged boss AI remain OPEN. This repair covers actual live first-phase Reset, not actor disappearance/replacement or every reset policy.",
     "Next Warrior investigation: instance TryAdvanceMagnarGuards returns immediately after magnarGuardsDelivered. OnCreatureCreate only rebinds the original companion GUID; fresh Hruthnir starts without chamber receipt. Trace actual AI replacement/grid lifecycle against the same real instance/guard epoch before designing retry; do not fake guard credit or clear client progress.",
     "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff native evidence remain unresolved/untouched. Empty active Crashes only describes reviewed crash state."
-  ]
+  ],
+  "fix_commit": "55c709d4415163b68e9d21fc9c6fc2c330b92ab4"
 }
