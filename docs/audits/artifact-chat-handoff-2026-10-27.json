@@ -1,4 +1,32 @@
 {
+  "latest_marksmanship_resume_entrance_2026_11_07": {
+    "audit": "docs/audits/marksmanship-resume-entrance-2026-11-07.json",
+    "status": "DEPLOYED SQL-only through canonical updater: native Marksmanship1162/map1489/972 resume entrance restored. Full-schema TEMP16 refusals/idempotence/preservation,native baseline22 vs repaired30 and live RELEASED hash/linked Recorder/Scepter/retained arrival+return+Survival/canonical startup pass. Existing EXEs unchanged;client/full-character traversal remains separate.",
+    "runtime_sha256": {
+      "worldserver": "74c7409481bac3a82dc10abc3c45d77c8d2814cb2505575ffede30d147cb3d76",
+      "bnetserver": "c7ec67dd0c8f14e79b791191aad4480c0c0fdc819e4695e7f93699faacfb10ad"
+    },
+    "diagnostics": {
+      "result": "Before/after crash/log snapshots for all native/source/TEMP/PE/updater/startup tests;exit/stdout/stderr and appended diagnostics inspected. Final suites and two canonical starts have no new/changed crash or unexplained appended warnings/errors/assertions/DBErrors. One isolated development fixture invalid-step error is explicitly resolved as described above,not a client crash.",
+      "canonical_crashes": "empty",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "Shared LINK2 unresolved mixed log retained unchanged;never truncated."
+    },
+    "unresolved": [
+      "Already empty old Marksmanship checkpoints are not bootstrapped by the current Warrior/Survival-only early recovery;owned-bow/postclaim lost-instance handling and full persisted-character/group binding login remain independent followups. This repair lets a valid running instance record its native entrance going forward.",
+      "Actual client initial/re-entry/relog/death/flight/camera/pet/guardian/group/faction/abandonment/loot/return and complete972 route remain unverified by this component regression. Native supplied final event is not proof of real player/pet acquisition in the client.",
+      "Other shared1489 native LFG routes and their own entrance provenance remain separate;existing940 missing entrance and1243 coordinates are retained without assuming this Hunter source applies to them. Survival39427,all36 full chains,Stromkar visuals and shared LINK2/Slaghammer/mixed7111 stay OPEN."
+    ],
+    "cleanup": {
+      "status": "PENDING verified archive/exact generated-file cleanup after focused fix commit",
+      "retain": [
+        ".codex/release-before-survival-graveyard-2026-11-07",
+        ".codex/release-before-survival-login-recovery-2026-11-07"
+      ]
+    },
+    "checks": "TEMP16 source/route/custom/nullable refusals+idempotence/preservation;native baseline22 versus repaired/live30 and real floor/completed48210 cleanup;typed26972 catalog,RELEASED hash,strict linked Recorder,Scepter,MM arrival/return,live Survival,two clean canonical startups."
+  },
   "latest_survival_login_recovery_2026_11_07": {
     "audit": "docs/audits/survival-login-recovery-2026-11-07.json",
     "status": "DEPLOYED: missing/unusable Hunter973 login checkpoints recover through native198950 entrance; earned owned Talonclaw with real flight+claim receipts can leave rejected login through native190598 Dalaran exit. Source/native/linked PE/retained checks and canonical ready/shutdown pass. Full persisted-character/group/client traversal remains separate.",

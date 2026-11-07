@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED SQL-only through canonical updater: native Marksmanship1162/map1489/972 resume entrance restored. Full-schema TEMP16 refusals/idempotence/preservation,native baseline22 vs repaired30 and live RELEASED hash/linked Recorder/Scepter/retained arrival+return+Survival/canonical startup pass. Existing EXEs unchanged;client/full-character traversal remains separate.",
+  "cause": "Matching26972 LFG1162 selects Hunter972/map1489/difficulty12 with USER_TELEPORT_NOT_ALLOWED,so it legitimately bypasses user-LFG coordinate validation. It lacked lfg_entrances. Actual RecordScenarioEntrance therefore cannot record an older live run first observed at a later step/loading/transport. The source spell201674 and native destination already exist; a later saved combat location is not a safe new-instance entrance.",
+  "scope": "Only absent1162 entrance row from the real201674 destination1489/234.68/1950.91/-55.89/0.282743. No production C++/new ScriptName,quest prerequisite,character reset,item/quest/kill grant,teleport,scenario criteria persistence or flags change.",
+  "implementation": [
+    "Guarded migration02 requires exact existing201674 source and exactly one original972 wildcard1489/diff0/team0/class3/LFG0 route. Insert only absent1162;retain an existing matching row and its custom name. Refuse altered/missing source or route and custom/zero/nullable existing coordinates. The same safe predicate gates insertion even when a client continues after SIGNAL with --force.",
+    "Actual generic Recorder/Prepare/LFG/Scenario consumers already implement late-entry recovery. Ordinary first-entry pose and an existing legitimate checkpoint stay intact. Rejoin only same-boot exact live instance;new boot/numeric mismatch or destroyed map restarts972 at its real entrance with native constructor step0. No actor/criteria state is restored by this data repair.",
+    "Actual972 contains eight steps0..7;8 is the completed sentinel,not a valid SetCurrentStep input. Native final48210 updates through the real criteria dispatcher to8;completed Recorder clears the checkpoint. Retain that cleanup rather than replaying an earned acquisition.",
+    "All other LFG rows,whole spell_target_position and scenario_data tables remain byte-value hash-identical. Native map1489 is shared with other routes;shared940 control remains unchanged. LFG loader adds a generic instance cemetery entry,but the existing instance_tuure GetClosestGraveYard override still returns the supplied death pose and was not modified. Other class routes/flags/phase/AI remain unchanged.",
+    "No combat/killer dispatch changed. The only injected final48210 is a controlled native regression input,not a production grant. Player/pet/guardian/group kill eligibility and real pickup/return choreography remain the existing native/scripts behavior;this repair does not certify them."
+  ],
+  "local_evidence": {
+    "native26972": "Typed actual DB2 catalog lists all seven map1489 LFG entries;1162 is scenario972,difficulty12,flags75795458. Native201674 effect0/227 targets1/17 with misc0. Actual world SmartAI104835 has invoker201674 transfer. Actual wildcard1489/class3 route selects972. Native game bootstrap applies real data/hotfix consumers;raw catalog and live SQL findings are distinguished.",
+    "terrain": "Actual Map1489 LoadGrid/GetHeight supports native201674 destination within0.1 yard in the native regression. No guessed later combat/graveyard pose used.",
+    "history": "Fetched origin;main a2e551be1 matched origin at start. Consulted current Survival/Warrior login and entrance audits,matching local DB2/world records and production consumers before adapting the data-only fix. No incompatible modern core or unreviewed video behavior imported."
+  },
+  "checks": {
+    "TEMP16": "Full actual schemas,one-row insertion/idempotence/custom-name preservation and full other-row/whole source+route hashes. Sixteen independent altered/missing source/map/XYZ/orientation/route/class/team/difficulty/LFG/custom/zero/nullable refusals leave all managed tables unchanged;live tables unchanged across TEMP tests.",
+    "baseline22": "TEMP original absence of1162 with current native consumer. Human+Orc x7 later steps yield14 missing receipts;ordinary/existing/shared940 six controls and completed-sentinel cleanup2 retained. Explicit expected-broken counterfactual,not successful gameplay.",
+    "native30": "TEMP repaired and actual updater-installed live data.14 late records,ordinary/existing4,live/saved-boot/numeric mismatch6,shared940 two controls,actual final48210->completed8->checkpoint cleanup2,and destroyed Map/recycled numeric ID/native1162 constructor2. Real entry floor;no character DB writes or item grant. Earlier quest/stage/pose and final event input controlled;no full LoadFromDB/SaveToDB/client/group selection claim.",
+    "linked": "Strict composed canonical Recorder/LFG coordinate proof returns through the full verifier chain. Mandatory canonical Test-ScepterLogin -VerifyReleaseBinary and generic ScenarioResume source ASAN/linked checks pass. No new executable or stale link promotion.",
+    "retained": "MarksmanshipArrival,MarksmanshipReturnCaster and MarksmanshipReturnAdmission source/TEMP/selected Release checks;live Survival1178/1384 full-schema/native40/linked repair remains. Actual client travel,voice,scene,equipment,return/pet/group remain separate.",
+    "updater": "Owned worldserver PID=3208\nPASS owned PID=3208 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "final_startup": "Owned worldserver PID=2528\nPASS owned PID=2528 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "runtime": "Two owned canonical starts reach fresh ready,graceful server shutdown0/exit0/gone;stderr empty. World/bnet hashes unchanged and protected configs/certs/DLLs retained. No user/unknown server stopped.",
+    "preservation": "Original complete LFG fingerprint excluding independently verified1028/1162/1178/1384 and whole spell target/scenario route fingerprints match. Only new1162 plus updater RELEASED record persist."
+  },
+  "migration": {
+    "file": "sql/updates/world/2026_11_07_02_marksmanship_resume_entrance.sql",
+    "sha256": "b1c214c4c69d39345e844b79c0a79d5a9a0c4c61bfb07034621c18fe72ed4090",
+    "normalized_LF_sha1": "4dacf14fdbf00bb4953fd418f3c4626cfcf47b3b",
+    "live": "Exact native1162 and updater RELEASED normalized hash checked by Test-MarksmanshipResumeData -VerifyLiveData"
+  },
+  "development_evidence": [
+    "Initial private read-only discovery used unsupported SELECT literal,* syntax and guessed target-column aliases;queries failed without mutation and were corrected against the existing local schema. Initial typed catalog used the wrong capitalization for LfgDungeonsLoadInfo;compiler rejected it. Final captured private query/catalog files contain corrected results;earlier failures are visible in tool history,not claimed as separately retained raw stderr bytes.",
+    "Initial native fixture incorrectly tried SetCurrentStep(8) although real972 has eight steps0..7. Native core correctly rejected it and diagnostics wrapper failed. Preserved original failed runtime directory/Server.log. Fixture now explicitly verifies native count8,tests valid later steps1..7 and reaches completed8 only via actual48210 criteria. Passing baseline22/positive30/live30 pair resolves this fixture error;no production validation or log was disabled. The wholly reviewed inactive fixture error log is eligible for exact hash-verified archival/reset after commit;canonical mixed log is not."
+  ],
+  "diagnostics": {
+    "result": "Before/after crash/log snapshots for all native/source/TEMP/PE/updater/startup tests;exit/stdout/stderr and appended diagnostics inspected. Final suites and two canonical starts have no new/changed crash or unexplained appended warnings/errors/assertions/DBErrors. One isolated development fixture invalid-step error is explicitly resolved as described above,not a client crash.",
+    "canonical_crashes": "empty",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "Shared LINK2 unresolved mixed log retained unchanged;never truncated."
+  },
+  "unresolved": [
+    "Already empty old Marksmanship checkpoints are not bootstrapped by the current Warrior/Survival-only early recovery;owned-bow/postclaim lost-instance handling and full persisted-character/group binding login remain independent followups. This repair lets a valid running instance record its native entrance going forward.",
+    "Actual client initial/re-entry/relog/death/flight/camera/pet/guardian/group/faction/abandonment/loot/return and complete972 route remain unverified by this component regression. Native supplied final event is not proof of real player/pet acquisition in the client.",
+    "Other shared1489 native LFG routes and their own entrance provenance remain separate;existing940 missing entrance and1243 coordinates are retained without assuming this Hunter source applies to them. Survival39427,all36 full chains,Stromkar visuals and shared LINK2/Slaghammer/mixed7111 stay OPEN."
+  ],
+  "runtime_sha256": {
+    "worldserver": "74c7409481bac3a82dc10abc3c45d77c8d2814cb2505575ffede30d147cb3d76",
+    "bnetserver": "c7ec67dd0c8f14e79b791191aad4480c0c0fdc819e4695e7f93699faacfb10ad"
+  },
+  "cleanup": {
+    "status": "PENDING verified archive/exact generated-file cleanup after focused fix commit",
+    "retain": [
+      ".codex/release-before-survival-graveyard-2026-11-07",
+      ".codex/release-before-survival-login-recovery-2026-11-07"
+    ]
+  }
+}
