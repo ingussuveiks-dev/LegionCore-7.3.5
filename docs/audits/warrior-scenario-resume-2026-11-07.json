@@ -30,14 +30,29 @@
     "active_crashes": "empty"
   },
   "cleanup": {
-    "status": "PENDING verified resolved evidence archive and exact temporary/generated/third rollback cleanup after focused commit",
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/warrior-scenario-resume-2026-11-07",
+    "manifest_sha256": "6d9b57c8e1516a29c9945733d950029f3e660b7ed61cd99729f8c005392cb789",
+    "original_files": 1036,
+    "cleanup_manifest_sha256": "073e7350f7b8117ed76c641fdcf3d3214a88e890eaf727865737b9ed7786469c",
+    "removed_files": 139,
+    "logical_removed_bytes": 1687392952,
+    "local_deletion_manifest": ".codex/warrior-resume-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
     "retained": [
       ".codex/release-before-warrior-scenario-resume-2026-11-07",
       ".codex/release-before-magnar-duel-recreation-2026-11-07"
-    ]
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 134091071488,
+    "disk_free_after_bytes": 135772454912,
+    "observed_free_increase_bytes": 1681383424
   },
   "unresolved": [
     "Actual full character LoadFromDB/SaveToDB and client/server-process restart,loading/arrival/camera/pet/death/abandonment/complete-owned-pickup outro and all3 Warrior/all36 whole chains remain separate. This records a first checkpoint for an admitted player;it does not claim to seed recovery for an already empty/malformed saved checkpoint. Investigate that early-login path separately before changing native quest admission.",
     "101430/103151 missingLINK2/Slaghammer intro and mixed7111 remain OPEN/untouched. Bounded prior-data/newer-local-Trinity/GitHub follow-up establishes no authentic missing action;unrelated numeric search hits are not behavioral evidence. New read-only research note remains outside fixed at.codex/shared-link2-followup-open-2026-11-07/summary.json;prior raw runtime/cache and all personal backups retained."
-  ]
+  ],
+  "fix_commit": "326cd81179080c3ddd777d1af0b8a69f484e2671"
 }
