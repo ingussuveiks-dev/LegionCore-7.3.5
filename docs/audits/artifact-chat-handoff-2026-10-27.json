@@ -21,8 +21,27 @@
       "Shared LINK2/Slaghammer intro and mixed7111 remain OPEN;preserve raw native reproduction/cache/research unchanged."
     ],
     "cleanup": {
-      "status": "Pending focused commit,verified archive and exact redundant owned temporary outputs cleanup;no hidden server needs to remain running."
-    }
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/survival-graveyard-2026-11-07",
+      "manifest_sha256": "dc8a4885a2f87b20055a6674e94d7d848b58285a0dd40c408706d58b7261813c",
+      "original_files": 2111,
+      "cleanup_manifest_sha256": "7e9d436dd8e0477f2b54349823d9eb196fa37a1a595aaef34e10bd62d958c03d",
+      "removed_files": 320,
+      "logical_removed_bytes": 3062057143,
+      "local_deletion_manifest": ".codex/survival-graveyard-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-survival-graveyard-2026-11-07",
+        ".codex/release-before-warrior-graveyard-2026-11-07"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 132628267008,
+      "disk_free_after_bytes": 135692582912,
+      "observed_free_increase_bytes": 3064315904
+    },
+    "fix_commit": "1c2149d027bb355adc27469ea1dca8b00ed9d56b"
   },
   "latest_warswords_graveyard_2026_11_07": {
     "audit": "docs/audits/warswords-graveyard-2026-11-07.json",
