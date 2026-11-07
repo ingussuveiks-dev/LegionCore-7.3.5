@@ -25,7 +25,7 @@
     "fix": "Place the synthetic TEMP clone10yd away, beyond native duplicate threshold squared0.5; retain the duplicate validator, unchanged production data and readonly pools. Passing26 native cases and clean public counterfactual/current runs pair with original failed evidence. Do not relabel the failed probe as ordinary passing gameplay.",
     "db_errors_sha256": "5e6f60fef7836ecca63d670a18779652ec3f7fe247e4f97b403313edf66e977f",
     "server_log_sha256": "9e8fd4334cfde080b333a571d157f4f5904e477d5c11242fd6f566e2a8db5ade",
-    "maintenance": "After implementation commit and verified archive, reset only these two wholly reviewed inactive private logs with exact hash/reparse/process guards. Preserve canonical mixed logs and unrelated unresolved evidence."
+    "maintenance": "COMPLETE: original DBErrors and informational Server.log archived/hash-verified. Reset only the 562-byte wholly reviewed inactive private DBErrors.log; retained the informative Server.log unchanged. Canonical mixed7111 and unrelated unresolved evidence retained."
   },
   "prototype_review": [
     "Correct native loader spelling LoadGameobjects; fix fixture branch placement so refusal cases do not fall through an admitted reload assertion. Preserve original failed compiler/assertion outputs.",
@@ -39,11 +39,26 @@
   },
   "ownership": "Only recorded owned canonical worldserver startup, gracefully stopped; no user/unknown process stopped. Configurations/certificates/DLLs hash-preserved.",
   "cleanup": {
-    "status": "Pending implementation commit then verified archive/private reviewed-log maintenance/temporary generated-output cleanup; follow-up records hashes and two retained rollback generations"
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-barrier-2026-11-07",
+    "manifest_sha256": "c0b79f96afb9caed4b6000c632be946f1a0aaa5389a48b2494dc4a12f6e65151",
+    "original_files": 3123,
+    "cleanup_manifest_sha256": "b3dd8f5bed2c8dc4de131ede1a229b2e1c53ad9d1a5ece2f3c342ee724773b90",
+    "removed_files": 717,
+    "logical_removed_bytes": 5736972381,
+    "local_deletion_manifest": ".codex/hruthnir-barrier-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 1,
+    "retained": [
+      ".codex/release-before-hruthnir-barrier-2026-11-07",
+      ".codex/release-before-hruthnir-chamber-2026-11-07"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged"
   },
   "unresolved": [
     "Actual full client Arms/Fury/Protection/all36 navigation/menu/audio/VFX/combat/evade/pickup/equipment/manual return/camera/pet/reconnect remain separate. Real mesh rays and controlled native endpoints do not certify client traversal.",
     "Cold NPC reload far at the entrance still needs authored route/checkpoint investigation; this repair closes the exact door reload/physical barrier. A lone already-acknowledged boss AI replacement remains separate.",
     "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff native evidence remain OPEN/untouched. Empty active Crashes does not certify all quests or eliminate mixed legacy errors."
-  ]
+  ],
+  "fix_commit": "2e120885393c6a8a429a0d9486469aa8132a2c76"
 }
