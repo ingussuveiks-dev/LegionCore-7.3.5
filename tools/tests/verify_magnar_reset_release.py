@@ -2,6 +2,7 @@
 from pathlib import Path
 import runpy
 import struct
+import re
 from capstone import CS_OP_IMM, CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 
@@ -21,7 +22,14 @@ def check(n, ins):
     reset = ins('?Reset' + boss)
     cleanup, = sites(reset, '?DespawnAll@SummonList@@')
     notification, = sites(reset, '?ResetMagnarOffer' + hr)
-    has(reset[:cleanup], 'byte ptr [rcx + 0xd1], 0', 'byte ptr [rcx + 0xe8], 0', 'byte ptr [rcx + 0xd5], 0', 'r14b, 1', 'r14b, r14b')
+    has(reset[:cleanup], 'byte ptr [rcx + 0xd1], 0', 'byte ptr [rcx + 0xd5], 0', 'r14b, 1', 'r14b, r14b')
+    first=next(i for i,op in enumerate(reset) if op.mnemonic=='cmp' and op.op_str=='byte ptr [rcx + 0xd1], 0')
+    releasing=next(i for i,op in enumerate(reset) if op.mnemonic=='cmp' and op.op_str=='byte ptr [rcx + 0xd5], 0')
+    false=next(i for i,op in enumerate(reset) if op.mnemonic=='xor' and op.op_str=='r14b, r14b')
+    first_branch=next(op for op in reset[first+1:releasing] if op.mnemonic=='je')
+    assert first_branch.operands[0].imm==reset[false].address
+    assert reset[releasing+1].mnemonic=='jne' and reset[releasing+1].operands[0].imm==reset[false].address
+    assert not any(v.type==CS_OP_MEM and v.mem.disp==0xe8 for op in reset[:false] for v in op.operands),'Fresh replacement still requires its lost local encounterStarted claim'
     has(reset[cleanup:notification], 'byte ptr [rbx + 0xd5], r12b', 'byte ptr [rbx + 0xe8], r12b', 'r14b, r14b',
         'byte ptr [rdi + 0x858], r12b', 'qword ptr [rdi + 0x9c0], rbx', 'dword ptr [rdi + 0xa18], r12d',
         'byte ptr [rdi + 0x39c5], r12b', 'eax, 0x17722', 'dword ptr [rdi + 0xe0], 0x5d7', 'r8d, 0x429')
@@ -44,6 +52,14 @@ def check(n, ins):
                         casts.append(op)
     assert len(casts) == 2
     has(reset[notification - 2:notification], 'rdx, rdi', 'rcx, rax')
+    tail=reset[notification+1:]
+    assert [(op.mnemonic,op.op_str) for op in tail[:2]]==[('mov','rcx, qword ptr [rsp + 0x100]'),('xor','rcx, rsp')]
+    # The shared symbol reader intentionally indexes C++ names only. Bind the
+    # sole C stack-cookie helper from the same timestamp-verified linker map.
+    cookies={n['resolve'](int(m[1],16)) for m in re.finditer(r'\b__security_check_cookie\s+([0-9a-fA-F]{16})\s+f', (n['args'].release/'worldserver.map').read_text(errors='replace'))}
+    assert len(cookies)==1
+    assert tail[2].mnemonic=='call' and n['resolve'](tail[2].operands[0].imm) in cookies
+    assert all(op.mnemonic in ('add','pop','ret') for op in tail[3:]),'Notification can access a destroyed AI afterwards'
     factory = ins('?GetAI@npc_magnar_icebreaker@@')
     if sites(factory, '??0npc_magnar_icebreakerAI@npc_magnar_icebreaker@@'):
         factory += ins('??0npc_magnar_icebreakerAI@npc_magnar_icebreaker@@')
@@ -55,6 +71,17 @@ def check(n, ins):
                 if struct.unpack_from('<Q', n['binary'], offset + 0x28)[0] == n['symbol']('?Reset' + boss):
                     tables.append(offset)
     assert len(tables) == 1, 'Factory does not select tested Magnar Reset'
+    initialization=n['symbol']('?InitializeAI@ScriptedAI@@')
+    assert n['resolve'](struct.unpack_from('<Q',n['binary'],tables[0]+0x20)[0])==n['resolve'](initialization)
+    init=ins('?AIM_Initialize@Creature@@');old,=sites(init,'?AIM_Destroy@Creature@@')
+    installed=next(i for i,op in enumerate(init) if op.op_str=='qword ptr [rbx + 0x9c0], rdi')
+    initialize,=[i for i,op in enumerate(init) if op.mnemonic=='call' and op.op_str=='qword ptr [rax + 0x20]']
+    assert old<installed<initialize
+    has(init[installed:initialize],'byte ptr [rbx + 0x858], 1','dword ptr [rbx + 0xa18], 0')
+    lock=next(i for i,op in enumerate(init) if op.mnemonic=='cmp' and op.op_str=='byte ptr [rcx + 0x3a9d], 0')
+    assert init[lock+1].mnemonic=='je' and init[lock+1].operands[0].imm==init[old].address
+    native_init=ins('?InitializeAI@ScriptedAI@@')
+    assert any(op.mnemonic=='call' and op.op_str=='qword ptr [rax + 0x28]' for op in native_init),'Native InitializeAI does not call selected Reset'
 
     rearm = ins('?ResetMagnarOffer' + hr)
     cancel, = sites(rearm, '?CancelMagnarStart' + hr)
@@ -82,7 +109,7 @@ def check(n, ins):
     for body in (rearm,):
         for forbidden in ('?UpdateAchievementCriteria@Player@@', '?CompleteQuest@Player@@', '?AddItem@Player@@', '?NearTeleportTo@', '?MovePoint@MotionMaster@@', '?Talk@CreatureAI@@'):
             assert not sites(body, forbidden), 'Reset release bypasses ordinary progression/arrival'
-    print('PASS selected Magnar first-phase Reset: acknowledged same-boss GUID stored before claim, real Reset/reserve cleanup/current-generation guards then instance-owned typed companion release, suspended AI handling, real1062 false/guard epoch/scenario909-3, own497 cleanup last, no movement/progression grants. Native/source matrices and client wipe traversal remain separate.')
+    print('PASS selected Magnar first-phase Reset/replacement: native unlocked AIM_Destroy/install/enabled/alive/InitializeAI/vtable Reset handoff; first-phase/not-releasing predicate no longer requires a fresh AI local encounterStarted. Acknowledged same-boss GUID still required by companion,real reserve cleanup/current-generation guards precede typed current/suspended companion release,real1062 false/guard epoch/scenario909-3/own497 cleanup last,no movement/progression grants. Native/source matrices and client traversal remain separate.')
 
 
 if __name__ == '__main__':

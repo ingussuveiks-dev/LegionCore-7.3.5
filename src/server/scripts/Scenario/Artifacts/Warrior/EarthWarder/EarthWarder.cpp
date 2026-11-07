@@ -1355,7 +1355,9 @@ public:
         void Reset() override
         {
             Creature* actor = me;
-            bool retryFirstPhase = first_phase && encounterStarted && !releasingWave;
+            // InitializeAI also resets a replacement that has no local start
+            // claim. The companion owns the acknowledged same-boss receipt.
+            bool retryFirstPhase = first_phase && !releasingWave;
             ++reserveGeneration;
             uint32 generation = reserveGeneration;
             pendingActivation.clear();

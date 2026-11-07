@@ -1,4 +1,14 @@
 {
+  "latest_magnar_ai_replacement_2026_11_07": {
+    "audit": "docs/audits/magnar-ai-replacement-2026-11-07.json",
+    "status": "DEPLOYED 06C1DDF8/CF65DEAE: actual acknowledged first-phase Magnar AI replacement now cleans old reserve and releases exact same-boss companion receipt via native Reset; ordinary original13s/cached menu/6s retry retained.",
+    "fix_commit": "Implementation commit containing this audit; exact hash follows cleanup handoff",
+    "checks": "20 ASAN Reset caller and111 consumer cases/full wave matrices;40 Human/Orc active-status native replacement/refusal contexts;2 pinned expected-broken controls;selected Release/native initialize/vtable/Reset/receipt/last-access proof;retained Reset/chamber/cold/start/player-pet-guardian Kill/9 canonical groups/Scepter pass. Owned worldserver PID=10060\nPASS owned PID=10060 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "next": "Warrior mid-corridor Hruthnir AI cursor recovery;actual client/later-phase AI state/all36 remain OPEN. Earlier LINK2/mixed7111/Slaghammer retained.",
+    "cleanup": {
+      "status": "Pending focused implementation commit,verified diagnostic archive and deletion of redundant task output; follow-up records hashes/two rollback generations"
+    }
+  },
   "latest_hruthnir_cold_route_2026_11_07": {
     "audit": "docs/audits/hruthnir-cold-route-2026-11-07.json",
     "status": "DEPLOYED CAA6A34A/48FEFECF: original Protection companion can follow the authored corridor from a same-instance cold entrance recreation; no nearby boss needed for the corridor,original boss admission/point6/13s/6s still own encounter start.",

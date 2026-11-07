@@ -36,10 +36,13 @@ struct Position { float positionX, positionY, positionZ, orientation; };
 struct Creature;
 #include "StartHeader.inc"
 #include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
-// This wave fixture has no shared instance; native reset integration is
-// covered by MagnarResetNative, rather than a fabricated companion here.
-void MagnarStart::ResetOffer(Creature*, Creature*) { assert(false); }
-struct InstanceScript { ObjectGuid GetGuidData(uint32) { assert(false); return {}; } };
+// Ordinary wave fixtures have no shared instance. Only the focused Reset
+// notification cases opt into observing the bridge; real consumers are native.
+bool observeResetNotifications=false;
+std::vector<std::pair<Creature*,Creature*>> resetNotifications;
+std::function<void()> onResetNotification;
+void MagnarStart::ResetOffer(Creature* companion, Creature* boss) { assert(observeResetNotifications&&companion&&boss);resetNotifications.emplace_back(companion,boss);if(onResetNotification)onResetNotification(); }
+struct InstanceScript { ObjectGuid companion;ObjectGuid GetGuidData(uint32 type) { assert(type==PillikHandoff::Companion);return companion; } };
 struct TempSummon;
 struct Unit;
 struct CreatureAI
@@ -144,7 +147,8 @@ struct Creature : Unit
     virtual TempSummon* ToTempSummon() { return nullptr; }
     CreatureAI* AI() const { return ai; }
     CreatureAI* GetDisabledAI() const { return nullptr; }
-    InstanceScript* GetInstanceScript() const { return nullptr; }
+    InstanceScript* instanceScript = nullptr;
+    InstanceScript* GetInstanceScript() const { return instanceScript; }
     ObjectGuid GetGUID() const { return guid; }
     uint32 GetEntry() const { return entry; }
     uint32 GetMapId() const { return mapId; }
@@ -771,6 +775,16 @@ int main()
         for (auto const& summon : fixture.summons) assert(summon->despawns == 1);
         fixture.ai.DoAction(1); assert(fixture.summons.size() == 24 && fixture.ai.summons.actors.size() == 12);
     }
+    uint32 resetCases=0;
+    auto attach=[](Fixture&f,InstanceScript&instance){f.ally.guid={90001,&f.ally,1};instance.companion=f.ally.guid;f.map.actors[f.ally.guid]=&f.ally;f.actor.instanceScript=&instance;observeResetNotifications=true;resetNotifications.clear();onResetNotification={};};
+    for(bool first:{false,true})for(bool accepted:{false,true})for(bool releasing:{false,true}){
+        Fixture f(false);InstanceScript instance;attach(f,instance);f.ai.first_phase=first;f.ai.encounterStarted=accepted;f.ai.releasingWave=releasing;f.ai.Reset();assert(resetNotifications.size()==uint32(first&&!releasing));if(!resetNotifications.empty())assert(resetNotifications[0]==std::make_pair(&f.ally,&f.actor));++resetCases;
+    }
+    for(uint32 fault=0;fault<10;++fault){Fixture f(false);InstanceScript instance;attach(f,instance);CreatureAI other;switch(fault){case 0:f.actor.IsAIEnabled=false;break;case 1:f.actor.ai=&other;break;case 2:f.actor.world=false;break;case 3:f.actor.alive=false;break;case 4:f.actor.despawning=true;break;case 5:f.actor.entry=1;break;case 6:f.actor.mapId=1;break;case 7:f.actor.instanceScript=nullptr;break;case 8:instance.companion={99999,nullptr,1};break;case 9:f.map.actors.erase(f.ally.guid);break;}f.ai.Reset();assert(resetNotifications.empty());++resetCases;}
+    {Fixture f;InstanceScript instance;attach(f,instance);f.summons[0]->onDespawn=[&](Creature*){++f.ai.reserveGeneration;};f.ai.Reset();assert(resetNotifications.empty());++resetCases;}
+    {Fixture f(false);auto live=std::make_unique<Magnar>(&f.actor);InstanceScript instance;attach(f,instance);onResetNotification=[&]{f.actor.ai=nullptr;live.reset();};live->Reset();assert(!live&&resetNotifications.size()==1);onResetNotification={};f.actor.ai=&f.ai;++resetCases;}
+    observeResetNotifications=false;
+    std::cout<<"PASS reset notification actual-method cases="<<resetCases<<": fresh and accepted first-phase Reset use the same companion bridge; second-phase/releasing/actor/instance/GUID refusals and lost cleanup epoch retained; actual AI deletion during notification is last access. Consumer acknowledgement and actual native replacement independently tested.\n";
     std::cout << "PASS: extracted native wave/start/update/death methods retain2/2/1/2/3 counted opponents and two auxiliary windshapers, player/pet/guardian notifications, once-only tracked deaths and original final Windwall/80pct/46427 requests. Live/duplicate/unselected/null/stale-reset callbacks cannot advance; activation-time deaths defer until stable snapshot release. Combat-gated498 resumes once after waves/victim/casting gates and Reset clears its pending event. Missing actors do not grant completion; replacement/retry/full Reset and client combat/VFX remain open.\n";
     std::cout << "PASS:40 faction/status/source wave-credit combinations prefer actual player/pet/guardian/charmer owner over eligible peers; dead owner remains eligible.19 invalid contexts retain the protected completed-wave state and retry before victim/cast/stun gates only after readmission. Missing/null/unavailable owner uses eligible native-map fallback, Reset cancels pending credit, and reentrant flag/credit/death/tick calls cannot duplicate46427. Shared scenario services controlled, not actual multiplayer/client traversal.\n";
     std::cout << "PASS:28 invalid start requests do not spawn, move, change flags or consume a start; explicit readmitted retry succeeds. Four faction/status starts claim before reentrant summon/flag callbacks; duplicate requests cannot add12 actors, discard reserve/active GUIDs or postpone timers before/during/after waves. Full encounter rebuild, missing-spawn recovery and client traversal remain open.\n";

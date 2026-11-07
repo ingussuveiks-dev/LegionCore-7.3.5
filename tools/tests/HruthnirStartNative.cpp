@@ -71,13 +71,15 @@ int main(int argc,char**argv){try{
      Require(boss->AIM_Initialize(new MagnarAI(boss.get())),"Native first-phase AI replacement failed");map.RemoveAllObjectsInRemoveList();
      for(auto guid:roster)Require(!map.GetCreature(guid),"Replaced native AI orphaned its reserve");
      Require(!boss->Brain().GetData(MagnarStart::Accepted)&&!WaveCredit(scenario),"AI cleanup gave progress/retained old acknowledgement");
-     boss->Brain().DoAction(1);auto replacement=boss->Brain().reserveGUIDs;Require(replacement[11],"Native replacement did not restart its owned reserve");
-     for(auto guid:replacement)for(auto old:roster)Require(guid!=old,"Native replacement reused stale reserve identity");
-     roster=replacement;
+     Require(!brain.magnarStartToken&&!brain.magnarStartedBoss&&!StartStories(map),"Native replacement did not retire its acknowledged companion request/story");
+     // MagnarReplacementNative covers the original13s/cached-option/6s retry.
+     // Never manually DoAction1 here: that bypass masked the missing reoffer.
     }
-    brain.MovementInform(POINT_MOTION_TYPE,7);brain.TryMagnarStart();companion.Tick(10000);
-    Require(boss->Brain().reserveGUIDs==roster&&StartStories(map)==1&&!WaveCredit(scenario),"Repeated native start duplicated reserve/story/credit");
-    boss->Brain().Reset();map.RemoveAllObjectsInRemoveList();for(auto guid:roster)Require(!map.GetCreature(guid),"Native reset retained a reserve actor");
+    else {
+     brain.MovementInform(POINT_MOTION_TYPE,7);brain.TryMagnarStart();companion.Tick(10000);
+     Require(boss->Brain().reserveGUIDs==roster&&StartStories(map)==1&&!WaveCredit(scenario),"Repeated native start duplicated reserve/story/credit");
+     boss->Brain().Reset();map.RemoveAllObjectsInRemoveList();for(auto guid:roster)Require(!map.GetCreature(guid),"Native reset retained a reserve actor");
+    }
    }
    pause.reset();brain.Reset();CleanStories(map);boss.reset();owner.reset();session->SetPlayer(nullptr);
    std::cout<<"PASS native Hruthnir start race="<<race<<" mode="<<mode<<": actual497/Unit queue/quest receipt/shared entry/Magnar acknowledgement; no player progress or character save; earlier escort/menu endpoint controlled\n";
