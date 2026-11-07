@@ -35,12 +35,27 @@
   "ownership": "Only recorded owned canonical worldserver launched; gracefully shutdown0/exit0/gone,empty stderr. No user/unknown server stopped; configurations/certs/DLL hashes preserved.",
   "database": "Read-only native sessions,scoped TEMP creature_text and synthetic unsaved Player/Creature endpoints;no repair SQL/schema/updater or direct persistent character/health/gear/progress edits. Canonical startup retains ordinary native database housekeeping; native regression sessions are read-only apart from verified TEMP setup. Credentials/configs/runtime logs/dumps/character data excluded from Git.",
   "cleanup": {
-    "status": "Pending focused implementation commit,verified archive and redundant temporary-output deletion; follow-up records hashes and retained two rollback generations"
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-route-2026-11-07",
+    "manifest_sha256": "fdf2db4aee44743476e89c94eb3ba7c8565a98f821d7bcf289400966f16fa924",
+    "original_files": 4245,
+    "cleanup_manifest_sha256": "fc73a96f4a9bfa2171292adb89ce32678533a5e48571477ed33bd01c0101ce86",
+    "removed_files": 948,
+    "logical_removed_bytes": 7256700287,
+    "local_deletion_manifest": ".codex/hruthnir-route-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-hruthnir-route-2026-11-07",
+      ".codex/release-before-hruthnir-barrier-2026-11-07"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged"
   },
   "unresolved": [
     "Actual client corridor navigation/dynamic first gates/visual/audio/menu/camera/pet/reconnect and full Arms/Fury/Protection/all36 traversal remain separate. Native static navigation/full spline movement plus controlled following Player do not certify every dynamic actor/GO/client path.",
     "Replacing only Hruthnir AI mid-corridor away from the DB entrance can lose the route cursor; this scope certifies DB recreation at the original entrance and same-AI movement interruption/epoch retirement, not arbitrary mid-corridor AI-cursor persistence. Actual AI deletion test certifies safety, not automatic cursor recovery.",
     "A lone already-acknowledged Magnar boss AI replacement remains separate: source trace shows fresh AI InitializeAI/Reset has encounterStarted=false, so retryFirstPhase remains false while companion retains the old accepted token. Earlier HruthnirStartNative mode6 manually calls new boss DoAction1 and therefore does not certify automatic reoffer; needs its own pinned reproduction/repair. Cold recovery requires the legitimate same-live-instance delivered receipt; no arbitrary new instance or server-restart progression restoration is claimed.",
     "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff evidence remain OPEN/untouched. Empty active Crashes does not certify every quest or resolve legacy mixed errors."
-  ]
+  ],
+  "fix_commit": "c30bf20441739bf3bafa57ab0458546dfbcd1a74"
 }
