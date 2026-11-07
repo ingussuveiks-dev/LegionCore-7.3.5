@@ -47,10 +47,25 @@
     "bnetserver": "c7ec67dd0c8f14e79b791191aad4480c0c0fdc819e4695e7f93699faacfb10ad"
   },
   "cleanup": {
-    "status": "PENDING verified archive and exact temporary cleanup after focused fix commit",
-    "retain": [
-      "C:/wamp64/www/LegionCore-7.3.5/.codex/release-before-survival-login-recovery-2026-11-07",
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/survival-login-recovery-2026-11-07",
+    "manifest_sha256": "cdc628439b803bac047c56063de09b3a83310f0c4d36e02b763288b0887deb4b",
+    "original_files": 2129,
+    "cleanup_manifest_sha256": "01fe80c7365ae7b7414c83530c013f98a419b8cb7161a029d6db2449b449ba2e",
+    "removed_files": 432,
+    "logical_removed_bytes": 3573561716,
+    "local_deletion_manifest": ".codex/survival-login-recovery-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-survival-login-recovery-2026-11-07",
       ".codex/release-before-survival-graveyard-2026-11-07"
-    ]
-  }
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 132089884672,
+    "disk_free_after_bytes": 135651573760,
+    "observed_free_increase_bytes": 3561689088
+  },
+  "fix_commit": "c6506ffbaebb00edbc5fdff557c533388e4bfa0d"
 }
