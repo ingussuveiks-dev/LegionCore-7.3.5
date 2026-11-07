@@ -365,6 +365,8 @@ public:
                     return magnarGuardCreditSent;
                 case 1060:
                     return magnarGuardGeneration;
+                case MagnarStart::ChamberDelivered:
+                    return magnarGuardCreditSent && magnarGuardsDelivered;
                 case DATA_YRGRIM_EVENT:
                     return igrimEvent;
                 default:

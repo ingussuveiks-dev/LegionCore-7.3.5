@@ -694,6 +694,24 @@ public:
                     player->RemoveAurasDueToSpell(189721);
         }
 
+        void RestoreMagnarChamber()
+        {
+            // A new AI/actor can lose its local chamber state while the real
+            // instance retains the completed scene/guard handoff. Restore only
+            // that receipt; the ordinary reoffer still owns all motion/timers.
+            if (magnarChamberStarted || magnarIntroPending || magnarIntroFinished ||
+                magnarArrivalPending || magnarStartToken || magnarOfferToken || magnarIntroInstanceGeneration ||
+                !IsMagnarOfferContext(me->GetInstanceId()))
+                return;
+            InstanceScript* instance = me->GetInstanceScript();
+            if (!instance || !instance->GetData(MagnarStart::ChamberDelivered) || !instance->GetData(1059) ||
+                instance->GetGuidData(PillikHandoff::Companion) != me->GetGUID())
+                return;
+            magnarIntroInstanceGeneration = instance->GetData(1060);
+            magnarChamberStarted = true;
+            _introDone = true;
+        }
+
         void UpdateMagnarReoffer(uint32 diff)
         {
             if (!magnarChamberStarted || magnarArrivalPending || magnarStartToken)
@@ -1077,6 +1095,7 @@ public:
             if (who->GetTypeId() != TYPEID_PLAYER)
                 return;
 
+            RestoreMagnarChamber();
             if (!_introDone && me->IsWithinDistInMap(who, 20.0f))
             {
                 _introDone = true;
@@ -1100,6 +1119,7 @@ public:
         void UpdateAI(uint32 diff) override
         {
             Creature* companion = me;
+            RestoreMagnarChamber();
             UpdateMagnarReoffer(diff);
             if (companion->AI() != this || !companion->IsInWorld())
                 return;

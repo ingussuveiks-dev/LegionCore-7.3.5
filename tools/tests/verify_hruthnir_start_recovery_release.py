@@ -100,4 +100,6 @@ def check(native, instructions):
         runpy.run_path(str(Path(__file__).with_name('verify_hruthnir_reoffer_release.py')))['check'](native, instructions)
     if any(name.startswith('?ResetMagnarOffer' + hr) for name in native['symbols']):
         runpy.run_path(str(Path(__file__).with_name('verify_magnar_reset_release.py')))['check'](native, instructions)
+    if any(name.startswith('?RestoreMagnarChamber' + hr) for name in native['symbols']):
+        runpy.run_path(str(Path(__file__).with_name('verify_hruthnir_chamber_release.py')))['check'](native, instructions)
     print('PASS selected Hruthnir retry: acknowledged497 -> original6000ms cue, weak Unit queue/1000ms retry, original GUID/quest receipt/current-or-suspended identity, same-boss native1062 before claim, re-entry receipt adoption and first-phase owned-reserve destructor. No recovery progress/item/teleport grants; source/native matrices and client traversal remain separate.')

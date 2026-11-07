@@ -162,11 +162,11 @@ struct GameObject
 };
 struct InstanceScript
 {
-    bool credit = true, pillikDead = false;
+    bool credit = true, pillikDead = false, chamberDelivered = false;
     ObjectGuid pillikActor{2,1}, pillikOwner = ObjectGuid::Empty, pillikCompanion{1,1};
     ObjectGuid GetGuidData(uint32 type) const { if(type==PillikHandoff::Actor)return pillikActor;if(type==PillikHandoff::Recipient)return pillikOwner;assert(type==PillikHandoff::Companion);return pillikCompanion; }
     uint32 generation = 1;
-    uint32 GetData(uint32 identity) const { if(identity==PillikHandoff::Death)return pillikDead;assert(identity == 1059 || identity == 1060); return identity == 1059 ? uint32(credit) : generation; }
+    uint32 GetData(uint32 identity) const { if(identity==MagnarStart::ChamberDelivered)return credit&&chamberDelivered;if(identity==PillikHandoff::Death)return pillikDead;assert(identity == 1059 || identity == 1060); return identity == 1059 ? uint32(credit) : generation; }
     void HandleGameObject(ObjectGuid, bool) { assert(false); }
 };
 struct Map
@@ -434,6 +434,7 @@ struct HruthnirAI : CreatureAI
 #include "AIFields.inc"
 #include "StartRecovery.inc"
 #include "Reoffer.inc"
+#include "RestoreChamber.inc"
 #include "PillikRecovery.inc"
 #include "AISelect.inc"
 #include "AIReset.inc"
@@ -531,7 +532,9 @@ struct Fixture
 };
 int main()
 {
-#if defined(RESET_ONLY)
+#if defined(CHAMBER_ONLY)
+#include "ChamberCases.inc"
+#elif defined(RESET_ONLY)
 #include "ResetCases.inc"
 #elif defined(REOFFER_ONLY)
 #include "ReofferCases.inc"

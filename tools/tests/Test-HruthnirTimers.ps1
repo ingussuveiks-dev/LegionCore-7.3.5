@@ -27,7 +27,10 @@ function TimerMethods([string]$selected){
   $movement=$movement.Replace('QueuePillikHandoff();','').Replace('[this, weak = std::weak_ptr<PillikProgress>(pillikProgress)]','[this]')
   $movement=$movement.Replace('auto state = weak.lock();','').Replace('if (!state || pillikProgress != state || !ArmPillikHandoff())'+"`n"+'                            return;','')
  }
- return ($evade+$movement+(Block $selected 'void MoveInLineOfSight(')+(Block $selected 'void DamageTaken('))
+ # Only the new admission prefix differs; its actual positive/negative policy
+ # is tested separately. All six authored clock callback bodies stay exact.
+ $los=(Block $selected 'void MoveInLineOfSight(').Replace('RestoreMagnarChamber();','')
+ return ($evade+$movement+$los+(Block $selected 'void DamageTaken('))
 }
 $normalized=(TimerMethods $actor).Replace('_presentationFunctions.AddDelayedEvent(', 'me->AddDelayedEvent(').Replace('sCreatureTextMgr->SendChat(targ, 5);','targ->AI()->Talk(5);')
 if((Shape $normalized) -cne (Shape (TimerMethods $oldActor))){throw 'Authored escort/timer callback behavior changed'}
