@@ -2,14 +2,32 @@
   "latest_magnar_recreation_2026_11_07": {
     "audit": "docs/audits/magnar-recreation-2026-11-07.json",
     "status": "DEPLOYED; original first-phase DB boss recreation/owned cleanup source/native72/selected Release/retained regressions and owned startup pass; full client and whole-map restart separate",
-    "fix_commit": "PENDING focused commit; filled during verified cleanup",
+    "fix_commit": "601e1b576a2b779b0e222983fba57134b5f4ea8b",
     "checks": "ASAN bridge66/caller125,wave/finale/guard scopes;native actual DB recreation72(48 admitted,24 scoped refusal including6 known pending genuine4 controls);2 pinned counterfactuals;8 installed PE;retained combat60/reoffer16/Reset16/start14/waves24,real loot/return/Scepter. Owned worldserver PID=24328\nPASS owned PID=24328 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
     "runtime_sha256": {
       "bnetserver": "B1B91AE99158D9F6D3B7A53DAAF966E6EAA744E2F71769ADF06749F7AF188EAE",
       "worldserver": "21FC59C5AE39A6FE5F0646AD71B9C4B97E10C3987FB11A1EF74C0ED6FD5D7A45"
     },
     "cleanup": {
-      "status": "PENDING focused commit and verified archive/temporary cleanup; relevant final regressions and owned startup passed"
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/magnar-recreation-2026-11-07",
+      "manifest_sha256": "34dc4b43e36e4e241de01946eb3b963d39fa6d9d942a6f6632f787e3d49fa527",
+      "original_files": 5150,
+      "cleanup_manifest_sha256": "1a5ec2da11fa216c5077dc3ca41331c3ce2a62841842374aaaa5d79b7f0bb246",
+      "removed_files": 448,
+      "logical_removed_bytes": 4197314332,
+      "local_deletion_manifest": ".codex/magnar-recreation-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-magnar-recreation-2026-11-07",
+        ".codex/release-before-magnar-combat-2026-11-07"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 127310303232,
+      "disk_free_after_bytes": 131508805632,
+      "observed_free_increase_bytes": 4198502400
     },
     "unresolved": [
       "Actual full client Arms/Fury/Protection and all36 chains,combat/wipes/failed movement,camera/pet/reconnect,audio/VFX,equipment/return remain separate. Controlled receipts/endpoints and selected binary evidence do not certify whole quest chains.",
