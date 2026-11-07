@@ -59,34 +59,37 @@ def verify_endpoint(entries, owner_operand, radius_register, load_radius=True, r
         assert native['binary'][native['offset'](address):native['offset'](address) + 4] == struct.pack('<f', value), 'Wrong point6 endpoint/radius constant'
 
 movement = instructions('?MovementInform' + suffix)
-context = positions(movement, context_name)[0]
+cold_route = any(name.startswith('?UpdateMagnarChamberRoute' + suffix) for name in native['symbols'])
+owner = 'rdi' if cold_route else 'rbx'
+legacy_home = positions(movement, '?SetHomePosition@Creature@@QEAAXMMMM')[0]
+context = next(index for index in positions(movement, context_name) if index > legacy_home)
 queue = next(index for index in positions(movement, '?AddDelayedEvent@FunctionProcessor@@')
              if movement[index - 1].op_str == 'edx, 0x32c8')
 assert context < queue
 deny = movement[context + 2].operands[0].imm
 assert movement[context + 1].op_str == 'al, al' and movement[context + 2].mnemonic == 'je'
 comparison = next(index for index, entry in enumerate(movement) if index > context and entry.mnemonic == 'comiss')
-request = positions(movement, '?HasMagnarChamberRequest' + suffix)
+request = [index for index in positions(movement, '?HasMagnarChamberRequest' + suffix) if context < index < queue]
 assert len(request) == 1 and request[0] == context + 4
-assert movement[request[0] - 1].op_str == 'rcx, rbx'
+assert movement[request[0] - 1].op_str == f'rcx, {owner}'
 assert movement[request[0] + 1].op_str == 'al, al' and movement[request[0] + 2].mnemonic == 'je' and movement[request[0] + 2].operands[0].imm == deny
-verify_endpoint(movement[request[0] + 3:comparison + 1], 'rcx, qword ptr [rbx + 0x20]', 'xmm0', retain_home_x=True)
+verify_endpoint(movement[request[0] + 3:comparison + 1], f'rcx, qword ptr [{owner} + 0x20]', 'xmm0', retain_home_x=True)
 assert movement[comparison + 1].mnemonic == 'jb' and movement[comparison + 1].operands[0].imm == deny
 home = next(index for index in positions(movement, '?SetHomePosition@Creature@@QEAAXMMMM') if context < index < queue)
 allocation = next(index for index, entry in enumerate(movement) if home < index < queue and entry.op_str == 'ecx, 0x18')
 assert comparison < home < allocation, 'Arrival must precede home and offer-token allocation'
 zero_register = 'r15' if any(name.startswith('?TryPillikHandoff' + suffix) for name in native['symbols']) else 'r14'
-assert any(entry.op_str == f'byte ptr [rbx + 0xac], {zero_register}b' for entry in movement[home:allocation])
+assert any(entry.op_str == f'byte ptr [{owner} + 0xac], {zero_register}b' for entry in movement[home:allocation])
 assert any(entry.mnemonic == 'xor' and entry.op_str == f'{zero_register}d, {zero_register}d' for entry in movement[:context])
 assert len(positions(movement[home:allocation], '?RemoveFlag@Object@@')) == 1
-for operand in (f'qword ptr [rbx + 0x78], {zero_register}', f'byte ptr [rbx + 0x5d], {zero_register}b', f'qword ptr [rbx + 0x60], {zero_register}'):
+for operand in (f'qword ptr [{owner} + 0x78], {zero_register}', f'byte ptr [{owner} + 0x5d], {zero_register}b', f'qword ptr [{owner} + 0x60], {zero_register}'):
     check = next(index for index, entry in enumerate(movement[:context]) if entry.mnemonic == 'cmp' and entry.op_str == operand)
     assert movement[check + 1].mnemonic == 'jne' and movement[check + 1].operands[0].imm == deny
 assert any(entry.op_str == f'byte ptr [rcx], {zero_register}b' for entry in movement[context:queue])
-assert any(entry.mnemonic == 'lea' and entry.op_str == 'rcx, [rbx + 0x78]' for entry in movement[context:queue])
-assert any(entry.mnemonic == 'lock inc' and entry.op_str == 'dword ptr [rdi + 0xc]' for entry in movement[context:queue]), 'Offer queue does not capture a weak owner'
+assert any(entry.mnemonic == 'lea' and entry.op_str == f'rcx, [{owner} + 0x78]' for entry in movement[context:queue])
+assert any(entry.mnemonic == 'lock inc' and entry.op_str == ('dword ptr [rbx + 0xc]' if cold_route else 'dword ptr [rdi + 0xc]') for entry in movement[context:queue]), 'Offer queue does not capture a weak owner'
 assert any(entry.op_str == 'r12d, dword ptr [r15 + 0x3b8]' for entry in movement[context:queue])
-capture = 'dword ptr [rbp - 0x68], r12d' if any(name.startswith('?TryPillikEntry' + suffix) for name in native['symbols']) else ('dword ptr [rbp - 0x58], r12d' if zero_register == 'r15' else 'dword ptr [rbp - 0x48], r12d')
+capture = 'dword ptr [rbp - 0x58], r12d' if cold_route else ('dword ptr [rbp - 0x68], r12d' if any(name.startswith('?TryPillikEntry' + suffix) for name in native['symbols']) else ('dword ptr [rbp - 0x58], r12d' if zero_register == 'r15' else 'dword ptr [rbp - 0x48], r12d'))
 assert any(entry.op_str == capture for entry in movement[context:queue])
 assert any(entry.op_str == 'rcx, 0x36a0' for entry in movement[context:queue])
 assert any(entry.op_str == 'dl, 0xf' for entry in movement[context:queue]), 'Native Talk15 was lost'

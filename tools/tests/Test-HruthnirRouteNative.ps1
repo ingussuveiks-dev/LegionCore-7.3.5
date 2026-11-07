@@ -1,0 +1,17 @@
+param()
+$ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+$out="$repo/build-extractors/runtime-test/hruthnir-route-native/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
+New-Item -ItemType Directory -Force "$out/logs"|Out-Null
+$canonical="$repo/build-extractors/bin/Release/worldserver.conf";$hash=(Get-FileHash $canonical).Hash
+$config=Get-Content $canonical -Raw;$config=[regex]::Replace($config,'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$out.Replace('\','/')+'/logs"'));[IO.File]::WriteAllText("$out/worldserver.conf",$config)
+$prior=$env:LEGION_DIALOGUE_CONFIG;$priorCompiler=$env:CL;$priorLink=$env:_LINK_
+Push-Location "$repo/build-extractors/bin/Release"
+try{
+ $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:CL="$priorCompiler /DNDEBUG /Zi /Fd`"$out/compiler.pdb`" /I`"$repo/src/server/scripts/Legion`"";$env:_LINK_="$priorLink /DEBUG /PDB:`"$out/native.pdb`" /MAP:`"$out/native.map`""
+ & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
+  & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile '../tests/HruthnirRouteNative.cpp' -ProbeName 'HruthnirRouteNative' -OutputFile "$out/native.tsv" *> "$out/catalog.log"
+  if(!$? -or $LASTEXITCODE){throw "Actual native route probe failed; inspect $out/catalog.log and native.tsv"}
+  Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(SEGMENT|PASS)'}
+ }
+}finally{$env:LEGION_DIALOGUE_CONFIG=$prior;$env:CL=$priorCompiler;$env:_LINK_=$priorLink;Pop-Location}
+if((Get-FileHash $canonical).Hash -ne $hash){throw 'Canonical config changed'}

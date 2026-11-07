@@ -1,4 +1,14 @@
 {
+  "latest_hruthnir_cold_route_2026_11_07": {
+    "audit": "docs/audits/hruthnir-cold-route-2026-11-07.json",
+    "status": "DEPLOYED CAA6A34A/48FEFECF: original Protection companion can follow the authored corridor from a same-instance cold entrance recreation; no nearby boss needed for the corridor,original boss admission/point6/13s/6s still own encounter start.",
+    "fix_commit": "Implementation commit containing this audit; exact hash follows cleanup handoff",
+    "checks": "76 ASAN actual-method cases,14 Human/Orc native full spline/arrival cases,2 pinned expected-broken cold entrance controls,12 matching geometry legs,selected Release/old clocks and9 retained canonical groups pass. Owned worldserver PID=20128\nPASS owned PID=20128 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "next": "Warrior lone acknowledged boss-AI replacement and mid-corridor companion AI-cursor recovery;actual client/dynamic gates/full36 remain OPEN. Existing mixed7111/LINK2/Slaghammer retained.",
+    "cleanup": {
+      "status": "Pending focused implementation commit,verified archive and redundant temporary-output deletion; follow-up records hashes and retained two rollback generations"
+    }
+  },
   "latest_hruthnir_barrier_2026_11_07": {
     "audit": "docs/audits/hruthnir-barrier-recovery-2026-11-07.json",
     "status": "DEPLOYED06B7694D/995A36BE: exact original Protection barrier now opens through native DOOR state and retains phase4/release on real new-GUID DB reload; before-publication recovery and post-native-hook epoch/actor guards.",

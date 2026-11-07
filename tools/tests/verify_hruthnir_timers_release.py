@@ -57,7 +57,8 @@ assert sites(n,destroy,method('CancelMagnarIntro'))[0]<destruct
 assert sites(n,destroy,'?Remove@Conversation@@')[0]<destruct
 current_reoffer=any(name.startswith(method('UpdateMagnarReoffer')) for name in n['symbols'])
 current_reset=any(name.startswith(method('ResetMagnarOffer')) for name in n['symbols'])
-assert (0x190 if current_reset else (0x180 if current_reoffer else (0x178 if current_pillik else (0x168 if current_start else 0x140)))) in values(factory) and {0x68,0x78,0x80,0xad}<=fields(factory)
+current_cold_route=any(name.startswith(method('UpdateMagnarChamberRoute')) for name in n['symbols'])
+assert (0x198 if current_cold_route else (0x190 if current_reset else (0x180 if current_reoffer else (0x178 if current_pillik else (0x168 if current_start else 0x140))))) in values(factory) and {0x68,0x78,0x80,0xad}<=fields(factory)
 verify_clock(n,method('UpdateLifecycle'),0xc0)
 assert not sites(n,ins(method('UpdateAI')),'?Update@FunctionProcessor@@')
 assert not sites(n,ins(method('Reset')),'?KillAllFunctions@FunctionProcessor@@')
@@ -69,7 +70,7 @@ for body,expected in zip(parents,[[(0xc0,5000)],movement_queues,[(0xc0,5000)]]):
  queued=sites(n,body,'?AddDelayedEvent@FunctionProcessor@@');assert len(queued)==len(expected)
  for at,(member,delay) in zip(queued,expected):
   window=[(op.mnemonic,op.op_str) for op in body[max(0,at-12):at]]
-  owner=('lea','rcx, [rbx + 0xc0]') if member==0xc0 else ('add','rcx, 0x36a0')
+  owner=('lea','rcx, [rdi + 0xc0]' if current_cold_route and body is parents[1] else 'rcx, [rbx + 0xc0]') if member==0xc0 else ('add','rcx, 0x36a0')
   assert owner in window and ('mov',f'edx, {delay:#x}') in window,(member,delay,window)
 callbacks=[name for name in n['symbols'] if name.startswith('?_Do_call@') and 'npc_hrutnirAI@' in name]
 current_approach=any(name.startswith(method('ScheduleMagnarApproach')) for name in n['symbols'])

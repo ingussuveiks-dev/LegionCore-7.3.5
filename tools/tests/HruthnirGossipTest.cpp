@@ -12,6 +12,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include <set>
 using uint32 = uint32_t;
 using uint64 = uint64_t;
 using int32 = int32_t;
@@ -205,7 +206,7 @@ struct MotionMaster
     std::function<void()> reenter;
     void MovePoint(uint32 point, float positionX, float positionY, float positionZ)
     {
-        assert((point == 2 && positionX == 4809.14f && positionY == 164.68f && positionZ == -11.20f) || (point == 7 && positionX == 4720.80f && positionY == 347.91f && positionZ == -37.71f) ||
+        assert(point == 8 || (point == 2 && positionX == 4809.14f && positionY == 164.68f && positionZ == -11.20f) || (point == 7 && positionX == 4720.80f && positionY == 347.91f && positionZ == -37.71f) ||
             (point == 6 && positionX == 4763.73f && positionY == 340.87f && positionZ == -37.19f));
         ++moves;
         type = POINT_MOTION_TYPE;
@@ -248,6 +249,9 @@ public:
     float distance = 4.0f;
     float arrivalDistanceSq = 0.0f;
     float offerDistanceSq = 0.0f;
+    bool coldRouteGeometry = false;
+    std::set<uint32> phases{6999};
+    auto const& GetPhases() const { return phases; }
     uint32 entry = 96468, mapId = 1495, instance = 42, flags = 1, LastUsedScriptID = 7;
     uint32 unitFlags = 0x2000380, react = 0;
     Map* map = &instanceMap;
@@ -278,6 +282,8 @@ public:
     void DespawnOrUnsummon(uint32) { assert(false); }
     float GetExactDistSq(float positionX, float positionY, float positionZ) const
     {
+        if(coldRouteGeometry) return (pose[0]-positionX)*(pose[0]-positionX)+(pose[1]-positionY)*(pose[1]-positionY)+(pose[2]-positionZ)*(pose[2]-positionZ);
+        if(positionX==4884.71f&&positionY==-77.9149f&&positionZ==60.9946f)return 1000000;
         if (positionX == 4763.73f && positionY == 340.87f && positionZ == -37.19f)
             return offerDistanceSq;
         assert(positionX == 4720.80f && positionY == 347.91f && positionZ == -37.71f);
@@ -405,6 +411,19 @@ struct ObjectAccessor
     static Conversation* GetConversation(WorldObject const&, ObjectGuid);
 };
 #include "GetConversation.inc"
+struct RouteNode {float x,y,z;};
+struct RouteManager {
+    bool available=true;std::vector<RouteNode> nodes{{4881.36f,-3.75994f,38.5434f},{4884.26f,7.04405f,35.0652f},{4881.24f,18.3332f,32.1674f},{4877.2f,30.3573f,28.9823f},{4876.76f,57.7736f,23.2463f},{4877.44f,78.6312f,18.8186f},{4874.49f,102.114f,13.1651f}};
+    auto GetPathScript(uint32 id)const {assert(id==9859004);return available?&nodes:nullptr;}
+} routeManager;
+auto sWaypointMgr=&routeManager;
+enum {PATHFIND_NORMAL=1,PATHFIND_SHORTCUT=2,PATHFIND_INCOMPLETE=4,PATHFIND_NOPATH=8,PATHFIND_NOT_USING_PATH=16,PATHFIND_SHORT=32};
+struct PathGenerator {
+    inline static bool success=true;inline static uint32 type=1;inline static float offset=0;RouteNode end{};
+    explicit PathGenerator(Creature*){}
+    bool CalculatePath(float x,float y,float z,bool force){assert(!force);end={x+offset,y,z};return success;}
+    uint32 GetPathType()const{return type;}auto const& GetActualEndPosition()const{return end;}
+};
 struct HruthnirScript : CreatureScript
 {
 #include "Select.inc"
@@ -434,6 +453,7 @@ struct HruthnirAI : CreatureAI
 #include "AIFields.inc"
 #include "StartRecovery.inc"
 #include "Reoffer.inc"
+#include "ColdRoute.inc"
 #include "RestoreChamber.inc"
 #include "PillikRecovery.inc"
 #include "AISelect.inc"
@@ -506,6 +526,7 @@ struct Fixture
     Fixture()
     {
         scenarioManager = {};
+        routeManager={};PathGenerator::success=true;PathGenerator::type=1;PathGenerator::offset=0;
         player.actor = &actor;
         actor.ai = &ai;
 #ifdef CURRENT_REQUEST
@@ -532,7 +553,9 @@ struct Fixture
 };
 int main()
 {
-#if defined(CHAMBER_ONLY)
+#if defined(COLD_ROUTE_ONLY)
+#include "HruthnirColdRouteCases.inc"
+#elif defined(CHAMBER_ONLY)
 #include "ChamberCases.inc"
 #elif defined(RESET_ONLY)
 #include "ResetCases.inc"

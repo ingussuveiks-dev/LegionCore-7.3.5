@@ -14,6 +14,7 @@
 #include "FunctionProcessor.h"
 #include "MoveSpline.h"
 #include "WaypointMovementGenerator.h"
+#include "PathGenerator.h"
 #include "QuestObjectScope.h"
 #include "magnar_start.h"
 #include "hruthnir_pillik.h"
@@ -143,6 +144,9 @@ public:
         std::shared_ptr<PillikProgress> pillikProgress = std::make_shared<PillikProgress>();
         uint32 magnarReofferTimer = 0;
         ObjectGuid magnarStartedBoss;
+        uint32 magnarRoutePoint = 0;
+        uint32 magnarRouteTimer = 0;
+        bool magnarRouteFailureReported = false;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -712,9 +716,92 @@ public:
             _introDone = true;
         }
 
+        bool GetMagnarRoutePoint(float& x, float& y, float& z) const
+        {
+            switch (magnarRoutePoint)
+            {
+                case 1: x = 4864.44f; y = -33.53f; z = 48.68f; return true;
+                case 9: x = 4809.14f; y = 164.68f; z = -11.20f; return true;
+                case 10: x = 4824.81f; y = 246.52f; z = -24.29f; return true;
+                case 11: x = 4822.31f; y = 328.56f; z = -30.14f; return true;
+                case 12: x = 4763.73f; y = 340.87f; z = -37.19f; return true;
+                default: break;
+            }
+            if (magnarRoutePoint < 2 || magnarRoutePoint > 8)
+                return false;
+            auto route = sWaypointMgr->GetPathScript(9859004);
+            if (!route || route->size() != 7)
+                return false;
+            auto const& node = (*route)[magnarRoutePoint - 2];
+            x = node.x; y = node.y; z = node.z;
+            return true;
+        }
+
+        void UpdateMagnarChamberRoute(uint32 diff)
+        {
+            if (!magnarChamberStarted || magnarArrivalPending || magnarStartToken || magnarOfferToken ||
+                magnarRoutePoint > 12 || !IsMagnarOfferContext(me->GetInstanceId()) || !HasMagnarChamberRequest() ||
+                me->GetInstanceScript()->GetGuidData(PillikHandoff::Companion) != me->GetGUID() ||
+                !me->GetPhases().count(6999))
+                return;
+            // A real DB recreation starts back at the entrance. Reuse the
+            // authored corridor, without replaying its old combat/credit hooks.
+            if (!magnarRoutePoint)
+            {
+                if (me->GetExactDistSq(4884.71f, -77.9149f, 60.9946f) > 25.0f)
+                    return;
+                magnarRoutePoint = 1;
+            }
+            if (magnarRouteTimer > diff)
+            {
+                magnarRouteTimer -= diff;
+                return;
+            }
+            magnarRouteTimer = 1000;
+            if (me->isInCombat() || me->HasUnitState(UNIT_STATE_NOT_MOVE) || me->IsMovementPreventedByCasting() ||
+                !me->movespline->Finalized() || me->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+                return;
+            bool participant = false;
+            for (auto const& reference : me->GetMap()->GetPlayers())
+                if (IsMagnarIntroPlayer(reference.getSource()))
+                    participant = true;
+            if (!participant)
+                return;
+            float x = 0, y = 0, z = 0;
+            bool known = GetMagnarRoutePoint(x, y, z);
+            PathGenerator path(me);
+            bool complete = known && path.CalculatePath(x, y, z, false) && (path.GetPathType() & PATHFIND_NORMAL) &&
+                !(path.GetPathType() & (PATHFIND_NOPATH | PATHFIND_INCOMPLETE | PATHFIND_NOT_USING_PATH | PATHFIND_SHORTCUT | PATHFIND_SHORT));
+            auto const& end = path.GetActualEndPosition();
+            if (!complete || !((end.x-x)*(end.x-x) + (end.y-y)*(end.y-y) + (end.z-z)*(end.z-z) <= 1.0f))
+            {
+                if (!magnarRouteFailureReported)
+                    TC_LOG_WARN("scripts", "Earthwarder chamber recovery: native route point %u is unavailable; retaining arrival for retry", magnarRoutePoint);
+                magnarRouteFailureReported = true;
+                return;
+            }
+            magnarRouteFailureReported = false;
+            // Motion can replace this AI. Real arrival owns advancement.
+            me->GetMotionMaster()->MovePoint(8, x, y, z);
+        }
+
+        void OnMagnarRouteArrival()
+        {
+            float x, y, z;
+            if (!magnarRoutePoint || !IsMagnarOfferContext(me->GetInstanceId()) || !HasMagnarChamberRequest() ||
+                me->GetInstanceScript()->GetGuidData(PillikHandoff::Companion) != me->GetGUID() ||
+                !me->GetPhases().count(6999) || !GetMagnarRoutePoint(x, y, z) || !(me->GetExactDistSq(x, y, z) <= 4.0f))
+                return;
+            ++magnarRoutePoint;
+            magnarRouteTimer = 0;
+            // At13 the ordinary nearby reoffer still requires a ready boss,
+            // then owns real point6 arrival and its full original13s offer.
+        }
+
         void UpdateMagnarReoffer(uint32 diff)
         {
-            if (!magnarChamberStarted || magnarArrivalPending || magnarStartToken)
+            if (!magnarChamberStarted || magnarArrivalPending || magnarStartToken ||
+                (magnarRoutePoint && magnarRoutePoint <= 12))
                 return;
             if (magnarOfferToken && !(magnarOfferReady && *magnarOfferToken && !IsMagnarOfferPosition()))
                 return;
@@ -922,6 +1009,8 @@ public:
                         magnarIntroPending = false;
                         magnarChamberStarted = false;
                         magnarIntroInstanceGeneration = generation;
+                        magnarRoutePoint = magnarRouteTimer = 0;
+                        magnarRouteFailureReported = false;
                         RemoveMagnarConversation();
                     }
                     if (!magnarChamberStarted && IsMagnarOfferContext(me->GetInstanceId()))
@@ -950,6 +1039,11 @@ public:
 
         void MovementInform(uint32 type, uint32 id) override
         {
+            if (type == POINT_MOTION_TYPE && id == 8)
+            {
+                OnMagnarRouteArrival();
+                return;
+            }
             if (type != POINT_MOTION_TYPE || (id != 6 && id != 7))
                 me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
             if (type == WAYPOINT_MOTION_TYPE)
@@ -1120,6 +1214,9 @@ public:
         {
             Creature* companion = me;
             RestoreMagnarChamber();
+            UpdateMagnarChamberRoute(diff);
+            if (companion->AI() != this || !companion->IsInWorld())
+                return;
             UpdateMagnarReoffer(diff);
             if (companion->AI() != this || !companion->IsInWorld())
                 return;

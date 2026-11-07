@@ -52,7 +52,12 @@ else:
     assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x68]' for entry in destructor[remove:])
 action = instructions('?DoAction' + suffix)
 epoch = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
-assert positions(action, cleanup_name) == [epoch + 1]
+if any(name.startswith('?UpdateMagnarChamberRoute' + suffix) for name in native['symbols']):
+    assert [(entry.mnemonic,entry.op_str) for entry in action[epoch+1:epoch+3]] == [
+        ('mov','qword ptr [rbx + 0x18c], 0'),('mov','byte ptr [rbx + 0x194], 0')]
+    assert positions(action, cleanup_name) == [epoch + 3]
+else:
+    assert positions(action, cleanup_name) == [epoch + 1]
 callback = instructions('??$invoke@AEAV<lambda_1>@?1??ScheduleMagnarStart' + suffix if current_start else '??R<lambda_6>@?BO@??MovementInform' + suffix)
 assert not positions(callback, lookup_name) and not positions(callback, remove_name)
 
@@ -78,6 +83,8 @@ for section in range(struct.unpack_from('<H', binary, pe + 6)[0]):
 assert zero_filled, 'Factory identity does not load16 bytes of native PE zero-initialized storage'
 has_owned_escort_clock = any(name.startswith('?UpdateLifecycle@npc_hrutnirAI@npc_hrutnir@@') for name in native['symbols'])
 allocation = 'ecx, 0x190' if any(name.startswith('?ResetMagnarOffer' + suffix) for name in native['symbols']) else ('ecx, 0x180' if any(name.startswith('?UpdateMagnarReoffer' + suffix) for name in native['symbols']) else ('ecx, 0x178' if any(name.startswith('?TryPillikHandoff' + suffix) for name in native['symbols']) else ('ecx, 0x168' if current_start else ('ecx, 0x140' if has_owned_escort_clock else 'ecx, 0xc0'))))
+if any(name.startswith('?UpdateMagnarChamberRoute' + suffix) for name in native['symbols']):
+    allocation = 'ecx, 0x198'
 assert any(entry.op_str == allocation for entry in factory[:store])
 if has_owned_escort_clock:
     assert any(entry.op_str == 'rcx, [rsi + 0xc0]' for entry in factory[store:])

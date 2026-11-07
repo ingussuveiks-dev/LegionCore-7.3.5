@@ -11,14 +11,23 @@ assert len(homes) == 3, 'Expected one legacy and two admitted home writes'
 legacy, offer, arrival = homes
 first = legacy - 6
 assert body[first].op_str == 'rcx, qword ptr [rcx + 0x20]'
-gate = body[first - 5:first]
-assert [(entry.mnemonic, entry.op_str) for entry in (gate[0], gate[2], gate[3])] == [
-    ('cmp', 'edx, 8'), ('lea', 'eax, [r8 - 6]'), ('cmp', 'eax, 1')]
-assert gate[1].mnemonic == 'jne' and gate[1].operands[0].imm == body[first].address
-assert gate[4].mnemonic == 'jbe' and body[legacy].address < gate[4].operands[0].imm < body[offer].address
-dispatch = next(index for index, entry in enumerate(body) if entry.address == gate[4].operands[0].imm)
-assert body[dispatch].mnemonic == 'dec' and body[dispatch].op_str == 'edi', 'Only point6/7 may skip legacy home before native switch'
-assert body[dispatch + 1].op_str == 'edi, 6' and body[dispatch + 2].mnemonic == 'ja'
+cold_route = previous['cold_route']
+if cold_route:
+    type_gate = next(i for i,entry in enumerate(body[:first]) if entry.mnemonic=='cmp' and entry.op_str=='edx, 8')
+    assert body[type_gate+1].mnemonic=='jne' and body[type_gate+1].operands[0].imm==body[first].address
+    gate=body[first-3:first]
+    assert [(entry.mnemonic,entry.op_str) for entry in gate[:2]]==[('lea','eax, [r8 - 6]'),('cmp','eax, 1')]
+    branch=gate[2]
+else:
+    gate = body[first - 5:first]
+    assert [(entry.mnemonic, entry.op_str) for entry in (gate[0], gate[2], gate[3])] == [('cmp', 'edx, 8'), ('lea', 'eax, [r8 - 6]'), ('cmp', 'eax, 1')]
+    assert gate[1].mnemonic == 'jne' and gate[1].operands[0].imm == body[first].address
+    branch=gate[4]
+assert branch.mnemonic=='jbe' and body[legacy].address<branch.operands[0].imm<body[offer].address
+dispatch=next(i for i,entry in enumerate(body) if entry.address==branch.operands[0].imm)
+id_register='ebx' if cold_route else 'edi'
+assert body[dispatch].mnemonic=='dec' and body[dispatch].op_str==id_register
+assert body[dispatch+1].op_str==id_register+', 6' and body[dispatch+2].mnemonic=='ja'
 for index in homes:
     expected_operands = [
         'dword ptr [rsp + 0x20], xmm0', 'xmm3, dword ptr [rcx + 0xd8]',
@@ -29,7 +38,7 @@ for index in homes:
     if index == legacy:
         assert body[index - 5].op_str == 'xmm0, dword ptr [rcx + 0xdc]'
     assert all(entry.mnemonic == 'movss' for entry in body[index - 4:index])
-contexts = positions(body, '?IsMagnarOfferContext@npc_hrutnirAI@npc_hrutnir@@')
+contexts = [index for index in positions(body, '?IsMagnarOfferContext@npc_hrutnirAI@npc_hrutnir@@') if index > legacy]
 assert len(contexts) == (2 if previous['current_start'] else 3) and legacy < contexts[0] < offer < contexts[1] < arrival
 if not previous['current_start']:
     assert arrival < contexts[2]
@@ -43,4 +52,6 @@ for operand in ('dword ptr [rcx + 0x3ac8], xmm1', 'dword ptr [rcx + 0x3acc], xmm
                 'dword ptr [rcx + 0x3ad0], xmm3', 'dword ptr [rbx + 0x3ad4], xmm0'):
     assert any(entry.mnemonic == 'movss' and entry.op_str == operand for entry in setter), 'Actual creature home field store changed'
 assert len(positions(setter, '?NormalizeOrientation@Position@@')) == 1
-print('PASS: installed full Hruthnir MovementInform skips legacy home for actual POINT8 IDs6/7 only; both context/ordered3D gates precede their current XYZ/orientation home writes and claims. Actual Creature home fields/normalization checked. Other notifications retain legacy update; no automatic evade/path recovery or client certificate.')
+print('PASS: installed ordinary Hruthnir POINT IDs6/7 require context/ordered3D endpoint before current XYZ/orientation home writes and claims; actual Creature home fields/normalization checked. Ordinary other notifications retain legacy home; additional scoped cold POINT8 arrival is certified separately when present. No client traversal certificate.')
+if cold_route:
+    runpy.run_path(str(Path(__file__).with_name('verify_hruthnir_cold_route_release.py')))['check'](previous['native'],instructions)

@@ -2,6 +2,17 @@ param([switch]$Baseline,[switch]$ScopeOnly,[string]$OutputDirectory='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$text,[string]$start){$a=$text.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $text.Length){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$text.Substring($a,$b-$a)}
 function Shape([string]$text){($text -replace '//[^\n]*','') -replace '\s',''}
+function WithoutColdRoutePrefix([string]$movement){
+ if($movement.Contains('OnMagnarRouteArrival();')){
+  $prefix=Block $movement 'if (type == POINT_MOTION_TYPE && id == 8)'
+  $expected='if (type == POINT_MOTION_TYPE && id == 8) { OnMagnarRouteArrival(); return; }'
+  if((Shape $prefix) -cne (Shape $expected)){throw 'Unexpected cold route admission prefix; retain all authored clock bodies'}
+  # The new receipt is separately covered by actual-method/native full motion
+  # and selected Release checks. This fixture retains the original six clocks.
+  return $movement.Replace($prefix,'')
+ }
+ return $movement
+}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
 $source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "e4a7e933a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pre-timer source missing'}
 $actor=Block $source 'class npc_hrutnir :';$oldActor=Block $old 'class npc_hrutnir :'
@@ -13,7 +24,7 @@ void UpdateLifecycle(uint32 diff) override {
 '@
 if((Shape $life) -cne (Shape $expectedLife)){throw 'Native ALIVE/CORPSE clock changed'}
 function TimerMethods([string]$selected){
- $movement=Block $selected 'void MovementInform('
+ $movement=WithoutColdRoutePrefix (Block $selected 'void MovementInform(')
  foreach($case in @('case 6:','case 7:')){$movement=$movement.Replace((Block $movement $case),'')}
  $evade=Block $selected 'void EnterEvadeMode('
  $evade=$evade.Replace((Block $evade 'if (secondfighting)'), '')
@@ -41,7 +52,7 @@ if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/hrut
 $selected=if($Baseline){$oldActor}else{$actor}
 $first=$actor.IndexOf('        struct PillikProgress');$last=$actor.IndexOf('        void sGossipSelect(',$first)
 [IO.File]::WriteAllText("$out/PillikFields.inc",$actor.Substring($first,$last-$first))
-$movement=Block $selected 'void MovementInform('
+$movement=WithoutColdRoutePrefix (Block $selected 'void MovementInform(')
 # Later guarded chamber branches are independently retained by HruthnirGossip.
 # Compile the complete earlier movement branches without replacing their bodies.
 foreach($case in @('case 6:','case 7:')){$movement=$movement.Replace((Block $movement $case),'')}
