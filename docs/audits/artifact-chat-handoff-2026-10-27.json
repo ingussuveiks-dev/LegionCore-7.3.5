@@ -20,8 +20,27 @@
       "Survival middle39427 blessing/prerequisite restoration and all36 whole artifact chains remain uncertified. Shared LINK2/Slaghammer/mixed7111 remain OPEN;original native reproduction/cache/research retained."
     ],
     "cleanup": {
-      "status": "Pending focused commit,verified diagnostic archive and exact redundant task-owned test outputs cleanup;no staged executable or background server needed."
-    }
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/survival-resume-entrances-2026-11-07",
+      "manifest_sha256": "98a11222bc11009c2413cfdb95c69eeca4a5d250264da18e6a795f21bd63df18",
+      "original_files": 2776,
+      "cleanup_manifest_sha256": "e6e6f394b7d950f75828c382d812a9de58bded3b7cd31eb93b0829f41edfaeb1",
+      "removed_files": 322,
+      "logical_removed_bytes": 3437325085,
+      "local_deletion_manifest": ".codex/survival-entrance-2026-11-07/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-survival-graveyard-2026-11-07",
+        ".codex/release-before-warrior-graveyard-2026-11-07"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 132252983296,
+      "disk_free_after_bytes": 135673716736,
+      "observed_free_increase_bytes": 3420733440
+    },
+    "fix_commit": "4fe4ae3367cb3bee5a33cfa291b5af1307f66e73"
   },
   "latest_survival_graveyard_2026_11_07": {
     "audit": "docs/audits/survival-graveyard-2026-11-07.json",
