@@ -48,13 +48,26 @@ else:
     maptext=(native['args'].release/'worldserver.map').read_text(errors='replace')
     # Player::CanFly is a virtual call; Unit's declaration is pure virtual.
     flight=native['symbol']('?CanFly@Player@@')
+    # The secondary GridObject vtable is short and is followed by unrelated
+    # data. Read only actual virtual-call slots within the primary Unit table,
+    # bounded by the next public symbol, rather than resolving 128 raw words.
+    primary=re.findall(r'\s+\w+:\w+\s+\?\?_7Player@@6BUnit@@@\s+([0-9a-fA-F]{16})',maptext)
+    assert len(primary)==1, 'Expected one Player Unit vtable'
+    table_address=int(primary[0],16)
+    public_addresses=[int(a,16) for a in re.findall(r'^\s+\w+:\w+\s+\S+\s+([0-9a-fA-F]{16})',maptext,re.M)]
+    table_end=min(a for a in public_addresses if a>table_address)
+    air=instructions('?AirEntrance@WarswordsArrivalRecovery@@')
+    virtual_slots={x.operands[0].mem.disp for x in air if x.mnemonic=='call'
+                   and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.base!=X86_REG_RIP
+                   and 0<=x.operands[0].mem.disp<table_end-table_address
+                   and x.operands[0].mem.disp%8==0}
     flight_slots=[]
-    for address in re.findall(r'\s+\w+:\w+\s+\?\?_7Player@@\S+\s+([0-9a-fA-F]{16})',maptext):
-        offset=native['offset'](int(address,16));table=struct.unpack_from('<128Q',native['binary'],offset)
-        flight_slots += [i*8 for i,value in enumerate(table) if native['resolve'](value)==flight]
+    for slot in virtual_slots:
+        value,=struct.unpack_from('<Q',native['binary'],native['offset'](table_address+slot))
+        if native['resolve'](value)==flight:flight_slots.append(slot)
     assert flight in native['calls']('?AirEntrance@WarswordsArrivalRecovery@@') or any(
         x.mnemonic=='call' and x.operands[0].type==CS_OP_MEM and x.operands[0].mem.disp in flight_slots
-        for x in instructions('?AirEntrance@WarswordsArrivalRecovery@@'))
+        for x in air)
     tables=re.findall(r'\s+\w+:\w+\s+\?\?_7player_warswords_arrival_recovery@@6B@\s+([0-9a-fA-F]{16})',maptext)
     assert len(tables)==1
     offset=native['offset'](int(tables[0],16));slots=struct.unpack_from('<45Q',native['binary'],offset)

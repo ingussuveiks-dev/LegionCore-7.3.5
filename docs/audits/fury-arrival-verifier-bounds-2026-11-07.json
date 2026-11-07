@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-07",
+  "status": "REPAIRED; strict composed Fury arrival PE verification passes current canonical and both retained prior Release generations",
+  "cause": "The CanFly check read 128 raw words from every Player vtable, including the short secondary GridObject table. A new legitimate link layout placed non-pointer data after that table; resolve() correctly rejected address38d000005d7. This was a verifier overread, not evidence of a gameplay crash or missing CanFly implementation.",
+  "fix": "Select the exact Player Unit primary vtable, require a unique match and bound it by the next public symbol. Inspect only aligned in-bounds virtual-call offsets actually used by AirEntrance; resolve those actual target pointers and require Player::CanFly. Keep strict target resolution, direct-call alternative, all other arrival assertions and linked-verifier full-chain completion.",
+  "checks": [
+    "Original checker fails on current canonical with Address outside PE; the failed captured output and diagnostics remain visible in .codex/warrior-login-recovery-2026-11-07/canonical-arrival.log and canonical-driver-attempt1.log.",
+    "Repaired composed verifier returns through the full check chain against current canonical and both .codex/release-before-warrior-login-recovery-2026-11-07 and .codex/release-before-warrior-scenario-resume-2026-11-07. Strict PE/map timestamps and retained native Fury controller/callback/vtable checks pass.",
+    "Before/after runtime diagnostic snapshots: no new or changed crashes, appended DBErrors or server warnings/errors/assertions. No production executable, data, database or character state changed by this verifier repair. Full client movement/visuals remain separate."
+  ],
+  "evidence": ".codex/warrior-login-recovery-2026-11-07/arrival-linked-driver.log;arrival-linked.log;arrival-compat-driver.log;arrival-compat-*.log",
+  "archive": "Diagnostic evidence will be hash-archived with the enclosing Warrior login recovery task under build-extractors/bin/Release/fixed/warrior-login-recovery-2026-11-07; no failed evidence is discarded."
+}
