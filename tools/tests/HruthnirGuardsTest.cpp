@@ -7,6 +7,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <set>
 #include <vector>
 
 using uint8 = uint8_t;
@@ -17,11 +18,13 @@ struct ObjectGuid
     uint32 value = 0;
     void Clear() { value = 0; }
     bool operator==(ObjectGuid other) const { return value == other.value; }
+    bool operator!=(ObjectGuid other) const { return value != other.value; }
 };
 constexpr uint32 CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1;
 constexpr uint32 CRITERIA_TYPE_SCRIPT_EVENT_2 = 92;
 constexpr uint32 NPC_INVISIBLE_MAN = 1, NPC_ORIK_TRUEHEART_PET = 2, NPC_CATO_PET = 3;
 constexpr uint32 GO_FIRST_DOOR = 1, GO_EVENT_DOOR = 2;
+constexpr uint32 GAMEOBJECT_TYPE_DOOR = 0, GO_STATE_ACTIVE = 0, GO_STATE_READY = 1;
 struct Player;
 struct Creature;
 struct GameObject;
@@ -39,6 +42,7 @@ struct Unit
     bool IsInWorld() const { return world; }
     bool IsAlive() const { return alive; }
     Map* GetMap() const { return map; }
+    std::set<uint32> GetPhases() const {return {phase};}
     float GetPositionX() const { return coordinateX; }
     Player* FindNearestPlayer(float);
     Creature* FindNearestCreature(uint32, float, bool);
@@ -78,13 +82,23 @@ struct GameObject
 {
     ObjectGuid guid{134170};
     uint32 entry = 243897, spawn = 134170, phase = 6999, changes = 0;
+    uint32 mapId=1495, mask=3, state=GO_STATE_READY, type=GAMEOBJECT_TYPE_DOOR, stateChanges=0;
+    Map* map=nullptr;
+    std::function<void()> onPhase,onState;
     bool world = true, samePhase = true;
     uint32 GetEntry() const { return entry; }
     uint32 GetDBTableGUIDLow() const { return spawn; }
     ObjectGuid GetGUID() const { return guid; }
     bool IsInWorld() const { return world; }
     bool InSamePhase(Creature*) const { return samePhase; }
-    void SetPhaseMask(uint32 mask, bool update) { if (mask != 4 || !update) std::abort(); ++changes; }
+    Map* GetMap() const {return map;}
+    uint32 GetMapId() const {return mapId;}
+    uint32 GetGoType() const {return type;}
+    std::set<uint32> GetPhases() const {return {phase};}
+    uint32 GetPhaseMask() const {return mask;}
+    uint32 GetGoState() const {return state;}
+    void SetGoState(uint32 value){if(value!=GO_STATE_ACTIVE)std::abort();state=value;++stateChanges;auto callback=onState;if(callback)callback();}
+    void SetPhaseMask(uint32 value, bool update) { if (value != 4 || !update) std::abort(); mask=value;++changes;auto callback=onPhase;if(callback)callback(); }
 };
 struct Player : Unit
 {
@@ -139,6 +153,7 @@ struct Scenario
     uint32 identity = 909, step = 2;
     uint32 GetScenarioId() const { return identity; }
     uint32 GetCurrentStep() const { return step; }
+    uint32 GetStepCount(bool bonus) const {if(!bonus)std::abort();return 6;}
 };
 struct ScenarioManager
 {
@@ -157,6 +172,7 @@ struct Instance
 #include "Object.inc"
 #include "Death.inc"
 #include "Advance.inc"
+#include "Barrier.inc"
 };
 void Require(bool condition, char const* message) { if (!condition) { std::cerr << "FAIL: " << message << '\n'; std::exit(1); } }
 struct Fixture
@@ -182,7 +198,7 @@ struct Fixture
             script.OnCreatureCreate(actor);
         }
         hunterDoor.guid = {140833}; hunterDoor.entry = 248777; hunterDoor.spawn = 140833; hunterDoor.phase = 6985;
-        for (auto object : {&door, &hunterDoor}) { map.objects[object->guid.value] = object; script.OnGameObjectCreate(object); }
+        for (auto object : {&door, &hunterDoor}) { object->map=&map;map.objects[object->guid.value] = object; script.OnGameObjectCreate(object); }
         owner.map = &map; owner.position = 10;
         stranger.map = &map; stranger.classId = 3;
         map.players = {{&stranger}, {&owner}};
@@ -192,12 +208,16 @@ struct Fixture
     void Both() { Death(first); Death(second); }
     void Completed()
     {
-        Require(owner.credits == 1 && stranger.credits == 0 && ai.actions == 1 && door.changes == 1 && hunterDoor.changes == 0 && scenario.step == 3, "one native transition, eligible reference, companion and Warrior-only door");
+        bool complete=owner.credits == 1 && stranger.credits == 0 && ai.actions == 1 && door.changes == 1 && hunterDoor.changes == 0 && scenario.step == 3;
+        if(!complete)std::cerr<<"CONTROL guard credits="<<owner.credits<<" stranger="<<stranger.credits<<" action="<<ai.actions<<" phaseChanges="<<door.changes<<" mask="<<door.mask<<" state="<<door.state<<" hunterChanges="<<hunterDoor.changes<<" stage="<<scenario.step<<'\n';
+        Require(complete, "one native transition, eligible reference, companion and Warrior-only door");
     }
 };
 int main()
 {
-#ifdef SCENE_BASELINE
+#if defined(BARRIER_ONLY)
+#include "BarrierCases.inc"
+#elif defined(SCENE_BASELINE)
     Fixture fixture; fixture.ai.sceneReady = false;
     fixture.Both();
     Require(fixture.owner.credits == 1 && fixture.scenario.step == 3 && fixture.door.changes == 1 && fixture.ai.actions == 1 && fixture.ai.introRequests == 0, "pinned08e49c9d changes stage/barrier before asking for any ready scene");
@@ -389,6 +409,9 @@ int main()
     {
         Fixture fixture; fixture.Death(fixture.first); fixture.Death(fixture.second);
         fixture.script.Initialize(); fixture.scenario.step = 2; fixture.owner.credits = fixture.ai.actions = fixture.door.changes = 0;
+        // This models a fresh instance's DB-reloaded door, rather than keeping
+        // the previous runtime mask/open pose while resetting only counters.
+        fixture.door.mask=3;fixture.door.state=GO_STATE_READY;fixture.door.stateChanges=0;
         fixture.first.alive = fixture.second.alive = true;
         fixture.script.OnCreatureCreate(&fixture.first); fixture.script.OnCreatureCreate(&fixture.second); fixture.script.OnCreatureCreate(&fixture.companion); fixture.script.OnGameObjectCreate(&fixture.door);
         fixture.script.TryAdvanceMagnarGuards(); Require(fixture.owner.credits == 0, "fresh instance requires fresh deaths");

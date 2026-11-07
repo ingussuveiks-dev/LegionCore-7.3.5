@@ -106,7 +106,10 @@ public:
         void OnGameObjectCreate(GameObject* go) override
         {
             if (go->GetEntry() == 243897 && go->GetDBTableGUIDLow() == 134170)
+            {
                 magnarDoorGUID = go->GetGUID();
+                RestoreMagnarBarrier(go);
+            }
             switch (go->GetEntry())
             {
                 case GO_FIRST_DOOR:
@@ -245,6 +248,38 @@ public:
             TryAdvanceMagnarGuards();
         }
 
+        void RestoreMagnarBarrier(GameObject* door)
+        {
+            if (!door || !magnarGuardCreditSent || !magnarGuardsDelivered ||
+                door->GetMap() != instance || door->GetMapId() != 1495 ||
+                door->GetEntry() != 243897 || door->GetDBTableGUIDLow() != 134170 ||
+                door->GetGUID() != magnarDoorGUID || door->GetGoType() != GAMEOBJECT_TYPE_DOOR ||
+                !door->GetPhases().count(6999) || (door->GetPhaseMask() != 3 && door->GetPhaseMask() != 4))
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() < 3 ||
+                scenario->GetCurrentStep() > scenario->GetStepCount(true))
+                return;
+            uint32 generation = magnarGuardGeneration;
+            ObjectGuid guid = door->GetGUID();
+            bool published = door->IsInWorld();
+            if (door->GetPhaseMask() != 4)
+                door->SetPhaseMask(4, true);
+            if (generation != magnarGuardGeneration)
+                return;
+            if (published)
+            {
+                door = instance->GetGameObject(guid);
+                if (!door || !door->IsInWorld() || door->GetGUID() != magnarDoorGUID ||
+                    door->GetEntry() != 243897 || !door->GetPhases().count(6999) || door->GetPhaseMask() != 4)
+                    return;
+            }
+            // A hidden legacy phase alone leaves the phase-ID collision mesh
+            // closed. Use the real DOOR open state; its native callback is last.
+            if (door->GetGoState() == GO_STATE_READY)
+                door->SetGoState(GO_STATE_ACTIVE);
+        }
+
         void TryAdvanceMagnarGuards()
         {
             if (magnarGuardsDelivered || magnarGuardDispatching)
@@ -315,9 +350,21 @@ public:
                 companion->GetEntry() == 96468 && companion->IsAIEnabled && companion->AI() &&
                 door && door->IsInWorld() && door->GetEntry() == 243897 && door->InSamePhase(companion))
             {
+                ObjectGuid companionGuid = companion->GetGUID();
+                CreatureAI* expectedAI = companion->AI();
                 magnarGuardsDelivered = true;
-                door->SetPhaseMask(4, true);
-                companion->AI()->DoAction(2);
+                RestoreMagnarBarrier(door);
+                // SetGoState invokes native script hooks. A callback must not
+                // send the old chamber action into a new epoch or actor/AI.
+                if (generation != magnarGuardGeneration)
+                    return;
+                companion = instance->GetCreature(companionGuid);
+                scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+                if (scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 3 &&
+                    companion && companion->GetEntry() == 96468 && companion->IsInWorld() && companion->IsAlive() && !companion->IsDespawn() &&
+                    companion->GetGUID() == magnarCompanionGUID && companion->GetPhases().count(6999) &&
+                    companion->IsAIEnabled && companion->AI() == expectedAI)
+                    expectedAI->DoAction(2);
             }
             magnarGuardDispatching = false;
         }

@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED; actual-method/native geometry/selected Release/retained checks and owned startup pass; actual client/cold NPC route remain OPEN",
+  "scope": "Protection39191/scenario909 original barrier243897/DB134170/map1495/phase6999/default legacy mask3/native DOOR/model33309 after actual scene+guard handoff, and native object recreation in the same instance",
+  "cause": "Original TryAdvanceMagnarGuards sets legacy phase4 but retains closed GO_STATE_READY. Native matching33309 still intersects phase-ID6999 rays even though Player InSamePhase rejects the hidden door. Native GameObjectModel collision checks phase IDs, not this legacy mask. Actual DB reload creates a new GUID with original mask3/closed pose; OnGameObjectCreate only rebinds the GUID and delivered-instance guard retry returns early, republishing a visible closed barrier.",
+  "implementation": [
+    "One scoped RestoreMagnarBarrier requires real guard-credit and delivered claims, original current door GUID/entry/DB spawn/map/native DOOR/phase6999/default mask3-or4, scenario909 stage>=3 through its native terminal step count. Preserve custom masks/phases, unrelated clones and shared Hunter1068/Paladin1082; no new data fields/SQL/ScriptNames or player progress.",
+    "Preserve authored phase4 hiding and use native READY->ACTIVE door state to release its actual collision model. Keep an existing active/alternative pose, and make repeated restoration a no-op. Never call EnableCollision directly or disable collision checks globally. SetGoState is last because it invokes native script hooks.",
+    "Restore during the original guarded handoff and exact original OnGameObjectCreate, before native model/world publication. Capture epoch; re-resolve a published door by full GUID after phase visibility work, rejecting missing/rebound/changed context. Before-publication objects are not yet in the global GUID holder, so retain their native creation ownership instead of using an impossible lookup.",
+    "After opening, original handoff rechecks the epoch, current909/3, original companion full GUID/entry/world/alive/phase6999/current enabled AI before action2. This prevents a reset/stage change/removed or replaced actor callback from receiving the old chamber action. Original scene readiness/46358/barrier/chamber ordering and shared instance fields remain."
+  ],
+  "sources": "Local matching26972 World row134170(mask3,phase6999)/template243897(DOOR0,display33309), native GameObject LoadFromDB/AddToWorld/SetGoState/model collision and original shared guard script. Native909 has six steps and a terminal currentStep6. Git origin/main73b0da45c and local audits establish the counterfactual; no modern-core copy or external/video claim.",
+  "checks": {
+    "counterfactual": "4 distinct Human/Orc actual original handoff/reload witnesses across2 cases, pinned73b0da45c. Native DB LoadFromDB/model33309/world publication/real guard handoff show hidden mask4 but closed mesh, then real remove/new full GUID/DB reload republishes visible mask3+closed mesh. Expected-broken controls, repeated via public Test-HruthnirBarrier.ps1 -Baseline; not passing ordinary gameplay.",
+    "source": "90 assertion-enabled ASAN actual-method cases:32 faction/refusal contexts,48 stage3..terminal6 x before/live publication x mask3/4 x ready/active/alternative poses,repeat no-op/null/missing post-phase GUID/epoch reset/state callback and5 post-open reset/stage/removed actor/current AI/phase refusals,new original door GUID reload without extra credit. Existing full guard source matrix also passes under ASAN:recipient admission,19 refusals/readmission,scene acknowledgement,group/native once-only criteria and reset/re-entry. Geometry services controlled.",
+    "native": "26 Human/Orc x13 linked-core contexts use actual scoped DB row/LoadFromDB/native GameObject publication/new GUID/shared handoff and matching33309 mesh rays. Original release and reload become native open/phase4 with no collision. Before-stage,missing guard/delivery,Hunter/Paladin,custom mask/phase and nonmatching TEMP clone stay closed/unchanged. Later stages/controlled native terminal6/alternative-open pose and repeated native GO5000ms loot/update preserve the release. Earlier scene/guard and companion pose seeded; native terminal field is a controlled endpoint, not actual completion/client traversal.",
+    "binary": "Original game/scripts Release library locations/final-link inputs; staged/canonical matching EXE/maps. Full original guard admission/readiness-before46358/observed3-before-handoff certificate retained. New selected helper certifies exact door/type/phase/mask/native stage bounds,phase4/epoch/full-GUID relookup/only ready->ACTIVE0 via SetGoState last; selected OnCreate and original handoff call it and post-hook epoch/scene/companion/AI guards precede action2. Six-owned/three-weak Unit clock chain returns through linked-verifier completion.",
+    "retained": "Native24 DOOR/BUTTON pose/loot contexts with real4413 mesh/reset pass, as do original100 clocks/60 start-source/native14 start/24 readiness-player/pet/guardian kills,Pillik172+114,reoffer123+16,Magnar Reset111+16,fresh Hruthnir chamber110+20,native original DB spawn and9 canonical groups including mandatory Scepter VerifyReleaseBinary and Fury bonfire/descent/loading.",
+    "diagnostics": "Final ordinary source/native/PE/canonical/startup checks inspect exit/stdout/stderr, pre/post canonical/own crash inventories/log offsets and appended DBErrors/server warnings/errors/assertions: no new unexplained failure or crash. One earlier failed fixture introduced a coincident TEMP clone; its duplicate-loader/readonly diagnostics are explicitly resolved and preserved below. Canonical mixed7111 remains byte-identical.",
+    "startup": "Owned worldserver PID=31724\nPASS owned PID=31724 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "diagnostic_repair": {
+    "runtime": "build-extractors/runtime-test/hruthnir-barrier-native/20261107-105719-381",
+    "cause": "Fixture cloned134170 to TEMP134171 at identical coordinates. Actual LoadGameobjects correctly detected duplicate distance0 and attempted its native merge/delete; readonly enforcement blocked both statements with1792. This was a fixture error, not ordinary scenario success. No persistent table writes were authorized or made.",
+    "fix": "Place the synthetic TEMP clone10yd away, beyond native duplicate threshold squared0.5; retain the duplicate validator, unchanged production data and readonly pools. Passing26 native cases and clean public counterfactual/current runs pair with original failed evidence. Do not relabel the failed probe as ordinary passing gameplay.",
+    "db_errors_sha256": "5e6f60fef7836ecca63d670a18779652ec3f7fe247e4f97b403313edf66e977f",
+    "server_log_sha256": "9e8fd4334cfde080b333a571d157f4f5904e477d5c11242fd6f566e2a8db5ade",
+    "maintenance": "After implementation commit and verified archive, reset only these two wholly reviewed inactive private logs with exact hash/reparse/process guards. Preserve canonical mixed logs and unrelated unresolved evidence."
+  },
+  "prototype_review": [
+    "Correct native loader spelling LoadGameobjects; fix fixture branch placement so refusal cases do not fall through an admitted reload assertion. Preserve original failed compiler/assertion outputs.",
+    "Older source reset fixture reset counters while implicitly retaining the newly modeled runtime mask/open pose. Model a fresh instance DB door with mask3/READY; native real LoadFromDB/republication separately verifies it. Keep failure diagnostics visible. Correct signed comparison expectations without suppressing warnings.",
+    "Selected epoch load and epoch comparison have the same operands; require actual CMP after native phase callback. Existing guard certificate retains original admission checks and two pre-open epochs, adding the third post-SetGoState epoch and helper binding rather than dropping the checks."
+  ],
+  "database": "No persistent SQL/schema/updater/character/gear/progress/health edits. Native World TEMP shadow/offset clone and readonly pools, synthetic unsaved Players/TEMP account; no runtime, credentials or character data committed.",
+  "runtime": {
+    "worldserver": "06B7694DC2AE3E0B7D936C90832199DA0666E3FCE974216C85719BDDE53C4182",
+    "bnetserver": "995A36BEEEBE5E7B3A2A6EFCBFB561F93EFAB2E13B1CD1D887F56340B12155FD"
+  },
+  "ownership": "Only recorded owned canonical worldserver startup, gracefully stopped; no user/unknown process stopped. Configurations/certificates/DLLs hash-preserved.",
+  "cleanup": {
+    "status": "Pending implementation commit then verified archive/private reviewed-log maintenance/temporary generated-output cleanup; follow-up records hashes and two retained rollback generations"
+  },
+  "unresolved": [
+    "Actual full client Arms/Fury/Protection/all36 navigation/menu/audio/VFX/combat/evade/pickup/equipment/manual return/camera/pet/reconnect remain separate. Real mesh rays and controlled native endpoints do not certify client traversal.",
+    "Cold NPC reload far at the entrance still needs authored route/checkpoint investigation; this repair closes the exact door reload/physical barrier. A lone already-acknowledged boss AI replacement remains separate.",
+    "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff native evidence remain OPEN/untouched. Empty active Crashes does not certify all quests or eliminate mixed legacy errors."
+  ]
+}

@@ -1,5 +1,7 @@
 # Real native Protection wave readiness and Kill/owner progression; no persistent character writes.
-param([switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline)
+param([switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+if($BarrierBaseline){$Barrier=$true}
+if($Barrier -and ($ChamberRecovery -or $ChamberBaseline -or $ResetRecovery -or $ResetBaseline -or $Reoffer -or $ReofferBaseline -or $Approach -or $ApproachBaseline -or $StartRecovery -or $Pillik -or $PillikBaseline -or $EntryBaseline -or $Baseline)){throw 'Choose only the Protection barrier native scope'}
 if($ChamberBaseline){$ChamberRecovery=$true}
 if($ChamberRecovery -and ($ResetRecovery -or $ResetBaseline -or $Reoffer -or $ReofferBaseline -or $Approach -or $ApproachBaseline -or $StartRecovery -or $Pillik -or $PillikBaseline -or $EntryBaseline -or $Baseline)){throw 'Choose only the fresh chamber native scope'}
 if($ResetBaseline){$ResetRecovery=$true}
@@ -12,14 +14,15 @@ if($Approach -and ($StartRecovery -or $Pillik -or $PillikBaseline -or $EntryBase
 if($Approach){$StartRecovery=$true}
 if($ResetRecovery){$StartRecovery=$true}
 if($ChamberRecovery){$StartRecovery=$true}
+if($Barrier){$StartRecovery=$true}
 if($EntryBaseline){$Pillik=$true}
 if($EntryBaseline -and $PillikBaseline){throw 'Choose one pinned Pillik counterfactual'}
 if($PillikBaseline){$Pillik=$true}
 if($StartRecovery -and $Pillik){throw "Choose start recovery or the earlier Pillik handoff"}
 if($Baseline -and ($StartRecovery -or $Pillik)){throw "Pinned counterfactual is separate from current start recovery"}
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$family=if($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
-$probe=if($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
+$family=if($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
+$probe=if($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
 $out="$repo/build-extractors/runtime-test/$family/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing actual $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
@@ -56,6 +59,7 @@ if($StartRecovery -or $Pillik){
  [IO.File]::WriteAllText("$out/HruthnirNative.inc",(Block $source 'namespace HruthnirGossip')+(Block $source 'class npc_hrutnir : public CreatureScript')+';'+(Block $source 'void MagnarStart::Rejoin(')+$resetBridge)
  $shared=if($PillikBaseline){(& git -C $repo show "cb1300a9f:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp") -join "`n"}else{Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp" -Raw}
  if($ChamberBaseline){$shared=(& git -C $repo show '827bb28aa:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp') -join "`n"}
+ if($BarrierBaseline){$shared=(& git -C $repo show '73b0da45c:src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp') -join "`n"}
  [IO.File]::WriteAllText("$out/ShieldsNative.inc",(Block $shared 'class instance_shields_rest : public InstanceMapScript')+';')
 }
 $previous=$env:LEGION_DIALOGUE_CONFIG;$previousCompiler=$env:CL;$previousLink=$env:_LINK_
@@ -67,6 +71,7 @@ if($StartRecovery -or $Pillik){$inputs+=@("$repo/tools/tests/HruthnirStartNative
 if($Reoffer){$inputs+=@("$repo/tools/tests/HruthnirReofferNative.cpp")}
 if($ResetRecovery){$inputs+=@("$repo/tools/tests/MagnarResetNative.cpp")}
 if($ChamberRecovery){$inputs+=@("$repo/tools/tests/HruthnirChamberNative.cpp")}
+if($Barrier){$inputs+=@("$repo/tools/tests/HruthnirBarrierNative.cpp","$repo/src/server/game/Entities/GameObject/GameObject.cpp","$repo/src/common/collision/Models/GameObjectModel.cpp")}
 if($Approach){$inputs+=@("$repo/tools/tests/HruthnirApproachNative.cpp","$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.h")}
 if($Pillik){$inputs+=@("$repo/tools/tests/HruthnirPillikNative.cpp")}
 if($StartRecovery -or $Pillik){$inputs+=@("$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h","$out/HruthnirNative.inc","$out/ShieldsNative.inc")}
@@ -79,6 +84,7 @@ try{
  if($ReofferBaseline){$env:CL+=" /DHRUTHNIR_REOFFER_BASELINE"}
  if($ResetBaseline){$env:CL+=" /DMAGNAR_RESET_BASELINE"}
  if($ChamberBaseline){$env:CL+=" /DHRUTHNIR_CHAMBER_BASELINE"}
+ if($BarrierBaseline){$env:CL+=" /DHRUTHNIR_BARRIER_BASELINE"}
  if($ApproachBaseline){$env:CL+=" /DHRUTHNIR_APPROACH_BASELINE"}
  if($PillikBaseline){$env:CL+=" /DHRUTHNIR_PILLIK_BASELINE"}
  if($EntryBaseline){$env:CL+=" /DHRUTHNIR_ENTRY_BASELINE"}

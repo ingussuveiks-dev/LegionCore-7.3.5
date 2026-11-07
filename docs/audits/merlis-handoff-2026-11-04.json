@@ -1,4 +1,14 @@
 {
+  "latest_hruthnir_barrier_2026_11_07": {
+    "audit": "docs/audits/hruthnir-barrier-recovery-2026-11-07.json",
+    "status": "DEPLOYED06B7694D/995A36BE: exact original Protection barrier now opens through native DOOR state and retains phase4/release on real new-GUID DB reload; before-publication recovery and post-native-hook epoch/actor guards.",
+    "fix_commit": "Implementation commit containing this audit; exact hash follows cleanup handoff",
+    "checks": "90 ASAN actual-method barrier contexts + full old guard ASAN;26 Human/Orc actual DB/native33309 geometry/phase/reload/shared/custom/repeat/terminal/GO-update cases;4 distinct pinned expected-broken witnesses. Retained24 native DOOR/BUTTON4413 contexts,all Warrior source/native/PE and9 canonical groups including Scepter/Fury pass. Owned worldserver PID=31724\nPASS owned PID=31724 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "next": "Continue Warrior cold far-entrance NPC route and lone boss-AI replacement;actual full client/all36 remain OPEN. TEMP-clone duplicate/1792 fixture diagnostics resolved by offset clone with validator/readonly retained; exact originals archived before private reset. Existing LINK2/mixed7111/Slaghammer retained.",
+    "cleanup": {
+      "status": "Pending implementation commit then verified archive/private reviewed-log maintenance/temporary generated-output cleanup; follow-up records hashes and two retained rollback generations"
+    }
+  },
   "latest_hruthnir_chamber_2026_11_07": {
     "audit": "docs/audits/hruthnir-chamber-recovery-2026-11-07.json",
     "status": "DEPLOYED9AD78545/C88527D1: fresh original Hruthnir AI/actor restores actual same-instance guard/delivered receipt; old initial LOS replay suppressed; original nearby point6/full13s/cached option/point7/497/full6s remains.",

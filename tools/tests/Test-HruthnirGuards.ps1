@@ -1,9 +1,10 @@
-param([switch]$Baseline,[switch]$SceneBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$SceneBaseline,[switch]$BarrierOnly,[switch]$AddressSanitizer,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
 if(($Baseline -or $SceneBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot certify installed guards'}
 if($Baseline -and $SceneBaseline){throw 'Choose one pinned baseline'}
+if($BarrierOnly -and ($Baseline -or $SceneBaseline)){throw 'Barrier source checks require current code'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$out="$repo/build-extractors/runtime-test/hruthnir-guards"
+$out="$repo/build-extractors/runtime-test/$(if($BarrierOnly){'hruthnir-barrier'}else{'hruthnir-guards'})"
 New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp'
@@ -20,6 +21,8 @@ $first=$death.IndexOf('                case 96455:');$last=$death.IndexOf('     
 if($first -lt 0 -or $last -lt 0){throw 'Native guard death branch missing'}
 [IO.File]::WriteAllText("$out/Death.inc",'void OnUnitDeath(Unit* unit){switch(unit->GetEntry()){'+$death.Substring($first,$last-$first)+'break;}}')
 [IO.File]::WriteAllText("$out/Advance.inc",$(if($Baseline){'void TryAdvanceMagnarGuards(){}'}else{(Block $source 'void RegisterMagnarGuardDeath(')+(Block $source 'void TryAdvanceMagnarGuards()')}))
+[IO.File]::WriteAllText("$out/Barrier.inc",$(if($source.Contains('void RestoreMagnarBarrier(')){Block $source 'void RestoreMagnarBarrier('}else{''}))
+Copy-Item "$PSScriptRoot/HruthnirBarrierCases.inc" "$out/BarrierCases.inc"
 if(!$Baseline){
  $loader=Block (Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw) 'bool Creature::LoadCreatureFromDB('
  $generate=$loader.IndexOf('guid = sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate();')
@@ -32,7 +35,9 @@ if(!$Baseline){
 }
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $definition=if($Baseline){'/DBASELINE'}elseif($SceneBaseline){'/DSCENE_BASELINE'}else{''}
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/HruthnirGuardsTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
+if($BarrierOnly){$definition+=' /DBARRIER_ONLY'}
+$instrument=if($AddressSanitizer){'/fsanitize=address /Zi'}else{''}
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition $instrument /I`"$out`" `"$PSScriptRoot/HruthnirGuardsTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/compiler.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Hruthnir guard regression failed'}
 if($VerifyReleaseBinary){
  & "$PSScriptRoot/Test-MagnarWaves.ps1" -VerifyReleaseBinary

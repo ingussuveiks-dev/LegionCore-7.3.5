@@ -11,6 +11,7 @@ instructions = previous['instructions']
 positions = previous['positions']
 suffix = '@instance_shields_rest_InstanceMapScript@instance_shields_rest@@'
 advance = '?TryAdvanceMagnarGuards' + suffix
+current_barrier = any(name.startswith('?RestoreMagnarBarrier' + suffix) for name in native['symbols'])
 
 
 def find(body, operand, mnemonic=None):
@@ -95,8 +96,8 @@ credit = positions(body, '?UpdateAchievementCriteria@Player@@')[0]
 assert find(body, 'byte ptr [rbp + 0x358], 1', 'mov') < find(body, 'byte ptr [rbp + 0x356], 1', 'mov') < credit
 assert find(body, 'edx, 0x5c', 'mov') < find(body, 'r8d, 0xb516', 'mov') < credit
 epochs = [index for index, entry in enumerate(body) if entry.op_str == 'r15d, dword ptr [rbp + 0x35c]' and entry.mnemonic == 'cmp']
-assert len(epochs) == 2
-epoch = epochs[-1]
+assert len(epochs) == (3 if current_barrier else 2)
+epoch = epochs[1]
 assert epoch > credit and body[epoch + 1].mnemonic == 'jne'
 recheck = body[epoch:]
 for operand, branch in (('eax, 0x38d', 'jne'), ('eax, 3', 'jne'), ('dword ptr [rbx + 0xa18], 0', 'jne'),
@@ -105,7 +106,7 @@ for operand, branch in (('eax, 0x38d', 'jne'), ('eax, 3', 'jne'), ('dword ptr [r
     gate = find(recheck, operand, 'cmp')
     assert recheck[gate + 1].mnemonic == branch
 claim = find(body, 'byte ptr [rbp + 0x357], 1', 'mov')
-door = find(body, 'qword ptr [rax + 0xa0]', 'call')
+door = positions(body, '?RestoreMagnarBarrier' + suffix)[0] if current_barrier else find(body, 'qword ptr [rax + 0xa0]', 'call')
 actions = [index for index, entry in enumerate(body) if entry.op_str == 'qword ptr [rax + 0x48]' and entry.mnemonic == 'call']
 assert len(actions) == 2
 arm, action = actions
@@ -116,7 +117,9 @@ assert body[ready - 2].op_str == 'edx, 0x423' and body[arm - 3].op_str == 'edx, 
 assert find(body[arm:ready], 'qword ptr [rbx + 0x9c0], rdi', 'cmp') >= 0
 assert find(body[arm:ready], 'eax, 0x38d', 'cmp') < find(body[arm:ready], 'eax, 2', 'cmp')
 assert epoch < claim < door < action < find(body, 'byte ptr [rbp + 0x358], 0', 'mov')
-assert body[door - 2].op_str == 'edx, 4' and body[action - 2].op_str == 'edx, 2'
+if not current_barrier:
+    assert body[door - 2].op_str == 'edx, 4'
+assert body[action - 2].op_str == 'edx, 2'
 reset = instructions('?Initialize' + suffix)
 for operand in ('word ptr [rdi + 0x334], bp', 'word ptr [rdi + 0x356], bp', 'byte ptr [rdi + 0x358], bpl'):
     assert find(reset, operand, 'mov') >= 0
@@ -143,3 +146,5 @@ if current_pillik:
     target = next(index for index, entry in enumerate(leaf) if entry.address == leaf[7].operands[0].imm)
     assert leaf[target].op_str == 'eax, byte ptr [rcx + 0x384]' and leaf[target + 1].mnemonic == 'ret'
 print('PASS: installed shared instance retains actual guard GUID/death/admission/500ms epoch retry, arms Hruthnir at909/2, requires current same-AI1059 readiness before46358 and observed3 before barrier/chamber. Actual GetData vtable retains credit-attempt1059/epoch1060 and Paladin6; new Pillik1063 is checked separately when present. No Hunter mutation/client traversal certificate.')
+if current_barrier:
+    runpy.run_path(str(Path(__file__).with_name('verify_hruthnir_barrier_release.py')))['check'](native, instructions)
