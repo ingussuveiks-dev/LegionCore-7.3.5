@@ -24,7 +24,9 @@ struct Player {
     void DestroyItemCount(uint32 item,uint32 count,bool update){assert(item==132512 && !update && count>=tome+bankTome && itemsLoaded);tome=bankTome=0;}
     struct Holder {int status=3;int GetPreparedResult(int){return status;}} holder;
     void _LoadQuestStatus(int savedStatus){++loads;status=savedStatus;}
-    bool early(){uint32 mapId=map,instanceId=1;
+    // This Warlock-only host enters after the acquisition seed block. It has
+    // not consumed the quest result; Warrior/Hunter seed paths are tested apart.
+    bool early(){uint32 mapId=map,instanceId=1;bool warriorQuestStatusLoaded=false;
 #include "EarlyRestore.inc"
         return scenarioQuestStatusLoaded;
     }

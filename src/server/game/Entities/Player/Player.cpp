@@ -17,7 +17,7 @@
  */
 
 #include "Player.h"
-#include "WarriorScenarioRoute.h"
+#include "AcquisitionScenarioRoute.h"
 #include "QuestRewardDisplay.h"
 #include "AccountMgr.h"
 #include "AchievementMgr.h"
@@ -22774,8 +22774,8 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
         PrepareScenarioLogin(mapId,instanceId);
         // An unrecorded acquisition may use its active quest's real entrance,
         // never a numeric saved instance or a later saved coordinate.
-        if (!m_scenarioLoginId && getClass() == CLASS_WARRIOR)
-            if (auto route = WarriorScenarioRoute::Find(mapId))
+        if (!m_scenarioLoginId)
+            if (auto route = AcquisitionScenarioRoute::Find(mapId, getClass()))
             {
                 _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
                 warriorQuestStatusLoaded = true;
@@ -23029,6 +23029,17 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     Map* map = m_scenarioLoginInstance ? sMapMgr->FindMap(mapId,m_scenarioLoginInstance) : nullptr;
     if (!map)
         map = sMapMgr->CreateMap(mapId, this);
+
+    // A new entrance-only Hunter recovery has no receipt proving ownership of
+    // an existing group/solo-bound scenario. Do not inherit that run or place
+    // the player behind its current stage; retain normal login rejection.
+    if (map && getClass() == CLASS_HUNTER && mapId == 1511 && m_scenarioLoginId == 973 &&
+        !m_scenarioResume.instance && !m_scenarioResume.boot && sScenarioMgr->GetScenario(map->GetInstanceId()))
+    {
+        m_scenarioResume = {};
+        m_scenarioLoginId = m_scenarioLoginInstance = 0;
+        SetScenarioId(0);
+    }
 
     if (!map)
     {

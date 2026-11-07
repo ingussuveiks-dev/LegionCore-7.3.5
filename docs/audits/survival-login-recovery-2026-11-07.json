@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED: missing/unusable Hunter973 login checkpoints recover through native198950 entrance; earned owned Talonclaw with real flight+claim receipts can leave rejected login through native190598 Dalaran exit. Source/native/linked PE/retained checks and canonical ready/shutdown pass. Full persisted-character/group/client traversal remains separate.",
+  "cause": "Previous native1178/1384 entrance repair lets real Recorder create future Hunter checkpoints, but LoadFromDB only bootstrapped empty Warrior receipts. An older Hunter save without a usable receipt never selected973 before map construction. Also a persisted real Talonclaw claim after the instance is lost cannot legitimately replay a fresh acquisition; the rejected-login fallback had no scoped earned-owner return.",
+  "scope": "Player-only login admission/recovery on Hunter map1511/scenario973/quest40385. Preserve actual Warrior1495/909/39191/187803,1511/944/40043/193335,1539/1037/41105/203920. No character reset or persistent test-character writes; no quest/item/criteria/kill credit or resurrection in the new helper.",
+  "implementation": [
+    "AcquisitionScenarioRoute retains the existing four-field representation and three Warrior rows, adding only Hunter1511/973/40385/198950. Existing Prepare first; active INCOMPLETE accepted quest rows load once before saved-transport and map selection. Require actual native target map/nonzero/finite/valid coordinates, seed zero old instance+boot, and explicitly Prepare(map,0). Keep unlock/position and normal/Warlock/rewarded loading order.",
+    "Prepare rejects a foreign scenario receipt on the class-specific shared map. Final CanResume rechecks exact scenario, active INCOMPLETE/COMPLETE quest and unrewarded status. A fresh Hunter instance with persisted100112 claim refuses replay; a genuine same-boot matching live instance remains admitted. The actual selected-map guard rejects an entrance-only zero-instance/boot seed if an already live Scenario is bound; no group unbind or numeric-instance adoption.",
+    "Only rejected post-AddPlayer login invokes ExitCompletedTalonclawLogin after the existing Dark Riders/Broken Shore/Sheilun exits. Require actual Hunter1511,nonGM,selector0/973,active unrewarded40385,persisted flight100111 and claim100112>=1,return103798<1,and any live Scenario must be same map+973. Native GetItemByEntry128808 with inBank=true proves actual owned nonzero loading/equipment/inventory-bag/bank-bag item.",
+    "Use existing190598 SpellInfo effect252 and real spell_target_position1220 with finite coordinates and actual MapManager zone7502. Call native TeleportTo once. Failed transfer leaves checkpoint/presentation intact; pending exact native far destination is idempotent and pending foreign/near transfer refuses. Only after accepted transfer remove205589 and clear consumed login/entrance state. Retain actual Ghost/no resurrection. Existing TalonclawReturn::Recover is unchanged and still requires actual alive in-world Dalaran arrival plus genuine receipts/item before returning credit; the new fallback never grants that credit.",
+    "No combat/kill callback changed. Pets/guardians cannot substitute for the actual Player owner/quest/inventory proof, and the helper grants no progression. Source fixtures declare their controlled endpoints; native component fixtures use real DB2/SQL quest/objectives,Player,item/Bag,Prepare/CanResume,Scenario and map destruction/construction. Neither models nor PE proof are claimed as full client login."
+  ],
+  "local_evidence": {
+    "native": "Matching26972 actual Hunter1178/1384 select973/map1511/difficulty12;real198950 effect0/227 and native1511 entrance were verified by preceding SQL repair. Actual40385 objectives100111/storage0,100112/storage1,103798/storage2 have amount1. Real128808 item and190598 effect252/native Dalaran destination loaded in native bootstrap.",
+    "history": "Fetched origin;main HEAD0af584162 matched origin before work. Consulted local log/diffs,previous Survival entrance/graveyard and Warrior login audits plus actual producer/consumer and native assets. Local matching evidence resolves this issue;no modern-core/gameplay behavior imported."
+  },
+  "checks": {
+    "counterfactual": "Pinned0af584162 early/normal/caller source68 ASAN plus native early/caller capsules116 with CURRENT native support. Missing Hunter early selection and earned-owner handler are absent. Explicit expected-broken counterfactual;not a historical whole binary or successful gameplay baseline.",
+    "source68": "Both teams x34 actual extracted early/normal/Prepare/CanResume/selected-map cases:empty/malformed/foreign/invalid records,one accepted quest load,live/fresh/complete preservation,source/map/class/unlock/position/data refusals,late reward/abandonment/claim and bound-live protection. ASAN with controlled services.",
+    "native120": "Human+Orc:early62,fresh constructors4,owner54;10 accepted source-native exits. Real quest/objective rows,loading/equipment/inventory-bag/bank-bag owned item,wrong/missing/zero-count owner cases,real Ghost,late statuses,valid-login short circuit,failed/foreign/pending/duplicate transfer,no item/progression/resurrection. Actual map destruction/recycled numeric ID,both1178/1384 constructors consume973/step0. Quest parser,saved transport/position-valid,selected binding,zone and teleport acceptance endpoints controlled;not full LoadFromDB/SaveToDB/arrival.",
+    "linked_PE": "Exact three Warrior rows+Hunter row;actual early call/quest order and zero instance+boot,transport reset,selected-map live guard;late quest/reward/fresh claim guard;actual ownership/native190598/effect252/1220/7502/failed+pending transfer and205589 cleanup;actual delayed caller preserves successful login and older exits. Composed strict verifier returns through entire chain.",
+    "retained": "Warrior source132/native138/linked early recovery and source64/native56/Recorder;mandatory canonical Test-ScepterLogin -VerifyReleaseBinary;TEMP character checkpoint migration/SELECT/UPDATE separation;New Blood login;live Survival entrance SQL/native40/linked;Hunter cemetery source58/native110/release104 and Fury source18/native64/release56;Talonclaw return/departure TEMP+source,presentation linked;Sheilun login ASAN+strict linked admission.",
+    "build": "Original game/game.vcxproj and scripts/scripts.vcxproj Release libraries rebuilt in original final-link locations,then staged final link. No global OutDir. Final stage/canonical hashes verified;configs/certs/DLLs preserved. Player method declaration only;no Player fields/layout added.",
+    "startup": "Owned worldserver PID=31272\nPASS owned PID=31272 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "preservation": "Full non1028/1178/1384 LFG,whole spell target and scenario route table hashes match original;matching canonical binaries,protected configuration/cert/DLLs,mixed7111 and empty Crashes verified. No user/unknown process stopped."
+  },
+  "development_evidence": [
+    "Native fixture initially attempted insertion through const rewarded-set getter and a local variable colliding with the sMapMgr macro;compiler rejected it. Adopted existing fixture-only const_cast for controlled rewarded rows and a scoped macro override solely for the declared zone endpoint. Failed compiler output retained;no client crash.",
+    "Native bootstrap initially loaded the real quest template but not its objective rows. Explicitly loaded the actual40385 objectives in native order,verified exactly3 native rows/storage/amounts,and reran baseline and positive successfully. No live data mutation.",
+    "New Blood retained host omitted the earlier Warrior quest-load flag introduced before this repair;compile failure exposed that host gap. Added explicit false flag at its Warlock-only boundary and reran successfully. Sheilun host now supplies a false unrelated Hunter exit;its real own-exit source/admission assertions remain. Source host unsigned Difficulty matches native comparison;old Scepter host narrowing/sign warnings remain identified fixture typing,not runtime errors.",
+    "Private PE listing initially attempted unwind bounds for template leaf symbols;skipped only those unsupported listing candidates. Public linked caller verifier requires exactly one actual delayed caller and all intended ordered branches. Public verifier never exits early through swallowed SystemExit."
+  ],
+  "diagnostics": {
+    "result": "Before/after crash and log snapshots for builds,source/native/TEMP/PE and owned canonical startup;exit/stdout/stderr/newly appended diagnostics reviewed. Final tests pass;no new/changed crash or unexplained appended server warning/error/assertion/DBErrors. Owned server gracefully shutdown0/exit0/gone;stderr empty.",
+    "canonical_crashes": "empty",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "Unresolved shared LINK2 mixed log retained byte-for-byte;no truncation."
+  },
+  "unresolved": [
+    "Full actual persisted-character LoadFromDB/SaveToDB and automatic group/solo binding selection have not been traversed by a client. Native tests exercise actual selected-map guard and destroyed/recycled Map/constructor endpoints with supplied state;no claim of full login/group coverage.",
+    "Actual cold entry/relog,post-190598 arrival/return credit,ghost/corpse/client resurrection,flight/camera/pet/guardian/equipment/bank/reconnect and complete13-stage Hunter quest remain client checks. New fallback does not synthesize actor/criteria progress or assert actual async destination arrival.",
+    "Survival middle39427 blessing/prerequisite restoration and all36 whole artifact chains remain uncertified. Shared LINK2/Slaghammer/mixed7111 remain OPEN;original reproduction/cache/research retained."
+  ],
+  "runtime_sha256": {
+    "worldserver": "74c7409481bac3a82dc10abc3c45d77c8d2814cb2505575ffede30d147cb3d76",
+    "bnetserver": "c7ec67dd0c8f14e79b791191aad4480c0c0fdc819e4695e7f93699faacfb10ad"
+  },
+  "cleanup": {
+    "status": "PENDING verified archive and exact temporary cleanup after focused fix commit",
+    "retain": [
+      "C:/wamp64/www/LegionCore-7.3.5/.codex/release-before-survival-login-recovery-2026-11-07",
+      ".codex/release-before-survival-graveyard-2026-11-07"
+    ]
+  }
+}

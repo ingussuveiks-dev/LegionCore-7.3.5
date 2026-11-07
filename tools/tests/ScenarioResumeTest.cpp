@@ -6,7 +6,7 @@
 using uint32=uint32_t;using uint16=uint16_t;using uint64=uint64_t;
 #define TC_LOG_INFO(...) ((void)0)
 constexpr int SCENARIO_TYPE_CHALLENGE_MODE=1;
-constexpr int QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,ALLIANCE=0,CLASS_WARRIOR=1,CLASS_WARLOCK=9,CLASS_MONK=10;
+constexpr int QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,ALLIANCE=0,CLASS_WARRIOR=1,CLASS_HUNTER=3,CLASS_WARLOCK=9,CLASS_MONK=10;
 constexpr unsigned AT_LOGIN_UNLOCK=1;constexpr int PLAYER_LOGIN_QUERY_LOADQUESTSTATUS=0;
 struct SpellTargetPosition {uint32 target_mapId;float target_X,target_Y,target_Z,target_Orientation;};
 struct SpellManager {std::map<uint32,SpellTargetPosition> targets;SpellTargetPosition const* GetSpellTargetPosition(uint32 id){auto i=targets.find(id);return i==targets.end()?nullptr:&i->second;}} spellManager;
@@ -23,13 +23,14 @@ struct MapEntry {
     bool IsGarrison()const{return garrison;}
 };
 struct ScenarioEntry {int Type=0;};
-enum Difficulty { DIFFICULTY_NORMAL_SCENARIO=12 };
+enum Difficulty : uint32 { DIFFICULTY_NORMAL_SCENARIO=12 };
 struct MapDifficultyEntry {uint32 DifficultyID=12;};
 struct DB2Manager {MapDifficultyEntry value;bool missing=false;MapDifficultyEntry const* GetDefaultMapDifficulty(uint32){return missing?nullptr:&value;}} sDB2Manager;
 struct ScenarioStore {ScenarioEntry value;bool missing=false;ScenarioEntry const* LookupEntry(uint32 id){return missing||!id?nullptr:&value;}} sScenarioStore;
 struct MapStore {MapEntry value;bool missing=false;MapEntry const* LookupEntry(uint32 id){return missing||value.ID!=id?nullptr:&value;}} sMapStore;
 struct Map {
     MapEntry entry;
+    uint32 instance=42;uint32 GetInstanceId()const{return instance;}
     uint32 GetId()const{return entry.ID;}bool IsScenario()const{return entry.IsScenario();}
     MapEntry const* GetEntry()const{return &entry;}
 };
@@ -67,14 +68,15 @@ struct Player {
     Session* GetSession(){return &session;}
     Map* GetMap()const{return const_cast<Map*>(&map);}uint32 GetMapId()const{return map.GetId();}
     uint32 GetGUIDLow(){return 1;}uint32 GetInstanceId(){return instance;}
-    int questStatus=3;bool rewarded=false;
+    int questStatus=3,acceptedQuest=0;unsigned claim=0;bool rewarded=false;
     unsigned m_atLoginFlags=0,loads=0;bool validPosition=true;
     struct Holder {int status=3;int GetPreparedResult(int){return status;}} holder;
     struct Move {struct Transport {unsigned resets=0;void Reset(){++resets;}} transport;} m_movementInfo;
     bool IsPositionValid()const{return validPosition;}
     void _LoadQuestStatus(int status){questStatus=status;++loads;}
     bool earlyWarrior();void normalQuest(bool scenarioQuestStatusLoaded);
-    uint32 GetTeam()const{return team;}uint32 getClass()const{return cls;}int GetQuestStatus(int id)const{return id==39191||id==40043||id==41105?questStatus:0;}bool GetQuestRewardStatus(int)const{return rewarded;}
+    uint32 GetTeam()const{return team;}uint32 getClass()const{return cls;}int GetQuestStatus(int id)const{return (!acceptedQuest||acceptedQuest==id)&&(id==39191||id==40043||id==41105||id==40385)?questStatus:0;}bool GetQuestRewardStatus(int)const{return rewarded;}
+    unsigned GetQuestObjectiveData(uint32,int)const{return claim;}
     // The real owned-item/native-objective predicate is independently compiled
     // and exercised by Test-SheilunLogin; this host controls only its admission result.
     bool HasPendingSheilunReturn()const{return pendingSheilun;}
@@ -86,6 +88,7 @@ struct Player {
 };
 #include "../../src/server/game/Scenarios/BrokenShoreClassRoute.h"
 #include "../../src/server/game/Scenarios/WarriorScenarioRoute.h"
+#include "../../src/server/game/Scenarios/AcquisitionScenarioRoute.h"
 #include "Resume.inc"
 bool Player::earlyWarrior(){uint32 mapId=GetMapId(),instanceId=instance;auto mapEntry=sMapStore.LookupEntry(mapId);uint64 transLowGUID=99;
 #include "WarriorEarly.inc"
@@ -116,7 +119,7 @@ void SharedWarriorEntrances(){
 #else
             assert(p.m_scenarioResume.scenario==route.scenario&&p.m_scenarioResume.x==route.x&&p.m_scenarioResume.y==route.y&&p.m_scenarioResume.z==route.z&&p.m_scenarioResume.o==route.o);
 #endif
-            assert(p.pos.x==10&&!p.relocated&&live.step==(reason?0:3));++cases;
+            assert(p.pos.x==10&&!p.relocated&&live.step==(reason?0u:3u));++cases;
         }
         {Player p;Scenario live{};setup(p,live);lfgManager.data.x=11;lfgManager.data.y=22;lfgManager.data.z=33;p.RecordScenarioEntrance();
 #ifdef WARRIOR_RESUME_BASELINE
@@ -297,4 +300,5 @@ int main()
 #ifndef WARRIOR_RESUME_BASELINE
     WarriorEarlyLogin();
 #endif
+    return 0;
 }

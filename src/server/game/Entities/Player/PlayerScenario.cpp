@@ -9,6 +9,7 @@
 #include "SpellMgr.h"
 #include "BrokenShoreClassRoute.h"
 #include "WarriorScenarioRoute.h"
+#include "AcquisitionScenarioRoute.h"
 #include "QuestData.h"
 
 namespace
@@ -53,15 +54,14 @@ lfg::LFGDungeonData const* ResumeDungeon(Player const* player, uint32 scenarioId
 
 void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
 {
-    if (getClass() == CLASS_WARRIOR)
-        if (auto route = WarriorScenarioRoute::Find(mapId))
-            if (m_scenarioResume.scenario && m_scenarioResume.scenario != route->scenario)
-            {
-                m_scenarioResume = {};
-                m_scenarioLoginId = m_scenarioLoginInstance = 0;
-                SetScenarioId(0);
-                return;
-            }
+    if (auto route = AcquisitionScenarioRoute::Find(mapId, getClass()))
+        if (m_scenarioResume.scenario && m_scenarioResume.scenario != route->scenario)
+        {
+            m_scenarioResume = {};
+            m_scenarioLoginId = m_scenarioLoginInstance = 0;
+            SetScenarioId(0);
+            return;
+        }
     MapEntry const* entry = sMapStore.LookupEntry(mapId);
     if (!m_scenarioResume.scenario || m_scenarioResume.map != mapId ||
         !Resumable(entry,m_scenarioResume.scenario) ||
@@ -106,11 +106,16 @@ bool Player::CanResumeScenarioLogin(uint32 scenarioId) const
 {
     // Rewarded rows load after the early selector. Revalidate admission here,
     // when real active/rewarded quest state is available to the map check.
-    if (getClass() == CLASS_WARRIOR)
-        if (auto route = WarriorScenarioRoute::Find(GetMapId()))
-            if (scenarioId != route->scenario || GetQuestRewardStatus(route->quest) ||
-                (GetQuestStatus(route->quest) != QUEST_STATUS_INCOMPLETE && GetQuestStatus(route->quest) != QUEST_STATUS_COMPLETE))
-                return false;
+    if (auto route = AcquisitionScenarioRoute::Find(GetMapId(), getClass()))
+    {
+        if (scenarioId != route->scenario || GetQuestRewardStatus(route->quest) ||
+            (GetQuestStatus(route->quest) != QUEST_STATUS_INCOMPLETE && GetQuestStatus(route->quest) != QUEST_STATUS_COMPLETE))
+            return false;
+        // The completed claim is loaded after the early selector. A new
+        // instance must not replay an acquisition whose artifact was claimed.
+        if (route->scenario == 973 && !m_scenarioLoginInstance && GetQuestObjectiveData(40385, 100112) >= 1)
+            return false;
+    }
     return m_scenarioLoginId && m_scenarioLoginId == scenarioId &&
         m_scenarioResume.map == GetMapId() && Resumable(GetMap()->GetEntry(),scenarioId);
 }
@@ -254,6 +259,44 @@ bool Player::ExitCompletedSheilunLogin()
     m_scenarioLoginId = m_scenarioLoginInstance = 0;
     SetScenarioId(0);
     TC_LOG_INFO("entities.player", "Sheilun: login returns artifact owner %u to native Mistweaver exit", GetGUIDLow());
+    return true;
+}
+
+bool Player::ExitCompletedTalonclawLogin()
+{
+    // A real persisted boarded arrival and manual claim may outlive the
+    // instance. Return its artifact owner through the native Dalaran exit;
+    // never replay combat or award the return receipt from this fallback.
+    if (GetMapId() != 1511 || getClass() != CLASS_HUNTER || isGameMaster() ||
+        (m_scenarioLoginId && m_scenarioLoginId != 973) || GetQuestRewardStatus(40385) ||
+        (GetQuestStatus(40385) != QUEST_STATUS_INCOMPLETE && GetQuestStatus(40385) != QUEST_STATUS_COMPLETE) ||
+        GetQuestObjectiveData(40385, 100111) < 1 || GetQuestObjectiveData(40385, 100112) < 1 ||
+        GetQuestObjectiveData(40385, 103798) >= 1)
+        return false;
+    Scenario* progress = sScenarioMgr->GetScenario(GetInstanceId());
+    if (progress && (progress->GetMap() != GetMap() || progress->GetScenarioId() != 973))
+        return false;
+    // The native slot scan also finds owned loading/bank bag items which
+    // Bag::GetItemCount deliberately excludes before world insertion.
+    Item* spear = GetItemByEntry(128808, true);
+    if (!spear || spear->GetOwnerGUID() != GetGUID() || !spear->GetCount())
+        return false;
+    SpellInfo const* spell = sSpellMgr->GetSpellInfo(190598);
+    SpellTargetPosition const* exit = sSpellMgr->GetSpellTargetPosition(190598);
+    if (!spell || !spell->HasEffect(SPELL_EFFECT_TELEPORT_L) || !exit || exit->target_mapId != 1220 ||
+        !MapManager::IsValidMapCoord(exit->target_mapId, exit->target_X, exit->target_Y, exit->target_Z, exit->target_Orientation) ||
+        sMapMgr->GetZoneId(exit->target_mapId, exit->target_X, exit->target_Y, exit->target_Z) != 7502)
+        return false;
+    if (IsBeingTeleported())
+        return IsBeingTeleportedFar() && GetTeleportDest().GetMapId() == exit->target_mapId &&
+            GetTeleportDest().GetExactDist(exit->target_X, exit->target_Y, exit->target_Z) < 0.01f;
+    if (!TeleportTo(exit->target_mapId, exit->target_X, exit->target_Y, exit->target_Z, exit->target_Orientation))
+        return false;
+    RemoveAurasDueToSpell(205589);
+    m_scenarioResume = {};
+    m_scenarioLoginId = m_scenarioLoginInstance = 0;
+    SetScenarioId(0);
+    TC_LOG_INFO("entities.player", "Talonclaw: login returns claimed artifact owner %u through native Dalaran exit", GetGUIDLow());
     return true;
 }
 

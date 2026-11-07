@@ -6,6 +6,7 @@
 #include "AreaTriggerData.h"
 #include "MapManager.h"
 #include "WarriorScenarioRoute.h"
+#include "AcquisitionScenarioRoute.h"
 #include <limits>
 struct RecoveryResumeTag {using Type=ScenarioResume Player::*;friend Type Access(RecoveryResumeTag);};
 template struct FixtureAccess<RecoveryResumeTag,&Player::m_scenarioResume>;

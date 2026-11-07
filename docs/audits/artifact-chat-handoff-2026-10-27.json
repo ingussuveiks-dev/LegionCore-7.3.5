@@ -1,4 +1,32 @@
 {
+  "latest_survival_login_recovery_2026_11_07": {
+    "audit": "docs/audits/survival-login-recovery-2026-11-07.json",
+    "status": "DEPLOYED: missing/unusable Hunter973 login checkpoints recover through native198950 entrance; earned owned Talonclaw with real flight+claim receipts can leave rejected login through native190598 Dalaran exit. Source/native/linked PE/retained checks and canonical ready/shutdown pass. Full persisted-character/group/client traversal remains separate.",
+    "runtime_sha256": {
+      "worldserver": "74c7409481bac3a82dc10abc3c45d77c8d2814cb2505575ffede30d147cb3d76",
+      "bnetserver": "c7ec67dd0c8f14e79b791191aad4480c0c0fdc819e4695e7f93699faacfb10ad"
+    },
+    "diagnostics": {
+      "result": "Before/after crash and log snapshots for builds,source/native/TEMP/PE and owned canonical startup;exit/stdout/stderr/newly appended diagnostics reviewed. Final tests pass;no new/changed crash or unexplained appended server warning/error/assertion/DBErrors. Owned server gracefully shutdown0/exit0/gone;stderr empty.",
+      "canonical_crashes": "empty",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "Unresolved shared LINK2 mixed log retained byte-for-byte;no truncation."
+    },
+    "unresolved": [
+      "Full actual persisted-character LoadFromDB/SaveToDB and automatic group/solo binding selection have not been traversed by a client. Native tests exercise actual selected-map guard and destroyed/recycled Map/constructor endpoints with supplied state;no claim of full login/group coverage.",
+      "Actual cold entry/relog,post-190598 arrival/return credit,ghost/corpse/client resurrection,flight/camera/pet/guardian/equipment/bank/reconnect and complete13-stage Hunter quest remain client checks. New fallback does not synthesize actor/criteria progress or assert actual async destination arrival.",
+      "Survival middle39427 blessing/prerequisite restoration and all36 whole artifact chains remain uncertified. Shared LINK2/Slaghammer/mixed7111 remain OPEN;original reproduction/cache/research retained."
+    ],
+    "cleanup": {
+      "status": "PENDING verified archive and exact temporary cleanup after focused fix commit",
+      "retain": [
+        "C:/wamp64/www/LegionCore-7.3.5/.codex/release-before-survival-login-recovery-2026-11-07",
+        ".codex/release-before-survival-graveyard-2026-11-07"
+      ]
+    },
+    "checks": "Counterfactual source68/native116;positive source68 ASAN/native120/strict linkedPE;retained Warrior138+56,Scepter,checkpoint TEMP/NewBlood,Hunter/Fury cemeteries,live Survival entrances,Talonclaw return/presentation/departure,Sheilun;canonical ready/shutdown0/exit0."
+  },
   "latest_survival_resume_entrances_2026_11_07": {
     "audit": "docs/audits/survival-resume-entrances-2026-11-07.json",
     "status": "DEPLOYED SQL-only through canonical updater;missing native Survival1178/1384 entrances repaired. Full-schema TEMP16 refusals/partial/idempotence/preservation,native baseline30 vs repaired40/live RELEASED hash/linked Recorder PE/retained Warrior+Hunter+Fury+Scepter/canonical startup pass. No new production C++ or executable.",
