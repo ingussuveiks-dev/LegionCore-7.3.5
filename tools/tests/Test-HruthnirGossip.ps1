@@ -54,7 +54,7 @@ $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf($(if($B
 [IO.File]::WriteAllText("$out/ConversationRemove.inc",(Block (Get-Content "$repo/src/server/game/Entities/Conversation/Conversation.cpp" -Raw) 'void Conversation::Remove(').Replace('void Conversation::','void '))
 $ready=''
 if($source.Contains('bool IsMagnarOfferReady(')){
- $ready=(Block $source 'bool IsMagnarOfferReady(')+'uint32 GetData(uint32 type) const override {'+(Block (Block $source 'uint32 GetData(') 'if (type == 1061)')+'return 0;}'
+ $ready=(Block $source 'bool IsMagnarOfferReady(')+'uint32 GetData(uint32 type) const override {'+$(if($source.Contains('if (type == MagnarStart::RouteCursor)')){Block (Block $source 'uint32 GetData(') 'if (type == MagnarStart::RouteCursor)'}else{''})+(Block (Block $source 'uint32 GetData(') 'if (type == 1061)')+'return 0;}'
 }
 [IO.File]::WriteAllText("$out/Ready.inc",$ready)
 [IO.File]::WriteAllText("$out/IntroContext.inc",$(if($source.Contains('bool IsMagnarIntroContext(')){Block $source 'bool IsMagnarIntroContext('}else{''}))

@@ -66,6 +66,7 @@ public:
             pillikGUID.Clear();
             pillikRecipient.Clear();
             pillikDied = false;
+            magnarRouteCursor = 0;
         }
 
         void OnPlayerEnter(Player* player) override
@@ -92,7 +93,11 @@ public:
                         magnarGuardDeaths[slot] = recordedDeath;
                     }
             if (creature->GetEntry() == 96468 && creature->GetDBTableGUIDLow() == 361306)
+            {
+                if (magnarCompanionGUID != creature->GetGUID())
+                    magnarRouteCursor = 0;
                 magnarCompanionGUID = creature->GetGUID();
+            }
             switch (creature->GetEntry())
             {
                 case NPC_INVISIBLE_MAN:
@@ -369,10 +374,40 @@ public:
             magnarGuardDispatching = false;
         }
 
+        void RememberMagnarRoute(uint32 epoch)
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (epoch != magnarGuardGeneration || !magnarGuardCreditSent || !magnarGuardsDelivered ||
+                !scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() != 3)
+                return;
+            ObjectGuid companionGuid = magnarCompanionGUID;
+            Creature* companion = instance->GetCreature(companionGuid);
+            if (!companion || !companion->IsInWorld() || !companion->IsAlive() || companion->IsDespawn() ||
+                companion->GetEntry() != 96468 || companion->GetDBTableGUIDLow() != 361306 ||
+                companion->GetMap() != instance || !companion->GetPhases().count(6999) ||
+                !companion->IsAIEnabled || !companion->AI())
+                return;
+            CreatureAI* expectedAI = companion->AI();
+            uint32 cursor = expectedAI->GetData(MagnarStart::RouteCursor);
+            companion = instance->GetCreature(companionGuid);
+            scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (cursor >= 1 && cursor <= 13 && epoch == magnarGuardGeneration &&
+                companionGuid == magnarCompanionGUID && companion && companion->IsInWorld() &&
+                companion->IsAlive() && !companion->IsDespawn() && companion->IsAIEnabled &&
+                companion->AI() == expectedAI && magnarGuardCreditSent && magnarGuardsDelivered &&
+                companion->GetEntry() == 96468 && companion->GetDBTableGUIDLow() == 361306 &&
+                companion->GetMap() == instance && companion->GetPhases().count(6999) &&
+                scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 3)
+                magnarRouteCursor = cursor;
+        }
+
         void SetData(uint32 type, uint32 data) override
         {
             switch (type)
             {
+                case MagnarStart::RouteCursor:
+                    RememberMagnarRoute(data);
+                    break;
                 case DATA_YRGRIM_EVENT:
                 {
                     igrimEvent = data;
@@ -414,6 +449,8 @@ public:
                     return magnarGuardGeneration;
                 case MagnarStart::ChamberDelivered:
                     return magnarGuardCreditSent && magnarGuardsDelivered;
+                case MagnarStart::RouteCursor:
+                    return magnarGuardCreditSent && magnarGuardsDelivered ? magnarRouteCursor : 0;
                 case DATA_YRGRIM_EVENT:
                     return igrimEvent;
                 default:
@@ -489,6 +526,7 @@ public:
         ObjectGuid pillikGUID;
         ObjectGuid pillikRecipient;
         bool pillikDied = false;
+        uint32 magnarRouteCursor = 0;
         void Update(uint32 diff) override
         {
             if (hunterWindTimer > diff) { hunterWindTimer -= diff; return; }

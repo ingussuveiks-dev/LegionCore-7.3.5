@@ -32,7 +32,7 @@ def check(n,ins):
     assert sites(route[:point],'?IsMovementPreventedByCasting@Unit@@') and sites(route[:point],'?GetCurrentMovementGeneratorType@MotionMaster@@')
     assert {struct.pack('<f',v) for v in (4884.71,-77.9149,60.9946,25.0)}<=constants(route[:point])
     has(route[point:path],'byte ptr [rsp + 0x20], 0')
-    has(route[path:move],'al, 0x3f','al, 1','byte ptr [rdi + 0x194], 0','edx, 8','byte ptr [rsp + 0x28], al')
+    has(route[path:move],'al, 0x3f','al, 1','byte ptr [rdi + 0x194], 0','edx, 8','byte ptr [rsp + 0x28], 1')
     assert struct.pack('<f',1.0) in constants(route[path:move])
     compare=next(i for i,op in enumerate(route[path:move],path) if op.mnemonic=='comiss')
     assert route[compare+1].mnemonic=='jb' and route[compare+1].operands[0].imm>route[move].address
@@ -53,7 +53,9 @@ def check(n,ins):
     assert selected<ordered<increment and arrival[ordered+1].mnemonic=='jb'
     assert arrival[ordered+1].operands[0].imm>body[home].address
     assert struct.pack('<f',4.0) in constants(arrival[selected:increment])
-    assert arrival[increment+2].mnemonic=='jmp' and arrival[increment+2].operands[0].imm>body[home].address,'Intermediate arrival falls into old combat/offer hooks'
+    has(arrival[increment:],'edx, 0x42b','r8d, dword ptr [rdi + 0xa8]','r9, qword ptr [rcx + 0xb8]')
+    record=next(i for i,op in enumerate(arrival) if i>increment and op.mnemonic=='call' and op.op_str=='r9')
+    assert arrival[record+1].mnemonic=='jmp' and arrival[record+1].operands[0].imm>body[home].address,'Intermediate arrival falls into old combat/offer hooks or uses AI after receipt callback'
     reoffer=ins('?UpdateMagnarReoffer'+suffix)
     has(reoffer[:20],'eax, dword ptr [rcx + 0x18c]','eax, 0xc')
     update=ins('?UpdateAI'+suffix)

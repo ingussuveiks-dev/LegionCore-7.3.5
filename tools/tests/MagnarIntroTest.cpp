@@ -7,6 +7,9 @@
 #include <map>
 #include <mutex>
 #include <vector>
+#include <set>
+#include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_start.h"
+#include "../../src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h"
 using uint32 = uint32_t;
 using uint64 = uint64_t;
 #include "Functions.inc"
@@ -32,6 +35,7 @@ struct Player;
 struct Creature;
 struct InstanceScript
 {
+    ObjectGuid GetGuidData(uint32) const { std::abort(); } // Corridor is a separate native scope.
     bool introCreditSent = false;
     uint32 generation = 1;
     uint32 GetData(uint32 identity) const { if (identity == 1060) return generation; if (identity != 1059) std::abort(); return introCreditSent; }
@@ -110,6 +114,8 @@ struct Creature
     uint32 GetMapId() const { return map ? map->identity : 0; }
     uint32 GetInstanceId() const { return map ? map->instance : 0; }
     void* AI() const { return ai; }
+    ObjectGuid GetGUID() const { std::abort(); }
+    std::set<uint32> GetPhases() const { std::abort(); }
     float GetDistance(Player* player) const { return std::abs(player->position); }
     void StopAttack() { ++stops; }
     void SetReactState(uint32) { }

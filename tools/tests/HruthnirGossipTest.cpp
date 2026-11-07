@@ -166,8 +166,10 @@ struct InstanceScript
     bool credit = true, pillikDead = false, chamberDelivered = false;
     ObjectGuid pillikActor{2,1}, pillikOwner = ObjectGuid::Empty, pillikCompanion{1,1};
     ObjectGuid GetGuidData(uint32 type) const { if(type==PillikHandoff::Actor)return pillikActor;if(type==PillikHandoff::Recipient)return pillikOwner;assert(type==PillikHandoff::Companion);return pillikCompanion; }
-    uint32 generation = 1;
-    uint32 GetData(uint32 identity) const { if(identity==MagnarStart::ChamberDelivered)return credit&&chamberDelivered;if(identity==PillikHandoff::Death)return pillikDead;assert(identity == 1059 || identity == 1060); return identity == 1059 ? uint32(credit) : generation; }
+    uint32 generation = 1, routeCursor = 0;
+    void SetData(uint32 identity, uint32 epoch) { assert(identity==MagnarStart::RouteCursor); if(onRecord)onRecord(epoch); }
+    std::function<void(uint32)> onRecord;
+    uint32 GetData(uint32 identity) const { if(identity==MagnarStart::RouteCursor)return credit&&chamberDelivered?routeCursor:0;if(identity==MagnarStart::ChamberDelivered)return credit&&chamberDelivered;if(identity==PillikHandoff::Death)return pillikDead;assert(identity == 1059 || identity == 1060); return identity == 1059 ? uint32(credit) : generation; }
     void HandleGameObject(ObjectGuid, bool) { assert(false); }
 };
 struct Map

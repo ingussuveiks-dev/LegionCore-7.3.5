@@ -1,4 +1,15 @@
 {
+  "latest_hruthnir_cursor_2026_11_07": {
+    "audit": "docs/audits/hruthnir-route-cursor-2026-11-07.json",
+    "status": "DEPLOYED; source/native/selected Release/retained checks and owned startup pass; actual client traversal remains separate",
+    "fix_commit": "Implementation commit containing this audit;exact hash follows cleanup handoff",
+    "checks": "97 ASAN route;16 native cursor;2 pinned counterfactuals;selected installed PE;retained9 groups/40 replacement/16 Reset/20 chamber/14 cold/14 start/24 player-pet-guardian. Owned worldserver PID=21620\nPASS owned PID=21620 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "next": "Warrior original untracked DoAction2 point6 AI replacement,then actual later-phase Magnar AI/full boss Creature identity recovery and full client chains;prior LINK2/Slaghammer remain OPEN.",
+    "cleanup": {
+      "status": "PENDING hash-verified archive and owned temporary-file cleanup after focused implementation commit",
+      "archive": "build-extractors/bin/Release/fixed/hruthnir-cursor-2026-11-07"
+    }
+  },
   "latest_magnar_ai_replacement_2026_11_07": {
     "audit": "docs/audits/magnar-ai-replacement-2026-11-07.json",
     "status": "DEPLOYED 06C1DDF8/CF65DEAE: actual acknowledged first-phase Magnar AI replacement now cleans old reserve and releases exact same-boss companion receipt via native Reset; ordinary original13s/cached menu/6s retry retained.",

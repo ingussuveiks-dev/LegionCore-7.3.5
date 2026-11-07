@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED; source/native/selected Release/retained checks and owned startup pass; actual client traversal remains separate",
+  "scope": "Warrior Protection39191/scenario909-3/map1495,original Hruthnir96468/DB361306/phase6999,same-fullGUID AI replacement during earned chamber corridor",
+  "cause": "AIM_Initialize keeps the Creature pose but new AI cursor0 is outside the entrance5yd guard and may be outside boss60yd reoffer range. Earned chamber metadata was adopted,but the companion remained idle.",
+  "implementation": [
+    "Instance1067 owns next native leg1..13. SetData accepts only current1060 epoch and pulls the value from the actual original fullGUID/current enabled living AI. Before/after virtual read,validate guard+delivery,current909/3,map/DB identity/6999;re-resolve actual actor/AI/GUID/epoch afterwards. Caller data cannot supply a waypoint.",
+    "Persist only a validated normal/complete native path intent before point8 motion and the next leg after existing actual ordered2yd arrival. Arrival receipt is last access;sender revalidates AI/world/epoch/cursor/context/GUID/phase/combat/root/cast/spline/motion after the virtual boundary.",
+    "Fresh AI adopts recorded1..13 under original chamber/context/GUID gates. At actual DB entrance use ordinary leg1 restart. Initialize and a different original fullGUID clear the record. No position-derived progress,teleport,combat/quest/scene grant,new SQL/IDs/ScriptNames.",
+    "Keep authored twelve native mmap legs,eligible player/retry and real final arrival. Normal ready-boss/point6/full13s/cached option/point7/497/full6s/acknowledged reserve still own start. Shared Hunter/Paladin paths retained."
+  ],
+  "sources": "Local origin/main a0f4cc39b history/audits;matching26972 DB spawn361306/route9859004,real Map/Unit/MotionMaster/PathGenerator and Creature AIM_Initialize lifecycle. No modern/external/video inference.",
+  "checks": {
+    "counterfactual": "Two Human/Orc native controls pin EWC/shared instance at a0f4cc39b: actual point4 motion,actual AIM_Initialize retains fullGUID/pose,then cursor0 stays idle10s outside entrance/boss range. Expected broken,not ordinary successful gameplay.",
+    "source": "97 assertion-enabled ASAN actual route cases: previous76 plus saved0..14 bounds,entrance override,post-receipt AI/epoch/root/GUID changes and actual AI deletion. Shared guard8 recipient/19 rejected-recovered context matrices pass. Intro fixture strict unused corridor API declarations let actual expanded GetData compile;scene-readiness assertions retained.",
+    "native": "16 Human/Orc contexts: actual same-GUID AI replacement at point4,repeated replacement through later checkpoints including13,root/retry,Initialize/stale epoch,new-fullGUID original entrance restart,missing delivery/later-step/disabledAI/out-of-range refusals. Positive paths use actual Unit spline/Map relocation/Point finalization and native normal mmap route through12999+1ms,cached menu,point7,497,5999+1ms,new reserve. Old combat/guard/victory criteria stay0. Earlier guard/scene receipt and following unsaved Player controlled;static geometry is not client/dynamic-gate traversal.",
+    "binary": "Original game/scripts Release libraries rebuilt at final-link paths;stage/canonical EXE/map hashes. New selected PE proves real1067 GetData/SetData vtables,query/store/identity/epoch revalidation,Initialize/newGUID clear,AI getter/metadata adoption and post-virtual motion guards. Existing scene/readiness/chamber/cold/guard/Pillik/Reset proofs retained. Actual compiler boolean/register/switch changes inspected;bounded side-effect-free scalar leaf evaluator rejects calls,writes,unsupported instructions and proves dispatch/loads without an obsolete fixed switch shape.",
+    "retained": "9 canonical groups: ASAN waves/finale,scene,gossip,real loot,return,pickup,Scepter VerifyReleaseBinary,Fury bonfire/descent/arrival. Native replacement40,Reset16,chamber20,cold14,start14 and player/pet/guardian waves24 with selected installed PE pass. Pet/guardian rules unchanged;native final-blow coverage separate from controlled route following.",
+    "diagnostics": "Final runs record pre/post crashes/logs and exit/stdout/stderr. No new/changed crash or unexplained appended DBErrors/server warning/error/assertion. Mixed7111/LINK2 and Slaghammer evidence unchanged. First native attempt excluded because hash guard detected a brace-only source edit during execution;immutable reruns pass. Initial standalone source attempt is superseded by wrapped97-case run. Earlier PE layout and intro-fixture declaration failures retained beside passing repairs. Existing compiler unused/conversion warnings reviewed.",
+    "startup": "Owned worldserver PID=21620\nPASS owned PID=21620 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "runtime_sha256": {
+    "worldserver": "F3752507AA8F927A3CBDE482393A989CDCE36BD741B30EF7747494F81858BE98",
+    "bnetserver": "1E8BF759E50F3FB594FE6D8278B7F6780AFB493A06AE6225A1B704E601A7BDDB"
+  },
+  "cleanup": {
+    "status": "PENDING hash-verified archive and owned temporary-file cleanup after focused implementation commit",
+    "archive": "build-extractors/bin/Release/fixed/hruthnir-cursor-2026-11-07"
+  },
+  "unresolved": [
+    "Actual client whole Arms/Fury/Protection/all36 navigation,combat,wipes,menu/audio/VFX,pickup/equipment/return/camera/pet/reconnect remain separate;controlled native receipts/player following/endpoints do not certify whole gameplay.",
+    "The original DoAction2 point6 approach still has no recorded cold-route cursor before motion;AI replacement during that separate untracked legacy leg is not covered by this repair. Record and regress its actual native movement intent separately.",
+    "Later-phase Magnar AI restoration/auxiliary lifecycle and full boss Creature/newGUID recreation with surviving consumed companion remain OPEN. Exact old-boss identity deliberately retained.",
+    "Earlier101430/103151 LINK2/mixed7111 and unrelated Slaghammer handoff remain OPEN/untouched;empty active Crashes does not certify every quest."
+  ]
+}

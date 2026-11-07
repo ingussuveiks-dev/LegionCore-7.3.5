@@ -41,10 +41,13 @@ assert body[first + 14].mnemonic == 'jb' and body[first + 14].operands[0].imm ==
 assert body[first + 15].op_str == 'al, 1'
 getter = instructions('?GetData' + suffix)
 read = positions(getter, ready_name)
-assert len(read) == 1 and getter[3].op_str == 'edx, 0x425' and getter[4].mnemonic == 'jne'
-assert getter[read[0] + 1].op_str == 'eax, al' and getter[read[0] + 4].mnemonic == 'ret'
-assert getter[4].operands[0].imm == getter[read[0] + 5].address
-assert any(entry.op_str == 'edx, 0x423' for entry in getter[read[0] + 5:])
+assert len(read) == 1
+ready_key = next(i for i,op in enumerate(getter) if op.mnemonic=='cmp' and op.op_str=='edx, 0x425')
+assert getter[ready_key+1].mnemonic=='jne' and read[0]==ready_key+2
+assert getter[read[0]+1].op_str=='eax, al'
+returned=next(i for i in range(read[0]+2,len(getter)) if getter[i].mnemonic=='ret')
+assert getter[ready_key+1].operands[0].imm==getter[returned+1].address
+assert getter[returned+1].op_str=='edx, 0x423'
 selection = instructions('?sGossipSelect' + suffix)
 gate = positions(selection, ready_name)[0]
 menu = positions(selection, '?GetItem@GossipMenu@@')[0]

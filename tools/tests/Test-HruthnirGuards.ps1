@@ -13,7 +13,7 @@ if($Baseline){$source=(& git -C $repo show "5dd9a8ab:$path") -join "`n";if($LAST
 if($SceneBaseline){$source=(& git -C $repo show "08e49c9d:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned early-scene source unavailable'}}
 $first=$source.IndexOf('        std::list<GameObject*> goDoorList;');$last=$source.IndexOf('        void Initialize()',$first)
 $fields=$source.Substring($first,$last-$first)
-if($source.IndexOf('        ObjectGuid pillikGUID;') -gt $last){$fields+=[regex]::Match($source,'(?s)        ObjectGuid pillikGUID;.*?bool pillikDied = false;').Value}
+if($source.IndexOf('        ObjectGuid pillikGUID;') -gt $last){$fields+=[regex]::Match($source,'(?s)        ObjectGuid pillikGUID;.*?bool pillikDied = false;(?:\s*uint32 magnarRouteCursor = 0;)?').Value}
 [IO.File]::WriteAllText("$out/Fields.inc",$fields)
 foreach($entry in @(@('Initialize','void Initialize()'),@('Create','void OnCreatureCreate('),@('Object','void OnGameObjectCreate('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]).Replace(' override',''))}
 $death=Block $source 'void OnUnitDeath('

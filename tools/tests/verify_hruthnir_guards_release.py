@@ -130,21 +130,15 @@ assert update[retry - 1].op_str == 'dword ptr [rcx + 0x360], 0x1f4'
 assert retry < find(update, 'eax, 0x42c', 'cmp')
 address = native['symbol']('?GetData' + suffix)
 assert slots[0xb0 // 8] == address
-following = min(value for value in native['symbols'].values() if value > address)
-assert 0 < following - address <= (96 if current_pillik else 64), 'Unbounded leaf GetData'
-decoder = Cs(CS_ARCH_X86, CS_MODE_64)
-decoder.detail = True
-leaf = list(decoder.disasm(native['binary'][native['offset'](address):native['offset'](address) + following - address], address))
-assert leaf[0].op_str == 'edx, 6' and leaf[1].mnemonic == 'je'
-assert leaf[2].op_str == 'edx, 0x41d' and leaf[3].mnemonic == 'je'
-assert leaf[4].op_str == 'edx, 1' and leaf[5].mnemonic == 'je'
-for branch, operand in ((1, 'eax, byte ptr [rcx + 0x312]'), (3, 'eax, byte ptr [rcx + 0x356]'), (5, 'eax, dword ptr [rcx + 0x35c]')):
-    target = next(index for index, entry in enumerate(leaf) if entry.address == leaf[branch].operands[0].imm)
-    assert leaf[target].op_str == operand and leaf[target + 1].mnemonic == 'ret'
-if current_pillik:
-    assert leaf[6].op_str == 'edx, 3' and leaf[7].mnemonic == 'je'
-    target = next(index for index, entry in enumerate(leaf) if entry.address == leaf[7].operands[0].imm)
-    assert leaf[target].op_str == 'eax, byte ptr [rcx + 0x384]' and leaf[target + 1].mnemonic == 'ret'
+from release_scalar_getter import decode, evaluate
+leaf = decode(native, '?GetData' + suffix)
+fields = {0x312: 7, 0x356: 1, 0x357: 1, 0x35c: 12345, 0x384: 3, 0x388: 9}
+expected = {6:7,1059:1,1060:12345}
+if current_pillik: expected[1063]=3
+if any(name.startswith('?RestoreMagnarChamber@npc_hrutnirAI') for name in native['symbols']): expected[1066]=1
+if any(name.startswith('?RememberMagnarRoute'+suffix) for name in native['symbols']): expected[1067]=9
+for key in list(range(1071))+[0xffffffff,0x80000000]:
+    assert evaluate(leaf,key,fields)==expected.get(key,0), f'Wrong installed shared GetData({key})'
 print('PASS: installed shared instance retains actual guard GUID/death/admission/500ms epoch retry, arms Hruthnir at909/2, requires current same-AI1059 readiness before46358 and observed3 before barrier/chamber. Actual GetData vtable retains credit-attempt1059/epoch1060 and Paladin6; new Pillik1063 is checked separately when present. No Hunter mutation/client traversal certificate.')
 if current_barrier:
     runpy.run_path(str(Path(__file__).with_name('verify_hruthnir_barrier_release.py')))['check'](native, instructions)

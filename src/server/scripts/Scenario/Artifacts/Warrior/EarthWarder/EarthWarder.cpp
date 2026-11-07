@@ -670,6 +670,13 @@ public:
 
         uint32 GetData(uint32 type) const override
         {
+            if (type == MagnarStart::RouteCursor)
+            {
+                return magnarRoutePoint >= 1 && magnarRoutePoint <= 13 &&
+                    IsMagnarOfferContext(me->GetInstanceId()) && HasMagnarChamberRequest() &&
+                    me->GetInstanceScript()->GetGuidData(PillikHandoff::Companion) == me->GetGUID() &&
+                    me->GetPhases().count(6999) ? magnarRoutePoint : 0;
+            }
             if (type == 1061)
             {
                 return IsMagnarOfferReady();
@@ -711,9 +718,14 @@ public:
             if (!instance || !instance->GetData(MagnarStart::ChamberDelivered) || !instance->GetData(1059) ||
                 instance->GetGuidData(PillikHandoff::Companion) != me->GetGUID())
                 return;
+            uint32 cursor = instance->GetData(MagnarStart::RouteCursor);
             magnarIntroInstanceGeneration = instance->GetData(1060);
             magnarChamberStarted = true;
             _introDone = true;
+            // Only this full GUID's real native route intent survives an AI
+            // replacement. A DB respawn at the entrance starts its own route.
+            if (cursor >= 1 && cursor <= 13 && me->GetExactDistSq(4884.71f, -77.9149f, 60.9946f) > 25.0f)
+                magnarRoutePoint = cursor;
         }
 
         bool GetMagnarRoutePoint(float& x, float& y, float& z) const
@@ -781,6 +793,22 @@ public:
                 return;
             }
             magnarRouteFailureReported = false;
+            Creature* companion = me;
+            uint32 epoch = magnarIntroInstanceGeneration;
+            uint32 cursor = magnarRoutePoint;
+            companion->GetInstanceScript()->SetData(MagnarStart::RouteCursor, epoch);
+            // The virtual receipt boundary may replace this AI. Revalidate
+            // before using any local state or issuing the native movement.
+            if (companion->AI() != this || !companion->IsInWorld())
+                return;
+            if (epoch != magnarIntroInstanceGeneration || cursor != magnarRoutePoint ||
+                !IsMagnarOfferContext(companion->GetInstanceId()) || !HasMagnarChamberRequest() ||
+                companion->GetInstanceScript()->GetGuidData(PillikHandoff::Companion) != companion->GetGUID() ||
+                !companion->GetPhases().count(6999) || companion->isInCombat() ||
+                companion->HasUnitState(UNIT_STATE_NOT_MOVE) || companion->IsMovementPreventedByCasting() ||
+                !companion->movespline->Finalized() ||
+                companion->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+                return;
             // Motion can replace this AI. Real arrival owns advancement.
             me->GetMotionMaster()->MovePoint(8, x, y, z);
         }
@@ -796,6 +824,7 @@ public:
             magnarRouteTimer = 0;
             // At13 the ordinary nearby reoffer still requires a ready boss,
             // then owns real point6 arrival and its full original13s offer.
+            me->GetInstanceScript()->SetData(MagnarStart::RouteCursor, magnarIntroInstanceGeneration);
         }
 
         void UpdateMagnarReoffer(uint32 diff)

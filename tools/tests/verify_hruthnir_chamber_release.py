@@ -27,14 +27,15 @@ def check(n,ins):
         'dword ptr [rdi + 0xa8], eax','byte ptr [rdi + 0xa5], 1','byte ptr [rdi + 0x58], 1')
     assert sites(helper,'?GetInstanceScript@WorldObject@@') and sites(helper,'??9ObjectGuid@@')
     calls=[(i,op) for i,op in enumerate(helper) if op.mnemonic=='call' and op.operands[0].type!=CS_OP_IMM]
-    assert len(calls)==4
+    assert len(calls)==5
     # Two actual read-only receipt/guard virtual calls, original companion GUID,
     # then the current epoch immediately before the three metadata stores.
     for (index,_),value in zip(calls[:2],('edx, 0x42a','edx, 0x423')):
         has(helper[max(0,index-6):index],value)
         assert helper[index+1].op_str=='eax, eax' and helper[index+2].mnemonic=='je'
         assert helper[index+2].operands[0].imm>helper[calls[-1][0]].address
-    has(helper[calls[-1][0]-4:calls[-1][0]],'edx, 0x424')
+    has(helper[calls[-2][0]-4:calls[-2][0]],'edx, 0x42b')
+    has(helper[calls[-1][0]-5:calls[-1][0]],'edx, 0x424')
     for forbidden in ('?MovePoint@MotionMaster@@','?Talk@CreatureAI@@','?AddDelayedEvent@FunctionProcessor@@',
                       '?UpdateAchievementCriteria@Player@@','?CompleteQuest@Player@@','?AddItem@Player@@','?NearTeleportTo@',
                       '?SceneCompleted@Player@@','?CreateConversation@','?DoAction'):
@@ -47,19 +48,12 @@ def check(n,ins):
     assert restore<sites(los,'?Talk@CreatureAI@@')[0]<sites(los,'?AddDelayedEvent@FunctionProcessor@@')[0]
     # Select and decode the actual shared GetData leaf, rather than invent a
     # persisted flag or relying on source text for the readonly receipt.
-    address=n['symbol']('?GetData'+shared);following=min(a for a in n['symbols'].values() if a>address)
-    assert 0<following-address<=96
-    decoder=Cs(CS_ARCH_X86,CS_MODE_64);decoder.detail=True
-    leaf=list(decoder.disasm(n['binary'][n['offset'](address):n['offset'](address)+following-address],address))
-    assert [(op.mnemonic,op.op_str) for op in leaf[:9:2]]==[('sub','edx, 6'),('sub','edx, 0x41d'),('sub','edx, 1'),('sub','edx, 3'),('cmp','edx, 3')]
-    assert 6+0x41d+1+3+3==1066
-    assert leaf[9].mnemonic=='jne'
-    false=leaf[9].operands[0].imm
-    assert [(op.mnemonic,op.op_str) for op in leaf[10:16:2]]==[('cmp','byte ptr [rcx + 0x356], 0'),('cmp','byte ptr [rcx + 0x357], 0'),('mov','eax, 1')]
-    assert leaf[11].mnemonic==leaf[13].mnemonic=='je' and leaf[11].operands[0].imm==leaf[13].operands[0].imm==false
-    assert leaf[15].mnemonic=='ret'
-    zero=next(i for i,op in enumerate(leaf) if op.address==false)
-    assert leaf[zero].mnemonic=='xor' and leaf[zero].op_str=='eax, eax' and leaf[zero+1].mnemonic=='ret'
+    from release_scalar_getter import decode,evaluate
+    address=n['symbol']('?GetData'+shared)
+    leaf=decode(n,'?GetData'+shared)
+    for credit in (0,1):
+        for delivered in (0,1):
+            assert evaluate(leaf,1066,{0x356:credit,0x357:delivered})==int(bool(credit and delivered))
     factory=ins('?GetInstanceScript@instance_shields_rest@@');tables=[]
     for op in factory:
         for operand in op.operands:
