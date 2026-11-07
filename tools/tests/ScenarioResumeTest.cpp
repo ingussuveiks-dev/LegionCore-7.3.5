@@ -6,7 +6,8 @@
 using uint32=uint32_t;using uint16=uint16_t;using uint64=uint64_t;
 #define TC_LOG_INFO(...) ((void)0)
 constexpr int SCENARIO_TYPE_CHALLENGE_MODE=1;
-constexpr int QUEST_STATUS_INCOMPLETE=3,ALLIANCE=0,CLASS_WARRIOR=1,CLASS_WARLOCK=9,CLASS_MONK=10;
+constexpr int QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,ALLIANCE=0,CLASS_WARRIOR=1,CLASS_WARLOCK=9,CLASS_MONK=10;
+constexpr unsigned AT_LOGIN_UNLOCK=1;constexpr int PLAYER_LOGIN_QUERY_LOADQUESTSTATUS=0;
 struct SpellTargetPosition {uint32 target_mapId;float target_X,target_Y,target_Z,target_Orientation;};
 struct SpellManager {std::map<uint32,SpellTargetPosition> targets;SpellTargetPosition const* GetSpellTargetPosition(uint32 id){auto i=targets.find(id);return i==targets.end()?nullptr:&i->second;}} spellManager;
 auto sSpellMgr=&spellManager;
@@ -46,9 +47,9 @@ auto sScenarioMgr=&scenarios;
 namespace lfg {struct LFGDungeonData {struct Dbc{uint32 ScenarioID=777;}entry;Dbc*dbc=&entry;float x=1,y=2,z=3,o=4;uint32 difficulty=12,id=908,map=9000;};}
 struct LfgManager {
     lfg::LFGDungeonData data;
-    bool missing=false,shared=false;
+    bool missing=false,shared=false,fallbackAlways=false;
     lfg::LFGDungeonData const* GetLFGDungeon(uint16 scenario,uint16 map){return missing||shared||scenario!=data.dbc->ScenarioID||map!=data.map?nullptr:&data;}
-    lfg::LFGDungeonData const* GetLFGDungeon(uint32 map,Difficulty,uint32){return missing||!shared||map!=data.map?nullptr:&data;}
+    lfg::LFGDungeonData const* GetLFGDungeon(uint32 map,Difficulty,uint32){return missing||(!shared&&!fallbackAlways)||map!=data.map?nullptr:&data;}
 } lfgManager;
 auto sLFGMgr=&lfgManager;
 struct ScenarioData {uint32 ScenarioID=777,Team=1,Class=1,DifficultyID=12,LfgDungeonID=908,MapID=9000;};
@@ -66,7 +67,14 @@ struct Player {
     Session* GetSession(){return &session;}
     Map* GetMap()const{return const_cast<Map*>(&map);}uint32 GetMapId()const{return map.GetId();}
     uint32 GetGUIDLow(){return 1;}uint32 GetInstanceId(){return instance;}
-    uint32 GetTeam()const{return team;}uint32 getClass()const{return cls;}int GetQuestStatus(int){return 0;}
+    int questStatus=3;bool rewarded=false;
+    unsigned m_atLoginFlags=0,loads=0;bool validPosition=true;
+    struct Holder {int status=3;int GetPreparedResult(int){return status;}} holder;
+    struct Move {struct Transport {unsigned resets=0;void Reset(){++resets;}} transport;} m_movementInfo;
+    bool IsPositionValid()const{return validPosition;}
+    void _LoadQuestStatus(int status){questStatus=status;++loads;}
+    bool earlyWarrior();void normalQuest(bool scenarioQuestStatusLoaded);
+    uint32 GetTeam()const{return team;}uint32 getClass()const{return cls;}int GetQuestStatus(int id)const{return id==39191||id==40043||id==41105?questStatus:0;}bool GetQuestRewardStatus(int)const{return rewarded;}
     // The real owned-item/native-objective predicate is independently compiled
     // and exercised by Test-SheilunLogin; this host controls only its admission result.
     bool HasPendingSheilunReturn()const{return pendingSheilun;}
@@ -77,7 +85,15 @@ struct Player {
     void PrepareScenarioLogin(uint32,uint32);bool CanResumeScenarioLogin(uint32)const;void RecordScenarioEntrance();
 };
 #include "../../src/server/game/Scenarios/BrokenShoreClassRoute.h"
+#include "../../src/server/game/Scenarios/WarriorScenarioRoute.h"
 #include "Resume.inc"
+bool Player::earlyWarrior(){uint32 mapId=GetMapId(),instanceId=instance;auto mapEntry=sMapStore.LookupEntry(mapId);uint64 transLowGUID=99;
+#include "WarriorEarly.inc"
+    assert(bool(m_scenarioLoginId)==(transLowGUID==0));return warriorQuestStatusLoaded;
+}
+void Player::normalQuest(bool scenarioQuestStatusLoaded){
+#include "NormalQuestLoad.inc"
+}
 bool allowed(Player* player,uint32 mapid){
 #include "Access.inc"
     return true;
@@ -130,6 +146,55 @@ void SharedWarriorEntrances(){
     std::cout<<"COUNTERFACTUAL pinned2396b47f7 source64:44 expected-broken Warrior late/source/default-row cases,20 retained controls;native class/terrain/client checks separate\n";
 #else
     std::cout<<"PASS actual RecordScenarioEntrance source64:Warrior944/1037/both teams/late-loading-transport-vehicle,valid foreign LFG priority,24 invalid native-source refusals,existing checkpoint/real first-entry preservation,foreign class/map/scenario controls;no movement or progress grant. Engine data controlled;native separate\n";
+#endif
+}
+void WarriorEarlyLogin(){
+    unsigned cases=0;
+    for(auto routeMap:{1495u,1511u,1539u})for(unsigned team:{0u,1u})for(unsigned kind=0;kind<22;++kind){
+        auto route=WarriorScenarioRoute::Find(routeMap);assert(route);
+        Player p;p.questStatus=0;p.team=team;p.map.entry.ID=routeMap;Scenario live{&p.map};live.id=route->scenario;live.step=3;
+        scenarios.entries.clear();scenarios.entries[42]=&live;scenarios.missingSteps=false;sMapStore.value.ID=routeMap;sMapStore.missing=sScenarioStore.missing=sDB2Manager.missing=objects.missing=lfgManager.missing=false;
+        objects.data={};objects.data.MapID=routeMap;objects.data.Team=0;objects.data.Class=CLASS_WARRIOR;objects.data.ScenarioID=route->scenario;objects.data.LfgDungeonID=908;
+        lfgManager.shared=true;lfgManager.fallbackAlways=false;lfgManager.data={};lfgManager.data.dbc=&lfgManager.data.entry;lfgManager.data.entry.ScenarioID=routeMap==1495?1068:routeMap==1511?973:1092;lfgManager.data.map=routeMap;lfgManager.data.x=lfgManager.data.y=lfgManager.data.z=0;
+        SpellTargetPosition target{routeMap,111,222,33,1};spellManager.targets.clear();spellManager.targets[route->spell]=target;
+        if(kind==1)assert(!p.m_scenarioResume.Read("bad checkpoint"));
+        if(kind==2){p.m_scenarioResume={routeMap,lfgManager.data.entry.ScenarioID,42,1000,101,202,30,1};lfgManager.shared=false;lfgManager.fallbackAlways=true;}
+        if(kind==3)p.m_scenarioResume={routeMap+1,route->scenario,42,1000,101,202,30,1};
+        if(kind==4)p.m_scenarioResume={routeMap,route->scenario,42,1000,std::numeric_limits<float>::quiet_NaN(),202,30,1};
+        if(kind==5||kind==6||kind==21)p.m_scenarioResume={routeMap,route->scenario,42,kind==6?999u:1000u,101,202,30,1};
+        if(kind==7||kind==21)p.holder.status=QUEST_STATUS_COMPLETE;
+        if(kind==8)p.holder.status=0;
+        if(kind==10)p.cls=CLASS_WARLOCK;
+        if(kind==11){p.map.entry.ID=9000;sMapStore.value.ID=9000;}
+        if(kind==12)p.m_atLoginFlags=AT_LOGIN_UNLOCK;
+        if(kind==13)p.validPosition=false;
+        if(kind==14)spellManager.targets.clear();
+        if(kind==15)spellManager.targets[route->spell].target_mapId=1;
+        if(kind==16)spellManager.targets[route->spell].target_X=spellManager.targets[route->spell].target_Y=spellManager.targets[route->spell].target_Z=0;
+        if(kind==17)spellManager.targets[route->spell].target_X=std::numeric_limits<float>::quiet_NaN();
+        if(kind==18)spellManager.targets[route->spell].target_Orientation=std::numeric_limits<float>::infinity();
+        if(kind==19)spellManager.targets[route->spell].target_X=20000;
+        bool loaded=p.earlyWarrior();p.normalQuest(loaded);assert(p.loads==1);
+        if(kind==9)p.rewarded=true;
+        if(kind==20)p.questStatus=0;
+        bool existing=kind==5||kind==6||kind==21;
+        bool recovered=kind<=4||kind==9||kind==20;
+#ifdef WARRIOR_LOGIN_SOURCE_BASELINE
+        if(recovered)assert(p.m_scenarioLoginId!=route->scenario);
+        if(!existing&&!recovered)assert(!p.m_scenarioLoginId);
+#else
+        if(recovered){assert(p.m_scenarioLoginId==route->scenario&&!p.m_scenarioLoginInstance&&p.selector==route->scenario&&p.pos.x==target.target_X&&p.m_scenarioResume.instance==0&&p.m_scenarioResume.boot==0);}
+        if(!existing&&!recovered)assert(!p.m_scenarioLoginId&&!p.relocated);
+        if(existing)assert(p.m_scenarioLoginId==route->scenario&&p.m_scenarioResume.x==101&&p.pos.x==(kind==6?101:10));
+        assert(p.CanResumeScenarioLogin(route->scenario)==((existing||recovered)&&kind!=9&&kind!=20));
+#endif
+        assert(live.step==3);++cases;
+    }
+    assert(cases==132);
+#ifdef WARRIOR_LOGIN_SOURCE_BASELINE
+    std::cout<<"COUNTERFACTUAL pinned5ec346c8e early-loader+resume source132:active missing/invalid/foreign receipts cannot recover before transport/Map construction;retained controls remain separate\n";
+#else
+    std::cout<<"PASS actual early-loader+resume source132:all3 routes/both teams,empty/malformed/foreign/wrong-map/invalid record,native-source failures,unlock/position/class/map/status refusals,existing live/fresh/complete receipts,one quest load,transport reset only after admission;late reward/abandonment rejects map admission;no progress grant\n";
 #endif
 }
 int main()
@@ -229,4 +294,7 @@ int main()
     live.map=&p.map;p.PrepareScenarioLogin(1541,42);assert(p.relocated&&p.selector==1007&&!p.m_scenarioLoginInstance&&p.pos.x==-1073);
     std::cout<<"PASS: production checkpoint parsing, fresh restart, live rejoin, consumed selector, ID reuse/boot separation, completion, map/type/routing gates, shared faction/class/difficulty/dungeon admission and legacy entrance retention/exit cleanup; actual Stromkar1539/1037 reset rejects empty checkpoint and admits the exact entrance receipt after selector consumption\n";
     SharedWarriorEntrances();
+#ifndef WARRIOR_RESUME_BASELINE
+    WarriorEarlyLogin();
+#endif
 }

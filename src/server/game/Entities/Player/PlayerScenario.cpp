@@ -8,6 +8,7 @@
 #include "Item.h"
 #include "SpellMgr.h"
 #include "BrokenShoreClassRoute.h"
+#include "WarriorScenarioRoute.h"
 #include "QuestData.h"
 
 namespace
@@ -52,6 +53,15 @@ lfg::LFGDungeonData const* ResumeDungeon(Player const* player, uint32 scenarioId
 
 void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
 {
+    if (getClass() == CLASS_WARRIOR)
+        if (auto route = WarriorScenarioRoute::Find(mapId))
+            if (m_scenarioResume.scenario && m_scenarioResume.scenario != route->scenario)
+            {
+                m_scenarioResume = {};
+                m_scenarioLoginId = m_scenarioLoginInstance = 0;
+                SetScenarioId(0);
+                return;
+            }
     MapEntry const* entry = sMapStore.LookupEntry(mapId);
     if (!m_scenarioResume.scenario || m_scenarioResume.map != mapId ||
         !Resumable(entry,m_scenarioResume.scenario) ||
@@ -94,6 +104,13 @@ void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
 
 bool Player::CanResumeScenarioLogin(uint32 scenarioId) const
 {
+    // Rewarded rows load after the early selector. Revalidate admission here,
+    // when real active/rewarded quest state is available to the map check.
+    if (getClass() == CLASS_WARRIOR)
+        if (auto route = WarriorScenarioRoute::Find(GetMapId()))
+            if (scenarioId != route->scenario || GetQuestRewardStatus(route->quest) ||
+                (GetQuestStatus(route->quest) != QUEST_STATUS_INCOMPLETE && GetQuestStatus(route->quest) != QUEST_STATUS_COMPLETE))
+                return false;
     return m_scenarioLoginId && m_scenarioLoginId == scenarioId &&
         m_scenarioResume.map == GetMapId() && Resumable(GetMap()->GetEntry(),scenarioId);
 }

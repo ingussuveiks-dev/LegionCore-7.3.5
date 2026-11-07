@@ -17,6 +17,7 @@
  */
 
 #include "Player.h"
+#include "WarriorScenarioRoute.h"
 #include "QuestRewardDisplay.h"
 #include "AccountMgr.h"
 #include "AchievementMgr.h"
@@ -22767,8 +22768,27 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     // Restore before the stale-transport fallback and before map creation.
     // An explicit character unlock still takes precedence over a checkpoint.
+    bool warriorQuestStatusLoaded = false;
     if (!(m_atLoginFlags & AT_LOGIN_UNLOCK) && mapEntry && IsPositionValid())
+    {
         PrepareScenarioLogin(mapId,instanceId);
+        // An unrecorded acquisition may use its active quest's real entrance,
+        // never a numeric saved instance or a later saved coordinate.
+        if (!m_scenarioLoginId && getClass() == CLASS_WARRIOR)
+            if (auto route = WarriorScenarioRoute::Find(mapId))
+            {
+                _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
+                warriorQuestStatusLoaded = true;
+                if (GetQuestStatus(route->quest) == QUEST_STATUS_INCOMPLETE)
+                    if (auto target = sSpellMgr->GetSpellTargetPosition(route->spell))
+                        if (target->target_mapId == mapId && (target->target_X || target->target_Y || target->target_Z) &&
+                            MapManager::IsValidMapCoord(mapId,target->target_X,target->target_Y,target->target_Z,target->target_Orientation))
+                        {
+                            m_scenarioResume = {mapId,route->scenario,0,0,target->target_X,target->target_Y,target->target_Z,target->target_Orientation};
+                            PrepareScenarioLogin(mapId,0);
+                        }
+            }
+    }
     if (m_scenarioLoginId)
     {
         m_movementInfo.transport.Reset();
@@ -22985,10 +23005,11 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     // Restore the selector before CreateMap chooses this scenario's difficulty.
     // These quest scenarios need quest status this early; do not consume
     // the same prepared result a second time in the normal quest-loading block.
-    bool scenarioQuestStatusLoaded = (mapId == 1522 || mapId == 1630) && getClass() == CLASS_WARLOCK;
-    if (scenarioQuestStatusLoaded)
+    bool scenarioQuestStatusLoaded = warriorQuestStatusLoaded;
+    if (!scenarioQuestStatusLoaded && (mapId == 1522 || mapId == 1630) && getClass() == CLASS_WARLOCK)
     {
         _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
+        scenarioQuestStatusLoaded = true;
         if (!m_scenarioLoginId && mapId == 1522 && GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE)
         {
             Scenario* introduction = sScenarioMgr->GetScenario(instanceId);

@@ -1,5 +1,7 @@
 # Real native Protection wave readiness and Kill/owner progression; no persistent character writes.
-param([switch]$WarriorLoginBaseline,[switch]$WarriorLogin,[switch]$LoginBaseline,[switch]$LoginLiveData,[switch]$LoginRecovery,[switch]$DuelDeferredBaseline,[switch]$DuelRecreation,[switch]$DuelRecreationBaseline,[switch]$Recreation,[switch]$RecreationBaseline,[switch]$CombatReplacement,[switch]$CombatBaseline,[switch]$PrimaryApproach,[switch]$PrimaryBaseline,[switch]$Cursor,[switch]$CursorBaseline,[switch]$Replacement,[switch]$ReplacementBaseline,[switch]$ColdRoute,[switch]$ColdRouteBaseline,[switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+param([switch]$WarriorRecoveryBaseline,[switch]$WarriorRecovery,[switch]$WarriorLoginBaseline,[switch]$WarriorLogin,[switch]$LoginBaseline,[switch]$LoginLiveData,[switch]$LoginRecovery,[switch]$DuelDeferredBaseline,[switch]$DuelRecreation,[switch]$DuelRecreationBaseline,[switch]$Recreation,[switch]$RecreationBaseline,[switch]$CombatReplacement,[switch]$CombatBaseline,[switch]$PrimaryApproach,[switch]$PrimaryBaseline,[switch]$Cursor,[switch]$CursorBaseline,[switch]$Replacement,[switch]$ReplacementBaseline,[switch]$ColdRoute,[switch]$ColdRouteBaseline,[switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+if($WarriorRecoveryBaseline){$WarriorRecovery=$true}
+if($WarriorRecovery){if($WarriorLoginBaseline -or $LoginBaseline -or $LoginLiveData){throw 'Choose only early Warrior recovery'};$WarriorLogin=$true}
 if($WarriorLoginBaseline){$WarriorLogin=$true}
 if($WarriorLogin){if($LoginBaseline -or $LoginLiveData){throw 'Choose only shared Warrior login'};$LoginRecovery=$true}
 if($LoginBaseline -and $LoginLiveData){throw 'Choose one login mode'}
@@ -49,8 +51,8 @@ if($PillikBaseline){$Pillik=$true}
 if($StartRecovery -and $Pillik){throw "Choose start recovery or the earlier Pillik handoff"}
 if($Baseline -and ($StartRecovery -or $Pillik)){throw "Pinned counterfactual is separate from current start recovery"}
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$family=if($WarriorLogin){"warrior-scenario-resume-native"}elseif($LoginRecovery){"magnar-login-native"}elseif($DuelRecreation){"magnar-duel-recreation-native"}elseif($Recreation){"magnar-recreation-native"}elseif($CombatReplacement){"magnar-combat-native"}elseif($PrimaryApproach){"hruthnir-primary-native"}elseif($Cursor){"hruthnir-cursor-native"}elseif($Replacement){"magnar-replacement-native"}elseif($ColdRoute){"hruthnir-cold-route-native"}elseif($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
-$probe=if($WarriorLogin){"WarriorScenarioResumeNative"}elseif($LoginRecovery){"MagnarLoginNative"}elseif($DuelRecreation){"MagnarDuelRecreationNative"}elseif($Recreation){"MagnarRecreationNative"}elseif($CombatReplacement){"MagnarCombatReplacementNative"}elseif($PrimaryApproach){"HruthnirPrimaryApproachNative"}elseif($Cursor){"HruthnirCursorNative"}elseif($Replacement){"MagnarReplacementNative"}elseif($ColdRoute){"HruthnirColdRouteNative"}elseif($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
+$family=if($WarriorRecovery){"warrior-login-recovery-native"}elseif($WarriorLogin){"warrior-scenario-resume-native"}elseif($LoginRecovery){"magnar-login-native"}elseif($DuelRecreation){"magnar-duel-recreation-native"}elseif($Recreation){"magnar-recreation-native"}elseif($CombatReplacement){"magnar-combat-native"}elseif($PrimaryApproach){"hruthnir-primary-native"}elseif($Cursor){"hruthnir-cursor-native"}elseif($Replacement){"magnar-replacement-native"}elseif($ColdRoute){"hruthnir-cold-route-native"}elseif($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
+$probe=if($WarriorRecovery){"WarriorLoginRecoveryNative"}elseif($WarriorLogin){"WarriorScenarioResumeNative"}elseif($LoginRecovery){"MagnarLoginNative"}elseif($DuelRecreation){"MagnarDuelRecreationNative"}elseif($Recreation){"MagnarRecreationNative"}elseif($CombatReplacement){"MagnarCombatReplacementNative"}elseif($PrimaryApproach){"HruthnirPrimaryApproachNative"}elseif($Cursor){"HruthnirCursorNative"}elseif($Replacement){"MagnarReplacementNative"}elseif($ColdRoute){"HruthnirColdRouteNative"}elseif($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
 $out="$repo/build-extractors/runtime-test/$family/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing actual $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
@@ -66,7 +68,8 @@ $old=(& git -C $repo show 'eb96dd4e6:src/server/scripts/Scenario/Artifacts/Rogue
 $quest=Get-Content "$repo/src/server/game/Globals/QuestData.cpp" -Raw
 $query=[regex]::Match($quest,'(?s)void QuestDataStoreMgr::LoadQuests\(\).*?WorldDatabase.Query\(("SELECT ".*?" FROM quest_template")\);').Groups[1].Value
 if(!$query){throw 'Actual native quest query missing'}
-[IO.File]::WriteAllText("$out/NativeAltheaQuest.inc",$query+' " WHERE ID IN(40710,42504,42627,40043,39191)"')
+$questIds=if($WarriorLogin){'40710,42504,42627,40043,39191,41105'}else{'40710,42504,42627,40043,39191'}
+[IO.File]::WriteAllText("$out/NativeAltheaQuest.inc",$query+' " WHERE ID IN('+$questIds+')"')
 $configPath="$repo/build-extractors/bin/Release/worldserver.conf";$hash=(Get-FileHash $configPath).Hash;$config=Get-Content $configPath -Raw
 $config=[regex]::Replace($config,'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$out.Replace('\','/')+'/logs"'));[IO.File]::WriteAllText("$out/worldserver.conf",$config)
 [IO.File]::WriteAllText("$out/AltheaIntro.inc",(Block $source 'class npc_sister_althea_ebonlocke : public CreatureScript')+';')
@@ -136,6 +139,16 @@ if($LoginRecovery){
  [IO.File]::WriteAllText("$out/MagnarLoginMigration.inc",'R"MAGNAR_SQL('+[IO.File]::ReadAllText($migration)+')MAGNAR_SQL"')
  $inputs+=@($migration,"$out/MagnarLoginMigration.inc")
 }
+if($WarriorRecovery){
+ $earlySource=if($WarriorRecoveryBaseline){(& git -C $repo show '5ec346c8e:src/server/game/Entities/Player/Player.cpp') -join "`n"}else{Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw}
+ $a=$earlySource.IndexOf('    // Restore before the stale-transport fallback');$b=$earlySource.IndexOf('    if(m_atLoginFlags & AT_LOGIN_UNLOCK)',$a)
+ if($a -lt 0 -or $b -le $a){throw 'Native early capsule missing'}
+ $early=$earlySource.Substring($a,$b-$a);if($WarriorRecoveryBaseline){$early='bool warriorQuestStatusLoaded=false;'+"`n"+$early}
+ [IO.File]::WriteAllText("$out/WarriorEarlyNative.inc",$early)
+ $a=$earlySource.IndexOf('    if (!scenarioQuestStatusLoaded)');$b=$earlySource.IndexOf('    _LoadQuestStatusObjectives(',$a)
+ [IO.File]::WriteAllText("$out/WarriorNormalQuestNative.inc",$earlySource.Substring($a,$b-$a))
+ $inputs+=@("$repo/tools/tests/WarriorLoginRecoveryNative.cpp","$repo/src/server/game/Entities/Player/Player.cpp","$repo/src/server/game/Scenarios/WarriorScenarioRoute.h","$out/WarriorEarlyNative.inc","$out/WarriorNormalQuestNative.inc")
+}
 $hashes=@{};foreach($path in $inputs){$hashes[$path]=(Get-FileHash $path).Hash}
 try{
  $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:CL="$previousCompiler /DNDEBUG /Zi /Fd`"$out/compiler.pdb`" /I`"$out`" /I`"$repo/src/server/scripts/Legion`""
@@ -145,6 +158,7 @@ try{
  if($ResetBaseline){$env:CL+=" /DMAGNAR_RESET_BASELINE"}
  if($ChamberBaseline){$env:CL+=" /DHRUTHNIR_CHAMBER_BASELINE"}
  if($ReplacementBaseline){$env:CL+=" /DMAGNAR_REPLACEMENT_BASELINE"}
+ if($WarriorRecoveryBaseline){$env:CL+=" /DWARRIOR_LOGIN_RECOVERY_BASELINE"}
  if($WarriorLoginBaseline){$env:CL+=" /DWARRIOR_LOGIN_BASELINE"}
  if($LoginBaseline){$env:CL+=" /DMAGNAR_LOGIN_BASELINE"}
  if($LoginLiveData){$env:CL+=" /DMAGNAR_LOGIN_LIVE"}

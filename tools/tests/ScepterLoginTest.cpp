@@ -59,7 +59,7 @@ struct Player {
     uint32 GetMapId(){return map;} int GetInstanceId(){return instance;}
     void _LoadQuestStatus(int saved){status=saved;++loads;}
     void Relocate(float nx,float ny,float nz,float no){x=nx;y=ny;z=nz;o=no;relocated=true;}
-    bool early(){uint32 mapId=map,instanceId=instance;
+    bool early(){uint32 mapId=map,instanceId=instance;bool warriorQuestStatusLoaded=false;
 #include "EarlyRestore.inc"
         return scenarioQuestStatusLoaded;
     }

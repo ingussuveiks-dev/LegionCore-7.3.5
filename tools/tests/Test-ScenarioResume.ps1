@@ -1,14 +1,21 @@
-param([switch]$WarriorBaseline,[switch]$AddressSanitizer,[switch]$VerifyReleaseBinary)
-if($WarriorBaseline -and $VerifyReleaseBinary){throw 'Expected-broken source cannot certify Release'}
+param([switch]$LoginBaseline,[switch]$WarriorBaseline,[switch]$AddressSanitizer,[switch]$VerifyReleaseBinary)
+if($LoginBaseline -and $WarriorBaseline){throw 'Choose one source counterfactual'}
+if(($WarriorBaseline -or $LoginBaseline) -and $VerifyReleaseBinary){throw 'Expected-broken source cannot certify Release'}
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $output="$repo/build-extractors/runtime-test/scenario-resume"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
-$source=if($WarriorBaseline){(& git -C $repo show '2396b47f7:src/server/game/Entities/Player/PlayerScenario.cpp') -join "`n"}else{Get-Content "$repo/src/server/game/Entities/Player/PlayerScenario.cpp" -Raw}
+$source=if($LoginBaseline){(& git -C $repo show '5ec346c8e:src/server/game/Entities/Player/PlayerScenario.cpp') -join "`n"}elseif($WarriorBaseline){(& git -C $repo show '2396b47f7:src/server/game/Entities/Player/PlayerScenario.cpp') -join "`n"}else{Get-Content "$repo/src/server/game/Entities/Player/PlayerScenario.cpp" -Raw}
 if(!$source){throw 'Actual/pinned scenario source missing'}
 $a=$source.IndexOf('namespace');$b=$source.IndexOf('bool Player::ExitCompletedBrokenShoreLogin()', $a)
 [IO.File]::WriteAllText("$output/Resume.inc",$source.Substring($a,$b-$a))
-$player=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
+$player=if($LoginBaseline){(& git -C $repo show '5ec346c8e:src/server/game/Entities/Player/Player.cpp') -join "`n"}else{Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw}
+$a=$player.IndexOf('    // Restore before the stale-transport fallback');$b=$player.IndexOf('    if(m_atLoginFlags & AT_LOGIN_UNLOCK)',$a)
+if($a -lt 0 -or $b -le $a){throw 'Actual early Warrior/transport block missing'}
+$early=$player.Substring($a,$b-$a);if($LoginBaseline){$early='bool warriorQuestStatusLoaded=false;'+"`n"+$early}
+[IO.File]::WriteAllText("$output/WarriorEarly.inc",$early)
+$a=$player.IndexOf('    if (!scenarioQuestStatusLoaded)');$b=$player.IndexOf('    _LoadQuestStatusObjectives(',$a)
+[IO.File]::WriteAllText("$output/NormalQuestLoad.inc",$player.Substring($a,$b-$a))
 if($player.IndexOf('PrepareScenarioLogin(mapId,instanceId)') -gt $player.IndexOf('else if (transLowGUID)')){throw 'Recovery after transport fallback'}
 if($player.IndexOf('PrepareScenarioLogin(mapId,instanceId)') -gt $player.IndexOf('    Map* map = m_scenarioLoginInstance')){throw 'Recovery after map creation'}
 if(!$player.Contains('m_scenarioResume.Read(fields[f_scenarioResume].GetString())') -or !$player.Contains('stmt->setString(index++, m_scenarioResume.Write())')){throw 'Checkpoint DB persistence missing'}
@@ -20,6 +27,7 @@ $block=$access.Substring($a,$b-$a)
 if(!$access.Contains('activeScenario->GetMap() == player->GetMap()') -or !$access.Contains('player->CanResumeScenarioLogin(activeScenario->GetScenarioId())')){throw 'Post-construction access must use actual live scenario'}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $instrument=if($AddressSanitizer){"/fsanitize=address /Zi /Fd`"$output/compiler.pdb`""}else{''}
+if($LoginBaseline){$instrument+=' /DWARRIOR_LOGIN_SOURCE_BASELINE'}
 if($WarriorBaseline){$instrument+=' /DWARRIOR_RESUME_BASELINE'}
 $cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 $instrument /I`"$output`" /I`"$repo/src/server/game/Scenarios`" `"$PSScriptRoot/ScenarioResumeTest.cpp`" /Fe`"$output/test.exe`" /Fo`"$output/test.obj`"`r`nif errorlevel 1 exit /b 1`r`n`"$output/test.exe`"`r`n"
 [IO.File]::WriteAllText("$output/run.cmd",$cmd)

@@ -1,4 +1,29 @@
 {
+  "latest_warrior_login_recovery_2026_11_07": {
+    "audit": "docs/audits/warrior-login-recovery-2026-11-07.json",
+    "status": "DEPLOYED; missing Warrior acquisition checkpoint recovery at the actual early login boundary repaired; source132 ASAN/native138/strict linked PE and retained regressions/canonical startup pass. Full persisted-character/client login and all three whole artifact chains remain client-pending.",
+    "checks": "Source132 ASAN+pinned132/native138+pinned native capsule132/strict stage+canonical PE;retained recorder64+56,Protection8/live data,Fury arrival,Scepter;owned canonical ready/shutdown0/exit0. Full persisted-character/client/group binding traversal remains pending.",
+    "runtime_sha256": {
+      "bnetserver": "143d42b25cfe0f0ec4de1717cc2005f8b5d7a7af78061e73833f5da5ec9f15c7",
+      "worldserver": "54979ef7bf3e417f718a66b5b66cc5b1428fb1e4fd83560901daf770b919addc"
+    },
+    "diagnostics": {
+      "result": "Every test/build/native/PE/startup wrapped with before/after crash and log snapshots;final runs no new/changed crashes,no unexplained appended warning/error/assertion,no new DBErrors. Owned canonical stderr empty,shutdown0/exit0/process gone.",
+      "canonical_crashes": "empty",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "Unresolved mixed shared LINK2 findings retained unchanged;not eligible for truncation."
+    },
+    "unresolved": [
+      "Actual full LoadFromDB/SaveToDB character roundtrip,client fresh/repeated entry,reconnect and death/revival are not proven by the extracted loader or native constructor fixtures. Dead state is not modified by this repair.",
+      "MapInstanced retains ordinary legitimate solo/permanent/group binding selection. The seeded instance/boot0 does not adopt a stale saved numeric instance; the native fresh-map tests do not exercise full MapManager creation with loaded group binds. Existing group bind,leader availability,live scenario sharing and actual group/faction gameplay require client/native whole-loader follow-up. No group binds cleared or group progression fabricated.",
+      "Fury source is the native air entrance;existing acknowledged descent recovery and pet/guardian,failed-cast,vehicle/camera/death/re-entry/full-combat timing remain actual client checks. Protection and Arms full scenes/combat/rewards also remain client checks.",
+      "All36 whole artifact chains remain uncertified. Shared LINK2/Slaghammer intro reproduction and mixed7111 remain OPEN;their original reports/cache/research are preserved."
+    ],
+    "cleanup": {
+      "status": "Pending final focused commit,verified diagnostic archive and redundant owned build/staging cleanup;no independent test server needs to remain running."
+    }
+  },
   "latest_warrior_scenario_resume_2026_11_07": {
     "audit": "docs/audits/warrior-scenario-resume-2026-11-07.json",
     "status": "DEPLOYED; Fury/Arms first entrance checkpoint recording on shared maps repaired;source64 ASAN/native56/strict linked PE/retained Protection+Fury arrival+Scepter/canonical startup pass. This is a recorder/rejoin/fresh-map policy repair,not verified whole-client login or an already-empty saved-character recovery.",

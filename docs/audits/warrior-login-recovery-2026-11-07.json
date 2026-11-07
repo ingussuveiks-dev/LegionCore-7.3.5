@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED; missing Warrior acquisition checkpoint recovery at the actual early login boundary repaired; source132 ASAN/native138/strict linked PE and retained regressions/canonical startup pass. Full persisted-character/client login and all three whole artifact chains remain client-pending.",
+  "cause": "Prior326cd records new Fury/Arms entrances correctly but cannot repair a character already saved inside with an empty or unusable checkpoint. The existing generic login can then reach stale-transport/home fallback or create a shared-map default scenario. Native active quest status was loaded too late to select the correct Warrior acquisition before transport fallback and map construction.",
+  "scope": "Warrior Protection39191/map1495/scenario909/187803, Fury40043/map1511/scenario944/193335, Arms41105/map1539/scenario1037/203920. Matching26972 spell targets are entrance sources; no live database or character rows changed.",
+  "implementation": [
+    "Shared immutable route table contains only those three map/scenario/quest/spell tuples. The existing valid checkpoint path runs first. Only a load with no selected checkpoint, actual Warrior class, known map, valid saved position and no explicit AT_LOGIN_UNLOCK loads active quest statuses early. Character death/revival remains native.",
+    "Require INCOMPLETE acquisition and actual native spell target with matching map, nonzero XYZ and valid coordinates. Seed entrance-only checkpoint with instance/boot0, call PrepareScenarioLogin(map,0), then use the existing selected-recovery transport reset. No old saved position, instance number, scenario step, item, kill credit or completion is imported.",
+    "Known-map foreign-scenario receipts are cleared before use. A valid existing live/fresh/complete receipt is preserved by the existing preparation policy. Final CanResumeScenarioLogin rechecks exact Warrior scenario and actual active INCOMPLETE/COMPLETE, unrewarded acquisition after normal rewarded rows load. Empty COMPLETE/NONE/rewarded/abandoned quest state cannot create a missing receipt.",
+    "Carry the early-loaded status flag through the existing Warlock path so the prepared quest result is consumed once. Rewarded quests, objectives, spell learning and other normal login loads retain their original stage. No Player field/layout/API change, spell cast, teleport, SQL migration or log suppression."
+  ],
+  "sources": "Matching local26972 native DB2/LFG/spell catalog,live spell_target_position/scenario_data and actual Player/PlayerScenario/MapInstanced/Map/SpellEffects code; pinned main/origin5ec346c8e and previous326cd history consulted. Native187803/193335/203920 use teleport effect227. Current task required no imported modern core or external gameplay behavior.",
+  "checks": {
+    "source132": "Actual extracted pre-transport LoadFromDB capsule plus actual Prepare/CanResume code under ASAN: 3 maps x Human/Orc x22 cases. Empty/malformed/foreign/wrong-map/invalid-position receipt recovery; valid live/fresh/complete preservation; early status exactly once; late reward/abandonment denial; wrong class/map,explicit unlock,invalid saved position,missing/wrong/zero/NaN/infinite/out-of-bounds native target refuse. Retained recorder64 and Scepter ordering pass.",
+    "baseline132": "Pinned5ec346c8e early capsule/Prepare/CanResume source and native capsule132 counterfactual pass their expected-broken assertions. Native support/bootstrap is current, not an entire historical binary. Final baseline contains all three real quest templates including41105.",
+    "native138": "Actual native Player getters/status,Prepare/CanResume,LFG/DB2/spell targets;132 variants plus6 native Map/parent destruction,recycled numeric ID and fresh Scenario constructor tests. Template presence and actual prepared query slot6 checked. Accepted status-row parser, saved-transport reset, position-valid endpoint and earlier step3 are controlled. Actual native constructor selects909/944/1037 at step0; no128289/128908/128910 item grant and no old stage grant.",
+    "linked_release": "Original generated static-library link inputs rebuilt, no global OutDir. Stage and canonical strict composed PE checks identify all three route tuples, unlock/class/map/status/native-coordinate guards, instance/boot0 and explicit Prepare(map,0), guarded transport reset, quest-load flag/order and final rewarded/admission checks. Retained first-entrance recording/completion/Vigfus linked checks also pass.",
+    "retained": "Warrior first-entrance source64/native56/PE; Protection live data/native8; Fury arrival source/ASAN/native catalog/binding/selected linked PE; canonical Test-ScepterLogin -VerifyReleaseBinary. Native recorder fixture now supplies active quest state required by actual late admission. Native bootstrap includes real Arms41105 template.",
+    "canonical_startup": "Owned worldserver PID=31020\nPASS owned PID=31020 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "data_preservation": "Read-only full-table hashes confirm all non1028 LFG entrances,whole spell targets/scenario route data unchanged against prior baseline;1028 independently checked by retained live Protection test. Configuration/certificates/DLLs and both deployed executable hashes checked before/after.",
+    "test_development": "Retain all failed probe evidence: missing native MapManager include fixed; native selected bootstrap initially omitted Arms41105 and now asserts real template; source fake now allows simultaneous direct/fallback LFG rows as production does. PE verifier handles legitimate leaf without unwind metadata by exact next-symbol boundary and scopes transport-reset check to the recovery block, not unrelated later resets. These were fixture/verifier failures, not observed client crashes. No diagnostic checks weakened or runtime errors hidden."
+  },
+  "diagnostics": {
+    "result": "Every test/build/native/PE/startup wrapped with before/after crash and log snapshots;final runs no new/changed crashes,no unexplained appended warning/error/assertion,no new DBErrors. Owned canonical stderr empty,shutdown0/exit0/process gone.",
+    "canonical_crashes": "empty",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "Unresolved mixed shared LINK2 findings retained unchanged;not eligible for truncation."
+  },
+  "unresolved": [
+    "Actual full LoadFromDB/SaveToDB character roundtrip,client fresh/repeated entry,reconnect and death/revival are not proven by the extracted loader or native constructor fixtures. Dead state is not modified by this repair.",
+    "MapInstanced retains ordinary legitimate solo/permanent/group binding selection. The seeded instance/boot0 does not adopt a stale saved numeric instance; the native fresh-map tests do not exercise full MapManager creation with loaded group binds. Existing group bind,leader availability,live scenario sharing and actual group/faction gameplay require client/native whole-loader follow-up. No group binds cleared or group progression fabricated.",
+    "Fury source is the native air entrance;existing acknowledged descent recovery and pet/guardian,failed-cast,vehicle/camera/death/re-entry/full-combat timing remain actual client checks. Protection and Arms full scenes/combat/rewards also remain client checks.",
+    "All36 whole artifact chains remain uncertified. Shared LINK2/Slaghammer intro reproduction and mixed7111 remain OPEN;their original reports/cache/research are preserved."
+  ],
+  "runtime_sha256": {
+    "bnetserver": "143d42b25cfe0f0ec4de1717cc2005f8b5d7a7af78061e73833f5da5ec9f15c7",
+    "worldserver": "54979ef7bf3e417f718a66b5b66cc5b1428fb1e4fd83560901daf770b919addc"
+  },
+  "cleanup": {
+    "status": "Pending final focused commit,verified diagnostic archive and redundant owned build/staging cleanup;no independent test server needs to remain running."
+  }
+}
