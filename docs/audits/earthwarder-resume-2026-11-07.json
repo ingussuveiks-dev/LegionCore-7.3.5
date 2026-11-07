@@ -29,14 +29,28 @@
     "active_crashes": "empty"
   },
   "cleanup": {
-    "status": "PENDING verified diagnostic archive and generated native/config/link output cleanup after focused commit",
+    "status": "COMPLETE; verified resolved native fixture/data/startup evidence archive,exact generated output cleanup and canonical/unresolved/recovery postcheck",
+    "archive": "build-extractors/bin/Release/fixed/earthwarder-resume-2026-11-07",
+    "manifest_sha256": "5fdf8cd0a20bed081a704dab9f43498c11ebfe13f3170d62b94a79d17356dd7c",
+    "archived_files": 499,
+    "removed_files": 156,
+    "logical_removed_bytes": 1409160153,
+    "cleanup_manifest_sha256": "f1d21287d4d1b05e6f80b3d048494c1ffc5de8664e65c82ddd26afcc935e4c59",
+    "local_deletion_manifest": ".codex/magnar-login-2026-11-07/cleanup-deleted.json",
+    "logs_reset": 0,
     "retained": [
       ".codex/release-before-magnar-duel-recreation-2026-11-07",
       ".codex/release-before-magnar-recreation-2026-11-07"
-    ]
+    ],
+    "deferred": "Keep unresolved101430/103151 LINK2/Slaghammer probe/cache/runtime,mixed7111,canonical runtime/shared data/required build libraries and all personal/character/database backups. No redundant native executable is needed for pending client checks.",
+    "disk_free_before_bytes": 134379388928,
+    "disk_free_after_bytes": 135784316928,
+    "observed_free_increase_bytes": 1404928000,
+    "postcheck": "PASS canonical existing EXE/config/cert/DLL hashes,all unresolved Slaghammer probe/cache/runtime,mixed7111 and both rollback generations unchanged;active Crashes empty,no world/bnet process;full client checks not certified by cleanup"
   },
   "unresolved": [
     "Actual client/server-process restart with persisted character rows,complete/rewarded/owned-pickup outro,re-entry/quest abandonment and all3 Warrior/all36 whole-chain traversal remain separate. Native fresh Map restart intentionally does not persist earned4;it restarts the authored scenario from a supported entrance. Client arrival/visibility/camera/pet/audio remain pending.",
     "Earlier101430/103151 missingLINK2/mixed7111 and Slaghammer intro remain OPEN and untouched. Retain their original probe/cache/runtime and all personal/character/database backups. Empty Crashes does not certify every quest or crash."
-  ]
+  ],
+  "fix_commit": "dcd914ba91790a60a6f16311bfb7540aa7652ef7"
 }
