@@ -9,5 +9,5 @@
     "Before/after runtime diagnostic snapshots: no new or changed crashes, appended DBErrors or server warnings/errors/assertions. No production executable, data, database or character state changed by this verifier repair. Full client movement/visuals remain separate."
   ],
   "evidence": ".codex/warrior-login-recovery-2026-11-07/arrival-linked-driver.log;arrival-linked.log;arrival-compat-driver.log;arrival-compat-*.log",
-  "archive": "Diagnostic evidence will be hash-archived with the enclosing Warrior login recovery task under build-extractors/bin/Release/fixed/warrior-login-recovery-2026-11-07; no failed evidence is discarded."
+  "archive": "Diagnostic evidence hash-archived with Warrior recovery commit7c90b2de5 under build-extractors/bin/Release/fixed/warrior-login-recovery-2026-11-07; manifest SHA2561ab97737356a12717f40a48af9d2af4657db043530e8fcbbd834e13cdc20f087 verified. Original failed output retained. Verifier repair commit a74b6293d."
 }

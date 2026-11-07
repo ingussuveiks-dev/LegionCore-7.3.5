@@ -38,6 +38,25 @@
     "worldserver": "54979ef7bf3e417f718a66b5b66cc5b1428fb1e4fd83560901daf770b919addc"
   },
   "cleanup": {
-    "status": "Pending final focused commit,verified diagnostic archive and redundant owned build/staging cleanup;no independent test server needs to remain running."
-  }
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/warrior-login-recovery-2026-11-07",
+    "manifest_sha256": "1ab97737356a12717f40a48af9d2af4657db043530e8fcbbd834e13cdc20f087",
+    "original_files": 1675,
+    "cleanup_manifest_sha256": "41be6229eb0a0135cb6c1255fbf0917f4eaa799d52c881355d8d193739d06c64",
+    "removed_files": 254,
+    "logical_removed_bytes": 2592785673,
+    "local_deletion_manifest": ".codex/warrior-login-recovery-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-warrior-login-recovery-2026-11-07",
+      ".codex/release-before-warrior-scenario-resume-2026-11-07"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 133132075008,
+    "disk_free_after_bytes": 135715405824,
+    "observed_free_increase_bytes": 2583330816
+  },
+  "fix_commit": "7c90b2de5b43bc383023b8d527bafaaa792ab182"
 }
