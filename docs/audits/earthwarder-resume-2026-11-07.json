@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED SQL-only; missing native Protection entrance repaired through canonical updater;TEMP data/native8/canonical source+Scepter/live RELEASED hash/startup and unrelated-source preservation pass. Full actual client restart/traversal remains separate.",
+  "scope": "Warrior Protection39191/scenario909/map1495/LFG1028; entrance checkpoint for an old run first recorded after stage0,including after actual10 owned deaths/46427/4. Existing live instances keep their chamber and earned duel; after actual whole Map destruction the native new scenario restarts at its entrance and step0.",
+  "cause": "Native26972 LFG1028/909/1495/difficulty12 sets USER_TELEPORT_NOT_ALLOWED,so LoadLFGDungeons legitimately leaves its coordinates zero when lfg_entrances1028 is absent. RecordScenarioEntrance must use the native entrance for a late/PlayerLoading/transport first recording and therefore returns without saving a checkpoint. Missing-row native controls reproduce this for Human and Orc after actual ten owned kills/46427/4. No persisted victory or arbitrary step4 is a legitimate replacement for this entrance.",
+  "implementation": [
+    "Guarded migration00 inserts only lfg_entrances1028 using existing187803 Jump to Prot Scenario target4916.3/-94/66.3/2.45. Matching native effect1/227,scenario909/map1495/difficulty12/LFG1028 and real map floor66.3065 are verified. Native entry companion361306 is nearby at4884.71/-77.9149/60.9946,phase6999. Hunter1234/1068 and Paladin1242/1082 are different native routes and remain unchanged.",
+    "Require the exact native spell destination and unique original909 wildcard route1495/diff0/team0/class1/LFG0. Accept absent1028 or already identical coordinates;explicitly SIGNAL on conflicting custom/source/route data. Copy coordinates from the existing source record, preserve a custom name on an already correct row, never overwrite another entrance.",
+    "Production C++ and canonical executables are unchanged. Existing actual Player::RecordScenarioEntrance/PrepareScenarioLogin and native LFG/Scenario constructors provide the behavior. Test runner gains scoped login/native baseline/live modes and hashes the new input/migration/core files. No new ScriptName,quest/item/credit grant,character migration or personal character write."
+  ],
+  "sources": "Matching local26972 DB2 LFG1028/909/1495/12 and flags,Spell187803 name/effect227,actual spell_target_position187803 and scenario_data rows;actual LFGMgr loader,PlayerScenario checkpoint code,Scenario constructors,Map/InstanceScript lifecycle and terrain. Git main/origin659d11f89 history consulted. Local evidence resolves this cause;no newer TrinityCore adaptation,external guide or video traversal needed/claimed.",
+  "checks": {
+    "counterfactual": "2 native Human/Orc controls clone LFG data into a TEMP shadow then remove1028 to reproduce the actually observed pre-fix absent row. Actual original DB Magnar/controlled earlier guard receipts/native497+6s start/10 owned Unit::Kill deaths/46427/4;late Record leaves checkpoint empty. Expected-broken controls,not successful ordinary gameplay or pinned historical binary.",
+    "sql": "Full native table schemas/data cloned into TEMP tables:exact one-row insertion,idempotence,full unrelated-LFG/whole-source-spell/whole-scenario-route preservation;8 explicit missing/wrong destination/map/route/team/difficulty/conflicting-custom/zero-custom refusals leave every table unchanged. Correct existing coordinates with a custom name are preserved. Actual live tests also verify updater RELEASED LF-SHA1 and row content.",
+    "native8": "Human/Orc each:actual10 owned kills/46427/4,actual late Record and ScenarioResume Write/Read;fresh Player object exact live boot/instance retains chamber;controlled stale boot or different instance returns to native entrance without touching actual old earned4/boss/46427. Then actual old Map/InstanceScript objects are destroyed and numeric instance ID recycled;actual native LFG constructor consumes909 selector and starts0 without old earned state,retired ticket,46427 or128289. Native CanResumeScenarioLogin and entrance rerecord pass. Floor66.3065 vs target66.3 checked. Earlier guard receipts/poses/clocks and changed saved-boot field are controlled;not a literal OS/server/client restart or full character SaveToDB/LoadFromDB traversal.",
+    "retained": "Actual generic production checkpoint source tests retain parser/live/fresh/boot/id reuse,consumed selector,shared faction/class/difficulty/dungeon admission,Stromkar reset and Sheilun completion scopes. Canonical -VerifyReleaseBinary and mandatory Scepter login -VerifyReleaseBinary pass. Prior native132 Magnar/pet/guardian credit and PE work remains unchanged;no combat C++ modified or unrelated regression rerun claimed.",
+    "deployment": "Canonical existing executable applied2026_11_07_00_earthwarder_resume_entrance.sql through its ordinary updater. Final full native/data/source/canonical suite uses LIVE data,not the TEMP repair. Full live table hashes prove only1028 insertion;all other LFG entrances,whole spell_target_position and scenario_data tables unchanged. EXE/config/cert/DLL hashes unchanged.",
+    "canonical_startup": "Owned worldserver PID=32248\nPASS owned PID=32248 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "diagnostics": "Every source/native/data/runtime test is pre/post wrapped with crashes/log lengths/times,exit/stdout/stderr and appended DBErrors/server diagnostics reviewed. Final ordinary runs have no new/changed crash or appended unexplained error/warning/assert. Active canonical Crashes empty,mixed7111 unchanged. Initial fixture included a nonexistent AreaTrigger header,then omitted map1495 VMAP/MMAP registration and asserted/raisedc0000005 in native Map construction;fixed fixture now uses startup-equivalent map registration and full native8 passes. Initial prototype first demonstrated missing1028 before full owned-wave controls. These failed and expected-broken logs are preserved and distinguished from successful gameplay. One read-only inspection used SourceSpellID from the wrong quest table;schema was inspected and query corrected,without data writes."
+  },
+  "runtime_sha256": {
+    "worldserver": "03c89d8ff4a23e5e9b6c958e8e8c47b8178f8344eebe7180ce8c6baea9048113",
+    "bnetserver": "b04ddd7ade3f6a5e01eb02cc11eb9d982d312ac61e28da880da841f95ea0dc9b"
+  },
+  "diagnostics": {
+    "private_evidence": ".codex/magnar-login-2026-11-07",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "active_crashes": "empty"
+  },
+  "cleanup": {
+    "status": "PENDING verified diagnostic archive and generated native/config/link output cleanup after focused commit",
+    "retained": [
+      ".codex/release-before-magnar-duel-recreation-2026-11-07",
+      ".codex/release-before-magnar-recreation-2026-11-07"
+    ]
+  },
+  "unresolved": [
+    "Actual client/server-process restart with persisted character rows,complete/rewarded/owned-pickup outro,re-entry/quest abandonment and all3 Warrior/all36 whole-chain traversal remain separate. Native fresh Map restart intentionally does not persist earned4;it restarts the authored scenario from a supported entrance. Client arrival/visibility/camera/pet/audio remain pending.",
+    "Earlier101430/103151 missingLINK2/mixed7111 and Slaghammer intro remain OPEN and untouched. Retain their original probe/cache/runtime and all personal/character/database backups. Empty Crashes does not certify every quest or crash."
+  ]
+}

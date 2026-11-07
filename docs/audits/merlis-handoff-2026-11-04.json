@@ -1,4 +1,26 @@
 {
+  "latest_earthwarder_resume_2026_11_07": {
+    "audit": "docs/audits/earthwarder-resume-2026-11-07.json",
+    "status": "DEPLOYED SQL-only; missing native Protection entrance repaired through canonical updater;TEMP data/native8/canonical source+Scepter/live RELEASED hash/startup and unrelated-source preservation pass. Full actual client restart/traversal remains separate.",
+    "fix_commit": "PENDING focused commit;filled during verified cleanup",
+    "checks": "Full-schema TEMP/idempotence/8 refusals;native8 actual earned4/live+stale/recycledID/fresh0,2 expected-broken native controls;generic/Scepter canonical checks;RELEASED updater LF hash,full live preservation. Owned worldserver PID=32248\nPASS owned PID=32248 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "runtime_sha256": {
+      "worldserver": "03c89d8ff4a23e5e9b6c958e8e8c47b8178f8344eebe7180ce8c6baea9048113",
+      "bnetserver": "b04ddd7ade3f6a5e01eb02cc11eb9d982d312ac61e28da880da841f95ea0dc9b"
+    },
+    "cleanup": {
+      "status": "PENDING verified diagnostic archive and generated native/config/link output cleanup after focused commit",
+      "retained": [
+        ".codex/release-before-magnar-duel-recreation-2026-11-07",
+        ".codex/release-before-magnar-recreation-2026-11-07"
+      ]
+    },
+    "unresolved": [
+      "Actual client/server-process restart with persisted character rows,complete/rewarded/owned-pickup outro,re-entry/quest abandonment and all3 Warrior/all36 whole-chain traversal remain separate. Native fresh Map restart intentionally does not persist earned4;it restarts the authored scenario from a supported entrance. Client arrival/visibility/camera/pet/audio remain pending.",
+      "Earlier101430/103151 missingLINK2/mixed7111 and Slaghammer intro remain OPEN and untouched. Retain their original probe/cache/runtime and all personal/character/database backups. Empty Crashes does not certify every quest or crash."
+    ],
+    "next": "Native whole-Map restart now has a verified entrance and starts0;do not implement guessed persisted4. Actual saved-character/client restart and complete Warrior traversal remain pending. Continue independent101430/103151 LINK2 source investigation or another incomplete artifact path using local evidence first."
+  },
   "latest_magnar_duel_recreation_2026_11_07": {
     "audit": "docs/audits/magnar-duel-recreation-2026-11-07.json",
     "status": "DEPLOYED; genuinely earned stage4 Magnar full Creature/newGUID recovery, health and presentation cleanup pass source/native132/selected Release/retained regressions and owned canonical startup; client and whole-map/server restart remain separate",

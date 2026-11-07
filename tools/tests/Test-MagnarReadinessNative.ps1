@@ -1,5 +1,8 @@
 # Real native Protection wave readiness and Kill/owner progression; no persistent character writes.
-param([switch]$DuelDeferredBaseline,[switch]$DuelRecreation,[switch]$DuelRecreationBaseline,[switch]$Recreation,[switch]$RecreationBaseline,[switch]$CombatReplacement,[switch]$CombatBaseline,[switch]$PrimaryApproach,[switch]$PrimaryBaseline,[switch]$Cursor,[switch]$CursorBaseline,[switch]$Replacement,[switch]$ReplacementBaseline,[switch]$ColdRoute,[switch]$ColdRouteBaseline,[switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+param([switch]$LoginBaseline,[switch]$LoginLiveData,[switch]$LoginRecovery,[switch]$DuelDeferredBaseline,[switch]$DuelRecreation,[switch]$DuelRecreationBaseline,[switch]$Recreation,[switch]$RecreationBaseline,[switch]$CombatReplacement,[switch]$CombatBaseline,[switch]$PrimaryApproach,[switch]$PrimaryBaseline,[switch]$Cursor,[switch]$CursorBaseline,[switch]$Replacement,[switch]$ReplacementBaseline,[switch]$ColdRoute,[switch]$ColdRouteBaseline,[switch]$Baseline,[switch]$StartRecovery,[switch]$Pillik,[switch]$PillikBaseline,[switch]$EntryBaseline,[switch]$Approach,[switch]$ApproachBaseline,[switch]$Reoffer,[switch]$ReofferBaseline,[switch]$ResetRecovery,[switch]$ResetBaseline,[switch]$ChamberRecovery,[switch]$ChamberBaseline,[switch]$Barrier,[switch]$BarrierBaseline)
+if($LoginBaseline -and $LoginLiveData){throw 'Choose one login mode'}
+if($LoginBaseline -or $LoginLiveData){$LoginRecovery=$true}
+if($LoginRecovery){if($DuelDeferredBaseline -or $DuelRecreationBaseline){throw 'Login recovery has no duel counterfactual'};$DuelRecreation=$true}
 if($DuelDeferredBaseline -and $DuelRecreationBaseline){throw "Choose one duel counterfactual"}
 if($DuelDeferredBaseline){$DuelRecreation=$true}
 if($DuelRecreationBaseline){$DuelRecreation=$true}
@@ -44,8 +47,8 @@ if($PillikBaseline){$Pillik=$true}
 if($StartRecovery -and $Pillik){throw "Choose start recovery or the earlier Pillik handoff"}
 if($Baseline -and ($StartRecovery -or $Pillik)){throw "Pinned counterfactual is separate from current start recovery"}
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
-$family=if($DuelRecreation){"magnar-duel-recreation-native"}elseif($Recreation){"magnar-recreation-native"}elseif($CombatReplacement){"magnar-combat-native"}elseif($PrimaryApproach){"hruthnir-primary-native"}elseif($Cursor){"hruthnir-cursor-native"}elseif($Replacement){"magnar-replacement-native"}elseif($ColdRoute){"hruthnir-cold-route-native"}elseif($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
-$probe=if($DuelRecreation){"MagnarDuelRecreationNative"}elseif($Recreation){"MagnarRecreationNative"}elseif($CombatReplacement){"MagnarCombatReplacementNative"}elseif($PrimaryApproach){"HruthnirPrimaryApproachNative"}elseif($Cursor){"HruthnirCursorNative"}elseif($Replacement){"MagnarReplacementNative"}elseif($ColdRoute){"HruthnirColdRouteNative"}elseif($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
+$family=if($LoginRecovery){"magnar-login-native"}elseif($DuelRecreation){"magnar-duel-recreation-native"}elseif($Recreation){"magnar-recreation-native"}elseif($CombatReplacement){"magnar-combat-native"}elseif($PrimaryApproach){"hruthnir-primary-native"}elseif($Cursor){"hruthnir-cursor-native"}elseif($Replacement){"magnar-replacement-native"}elseif($ColdRoute){"hruthnir-cold-route-native"}elseif($Barrier){"hruthnir-barrier-native"}elseif($ChamberRecovery){"hruthnir-chamber-native"}elseif($ResetRecovery){"magnar-reset-native"}elseif($Reoffer){"hruthnir-reoffer-native"}elseif($Approach){"hruthnir-approach-native"}elseif($Pillik){"hruthnir-pillik-native"}elseif($StartRecovery -or $Pillik){"hruthnir-start-native"}else{"magnar-readiness-native"}
+$probe=if($LoginRecovery){"MagnarLoginNative"}elseif($DuelRecreation){"MagnarDuelRecreationNative"}elseif($Recreation){"MagnarRecreationNative"}elseif($CombatReplacement){"MagnarCombatReplacementNative"}elseif($PrimaryApproach){"HruthnirPrimaryApproachNative"}elseif($Cursor){"HruthnirCursorNative"}elseif($Replacement){"MagnarReplacementNative"}elseif($ColdRoute){"HruthnirColdRouteNative"}elseif($Barrier){"HruthnirBarrierNative"}elseif($ChamberRecovery){"HruthnirChamberNative"}elseif($ResetRecovery){"MagnarResetNative"}elseif($Reoffer){"HruthnirReofferNative"}elseif($Approach){"HruthnirApproachNative"}elseif($Pillik){"HruthnirPillikNative"}elseif($StartRecovery -or $Pillik){"HruthnirStartNative"}else{"MagnarReadinessNative"}
 $out="$repo/build-extractors/runtime-test/$family/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force "$out/logs"|Out-Null
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing actual $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
@@ -123,6 +126,13 @@ if($Pillik){$inputs+=@("$repo/tools/tests/HruthnirPillikNative.cpp")}
 if($StartRecovery -or $Pillik){$inputs+=@("$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/hruthnir_pillik.h","$out/HruthnirNative.inc","$out/ShieldsNative.inc","$out/MagnarCombatBridge.inc")}
 $inputs+=@("$out/MagnarNative.inc")
 $inputs+=@("$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/magnar_combat.h")
+if($LoginRecovery){$inputs+=@("$repo/tools/tests/MagnarLoginNative.cpp","$repo/src/server/game/Entities/Player/PlayerScenario.cpp","$repo/src/server/game/DungeonFinding/LFGMgr.cpp")}
+if($LoginRecovery){
+ $migration="$repo/sql/pending/world/2026_11_07_00_earthwarder_resume_entrance.sql"
+ if(!(Test-Path $migration)){$migration="$repo/sql/updates/world/2026_11_07_00_earthwarder_resume_entrance.sql"}
+ [IO.File]::WriteAllText("$out/MagnarLoginMigration.inc",'R"MAGNAR_SQL('+[IO.File]::ReadAllText($migration)+')MAGNAR_SQL"')
+ $inputs+=@($migration,"$out/MagnarLoginMigration.inc")
+}
 $hashes=@{};foreach($path in $inputs){$hashes[$path]=(Get-FileHash $path).Hash}
 try{
  $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:CL="$previousCompiler /DNDEBUG /Zi /Fd`"$out/compiler.pdb`" /I`"$out`" /I`"$repo/src/server/scripts/Legion`""
@@ -132,6 +142,8 @@ try{
  if($ResetBaseline){$env:CL+=" /DMAGNAR_RESET_BASELINE"}
  if($ChamberBaseline){$env:CL+=" /DHRUTHNIR_CHAMBER_BASELINE"}
  if($ReplacementBaseline){$env:CL+=" /DMAGNAR_REPLACEMENT_BASELINE"}
+ if($LoginBaseline){$env:CL+=" /DMAGNAR_LOGIN_BASELINE"}
+ if($LoginLiveData){$env:CL+=" /DMAGNAR_LOGIN_LIVE"}
  if($DuelDeferredBaseline){$env:CL+=" /DMAGNAR_DUEL_DEFERRED_BASELINE"}
  if($DuelRecreationBaseline){$env:CL+=" /DMAGNAR_DUEL_RECREATION_BASELINE"}
  if($RecreationBaseline){$env:CL+=" /DMAGNAR_RECREATION_BASELINE"}
