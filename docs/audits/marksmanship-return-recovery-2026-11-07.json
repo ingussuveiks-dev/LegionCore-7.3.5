@@ -43,10 +43,25 @@
     "bnetserver": "e462824db5f7950619498b4487783047e75fce58253151bb5b8208bffa92e109"
   },
   "cleanup": {
-    "status": "PENDING verified archive/exact generated-stage-oldest rollback cleanup after focused fix commit",
-    "retain": [
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/marksmanship-return-recovery-2026-11-07",
+    "manifest_sha256": "01b873d8c237c361a8497db1e98570a1e176b524507c0e9b21a53c597101dcb6",
+    "original_files": 2134,
+    "cleanup_manifest_sha256": "736c0ef02543c0cfadd5665771ab35e1986392b57a84f301b4bf0e69156db4d8",
+    "removed_files": 338,
+    "logical_removed_bytes": 2976247185,
+    "local_deletion_manifest": ".codex/marksmanship-return-recovery-2026-11-07/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
       ".codex/release-before-marksmanship-return-recovery-2026-11-07",
       ".codex/release-before-marksmanship-login-recovery-2026-11-07"
-    ]
-  }
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 133559836672,
+    "disk_free_after_bytes": 136523784192,
+    "observed_free_increase_bytes": 2963947520
+  },
+  "fix_commit": "f343edfe3a3694e5f0920ec01d2ec4e4ea9f4a69"
 }
