@@ -37,7 +37,7 @@ $inputs=@("$repo/tools/tests/SlaghammerCompanionNative.cpp","$repo/src/server/ga
 # source and final-link library bytes before/after the sequential native run.
 $hashes=@{};foreach($path in $inputs){$hashes[$path]=(Get-FileHash $path).Hash}
 try{
- $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:CL="$previousCompiler /DNDEBUG /Zi /I`"$out`" /I`"$repo/src/server/scripts/Legion`""
+ $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf";$env:CL="$previousCompiler /DNDEBUG /Zi /Fd`"$out/compiler.pdb`" /I`"$out`" /I`"$repo/src/server/scripts/Legion`""
 
 
  if($ProgressBaseline){$env:CL+=' /DPROGRESS_BASELINE'};$env:_LINK_="$previousLink /DEBUG /PDB:`"$out/native.pdb`" /MAP:`"$out/native.map`""

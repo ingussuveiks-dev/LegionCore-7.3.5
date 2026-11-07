@@ -6,6 +6,7 @@
 #include "ScriptedCreature.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include "MapManager.h"
 
 namespace WarswordsArrival
 {
@@ -50,6 +51,28 @@ public:
         std::map<uint32, ObjectGuid> objects;
         WarswordsWaves::State waves;
         bool myscenario;
+        WorldLocation graveyard;
+
+        WorldLocation* GetClosestGraveYard(float /*x*/, float /*y*/, float /*z*/) override
+        {
+            // This map also hosts the Survival Hunter acquisition. Its native
+            // graveyard policy must remain separate from the Fury scenario.
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 944)
+                return nullptr;
+
+            // 193335 enters in mid-air. Releasing a corpse must instead use
+            // the authored, grounded Fury GY1 without advancing the scenario.
+            WorldSafeLocsEntry const* safe = sWorldSafeLocsStore.LookupEntry(5228);
+            if (!safe || safe->MapID != 1511 || !(safe->Loc.X || safe->Loc.Y || safe->Loc.Z) ||
+                !MapManager::IsValidMapCoord(safe->MapID, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f))
+            {
+                TC_LOG_ERROR("scripts", "Fury graveyard: invalid native WorldSafeLocs 5228 for instance %u", instance->GetInstanceId());
+                return nullptr;
+            }
+            graveyard.WorldRelocate(safe->MapID, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f);
+            return &graveyard;
+        }
 
         void Initialize() override
         {

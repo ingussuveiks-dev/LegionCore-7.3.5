@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED; Fury944/map1511 missing instance graveyard repaired with native grounded5228;source18 ASAN/native64 including56 real Player release/near ACK/delayed resurrection cases,strict linked PE/retained regressions/canonical startup pass. Full client death/corpse/reconnect and whole chains remain pending.",
+  "cause": "Registered instance_warswords had no GetClosestGraveYard override. Actual native AreaTrigger/LFG loaders register no map1511 graveyard,so InstanceMap::GetClosestGraveYard returns null. Player::RepopAtGraveyard consequently cannot use its normal instance near-transfer/delayed resurrection branch and falls through to outdoor graveyard selection. Matching193335 is an intentional air entrance,not a safe corpse return. This confirms a missing Fury instance recovery path;it does not establish the exact historical client death or every outdoor fallback outcome.",
+  "scope": "Fury944 only. Choose actual WorldSafeLocs5228 Fury Warrior Acquisition GY 1 - CRT at3380.29,1401.9,69.5355;native floor69.5346. Callback is instance-owned and returns the grounded entrance at every existing stage. No stage checkpoint is invented from the later cemetery names.",
+  "implementation": [
+    "Registered Fury instance override first resolves actual scenario and requires944. Missing scenario or shared Hunter973 returns nullptr,retaining its existing fallback. Do not assign Warrior positions to shared LFG1178/973 or modify global graveyard rows.",
+    "Require actual5228 row,map1511,nonzero XYZ and native MapManager coordinate validation. Keep contextual scripts error if native data is missing or invalid. Convert native degrees45.7539 to radians before WorldRelocate and return a persistent per-instance WorldLocation.",
+    "Use the existing Player::RepopAtGraveyard/InstanceMap dispatch,SafeTeleport,MoveTeleportAck and delayed ResurrectPlayer(0.5) flow. The callback contains no teleport,resurrection,quest/item/criteria or wave mutation. Preserve existing arrival descent,wave state and all other callbacks.",
+    "Add source ASAN/native/pinned-instance/selected PE checks. Place the retained native wave test compiler PDB under its own output,avoiding writes into the preexisting canonical vc140.pdb. No live SQL/character changes or new ScriptName."
+  ],
+  "sources": {
+    "local": "Matching26972 WorldSafeLocs/ScenarioStep data and native map geometry;actual LFGMgr/AreaTrigger/ObjectMgr graveyard loaders,InstanceMap and Player release/MovementHandler ACK code;original c252ae5ee actual instance;native whole class registration and real Player/Scenario methods.",
+    "sequence": "Native944 has exactly7 steps0-6:Into the Mists,Village of the Damned,Deeper Into the Fog,The Stolen Souls,Vigfus Himself,On The Trail,The Warswords. Source all-stage entrance-only cemetery preserves those steps and their criteria. Later native5229/5273/5131 were inspected as death-site controls,not assigned guessed unlock thresholds.",
+    "shared_map_correction": "Initial research without registered scripts showed a distant generic1539 LFG point. Registered instance_silver_hand correctly overrides it with native5281;Arms/Priest/Paladin callback is retained. This generic fallback was not a proven Arms gameplay defect and was not changed. Protection1028 native fallback remains4916.3,-94,66.3.",
+    "external": "Local matching data/code resolve the defect and grounded source;no modern TrinityCore behavior or remote implementation imported,no video/client traversal claimed."
+  },
+  "checks": {
+    "baseline": "Pinned c252ae5ee whole Fury instance compiled with current native support:56 Human/Orc x7 valid stages x4 native death-site contexts lack an instance cemetery;8 missing/shared/protection/crypt controls retained. Counterfactual actual callback policy,not a historical whole binary or successful baseline release.",
+    "source18": "Extract actual callback,compile under ASAN. Persistent native entrance and repeat;missing/foreign scenario;missing/wrong-map/zero source;NaN/infinite/out-of-bounds XY and nonfinite Z/orientation reject;contextual error endpoint retained;native degrees converted. Scenario,source and coordinate services controlled;not full-native ASAN.",
+    "native64_release56": "Actual registered whole instance,real DB2/Map/Player/InstanceMap/Scenario and real map floor. Human+Orc x stages0-6 x four native death locations5228/5229/5273/5131. Repeated lookup retains5228 and radians. Set earlier dead/quest/stage state in memory;actual RepopAtGraveyard schedules same-map transfer to5228+2Z,actual MoveTeleportAck finishes transfer and actual delayed native resurrection restores half health. Duplicate ACK harmless;original quest INCOMPLETE/no artifact;scenario step,criteria and wave fields unchanged. Eight shared Hunter/missing-scenario/Protection/Arms/Priest/Paladin controls retained. No character saves/full session login/corpse DB fixture.",
+    "release": "Original Release script library rebuilt and linked against original final-link inputs;no OutDir. Stage/canonical strict composed PE identifies actual registered callback in native virtual dispatch slot,944/1511/5228 identities,real scenario/coordinate calls and retained diagnostics;rejects direct teleport/resurrection/progression calls. Retained native arrival controller PE also passes.",
+    "retained": "Warrior login source132+recorder64 ASAN/native138/strict PE;canonical Scepter -VerifyReleaseBinary;Fury arrival50 ASAN/native catalog/binding/PE;native Fury9 summon deaths/3 waves+leader actual stage1->2 regression.",
+    "startup": "Owned worldserver PID=29256\nPASS owned PID=29256 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "preservation": "Canonical config/certificates/DLLs and deployed EXE hashes checked;non1028 LFG/full spell targets/full scenario route data unchanged against original read-only baseline. No database mutation."
+  },
+  "diagnostics": {
+    "final": "All final tests/build/native/PE/startup have before/after snapshots;no new/changed crash,no unexplained appended server warning/error/assertion or DBErrors. Owned server stderr empty,shutdown0/exit0/gone.",
+    "canonical_crashes": "empty",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "Unresolved shared LINK2 mixed log preserved unchanged;no truncation."
+  },
+  "development_evidence": [
+    "Private research builder initially completed its native read-only probe but tried to hash the old probe name;corrected bookkeeping and reran with real registered scripts. Retain both original outputs.",
+    "First public baseline fixture requested nonexistent step7. Actual Scenario correctly logged rejection and the diagnostic wrapper failed. Native data has7 steps,so fixture now covers all valid0-6 and asserts64/56 counts. This is a resolved test-input error,not a runtime gameplay fix or successful ordinary baseline. Original Server.log hash6254dcde10ed6c00619a018044eb5598787178c20f6036703e99532fedbb4f45 is reviewed for later byte-preserving archive.",
+    "Initial source ASAN fixture omitted the virtual base for the extracted override;compiler rejected it. Added the matching virtual signature and reran. An earlier private runner edit inserted a switch block into an expression;rebuilt the edit from HEAD with single targeted replacements before any native launch. Failed evidence retained;no game checks disabled."
+  ],
+  "unresolved": [
+    "Actual client Release Spirit UI,corpse/ghost effects,pet portrait,camera,combat death,all-stage return walking,logout/reconnect and full Fury chain remain client checks. Native dead/quest/stage state is controlled and only the real release/ACK/resurrection path is exercised. The native entrance-only cemetery does not certify Blizzard original later-checkpoint timing.",
+    "Shared Hunter973 native instance fallback remains absent as before;its outdoor fallback,actual release and appropriate Hunter graveyard policy are a separate follow-up. No whole-map/all-class resurrection claim.",
+    "Warrior whole character/group-bind login paths and full Arms/Protection acquisition remain separate checks. All36 whole chains are not certified.",
+    "Shared LINK2/Slaghammer intro and mixed7111 remain OPEN;retain raw native reproduction/cache/research unchanged."
+  ],
+  "runtime_sha256": {
+    "worldserver": "644e5a9298bc865bf6c5c384c6f5c40c155c2ff1ebb6f3efa950e37cccf1f8af",
+    "bnetserver": "67b3a31b4ea365f96b3577c97ea780d2870870af4cb538954b7272242f0023cd"
+  },
+  "cleanup": {
+    "status": "Pending focused commit,verified diagnostic archive and exact owned test/staging cleanup;no task-owned hidden server needs to remain running."
+  }
+}

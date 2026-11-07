@@ -1,4 +1,29 @@
 {
+  "latest_warswords_graveyard_2026_11_07": {
+    "audit": "docs/audits/warswords-graveyard-2026-11-07.json",
+    "status": "DEPLOYED; Fury944/map1511 missing instance graveyard repaired with native grounded5228;source18 ASAN/native64 including56 real Player release/near ACK/delayed resurrection cases,strict linked PE/retained regressions/canonical startup pass. Full client death/corpse/reconnect and whole chains remain pending.",
+    "checks": "Source18 ASAN/native64 with56 actual release/ACK/resurrection;pinned actual instance56+8 controls;strict stage/canonical PE;retained Warrior138,Scepter,Fury arrival50 and native waves;owned ready/shutdown0/exit0. Client/corpse/full-chain checks separate.",
+    "runtime_sha256": {
+      "worldserver": "644e5a9298bc865bf6c5c384c6f5c40c155c2ff1ebb6f3efa950e37cccf1f8af",
+      "bnetserver": "67b3a31b4ea365f96b3577c97ea780d2870870af4cb538954b7272242f0023cd"
+    },
+    "diagnostics": {
+      "final": "All final tests/build/native/PE/startup have before/after snapshots;no new/changed crash,no unexplained appended server warning/error/assertion or DBErrors. Owned server stderr empty,shutdown0/exit0/gone.",
+      "canonical_crashes": "empty",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "Unresolved shared LINK2 mixed log preserved unchanged;no truncation."
+    },
+    "unresolved": [
+      "Actual client Release Spirit UI,corpse/ghost effects,pet portrait,camera,combat death,all-stage return walking,logout/reconnect and full Fury chain remain client checks. Native dead/quest/stage state is controlled and only the real release/ACK/resurrection path is exercised. The native entrance-only cemetery does not certify Blizzard original later-checkpoint timing.",
+      "Shared Hunter973 native instance fallback remains absent as before;its outdoor fallback,actual release and appropriate Hunter graveyard policy are a separate follow-up. No whole-map/all-class resurrection claim.",
+      "Warrior whole character/group-bind login paths and full Arms/Protection acquisition remain separate checks. All36 whole chains are not certified.",
+      "Shared LINK2/Slaghammer intro and mixed7111 remain OPEN;retain raw native reproduction/cache/research unchanged."
+    ],
+    "cleanup": {
+      "status": "Pending focused commit,verified diagnostic archive and exact owned test/staging cleanup;no task-owned hidden server needs to remain running."
+    }
+  },
   "latest_warrior_login_recovery_2026_11_07": {
     "audit": "docs/audits/warrior-login-recovery-2026-11-07.json",
     "status": "DEPLOYED; missing Warrior acquisition checkpoint recovery at the actual early login boundary repaired; source132 ASAN/native138/strict linked PE and retained regressions/canonical startup pass. Full persisted-character/client login and all three whole artifact chains remain client-pending.",
