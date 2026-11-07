@@ -9,8 +9,35 @@
 #include "WarswordsGraveyardInstance.inc"
 #include "../../src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp"
 
+static void CheckNoScenarioGraveyard(InstanceMap& map,InstanceScript* script,float x,float y,float z)
+{
+ Require(!script->GetClosestGraveYard(x,y,z),"No-scenario override reused a prior class cemetery");
+ auto fallback=map.GetClosestGraveYard(x,y,z);auto native=sObjectMgr->GetInstanceGraveYard(map.GetId());
+ bool known=false;if(native)for(auto const& p:*native)if(fallback&&fallback->GetExactDist(p.GetPositionX(),p.GetPositionY(),p.GetPositionZ())<0.001f)known=true;
+ Require(fallback?known:(!native||native->empty()),"No-scenario generic fallback differs from actual registered entrance data");
+}
+
+#if defined(FURY_GRAVEYARD_BASELINE) || defined(SURVIVAL_GRAVEYARD_BASELINE)
+static void OriginalSharedGraveyardEntranceData()
+{
+ // These historical callback counterfactuals predate the two restored native
+ // LFG entrances. Isolate that absence in TEMP data, never the live tables.
+ WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");
+ WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE graveyard_lfg_seed LIKE lfg_entrances");
+ WorldDatabase.DirectExecute("INSERT INTO graveyard_lfg_seed SELECT * FROM lfg_entrances");
+ WorldDatabase.DirectExecute("CREATE TEMPORARY TABLE lfg_entrances LIKE graveyard_lfg_seed");
+ auto temporary=WorldDatabase.Query("SHOW CREATE TABLE lfg_entrances");Require(temporary&&temporary->Fetch()[1].GetString().find("CREATE TEMPORARY TABLE")!=std::string::npos,"Historical graveyard data is not TEMP isolated");
+ WorldDatabase.DirectExecute("INSERT INTO lfg_entrances SELECT * FROM graveyard_lfg_seed WHERE dungeonId NOT IN(1178,1384)");
+ WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");
+}
+#endif
+
 int main(int argc,char** argv){try{
- InitializeAltheaGuardsNative(argc,argv);sAreaTriggerDataStore->LoadAreaTriggerTeleports();sLFGMgr->LoadLFGDungeons();sSpellMgr->LoadSpellTargetPositions();
+ InitializeAltheaGuardsNative(argc,argv);
+#ifdef FURY_GRAVEYARD_BASELINE
+ OriginalSharedGraveyardEntranceData();
+#endif
+ sAreaTriggerDataStore->LoadAreaTriggerTeleports();sLFGMgr->LoadLFGDungeons();sSpellMgr->LoadSpellTargetPositions();
  dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1495,{}},{1511,{}},{1539,{}}});
  MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1495,{}},{1511,{}},{1539,{}}});
  sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());new instance_warswords;new instance_silver_hand;sScriptMgr->SwapScriptContext(true);
@@ -57,7 +84,7 @@ int main(int argc,char** argv){try{
   auto hunter=sWorldSafeLocsStore.LookupEntry(5295);auto hunterGy=map.GetClosestGraveYard(safe->Loc.X,safe->Loc.Y,safe->Loc.Z);
   Require(hunter&&hunterGy&&hunterGy->GetExactDist(hunter->Loc.X,hunter->Loc.Y,hunter->Loc.Z)<0.001f,"Shared Hunter cemetery did not retain its distinct native source");++cases;
 #endif
-  sScenarioMgr->RemoveScenario(map.GetInstanceId());Require(!map.GetClosestGraveYard(safe->Loc.X,safe->Loc.Y,safe->Loc.Z),"Fury cemetery used without an actual scenario");++cases;
+  sScenarioMgr->RemoveScenario(map.GetInstanceId());CheckNoScenarioGraveyard(map,script,safe->Loc.X,safe->Loc.Y,safe->Loc.Z);++cases;
  }
  // Protection's LFG1028 and the actual shared Arms/Priest/Paladin callback are
  // controls, not replaced by the raw generic-map fallback from early research.

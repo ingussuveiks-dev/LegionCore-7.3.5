@@ -6,7 +6,11 @@
 #include "PlayerDefines.h"
 static WorldSafeLocsEntry const* HunterSafe(unsigned step){return sWorldSafeLocsStore.LookupEntry(step>=7?5296:5295);}
 int main(int argc,char**argv){try{
- InitializeAltheaGuardsNative(argc,argv);sAreaTriggerDataStore->LoadAreaTriggerTeleports();sLFGMgr->LoadLFGDungeons();sSpellMgr->LoadSpellTargetPositions();sObjectMgr->LoadGraveyardZones();
+ InitializeAltheaGuardsNative(argc,argv);
+#ifdef SURVIVAL_GRAVEYARD_BASELINE
+ OriginalSharedGraveyardEntranceData();
+#endif
+ sAreaTriggerDataStore->LoadAreaTriggerTeleports();sLFGMgr->LoadLFGDungeons();sSpellMgr->LoadSpellTargetPositions();sObjectMgr->LoadGraveyardZones();
  Require(sQuestDataStore->GetQuestTemplate(40385),"Real native Hunter40385 template missing");
  auto gates=WorldDatabase.Query("SELECT COUNT(*) FROM achievement_criteria_data WHERE criteria_id=29205");Require(gates&&!gates->Fetch()[0].GetUInt32(),"Native harpoon criterion requires extra live data gates before boundary proof");
  unsigned steps=0,harpoonRoot=0;for(auto s:sScenarioStepStore)if(s->ScenarioID==973){++steps;if(s->OrderIndex==6)harpoonRoot=s->Criteriatreeid;}Require(steps==13&&harpoonRoot,"Native Hunter step count/harpoon root changed");auto criterion=sCriteriaStore.LookupEntry(29205);Require(criterion&&criterion->Type==92&&criterion->Asset==47608,"Native harpoon credit identity changed");
@@ -55,7 +59,7 @@ int main(int argc,char**argv){try{
    Require(after&&after->GetExactDist(late->Loc.X,late->Loc.Y,late->Loc.Z)<0.001f,"Acknowledged real harpoon credit did not unlock later cemetery");
 #endif
    ++cases;}
-  sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,944);auto fury=sWorldSafeLocsStore.LookupEntry(5228);auto f=map.GetClosestGraveYard(0,0,0);Require(f&&f->GetExactDist(fury->Loc.X,fury->Loc.Y,fury->Loc.Z)<0.001f,"Survival recovery changed shared Fury cemetery");++cases;sScenarioMgr->RemoveScenario(map.GetInstanceId());Require(!map.GetClosestGraveYard(0,0,0),"Missing scenario reused a prior cemetery pose");++cases;
+  sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,944);auto fury=sWorldSafeLocsStore.LookupEntry(5228);auto f=map.GetClosestGraveYard(0,0,0);Require(f&&f->GetExactDist(fury->Loc.X,fury->Loc.Y,fury->Loc.Z)<0.001f,"Survival recovery changed shared Fury cemetery");++cases;sScenarioMgr->RemoveScenario(map.GetInstanceId());CheckNoScenarioGraveyard(map,script,0,0,0);++cases;
  }
  Require(cases==110&&releases==104,"Native Hunter regression count changed");
 #ifdef SURVIVAL_GRAVEYARD_BASELINE

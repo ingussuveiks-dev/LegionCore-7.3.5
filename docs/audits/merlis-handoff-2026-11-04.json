@@ -1,4 +1,28 @@
 {
+  "latest_survival_resume_entrances_2026_11_07": {
+    "audit": "docs/audits/survival-resume-entrances-2026-11-07.json",
+    "status": "DEPLOYED SQL-only through canonical updater;missing native Survival1178/1384 entrances repaired. Full-schema TEMP16 refusals/partial/idempotence/preservation,native baseline30 vs repaired40/live RELEASED hash/linked Recorder PE/retained Warrior+Hunter+Fury+Scepter/canonical startup pass. No new production C++ or executable.",
+    "checks": "Original live native8 and TEMP baseline30;full-schema16 refusals/idempotence/partial preservation;native40 TEMP+live,RELEASED hash,linked PE;retained Warrior/Hunter/Fury/Scepter/boarded departure and two clean canonical startups. Empty old Hunter receipts/client/group paths remain separate.",
+    "runtime_sha256": {
+      "worldserver": "c7e8d2ce3c329291f52898b0017e4e05b6ac773bb907560ad359bf3af74c92cb",
+      "bnetserver": "00a90ce39f7a79ed5a0bca6a775a96f14bc51b05d0b23c9dea9f98da2adf4bda"
+    },
+    "diagnostics": {
+      "result": "Every automated/native/TEMP/updater/PE/startup test has before/after crash/log snapshots. Final exit/stdout/stderr inspected;no new/changed crashes or unexplained appended warning/error/assertion/DBErrors. Both owned servers gracefully exited0 and are gone.",
+      "canonical_crashes": "empty",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "Unresolved shared LINK2 mixed log retained unchanged;no truncation."
+    },
+    "unresolved": [
+      "An already empty saved Hunter checkpoint is not seeded by early LoadFromDB in this repair;the previous Warrior-only recovery remains scoped to Warrior. Hunter empty-checkpoint/whole persisted-character/group-bind login is a separate next repair. A fresh valid native entry can now record its own checkpoint.",
+      "Actual client cold entry,logout/reconnect,pet/guardian/vehicle/camera/flight,abandonment/return,group variants and whole13-stage Hunter chain remain separate. Native tests manually seed prior quest/stage/pose and do not serialize actor/criteria state.",
+      "Survival middle39427 blessing/prerequisite restoration and all36 whole artifact chains remain uncertified. Shared LINK2/Slaghammer/mixed7111 remain OPEN;original native reproduction/cache/research retained."
+    ],
+    "cleanup": {
+      "status": "Pending focused commit,verified diagnostic archive and exact redundant task-owned test outputs cleanup;no staged executable or background server needed."
+    }
+  },
   "latest_survival_graveyard_2026_11_07": {
     "audit": "docs/audits/survival-graveyard-2026-11-07.json",
     "status": "DEPLOYED; Survival973/map1511 stage-aware native graveyards5295/5296 repaired;source58 ASAN/native110 including104 real Ghost release/near ACK/delayed revival,paired native baseline,actual harpoon6->7 acknowledgment,strict PE/retained regressions/canonical startup pass. Full client/corpse/pet/flight and all13 whole stages remain pending.",

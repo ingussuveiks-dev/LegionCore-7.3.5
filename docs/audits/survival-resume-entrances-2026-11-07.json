@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-07",
+  "status": "DEPLOYED SQL-only through canonical updater;missing native Survival1178/1384 entrances repaired. Full-schema TEMP16 refusals/partial/idempotence/preservation,native baseline30 vs repaired40/live RELEASED hash/linked Recorder PE/retained Warrior+Hunter+Fury+Scepter/canonical startup pass. No new production C++ or executable.",
+  "cause": "Matching26972 LFG1178 and1384 both select Hunter973/map1511/difficulty12 with USER_TELEPORT_NOT_ALLOWED. Both lacked lfg_entrances,leaving native LFG coordinates0. An old run first recorded after stage0,or during loading/transport,therefore returns without a checkpoint in actual Player::RecordScenarioEntrance. Original installed native8 observations and isolated missing-data24 late cases reproduce the defect. A later saved combat pose is not a safe fresh-instance entrance.",
+  "scope": "Restore both native queue IDs from existing198950 Fly to Stormheim destination1511/3364.77/1919.54/0.092994/5.69981. Preserve ordinary first-entry pose,existing matching entrance and live-instance location. Fresh destroyed-instance recovery restarts973 at its real entry/step0;actor/criteria progress is not persisted by this repair.",
+  "implementation": [
+    "Guarded migration01 inserts only absent1178/1384 using the original spell_target_position values. Require exact native source and one original973 wildcard1511/diff0/team0/class3/LFG0 route. Accept absent,partial-correct or already-correct rows;preserve all existing custom names. Explicitly SIGNAL on source/route/custom-coordinate/nullable-coordinate conflicts and gate insertion on the same safe variable even under --force.",
+    "Native LFG flags,DBC data,scenario_data and spell destinations remain unchanged. Do not assign Warrior air193335 or a later Hunter graveyard/harpoon/combat position. Generic actual Recorder/Prepare/LFG/Scenario consumers already implement the behavior;no production C++ or new ScriptName.",
+    "LFG loader also registers both valid entries in generic instance graveyards. Retain real944/973 cemetery overrides5228/5295/5296. Update no-scenario native controls to require the override returns null and any fallback belongs to actual registered entries,instead of assuming the global list is empty. Historical graveyard counterfactuals explicitly TEMP-shadow the original absence of1178/1384;never remove live rows for a baseline.",
+    "No character query/reset/save,item grant,kill/quest/criteria credit,direct teleport or current-position rewrite. Keep native user LFG teleport disabled. No redundant staged executable is built for a data-only repair."
+  ],
+  "local_evidence": {
+    "native": "Real26972 LFG1178/1384 flags75795458,difficulty12,scenario973,map1511.198950 Fly to Stormheim effect0/227 plus effect1/64. Original native target matches existing boarded-departure transfer contract;real map floor0.0932121 supports targetZ0.092994.",
+    "consumer": "Actual RecordScenarioEntrance uses native entrance for a late/loading/transport/vehicle first record,retains existing checkpoint and ordinary first entry. Prepare rejoins only exact same-boot live instance;fresh selector is consumed by the real Scenario constructor. Native owner/boarded198950 admission and accepted-target receipt are independently retained.",
+    "history": "Local Git main/origind28a831e8 and prior Protection1028/shared Warrior/Survival graveyard/boarded-departure audits consulted;origin fetched0/0. Matching local native data and actual producer/consumer resolve this defect;no modern core or unreviewed gameplay evidence imported."
+  },
+  "checks": {
+    "before_native8": "Original installed native game library and live absent1178/1384;Human/Orc x stages1/6/7/12 fail to record an entrance. Native source/effects/both queue metadata and real target floor captured. Expected-broken observations,not ordinary gameplay success.",
+    "data16": "Actual full-schema TEMP copies;exact two-row insertion,idempotence,all other LFG/whole spell/whole route hashes unchanged. Sixteen exact no-mutation source/map/route/class/team/difficulty/LFG/custom1178/custom1384/zero/nullable refusals;existing and partially restored correct custom names retained. Original live three-table hashes unchanged across TEMP tests.",
+    "native_baseline30": "Same actual compiled native consumer with TEMP lfg_entrances missing1178/1384:Human+Orc x12 valid later stages yield24 missing checkpoints;ordinary first entry,existing legitimate record and shared Fury6 controls remain. No historical binary substitution or successful ordinary baseline claimed.",
+    "native40": "TEMP repaired data then actual live updater data. Native24 late records copy real198950 source without relocating current player;ordinary/existing pose preservation,exact live rejoin versus new boot/numeric mismatch;actual whole Map/parent destruction and recycled numeric ID;both1178/1384 native constructors select973/step0 and consume selector. Actual native ground validated;shared Fury still chooses193335 despite nonzero Hunter LFG coordinates. No artifact or scenario progress grant. Earlier quest/stage/pose controlled;no full character LoadFromDB/SaveToDB/client session.",
+    "retained": "Strict linked native Recorder/LFG coordinate branch and Warp/completion/Vigfus proof;Warrior source64 ASAN/native56 plus early source132/native138/PE;mandatory canonical Scepter;Hunter source58/native110/release104 and Fury source18/native64/release56/PE;both historical cemetery baselines with TEMP original data;boarded-departure nine-table TEMP/live source readback.",
+    "updater": "Owned worldserver PID=7848\nPASS owned PID=7848 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "final_startup": "Owned worldserver PID=9572\nPASS owned PID=9572 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "runtime": "Canonical worldserver/bnetserver executable hashes unchanged;protected configuration/certificate/DLL hashes unchanged. First owned startup applied01 and loaded333 positions;final owned ready/shutdown0/exit0/gone,stderr empty. No user/unknown process stopped.",
+    "preservation": "Original full table hashes retain every LFG entrance except independently verified1028/1178/1384,whole spell target and scenario route tables. Existing1028 remains exact. Only two new entrance rows and the updater RELEASED record persist."
+  },
+  "migration": {
+    "file": "sql/updates/world/2026_11_07_01_survival_resume_entrances.sql",
+    "normalized_LF_sha1": "145cc15464d1ba3f861f485492042fd4b535289d",
+    "sha256": "5a9c20ca5580f6b33e259216ea3dd988f9c2ae66c72fbfcad3d470147c9ee587",
+    "live": "Exact two native coordinates and updater RELEASED normalized hash verified by Test-SurvivalResumeData -VerifyLiveData"
+  },
+  "development_evidence": [
+    "First private research included a main-renaming wrapper through another main-renaming wrapper and used ambiguous GetHeight({}) overload. Compiler rejected it. Used the direct existing support fixture and explicit XYZ overload,then reran native8 successfully. Failed compilation retained;not a client crash.",
+    "Null-safe custom-coordinate guard and two nullable TEMP schema refusals added before promotion. Current canonical schema positions are NOT NULL;the guard still refuses a custom nullable row instead of accepting SQL UNKNOWN. No live schema alteration.",
+    "Test maintenance explicitly separates no-scenario override rejection from newly valid generic LFG fallback and isolates original LFG absence for historical cemetery baselines. All final original and repaired variants pass;no diagnostic or class guard disabled."
+  ],
+  "diagnostics": {
+    "result": "Every automated/native/TEMP/updater/PE/startup test has before/after crash/log snapshots. Final exit/stdout/stderr inspected;no new/changed crashes or unexplained appended warning/error/assertion/DBErrors. Both owned servers gracefully exited0 and are gone.",
+    "canonical_crashes": "empty",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "Unresolved shared LINK2 mixed log retained unchanged;no truncation."
+  },
+  "unresolved": [
+    "An already empty saved Hunter checkpoint is not seeded by early LoadFromDB in this repair;the previous Warrior-only recovery remains scoped to Warrior. Hunter empty-checkpoint/whole persisted-character/group-bind login is a separate next repair. A fresh valid native entry can now record its own checkpoint.",
+    "Actual client cold entry,logout/reconnect,pet/guardian/vehicle/camera/flight,abandonment/return,group variants and whole13-stage Hunter chain remain separate. Native tests manually seed prior quest/stage/pose and do not serialize actor/criteria state.",
+    "Survival middle39427 blessing/prerequisite restoration and all36 whole artifact chains remain uncertified. Shared LINK2/Slaghammer/mixed7111 remain OPEN;original native reproduction/cache/research retained."
+  ],
+  "runtime_sha256": {
+    "worldserver": "c7e8d2ce3c329291f52898b0017e4e05b6ac773bb907560ad359bf3af74c92cb",
+    "bnetserver": "00a90ce39f7a79ed5a0bca6a775a96f14bc51b05d0b23c9dea9f98da2adf4bda"
+  },
+  "cleanup": {
+    "status": "Pending focused commit,verified diagnostic archive and exact redundant task-owned test outputs cleanup;no staged executable or background server needed."
+  }
+}
