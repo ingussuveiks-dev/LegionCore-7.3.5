@@ -44,6 +44,25 @@
     "Shared LINK2 mixed7111 and unresolved Slaghammer handoff probe20261106-121715-172/cache/research remain OPEN and untouched;no unexplained crash/log was filed as resolved."
   ],
   "cleanup": {
-    "status": "Verified fixed archive/exact generated-output cleanup follows focused fix commit;retain new before-Tuure-graveyard plus before-Tuure-login recovery copies,retire older before-Marksmanship-return after passing canonical checks."
-  }
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/tuure-graveyard-2026-11-08",
+    "manifest_sha256": "d0121dfa4ee747addc1029f752f7e39f68ad4b74e4bbbed308dc20b643e9f824",
+    "original_files": 2256,
+    "cleanup_manifest_sha256": "27bf8a9aec8abbacb1f310d9b7df0a670f7ee729a3434cd46a368f221f8bc34a",
+    "removed_files": 379,
+    "logical_removed_bytes": 2268135030,
+    "local_deletion_manifest": ".codex/tuure-graveyard-2026-11-08/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-tuure-graveyard-2026-11-08",
+      ".codex/release-before-tuure-login-recovery-2026-11-08"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 133980327936,
+    "disk_free_after_bytes": 136248958976,
+    "observed_free_increase_bytes": 2268631040
+  },
+  "fix_commit": "5d29f6f7bccb158b65e5b9d727ca386d27f58bf5"
 }
