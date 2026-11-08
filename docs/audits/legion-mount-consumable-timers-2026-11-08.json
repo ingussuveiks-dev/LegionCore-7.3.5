@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-08",
+  "title": "Legion blacksmithing mount consumable timers",
+  "status": "AUTOMATED_VERIFIED_CLIENT_PENDING",
+  "batch": "seven-lifecycle-fixes-2026-11-08",
+  "baseline_revision": "6dc3bc59f",
+  "production": "src/server/scripts/Spells/spell_item.cpp",
+  "classes": [
+    "spell_item_leystone_hoofplates",
+    "spell_item_demonsteel_stirrups"
+  ],
+  "cause": "A dangling else was bound to the eligibility condition inside if(timer<=diff). Ordinary50ms updates never decreased the2000ms timer, so both leystone hoofplates182993 and demonsteel stirrups209563 failed to activate their companion buffs.",
+  "repair": "Decrement before deadline;reset bounded2000ms polling before eligibility/cast. Preserve map1220,parent/child gates,normal native casts and2h/blacksmith8h duration;guard the Player-only profession check instead of dereferencing a null ToPlayer result.",
+  "checks": [
+    "Pinned original40x50ms ticks produce neither native buff.",
+    "ASAN full classes:normal2s deadline,overshoot,existing buff,wrong map,failed cast/no grant,bounded retry,remove,ordinary/blacksmith/nonplayer duration,missing caster.",
+    "Native actual dummy effect0 data/bindings and owner/effect-update execution on map1600:wrong-map buffs withheld. Positive map1220 cast endpoints are modeled,not claimed as native client traversal."
+  ],
+  "source_regression_command": "tools/tests/Test-SevenSpellLifecycles.ps1 -Case Blacksmith [-Baseline / -AddressSanitizer]",
+  "release": "tools/tests/verify_seven_lifecycle_release.py",
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "87b31fa62508b777b14cac0f03749f1c8d86e51b835f6ed6f13c597f46d99edd",
+    "bnet_sha256": "88e9938d3dfc92e325fc63af501e62258fe54cd52e7ff0baa003fa14d8676f3b",
+    "owned_startup": "PID30496:fresh ready,server shutdown0,exit0,gone;stderr empty;configs/certs/DLLs hash-preserved"
+  },
+  "diagnostics": "Final paired checks clean after pre/post snapshots;expected original UAF captured separately. Original fixture MMAP initialization crash and incorrect isAlive API compile attempt repaired and paired with passing native/build runs. Legacy C5055 in untouched methods and native fixture conversion warnings retained;no production warning introduced by these seven changes. Mixed canonical7111-byte LINK2 log unchanged/untruncated. Full archive/cleanup record in batch closeout.",
+  "client_pending": [
+    "Client Broken Isles mounted effects,2h/8h duration presentation,dismount and item reuse."
+  ],
+  "not_claimed": "No actual client traversal performed;not a complete Lady finale or all36 chains;no character reset,SQL mutation,quest credit or item grants."
+}

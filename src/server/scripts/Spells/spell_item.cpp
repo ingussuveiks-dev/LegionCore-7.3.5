@@ -3797,11 +3797,14 @@ class spell_item_leystone_hoofplates : public AuraScript
         if (!caster)
             return;
 
-        if (timer <= diff)
-            if (caster->HasAura(182993) && caster->GetMapId() == 1220 && !caster->HasAura(233044))
-                caster->CastSpell(caster, 233044, false);
-        else
+        if (timer > diff)
+        {
             timer -= diff;
+            return;
+        }
+        timer = 2000;
+        if (caster->HasAura(182993) && caster->GetMapId() == 1220 && !caster->HasAura(233044))
+            caster->CastSpell(caster, 233044, false);
     }
 
     void CalculateMaxDuration(int32& duration)
@@ -3812,8 +3815,9 @@ class spell_item_leystone_hoofplates : public AuraScript
 
         duration = 120 * MINUTE * IN_MILLISECONDS;
 
-        if (caster->ToPlayer()->HasSkill(164))
-            duration = duration * 4;
+        if (Player* player = caster->ToPlayer())
+            if (player->HasSkill(164))
+                duration = duration * 4;
     }
 
     void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
@@ -3852,11 +3856,14 @@ class spell_item_demonsteel_stirrups : public AuraScript
         if (!caster)
             return;
 
-        if (timer <= diff)
-            if (caster->HasAura(209563) && caster->GetMapId() == 1220 && !caster->HasAura(233043))
-                caster->CastSpell(caster, 233043, false);
-            else
-                timer -= diff;
+        if (timer > diff)
+        {
+            timer -= diff;
+            return;
+        }
+        timer = 2000;
+        if (caster->HasAura(209563) && caster->GetMapId() == 1220 && !caster->HasAura(233043))
+            caster->CastSpell(caster, 233043, false);
     }
 
     void CalculateMaxDuration(int32& duration)
@@ -3867,8 +3874,9 @@ class spell_item_demonsteel_stirrups : public AuraScript
 
         duration = 120 * MINUTE * IN_MILLISECONDS;
 
-        if (caster->ToPlayer()->HasSkill(164))
-            duration = duration * 4;
+        if (Player* player = caster->ToPlayer())
+            if (player->HasSkill(164))
+                duration = duration * 4;
     }
 
     void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
