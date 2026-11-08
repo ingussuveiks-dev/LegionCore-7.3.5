@@ -1,0 +1,20 @@
+Turpini LegionCore-7.3.5 projektā C:/wamp64/www/LegionCore-7.3.5, zars main, origin https://github.com/ingussuveiks-dev/LegionCore-7.3.5. Vispirms izlasi AGENTS.md, docs/audits/seven-lifecycle-fixes-2026-11-08.json un docs/audits/artifact-chat-handoff-2026-10-27.json; pārbaudi GitHub un lokālos git log/diff.
+
+Iepriekšējā čatā pēc mana norādījuma pabeidza tieši 7 jaunus labojumus un apstājās:
+- 0c10a2649 — Touch of Elune minute update; docs/audits/touch-elune-update-owner-2026-11-08.json
+- c6546c592 — Legion blacksmithing mount consumable timers; docs/audits/legion-mount-consumable-timers-2026-11-08.json
+- f9b66f48c — Sky Golem mounted-interaction ownership; docs/audits/sky-golem-interaction-cleanup-2026-11-08.json
+- 8bf376bfa — Chauffeur delayed aura lifetime; docs/audits/chauffeur-aura-lifetime-2026-11-08.json
+- 7c2a56dbf — Master Hunter seeking crystal single destination; docs/audits/seeking-crystal-single-destination-2026-11-08.json
+- 6079f3057 — Argus whistle delayed origin guard; docs/audits/argus-whistle-origin-guard-2026-11-08.json
+- 43eb56fad — Queued vehicle passenger life admission; docs/audits/vehicle-deferred-life-admission-2026-11-08.json
+
+Visi septiņi ir komitēti/push uz origin/main un iekļauti kanoniskajā build-extractors/bin/Release. Automatizētās pārbaudes ietver sākotnējo defektu atkārtošanu, labotā pilnā avota ASAN regresijas, attiecīgos īstā kodola/26972 datu testus un faktiskā Release EXE pārbaudes. Pārbaudīts kanoniskais starts un korekta apturēšana bez jaunām avārijām vai jaunām servera/DB kļūdām. Faktiska klienta spēlēšana šajā septiņu labojumu posmā nav veikta; atlikušās klienta pārbaudes ir auditos. Tas nenozīmē, ka visas 36 artefaktu ķēdes ir pabeigtas.
+
+Nākamā precīzā vieta: autentiska dzīvas Lady104856/spawn362095 aktivizācija, padošanās nosacījums, native209552/conversation1906 pieņemšanas apstiprinājums, Grash105298/spawn362092 finisher un cleanup Sharasdal40341/scenario1066 finālā. Native209457 Grash mērķis, sēdvietu ietilpība un viļņu iekāpšanas apstiprinājums jau ir laboti un pārbaudīti. Trūkst droša pierādījuma īstajam slieksnim un nobeiguma secībai: neizdomā HP procentu, nogalināšanas taimeri vai automātisku progresu. Sāc ar .codex/sharasdal-lady-finale-open-2026-11-08/research.json un citām .codex/sharasdal-*-open-2026-11-08 mapēm. Ja autentisku secību nevar pamatot, saglabā OPEN un paņem citu pierādāmu nepabeigtu artefakta defektu.
+
+Saglabā OPEN shared LINK2 trūkstošās darbības101430/103151, Slaghammer avāriju un kešu. Neklusini diagnostiku. Kanoniskais logs/DBErrors.log joprojām ir jaukts OPEN žurnāls7111 baiti, SHA256 fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1; to nedrīkst notīrīt. Nedarbināt Test-SlaghammerHandoffNative noklusējuma režīmā, jo tas pārraksta vajadzīgo OPEN kešu.
+
+Nevajadzīgie šī posma testu EXE/PDB/MAP/OBJ un staging kopijas ir izdzēsti pēc SHA256 pārbaudītas diagnostikas arhivēšanas fixed/seven-lifecycle-fixes-2026-11-08. Atbrīvoti aptuveni3.11GB loģisko failu. Saglabātas divas vajadzīgās rollback paaudzes: .codex/release-before-seven-fixes-2026-11-08 un .codex/release-before-vehicle-aura-capacity-2026-11-08. Šī čata palaistie serveri ir apturēti.
+
+Pirms katra testa fiksē crashes un žurnālu izmērus/laikus; pēc tam pārbaudi exit/stdout/stderr un jaunās diagnostikas rindas. Nelieto globālu MSBuild OutDir; pārbaudi īstos final-link .lib un Release kodu. MariaDB pieslēgumu nolasīt lokāli no worldserver.conf, nekad neizvadīt paroles. Neapturi lietotāja/nezināmu serveri; vajadzības gadījumā staging darbus turpini atsevišķi. Nepabeigtu C++ ScriptName SQL neliec dzīvajā updater pirms atbilstošā EXE. Katram pabeigtam labojumam fokusēts komits un push; pēc ieviešanas/starta pārbaudes sakopj nevajadzīgo testa serveri. Personāžu progresu neatiestati bez mana atsevišķa pieprasījuma.

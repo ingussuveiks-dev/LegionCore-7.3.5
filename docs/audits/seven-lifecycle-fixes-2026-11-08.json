@@ -1,0 +1,136 @@
+{
+  "date": "2026-11-08",
+  "request": "Complete about seven additional fixes,then stop and supply a portable new-chat handoff.",
+  "status": "COMPLETE_7_OF_7_AUTOMATED_CLIENT_CHECKS_PENDING",
+  "support_commit": "59e834ed6",
+  "fixes": [
+    {
+      "key": "touch-elune-update-owner",
+      "case": "Elune",
+      "path": "src/server/scripts/Spells/spell_generic.cpp",
+      "classes": [
+        "spell_gen_touch_of_elune"
+      ],
+      "title": "Touch of Elune minute update",
+      "commit": "0c10a264985c9256fb58cb4a7a2d847948753c39",
+      "audit": "docs/audits/touch-elune-update-owner-2026-11-08.json"
+    },
+    {
+      "key": "legion-mount-consumable-timers",
+      "case": "Blacksmith",
+      "path": "src/server/scripts/Spells/spell_item.cpp",
+      "classes": [
+        "spell_item_leystone_hoofplates",
+        "spell_item_demonsteel_stirrups"
+      ],
+      "title": "Legion blacksmithing mount consumable timers",
+      "commit": "c6546c592c6d861d7bfe96e40d3c33d1d0f834b4",
+      "audit": "docs/audits/legion-mount-consumable-timers-2026-11-08.json"
+    },
+    {
+      "key": "sky-golem-interaction-cleanup",
+      "case": "Golem",
+      "path": "src/server/scripts/Spells/spell_item.cpp",
+      "classes": [
+        "spell_item_golem"
+      ],
+      "title": "Sky Golem mounted-interaction ownership",
+      "commit": "f9b66f48cdd7b6fe32f15cf8a3c508eebd9befa0",
+      "audit": "docs/audits/sky-golem-interaction-cleanup-2026-11-08.json"
+    },
+    {
+      "key": "chauffeur-aura-lifetime",
+      "case": "Chauffeur",
+      "path": "src/server/scripts/Spells/spell_generic.cpp",
+      "classes": [
+        "spell_mount_summon_chauffeur"
+      ],
+      "title": "Chauffeur delayed aura lifetime",
+      "commit": "8bf376bfabb5ee682e675a2fac4f22817a78fdd8",
+      "audit": "docs/audits/chauffeur-aura-lifetime-2026-11-08.json"
+    },
+    {
+      "key": "seeking-crystal-single-destination",
+      "case": "Crystal",
+      "path": "src/server/scripts/Spells/spell_item.cpp",
+      "classes": [
+        "spell_masters_hunter_seeking_crystal_teleport"
+      ],
+      "title": "Master Hunter seeking crystal single destination",
+      "commit": "7c2a56dbf22e79a2bc602637162b73baaff44c67",
+      "audit": "docs/audits/seeking-crystal-single-destination-2026-11-08.json"
+    },
+    {
+      "key": "argus-whistle-origin-guard",
+      "case": "Argus",
+      "path": "src/server/scripts/Spells/spell_generic.cpp",
+      "classes": [
+        "spell_flight_masters_whistle_argus"
+      ],
+      "title": "Argus whistle delayed origin guard",
+      "commit": "6079f30573345b7a5d96377270a3c311f9089d7b",
+      "audit": "docs/audits/argus-whistle-origin-guard-2026-11-08.json"
+    },
+    {
+      "key": "vehicle-deferred-life-admission",
+      "case": "Vehicle",
+      "path": "src/server/game/Entities/Vehicle/Vehicle.cpp",
+      "classes": [],
+      "title": "Queued vehicle passenger life admission",
+      "commit": "43eb56fadfd23cfb3ce4a4ba8445fb9ae8ead307",
+      "audit": "docs/audits/vehicle-deferred-life-admission-2026-11-08.json"
+    }
+  ],
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "87b31fa62508b777b14cac0f03749f1c8d86e51b835f6ed6f13c597f46d99edd",
+    "bnet_sha256": "88e9938d3dfc92e325fc63af501e62258fe54cd52e7ff0baa003fa14d8676f3b",
+    "source_scope": "Whole generic/item files equal6dc3bc59f outside the seven selected classes;whole Vehicle.cpp equals the pinned source plus exactly one native deferred life guard. Selected actual PE registrations/callbacks/branches verified after deployment.",
+    "build": "Original generated Release game.lib/scripts.lib and final-link dependencies,no global OutDir override;stage promoted/hash-verified before task-owned startup. Required original libraries retained."
+  },
+  "checks": [
+    "Six paired original full-class counterfactuals and repaired full-source ASAN feature regressions. Actual native AuraScript getter/update dispatch is extracted in the model;Unit/Player/nearest target/teleport endpoints are modeled.",
+    "Extra pinned chauffeur ASAN heap-use-after-free counterfactual exit1 captured separately;repaired destroy/remount ASAN pass.",
+    "Pinned whole Vehicle.cpp actual native dead-driver reproduction paired with repaired6 real4050 chauffeur kit/death/revive/seat/missing-kit/removed-world contexts.",
+    "Native26972 spell catalog/eight live script bindings plus real Elune minute dispatcher,aura owner,golem cleanup and native mount queue/Dismount endpoints. Positive Broken Isles consumable/rare/taxi destination/client paths remain modeled or pending.",
+    "Selected staged and canonical x64 PE seven-feature registered paths;canonical Test-ScepterLogin.ps1 -VerifyReleaseBinary.",
+    "Retained vehicle capacity original2+repaired16/PE;Sharasdal contact ASAN30/native32/full selected Release;actual live carry selector/native32.",
+    "Final owned canonical PID29480:ready,server shutdown0,exit0,gone,stderr empty. Earlier owned PID30496 also stopped cleanly. No user/unknown server stopped or left running."
+  ],
+  "diagnostics": {
+    "final": "No new/changed crash report or appended DBErrors/server warning/error/assertion in final checked runs. Active canonical Crashes empty.",
+    "preserved_mixed_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN LINK2 evidence,not truncated or moved to fixed"
+    },
+    "development": "Original fixture MMAP initialization assertion,wrong isAlive API attempt,fixture state/includes/access corrections,PE register-form expectation and exact reviewed wave source certificate update are preserved with passing repaired pairs. Five C5055 warnings belong to unchanged legacy methods;no new production warning from these seven repairs. Native fixture conversion warnings retained.",
+    "expected_counterfactual": "Original ASAN heap-use-after-free is explicitly expected-broken and kept with repaired passing evidence;not represented as successful gameplay."
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/seven-lifecycle-fixes-2026-11-08",
+    "archive_manifest_sha256": "7a810f1f504cfd4b1667f85dbc75d11c008ad6eeb5ea159e4d23a0384672583d",
+    "original_files": 1139,
+    "removed_files": 564,
+    "logical_removed_bytes": 3111025759,
+    "free_C_bytes_after": 133103161344,
+    "deletion_manifest": ".codex/seven-fixes-2026-11-08/cleanup-deleted.json",
+    "retained_rollbacks": [
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_old_rollback": ".codex/release-before-sharasdal-wave-contact-2026-11-08",
+    "retained": "Regression sources/reusable tools,canonical EXEs/configs/certs/DLLs/extracted data,required build libraries,all unresolved OPEN research/Slaghammer crash and cache and mixed log. No log resets.",
+    "supplemental_manifest": "build-extractors/bin/Release/fixed/seven-lifecycle-fixes-2026-11-08/closeout/manifest.json"
+  },
+  "pending": [
+    "Actual client tests listed in all seven feature audits;no client was operated in this batch.",
+    "Authentic living-Lady104856/spawn362095 activation/surrender threshold/actual1906 acknowledgment/Grash105298/spawn362092 finisher/cleanup remains OPEN. Native209457 carry target/capacity/contact primitives are tested,but do not implement the finale.",
+    "Shared LINK2 authentic missing action payloads101430/103151,prior Slaghammer/handshake evidence,and all36 full artifact chains remain OPEN.",
+    "No character reset or personal character/database backup deletion."
+  ],
+  "next": "Read this audit and artifact-chat-handoff-2026-10-27.json plus git log/diffs. Continue authentic living-Lady producer/1906/finisher lifecycle using retained local26972 data and OPEN research. If authentic evidence is still missing,retain the gap and choose another demonstrable unfinished artifact defect;do not guess HP/kill timers or remove diagnostics.",
+  "stop": "The requested seven product fixes are done;this chat stops after archive,cleanup,commit/push and handoff. Test support and closeout documentation are not counted as extra fixes."
+}
