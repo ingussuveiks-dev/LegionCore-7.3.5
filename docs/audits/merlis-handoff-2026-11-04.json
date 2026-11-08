@@ -1,4 +1,44 @@
 {
+  "latest_dreadblades_graveyard_2026_11_08": {
+    "status": "DEPLOYED focused Dreadblades1012/map1545 four-checkpoint recovery including completed sentinel5. Source114 ASAN/native56 with48 real release/ACKs,paired pinned48/52,staged/canonical selected proof,retained pickup/death/two surrender checks and owned startup pass. Full client40849 remains separate.",
+    "scope": "Only instance_dreadblades::GetClosestGraveYard plus MapManager include. Native Scenario1012 required;use5299 at0,5359 at1,5360 at2..3,5361 from4 including completed5. Keep instance-owned WorldLocation and authored degree-to-radian facing. Validate source identity/map/nonzero/finite/bounds;contextual ERROR/null for corrupt source,ordinary null for absent/foreign Scenario. No new fields,SQL,quest/item/criteria/stage award,direct Player teleport/resurrection or character reset.",
+    "checks": {
+      "source": "114 extracted actual callback ASAN cases:48 all5 stages+completed5/four death contexts/repeated selections,56 corrupt-required-source refusals acrossfour checkpoints,8 missing/foreign Scenario controls and2 nonfinite death inputs. Original pinned9a8f9340d source48 reproduces wrong stage1/2/4/completed and zero facing. Source endpoints controlled,not whole-core ASAN.",
+      "native": "56 cases with48 actual Player ghost8326/RepopAtGraveyard/+2Z/near MoveTeleportAck/half-health/ghost cleanup and duplicate ACK. Registered complete1545 struct selected via actual generic descriptor/native InstanceMap dispatch;Human+Orc/all5 stages+real completed5/four poses/two active40849 statuses/four native VMAP floors/facing. Four native ordered-event/final two-child AND cases across both orders and4 missing/foreign controls. No quest/item/progress change from recovery.",
+      "native_limits": "Earlier quest/pose/stage and legacy InstanceScript cached-step inputs are controlled. Host maps are local objects,not globally registered MapManager maps;the old callback cache is seeded to mirror native SetCurrentStep notification. Real Scenario/Player criteria dispatch proves ordered steps and completion;earlier movement/combat,actual full LoadFromDB/SaveToDB/pet/group/client traversal not established.",
+      "counterfactual": "Pinned9a8f9340d whole native instance52/release48 reproduces original routing/facing with current native support;not historical whole executable. Old canonical explicitly rejects missing new cemetery proof;paired selected staged/canonical repair passes.",
+      "linked": "Actual registered1545 ScriptObject descriptor/GetInstanceScript factory installs repaired primary vtable;native InstanceMap cemetery slot dispatch,1012 guard,precise four-way stage branch including completed5,indexed source identity/map/zero/finite/radian checks,stable instance-owned XYZ/map/facing stores/return and contextual null diagnostic. Complete retained native Eliza owner/death and real loot/equip/pickup proof composed;no direct player mutation/progression calls.",
+      "retained": "Pickup ASAN full storage/state/cast/equip pair and real-death admission;Eliza owner/pet/guardian/charmer/null/offline/failure/reveal cases;Degauz32 scaled surrender cases;Brinebeard48 scaled final-damage/visual/missing-emitter/timer cases. Mandatory canonical Scepter source/Release plus retained latest Sharasdal/Tuure legacy selected chain pass.",
+      "build": "Original Release game/scripts libraries and actual final-link paths used;only shared instance_class_art_scenarios.cpp production compilation changed. Separate staged EXE/MAP then absent-process backup/hash promotion to canonical. No global OutDir override;required original libraries/extracted data/configuration/certs/DLLs preserved.",
+      "runtime": "Owned PID=28792 reached fresh ready\nPASS owned PID=28792 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+      "preservation": "Before/after promotion/startup full-column fingerprints equal all LFG/spell destinations/scenario routes and selected1545 graphs/conditions/spawns/templates. No SQL migration or persistent character data changes;only task-owned worldserver PID28792 launched and gracefully stopped. MariaDB left running."
+    },
+    "binary": {
+      "bnetserver": "72c58b94f8c6f312d43fa9b4346f6d2f607c8e697b6e75795c68dd44e7d64c7a",
+      "worldserver": "7d763279682c6291d2d500817cdc6270c5a79537ae20272184b8f9cd70a7e3de"
+    },
+    "diagnostics": {
+      "result": "All source/native/catalog/SQL/build/link/PE/retained/startup checks wrapped in pre/post canonical+own crash/log snapshots. Final passes:exit0,captured stdout/stderr inspected,no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Active Crashes empty.",
+      "development": [
+        "Initial pinned native baseline did not seed legacy InstanceScript cached step after controlled Scenario setup;local host map is outside global MapManager registry so old callback read0. Add explicit controlled native setScenarioStep(step),then pinned52/release48 and current56/release48 pass. Initial assertion/exit1 evidence retained;no runtime failure logged.",
+        "Private PE inspection initially selected native key rather than actual n export;corrected. First public proof tried function-only symbol lookup for data vtable,then wrong MapScript secondary table for GetInstanceScript;read unique data symbol explicitly and follow actual ScriptObject primary descriptor. Final selected stage/canonical proof passes;original failed outputs retained.",
+        "Retained pickup host lacked actual GAMEOBJECT_TYPE_DOOR enum for current extracted SetLootState. Separate test-only0f6224081 adds actual0 without changing production or native chest type3;repaired ASAN passes. Initial compile/evidence retained;see separate audit.",
+        "Retained older extracted hosts emit reviewed C4189 unused native lookup size,C4100 original AI parameters and C4244 EventMap uint16->uint8. These remain visible;new cemetery source/current+baseline and production build add no warning."
+      ],
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "OPEN shared LINK2;unchanged,not archived as resolved or truncated."
+    },
+    "unresolved": [
+      "Actual client death/release/corpse reclaim/facing,all4 route floors/path access/phase rendering,re-entry/reconnect,camera/pet/guardian/group/faction/full40849 loot/equip/outro remain unverified. Automated native release/ACK is not whole-client traversal.",
+      "Combat/one-hit/pet/guardian/group progression rules unchanged;retained source/native endpoints are separate from actual client combat. No extra character/quest/item/AP/checkpoint reset performed.",
+      "Sharasdal living Lady1906/carry/finisher/native210247/waves/full40341,original Slaghammer handoff intro/shared LINK2/mixed7111,Survival/Fu Zan/Stromkar presentation and all36 whole chains remain OPEN."
+    ],
+    "cleanup": {
+      "status": "Pending verified issue archive and exact task-owned generated/staging/obsolete rollback cleanup;retain Dreadblades and previous Sharasdal entrance recovery generations."
+    },
+    "audit": "docs/audits/dreadblades-graveyard-2026-11-08.json"
+  },
   "latest_sharasdal_entrance_2026_11_08": {
     "status": "DEPLOYED focused Sharasdal1600/1066 LFG1229 entrance and exact legacy checkpoint repair. Source126 ASAN/native112,paired pinned74/60,TEMP29,linked Release,retained recoveries and owned canonical startup pass. Full client40341 remains separate.",
     "scope": "Only one LFG entrance and exact known old Shaman1600/1066 checkpoint XYZ/O. Preserve boot/instance/progression and healthy live pose. No character reset,checkpoint seeding,new fields,quest/inventory loading,progress/item/criteria award,combat/credit/actor change or ordinary teleport replacement.",

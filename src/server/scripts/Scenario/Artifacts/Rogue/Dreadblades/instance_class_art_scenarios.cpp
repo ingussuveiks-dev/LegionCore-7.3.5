@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include "MapManager.h"
 #include "TemporarySummon.h"
 #include "Group.h"
 #include "ObjectAccessor.h"
@@ -28,29 +29,24 @@ struct instance_dreadblades : public InstanceScript
     
     WorldLocation loc_res_pla;
 
-    WorldLocation* GetClosestGraveYard(float x, float y, float z) override
+    WorldLocation* GetClosestGraveYard(float /*x*/, float /*y*/, float /*z*/) override
     {
-        loc_res_pla.WorldRelocate(1545, x, y, z);
-
-        uint32 graveyardId = 5299;
-
-        switch (getScenarionStep())
+        Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1012)
+            return nullptr;
+        // Native names use displayed stages (one-based). Keep Eliza's beach
+        // after final pickup too: the completed sentinel is step5, not step0.
+        uint32 step = scenario->GetCurrentStep();
+        uint32 graveyardId = step >= 4 ? 5361 : step >= 2 ? 5360 : step == 1 ? 5359 : 5299;
+        WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId);
+        if (!gy || gy->ID != graveyardId || gy->MapID != 1545 ||
+            (gy->Loc.X == 0.0f && gy->Loc.Y == 0.0f && gy->Loc.Z == 0.0f) ||
+            !MapManager::IsValidMapCoord(1545, gy->Loc.X, gy->Loc.Y, gy->Loc.Z, gy->Loc.O * float(M_PI) / 180.0f))
         {
-        case 0:
-        case 1:
-        case 2:
-            graveyardId = 5299;
-            break;
-        case 3:
-        case 4:
-            graveyardId = 5360;
-            break;
+            TC_LOG_ERROR("scripts", "Dreadblades graveyard: invalid native WorldSafeLocs %u for instance %u", graveyardId, instance->GetInstanceId());
+            return nullptr;
         }
-
-        if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
-        {
-            loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-        }
+        loc_res_pla.WorldRelocate(1545, gy->Loc.X, gy->Loc.Y, gy->Loc.Z, gy->Loc.O * float(M_PI) / 180.0f);
         return &loc_res_pla;
     }
 };
