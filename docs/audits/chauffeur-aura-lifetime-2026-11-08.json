@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-08",
+  "title": "Chauffeur delayed aura lifetime",
+  "status": "AUTOMATED_VERIFIED_CLIENT_PENDING",
+  "batch": "seven-lifecycle-fixes-2026-11-08",
+  "baseline_revision": "6dc3bc59f",
+  "production": "src/server/scripts/Spells/spell_generic.cpp",
+  "classes": [
+    "spell_mount_summon_chauffeur"
+  ],
+  "cause": "The500ms Unit queue captured this AuraScript. Dismount destroys it while its callback remains queued;remount makes HasAura true again and dereferences the freed DriverSum. The old cleanup also cleared a list while iterating it.",
+  "repair": "Capture a shared per-aura attempt state,never this or a Vehicle pointer. Removal cancels even before the driver exists;callback re-resolves the expected native recAura kit and checks living/in-world owner. Despawn only recorded drivers,clear after iteration;Unit::Dismount retains ownership of player kit removal.",
+  "checks": [
+    "Pinned full class ASAN reproduces heap-use-after-free with exit1 after actual fixture aura destruction/remount;explicit expected-broken counterfactual,not a passing ordinary run.",
+    "Repaired full class ASAN:destroyed old attempt/new attempt in same500ms,499+1 delivery,one Alliance driver,Horde driver,owned cleanup,dead/missing owner.",
+    "Native actual179244 mounted aura,4050 kit and real Unit FunctionProcessor:removed/destroyed script callback remains cancelled;native Dismount cleans the kit. Positive summon/boarding presentation is modeled and native deferred boarding is covered separately."
+  ],
+  "source_regression_command": "tools/tests/Test-SevenSpellLifecycles.ps1 -Case Chauffeur [-Baseline / -AddressSanitizer]",
+  "release": "tools/tests/verify_seven_lifecycle_release.py",
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "87b31fa62508b777b14cac0f03749f1c8d86e51b835f6ed6f13c597f46d99edd",
+    "bnet_sha256": "88e9938d3dfc92e325fc63af501e62258fe54cd52e7ff0baa003fa14d8676f3b",
+    "owned_startup": "PID30496:fresh ready,server shutdown0,exit0,gone;stderr empty;configs/certs/DLLs hash-preserved"
+  },
+  "diagnostics": "Final paired checks clean after pre/post snapshots;expected original UAF captured separately. Original fixture MMAP initialization crash and incorrect isAlive API compile attempt repaired and paired with passing native/build runs. Legacy C5055 in untouched methods and native fixture conversion warnings retained;no production warning introduced by these seven changes. Mixed canonical7111-byte LINK2 log unchanged/untruncated. Full archive/cleanup record in batch closeout.",
+  "client_pending": [
+    "Client fast dismount/remount on both factions,driver boarding,seat presentation and pet/camera."
+  ],
+  "not_claimed": "No actual client traversal performed;not a complete Lady finale or all36 chains;no character reset,SQL mutation,quest credit or item grants."
+}

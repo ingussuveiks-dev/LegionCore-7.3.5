@@ -7762,68 +7762,55 @@ class spell_mount_summon_chauffeur : public AuraScript
 {
     PrepareAuraScript(spell_mount_summon_chauffeur);
 
-    GuidList DriverSum;
+    struct DriverState
+    {
+        bool active = true;
+        GuidList summons;
+    };
+    std::shared_ptr<DriverState> _driver = std::make_shared<DriverState>();
 
     void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        auto caster = GetCaster();
-        auto player = GetCaster()->ToPlayer();
-        if (!caster || !player)
+        Unit* caster = GetUnitOwner();
+        Player* player = caster ? caster->ToPlayer() : nullptr;
+        if (!player)
             return;
 
         uint32 mountaura = player->GetTeam() == ALLIANCE ? alliance_spell : horde_spell;
         uint32 driver = player->GetTeam() == ALLIANCE ? alliance_npc : horde_npc;
-
-        if (caster->CreateVehicleKit(recId, 0, mountaura))
-            caster->SendSetVehicleRecId(recId);
-        else
+        if (!caster->CreateVehicleKit(recId, 0, mountaura))
             return;
+        caster->SendSetVehicleRecId(recId);
+        caster->GetVehicleKit()->Reset();
 
-        if (auto veh = caster->GetVehicleKit())
+        // The unit queue can outlive this AuraScript (dismount/remount in 500 ms).
+        // Retain only this attempt's cancellation state, never the script or kit.
+        auto state = _driver;
+        caster->AddDelayedEvent(500, [caster, driver, mountaura, state]
         {
-            veh->Reset();
-            caster->AddDelayedEvent(500, [veh, caster, driver, mountaura, this]() -> void {
-                if (caster->HasAura(mountaura))
-                {
-                    if (!DriverSum.empty())
-                    {
-                        for (GuidList::const_iterator itr = DriverSum.begin(); itr != DriverSum.end(); ++itr)
-                        {
-                            if (Creature* d = Unit::GetCreature(*caster, *itr))
-                                if (d)
-                                    d->DespawnOrUnsummon(100);
-
-                            DriverSum.clear();
-                        }
-                    }
-                    if (auto sum = caster->SummonCreature(driver, caster->GetPosition()))
-                    {
-                        DriverSum.push_back(sum->GetGUID());
-                        sum->CastSpell(caster, ride_veh, true);
-                    }
-                }
-            });
-        }
-        else
-            return;
+            if (!state->active || !caster->IsInWorld() || !caster->IsAlive() ||
+                !caster->HasAura(mountaura))
+                return;
+            Vehicle* vehicle = caster->GetVehicleKit();
+            if (!vehicle || vehicle->GetRecAura() != mountaura)
+                return;
+            if (auto summon = caster->SummonCreature(driver, caster->GetPosition()))
+            {
+                state->summons.push_back(summon->GetGUID());
+                summon->CastSpell(caster, ride_veh, true);
+            }
+        });
     }
 
     void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (auto caster = GetCaster())
-        {
-            if (DriverSum.empty())
-                return;
-
-            for (GuidList::const_iterator itr = DriverSum.begin(); itr != DriverSum.end(); ++itr)
-            {
-                if (Creature* d = Unit::GetCreature(*caster, *itr))
-                    if (d)
-                        d->DespawnOrUnsummon(100);
-            }
-            DriverSum.clear();
-            caster->RemoveVehicleKit();
-        }
+        _driver->active = false;
+        if (Unit* owner = GetUnitOwner())
+            for (auto const& guid : _driver->summons)
+                if (Creature* driver = Unit::GetCreature(*owner, guid))
+                    driver->DespawnOrUnsummon(100);
+        _driver->summons.clear();
+        // Unit::Dismount owns player vehicle-kit removal.
     }
 
     void Register() override
