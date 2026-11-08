@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-08",
+  "status": "TEST-ONLY linked verification repaired;strict complete Herald chain passes on the unchanged current canonical binary.",
+  "cause": "verify_orestes_farewell_release pinned SmartScript mEventPhase at0xac. Linked-cast retry state added by76ca986cd enlarged the class;actual action22,DecPhase,UpdateTimer and ProcessEvent now consistently use0x104. Canonical Herald PE verification rejected the obsolete proof even though the linked implementation agreed.",
+  "fix": "Derive the phase member from actual native DecPhase one four-byte RCX read/write pair,same register and bounded decrement arithmetic. Require action22 payload write and both timer/event mask loads to use that exact derived member,retaining BT checks and all native dialogue/credit/death/proximity/action-switch bridges. No acceptance based on a larger arbitrary offset or byte-string presence.",
+  "checks": "Original fixed0xac proof failed on current binary;paired revised strict run_linked_release_verifier.py verify_marksmanship_herald_release.py completes every composed check. Phase disassembly records observed0x104 without hardcoding it as future class layout. Pre/post diagnostics have no new crashes/appended server/DBErrors.",
+  "production": "No C++,SQL,config,data or binary change by this fix. The separately staged/deployed MM cemetery code does not change SmartScript layout.",
+  "limits": "Selected linked paths are not whole client traversal,Herald combat,actual receiver recreation or audio certification.",
+  "evidence": ".codex/marksmanship-graveyard-2026-11-08/final-HeraldASAN.log,phase-disassembly.txt,phase-proof.log and phase-proof-evidence.",
+  "cleanup": "Evidence joins the ongoing MM cemetery archive/cleanup after its canonical tests;no task-owned server or separate executable was created by this verifier fix. Mixed7111/LINK2 remain OPEN and untouched."
+}
