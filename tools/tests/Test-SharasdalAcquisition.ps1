@@ -20,7 +20,9 @@ $effects=Get-Content "$repo/src/server/game/Spells/SpellEffects.cpp" -Raw
 foreach($name in @('ForceEquipItem','SendEvent','KillCredit')){[IO.File]::WriteAllText("$out/$name.inc",(Block $effects "void Spell::Effect$name("))}
 [IO.File]::WriteAllText("$out/CriteriaTypes.inc",(Block (Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw) 'enum CriteriaTypes')+';')
 [IO.File]::WriteAllText("$out/NativeEnums.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'enum AuraRemoveMode')+';'+(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.h" -Raw) 'enum SceneEventStatus')+';')
-[IO.File]::WriteAllText("$out/QuestObjectScope.inc",(Block (Get-Content "$repo/src/server/game/Entities/Object/QuestObjectScope.h" -Raw) 'struct QuestObjectScope')+';')
+$scope=(Get-Content "$repo/src/server/game/Entities/Object/QuestObjectScope.h" -Raw).Replace("`r",'')
+# Match the declaration, not QuestCancellationReceipt's earlier friend line.
+[IO.File]::WriteAllText("$out/QuestObjectScope.inc",(Block $scope 'class QuestCancellationReceipt')+';'+(Block $scope "`nstruct QuestObjectScope`n")+';')
 [IO.File]::WriteAllText("$out/BindQuestObject.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw) 'void Player::BindQuestObject('))
 [IO.File]::WriteAllText("$out/QuestLease.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw) 'void Player::AddQuestDelayedEvent('))
 $objectSource=Get-Content "$repo/src/server/game/Entities/Object/Object.cpp" -Raw

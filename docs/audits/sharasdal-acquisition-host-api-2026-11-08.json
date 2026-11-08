@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-08",
+  "status": "VERIFIED test-only Sharasdal acquisition host compatibility repair;no production controller/core/data change.",
+  "cause": "The older acquisition host extracted the first textual struct QuestObjectScope occurrence,now a friend declaration inside QuestCancellationReceipt. It omitted the real receipt class,new bool target-restriction/loot-binding API,door enum,and already-equipped parent child-equipping API. The full enclosing suite therefore failed compilation instead of testing current acquisition behavior.",
+  "repair": [
+    "Extract actual full QuestCancellationReceipt and newline-anchored QuestObjectScope declaration. Keep real BindQuestObject/BindQuestObjectScope/Cancel/expiry methods;update host signatures/target field and observe loot-scope endpoint. Existing cancellation case now also checks native receipt state and original story binding.",
+    "Provide native bag/slot and EquipChildItem endpoints plus native door enum0. Preserve real failed child validation in the existing failure matrix;add a passing already-equipped-parent/missing-child repair case that retains both original item GUIDs,uses no SwapItem and grants no new item. Keep actual current EffectForceEquipItem body rather than pinning the old one."
+  ],
+  "checks": "76 full acquisition/controller/native effect/storage/scope ASAN cases and current canonical acquisition linked chain pass. Services at registry/collision/spline/scene/network/group/criteria/child inventory and loot-scope endpoint are controlled;not full engine/client traversal. Canonical Scepter and task-owned startup also pass for the accompanying cemetery repair.",
+  "diagnostics": "Initial compiler failures and partial-adaptation diagnostics retained. Repaired76 ASAN and canonical linked proof pass;no new crash/appended DBErrors or unexplained server warning/error/assertion. Existing host C4458 warnings retained. No checks or production diagnostics suppressed.",
+  "cleanup": {
+    "status": "PENDING shared verified archive/cleanup with the independently committed Sharasdal cemetery issue."
+  }
+}
