@@ -12,7 +12,10 @@ static unsigned errors=0;
 #define TC_LOG_ERROR(...) (++errors)
 struct WorldLocation {uint32 map=0;float x=0,y=0,z=0,o=0;void WorldRelocate(uint32 m,float a,float b,float c,float d=0){map=m;x=a;y=b;z=c;o=d;}};
 struct WorldSafeLocsEntry {uint32 ID=5480,MapID=1489;struct {float X=-43.1440964f,Y=1160.33679f,Z=-74.353569f,O=27.7250366f;}Loc;};
-struct Store {WorldSafeLocsEntry data,early{5433,1489,{236.392365f,1952.18921f,-55.7522888f,20}},late{5434,1489,{192.675354f,1435.95142f,-35.8320885f,254.1651f}};bool missing=false;uint32 reads=0;WorldSafeLocsEntry const* LookupEntry(uint32 id){assert(id==5480||id==5433||id==5434);++reads;return missing?nullptr:id==5480?&data:id==5433?&early:&late;}}sWorldSafeLocsStore;
+struct Store {WorldSafeLocsEntry data,early{5433,1489,{236.392365f,1952.18921f,-55.7522888f,20}},late{5434,1489,{192.675354f,1435.95142f,-35.8320885f,254.1651f}},blood{5440,1489,{311.418396f,1669.00696f,-67.7327881f,271.646362f}},bloodLate{5441,1489,{196.017365f,1524.39233f,-32.2376633f,274.948456f}};bool missing=false;uint32 reads=0;WorldSafeLocsEntry const* LookupEntry(uint32 id){assert(id==5480||id==5433||id==5434||id==5440||id==5441);++reads;return missing?nullptr:id==5480?&data:id==5433?&early:id==5434?&late:id==5440?&blood:&bloodLate;}}sWorldSafeLocsStore;
+struct SpellTargetPosition{uint32 target_mapId=1489;float target_X=240.9f,target_Y=1953.44f,target_Z=-55.29f,target_Orientation=.384845f;};
+struct GraveyardSpellStore{SpellTargetPosition data;bool missing=false;uint32 reads=0;SpellTargetPosition const* GetSpellTargetPosition(uint32 id){assert(id==201678);++reads;return missing?nullptr:&data;}}graveyardSpells;
+auto sSpellMgr=&graveyardSpells;
 struct Scenario {uint32 id=1085,step=0;uint32 GetScenarioId(){return id;}uint32 GetCurrentStep(){return step;}};
 struct Manager {Scenario data;bool missing=false;Scenario* GetScenario(uint32 id){assert(id==987);return missing?nullptr:&data;}}manager;
 auto sScenarioMgr=&manager;
@@ -22,7 +25,7 @@ struct Base {virtual WorldLocation* GetClosestGraveYard(float,float,float)=0;};
 struct Probe:Base {Map map;Map* instance=&map;WorldLocation loc_res_pla;
 #include "TuureGraveyard.inc"
 };
-static void Reset(){manager={};sWorldSafeLocsStore={};}
+static void Reset(){manager={};sWorldSafeLocsStore={};graveyardSpells={};}
 int main(){Probe p;unsigned cases=0;
  for(unsigned step=0;step<8;++step)for(unsigned place=0;place<4;++place)for(unsigned repeat=0;repeat<2;++repeat){Reset();manager.data.step=step;float x=place==0?-828.85f:place==1?71.9653f:place==2?236.392f:-43.1441f;float y=place?1218.51f:4372;float z=place==3?-1000.0f:place==0?738.64f:-74.2702f;auto before=errors;auto loc=p.GetClosestGraveYard(x,y,z);
   assert(loc==&p.loc_res_pla&&loc->map==1489&&errors==before);
@@ -42,7 +45,7 @@ int main(){Probe p;unsigned cases=0;
   auto loc=p.GetClosestGraveYard(3,4,5);if(fault<14)assert(!loc&&errors==before+1);else assert(loc&&loc->x==3&&loc->y==4&&loc->z==5&&errors==before&&!sWorldSafeLocsStore.reads);++cases;
  }
 #endif
- for(unsigned kind=0;kind<3;++kind)for(unsigned place=0;place<4;++place){Reset();if(kind==0)manager.missing=true;else manager.data.id=kind==1?940:1146;auto before=errors;auto loc=p.GetClosestGraveYard(float(place),4,-7);assert(loc&&loc->x==place&&loc->y==4&&loc->z==-7&&errors==before&&!sWorldSafeLocsStore.reads);++cases;}
+ for(unsigned kind=0;kind<3;++kind)for(unsigned place=0;place<4;++place){Reset();if(kind==0)manager.missing=true;else manager.data.id=kind==1?1145:1146;auto before=errors;auto loc=p.GetClosestGraveYard(float(place),4,-7);assert(loc&&loc->x==place&&loc->y==4&&loc->z==-7&&errors==before&&!sWorldSafeLocsStore.reads);++cases;}
  for(unsigned kind=0;kind<4;++kind){Reset();float x=kind==0?std::numeric_limits<float>::quiet_NaN():kind==1?std::numeric_limits<float>::infinity():99999;auto loc=p.GetClosestGraveYard(x,-99999,-2000);
 #ifdef TUURE_GRAVEYARD_BASELINE
   assert(loc&&(kind==0?std::isnan(loc->x):loc->x==x)&&loc->z==-2000);
@@ -54,7 +57,7 @@ int main(){Probe p;unsigned cases=0;
 #ifdef TUURE_GRAVEYARD_BASELINE
  assert(cases==80);std::cout<<"COUNTERFACTUAL pinned562084277 Tuure graveyard source80 ASAN:death and nonfinite/void positions echoed,shared/no-scenario controls;not successful recovery\n";
 #else
- assert(cases==96);std::cout<<"PASS extracted Tuure graveyard96 ASAN:1085/all7steps+completed,5480/radians independent of death pose,14 corrupt-source refusals with diagnostics,shared940/1146/no-scenario unchanged,stable location;controlled services,no progression/direct resurrection\n";
+ assert(cases==96);std::cout<<"PASS extracted Tuure graveyard96 ASAN:1085/all7steps+completed,5480/radians independent of death pose,14 corrupt-source refusals with diagnostics,shared1145/1146/no-scenario unchanged,stable location;controlled services,no progression/direct resurrection\n";
 #endif
  return 0;
 }

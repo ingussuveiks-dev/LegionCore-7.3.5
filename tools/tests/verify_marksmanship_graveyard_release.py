@@ -9,16 +9,17 @@ p = runpy.run_path(str(Path(__file__).with_name('verify_tuure_graveyard_release.
 n, body, sites, at = (p[k] for k in ('n', 'body', 'sites', 'at'))
 mark = p['marksman']
 assert mark is not None, 'Release lacks stage-aware Marksmanship cemetery'
-step, = sites('?GetCurrentStep@Scenario@@')
-assert step == mark + 3
+step = next(i for i in sites('?GetCurrentStep@Scenario@@') if mark < i <= mark + 3)
+assert step in (mark + 2, mark + 3)
 assert [(o.mnemonic, o.op_str) for o in body[step + 1:step + 4]] == [('cmp', 'eax, 5'), ('sbb', 'edx, edx'), ('add', 'edx, 0x153a')]
-lookup = at('rdi, qword ptr [rax + rdx*8]', 'mov')
-identity = at('dword ptr [rdi], edx', 'cmp')
+data_reg, map_reg, map_word = (p[k] for k in ('data_reg', 'map_reg', 'map_word'))
+lookup = at(data_reg + ', qword ptr [rax + rdx*8]', 'mov')
+identity = at('dword ptr [' + data_reg + '], edx', 'cmp')
 failure = body[identity + 1].operands[0].imm
 assert body[identity + 1].mnemonic == 'jne' and body[lookup + 2].operands[0].imm == failure
 assert body[lookup - 2].mnemonic == 'jae' and body[lookup - 2].operands[0].imm == failure
-mapcheck = next(i for i, o in enumerate(body) if i > identity and o.mnemonic == 'cmp' and o.op_str == 'word ptr [rdi + 0x1c], si')
-assert body[mapcheck - 1].op_str == 'esi, 0x5d1' and body[mapcheck + 1].operands[0].imm == failure
+mapcheck = next(i for i, o in enumerate(body) if i > identity and o.mnemonic == 'cmp' and o.op_str == 'word ptr [' + data_reg + ' + 0x1c], ' + map_word)
+assert body[mapcheck - 1].op_str == map_reg + ', 0x5d1' and body[mapcheck + 1].operands[0].imm == failure
 coord = p['coordinates'][1]
 assert step < lookup < identity < mapcheck < coord
 assert any(o.mnemonic == 'je' and o.operands[0].imm == failure for o in body[mapcheck + 2:coord])

@@ -5,6 +5,7 @@
 #include "LFGMgr.h"
 #include "AreaTriggerData.h"
 #include "MapManager.h"
+#include "SpellMgr.h"
 #include "MovementPackets.h"
 #include "PlayerDefines.h"
 #include "DB2LoadInfo.h"
@@ -17,7 +18,7 @@ namespace TuureGraveyardFixture {
 #include "TuureGraveyardInstance.inc"
 }
 int main(int argc,char**argv){try{
- InitializeAltheaGuardsNative(argc,argv);sAreaTriggerDataStore->LoadAreaTriggerTeleports();sLFGMgr->LoadLFGDungeons();
+ InitializeAltheaGuardsNative(argc,argv);sAreaTriggerDataStore->LoadAreaTriggerTeleports();sLFGMgr->LoadLFGDungeons();sSpellMgr->LoadSpellTargetPositions();
  DB2Storage<CharBaseInfoEntry> pairs("CharBaseInfo.db2",CharBaseInfoLoadInfo::Instance());Require(pairs.Load(argv[1],0),"Actual Legion race/class data absent");
  auto safe=sWorldSafeLocsStore.LookupEntry(5480);auto d=sLFGMgr->GetLFGDungeon(1243);Require(safe&&safe->MapID==1489&&std::string(safe->Name->Str[0])=="7.0 Artifacts - Priest - Holy - Niskara Entrance Loc - LWB"&&d&&d->dbc&&d->dbc->ScenarioID==1085&&d->map==1489&&d->difficulty==DIFFICULTY_N_SCENARIO,"Native Holy source absent");
  Require(sScenarioMgr->GetScenarioSteps(1085)&&sScenarioMgr->GetScenarioSteps(1085)->size()==7,"Actual Holy seven-step sequence changed");
@@ -58,7 +59,7 @@ int main(int argc,char**argv){try{
 #ifdef TUURE_GRAVEYARD_BASELINE
 Require(gy&&gy->GetExactDist(12,34,-56)<.001f,"Pinned shared policy changed");
 #else
-if(id==972){auto hunter=sWorldSafeLocsStore.LookupEntry(5433);Require(gy&&hunter&&gy->GetExactDist(hunter->Loc.X,hunter->Loc.Y,hunter->Loc.Z)<.001f,"Shared Hunter stage0 cemetery changed");}else Require(gy&&gy->GetExactDist(12,34,-56)<.001f,"Shared Blood policy changed");
+if(id==972){auto hunter=sWorldSafeLocsStore.LookupEntry(5433);Require(gy&&hunter&&gy->GetExactDist(hunter->Loc.X,hunter->Loc.Y,hunter->Loc.Z)<.001f,"Shared Hunter stage0 cemetery changed");}else {auto blood=sSpellMgr->GetSpellTargetPosition(201678);Require(gy&&blood&&gy->GetExactDist(blood->target_X,blood->target_Y,blood->target_Z)<.001f,"Shared Blood stage0 entry changed");}
 #endif
 ++cases;}
   sScenarioMgr->RemoveScenario(map.GetInstanceId());auto gy=map.GetClosestGraveYard(12,34,-56);Require(gy&&gy->GetExactDist(12,34,-56)<.001f,"No-scenario policy changed");++cases;session->SetPlayer(nullptr);delete session;
@@ -67,7 +68,7 @@ if(id==972){auto hunter=sWorldSafeLocsStore.LookupEntry(5433);Require(gy&&hunter
 #ifdef TUURE_GRAVEYARD_BASELINE
  std::cout<<"COUNTERFACTUAL pinned562084277 Tuure native64/release58:registered whole old instance echoes corpse/foreign-world/below-map poses through real release+ACK;completed/shared/no-scenario controls. Current native support,not historical binary or successful safe recovery"<<std::endl;
 #else
- std::cout<<"PASS Tuure native64/release58:registered whole instance/native5480+real floor,Human+Undead26972 pairs,all7 stages+real ALL-root completion,foreign-world/late/below-map/shared-wing death poses,actual ghost release+ACK/delayed half-health revival,repeated selection/ACK,shared940/no-scenario and native972 control;no scenario/actor/quest/item grants. Earlier quest/death/stage and final credit endpoints controlled;full client/corpse/pet/group traversal separate"<<std::endl;
+ std::cout<<"PASS Tuure native64/release58:registered whole instance/native5480+real floor,Human+Undead26972 pairs,all7 stages+real ALL-root completion,foreign-world/late/below-map/shared-wing death poses,actual ghost release+ACK/delayed half-health revival,repeated selection/ACK,native940/972 and no-scenario controls;no scenario/actor/quest/item grants. Earlier quest/death/stage and final credit endpoints controlled;full client/corpse/pet/group traversal separate"<<std::endl;
 #endif
  CloseAltheaNative();return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<std::endl;return 1;}}

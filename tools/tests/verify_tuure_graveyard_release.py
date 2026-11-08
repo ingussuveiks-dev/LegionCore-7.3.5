@@ -39,22 +39,28 @@ fallback = body[scoped + 1].operands[0].imm
 assert body[scoped + 1].mnemonic == 'jne'
 marksman = next((i for i, o in enumerate(body) if o.mnemonic == 'cmp' and o.op_str == 'eax, 0x3cc'), None)
 if marksman is not None:
-    assert fallback == body[marksman - 2].address and body[marksman - 1].mnemonic == 'call'
+    assert any(o.address == fallback for o in body[marksman - 4:marksman]) and any(i in sites('?GetScenarioId@Scenario@@') for i in range(marksman - 4, marksman))
     assert body[marksman + 1].mnemonic == 'jne'
     fallback = body[marksman + 1].operands[0].imm
+blood = next((i for i, o in enumerate(body) if o.mnemonic == 'cmp' and o.op_str == 'eax, 0x3ac'), None)
+if blood is not None:
+    assert marksman is not None and any(o.address == fallback for o in body[blood - 4:blood]) and any(i in sites('?GetScenarioId@Scenario@@') for i in range(blood - 4, blood))
+    assert body[blood + 1].mnemonic == 'jne'
+    fallback = body[blood + 1].operands[0].imm
 null_branch = next(o for o in body[sites('?GetScenario@ScenarioMgr@@')[0] + 1:scoped] if o.mnemonic == 'je')
 assert null_branch.operands[0].imm == fallback
-lookup = at('rdi, qword ptr [rax + 0xab40]', 'mov')  #5480*8
-identity = at('dword ptr [rdi], 0x1568', 'cmp')
+data_reg, map_reg, map_word = ('rsi', 'edi', 'di') if blood is not None else ('rdi', 'esi', 'si')
+lookup = at(data_reg + ', qword ptr [rax + 0xab40]', 'mov')  #5480*8
+identity = at('dword ptr [' + data_reg + '], 0x1568', 'cmp')
 failure = body[identity + 1].operands[0].imm
 assert body[lookup + 2].operands[0].imm == failure
-mapcheck = at('word ptr [rdi + 0x1c], si', 'cmp')
+mapcheck = at('word ptr [' + data_reg + ' + 0x1c], ' + map_word, 'cmp')
 assert body[mapcheck + 1].operands[0].imm == failure
-at('esi, 0x5d1', 'mov')
+at(map_reg + ', 0x5d1', 'mov')
 zero = at('xmm0, xmm1', 'ucomiss')
 assert any(o.mnemonic == 'je' and o.operands[0].imm == failure for o in body[zero:zero + 10])
 coordinates = sites('?IsValidMapCoord@MapManager@@SA_NIMMMM@Z')
-assert len(coordinates) == (2 if marksman is not None else 1)
+assert len(coordinates) == (4 if blood is not None else 2 if marksman is not None else 1)
 coord = coordinates[0]
 assert scoped < lookup < identity < mapcheck < coord and body[coord + 2].operands[0].imm == failure
 for register, expected in (('xmm6', 3.141592653589793), ('xmm7', 180.0)):

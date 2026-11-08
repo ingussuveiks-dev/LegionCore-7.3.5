@@ -19,10 +19,10 @@ int main(){Probe p;unsigned cases=0;
   assert(!p.GetClosestGraveYard(3,4,5)&&errors==before+1);++cases;
  }
 #endif
- for(unsigned kind=0;kind<3;++kind)for(unsigned place=0;place<4;++place){Reset();if(kind==0)manager.missing=true;else manager.data.id=kind==1?940:1085;auto loc=p.GetClosestGraveYard(float(place),4,-7);if(kind==2)assert(loc&&loc->x==sWorldSafeLocsStore.data.Loc.X&&loc->z==sWorldSafeLocsStore.data.Loc.Z);else assert(loc&&loc->x==place&&loc->y==4&&loc->z==-7);++cases;}
+ for(unsigned kind=0;kind<3;++kind)for(unsigned place=0;place<4;++place){Reset();if(kind==0)manager.missing=true;else manager.data.id=kind==1?1145:1085;auto loc=p.GetClosestGraveYard(float(place),4,-7);if(kind==2)assert(loc&&loc->x==sWorldSafeLocsStore.data.Loc.X&&loc->z==sWorldSafeLocsStore.data.Loc.Z);else assert(loc&&loc->x==place&&loc->y==4&&loc->z==-7);++cases;}
 #ifdef MARKSMAN_GRAVEYARD_BASELINE
- assert(cases==84);std::cout<<"COUNTERFACTUAL pinnedf3c39b87a MM graveyard source84 ASAN:all8 stages+completed echo corpse positions,retained Holy/Blood/no-scenario;not safe recovery\n";
+ assert(cases==84);std::cout<<"COUNTERFACTUAL pinnedf3c39b87a MM graveyard source84 ASAN:all8 stages+completed echo corpse positions,retained Holy/other/no-scenario;not safe recovery\n";
 #else
- assert(cases==112);std::cout<<"PASS extracted MM graveyard112 ASAN:972/all8stages+completed,5433 before5/5434 from5,28 invalid-source refusals with diagnostics,repeated selection independent of death pose,retained Holy/Blood/no-scenario;controlled services,no progression/direct resurrection\n";
+ assert(cases==112);std::cout<<"PASS extracted MM graveyard112 ASAN:972/all8stages+completed,5433 before5/5434 from5,28 invalid-source refusals with diagnostics,repeated selection independent of death pose,retained Holy/other/no-scenario;controlled services,no progression/direct resurrection\n";
 #endif
 }

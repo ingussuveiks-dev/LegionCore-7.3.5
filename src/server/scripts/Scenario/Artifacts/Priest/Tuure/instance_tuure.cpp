@@ -12,6 +12,7 @@
 #include "CreatureTextMgr.h"
 #include "MoveSpline.h"
 #include "MapManager.h"
+#include "SpellMgr.h"
 
 
 class instance_tuure : public InstanceMapScript
@@ -646,6 +647,35 @@ public:
                     !MapManager::IsValidMapCoord(1489, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f))
                 {
                     TC_LOG_ERROR("scripts", "Marksmanship graveyard: invalid native WorldSafeLocs %u for instance %u", safeId, instance->GetInstanceId());
+                    return nullptr;
+                }
+                loc_res_pla.WorldRelocate(1489, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f);
+                return &loc_res_pla;
+            }
+            if (scenario && scenario->GetScenarioId() == 940)
+            {
+                uint32 step = scenario->GetCurrentStep();
+                if (step < 3)
+                {
+                    // Blood GY1 is beyond the first flame wall. Until native
+                    //48612 acknowledges its removal, keep the real201678 entry.
+                    SpellTargetPosition const* entry = sSpellMgr->GetSpellTargetPosition(201678);
+                    if (!entry || entry->target_mapId != 1489 || !(entry->target_X || entry->target_Y || entry->target_Z) ||
+                        !MapManager::IsValidMapCoord(1489, entry->target_X, entry->target_Y, entry->target_Z, entry->target_Orientation))
+                    {
+                        TC_LOG_ERROR("scripts", "Blood graveyard: invalid native entry201678 for instance %u", instance->GetInstanceId());
+                        return nullptr;
+                    }
+                    loc_res_pla.WorldRelocate(1489, entry->target_X, entry->target_Y, entry->target_Z, entry->target_Orientation);
+                    return &loc_res_pla;
+                }
+                // The second acknowledgement48687 opens the citadel at6->7.
+                uint32 safeId = step >= 7 ? 5441 : 5440;
+                WorldSafeLocsEntry const* safe = sWorldSafeLocsStore.LookupEntry(safeId);
+                if (!safe || safe->ID != safeId || safe->MapID != 1489 || !(safe->Loc.X || safe->Loc.Y || safe->Loc.Z) ||
+                    !MapManager::IsValidMapCoord(1489, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f))
+                {
+                    TC_LOG_ERROR("scripts", "Blood graveyard: invalid native WorldSafeLocs %u for instance %u", safeId, instance->GetInstanceId());
                     return nullptr;
                 }
                 loc_res_pla.WorldRelocate(1489, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f);

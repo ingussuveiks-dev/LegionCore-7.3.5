@@ -30,6 +30,8 @@ struct WorldLocation{void WorldRelocate(uint32,float,float,float,float=0){}};
 struct WorldSafeLocsEntry{uint32 ID=5480,MapID=1489;struct{float X=-43.1440964f,Y=1160.33679f,Z=-74.353569f,O=27.7250366f;}Loc;};
 struct SafeStore{WorldSafeLocsEntry data;WorldSafeLocsEntry const* LookupEntry(uint32 id){assert(id==5480);return &data;}}sWorldSafeLocsStore;
 struct MapManager{static bool IsValidMapCoord(uint32 map,float x,float y,float z,float o){return map==1489&&std::isfinite(x)&&std::isfinite(y)&&std::isfinite(z)&&std::isfinite(o)&&std::fabs(x)<17066&&std::fabs(y)<17066;}};
+struct SpellTargetPosition{uint32 target_mapId=1489;float target_X=240.9f,target_Y=1953.44f,target_Z=-55.29f,target_Orientation=.384845f;};
+struct GraveyardSpellStore{SpellTargetPosition data;SpellTargetPosition const* GetSpellTargetPosition(uint32 id){assert(id==201678);return &data;}}graveyardSpells;auto sSpellMgr=&graveyardSpells;
 #define TC_LOG_ERROR(...) assert(false)
 '@
  $nativeFixture=Replace-Fixture $nativeFixture 'struct InstanceScript {bool CheckDamageManager()const{return false;}void UpdateDamageManager(ObjectGuid,int32,bool){};};' @'

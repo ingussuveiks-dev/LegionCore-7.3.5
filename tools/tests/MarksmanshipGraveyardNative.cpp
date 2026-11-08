@@ -2,7 +2,7 @@
 #include "TuureGraveyardNative.cpp"
 #undef main
 int main(int argc,char**argv){try{
- InitializeAltheaGuardsNative(argc,argv);sAreaTriggerDataStore->LoadAreaTriggerTeleports();sLFGMgr->LoadLFGDungeons();
+ InitializeAltheaGuardsNative(argc,argv);sAreaTriggerDataStore->LoadAreaTriggerTeleports();sLFGMgr->LoadLFGDungeons();sSpellMgr->LoadSpellTargetPositions();
  auto early=sWorldSafeLocsStore.LookupEntry(5433);auto late=sWorldSafeLocsStore.LookupEntry(5434);Require(early&&late&&early->MapID==1489&&late->MapID==1489&&std::string(early->Name->Str[0])=="7.0 Artifacts - Niskara - MM Niskara GY 1 - CRT"&&std::string(late->Name->Str[0])=="7.0 Artifacts - Niskara - MM Niskara GY 2 - CRT","Actual Hunter cemetery identities absent");
  auto steps=sScenarioMgr->GetScenarioSteps(972);Require(steps&&steps->size()==8,"Native972 eight-step sequence changed");auto criterion=sCriteriaStore.LookupEntry(29305);Require(criterion&&criterion->Type==92&&criterion->Asset==47927,"Actual Herald acknowledgement changed");bool contained=false;for(auto leaf:sCriteriaTreeStore)if(leaf->CriteriaID==29305){auto current=leaf;for(unsigned depth=0;current&&depth<64;++depth){if(current->ID==46385)contained=true;current=sCriteriaTreeStore.LookupEntry(current->Parent);}}Require(contained&&(*steps)[4]->Criteriatreeid==46385,"Native Herald4->5 root changed");
  auto row=WorldDatabase.Query("SELECT link,event_type,action_type,action_param1,action_param2,target_type FROM smart_scripts WHERE entryorguid=100836 AND source_type=0 AND id=3");Require(row&&row->GetRowCount()==1,"Native Herald death dispatch missing");auto f=row->Fetch();Require(f[0].GetUInt32()==4&&f[1].GetUInt32()==6&&f[2].GetUInt32()==205&&f[3].GetUInt32()==92&&f[4].GetUInt32()==47927&&f[5].GetUInt32()==7,"Native Herald owner/group credit bridge changed");
@@ -44,7 +44,13 @@ int main(int argc,char**argv){try{
    Require(after&&after->GetExactDist(late->Loc.X,late->Loc.Y,late->Loc.Z)<.001f,"Acknowledged Herald did not unlock native5434");
 #endif
    p.UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,47927);Require(scenario->GetCurrentStep()==5&&!p.HasItemCount(128826,1,true),"Duplicate native event skipped Inquisitor or granted bow");++cases;}
-  for(unsigned id:{1085u,940u}){sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,id);auto gy=map.GetClosestGraveYard(12,34,-56);auto holy=sWorldSafeLocsStore.LookupEntry(5480);Require(gy&&(id==1085?gy->GetExactDist(holy->Loc.X,holy->Loc.Y,holy->Loc.Z)<.001f:gy->GetExactDist(12,34,-56)<.001f),"Retained Holy/Blood policy changed");++cases;}
+  for(unsigned id:{1085u,940u}){sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,id);auto gy=map.GetClosestGraveYard(12,34,-56);auto holy=sWorldSafeLocsStore.LookupEntry(5480);if(id==1085)Require(gy&&gy->GetExactDist(holy->Loc.X,holy->Loc.Y,holy->Loc.Z)<.001f,"Retained Holy policy changed");else{
+#ifdef MARKSMAN_GRAVEYARD_BASELINE
+Require(gy&&gy->GetExactDist(12,34,-56)<.001f,"Pinned Blood policy changed");
+#else
+auto blood=sSpellMgr->GetSpellTargetPosition(201678);Require(gy&&blood&&gy->GetExactDist(blood->target_X,blood->target_Y,blood->target_Z)<.001f,"Native Blood stage0 recovery changed");
+#endif
+}++cases;}
   sScenarioMgr->RemoveScenario(map.GetInstanceId());Require(map.GetClosestGraveYard(12,34,-56)->GetExactDist(12,34,-56)<.001f,"No-scenario policy changed");++cases;session->SetPlayer(nullptr);delete session;
  }
  Require(cases==74&&releases==66,"MM native count changed");
