@@ -1,4 +1,34 @@
 {
+  "latest_hodir_landing_2026_11_08": {
+    "status": "DEPLOYED Hodir1146 landing admission/data repair: source18 ASAN, actual native48, full-schema TEMP/93 refusal cases and live RELEASED hash pass. Canonical ready/shutdown0 clean. This is Warrior campaign42974, not another completed artifact acquisition chain.",
+    "scope": "Only conditions22/group1/entry157 SourceId10->13 and smart_scripts157/source13/id1 event_type89->61. All other fields, comments, targets, parameters, event radius/pose/phase, quest/route and aura producer retained. SQL-only; existing canonical SmartEventObject/native SmartScript needs no new registration or rebuild. No persistent character mutation, quest/item grant, direct teleport/resurrection or stage override.",
+    "checks": {
+      "source": "18 ASAN cases using extracted real source13 condition lookup, condition44, event dispatch, invoker7, action205, LINK lookup/tail and aura action28. All6 stages+modeled completed, repeated dispatch, native-step2->3 modeled criteria endpoint, missing/wrong scenario/noninstance/expired controls. Controlled world and criteria endpoints, not full core/client traversal.",
+      "native": "48 actual native cases: registered extracted SmartEventObject, actual EventObject range/phase discovery, real source13 conditions, actual Scenario1146/52537 transition2->3 and LINK61/action28. Human+Orc and active INCOMPLETE/COMPLETE42974; all6 stages, inside-entry suppression, real exit/reentry and new-aura repeat retention, shared972, absent scenario, wrong phase then restored phase, absent aura cleanup and actual dead callback gate. Quest/item state unchanged by ordinary trigger. Earlier accepted quest, aura, pose and stage controlled in memory; real producer, flight, client and character LoadFromDB not traversed. Native Release libraries, not whole-core ASAN.",
+      "counterfactual": "Extracted ASAN14 reproduces full original10/89: premature cleanup and14 explicitly observed expected invalid-LINK diagnostics, not ordinary successful traversal. Native32 deliberately isolates wrong-source10 with controlled valid LINK61, reproducing wrong-stage/shared-map aura removal without emitting an unexplained native DBErrors. These are component counterfactuals using current support, not a historical full executable.",
+      "data": "Full actual schemas in connection-private TEMP shadows. Exact two-cell expected full-row fingerprints, every other column including comments unchanged, idempotence, both partial states, harmless custom comments and93 no-mutation refusals across root/cleanup/condition/route/spawn/template. Live scoped tables unchanged by regressions. After real updater: repaired source13/LINK61 and exact LF-SHA1 RELEASED migration verified; live native48 passes.",
+      "retained": "Mandatory Test-ScepterLogin.ps1 -VerifyReleaseBinary passes source behavior and unchanged canonical executable marker. Its known pre-existing signed/unsigned host warnings are retained in captured output; not runtime diagnostics or newly introduced production warnings.",
+      "runtime": "Task-owned canonical worldserver PID22688 reached fresh ready after actual updater, graceful stdin server shutdown0, exit0/gone and empty stderr. No user/unknown server stopped; MariaDB left running. Binaries/config/certs/DLL hashes unchanged."
+    },
+    "diagnostics": {
+      "result": "Pre/post diagnostic snapshots around source/native/SQL/runtime/retained checks: no new or changed crashes, appended DBErrors or server warnings/errors/assertions in passing runs. Active canonical Crashes empty.",
+      "development": "Preserved initial read-only research ERROR1054 from an incorrect creature_template column, corrected query passes. Native fixture initially failed compilation because AddToGrid inferred derived LandingEvent instead of EventObject; corrected explicit native base pointer. A fixture exit at41 yards remained inside native GetDistance radius due object reach; corrected controlled exit to50 yards, no EventObject/core change. Source host global-name shadow warning corrected without suppressing diagnostics. Failed fixture evidence retained beside repaired runs.",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "OPEN shared LINK2, unchanged; no log truncation/rotation."
+    },
+    "unresolved": [
+      "Actual client42974 acceptance/217812 entry,110122 death/producer217815, empowered leap/boarding/felbat kills and dive near Thorim, camera, voice, actors, phases and later conversations/Hodir/turn-in remain unverified. This local landing repair does not certify the entire Warrior campaign or all36 acquisition chains.",
+      "Actual failed producer casts, caster disappearance, death/logout/re-entry and relog aura restoration remain separate. No aura recovery grant or shortcut was added. Landing at the real event can legitimately succeed without217815; the fixture positions players there and does not prove safe travel.",
+      "Group-bound campaign traversal, pet/guardian final blows/one-hit scaling in preceding or later combat and group landing timing remain separate. This patch changes no combat, owner-credit or scenario-binding code; actual native triggering Player and normal scenario dispatch are retained. A pet cannot independently trigger this Player-only EventObject path.",
+      "Hodir1146 cemetery recovery is investigated but unimplemented; previous fallback retained. Survival39427 follow-up, Stromkar/client visuals, all36 whole-chain traversal and shared LINK2/mixed7111 remain OPEN. Preserve original Slaghammer handoff20261106-121715-172/cache/research bytes."
+    ],
+    "cleanup": {
+      "status": "PENDING archive/hash verification and exact task-owned generated-output deletion after focused fix commit; no redundant executable is required for pending client gameplay checks."
+    },
+    "audit": "docs/audits/hodir-landing-admission-2026-11-08.json",
+    "next": "Hodir1146 scoped safe cemetery/release/revival; client campaign42974 and all36 whole chains remain separate."
+  },
   "latest_blood_graveyard_2026_11_08": {
     "status": "DEPLOYED Blood940 barrier-aware death recovery on shared1489. Source156 ASAN/native102 with90 actual releases/ACKs/revivals,paired pinned counterfactuals,both real barrier boundaries and selected canonical proof pass;owned ready/shutdown0 clean. Full client traversal remains separate.",
     "scope": "Actual940 branch of instance_tuure::GetClosestGraveYard only. No SQL,character reset,quest/item/criterion grant,direct teleport/resurrection,combat/actor/door/stage mutation,new registration or Player/core/layout change. Retain Holy5480,Hunter5433/5434 and other/no-scenario fallback.",
