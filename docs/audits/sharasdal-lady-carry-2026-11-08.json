@@ -43,6 +43,29 @@
   ],
   "next": "Continue authentic full-GUID living-Lady producer/1906/finisher lifecycle;reuse proven carry target/native capacity primitives and preserve remaining client gaps.",
   "cleanup": {
-    "status": "PENDING shared original-byte/hash archive and exact owned output cleanup"
-  }
+    "status": "COMPLETE; both focused fixes deployed/tested;verified original-byte archive and exact owned cleanup/postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/vehicle-capacity-lady-carry-2026-11-08",
+    "archive_manifest_sha256": "0e6fbc526cf06c3cb4e04d52608979c5f877a2af0b5ca34e7f781a50498a9780",
+    "original_files": 634,
+    "removed_files": 270,
+    "logical_removed_bytes": 3719624850,
+    "local_deletion_manifest": ".codex/sharasdal-lady-carry-2026-11-08/cleanup-deleted.json",
+    "deletion_manifest_sha256": "7f0e0d228387da53e2b07ab7c6bfefc85d7703ad44965f5f9e254e68fe30087f",
+    "fix_commits": [
+      "083a2021538413165c2d668b31eec00b9043618b",
+      "528368fd6dd3661b4ff4688bfe575e08bc961c50"
+    ],
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08",
+      ".codex/release-before-sharasdal-wave-contact-2026-11-08"
+    ],
+    "postcheck": "PASS canonical EXE/MAP hashes/protected configs-certs-DLLs/original required game library/two recent rollback generations/unresolved bytes;no task-owned world/bnet left;active Crashes empty;mixed7111 unchanged",
+    "deferred": "Keep original Slaghammer crash/cache,prior LINK2/living-Lady/wave-contact OPEN notes,new authentic finale research and all personal backups. Full living-Lady producer/client gaps remain OPEN;no staged EXE or obsolete test server is needed for those checks.",
+    "compiler_notes": "No new production compilation warning. Older retained fixture signedness/conversion/shadow/constant-expression warnings remain visible in captured Scepter/aura/Warlock logs;their production/fixture source is unchanged by these two fixes,not suppressed.",
+    "disk_free_before_bytes": 129667387392,
+    "disk_free_after_bytes": 133387440128,
+    "observed_free_increase_bytes": 3720052736
+  },
+  "fix_commit": "528368fd6dd3661b4ff4688bfe575e08bc961c50"
 }
