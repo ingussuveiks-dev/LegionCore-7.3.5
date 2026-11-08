@@ -35,7 +35,7 @@
     "result": "Pre/post crash/log snapshots wrap source/native/SQL/build/link/PE/retained/startup/readback checks. Final runs no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Canonical Crashes empty.",
     "development": [
       "Initial source fixture incorrectly chained missing/shared/fallbackAlways flags;separate actual fallbackAlways from missing/shared,then126/74 pass. Assertion/driver evidence retained.",
-      "Initial native TEMP SQL loader split a semicolon inside a -- comment,causing syntax1064 and parsing ERROR in owned181239-506 DBErrors/Server.log. Skip whole comment lines before quote-aware splitting;guards/diagnostics retained. Repaired112/60 and live112 pass. Only these two wholly reviewed inactive logs eligible for verified archive/reset;canonical mixed log untouched.",
+      "Initial native TEMP SQL loader split a semicolon inside a -- comment,causing syntax1064 and parsing ERROR in owned181239-506 DBErrors.log. Skip whole comment lines before quote-aware splitting;guards/diagnostics retained. Repaired112/60 and live112 pass. Only this one wholly reviewed inactive log eligible for verified archive/reset;canonical mixed log untouched. Server.log contains informative loading history without ERROR/WARN/assertions and is archived without truncation.",
       "Next native main exited0xC00000FD before output. PE inspection:1MiB stack reserve,main frame0x102598 exceeds it. Heap-own large MapInstanced/InstanceMap fixtures with finite RAII cleanup;no stack-limit override. Native112/60 now clean. No new crash file generated;exit/stdout and disassembly preserved.",
       "Private PE inspection initially required unavailable pefile;replace with actual struct header parsing/Capstone. Initial new proof find call had wrong positional mnemonic argument;use keyword. Final staged/canonical proofs pass;initial failure evidence retained.",
       "Existing source-host BrokenShoreClassRoute C4244 narrowing warning remains visible;not a new production/runtime warning and not suppressed."
@@ -54,6 +54,25 @@
     "Unknown shared LINK2/mixed7111,original Slaghammer intro,reported Stromkar presentation/equipment/exit/singleton,Survival39427/Fu Zan and all36 full client chains remain OPEN. No new character reset or observed video/audio claimed."
   ],
   "cleanup": {
-    "status": "Pending verified issue archive and exact task-owned generated/staging/obsolete rollback cleanup;retain new entrance plus previous Sharasdal cemetery recovery generations."
-  }
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/sharasdal-entrance-2026-11-08",
+    "manifest_sha256": "dc9bfbb66445188b6286fb3a3bc59afa052a1dbfc323270ff7693df4a7c6528a",
+    "original_files": 716,
+    "cleanup_manifest_sha256": "74bf00c51bb4a030a6eae380d5be0ab7c16233570905e461ef953af7cf313076",
+    "removed_files": 302,
+    "logical_removed_bytes": 2764448565,
+    "local_deletion_manifest": ".codex/sharasdal-entrance-2026-11-08/cleanup-deleted.json",
+    "inactive_error_logs_reset": 1,
+    "retained": [
+      ".codex/release-before-sharasdal-entrance-2026-11-08",
+      ".codex/release-before-sharasdal-graveyard-2026-11-08"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;one reviewed inactive native TEMP loader logs reset only after original-byte archive;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 130954907648,
+    "disk_free_after_bytes": 133719007232,
+    "observed_free_increase_bytes": 2764099584
+  },
+  "fix_commit": "8594d7c03dc6a3890e91591b67e0a281966075df"
 }
