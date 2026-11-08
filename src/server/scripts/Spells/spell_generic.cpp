@@ -6583,9 +6583,16 @@ class spell_flight_masters_whistle_argus : public SpellScript
             if (!to)
                 return;
 
-            player->AddDelayedEvent(500, [player, to]() -> void
+            Position destination(to->Pos.X, to->Pos.Y, to->Pos.Z, 0.0f);
+            uint32 mapId = player->GetMapId();
+            uint32 instanceId = player->GetInstanceId();
+            player->AddDelayedEvent(500, [player, destination, mapId, instanceId]() -> void
             {
-                player->NearTeleportTo(to->Pos.X, to->Pos.Y, to->Pos.Z, 0.0f);
+                // Taxi selection belongs to the map/instance where the cast finished.
+                if (player->IsInWorld() && !player->IsPreDelete() && player->IsAlive() &&
+                    !player->HasPendingTeleport() && player->GetMapId() == mapId &&
+                    player->GetInstanceId() == instanceId)
+                    player->NearTeleportTo(destination);
             });
         }
     }
