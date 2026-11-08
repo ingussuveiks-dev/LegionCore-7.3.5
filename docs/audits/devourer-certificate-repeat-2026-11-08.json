@@ -5,5 +5,26 @@
   "fix": "Accept the exact pinned48c20d9c6 pre-opening class as an additional already-normalized boundary. Keep exact whole-class comparisons and every original Reset/clone delta check. Do not accept arbitrary classes missing ResetClones or replace production callbacks.",
   "checks": "New Test-DevourerCertificates.ps1 passes6 cases:current escape/door composition,repeat normalization equality,and both reject an unrelated capture-field mutation. Repaired Test-DevourerDoor.ps1 passes53 ASAN contexts including actual source/native lookup/receipt,real prior leaves/ack-before-key/phase,missing actors/refused credit/cancellation/re-entry and earned no-key cleanup. Cast/geometry endpoints controlled;native/client separate.",
   "diagnostics": "Initial missing-ResetClones source-certificate failure and initial test setup missing explicit escape-function import retained;fixed current runs use pre/post crash/log snapshots and exit0 with no new crash/appended DBErrors/server failure. No log suppression or production/data change.",
-  "cleanup": "Pending shared verified archive and task-owned generated cleanup with Devourer cemetery task;test source and unresolved diagnostics retained."
+  "cleanup": {
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/devourer-graveyard-2026-11-08",
+    "manifest_sha256": "332196ef0be6ab87e95c06801bf17b0eee8e75b6c19936b3d5b6d0aafbef78a4",
+    "original_files": 808,
+    "cleanup_manifest_sha256": "35ceb11ae6eb6d0a98cbad91c00dc57906e4689d28f1e1d47aab9cb9ed57a471",
+    "removed_files": 342,
+    "logical_removed_bytes": 3501923008,
+    "local_deletion_manifest": ".codex/devourer-graveyard-2026-11-08/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-devourer-graveyard-2026-11-08",
+      ".codex/release-before-kingslayers-graveyard-2026-11-08"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 130122117120,
+    "disk_free_after_bytes": 133624418304,
+    "observed_free_increase_bytes": 3502301184
+  },
+  "fix_commit": "13c62965c0a1edbfedbabf214ade431e4bc1f7b7"
 }
