@@ -1,131 +1,142 @@
 {
+  "latest_recovery_cache_test_correction_2026_11_08": {
+    "date": "2026-11-08",
+    "status": "CORRECTED test interpretation;no production or live data change in this correction",
+    "finding": "Scenario::GetMap returns its stored curMap directly. SetCurrentStep notifies the native instance cache; UpdateCurrentStep notifies only while currentStep<steps.size(). Natural completion therefore retains the final active cache (Dreadblades4,Kingslayers9,Devourer6). Earlier source fixtures explicitly supplied cached5/10/7;they do not prove ordinary completion resets the cemetery. Earlier native fixtures incorrectly overwrote the cache with the completed sentinel. Remove that write and assert actual native notifications instead.",
+    "impact": "Dreadblades authored stage checkpoints/facing/source guards and Kingslayers facing/source guards remain valid. No ordinary completion reset is established by the old seeded-cache counterfactual. The prior broad user-facing claim is withdrawn. Devourer pending work must use natural native completion as well.",
+    "checks": "Corrected Dreadblades current56/pinned52 native with48 releases each,and Kingslayers current192/pinned184 native with176 releases each pass actual native cached-step assertions. Existing baseline source48/88 with explicit cache inputs still passes and is labeled synthetic;new Devourer source64 likewise. Native actual map pointers/SetCurrentStep/UpdateCurrentStep inspected. No historical whole-binary/full client claim.",
+    "diagnostics": "All four corrected native tests and three baseline ASAN fixtures have pre/post canonical+own snapshots;exit0/no new crashes/appended DBErrors/server failure. Original fixed archives are preserved byte-for-byte;new correction evidence is archived with the pending Devourer task after its deployment.",
+    "cleanup": "Pending shared verified archive and task-owned generated cleanup in Devourer cemetery task;retain regression source/unresolved LINK2 evidence.",
+    "audit": "docs/audits/recovery-cache-test-correction-2026-11-08.json"
+  },
   "latest_kingslayers_graveyard_2026_11_08": {
-    "status": "DEPLOYED focused Kingslayers1123/map1620 cemetery recovery. Source154 ASAN/native192 with176 real releases/ACKs,paired pinned88/184,selected stage/canonical proof,retained guards/pickup/return/death and owned canonical startup pass. Full client chain remains separate.",
-    "scope": "Only cemetery callback and required MapManager/Scenario headers. Require actual1123;retain original0..9 boundaries:5518 before2,5528 at2..4,5529 at5..6,5530 from7 including completed10. Validate native index/identity/map/nonzero/finite/bounds and convert DB2 degrees to radians in existing instance-owned WorldLocation. Absent/foreign Scenario null;bad required source contextual ERROR/null. No new fields,SQL,quest/item/criteria/stage grant,direct Player teleport/resurrection or character reset.",
-    "checks": {
-      "source": "154 extracted actual callback ASAN cases:88 all10 steps+completed/four death contexts/repeated selections,56 source identity/map/zero/finite/bounds refusals,8 absent/foreign controls,2 nonfinite-death inputs. Pinned148c610e4 source88 preserves0..9 but returns5518 at10 and zero facing. Services controlled,not whole-core ASAN.",
-      "native": "192 actual registered whole1620/Player/Scenario cases,176 ghost8326/RepopAtGraveyard/+2Z/near ACK/half-health/ghost+duplicate cleanup releases:Human+Orc,both42504/42627,both active statuses,all10 stages+actual completed10,four poses/four VMAP floors/authored facing. Eight actual ordered full-native-criteria sequences including multi-child AND/duplicate denial/both child orders and8 absent/foreign controls. Recovery preserves every guard GUID/death bit,native cached step,quest/item/criteria state.",
-      "native_limits": "Earlier stage/quest/pose/cache/ledger and script-event inputs controlled. Local fixture maps are outside global MapManager;legacy cached step seeded to mirror actual map notification. Actual native criteria/AND/exit completion is exercised,but earlier combat/travel,pickup/exit spell scheduling,full LoadFromDB/SaveToDB/client/groups remain separate.",
-      "native_Horde": "Ordinary city/channel strings and actual spell_proc_event loader(TEMP copy of actual rows) initialized. Native movement ACK retains actual hostile-area2479 and its proc dispatch:72 repaired and64 pinned honorless ACKs. No faction/PvP/proc checks disabled and no manual2479 grant.",
-      "counterfactual": "Pinned148c610e4 whole native instance184/release176 preserves original0..9 and completed-start/zero facing under current support;not historical binary. Old canonical rejects exact missing new cemetery proof;paired selected stage/canonical proof passes.",
-      "linked": "Actual instance_kingslayers registered descriptor/factory/primary vtable/native InstanceMap cemetery dispatch,1123 guard,precise unsigned four-way stage branch including10,indexed identity/map/nonzero/finite/radians,stable instance location at314 XYZ/map/facing/return and contextual null failure. Complete retained Kingslayers loot/pickup/door/Althea/native guard PE chain;no direct player/progression calls.",
-      "retained": "Guard ASAN/source scope and26 actual native guard cases:three real Unit::Kill receipts,player/pet/guardian/Garona,missing/moved/respawn/replacement/stale GUID/corpse/recycled instance. Full Kingslayers Pickup/Return/DeathCredit ASAN suites pass. Mandatory canonical Scepter source/Release and retained Sharasdal/Tuure legacy selected chain pass.",
-      "build": "Original Release game/scripts libraries and actual final-link paths;only production instance_kingslayers.cpp rebuilt. Stage EXE/MAP/hash verified before absent-process canonical promotion. No global OutDir;configuration/certs/DLLs/extracted data/required original libraries preserved.",
-      "runtime": "Owned PID=8764 reached fresh ready\nPASS owned PID=8764 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
-      "preservation": "Full-column before/after promotion/startup fingerprints equal all LFG/spell destinations/scenario routes and scoped1620 graphs/conditions/spawns/templates. No persistent SQL/character changes. Only owned worldserver PID8764 launched/gracefully stopped;no user/unknown process stopped. MariaDB left running."
-    },
-    "binary": {
-      "bnetserver": "520cc4987f78b74d8d05e081edfe340ac48a3fbc0b14edbe1d056c73f2d22986",
-      "worldserver": "17c924f7d8ff63922b7e245d951b1691672d6b9c62d5e3f69dc74b9fd46f97b5"
-    },
-    "diagnostics": {
-      "result": "Pre/post canonical+own crash/log snapshots wrap catalog/source/native/SQL/build/link/PE/retained/startup. Final passing runs exit0/stdout+stderr reviewed,no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Active canonical Crashes empty.",
-      "development": [
-        "Initial native probe omitted startup trinity_string/proc services. Human city channel updates emitted819 missing-string errors;Horde hostile-area near-ACK automatically cast2479 and hit uninitialized SpellMgr::mSpellProcEventMap,raising captured NATIVE EXCEPTION c0000005 in GetSpellProcEvent. No dump/crash report generated;original stack/catalog/diagnostic bytes retained. Fix fixture by actual LoadTrinityStrings and actual LoadSpellProcEvents on TEMP actual rows;repaired192/pinned184 pass and assert real72/64 hostile ACK auras. Do not alter production proc bounds/faction/native ACK or suppress logs.",
-        "New hostile-ACK assertion initially used guessed PvPInfo member IsHostile and failed compilation. Actual MovementHandler/Player.h use inHostileArea;corrected to actual field. Failed compile evidence retained.",
-        "Old whole-SpellEffects door source certificate rejected separately deployed Fury/equipped-child changes. Separate test-onlyac74033fd pins exact da75c27a2 full source,then retains original044614303/a9e86af7b door delta and every actual-current-Release check. Initial failure retained;complete chain passes. See separate audit.",
-        "Retained old extracted source hosts emit reviewed native lookup unused-size,AI unused-parameter,EventMap narrowing and fixture shadow warnings. Kept visible;new cemetery source/current+baseline and original production build add no warning."
-      ],
-      "resolved_native_error_log": {
-        "path": "build-extractors/runtime-test/kingslayers-graveyard-native/20261108-190922-864/logs/DBErrors.log",
-        "bytes": 12180,
-        "lines": 145,
-        "sha256": "63d00d608760b144c0c8784a35d93a5af842b83ade4aa280aac988ff8bec189a",
-        "review": "Every line is the diagnosed missing bootstrap819;archive original bytes/hash then reset only this wholly reviewed inactive log. Informative Server.log has no error and is retained without truncation."
-      },
-      "mixed_DBErrors_bytes": 7111,
-      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
-      "mixed_DBErrors": "OPEN shared LINK2;untouched,not archived as resolved or truncated."
-    },
-    "unresolved": [
-      "Actual client death/release/corpse reclaim/facing,four route floors/phase rendering,path access,re-entry/reconnect,pet/guardian/group/faction/camera and full42504/42627 pickup/outro/exit remain unverified. Native ACK/controlled events are not whole client traversal.",
-      "Combat/one-hit/owner/pet/guardian/group progression unchanged. Retained guard/death/loot checks do not newly certify real combat or all ten stage gameplay. No further character/quest/item/AP/checkpoint reset performed.",
-      "Original Slaghammer handoff intro/shared LINK2/mixed7111,Sharasdal living Lady1906/carry/finisher/native210247/waves/full40341,Survival/Fu Zan/Stromkar presentation and all36 whole chains remain OPEN."
-    ],
-    "cleanup": {
-      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
-      "archive": "build-extractors/bin/Release/fixed/kingslayers-graveyard-2026-11-08",
-      "manifest_sha256": "762d505736948b7b320bee0fbe6f6df8847f04920186d1c3c1d2509229e35b6b",
-      "original_files": 488,
-      "cleanup_manifest_sha256": "a3bbbee43f56748e5b9abc334dea269ee4ef473c888b7ea8d06d19b55dd22f01",
-      "removed_files": 180,
-      "logical_removed_bytes": 1775756117,
-      "local_deletion_manifest": ".codex/kingslayers-graveyard-2026-11-08/cleanup-deleted.json",
-      "inactive_error_logs_reset": 1,
-      "retained": [
-        ".codex/release-before-kingslayers-graveyard-2026-11-08",
-        ".codex/release-before-dreadblades-graveyard-2026-11-08"
-      ],
-      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
-      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;one reviewed inactive native819 bootstrap log reset after original-byte archive;canonical/mixed logs untouched.",
-      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
-      "disk_free_before_bytes": 132006645760,
-      "disk_free_after_bytes": 133782609920,
-      "observed_free_increase_bytes": 1775964160
-    },
-    "audit": "docs/audits/kingslayers-graveyard-2026-11-08.json",
-    "fix_commit": "15ac325bca9a4d1082f23667d7943401677219e0",
-    "next": "Next independent candidate:Devourer1607/1078 cemetery source defaults5467 above cached6 while its outro uses7,and omits facing/required-source validation. Review actual26972 ScenarioStep/WorldSafeLocs and route before any edit. Read-only source finding only;no repaired regression or deployment for that candidate."
+  "status": "DEPLOYED focused Kingslayers1123/map1620 cemetery recovery. Source154 ASAN/native192 with176 real releases/ACKs,paired pinned88/184,selected stage/canonical proof,retained guards/pickup/return/death and owned canonical startup pass. Full client chain remains separate.",
+  "scope": "Only cemetery callback and required MapManager/Scenario headers. Require actual1123;retain original0..9 boundaries:5518 before2,5528 at2..4,5529 at5..6,5530 from7 including completed10. Validate native index/identity/map/nonzero/finite/bounds and convert DB2 degrees to radians in existing instance-owned WorldLocation. Absent/foreign Scenario null;bad required source contextual ERROR/null. No new fields,SQL,quest/item/criteria/stage grant,direct Player teleport/resurrection or character reset.",
+  "checks": {
+    "source": "154 extracted actual callback ASAN cases:88 all10 steps+completed/four death contexts/repeated selections,56 source identity/map/zero/finite/bounds refusals,8 absent/foreign controls,2 nonfinite-death inputs. Pinned148c610e4 source88 preserves0..9 but returns5518 at10 and zero facing. Services controlled,not whole-core ASAN.",
+    "native": "192 actual registered whole1620/Player/Scenario cases,176 ghost8326/RepopAtGraveyard/+2Z/near ACK/half-health/ghost+duplicate cleanup releases:Human+Orc,both42504/42627,both active statuses,all10 stages+actual completed10,four poses/four VMAP floors/authored facing. Eight actual ordered full-native-criteria sequences including multi-child AND/duplicate denial/both child orders and8 absent/foreign controls. Recovery preserves every guard GUID/death bit,native cached step,quest/item/criteria state.",
+    "native_limits": "Earlier quest/pose/stage/ledger inputs are controlled;native Scenario stores the real fixture map pointer directly and its actual cache notifications are asserted. Completion retains the last active cached step. No global MapManager registration is needed for this notification. Earlier combat/travel,full LoadFromDB/SaveToDB/client traversal remain separate.",
+    "native_Horde": "Ordinary city/channel strings and actual spell_proc_event loader(TEMP copy of actual rows) initialized. Native movement ACK retains actual hostile-area2479 and its proc dispatch:72 repaired and64 pinned honorless ACKs. No faction/PvP/proc checks disabled and no manual2479 grant.",
+    "counterfactual": "Corrected pinned148c610e4 whole native instance184/release176 asserts actual cache9 at natural completion10 and correctly retains5530. Source88 with explicit cached10 defaults to entrance;that is a controlled input,not natural completion. Repaired192/release176 keeps original checkpoints plus facing/source validation and authoritative Scenario selection. Current support,not historical binary;old Release still rejects missing new proof.",
+    "linked": "Actual instance_kingslayers registered descriptor/factory/primary vtable/native InstanceMap cemetery dispatch,1123 guard,precise unsigned four-way stage branch including10,indexed identity/map/nonzero/finite/radians,stable instance location at314 XYZ/map/facing/return and contextual null failure. Complete retained Kingslayers loot/pickup/door/Althea/native guard PE chain;no direct player/progression calls.",
+    "retained": "Guard ASAN/source scope and26 actual native guard cases:three real Unit::Kill receipts,player/pet/guardian/Garona,missing/moved/respawn/replacement/stale GUID/corpse/recycled instance. Full Kingslayers Pickup/Return/DeathCredit ASAN suites pass. Mandatory canonical Scepter source/Release and retained Sharasdal/Tuure legacy selected chain pass.",
+    "build": "Original Release game/scripts libraries and actual final-link paths;only production instance_kingslayers.cpp rebuilt. Stage EXE/MAP/hash verified before absent-process canonical promotion. No global OutDir;configuration/certs/DLLs/extracted data/required original libraries preserved.",
+    "runtime": "Owned PID=8764 reached fresh ready\nPASS owned PID=8764 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "preservation": "Full-column before/after promotion/startup fingerprints equal all LFG/spell destinations/scenario routes and scoped1620 graphs/conditions/spawns/templates. No persistent SQL/character changes. Only owned worldserver PID8764 launched/gracefully stopped;no user/unknown process stopped. MariaDB left running."
   },
+  "binary": {
+    "bnetserver": "520cc4987f78b74d8d05e081edfe340ac48a3fbc0b14edbe1d056c73f2d22986",
+    "worldserver": "17c924f7d8ff63922b7e245d951b1691672d6b9c62d5e3f69dc74b9fd46f97b5"
+  },
+  "diagnostics": {
+    "result": "Pre/post canonical+own crash/log snapshots wrap catalog/source/native/SQL/build/link/PE/retained/startup. Final passing runs exit0/stdout+stderr reviewed,no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Active canonical Crashes empty.",
+    "development": [
+      "Initial native probe omitted startup trinity_string/proc services. Human city channel updates emitted819 missing-string errors;Horde hostile-area near-ACK automatically cast2479 and hit uninitialized SpellMgr::mSpellProcEventMap,raising captured NATIVE EXCEPTION c0000005 in GetSpellProcEvent. No dump/crash report generated;original stack/catalog/diagnostic bytes retained. Fix fixture by actual LoadTrinityStrings and actual LoadSpellProcEvents on TEMP actual rows;repaired192/pinned184 pass and assert real72/64 hostile ACK auras. Do not alter production proc bounds/faction/native ACK or suppress logs.",
+      "New hostile-ACK assertion initially used guessed PvPInfo member IsHostile and failed compilation. Actual MovementHandler/Player.h use inHostileArea;corrected to actual field. Failed compile evidence retained.",
+      "Old whole-SpellEffects door source certificate rejected separately deployed Fury/equipped-child changes. Separate test-onlyac74033fd pins exact da75c27a2 full source,then retains original044614303/a9e86af7b door delta and every actual-current-Release check. Initial failure retained;complete chain passes. See separate audit.",
+      "Retained old extracted source hosts emit reviewed native lookup unused-size,AI unused-parameter,EventMap narrowing and fixture shadow warnings. Kept visible;new cemetery source/current+baseline and original production build add no warning."
+    ],
+    "resolved_native_error_log": {
+      "path": "build-extractors/runtime-test/kingslayers-graveyard-native/20261108-190922-864/logs/DBErrors.log",
+      "bytes": 12180,
+      "lines": 145,
+      "sha256": "63d00d608760b144c0c8784a35d93a5af842b83ade4aa280aac988ff8bec189a",
+      "review": "Every line is the diagnosed missing bootstrap819;archive original bytes/hash then reset only this wholly reviewed inactive log. Informative Server.log has no error and is retained without truncation."
+    },
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "OPEN shared LINK2;untouched,not archived as resolved or truncated."
+  },
+  "unresolved": [
+    "Actual client death/release/corpse reclaim/facing,four route floors/phase rendering,path access,re-entry/reconnect,pet/guardian/group/faction/camera and full42504/42627 pickup/outro/exit remain unverified. Native ACK/controlled events are not whole client traversal.",
+    "Combat/one-hit/owner/pet/guardian/group progression unchanged. Retained guard/death/loot checks do not newly certify real combat or all ten stage gameplay. No further character/quest/item/AP/checkpoint reset performed.",
+    "Original Slaghammer handoff intro/shared LINK2/mixed7111,Sharasdal living Lady1906/carry/finisher/native210247/waves/full40341,Survival/Fu Zan/Stromkar presentation and all36 whole chains remain OPEN."
+  ],
+  "cleanup": {
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/kingslayers-graveyard-2026-11-08",
+    "manifest_sha256": "762d505736948b7b320bee0fbe6f6df8847f04920186d1c3c1d2509229e35b6b",
+    "original_files": 488,
+    "cleanup_manifest_sha256": "a3bbbee43f56748e5b9abc334dea269ee4ef473c888b7ea8d06d19b55dd22f01",
+    "removed_files": 180,
+    "logical_removed_bytes": 1775756117,
+    "local_deletion_manifest": ".codex/kingslayers-graveyard-2026-11-08/cleanup-deleted.json",
+    "inactive_error_logs_reset": 1,
+    "retained": [
+      ".codex/release-before-kingslayers-graveyard-2026-11-08",
+      ".codex/release-before-dreadblades-graveyard-2026-11-08"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;one reviewed inactive native819 bootstrap log reset after original-byte archive;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 132006645760,
+    "disk_free_after_bytes": 133782609920,
+    "observed_free_increase_bytes": 1775964160
+  },
+  "audit": "docs/audits/kingslayers-graveyard-2026-11-08.json",
+  "fix_commit": "15ac325bca9a4d1082f23667d7943401677219e0",
+  "correction_2026_11_08": "Scenario::GetMap returns its stored curMap directly. SetCurrentStep notifies the native instance cache; UpdateCurrentStep notifies only while currentStep<steps.size(). Natural completion therefore retains the final active cache (Dreadblades4,Kingslayers9,Devourer6). Earlier source fixtures explicitly supplied cached5/10/7;they do not prove ordinary completion resets the cemetery. Earlier native fixtures incorrectly overwrote the cache with the completed sentinel. Remove that write and assert actual native notifications instead."
+},
   "latest_dreadblades_graveyard_2026_11_08": {
-    "status": "DEPLOYED focused Dreadblades1012/map1545 four-checkpoint recovery including completed sentinel5. Source114 ASAN/native56 with48 real release/ACKs,paired pinned48/52,staged/canonical selected proof,retained pickup/death/two surrender checks and owned startup pass. Full client40849 remains separate.",
-    "scope": "Only instance_dreadblades::GetClosestGraveYard plus MapManager include. Native Scenario1012 required;use5299 at0,5359 at1,5360 at2..3,5361 from4 including completed5. Keep instance-owned WorldLocation and authored degree-to-radian facing. Validate source identity/map/nonzero/finite/bounds;contextual ERROR/null for corrupt source,ordinary null for absent/foreign Scenario. No new fields,SQL,quest/item/criteria/stage award,direct Player teleport/resurrection or character reset.",
-    "checks": {
-      "source": "114 extracted actual callback ASAN cases:48 all5 stages+completed5/four death contexts/repeated selections,56 corrupt-required-source refusals acrossfour checkpoints,8 missing/foreign Scenario controls and2 nonfinite death inputs. Original pinned9a8f9340d source48 reproduces wrong stage1/2/4/completed and zero facing. Source endpoints controlled,not whole-core ASAN.",
-      "native": "56 cases with48 actual Player ghost8326/RepopAtGraveyard/+2Z/near MoveTeleportAck/half-health/ghost cleanup and duplicate ACK. Registered complete1545 struct selected via actual generic descriptor/native InstanceMap dispatch;Human+Orc/all5 stages+real completed5/four poses/two active40849 statuses/four native VMAP floors/facing. Four native ordered-event/final two-child AND cases across both orders and4 missing/foreign controls. No quest/item/progress change from recovery.",
-      "native_limits": "Earlier quest/pose/stage and legacy InstanceScript cached-step inputs are controlled. Host maps are local objects,not globally registered MapManager maps;the old callback cache is seeded to mirror native SetCurrentStep notification. Real Scenario/Player criteria dispatch proves ordered steps and completion;earlier movement/combat,actual full LoadFromDB/SaveToDB/pet/group/client traversal not established.",
-      "counterfactual": "Pinned9a8f9340d whole native instance52/release48 reproduces original routing/facing with current native support;not historical whole executable. Old canonical explicitly rejects missing new cemetery proof;paired selected staged/canonical repair passes.",
-      "linked": "Actual registered1545 ScriptObject descriptor/GetInstanceScript factory installs repaired primary vtable;native InstanceMap cemetery slot dispatch,1012 guard,precise four-way stage branch including completed5,indexed source identity/map/zero/finite/radian checks,stable instance-owned XYZ/map/facing stores/return and contextual null diagnostic. Complete retained native Eliza owner/death and real loot/equip/pickup proof composed;no direct player mutation/progression calls.",
-      "retained": "Pickup ASAN full storage/state/cast/equip pair and real-death admission;Eliza owner/pet/guardian/charmer/null/offline/failure/reveal cases;Degauz32 scaled surrender cases;Brinebeard48 scaled final-damage/visual/missing-emitter/timer cases. Mandatory canonical Scepter source/Release plus retained latest Sharasdal/Tuure legacy selected chain pass.",
-      "build": "Original Release game/scripts libraries and actual final-link paths used;only shared instance_class_art_scenarios.cpp production compilation changed. Separate staged EXE/MAP then absent-process backup/hash promotion to canonical. No global OutDir override;required original libraries/extracted data/configuration/certs/DLLs preserved.",
-      "runtime": "Owned PID=28792 reached fresh ready\nPASS owned PID=28792 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
-      "preservation": "Before/after promotion/startup full-column fingerprints equal all LFG/spell destinations/scenario routes and selected1545 graphs/conditions/spawns/templates. No SQL migration or persistent character data changes;only task-owned worldserver PID28792 launched and gracefully stopped. MariaDB left running."
-    },
-    "binary": {
-      "bnetserver": "72c58b94f8c6f312d43fa9b4346f6d2f607c8e697b6e75795c68dd44e7d64c7a",
-      "worldserver": "7d763279682c6291d2d500817cdc6270c5a79537ae20272184b8f9cd70a7e3de"
-    },
-    "diagnostics": {
-      "result": "All source/native/catalog/SQL/build/link/PE/retained/startup checks wrapped in pre/post canonical+own crash/log snapshots. Final passes:exit0,captured stdout/stderr inspected,no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Active Crashes empty.",
-      "development": [
-        "Initial pinned native baseline did not seed legacy InstanceScript cached step after controlled Scenario setup;local host map is outside global MapManager registry so old callback read0. Add explicit controlled native setScenarioStep(step),then pinned52/release48 and current56/release48 pass. Initial assertion/exit1 evidence retained;no runtime failure logged.",
-        "Private PE inspection initially selected native key rather than actual n export;corrected. First public proof tried function-only symbol lookup for data vtable,then wrong MapScript secondary table for GetInstanceScript;read unique data symbol explicitly and follow actual ScriptObject primary descriptor. Final selected stage/canonical proof passes;original failed outputs retained.",
-        "Retained pickup host lacked actual GAMEOBJECT_TYPE_DOOR enum for current extracted SetLootState. Separate test-only0f6224081 adds actual0 without changing production or native chest type3;repaired ASAN passes. Initial compile/evidence retained;see separate audit.",
-        "Retained older extracted hosts emit reviewed C4189 unused native lookup size,C4100 original AI parameters and C4244 EventMap uint16->uint8. These remain visible;new cemetery source/current+baseline and production build add no warning."
-      ],
-      "mixed_DBErrors_bytes": 7111,
-      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
-      "mixed_DBErrors": "OPEN shared LINK2;unchanged,not archived as resolved or truncated."
-    },
-    "unresolved": [
-      "Actual client death/release/corpse reclaim/facing,all4 route floors/path access/phase rendering,re-entry/reconnect,camera/pet/guardian/group/faction/full40849 loot/equip/outro remain unverified. Automated native release/ACK is not whole-client traversal.",
-      "Combat/one-hit/pet/guardian/group progression rules unchanged;retained source/native endpoints are separate from actual client combat. No extra character/quest/item/AP/checkpoint reset performed.",
-      "Sharasdal living Lady1906/carry/finisher/native210247/waves/full40341,original Slaghammer handoff intro/shared LINK2/mixed7111,Survival/Fu Zan/Stromkar presentation and all36 whole chains remain OPEN."
-    ],
-    "cleanup": {
-      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
-      "archive": "build-extractors/bin/Release/fixed/dreadblades-graveyard-2026-11-08",
-      "manifest_sha256": "bcbf2a521ba7f2be83fb17435efcf9aa2c1d2ef3195e15f8a3c2edd1ff994b9b",
-      "original_files": 588,
-      "cleanup_manifest_sha256": "6cde65e10e9cd46fe733d7ad79c980710c0ec7709e7a1779f490f0e58c3bfb63",
-      "removed_files": 229,
-      "logical_removed_bytes": 1557434533,
-      "local_deletion_manifest": ".codex/dreadblades-graveyard-2026-11-08/cleanup-deleted.json",
-      "inactive_error_logs_reset": 0,
-      "retained": [
-        ".codex/release-before-dreadblades-graveyard-2026-11-08",
-        ".codex/release-before-sharasdal-entrance-2026-11-08"
-      ],
-      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
-      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
-      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
-      "disk_free_before_bytes": 132159377408,
-      "disk_free_after_bytes": 133717041152,
-      "observed_free_increase_bytes": 1557663744
-    },
-    "audit": "docs/audits/dreadblades-graveyard-2026-11-08.json",
-    "fix_commit": "181c85664984a010cd978aefc5ad754f3d428635"
+  "status": "DEPLOYED focused Dreadblades1012/map1545 four-checkpoint recovery including completed sentinel5. Source114 ASAN/native56 with48 real release/ACKs,paired pinned48/52,staged/canonical selected proof,retained pickup/death/two surrender checks and owned startup pass. Full client40849 remains separate.",
+  "scope": "Only instance_dreadblades::GetClosestGraveYard plus MapManager include. Native Scenario1012 required;use5299 at0,5359 at1,5360 at2..3,5361 from4 including completed5. Keep instance-owned WorldLocation and authored degree-to-radian facing. Validate source identity/map/nonzero/finite/bounds;contextual ERROR/null for corrupt source,ordinary null for absent/foreign Scenario. No new fields,SQL,quest/item/criteria/stage award,direct Player teleport/resurrection or character reset.",
+  "checks": {
+    "source": "114 extracted actual callback ASAN cases:48 all5 stages+completed5/four death contexts/repeated selections,56 corrupt-required-source refusals acrossfour checkpoints,8 missing/foreign Scenario controls and2 nonfinite death inputs. Original pinned9a8f9340d source48 reproduces wrong stage1/2/4/completed and zero facing. Source endpoints controlled,not whole-core ASAN.",
+    "native": "56 cases with48 actual Player ghost8326/RepopAtGraveyard/+2Z/near MoveTeleportAck/half-health/ghost cleanup and duplicate ACK. Registered complete1545 struct selected via actual generic descriptor/native InstanceMap dispatch;Human+Orc/all5 stages+real completed5/four poses/two active40849 statuses/four native VMAP floors/facing. Four native ordered-event/final two-child AND cases across both orders and4 missing/foreign controls. No quest/item/progress change from recovery.",
+    "native_limits": "Earlier quest/pose/stage/ledger inputs are controlled;native Scenario stores the real fixture map pointer directly and its actual cache notifications are asserted. Completion retains the last active cached step. No global MapManager registration is needed for this notification. Earlier combat/travel,full LoadFromDB/SaveToDB/client traversal remain separate.",
+    "counterfactual": "Corrected pinned9a8f9340d whole native instance52/release48 asserts actual cache4 at natural completion5 and correctly retains5360/hill. Source48 with explicit cached5 defaults to entrance;that is a controlled input,not natural completion. Repaired native56/release48 selects authored stage-specific checkpoints/facing including5361 at4/5. Current support,not historical binary;old Release still rejects missing new recovery proof.",
+    "linked": "Actual registered1545 ScriptObject descriptor/GetInstanceScript factory installs repaired primary vtable;native InstanceMap cemetery slot dispatch,1012 guard,precise four-way stage branch including completed5,indexed source identity/map/zero/finite/radian checks,stable instance-owned XYZ/map/facing stores/return and contextual null diagnostic. Complete retained native Eliza owner/death and real loot/equip/pickup proof composed;no direct player mutation/progression calls.",
+    "retained": "Pickup ASAN full storage/state/cast/equip pair and real-death admission;Eliza owner/pet/guardian/charmer/null/offline/failure/reveal cases;Degauz32 scaled surrender cases;Brinebeard48 scaled final-damage/visual/missing-emitter/timer cases. Mandatory canonical Scepter source/Release plus retained latest Sharasdal/Tuure legacy selected chain pass.",
+    "build": "Original Release game/scripts libraries and actual final-link paths used;only shared instance_class_art_scenarios.cpp production compilation changed. Separate staged EXE/MAP then absent-process backup/hash promotion to canonical. No global OutDir override;required original libraries/extracted data/configuration/certs/DLLs preserved.",
+    "runtime": "Owned PID=28792 reached fresh ready\nPASS owned PID=28792 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "preservation": "Before/after promotion/startup full-column fingerprints equal all LFG/spell destinations/scenario routes and selected1545 graphs/conditions/spawns/templates. No SQL migration or persistent character data changes;only task-owned worldserver PID28792 launched and gracefully stopped. MariaDB left running."
   },
+  "binary": {
+    "bnetserver": "72c58b94f8c6f312d43fa9b4346f6d2f607c8e697b6e75795c68dd44e7d64c7a",
+    "worldserver": "7d763279682c6291d2d500817cdc6270c5a79537ae20272184b8f9cd70a7e3de"
+  },
+  "diagnostics": {
+    "result": "All source/native/catalog/SQL/build/link/PE/retained/startup checks wrapped in pre/post canonical+own crash/log snapshots. Final passes:exit0,captured stdout/stderr inspected,no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Active Crashes empty.",
+    "development": [
+      "Earlier native baseline failure was incorrectly blamed on a map outside global MapManager. Scenario holds curMap directly;natural completion retains cache4,which the fixture incorrectly replaced with5. Corrected current56/pinned52 release48 suites use actual notifications and pass. Original failed/old explanatory bytes remain historical evidence.",
+      "Private PE inspection initially selected native key rather than actual n export;corrected. First public proof tried function-only symbol lookup for data vtable,then wrong MapScript secondary table for GetInstanceScript;read unique data symbol explicitly and follow actual ScriptObject primary descriptor. Final selected stage/canonical proof passes;original failed outputs retained.",
+      "Retained pickup host lacked actual GAMEOBJECT_TYPE_DOOR enum for current extracted SetLootState. Separate test-only0f6224081 adds actual0 without changing production or native chest type3;repaired ASAN passes. Initial compile/evidence retained;see separate audit.",
+      "Retained older extracted hosts emit reviewed C4189 unused native lookup size,C4100 original AI parameters and C4244 EventMap uint16->uint8. These remain visible;new cemetery source/current+baseline and production build add no warning."
+    ],
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "OPEN shared LINK2;unchanged,not archived as resolved or truncated."
+  },
+  "unresolved": [
+    "Actual client death/release/corpse reclaim/facing,all4 route floors/path access/phase rendering,re-entry/reconnect,camera/pet/guardian/group/faction/full40849 loot/equip/outro remain unverified. Automated native release/ACK is not whole-client traversal.",
+    "Combat/one-hit/pet/guardian/group progression rules unchanged;retained source/native endpoints are separate from actual client combat. No extra character/quest/item/AP/checkpoint reset performed.",
+    "Sharasdal living Lady1906/carry/finisher/native210247/waves/full40341,original Slaghammer handoff intro/shared LINK2/mixed7111,Survival/Fu Zan/Stromkar presentation and all36 whole chains remain OPEN."
+  ],
+  "cleanup": {
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/dreadblades-graveyard-2026-11-08",
+    "manifest_sha256": "bcbf2a521ba7f2be83fb17435efcf9aa2c1d2ef3195e15f8a3c2edd1ff994b9b",
+    "original_files": 588,
+    "cleanup_manifest_sha256": "6cde65e10e9cd46fe733d7ad79c980710c0ec7709e7a1779f490f0e58c3bfb63",
+    "removed_files": 229,
+    "logical_removed_bytes": 1557434533,
+    "local_deletion_manifest": ".codex/dreadblades-graveyard-2026-11-08/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-dreadblades-graveyard-2026-11-08",
+      ".codex/release-before-sharasdal-entrance-2026-11-08"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 132159377408,
+    "disk_free_after_bytes": 133717041152,
+    "observed_free_increase_bytes": 1557663744
+  },
+  "audit": "docs/audits/dreadblades-graveyard-2026-11-08.json",
+  "fix_commit": "181c85664984a010cd978aefc5ad754f3d428635",
+  "correction_2026_11_08": "Scenario::GetMap returns its stored curMap directly. SetCurrentStep notifies the native instance cache; UpdateCurrentStep notifies only while currentStep<steps.size(). Natural completion therefore retains the final active cache (Dreadblades4,Kingslayers9,Devourer6). Earlier source fixtures explicitly supplied cached5/10/7;they do not prove ordinary completion resets the cemetery. Earlier native fixtures incorrectly overwrote the cache with the completed sentinel. Remove that write and assert actual native notifications instead."
+},
   "latest_sharasdal_entrance_2026_11_08": {
     "status": "DEPLOYED focused Sharasdal1600/1066 LFG1229 entrance and exact legacy checkpoint repair. Source126 ASAN/native112,paired pinned74/60,TEMP29,linked Release,retained recoveries and owned canonical startup pass. Full client40341 remains separate.",
     "scope": "Only one LFG entrance and exact known old Shaman1600/1066 checkpoint XYZ/O. Preserve boot/instance/progression and healthy live pose. No character reset,checkpoint seeding,new fields,quest/inventory loading,progress/item/criteria award,combat/credit/actor change or ordinary teleport replacement.",

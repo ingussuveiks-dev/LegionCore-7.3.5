@@ -21,12 +21,11 @@ int main(int argc,char**argv){try{
   for(unsigned step=0;step<6;++step)for(unsigned context=0;context<4;++context){
    sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,1012);Position death=context==0?Pose(5299):context==1?Pose(5361):context==2?Position{836.16f,1035.4f,48.61f,0}:Position{0,0,-1000,0};auto owner=std::make_unique<NativePlayer>(session,map,952,death);auto& p=*owner;p.SetByteValue(UNIT_FIELD_BYTES_0,0,race);p.SetByteValue(UNIT_FIELD_BYTES_0,1,CLASS_ROGUE);p.setFactionForRace(race);p.SetPhaseId({6199},false);p.SetQuestStatus(40849,context%2?QUEST_STATUS_COMPLETE:QUEST_STATUS_INCOMPLETE);p.SetQuestSlot(0,40849);scenario->SetCurrentStep(step==5?4:step);
    if(step==5){p.UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,48582);p.UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,48553);Require(scenario->IsCompleted(false)&&scenario->GetCurrentStep()==5,"Actual native final AND tree did not complete");}
-   // Earlier stage is controlled. This local map is not in MapManager's global
-   // registry, so mirror the native cached-step notification for the old host.
-   script->setScenarioStep(step);
+   // Scenario holds this map directly; native completion retains cached4.
+   unsigned cached=step==5?4:step;Require(script->getScenarionStep()==cached,"Native Dreadblades cached-step notification changed");
    auto count=scenario->GetAchievementMgr().GetCriteriaProgressMap()->size();auto status=p.GetQuestStatus(40849);auto gy=map.GetClosestGraveYard(death.GetPositionX(),death.GetPositionY(),death.GetPositionZ());
 #ifdef DREADBLADES_GRAVEYARD_BASELINE
-   unsigned expectedId=step==3||step==4?5360:5299;
+   unsigned expectedId=cached==3||cached==4?5360:5299;
 #else
    unsigned expectedId=Checkpoint(step);
 #endif
@@ -52,7 +51,7 @@ int main(int argc,char**argv){try{
   sScenarioMgr->RemoveScenario(map.GetInstanceId());session->SetPlayer(nullptr);delete session;
  }
 #ifdef DREADBLADES_GRAVEYARD_BASELINE
- Require(cases==52&&releases==48,"Pinned native count changed");std::cout<<"COUNTERFACTUAL pinned9a8f9340d Dreadblades native52/release48:original stage1/2=start,stage4=hill,completed5=start,zero facing. Original whole instance/current native support,not historical binary"<<std::endl;
+ Require(cases==52&&releases==48,"Pinned native count changed");std::cout<<"COUNTERFACTUAL pinned9a8f9340d Dreadblades native52/release48:original stage1/2=start,stage4=hill,natural completed5 retains cached4/hill,zero facing. Original whole instance/current native support,not historical binary"<<std::endl;
 #else
  Require(cases==56&&releases==48,"Native Dreadblades count changed");std::cout<<"PASS Dreadblades native56/release48:registered whole1545/native Player/Scenario,all5 stages+real completed5,Human+Orc/four death contexts/two active statuses,four VMAP floors/facing,ghost/repop/ACK/half-health/duplicate cleanup,actual ordered4 boundaries and final death/pickup AND both orders,foreign+missing null,no quest/item/progress grant. Earlier pose/stage/final event endpoints controlled;client/combat/pet/group separate"<<std::endl;
 #endif

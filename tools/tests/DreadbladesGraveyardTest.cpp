@@ -40,6 +40,6 @@ int main(){Probe p;unsigned cases=0;
  for(unsigned step:{0u,4u}){Reset();manager.data.step=step;Same(p.GetClosestGraveYard(std::numeric_limits<float>::quiet_NaN(),99999,-1000),sWorldSafeLocsStore.rows[Slot(step)],true);++cases;}
  assert(cases==114);std::cout<<"PASS Dreadblades graveyard114 ASAN:all5 stages+completed,four native checkpoints/facing,56 diagnostic source refusals,repeated/four death contexts/foreign+missing scenario/nonfinite death;actual callback,controlled services,no progress or direct resurrection\n";
 #else
- assert(cases==48);std::cout<<"COUNTERFACTUAL pinned9a8f9340d Dreadblades source48:stage1/2 use start,stage4 uses hill,completed5 returns start;all facing zero. Current controlled support,not historical executable\n";
+ assert(cases==48);std::cout<<"COUNTERFACTUAL pinned9a8f9340d Dreadblades source48:stage1/2 use start,stage4 uses hill,explicit cached5 input returns start;all facing zero. Controlled cached-step inputs,not natural completion or historical executable\n";
 #endif
 }

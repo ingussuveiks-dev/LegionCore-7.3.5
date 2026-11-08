@@ -1,0 +1,9 @@
+{
+  "date": "2026-11-08",
+  "status": "CORRECTED test interpretation;no production or live data change in this correction",
+  "finding": "Scenario::GetMap returns its stored curMap directly. SetCurrentStep notifies the native instance cache; UpdateCurrentStep notifies only while currentStep<steps.size(). Natural completion therefore retains the final active cache (Dreadblades4,Kingslayers9,Devourer6). Earlier source fixtures explicitly supplied cached5/10/7;they do not prove ordinary completion resets the cemetery. Earlier native fixtures incorrectly overwrote the cache with the completed sentinel. Remove that write and assert actual native notifications instead.",
+  "impact": "Dreadblades authored stage checkpoints/facing/source guards and Kingslayers facing/source guards remain valid. No ordinary completion reset is established by the old seeded-cache counterfactual. The prior broad user-facing claim is withdrawn. Devourer pending work must use natural native completion as well.",
+  "checks": "Corrected Dreadblades current56/pinned52 native with48 releases each,and Kingslayers current192/pinned184 native with176 releases each pass actual native cached-step assertions. Existing baseline source48/88 with explicit cache inputs still passes and is labeled synthetic;new Devourer source64 likewise. Native actual map pointers/SetCurrentStep/UpdateCurrentStep inspected. No historical whole-binary/full client claim.",
+  "diagnostics": "All four corrected native tests and three baseline ASAN fixtures have pre/post canonical+own snapshots;exit0/no new crashes/appended DBErrors/server failure. Original fixed archives are preserved byte-for-byte;new correction evidence is archived with the pending Devourer task after its deployment.",
+  "cleanup": "Pending shared verified archive and task-owned generated cleanup in Devourer cemetery task;retain regression source/unresolved LINK2 evidence."
+}

@@ -22,13 +22,12 @@ int main(int argc,char**argv){try{
   for(unsigned step=0;step<11;++step)for(unsigned context=0;context<4;++context){
    sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,1123);Position death=context==0?Pose(5518):context==1?Pose(5530):context==2?Position{836.16f,1035.4f,48.61f,0}:Position{0,0,-1000,0};auto owner=std::make_unique<NativePlayer>(session,map,962,death);auto& p=*owner;p.SetByteValue(UNIT_FIELD_BYTES_0,0,race);p.SetByteValue(UNIT_FIELD_BYTES_0,1,CLASS_ROGUE);p.setFactionForRace(race);p.SetQuestStatus(quest,context%2?QUEST_STATUS_COMPLETE:QUEST_STATUS_INCOMPLETE);p.SetQuestSlot(0,quest);scenario->SetCurrentStep(step==10?9:step);
    if(step==10){p.UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,51617);Require(scenario->IsCompleted(false)&&scenario->GetCurrentStep()==10,"Native exit event did not complete1123");}
-   // Local fixture maps are outside MapManager; mirror its cached-step
-   // notification for the pinned callback, without advancing either input.
-   script->setScenarioStep(step);std::array<bool,3> guard{};std::array<ObjectGuid,3> guids{};
+   // Native Scenario completion retains the last cached active step9.
+   unsigned cached=step==10?9:step;Require(script->getScenarionStep()==cached,"Native cached-step notification changed");std::array<bool,3> guard{};std::array<ObjectGuid,3> guids{};
    for(unsigned i=0;i<3;++i){script->altheaGuards[i].guid=p.GetGUID();script->altheaGuards[i].defeated=(i+context)%2;guard[i]=script->altheaGuards[i].defeated;guids[i]=script->altheaGuards[i].guid;}
    auto count=scenario->GetAchievementMgr().GetCriteriaProgressMap()->size();auto status=p.GetQuestStatus(quest);auto gy=map.GetClosestGraveYard(death.GetPositionX(),death.GetPositionY(),death.GetPositionZ());
 #ifdef KINGSLAYERS_GRAVEYARD_BASELINE
-   unsigned expectedId=step==10?5518:Checkpoint(step);
+   unsigned expectedId=Checkpoint(cached);
 #else
    unsigned expectedId=Checkpoint(step);
 #endif
@@ -38,7 +37,7 @@ int main(int argc,char**argv){try{
 #else
    Require(std::fabs(gy->GetOrientation()-expected.GetOrientation())<.001f,"Native facing lost");
 #endif
-   p.SetHealth(0);p.setDeathState(CORPSE);p.CastSpell(&p,8326,true);p.SetHealth(1);Require(p.HasAura(8326)&&p.HasFlag(PLAYER_FIELD_PLAYER_FLAGS,PLAYER_FLAGS_GHOST),"Native ghost absent");p.RepopAtGraveyard();Require(p.IsBeingTeleportedNear(),"Native release absent");WorldPackets::Movement::MoveTeleportAck ack{WorldPacket(CMSG_MOVE_TELEPORT_ACK)};ack.MoverGUID=p.GetGUID();session->HandleMoveTeleportAck(ack);Require(p.IsAlive()&&!p.IsBeingTeleported()&&!p.HasAura(8326)&&!p.HasFlag(PLAYER_FIELD_PLAYER_FLAGS,PLAYER_FLAGS_GHOST)&&p.GetHealth()==p.GetMaxHealth()/2&&p.GetExactDist(expected.GetPositionX(),expected.GetPositionY(),expected.GetPositionZ()+2)<.001f,"Native release/ACK/health/ghost cleanup failed");if(p.pvpInfo.inHostileArea){Require(p.HasAura(2479),"Native hostile-area ACK lost honorless2479");++honorless;}session->HandleMoveTeleportAck(ack);Require(scenario->GetCurrentStep()==step&&script->getScenarionStep()==step&&scenario->GetAchievementMgr().GetCriteriaProgressMap()->size()==count&&p.GetQuestStatus(quest)==status&&!p.HasItemCount(128870,1,true),"Recovery changed quest/item/criteria/cache");for(unsigned i=0;i<3;++i)Require(script->altheaGuards[i].guid==guids[i]&&script->altheaGuards[i].defeated==guard[i],"Recovery changed guard ledger");++cases;++releases;
+   p.SetHealth(0);p.setDeathState(CORPSE);p.CastSpell(&p,8326,true);p.SetHealth(1);Require(p.HasAura(8326)&&p.HasFlag(PLAYER_FIELD_PLAYER_FLAGS,PLAYER_FLAGS_GHOST),"Native ghost absent");p.RepopAtGraveyard();Require(p.IsBeingTeleportedNear(),"Native release absent");WorldPackets::Movement::MoveTeleportAck ack{WorldPacket(CMSG_MOVE_TELEPORT_ACK)};ack.MoverGUID=p.GetGUID();session->HandleMoveTeleportAck(ack);Require(p.IsAlive()&&!p.IsBeingTeleported()&&!p.HasAura(8326)&&!p.HasFlag(PLAYER_FIELD_PLAYER_FLAGS,PLAYER_FLAGS_GHOST)&&p.GetHealth()==p.GetMaxHealth()/2&&p.GetExactDist(expected.GetPositionX(),expected.GetPositionY(),expected.GetPositionZ()+2)<.001f,"Native release/ACK/health/ghost cleanup failed");if(p.pvpInfo.inHostileArea){Require(p.HasAura(2479),"Native hostile-area ACK lost honorless2479");++honorless;}session->HandleMoveTeleportAck(ack);Require(scenario->GetCurrentStep()==step&&script->getScenarionStep()==cached&&scenario->GetAchievementMgr().GetCriteriaProgressMap()->size()==count&&p.GetQuestStatus(quest)==status&&!p.HasItemCount(128870,1,true),"Recovery changed quest/item/criteria/cache");for(unsigned i=0;i<3;++i)Require(script->altheaGuards[i].guid==guids[i]&&script->altheaGuards[i].defeated==guard[i],"Recovery changed guard ledger");++cases;++releases;
   }
   for(unsigned order=0;order<2;++order){sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,1123);auto p=std::make_unique<NativePlayer>(session,map,963,Pose(5518));p->SetByteValue(UNIT_FIELD_BYTES_0,1,CLASS_ROGUE);p->SetQuestStatus(quest,QUEST_STATUS_INCOMPLETE);p->SetQuestSlot(0,quest);
    for(unsigned step=0;step<10;++step){auto events=assets[step];if(order)std::reverse(events.begin(),events.end());for(unsigned i=0;i<events.size();++i){p->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,events[i]);if(i+1<events.size()){p->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,events[i]);Require(scenario->GetCurrentStep()==step,"Single/duplicate child bypassed native AND");}}Require(scenario->GetCurrentStep()==step+1,"Native ordered step failed");
@@ -54,7 +53,7 @@ int main(int argc,char**argv){try{
  }
  Require(honorless>0,"Horde hostile-area ACK not exercised");std::cout<<"HONORLESS_ACK "<<honorless<<std::endl;
 #ifdef KINGSLAYERS_GRAVEYARD_BASELINE
- Require(cases==184&&releases==176,"Pinned count changed");std::cout<<"COUNTERFACTUAL pinned148c610e4 Kingslayers native184/release176:all10 old checkpoints preserved;completed10 returns5518/facing zero. Old whole instance/current support,not historical binary"<<std::endl;
+ Require(cases==184&&releases==176,"Pinned count changed");std::cout<<"COUNTERFACTUAL pinned148c610e4 Kingslayers native184/release176:all10 old checkpoints preserved;natural completed10 retains cached9/5530/facing zero. Old whole instance/current support,not historical binary"<<std::endl;
 #else
  Require(cases==192&&releases==176,"Native count changed");std::cout<<"PASS Kingslayers native192/release176:registered whole1620/1123,Human+Orc/both42504+42627/two active statuses/all10 stages+real complete10/four poses,four VMAP floors/facing,real ghost/repop/ACK/half-health/duplicate cleanup,guard ledger unchanged,all native ordered boundaries/AND both orders,foreign+missing null. Earlier stage/quest/cache/ledger/events controlled;full client/combat/pet/group separate"<<std::endl;
 #endif
