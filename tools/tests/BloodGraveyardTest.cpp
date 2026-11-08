@@ -31,7 +31,7 @@ int main(){Probe p;unsigned cases=0;
   assert(!p.GetClosestGraveYard(1,2,3)&&errors==before+1&&!graveyardSpells.reads);++cases;
  }
 #endif
- for(unsigned kind=0;kind<4;++kind)for(unsigned place=0;place<4;++place){Reset();if(kind==0)manager.missing=true;else manager.data.id=kind==1?1085:kind==2?972:1146;auto loc=p.GetClosestGraveYard(float(place),4,-7);if(kind==1)assert(loc&&loc->x==sWorldSafeLocsStore.data.Loc.X);else if(kind==2)assert(loc&&loc->x==sWorldSafeLocsStore.early.Loc.X);else assert(loc&&loc->x==place&&loc->y==4&&loc->z==-7);++cases;}
+ for(unsigned kind=0;kind<4;++kind)for(unsigned place=0;place<4;++place){Reset();if(kind==0)manager.missing=true;else manager.data.id=kind==1?1085:kind==2?972:1145;auto loc=p.GetClosestGraveYard(float(place),4,-7);if(kind==1)assert(loc&&loc->x==sWorldSafeLocsStore.data.Loc.X);else if(kind==2)assert(loc&&loc->x==sWorldSafeLocsStore.early.Loc.X);else assert(loc&&loc->x==place&&loc->y==4&&loc->z==-7);++cases;}
  for(unsigned step:{0u,3u,7u}){Reset();manager.data.id=940;manager.data.step=step;auto loc=p.GetClosestGraveYard(std::numeric_limits<float>::quiet_NaN(),99999,-1000);
 #ifdef BLOOD_GRAVEYARD_BASELINE
   assert(loc&&std::isnan(loc->x)&&loc->z==-1000);

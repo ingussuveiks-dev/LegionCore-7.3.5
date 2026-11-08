@@ -22,10 +22,17 @@ assert body[mapcheck - 1].op_str == 'edi, 0x5d1' and body[mapcheck + 1].operands
 early_coord = holy['coordinates'][2]
 assert entry < mapcheck < early_coord and body[early_coord + 2].operands[0].imm == entry_failure
 assert any(o.mnemonic == 'je' and o.operands[0].imm == entry_failure for o in body[mapcheck + 2:early_coord])
-expected = [('movss', 'xmm0, dword ptr [rsi + 0x10]'), ('movss', 'xmm3, dword ptr [rsi + 0xc]'), ('movss', 'xmm2, dword ptr [rsi + 8]'), ('movss', 'xmm1, dword ptr [rsi + 4]')]
-assert [(o.mnemonic, o.op_str) for o in body[early_coord + 3:early_coord + 7]] == expected
-stores = at('rbx, [r14 + 0x2e0]', 'lea')
-assert body[early_coord + 7].mnemonic == 'jmp' and body[early_coord + 7].operands[0].imm == body[stores].address, 'Entry must use native radians without a second degree conversion'
+if holy['relocation_tail'] is not None:
+    expected = [('movss', 'xmm0, dword ptr [rsi + 0x10]'), ('movss', 'dword ptr [rsp + 0x28], xmm0'),
+                ('movss', 'xmm1, dword ptr [rsi + 0xc]'), ('movss', 'dword ptr [rsp + 0x20], xmm1'),
+                ('movss', 'xmm3, dword ptr [rsi + 8]'), ('movss', 'xmm2, dword ptr [rsi + 4]')]
+    assert [(o.mnemonic, o.op_str) for o in body[early_coord + 3:early_coord + 9]] == expected
+    assert body[early_coord + 9].mnemonic == 'jmp' and body[early_coord + 9].operands[0].imm == holy['relocation_tail'], 'Native entry radians/XYZ must reach proven native WorldRelocate ABI arguments'
+else:
+    expected = [('movss', 'xmm0, dword ptr [rsi + 0x10]'), ('movss', 'xmm3, dword ptr [rsi + 0xc]'), ('movss', 'xmm2, dword ptr [rsi + 8]'), ('movss', 'xmm1, dword ptr [rsi + 4]')]
+    assert [(o.mnemonic, o.op_str) for o in body[early_coord + 3:early_coord + 7]] == expected
+    stores = at('rbx, [r14 + 0x2e0]', 'lea')
+    assert body[early_coord + 7].mnemonic == 'jmp' and body[early_coord + 7].operands[0].imm == body[stores].address, 'Entry must use native radians without a second degree conversion'
 late_at = next(i for i, o in enumerate(body) if o.address == later)
 assert [(o.mnemonic, o.op_str) for o in body[late_at:late_at + 3]] == [('cmp', 'eax, 7'), ('sbb', 'edx, edx'), ('add', 'edx, 0x1541')]
 lookup = next(i for i, o in enumerate(body) if i > late_at and o.mnemonic == 'mov' and o.op_str == 'rsi, qword ptr [rax + rdx*8]')

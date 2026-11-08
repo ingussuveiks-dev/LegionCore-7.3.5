@@ -46,7 +46,7 @@ int main(int argc,char**argv){try{
 #endif
    p.UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,asset);Require(scenario->GetCurrentStep()==step+1&&!p.HasItemCount(128402,1,true),"Duplicate barrier event skipped next phase or granted Maw");++cases;
   }
-  for(unsigned id:{1085u,972u,1146u}){sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,id);auto gy=map.GetClosestGraveYard(12,34,-56);auto safe=sWorldSafeLocsStore.LookupEntry(id==1085?5480:5433);Require(gy&&(id==1146?gy->GetExactDist(12,34,-56)<.001f:gy->GetExactDist(safe->Loc.X,safe->Loc.Y,safe->Loc.Z)<.001f),"Retained Holy/Hunter/other cemetery changed");++cases;}
+  for(unsigned id:{1085u,972u,1145u}){sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,id);auto gy=map.GetClosestGraveYard(12,34,-56);auto safe=sWorldSafeLocsStore.LookupEntry(id==1085?5480:5433);Require(gy&&(id==1145?gy->GetExactDist(12,34,-56)<.001f:gy->GetExactDist(safe->Loc.X,safe->Loc.Y,safe->Loc.Z)<.001f),"Retained Holy/Hunter/other cemetery changed");++cases;}
   sScenarioMgr->RemoveScenario(map.GetInstanceId());auto gy=map.GetClosestGraveYard(12,34,-56);Require(gy&&gy->GetExactDist(12,34,-56)<.001f,"No-scenario policy changed");++cases;session->SetPlayer(nullptr);delete session;
  }
  Require(cases==102&&releases==90,"Blood native count changed");
