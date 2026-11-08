@@ -29,9 +29,28 @@
       "Unknown shared LINK2/mixed7111 and original Slaghammer intro,reported Stromkar presentation/equipment/exit/singleton,Survival39427/Fu Zan route and all36 complete client chains remain OPEN. No new reset or video/audio traversal claimed."
     ],
     "cleanup": {
-      "status": "PENDING focused commit,verified archive and exact temporary/compiler/obsolete-rollback cleanup."
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/sharasdal-graveyard-2026-11-08",
+      "manifest_sha256": "13939b695acab7eecfd7b7101f5c5d7b09a9c426759262e4fd199b5e3d1bf4b8",
+      "original_files": 514,
+      "cleanup_manifest_sha256": "e925d22ae2582f9dcfefd60e7009430adba9903ee52f1af340bfd01eb79fa40b",
+      "removed_files": 224,
+      "logical_removed_bytes": 1245827565,
+      "local_deletion_manifest": ".codex/sharasdal-graveyard-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-sharasdal-graveyard-2026-11-08",
+        ".codex/release-before-holy-graveyard-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 132762300416,
+      "disk_free_after_bytes": 134005497856,
+      "observed_free_increase_bytes": 1243197440
     },
-    "audit": "docs/audits/sharasdal-graveyard-2026-11-08.json"
+    "audit": "docs/audits/sharasdal-graveyard-2026-11-08.json",
+    "fix_commit": "347d4f1ab2c84c92e2bb15da6b9f5022804cf549"
   },
   "latest_holy_graveyard_2026_11_08": {
     "status": "DEPLOYED focused Holy Paladin1092 bidirectional cemetery recovery on shared1539. Source157 ASAN/native104 with90 actual releases/ACKs, pinned counterfactuals, three real native criterion boundaries, staged/canonical linked proof and retained Arms/Shadow/shared actor/loot checks pass. Owned startup clean. Full client traversal remains separate.",
