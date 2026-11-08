@@ -4102,17 +4102,22 @@ class spell_masters_hunter_seeking_crystal_teleport : public SpellScript
             if (auto crea = caster->FindNearestCreature(RareEntries, 500.0f, true))
             {
                 Position pos = crea->GetPosition();
+                uint32 mapId = caster->GetMapId();
+                uint32 instanceId = caster->GetInstanceId();
                 if (crea->GetEntry() == 96424)
-                {
                     caster->CastSpell(caster, 190820, true);
-                    caster->AddDelayedEvent(500, [caster, pos] {
-                        caster->NearTeleportTo(pos);    });
-                }
-                else
+                caster->AddDelayedEvent(500, [caster, pos, mapId, instanceId]
                 {
-                    caster->AddDelayedEvent(500, [caster, pos] {
-                        caster->NearTeleportTo(pos);    });
-                }
+                    if (!caster->IsInWorld() || caster->IsPreDelete() || !caster->IsAlive() ||
+                        caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                        return;
+                    if (Player* player = caster->ToPlayer())
+                        if (player->HasPendingTeleport())
+                            return;
+                    caster->NearTeleportTo(pos);
+                });
+                // Match CheckElevation's first eligible entry; one use queues one move.
+                return;
             }
     }
 

@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-08",
+  "title": "Master Hunter seeking crystal single destination",
+  "status": "AUTOMATED_VERIFIED_CLIENT_PENDING",
+  "batch": "seven-lifecycle-fixes-2026-11-08",
+  "baseline_revision": "6dc3bc59f",
+  "production": "src/server/scripts/Spells/spell_item.cpp",
+  "classes": [
+    "spell_masters_hunter_seeking_crystal_teleport"
+  ],
+  "cause": "Spell190811 queues one delayed teleport for every matching rare entry;one use can move the player several times and the last authored entry wins. The old queued coordinates can also be applied after the caster changes maps.",
+  "repair": "Stop after the first eligible entry,matching the parent CheckElevation authored priority. Preserve special96424/190820 and500ms delay. Callback requires original map/instance,living/in-world/nondeleted owner and no pending Player teleport;never grant progress or pick a guessed random/global-nearest target.",
+  "checks": [
+    "Pinned full class with two authored rares queues two movements and ends at the last rare.",
+    "ASAN full class:first eligible once,499+1 deadline,map/instance change,pending teleport,death/predelete/out-of-world,no rare,special rare buff,missing caster. Unit/rare/teleport endpoints modeled.",
+    "Native26972 spell190811/190820 and actual script binding read;selected Release factory/AfterCast and queued guard path checked. Native/client actual destination traversal remains separate."
+  ],
+  "source_regression_command": "tools/tests/Test-SevenSpellLifecycles.ps1 -Case Crystal [-Baseline / -AddressSanitizer]",
+  "release": "tools/tests/verify_seven_lifecycle_release.py",
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "87b31fa62508b777b14cac0f03749f1c8d86e51b835f6ed6f13c597f46d99edd",
+    "bnet_sha256": "88e9938d3dfc92e325fc63af501e62258fe54cd52e7ff0baa003fa14d8676f3b",
+    "owned_startup": "PID30496:fresh ready,server shutdown0,exit0,gone;stderr empty;configs/certs/DLLs hash-preserved"
+  },
+  "diagnostics": "Final paired checks clean after pre/post snapshots;expected original UAF captured separately. Original fixture MMAP initialization crash and incorrect isAlive API compile attempt repaired and paired with passing native/build runs. Legacy C5055 in untouched methods and native fixture conversion warnings retained;no production warning introduced by these seven changes. Mixed canonical7111-byte LINK2 log unchanged/untruncated. Full archive/cleanup record in batch closeout.",
+  "client_pending": [
+    "Client Tanaan rare selection,one actual movement,special rare visual,travel/death during delay."
+  ],
+  "not_claimed": "No actual client traversal performed;not a complete Lady finale or all36 chains;no character reset,SQL mutation,quest credit or item grants."
+}
