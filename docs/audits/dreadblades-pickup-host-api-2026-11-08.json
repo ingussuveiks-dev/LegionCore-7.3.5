@@ -1,0 +1,9 @@
+{
+  "date": "2026-11-08",
+  "status": "PASS test-only fixture compatibility repair; production pickup/core unchanged",
+  "cause": "Extracted current GameObject::SetLootState now retains the door-only early return. The old pickup host omitted GAMEOBJECT_TYPE_DOOR and failed compilation before running its regression.",
+  "fix": "Add actual SharedDefines.h enum GAMEOBJECT_TYPE_DOOR=0 to the controlled host. Its GameObject still returns chest type3, so the real native chest state/AI/script dispatch continues unchanged. Do not remove the production door guard or skip extracting the actual callback.",
+  "checks": "Test-DreadbladesPickup.ps1 -AddressSanitizer passes complete pickup/actual loot storage and state dispatch: real death admission, full bags/storage retry, pending cast/equip pair, no automatic item or early/double reward, missing actors and stale claimant cleanup. Services are controlled; actual equip/scene/network/client remain separate.",
+  "diagnostics": "Both failed compile and repaired ASAN use canonical/own pre/post crash/log snapshots; no new crash/appended DBErrors/server failure. Failed compiler log and original generated callback/diagnostic bytes retained in .codex/dreadblades-graveyard-2026-11-08/pickup-initial-evidence; archive follows focused cemetery deployment. Mixed7111 LINK2 remains untouched.",
+  "cleanup": "Pending shared verified diagnostic archive and task-owned generated cleanup with the focused Dreadblades cemetery task; test source retained."
+}
