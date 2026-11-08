@@ -1,6 +1,19 @@
+# Exact independently verified Holy addition; restore the prior Shadow method
+# before older unrelated whole-instance comparisons. Unknown edits still fail.
+function Remove-HolyGraveyardScope([string]$source) {
+ if(!$source.Contains('Silver Hand graveyard: invalid native WorldSafeLocs')){return $source}
+ function HolyCemeteryBlock([string]$text){$a=$text.IndexOf('        WorldLocation* GetClosestGraveYard(');if($a -lt 0){throw 'Missing Holy cemetery scope'};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};return $text.Substring($a,$b-$a)}
+ $method=HolyCemeteryBlock $source;$bytes=[Text.Encoding]::UTF8.GetBytes(($method -replace '\s',''))
+ $hash=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($bytes))).Replace('-','').ToLowerInvariant()
+ if($hash -ne '0cc1f37f7efe3e5c24c213c6e7ae2ad892e4f3beea3b12095682ef63c4d810a7'){throw 'Holy cemetery differs from its exact independently verified scope'}
+ $prior=(& git -C "$PSScriptRoot/../.." show '2bd533cfd:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp') -join "`n"
+ if($LASTEXITCODE){throw 'Pinned pre-Holy instance absent'}
+ return $source.Replace($method,(HolyCemeteryBlock $prior))
+}
 # Exact independently verified Shadow addition; restore the prior Arms method
 # before older unrelated whole-instance comparisons. Unknown edits still fail.
 function Remove-ShadowGraveyardScope([string]$source) {
+ $source=Remove-HolyGraveyardScope $source
  if(!$source.Contains('Shadow graveyard: invalid native WorldSafeLocs')){return $source}
  function ShadowCemeteryBlock([string]$text){$a=$text.IndexOf('        WorldLocation* GetClosestGraveYard(');if($a -lt 0){throw 'Missing Shadow cemetery scope'};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};return $text.Substring($a,$b-$a)}
  $method=ShadowCemeteryBlock $source;$bytes=[Text.Encoding]::UTF8.GetBytes(($method -replace '\s',''))

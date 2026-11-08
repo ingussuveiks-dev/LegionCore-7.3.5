@@ -42,7 +42,11 @@ int main(int argc,char**argv){try{
    Require(gy&&gy->GetExactDist(target(step+1))<.001f,"Acknowledged passage did not select its checkpoint");
 #endif
    p.UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,event);Require(scenario->GetCurrentStep()==step+1&&!p.HasItemCount(128827,1,true),"Duplicate event skipped stage or granted item");++cases;}
-  for(unsigned id:{1037u,1092u,1146u}){sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,id);auto gy=map.GetClosestGraveYard(12,34,-56);if(id==1037){auto arms=sWorldSafeLocsStore.LookupEntry(5339);Require(gy&&gy->GetExactDist(arms->Loc.X,arms->Loc.Y,arms->Loc.Z)<.001f&&std::fabs(gy->GetOrientation()-arms->Loc.O*float(M_PI)/180)<.001f,"Retained Arms recovery changed");}else Require(gy&&gy->GetExactDist(general->Loc.X,general->Loc.Y,general->Loc.Z)<.001f&&gy->GetOrientation()==0,"Retained shared generic recovery changed");++cases;}sScenarioMgr->RemoveScenario(map.GetInstanceId());auto gy=map.GetClosestGraveYard(12,34,-56);Require(gy&&gy->GetExactDist(general->Loc.X,general->Loc.Y,general->Loc.Z)<.001f,"No-scenario policy changed");++cases;session->SetPlayer(nullptr);delete session;
+  for(unsigned id:{1037u,1092u,1146u}){sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,id);auto gy=map.GetClosestGraveYard(12,34,-56);if(id==1037){auto arms=sWorldSafeLocsStore.LookupEntry(5339);Require(gy&&gy->GetExactDist(arms->Loc.X,arms->Loc.Y,arms->Loc.Z)<.001f&&std::fabs(gy->GetOrientation()-arms->Loc.O*float(M_PI)/180)<.001f,"Retained Arms recovery changed");}else
+#ifndef SHADOW_GRAVEYARD_BASELINE
+ if(id==1092){auto holy=sWorldSafeLocsStore.LookupEntry(5488);Require(holy&&gy&&gy->GetExactDist(holy->Loc.X,holy->Loc.Y,holy->Loc.Z)<.001f&&std::fabs(gy->GetOrientation()-holy->Loc.O*float(M_PI)/180)<.001f,"Holy outside recovery changed");}else
+#endif
+ Require(gy&&gy->GetExactDist(general->Loc.X,general->Loc.Y,general->Loc.Z)<.001f&&gy->GetOrientation()==0,"Retained shared generic recovery changed");++cases;}sScenarioMgr->RemoveScenario(map.GetInstanceId());auto gy=map.GetClosestGraveYard(12,34,-56);Require(gy&&gy->GetExactDist(general->Loc.X,general->Loc.Y,general->Loc.Z)<.001f,"No-scenario policy changed");++cases;session->SetPlayer(nullptr);delete session;
  }
  Require(cases==94&&releases==82,"Native Shadow test count changed");
 #ifdef SHADOW_GRAVEYARD_BASELINE

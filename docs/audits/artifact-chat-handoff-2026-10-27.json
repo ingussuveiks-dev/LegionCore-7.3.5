@@ -1,4 +1,38 @@
 {
+  "latest_holy_graveyard_2026_11_08": {
+    "status": "DEPLOYED focused Holy Paladin1092 bidirectional cemetery recovery on shared1539. Source157 ASAN/native104 with90 actual releases/ACKs, pinned counterfactuals, three real native criterion boundaries, staged/canonical linked proof and retained Arms/Shadow/shared actor/loot checks pass. Owned startup clean. Full client traversal remains separate.",
+    "scope": "Only the1092 branch of instance_silver_hand::GetClosestGraveYard. No SQL, character reset, added field/registration/layout, direct Player teleport/resurrection, health/aura/quest/item/criteria/stage grant or combat/actor lifecycle change. Arms1037, Shadow991 and other/no-scenario general5281 policies retained.",
+    "checks": {
+      "source": "157 actual whole-callback ASAN cases:96 repeated selections across11 stages+modeled complete/four death poses;42 corrupt/missing source diagnostic refusals;16 retained Arms/Shadow/other/no-scenario controls;3 nonfinite death controls. Services controlled,not whole-core ASAN or client.",
+      "native": "104 cases/90 real releases:Human+BloodElf/all11 stages+actual completed11/both active42120 statuses/four death contexts;real registered whole1539 instance/native Player/Scenario,source floor/facing,ghost/repop/near ACK/half-health/repeated cleanup. Six boundary cases verify premature/duplicate denials and actual50766 1->2/50897 4->5/50912 6->7 selection changes. Eight retained Arms/Shadow/other/no-scenario controls. Earlier quest/death/stage,phase fixtures and50966 final input controlled;actual finale actors supplied before native10 dispatch. No saved character write or full combat/client traversal.",
+      "counterfactual": "Pinned2bd533cfd source115 ASAN/native104 with90 releases revives at general5281/zero-facing;current native support,not historical whole binary. Old canonical explicitly rejects missing Holy recovery,while repaired staged/canonical linked proof passes. Do not claim native ACK itself was broken or every general position physically unsafe.",
+      "linked": "Actual registered instance primary vptr/virtual cemetery dispatch;1092 identity,step<2->5488,unsigned5..6->5694,otherwise5693;indexed source identity/map/zero/finite validation/native degree conversion/shared XYZ/map/facing stores/stable return/contextual null failure. Complete retained Arms/Shadow/general and Slaghammer owner/receipt/lifecycle/progression exclusions.",
+      "retained": "Arms149 source/native94/release82;Shadow135 source/native94/release82;54 first-fight/lifecycle ASAN cases/exact unrelated scope;ritual dispatch/waypoint guards;first-path entry and procession-recovery source/data;40 real shared-instance admissions;36 real handoff owner/retry/ack contexts using isolated HolyRetainedSlaghammerHandoffNative. Mandatory canonical Scepter and full Stromkar TEMP/live/shared Xalatath consumer suite pass. Native/source endpoints remain separate from actual client traversal.",
+      "build": "Original Release game/scripts dependencies and staged world/bnet final link without OutDir override;matching staged/canonical EXE/map hashes;configs/certificates/DLLs/extracted data and required libraries preserved.",
+      "runtime": "Owned worldserver PID=21456\nPASS owned PID=21456 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;no user/unknown server stopped;MariaDB left running.",
+      "preservation": "Full-column before/after fingerprints match all LFG entrances/spell destinations/scenario routes and selected Holy/shared actor graphs/conditions/spawns/templates. No persistent world-data change or character reset. Original OPEN Slaghammer cache/probe and Nov7/Nov8 LINK2 evidence preserved."
+    },
+    "diagnostics": {
+      "result": "Pre/post crash/log snapshots wrap source/native/SQL/build/link/PE/runtime/retained checks. Final runs have no new/changed crashes,appended DBErrors or unexplained server warnings/errors/assertions. Active canonical Crashes empty.",
+      "development": "Copied SQL reader initially substituted --boundarybase for --database;client rejected option before query. Corrected helper and read-only query passes;original stderr retained. Initial native host104/release90 reached actual Holy10 without finale actors and emitted two existing missing-actor warnings despite passing assertions. Diagnostics wrapper rejected that run. Host now supplies actual native finale actors before10 dispatch and loads real texts,retaining production discovery behavior/diagnostics;current104 and pinned104 pass cleanly. Original failed-run bytes/hash retained;not treated as an ordinary passing test. Retained older compiler warnings captured separately.",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "OPEN shared LINK2;untouched,never truncated or archived as resolved."
+    },
+    "binary": {
+      "worldserver": "29d1ea6a85a3322b83b793c2ab1db4adf8edd7c01d1d16f96c0c2ff3d18f0a7a",
+      "bnetserver": "ba92651c7c053273316b65e88a0ee22145614007901ff53ee57128b740f9e7ed"
+    },
+    "unresolved": [
+      "Full client Release Spirit/corpse/reclaim/phase-visible barriers/floor landing/walk back to rescue/return/re-entry/reconnect/pet/guardian/vehicle restoration and whole42120 remain unverified. Native release/ACK is not full character LoadFromDB or client gameplay.",
+      "Real issued routes,combat/boss/one-hit/player/pet/guardian/group eligibility,rescue heals/cleanses,pickup/equip/scene/return remain unchanged and are not newly certified by the cemetery patch. Failed/missing actor recovery is preserved,not bypassed.",
+      "Shared101430/103151 LINK2/mixed7111,original Slaghammer intro evidence,reported Stromkar presentation/equipment/exit/singleton,Survival39427 and all36 whole client chains remain separate OPEN work."
+    ],
+    "cleanup": {
+      "status": "PENDING verified archive and exact task-owned temporary/obsolete-rollback cleanup after focused commit."
+    },
+    "audit": "docs/audits/holy-graveyard-2026-11-08.json"
+  },
   "latest_shadow_graveyard_2026_11_08": {
     "status": "DEPLOYED focused Shadow Priest991 interior checkpoint recovery on shared1539. Source135 ASAN/native94 with82 actual releases/ACKs, pinned counterfactuals, both native criterion boundaries, staged/canonical linked proofs and retained shared instance/handoff/loot checks pass. Owned startup clean. Full client traversal remains separate.",
     "scope": "Only a991 interior branch in instance_silver_hand::GetClosestGraveYard. No SQL, character reset, new fields/registration/layout, direct player teleport/resurrection, health/aura/quest/item/criteria/stage grants or combat/actor lifecycle changes. Shadow0/1 and Holy1092/other/no-scenario retain legacy5281; Arms1037 retains its independently verified checkpoint policy.",

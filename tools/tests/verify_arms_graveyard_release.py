@@ -24,6 +24,12 @@ if shadow_scope is not None:
  assert any(o.address==fallback for o in body[shadow_scope-4:shadow_scope]) and any(i in sites('?GetScenarioId@Scenario@@') for i in range(shadow_scope-4,shadow_scope))
  assert body[shadow_scope+1].mnemonic=='jne'
  fallback=body[shadow_scope+1].operands[0].imm
+shadow_fallback=fallback
+holy_scope=next((i for i,o in enumerate(body) if o.mnemonic=='cmp' and o.op_str=='eax, 0x444'),None)
+if holy_scope is not None:
+ assert any(o.address==fallback for o in body[holy_scope-4:holy_scope]) and any(i in sites('?GetScenarioId@Scenario@@') for i in range(holy_scope-4,holy_scope))
+ assert body[holy_scope+1].mnemonic=='jne'
+ fallback=body[holy_scope+1].operands[0].imm
 assert any(o.mnemonic=='je' and o.operands[0].imm==fallback for o in body[sites('?GetScenario@ScenarioMgr@@')[0]+1:scope])
 step=next(i for i in sites('?GetCurrentStep@Scenario@@') if scope<i<=scope+3);assert scope<step
 assert [(o.mnemonic,o.op_str) for o in body[step+1:step+3]]==[('cmp','eax, 4'),('jae',hex(body[step+5].address))]
@@ -33,7 +39,7 @@ lookup=at('rdi, qword ptr [rax + rcx*8]','mov');identity=at('dword ptr [rdi], ed
 assert body[identity+1].mnemonic=='jne' and body[lookup+2].mnemonic=='je' and body[lookup+2].operands[0].imm==failure
 assert body[lookup-3].mnemonic=='jae' and body[lookup-3].operands[0].imm==failure and body[lookup-2].op_str=='ecx, edx'
 mapcheck=at('word ptr [rdi + 0x1c], si','cmp');assert body[mapcheck-1].op_str=='esi, 0x603' and body[mapcheck+1].operands[0].imm==failure
-coordinates=sites('?IsValidMapCoord@MapManager@@SA_NIMMMM@Z');assert len(coordinates)==(2 if shadow_scope is not None else 1);coord=coordinates[0];assert step<lookup<identity<mapcheck<coord
+coordinates=sites('?IsValidMapCoord@MapManager@@SA_NIMMMM@Z');assert len(coordinates)==1+int(shadow_scope is not None)+int(holy_scope is not None);coord=coordinates[0];assert step<lookup<identity<mapcheck<coord
 assert any(o.mnemonic=='je' and o.operands[0].imm==failure for o in body[mapcheck+2:coord]) and body[coord+2].operands[0].imm==failure
 for register,expected in [('xmm6',3.141592653589793),('xmm7',180.0)]:
  o=next(o for o in body[mapcheck:coord] if o.mnemonic=='movss' and o.op_str.startswith(register+',') and 'rip' in o.op_str);a=next(a for a in o.operands if a.type==CS_OP_MEM and a.mem.base==X86_REG_RIP)

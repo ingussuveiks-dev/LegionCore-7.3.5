@@ -82,6 +82,22 @@ public:
                 loc_res_pla.WorldRelocate(1539, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f);
                 return &loc_res_pla;
             }
+            if (scenario && scenario->GetScenarioId() == 1092)
+            {
+                // 50766 admits the crypt,50897 the prison. After50912 the
+                // escape barrier closes behind the party; recover upstairs.
+                uint32 step = scenario->GetCurrentStep();
+                uint32 safeId = step < 2 ? 5488 : step >= 5 && step < 7 ? 5694 : 5693;
+                WorldSafeLocsEntry const* safe = sWorldSafeLocsStore.LookupEntry(safeId);
+                if (!safe || safe->ID != safeId || safe->MapID != 1539 || !(safe->Loc.X || safe->Loc.Y || safe->Loc.Z) ||
+                    !MapManager::IsValidMapCoord(1539, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f))
+                {
+                    TC_LOG_ERROR("scripts", "Silver Hand graveyard: invalid native WorldSafeLocs %u for instance %u", safeId, instance->GetInstanceId());
+                    return nullptr;
+                }
+                loc_res_pla.WorldRelocate(1539, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f);
+                return &loc_res_pla;
+            }
             // Other1539 scenarios retain their existing general safe location.
             loc_res_pla.WorldRelocate(1539, x, y, z);
 

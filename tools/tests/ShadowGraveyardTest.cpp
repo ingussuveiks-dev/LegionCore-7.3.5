@@ -12,7 +12,7 @@ static unsigned errors=0;
 #define TC_LOG_ERROR(...) (++errors)
 struct WorldLocation{uint32 map=0;float x=0,y=0,z=0,o=0;void WorldRelocate(uint32 m,float a,float b,float c,float d=0){map=m;x=a;y=b;z=c;o=d;}};
 struct WorldSafeLocsEntry{uint32 ID,MapID=1539;struct{float X,Y,Z,O;}Loc;};
-struct Store{WorldSafeLocsEntry general{5281,1539,{2038.49133f,2442.02271f,135.075638f,196.582993f}},early{5339,1539,{1934.17883f,2513.69019f,130.607132f,341.615692f}},middle{5335,1539,{2072.02002f,2348.32007f,66.4023972f,198.197998f}},late{5705,1539,{1877.68994f,2249,37.5471001f,269.972992f}},shadow{5351,1539,{1877.68994f,2249,37.5471001f,269.972992f}};bool missing=false;unsigned reads=0;WorldSafeLocsEntry const* LookupEntry(uint32 id){assert(id==5281||id==5339||id==5335||id==5705||id==5351);++reads;return missing?nullptr:id==5281?&general:id==5339?&early:id==5335?&middle:id==5705?&late:&shadow;}}sWorldSafeLocsStore;
+struct Store{WorldSafeLocsEntry general{5281,1539,{2038.49133f,2442.02271f,135.075638f,196.582993f}},early{5339,1539,{1934.17883f,2513.69019f,130.607132f,341.615692f}},middle{5335,1539,{2072.02002f,2348.32007f,66.4023972f,198.197998f}},late{5705,1539,{1877.68994f,2249,37.5471001f,269.972992f}},shadow{5351,1539,{1877.68994f,2249,37.5471001f,269.972992f}},outside{5488,1539,{2116.3999f,2428.46997f,119.737f,314.596985f}};bool missing=false;unsigned reads=0;WorldSafeLocsEntry const* LookupEntry(uint32 id){assert(id==5281||id==5339||id==5335||id==5705||id==5351||id==5488);++reads;return missing?nullptr:id==5281?&general:id==5339?&early:id==5335?&middle:id==5705?&late:id==5488?&outside:&shadow;}}sWorldSafeLocsStore;
 struct Scenario{uint32 id=991,step=0;uint32 GetScenarioId(){return id;}uint32 GetCurrentStep(){return step;}};
 struct Manager{Scenario data;bool missing=false;Scenario* GetScenario(uint32 id){assert(id==987);return missing?nullptr:&data;}}manager;auto sScenarioMgr=&manager;
 struct Map{uint32 GetInstanceId(){return 987;}};
@@ -38,7 +38,11 @@ int main(){Probe p;unsigned cases=0;
 #ifndef SHADOW_GRAVEYARD_BASELINE
  for(unsigned step:{2u,7u})for(unsigned fault=0;fault<14;++fault){Reset();manager.data.step=step;auto& s=step<7?sWorldSafeLocsStore.middle:sWorldSafeLocsStore.shadow;auto before=errors;if(fault==0)sWorldSafeLocsStore.missing=true;if(fault==1)s.ID=5281;if(fault==2)s.MapID=1220;if(fault==3)s.Loc.X=s.Loc.Y=s.Loc.Z=0;if(fault>=4&&fault<10){float& v=fault<7?s.Loc.X:s.Loc.Y;auto k=(fault-4)%3;v=k==0?std::numeric_limits<float>::quiet_NaN():k==1?std::numeric_limits<float>::infinity():2000000;}if(fault>=10){float& v=fault<12?s.Loc.Z:s.Loc.O;v=fault%2?std::numeric_limits<float>::infinity():std::numeric_limits<float>::quiet_NaN();}assert(!p.GetClosestGraveYard(1,2,3)&&errors==before+1);++cases;}
 #endif
- for(unsigned kind=0;kind<4;++kind)for(unsigned pose=0;pose<4;++pose){Reset();if(!kind)manager.missing=true;else manager.data.id=kind==1?1037:kind==2?1092:1146;auto before=errors;auto loc=p.GetClosestGraveYard(float(pose),4,-7);if(kind==1)Same(loc,sWorldSafeLocsStore.early);else Same(loc,sWorldSafeLocsStore.general,false);assert(errors==before&&sWorldSafeLocsStore.reads==1);++cases;}
+ for(unsigned kind=0;kind<4;++kind)for(unsigned pose=0;pose<4;++pose){Reset();if(!kind)manager.missing=true;else manager.data.id=kind==1?1037:kind==2?1092:1146;auto before=errors;auto loc=p.GetClosestGraveYard(float(pose),4,-7);if(kind==1)Same(loc,sWorldSafeLocsStore.early);else
+#ifndef SHADOW_GRAVEYARD_BASELINE
+ if(kind==2)Same(loc,sWorldSafeLocsStore.outside);else
+#endif
+ Same(loc,sWorldSafeLocsStore.general,false);assert(errors==before&&sWorldSafeLocsStore.reads==1);++cases;}
  for(unsigned step:{0u,2u,7u}){Reset();manager.data.step=step;auto loc=p.GetClosestGraveYard(std::numeric_limits<float>::quiet_NaN(),99999,-1000);
 #ifdef SHADOW_GRAVEYARD_BASELINE
   Same(loc,sWorldSafeLocsStore.general,false);

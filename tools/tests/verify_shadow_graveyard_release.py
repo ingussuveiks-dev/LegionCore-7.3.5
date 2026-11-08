@@ -4,9 +4,9 @@ import runpy,struct
 from capstone import CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 p=runpy.run_path(str(Path(__file__).with_name('verify_arms_graveyard_release.py')))
-n,body,sites,at=(p[k] for k in ('n','body','sites','at'));scope=p['shadow_scope'];fallback=p['fallback']
+n,body,sites,at=(p[k] for k in ('n','body','sites','at'));scope=p['shadow_scope'];fallback=p['shadow_fallback']
 assert scope is not None,'Release lacks Shadow interior cemetery recovery'
-first,second=[i for i in sites('?GetCurrentStep@Scenario@@') if i>scope]
+first,second=[i for i in sites('?GetCurrentStep@Scenario@@') if scope<i<(p['holy_scope'] or len(body))]
 assert [(o.mnemonic,o.op_str) for o in body[first+1:first+3]]==[('cmp','eax, 2'),('jb',hex(fallback))],'Shadow stages0/1 must retain the general fallback'
 assert [(o.mnemonic,o.op_str) for o in body[second+1:second+5]]==[('mov','edx, 0x14e7'),('mov','ecx, 0x14d7'),('cmp','eax, 7'),('cmovb','edx, ecx')]
 lookup=next(i for i,o in enumerate(body) if i>second and o.mnemonic=='mov' and o.op_str=='rdi, qword ptr [rax + rdx*8]')
