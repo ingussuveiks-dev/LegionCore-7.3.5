@@ -6,6 +6,13 @@
   "checks": "Original fixed0xac proof failed on current binary;paired revised strict run_linked_release_verifier.py verify_marksmanship_herald_release.py completes every composed check. Phase disassembly records observed0x104 without hardcoding it as future class layout. Pre/post diagnostics have no new crashes/appended server/DBErrors.",
   "production": "No C++,SQL,config,data or binary change by this fix. The separately staged/deployed MM cemetery code does not change SmartScript layout.",
   "limits": "Selected linked paths are not whole client traversal,Herald combat,actual receiver recreation or audio certification.",
-  "evidence": ".codex/marksmanship-graveyard-2026-11-08/final-HeraldASAN.log,phase-disassembly.txt,phase-proof.log and phase-proof-evidence.",
-  "cleanup": "Evidence joins the ongoing MM cemetery archive/cleanup after its canonical tests;no task-owned server or separate executable was created by this verifier fix. Mixed7111/LINK2 remain OPEN and untouched."
+  "evidence": ".codex/marksmanship-graveyard-2026-11-08/final-HeraldASAN-phase-proof-failure.log,phase-disassembly.txt,phase-proof.log and phase-proof-evidence;verified original byte copies in enclosing fixed archive.",
+  "cleanup": {
+    "status": "COMPLETE with enclosing MM cemetery task;original failed/passing evidence archived and hashes verified,exact temporary deletions complete",
+    "audit": "docs/audits/marksmanship-graveyard-2026-11-08.json",
+    "fix_commit": "ce9150445505eab70fb15c0aff1d491f746fa8b8",
+    "archive": "build-extractors/bin/Release/fixed/marksmanship-graveyard-2026-11-08",
+    "manifest_sha256": "a38755b1a6ebe37e5d064bf6d462d9d1e3b7dd02d6416aeaaddf592d812cf54e",
+    "unresolved": "Mixed7111/LINK2 and original Slaghammer evidence retained unchanged;client/receiver recreation remains separate."
+  }
 }

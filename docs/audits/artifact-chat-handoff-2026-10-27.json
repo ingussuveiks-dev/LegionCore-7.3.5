@@ -19,9 +19,28 @@
       "Survival39427 follow-up,Stromkar visuals/client traversal,all36 full chains and shared LINK2/mixed7111 remain OPEN. Original unresolved Slaghammer handoff probe20261106-121715-172/cache/research remain unchanged;no unexplained error archived as resolved."
     ],
     "cleanup": {
-      "status": "Verified fixed archive/exact generated-output cleanup follows focused fix commit;retain new before-MM-graveyard plus before-Tuure-graveyard recovery copies,retire older before-Tuure-login after passing canonical checks."
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/marksmanship-graveyard-2026-11-08",
+      "manifest_sha256": "a38755b1a6ebe37e5d064bf6d462d9d1e3b7dd02d6416aeaaddf592d812cf54e",
+      "original_files": 2500,
+      "cleanup_manifest_sha256": "e7a81ffcabd6153c1391b652b5813dbbf59703b7f3219a3d88edbfd23c1790ac",
+      "removed_files": 304,
+      "logical_removed_bytes": 2638214134,
+      "local_deletion_manifest": ".codex/marksmanship-graveyard-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-marksmanship-graveyard-2026-11-08",
+        ".codex/release-before-tuure-graveyard-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 132451667968,
+      "disk_free_after_bytes": 135100956672,
+      "observed_free_increase_bytes": 2649288704
     },
-    "audit": "docs/audits/marksmanship-graveyard-2026-11-08.json"
+    "audit": "docs/audits/marksmanship-graveyard-2026-11-08.json",
+    "fix_commit": "ce9150445505eab70fb15c0aff1d491f746fa8b8"
   },
   "latest_tuure_graveyard_2026_11_08": {
     "status": "DEPLOYED scoped Holy1085 cemetery recovery on shared map1489. Source96 ASAN/native64 with58 actual RepopAtGraveyard/near-transfer ACK/revival cases pass,paired old-instance/source counterfactuals and linked Release proof pass;canonical ready/shutdown0 clean. Full client/corpse/pet/group traversal remains separate.",
