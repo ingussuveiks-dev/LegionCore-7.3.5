@@ -1,6 +1,19 @@
+# Exact independently verified Shadow addition; restore the prior Arms method
+# before older unrelated whole-instance comparisons. Unknown edits still fail.
+function Remove-ShadowGraveyardScope([string]$source) {
+ if(!$source.Contains('Shadow graveyard: invalid native WorldSafeLocs')){return $source}
+ function ShadowCemeteryBlock([string]$text){$a=$text.IndexOf('        WorldLocation* GetClosestGraveYard(');if($a -lt 0){throw 'Missing Shadow cemetery scope'};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};return $text.Substring($a,$b-$a)}
+ $method=ShadowCemeteryBlock $source;$bytes=[Text.Encoding]::UTF8.GetBytes(($method -replace '\s',''))
+ $hash=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($bytes))).Replace('-','').ToLowerInvariant()
+ if($hash -ne '12ee9385c1543789bee6250d40fd8b65a3a0037a42c61fd6b6f9f566aabc85b0'){throw 'Shadow cemetery differs from its exact independently verified scope'}
+ $prior=(& git -C "$PSScriptRoot/../.." show '41e2b7743:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp') -join "`n"
+ if($LASTEXITCODE){throw 'Pinned pre-Shadow instance absent'}
+ return $source.Replace($method,(ShadowCemeteryBlock $prior))
+}
 # Preserve the exact, separately tested Arms cemetery addition while comparing
 # earlier whole-instance changes. Unknown callback edits still fail this guard.
 function Remove-ArmsGraveyardScope([string]$source) {
+ $source=Remove-ShadowGraveyardScope $source
  if(!$source.Contains('Stromkar graveyard: invalid native WorldSafeLocs')){return $source}
  function CemeteryBlock([string]$text){$a=$text.IndexOf('        WorldLocation* GetClosestGraveYard(');if($a -lt 0){throw 'Missing cemetery scope'};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};return $text.Substring($a,$b-$a)}
  $method=CemeteryBlock $source
