@@ -1,4 +1,48 @@
 {
+  "latest_devourer_graveyard_2026_11_08": {
+    "status": "DEPLOYED focused Devourer1078/map1607 authored cemetery facing and validated recovery. Source130 ASAN/native72 with64 real releases/ACKs,paired pinned64/68,selected stage/canonical proof,retained live escape/claim/door/capture/pickup/death and owned startup pass. Natural completion cache corrected separately;full client41924 remains unverified.",
+    "scope": "Only GetClosestGraveYard and MapManager/Scenario headers. Require actual1078 and preserve existing floor boundaries:5467 at0,5468 at1..2,5469 at3..4,5470 from5 including completed7. Use authored degree-to-radian facing and native index/identity/map/nonzero/finite/bounds checks. Bad required source contextual ERROR/null;absent/foreign Scenario ordinary null. No fields,SQL,progress/item/criteria/quest grant,direct Player teleport/resurrection or character reset. Actor-list/outro/update code unchanged.",
+    "checks": {
+      "source": "130 extracted actual callback ASAN cases:64 all7 stages+completed/four poses/repeat,56 source identity/map/zero/finite/bounds diagnostic refusals,8 absent/foreign controls,2 nonfinite death inputs. Pinned3465a1d48 source64 has zero facing and defaults on explicit cache7. Controlled cache inputs,not natural completion/full core ASAN.",
+      "native": "72 registered whole1607/Player/Scenario cases with64 actual ghost8326/RepopAtGraveyard/+2Z/near ACK/half-health/ghost+duplicate cleanup releases. Human+Orc/both active41924 statuses/all7 stages+real complete7/four poses/four VMAP floors/facing. Assert natural cached6 at completion;recovery preserves cache,quest/item/criteria and controlled instance outro timer/list. Four native ordered sequences cover AND both orders/duplicate refusal and real item/event OR variants;4 absent/foreign null controls.",
+      "native_limits": "Earlier stage/quest/pose and instance outro fields and event/loot/target inputs controlled. Type28 is BE_SPELL_TARGET,not CAST_SPELL29:Spell.cpp3108 forwards it directly to Scenario after Player group-type filtering;the test uses that native Scenario endpoint with actual player/caster. It does not claim a real spell cast;retained live escape46 separately exercises actual211689/211687/two-second cast/aura/door. No full LoadFromDB/SaveToDB/client traversal.",
+      "counterfactual": "Pinned3465a1d48 whole native instance68/release64 retains original0..6 and natural completed7/cached6/5470,with zero facing. Source64 explicit cache7 is separate. Current support,not historical executable. Old canonical rejects exact missing new proof;selected staged/canonical repair passes.",
+      "linked": "Actual registered1607 descriptor/factory/primary vtable/native InstanceMap cemetery slot;1078 guard,precise unsigned5/3/1 branch(native sbb selects5467/5468),indexed identity/map/nonzero/finite/radians,stable existing2e0 XYZ/map/facing/return and contextual null failure. Complete retained Devourer actual loot/claim/death and registered opening/capture/EventProcessor PE chain. No direct player/progression calls.",
+      "retained": "46 live native escape/cage/cache/door and16 native full-GUID/quest-receipt/child-pair claim contexts. Source53 door ASAN;capture sequence16 owner/helper variants and real EventMap/queue/owner/23s+5s+10s clocks;25 claim identity/attempt ASAN;full pickup27 denials/storage/full bag/null store/bank/native equip pair/retry;16 death owner/pet/guardian/charmer/null/visual/four-door cleanup ASAN. Source/cast/geometry/equipment endpoints remain distinct from client. Certificate6 preserves repeat equality and unknown-edit refusal. Mandatory canonical Scepter and retained Sharasdal/Tuure legacy proof pass.",
+      "prior_correction": "Natural native Dreadblades56/pinned52 with48 releases each and Kingslayers192/pinned184 with176 releases each pass without overwritten completion caches. Three explicit-cache baseline ASAN suites48/88/64 pass with corrected labels. Historical archives retained;no production rollback/data reset from this correction.",
+      "build": "Original Release game/scripts libraries and final-link paths;only instance_devourer.cpp production compilation changed. Separate stage EXE/MAP hashes promoted only with no user/unknown server. No global OutDir override;protected configs/certs/DLLs/data/required original libraries preserved.",
+      "runtime": "Owned PID=25276 reached fresh ready\nPASS owned PID=25276 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+      "preservation": "Full-column before/after promotion/startup hashes retain all LFG/spell destinations/scenario routes and scoped1607 SAI/conditions/spawns/templates. No persistent SQL/character mutation. Only owned PID25276 worldserver launched and gracefully stopped;no user/unknown process stopped. MariaDB left running."
+    },
+    "binary": {
+      "bnetserver": "cd3900137b06daaead07fe4b5be826105b120540059466e24e125241af116a9b",
+      "worldserver": "1ee2f839331ef919003dad6f1d7f020601ddc3bd471f99e7d769ab5ba4b1c7aa"
+    },
+    "diagnostics": {
+      "result": "Pre/post canonical+own crash/log snapshots wrap source/native/catalog/SQL/build/link/PE/retained/startup. Final passing runs exit0,stdout/stderr inspected,no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Canonical Crashes empty.",
+      "development": [
+        "Initial new native event-vector initializer missed its outer closing brace;corrected and compile passes. Initial ordered sequence emitted type28 only via Player,which deliberately filters group criteria;native Spell.cpp forwards this target event directly to Scenario. Correct endpoint retained with no core/group check disabled;repaired72/pinned68 full AND/OR sequences pass. Original compile/assertion/trace receipts preserved.",
+        "Initial selected PE composition used ins export from pickup rather than actual claim module;compose full claim module and retain every selected check. Final staged/canonical proof passes;initial KeyError output retained.",
+        "Retained door source certificate failed when a repeated normalization looked for already-removed ResetClones. Separate13c62965c accepts only exact pinned pre-opening class,adds6 repeat/unknown-field checks,and retains53 door ASAN. Its initial regression setup needed explicit escape-function import;fixed without production change. See certificate audit.",
+        "Prior completed-cache interpretation was too broad. Separate59034230c removes manual cache overwrite,asserts actual native notifications and corrects audits;ordinary completion reset claim withdrawn. Original fixed archives remain byte-identical.",
+        "Retained older extracted hosts show reviewed narrowing,unused local/parameter and fixture-shadow warnings;kept visible. New cemetery source/current+baseline and original production build add no warning."
+      ],
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "OPEN shared LINK2;untouched,not archived as resolved or truncated."
+    },
+    "unresolved": [
+      "Actual client death/release/corpse reclaim/facing,all floor access/phase rendering/re-entry/reconnect/pet/guardian/group/faction/camera and full41924 pickup/outro/return remain unverified. Native ACK and controlled criteria endpoints do not prove whole client traversal.",
+      "Combat/one-hit/owner/group credit unchanged;retained source/native death and cast endpoints are separate from real gameplay. No further character/item/AP/quest/checkpoint reset performed.",
+      "Independent source finding:old instance Update waits on cached7 for decorative outro209813/209814,while natural completion retains6. This patch preserves that code;its actual decoration/actor lifecycle needs a separate regression and repair,not a whole-chain completion claim.",
+      "Original Slaghammer intro/shared LINK2/mixed7111,Sharasdal living Lady1906/carry/finisher/native210247/waves/full40341,Survival/Fu Zan/Stromkar presentation and all36 whole chains remain OPEN."
+    ],
+    "next": "Investigate actual Devourer decorative-outro consumer against natural completed1078/cache6;preserve combat,actor lists and native spell eligibility. Current source finding only;no outro repair or client verification claimed.",
+    "cleanup": {
+      "status": "Pending verified archive and exact task-owned generated/stage/obsolete rollback cleanup;retain Devourer plus previous Kingslayers recovery generations."
+    },
+    "audit": "docs/audits/devourer-graveyard-2026-11-08.json"
+  },
   "latest_recovery_cache_test_correction_2026_11_08": {
     "date": "2026-11-08",
     "status": "CORRECTED test interpretation;no production or live data change in this correction",

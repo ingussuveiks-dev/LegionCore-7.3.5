@@ -4,6 +4,9 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "MapManager.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 
 
 class instance_devourer : public InstanceMapScript
@@ -43,34 +46,24 @@ public:
         }
         
         
-        WorldLocation* GetClosestGraveYard(float x, float y, float z) override
-        // OnPlayerDeath
+        WorldLocation* GetClosestGraveYard(float /*x*/, float /*y*/, float /*z*/) override
         {
-            // Init data
-            loc_res_pla.WorldRelocate(1607, x, y, z);
-
-            uint32 graveyardId = 5467;
-            
-            switch(getScenarionStep())
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1078)
+                return nullptr;
+            // Keep the earned floor boundaries, including the locked stage2
+            // escape, and retain the last cemetery at completed sentinel7.
+            uint32 step = scenario->GetCurrentStep();
+            uint32 graveyardId = step >= 5 ? 5470 : step >= 3 ? 5469 : step >= 1 ? 5468 : 5467;
+            WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId);
+            if (!gy || gy->ID != graveyardId || gy->MapID != 1607 ||
+                (gy->Loc.X == 0.0f && gy->Loc.Y == 0.0f && gy->Loc.Z == 0.0f) ||
+                !MapManager::IsValidMapCoord(1607, gy->Loc.X, gy->Loc.Y, gy->Loc.Z, gy->Loc.O * float(M_PI) / 180.0f))
             {
-                case 1:
-                case 2:
-                    graveyardId = 5468;
-                    break;
-                case 3:
-                case 4:
-                    graveyardId = 5469;
-                    break;
-                case 5:
-                case 6:
-                    graveyardId = 5470;
-                    break;
+                TC_LOG_ERROR("scripts", "Devourer graveyard: invalid native WorldSafeLocs %u for instance %u", graveyardId, instance->GetInstanceId());
+                return nullptr;
             }
-
-            if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
-            {
-                loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-            }
+            loc_res_pla.WorldRelocate(1607, gy->Loc.X, gy->Loc.Y, gy->Loc.Z, gy->Loc.O * float(M_PI) / 180.0f);
             return &loc_res_pla;
         }
         
