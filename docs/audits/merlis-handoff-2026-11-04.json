@@ -64,8 +64,26 @@
     ],
     "next": "Continue authentic living-Lady carry/1906 producer and failed-initial-wave-cast lifecycle investigation. Native authored wave movement is now covered;do not repeat stationary-only claims or certify client gameplay.",
     "cleanup": {
-      "status": "PENDING exact owned native-output archive/removal;no new staging or rollback generation created"
-    }
+      "status": "COMPLETE; original-byte/hash archive and exact owned native-output deletion/postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/sharasdal-wave-motion-2026-11-08",
+      "archive_manifest_sha256": "675439b909f1c060a28cb932e8332579ba1ad3cff179cd7184d9b61b772adf7f",
+      "archived_files": 220,
+      "removed_files": 83,
+      "logical_removed_bytes": 894982270,
+      "deletion_manifest": ".codex/sharasdal-wave-motion-2026-11-08/cleanup-deleted.json",
+      "deletion_manifest_sha256": "d04067e3398ca07a7aca1cd22fce417895898f128a1a4b425ac0e144b62ef788",
+      "retained_rollbacks": [
+        ".codex/release-before-sharasdal-wave-contact-2026-11-08",
+        ".codex/release-before-sharasdal-wave-cleanup-2026-11-08"
+      ],
+      "inactive_error_logs_reset": 0,
+      "postcheck": "PASS canonical EXEs/protected config-cert-DLLs/required original library/two retained rollback generations/unresolved bytes unchanged;no task-owned world/bnet left;active Crashes empty;mixed7111 intact",
+      "deferred": "Retain original Slaghammer crash/cache,LINK2/living-Lady/wave-contact OPEN evidence and personal backups. No new staging/runtime EXE needed for outstanding client checks. No production rebuild/deployment/new rollback was made.",
+      "disk_free_before_bytes": 132501266432,
+      "disk_free_after_bytes": 133395857408,
+      "observed_free_increase_bytes": 894590976
+    },
+    "test_commit": "07e817f18628c87a0f101f90e08a7e9f5030a753"
   },
   "latest_sharasdal_wave_contact_2026_11_08": {
     "status": "DEPLOYED focused Sharasdal native wave contact acknowledgement/retry. ASAN30/native32, original native6 counterfactual, selected old rejection/stage/canonical proof, retained wave/mover/Scepter and owned startup pass. Physical moving-path/client/full1066/all36 remain unverified.",
