@@ -19,9 +19,28 @@
       "Survival39427 follow-up,Stromkar/client visuals,all36 full chains and shared LINK2/mixed7111 remain OPEN. Original Slaghammer handoff20261106-121715-172/cache/research bytes remain untouched;no unexplained diagnostic archived as resolved."
     ],
     "cleanup": {
-      "status": "Verified fixed archive/exact temporary cleanup follows focused fix commit;retain new before-Blood-graveyard plus before-MM-graveyard recovery copies,retire older before-Tuure-graveyard after canonical checks."
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/blood-graveyard-2026-11-08",
+      "manifest_sha256": "25eca85ed7b37cc23d8385c452f2354b79043fc7c4756393bea4cd7b5c2c707e",
+      "original_files": 1848,
+      "cleanup_manifest_sha256": "17de4fad50d20ed147c4593f4b496eac119608cade10c581f921c82e35f4cab8",
+      "removed_files": 267,
+      "logical_removed_bytes": 2596519608,
+      "local_deletion_manifest": ".codex/blood-graveyard-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-blood-graveyard-2026-11-08",
+        ".codex/release-before-marksmanship-graveyard-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 132255686656,
+      "disk_free_after_bytes": 134852464640,
+      "observed_free_increase_bytes": 2596777984
     },
-    "audit": "docs/audits/blood-graveyard-2026-11-08.json"
+    "audit": "docs/audits/blood-graveyard-2026-11-08.json",
+    "fix_commit": "6eb224604a94f27279e130e4b4e862441fcbbc71"
   },
   "latest_marksmanship_graveyard_2026_11_08": {
     "status": "DEPLOYED Marksmanship972 stage-aware native cemetery recovery on shared1489. Source112 ASAN/native74 with66 actual release/ACK/revival cases,paired pinned counterfactuals,actual Herald47927 boundary4->5 and linked canonical proof pass;owned ready/shutdown0 clean. Full client traversal remains separate.",
