@@ -4,6 +4,11 @@ function Restore-DevourerCloneResetBoundary([string]$source){
  if($LASTEXITCODE){throw 'Pinned pre-clone-reset source missing'}
  $marker='class npc_akaari_shadowgore :';$body=Block $source $marker;$prior=Block $old $marker
  if(($body-replace '\s','') -ceq ($prior-replace '\s','')){return $source}
+ # An enclosing certificate may already have removed both clone reset and
+ # the independently checked opening. Accept only that exact pinned class.
+ $opening=(& git -C $repo show '48c20d9c6:src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp') -join "`n"
+ if($LASTEXITCODE){throw 'Pinned pre-opening capture source missing'}
+ if(($body-replace '\s','') -ceq ((Block $opening $marker)-replace '\s','')){return $source}
  $normalized=$body.Replace((Block $body 'void ResetClones('),'')
  $reset=Block $body 'void Reset(';$before=Block $prior 'void Reset('
  if(($reset.Replace('ResetClones();','')-replace '\s','') -cne ($before-replace '\s','')){throw 'Original capture Reset unexpectedly changed'}

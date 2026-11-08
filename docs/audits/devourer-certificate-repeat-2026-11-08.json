@@ -1,0 +1,9 @@
+{
+  "date": "2026-11-08",
+  "status": "PASS test-only certificate composition repair; production actor/core/data unchanged",
+  "cause": "The door suite composes the escape certificate twice. First normalization removes both clone Reset and opening. The clone-reset certificate accepted only its later pre-clone class,so the second pass attempted to extract ResetClones from the earlier pre-opening class and failed before compiling the door test.",
+  "fix": "Accept the exact pinned48c20d9c6 pre-opening class as an additional already-normalized boundary. Keep exact whole-class comparisons and every original Reset/clone delta check. Do not accept arbitrary classes missing ResetClones or replace production callbacks.",
+  "checks": "New Test-DevourerCertificates.ps1 passes6 cases:current escape/door composition,repeat normalization equality,and both reject an unrelated capture-field mutation. Repaired Test-DevourerDoor.ps1 passes53 ASAN contexts including actual source/native lookup/receipt,real prior leaves/ack-before-key/phase,missing actors/refused credit/cancellation/re-entry and earned no-key cleanup. Cast/geometry endpoints controlled;native/client separate.",
+  "diagnostics": "Initial missing-ResetClones source-certificate failure and initial test setup missing explicit escape-function import retained;fixed current runs use pre/post crash/log snapshots and exit0 with no new crash/appended DBErrors/server failure. No log suppression or production/data change.",
+  "cleanup": "Pending shared verified archive and task-owned generated cleanup with Devourer cemetery task;test source and unresolved diagnostics retained."
+}
