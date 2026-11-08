@@ -29,9 +29,28 @@
       "Reported Stromkar presentation/equipment/exit/singleton,Survival39427 and all36 whole client chains remain separate. No new video/audio traversal or character reset claimed."
     ],
     "cleanup": {
-      "status": "PENDING archive and exact task-owned staging/compiler/obsolete-rollback cleanup after focused commit;canonical no longer needs staging copy."
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/shadow-graveyard-2026-11-08",
+      "manifest_sha256": "27fe924be3318c21467d040cc7f44cc9e2ed01eaa52080e2a03a1d8cbd673a6d",
+      "original_files": 593,
+      "cleanup_manifest_sha256": "d3da606d6ace619e89a2a7aa3568cbc54008c755f41a27078a143794dba45fea",
+      "removed_files": 237,
+      "logical_removed_bytes": 2389627694,
+      "local_deletion_manifest": ".codex/shadow-graveyard-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-shadow-graveyard-2026-11-08",
+        ".codex/release-before-arms-graveyard-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 131644596224,
+      "disk_free_after_bytes": 134030467072,
+      "observed_free_increase_bytes": 2385870848
     },
-    "audit": "docs/audits/shadow-graveyard-2026-11-08.json"
+    "audit": "docs/audits/shadow-graveyard-2026-11-08.json",
+    "fix_commit": "ae6912df31bbaef5f16aeb2662850ee3f0b5f63c"
   },
   "latest_arms_graveyard_2026_11_08": {
     "status": "DEPLOYED focused Arms1037 class checkpoint recovery on shared1539. Source149 ASAN/native94 with82 actual releases/ACKs, pinned counterfactuals, both real native boundaries, selected staged/canonical proof and retained shared instance/handoff/loot checks pass. Owned startup clean. Full client traversal remains separate.",
