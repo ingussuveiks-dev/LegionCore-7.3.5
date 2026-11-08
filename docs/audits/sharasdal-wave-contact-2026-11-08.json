@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-08",
+  "status": "DEPLOYED focused Sharasdal native wave contact acknowledgement/retry. ASAN30/native32, original native6 counterfactual, selected old rejection/stage/canonical proof, retained wave/mover/Scepter and owned startup pass. Physical moving-path/client/full1066/all36 remain unverified.",
+  "cause": "The attached6547/custom11160 native action46598 has hitMaxCount1 and ENTER-only dispatch. Generic DoAction consumed its one hit immediately after CastSpell, although actual VehicleJoinEvent is asynchronous or boarding can fail. Missing kit/aborted join then left the player in affectedPlayers without another ENTER;restoring the kit or removing the obstruction did not recover the ride. Original actual native6 reproduced four lost-contact cases and two ordinary successful controls before rebuilding game.lib.",
+  "scope": "Only the exact owned living105251 wave in map1600/scenario1066 with full caster+target GUID match and original single id1/CAST46598/flags1056840/hit1/charges0 action gains ENTER|UPDATE_TARGET at native209132 effect0 ApplyAuraPeriod1000 (trigger209184). Set both runtime metadata and initial update timer. Keep attempted casts unconsumed;real seat0 passenger/base acknowledgement consumes the existing native budget without another cast. VehicleJoinEvent notifies the actual owned AT after native seat/GUID/transport spline handoff and before optional content AI. No new fields,SQL,manual boarding,item/progress/quest/cemetery changes,teleport or guessed surrender threshold.",
+  "local_evidence": {
+    "history": "Reviewed fetched origin/main2bee4580c and local current source/diffs/native assets. Previous989c221cd wave optional-kit cleanup retained;92853bde7 Devourer actual completion retained. No external implementation copied.",
+    "data": "Fresh readonly MariaDB full-EOF/empty-stderr query confirms6547/custom11160/spell209132 attachedRadius6/Height8/offset3.5 with no areatrigger_data row;one action id1/moment1/type0/flags1056840/spell46598/hit1/amount1/charges0;no matching script/condition override. Creature105251 uses Vehicle4717/npc_sharasdal_waterwall. Matching26972 retained catalog confirms effect0 PERIODIC_TRIGGER23/trigger209184/ApplyAuraPeriod1000,effect1 aura395/6547,hardcoded46598 control-vehicle236 and native seat16540 noncontrol. No data migration.",
+    "contract": "Traced native AreaTrigger FillCustomData/copied list-node actions/geometric UpdateAffectedList/affectedPlayers/ActionOnUpdate/DoAction and native Spell control aura/VehicleJoinEvent Execute/AI replacement VehicleReset/seat0 acknowledgement. Generic action/counter/charge/mover/AI behavior outside exact additions is whole-source pinned2bee4580c.",
+    "original_native": {
+      "base": "2bee4580c",
+      "exe_sha256": "b925e1b734c1875b935bd00fd913d8895fe941c5ef504f33aa7132df8dd0c11b",
+      "runtime": "build-extractors\\runtime-test\\sharasdal-wave-contact-native\\20261108-210122-629",
+      "purpose": "Original native contact6 counterfactual executed before game-library rebuild;temporary until repaired native/Release regression and archival."
+    }
+  },
+  "checks": {
+    "source": "Whole native source certificate removes only exact reviewed Fill/late preflight/noncasting acknowledgement/defer/Vehicle event notification additions then compares entire AreaTrigger.cpp/Vehicle.cpp against2bee4580c;whole header hash. Actual helper ASAN30 verifies full ownership identity incl high/low GUID halves,scenario/world/live/deletion/map/real+custom/spell identity and exact action count/flags/budget/period/moment refusals.",
+    "native": "32 contexts:actual registered whole wave factory,real geometric native AT loader/contact and46598/queued VehicleJoinEvent on Draenei+Orc. Normal contact,missing-kit and aborted join stationary999+1ms recovery,optional AI retirement and actual AIM_Initialize cancellation/retry,late phase/death/range/teleport deferral/recovery,concurrent visitor,pet/guardian first,foreign scenario/shared other actor/custom budget generic controls,new actual AT GUID lifecycle,no replay after dismount. All retain quest40341 incomplete/item128911 absent/scenario step3. Only private TEMP shadows;no persistent character or world data edits.",
+    "counterfactual": "Original2bee actual native6 executed before game-library rebuild;four missing-kit/aborted-join contacts consumed hit1 and refused subsequent recovery;two ordinary native contacts boarded. Original binary/input/map/PDB hashes recorded until repaired regression verified and redundant outputs deleted. Old canonical selected PE is explicitly expected to reject at missing acknowledged-contact helper;paired repaired stage/canonical pass.",
+    "linked": "Strict composed PE verifier returns through retained registered wave factory/AI/native POINT cleanup/acquisition/ascent/combat/gauntlet/death/cemetery chain and new actual native Fill/DoAction/VehicleJoinEvent. Verifies ownership helper/full GUID comparisons/exact native action/native period+initial timer,seat0+base acknowledgement,counter deferral and noncasting branch,late eligibility/occupied refusal;selected native Event vtable slot1 and seat/GUID/spline before AT notification/content callback. No progression/item/teleport calls.",
+    "retained": "Wave source8 ASAN/native12 and selected stage prove previous optional-kit completed cleanup retained. WarlockRegression shared vehicle/mover source checks pass. Canonical selected Devourer outro and Sharasdal legacy-login proofs and mandatory Scepter source/Release pass.",
+    "build": "Original Release game.lib/scripts.lib and original generated final-link inputs;AreaTrigger.cpp and Vehicle.cpp recompiled with helper. Separate stage;four EXE/MAP hash promotion only absent user/unknown world/bnet;no global OutDir. Config/cert/DLL/extracted data/original required libraries preserved.",
+    "runtime": "Owned PID=18860 reached fresh ready\nPASS owned PID=18860 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "preservation": "Before/after full-column hashes unchanged for all LFG entrances/spell destinations/scenario_data and scoped map1600 five actors SmartAI/conditions/spawns/templates. Only owned canonical startup PID gracefully shutdown0/exit0/gone;no user process stopped.",
+    "limits": "Native probes use controlled earlier quest/stage/pose/phase and actual geometric stationary contact/event endpoints;full native Release core is not ASAN. No physical moving wave/swept collision/complete route/camera/pet portrait/client traversal certification."
+  },
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "2bf0483979bd89f86bc0143c1f68d8bde7f2408e8cbc41b995bc6ead2673e31d",
+    "bnet_sha256": "ea10779ec11b5ee351710cc4b73b67eaa914cdc8d3161740c8013a70cf3ea2b1",
+    "rollback": ".codex/release-before-sharasdal-wave-contact-2026-11-08"
+  },
+  "diagnostics": {
+    "final": "Pre/post canonical+own crash/log snapshots wrap SQL/source/native/build/link/PE/retained/startup. Passing final checks exit0,no new/changed crash files,no appended DBErrors or unexplained server warnings/errors/assertions. Owned stderr empty. Canonical active Crashes empty.",
+    "development": [
+      "First repaired native6 failed scoped period installation because prototype used effect.Amplitude (coefficient),not native ApplyAuraPeriod;corrected against actual loader/native data and rebuilt. Final native6/32 pass. Original failure preserved,not an expected-broken baseline.",
+      "New helper ASAN fixture initially shadowed header-local scenario(C4459);renamed fake global testScenario. First rename missed one ternary reference and failed compile;fixed. Final ASAN30 clean. No native production warning suppression.",
+      "Expanded mode4 initially expected pending native join to survive actual AIM_Initialize. Native VehicleReset legitimately aborts it;fixture now verifies recovery at next native1000ms period. Final32 pass;production guard not weakened.",
+      "First selected PE proof assumed only one GetPassenger call in generic DoAction. Actual native handler also has unrelated later calls;proof now selects the real scoped call after exact-action admission. Original failed proof preserved;final complete chain passes."
+    ],
+    "preserved_open": "Mixed canonical DBErrors7111 SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 unchanged/untruncated. Original Slaghammer native intro/cache,Nov7/8 shared LINK2,living-Lady and earlier wave-contact OPEN evidence retained. No log emptied or crash moved merely to hide symptoms."
+  },
+  "unresolved": [
+    "Actual physical moving-wave contact/route interruptions,full client40341/1066/camera/pet portrait and all36 remain pending. This fix covers actual queued-seat acknowledgement/retry,not whole gameplay traversal.",
+    "Living Lady1906/209457/209487 surrender/carry/finisher and210247 follower cleanup remain implementation work;no authentic threshold/timing established and no substitute invented.",
+    "Existing shared LINK2/Slaghammer unresolved intro evidence and other recorded client gaps remain OPEN. No character reset."
+  ],
+  "next": "Continue physical moving-wave/attached-contact lifecycle investigation and authentic living-Lady activation evidence;keep whole-chain/client checks explicit.",
+  "cleanup": {
+    "status": "PENDING mandatory original-byte/hash archive and exact owned temporary cleanup after focused commit"
+  }
+}

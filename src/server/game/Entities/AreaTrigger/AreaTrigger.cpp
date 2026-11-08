@@ -27,6 +27,7 @@
 #include "UpdateFieldFlags.h"
 #include "Vehicle.h"
 #include "VMapFactory.h"
+#include "SharasdalWaveRide.h"
 
 AreaTriggerScaleData::AreaTriggerScaleData()
 {
@@ -391,6 +392,25 @@ void AreaTrigger::FillCustomData(Unit* caster)
 
     switch (GetSpellId())
     {
+        case SharasdalWaveRide::Wave:
+        {
+            // Keep the original contact action, with an owned retry at the
+            // wave's native periodic cadence until actual boarding succeeds.
+            if (SharasdalWaveRide::Owns(this, caster) && atInfo.actions.size() == 1)
+            {
+                AreaTriggerAction& action = atInfo.actions.front();
+                SpellEffectInfo const* effect = GetSpellInfo()->GetEffect(EFFECT_0);
+                if (SharasdalWaveRide::NativeAction(action) && action.moment == AT_ACTION_MOMENT_ENTER &&
+                    effect->ApplyAuraName == SPELL_AURA_PERIODIC_TRIGGER_SPELL &&
+                    effect->TriggerSpell == 209184 && effect->ApplyAuraPeriod == SharasdalWaveRide::Period)
+                {
+                    action.moment = AreaTriggerActionMoment(SharasdalWaveRide::Moment);
+                    atInfo.updateDelay = SharasdalWaveRide::Period;
+                    _updateDelay = SharasdalWaveRide::Period;
+                }
+            }
+            break;
+        }
         case 191034: // Starfall
         {
             if (caster->HasAura(200726)) // Celestial Downpour (PvP Talent)
@@ -972,6 +992,17 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
     else if (action.action->hitMaxCount && int32(action.hitCount) >= action.action->hitMaxCount)
         return;
 
+    bool waveRide = SharasdalWaveRide::Enabled(this, _caster, atInfo) &&
+        SharasdalWaveRide::NativeAction(*action.action) && caster && caster->IsPlayer() && unit == _caster;
+    Vehicle* waveVehicle = waveRide ? unit->GetVehicleKit() : nullptr;
+    bool boardedWave = waveVehicle && waveVehicle->GetPassenger(0) == caster && caster->GetVehicleBase() == unit;
+    if (waveRide && !boardedWave && (!caster->IsInWorld() || caster->IsPreDelete() || !caster->IsAlive() ||
+        caster->GetMap() != GetMap() || !caster->InSamePhase(unit) || caster->ToPlayer()->IsBeingTeleported()))
+        return;
+    if (waveRide && !boardedWave && (!waveVehicle || !waveVehicle->HasEmptySeat(0) ||
+        unit->HasAura(SharasdalWaveRide::Ride) || caster->GetVehicleBase()))
+        return; // Missing/busy kit or pending native join; never replace that join.
+
     bool CallScriptAreaTriggerCast = false;
 
     switch (action.action->actionType)
@@ -980,6 +1011,9 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
         {
             if (_on_remove)
                 return;
+
+            if (boardedWave)
+                break; // Native seat acknowledgement consumes the budget without another cast.
 
             if (caster)
             {
@@ -1257,6 +1291,9 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
                 if (creature->IsAIEnabled)
                     creature->AI()->OnAreaTriggerCast(_caster, unit, action.action->spellId, GetSpellId());
     }
+
+    if (waveRide && !boardedWave)
+        return; // A cast attempt is not the queued VehicleJoinEvent acknowledgement.
 
     if (action.action->hitMaxCount < 0)
         affectedPlayersForAllTime.push_back(unit->GetGUID());

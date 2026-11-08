@@ -32,6 +32,7 @@
 #include "EventProcessor.h"
 #include "Player.h"
 #include "Battleground.h"
+#include "SharasdalWaveRide.h"
 
 Vehicle::Vehicle(Unit* unit, VehicleEntry const* vehInfo, uint32 creatureEntry, uint32 recAura) :
     UsableSeatNum(0), _me(unit), _vehicleInfo(vehInfo), _creatureEntry(creatureEntry), _status(STATUS_NONE),
@@ -1195,6 +1196,13 @@ bool VehicleJoinEvent::Execute(uint64 eventTime, uint32)
             Passenger->UpdateObjectVisibility(true); // not need, buged visible data when player move to vehicle
         }
     }
+
+    // Commit only after the real native seat/transport handoff. This also
+    // works while the wave's optional content AI is unavailable or replaced.
+    if (Target->GetEntry() == 105251 && Target->GetMapId() == 1600)
+        if (AreaTrigger* trigger = Target->GetAreaObject(SharasdalWaveRide::Wave))
+            if (SharasdalWaveRide::Enabled(trigger, Target, trigger->GetAreaTriggerInfo()))
+                trigger->AffectUnit(Passenger, AT_ACTION_MOMENT_ENTER);
 
     if (Target->IsCreature())
     {
