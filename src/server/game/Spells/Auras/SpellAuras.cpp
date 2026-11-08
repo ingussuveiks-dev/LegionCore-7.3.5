@@ -2797,17 +2797,10 @@ bool Aura::CanStackWith(Aura const* existingAura) const
 
     if (HasEffectType(SPELL_AURA_CONTROL_VEHICLE) && existingAura->HasEffectType(SPELL_AURA_CONTROL_VEHICLE))
     {
-        Vehicle* veh = nullptr;
-        if (GetOwner()->ToUnit())
-            veh = GetOwner()->ToUnit()->GetVehicleKit();
-
-        if (!veh)           // We should probably just let it stack. Vehicle system will prevent undefined behaviour later
-            return true;
-
-        if (!veh->GetAvailableSeatCount())
-            return false;   // No empty seat available
-
-        return true; // Empty seat available (skip rest)
+        // Compatibility must not evict existing riders to make room. Native
+        // Vehicle::AddPassenger owns capacity and explicit-seat replacement;
+        // its aborted join removes only the unsuccessful incoming aura.
+        return true;
     }
 
     if (HasEffectType(SPELL_AURA_SHOW_CONFIRMATION_PROMPT) || HasEffectType(SPELL_AURA_SHOW_CONFIRMATION_PROMPT_WITH_DIFFICULTY))

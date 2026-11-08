@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-08",
+  "status": "DEPLOYED focused native vehicle aura capacity repair. Original2/full native16,whole aura source certificate,selected original rejection/stage/canonical PE,retained aura/Warlock/wave/Scepter and owned startup pass. Actual client/shared vehicle traversal remain separate.",
+  "cause": "Aura::CanStackWith returned false for two control-vehicle236 auras when the kit had no free seat. Unit::_RemoveNoStackAurasDueToAura interprets false as incompatibility and removes an existing rider aura. That freed a seat and let a new automatic ride board. Native AddPassenger already owns full-seat refusal and explicit-seat replacement;capacity was incorrectly applied at the earlier destructive compatibility layer.",
+  "scope": "Only make two native control-vehicle auras compatible regardless of seat capacity. Do not remove the authoritative Vehicle::AddPassenger capacity/explicit-seat checks,queued event/abort handling or any unrelated aura exclusivity/single-target/proc/charge rule. No new fields,SQL dependency,grant,forced boarding,teleport or log/check suppression.",
+  "checks": {
+    "counterfactual": "Two actual full kits105251/4717/16540 and105298/4720/16549+16550 reproduce eviction. Initial pre-build original-library counterfactual retained;reusable baseline compiles whole pinned798e39578 SpellAuras.cpp into the probe with current otherwise unchanged native support. It is an explicitly expected-broken native method counterfactual,not an old complete server binary or ordinary passing run. Source outside the repaired branch is exactly pinned.",
+    "native": "16 contexts:actual1/2-seat kits and real native46598 Aura/Unit/VehicleJoinEvent. Empty admission,full automatic refusal retaining every actual rider/removing only failed incoming aura,last free seat,explicit first and last seat replacement affecting only requested occupant,existing-rider refresh,and retry after real seat release. NPC plus valid Draenei/Orc Player incoming actors,actual seat/base identities;scenario/criteria unchanged. Native Release core is not ASAN.",
+    "source": "Exact reviewed control-vehicle pair branch;replace that branch with pinned old text then compare entire SpellAuras.cpp ignoring whitespace to798e39578. Every unrelated aura rule remains unchanged.",
+    "linked": "Strict PE/map timestamp match;actual Unit::_AddAura/nonstack dispatcher calls actual Aura::CanStackWith. Both236 HasEffectType tests join immediate true compatibility;native effect handler->_EnterVehicle->AddPassenger remains,actual inlined VehicleJoinEvent vtable/Execute slot and EventProcessor scheduling/Abort removal selected. Expected old canonical rejects this exact gate,stage and new canonical return through complete proof.",
+    "retained": "AuraScript reentry extracted native dispatch and Warlock/mover regressions pass. Canonical Scepter source/Release and retained Sharasdal wave scopeASAN30/native32/full selected acquisition/ascent/gauntlet/death/cemetery proof chain pass.",
+    "build": "Only production SpellAuras.cpp changes;original Release game/scripts libraries and original final-link inputs,private stage then four EXE/MAP hash promotion. No OutDir override. Protected configs/certs/DLLs/extracted data and required original libraries retained.",
+    "runtime": "Owned PID=24108 reached fresh ready\nPASS owned PID=24108 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "preservation": "No persistent character writes. Before/after readonly full-column route/LFG/spell destination/scenario_data/scoped Sharasdal source22/actors/SmartAI fingerprints unchanged from prior verified snapshot. Companion209457 selector migration is a separate focused data repair/audit.",
+    "limits": "Native clock/earlier map/scenario/pose and actor setup controlled;no actual client/camera/pet portrait or all vehicle/whole artifact chain claim. Intentional explicit-seat eviction and other pre-existing aura-specific exclusivity rules remain native;this fixes capacity-driven removal only."
+  },
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "2ce886b0a3609d8ef5b2a8a0309b63c77649802a22b590277b5c77147d3bdbfe",
+    "bnet_sha256": "0ab273b61eec2d0428e131989bbc962c12242ee40dde44a34b9d3e7e0627b6b0",
+    "rollback": "C:/wamp64/www/LegionCore-7.3.5/.codex/release-before-vehicle-aura-capacity-2026-11-08"
+  },
+  "diagnostics": {
+    "final": "Canonical+own pre/post crash/log snapshots wrap native/pinned baseline/build/link/PE/retained/startup checks. All final checks exit0,no new/changed crash files,no appended DBErrors or unexplained server warnings/errors/assertions. Owned PID24108 fresh ready/shutdown0/exit0/gone;stderr empty. No user/unknown server stopped.",
+    "development": [
+      "Lady carry full-two-seat regression initially failed because the existing core actually displaced an occupied rider. Added separate capacity proof before changing core. Not dismissed as a fixture failure.",
+      "First capacity baseline expected both riders to be removed. Native nonstack iteration removes one then observes new free capacity;corrected exact expectation to one eviction and takeover of that actual seat. Two-case original counterfactual then passed before repair and in reusable pinned method mode. Original failed expectation/diagnostics preserved.",
+      "First PE verifier assumed outlined VehicleJoinEvent constructor. Compiler inlines its vtable install;actual vtable/Execute slot plus EventProcessor AddEvent now selected. Old rejection initially hit an earlier branch-layout assertion without the expected diagnostic string;added specific gate message. Final paired old rejection/new selected proof passes. No production behavior weakened."
+    ],
+    "preserved_open": "Mixed canonical DBErrors7111 SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 unchanged/untruncated. Old Slaghammer intro/cache and shared LINK2/living-Lady research remain OPEN."
+  },
+  "unresolved": [
+    "Actual client/shared vehicle camera/pet portrait/whole-chain checks remain separate.",
+    "Full living-Lady producer/threshold/dialogue/finisher and old LINK2/Slaghammer issues remain OPEN;no character reset."
+  ],
+  "next": "Finish separate native209457 source13 selector data repair and preserve full living-Lady activation evidence gap.",
+  "cleanup": {
+    "status": "PENDING shared original-byte/hash archive and exact owned output cleanup after both focused commits"
+  }
+}
