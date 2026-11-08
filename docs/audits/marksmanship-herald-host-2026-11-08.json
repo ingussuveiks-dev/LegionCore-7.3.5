@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-08",
+  "status": "TEST-ONLY repaired Herald host;source ASAN and TEMP SQL pass. No production C++,SQL or canonical binary changed by this fix.",
+  "cause": "The extracted current SmartScript SET_DATA action now names CreatureAI/GameObjectAI,checks a missing current AI and emits a receiver entry/GUID warning. The old Herald fake host omitted these types and accessors,so retained regression compilation failed before gameplay assertions.",
+  "fix": "Add compatible fake AI aliases,virtual entry/GUID/string diagnostics and an observable warning endpoint;preserve actual extracted SET_DATA code. Add one missing-current-AI/replacement control proving diagnostic and no replay of consumed one-shot into a different AI. Expose real AddressSanitizer compilation and explicit private compiler PDB in Test-MarksmanshipHeraldChallenge.",
+  "checks": "Actual sender/receiver native timer/condition/nearest/SET_DATA/SmartAI/TALK host and full-schema TEMP conditions/SmartAI refusals/idempotence pass under /fsanitize=address /Zi. Existing compiler unused-parameter warnings remain visible. All normal cases produce no diagnostic;controlled missing-AI case observes exactly one source-host warning. No new crash/appended server warnings/errors/assertions or DBErrors.",
+  "limits": "Fake world/scenario/text/AI endpoints are adapters,not actual Herald combat/client/audio or receiver recreation. Missing current AI does not gain generic replay/recovery;that remains separate. Initial calls passed legacy unrecognized flags;final explicit AddressSanitizer switch is verified in compiler command,not inferred from those calls.",
+  "evidence": ".codex/marksmanship-graveyard-2026-11-08/herald-adapter.log and herald-adapter-evidence;original failed compile final-Herald.log retained.",
+  "cleanup": "Temporaries retained only for the ongoing independently staged Marksmanship cemetery regression/canonical promotion. Archive and exact cleanup will be recorded by its focused audit after deployed checks. Mixed7111/LINK2 and unresolved Slaghammer evidence remain OPEN and untouched."
+}

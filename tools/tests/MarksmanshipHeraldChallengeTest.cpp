@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <string>
 using uint32=uint32_t;using uint8=uint8_t;using int64=int64_t;
 enum SMART_EVENT {SMART_EVENT_UPDATE=60,SMART_EVENT_LINK=61,SMART_EVENT_DATA_SET=38,SMART_EVENT_TEXT_OVER=52,SMART_EVENT_WAYPOINT_START=39,SMART_EVENT_WAYPOINT_REACHED=40};
 enum {SMART_EVENT_UPDATE_IC=0,SMART_EVENT_UPDATE_OOC=1,SMART_EVENT_HEALTH_PCT=2,SMART_EVENT_TARGET_HEALTH_PCT=3,
@@ -18,6 +19,10 @@ enum {SMART_EVENT_UPDATE_IC=0,SMART_EVENT_UPDATE_OOC=1,SMART_EVENT_HEALTH_PCT=2,
     CONDITION_SCENARION_STEP=44,SMART_ACTION_SET_DATA=45,SMART_ACTION_TALK=1,SMART_TARGET_CLOSEST_CREATURE=19};
 #define TC_LOG_DEBUG(...) ((void)0)
 #define TC_LOG_ERROR(...) assert(false)
+static unsigned nativeWarnings=0;
+template<class... Args>static void ObserveWarning(char const*,char const*,Args...){++nativeWarnings;}
+#define TC_LOG_WARN(...) ObserveWarning(__VA_ARGS__)
+#define SI64FMTD "%lld"
 struct Unit;struct Creature;struct Player;struct GameObject;struct SpellInfo;struct SmartScript;
 #ifdef XALATATH_ACTOR_RETRY_TEST
 constexpr SMART_EVENT SMART_EVENT_SUMMONED_UNIT=static_cast<SMART_EVENT>(17),SMART_EVENT_SPELLHIT=static_cast<SMART_EVENT>(8),SMART_EVENT_RESET=static_cast<SMART_EVENT>(25);
@@ -36,7 +41,7 @@ struct WayPoint {uint32 id=1;float x=0,y=0,z=0;};
 struct MotionMaster {uint32 moves=0;void MovePoint(uint32 identity,float,float,float){assert(identity==1);++moves;}};
 #define CAST_AI(type, object) static_cast<type*>(object)
 #endif
-struct ObjectGuid {Unit* unit=nullptr;static ObjectGuid Empty;};ObjectGuid ObjectGuid::Empty;
+struct ObjectGuid {Unit* unit=nullptr;static ObjectGuid Empty;std::string ToString()const{return "fixture-guid";}};ObjectGuid ObjectGuid::Empty;
 struct InstanceMap {uint32 GetInstanceId(){return 42;}} instanceMap;
 struct Map {InstanceMap* ToInstanceMap(){return &instanceMap;}} worldMap;
 struct WorldObject {
@@ -50,6 +55,7 @@ struct WorldObject {
 #endif
     bool instanced=true,expired=false;std::vector<Creature*> nearby;
     virtual ~WorldObject()=default;virtual Unit* ToUnit(){return nullptr;}virtual Creature* ToCreature(){return nullptr;}virtual Player* ToPlayer(){return nullptr;}virtual GameObject* ToGameObject(){return nullptr;}
+    virtual uint32 GetEntry(){return 0;}virtual ObjectGuid GetGUID(){return {};}
     bool InInstance(){return instanced;}Map* GetMap(){return &worldMap;}bool IsQuestObjectExpired(){return expired;}
     bool HasQuestObjectScope(){return false;}bool CanTargetQuestObject(WorldObject*){return true;}
     Creature* FindNearestCreature(uint32,float,bool=true);bool IsWithinDistInMap(Creature*,float);float GetDistance(Creature*);
@@ -89,6 +95,7 @@ struct SmartAI {
     void SetDespawnTime(uint32 value){despawnTime=value;}bool StartPath(bool,uint32,bool,Unit*);
 #endif
 };
+using CreatureAI=SmartAI;using GameObjectAI=SmartAI;
 struct GameObject:WorldObject {SmartAI ai;SmartAI* AI(){return &ai;}};
 struct Creature:Unit {
 #ifdef XALATATH_ACTOR_RETRY_TEST
@@ -99,7 +106,7 @@ struct Creature:Unit {
     uint32 deaths=0;bool isDead(){return !alive;}void Kill(Creature* target){assert(target==this);alive=false;++deaths;}
 #endif
     uint32 identity=0,speeches=0,lastSpeech=99;float distance=1;bool alive=true,sameMap=true,samePhase=true,available=true,combat=false;
-    SmartAI ai;Creature* ToCreature()override{return this;}SmartAI* AI(){return &ai;}
+    SmartAI ai;bool aiAvailable=true;Creature* ToCreature()override{return this;}SmartAI* AI(){return aiAvailable?&ai:nullptr;}
     bool IsAlive(){return alive;}uint32 GetEntry(){return identity;}bool isInCombat(){return combat;}bool HasUnitState(uint32){return false;}
 #ifdef MARKSMANSHIP_FINAL_STAGE_TEST
     Player* selectedPlayer=nullptr;float playerDistance=1;
@@ -368,6 +375,10 @@ int main(int argc,char** argv){
         for(Unit* source:{&pet,&guardian,static_cast<Unit*>(&player),static_cast<Unit*>(nullptr)})receiverGuard.receiver.ProcessEventsFor(SMART_EVENT_DATA_SET,source,1,1);
         assert(!receiverGuard.herald.speeches&&!receiverGuard.receiver.mEvents[0].runOnce);scenarioManager.scenario.step=4;receiverGuard.Tick();assert(receiverGuard.herald.speeches==1&&!receiverGuard.receiver.mLastInvoker.unit);}
     {Fixture timing;timing.Tick();timing.receiver.TextTick(8000);assert(timing.receiver.mUseTextTimer&&!timing.receiver.mTextTimer&&!timing.vereesa.speeches);timing.receiver.TextTick(1);assert(!timing.receiver.mUseTextTimer&&timing.vereesa.speeches==1&&timing.vereesa.lastSpeech==10);timing.receiver.TextTick(1000);assert(timing.vereesa.speeches==1);}
+    assert(!nativeWarnings);
+    {Fixture replaced;auto before=nativeWarnings;replaced.herald.aiAvailable=false;replaced.Tick();assert(nativeWarnings==before+1&&!replaced.herald.speeches&&replaced.sender.mEvents[0].runOnce);replaced.herald.aiAvailable=true;replaced.Tick();assert(nativeWarnings==before+1&&!replaced.herald.speeches);}
     std::cout<<"PASS: native timer/repeat/conditions/nearest/SET_DATA/SmartAI/TALK reproduce lost and premature Herald challenge; native972 stage4 and living50yd actor preserve loaded retry and exactly-once speech/8000ms text timer. World/grid/scenario/text hosts are not client traversal or audio verification.\n";
+    std::cout<<"PASS current SET_DATA receiver API and missing-current-AI diagnostic;one-shot is not replayed into a replacement AI. Runtime receiver recovery remains separate.\n";
+    return 0;
 }
 #endif

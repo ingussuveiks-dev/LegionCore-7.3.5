@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary)
+param([switch]$VerifyReleaseBinary,[switch]$AddressSanitizer)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/marksmanship-herald-challenge"
@@ -95,7 +95,8 @@ $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
 $source=Get-Content "$repo/src/server/game/AI/ScriptedAI/ScriptedCreature.h" -Raw
 [IO.File]::WriteAllText("$out/NearestHelper.inc",(Section $source 'inline Creature* GetClosestCreatureWithEntry(' 'inline GameObject* GetClosestGameObjectWithEntry('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/MarksmanshipHeraldChallengeTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/rows.tsv`" `"$out/conditions.tsv`"`n")
+$flags=if($AddressSanitizer){'/fsanitize=address /Zi'}else{''}
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $flags /Fd`"$out/compiler.pdb`" /I`"$out`" `"$PSScriptRoot/MarksmanshipHeraldChallengeTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/rows.tsv`" `"$out/conditions.tsv`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Herald challenge regression failed'}
 if($VerifyReleaseBinary){
  $previousPython=$env:PYTHONPATH
