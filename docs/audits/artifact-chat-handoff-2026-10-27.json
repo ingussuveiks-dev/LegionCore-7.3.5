@@ -24,10 +24,29 @@
       "Hodir1146 cemetery recovery is investigated but unimplemented; previous fallback retained. Survival39427 follow-up, Stromkar/client visuals, all36 whole-chain traversal and shared LINK2/mixed7111 remain OPEN. Preserve original Slaghammer handoff20261106-121715-172/cache/research bytes."
     ],
     "cleanup": {
-      "status": "PENDING archive/hash verification and exact task-owned generated-output deletion after focused fix commit; no redundant executable is required for pending client gameplay checks."
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/hodir-landing-admission-2026-11-08",
+      "manifest_sha256": "ea8a2e4da4137ae13cd326c607f3e05cfce8c4923c8f6bacb0dc2035a03f4a3f",
+      "original_files": 1479,
+      "cleanup_manifest_sha256": "c05fa937c95ce4537545ede0123544f85d1551fdce341d7719b538959844d813",
+      "removed_files": 293,
+      "logical_removed_bytes": 1350683993,
+      "local_deletion_manifest": ".codex/hodir-graveyard-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-blood-graveyard-2026-11-08",
+        ".codex/release-before-marksmanship-graveyard-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 133258715136,
+      "disk_free_after_bytes": 134600306688,
+      "observed_free_increase_bytes": 1341591552
     },
     "audit": "docs/audits/hodir-landing-admission-2026-11-08.json",
-    "next": "Hodir1146 scoped safe cemetery/release/revival; client campaign42974 and all36 whole chains remain separate."
+    "next": "Hodir1146 scoped safe cemetery/release/revival; client campaign42974 and all36 whole chains remain separate.",
+    "fix_commit": "3c9299c9edb1351b82da85b097c64c654b56b5f3"
   },
   "latest_blood_graveyard_2026_11_08": {
     "status": "DEPLOYED Blood940 barrier-aware death recovery on shared1489. Source156 ASAN/native102 with90 actual releases/ACKs/revivals,paired pinned counterfactuals,both real barrier boundaries and selected canonical proof pass;owned ready/shutdown0 clean. Full client traversal remains separate.",
