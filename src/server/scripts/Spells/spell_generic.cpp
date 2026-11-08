@@ -3254,7 +3254,7 @@ class spell_gen_touch_of_elune : public AuraScript
 
     void UpdateStatAura()
     {
-        Unit* target = GetTarget();
+        Unit* target = GetUnitOwner();
         if (!target)
             return;
 

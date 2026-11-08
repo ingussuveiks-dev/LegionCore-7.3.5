@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-08",
+  "title": "Touch of Elune minute update",
+  "status": "AUTOMATED_VERIFIED_CLIENT_PENDING",
+  "batch": "seven-lifecycle-fixes-2026-11-08",
+  "baseline_revision": "6dc3bc59f",
+  "production": "src/server/scripts/Spells/spell_generic.cpp",
+  "classes": [
+    "spell_gen_touch_of_elune"
+  ],
+  "cause": "OnAuraUpdate has no AuraApplication. UpdateStatAura called application-only GetTarget, emitted a script error and never changed the day/night stat aura after initial application.",
+  "repair": "Use GetUnitOwner in the shared stat updater. Preserve real apply/remove hooks, realm-local hour 6/18 boundaries, 60000ms polling, mutually exclusive native154796/154797 and no duplicate cast.",
+  "checks": [
+    "Pinned original initial night application succeeds; minute tick at daybreak increments the native getter diagnostic counter and leaves night aura active.",
+    "Repaired extracted full class with native no-application getter/dispatcher passes ASAN:59999+1 tick,6/17/18h,overshoot,existing stat,remove,missing owner.",
+    "Real native26972 aura154748 and native owner/OnAuraUpdate dispatcher restores removed current stat buff at60000ms without GetTarget diagnostics."
+  ],
+  "source_regression_command": "tools/tests/Test-SevenSpellLifecycles.ps1 -Case Elune [-Baseline / -AddressSanitizer]",
+  "release": "tools/tests/verify_seven_lifecycle_release.py",
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "87b31fa62508b777b14cac0f03749f1c8d86e51b835f6ed6f13c597f46d99edd",
+    "bnet_sha256": "88e9938d3dfc92e325fc63af501e62258fe54cd52e7ff0baa003fa14d8676f3b",
+    "owned_startup": "PID30496:fresh ready,server shutdown0,exit0,gone;stderr empty;configs/certs/DLLs hash-preserved"
+  },
+  "diagnostics": "Final paired checks clean after pre/post snapshots;expected original UAF captured separately. Original fixture MMAP initialization crash and incorrect isAlive API compile attempt repaired and paired with passing native/build runs. Legacy C5055 in untouched methods and native fixture conversion warnings retained;no production warning introduced by these seven changes. Mixed canonical7111-byte LINK2 log unchanged/untruncated. Full archive/cleanup record in batch closeout.",
+  "client_pending": [
+    "Actual client realm day/night transition/stat display and relog."
+  ],
+  "not_claimed": "No actual client traversal performed;not a complete Lady finale or all36 chains;no character reset,SQL mutation,quest credit or item grants."
+}
