@@ -66,6 +66,25 @@
     "Sharasdal living Lady1906/carry/finisher/native210247/waves/full40341,original Slaghammer handoff intro/shared LINK2/mixed7111,Survival/Fu Zan/Stromkar presentation and all36 whole chains remain OPEN."
   ],
   "cleanup": {
-    "status": "Pending verified issue archive and exact task-owned generated/staging/obsolete rollback cleanup;retain Dreadblades and previous Sharasdal entrance recovery generations."
-  }
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/dreadblades-graveyard-2026-11-08",
+    "manifest_sha256": "bcbf2a521ba7f2be83fb17435efcf9aa2c1d2ef3195e15f8a3c2edd1ff994b9b",
+    "original_files": 588,
+    "cleanup_manifest_sha256": "6cde65e10e9cd46fe733d7ad79c980710c0ec7709e7a1779f490f0e58c3bfb63",
+    "removed_files": 229,
+    "logical_removed_bytes": 1557434533,
+    "local_deletion_manifest": ".codex/dreadblades-graveyard-2026-11-08/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-dreadblades-graveyard-2026-11-08",
+      ".codex/release-before-sharasdal-entrance-2026-11-08"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 132159377408,
+    "disk_free_after_bytes": 133717041152,
+    "observed_free_increase_bytes": 1557663744
+  },
+  "fix_commit": "181c85664984a010cd978aefc5ad754f3d428635"
 }

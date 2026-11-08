@@ -5,5 +5,26 @@
   "fix": "Add actual SharedDefines.h enum GAMEOBJECT_TYPE_DOOR=0 to the controlled host. Its GameObject still returns chest type3, so the real native chest state/AI/script dispatch continues unchanged. Do not remove the production door guard or skip extracting the actual callback.",
   "checks": "Test-DreadbladesPickup.ps1 -AddressSanitizer passes complete pickup/actual loot storage and state dispatch: real death admission, full bags/storage retry, pending cast/equip pair, no automatic item or early/double reward, missing actors and stale claimant cleanup. Services are controlled; actual equip/scene/network/client remain separate.",
   "diagnostics": "Both failed compile and repaired ASAN use canonical/own pre/post crash/log snapshots; no new crash/appended DBErrors/server failure. Failed compiler log and original generated callback/diagnostic bytes retained in .codex/dreadblades-graveyard-2026-11-08/pickup-initial-evidence; archive follows focused cemetery deployment. Mixed7111 LINK2 remains untouched.",
-  "cleanup": "Pending shared verified diagnostic archive and task-owned generated cleanup with the focused Dreadblades cemetery task; test source retained."
+  "cleanup": {
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/dreadblades-graveyard-2026-11-08",
+    "manifest_sha256": "bcbf2a521ba7f2be83fb17435efcf9aa2c1d2ef3195e15f8a3c2edd1ff994b9b",
+    "original_files": 588,
+    "cleanup_manifest_sha256": "6cde65e10e9cd46fe733d7ad79c980710c0ec7709e7a1779f490f0e58c3bfb63",
+    "removed_files": 229,
+    "logical_removed_bytes": 1557434533,
+    "local_deletion_manifest": ".codex/dreadblades-graveyard-2026-11-08/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-dreadblades-graveyard-2026-11-08",
+      ".codex/release-before-sharasdal-entrance-2026-11-08"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 132159377408,
+    "disk_free_after_bytes": 133717041152,
+    "observed_free_increase_bytes": 1557663744
+  },
+  "fix_commit": "0f6224081110bbc4e22e3e72018cffb288e2913f"
 }
