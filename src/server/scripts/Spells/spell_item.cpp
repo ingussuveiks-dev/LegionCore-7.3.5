@@ -3901,48 +3901,53 @@ class spell_item_golem : public AuraScript
 {
     PrepareAuraScript(spell_item_golem);
 
-    uint16 timer;
+    uint32 timer = 500;
+    bool _ownsInteraction = false;
 
-    bool Load() override
+    void ReleaseInteraction(Player* player)
     {
-        timer = 500;
-        return true;
+        if (_ownsInteraction && !player->HasAuraType(SPELL_AURA_ALLOW_USING_GAMEOBJECTS_WHILE_MOUNTED))
+            player->RemoveFlag(PLAYER_FIELD_LOCAL_FLAGS, PLAYER_LOCAL_FLAG_CAN_USE_OBJECTS_MOUNTED);
+        _ownsInteraction = false;
     }
 
     void OnUpdate(uint32 diff, AuraEffect* /*aurEff*/)
     {
-        Player* caster = GetCaster()->ToPlayer();
-        if (!caster)
+        Unit* owner = GetUnitOwner();
+        Player* player = owner ? owner->ToPlayer() : nullptr;
+        if (!player)
             return;
-
-        if (caster->GetMap()->IsBattlegroundOrArena() || caster->GetMap()->IsRaid() || caster->GetMap()->IsDungeon())
-            return;
-
-        if (timer <= diff)
+        if (timer > diff)
         {
-            if (caster->HasSkill(182))
-            {
-                timer = 2000;
-
-                if (caster->FindNearestGameObjectOfType(GAMEOBJECT_TYPE_GATHERING_NODE, 3.0f))
-                {
-                    if (!caster->HasFlag(PLAYER_FIELD_LOCAL_FLAGS, PLAYER_LOCAL_FLAG_CAN_USE_OBJECTS_MOUNTED))
-                        caster->SetFlag(PLAYER_FIELD_LOCAL_FLAGS, PLAYER_LOCAL_FLAG_CAN_USE_OBJECTS_MOUNTED);
-                }
-                else
-                {
-                    if (caster->HasFlag(PLAYER_FIELD_LOCAL_FLAGS, PLAYER_LOCAL_FLAG_CAN_USE_OBJECTS_MOUNTED))
-                        caster->RemoveFlag(PLAYER_FIELD_LOCAL_FLAGS, PLAYER_LOCAL_FLAG_CAN_USE_OBJECTS_MOUNTED);
-                }
-            }
-        }
-        else
             timer -= diff;
+            return;
+        }
+        timer = 2000;
+        Map* map = player->GetMap();
+        if (!map || map->IsBattlegroundOrArena() || map->IsRaid() || map->IsDungeon() ||
+            !player->HasSkill(182) || !player->FindNearestGameObjectOfType(GAMEOBJECT_TYPE_GATHERING_NODE, 3.0f))
+        {
+            ReleaseInteraction(player);
+            return;
+        }
+        if (!player->HasFlag(PLAYER_FIELD_LOCAL_FLAGS, PLAYER_LOCAL_FLAG_CAN_USE_OBJECTS_MOUNTED))
+        {
+            player->SetFlag(PLAYER_FIELD_LOCAL_FLAGS, PLAYER_LOCAL_FLAG_CAN_USE_OBJECTS_MOUNTED);
+            _ownsInteraction = true;
+        }
+    }
+
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* owner = GetUnitOwner())
+            if (Player* player = owner->ToPlayer())
+                ReleaseInteraction(player);
     }
 
     void Register() override
     {
         OnEffectUpdate += AuraEffectUpdateFn(spell_item_golem::OnUpdate, EFFECT_0, SPELL_AURA_MOUNTED);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_item_golem::OnRemove, EFFECT_0, SPELL_AURA_MOUNTED, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

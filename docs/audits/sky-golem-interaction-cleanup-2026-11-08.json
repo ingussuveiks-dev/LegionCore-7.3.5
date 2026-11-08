@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-08",
+  "title": "Sky Golem mounted-interaction ownership",
+  "status": "AUTOMATED_VERIFIED_CLIENT_PENDING",
+  "batch": "seven-lifecycle-fixes-2026-11-08",
+  "baseline_revision": "6dc3bc59f",
+  "production": "src/server/scripts/Spells/spell_item.cpp",
+  "classes": [
+    "spell_item_golem"
+  ],
+  "cause": "Sky Golem134359 sets the shared mounted-interaction player flag near a herb but has no removal hook. Losing Herbalism or entering an excluded map also leaves the flag set. A missing caster is dereferenced before null checking.",
+  "repair": "Resolve the actual aura owner. Track only this script's grant;release it on removal,skill loss,excluded map or leaving the node. Preserve a preexisting flag and native SPELL_AURA_ALLOW_USING_GAMEOBJECTS_WHILE_MOUNTED providers;retain500ms initial and2000ms repeat cadence.",
+  "checks": [
+    "Pinned original grants interaction and leaves it active after dismount.",
+    "ASAN full class:initial delay,node admission,dismount,skill loss,excluded map,native provider overlap,preexisting flag,missing owner.",
+    "Native26972 mounted effect0 has no independent allow-using-objects aura. Native Player cleanup removes an owned flag and preserves unrelated flag. Nearest-node admission endpoint remains modeled."
+  ],
+  "source_regression_command": "tools/tests/Test-SevenSpellLifecycles.ps1 -Case Golem [-Baseline / -AddressSanitizer]",
+  "release": "tools/tests/verify_seven_lifecycle_release.py",
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "87b31fa62508b777b14cac0f03749f1c8d86e51b835f6ed6f13c597f46d99edd",
+    "bnet_sha256": "88e9938d3dfc92e325fc63af501e62258fe54cd52e7ff0baa003fa14d8676f3b",
+    "owned_startup": "PID30496:fresh ready,server shutdown0,exit0,gone;stderr empty;configs/certs/DLLs hash-preserved"
+  },
+  "diagnostics": "Final paired checks clean after pre/post snapshots;expected original UAF captured separately. Original fixture MMAP initialization crash and incorrect isAlive API compile attempt repaired and paired with passing native/build runs. Legacy C5055 in untouched methods and native fixture conversion warnings retained;no production warning introduced by these seven changes. Mixed canonical7111-byte LINK2 log unchanged/untruncated. Full archive/cleanup record in batch closeout.",
+  "client_pending": [
+    "Client gathering,dismount,profession loss,instance travel and overlapping mounted-interaction items."
+  ],
+  "not_claimed": "No actual client traversal performed;not a complete Lady finale or all36 chains;no character reset,SQL mutation,quest credit or item grants."
+}
