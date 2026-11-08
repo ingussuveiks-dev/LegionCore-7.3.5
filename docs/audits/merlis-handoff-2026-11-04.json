@@ -1,4 +1,44 @@
 {
+  "latest_sharasdal_lady_carry_2026_11_08": {
+    "status": "DEPLOYED focused209457 native implicit-target repair;paired original6/TEMP native32/actual live-row native32 and selected seat-capacity Release pass. This makes the carry primitive usable;full living-Lady surrender/producer/dialogue/finisher and client/full1066/all36 remain OPEN.",
+    "scope": "Add six source13/effectMask1/ElseGroup0 conditions:target0 living105298/map1600/scenario1066 step4 and caster1 living104856. Preserve native150-yard nearest matching target search,actual queued vehicle/seat admission,original effect1 self dummy,native kit/seat poses/exit/cleanup. Do not grant health/items/quest/scenario credit,change thresholds or implement a guessed finale. Native condition31 supports entry only;no incompatible modern GUID value3 or new C++ ScriptName.",
+    "checks": {
+      "counterfactual": "Original pre-change native carry6/current full NPC models:explicit Grash argument still results no vehicle,self effect0 true;original EXE/map/PDB/source/input hashes preserved until paired fix checks/archive. Reusable TEMP mode clears only its private copied target scope to reproduce the original absence,then applies the repaired migration. Expected-broken original is not labeled a successful encounter.",
+      "migration": "Native private TEMP conditions clone,real SQL migration twice,idempotent six rows. Extra unexpected source-group row and altered caster-entry graph make the actual safety predicate false before DML;restore exact TEMP rows then repair passes. Guard enforces original-or-exact-applied target graph,actual NPC template/spawns and no alternate spell binding. No persistent shadow-test edits.",
+      "native": "32 repaired contexts:valid Draenei/Orc Player witnesses with actual NPC templates/native ordinary209457/source13 loader/VehicleJoinEvent. Correct Grash despite closer Erunak or other vehicle;nearest second matching Grash retains native policy;occupied first seat retains native free-seat1 choice. Missing kit/wrong caster/foreign scenario/wrong stage/dead target/phase/range/wrong-entry/full-kit refused;full actual seats retained with coupled core fix. Actual repeat/exit/retry,transport GUID and no health/item/quest/scenario/criteria mutation verified.",
+      "live": "Canonical updater actually applied2026_11_08_05,readback exactly six intended rows. Live mode selectively copies actual World scope and loads it through native ConditionMgr without clearing/applying migrations;all32 actual live-row cases pass. Effect0 has six conditions,effect1 none. This is selective native/live-data proof,not client traversal.",
+      "linked": "Canonical selected native capacity/nonstack/queued vehicle path proof passes;required core083a20215 prevents capacity-driven aura eviction. Matching canonical EXEs/configuration hashes retained after source/data tests.",
+      "retained": "Core capacity pinned original2/repaired16,whole aura source certificate,canonical Scepter and Sharasdal wave scopeASAN30/native32/full selected proof chain pass. Shared aura reentry and Warlock/mover checks pass.",
+      "runtime": "Owned PID=24108 reached fresh ready\nPASS owned PID=24108 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+      "preservation": "Only persistent gameplay data change is the six209457 source13 rows;updater tracking changes expected. Full-column LFG/spell destinations/scenario_data and scoped1600 NPC/source22/SmartAI/template/spawn fingerprints equal the previous verified snapshot. No persistent character/account/quest/item/AP/reset writes. Native account cleanup isolated by empty TEMP account tables/readonly pools.",
+      "limits": "Native earlier quest/stage/map/poses and injected faults controlled;no actual client/controller producer or full encounter. Entry conditions do not bind a DB spawn/full GUID and preserve nearest matching Grash/free-seat choice. Future producer must bind actual362095/362092 and original attempt,check kit/desired seat/pending owner,acknowledge actual boarding,handle mind-control/combat/dialogue/finisher/cleanup;CastSpell OK/aura presence alone is insufficient."
+    },
+    "migration": {
+      "path": "sql/updates/world/2026_11_08_05_sharasdal_grash_carry_target.sql",
+      "sha256": "fd6097b06faad9d4616a650508a2fad7a0a8a1f9d0da33e833df693fac3eccdd",
+      "new_cpp_script_names": false,
+      "promotion": "Kept outside live updater until matching capacity EXE ready;promoted canonical EXEs first,then migration;owned startup applies it and actual live-row native checks pass."
+    },
+    "deployment": {
+      "canonical": "build-extractors/bin/Release",
+      "world_sha256": "2ce886b0a3609d8ef5b2a8a0309b63c77649802a22b590277b5c77147d3bdbfe",
+      "bnet_sha256": "0ab273b61eec2d0428e131989bbc962c12242ee40dde44a34b9d3e7e0627b6b0",
+      "capacity_fix_commit": "083a2021538413165c2d668b31eec00b9043618b"
+    },
+    "diagnostics": {
+      "final": "All final native/public/live/guard/build/PE/source/preservation/startup checks exit0;no new/changed crashes,no appended DBErrors or unexplained server warning/error/assertion. Owned PID24108 fresh ready/shutdown0/exit0/gone;stderr empty. No user server stopped.",
+      "development": "Initial data-only native full-seat case exposed the separately repaired real aura-capacity bug;not hidden as a test artifact. Initial original6 findings are explicitly research/counterfactual,not passing repaired runs. Private preparer initially matched a repeated runner fragment before any write and stopped;tightened exact scope. All original compiler/probe/PE diagnostics retained with the specific core repair audit.",
+      "preserved_open": "Mixed7111 canonical LINK2 log unchanged/untruncated,old Slaghammer crash/cache and all prior/new authentic living-Lady OPEN research retained. No error-log reset."
+    },
+    "unresolved": [
+      "Full living-Lady activation/surrender threshold/actual1906 acknowledgement/Grash finisher/native210247 follower cleanup are still implementation work;no authentic lethal schedule established.",
+      "Client camera/pet portrait/rendering/full40341/1066/all36 and prior LINK2/Slaghammer gaps remain OPEN;no character reset."
+    ],
+    "next": "Continue authentic full-GUID living-Lady producer/1906/finisher lifecycle;reuse proven carry target/native capacity primitives and preserve remaining client gaps.",
+    "cleanup": {
+      "status": "PENDING shared original-byte/hash archive and exact owned output cleanup"
+    }
+  },
   "latest_vehicle_aura_capacity_2026_11_08": {
     "status": "DEPLOYED focused native vehicle aura capacity repair. Original2/full native16,whole aura source certificate,selected original rejection/stage/canonical PE,retained aura/Warlock/wave/Scepter and owned startup pass. Actual client/shared vehicle traversal remain separate.",
     "scope": "Only make two native control-vehicle auras compatible regardless of seat capacity. Do not remove the authoritative Vehicle::AddPassenger capacity/explicit-seat checks,queued event/abort handling or any unrelated aura exclusivity/single-target/proc/charge rule. No new fields,SQL dependency,grant,forced boarding,teleport or log/check suppression.",
