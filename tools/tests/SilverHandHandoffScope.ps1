@@ -1,5 +1,19 @@
+# Preserve the exact, separately tested Arms cemetery addition while comparing
+# earlier whole-instance changes. Unknown callback edits still fail this guard.
+function Remove-ArmsGraveyardScope([string]$source) {
+ if(!$source.Contains('Stromkar graveyard: invalid native WorldSafeLocs')){return $source}
+ function CemeteryBlock([string]$text){$a=$text.IndexOf('        WorldLocation* GetClosestGraveYard(');if($a -lt 0){throw 'Missing cemetery scope'};$b=$text.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($text[$b] -eq '{'))-([int]($text[$b] -eq '}'));++$b};return $text.Substring($a,$b-$a)}
+ $method=CemeteryBlock $source
+ $bytes=[Text.Encoding]::UTF8.GetBytes(($method -replace '\s',''))
+ $hash=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($bytes))).Replace('-','').ToLowerInvariant()
+ if($hash -ne 'f0f8d5ed0b93b767a1997c0cebcbb66cb26a8586bbc0e0cec553eefdb335edb3'){throw 'Arms cemetery differs from the exact independently verified scope'}
+ $prior=(& git -C "$PSScriptRoot/../.." show '96ca7646c:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp') -join "`n"
+ if($LASTEXITCODE){throw 'Pinned pre-Arms instance absent'}
+ return $source.Replace($method,(CemeteryBlock $prior)).Replace('#include "MapManager.h"','')
+}
 # Verify the exact Priest-only addition before older whole-instance comparisons.
 function Remove-SilverHandHandoffScope([string]$source) {
+ $source=Remove-ArmsGraveyardScope $source
  $source=$source.Replace("`r",'')
  $include='#include "../../Priest/slaghammer_handoff.h"'
  $base='struct instance_silver_hand_InstanceMapScript : public InstanceScript, public SlaghammerHandoff::Instance'

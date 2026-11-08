@@ -1,6 +1,7 @@
 // Whole registered native1539 instance; downstream ritual AI action endpoint is observed.
 #define SLAGHAMMER_COMPANION_SUPPORT_ONLY
 #include "SlaghammerCompanionNative.cpp"
+#include "MapManager.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/silver_hand_first_fight.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Priest/slaghammer_handoff.h"
 #include "SilverHandInstance.inc"

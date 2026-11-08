@@ -6,6 +6,7 @@
 #include "ScriptedCreature.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include "MapManager.h"
 #include "silver_hand_first_fight.h"
 #include "../../Priest/slaghammer_handoff.h"
 
@@ -49,6 +50,24 @@ public:
 
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override
         {
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (scenario && scenario->GetScenarioId() == 1037)
+            {
+                // Keep the outdoor start until actual49022 accepts tomb entry.
+                // Only49058 at6->7 acknowledges the passage into Zakajz's prison.
+                uint32 step = scenario->GetCurrentStep();
+                uint32 safeId = step < 4 ? 5339 : step < 7 ? 5335 : 5705;
+                WorldSafeLocsEntry const* safe = sWorldSafeLocsStore.LookupEntry(safeId);
+                if (!safe || safe->ID != safeId || safe->MapID != 1539 || !(safe->Loc.X || safe->Loc.Y || safe->Loc.Z) ||
+                    !MapManager::IsValidMapCoord(1539, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f))
+                {
+                    TC_LOG_ERROR("scripts", "Stromkar graveyard: invalid native WorldSafeLocs %u for instance %u", safeId, instance->GetInstanceId());
+                    return nullptr;
+                }
+                loc_res_pla.WorldRelocate(1539, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f);
+                return &loc_res_pla;
+            }
+            // Other1539 scenarios retain their existing general safe location.
             loc_res_pla.WorldRelocate(1539, x, y, z);
 
             uint32 graveyardId = 5281;

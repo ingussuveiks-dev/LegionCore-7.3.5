@@ -1,5 +1,6 @@
 # Native instance-owned static Slaghammer handoff; distinct fault and OPEN intro modes.
-param([switch]$CastFailure,[switch]$ObserveOpenIntro)
+param([switch]$CastFailure,[switch]$ObserveOpenIntro,[string]$ProbeName="SlaghammerHandoffNative")
+if($ProbeName -notmatch '^[A-Za-z][A-Za-z0-9_]*$'){throw 'Invalid isolated probe name'}
 if($CastFailure -and $ObserveOpenIntro){throw 'Fault/reproduction modes are separate'}
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/slaghammer-handoff-native/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
@@ -41,7 +42,7 @@ try{
  $env:_LINK_="$previousLink /DEBUG /PDB:`"$out/native.pdb`" /MAP:`"$out/native.map`""
  Push-Location "$repo/build-extractors/bin/Release"
  try{try{& "$repo/tools/tests/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
-  & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ../tests/SlaghammerHandoffNative.cpp -ProbeName SlaghammerHandoffNative -OutputFile "$out/native.tsv" *> "$out/catalog.log"
+  & "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ../tests/SlaghammerHandoffNative.cpp -ProbeName $ProbeName -OutputFile "$out/native.tsv" *> "$out/catalog.log"
   if(!$? -or $LASTEXITCODE){throw "Native Slaghammer handoff failed: $out/catalog.log"}
  }}catch{
   if(!$CastFailure -or !(Test-Path "$out/native.tsv")){throw}
@@ -57,5 +58,5 @@ try{
 if((Get-FileHash $configPath).Hash -ne $hash){throw 'Canonical configuration changed'}
 
 foreach($path in $inputs){if((Get-FileHash $path).Hash -ne $hashes[$path]){throw 'Native finale source/final-link inputs changed during execution'}}
-@{Inputs=$hashes;Probe=(Get-FileHash "$repo/build-extractors/runtime-test/legion-legendary-catalog/SlaghammerHandoffNative.exe").Hash;NativeReleaseNotAsan=$true}|ConvertTo-Json|Set-Content "$out/native-inputs.json"
+@{Inputs=$hashes;Probe=(Get-FileHash "$repo/build-extractors/runtime-test/legion-legendary-catalog/$ProbeName.exe").Hash;NativeReleaseNotAsan=$true}|ConvertTo-Json|Set-Content "$out/native-inputs.json"
 Get-Content "$out/native.tsv"|Where-Object {$_ -match '^(PASS|CASE|CONTROL|COUNTERFACTUAL)'}

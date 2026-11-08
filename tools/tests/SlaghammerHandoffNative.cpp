@@ -2,6 +2,7 @@
 // Earlier accepted intro is explicitly controlled; unknown LINK2 remains OPEN.
 #define SLAGHAMMER_COMPANION_SUPPORT_ONLY
 #include "SlaghammerCompanionNative.cpp"
+#include "MapManager.h"
 #include "PlayerDefines.h"
 #include "GameObjectModel.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/silver_hand_first_fight.h"
