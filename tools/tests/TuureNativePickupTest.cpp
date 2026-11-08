@@ -15,7 +15,7 @@ using uint8=uint8_t;using uint16=uint16_t;using uint32=uint32_t;using uint64=uin
 using LootState=uint32;using SpellCastResult=uint32;using SpellEffIndex=uint32;struct ItemPosCountVec:std::vector<uint32>{void emplace_back(std::uint16_t,uint32){assert(false);}};
 enum {CLASS_PRIEST=5,QUEST_STATUS_NONE=0,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,GO_READY=1,GO_ACTIVATED=2,GO_JUST_DEACTIVATED=3,
  GAMEOBJECT_FIELD_FLAGS=17,GO_FLAG_NOT_SELECTABLE=16,INVENTORY_SLOT_BAG_0=255,EQUIPMENT_SLOT_MAINHAND=15,
- SPELL_CAST_OK=0,SPELL_FAILED_BAD_TARGETS=1,TYPEID_PLAYER=4,NULL_BAG=255,NULL_SLOT=255,GAMEOBJECT_TYPE_FISHINGNODE=17,
+ SPELL_CAST_OK=0,SPELL_FAILED_BAD_TARGETS=1,TYPEID_PLAYER=4,NULL_BAG=255,NULL_SLOT=255,GAMEOBJECT_TYPE_DOOR=0,GAMEOBJECT_TYPE_FISHINGNODE=17,
  EFFECT_0=0,EFFECT_ALL=255,SPELL_EFFECT_ANY=255,SPELL_EFFECT_TELEPORT_L=252,SCENE_COMPLETE=3,
  SPELL_EFFECT_HANDLE_HIT_TARGET=1,SPELL_EFFECT_HANDLE_HIT=2,TARGET_FLAG_UNIT_MASK=1,TARGET_FLAG_GAMEOBJECT_MASK=2};
 #include "CriteriaTypes.inc"
@@ -31,9 +31,9 @@ struct Map{void ScriptsStart(uint32,uint32,Unit*,WorldObject*){}} liveMap,otherM
 struct Unit:WorldObject{ObjectGuid guid{1};FunctionProcessor functions;virtual Player* ToPlayer(){return nullptr;}virtual uint32 GetTypeId(){return 3;}
  ObjectGuid GetGUID()const{return guid;}virtual Map* GetMap(){return &liveMap;}ZoneScript* GetZoneScript(){return nullptr;}InstanceScript* GetInstanceScript(){return nullptr;}
  SpellCastResult CastSpell(Unit*,uint32,bool=false);void AddDelayedEvent(uint64 delay,std::function<void()>&& fn){functions.AddDelayedEvent(delay,std::move(fn));}};
-struct ItemTemplate{uint32 GetArtifactID()const{return 1;}uint32 GetInventoryType()const{return 13;}};
+struct ItemTemplate{uint32 GetArtifactID()const{return 1;}uint32 GetInventoryType()const{return 17;}};
 constexpr uint32 INVTYPE_2HWEAPON=17;
-struct Item{ItemTemplate const*GetTemplate()const{static ItemTemplate t;return &t;}uint32 entry=128825;ObjectGuid guid{21},child;uint16 position=0xFF20;uint32 GetEntry()const{return entry;}ObjectGuid GetChildItem()const{return child;}ObjectGuid GetGUID()const{return guid;}bool IsEquipped()const{return position==0xFF0F;}uint16 GetPos()const{return position;}};
+struct Item{ItemTemplate const*GetTemplate()const{static ItemTemplate t;return &t;}uint32 entry=128825;ObjectGuid guid{21},child;uint16 position=0xFF20;uint32 GetEntry()const{return entry;}ObjectGuid GetChildItem()const{return child;}ObjectGuid GetGUID()const{return guid;}bool IsEquipped()const{return position==0xFF0F;}uint16 GetPos()const{return position;}uint8 GetBagSlot()const{return uint8(position>>8);}uint8 GetSlot()const{return uint8(position&0xFF);}};
 struct Progress{uint32 Counter=0;};
 struct Scenario{uint32 id=1085,step=6;std::map<uint32,Progress> progress{{47656,{1}}};uint32 GetScenarioId(){return id;}uint32 GetCurrentStep(){return step;}
  Scenario& GetAchievementMgr(){return *this;}auto const* GetCriteriaProgressMap(){return &progress;}};
@@ -51,7 +51,7 @@ struct GameObject;struct Unit;
 struct ScriptManager{ template<class... Args> bool CanAutoEquipLoot(Args&&...){return false;}void OnGameObjectLootStateChanged(GameObject* go,uint32 state,Unit* player);} scripts;auto sScriptMgr=&scripts;
 struct Player:Unit{
  bool world=true,contact=true,alive=true,teleport=false,rewarded=false,owned=false,bank=false,room=true,storage=true,phase=true,visible=true,los=true,equipRoom=true,swapBlocked=false,gm=false;
- bool synchronous=false,canDelay=false,m_bHasDelayedTeleport=false,scene=false,launched=false,record=true,hideSource=false;uint32 klass=5,status=3,instance=42,mapId=1489,casts=0,castResult=0,acquisitions=0,departures=0,explicitRewards=0,grants=0,errors=0,swaps=0,teleports=0,aborts=0;
+ bool synchronous=false,canDelay=false,m_bHasDelayedTeleport=false,scene=false,launched=false,record=true,hideSource=false;uint32 klass=5,questState=3,instance=42,mapId=1489,casts=0,castResult=0,acquisitions=0,departures=0,explicitRewards=0,grants=0,errors=0,swaps=0,teleports=0,aborts=0;
  float distance=1;Map* map=&liveMap;QuestStatusData quest;Item parent,old{12345,{31},{},0xFF0F};Item* mainhand=&old;WorldLocation m_teleport_dest{0,0,0,0,0};uint32 m_teleport_options=0;
  std::vector<std::pair<uint32,bool>> castFlags;std::vector<uint32> castIds,otherEvents;std::vector<std::function<void()>> queued;std::function<void()> onCredit;
  Player* ToPlayer()override{return this;}uint32 GetTypeId()override{return 4;}bool IsInWorld(){return world;}bool CanContact(){return world&&contact;}bool IsAlive(){return alive;}
@@ -59,8 +59,8 @@ struct Player:Unit{
  bool IsBeingTeleported()const{return teleport;}uint32 getClass(){return klass;}uint32 GetMapId(){return mapId;}Map* GetMap()override{return map;}uint32 GetInstanceId(){return instance;}
 #include "Pending.inc"
  bool InSamePhase(GameObject*){return phase;}bool canSeeOrDetect(GameObject*){return visible;}bool IsWithinLOSInMap(GameObject*){return los;}bool IsWithinDistInMap(GameObject*,float radius){return distance<=radius;}
- bool GetQuestRewardStatus(uint32 id){assert(id==41993);return rewarded;}uint32 GetQuestStatus(uint32 id){assert(id==41993);return status;}
- QuestStatusData* getQuestStatus(uint32 id){assert(id==41993);quest.Status=status;return record?&quest:nullptr;}void AddQuestDelayedEvent(uint32,uint64,std::function<void()>&&);
+ bool GetQuestRewardStatus(uint32 id){assert(id==41993);return rewarded;}uint32 GetQuestStatus(uint32 id){assert(id==41993);return questState;}
+ QuestStatusData* getQuestStatus(uint32 id){assert(id==41993);quest.Status=questState;return record?&quest:nullptr;}void AddQuestDelayedEvent(uint32,uint64,std::function<void()>&&);
  bool HasItemCount(uint32 id,uint32=1,bool withBank=false){assert(id==128825);return owned||(withBank&&bank);}Item* GetItemByEntry(uint32 id){assert(id==128825);return owned?&parent:nullptr;}
  Item* GetItemByPos(uint32 bag,uint32 slot){assert(bag==255&&slot==15);return mainhand;}bool HasSceneStatus(uint32 id,uint32 state){assert(id==1265&&state==3);return scene;}
  Item* AddItem(uint32 id,uint32 count){assert(id==128825&&count==1);++grants;if(!room||!storage)return nullptr;owned=true;return &parent;}
@@ -69,8 +69,9 @@ struct Player:Unit{
  InventoryResult CanStoreNewItem(uint32,uint32,ItemPosCountVec& dest,uint32 id,uint32 count,void*,bool){assert(id==128825&&count==1);if(!room)return EQUIP_ERR_INVENTORY_FULL;dest.push_back(1);return EQUIP_ERR_OK;}
  Item* StoreNewItem(ItemPosCountVec const&,uint32,bool,uint32,std::set<uint32> const&,std::vector<uint32> const&,uint32,bool refund=false,bool autoEquip=false) {assert(!refund&&!autoEquip);if(!storage)return nullptr;owned=true;return &parent;}
  void SendEquipError(InventoryResult,void*,void*,uint32){++errors;}void SendEquipError(InventoryResult,Item*){++errors;}
- InventoryResult CanEquipItem(uint32,uint16& dest,Item*,bool,bool notLoading,bool mailOffhand){assert(notLoading&&!mailOffhand);dest=0xFF0F;return equipRoom?EQUIP_ERR_OK:EQUIP_ERR_INVENTORY_FULL;}InventoryResult CanEquipChildItem(Item*){assert(false);return EQUIP_ERR_OK;}
- void SwapItem(uint16 source,uint16 dest,bool mailOffhand){assert(!mailOffhand);++swaps;if(swapBlocked)return;old.position=source;parent.position=dest;mainhand=&parent;}
+ InventoryResult CanEquipItem(uint32,uint16& dest,Item*,bool,bool notLoading,bool mailOffhand){assert(notLoading&&mailOffhand);dest=0xFF0F;return equipRoom?EQUIP_ERR_OK:EQUIP_ERR_INVENTORY_FULL;}InventoryResult CanEquipChildItem(Item*){assert(false);return EQUIP_ERR_OK;}
+ void EquipChildItem(uint8,uint8,Item*){assert(false);} // Tuure's staff has no linked child.
+ void SwapItem(uint16 source,uint16 dest,bool mailOffhand){assert(mailOffhand);++swaps;if(swapBlocked)return;old.position=source;parent.position=dest;mainhand=&parent;}
  void StoreLootItem(Loot* loot){LootItem* item=&loot->item;void* qitem=nullptr;
 #include "StoreInventory.inc"
 #include "ConsumeLoot.inc"
@@ -109,13 +110,13 @@ struct SpellScene{uint32 MiscValue=1265,SceneScriptPackageID=1565;};
 #include "Presentation.inc"
 struct Effect{int32 MiscValue=0;uint32 GetProvidedTargetMask()const{return 0;}};
 struct SpellInfo{uint32 Id=0;Effect effects[5];Effect* GetEffect(uint32 index,uint32){return &effects[index];}};
-struct Spell{Player* player;Unit* m_caster;Unit* unitTarget;GameObject* gameObjTarget=nullptr;WorldObject* focusObject=nullptr;uint32 effectHandleMode=SPELL_EFFECT_HANDLE_HIT_TARGET,m_diffMode=0;SpellInfo info;SpellInfo* m_spellInfo=&info;
- bool rejectTeleport=false;uint32 destination=1220;float destX=-828.85f;uint32 nativeTeleports=0;
- Spell(Player* p,uint32 id):player(p),m_caster(p),unitTarget(p){info.Id=id;info.effects[0].MiscValue=128825;info.effects[3].MiscValue=id==210733?50679:50737;info.effects[2].MiscValue=54073;}
+struct Spell{Player* fixturePlayer;Unit* m_caster;Unit* unitTarget;GameObject* gameObjTarget=nullptr;WorldObject* focusObject=nullptr;uint32 effectHandleMode=SPELL_EFFECT_HANDLE_HIT_TARGET,m_diffMode=0;SpellInfo info;SpellInfo* m_spellInfo=&info;
+ bool rejectTeleport=false;uint32 fixtureDestination=1220;float destX=-828.85f;uint32 nativeTeleports=0;
+ Spell(Player* p,uint32 id):fixturePlayer(p),m_caster(p),unitTarget(p){info.Id=id;info.effects[0].MiscValue=128825;info.effects[3].MiscValue=id==210733?50679:50737;info.effects[2].MiscValue=54073;}
  void EffectForceEquipItem(SpellEffIndex);void EffectSendEvent(SpellEffIndex);
- void EffectTeleportUnits(SpellEffIndex index){assert(index==0);++nativeTeleports;if(rejectTeleport){++player->aborts;return;}player->TeleportToFixture(destination,destX,4372,738.64f,1.86768f,0);}
+ void EffectTeleportUnits(SpellEffIndex index){assert(index==0);++nativeTeleports;if(rejectTeleport){++fixturePlayer->aborts;return;}fixturePlayer->TeleportToFixture(fixtureDestination,destX,4372,738.64f,1.86768f,0);}
  void Default(uint32 index){if(info.Id==210818){EffectTeleportUnits(index);return;}if(info.Id==210734&&index==0){effectHandleMode=SPELL_EFFECT_HANDLE_HIT_TARGET;EffectForceEquipItem(index);}
-  else if(info.Id==210733&&index==0){player->launched=true;player->scene=false;}
+  else if(info.Id==210733&&index==0){fixturePlayer->launched=true;fixturePlayer->scene=false;}
   else if((info.Id==210733&&index==3)||(info.Id==210734&&(index==2||index==3))){effectHandleMode=SPELL_EFFECT_HANDLE_HIT;EffectSendEvent(index);}}
 };
 #include "ForceEquip.inc"
@@ -123,7 +124,7 @@ struct Spell{Player* player;Unit* m_caster;Unit* unitTarget;GameObject* gameObjT
 struct CheckHook{std::function<SpellCastResult(SpellScript*)> callback;CheckHook& operator+=(CheckHook value){callback=value.callback;return *this;}};
 struct EffectHook{struct Entry{uint32 effect,type;std::function<void(SpellScript*,uint32)> callback;};std::vector<Entry> entries;EffectHook& operator+=(Entry value){entries.push_back(value);return *this;}};
 struct SpellScript{Spell* spell=nullptr;CheckHook OnCheckCast;EffectHook OnEffectHit,OnEffectHitTarget;bool prevented[5]{};virtual ~SpellScript()=default;virtual bool Load(){return true;}virtual void Register(){}
- Unit* GetCaster(){return spell->m_caster;}Player* GetHitPlayer(){return spell->player;}Spell* GetSpell(){return spell;}SpellInfo* GetSpellInfo(){return &spell->info;}void PreventHitDefaultEffect(uint32 index){prevented[index]=true;}
+ Unit* GetCaster(){return spell->m_caster;}Player* GetHitPlayer(){return spell->fixturePlayer;}Spell* GetSpell(){return spell;}SpellInfo* GetSpellInfo(){return &spell->info;}void PreventHitDefaultEffect(uint32 index){prevented[index]=true;}
  void Execute(){uint32 count=spell->info.Id==210818?1:spell->info.Id==210733?4:5;for(uint32 index=0;index<count;++index){auto& hook=((spell->info.Id==210733&&index==3)||(spell->info.Id==210734&&(index==2||index==3)))?OnEffectHit:OnEffectHitTarget;
    for(auto& entry:hook.entries)if(entry.effect==index||entry.effect==EFFECT_ALL)entry.callback(this,index);if(!prevented[index])spell->Default(index);}}
 };
@@ -162,8 +163,8 @@ int main(){
  std::cout<<"PASS pinned d9137d5a counterfactual: full-bag activation gives50679/direct failed AddItem then14s50702/explicit1085 and return before actual storage/equip. Expected failing ordinary behavior.\n";
 #else
  uint32 variants=0;
- for(uint32 status:{1u,3u})for(bool sync:{false,true})for(bool inherited:{false,true})for(bool missing:{false,true}){
-  Fixture f;f.p.status=status;f.p.synchronous=sync;f.p.canDelay=inherited;if(missing)f.go->visual=nullptr;
+ for(uint32 questState:{1u,3u})for(bool sync:{false,true})for(bool inherited:{false,true})for(bool missing:{false,true}){
+  Fixture f;f.p.questState=questState;f.p.synchronous=sync;f.p.canDelay=inherited;if(missing)f.go->visual=nullptr;
   f.go->SetLootState(GO_ACTIVATED,&f.p);assert(!f.p.acquisitions&&!f.p.grants&&!f.p.casts);
   f.LootStaff();assert(f.p.owned&&f.go->getLootState()==GO_READY);f.Flush();assert(f.p.acquisitions==1&&!f.p.departures&&!f.p.grants&&!f.p.explicitRewards);
   f.go->SetLootState(GO_JUST_DEACTIVATED,&f.p);assert(std::count(f.p.castIds.begin(),f.p.castIds.end(),210733u)==1);
@@ -173,7 +174,7 @@ int main(){
   assert(manager.scenario.step==7&&f.ai->GetData(TuureAcquisition::Finished)&&f.go->getLootState()==GO_JUST_DEACTIVATED&&!f.p.explicitRewards&&!f.p.grants);
   if(!missing)assert(f.visual.removed&&f.visual.delay==1000);f.ai->UpdateAI(15000);assert(f.p.departures==1);++variants;
  }
- for(uint32 bad=0;bad<29;++bad){Fixture f;switch(bad){case 0:f.p.world=false;break;case 1:f.p.contact=false;break;case 2:f.p.alive=false;break;case 3:f.p.teleport=true;break;case 4:f.p.klass=1;break;case 5:f.go->world=false;break;case 6:f.go->spawned=false;break;case 7:f.go->entry=1;break;case 8:f.go->mapId=1;break;case 9:f.p.map=&otherMap;break;case 10:f.p.instance=43;break;case 11:f.p.phase=false;break;case 12:f.p.visible=false;break;case 13:f.p.los=false;break;case 14:f.p.distance=6;break;case 15:f.go->notSelectable=true;break;case 16:f.p.rewarded=true;break;case 17:f.p.status=0;break;case 18:f.p.status=5;break;case 19:f.p.status=6;break;case 20:manager.present=false;break;case 21:manager.scenario.id=972;break;case 22:manager.scenario.step=5;break;case 23:manager.scenario.step=7;break;case 24:manager.scenario.progress.clear();break;case 25:manager.scenario.progress[47656].Counter=0;break;case 26:f.p.map=nullptr;break;case 27:f.p.m_bHasDelayedTeleport=true;break;case 28:f.p.gm=true;break;}
+ for(uint32 bad=0;bad<29;++bad){Fixture f;switch(bad){case 0:f.p.world=false;break;case 1:f.p.contact=false;break;case 2:f.p.alive=false;break;case 3:f.p.teleport=true;break;case 4:f.p.klass=1;break;case 5:f.go->world=false;break;case 6:f.go->spawned=false;break;case 7:f.go->entry=1;break;case 8:f.go->mapId=1;break;case 9:f.p.map=&otherMap;break;case 10:f.p.instance=43;break;case 11:f.p.phase=false;break;case 12:f.p.visible=false;break;case 13:f.p.los=false;break;case 14:f.p.distance=6;break;case 15:f.go->notSelectable=true;break;case 16:f.p.rewarded=true;break;case 17:f.p.questState=0;break;case 18:f.p.questState=5;break;case 19:f.p.questState=6;break;case 20:manager.present=false;break;case 21:manager.scenario.id=972;break;case 22:manager.scenario.step=5;break;case 23:manager.scenario.step=7;break;case 24:manager.scenario.progress.clear();break;case 25:manager.scenario.progress[47656].Counter=0;break;case 26:f.p.map=nullptr;break;case 27:f.p.m_bHasDelayedTeleport=true;break;case 28:f.p.gm=true;break;}
   assert(f.script.OnGossipHello(&f.p,f.go.get())&&f.ai->GossipHello(&f.p,false));f.p.owned=true;f.go->SetLootState(GO_JUST_DEACTIVATED,&f.p);f.ai->UpdateAI(15000);f.Flush();assert(!f.p.casts&&!f.p.acquisitions&&!f.p.departures&&!f.p.grants&&!f.visual.removed);
  }
  for(bool allocation:{false,true}){Fixture f;Loot loot;if(allocation)f.p.storage=false;else f.p.room=false;f.go->SetLootState(GO_ACTIVATED,&f.p);f.p.StoreLootItem(&loot);assert(!loot.isLooted()&&!CompletedLoot(&loot,f.go.get())&&!f.p.owned&&!f.p.acquisitions&&!f.p.casts);f.p.room=f.p.storage=true;f.p.StoreLootItem(&loot);assert(CompletedLoot(&loot,f.go.get())&&f.p.owned);f.go->SetLootState(GO_JUST_DEACTIVATED,&f.p);f.Flush();assert(f.p.acquisitions==1&&!f.p.departures);}
@@ -185,9 +186,9 @@ int main(){
  {Fixture f;f.LootStaff();f.Flush();f.ai->UpdateAI(30000);assert(f.ai->GetGUID(0).IsEmpty()&&!f.p.departures&&warnings==1&&f.p.owned);f.script.OnGossipHello(&f.p,f.go.get());f.Flush();f.SceneComplete();f.Flush();f.ai->UpdateAI(14000);f.Flush();assert(f.p.departures==1&&!f.p.grants);}
  {Fixture f;f.LootStaff();auto held=f.p.quest.ScriptLifetime;f.p.quest.ScriptLifetime.reset();f.p.AddQuestDelayedEvent(41993,0,[]{});f.Flush();assert(!f.p.acquisitions&&!f.p.launched&&!f.p.departures);f.ai->UpdateAI(1);assert(f.ai->GetGUID(0).IsEmpty());}
  {Fixture f;f.LootStaff();f.Flush();f.SceneComplete();f.p.quest.ScriptLifetime=std::make_shared<uint8>();f.Flush();assert(!f.p.swaps&&f.p.otherEvents.empty()&&!f.p.departures);}
- for(uint32 late=0;late<13;++late){Fixture f;f.LootStaff();f.Flush();f.SceneComplete();f.Flush();f.ai->UpdateAI(14000);assert(!f.p.departures&&!f.p.teleports);switch(late){case 0:f.p.quest.ScriptLifetime.reset();f.p.AddQuestDelayedEvent(41993,0,[]{});break;case 1:f.p.distance=6;break;case 2:f.p.map=&otherMap;break;case 3:f.p.status=0;break;case 4:f.p.owned=false;break;case 5:f.p.guid.high=1;break;case 6:f.go->guid.high=1;break;case 7:objects.clear();f.ai.reset();f.go.reset();break;case 8:f.p.mainhand=&f.p.old;break;case 9:f.p.instance=43;break;case 10:f.p.scene=false;break;case 11:manager.scenario.step=5;break;case 12:f.p.gm=true;break;}f.Flush();assert(!f.p.departures&&!f.p.teleports&&!f.visual.removed);}
+ for(uint32 late=0;late<13;++late){Fixture f;f.LootStaff();f.Flush();f.SceneComplete();f.Flush();f.ai->UpdateAI(14000);assert(!f.p.departures&&!f.p.teleports);switch(late){case 0:f.p.quest.ScriptLifetime.reset();f.p.AddQuestDelayedEvent(41993,0,[]{});break;case 1:f.p.distance=6;break;case 2:f.p.map=&otherMap;break;case 3:f.p.questState=0;break;case 4:f.p.owned=false;break;case 5:f.p.guid.high=1;break;case 6:f.go->guid.high=1;break;case 7:objects.clear();f.ai.reset();f.go.reset();break;case 8:f.p.mainhand=&f.p.old;break;case 9:f.p.instance=43;break;case 10:f.p.scene=false;break;case 11:manager.scenario.step=5;break;case 12:f.p.gm=true;break;}f.Flush();assert(!f.p.departures&&!f.p.teleports&&!f.visual.removed);}
  {Fixture f;f.LootStaff();f.Flush();f.SceneComplete();f.Flush();f.p.castResult=SPELL_FAILED_BAD_TARGETS;f.ai->UpdateAI(14000);f.Flush();assert(!f.p.teleports&&!f.p.departures&&warnings==1&&!f.ai->GetGUID(0).IsEmpty());f.p.castResult=0;f.ai->UpdateAI(5000);f.Flush();assert(f.p.departures==1&&f.p.castFlags.back()==std::make_pair(210818u,false));}
- for(uint32 rejected=0;rejected<3;++rejected){Fixture f;f.LootStaff();f.Flush();f.SceneComplete();f.Flush();f.ai->UpdateAI(14000);if(rejected==0)requests.back().spell->rejectTeleport=true;if(rejected==1)requests.back().spell->destination=1;if(rejected==2)requests.back().spell->destX+=1;f.Flush();assert(!f.p.departures&&!f.ai->GetData(TuureAcquisition::Finished)&&!f.visual.removed&&warnings==1);if(rejected==0){f.ai->UpdateAI(5000);f.Flush();assert(f.p.departures==1&&f.p.aborts==1&&f.p.teleports==1);}}
+ for(uint32 rejected=0;rejected<3;++rejected){Fixture f;f.LootStaff();f.Flush();f.SceneComplete();f.Flush();f.ai->UpdateAI(14000);if(rejected==0)requests.back().spell->rejectTeleport=true;if(rejected==1)requests.back().spell->fixtureDestination=1;if(rejected==2)requests.back().spell->destX+=1;f.Flush();assert(!f.p.departures&&!f.ai->GetData(TuureAcquisition::Finished)&&!f.visual.removed&&warnings==1);if(rejected==0){f.ai->UpdateAI(5000);f.Flush();assert(f.p.departures==1&&f.p.aborts==1&&f.p.teleports==1);}}
  {Fixture f;f.LootStaff();f.Flush();f.SceneComplete();f.Flush();f.ai->UpdateAI(14000);auto request=requests.back();f.p.onCredit=[&](){request.script->Execute();};f.Flush();request.script->Execute();assert(f.p.departures==1&&request.spell->nativeTeleports==1);}
  for(uint32 context=0;context<2;++context){Fixture f;if(context==0)f.p.mapId=1712;else manager.scenario.id=972;assert(f.p.CastSpell(&f.p,210818,true)==SPELL_CAST_OK);f.Flush();assert(f.p.teleports==1&&!f.p.departures&&!f.visual.removed);}
  {Fixture f;f.LootStaff();f.Flush();f.SceneComplete();f.Flush();f.ai->UpdateAI(13999);assert(f.p.CastSpell(&f.p,210818,true)==SPELL_FAILED_BAD_TARGETS);f.Flush();assert(!f.p.teleports&&!f.p.departures);f.ai->UpdateAI(1);f.Flush();assert(f.p.departures==1);}

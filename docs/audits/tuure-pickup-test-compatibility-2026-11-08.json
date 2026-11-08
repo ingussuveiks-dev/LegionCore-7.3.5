@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-08",
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/tuure-resume-entrance-2026-11-08",
+    "status": "Generated outputs retained for the active Tuure entrance final regressions;archive and exact cleanup will close with that focused task"
+  },
+  "cause": "Tuure pickup host predated native generic door SetLootState branch and ForceEquipItem already-equipped child replay. Missing enum/method declarations prevented compilation. It also modeled the real two-handed staff as a one-handed item.",
+  "limits": [
+    "No actual client traversal,full character inventory placement/offhand mailing or child-equipment verification inferred.",
+    "Mixed7111 LINK2 and Slaghammer reproduction remain OPEN/unchanged."
+  ],
+  "implementation": [
+    "Declare native door0 and Item bag/slot getters. Child APIs fail by assertion if called: actual Tuure128825 has no linked child;do not fake child equip success.",
+    "Model actual native128825 InventoryType17 (artifact45 observed in26972+readonly hotfix catalog) and assert the real two-handed mailOffhand policy reaches controlled CanEquipItem/SwapItem endpoints. Actual offhand mail/storage is not simulated.",
+    "Rename host quest/Spell fields to avoid shadowing extracted production locals. Retain whole extracted production handlers and all existing cases;no checks or loggers disabled."
+  ],
+  "evidence": ".codex/tuure-resume-2026-11-08;failed compile and passing repaired ASAN stdout/stderr/diagnostic snapshots retained",
+  "checks": [
+    "Test-TuureNativePickup.ps1 -AddressSanitizer:16 status/sync/deferred/inherited-delay/optional-actor variants,29 admission denials,real extracted storage/release/equip/send-event/quest lease/deferred teleport flow,full bags,failed casts,abandon/retry/fullGUID/reentrant exactly-once50702 all pass. Endpoints remain controlled.",
+    "Test-TuureCompletionTree.ps1 -AddressSanitizer with actual typed26972+readonly hotfix catalog:real128825 inventory17/artifact45;actual native ALL-root50679+50702 matrix and one reward dispatch pass.",
+    "Strict selected canonical Tuure factories/scene/native accepted departure PE chain passes;post-test no new crash,appended DBErrors or server warnings/errors/assertions. Existing extracted FunctionProcessor/Scenario size_t narrowing compiler warnings remain visible and separate from production runtime diagnostics."
+  ],
+  "status": "FIXED test-host compatibility only;production handlers,binaries,data and character state unchanged by this commit"
+}
