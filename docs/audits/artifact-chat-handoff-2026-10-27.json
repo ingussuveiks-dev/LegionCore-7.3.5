@@ -26,10 +26,29 @@
       "Survival39427 follow-up, Stromkar/client visuals, all36 full chains and shared LINK2/mixed7111 remain OPEN. Preserve Slaghammer handoff20261106-121715-172/cache/research bytes. Next independent investigation should follow the existing shared LINK2 handoff evidence."
     ],
     "cleanup": {
-      "status": "PENDING verified fixed archive and exact task-owned generated/staging cleanup; retain two recent recovery generations and unresolved evidence."
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/hodir-cemetery-2026-11-08",
+      "manifest_sha256": "cb98e03a4085cfb1dcfed84326c09d61b74afac5ba49afb300517051b0cef93d",
+      "original_files": 2815,
+      "cleanup_manifest_sha256": "f3fffb83723fc7071427916a342cdcf8639666d3a274a6569538356ab7fa249e",
+      "removed_files": 356,
+      "logical_removed_bytes": 3333940330,
+      "local_deletion_manifest": ".codex/hodir-cemetery-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-hodir-cemetery-2026-11-08",
+        ".codex/release-before-blood-graveyard-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 131250556928,
+      "disk_free_after_bytes": 134569086976,
+      "observed_free_increase_bytes": 3318530048
     },
     "audit": "docs/audits/hodir-cemetery-2026-11-08.json",
-    "next": "Existing shared LINK2 handoff investigation; client Hodir42974 and all36 whole-chain traversal remain separate."
+    "next": "Existing shared LINK2 handoff investigation; client Hodir42974 and all36 whole-chain traversal remain separate.",
+    "fix_commit": "eb75865cae759e9fdbe34441dd12b6bbd6575ca5"
   },
   "latest_hodir_landing_2026_11_08": {
     "status": "DEPLOYED Hodir1146 landing admission/data repair: source18 ASAN, actual native48, full-schema TEMP/93 refusal cases and live RELEASED hash pass. Canonical ready/shutdown0 clean. This is Warrior campaign42974, not another completed artifact acquisition chain.",
