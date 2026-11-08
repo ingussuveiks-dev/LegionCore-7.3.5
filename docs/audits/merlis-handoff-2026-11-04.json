@@ -36,9 +36,39 @@
     ],
     "next": "Continue source/native investigation of Sharasdal living Lady1906 and actual finisher/210247 against the existing Oct31 research. Fu Zan intro acknowledgement already has a separate Nov1 repair;do not reopen it based on older admission-only notes.",
     "cleanup": {
-      "status": "Pending verified original-byte/hash archive and bounded task-owned staging/generated/obsolete rollback cleanup before handoff."
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/devourer-outro-2026-11-08",
+      "manifest_sha256": "83f23bfa8b03e6d4bd2756c0764961df42072bcfdf5221809975b1cf423b6c9d",
+      "original_files": 613,
+      "cleanup_manifest_sha256": "e3f1c8b6a2077a632f40992d49aa98927e8eee7b6a7b62b9bbd1e2f74917bffc",
+      "removed_files": 241,
+      "logical_removed_bytes": 2613383502,
+      "local_deletion_manifest": ".codex/devourer-outro-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-devourer-outro-2026-11-08",
+        ".codex/release-before-devourer-graveyard-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks. New read-only living-Lady continuation retained OPEN at .codex/sharasdal-living-followup-open-2026-11-08.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 131006099456,
+      "disk_free_after_bytes": 133616164864,
+      "observed_free_increase_bytes": 2610065408
     },
-    "audit": "docs/audits/devourer-outro-2026-11-08.json"
+    "audit": "docs/audits/devourer-outro-2026-11-08.json",
+    "fix_commit": "92853bde7942409a9ab22ed587051935524aa284",
+    "next_source_review": {
+      "status": "OPEN read-only source continuation after Devourer fix;no new gameplay repair/native test/client claim",
+      "evidence": ".codex/sharasdal-living-followup-open-2026-11-08/source-review.json",
+      "findings": [
+        "Current gauntlet arrival header already scopes50314 to actual early illusion362091 after real47131 ascent;47378 acknowledgement precedes stopping waves and sending upper Grash362092 DoAction3 to suspended/current content AI. Do not treat old arrival/ascent audit counterfactuals as unfixed current code.",
+        "Current upper-wall handler uses actual point/cast209904/object248514 acknowledgement before49819,and attacks only real Lady362095 plus exact upper allies. Real Lady JustDied delegates to instance RecordLadyDeath;the living presentation remains separate from actual-death credit.",
+        "Current real Lady class contains no DamageTakenAfterScaling override or209457/209552/209487/210247 producer;existing combat queue is209919/209707/209934/209983. Existing scaled-damage hooks in this file belong to other actors and cannot be transplanted without whole-sequence ownership/loot/one-hit analysis.",
+        "Oct31 matching26972/world/asset/video research records candidate carry/1906/stomp but no proven surrender threshold or native lethal schedule. No percent/kill/timer/progression substitute added;no new external page/video review or fresh live-data equivalence claimed."
+      ],
+      "next": "Trace living1906 producer/accepted conversation/real Grash native vehicle acknowledgement and finisher attribution against local data and original sequence;establish bounded failed-actor/cast/reentry/pet/guardian/one-hit regression before production change."
+    }
   },
   "latest_devourer_graveyard_2026_11_08": {
     "status": "DEPLOYED focused Devourer1078/map1607 authored cemetery facing and validated recovery. Source130 ASAN/native72 with64 real releases/ACKs,paired pinned64/68,selected stage/canonical proof,retained live escape/claim/door/capture/pickup/death and owned startup pass. Natural completion cache corrected separately;full client41924 remains unverified.",
