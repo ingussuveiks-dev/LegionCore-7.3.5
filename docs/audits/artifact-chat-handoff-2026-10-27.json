@@ -29,9 +29,28 @@
       "Shared101430/103151 LINK2/mixed7111,original Slaghammer intro evidence,reported Stromkar presentation/equipment/exit/singleton,Survival39427 and all36 whole client chains remain separate OPEN work."
     ],
     "cleanup": {
-      "status": "PENDING verified archive and exact task-owned temporary/obsolete-rollback cleanup after focused commit."
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/holy-graveyard-2026-11-08",
+      "manifest_sha256": "c9a00cb945d0d59416d878db944ee80db0bf1bddb395c183fb6f1f9473f7f615",
+      "original_files": 772,
+      "cleanup_manifest_sha256": "b01d43aecf20647d16a514afdc5144de0d891809dc875bce763f934078082453",
+      "removed_files": 328,
+      "logical_removed_bytes": 3028579252,
+      "local_deletion_manifest": ".codex/holy-graveyard-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 1,
+      "retained": [
+        ".codex/release-before-holy-graveyard-2026-11-08",
+        ".codex/release-before-shadow-graveyard-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;only the wholly reviewed inactive failed-host Server.log reset after verified archival;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 130985099264,
+      "disk_free_after_bytes": 134008332288,
+      "observed_free_increase_bytes": 3023233024
     },
-    "audit": "docs/audits/holy-graveyard-2026-11-08.json"
+    "audit": "docs/audits/holy-graveyard-2026-11-08.json",
+    "fix_commit": "dd2bf388abd1a9ae4eec6494246c3d05de3d9297"
   },
   "latest_shadow_graveyard_2026_11_08": {
     "status": "DEPLOYED focused Shadow Priest991 interior checkpoint recovery on shared1539. Source135 ASAN/native94 with82 actual releases/ACKs, pinned counterfactuals, both native criterion boundaries, staged/canonical linked proofs and retained shared instance/handoff/loot checks pass. Owned startup clean. Full client traversal remains separate.",
