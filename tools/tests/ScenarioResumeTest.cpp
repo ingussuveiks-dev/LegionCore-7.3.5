@@ -8,7 +8,7 @@ using uint32=uint32_t;using uint16=uint16_t;using uint64=uint64_t;
 #define TC_LOG_INFO(...) ((void)0)
 #endif
 constexpr int SCENARIO_TYPE_CHALLENGE_MODE=1;
-constexpr int QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,ALLIANCE=0,CLASS_WARRIOR=1,CLASS_HUNTER=3,CLASS_PRIEST=5,CLASS_WARLOCK=9,CLASS_MONK=10;
+constexpr int QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,ALLIANCE=0,CLASS_WARRIOR=1,CLASS_HUNTER=3,CLASS_PRIEST=5,CLASS_SHAMAN=7,CLASS_WARLOCK=9,CLASS_MONK=10;
 constexpr unsigned AT_LOGIN_UNLOCK=1;constexpr int PLAYER_LOGIN_QUERY_LOADQUESTSTATUS=0;
 struct SpellTargetPosition {uint32 target_mapId;float target_X,target_Y,target_Z,target_Orientation;};
 struct SpellManager {std::map<uint32,SpellTargetPosition> targets;SpellTargetPosition const* GetSpellTargetPosition(uint32 id){auto i=targets.find(id);return i==targets.end()?nullptr:&i->second;}} spellManager;

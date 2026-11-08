@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-08",
+  "status": "DEPLOYED focused Sharasdal1600/1066 LFG1229 entrance and exact legacy checkpoint repair. Source126 ASAN/native112,paired pinned74/60,TEMP29,linked Release,retained recoveries and owned canonical startup pass. Full client40341 remains separate.",
+  "cause": "LFG1229 used836.16,1035.4,48.61/1.7935,far from the native207683 acquisition entrance. RecordScenarioEntrance uses this row for late/loading/vehicle receipts. PrepareScenarioLogin consumes persisted positions,so changing only SQL leaves known old receipts unsafe.",
+  "scope": "Only one LFG entrance and exact known old Shaman1600/1066 checkpoint XYZ/O. Preserve boot/instance/progression and healthy live pose. No character reset,checkpoint seeding,new fields,quest/inventory loading,progress/item/criteria award,combat/credit/actor change or ordinary teleport replacement.",
+  "implementation": [
+    "Guarded migration accepts original NULL-name old1229,already canonical pose with name preserved,or missing row. Require actual1066 class7 routing,207683 destination,initial102826/362063 phase6120/script and all four40341 objectives. Unreviewed data refuses via45000;only1229 XYZ/O updated or missing row inserted.",
+    "RecoverLegacySharasdalEntrance requires class7/map1600/scenario1066/full known old XYZ/O,nonzero persisted instance/boot,native1229/1600/difficulty12/ScenarioID0/user-teleport-not-allowed data,scenario steps and exact real207683 target. LFG must be finite/map-valid and within1cm XYZ/0.001rad of the source. Missing proof refuses through normal checkpoint/login-selector cleanup;custom tuples unchanged.",
+    "Normalize saved entrance before native live/fresh selection. Preserve a healthy live player position. Repair live player at the known old XY even after falling;retain native boot/instance validation,fresh step0 construction,serialization/completion cleanup and replay unlock. Existing Tuure helper and earned-ascent cemetery5443/5473 policy unchanged."
+  ],
+  "local_evidence": {
+    "history": "Reviewed fetched origin/main677430a07,local log/diff and prior Sharasdal cemetery/ascent/acquisition audits. Matching local26972/runtime DB/core resolves this focused issue;no external/modern-core adaptation or video observation claimed.",
+    "travel": "Fresh typed26972 catalog:207683 E0=227/Misc1332/TargetA1/TargetB17;E1=90/111286/A1/B0. Spell.cpp TARGET_DEST_DB reads actual spell_target_position map1600 and(-629.42,808.68,247.67,6.2797rad);the raw Misc1332 does not override that DB destination. No native252 producer for1229 found;no direct C++1229 producer.",
+    "cemetery": "5443=(-622.690979,805.760437,245.953827,0deg) is a separate lower cemetery;5473=(-184.494003,801.723999,796.705017,359.64801deg) is elevator top. Neither substituted for actual travel207683.",
+    "world": "scenario_data1066/map1600/class7/team0/diff0/Lfg0;LFG1229 Map1600/ScenarioID0/diff12/Flags75795458. Initial Erunak102826/362063 at(-619.811,804.37,245.375),phase6120,npc_erunak_stonespeaker;40341 objectives105805/105787/105806/111286,each type0/amount1. Real VMAP floor tested.",
+    "readback": [
+      "entry\t1229\tNULL\t-629.42\t808.68\t247.67\t6.2797",
+      "portal\t207683\t1600\t-629.42\t808.68\t247.67\t6.2797",
+      "update\t2026_11_08_04_sharasdal_resume_entrance.sql\t4A0FAA44FDDBBAB0AC15BD1CD26E4C1A20790693\tRELEASED"
+    ],
+    "migration_sha1": "4a0faa44fddbbab0ac15bd1cd26e4c1a20790693",
+    "deployment_order": "New executable/hash verification preceded moving code-coupled SQL from pending into live updater. Owned canonical startup applied migration;readback hash matches local file/stateRELEASED;native LIVE reads deployed row without TEMP mutation."
+  },
+  "checks": {
+    "source": "126 extracted actual whole Prepare/namespace ASAN cases:56 legacy modes across2 factions/2 active statuses,52 source/provenance refusals and18 custom/foreign controls. Live valid/badXY/falling,fresh boot/numeric mismatch,repeated serialization/completion/unlock. Source endpoints controlled;not whole-core ASAN.",
+    "native": "112 actual Player/Prepare/Scenario/LFG cases:10 real late Recorder receipts at stages1..5/Draenei+Orc(actual26972 supported pairs),48 legacy/status/race modes,52 source/header refusals,2 whole destroyed-map/recycled-ID/fresh native LFG1229->1066 step0 controls. Actual final49820 reaches completed sentinel6 and clears replay checkpoint. Earlier quest/pose/stage and source faults controlled;no persistent character writes/full LoadFromDB.",
+    "counterfactual": "Pinned677430a07 source74/native60 retains wrong old receipts/fresh/live/falling positions. Native capsule uses current support,not historical whole executable. Old canonical explicitly fails new Sharasdal linked proof;repaired staged/canonical passes.",
+    "sql": "TEMP29:original update,idempotence,missing-row insertion,canonical custom-name retention and25 deliberate error1644/SQLSTATE45000 refusals. Full-column graph/non1229-LFG preservation. --force only in TEMP deliberate-error fixture to inspect preservation after each refusal;expected stderr retained. No persistent world/character mutation by this fixture.",
+    "linked": "Strict composed proof retains complete Tuure legacy guard and follows actual Sharasdal helper/caller:exact tuple/provenance/source/finite/radian gates,XYZ/O-only stores,enum outcomes,refused cleanup CFG,healthy/completed/live handling and badXY-only native Relocate. No item/quest/criteria/teleport calls. Original Release library/final-link inputs used without global OutDir.",
+    "retained": "Tuure source118/native94;Warrior early+normal source132/native138 covering all3 routes;Sharasdal cemetery206/native72 with64 real releases/ACKs and selected Release;acquisition76/linked Release;mandatory Scepter source/canonical Release pass.",
+    "runtime": "Owned PID=10848 reached fresh ready\nPASS owned PID=10848 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "preservation": "Full-column before/after hashes equal all spell destinations/scenario routes,all non1229 LFG and scoped102826/105298/104853/104856/102839 graphs/conditions/spawns/templates. Only intended1229 changed. Protected configuration/certs/DLLs/data/required original libraries preserved. No user/unknown world/bnet stopped;owned PID10848 exited0;MariaDB left running."
+  },
+  "diagnostics": {
+    "result": "Pre/post crash/log snapshots wrap source/native/SQL/build/link/PE/retained/startup/readback checks. Final runs no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Canonical Crashes empty.",
+    "development": [
+      "Initial source fixture incorrectly chained missing/shared/fallbackAlways flags;separate actual fallbackAlways from missing/shared,then126/74 pass. Assertion/driver evidence retained.",
+      "Initial native TEMP SQL loader split a semicolon inside a -- comment,causing syntax1064 and parsing ERROR in owned181239-506 DBErrors/Server.log. Skip whole comment lines before quote-aware splitting;guards/diagnostics retained. Repaired112/60 and live112 pass. Only these two wholly reviewed inactive logs eligible for verified archive/reset;canonical mixed log untouched.",
+      "Next native main exited0xC00000FD before output. PE inspection:1MiB stack reserve,main frame0x102598 exceeds it. Heap-own large MapInstanced/InstanceMap fixtures with finite RAII cleanup;no stack-limit override. Native112/60 now clean. No new crash file generated;exit/stdout and disassembly preserved.",
+      "Private PE inspection initially required unavailable pefile;replace with actual struct header parsing/Capstone. Initial new proof find call had wrong positional mnemonic argument;use keyword. Final staged/canonical proofs pass;initial failure evidence retained.",
+      "Existing source-host BrokenShoreClassRoute C4244 narrowing warning remains visible;not a new production/runtime warning and not suppressed."
+    ],
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "OPEN shared LINK2;untouched,not archived as resolved."
+  },
+  "binary": {
+    "bnetserver": "a85d701cc1ac074ff70327853c5e760f167359d70bd572ea8451647efd23a876",
+    "worldserver": "14a217225460733ec9faf3e28981430a3a9df7f2610df979e16fc29d4db46455"
+  },
+  "unresolved": [
+    "Actual client normal207683 travel,login/re-entry/reconnect/loading/vehicle/falling/ghost presentation,camera/pet restoration and full40341/loot/equipment/outro remain unverified. Native controlled login does not prove full LoadFromDB/SaveToDB or client traversal. Custom/missing checkpoint repair is deliberately outside this exact-known-tuple scope.",
+    "Combat,one-hit/player-pet-guardian/group/faction credit and shared actor behavior unchanged;retained endpoints do not newly certify gameplay. Living Lady1906/vehicle/finisher and native210247/full waves/loot remain independent open work.",
+    "Unknown shared LINK2/mixed7111,original Slaghammer intro,reported Stromkar presentation/equipment/exit/singleton,Survival39427/Fu Zan and all36 full client chains remain OPEN. No new character reset or observed video/audio claimed."
+  ],
+  "cleanup": {
+    "status": "Pending verified issue archive and exact task-owned generated/staging/obsolete rollback cleanup;retain new entrance plus previous Sharasdal cemetery recovery generations."
+  }
+}

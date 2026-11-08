@@ -69,18 +69,27 @@ find(h, 'eax, 1', mnemonic='mov')
 call = sites(p, prefix)
 assert len(call) == 1
 at = call[0]
-assert p[at + 2].op_str == 'eax, 2' and p[at + 3].mnemonic == 'jne'
-reset = find(p, 'qword ptr [rsi + 0x6bd8], 0', at)
+sharasdal = sites(p, '?RecoverLegacySharasdalEntrance@')
+if sharasdal:
+    # The second independently checked legacy scope keeps Tuure's result in
+    # r12d/stack34 while checking its own result. Follow the actual Tuure use.
+    assert len(sharasdal) == 1 and p[at + 1].op_str == 'r12d, eax' and p[at + 2].op_str == 'dword ptr [rsp + 0x34], eax'
+    compare = find(p, 'r12d, 2', sharasdal[0], 'cmp')
+else:
+    compare = at + 2
+    assert p[compare].op_str == 'eax, 2'
+assert p[compare + 1].mnemonic == 'jne'
+reset = find(p, 'qword ptr [rsi + 0x6bd8], 0', compare)
 selector = find(p, 'word ptr [rsi + 0x6ba8], di', reset)
 live = sites(p, '?GetScenario@ScenarioMgr@@')[0]
 assert at < reset < selector < live
 # Optimized logging branches share the later function epilogue. Walk both
 # conditional edges in the refusal path instead of assuming a linear ret.
 by_address = {o.address: i for i, o in enumerate(p)}
-pending = [at + 4]
+pending = [compare + 2]
 seen = set()
 returns = 0
-continuation = p[at + 3].operands[0].imm
+continuation = p[compare + 1].operands[0].imm
 while pending:
     i = pending.pop()
     if i in seen:
@@ -101,13 +110,26 @@ while pending:
 assert returns and reset in seen and selector in seen
 complete = sites(p, '?IsCompleted@Scenario@@')[0]
 keep = find(p, 'dword ptr [rsi + 0x6bdc], eax', complete)
-repair = find(p, 'dword ptr [rsp + 0x50], 1', keep, 'cmp')
+repair = find(p, 'dword ptr [rsp + '+('0x34' if sharasdal else '0x50')+'], 1', keep, 'cmp')
 live_sub = [i for i, o in enumerate(p[repair:repair + 20], repair) if o.mnemonic == 'subss' and 'rip' in o.op_str]
 assert len(live_sub) == 2
 for i, value in zip(live_sub, (-828.85, 4372)):
     near(p[i], value)
-find(p, 'dword ptr [rsi + 0xd0], eax', live_sub[-1], 'mov')
-find(p, 'dword ptr [rsi + 0xd8], xmm1', live_sub[-1], 'movss')
+if sharasdal:
+    for register, offset, slot in [('rax', '0x6bd4', '0x70'), ('rcx', '0x6bd0', '0x78'), ('rdx', '0x6bcc', '0x80'), ('r8', '0x6bc8', '0x88')]:
+        source = find(p, register+', [rsi + '+offset+']', 0, 'lea')
+        assert p[source + 1].op_str == 'qword ptr [rsp + '+slot+'], '+register
+    relocate = next(i for i in sites(p, '?Relocate@Position@@') if live_sub[-1] < i < live_sub[-1] + 20)
+    assert [(o.mnemonic, o.op_str) for o in p[relocate-6:relocate]] == [
+        ('movss','xmm0, dword ptr [r14]'), ('movss','dword ptr [rsp + 0x20], xmm0'),
+        ('movss','xmm3, dword ptr [r12]'), ('movss','xmm2, dword ptr [r13]'),
+        ('movss','xmm1, dword ptr [rdi]'), ('lea','rcx, [rsi + 0xd0]')]
+    assert [(o.mnemonic, o.op_str) for o in p[repair-4:repair]] == [
+        ('mov','r14, qword ptr [rsp + 0x70]'),('mov','r12, qword ptr [rsp + 0x78]'),
+        ('mov','r13, qword ptr [rsp + 0x80]'),('mov','rdi, qword ptr [rsp + 0x88]')]
+else:
+    find(p, 'dword ptr [rsi + 0xd0], eax', live_sub[-1], 'mov')
+    find(p, 'dword ptr [rsi + 0xd8], xmm1', live_sub[-1], 'movss')
 for body in (h, p):
     for forbidden in ('?TeleportTo@', '?KilledMonsterCredit@', '?AddItem@', '?CompleteQuest@', '?UpdateAchievementCriteria@', '?SetQuestStatus@'):
         assert not sites(body, forbidden), forbidden

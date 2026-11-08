@@ -15,6 +15,33 @@
 namespace
 {
 enum class TuureEntranceRecovery { Unchanged, Repaired, Refused };
+enum class SharasdalEntranceRecovery { Unchanged, Repaired, Refused };
+
+SharasdalEntranceRecovery RecoverLegacySharasdalEntrance(Player const* player, uint32 mapId, ScenarioResume& saved, lfg::LFGDungeonData const* data)
+{
+    if (mapId != 1600 || player->getClass() != CLASS_SHAMAN || saved.map != 1600 || saved.scenario != 1066 ||
+        !(std::fabs(saved.x - 836.16f) < 0.001f && std::fabs(saved.y - 1035.4f) < 0.001f &&
+          std::fabs(saved.z - 48.61f) < 0.001f && std::fabs(saved.o - 1.7935f) < 0.001f))
+        return SharasdalEntranceRecovery::Unchanged;
+
+    // Only the historical1229 tuple is repairable. Native207683 is the real
+    // acquisition entrance; the separate5443 graveyard is not a travel spell.
+    auto target = sSpellMgr->GetSpellTargetPosition(207683);
+    if (!saved.instance || !saved.boot || !data || !data->dbc || data->id != 1229 || data->map != 1600 ||
+        data->difficulty != DIFFICULTY_N_SCENARIO || data->dbc->ID != 1229 || data->dbc->MapID != 1600 ||
+        data->dbc->ScenarioID != 0 || data->dbc->DifficultyID != DIFFICULTY_N_SCENARIO ||
+        !(data->dbc->Flags & LFG_FLAG_USER_TELEPORT_NOT_ALLOWED) || !sScenarioMgr->GetScenarioSteps(1066) ||
+        !target || target->target_mapId != 1600 ||
+        !(std::fabs(target->target_X - (-629.42f)) < 0.001f && std::fabs(target->target_Y - 808.68f) < 0.001f &&
+          std::fabs(target->target_Z - 247.67f) < 0.001f && std::fabs(target->target_Orientation - 6.2797f) < 0.001f) ||
+        !MapManager::IsValidMapCoord(1600, data->x, data->y, data->z, data->o))
+        return SharasdalEntranceRecovery::Refused;
+    float dx = data->x - target->target_X, dy = data->y - target->target_Y, dz = data->z - target->target_Z;
+    if (dx * dx + dy * dy + dz * dz >= 0.0001f || !(std::fabs(data->o - target->target_Orientation) < 0.001f))
+        return SharasdalEntranceRecovery::Refused;
+    saved.x = data->x; saved.y = data->y; saved.z = data->z; saved.o = data->o;
+    return SharasdalEntranceRecovery::Repaired;
+}
 
 TuureEntranceRecovery RecoverLegacyTuureEntrance(Player const* player, uint32 mapId, ScenarioResume& saved, lfg::LFGDungeonData const* data)
 {
@@ -105,6 +132,15 @@ void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
     // Native scenario/map routing must still exist after a data update.
     auto data = ResumeDungeon(this,m_scenarioResume.scenario,mapId);
     TuureEntranceRecovery tuure = RecoverLegacyTuureEntrance(this, mapId, m_scenarioResume, data);
+    SharasdalEntranceRecovery sharasdal = RecoverLegacySharasdalEntrance(this, mapId, m_scenarioResume, data);
+    if (sharasdal == SharasdalEntranceRecovery::Refused)
+    {
+        m_scenarioResume = {};
+        m_scenarioLoginId = m_scenarioLoginInstance = 0;
+        SetScenarioId(0);
+        TC_LOG_INFO("entities.player", "Scenario resume: refusing unsafe legacy Sharasdal entrance for player %u; receipt/source proof unavailable", GetGUIDLow());
+        return;
+    }
     if (tuure == TuureEntranceRecovery::Refused)
     {
         m_scenarioResume = {};
@@ -120,6 +156,8 @@ void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
     }
     if (tuure == TuureEntranceRecovery::Repaired)
         TC_LOG_INFO("entities.player", "Scenario resume: normalized legacy Tuure entrance for player %u", GetGUIDLow());
+    if (sharasdal == SharasdalEntranceRecovery::Repaired)
+        TC_LOG_INFO("entities.player", "Scenario resume: normalized legacy Sharasdal entrance for player %u", GetGUIDLow());
     m_scenarioLoginId = m_scenarioResume.scenario;
     SetScenarioId(uint16(m_scenarioLoginId));
     Scenario* live = m_scenarioResume.boot == uint64(GameTime::GetStartTime()) &&
@@ -143,6 +181,9 @@ void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
         if (tuure == TuureEntranceRecovery::Repaired &&
             std::fabs(current.GetPositionX() - (-828.85f)) < 0.001f && std::fabs(current.GetPositionY() - 4372.0f) < 0.001f)
             Relocate(m_scenarioResume.x, m_scenarioResume.y, m_scenarioResume.z, m_scenarioResume.o);
+        if (sharasdal == SharasdalEntranceRecovery::Repaired &&
+            std::fabs(current.GetPositionX() - 836.16f) < 0.001f && std::fabs(current.GetPositionY() - 1035.4f) < 0.001f)
+            Relocate(m_scenarioResume.x,m_scenarioResume.y,m_scenarioResume.z,m_scenarioResume.o);
         TC_LOG_INFO("entities.player", "Scenario resume: player %u rejoins live scenario %u instance %u",GetGUIDLow(),m_scenarioLoginId,instanceId);
         return;
     }

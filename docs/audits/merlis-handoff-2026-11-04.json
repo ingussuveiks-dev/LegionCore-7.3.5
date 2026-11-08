@@ -1,4 +1,44 @@
 {
+  "latest_sharasdal_entrance_2026_11_08": {
+    "status": "DEPLOYED focused Sharasdal1600/1066 LFG1229 entrance and exact legacy checkpoint repair. Source126 ASAN/native112,paired pinned74/60,TEMP29,linked Release,retained recoveries and owned canonical startup pass. Full client40341 remains separate.",
+    "scope": "Only one LFG entrance and exact known old Shaman1600/1066 checkpoint XYZ/O. Preserve boot/instance/progression and healthy live pose. No character reset,checkpoint seeding,new fields,quest/inventory loading,progress/item/criteria award,combat/credit/actor change or ordinary teleport replacement.",
+    "checks": {
+      "source": "126 extracted actual whole Prepare/namespace ASAN cases:56 legacy modes across2 factions/2 active statuses,52 source/provenance refusals and18 custom/foreign controls. Live valid/badXY/falling,fresh boot/numeric mismatch,repeated serialization/completion/unlock. Source endpoints controlled;not whole-core ASAN.",
+      "native": "112 actual Player/Prepare/Scenario/LFG cases:10 real late Recorder receipts at stages1..5/Draenei+Orc(actual26972 supported pairs),48 legacy/status/race modes,52 source/header refusals,2 whole destroyed-map/recycled-ID/fresh native LFG1229->1066 step0 controls. Actual final49820 reaches completed sentinel6 and clears replay checkpoint. Earlier quest/pose/stage and source faults controlled;no persistent character writes/full LoadFromDB.",
+      "counterfactual": "Pinned677430a07 source74/native60 retains wrong old receipts/fresh/live/falling positions. Native capsule uses current support,not historical whole executable. Old canonical explicitly fails new Sharasdal linked proof;repaired staged/canonical passes.",
+      "sql": "TEMP29:original update,idempotence,missing-row insertion,canonical custom-name retention and25 deliberate error1644/SQLSTATE45000 refusals. Full-column graph/non1229-LFG preservation. --force only in TEMP deliberate-error fixture to inspect preservation after each refusal;expected stderr retained. No persistent world/character mutation by this fixture.",
+      "linked": "Strict composed proof retains complete Tuure legacy guard and follows actual Sharasdal helper/caller:exact tuple/provenance/source/finite/radian gates,XYZ/O-only stores,enum outcomes,refused cleanup CFG,healthy/completed/live handling and badXY-only native Relocate. No item/quest/criteria/teleport calls. Original Release library/final-link inputs used without global OutDir.",
+      "retained": "Tuure source118/native94;Warrior early+normal source132/native138 covering all3 routes;Sharasdal cemetery206/native72 with64 real releases/ACKs and selected Release;acquisition76/linked Release;mandatory Scepter source/canonical Release pass.",
+      "runtime": "Owned PID=10848 reached fresh ready\nPASS owned PID=10848 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+      "preservation": "Full-column before/after hashes equal all spell destinations/scenario routes,all non1229 LFG and scoped102826/105298/104853/104856/102839 graphs/conditions/spawns/templates. Only intended1229 changed. Protected configuration/certs/DLLs/data/required original libraries preserved. No user/unknown world/bnet stopped;owned PID10848 exited0;MariaDB left running."
+    },
+    "binary": {
+      "bnetserver": "a85d701cc1ac074ff70327853c5e760f167359d70bd572ea8451647efd23a876",
+      "worldserver": "14a217225460733ec9faf3e28981430a3a9df7f2610df979e16fc29d4db46455"
+    },
+    "diagnostics": {
+      "result": "Pre/post crash/log snapshots wrap source/native/SQL/build/link/PE/retained/startup/readback checks. Final runs no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Canonical Crashes empty.",
+      "development": [
+        "Initial source fixture incorrectly chained missing/shared/fallbackAlways flags;separate actual fallbackAlways from missing/shared,then126/74 pass. Assertion/driver evidence retained.",
+        "Initial native TEMP SQL loader split a semicolon inside a -- comment,causing syntax1064 and parsing ERROR in owned181239-506 DBErrors/Server.log. Skip whole comment lines before quote-aware splitting;guards/diagnostics retained. Repaired112/60 and live112 pass. Only these two wholly reviewed inactive logs eligible for verified archive/reset;canonical mixed log untouched.",
+        "Next native main exited0xC00000FD before output. PE inspection:1MiB stack reserve,main frame0x102598 exceeds it. Heap-own large MapInstanced/InstanceMap fixtures with finite RAII cleanup;no stack-limit override. Native112/60 now clean. No new crash file generated;exit/stdout and disassembly preserved.",
+        "Private PE inspection initially required unavailable pefile;replace with actual struct header parsing/Capstone. Initial new proof find call had wrong positional mnemonic argument;use keyword. Final staged/canonical proofs pass;initial failure evidence retained.",
+        "Existing source-host BrokenShoreClassRoute C4244 narrowing warning remains visible;not a new production/runtime warning and not suppressed."
+      ],
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "OPEN shared LINK2;untouched,not archived as resolved."
+    },
+    "unresolved": [
+      "Actual client normal207683 travel,login/re-entry/reconnect/loading/vehicle/falling/ghost presentation,camera/pet restoration and full40341/loot/equipment/outro remain unverified. Native controlled login does not prove full LoadFromDB/SaveToDB or client traversal. Custom/missing checkpoint repair is deliberately outside this exact-known-tuple scope.",
+      "Combat,one-hit/player-pet-guardian/group/faction credit and shared actor behavior unchanged;retained endpoints do not newly certify gameplay. Living Lady1906/vehicle/finisher and native210247/full waves/loot remain independent open work.",
+      "Unknown shared LINK2/mixed7111,original Slaghammer intro,reported Stromkar presentation/equipment/exit/singleton,Survival39427/Fu Zan and all36 full client chains remain OPEN. No new character reset or observed video/audio claimed."
+    ],
+    "cleanup": {
+      "status": "Pending verified issue archive and exact task-owned generated/staging/obsolete rollback cleanup;retain new entrance plus previous Sharasdal cemetery recovery generations."
+    },
+    "audit": "docs/audits/sharasdal-entrance-2026-11-08.json"
+  },
   "latest_sharasdal_graveyard_2026_11_08": {
     "status": "DEPLOYED focused Sharasdal1066 cemetery recovery on1600. Source206 ASAN/native72 with64 real releases/ACKs,pinned death-pose counterfactuals,actual50336/50314 AND ordering,staged/canonical linked proof and retained ascent/upper/gauntlet/acquisition checks pass. Owned startup clean. Whole client traversal remains separate.",
     "scope": "Only GetClosestGraveYard and MapManager include. No new instance fields/registration/layout,SQL,character reset,direct Player teleport/resurrection,health/aura/quest/item/criteria/stage grant,ascent owner or combat/actor lifecycle change.",
