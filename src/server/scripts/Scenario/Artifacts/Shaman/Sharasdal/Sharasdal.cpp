@@ -1327,10 +1327,8 @@ public:
                 return;
 
             if (me->GetVehicleKit())
-            {
                 me->GetVehicleKit()->RemoveAllPassengers();
-                me->DespawnOrUnsummon(100);
-            }
+            me->DespawnOrUnsummon(100);
         }
 
     };

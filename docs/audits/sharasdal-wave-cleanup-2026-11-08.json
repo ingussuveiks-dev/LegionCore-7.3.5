@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-08",
+  "status": "DEPLOYED focused Sharasdal105251 wave cleanup without its vehicle kit. Paired source8 ASAN/native12, selected original rejection/staged/canonical proof, retained combat/gauntlet/Lady/acquisition, Scepter and owned startup pass. Physical wave/client/full1066/all36 remain unverified.",
+  "cause": "Original MovementInform puts DespawnOrUnsummon(100) inside GetVehicleKit conditional. Actual native RemoveVehicleKit deletes the optional component while leaving its creature alive. A subsequent POINT callback cannot clean that finished manual-lifetime summon. Paired native regression reproduces four such teardown cases;no claim that ordinary intact wave boarding removes its noncontrol kit.",
+  "scope": "Only move the existing100ms DespawnOrUnsummon outside the optional vehicle block. Preserve POINT-only admission,any point id,passenger ejection before despawn,original delay and native zero-respawn semantics,factory/passive/Reset,all Lady/Grash routes and2s/6s spawning/three lanes/spell209132. No fields,SQL,credit/item/progression,teleport,guessed timeout or surrender threshold.",
+  "local_evidence": {
+    "history": "Fetched origin/main dbb95ce8d and reviewed current scripts/core plus Oct31 and Nov8 living-Lady,gauntlet,acquisition,wave and native catalogs. Current lower ascent/gauntlet admission and actual-death/acquisition fixes are already deployed;do not mistake historical counterfactuals for current bugs.",
+    "catalog": [
+      "SPELL\t46598\tRide Vehicle Hardcoded",
+      "EFFECT\t46598\t0\t0\t6\t236\t0\t0\t0\t0\t0\t25\t0",
+      "EFFECT\t46598\t0\t1\t6\t4\t0\t0\t0\t0\t0\t1\t0",
+      "MISC\t46598\t0\t21\t-1\t152\t65792\t268436480\t4\t0\t4\t8\t0\t0\t0\t0\t1\t0\t0\t0",
+      "SPELL\t209132\tWave FX",
+      "EFFECT\t209132\t0\t0\t6\t23\t0\t1000\t0\t0\t209184\t1\t0",
+      "EFFECT\t209132\t0\t1\t6\t395\t0\t0\t6547\t0\t0\t1\t0",
+      "MISC\t209132\t0\t21\t-1\t1\t696254848\t1056\t273170437\t269681152\t8388736\t393224\t4608\t0\t0\t1048576\t0\t0\t0\t0",
+      "SPELL\t209184\tPillar Splash",
+      "EFFECT\t209184\t0\t0\t3\t0\t0\t0\t0\t0\t0\t22\t7",
+      "MISC\t209184\t0\t0\t-2\t7\t696254848\t1056\t273170437\t269681152\t8388736\t393224\t4608\t0\t0\t1048576\t0\t0\t0\t0",
+      "SPELL\t210247\tDespawn All Followers",
+      "EFFECT\t210247\t0\t0\t3\t0\t0\t0\t0\t0\t0\t22\t7",
+      "EFFECT\t210247\t0\t1\t3\t0\t0\t0\t0\t0\t0\t22\t7",
+      "EFFECT\t210247\t0\t2\t3\t0\t0\t0\t0\t0\t0\t22\t7",
+      "MISC\t210247\t0\t0\t-2\t1\t696254848\t1056\t273170437\t269681152\t8388736\t393224\t4608\t0\t0\t1048576\t0\t0\t0\t0",
+      "VEHICLE\t4717\t1073877031\t0",
+      "SEAT\t0\t16540\t32783\t33554432\t0\t2\t0.5\t0\t2.5\t131\t132\t37",
+      "EOF\twave-native"
+    ],
+    "native_contract": "Fresh real World template105251 VehicleId4717/ScriptName npc_sharasdal_waterwall checked by native loader. Matching26972+read-only Hotfix confirms one seat16540 with noncontrol flags. Unit::RemoveVehicleKit,Vehicle::RemoveAllPassengers,Creature::DespawnOrUnsummon and TempSummon::UnSummon/EventProcessor traced. Component absence must not imply the owning summon was removed.",
+    "living_lady": "Local data/assets/prior sampled-video research still does not prove living Lady surrender threshold or native final-lethal schedule. Current Trinity script search returned no matching implementation;new bounded web searches returned no accepted relevant donor. No new footage watched or external implementation copied. Living1906/carry/finisher remain separate."
+  },
+  "checks": {
+    "source": "8 ASAN contexts compile whole actual wave class/factory:passive/reset,kit present/absent,passengers before despawn,kit disappearing during ejection,nonpoint refusal,existing any-point ids and100ms. Exact whole Sharasdal file outside certified wave block matches dbb95ce8d. Scope helper preserves repeated normalization and rejects unknown delay101;retained combat certificate uses only this exact separately verified delta.",
+    "native": "12 actual registered whole-wave factory/manual105251 summons with native4717/16540,Draenei+Orc,actual Player EnterVehicle/VehicleJoinEvent,optional component teardown,real passenger removal,and native99+1ms EventProcessor/ForcedUnsummonDelayEvent/map removal. Four missing-kit variants and eight intact/reset/foreign-motion controls. No quest40341/item128911/scenario1066 progression mutation.",
+    "counterfactual": "Pinned dbb95ce8d source8/native12. Four real native vehicle-teardown waves remain alive after POINT and100ms;ordinary eight controls preserve original cleanup. Explicit lifecycle counterfactual,not evidence that normal noncontrol boarding drops a kit. Current native support,not historical EXE.",
+    "limits": "MovementInform endpoint and earlier quest/stage/pose/phase are controlled. Native summon/vehicle/boarding/ejection/event/map deletion are real;full native Release core is not ASAN. No actual physical path,attached AT contact,swept hit,rendering,camera/pet portrait or client traversal claim.",
+    "linked": "Actual registered ScriptObject descriptor slot10 GetAI,passive factory/AI vtable and native PointMovementGenerator callback slot. POINT8-only branch,optional kit/ejection both join original100ms zero-respawn despawn,exact two native calls/no progression,item or teleport. Full retained Sharasdal acquisition/ascent/gauntlet/combat/death/cemetery proof,canonical Devourer outro and legacy-login proof retained.",
+    "retained": "CombatAI12 ASAN,GauntletArrival73 ASAN,Lady73 ASAN with native death/owner/pet/guardian/charmer/known upper allies/both final-wall orders,and Acquisition76 ASAN with whole controller/native handlers and original attempt/real parent-child equip gating. Mandatory canonical Scepter source/Release passes.",
+    "build": "Original Release game/scripts libraries and generated final-link inputs,only Sharasdal.cpp production compile;separate stage and four EXE/MAP hash promotion while no user/unknown world/bnet process running. No global OutDir. Protected config/cert/DLLs/data and required original libraries retained.",
+    "runtime": "Owned PID=10788 reached fresh ready\nPASS owned PID=10788 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "preservation": "Before/after full-column hashes:all LFG/spell destinations/scenario_data and scoped1600 five actors SmartAI/conditions/spawns/templates. World/Hotfix/Login/Character native pools readonly with private empty TEMP account protection. No persistent SQL or character/item/AP/quest/checkpoint reset. Only task-owned canonical process launched/gracefully stopped."
+  },
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "8edf3b02a31e93c26a040cab860e9297eb8928febbf80f1eb76c33d839db044b",
+    "bnet_sha256": "9225fe3c74c826165b6b743c9d96a628c528f1493d690e22a34cd736c65ab62c",
+    "rollback": ".codex/release-before-sharasdal-wave-cleanup-2026-11-08"
+  },
+  "diagnostics": {
+    "final": "Pre/post canonical+own crash/log snapshots wrap catalog/source/native/build/link/PE/retained/startup. Final passing checks exit0/no new or changed crash reports/no appended DBErrors/no unexplained server warnings/errors/assertions;owned stderr empty. Canonical Crashes empty.",
+    "development": [
+      "Initial native boarding fixture left its synthetic Player NativeDisplayId0. VehicleJoinEvent calls real GetCollisionHeight,whose native AssertEntry(0) asserted and process exited ACCESS_VIOLATION. Original stderr/stack (Trinity::Assert -> Unit::GetCollisionHeight -> VehicleJoinEvent::Execute -> main),exit code and logs retained;no crash-file produced. Fixture now uses matching ChrRaces.MaleDisplayID and validates real model/collision height before boarding. Normal production Player InitDisplayIds already establishes that state;no core assertion weakened. Paired baseline/repaired native12 and final reruns pass. This development crash was not the expected cleanup counterfactual.",
+      "Initial scope scaffolder used platform cp1252 to read existing UTF8 Sharasdal.cpp and stopped on0x81;explicit UTF8 fixes the scaffolder. First source run then found missing not-yet-created helper before C++ execution;final source8/baseline8 and helper checks pass. Evidence/failed diagnostics retained.",
+      "Initial PE descriptor read only8 primary slots,then incorrectly counted two base slots. Actual ScriptObject has one virtual destructor;native descriptor bytes and full header prove GetAI at slot10 of11 entries. Correct selected proof also traces actual native POINT dispatch. Original failed proof retained;paired old missing-cleanup rejection and final stage/canonical pass.",
+      "Existing original wave unreferenced id C4100 and retained fixture conversion/shadow warnings remain visible. No new production compilation warning,log/check suppression or mixed-log rotation. Final native coverage uses valid Draenei/Orc Shaman race pairs rather than the earlier synthetic Human/Orc faction-only controls."
+    ],
+    "preserved_open": "Mixed canonical DBErrors7111 SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 unchanged/untruncated. Original Slaghammer intro crash/cache,shared LINK2 Nov7/8 and living-Lady OPEN source research retained."
+  },
+  "unresolved": [
+    "Physical waves/AT contact/boarding during motion/route interruptions/missing-cast and AI-removal cases still require broader native/client traversal;this focused repair only handles completed POINT cleanup without its optional kit.",
+    "Living Lady1906/209457/209487 surrender/carry/finisher and210247 follower cleanup remain implementation work. No threshold,kill,timer,teleport or progress substitute invented.",
+    "Actual client full40341/1066,all36,existing LINK2/Slaghammer,Survival/Stromkar and other recorded client gaps remain OPEN. No character reset."
+  ],
+  "next": "Continue independent real wave movement/attached area-trigger contact/failed-cast lifecycle investigation against native catalog,then living-Lady acknowledged carry/1906/finisher once authentic activation evidence is established.",
+  "cleanup": {
+    "status": "Pending verified original-byte/hash archive and exact owned staging/generated/obsolete rollback cleanup before handoff."
+  }
+}
