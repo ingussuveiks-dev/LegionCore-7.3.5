@@ -19,13 +19,28 @@
       "Earned owned-artifact recovery and shared1489 graveyard/actor lifecycle,Survival39427 middle blessing,Stromkar visuals and shared LINK2/Slaghammer remain OPEN. Original unresolved reproduction/cache/research and mixed7111 preserved;no further character/item/progress reset authorized."
     ],
     "cleanup": {
-      "status": "PENDING verified fixed archive and exact owned generated/private-config cleanup after focused commit",
-      "retain": [
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/tuure-resume-entrance-2026-11-08",
+      "manifest_sha256": "f322b9ed9410eb30ab70486c2fff82225cc7a04a7f2eb9d3073f3689100207f7",
+      "original_files": 3232,
+      "cleanup_manifest_sha256": "14cd6ab2ca3f35f72000bfde229ee97941323b2ebf0650fcd3dccb16e0c5f303",
+      "removed_files": 418,
+      "logical_removed_bytes": 3148016740,
+      "local_deletion_manifest": ".codex/tuure-resume-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
         ".codex/release-before-marksmanship-return-recovery-2026-11-07",
         ".codex/release-before-marksmanship-login-recovery-2026-11-07"
-      ]
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 133308166144,
+      "disk_free_after_bytes": 136448274432,
+      "observed_free_increase_bytes": 3140108288
     },
-    "checks": "Native legacy22 vs repaired/live28,TEMP22 refusals,actual native5480/facing/ground/precision,selected Recorder+Tuure/Scepter,retained Blood36/MM30/Tuure ASAN/live pickup;owned ready/shutdown0/exit0 canonical starts with unchanged binaries."
+    "checks": "Native legacy22 vs repaired/live28,TEMP22 refusals,actual native5480/facing/ground/precision,selected Recorder+Tuure/Scepter,retained Blood36/MM30/Tuure ASAN/live pickup;owned ready/shutdown0/exit0 canonical starts with unchanged binaries.",
+    "fix_commit": "d3648133272779718b62cce16928c518d908b7fb"
   },
   "latest_blood_resume_2026_11_08": {
     "audit": "docs/audits/blood-resume-entrance-2026-11-08.json",

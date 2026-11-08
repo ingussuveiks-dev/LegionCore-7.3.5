@@ -1,8 +1,25 @@
 {
   "date": "2026-11-08",
   "cleanup": {
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
     "archive": "build-extractors/bin/Release/fixed/tuure-resume-entrance-2026-11-08",
-    "status": "Generated outputs retained for the active Tuure entrance final regressions;archive and exact cleanup will close with that focused task"
+    "manifest_sha256": "f322b9ed9410eb30ab70486c2fff82225cc7a04a7f2eb9d3073f3689100207f7",
+    "original_files": 3232,
+    "cleanup_manifest_sha256": "14cd6ab2ca3f35f72000bfde229ee97941323b2ebf0650fcd3dccb16e0c5f303",
+    "removed_files": 418,
+    "logical_removed_bytes": 3148016740,
+    "local_deletion_manifest": ".codex/tuure-resume-2026-11-08/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-marksmanship-return-recovery-2026-11-07",
+      ".codex/release-before-marksmanship-login-recovery-2026-11-07"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 133308166144,
+    "disk_free_after_bytes": 136448274432,
+    "observed_free_increase_bytes": 3140108288
   },
   "cause": "Tuure pickup host predated native generic door SetLootState branch and ForceEquipItem already-equipped child replay. Missing enum/method declarations prevented compilation. It also modeled the real two-handed staff as a one-handed item.",
   "limits": [
@@ -20,5 +37,6 @@
     "Test-TuureCompletionTree.ps1 -AddressSanitizer with actual typed26972+readonly hotfix catalog:real128825 inventory17/artifact45;actual native ALL-root50679+50702 matrix and one reward dispatch pass.",
     "Strict selected canonical Tuure factories/scene/native accepted departure PE chain passes;post-test no new crash,appended DBErrors or server warnings/errors/assertions. Existing extracted FunctionProcessor/Scenario size_t narrowing compiler warnings remain visible and separate from production runtime diagnostics."
   ],
-  "status": "FIXED test-host compatibility only;production handlers,binaries,data and character state unchanged by this commit"
+  "status": "FIXED test-host compatibility only;production handlers,binaries,data and character state unchanged by this commit",
+  "fix_commit": "4ca4348e36792361cc020bb549168dc0477e6fd1"
 }
