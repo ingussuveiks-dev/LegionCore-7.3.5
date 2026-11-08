@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-08",
+  "title": "Queued vehicle passenger life admission",
+  "status": "AUTOMATED_VERIFIED_CLIENT_PENDING",
+  "batch": "seven-lifecycle-fixes-2026-11-08",
+  "baseline_revision": "6dc3bc59f",
+  "production": "src/server/game/Entities/Vehicle/Vehicle.cpp",
+  "classes": [],
+  "cause": "Unit::_EnterVehicle checks life when the aura is applied,but VehicleJoinEvent runs later. A dead queued chauffeur can still board a player's recAura vehicle because that path does not require a surviving control aura.",
+  "repair": "Before deferred target lookup reject not-in-world,predelete or dead passengers through native Abort. Keep native seat allocation,explicit replacement,control aura cleanup,revive/retry and acknowledged Sharasdal progression unchanged. Predicate applies to Players/NPCs/pets/guardians;no progression is awarded here.",
+  "checks": [
+    "Actual pinned6dc3bc59f whole Vehicle.cpp reproduces a native89713 chauffeur entering a real4050/179244 Player kit after setDeathState(JUST_DIED),including the retry setup.",
+    "Repaired native6 contexts:death during delay,living join,dead before request,death/revive retry,missing kit,removed-world;failed joins preserve actual available seats.",
+    "Existing capacity original2+repaired16 retained;Sharasdal acknowledged-contact ASAN30/native32/Release retained. Source certificate normalizes only the exact separately reviewed life guard,leaving original wave code checks strict."
+  ],
+  "source_regression_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe VehicleDeferredAdmissionNative [-AdditionalBaseline]",
+  "release": "tools/tests/verify_seven_lifecycle_release.py",
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "87b31fa62508b777b14cac0f03749f1c8d86e51b835f6ed6f13c597f46d99edd",
+    "bnet_sha256": "88e9938d3dfc92e325fc63af501e62258fe54cd52e7ff0baa003fa14d8676f3b",
+    "owned_startup": "PID30496:fresh ready,server shutdown0,exit0,gone;stderr empty;configs/certs/DLLs hash-preserved"
+  },
+  "diagnostics": "Final paired checks clean after pre/post snapshots;expected original UAF captured separately. Original fixture MMAP initialization crash and incorrect isAlive API compile attempt repaired and paired with passing native/build runs. Legacy C5055 in untouched methods and native fixture conversion warnings retained;no production warning introduced by these seven changes. Mixed canonical7111-byte LINK2 log unchanged/untruncated. Full archive/cleanup record in batch closeout.",
+  "client_pending": [
+    "Actual client death during queued boarding,ordinary shared vehicles,both chauffeur factions,camera/pet portrait;not all36 artifact chains."
+  ],
+  "not_claimed": "No actual client traversal performed;not a complete Lady finale or all36 chains;no character reset,SQL mutation,quest credit or item grants."
+}

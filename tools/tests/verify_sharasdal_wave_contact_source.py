@@ -19,8 +19,13 @@ a=v.index('    // Commit only after');b=v.index('    if (Target->IsCreature())',
 for name,part in parts.items():assert sha(part)==expected[name],name+' changed beyond certified repair'
 for name in ['wave_case','preflight','ack_break','defer']:at=at.replace(parts[name],'',1)
 v=v.replace(parts['vehicle_ack'],'',1)
+# Independently paired native lifecycle repair: normalize only this exact guard.
+life='// Admission is asynchronous: a living caster may die before this event runs.\n    if (!Passenger->IsInWorld() || Passenger->IsPreDelete() || !Passenger->IsAlive())'
+assert v.count(life)==1,'Reviewed deferred life guard missing/duplicated'
+v=v.replace(life,'if (!Passenger->IsInWorld())',1)
+
 for s,key in [(at,'at'),(v,'vehicle')]:
  s=s.replace('#include "SharasdalWaveRide.h"','')
  assert ''.join(s.split())==''.join(pinned(paths[key]).split()),'Unreviewed unrelated native code: '+key
 assert sha((r/'src/server/game/Entities/AreaTrigger/SharasdalWaveRide.h').read_text(encoding='utf-8'))=='e77168ceb8ffab7b87784a95eab9ec7cb65f05db9be0955ded0768203de488c5'
-print('PASS wave ride whole native source scope:only exact owned cadence/ack/defer and vehicle-seat notification;all unrelated cast/charge/counter/actions/vehicle/AI/mover/native admission code pinned2bee4580c retained')
+print('PASS wave ride whole native source scope:only exact owned cadence/ack/defer and vehicle-seat notification;all unrelated cast/charge/counter/actions/vehicle/AI/mover/native admission code pinned2bee4580c retained except exact separately tested deferred life guard')

@@ -1033,7 +1033,8 @@ VehicleJoinEvent::~VehicleJoinEvent()
 
 bool VehicleJoinEvent::Execute(uint64 eventTime, uint32)
 {
-    if (!Passenger->IsInWorld())
+    // Admission is asynchronous: a living caster may die before this event runs.
+    if (!Passenger->IsInWorld() || Passenger->IsPreDelete() || !Passenger->IsAlive())
     {
         Abort(eventTime);
         return true;
