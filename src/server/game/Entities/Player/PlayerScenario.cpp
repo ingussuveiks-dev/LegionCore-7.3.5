@@ -14,6 +14,38 @@
 
 namespace
 {
+enum class TuureEntranceRecovery { Unchanged, Repaired, Refused };
+
+TuureEntranceRecovery RecoverLegacyTuureEntrance(Player const* player, uint32 mapId, ScenarioResume& saved, lfg::LFGDungeonData const* data)
+{
+    if (mapId != 1489 || player->getClass() != CLASS_PRIEST || saved.map != 1489 || saved.scenario != 1085 ||
+        !(std::fabs(saved.x - (-828.85f)) < 0.001f && std::fabs(saved.y - 4372.0f) < 0.001f &&
+          std::fabs(saved.z - 738.64f) < 0.001f && std::fabs(saved.o - 1.86768f) < 0.001f))
+        return TuureEntranceRecovery::Unchanged;
+
+    // Only the historical persisted1243 tuple is recoverable. Early login has
+    // not loaded quests/inventory; this never creates a missing checkpoint or
+    // changes ordinary quest admission, progress, instance ownership or boot.
+    WorldSafeLocsEntry const* safe = sWorldSafeLocsStore.LookupEntry(5480);
+    if (!saved.instance || !saved.boot || !data || !data->dbc || data->id != 1243 || data->map != 1489 ||
+        data->difficulty != DIFFICULTY_N_SCENARIO || data->dbc->ID != 1243 || data->dbc->MapID != 1489 ||
+        data->dbc->ScenarioID != 1085 || data->dbc->DifficultyID != DIFFICULTY_N_SCENARIO ||
+        !(data->dbc->Flags & LFG_FLAG_USER_TELEPORT_NOT_ALLOWED) || !sScenarioMgr->GetScenarioSteps(1085) ||
+        !safe || safe->ID != 5480 || safe->MapID != 1489 ||
+        !(std::fabs(safe->Loc.X - (-43.1440964f)) < 0.001f && std::fabs(safe->Loc.Y - 1160.33679f) < 0.001f &&
+          std::fabs(safe->Loc.Z - (-74.353569f)) < 0.001f && std::fabs(safe->Loc.O - 27.7250366f) < 0.001f) ||
+        !MapManager::IsValidMapCoord(1489, data->x, data->y, data->z, data->o))
+        return TuureEntranceRecovery::Refused;
+    float dx = data->x - safe->Loc.X, dy = data->y - safe->Loc.Y, dz = data->z - safe->Loc.Z;
+    // Native SQL FLOAT text output differs from DB2 by3.174mm here. Keep the
+    // existing native loader and bound its geometry delta, including facing.
+    if (dx * dx + dy * dy + dz * dz >= 0.0001f ||
+        !(std::fabs(data->o - safe->Loc.O * 0.01745329251994329577f) < 0.001f))
+        return TuureEntranceRecovery::Refused;
+    saved.x = data->x; saved.y = data->y; saved.z = data->z; saved.o = data->o;
+    return TuureEntranceRecovery::Repaired;
+}
+
 bool Resumable(MapEntry const* entry, uint32 scenarioId)
 {
     ScenarioEntry const* scenario = sScenarioStore.LookupEntry(scenarioId);
@@ -72,11 +104,22 @@ void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
     }
     // Native scenario/map routing must still exist after a data update.
     auto data = ResumeDungeon(this,m_scenarioResume.scenario,mapId);
+    TuureEntranceRecovery tuure = RecoverLegacyTuureEntrance(this, mapId, m_scenarioResume, data);
+    if (tuure == TuureEntranceRecovery::Refused)
+    {
+        m_scenarioResume = {};
+        m_scenarioLoginId = m_scenarioLoginInstance = 0;
+        SetScenarioId(0);
+        TC_LOG_INFO("entities.player", "Scenario resume: refusing unsafe legacy Tuure entrance for player %u; receipt/source proof unavailable", GetGUIDLow());
+        return;
+    }
     if (!data || !sScenarioMgr->GetScenarioSteps(m_scenarioResume.scenario))
     {
         m_scenarioResume = {};
         return;
     }
+    if (tuure == TuureEntranceRecovery::Repaired)
+        TC_LOG_INFO("entities.player", "Scenario resume: normalized legacy Tuure entrance for player %u", GetGUIDLow());
     m_scenarioLoginId = m_scenarioResume.scenario;
     SetScenarioId(uint16(m_scenarioLoginId));
     Scenario* live = m_scenarioResume.boot == uint64(GameTime::GetStartTime()) &&
@@ -93,6 +136,13 @@ void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
             return;
         }
         m_scenarioLoginInstance = instanceId;
+        // Preserve a legitimate live pose. A player still at the same proven
+        // foreign-world XY may already be falling; recover that pose without
+        // resetting this live scenario's stage, actors or instance identity.
+        auto current = GetPosition();
+        if (tuure == TuureEntranceRecovery::Repaired &&
+            std::fabs(current.GetPositionX() - (-828.85f)) < 0.001f && std::fabs(current.GetPositionY() - 4372.0f) < 0.001f)
+            Relocate(m_scenarioResume.x, m_scenarioResume.y, m_scenarioResume.z, m_scenarioResume.o);
         TC_LOG_INFO("entities.player", "Scenario resume: player %u rejoins live scenario %u instance %u",GetGUIDLow(),m_scenarioLoginId,instanceId);
         return;
     }

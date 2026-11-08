@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-08",
+  "status": "DEPLOYED C++ repair for already persisted exact bad Tuure1243/map1489/scenario1085 entrance receipts. Source118 ASAN/native94,paired pinned counterfactuals,selected linked proof,retained chains and canonical ready/shutdown0 pass. Actual full saved-character/client traversal remains separate.",
+  "cause": "The preceding d36481332 SQL repair corrected native1243 for future fallback records but existing character receipts retained the former Dalaran1220 return tuple -828.85,4372,738.64,1.86768 on Niskara1489. PrepareScenarioLogin trusted the stored coordinates;fresh instances restarted thousands of yards away and same-boot live re-entry could preserve that unsafe/falling pose.",
+  "scope": "PlayerScenario.cpp only production change;no SQL,character writes,resurrection,quest/item/criteria grant,actor/stage serialization,combat callback or new script registration. Shared fake-host adapters and explicit old-method baseline support are regression-only.",
+  "implementation": [
+    "Recognize only actual Priest5/map1489 plus stored map1489/scenario1085 and all four exact legacy cells within0.001. Existing legitimate/native/custom tuples and foreign map/class/scenario receipts do not normalize. Require persisted nonzero instance and boot;never seed a missing checkpoint.",
+    "Resolve existing native ResumeDungeon,require1243/1489/difficulty12,matching underlying LFGDungeons ID/map/scenario/difficulty and USER_TELEPORT_NOT_ALLOWED0x0800,existing scenario steps and WorldSafeLoc5480. Require5480 raw XYZ -43.1440964,1160.33679,-74.353569 and27.7250366deg;validate finite loaded coordinates and facing,loaded XYZ within1cm and orientation within0.001rad of native degree conversion.",
+    "Copy only receipt XYZ/O from the actual loaded1243. Preserve receipt map/scenario/instance/boot,valid live position and native completed cleanup. Fresh boot/mismatched instance or destroyed native map uses corrected entrance through existing Prepare. In a matching live instance,only the precisely proven bad currentXY is relocated,including a fallingZ;keep its stage,actors and identity. This is early local login relocation before world insertion,not a live teleport or automatic health change.",
+    "Fail closed when the exact bad tuple is recognized but source/provenance is unavailable:discard unsafe checkpoint and temporary selectors,log INFO and return to the existing invalid-login fallback. Preserve useful normalization/refusal diagnostics. Repeated normalization does not rewrite correct receipts or repeat the normalization message.",
+    "Early Prepare runs before quest/inventory loading. This patch does not add a synthetic active-quest gate or infer ownership from unloaded state;ordinary generic Tuure admission is unchanged. No new objective,pickup,completion,return,health or group award occurs. Native player/pet/guardian/group combat and final two-event ALL-root rules are unchanged.",
+    "Matching26972 WorldSafe5480 and actual native1243 were checked locally first;normal SQL FLOAT text rounds Y1160.33679 to1160.34 with3.174mm drift. Keep native loader/serialization and explicitly bound this actual geometry,without changing generic precision or suppressing checks."
+  ],
+  "history": "Fetched origin/main and reviewed local history/audits at fdb24afb8,d36481332,4ca4348e3. Matching local native DB2,world records,LFG loader and Player/Scenario code supplied sufficient evidence;no modern Trinity API,external/unseen video or incompatible source imported.",
+  "checks": {
+    "source": "Extracted actual namespace/Prepare/CanResume/Record and early-loader/map-access fragments:current118 ASAN,including44 source/provenance refusals and18 foreign/custom controls;fdb24afb8 pinned source74 explicitly reproduces bad fresh/live/falling poses. Team endpoints are controlled;native race eligibility is checked separately.",
+    "native": "Current94 actual Player/Prepare/LFG/WorldSafe5480/Scenario/serialization cases;real26972 Human/Priest and Undead/Priest pairs,incomplete+complete,44 process-local invalid-source/provenance cases,valid live pose,unsafeXY/falling recovery,exact boot/numeric mismatch,completed cleanup,repeat/Record/roundtrip,whole old-map destruction/recycled ID and real1243 fresh1085 step0 constructor. Source mutations use RAII restoration only inside probe process;TEMP/read-only database scope,no persistent character changes.",
+    "counterfactual": "Pinned fdb24afb8 Prepare native50 uses an explicit extracted old method capsule plus current native support libraries,not a historical whole binary. Existing entrance native22 baseline similarly uses pinned Prepare with TEMP legacy1243;repaired/live native28 retain native storage/geometry/ALL-root/shared972 controls.",
+    "linked": "Strict selected helper and Prepare x64 proof requires native guards,all legacy cells,raw5480/delta/facing/finite source,XYZ/O-only stores,return values,refusal CFG to shared epilogue,completed/live-safe branch and exact badXY writes. Composes full retained acquisition/earned-Marksmanship/Recorder chain. Old canonical c2dd26d6 specifically rejects missing helper;staged and canonical e7cdb1ea pass. Selected machine-code paths do not prove full client traversal.",
+    "retained": "Marksmanship earned source67/native80/live SQL/PE;Marksmanship login source68/native64/PE;Survival login source68/native120/PE;Warrior actual early source132/native138/PE;generic scenario ASAN/PE;live Blood36 and Marksmanship30 native entrance/data/PE;Tuure intro/heal,Boros greeting,pickup,completion-tree and live pickup-data ASAN;mandatory canonical Scepter source/Release verification.",
+    "build": "Original game and scripts Release project dependencies followed by staged final link;no global OutDir and no header/layout/Player API change. Tested code is in canonical final-link EXE,map and retained original game/scripts libraries. Config/certs/DLLs/data preserved.",
+    "runtime": "Task-owned canonical worldserver reached newly appended ready,stdin server shutdown0,exit0,gone and empty stderr. No user/unknown world or bnet stopped;MariaDB left running.",
+    "preservation": "Read-only full-table fingerprints for all non1243 LFG entrances,whole spell_target_position and scenario routes unchanged;native1243 independently checked. Protected runtime file hashes unchanged;no character reset or DB mutation."
+  },
+  "diagnostics": {
+    "result": "Every source/native/build/PE/runtime test wrapped pre/post crash/log diagnostics;passing repaired runs have no new/changed crashes,appended DBErrors or unexplained appended server warnings/errors/assertions. Active canonical Crashes empty.",
+    "development": "Initial pinned native compile missed BrokenShoreClassRoute include;fixed header and native50 passes. Expanded unoptimized native main allocated four large Player locals and exhausted default Windows stack inside __chkstk/vutf8printf during initialization,before tested Prepare. Use separate owned heap fixtures;current94 and pinned50 pass. Original failure catalog/driver output retained for resolved archive. Initial PE harness syntax and linear-ret assumption corrected;optimized refusal path uses a shared epilogue now checked by CFG,not weakened. Existing host BrokenShoreClassRoute uint32-to-uint16 C4244 remains visible and unchanged;PDB/full-link informational messages retained.",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "OPEN shared LINK2 evidence remains byte-for-byte;no mixed or unknown-written log truncated."
+  },
+  "binary": {
+    "worldserver": "e7cdb1eab74d060afcf740079ba2e1de79d55a290b41d01ba33c08914cff6ce6",
+    "bnetserver": "61b655d8d2839e0941018045b97ff4d4dd486758775e4206d0c3788b8b9ebc30"
+  },
+  "unresolved": [
+    "Actual full saved-character LoadFromDB,transport/fall/death state,group bind selection and client visual/arrival/relog traversal remain unverified;native fixtures control earlier quest/pose state. No claim of whole36 chain completion.",
+    "Tuure generic admission,pickup/earned-owner return retry and shared1489 graveyard/resurrection/actor lifecycle remain separate findings;this patch neither grants missing return credit nor resurrects a dead character.",
+    "Survival39427 follow-up,Stromkar descent/bonfire visuals and client combat/pet/guardian/group traversal remain separate audit/client checks.",
+    "Shared LINK2 mixed7111 and unresolved Slaghammer handoff intro probe at20261106-121715-172/cache/research remain OPEN and preserved;no unexplained diagnostic was filed as resolved."
+  ],
+  "cleanup": {
+    "status": "Exact generated-output cleanup and verified fixed archive follow focused fix commit;retain new Tuure and before-Marksmanship-return recovery copies,retire older before-Marksmanship-login only after passing canonical checks."
+  }
+}

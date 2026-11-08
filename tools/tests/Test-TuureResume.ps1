@@ -8,7 +8,7 @@ $roots=@('tuure-entrance-native','tuure-resume-data','legion-legendary-catalog')
  if($Baseline){
   & "$PSScriptRoot/Test-MagnarReadinessNative.ps1" -TuureEntranceBaseline *> "$out/native.log";if(!$?){throw 'Tuure legacy-coordinate counterfactual failed'}
   if((Get-Content "$out/native.log" -Raw) -notmatch 'COUNTERFACTUAL native Tuure entrance22'){throw 'Unexpected Tuure counterfactual variant/count'}
-  'COUNTERFACTUAL native Tuure legacy1243:12 wrong late receipts+2 wrong fresh restarts,8 original/existing/shared972/completed controls retained. TEMP original Dalaran coordinates,not ordinary successful gameplay.'
+  'COUNTERFACTUAL native Tuure legacy1243:12 wrong late receipts+2 wrong fresh restarts,8 original/existing/shared972/completed controls retained. TEMP original Dalaran coordinates and pinned fdb24afb8 Prepare capsule with current native support,not a historical whole binary or ordinary successful gameplay.'
  }else{
   & "$PSScriptRoot/Test-TuureResumeData.ps1" -VerifyLiveData:$VerifyLiveData *> "$out/data.log";if(!$?){throw 'Tuure entrance data failed'}
   if($VerifyLiveData){& "$PSScriptRoot/Test-MagnarReadinessNative.ps1" -TuureEntranceLive *> "$out/native.log"}else{& "$PSScriptRoot/Test-MagnarReadinessNative.ps1" -TuureEntrance *> "$out/native.log"};if(!$?){throw 'Tuure native entrance failed'}

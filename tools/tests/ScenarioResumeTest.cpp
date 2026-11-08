@@ -4,9 +4,11 @@
 #include <map>
 #include <limits>
 using uint32=uint32_t;using uint16=uint16_t;using uint64=uint64_t;
+#ifndef TC_LOG_INFO
 #define TC_LOG_INFO(...) ((void)0)
+#endif
 constexpr int SCENARIO_TYPE_CHALLENGE_MODE=1;
-constexpr int QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,ALLIANCE=0,CLASS_WARRIOR=1,CLASS_HUNTER=3,CLASS_WARLOCK=9,CLASS_MONK=10;
+constexpr int QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,ALLIANCE=0,CLASS_WARRIOR=1,CLASS_HUNTER=3,CLASS_PRIEST=5,CLASS_WARLOCK=9,CLASS_MONK=10;
 constexpr unsigned AT_LOGIN_UNLOCK=1;constexpr int PLAYER_LOGIN_QUERY_LOADQUESTSTATUS=0;
 struct SpellTargetPosition {uint32 target_mapId;float target_X,target_Y,target_Z,target_Orientation;};
 struct SpellManager {std::map<uint32,SpellTargetPosition> targets;SpellTargetPosition const* GetSpellTargetPosition(uint32 id){auto i=targets.find(id);return i==targets.end()?nullptr:&i->second;}} spellManager;
@@ -23,7 +25,10 @@ struct MapEntry {
     bool IsGarrison()const{return garrison;}
 };
 struct ScenarioEntry {int Type=0;};
-enum Difficulty : uint32 { DIFFICULTY_NORMAL_SCENARIO=12 };
+enum Difficulty : uint32 { DIFFICULTY_NORMAL_SCENARIO=12,DIFFICULTY_N_SCENARIO=12 };
+constexpr uint32 LFG_FLAG_USER_TELEPORT_NOT_ALLOWED=0x0800;
+struct WorldSafeLocsEntry {uint32 ID=5480,MapID=1489;struct {float X=-43.1440964f,Y=1160.33679f,Z=-74.353569f,O=27.7250366f;}Loc;};
+struct SafeStore {WorldSafeLocsEntry value;bool missing=false;WorldSafeLocsEntry const* LookupEntry(uint32 id){return missing||id!=5480?nullptr:&value;}} sWorldSafeLocsStore;
 struct MapDifficultyEntry {uint32 DifficultyID=12;};
 struct DB2Manager {MapDifficultyEntry value;bool missing=false;MapDifficultyEntry const* GetDefaultMapDifficulty(uint32){return missing?nullptr:&value;}} sDB2Manager;
 struct ScenarioStore {ScenarioEntry value;bool missing=false;ScenarioEntry const* LookupEntry(uint32 id){return missing||!id?nullptr:&value;}} sScenarioStore;
@@ -45,7 +50,7 @@ struct ScenarioManager {
     int const* GetScenarioSteps(uint32){static int steps;return missingSteps?nullptr:&steps;}
 } scenarios;
 auto sScenarioMgr=&scenarios;
-namespace lfg {struct LFGDungeonData {struct Dbc{uint32 ScenarioID=777;}entry;Dbc*dbc=&entry;float x=1,y=2,z=3,o=4;uint32 difficulty=12,id=908,map=9000;};}
+namespace lfg {struct LFGDungeonData {struct Dbc{uint32 ScenarioID=777,ID=1243,MapID=1489,DifficultyID=12,Flags=LFG_FLAG_USER_TELEPORT_NOT_ALLOWED;}entry;Dbc*dbc=&entry;float x=1,y=2,z=3,o=4;uint32 difficulty=12,id=908,map=9000;};}
 struct LfgManager {
     lfg::LFGDungeonData data;
     bool missing=false,shared=false,fallbackAlways=false;

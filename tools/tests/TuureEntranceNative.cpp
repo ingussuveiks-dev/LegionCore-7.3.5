@@ -11,6 +11,10 @@
 struct TuureEntryTag{using Type=ScenarioResume Player::*;friend Type Access(TuureEntryTag);};
 template struct FixtureAccess<TuureEntryTag,&Player::m_scenarioResume>;
 static void Priest(Player& p,unsigned race){p.SetByteValue(UNIT_FIELD_BYTES_0,0,race);p.SetByteValue(UNIT_FIELD_BYTES_0,1,CLASS_PRIEST);p.setFactionForRace(race);p.SetQuestStatus(41993,QUEST_STATUS_INCOMPLETE);p.SetQuestSlot(0,41993);}
+#if defined(TUURE_ENTRANCE_BASELINE) || defined(TUURE_LEGACY_LOGIN_BASELINE)
+#include "TuurePinnedPrepareNative.h"
+#endif
+#ifndef TUURE_ENTRANCE_SUPPORT_ONLY
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);
  DB2Storage<CharBaseInfoEntry> pairs("CharBaseInfo.db2",CharBaseInfoLoadInfo::Instance());Require(pairs.Load(argv[1],0),"Matching Legion race/class data missing");
@@ -62,7 +66,7 @@ int main(int argc,char**argv){try{
    }
    scenario->SetCurrentStep(0);{NativePlayer p(session,map,801,late);Priest(p,race);p.RecordScenarioEntrance();auto receipt=p.*Access(TuureEntryTag{});Require(receipt.scenario==1085&&std::fabs(receipt.x-late.GetPositionX())<0.001f,"Ordinary entry changed");++cases;scenario->SetCurrentStep(3);p.RecordScenarioEntrance();Require((p.*Access(TuureEntryTag{})).x==receipt.x&&p.GetExactDist(late)<0.001f,"Existing legitimate pose overwritten");++cases;}
 #ifdef TUURE_ENTRANCE_BASELINE
-   {NativePlayer p(session,map,801,late);Priest(p,race);Require((p.*Access(TuureEntryTag{})).Read(saved.Write()),"Bad receipt read failed");(p.*Access(TuureEntryTag{})).boot++;p.PrepareScenarioLogin(1489,instance);Require(std::fabs(p.GetPositionX()+828.85f)<0.001f&&entry.GetExactDist(&p)>3000,"Bad fresh restart not reproduced");p.Relocate(late);++cases;}
+   {NativePlayer p(session,map,801,late);Priest(p,race);Require((p.*Access(TuureEntryTag{})).Read(saved.Write()),"Bad receipt read failed");(p.*Access(TuureEntryTag{})).boot++;PinnedTuureLogin::Prepare(p,1489,instance);Require(std::fabs(p.GetPositionX()+828.85f)<0.001f&&entry.GetExactDist(&p)>3000,"Bad fresh restart not reproduced");p.Relocate(late);++cases;}
 #else
    for(unsigned mode=0;mode<3;++mode){NativePlayer p(session,map,801,late);Priest(p,race);Require((p.*Access(TuureEntryTag{})).Read(saved.Write()),"Receipt roundtrip failed");if(mode==1)(p.*Access(TuureEntryTag{})).boot++;p.PrepareScenarioLogin(1489,instance+(mode==2));if(!mode)Require(p.GetScenarioLoginInstance()==instance&&p.GetExactDist(late)<0.001f,"Exact live rejoin lost pose");else Require(!p.GetScenarioLoginInstance()&&p.GetScenarioId()==1085&&p.GetExactDist(resume)<0.001f,"Fresh Holy restart lost native entrance");Require(scenario->GetCurrentStep()==3,"Prepare changed old stage");p.Relocate(late);++cases;}
 #endif
@@ -81,3 +85,4 @@ int main(int argc,char**argv){try{
 #endif
  CloseAltheaNative();return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<std::endl;return 1;}}
+#endif

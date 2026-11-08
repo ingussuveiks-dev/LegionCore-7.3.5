@@ -1,4 +1,28 @@
 {
+  "latest_tuure_login_recovery_2026_11_08": {
+    "audit": "docs/audits/tuure-login-recovery-2026-11-08.json",
+    "status": "DEPLOYED C++ repair for already persisted exact bad Tuure1243/map1489/scenario1085 entrance receipts. Source118 ASAN/native94,paired pinned counterfactuals,selected linked proof,retained chains and canonical ready/shutdown0 pass. Actual full saved-character/client traversal remains separate.",
+    "scope": "PlayerScenario.cpp only production change;no SQL,character writes,resurrection,quest/item/criteria grant,actor/stage serialization,combat callback or new script registration. Shared fake-host adapters and explicit old-method baseline support are regression-only.",
+    "checks": {
+      "source": "Extracted actual namespace/Prepare/CanResume/Record and early-loader/map-access fragments:current118 ASAN,including44 source/provenance refusals and18 foreign/custom controls;fdb24afb8 pinned source74 explicitly reproduces bad fresh/live/falling poses. Team endpoints are controlled;native race eligibility is checked separately.",
+      "native": "Current94 actual Player/Prepare/LFG/WorldSafe5480/Scenario/serialization cases;real26972 Human/Priest and Undead/Priest pairs,incomplete+complete,44 process-local invalid-source/provenance cases,valid live pose,unsafeXY/falling recovery,exact boot/numeric mismatch,completed cleanup,repeat/Record/roundtrip,whole old-map destruction/recycled ID and real1243 fresh1085 step0 constructor. Source mutations use RAII restoration only inside probe process;TEMP/read-only database scope,no persistent character changes.",
+      "counterfactual": "Pinned fdb24afb8 Prepare native50 uses an explicit extracted old method capsule plus current native support libraries,not a historical whole binary. Existing entrance native22 baseline similarly uses pinned Prepare with TEMP legacy1243;repaired/live native28 retain native storage/geometry/ALL-root/shared972 controls.",
+      "linked": "Strict selected helper and Prepare x64 proof requires native guards,all legacy cells,raw5480/delta/facing/finite source,XYZ/O-only stores,return values,refusal CFG to shared epilogue,completed/live-safe branch and exact badXY writes. Composes full retained acquisition/earned-Marksmanship/Recorder chain. Old canonical c2dd26d6 specifically rejects missing helper;staged and canonical e7cdb1ea pass. Selected machine-code paths do not prove full client traversal.",
+      "retained": "Marksmanship earned source67/native80/live SQL/PE;Marksmanship login source68/native64/PE;Survival login source68/native120/PE;Warrior actual early source132/native138/PE;generic scenario ASAN/PE;live Blood36 and Marksmanship30 native entrance/data/PE;Tuure intro/heal,Boros greeting,pickup,completion-tree and live pickup-data ASAN;mandatory canonical Scepter source/Release verification.",
+      "build": "Original game and scripts Release project dependencies followed by staged final link;no global OutDir and no header/layout/Player API change. Tested code is in canonical final-link EXE,map and retained original game/scripts libraries. Config/certs/DLLs/data preserved.",
+      "runtime": "Task-owned canonical worldserver reached newly appended ready,stdin server shutdown0,exit0,gone and empty stderr. No user/unknown world or bnet stopped;MariaDB left running.",
+      "preservation": "Read-only full-table fingerprints for all non1243 LFG entrances,whole spell_target_position and scenario routes unchanged;native1243 independently checked. Protected runtime file hashes unchanged;no character reset or DB mutation."
+    },
+    "unresolved": [
+      "Actual full saved-character LoadFromDB,transport/fall/death state,group bind selection and client visual/arrival/relog traversal remain unverified;native fixtures control earlier quest/pose state. No claim of whole36 chain completion.",
+      "Tuure generic admission,pickup/earned-owner return retry and shared1489 graveyard/resurrection/actor lifecycle remain separate findings;this patch neither grants missing return credit nor resurrects a dead character.",
+      "Survival39427 follow-up,Stromkar descent/bonfire visuals and client combat/pet/guardian/group traversal remain separate audit/client checks.",
+      "Shared LINK2 mixed7111 and unresolved Slaghammer handoff intro probe at20261106-121715-172/cache/research remain OPEN and preserved;no unexplained diagnostic was filed as resolved."
+    ],
+    "cleanup": {
+      "status": "Exact generated-output cleanup and verified fixed archive follow focused fix commit;retain new Tuure and before-Marksmanship-return recovery copies,retire older before-Marksmanship-login only after passing canonical checks."
+    }
+  },
   "latest_tuure_resume_2026_11_08": {
     "audit": "docs/audits/tuure-resume-entrance-2026-11-08.json",
     "status": "DEPLOYED SQL-only: Tuure1243/map1489/scenario1085 fallback entrance now uses actual Holy Priest WorldSafeLoc5480 instead of Dalaran return coordinates. Native legacy22 vs repaired/live28,TEMP22 refusals,selected PE,retained chains and canonical startup pass. Existing saved character checkpoints and full client traversal are separate.",
