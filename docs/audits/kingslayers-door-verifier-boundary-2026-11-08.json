@@ -5,5 +5,26 @@
   "fix": "First require the exact current whole source to match reviewed da75c27a2. Then apply the original exact door delta certificate to its actual044614303 boundary versus a9e86af7b. Unknown edits still fail. All original selected current-Release native lock/order/scope/real activation/51549/51654/vtable checks continue against the current binary.",
   "checks": "Strict composed staged Kingslayers cemetery verifier returns through native pickup/door/Althea/guard proofs. Old failing whole-file assertion retained as pe-stage-initial.log; repaired full chain passes without removing checks or changing production. Source snapshots pin both boundaries; no historical whole-binary claim.",
   "diagnostics": "Pre/post canonical/own crashes/log snapshots for both attempts; no new crash/appended DBErrors/server failure. The separate incomplete cemetery test bootstrap exception/string diagnostics are recorded in its own audit, not attributed to this verifier.",
-  "cleanup": "Pending verified issue archive and task-owned generated cleanup with Kingslayers cemetery; retain regression source and unresolved evidence."
+  "cleanup": {
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/kingslayers-graveyard-2026-11-08",
+    "manifest_sha256": "762d505736948b7b320bee0fbe6f6df8847f04920186d1c3c1d2509229e35b6b",
+    "original_files": 488,
+    "cleanup_manifest_sha256": "a3bbbee43f56748e5b9abc334dea269ee4ef473c888b7ea8d06d19b55dd22f01",
+    "removed_files": 180,
+    "logical_removed_bytes": 1775756117,
+    "local_deletion_manifest": ".codex/kingslayers-graveyard-2026-11-08/cleanup-deleted.json",
+    "inactive_error_logs_reset": 1,
+    "retained": [
+      ".codex/release-before-kingslayers-graveyard-2026-11-08",
+      ".codex/release-before-dreadblades-graveyard-2026-11-08"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;one reviewed inactive native819 bootstrap log reset after original-byte archive;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 132006645760,
+    "disk_free_after_bytes": 133782609920,
+    "observed_free_increase_bytes": 1775964160
+  },
+  "fix_commit": "ac74033fdb471cefd6f3ad8486ec8a71396f7588"
 }

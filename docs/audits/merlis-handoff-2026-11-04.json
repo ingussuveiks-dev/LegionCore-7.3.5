@@ -43,9 +43,29 @@
       "Original Slaghammer handoff intro/shared LINK2/mixed7111,Sharasdal living Lady1906/carry/finisher/native210247/waves/full40341,Survival/Fu Zan/Stromkar presentation and all36 whole chains remain OPEN."
     ],
     "cleanup": {
-      "status": "Pending verified archive and exact task-owned generated/stage/obsolete rollback cleanup;retain new Kingslayers plus previous Dreadblades recovery generations."
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/kingslayers-graveyard-2026-11-08",
+      "manifest_sha256": "762d505736948b7b320bee0fbe6f6df8847f04920186d1c3c1d2509229e35b6b",
+      "original_files": 488,
+      "cleanup_manifest_sha256": "a3bbbee43f56748e5b9abc334dea269ee4ef473c888b7ea8d06d19b55dd22f01",
+      "removed_files": 180,
+      "logical_removed_bytes": 1775756117,
+      "local_deletion_manifest": ".codex/kingslayers-graveyard-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 1,
+      "retained": [
+        ".codex/release-before-kingslayers-graveyard-2026-11-08",
+        ".codex/release-before-dreadblades-graveyard-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;one reviewed inactive native819 bootstrap log reset after original-byte archive;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 132006645760,
+      "disk_free_after_bytes": 133782609920,
+      "observed_free_increase_bytes": 1775964160
     },
-    "audit": "docs/audits/kingslayers-graveyard-2026-11-08.json"
+    "audit": "docs/audits/kingslayers-graveyard-2026-11-08.json",
+    "fix_commit": "15ac325bca9a4d1082f23667d7943401677219e0",
+    "next": "Next independent candidate:Devourer1607/1078 cemetery source defaults5467 above cached6 while its outro uses7,and omits facing/required-source validation. Review actual26972 ScenarioStep/WorldSafeLocs and route before any edit. Read-only source finding only;no repaired regression or deployment for that candidate."
   },
   "latest_dreadblades_graveyard_2026_11_08": {
     "status": "DEPLOYED focused Dreadblades1012/map1545 four-checkpoint recovery including completed sentinel5. Source114 ASAN/native56 with48 real release/ACKs,paired pinned48/52,staged/canonical selected proof,retained pickup/death/two surrender checks and owned startup pass. Full client40849 remains separate.",
