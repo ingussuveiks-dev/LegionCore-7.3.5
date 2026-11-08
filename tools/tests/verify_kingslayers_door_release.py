@@ -6,6 +6,12 @@ from capstone.x86_const import X86_REG_RIP
 from sharasdal_erunak_entry_pe import sites,values,floats
 repo=Path(__file__).resolve().parents[2];path='src/server/game/Spells/SpellEffects.cpp'
 before=subprocess.check_output(['git','-C',str(repo),'show','a9e86af7b:'+path],text=True,encoding='utf-8');current=(repo/path).read_text(encoding='utf-8')
+# Later reviewed Fury landing/bonfire and equipped-child repairs share this
+# file. Certify their exact whole-file boundary before the older door delta;
+# retain the actual selected Release checks below against the current binary.
+reviewed=subprocess.check_output(['git','-C',str(repo),'show','da75c27a2:'+path],text=True,encoding='utf-8')
+assert current==reviewed,'Unreviewed shared SpellEffects change beyond the certified Fury/equipped-child boundary'
+current=subprocess.check_output(['git','-C',str(repo),'show','044614303:'+path],text=True,encoding='utf-8')
 addition='''    // This authored door owns activation/progression in its AI after native
     // lock validation. Other doors retain their original early-use path.
     bool const kingslayersDoor = gameObjTarget && gameObjTarget->GetEntry() == 251053 &&
