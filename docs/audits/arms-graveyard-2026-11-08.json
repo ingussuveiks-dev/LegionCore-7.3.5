@@ -46,6 +46,25 @@
     "Survival39427, reported Stromkar presentation/equipment/exit/singleton client checks and all36 full chains remain separate. No new character reset or video traversal claimed."
   ],
   "cleanup": {
-    "status": "PENDING grouped hash-verified diagnostic archive and exact generated/staging deletion; keep two recent rollback generations plus all OPEN evidence."
-  }
+    "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+    "archive": "build-extractors/bin/Release/fixed/arms-graveyard-2026-11-08",
+    "manifest_sha256": "2601c3096853955507e1088e8c3a97463fe72f317d1e5fce378d4908ce7336db",
+    "original_files": 712,
+    "cleanup_manifest_sha256": "2d39ff56a15c0de8827bb82fb5196ab580362de6f53ddaa8fd23c5a6fca73824",
+    "removed_files": 271,
+    "logical_removed_bytes": 2681848835,
+    "local_deletion_manifest": ".codex/shared-crypt-recovery-2026-11-08/cleanup-deleted.json",
+    "inactive_error_logs_reset": 0,
+    "retained": [
+      ".codex/release-before-arms-graveyard-2026-11-08",
+      ".codex/release-before-hodir-cemetery-2026-11-08"
+    ],
+    "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+    "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+    "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+    "disk_free_before_bytes": 131610345472,
+    "disk_free_after_bytes": 134288007168,
+    "observed_free_increase_bytes": 2677661696
+  },
+  "fix_commit": "02fbe28c08834112f93554c652f91f044081c85c"
 }
