@@ -20,8 +20,27 @@
       "Shared LINK2 mixed7111 and unresolved Slaghammer handoff intro probe at20261106-121715-172/cache/research remain OPEN and preserved;no unexplained diagnostic was filed as resolved."
     ],
     "cleanup": {
-      "status": "Exact generated-output cleanup and verified fixed archive follow focused fix commit;retain new Tuure and before-Marksmanship-return recovery copies,retire older before-Marksmanship-login only after passing canonical checks."
-    }
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/tuure-login-recovery-2026-11-08",
+      "manifest_sha256": "6988858b8b4113637f43ac0656743825e118ab28608d38a6e7b4d0a9759e1bd7",
+      "original_files": 5072,
+      "cleanup_manifest_sha256": "afa112ceb1e53fe64b816abf54c6312ca51ba5c172d44286125cd1dc9fdf26be",
+      "removed_files": 517,
+      "logical_removed_bytes": 4596461169,
+      "local_deletion_manifest": ".codex/tuure-login-recovery-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-tuure-login-recovery-2026-11-08",
+        ".codex/release-before-marksmanship-return-recovery-2026-11-07"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 131791523840,
+      "disk_free_after_bytes": 136388448256,
+      "observed_free_increase_bytes": 4596924416
+    },
+    "fix_commit": "3fda0b9f2e8dc6fc3eccd321dccc263e6a627406"
   },
   "latest_tuure_resume_2026_11_08": {
     "audit": "docs/audits/tuure-resume-entrance-2026-11-08.json",
