@@ -27,14 +27,17 @@ send = native['symbol']('?SendChat@CreatureTextMgr@@')
 assert send in calls(talk) and send not in calls(cast), 'TALK and CAST no longer have distinct speech behavior'
 cast_name = '?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@I_NPEAVItem@@PEBVAuraEffect@@VObjectGuid@@'
 assert native['symbol'](cast_name) in calls(cast), 'Old CAST opcode no longer requests an actual spell'
-for displacement, size in [(0x120, 4), (0x124, 4), (0x138, 4), (0x13c, 1)]:
+# Linked-cast retry state precedes these members. Native SmartScriptTalkLayout
+# binds current header/Release ABI: timer178,id17c,GUID180..18f,talker190,enabled194.
+# The old120/124/138/13c offsets predate those members; keep checking actual stores.
+for displacement, size in [(0x178, 4), (0x17c, 4), (0x190, 4), (0x194, 1)]:
     assert any(entry.mnemonic == 'mov' and entry.operands[0].type == CS_OP_MEM
                and entry.operands[0].mem.disp == displacement and entry.operands[0].size == size
                for entry in talk), f'TALK omits actual text-timer field {displacement:x}'
 update = instructions('?OnUpdate@SmartScript@@')
 timer_load = next(index for index, entry in enumerate(update) if entry.mnemonic == 'mov'
                   and entry.operands[0].type == CS_OP_REG and entry.operands[1].type == CS_OP_MEM
-                  and entry.operands[1].mem.disp == 0x120)
+                  and entry.operands[1].mem.disp == 0x178)
 assert update[timer_load + 1].mnemonic == 'cmp' and update[timer_load + 1].operands[0].reg == update[timer_load].operands[0].reg
 assert update[timer_load + 2].mnemonic == 'jae', 'Expiry no longer retains native timer < diff boundary'
 assert any(entry.mnemonic == 'mov' and any(operand.type == CS_OP_IMM and operand.imm == 52 for operand in entry.operands)

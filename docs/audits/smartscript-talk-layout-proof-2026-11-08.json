@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-08",
+  "status": "TEST-ONLY repaired stale TALK member-offset proof; native header/Release layout and both pre-Arms/canonical linked paths agree, full enclosing Stromkar/shared consumer suite passes. No gameplay/core/SQL/binary mutation by this repair.",
+  "cause": "verify_talonclaw_apata_dialogue_release still expected SmartScript text members at120/124/138/13c. Earlier76ca986cd linked-cast retry state precedes these members. Current actual header/Release has timer178/id17c/GUID180..18f/talker190/enabled194, sizeof416. The old verifier falsely rejected TALK before the enclosing acquisition suite could finish; this was not a newly observed runtime speech failure.",
+  "implementation": "Change only the four exact TALK store offsets and native OnUpdate timer read. Preserve 4/4/4/1-byte widths, actual chat versus cast opcode distinction, real timer<diff expiry, TEXT_OVER52, ProcessEventsFor/ProcessEvent/ProcessAction and StartPath bridges. Add a read-only native current-header/Release-constructor layout reader; no logging/check suppression or alternative runtime behavior.",
+  "checks": {
+    "layout": "SmartScriptTalkLayout.cpp constructs actual SmartScript, measures five real pointer-to-member offsets/sizes:376/4,380/4,384/16,400/4,404/1, size416. Linked current game.lib, not a modeled class.",
+    "linked": "Strict full enclosing linked verifier passes on canonical Arms binary and pre-Arms rollback34efe5f2, establishing that this layout predates the cemetery addition. Original assertion field120 failure captured; not a gameplay counterfactual or an ordinary passing test.",
+    "enclosing": "Complete Test-StromkarRealAcquisition.ps1 -VerifyReleaseBinary including native schema TEMP/live records and all three shared consumers passes after the change, through EOF. Actual equip/client/whole chains remain separate.",
+    "diagnostics": "Pre/post wrapper snapshots: no new/changed crashes, appended DBErrors or server warnings/errors/assertions. Three reader compile iterations exposed missing standalone include dependencies (containers,ObjectGuid,MovementPackets); include explicit dependencies and retain original logs. Final reader/proofs exit0."
+  },
+  "canonical_world_sha256": "5b488cfb71f27cabbdbbdc642ef1dd24dd41b2bd18efdf8c318a97c5a8a5ccfa",
+  "before_arms_world_sha256": "34efe5f267f0c3d9fe4e78f0f09204bd2603cee0c9fb93891aac33445512f5d0",
+  "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+  "unresolved": "Shared LINK2/mixed7111 and original Slaghammer intro/cache remain OPEN; no error log reset. Full client speech and all36 chains remain separate.",
+  "cleanup": {
+    "status": "PENDING grouped diagnostic archive and exact generated-output removal with the enclosing Arms task; reader source retained.",
+    "planned_archive": "build-extractors/bin/Release/fixed/arms-graveyard-2026-11-08/.codex/smart-talk-layout-2026-11-08"
+  }
+}
