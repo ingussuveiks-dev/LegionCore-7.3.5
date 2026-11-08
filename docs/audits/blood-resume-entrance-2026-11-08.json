@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-08",
+  "status": "DEPLOYED SQL-only via canonical updater: Blood1059/map1489/scenario940 native resume entrance restored. Native missing baseline28 vs repaired/live36,TEMP18 refusals,linked Recorder,retained Hunter/Blood/Scepter and canonical startup pass. Existing EXEs unchanged;full saved-character/client traversal remains separate.",
+  "cause": "Native26972 LFG1059 selects940/difficulty12 with USER_TELEPORT_NOT_ALLOWED and lacked lfg_entrances. Generic RecordScenarioEntrance cannot record an older live run first observed after step0 or loading/transport without that source. Numeric instance reuse or a later combat coordinate is not a safe new-instance entrance. Actual original102414 portal requests scenario940 then201678,whose real destination supplies the missing row.",
+  "scope": "Only absent1059 entrance row from actual201678 destination1489/240.9/1953.44/-55.29/0.384845. No production C++/new registration,binary,quest prerequisite,character reset,manual teleport,item/quest/kill credit or scenario-criteria serialization change.",
+  "implementation": [
+    "Fail-closed migration01 requires the exact real201678 target,one original940 wildcard1489/class0/team0/diff0/LFG0 route,and actual102414 root0/204->940 LINK1/85->201678. Insert only absent1059,retain an exact existing row and its custom name;reject altered/missing source/route/portal or custom/zero/nullable existing coordinates. Same predicate protects INSERT even when a client continues after SIGNAL with --force.",
+    "Existing generic native Recorder/Prepare/LFG/Scenario consumers already implement this path. Ordinary initial pose and a legitimate existing checkpoint remain unchanged. Rejoin only exact same-boot live scenario+instance;old boot,numeric mismatch or destroyed Map starts940 at its real entrance and native constructor step0. Criteria/actors are transient;no exact old combat-stage restoration.",
+    "Actual940 contains11 steps0..10;11 is its completion sentinel. Native final48857 updates through the actual criteria dispatcher and completed Recorder clears the checkpoint. Do not SetCurrentStep11 or replay completion. Test48857 input is controlled;production data adds no completion grant.",
+    "All other LFG rows and whole spell target/scenario route fingerprints remain unchanged. Actual102414 source SmartAI and an unrelated100397 graph remain unchanged in full-schema scoped TEMP tests. The original class0 route and native flags remain;this does not add or change class/faction/quest admission. Shared972 retained;MM fixture control now checks current940 source provenance instead of assuming1059 must remain missing forever.",
+    "No combat/killer handler changed. Player/pet/guardian/eligible-group progression remains native,including original201678 effect90 credits102414/102403. This repair adds neither a cast nor any credit. Blood source40740,earlier steps/poses and final native event are controlled fixture inputs,not client traversal.",
+    "LFG loading also defines a generic cemetery entry. Existing instance_tuure graveyard override returning the supplied death pose is unchanged;this patch does not certify resurrection or new graveyard behavior on shared1489."
+  ],
+  "local_evidence": {
+    "history": "Fetched origin;main557d67dfa matched origin at task start. Consulted local Git/audits and matching local native data/world records/core before repair. No modern-core or external/unseen-video behavior imported.",
+    "catalog": "Reusable NiskaraEntranceCatalog uses production typed DB2Storage against actual26972 Spell/SpellEffect/LFGDungeons/ScenarioStep/CriteriaTree/Criteria. Seven1489 routes,real201678 effect0/227 misc1341 targets1/17 plus native90/102414 and102403;940 eleven step roots and final46836/46837/92/48857. Raw catalog is separate from native runtime bootstrap/hotfix consumers.",
+    "portal": "Live102414 SmartAI/static spawn375307 in1220 at-824.026,3683.28,26.1672:original range root0 action204/940 LINK1 action85/201678,both target18. No source22 or source17 gate found in bounded query;none invented. Quest40740 native objective storage0/102403 and4/102414 corroborate the transfer identity;actual item128402/scene1168 remains its prior pickup repair.",
+    "floor": "Actual Map1489 LoadGrid/GetHeight at the201678 source is within0.1 yard. No Hunter201674 coordinate or guessed later graveyard pose substituted. Priest1243/1085 coordinates remain a separately unresolved issue."
+  },
+  "checks": {
+    "TEMP18": "Full actual entrance/source/route schemas and scoped native/unrelated SmartAI graphs;exact one-row insert,idempotence,custom-name preservation,18 independent source/map/XYZ/orientation/route/class/team/difficulty/LFG/custom/zero/nullable/portal refusals each signal once and leave managed tables unchanged. Live tables unchanged by TEMP tests.",
+    "baseline28": "Explicit expected-broken TEMP absence1059:Human+Orc x10 later stages reproduce20 missing checkpoints;8 ordinary/existing/shared972/completed controls retained. Not an ordinary successful gameplay run.",
+    "native36": "TEMP repaired and actual updater-installed live data:20 late receipts,4 ordinary/existing,6 same-live/boot/numeric mismatch,2 whole Map destruction/recycled numericID/native1059 constructor940 step0,2 actual48857 completed cleanup,2 independent972 controls. Real source floor verified. Record/Prepare do not move the live player or grant artifact/criteria. No character database writes;quest/stage/pose/final-event endpoints controlled,full LoadFromDB/SaveToDB/group/client separate.",
+    "linked": "Composed strict canonical Recorder/LFG/source coordinate verification returns through the full chain. Mandatory canonical Scepter -VerifyReleaseBinary and generic ScenarioResume ASAN/linked check pass;no new executable or stale link promotion.",
+    "retained": "Live MM1162 full-schema16/native30 and Survival1178/1384 full-schema/native40/linked;Blood physical loot and scene equipment live data/ASAN plus actual prison guard native catalog/source/selected PE. These preserve component admission and do not certify the complete chain.",
+    "updater": "Owned worldserver PID=26092\nPASS owned PID=26092 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "final_startup": "Owned worldserver PID=12352\nPASS owned PID=12352 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "preservation": "Original all-other LFG fingerprint excluding independently verified1028/1059/1162/1178/1384,whole spell_target_position and scenario_data match. World/bnet hashes and protected configs/certs/DLLs unchanged;no user/unknown server stopped. New1059 and its updater RELEASED normalized-LF SHA1 verified."
+  },
+  "migration": {
+    "file": "sql/updates/world/2026_11_08_01_blood_resume_entrance.sql",
+    "sha256": "09c0170f7e343aee19149a9629d50567885caa014158b334e23b8c0ad5ed1ed1",
+    "released_sha1": "e5722693caf47c5a161316d88ab1212446e4f3d3"
+  },
+  "runtime_sha256": {
+    "worldserver": "c2dd26d6ff5163aa6997433a5c2b546d1e12eb3ed07678bef4ad9e83051020e6",
+    "bnetserver": "e462824db5f7950619498b4487783047e75fce58253151bb5b8208bffa92e109"
+  },
+  "diagnostics": {
+    "result": "Before/after crash/log snapshots around catalog,TEMP,native,PE,ASAN and both owned canonical starts. Exits/stdout/stderr/new crashes/appended server warnings/errors/asserts/DBErrors reviewed. Final tests/startups have no new unexplained diagnostics;owned ready/shutdown0/exit0/gone,stderr empty. Active Crashes empty.",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "OPEN shared LINK2 mixed evidence retained byte-for-byte;not truncated.",
+    "development": "Two private read-only queries used incorrect schema names (map and SourceSpellID);original failure evidence retained,correct source queries used thereafter. Initial runner edit accidentally rewrote the family/probe expression and attempted nonexistent tests/.cpp;fixed runner selects BloodEntranceNative and native baseline28/repaired36/live36 pass. Failed isolated root20261108-055025-311 contains owned generated fragments/private config only;diagnostics archived before exact cleanup. No production failure hidden or diagnostic suppression."
+  },
+  "unresolved": [
+    "Actual client entry/re-entry,full saved-character LoadFromDB/SaveToDB,automatic group bindings,combat/pet/guardian/one-hit branches,physical loot/full bags/scene/equipment/voice/camera/return/relog and all36 whole chains remain separate checks. Typed/component/native startup tests do not certify them.",
+    "Blood owned-artifact return recovery after a lost checkpoint and shared1489 graveyard/actor lifecycle remain separate;this only restores real entrance data and existing generic checkpoints. Priest1243/1085 source/coordinate provenance,Survival39427 middle blessing,Stromkar visuals and shared LINK2/Slaghammer stay OPEN.",
+    "Original unresolved Slaghammer reproduction/cache/research and mixed7111 retained. No further character/item/progress reset is authorized by this work."
+  ],
+  "cleanup": {
+    "status": "PENDING verified fixed archive and exact owned generated/private-config cleanup after focused commit",
+    "retain": [
+      ".codex/release-before-marksmanship-return-recovery-2026-11-07",
+      ".codex/release-before-marksmanship-login-recovery-2026-11-07"
+    ]
+  }
+}
