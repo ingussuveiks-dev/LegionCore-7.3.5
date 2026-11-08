@@ -36,7 +36,37 @@
     ],
     "next": "Continue physical moving-wave/attached-contact lifecycle investigation and authentic living-Lady activation evidence;keep whole-chain/client checks explicit.",
     "cleanup": {
-      "status": "PENDING mandatory original-byte/hash archive and exact owned temporary cleanup after focused commit"
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/sharasdal-wave-contact-2026-11-08",
+      "manifest_sha256": "aab7d0a3fc261ce1332bc7f0d93f158dbb7816644897758c1ef9bf07023458ef",
+      "original_files": 475,
+      "cleanup_manifest_sha256": "6f66753712404a3ce394afa63ef49f56109a85ed277956c9da1a3913143e708f",
+      "removed_files": 166,
+      "logical_removed_bytes": 2028998074,
+      "local_deletion_manifest": ".codex/sharasdal-wave-contact-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-sharasdal-wave-contact-2026-11-08",
+        ".codex/release-before-sharasdal-wave-cleanup-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 131362304000,
+      "disk_free_after_bytes": 133391556608,
+      "observed_free_increase_bytes": 2029252608,
+      "handoff_review": "Corrected copied closeout helper selecting previous cleanup member;restored historic handoff tail from focused1766a0530 and verified exact unchanged tail after updating only the current contact member. No implementation/runtime/test evidence affected."
+    },
+    "fix_commit": "1766a05301e8ea2f0a780674bf49ca5488d204de",
+    "followup_source_review": {
+      "status": "READONLY continuation after focused fix;no second gameplay fix claimed",
+      "attached_movement": "AreaTrigger::Update calls UpdateSplinePosition before UpdateAffectedList. UpdateSplinePosition handles actual nonempty target GUID through UpdatePosition before returning on !isMoving. Same-map UpdatePosition uses native AreaTriggerRelocation to follow the caster XY/Z/facing. Thus matching6547 HasAttached1/isMoving0 is consistent with native attachment;do not change isMoving to1 merely because the wave moves. Actual physical path/contact remains to be exercised.",
+      "spawn_cast": "Current gauntlet UpdateAI issues actual105251 MovePoint1 toward(-148.25,802.57,796.49),then ordinary209132 cast and rearms6000ms. That caller does not inspect CastSpell result. Current native32 verifies normal209132 creates the attached AT;failed initial cast during real moving-wave spawn is a separate outstanding reproduction,not a proven runtime failure or permission to invent a timer/grant.",
+      "next_check": "Build a real native creature-spline/map relocation test for all three authored lanes and moving geometric entry/exit,then failed initial209132 cast/interrupted route/cleanup. Preserve current original native attachment semantics and distinguish controlled endpoints from client traversal.",
+      "source_sha256": {
+        "src/server/game/Entities/AreaTrigger/AreaTrigger.cpp": "f073af5f0f110740060ad38163d1ad01a242f6a0543c31936f43111d560901c1",
+        "src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp": "f9dfd68188b9757aafe70473432deb025a4d36ada832f1924565df0b706df674"
+      }
     }
   },
   "latest_sharasdal_wave_cleanup_2026_11_08": {
