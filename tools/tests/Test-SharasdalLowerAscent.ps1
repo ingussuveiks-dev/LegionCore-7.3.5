@@ -34,6 +34,8 @@ $issue='                            if (InstanceScript* script = me->GetInstance
 Same ($actions.Replace($issue,'')) $expected 'Other routes/actions/timing or installed-path bridge changed'
 Same ($grash.Replace($select,$oldSelect).Replace($actions,$oldActions)) $oldGrash 'Other Grash fields/heal/wall/combat/lifecycle changed'
 Same ($source.Replace($erunak,$oldErunak).Replace($grash,$oldGrash)) $old 'Other scenario actors/spells/registration changed'
+. "$PSScriptRoot/SharasdalGraveyardScope.ps1"
+$instance=Remove-SharasdalGraveyardScope $instance
 $normal=$instance.Replace('        #include "sharasdal_lower_ascent.h"','').Replace('            RearmAscent(player);','').Replace('            UpdateAscent(diff);','')
 foreach($header in @('ObjectAccessor.h','WaypointManager.h','WaypointMovementGenerator.h','MoveSpline.h')){$normal=$normal.Replace("#include `"$header`"",'')}
 Same $normal $oldInstance 'Other instance fields/deaths/credits/re-entry/creation changed'

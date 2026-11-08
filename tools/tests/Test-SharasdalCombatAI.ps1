@@ -6,7 +6,13 @@ $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$so
 $normal=$source
 foreach($pair in @(@('erunak','AttackStart(lady)'),@('adel','AttackStart(lady)'),@('garsh','Talk(9)'))){$name=$pair[0];$action=$pair[1];$prefix=' '*28;$added="${prefix}if (CreatureAI* content = $name"+'->GetDisabledAI() ? static_cast<CreatureAI*>('+$name+'->GetDisabledAI()) : '+$name+"->AI())`n"+$prefix+'    content->'+$action+';';$normal=Adapt $normal $added ($prefix+$name+'->AI()->'+$action+';')}
 if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Other actors/progression/spell/target/cast ordering/timers changed'}
-foreach($name in @('instance_sharasdal.cpp','sharasdal_lower_ascent.h','sharasdal_gauntlet_arrival.h','sharasdal_upper_wall.h','sharasdal_erunak_entry.h','sharasdal_erunak_upper.h')){$relative='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/'+$name;$prior=(& git -C $repo show "585592236:$relative") -join "`n";if($LASTEXITCODE -or (($prior -replace '\s','') -cne ((Get-Content "$repo/$relative" -Raw) -replace '\s',''))){throw "Other instance/member policy changed: $name"}}
+. "$PSScriptRoot/SharasdalGraveyardScope.ps1"
+foreach($name in @('instance_sharasdal.cpp','sharasdal_lower_ascent.h','sharasdal_gauntlet_arrival.h','sharasdal_upper_wall.h','sharasdal_erunak_entry.h','sharasdal_erunak_upper.h')){
+ $relative='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/'+$name;$prior=(& git -C $repo show "585592236:$relative") -join "`n";if($LASTEXITCODE){throw 'Pinned combat instance/member missing'}
+ $actual=Get-Content "$repo/$relative" -Raw
+ if($name -eq 'instance_sharasdal.cpp'){$actual=Remove-SharasdalGraveyardScope $actual}
+ if(($prior -replace '\s','') -cne ($actual -replace '\s','')){throw "Other instance/member policy changed: $name"}
+}
 if($ScopeOnly){'PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sharasdal-combat-ai$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory)

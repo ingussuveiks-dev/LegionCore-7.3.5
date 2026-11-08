@@ -12,6 +12,7 @@
 #include "WaypointManager.h"
 #include "WaypointMovementGenerator.h"
 #include "MoveSpline.h"
+#include "MapManager.h"
 #include <array>
 
 namespace SharasdalGuard
@@ -665,12 +666,31 @@ public:
             }
         }
 
-        WorldLocation* GetClosestGraveYard(float x, float y, float z) override
-        // OnPlayerDeath
-        {            
-            // Init data
-            loc_res_pla.WorldRelocate(1600, x, y, z);
+        WorldLocation* GetClosestGraveYard(float /*x*/, float /*y*/, float /*z*/) override
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1066)
+                return nullptr;
 
+            uint32 step = scenario->GetCurrentStep();
+            bool ascended = step >= 4;
+            if (step == 3)
+            {
+                // Stage3 also includes the lower floor. Only the real ascent
+                // event50336/leaf47131 admits the native elevator-top source.
+                auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+                auto found = progress->find(47131);
+                ascended = found != progress->end() && found->second.Counter;
+            }
+            uint32 safeId = ascended ? 5473 : 5443;
+            WorldSafeLocsEntry const* safe = sWorldSafeLocsStore.LookupEntry(safeId);
+            if (!safe || safe->ID != safeId || safe->MapID != 1600 || !(safe->Loc.X || safe->Loc.Y || safe->Loc.Z) ||
+                !MapManager::IsValidMapCoord(1600, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f))
+            {
+                TC_LOG_ERROR("scripts", "Sharasdal graveyard: invalid native WorldSafeLocs %u for instance %u", safeId, instance->GetInstanceId());
+                return nullptr;
+            }
+            loc_res_pla.WorldRelocate(1600, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f);
             return &loc_res_pla;
         }
 
