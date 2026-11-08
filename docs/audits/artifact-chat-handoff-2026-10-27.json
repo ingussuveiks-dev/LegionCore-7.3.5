@@ -1,4 +1,32 @@
 {
+  "latest_tuure_resume_2026_11_08": {
+    "audit": "docs/audits/tuure-resume-entrance-2026-11-08.json",
+    "status": "DEPLOYED SQL-only: Tuure1243/map1489/scenario1085 fallback entrance now uses actual Holy Priest WorldSafeLoc5480 instead of Dalaran return coordinates. Native legacy22 vs repaired/live28,TEMP22 refusals,selected PE,retained chains and canonical startup pass. Existing saved character checkpoints and full client traversal are separate.",
+    "runtime_sha256": {
+      "worldserver": "c2dd26d6ff5163aa6997433a5c2b546d1e12eb3ed07678bef4ad9e83051020e6",
+      "bnetserver": "e462824db5f7950619498b4487783047e75fce58253151bb5b8208bffa92e109"
+    },
+    "diagnostics": {
+      "result": "Before/after crash/log snapshots for typed catalog,TEMP/native/ASAN/PE and all owned canonical starts. Exits/stdout/stderr/new crashes/appended warnings/errors/asserts/DBErrors reviewed. No new crash or unexplained appended server diagnostic in passing repaired tests/startups. Owned ready/shutdown0/exit0/gone,stderr empty;active Crashes empty.",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "mixed_DBErrors": "OPEN shared LINK2 mixed evidence retained byte-for-byte;never truncated.",
+      "development": "Initial native faction controls used synthetic Orc/Priest;final fixture instead requires native CharBaseInfo Human/Priest+Undead/Priest for both faction runs. Three initial repaired native fixture attempts failed an overstrict raw-DB2-to-text-SQL1mm comparison. Instrumented output proves raw5480 vs normal MariaDB FLOAT result differs3.174mm;stored SQL remains within1mm. Fixed the fixture to independently validate storage,1cm geometry budget and exact loaded receipt/restart contract. Final native28 and baseline22 pass;original diagnostic outputs retained. Retained Tuure pickup host initially lacked current door/child APIs;separate focused test-only commit repairs it and real two-handed offhand policy,with failed compile/passing ASAN evidence retained. PDB missing/full-link message is ordinary linker information. Preexisting unchanged FunctionProcessor/Scenario host size_t narrowing warnings remain visible. No production log/check suppression."
+    },
+    "unresolved": [
+      "Existing stored wrong1243 character checkpoints remain unchanged;this repair prevents new incorrect native-fallback receipts. A separately proven login migration/recovery is needed for already persisted bad tuples;do not broadly overwrite legitimate saved entrances or reset player progress.",
+      "Actual client initial travel/re-entry,relog and complete LoadFromDB/SaveToDB,automatic group bindings,healing/combat/pet/guardian/one-hit paths,loot/full bags/scene/equipment/voice/camera/return and all36 whole chains remain separate checks. Compiled/native components and clean startup do not certify them.",
+      "Earned owned-artifact recovery and shared1489 graveyard/actor lifecycle,Survival39427 middle blessing,Stromkar visuals and shared LINK2/Slaghammer remain OPEN. Original unresolved reproduction/cache/research and mixed7111 preserved;no further character/item/progress reset authorized."
+    ],
+    "cleanup": {
+      "status": "PENDING verified fixed archive and exact owned generated/private-config cleanup after focused commit",
+      "retain": [
+        ".codex/release-before-marksmanship-return-recovery-2026-11-07",
+        ".codex/release-before-marksmanship-login-recovery-2026-11-07"
+      ]
+    },
+    "checks": "Native legacy22 vs repaired/live28,TEMP22 refusals,actual native5480/facing/ground/precision,selected Recorder+Tuure/Scepter,retained Blood36/MM30/Tuure ASAN/live pickup;owned ready/shutdown0/exit0 canonical starts with unchanged binaries."
+  },
   "latest_blood_resume_2026_11_08": {
     "audit": "docs/audits/blood-resume-entrance-2026-11-08.json",
     "status": "DEPLOYED SQL-only via canonical updater: Blood1059/map1489/scenario940 native resume entrance restored. Native missing baseline28 vs repaired/live36,TEMP18 refusals,linked Recorder,retained Hunter/Blood/Scepter and canonical startup pass. Existing EXEs unchanged;full saved-character/client traversal remains separate.",

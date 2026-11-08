@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-08",
+  "status": "DEPLOYED SQL-only: Tuure1243/map1489/scenario1085 fallback entrance now uses actual Holy Priest WorldSafeLoc5480 instead of Dalaran return coordinates. Native legacy22 vs repaired/live28,TEMP22 refusals,selected PE,retained chains and canonical startup pass. Existing saved character checkpoints and full client traversal are separate.",
+  "cause": "The existing1243 row contained -828.85,4372,738.64,1.86768, exactly the Dalaran1220 return destination210818/212022, while native1243 is1085 on map1489. Generic later/loading/transport Recorder consumed that nonzero row as a1489 entrance. New receipts and later fresh restarts therefore used coordinates thousands of yards from native Holy5480. Generic finite/map-coordinate validation cannot identify a foreign-world pose.",
+  "scope": "Four coordinate cells of the exact legacy1243 row;preserve its NULL name. Insert a missing row only with proven native route/initial actor,retain correct existing custom names,refuse unknown/custom legacy definitions. No production C++,binary,new registration,quest/prerequisite/item/progress reset,manual transfer or character database mutation.",
+  "implementation": [
+    "WorldSafeLoc5480 is explicitly named7.0 Artifacts - Priest - Holy - Niskara Entrance Loc - LWB. Use raw native XYZ -43.1440964,1160.33679,-74.353569 and27.7250366deg ->0.483893174rad. Keep the ordinary native LFG/Recorder/Prepare/Scenario consumers. No borrowed Hunter/Blood/Warrior portal coordinates.",
+    "Guard original1085 wildcard1489/class5/team0/diff0/LFG0 route,real initial Boros106134/spawn361419/map1489/phase6374/pose and existing npc_vindicator_boros binding. Refuse altered/missing context,unknown current entrance,zero/nullable/custom legacy/Hodir definitions. Same safe predicate gates writes after SIGNAL,including --force clients. Idempotent and correct custom names remain unchanged.",
+    "Native Recorder retains ordinary initial and existing legitimate checkpoints. Later first observation uses current1243;same-boot exact live instance keeps its pose,old boot/numeric mismatch or destroyed map starts actual1085 at its newly recorded entrance. No actor/criteria serialization or forced old-stage replay. Already persisted wrong character receipts are not rewritten by this data-only change.",
+    "Actual1085 has seven steps0..6;7 is its completion sentinel. Final native ALL-root47678 requires both50679 pickup and50702 return. Controlled native regression confirms pickup alone does not complete it and real final dispatcher then clears the checkpoint. Production migration sends neither event and grants no item/quest/scenario credit.",
+    "Native SQL FLOAT text output rounds stored5480 Y1160.33679 to loaded1160.34, producing3.174mm drift. Tests separately require stored SQL arithmetic within1mm of raw5480,loaded geometry within1cm,correct degree-facing conversion and receipts/restarts within1mm of the actual native loader. Preserve native Field::GetFloat/serialization;no precision check suppressed or generic conversion changed.",
+    "No combat/killer callback changed. Player/pet/guardian/legitimate group credit remains native;no new nearest-player award or phase/quest admission change. Solo1243 behavior and actual Boros/healing/pickup/return rules remain original. Shared native940/972 rows and other class source data remain unchanged.",
+    "LFG loading also registers generic cemetery locations. Shared instance_tuure graveyard override still returns its supplied death pose;this patch does not repair or certify resurrection/whole shared1489 actor lifecycle."
+  ],
+  "local_evidence": {
+    "history": "Fetched origin;main4b5438fe1 matched origin at task start. Consulted Git/audits,matching local DB2/world records and actual loader/Recorder/Prepare/native Tuure sources before changing data. No incompatible modern core or external/unseen-video implementation imported.",
+    "source_selection": "217812 was initially investigated because it targets1489,but its credit110929 belongs42974 and native5558 identifies Warrior The Fate of Hodir.210180 credit106033/source17 belongs42074 and42125. Neither is asserted to be the41993 Tuure entry spell. Typed nativeWorldSafeLoc5480 supplies an unambiguous Holy entrance;5487 is a distinct Holy acquisition point,not substituted.",
+    "matching_native": "Reusable TuureEntranceCatalog reads typed production DB2Storage(WorldSafeLocs/Spell/SpellEffect) at actual26972 with9-digit float output. It lists all shared-map safe locations and names. Runtime native game bootstrap/hotfix-loaded5480 name/XYZ/facing and actual1243/1085/diff12/USER_TELEPORT_NOT_ALLOWED are separately asserted. Raw catalog and actual loaded consumers are distinguished;native fixture checks both Human/Priest and Undead/Priest against typed26972 CharBaseInfo (Orc/Priest is not a Legion pair).",
+    "actor": "Actual first1085 step0 is Heal Vindicator Boros. Real106134/spawn361419 at-23.2934,1170.98,-69.2009/phase6374 lies near5480. Existing templateScriptName npc_vindicator_boros and shared instance_tuure/map1489 binding unchanged. No quest gate invented from another portal.",
+    "geometry": "Actual Map1489 LoadGrid/GetHeight supports5480 within0.1 yard. No guessed later boss/return/airborne point used. Baseline reproduces wrong receipts/restarts without trying to load missing Dalaran-coordinate tiles inside1489."
+  },
+  "checks": {
+    "TEMP22": "Full native entrance/source/route schemas and scoped initial/unrelated actors/templates. Exact4 legacy coordinate cells,name retained;absent insertion,idempotence,correct custom-name preservation. Whole other LFG rows/spell targets/scenario routes and scoped actor/template hashes retained.22 independent source/route/initial-actor/unknown/null/custom/Hodir refusals signal once and leave managed TEMP data unchanged. Live data unchanged by tests.",
+    "baseline22": "Explicit expected-broken TEMP original1243:Human+Undead x6 later stages produce12 wrong Dalaran-coordinate receipts;2 old-boot fresh restarts replay them.8 ordinary/existing/shared972/completed controls retained. Not ordinary successful gameplay or an assertion that old persisted character records were migrated.",
+    "native28": "TEMP repaired and updater-installed live data:12 new late receipts,4 ordinary/existing,6 live/boot/numeric mismatch,2 destroyed whole Map/recycled numericID/native1243 constructor1085 step0,2 real two-event ALL-root completed cleanup,2 shared972 controls. Real native5480 ground/orientation,stored SQL precision and actual loaded receipts verified. Quest/stage/pose/final events controlled;no persistent character writes or item/movement/credit grant by Recorder. Full saved-character LoadFromDB/SaveToDB/group selection/client separate.",
+    "fixture_compatibility": "4ca4348e36792361cc020bb549168dc0477e6fd1 independently repairs stale Tuure pickup host door/child APIs and real two-handed staff policy;separate audit tuure-pickup-test-compatibility-2026-11-08.json. Repaired ASAN/native catalog pass;production source unchanged.",
+    "linked": "Strict composed canonical Recorder/LFG/coordinate PE returns through the full chain. Additional selected Tuure pickup/presentation/scene/spell/AI factories and native departure-effect/accepted50702 gates pass. Canonical Scepter -VerifyReleaseBinary and generic ScenarioResume ASAN/selected PE pass;no new executable or stale link promotion.",
+    "retained": "Live Blood1059/native36 and MM1162/native30 with TEMP/selected PE;Tuure intro-heal,Boros greeting,native pickup/scene/departure and native final ALL-tree ASAN plus live pickup full-schema/TEMP+source conditions. Component coverage remains separate from full combat/client traversal.",
+    "updater": "Owned worldserver PID=32104\nPASS owned PID=32104 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "final_startup": "Owned worldserver PID=11496\nPASS owned PID=11496 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "preservation": "Pre-promotion full all-non1243 LFG,whole spell_target_position and scenario_data fingerprints match after restart. Exact world/bnet/protected configs/certs/DLL hashes unchanged. No user/unknown server stopped;new normalized-LF RELEASED hash/live5480 row verified."
+  },
+  "migration": {
+    "file": "sql/updates/world/2026_11_08_02_tuure_resume_entrance.sql",
+    "sha256": "e1f167b346e7fcddcf68e3517a98c0b92be776c84e94315ab80812035741c83b",
+    "released_sha1": "39d0ecf9b5cfa09199fb35865ca15350c7ed3c5b"
+  },
+  "runtime_sha256": {
+    "worldserver": "c2dd26d6ff5163aa6997433a5c2b546d1e12eb3ed07678bef4ad9e83051020e6",
+    "bnetserver": "e462824db5f7950619498b4487783047e75fce58253151bb5b8208bffa92e109"
+  },
+  "diagnostics": {
+    "result": "Before/after crash/log snapshots for typed catalog,TEMP/native/ASAN/PE and all owned canonical starts. Exits/stdout/stderr/new crashes/appended warnings/errors/asserts/DBErrors reviewed. No new crash or unexplained appended server diagnostic in passing repaired tests/startups. Owned ready/shutdown0/exit0/gone,stderr empty;active Crashes empty.",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "mixed_DBErrors": "OPEN shared LINK2 mixed evidence retained byte-for-byte;never truncated.",
+    "development": "Initial native faction controls used synthetic Orc/Priest;final fixture instead requires native CharBaseInfo Human/Priest+Undead/Priest for both faction runs. Three initial repaired native fixture attempts failed an overstrict raw-DB2-to-text-SQL1mm comparison. Instrumented output proves raw5480 vs normal MariaDB FLOAT result differs3.174mm;stored SQL remains within1mm. Fixed the fixture to independently validate storage,1cm geometry budget and exact loaded receipt/restart contract. Final native28 and baseline22 pass;original diagnostic outputs retained. Retained Tuure pickup host initially lacked current door/child APIs;separate focused test-only commit repairs it and real two-handed offhand policy,with failed compile/passing ASAN evidence retained. PDB missing/full-link message is ordinary linker information. Preexisting unchanged FunctionProcessor/Scenario host size_t narrowing warnings remain visible. No production log/check suppression."
+  },
+  "unresolved": [
+    "Existing stored wrong1243 character checkpoints remain unchanged;this repair prevents new incorrect native-fallback receipts. A separately proven login migration/recovery is needed for already persisted bad tuples;do not broadly overwrite legitimate saved entrances or reset player progress.",
+    "Actual client initial travel/re-entry,relog and complete LoadFromDB/SaveToDB,automatic group bindings,healing/combat/pet/guardian/one-hit paths,loot/full bags/scene/equipment/voice/camera/return and all36 whole chains remain separate checks. Compiled/native components and clean startup do not certify them.",
+    "Earned owned-artifact recovery and shared1489 graveyard/actor lifecycle,Survival39427 middle blessing,Stromkar visuals and shared LINK2/Slaghammer remain OPEN. Original unresolved reproduction/cache/research and mixed7111 preserved;no further character/item/progress reset authorized."
+  ],
+  "cleanup": {
+    "status": "PENDING verified fixed archive and exact owned generated/private-config cleanup after focused commit",
+    "retain": [
+      ".codex/release-before-marksmanship-return-recovery-2026-11-07",
+      ".codex/release-before-marksmanship-login-recovery-2026-11-07"
+    ]
+  }
+}
