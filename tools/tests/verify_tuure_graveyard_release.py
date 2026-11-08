@@ -37,7 +37,13 @@ assert any(o.mnemonic == 'call' and o.operands[0].type == CS_OP_MEM and o.operan
 scoped = at('eax, 0x43d', 'cmp')
 fallback = body[scoped + 1].operands[0].imm
 assert body[scoped + 1].mnemonic == 'jne'
-assert body[sites('?GetScenario@ScenarioMgr@@')[0] + 2].operands[0].imm == fallback
+marksman = next((i for i, o in enumerate(body) if o.mnemonic == 'cmp' and o.op_str == 'eax, 0x3cc'), None)
+if marksman is not None:
+    assert fallback == body[marksman - 2].address and body[marksman - 1].mnemonic == 'call'
+    assert body[marksman + 1].mnemonic == 'jne'
+    fallback = body[marksman + 1].operands[0].imm
+null_branch = next(o for o in body[sites('?GetScenario@ScenarioMgr@@')[0] + 1:scoped] if o.mnemonic == 'je')
+assert null_branch.operands[0].imm == fallback
 lookup = at('rdi, qword ptr [rax + 0xab40]', 'mov')  #5480*8
 identity = at('dword ptr [rdi], 0x1568', 'cmp')
 failure = body[identity + 1].operands[0].imm
@@ -47,7 +53,9 @@ assert body[mapcheck + 1].operands[0].imm == failure
 at('esi, 0x5d1', 'mov')
 zero = at('xmm0, xmm1', 'ucomiss')
 assert any(o.mnemonic == 'je' and o.operands[0].imm == failure for o in body[zero:zero + 10])
-coord, = sites('?IsValidMapCoord@MapManager@@SA_NIMMMM@Z')
+coordinates = sites('?IsValidMapCoord@MapManager@@SA_NIMMMM@Z')
+assert len(coordinates) == (2 if marksman is not None else 1)
+coord = coordinates[0]
 assert scoped < lookup < identity < mapcheck < coord and body[coord + 2].operands[0].imm == failure
 for register, expected in (('xmm6', 3.141592653589793), ('xmm7', 180.0)):
     o = next(o for o in body[mapcheck:coord] if o.mnemonic == 'movss' and o.op_str.startswith(register + ',') and 'rip' in o.op_str)
@@ -64,4 +72,4 @@ assert any(o.mnemonic == 'je' and o.operands[0].imm == body[refused].address for
 assert b'Tuure graveyard: invalid native WorldSafeLocs 5480 for instance %u' in n['binary']
 for forbidden in ('?TeleportTo@Player@@', '?ResurrectPlayer@Player@@', '?CompleteQuest@Player@@', '?AddItem@Player@@', '?KilledMonsterCredit@Player@@', '?UpdateAchievementCriteria@Player@@', '?SetCurrentStep@Scenario@@', '?SetHealth@Unit@@'):
     assert not any(name.startswith(forbidden) and n['resolve'](a) in calls for name, a in n['symbols'].items()), forbidden
-print('PASS linked Tuure cemetery:actual registered instance/virtual dispatch,1085-only5480/map/zero/finite source guards,radian conversion/native XYZ writes,diagnostic/null failure,other shared/no-scenario death-pose policy retained;no direct resurrection/progress grant. Retained first-fight/route/cage/captain native hooks;full client separate.')
+print('PASS linked Tuure cemetery:actual registered instance/virtual dispatch,1085-only5480/map/zero/finite source guards,radian conversion/native XYZ writes,diagnostic/null failure,remaining shared/no-scenario death-pose fallback retained;separate972 branch inspected when present,no direct resurrection/progress grant. Retained first-fight/route/cage/captain native hooks;full client separate.')

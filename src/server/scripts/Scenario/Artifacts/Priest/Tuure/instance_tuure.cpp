@@ -634,6 +634,23 @@ public:
                 loc_res_pla.WorldRelocate(1489, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f);
                 return &loc_res_pla;
             }
+            if (scenario && scenario->GetScenarioId() == 972)
+            {
+                // The second native Hunter cemetery is past the Herald.
+                // Unlock it only after actual47927 advances step4 to5, never
+                // from a corpse's position or a prematurely killed actor.
+                uint32 safeId = scenario->GetCurrentStep() >= 5 ? 5434 : 5433;
+                WorldSafeLocsEntry const* safe = sWorldSafeLocsStore.LookupEntry(safeId);
+                if (!safe || safe->ID != safeId || safe->MapID != 1489 ||
+                    !(safe->Loc.X || safe->Loc.Y || safe->Loc.Z) ||
+                    !MapManager::IsValidMapCoord(1489, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f))
+                {
+                    TC_LOG_ERROR("scripts", "Marksmanship graveyard: invalid native WorldSafeLocs %u for instance %u", safeId, instance->GetInstanceId());
+                    return nullptr;
+                }
+                loc_res_pla.WorldRelocate(1489, safe->Loc.X, safe->Loc.Y, safe->Loc.Z, safe->Loc.O * float(M_PI) / 180.0f);
+                return &loc_res_pla;
+            }
             // Other scenarios on1489 retain their existing recovery policy.
             loc_res_pla.WorldRelocate(1489, x, y, z);
             return &loc_res_pla;

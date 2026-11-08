@@ -54,14 +54,20 @@ int main(int argc,char**argv){try{
   };
   for(unsigned step=0;step<7;++step)for(unsigned place=0;place<4;++place){scenario->SetCurrentStep(step);Position pos=place==0?Position{-828.85f,4372,738.64f,0}:place==1?Position{71.9653f,1218.51f,-74.2702f,0}:place==2?Position{safe->Loc.X,safe->Loc.Y,-1000,0}:Position{236.392f,1952.189f,-55.7523f,0};exercise(pos,step,false);}
   scenario->SetCurrentStep(6);exercise({71.9653f,1218.51f,-74.2702f,0},7,true);
-  for(unsigned id:{940u,972u}){sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,id);auto gy=map.GetClosestGraveYard(12,34,-56);Require(gy&&gy->GetExactDist(12,34,-56)<.001f,"Shared non-Holy policy changed");++cases;}
+  for(unsigned id:{940u,972u}){sScenarioMgr->RemoveScenario(map.GetInstanceId());scenario=sScenarioMgr->AddScenario(&map,id);auto gy=map.GetClosestGraveYard(12,34,-56);
+#ifdef TUURE_GRAVEYARD_BASELINE
+Require(gy&&gy->GetExactDist(12,34,-56)<.001f,"Pinned shared policy changed");
+#else
+if(id==972){auto hunter=sWorldSafeLocsStore.LookupEntry(5433);Require(gy&&hunter&&gy->GetExactDist(hunter->Loc.X,hunter->Loc.Y,hunter->Loc.Z)<.001f,"Shared Hunter stage0 cemetery changed");}else Require(gy&&gy->GetExactDist(12,34,-56)<.001f,"Shared Blood policy changed");
+#endif
+++cases;}
   sScenarioMgr->RemoveScenario(map.GetInstanceId());auto gy=map.GetClosestGraveYard(12,34,-56);Require(gy&&gy->GetExactDist(12,34,-56)<.001f,"No-scenario policy changed");++cases;session->SetPlayer(nullptr);delete session;
  }
  Require(cases==64&&releases==58,"Native graveyard variant/count changed");
 #ifdef TUURE_GRAVEYARD_BASELINE
  std::cout<<"COUNTERFACTUAL pinned562084277 Tuure native64/release58:registered whole old instance echoes corpse/foreign-world/below-map poses through real release+ACK;completed/shared/no-scenario controls. Current native support,not historical binary or successful safe recovery"<<std::endl;
 #else
- std::cout<<"PASS Tuure native64/release58:registered whole instance/native5480+real floor,Human+Undead26972 pairs,all7 stages+real ALL-root completion,foreign-world/late/below-map/shared-wing death poses,actual ghost release+ACK/delayed half-health revival,repeated selection/ACK,shared940/972/no-scenario preserved;no scenario/actor/quest/item grants. Earlier quest/death/stage and final credit endpoints controlled;full client/corpse/pet/group traversal separate"<<std::endl;
+ std::cout<<"PASS Tuure native64/release58:registered whole instance/native5480+real floor,Human+Undead26972 pairs,all7 stages+real ALL-root completion,foreign-world/late/below-map/shared-wing death poses,actual ghost release+ACK/delayed half-health revival,repeated selection/ACK,shared940/no-scenario and native972 control;no scenario/actor/quest/item grants. Earlier quest/death/stage and final credit endpoints controlled;full client/corpse/pet/group traversal separate"<<std::endl;
 #endif
  CloseAltheaNative();return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<std::endl;return 1;}}

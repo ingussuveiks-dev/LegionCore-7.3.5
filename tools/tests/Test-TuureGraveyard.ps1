@@ -17,6 +17,6 @@ $roots=@('tuure-graveyard-native','tuure-graveyard-source','legion-legendary-cat
    $old=$env:PYTHONPATH
    try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$repo/tools/tests;$old";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/run_linked_release_verifier.py" "$PSScriptRoot/verify_tuure_graveyard_release.py" $ReleaseDirectory *> "$out/release.log";if($LASTEXITCODE){throw 'Linked Tuure cemetery failed'}}finally{$env:PYTHONPATH=$old}
   }
-  'PASS Tuure cemetery:source96 ASAN/native64 with58 actual releases/ACKs,5480 floor/facing,all7 stages+completed,native Human+Undead pairs,invalid-source diagnostics,foreign/below-map death poses,shared940/972/no-scenario controls;no progression/item or direct resurrection from callback. Earlier state/final criterion endpoints controlled;full client/corpse/pet/group traversal separate.'
+  'PASS Tuure cemetery:source96 ASAN/native64 with58 actual releases/ACKs,5480 floor/facing,all7 stages+completed,native Human+Undead pairs,invalid-source diagnostics,foreign/below-map death poses,shared940/no-scenario and native972 controls;no progression/item or direct resurrection from callback. Earlier state/final criterion endpoints controlled;full client/corpse/pet/group traversal separate.'
  }
 }

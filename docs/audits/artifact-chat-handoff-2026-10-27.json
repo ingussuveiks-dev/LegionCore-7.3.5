@@ -1,4 +1,28 @@
 {
+  "latest_marksmanship_graveyard_2026_11_08": {
+    "status": "DEPLOYED Marksmanship972 stage-aware native cemetery recovery on shared1489. Source112 ASAN/native74 with66 actual release/ACK/revival cases,paired pinned counterfactuals,actual Herald47927 boundary4->5 and linked canonical proof pass;owned ready/shutdown0 clean. Full client traversal remains separate.",
+    "scope": "Only actual972 branch of instance_tuure::GetClosestGraveYard. No SQL,character changes,quest/item/criteria grant,direct teleport/resurrection,combat/actor reset,new script registration,Player/core or layout change. Holy1085 remains5480;Blood940 and other/no-scenario paths retain their old policy.",
+    "checks": {
+      "source": "Current112 ASAN:all8 stages+completed72 repeated pose cases,28 invalid selected-source diagnostics at both sides4/5,12 retained Holy/Blood/no-scenario controls. Pinnedf3c39b87a source84 reproduces corpse-coordinate recovery. Controlled services;not full client.",
+      "native": "Current74/release66 actual registered whole instance/Player/Scenario/native5433+5434/real floors/facing,Human+Orc,all stages+completed and both active statuses,early/late/foreign-world/below-map death contexts. Actual ghost8326/flags,RepopAtGraveyard,near-transfer,WorldSession ACK,delayed half-health/ghost cleanup and repeated selection/ACK. Criterion-map size/stage/controller/quest/item state unchanged by release. Native wrong-stage/repeated47927 controls and actual4->5 acknowledgement tested. Final48210 endpoint is supplied only to establish the completed control;no bow granted.",
+      "counterfactual": "Pinnedf3c39b87a whole-instance native74/release66 with current support libraries and source84 reproduces unsafe pose echoes and missing stage checkpoint. Not a historical whole executable or ordinary passing safe recovery. Old canonical9bc793c6 specifically rejects missing stage-aware MM branch;new staged/canonical linked proofs pass.",
+      "linked": "Require actual972 guard and GetCurrentStep>=5 ->5434 else5433,selected native row ID/map/zero/finite/facing and shared native stores,diagnostic/null path,registered instance dispatch,Holy5480 and untouched fallback. Forbid callback direct teleport/resurrection/health/quest/item/criteria/stage mutation. Retained Tuure first-fight/route/cage/captain and actual native dispatch/owner/lease checks compose fully.",
+      "retained": "Holy source96 ASAN/native64/release58/PE;Herald real ASAN host/TEMP SQL/canonical PE,first-fight28 owner variants and route40 accepted+16 missing-owner denials under ASAN;earned MM return source67/native80/live SQL/PE;live MM entrance/native30/data/PE;generic ScenarioResume ASAN/PE;mandatory canonical Scepter source/Release.",
+      "build": "Original game/scripts Release project dependencies,staged final link without global OutDir;only production instance_tuure.cpp changed. Canonical EXE+map hashes match tested staging;required original build libraries/config/certs/DLLs/data preserved.",
+      "runtime": "Task-owned canonical worldserver fresh ready,stdin server shutdown0,exit0,gone and empty stderr. No user/unknown server stopped;MariaDB left running.",
+      "preservation": "Read-only full-table fingerprints of non1243 LFG entrances,whole spell target/scenario routes unchanged;live MM/Holy entrance independently verified. Protected runtime hashes unchanged;no actual character reset or persistent character write by fixtures."
+    },
+    "unresolved": [
+      "Full client Release Spirit packet/corpse creation/reclaim/phase-visible return path,pet/guardian reappearance,group binding,reconnect/death timing and complete Marksmanship traversal remain separate. Native fixture directly calls actual RepopAtGraveyard and actual ACK;it does not simulate the client or full character LoadFromDB.",
+      "Actual Herald combat/player-pet-guardian final blow and stage-specific visual/return-route traversal are not newly verified by controlled boundary endpoints. Generic missing-current-AI SET_DATA one-shot is not replayed into a replacement;actual receiver-recreation recovery remains separate.",
+      "Blood940 and other shared1489 scenarios retain their previous corpse-position policy. Their authored GYs and stage boundaries need separate investigation;Holy later-path/client checks and earned-owned-artifact return recovery remain separate.",
+      "Survival39427 follow-up,Stromkar visuals/client traversal,all36 full chains and shared LINK2/mixed7111 remain OPEN. Original unresolved Slaghammer handoff probe20261106-121715-172/cache/research remain unchanged;no unexplained error archived as resolved."
+    ],
+    "cleanup": {
+      "status": "Verified fixed archive/exact generated-output cleanup follows focused fix commit;retain new before-MM-graveyard plus before-Tuure-graveyard recovery copies,retire older before-Tuure-login after passing canonical checks."
+    },
+    "audit": "docs/audits/marksmanship-graveyard-2026-11-08.json"
+  },
   "latest_tuure_graveyard_2026_11_08": {
     "status": "DEPLOYED scoped Holy1085 cemetery recovery on shared map1489. Source96 ASAN/native64 with58 actual RepopAtGraveyard/near-transfer ACK/revival cases pass,paired old-instance/source counterfactuals and linked Release proof pass;canonical ready/shutdown0 clean. Full client/corpse/pet/group traversal remains separate.",
     "scope": "Only the actual scenario1085 branch of instance_tuure cemetery callback. No SQL,character reset,quest/item/progress grant,direct teleport/resurrection,combat hook,actor/stage reset,new registration or Player/core change. Other shared scenarios and no-scenario policy remain byte-equivalent in selected behavior.",
