@@ -1,0 +1,75 @@
+{
+  "date": "2026-11-08",
+  "status": "VERIFIED focused native moving-wave paths/contact/boarding/cleanup in24 contexts. New regression coverage only;production code/data and canonical Release unchanged. Client/full1066/all36 and living Lady remain OPEN.",
+  "cause": "Prior wave contact32 covered real geometric stationary contact/queued native seat acknowledgement,but did not drive the authored wave spline/map relocation to natural POINT completion. This task closes that native coverage gap;no new production defect was found in these24 moving paths.",
+  "scope": "Add isolated -SharasdalWaveMotion native probe and reusable Test-SharasdalWaveMotion.ps1 entry. Extract actual three sumpos lanes and single authored add MovePoint1 endpoint from current whole Sharasdal.cpp;register/call actual whole wave class. Keep existing native runner modes. No production edits,SQL migration,character reset,manual boarding,teleport,credit,item or progression grants.",
+  "local_evidence": {
+    "history": "Fetched/reviewed clean main/origin15fb5495d with1766a0530 contact acknowledgement and989c221cd kit-independent cleanup. Current matching26972/nativeWorld6547/11160/209132/46598/105251/4717 data loaded through existing readonly bootstrap/TEMP shadows. No external implementation adopted.",
+    "native_contract": "AreaTrigger::UpdateSplinePosition resolves attached full target GUID before !isMoving return;UpdatePosition follows wave via native map relocation. Therefore existing HasAttached1/isMoving0 is correct for this test. Native real navigation query available on1600;all24 lanes calculate complete PATHFIND_NORMAL1 with no NOT_USING_PATH/NOPATH/INCOMPLETE and actual multi-point mesh paths.",
+    "endpoint": "Lane poses and destination are parsed from current authored caller rather than copied fixture numbers. Actual native MovePoint1 is launched before ordinary209132 cast,matching controller call order. Earlier scenario3/active40341 and player midpoint/no-contact poses are controlled;the gauntlet controller spawn timer itself is not executed."
+  },
+  "checks": {
+    "native": "24 contexts=Draenei+Orc x3 actual lanes x4 modes:stationary eligible midpoint encountered by moving wave;outside20-yard control;real queued join aborted through RemoveVehicleKit then restored/retried while wave moves;actual native ROOT interruption with same point generator automatically resuming after root removal. Actual native Unit spline dispatcher/MotionMaster/map move lists/AT Update/geometric affectedPlayers/native46598/VehicleJoinEvent/seat0/base/full transport GUID and moving pose are checked. Natural POINT finalization reaches original endpoint,ejects then99+1ms EventProcessor/map deletion. Quest40341 incomplete,item128911 absent,scenario3 and existing criteria-map size unchanged.",
+    "geometry": "All24 complete real1600 navmesh paths,27 points for lane0 in observed logs;attached AT stays within0.02 yards of actual wave after each relocation. Native endpoint within0.1 yards. No manual coordinate relocation of the moving wave/no forceDest or guessed bypass.",
+    "public_entry": "Final Test-SharasdalWaveMotion.ps1 invokes isolated native mode,checks actual PASS24 and records canonical+own pre/post crash/log diagnostics. Optional -VerifyReleaseBinary composes retained strict selected contact/wave/acquisition/recovery proof;it was not redundantly rerun this task.",
+    "binary_equivalence": "Original game.lib hash equals the prior passing native32 manifest paired with selected canonical Release proof;current canonical world/bnet SHA256 equals prior deployed audit. Production source diff is empty. No production rebuild/stage/promotion needed;no claim compilation alone proves behavior.",
+    "runtime": "Owned PID=31588 reached fresh ready\nPASS owned PID=31588 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "preservation": "Fresh readonly full-column current hashes equal previous task verified-after snapshot for all LFG entrances,spell_target_position,scenario_data and scoped1600 five actors SmartAI/conditions/spawns/templates. Private native Login/Character account TEMP guards and readonly pools retained. No persistent world/character writes.",
+    "limits": "Real native movement/event dispatch is driven by an explicit50ms fixture clock;earlier quest/scenario/player pose and root/abort endpoints are controlled. This is not a client or full Map::Update/whole-gauntlet traversal. Native Release core is not ASAN. Rendered wave/swept client collision/camera/pet portrait/re-entry/full1066/all36 remain separate."
+  },
+  "verified_current": {
+    "canonical_unchanged": {
+      "canonical": "build-extractors/bin/Release",
+      "world_sha256": "2bf0483979bd89f86bc0143c1f68d8bde7f2408e8cbc41b995bc6ead2673e31d",
+      "bnet_sha256": "ea10779ec11b5ee351710cc4b73b67eaa914cdc8d3161740c8013a70cf3ea2b1",
+      "rollback": ".codex/release-before-sharasdal-wave-contact-2026-11-08"
+    },
+    "original_game_lib_sha256": "189fb705daff792571bfd917de892eed670a2c028f992e35e371a88161c576e2",
+    "previous_native_manifest": "build-extractors/bin/Release/fixed/sharasdal-wave-contact-2026-11-08/build-extractors/runtime-test/sharasdal-wave-contact-native/20261108-211900-108/native-inputs.json",
+    "final_native": "build-extractors/runtime-test/sharasdal-wave-motion-native/20261108-214421-286",
+    "complete_navmesh_paths": [
+      "LANE 0 navmesh=1 path=1 points=27",
+      "LANE 0 navmesh=1 path=1 points=27",
+      "LANE 0 navmesh=1 path=1 points=27",
+      "LANE 0 navmesh=1 path=1 points=27",
+      "LANE 1 navmesh=1 path=1 points=27",
+      "LANE 1 navmesh=1 path=1 points=27",
+      "LANE 1 navmesh=1 path=1 points=27",
+      "LANE 1 navmesh=1 path=1 points=27",
+      "LANE 2 navmesh=1 path=1 points=27",
+      "LANE 2 navmesh=1 path=1 points=27",
+      "LANE 2 navmesh=1 path=1 points=27",
+      "LANE 2 navmesh=1 path=1 points=27",
+      "LANE 0 navmesh=1 path=1 points=27",
+      "LANE 0 navmesh=1 path=1 points=27",
+      "LANE 0 navmesh=1 path=1 points=27",
+      "LANE 0 navmesh=1 path=1 points=27",
+      "LANE 1 navmesh=1 path=1 points=27",
+      "LANE 1 navmesh=1 path=1 points=27",
+      "LANE 1 navmesh=1 path=1 points=27",
+      "LANE 1 navmesh=1 path=1 points=27",
+      "LANE 2 navmesh=1 path=1 points=27",
+      "LANE 2 navmesh=1 path=1 points=27",
+      "LANE 2 navmesh=1 path=1 points=27",
+      "LANE 2 navmesh=1 path=1 points=27"
+    ]
+  },
+  "diagnostics": {
+    "final": "All final native/public/source/hash/preservation/startup checks exit0;canonical+own crash/log snapshots show no new/changed crashes,appended DBErrors or unexplained server warnings/errors/assertions. Owned canonical PID31588 fresh ready/graceful shutdown0/exit0/gone/stderr empty. No user/unknown process stopped.",
+    "development": [
+      "Initial probe could not compile direct Unit::UpdateSplineMovement calls because that dispatcher is private. Fixture now uses a scoped explicit member-pointer access seam,as other native fixtures do;production access checks and headers unchanged. Original compiler diagnostics retained.",
+      "First running probe incorrectly expected StopMoving plus explicit MovementExpired(false) not to finalize the wave. Actual native Point DoFinalize intentionally notifies MovementInform for finalized splines;existing wave callback ejects/despawns. That fixture expectation was wrong,not a production failure or a successful ordinary test. Replaced it with actual native ROOT pause/resumption through the retained generator;final24 pass. No callback,log or guard suppressed.",
+      "Additional geometry/transport-pose assertions passed;final public run uses extracted source endpoint and records complete actual navmesh path flags. Earlier passing runs retained separately from initial scaffold failures."
+    ],
+    "preserved_open": "Canonical mixed DBErrors7111 SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 unchanged/untruncated. Old Slaghammer native crash/cache,shared LINK2 Nov7/8,living-Lady and earlier wave-contact OPEN evidence unchanged. No log reset."
+  },
+  "unresolved": [
+    "Living Lady1906/209457/209487 surrender/carry/finisher and210247 follower cleanup still need authentic activation/threshold/timing evidence and implementation. No invented lethal/surrender/teleport/progression substitute.",
+    "Actual gauntlet-controlled repeated spawn/cast failures,whole encounter/re-entry/client/camera/pet portrait/full40341/1066 and all36 remain separate. Explicit cancellation is distinct from native root pause.",
+    "Prior shared LINK2/Slaghammer intro and other recorded client gaps remain OPEN."
+  ],
+  "next": "Continue authentic living-Lady carry/1906 producer and failed-initial-wave-cast lifecycle investigation. Native authored wave movement is now covered;do not repeat stationary-only claims or certify client gameplay.",
+  "cleanup": {
+    "status": "PENDING exact owned native-output archive/removal;no new staging or rollback generation created"
+  }
+}
