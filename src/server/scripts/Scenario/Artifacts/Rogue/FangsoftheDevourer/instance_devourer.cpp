@@ -7,6 +7,7 @@
 #include "MapManager.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include <algorithm>
 
 
 class instance_devourer : public InstanceMapScript
@@ -69,18 +70,32 @@ public:
         
         void Update(uint32 diff) override
         {
-            if (getScenarionStep() == 7)
-                if (outrotimer <= diff)
-                {
-                    if (!trashGUIDconteiner.empty())
-                        for (auto trash : trashGUIDconteiner)
-                        {
-                            if (trash && urand(0, 1) == 1)
-                                trash->CastSpell(trash, (trash->GetEntry() == 98308 ? 209814 : 209813));
-                        }
-                    outrotimer = 2000;
-                }
-                else outrotimer -= diff;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1078 || !scenario->IsCompleted(false))
+                return;
+            if (outrotimer > diff)
+            {
+                outrotimer -= diff;
+                return;
+            }
+            outrotimer = 2000;
+            // Cast callbacks can remove actors or reset this controller.
+            // Snapshot identities, then resolve only still-tracked targets.
+            GuidSet targets;
+            for (Creature* trash : trashGUIDconteiner)
+                if (trash)
+                    targets.insert(trash->GetGUID());
+            for (ObjectGuid const& guid : targets)
+            {
+                scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+                if (!scenario || scenario->GetScenarioId() != 1078 || !scenario->IsCompleted(false))
+                    break;
+                Creature* trash = instance->GetCreature(guid);
+                if (trash && trash->IsInWorld() && !trash->IsPreDelete() &&
+                    (trash->GetEntry() == 98308 || trash->GetEntry() == 98307 || trash->GetEntry() == 54638) &&
+                    std::find(trashGUIDconteiner.begin(), trashGUIDconteiner.end(), trash) != trashGUIDconteiner.end() && urand(0, 1) == 1)
+                    trash->CastSpell(trash, trash->GetEntry() == 98308 ? 209814 : 209813);
+            }
         }
     };
 };

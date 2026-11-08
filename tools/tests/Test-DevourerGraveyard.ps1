@@ -6,6 +6,12 @@ $out="$repo/build-extractors/runtime-test/devourer-graveyard-check/$(Get-Date -F
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @("$repo/build-extractors/runtime-test") -Test {
  function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw 'Missing actual Devourer callback'};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
  $path='src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/instance_devourer.cpp';$old=(& git -C $repo show "3465a1d48:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned whole instance absent'};$current=Get-Content "$repo/$path" -Raw
+ # The independent outro regression certifies this exact later Update delta.
+ $outro=Block $current 'void Update(uint32 diff)'
+ $sha=[Security.Cryptography.SHA256]::Create();try{$digest=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($outro.Replace("`r",''))))).Replace('-','').ToLowerInvariant()}finally{$sha.Dispose()}
+ if($digest -ne '432028f397efde125f01da0506ad4594c15e80e1e00f065a2754e5c05dee63e6'){throw 'Uncertified later Devourer outro callback'}
+ $prior=(& git -C $repo show "e59f20dd3:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned certified outro absent'}
+ $current=$current.Replace($outro,(Block $prior 'void Update(uint32 diff)')).Replace('#include <algorithm>','')
  $current=$current.Replace((Block $current 'WorldLocation* GetClosestGraveYard('),(Block $old 'WorldLocation* GetClosestGraveYard(')).Replace('#include "MapManager.h"','').Replace('#include "Scenario.h"','').Replace('#include "ScenarioMgr.h"','')
  if(($old -replace '\s','') -cne ($current -replace '\s','')){throw 'Unreviewed constructor/actor-list/outro/update/registration change'}
  & "$PSScriptRoot/Test-DevourerGraveyardSource.ps1" -Baseline:$Baseline *> "$out/source.log";if(!$?){throw 'Devourer source failed'}

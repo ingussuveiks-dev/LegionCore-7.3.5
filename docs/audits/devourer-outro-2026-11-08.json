@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-08",
+  "status": "DEPLOYED focused Devourer1078/map1607 completed-scenario reactions. Paired pinned source/native failure, repaired ASAN/native10, selected staged/canonical proof, retained acquisition/recovery, Scepter and owned startup pass. Actual client visuals/full41924/all36 remain unverified.",
+  "cause": "Scenario1078 has seven ordinary steps. Native final criterion50301 advances actual currentStep6 to completed7 but deliberately retains instance cache6. Original instance Update waits for cached7, so natural completion never starts its existing two-second reactions. This is a real separate outro defect;the earlier cemetery completion-reset hypothesis was withdrawn in59034230c.",
+  "scope": "Only Update plus algorithm include. Require actual1078 and IsCompleted(false),including per-target revalidation. Preserve native2000ms cadence,50-percent urand and ordinary self209814 for98308/209813 for98307+54638. Snapshot deduplicated full GUIDs before casts and resolve current map actor with world/predelete/entry/still-tracked guards. Rearm before callbacks. Existing fields/ABI/raw actor-list type/native create/remove callbacks,Initialize,graveyard,SQL and progression unchanged. No character/item/AP/quest/checkpoint reset.",
+  "local_evidence": {
+    "history": "Fetched origin/main e59f20dd3;reviewed local Git/audits,matching26972 DB2+Hotfix and current World records/core lifetime callbacks. Local evidence resolves the defect;no modern-core adaptation or external/video observation claimed.",
+    "catalog": [
+      "SPELL\t209813\tExplosion",
+      "EFFECT\t209813\t0\t0\t3\t0\t0\t0\t0\t0\t1\t0",
+      "MISC\t209813\t0\t-2\t0\t0\t696254848\t1056\t273170437\t269681152\t8388736\t393224\t4608\t0\t0\t1048576\t0\t0\t0\t0",
+      "SPELL\t209814\tExplosion",
+      "EFFECT\t209814\t0\t0\t3\t0\t0\t0\t0\t0\t1\t0",
+      "MISC\t209814\t0\t-2\t0\t0\t696254848\t1056\t273170437\t269681152\t8388736\t393224\t4608\t0\t0\t1048576\t0\t0\t0\t0",
+      "EOF\tdevourer-outro"
+    ],
+    "world": "Read-only full-EOF World confirms three native templates98308/98307/54638 and their actual faction/flags. Static1607 reaction actors98307/54638 use phase7003;no static98308 returned. No spell script/linked-spell bindings for209813/209814. Existing54638 Smart rows do not select an AI on its current blank-AIName/blank-ScriptName template. No data mutation.",
+    "spells": "Both explosions are instantaneous native self-target dummy3 with no trigger/damage/instakill/progression/despawn effect in the matching catalog. Actual native ordinary casts deliver SpellHit. This repair restores existing scripted reactions,not a verified cinematic or new gameplay credit.",
+    "lifetime": "Creature::AddToWorld/ordinary RemoveFromWorld call the actual instance Create/Remove hooks. Snapshot raw-pointer reads rely on this existing main-thread lifetime contract. GUID resolution protects against removal during subsequent casts;it is not a claim to recover a pointer already dangling before the snapshot."
+  },
+  "checks": {
+    "source": "167 deterministic checks under AddressSanitizer extracting actual Initialize/Create/Remove/Update. Natural completed/cache6 admission,misleading cache7 incomplete refusal,missing/foreign scopes,1999+1/large diff/no catchup,random0/1,three entries/dedup,missing/not-world/predelete/changed-entry/untracked actors,self removal,other removal+free,addition deferred,reset/scenario removal/id/status mutation during cast,ordinary self spell mapping/repeated attempts. Whole instance outside Update/include matches pinned e59f20dd3.",
+    "counterfactual": "Pinned e59f20dd3 extracted source5 checks and whole-instance native10 each reproduce real complete7/cache6 with zero reactions. Separate source synthetic cache7 admits original two-second cast. Current native support,not historical executable. Old canonical selected proof rejects exact missing actual-completion gate;repaired stage/canonical passes.",
+    "native": "10 Human/Orc and active41924 status contexts with actual registered map1607 instance,real final Player50301 -> complete7/cache6,ordinary209813/209814 native SpellHit on actual three templates. All incomplete stages refuse. Native Creature::AddToWorld/RemoveFromWorld tracking,duplicate-create dedup,reentrant other removal/reset,timer,and no item/quest/criteria/cache mutation checked. Bounded64 two-second pulses preserve real RNG;source deterministically covers chance0/1.",
+    "native_limits": "Earlier quest/stages and spawn poses are controlled. 98308 has no static World spawn and is a scripted-only fixture. ASAN covers extracted callbacks,not the full native Release core. No client playback,actual full41924 travel/equipment/return or save/load claim.",
+    "linked": "Selected registered1607 descriptor/factory/primary Update plus retained native cemetery dispatch;actual1078/nonbonus completion before timer and each target,2000ms before callbacks,full128-bit snapshot and current-map lookup,live/predelete/three-entry/list-membership guards,native urand/ordinary self selector,loop scenario refresh,no cached-step/item/progression calls. Full Devourer acquisition/death/claim/opening/capture/EventProcessor proof retained.",
+    "retained": "Cemetery130 source ASAN/native72 including64 real ghost/repop/ACK releases;native live escape46 and claim16;door53 ASAN,capture16 ASAN,pickup-claim25 ASAN,death owner/pet/guardian16 ASAN. Existing cemetery whole-source certificate recognizes only exact separately verified Update delta;unknown changes remain rejected. Canonical Scepter source/Release and Sharasdal/Tuure legacy linked proof pass.",
+    "build": "Original game/scripts Release libraries and final-link paths,only instance_devourer.cpp production rebuild. No global OutDir. Separate staged world/bnet EXE+MAP promoted with no world/bnet process running;hashes and protected configs/certs/DLLs unchanged.",
+    "runtime": "Owned PID=23360 reached fresh ready\nPASS owned PID=23360 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "preservation": "Full-column before/after canonical startup hashes retain all LFG/spell_target_position/scenario_data and scoped1607 SAI/conditions/spawns/templates,including all three reaction entries. Read-only native pools/TEMP shadows;no persistent SQL or character changes. Only owned PID23360 launched and gracefully stopped;no hidden task server left running."
+  },
+  "deployment": {
+    "world_sha256": "d862288f8affa313e7df8a5c06f52e97ee008cbd94929b3fc5f2532b80826411",
+    "bnet_sha256": "37f073a24d1ce7b954b83b10099f1fdbed034414ad7bd9919557755d0995ef31",
+    "rollback": ".codex/release-before-devourer-outro-2026-11-08",
+    "canonical": "build-extractors/bin/Release"
+  },
+  "diagnostics": {
+    "result": "Pre/post canonical+own crash/log snapshots wrap source/native/catalog/SQL/build/link/PE/retained/startup. Final checks exit0/no new or changed crash/no appended DBErrors/no unexplained server warning,error or assertion. Canonical Crashes empty. Owned stdout/stderr reviewed;stderr empty.",
+    "development": [
+      "First catalog driver omitted LEGION_DIALOGUE_CONFIG;exit2 before DB connection,then config environment set/restored and typed catalog succeeds. First read-only SQL selected nonexistent creature_template.name;CLI1054 retained,correct native-schema fields/full EOF pass. No server DBErrors from either tool mistake.",
+      "First extracted-source compile omitted string header needed for std::to_string;added header. Baseline then had an unreachable common return warning;removed its early return. Paired clean baseline/repaired ASAN pass;original outputs retained.",
+      "Initial selected-PE certificate indexed a preceding loop instruction rather than the actual ScenarioMgr::instance call. Disassembly confirms refresh target;certificate now resolves the actual named call and paired original rejection/new stage/canonical proofs pass. No production alteration to satisfy the certificate.",
+      "Retained Scepter fixture C4244/C4389 warnings remain visible and predate this fix;original production Release compilation has no new warnings. No check/log disabled."
+    ],
+    "preserved_open": "Canonical mixed DBErrors.log7111 bytes SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 unchanged/untruncated. Original Slaghammer handoff native crash/cache and shared LINK2 Nov7/Nov8 research retained."
+  },
+  "unresolved": [
+    "Actual client reaction visuals/audio,phase rendering/re-entry/reconnect,camera/pet and full41924 pickup/outro/return need client traversal. No whole36 completion claim.",
+    "These native spells do not deal damage or award progress;combat/scaling/player/pet/guardian/group credit is unchanged and separately covered by retained death regressions,not certified as complete gameplay.",
+    "Shared LINK2/original Slaghammer intro,Sharasdal living Lady1906/carry/finisher/native210247/waves,Survival/Stromkar presentation and other full-chain client gaps remain OPEN."
+  ],
+  "next": "Continue source/native investigation of Sharasdal living Lady1906 and actual finisher/210247 against the existing Oct31 research. Fu Zan intro acknowledgement already has a separate Nov1 repair;do not reopen it based on older admission-only notes.",
+  "cleanup": {
+    "status": "Pending verified original-byte/hash archive and bounded task-owned staging/generated/obsolete rollback cleanup before handoff."
+  }
+}
