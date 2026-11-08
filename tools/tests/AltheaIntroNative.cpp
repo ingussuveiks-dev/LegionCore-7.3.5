@@ -3,6 +3,7 @@
 #define ALTHEA_CREDIT_NATIVE_SUPPORT_ONLY
 #include "AltheaCreditNative.cpp"
 #include "MoveSpline.h"
+#include "MapManager.h"
 #include "../../src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/KingslayersGuardProgress.h"
 #include "KingslayersInstance.inc"
 #include "AltheaIntro.inc"

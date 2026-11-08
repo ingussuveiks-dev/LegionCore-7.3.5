@@ -6,6 +6,9 @@
 #include "ScriptedCreature.h"
 #include "KingslayersGuardProgress.h"
 #include "Map.h"
+#include "MapManager.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 
 
 class instance_kingslayers : public InstanceMapScript
@@ -95,40 +98,23 @@ public:
         
         WorldLocation loc_res_pla;  // for respawn
 
-        WorldLocation* GetClosestGraveYard(float x, float y, float z) override
-        // OnPlayerDeath
+        WorldLocation* GetClosestGraveYard(float /*x*/, float /*y*/, float /*z*/) override
         {
-            // Init data
-            loc_res_pla.WorldRelocate(1620, x, y, z);
-
-            uint32 graveyardId = 5518;
-            
-            switch(getScenarionStep())
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1123)
+                return nullptr;
+            // Keep the native stage8-10 cemetery after the completed sentinel10.
+            uint32 step = scenario->GetCurrentStep();
+            uint32 graveyardId = step >= 7 ? 5530 : step >= 5 ? 5529 : step >= 2 ? 5528 : 5518;
+            WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId);
+            if (!gy || gy->ID != graveyardId || gy->MapID != 1620 ||
+                (gy->Loc.X == 0.0f && gy->Loc.Y == 0.0f && gy->Loc.Z == 0.0f) ||
+                !MapManager::IsValidMapCoord(1620, gy->Loc.X, gy->Loc.Y, gy->Loc.Z, gy->Loc.O * float(M_PI) / 180.0f))
             {
-                case 0:
-                case 1:
-                    graveyardId = 5518;
-                    break;
-                case 2:
-                case 3:
-                case 4:
-                    graveyardId = 5528;
-                    break;
-                case 5:
-                case 6:
-                    graveyardId = 5529;
-                    break;
-                case 7:
-                case 8:
-                case 9:
-                    graveyardId = 5530;
-                    break;
+                TC_LOG_ERROR("scripts", "Kingslayers graveyard: invalid native WorldSafeLocs %u for instance %u", graveyardId, instance->GetInstanceId());
+                return nullptr;
             }
-
-            if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
-            {
-                loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-            }
+            loc_res_pla.WorldRelocate(1620, gy->Loc.X, gy->Loc.Y, gy->Loc.Z, gy->Loc.O * float(M_PI) / 180.0f);
             return &loc_res_pla;
         }
         

@@ -4,6 +4,7 @@ $out="$repo/build-extractors/runtime-test/althea-guards-asan/$(Get-Date -Format 
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};$s.Substring($a,$b-$a)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/instance_kingslayers.cpp';$current=Get-Content "$repo/$path" -Raw;$old=(& git -C $repo show "b1fc9b11d:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned guard controller predecessor missing'}
+ . "$PSScriptRoot/KingslayersGraveyardScope.ps1";$current=Restore-KingslayersGraveyardBoundary $current
  $a=$current.IndexOf('        struct GuardState');$b=$current.IndexOf('        WorldLocation loc_res_pla;',$a);$helpers=$current.Substring($a,$b-$a)
  [IO.File]::WriteAllText("$out/GuardLedger.inc",$helpers)
  if(($current.Remove($a,$b-$a).Replace('#include "KingslayersGuardProgress.h"','').Replace('#include "Map.h"','')-replace '\s','') -cne ($old-replace '\s','')){throw 'Original instance graveyard/update/constructor changed outside dedicated guard ledger'}
