@@ -19,13 +19,28 @@
       "Original unresolved Slaghammer reproduction/cache/research and mixed7111 retained. No further character/item/progress reset is authorized by this work."
     ],
     "cleanup": {
-      "status": "PENDING verified fixed archive and exact owned generated/private-config cleanup after focused commit",
-      "retain": [
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/blood-resume-entrance-2026-11-08",
+      "manifest_sha256": "9304e85b996fa5d956d530724e5afde441a3804459c3606a59b0c94d8991d34e",
+      "original_files": 2516,
+      "cleanup_manifest_sha256": "8698b05fa1acaeb6089bbe20b4f942e1437838d0bdf8d92a0018a75f028398f5",
+      "removed_files": 237,
+      "logical_removed_bytes": 1820018313,
+      "local_deletion_manifest": ".codex/blood-resume-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
         ".codex/release-before-marksmanship-return-recovery-2026-11-07",
         ".codex/release-before-marksmanship-login-recovery-2026-11-07"
-      ]
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 134676963328,
+      "disk_free_after_bytes": 136479031296,
+      "observed_free_increase_bytes": 1802067968
     },
-    "checks": "TEMP18/native missing28 vs repaired/live36,linked Recorder;retained live MM30/Survival40,Blood loot+scene ASAN/prison native+PE,ScenarioResume and canonical Scepter;two ready/shutdown0/exit0 starts with unchanged binaries."
+    "checks": "TEMP18/native missing28 vs repaired/live36,linked Recorder;retained live MM30/Survival40,Blood loot+scene ASAN/prison native+PE,ScenarioResume and canonical Scepter;two ready/shutdown0/exit0 starts with unchanged binaries.",
+    "fix_commit": "32336dd5478cb93b22bca71f596ff676137204ca"
   },
   "latest_marksmanship_return_recovery_2026_11_07": {
     "audit": "docs/audits/marksmanship-return-recovery-2026-11-07.json",
