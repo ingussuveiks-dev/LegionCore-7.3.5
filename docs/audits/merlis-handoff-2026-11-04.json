@@ -36,9 +36,38 @@
     ],
     "next": "Continue independent real wave movement/attached area-trigger contact/failed-cast lifecycle investigation against native catalog,then living-Lady acknowledged carry/1906/finisher once authentic activation evidence is established.",
     "cleanup": {
-      "status": "Pending verified original-byte/hash archive and exact owned staging/generated/obsolete rollback cleanup before handoff."
+      "status": "COMPLETE; verified archive, exact task-owned temporary deletions and canonical/protected/rollback/diagnostic postcheck pass",
+      "archive": "build-extractors/bin/Release/fixed/sharasdal-wave-cleanup-2026-11-08",
+      "manifest_sha256": "4d7e0dd52d374969dc9aca7999a1b7de42635845640cf5f01efd6665deaba6b5",
+      "original_files": 635,
+      "cleanup_manifest_sha256": "06311c41d1db3441d715a51e53f1404b117c44a49cf2689142c0869ab888a14a",
+      "removed_files": 290,
+      "logical_removed_bytes": 2238510383,
+      "local_deletion_manifest": ".codex/sharasdal-wave-cleanup-2026-11-08/cleanup-deleted.json",
+      "inactive_error_logs_reset": 0,
+      "retained": [
+        ".codex/release-before-sharasdal-wave-cleanup-2026-11-08",
+        ".codex/release-before-devourer-outro-2026-11-08"
+      ],
+      "deferred": "Retain unresolved Slaghammer handoff intro probe/cache/research, mixed7111 LINK2 and all personal backups. Native/source tools retained; no staging executable needed for pending client gameplay checks. New wave-contact source review retained OPEN at .codex/sharasdal-wave-contact-open-2026-11-08.",
+      "archive_selection": "Final startup UTC and exact original Server.log byte range identify the owned run;all original diagnostic bytes are preserved and hash-verified;no log reset;canonical/mixed logs untouched.",
+      "postcheck": "PASS canonical matching deployed EXE hashes/protected configurations/certs/DLLs/two rollback generations;no task-owned world/bnet process;active Crashes empty;mixed7111 and unrelated unresolved Slaghammer bytes unchanged",
+      "disk_free_before_bytes": 131375243264,
+      "disk_free_after_bytes": 133609889792,
+      "observed_free_increase_bytes": 2234646528
     },
-    "audit": "docs/audits/sharasdal-wave-cleanup-2026-11-08.json"
+    "audit": "docs/audits/sharasdal-wave-cleanup-2026-11-08.json",
+    "fix_commit": "989c221cd0e33c16b23eeacbb962dac991d4984f",
+    "next_source_review": {
+      "status": "OPEN read-only continuation;source finding,not reproduced native contact failure or a completed second repair",
+      "evidence": ".codex/sharasdal-wave-contact-open-2026-11-08/source-review.json",
+      "findings": [
+        "Actual AreaTrigger::DoAction first keeps Player contact admission,then target flags can make contact Player the caster and restore the AT owner as target. Preserve this native producer;ordinary Pillar Splash209184 is not the ride producer.",
+        "For action0,DoAction invokes real CastSpell but ignores its SpellCastResult,sets CallScriptAreaTriggerCast and later increments action.hitCount regardless. A native failed cast or subsequent failed VehicleJoin acknowledgement therefore needs a focused reproduction before claiming successful ride or deciding whether the authored one-hit budget should be retained/retried.",
+        "VehicleJoinEvent can acknowledge actual boarding asynchronously;the current focused cleanup regression exercises that native endpoint but drives it with EnterVehicle,not geometric AT contact. Generic action semantics affect other content:do not globally change attempt counters based on this source finding alone."
+      ],
+      "next": "Fresh read-only6547/action/shape scope,load native AreaTrigger actions/scripts before a real contact probe;separate cast refusal from failed queued boarding and physical/contact/client outcomes. Add a scoped repair only after a reproduced authored failure and alternative-path coverage."
+    }
   },
   "latest_devourer_outro_2026_11_08": {
     "status": "DEPLOYED focused Devourer1078/map1607 completed-scenario reactions. Paired pinned source/native failure, repaired ASAN/native10, selected staged/canonical proof, retained acquisition/recovery, Scepter and owned startup pass. Actual client visuals/full41924/all36 remain unverified.",
