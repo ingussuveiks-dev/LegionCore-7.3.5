@@ -1,4 +1,28 @@
 {
+  "latest_tuure_graveyard_2026_11_08": {
+    "status": "DEPLOYED scoped Holy1085 cemetery recovery on shared map1489. Source96 ASAN/native64 with58 actual RepopAtGraveyard/near-transfer ACK/revival cases pass,paired old-instance/source counterfactuals and linked Release proof pass;canonical ready/shutdown0 clean. Full client/corpse/pet/group traversal remains separate.",
+    "scope": "Only the actual scenario1085 branch of instance_tuure cemetery callback. No SQL,character reset,quest/item/progress grant,direct teleport/resurrection,combat hook,actor/stage reset,new registration or Player/core change. Other shared scenarios and no-scenario policy remain byte-equivalent in selected behavior.",
+    "checks": {
+      "source": "Current96 ASAN:all7 steps+modeled completed,64 repeated death-position selections,14 corrupt-source diagnostics,foreign/shared/no-scenario controls and nonfinite/void inputs. Pinned562084277 source80 explicitly echoes old unsafe positions;controlled services,not full native traversal.",
+      "native": "Current64 cases with58 actual releases:Human+Undead,7 stages times4 death contexts,completed ALL-root control,shared940/972 and no-scenario controls. Death contexts include former Dalaran tuple,late Holy position,below-mapZ and another shared-map wing. Actual registered whole instance dispatch,ghost8326/flag setup,RepopAtGraveyard,near-transfer,WorldSession::HandleMoveTeleportAck,delayed half-health revival/ghost cleanup,repeat selection/ACK and unchanged criterion-map size/stage/controller/quest/item state. Earlier accepted quest/death/pose/stage are controlled in memory;final pickup/return criteria are supplied only to establish the completed control.",
+      "counterfactual": "Pinned562084277 whole instance/native64/release58 plus source80 reproduce unsafe corpse-coordinate recovery with the same current native support. It is not a historical whole executable,ordinary passing safe gameplay,or a claim the old ACK failed to revive. Previous canonical e7cdb1ea is specifically rejected for lacking scoped Holy recovery;new staged and canonical binaries pass.",
+      "linked": "Actual deployed factory/vtable and InstanceMap virtual slot select the repaired GetClosestGraveYard. Selected machine code proves1085 guard,5480 ID/map/zero/finite validation,degrees/radians,correct source stores,diagnostic/null rejection and retained other-context death-position stores. Prohibits direct teleport/resurrection/health/quest/item/criteria/stage calls. Composes retained native first-fight/route/cage/captain dispatch and owner/lease proofs.",
+      "retained": "First-fight/source28 owner variants,second-route40 accepted+16 missing-native-owner denials,cage23 denials/retries and captain56 source ASAN;native player/pet/guardian/charmer/three-allies dispatch fragments retained. Tuure legacy login118 ASAN/native94/PE;live native entrance28 plus TEMP22 refusal/data/Recorder proof;intro/heal,Boros greeting,pickup,completion-tree/live pickup-data ASAN;shared ScenarioResume ASAN/PE and mandatory canonical Scepter source/Release.",
+      "build": "Original game Release project and scripts Release dependencies followed by staged final link;no global OutDir. Only production instance_tuure.cpp changed. Canonical worldserver/bnetserver EXE+map copy hashes match staged output;config/certs/DLLs/data and required build libraries retained.",
+      "runtime": "Task-owned canonical worldserver reached fresh appended ready,graceful stdin server shutdown0,exit0,gone with empty stderr. No user/unknown world or bnet stopped. MariaDB left running.",
+      "preservation": "Read-only fingerprints for all non1243 LFG entrances,whole spell target and scenario route tables unchanged;live1243 independently verified. Protected runtime files unchanged;no actual character data reset or persistent character write by fixtures."
+    },
+    "unresolved": [
+      "Actual client Release Spirit packet/corpse creation/reclaim presentation,phase-visible return path from5480 at later stages,pet/guardian reappearance,group binds,reconnect/death timing and complete Holy traversal remain unverified. Native fixture directly calls actual RepopAtGraveyard and actual ACK handler;it does not simulate full client or full character LoadFromDB.",
+      "Other shared1489 scenarios still have their previous corpse-position cemetery behavior. Native MM5433/5434,Blood5440/5441 and other class GYs need separate stage-boundary/provenance investigations;this patch does not certify them.",
+      "Tuure earned-owned-artifact return recovery,generic admission/actor lifecycle,Survival39427 follow-up,Stromkar visual/client traversal and all36 full chains remain separate.",
+      "Shared LINK2 mixed7111 and unresolved Slaghammer handoff probe20261106-121715-172/cache/research remain OPEN and untouched;no unexplained crash/log was filed as resolved."
+    ],
+    "cleanup": {
+      "status": "Verified fixed archive/exact generated-output cleanup follows focused fix commit;retain new before-Tuure-graveyard plus before-Tuure-login recovery copies,retire older before-Marksmanship-return after passing canonical checks."
+    },
+    "audit": "docs/audits/tuure-graveyard-2026-11-08.json"
+  },
   "latest_tuure_login_recovery_2026_11_08": {
     "audit": "docs/audits/tuure-login-recovery-2026-11-08.json",
     "status": "DEPLOYED C++ repair for already persisted exact bad Tuure1243/map1489/scenario1085 entrance receipts. Source118 ASAN/native94,paired pinned counterfactuals,selected linked proof,retained chains and canonical ready/shutdown0 pass. Actual full saved-character/client traversal remains separate.",

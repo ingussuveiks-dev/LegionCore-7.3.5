@@ -21,7 +21,16 @@ struct InstanceScript;
 struct Reference{Player* player;Player* getSource()const{return player;}};
 struct Map{InstanceScript* script=nullptr;std::vector<Reference> players;std::vector<Creature*> actors;uint32 GetInstanceId()const{return 7;}auto const& GetPlayers()const{return players;}Creature* GetCreature(ObjectGuid const&);};
 using InstanceMap=Map;
-struct WorldLocation{void WorldRelocate(uint32,float,float,float){}};
+struct WorldLocation{void WorldRelocate(uint32,float,float,float,float=0){}};
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+// The complete instance now also compiles its scoped cemetery callback.
+// Dedicated TuureGraveyard tests exercise this source and native release.
+struct WorldSafeLocsEntry{uint32 ID=5480,MapID=1489;struct{float X=-43.1440964f,Y=1160.33679f,Z=-74.353569f,O=27.7250366f;}Loc;};
+struct SafeStore{WorldSafeLocsEntry data;WorldSafeLocsEntry const* LookupEntry(uint32 id){assert(id==5480);return &data;}}sWorldSafeLocsStore;
+struct MapManager{static bool IsValidMapCoord(uint32 map,float x,float y,float z,float o){return map==1489&&std::isfinite(x)&&std::isfinite(y)&&std::isfinite(z)&&std::isfinite(o)&&std::fabs(x)<17066&&std::fabs(y)<17066;}};
+#define TC_LOG_ERROR(...) assert(false)
 '@
  $nativeFixture=Replace-Fixture $nativeFixture 'struct InstanceScript {bool CheckDamageManager()const{return false;}void UpdateDamageManager(ObjectGuid,int32,bool){};};' @'
 struct InstanceScript{
