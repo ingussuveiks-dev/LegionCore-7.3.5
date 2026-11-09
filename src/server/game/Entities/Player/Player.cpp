@@ -7080,7 +7080,7 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
     if (restore_percent > 0.0f)
     {
         restore_percent *= GetTotalAuraMultiplier(SPELL_AURA_MOD_RESURRECTED_HEALTH_BY_GUILD_MEMBER);
-        SetHealth(uint32(GetMaxHealth()*restore_percent));
+        SetHealth(uint64(GetMaxHealth()*restore_percent));
         SetPower(POWER_MANA, uint32(GetMaxPower(POWER_MANA)*restore_percent));
         ResetPowers(restore_percent);
     }

@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Resurrection",
+  "base": "efd389974",
+  "support_commit": "9fdeddda617fab913e0b68ed230c813daf1c2602",
+  "cause": "Native resurrection percentage restoration narrowed64bit maxHP product to32bits.",
+  "implementation": "Pass uint64 restoration to SetHealth;preserve caller-owned0restore,mana/powers,death/zone/sickness handling.",
+  "focused_checks": "Exact whole restore block highHP/normal/zero/guild/cap;native block on real Player. Full death/zone/resurrect pipeline not fixture-traversed.",
+  "validation": {
+    "source": "Test-SixthTenRepairs.ps1:10 pinned efd389974 counterfactuals paired with10 repaired extracted complete methods/classes or exact changed native branches under MSVC-ASAN. External world/cast/group endpoints modeled. Evade rerun after lifetime expansion;existing10-context EventProcessorAbort ASAN passes. Not full-core ASAN/client traversal.",
+    "native": "Test-MagnarReadinessNative -AdditionalProbe SixthTenNative:immutable original Release library inputs;real Item AP field-width,Field64 collector/remap;actual Player regen,exact resurrection restore block,Chain selection on actual Players;real207498 Absorb dispatcher;full Orinoko AI,actual Whisker TempSummon deletion on evade/death and active55929 reference -> abort -> normal Unit release -> event deletion;real202328 missing-anchor refusal. Synthetic map/profiles/IDs,earlier state controlled. Database stays readonly,no character save/import.",
+    "sql": "Native generated four synthetic INSERT statements roundtrip in faithful minimal BIGINT/INT UNSIGNED/name TEMP tables. Separate SELECT+CREATE TEMP-only reader,denied persistent DELETE WHERE0 canary,user dropped finally. Item1099511627993,pet2147483648,owner1099511627793,escaped O'Brien and child link read back correctly. No actual character backup import or persistent DML.",
+    "release": "Original game.lib/scripts.lib final-link paths rebuilt;staged and canonical verify_sixth_ten_release.py checks selected10 paths plus prior57. Unused memory LoadDump overload compiles in library and is source-tested;linker omits it from EXE. Canonical Scepter -VerifyReleaseBinary,ArtifactTierProgression -VerifyReleaseBinary and PetLoadSelection pass.",
+    "scope": "verify_sixth_ten_scope.py reverses metadata edits in9production files to efd389974. Orinoko includes shared CreatureAI deferred spell-event deletion and owner/group credit. Unrelated gates/timers/progression/schema unchanged;no migration.",
+    "runtime": "Canonical+own pre/post crashes/log sizes/timestamps and exit/stdout/stderr/newDBErrors/server warning/error/assertion review for tests/build/link/start. Final tests clean. Owned canonical startup ready/graceful shutdown0/exit0/gone;no user process stopped;configs/certs/DLLs retained."
+  },
+  "client_pending": "Actual spells/spirit healer/rez requests/sickness/pet/reconnect and map variants.",
+  "pending": [
+    "Authentic living Lady activation/surrender/conversation1906/Grash finisher/cleanup remains OPEN;no HP threshold or kill timer invented.",
+    "Shared LINK2/Slaghammer crash/cache,mixed canonical7111-byte DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run,its cache preserved.",
+    "Orinoko SAY_CALL_FOR_HELP=-1571032 narrows into uint8;actual matching creature_text has no CreatureID30020 rows. Missing speech remains OPEN;no invented text/group. LowHP speech path was not invoked in fixture.",
+    "Actual client/combat/visual/audio/equipment/group/pet/guardian/retry/reentry/full-instance traversal remains pending. Controlled native/source endpoints do not certify all alternate gameplay paths.",
+    "35compiler warning occurrences reference source expressions present verbatim in efd389974;inventory retained. Historical warnings stay visible,not certified repaired."
+  ],
+  "paths": [
+    "src/server/game/Entities/Player/Player.cpp"
+  ],
+  "patch_sha256": "eca4497bbace3f55482550523d7ca51865a98b90cea9e235c8048aac6148bf61",
+  "canonical_world_sha256": "687321401905e9df2b01f19cb6cc9d4c8ea6bd0554846e6e88b639215fa96e67",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/sixth-ten-repairs-2026-11-09"
+  },
+  "batch_audit": "docs/audits/sixth-ten-repairs-2026-11-09.json"
+}
