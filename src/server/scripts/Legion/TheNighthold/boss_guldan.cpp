@@ -560,7 +560,7 @@ public:
             {
                 me->SetVisible(false);
                 // me->RemoveAllAreaObjects();
-                me->m_Events.KillAllEvents(true);
+                me->m_Events.KillAllEvents(false);
 
                 events.Reset();
                 summons.DespawnEntry(104526);
@@ -982,7 +982,7 @@ public:
                 }
                 case PHASE_THIRD:
                 {
-                    me->m_Events.KillAllEvents(true);
+                    me->m_Events.KillAllEvents(false);
                     instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EMPOWERED_LIQUID_HELLFIRE);
                     DoCast(SPELL_EYE_OF_AMANTHUL_PHASE_3);
                     me->AddAura(SPELL_EYE_OF_AMANTHUL_PHASE_3_AT, me);
