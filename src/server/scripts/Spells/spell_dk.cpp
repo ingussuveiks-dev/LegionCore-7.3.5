@@ -1600,6 +1600,10 @@ class spell_dk_glacial_advance : public SpellScriptLoader
                     ObjectGuid spellGuid = (GetSpell()->m_castGuid[1].GetSubType() == SPELL_CAST_TYPE_NORMAL) ? GetSpell()->m_castGuid[1] : GetSpell()->m_castGuid[0];
 
                     Position const* pos = GetExplTargetDest();
+                    if (!pos)
+                        return;
+                    uint32 mapId = caster->GetMapId();
+                    uint32 instanceId = caster->GetInstanceId();
                     float angle = caster->GetAngle(pos);
                     for (int i = 1; i < 9; i++)
                     {
@@ -1612,8 +1616,11 @@ class spell_dk_glacial_advance : public SpellScriptLoader
                         Position _position;
                         _position.Relocate(x, y, z, 0.0f);
                         targets.SetDst(_position);
-                        caster->AddDelayedEvent(delay*(i - 1), [caster, spellInfo, values, castTime, targets, spellGuid]() -> void
+                        caster->AddDelayedEvent(delay*(i - 1), [caster, spellInfo, values, castTime, targets, spellGuid, mapId, instanceId]() -> void
                         {
+                            if (!caster->IsInWorld() || caster->IsPreDelete() ||
+                                caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                                return;
                             TriggerCastData triggerData;
                             triggerData.triggerFlags = TRIGGERED_FULL_MASK;
                             triggerData.spellGuid = spellGuid;

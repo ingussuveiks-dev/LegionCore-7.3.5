@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Glacial",
+  "scope": {
+    "key": "Glacial",
+    "file": "spell_dk.cpp",
+    "classes": [
+      "spell_dk_glacial_advance"
+    ],
+    "spell": 194913,
+    "title": "Keep queued Glacial Advance impacts on their original map"
+  },
+  "base": "797cebe2f",
+  "support_commit": "da8b5fe236f270df633c6e72a3ddaf4976664edd",
+  "cause": "Eight queued195975 destination casts retain coordinates but execute using their queue owner after a map/instance transition. SpellCastTargets::SetDst(Position) stores a destination with no fixed original map;SetCaster only stores its pointer.",
+  "implementation": "Snapshot original map/instance before scheduling;each callback requires world/non-predelete/same origin. Guard missing explicit destination. Preserve eight2.5-yard positions,0..350ms schedule,ground lookup,original cast GUID/time/subtype and native CastSpell.",
+  "validation": {
+    "command": "tools/tests/Test-ThirdTenSpellRepairs.ps1 -Case Glacial (also -Baseline)",
+    "coverage": "Paired full-class/actual FunctionProcessor ASAN origin/world/predelete/death/no-repeat cases verify eight positions/cast metadata. Full class compiles against actual core and matching native data/binding read. PE follows actual _Do_call tail adapter to lambda operator before checking every origin guard and native cast. Collision/hits/world endpoints modeled.",
+    "native_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe ThirdTenSpellNative",
+    "native_total": "12live bindings/11classes,two actual mounted/dismounted speed controls and16 actual recipient/model/cleanup/calc/missing-caster-at-Load contexts;earlier profiles/poses/capability controlled,readonly/TEMP database scope,no character saves. Not full-core ASAN.",
+    "source_scope": "Five whole source files equal797cebe2f outside exactly11selected classes/ten problems. Other registrations/shared quest scripts unchanged.",
+    "release": "Original scripts.lib/final-link dependencies,no global OutDir;staged+canonical ten PE paths and prior27 paths retained;canonical Scepter and existing defensive/Shadow regressions pass.",
+    "startup": "Owned28440 fresh canonical ready,shutdown0,exit0,gone,stderr empty;no user process stopped/protected configuration changed."
+  },
+  "canonical_world_sha256": "435bb556058e4c1b2040967c1a9786c63cff705a1e9e90c8491d3f1b5d97de9f",
+  "tested_class_sha256": {
+    "spell_dk_glacial_advance": "ea77fec3977401b515d925530608abf9dce6d721c5acb9da3c776e736f61c754"
+  },
+  "aura_contract": "Native Aura::GetCaster resolves unit owner directly for ordinary self-casts. Distinct-caster ownership checks intentionally create a supported separate NPC caster and remove that actor. Neither model faults nor these audits claim observed production/client crashes during ordinary self-use.",
+  "diagnostics": "Before/after canonical+own crash/log snapshots and exit/stdout/stderr review for tests/build/link/start. Final tests add no crash/DBErrors/server warning/error/assertion. Original Ocean ASAN baseline is explicitly expected failing;native fixture initialization/admission and PE inlining/adapter mistakes were traced and corrected;details/evidence retained in batch audit.",
+  "client_pending": "Actual DK cast/eight impacts/terrain,failed native casts,pet/guardian attribution,latency and map changes during wave.",
+  "progression": "No SQL,HP threshold,kill timer,character reset,item/quest/progression grant or new class/group restriction. Unit queue owners/native cast and credit attribution retained,including player/pet/guardian paths;actual full combat alternatives still need client testing.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/third-ten-spell-repairs-2026-11-09"
+  },
+  "shared_open": "Authentic living Lady/1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors,handshake and all36 whole chains remain OPEN. Default Slaghammer probe not run;no active log truncated.",
+  "batch_audit": "docs/audits/third-ten-spell-repairs-2026-11-09.json"
+}
