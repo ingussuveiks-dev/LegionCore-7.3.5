@@ -188,7 +188,7 @@ struct boss_high_botanist_telarn : BossAI
                 me->SetVisible(false);
             }
             if (instance)
-                instance->AddDelayedEvent(500, [=] () -> void { Init(); });
+                me->AddDelayedEvent(500, [this] () -> void { if (me->IsAlive()) Init(); });
         }
     }
 
