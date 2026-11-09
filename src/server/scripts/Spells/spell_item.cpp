@@ -3377,8 +3377,11 @@ class spell_item_ocean_embrace : public SpellScriptLoader
 
             void OnApply(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
+                Unit* owner = GetUnitOwner();
+                Player* plr = owner ? owner->ToPlayer() : nullptr;
+                if (!plr)
+                    return;
                 if (auto itemGUID = aurEff->GetBase()->GetCastItemGUID())
-                    if (auto plr = GetCaster()->ToPlayer())
                         if (auto castItem = plr->GetItemByGuid(itemGUID))
                         {
                             switch (plr->GetSpecializationId())
@@ -3407,7 +3410,7 @@ class spell_item_ocean_embrace : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                if (auto caster = GetCaster())
+                if (auto caster = GetUnitOwner())
                 {
                     caster->RemoveAurasDueToSpell(242460);
                     caster->RemoveAurasDueToSpell(242461);
