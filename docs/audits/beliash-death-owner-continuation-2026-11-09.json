@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Beliash",
+  "base": "92ccd64d1",
+  "support_commit": "45854947bfe40fe03ea130f2f95833d982ce0d7e",
+  "paths": [
+    "src/server/scripts/Legion/mardum.cpp"
+  ],
+  "cause": "Doom Commander Beliash93221 Player-only death gate lost38766 credit/selfcast for nearby recipients when a pet/guardian killed him.",
+  "implementation": "Use native owner resolver/null guard;retain Tyranna95048 cleanup independently,original speech,60yard Player list,CREDIT106003 and210093 player selfcast.",
+  "focused_checks": "Whole callback direct/owner/null/unowned and independent Tyranna cleanup;8binding/native owner/Kill control/actual compiled call. Native recipient radius/eligible quest checks unchanged.",
+  "validation": {
+    "source": "Test-SeventhTenRepairs.ps1:10 pinned92ccd64d1 original-behavior counterfactuals paired with10 repaired MSVC-ASAN cases. Entire selected death callbacks,entire Condition57 switch case,and actual saved-transport declaration/fallback branch extracted. External actors/quest/group/cast/conversation endpoints controlled. Final suite rerun after native Talbot API inspection and actual NPC96783 name correction. Not full-core ASAN/client traversal.",
+    "native": "Test-MagnarReadinessNative -AdditionalProbe SeventhTenNative:actual Condition::Meets on real equipped128943 Item checks both64bit AP min/max branches;actual Field64 high-only counter from explicitly quoted SQL decimal.8 exact selected owner assignments run inside24 actual Unit::Kill player/Pet/Guardian death dispatches;original killer GUID retained,second Kill does not dispatch again,null/unowned refused. Full selected NPC death callbacks/cast/group/outro endpoints remain source-modeled. Synthetic profiles/earlier states and controlled dispatch AI;no character save/import.",
+    "release": "Original game.lib/scripts.lib paths rebuilt and final-linked. Staged+canonical verify_seventh_ten_release.py checks8actual owner/null-guard callbacks,Talbot me source,Netherweb successful summon/Nerubar SPELL_CAST_OK before rescue credit,Condition57 both64bit comparison branches,and actual saved transport64bit Field/store/diagnostic. Prior67 paths retained. Canonical Scepter -VerifyReleaseBinary,ScenarioResume -AddressSanitizer -VerifyReleaseBinary and ArtifactTierProgression -VerifyReleaseBinary pass.",
+    "scope": "verify_seventh_ten_scope.py reverses selected metadata edits in6production files to92ccd64d1. No migration or character-data rewrite. Existing quest gates,RNG ranges,recipient radii,actors,dialogue,casts,timers,phase paths and unrelated scripts remain,except selected rescue-success guards and Talbot valid group source.",
+    "runtime": "Every test/build/link/start has canonical+own pre/post crash/log length/timestamp snapshots,exit/stdout/stderr/newDBErrors/server warning/error/assertion review. All final regressions and canonical ready/graceful shutdown0/exit0/gone are clean. Owned canonical PID28664 stopped;no user process stopped;configuration/cert/DLL hashes retained."
+  },
+  "recipient_rules": "Beliash/Bastillax original60yard Player lists retained;Caza/Immolanth original single player endpoint now owner;Prolifica owner-local outro;Talbot actual corpse source uses native group/range/alive rules;rescues retain native KilledMonsterCredit and active quest gates. No nearest-player/new blanket group/item/progression grants.",
+  "canonical_world_sha256": "6ae65ef662b02d7a7adde6f3474808145d25a21592eb9626486fe49801af83e2",
+  "patch_sha256": "974be805a1f804215b6916aaee819b078f35926923724698e5284271493f4061",
+  "client_pending": "Actual38766 combat/pet/guardian/nearby recipients/failed optional visual/credits/reentry/whole Demon Hunter intro.",
+  "pending": [
+    "Authentic living Lady activation/surrender/conversation1906/Grash finisher/cleanup remains OPEN;no HP threshold or kill timer invented.",
+    "Shared LINK2,Slaghammer crash/cache,mixed canonical7111-byte DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run,its cache retained.",
+    "MariaDB11.4.9 unquoted numeric CAST discrepancy remains OPEN_EXTERNAL_SQL_EXPRESSION:CAST(4294967296 AS UNSIGNED)->0,CAST(4294967297 AS UNSIGNED)->1;bare number and quoted-decimal CAST retain4294967296. Reproduced through native core and direct CLI. Cause not established;no DB-server/production-query workaround. Raw evidence hash-verified outside fixed at .codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09.",
+    "Actual client/full combat/intro/escort/rescue/visual/audio/group/faction/reentry/failed actor/cast/outro traversal remains pending. Source models and native shared endpoints do not prove full quest chains.",
+    "23 compiler warning occurrences reference expressions present verbatim in92ccd64d1. Inventory retained;historical warnings visible,not certified repaired."
+  ],
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/seventh-ten-repairs-2026-11-09"
+  },
+  "batch_audit": "docs/audits/seventh-ten-repairs-2026-11-09.json"
+}

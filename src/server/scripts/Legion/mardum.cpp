@@ -1237,7 +1237,7 @@ public:
                 Tyranna->DespawnOrUnsummon(500);
                 TyrannaGuid = ObjectGuid::Empty;
             }
-            Player* player = killer->ToPlayer();
+            Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             if (!player)
                 return;
 
