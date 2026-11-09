@@ -9595,15 +9595,15 @@ void AuraEffect::HandleAuraProcOnHpBelow(AuraApplication const* auraApp, uint8 m
     if (!target || !caster)
         return;
 
-    uint32 curCount = target->CountPctFromMaxHealth(GetAmount());
+    uint64 curCount = target->CountPctFromMaxHealth(GetAmount());
     uint32 triggered_spell_id = GetTriggerSpell();
     SpellInfo const* triggerEntry = sSpellMgr->GetSpellInfo(triggered_spell_id);
     if(!triggerEntry)
         return;
 
-    uint32 curHealth = target->GetHealth();
+    uint64 curHealth = target->GetHealth();
 
-    TC_LOG_DEBUG("spells", "HandleAuraProcOnHpBelow GetId %u triggered_spell_id %u curCount %u curHealth %u", GetId(), triggered_spell_id, curCount, curHealth);
+    TC_LOG_DEBUG("spells", "HandleAuraProcOnHpBelow GetId %u triggered_spell_id %u curCount " UI64FMTD " curHealth " UI64FMTD, GetId(), triggered_spell_id, curCount, curHealth);
 
     if(GetMiscValue() == 1) // Below
     {
