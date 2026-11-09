@@ -314,9 +314,14 @@ class spell_warl_unstable_affliction : public SpellScriptLoader
 
                     float damage = CalculatePct(aurEff->GetAmount(), perc);
 
+                    uint32 mapId = caster->GetMapId();
+                    uint32 instanceId = caster->GetInstanceId();
                     ObjectGuid targetGUID = dispeller->GetGUID();
-                    caster->AddDelayedEvent(50, [caster, targetGUID, damage]() -> void
+                    caster->AddDelayedEvent(50, [caster, targetGUID, damage, mapId, instanceId]() -> void
                     {
+                        if (!caster->IsInWorld() || caster->IsPreDelete() ||
+                            caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                            return;
                         Unit* target = ObjectAccessor::GetUnit(*caster, targetGUID);
                         if (!target)
                             return;

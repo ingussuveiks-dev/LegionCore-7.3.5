@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Dispel",
+  "scope": {
+    "key": "Dispel",
+    "file": "spell_warlock.cpp",
+    "cls": "spell_warl_unstable_affliction",
+    "spell": 233490,
+    "title": "Keep delayed Unstable Affliction backlash in its original instance"
+  },
+  "base": "50b42e107",
+  "support_commit": "9fc679b169b7a95486a30e09bf5832cc096d8542",
+  "cause": "50ms dispel backlash GUID lookup can hit after caster and dispeller both move to a different shared instance.",
+  "implementation": "Snapshot original caster map/instance;guard world/predelete/origin before existing dispeller GUID resolution. Preserve50ms,original caster attribution,amount,all five UA variants and Fatal Echoes/remove behavior.",
+  "validation": {
+    "source_command": "tools/tests/Test-NextTenSpellRepairs.ps1 -Case Dispel (also -Baseline)",
+    "coverage": "Paired complete-class/actual FunctionProcessor ASAN cross-map/both-migrating,mising-target,world/predelete/death,deadline,exactly-one/no-repeat callbacks;all five live bindings/native data/full class compile and actual registered PE closure. Existing Warlock/Burning Rush/mover regression passes.",
+    "native_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe NextTenSpellNative",
+    "native_total": "14live bindings/ten names,matching26972 DB2+read-only hotfix;24 registered Flask casts and8 controlled native aura/cooldown contexts. Not full-core ASAN or client traversal.",
+    "scope": "Five whole production files match50b42e107 outside exactly ten selected complete classes;all other classes and registrations retained.",
+    "release": "Original scripts.lib dependencies,no global OutDir;staged/canonical ten-repair PE plus previous17 paths pass. Canonical Scepter and Warlock regressions pass.",
+    "startup": "Owned canonical25956 fresh ready,server shutdown0,exit0,gone,stderr empty;no user process stopped/configuration changed."
+  },
+  "canonical_world_sha256": "ed56fd0f6523cf9767f02ecc8aaa12d9dfab914d5100fc3c01d4aebd116b4d87",
+  "tested_class_sha256": "040d0226ba0d2025e891d7c2963fe4c2e0cd98c519f117bbdd2e3da99c19a27a",
+  "diagnostics": "Every test/build/link/start has canonical+own pre/post crash/log snapshots and reviewed exit/stdout/stderr. Final tests have no new crash/appended DBErrors/server warning/error/assertion. Counterfactual ASAN faults are expected-broken baselines paired with repaired passes. Native fixture missing spell-bonus initialization was traced and repaired;see batch audit for full development evidence.",
+  "client_pending": "Actual dispels/backlash/silence,damage,all5variants,latency,death and map transitions with both players.",
+  "progression": "No SQL,character reset,HP threshold,kill timer or quest/loot grant added. Existing native spell hit/credit/group rules retained;Unit queue owners can be player/pet/guardian/NPC. This does not certify every combat alternative in the client.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/next-ten-spell-repairs-2026-11-09"
+  },
+  "shared_open": "Living Lady/authentic1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors and all36 whole chains remain OPEN. No default Slaghammer probe or active-log truncation.",
+  "batch_audit": "docs/audits/next-ten-spell-repairs-2026-11-09.json"
+}
