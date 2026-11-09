@@ -6188,7 +6188,7 @@ class spell_failure_detection_pylon : public SpellScript
     {
         targets.remove_if([](WorldObject* target)
         {
-            return target->ToPlayer()->IsAlive();
+            return !target || !target->IsPlayer() || target->ToPlayer()->IsAlive();
         });
     }
 
