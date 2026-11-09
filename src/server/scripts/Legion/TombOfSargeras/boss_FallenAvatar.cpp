@@ -334,7 +334,7 @@ struct boss_fallen_avatar : BossAI
         Talk(SAY_DEATH);
         // _JustDied(); // without summons
         me->RemoveAllAreaObjects();
-        me->m_Events.KillAllEvents(true);
+        me->m_Events.KillAllEvents(false);
 
         events.Reset();
         if (instance)
