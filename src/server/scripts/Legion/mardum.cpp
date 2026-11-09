@@ -672,7 +672,7 @@ public:
         {
             sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2);
 
-            Player *player = attacker->ToPlayer();
+            Player *player = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             if (!player)
                 return;
 
