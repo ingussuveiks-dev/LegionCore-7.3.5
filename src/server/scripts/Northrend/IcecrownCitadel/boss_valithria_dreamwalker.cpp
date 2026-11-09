@@ -275,6 +275,10 @@ class boss_valithria_dreamwalker : public CreatureScript
 
                 if (instance && !bIntro && who->IsPlayer() && who->IsWithinDistInMap(me, 3.0f,true))
                 {
+                    combat_trigger = me->SummonCreature(NPC_GREEN_DRAGON_COMBAT_TRIGGER, me->GetPositionX(), me->GetPositionY(),me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 20000);
+                    if (!combat_trigger)
+                        return;
+
                     if (instance && instance->GetBossState(DATA_VALITHRIA_DREAMWALKER) == NOT_STARTED)
                         instance->SetBossState(DATA_VALITHRIA_DREAMWALKER, IN_PROGRESS);
 
@@ -294,7 +298,6 @@ class boss_valithria_dreamwalker : public CreatureScript
                     events.ScheduleEvent(EVENT_CHECK_EVADE, 10000);
                     events.ScheduleEvent(EVENT_DREAM_PORTAL, 45000);
 
-                    combat_trigger = me->SummonCreature(NPC_GREEN_DRAGON_COMBAT_TRIGGER, me->GetPositionX(), me->GetPositionY(),me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 20000);
                     combat_trigger->SetDisplayId(MODEL_INVISIBLE);
                     me->AddThreat(combat_trigger, 10000000.0f);
                     combat_trigger->AddThreat(me, 10000000.0f);
