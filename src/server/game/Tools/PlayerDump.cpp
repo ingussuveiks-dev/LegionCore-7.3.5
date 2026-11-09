@@ -52,7 +52,7 @@ static DumpTable dumpTables[DUMP_TABLE_COUNT] =
     { "character_homebind",               DTT_CHAR_TABLE, "`guid`, `mapId`, `zoneId`, `posX`, `posY`, `posZ`"},
     { "character_inventory",              DTT_INVENTORY,  "`guid`, `bag`, `slot`, `item`"},
     { "character_pet",                    DTT_PET,        "`id`, `entry`, `owner`, `modelid`, `CreatedBySpell`, `PetType`, `level`, `exp`, `Reactstate`, `name`, `renamed`, `curhealth`, `curmana`, `savetime`, `abdata`, `specialization`"},
-    { "character_pet_declinedname",       DTT_PET,        "`id`, `owner`, `genitive`, `dative`, `accusative`, `instrumental`, `prepositional`"},
+    { "character_pet_declinedname",       DTT_PET_DECLINED_NAME,        "`id`, `owner`, `genitive`, `dative`, `accusative`, `instrumental`, `prepositional`"},
     { "character_queststatus",            DTT_CHAR_TABLE, "`guid`, `account`, `quest`, `status`, `timer`"},
     { "character_queststatus_rewarded",   DTT_CHAR_TABLE, "`guid`, `account`, `quest`"},
     { "character_queststatus_objectives", DTT_CHAR_TABLE, "`guid`, `account`, `quest`, `objective`, `data`"},
@@ -281,6 +281,7 @@ bool PlayerDumpWriter::DumpTable(std::string& dump, ObjectGuid::LowType guid, ch
         case DTT_ITEM_GIFT:     fieldname = "item_guid"; guids = &items; break;
         case DTT_ITEM_TABLE:    fieldname = "itemGuid";  guids = &items; break;
         case DTT_PET:           fieldname = "owner";                     break;
+        case DTT_PET_DECLINED_NAME: fieldname = "owner";                  break;
         case DTT_PET_TABLE:     fieldname = "guid";      guids = &pets;  break;
         case DTT_MAIL:          fieldname = "receiver";                  break;
         case DTT_MAIL_ITEM:     fieldname = "mail_id";   guids = &mails; break;
@@ -384,6 +385,32 @@ DumpReturn PlayerDumpWriter::WriteDump(ObjectGuid::LowType guid, std::string& du
     return DUMP_SUCCESS;
 }
 
+// Pet rows, declined names and child rows share one persistent PetNumber map.
+static bool ChangePetReference(std::string& line, std::map<uint32, uint32>& petids,
+    char const* owner, uint32 ownerField, bool create)
+{
+    std::string oldText = GetNth(line, 1);
+    if (oldText.empty() || oldText.size() > 10 ||
+        oldText.find_first_not_of("0123456789") != std::string::npos)
+        return false;
+    uint64 oldId = strtoull(oldText.c_str(), nullptr, 10);
+    if (!oldId || oldId > UINT32_MAX)
+        return false;
+    auto found = petids.find(uint32(oldId));
+    if (found == petids.end())
+    {
+        if (!create)
+            return false;
+        uint32 next = sObjectMgr->GeneratePetNumber();
+        if (!next)
+            return false;
+        found = petids.emplace(uint32(oldId), next).first;
+    }
+    std::string nextText = std::to_string(found->second);
+    return ChangeNth(line, 1, nextText.c_str()) &&
+        (!ownerField || ChangeNth(line, ownerField, owner));
+}
+
 // Reading - High-level functions
 #define ROLLBACK(DR) {fclose(fin); return (DR);}
 
@@ -408,7 +435,7 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
     if (!fin)
         return DUMP_FILE_OPEN_ERROR;
 
-    char newguid[21], chraccount[20], newpetid[20], currpetid[20], lastpetid[20], lastfollowerid[21];
+    char newguid[21], chraccount[20], lastfollowerid[21];
 
     // make sure the same guid doesn't already exist and is safe to use
     bool incHighest = true;
@@ -444,8 +471,6 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
 
     snprintf(newguid, sizeof(newguid), UI64FMTD, guid);
     snprintf(chraccount, 20, "%u", account);
-    snprintf(newpetid, 20, "%u", sObjectMgr->GeneratePetNumber());
-    snprintf(lastpetid, 20, "%s", "");
     snprintf(lastfollowerid, sizeof(lastfollowerid), UI64FMTD, sGarrisonMgr.GenerateFollowerDbId());
 
     std::map<uint64, uint64> items;
@@ -619,45 +644,23 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
                 break;
             }
             case DTT_PET:
+            case DTT_PET_DECLINED_NAME:
             {
-                //store a map of old pet id to new inserted pet id for use by type 5 tables
-                snprintf(currpetid, 20, "%s", GetNth(line, 1).c_str());
-                if (*lastpetid == '\0')
-                    snprintf(lastpetid, 20, "%s", currpetid);
-                if (strcmp(lastpetid, currpetid) != 0)
+                if (!ChangePetReference(line, petids, newguid,
+                    type == DTT_PET_DECLINED_NAME ? 2 : 3, type == DTT_PET))
                 {
-                    snprintf(newpetid, 20, "%d", sObjectMgr->GeneratePetNumber());
-                    snprintf(lastpetid, 20, "%s", currpetid);
-                }
-
-                std::map<uint32, uint32> :: const_iterator petids_iter = petids.find(atoi(currpetid));
-
-                if (petids_iter == petids.end())
-                {
-                    petids.insert(PetIdsPair(atoi(currpetid), atoi(newpetid)));
-                }
-
-                if (!ChangeNth(line, 1, newpetid))          // character_pet.id update
+                    TC_LOG_ERROR("network", "LoadPlayerDump: invalid pet/owner reference");
                     ROLLBACK(DUMP_FILE_BROKEN);
-                if (!ChangeNth(line, 3, newguid))           // character_pet.owner update
-                    ROLLBACK(DUMP_FILE_BROKEN);
-
+                }
                 break;
             }
-            case DTT_PET_TABLE:                             // pet_aura, pet_spell, pet_spell_cooldown
+            case DTT_PET_TABLE:
             {
-                snprintf(currpetid, 20, "%s", GetNth(line, 1).c_str());
-
-                // lookup currpetid and match to new inserted pet id
-                std::map<uint32, uint32> :: const_iterator petids_iter = petids.find(atoi(currpetid));
-                if (petids_iter == petids.end())             // couldn't find new inserted id
+                if (!ChangePetReference(line, petids, nullptr, 0, false))
+                {
+                    TC_LOG_ERROR("network", "LoadPlayerDump: missing pet child reference");
                     ROLLBACK(DUMP_FILE_BROKEN);
-
-                snprintf(newpetid, 20, "%d", petids_iter->second);
-
-                if (!ChangeNth(line, 1, newpetid))
-                    ROLLBACK(DUMP_FILE_BROKEN);
-
+                }
                 break;
             }
             case DTT_CHAR_VS_FOLLOW:
@@ -706,7 +709,7 @@ DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::st
     if (charcount >= sWorld->getIntConfig(CONFIG_CHARACTERS_PER_REALM))
         return DUMP_TOO_MANY_CHARS;
 
-    char newguid[21], chraccount[20], newpetid[20], currpetid[20], lastpetid[20], lastfollowerid[21];
+    char newguid[21], chraccount[20], lastfollowerid[21];
 
     // make sure the same guid doesn't already exist and is safe to use
     bool incHighest = true;
@@ -741,8 +744,6 @@ DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::st
 
     snprintf(newguid, sizeof(newguid), UI64FMTD, guid);
     snprintf(chraccount, 20, "%u", account);
-    snprintf(newpetid, 20, "%u", sObjectMgr->GeneratePetNumber());
-    snprintf(lastpetid, 20, "%s", "");
     snprintf(lastfollowerid, sizeof(lastfollowerid), UI64FMTD, sGarrisonMgr.GenerateFollowerDbId());
 
     std::map<uint64, uint64> items;
@@ -984,54 +985,21 @@ DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::st
                 break;
             }
             case DTT_PET:
+            case DTT_PET_DECLINED_NAME:
             {
-                //store a map of old pet id to new inserted pet id for use by type 5 tables
-                snprintf(currpetid, 20, "%s", GetNth(line, 1).c_str());
-                if (*lastpetid == '\0')
-                    snprintf(lastpetid, 20, "%s", currpetid);
-                if (strcmp(lastpetid, currpetid) != 0)
+                if (!ChangePetReference(line, petids, newguid,
+                    type == DTT_PET_DECLINED_NAME ? 2 : 3, type == DTT_PET))
                 {
-                    snprintf(newpetid, 20, "%d", sObjectMgr->GeneratePetNumber());
-                    snprintf(lastpetid, 20, "%s", currpetid);
-                }
-
-                std::map<uint32, uint32> :: const_iterator petids_iter = petids.find(atoi(currpetid));
-
-                if (petids_iter == petids.end())
-                {
-                    petids.insert(PetIdsPair(atoi(currpetid), atoi(newpetid)));
-                }
-
-                if (!ChangeNth(line, 1, newpetid))          // character_pet.id update
-                {
-                    TC_LOG_ERROR("network", "LoadPlayerDump: character_pet.id line: '%s'!", line.c_str());
+                    TC_LOG_ERROR("network", "LoadPlayerDump: invalid pet/owner reference");
                     return DUMP_FILE_BROKEN;
                 }
-                if (!ChangeNth(line, 3, newguid))           // character_pet.owner update
-                {
-                    TC_LOG_ERROR("network", "LoadPlayerDump: character_pet.owne line: '%s'!", line.c_str());
-                    return DUMP_FILE_BROKEN;
-                }
-
                 break;
             }
-            case DTT_PET_TABLE:                             // pet_aura, pet_spell, pet_spell_cooldown
+            case DTT_PET_TABLE:
             {
-                snprintf(currpetid, 20, "%s", GetNth(line, 1).c_str());
-
-                // lookup currpetid and match to new inserted pet id
-                std::map<uint32, uint32> :: const_iterator petids_iter = petids.find(atoi(currpetid));
-                if (petids_iter == petids.end())             // couldn't find new inserted id
+                if (!ChangePetReference(line, petids, nullptr, 0, false))
                 {
-                    TC_LOG_ERROR("network", "LoadPlayerDump: pet line: '%s'!", line.c_str());
-                    return DUMP_FILE_BROKEN;
-                }
-
-                snprintf(newpetid, 20, "%d", petids_iter->second);
-
-                if (!ChangeNth(line, 1, newpetid))
-                {
-                    TC_LOG_ERROR("network", "LoadPlayerDump: pet line: '%s'!", line.c_str());
+                    TC_LOG_ERROR("network", "LoadPlayerDump: missing pet child reference");
                     return DUMP_FILE_BROKEN;
                 }
                 break;

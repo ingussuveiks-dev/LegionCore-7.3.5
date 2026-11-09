@@ -47,6 +47,7 @@ enum DumpTableType
     DTT_ARTI_TABLE,     // <- item guids                    // item_instance_artifact, item_instance_artifact_powers
     DTT_CHAR_TRANSMOG,  // <- guid                          // character_transmog_outfits
 
+    DTT_PET_DECLINED_NAME, // pet id followed by owner, then grammatical names
     DTT_PET,            //    -> pet guids collection       // character_pet
     DTT_PET_TABLE,      // <- pet guids                     // pet_aura, pet_spell, pet_spell_cooldown
 
