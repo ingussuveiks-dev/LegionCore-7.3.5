@@ -3452,19 +3452,35 @@ class spell_monk_breath_of_fire : public SpellScript
     {
         if (Unit* caster = GetCaster())
         {
+            uint32 mapId = caster->GetMapId();
+            uint32 instanceId = caster->GetInstanceId();
             if (caster->HasAura(213183)) // Dragonfire Brew
             {
-                caster->AddDelayedEvent(600, [caster]() -> void
+                caster->AddDelayedEvent(600, [caster, mapId, instanceId]() -> void
                 {
+                    if (!caster->IsInWorld() || caster->IsPreDelete() ||
+                        caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                        return;
                     caster->CastSpell(caster, 227681, true);
                 });
-                caster->AddDelayedEvent(1200, [caster]() -> void
+                caster->AddDelayedEvent(1200, [caster, mapId, instanceId]() -> void
                 {
+                    if (!caster->IsInWorld() || caster->IsPreDelete() ||
+                        caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                        return;
                     caster->CastSpell(caster, 227681, true);
                 });
             }
             if (caster->HasAura(202272)) // Incendiary Breath (Honor Talent)
-                caster->CastSpellDelay(caster, 202274, true, 200);
+            {
+                caster->AddDelayedCombat(200, [caster, mapId, instanceId]() -> void
+                {
+                    if (!caster->IsInWorld() || caster->IsPreDelete() ||
+                        caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                        return;
+                    caster->CastSpell(caster, 202274, true);
+                });
+            }
 
             if (Player* plr = caster->ToPlayer())
             {
