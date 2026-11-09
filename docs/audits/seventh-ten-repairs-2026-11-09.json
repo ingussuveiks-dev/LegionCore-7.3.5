@@ -1,0 +1,207 @@
+{
+  "date": "2026-11-09",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "92ccd64d1f92c7afc8a00c742a889c75019f4e6b",
+  "support_commit": "45854947bfe40fe03ea130f2f95833d982ce0d7e",
+  "implementation_head": "3826797d2ccb4c4092b7958c1f991bd28880ecba",
+  "fixes": [
+    {
+      "key": "ArtifactCondition",
+      "title": "Evaluate artifact power conditions without truncating the native AP balance",
+      "paths": [
+        "src/server/game/Conditions/ConditionMgr.cpp"
+      ],
+      "audit": "docs/audits/artifact-ap-condition-width-2026-11-09.json",
+      "commit": "3dcc65b0e5a91a901a9ab491c526d9c16048af97"
+    },
+    {
+      "key": "Transport",
+      "title": "Keep the complete saved transport counter through login presence checks",
+      "paths": [
+        "src/server/game/Entities/Player/Player.cpp"
+      ],
+      "audit": "docs/audits/saved-transport-counter-width-2026-11-09.json",
+      "commit": "f9e405846f7074a0445dfdfdff7a3206df0a91ae"
+    },
+    {
+      "key": "Talbot",
+      "title": "Keep Talbot finale owner and native group credit on pet killing blows",
+      "paths": [
+        "src/server/scripts/Northrend/zone_borean_tundra.cpp"
+      ],
+      "audit": "docs/audits/talbot-finale-owner-group-credit-2026-11-09.json",
+      "commit": "2bf359dc2d1dc45ccac5a5c48c38e1e23cf7338a"
+    },
+    {
+      "key": "Netherweb",
+      "title": "Resolve the eligible player owner for mob_netherweb_victim death continuation",
+      "paths": [
+        "src/server/scripts/Outland/zone_terokkar_forest.cpp"
+      ],
+      "audit": "docs/audits/netherweb-rescue-owner-credit-2026-11-09.json",
+      "commit": "3b4f7531c90da35db964b59e8eb42cf94e8f02f2"
+    },
+    {
+      "key": "Nerubar",
+      "title": "Resolve the eligible player owner for mob_nerubar_victim death continuation",
+      "paths": [
+        "src/server/scripts/Northrend/zone_borean_tundra.cpp"
+      ],
+      "audit": "docs/audits/nerubar-rescue-owner-credit-2026-11-09.json",
+      "commit": "a4065fee6f3f8efaf0cb0e0b49afb7dea32bf7f5"
+    },
+    {
+      "key": "Beliash",
+      "title": "Resolve the eligible player owner for npc_q93221_beliash death continuation",
+      "paths": [
+        "src/server/scripts/Legion/mardum.cpp"
+      ],
+      "audit": "docs/audits/beliash-death-owner-continuation-2026-11-09.json",
+      "commit": "39e2777d74e7063fecf68ceb8d3b2142f5d279c9"
+    },
+    {
+      "key": "Caza",
+      "title": "Resolve the eligible player owner for npc_q39495_caza death continuation",
+      "paths": [
+        "src/server/scripts/Legion/mardum.cpp"
+      ],
+      "audit": "docs/audits/caza-death-owner-continuation-2026-11-09.json",
+      "commit": "083f11630f7feb6b4f66cfe5ccbf4051de239a12"
+    },
+    {
+      "key": "Prolifica",
+      "title": "Resolve the eligible player owner for npc_q39495_prolifica death continuation",
+      "paths": [
+        "src/server/scripts/Legion/mardum.cpp"
+      ],
+      "audit": "docs/audits/prolifica-death-owner-outro-2026-11-09.json",
+      "commit": "fa9fe5d4de09cf194bc0f3351da6589cae5280c4"
+    },
+    {
+      "key": "Immolanth",
+      "title": "Resolve the eligible player owner for npc_q39683 death continuation",
+      "paths": [
+        "src/server/scripts/Legion/warden_prison.cpp"
+      ],
+      "audit": "docs/audits/immolanth-death-owner-continuation-2026-11-09.json",
+      "commit": "9556d24e33d07bf69b26a5eaf9b23f8508951eee"
+    },
+    {
+      "key": "Bastillax",
+      "title": "Resolve the eligible player owner for npc_q39694 death continuation",
+      "paths": [
+        "src/server/scripts/Legion/warden_prison.cpp"
+      ],
+      "audit": "docs/audits/bastillax-death-owner-continuation-2026-11-09.json",
+      "commit": "3826797d2ccb4c4092b7958c1f991bd28880ecba"
+    }
+  ],
+  "counting": "Exactly10 independent selected problems:Condition57 AP width,saved transport counter presence,and8 distinct death continuations(Netherweb,Nerubar,Talbot,Beliash,Caza,Prolifica,Immolanth,Bastillax). Talbot includes actual source and2rescues include action-success prerequisite;these complete their selected lifecycle fixes,not extra counted problems.10separate implementation commits/6production files;support/archive/handoff commits not counted.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "6ae65ef662b02d7a7adde6f3474808145d25a21592eb9626486fe49801af83e2",
+    "bnet_sha256": "7dac9f8462b45fb6037db18402903bb0a99305ea093625bcc8f15e3d065da630",
+    "rollback": ".codex/release-before-seventh-ten-fixes-2026-11-09",
+    "owned_startup": "Owned PID28664 fresh ready,server shutdown0,exit0,gone,stderr empty;protected config/cert/DLL hashes unchanged;no user process stopped."
+  },
+  "validation": {
+    "source": "Test-SeventhTenRepairs.ps1:10 pinned92ccd64d1 original-behavior counterfactuals paired with10 repaired MSVC-ASAN cases. Entire selected death callbacks,entire Condition57 switch case,and actual saved-transport declaration/fallback branch extracted. External actors/quest/group/cast/conversation endpoints controlled. Final suite rerun after native Talbot API inspection and actual NPC96783 name correction. Not full-core ASAN/client traversal.",
+    "native": "Test-MagnarReadinessNative -AdditionalProbe SeventhTenNative:actual Condition::Meets on real equipped128943 Item checks both64bit AP min/max branches;actual Field64 high-only counter from explicitly quoted SQL decimal.8 exact selected owner assignments run inside24 actual Unit::Kill player/Pet/Guardian death dispatches;original killer GUID retained,second Kill does not dispatch again,null/unowned refused. Full selected NPC death callbacks/cast/group/outro endpoints remain source-modeled. Synthetic profiles/earlier states and controlled dispatch AI;no character save/import.",
+    "release": "Original game.lib/scripts.lib paths rebuilt and final-linked. Staged+canonical verify_seventh_ten_release.py checks8actual owner/null-guard callbacks,Talbot me source,Netherweb successful summon/Nerubar SPELL_CAST_OK before rescue credit,Condition57 both64bit comparison branches,and actual saved transport64bit Field/store/diagnostic. Prior67 paths retained. Canonical Scepter -VerifyReleaseBinary,ScenarioResume -AddressSanitizer -VerifyReleaseBinary and ArtifactTierProgression -VerifyReleaseBinary pass.",
+    "scope": "verify_seventh_ten_scope.py reverses selected metadata edits in6production files to92ccd64d1. No migration or character-data rewrite. Existing quest gates,RNG ranges,recipient radii,actors,dialogue,casts,timers,phase paths and unrelated scripts remain,except selected rescue-success guards and Talbot valid group source.",
+    "runtime": "Every test/build/link/start has canonical+own pre/post crash/log length/timestamp snapshots,exit/stdout/stderr/newDBErrors/server warning/error/assertion review. All final regressions and canonical ready/graceful shutdown0/exit0/gone are clean. Owned canonical PID28664 stopped;no user process stopped;configuration/cert/DLL hashes retained."
+  },
+  "data": "Matching native26972 SpellMgr/Item template128943 and actual local world bindings22355/25284/25301/93221/96441/98986/96682/96783,quests10873/11611/12019/38766/39495/39683/39694. Readonly schema characters.transguid BIGINT UNSIGNED;Condition57 actual12SmartAI rows,max100. Local native Player group reward requires real in-world source. No migrations/character rows read or written. Newer Trinity APIs not transplanted.",
+  "recipient_rules": "Beliash/Bastillax original60yard Player lists retained;Caza/Immolanth original single player endpoint now owner;Prolifica owner-local outro;Talbot actual corpse source uses native group/range/alive rules;rescues retain native KilledMonsterCredit and active quest gates. No nearest-player/new blanket group/item/progression grants.",
+  "scouted_rejected": "Guild XP loader narrowing found,but its vector has no consumer in this core and live data staysbelow2^32;reverted before selecting10and not counted. Other GM ID/legacy speech findings not edited.",
+  "diagnostics": {
+    "final": "Final20 source cases,native Condition57/Field64/24Kill+null-unowned controls,build/link/staged+canonical PE,retained regressions and canonical startup pass to stated scopes. Canonical+own before/after crash/log lengths/timestamps,exit/stdout/stderr,newDBErrors/server warning/error/assertion reviews retained. Active canonical Crashes empty;no world/bnet server remains.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated/outside fixed"
+    },
+    "open_sql_audit": "docs/audits/mariadb-unsigned-cast-open-2026-11-09.json",
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "compiler": {
+      "warnings": 23,
+      "types": {
+        "C4018": 14,
+        "C5055": 8,
+        "C4146": 1
+      },
+      "status": "All23 warned source expressions are present verbatim in92ccd64d1;historical diagnostics remain visible,not certified repaired. No log/check disabled.",
+      "evidence": ".codex/seventh-ten-fixes-2026-11-09/compiler-warnings.json",
+      "sha256": "7cb4d72380604858a4c0f05dcfb813e0d8f620caaf4b9e954342af1f9227dc14"
+    },
+    "development": [
+      "Three ordinary native attempts failed their high-only Field assertion because this MariaDB server returned0 for CAST(4294967296 AS UNSIGNED). Native GetString also saw0;direct native SQL CLI independently returned0/1 for numeric CAST4294967296/4294967297,while bare4294967296 and quoted decimal CAST remain full. Actual Field64 passes with explicitly quoted synthetic decimal. Cause remains OPEN_EXTERNAL_SQL_EXPRESSION,not labeled fixed.82raw snapshots/hash manifest preserved outside fixed;raw native1-3/catalog diagnostics excluded from resolved archive. No DB/server/production-query changes or hidden logs.",
+      "Tracing the full Talbot continuation found original RewardPlayerAndGroupAtEvent(...,0) violates native required in-world source and always returns. Source model int-placeholder initially concealed this;corrected model to Unit* with null refusal,and production now passes actual me while preserving Leryssa/Arlos cleanup. All20 source cases rerun afterward. Full actual Player group eligibility code traced;complete quest/escort/client/group progression remains pending.",
+      "Matching local names identify NPC96783 as Bastillax. Initial internal fixture label Tirathon was corrected before final named20source/native runs without changing any production NPC/script IDs. Caza and Prolifica share39495 but have separate combat/death/outro endpoints and separate commits.",
+      "First PE guard assertion assumed a null branch within4instructions of owner lookup;actual conditional is before the function prologue/register saves. Inspected compiled paths and verify branch skips owner call plus post-call null test,without changing product to satisfy verifier. Final staged/canonical10/prior67 chain returns fully to wrapper.",
+      "Native death fixture deliberately installs controlled dispatch AI executing exact owner assignment instead of full progression/cast/outro callbacks. It proves actual Unit::Kill player/Pet/Guardian/original-killer/exactly-once behavior,not full individual NPC AI traversal. Complete callback bodies are separately source-ASAN tested;native/PE/source/client boundaries remain explicit.",
+      "Readonly schema/binding/quest/name/condition scouting retained locally. Guild XP vector narrowing was reverted as a selected candidate because no current consumer;not counted. Local typed contracts resolved selected changes,so no incompatible modern Trinity transplant or guessed HP/kill timer introduced.",
+      "Reviewed staged diffs/path sets for support and10 focused implementation commits;shared mardum/warden/borean files staged by exact LF patches. All10 individually pushed to origin/main. Runtime logs/config/dumps/character data/original user attachment excluded.",
+      "Final archive review caught a Windows path-filter defect:regex escaped slash without matching backslash,so94OPEN raw copies had also entered fixed. Verified original82OPEN snapshots,then copied/hash-verified all94erroneous fixed snapshots to outside-fixed classification-correction before removing only those fixed copies. Original raw evidence retained. Rewrote fixed manifest to1030resolved/support snapshots,normalized paths for future filtering,and final review verifies both outside-fixed manifests(82+94snapshots) plus exclusion from fixed. No active log truncated."
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/seventh-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "7f22a97369fadf6815aeea4598a9f2b84f21914b5a379f9747fcabef825d30c4",
+    "original_files": 1030,
+    "removed_files": 286,
+    "logical_removed_bytes": 1752381793,
+    "deletion_manifest": ".codex/seventh-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "825f2eb69bf29308b68f4b41911ece2e6b25580f31c5cd9d2d9e742d61043d65",
+    "retained_rollbacks": [
+      ".codex/release-before-seventh-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-sixth-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-sixthcf7855ad generation retired after newest pre-seventh0abb6ede rollback verification",
+    "logs_truncated": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "preserved": "Canonical EXE/MAP/config/certs/DLL/extracted data,required original game/scripts libraries/main incremental cache,reusable regression source,personal/character/database backups,security and OPEN Lady/LINK2/Slaghammer/mixed-log evidence. New82raw SQL-expression snapshots remain outside fixed. Private test configs deleted,not archived. Failed native1-3/catalog raw diagnostics excluded from fixed. SQL reproduction source suffices;no outstanding purpose for redundant test executables.",
+    "postcheck": "Canonical/protected/mixed log hashes retained;active Crashes empty,no world/bnet process;OPEN evidence hashes retained.",
+    "supplemental_evidence": {
+      "snapshots": 225,
+      "manifest": "build-extractors/bin/Release/fixed/seventh-ten-repairs-2026-11-09/final-review/manifest.json",
+      "manifest_sha256": "4fac3676d53b6dbeb8cd2f4afa4fd7c3d09f327fff041e80e9dd53330c33d335",
+      "scope": "Completed archive cleanup/classification correction/final-review diagnostics and task scripts;source/destination/source hashes verified;OPEN catalog/native1-3 raw diagnostics excluded."
+    },
+    "archive_classification_correction": {
+      "Files": 94,
+      "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+      "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+    }
+  },
+  "pending": [
+    "Authentic living Lady activation/surrender/conversation1906/Grash finisher/cleanup remains OPEN;no HP threshold or kill timer invented.",
+    "Shared LINK2,Slaghammer crash/cache,mixed canonical7111-byte DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run,its cache retained.",
+    "MariaDB11.4.9 unquoted numeric CAST discrepancy remains OPEN_EXTERNAL_SQL_EXPRESSION:CAST(4294967296 AS UNSIGNED)->0,CAST(4294967297 AS UNSIGNED)->1;bare number and quoted-decimal CAST retain4294967296. Reproduced through native core and direct CLI. Cause not established;no DB-server/production-query workaround. Raw evidence hash-verified outside fixed at .codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09.",
+    "Actual client/full combat/intro/escort/rescue/visual/audio/group/faction/reentry/failed actor/cast/outro traversal remains pending. Source models and native shared endpoints do not prove full quest chains.",
+    "23 compiler warning occurrences reference expressions present verbatim in92ccd64d1. Inventory retained;historical warnings visible,not certified repaired."
+  ],
+  "stop": "Exactly10 product problems implemented,tested to stated source/native scopes,deployed,committed/individually pushed and cleaned. Stop after final audit/handoff push;no eleventh repair started. OPEN external SQL expression and client/whole-chain checks remain visible."
+}

@@ -29,8 +29,47 @@
     "23 compiler warning occurrences reference expressions present verbatim in92ccd64d1. Inventory retained;historical warnings visible,not certified repaired."
   ],
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE",
-    "archive": "build-extractors/bin/Release/fixed/seventh-ten-repairs-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/seventh-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "7f22a97369fadf6815aeea4598a9f2b84f21914b5a379f9747fcabef825d30c4",
+    "original_files": 1030,
+    "removed_files": 286,
+    "logical_removed_bytes": 1752381793,
+    "deletion_manifest": ".codex/seventh-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "825f2eb69bf29308b68f4b41911ece2e6b25580f31c5cd9d2d9e742d61043d65",
+    "retained_rollbacks": [
+      ".codex/release-before-seventh-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-sixth-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-sixthcf7855ad generation retired after newest pre-seventh0abb6ede rollback verification",
+    "logs_truncated": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "preserved": "Canonical EXE/MAP/config/certs/DLL/extracted data,required original game/scripts libraries/main incremental cache,reusable regression source,personal/character/database backups,security and OPEN Lady/LINK2/Slaghammer/mixed-log evidence. New82raw SQL-expression snapshots remain outside fixed. Private test configs deleted,not archived. Failed native1-3/catalog raw diagnostics excluded from fixed. SQL reproduction source suffices;no outstanding purpose for redundant test executables.",
+    "postcheck": "Canonical/protected/mixed log hashes retained;active Crashes empty,no world/bnet process;OPEN evidence hashes retained.",
+    "supplemental_evidence": {
+      "snapshots": 225,
+      "manifest": "build-extractors/bin/Release/fixed/seventh-ten-repairs-2026-11-09/final-review/manifest.json",
+      "manifest_sha256": "4fac3676d53b6dbeb8cd2f4afa4fd7c3d09f327fff041e80e9dd53330c33d335",
+      "scope": "Completed archive cleanup/classification correction/final-review diagnostics and task scripts;source/destination/source hashes verified;OPEN catalog/native1-3 raw diagnostics excluded."
+    },
+    "archive_classification_correction": {
+      "Files": 94,
+      "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+      "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+    }
   },
-  "batch_audit": "docs/audits/seventh-ten-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/seventh-ten-repairs-2026-11-09.json",
+  "fix_commit": "083f11630f7feb6b4f66cfe5ccbf4051de239a12",
+  "final_scope_metadata_sha256": "2d73ef28c804d233a25d588e60e42b3cc86ffef39a49d2ee174996b7887bcb37"
 }
