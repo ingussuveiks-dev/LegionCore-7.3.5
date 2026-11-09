@@ -92,15 +92,31 @@ public:
             }
         }
 
+        std::map<ObjectGuid, std::shared_ptr<uint8>> entryAttempts;
+
+        void OnPlayerLeave(Player* player) override
+        {
+            if (player)
+                entryAttempts.erase(player->GetGUID());
+        }
+
         void OnPlayerEnter(Player* player) override
         {
             if (!player)
                 return;
 
+            auto attempt = std::make_shared<uint8>(0);
+            entryAttempts[player->GetGUID()] = attempt;
+            std::weak_ptr<uint8> weakAttempt = attempt;
+            uint32 const mapId = player->GetMapId();
+            uint32 const instanceId = player->GetInstanceId();
+
             player->CastSpell(player, 240155);
 
-            player->AddDelayedEvent(5000, [player]() -> void
+            player->AddDelayedEvent(5000, [player, mapId, instanceId, weakAttempt]() -> void
             {
+                if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                    return;
                 player->CastSpell(player, 243303); // summon
 
                 std::list<Creature*> trash;
@@ -108,8 +124,10 @@ public:
                 for (std::list<Creature*>::iterator itr = trash.begin(); itr != trash.end(); ++itr)
                     (*itr)->CastSpell(*itr, 243303); // summon
 
-                player->AddDelayedEvent(4000, [player]() -> void
+                player->AddDelayedEvent(4000, [player, mapId, instanceId, weakAttempt]() -> void
                 {
+                    if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                        return;
                     player->RemoveAura(240188);
                     player->CreateConversation(4526);
                 });

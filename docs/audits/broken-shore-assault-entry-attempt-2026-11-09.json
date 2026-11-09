@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "AssaultEntry",
+  "base": "f382f0c19e5b3b9702e6d580b7f649b8662e1e7a",
+  "support_commit": "8bde88b9de0b7628674587e752fbef70690bb5ab",
+  "paths": [
+    "src/server/scripts/Scenario/AssaultBrokenShore/instance_AssaultBrokenShore.cpp"
+  ],
+  "cause": "Five-second and nested four-second Player callbacks could execute in another map or stale entry.",
+  "implementation": "Guard both stages by instance-owned weak entry attempt and original world/map/instance. Leave/reentry cancels old stages;retain240155 immediate,243303 NPC scan50yards,240188 cleanup and4526 at5+4seconds.",
+  "validation": {
+    "source": "Twenty MSVC ASAN cases:ten pinned f382f0c19 expected-broken counterfactuals paired with ten repaired cases. Exact production callback bodies and full selected entry/Dramock methods run against controlled queues/Unit/cast/route/conversation/credit endpoints. Retired storage stays allocated and instrumented;controls do not execute intentional native UAF. Covers missing actors,dead boss,immutable both-faction routes,cocoon cleanup without caster,origin/leave/reentry,current quest changes,nested Assault cancellation,Nighthold late floor and failed-create retry,Dramock Reset/departure/abandonment/duplicate finish. Not actual client traversal.",
+    "native": "Nine selected native cases:Molten actual Unit combat queue and summon GUID lookup,Cathedral two actual ObjectAccessor lookups,Brawlers native faction-value capture,five real Player-queue entry-token/origin guards,and Dramock current native quest/objective/GUID snapshot consumption. Reads matching26972 spells/quests and real47430 objectives. Observed payload endpoints replace encounter casts,movement,conversations and credit;entry quest branches and full Telarn ownership remain source-only. Real departure and instance-token destruction covered. Transient Player/controlled state only;no character saves/full-core ASAN or whole encounter claim.",
+    "release": "Original main game/scripts libraries built at actual final-link inputs;staged and canonical PE verify these ten repairs plus137 prior selected paths. Telarn constructor is inlined in actual GenericCreatureScript factory;it schedules the Creature function queue,not InstanceScript. Ten original-map closures across three invasion,two Assault and two Nighthold stages retain weak-attempt/current-map-instance guards. Canonical Scepter,ArtifactTier,ScenarioResumeASAN and owned canonical fresh ready/graceful shutdown0/exit0/gone pass.",
+    "diagnostics": "Every source/native/build/link/PE/retained/start check has before/after canonical and own crash/log snapshots,exit/stdout/stderr and appended warnings/errors/assertions/DBErrors review. Final checks clean;earlier fixture/PE-assumption failures remain development evidence. Compiler inventory retained. Mixed7111-byte DBErrors remains OPEN/untruncated.",
+    "scope": "Exactly ten independent repairs in ten production files:Molten ability,Brawlers faction route,Cathedral release,three invasion entry controllers,Assault entry,Nighthold entry,Telarn initialization,Dramock roster. All original timers/IDs/native group and faction rules retained. No SQL or character rewrite,no guessed Lady health/kill timer. Multiple callbacks within one authored entry sequence count once."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 complete artifact chains remain OPEN;no default Slaghammer probe or mixed-log truncation.",
+    "MariaDB unsigned CAST:82original+94corrected raw records remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing:26raw records and ninth-batch investigation EXE/symbols retained.",
+    "Actual client Molten channel/raid,cocoon visuals/release/jump,Brawlers both-faction full round,three invasion admission/conversation/travel,Assault actors/spells/nested intro,Nighthold floor/full raid/audio and Telarn encounter,Dramock speech/credit/group/retry require traversal. Pet/guardian/group kill credit paths are unchanged;this batch does not certify them.",
+    "Scouted Antorus eventobject_antorus_into has singleton-wide eventDone consumed before prerequisites and foreign-instance async callbacks. Full per-eventobject/per-instance ownership,retry and summon deduplication need a separate repair;left unchanged and not counted.",
+    "Brawlers count_adds starts0 in constructor and three scripted summons use0..2 in six-entry arrays. Reset does not reset count_adds;reuse may need a separate controller reset/summon-cleanup audit. This batch changes only delayed immutable faction capture and does not certify repeated Reset lifecycle."
+  ],
+  "canonical_world_sha256": "418a4825affb739eddf1dc60d606e6734b65c9424e83baa2e332df44ea9952de",
+  "patch_sha256": "b3f247bb6afa55e2abdb13eb243d40eac8a0129f08512166d16e71aeb219642a",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/fourteenth-ten-repairs-2026-11-09.json"
+}
