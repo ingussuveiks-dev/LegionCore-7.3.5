@@ -1,0 +1,172 @@
+[
+  {
+    "key": "Molten",
+    "title": "Resolve the Molten Touch summon before the delayed channel",
+    "paths": [
+      "src/server/scripts/Legion/AntorusTheBurningThrone/boss_felhounds.cpp"
+    ],
+    "cls": "npc_felhounds_fharg",
+    "method": "UpdateAI",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_felhounds.cpp",
+        "old": "me->AddDelayedCombat(1800, [this, summon]() -> void\n                            {\n                                if (summon)",
+        "new": "me->AddDelayedCombat(1800, [this, summonGuid = summon->GetGUID()]() -> void\n                            {\n                                if (!me->IsAlive())\n                                    return;\n                                if (Creature* summon = ObjectAccessor::GetCreature(*me, summonGuid))",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "Brawler",
+    "title": "Retain faction values instead of a player pointer in Brawlers route callbacks",
+    "paths": [
+      "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp"
+    ],
+    "cls": "boss_brawguild_master",
+    "method": "JustSummoned",
+    "edits": [
+      {
+        "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp",
+        "old": "summon->AddDelayedEvent(47000, [summon, player] () -> void\n                    {\n                        summon->GetMotionMaster()->Clear();\n                        summon->GetMotionMaster()->MovePath(player->GetTeamId() == TEAM_ALLIANCE ? a_WP[urand(0, 5)] :  h_WP[urand(0, 5)], false);\n                    });",
+        "new": "summon->AddDelayedEvent(47000, [summon, team = player->GetTeamId()] () -> void\n                    {\n                        summon->GetMotionMaster()->Clear();\n                        summon->GetMotionMaster()->MovePath(team == TEAM_ALLIANCE ? a_WP[urand(0, 5)] : h_WP[urand(0, 5)], false);\n                    });",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "Cocoon",
+    "title": "Resolve Cathedral cocoon and caster at spider release",
+    "paths": [
+      "src/server/scripts/Legion/CathedralEternalNight/cathedral_of_eternal_night.cpp"
+    ],
+    "cls": "spell_coen_summon_spider",
+    "method": "HandleAfterCast",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/CathedralEternalNight/cathedral_of_eternal_night.cpp",
+        "old": "spider->AddDelayedEvent(10000, [spider, kokon, caster] () -> void\n                            {\n                                if (!kokon || !spider)\n                                    return;\n                                \n                                spider->CastSpell(kokon, 116894);\n                                kokon->DespawnOrUnsummon(3000);\n                                spider->GetMotionMaster()->MoveJump(spider->GetPositionX(), spider->GetPositionY(), caster->GetPositionZ(), 50, 50);\n                            });",
+        "new": "spider->AddDelayedEvent(10000, [spider, cocoonGuid = kokon->GetGUID(), casterGuid = caster->GetGUID()] () -> void\n                            {\n                                Creature* kokon = ObjectAccessor::GetCreature(*spider, cocoonGuid);\n                                if (!kokon)\n                                    return;\n\n                                spider->CastSpell(kokon, 116894);\n                                kokon->DespawnOrUnsummon(3000);\n                                if (Unit* caster = ObjectAccessor::GetUnit(*spider, casterGuid))\n                                    spider->GetMotionMaster()->MoveJump(spider->GetPositionX(), spider->GetPositionY(), caster->GetPositionZ(), 50, 50);\n                            });",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "StormEntry",
+    "title": "Cancel stale Stormheim invasion entry callbacks",
+    "paths": [
+      "src/server/scripts/Scenario/LegionInvasion/Stormheim/instance_InvasionStormheim.cpp"
+    ],
+    "cls": "instance_invasion_stormheim_InstanceMapScript",
+    "method": "OnPlayerEnter",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/LegionInvasion/Stormheim/instance_InvasionStormheim.cpp",
+        "old": "void OnPlayerEnter(Player* player) override\n        {\n            if (!player)\n                return;\n\n            if (player->GetQuestStatus(46110) != QUEST_STATUS_INCOMPLETE)\n            {\n                player->AddDelayedEvent(2000, [player]() -> void\n                {\n                    player->TeleportTo(1220, -834.95f, 4277.59f, 746.25f, 1.0f);\n                });\n                return;\n            }\n\n            player->AddDelayedEvent(5000, [player] () -> void\n            {\n                player->CreateConversation(4527);\n            });\n        }",
+        "new": "std::map<ObjectGuid, std::shared_ptr<uint8>> entryAttempts;\n\n        void OnPlayerLeave(Player* player) override\n        {\n            if (player)\n                entryAttempts.erase(player->GetGUID());\n        }\n\n        void OnPlayerEnter(Player* player) override\n        {\n            if (!player)\n                return;\n\n            auto attempt = std::make_shared<uint8>(0);\n            entryAttempts[player->GetGUID()] = attempt;\n            std::weak_ptr<uint8> weakAttempt = attempt;\n            uint32 const mapId = player->GetMapId();\n            uint32 const instanceId = player->GetInstanceId();\n\n            if (player->GetQuestStatus(46110) != QUEST_STATUS_INCOMPLETE)\n            {\n                player->AddDelayedEvent(2000, [player, mapId, instanceId, weakAttempt]() -> void\n                {\n                    if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                        return;\n                    if (player->GetQuestStatus(46110) == QUEST_STATUS_INCOMPLETE)\n                        return;\n                    player->TeleportTo(1220, -834.95f, 4277.59f, 746.25f, 1.0f);\n                });\n                return;\n            }\n\n            player->AddDelayedEvent(5000, [player, mapId, instanceId, weakAttempt]() -> void\n            {\n                if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                    return;\n                if (player->GetQuestStatus(46110) != QUEST_STATUS_INCOMPLETE)\n                    return;\n                player->CreateConversation(4527);\n            });\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "AzsunaEntry",
+    "title": "Cancel stale Azsuna invasion entry callbacks",
+    "paths": [
+      "src/server/scripts/Scenario/LegionInvasion/Azsuna/instance_InvasionAzsuna.cpp"
+    ],
+    "cls": "instance_InvasionAzsuna_InstanceMapScript",
+    "method": "OnPlayerEnter",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/LegionInvasion/Azsuna/instance_InvasionAzsuna.cpp",
+        "old": "void OnPlayerEnter(Player* player) override\n        {\n            if (!player)\n                return;\n\n            if (player->GetQuestStatus(46199) != QUEST_STATUS_INCOMPLETE)\n            {\n                player->AddDelayedEvent(2000, [player]() -> void\n                {\n                    player->TeleportTo(1220, -834.95f, 4277.59f, 746.25f, 1.0f);\n                });\n                return;\n            }\n            \n            player->AddDelayedEvent(5000, [player]() -> void\n            {\n                player->CreateConversation(4587);\n            });\n        }",
+        "new": "std::map<ObjectGuid, std::shared_ptr<uint8>> entryAttempts;\n\n        void OnPlayerLeave(Player* player) override\n        {\n            if (player)\n                entryAttempts.erase(player->GetGUID());\n        }\n\n        void OnPlayerEnter(Player* player) override\n        {\n            if (!player)\n                return;\n\n            auto attempt = std::make_shared<uint8>(0);\n            entryAttempts[player->GetGUID()] = attempt;\n            std::weak_ptr<uint8> weakAttempt = attempt;\n            uint32 const mapId = player->GetMapId();\n            uint32 const instanceId = player->GetInstanceId();\n\n            if (player->GetQuestStatus(46199) != QUEST_STATUS_INCOMPLETE)\n            {\n                player->AddDelayedEvent(2000, [player, mapId, instanceId, weakAttempt]() -> void\n                {\n                    if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                        return;\n                    if (player->GetQuestStatus(46199) == QUEST_STATUS_INCOMPLETE)\n                        return;\n                    player->TeleportTo(1220, -834.95f, 4277.59f, 746.25f, 1.0f);\n                });\n                return;\n            }\n\n            player->AddDelayedEvent(5000, [player, mapId, instanceId, weakAttempt]() -> void\n            {\n                if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                    return;\n                if (player->GetQuestStatus(46199) != QUEST_STATUS_INCOMPLETE)\n                    return;\n                player->CreateConversation(4587);\n            });\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "HMEntry",
+    "title": "Cancel stale HighMountain invasion entry callbacks",
+    "paths": [
+      "src/server/scripts/Scenario/LegionInvasion/HighMountain/instance_InvasionHM.cpp"
+    ],
+    "cls": "instance_invasion_HM_InstanceMapScript",
+    "method": "OnPlayerEnter",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/LegionInvasion/HighMountain/instance_InvasionHM.cpp",
+        "old": "void OnPlayerEnter(Player* player) override\n        {\n            if (!player)\n                return;\n            \n            if (player->GetQuestStatus(46182) != QUEST_STATUS_INCOMPLETE)\n            {\n                player->AddDelayedEvent(2000, [player]() -> void\n                {\n                    player->TeleportTo(1220, -834.95f, 4277.59f, 746.25f, 1.0f);\n                });\n                return;\n            }\n\n            player->AddDelayedEvent(5000, [player]() -> void\n            {\n                player->CreateConversation(4676);\n            });\n        }",
+        "new": "std::map<ObjectGuid, std::shared_ptr<uint8>> entryAttempts;\n\n        void OnPlayerLeave(Player* player) override\n        {\n            if (player)\n                entryAttempts.erase(player->GetGUID());\n        }\n\n        void OnPlayerEnter(Player* player) override\n        {\n            if (!player)\n                return;\n\n            auto attempt = std::make_shared<uint8>(0);\n            entryAttempts[player->GetGUID()] = attempt;\n            std::weak_ptr<uint8> weakAttempt = attempt;\n            uint32 const mapId = player->GetMapId();\n            uint32 const instanceId = player->GetInstanceId();\n\n            if (player->GetQuestStatus(46182) != QUEST_STATUS_INCOMPLETE)\n            {\n                player->AddDelayedEvent(2000, [player, mapId, instanceId, weakAttempt]() -> void\n                {\n                    if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                        return;\n                    if (player->GetQuestStatus(46182) == QUEST_STATUS_INCOMPLETE)\n                        return;\n                    player->TeleportTo(1220, -834.95f, 4277.59f, 746.25f, 1.0f);\n                });\n                return;\n            }\n\n            player->AddDelayedEvent(5000, [player, mapId, instanceId, weakAttempt]() -> void\n            {\n                if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                    return;\n                if (player->GetQuestStatus(46182) != QUEST_STATUS_INCOMPLETE)\n                    return;\n                player->CreateConversation(4676);\n            });\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "AssaultEntry",
+    "title": "Cancel stale Broken Shore assault intro stages",
+    "paths": [
+      "src/server/scripts/Scenario/AssaultBrokenShore/instance_AssaultBrokenShore.cpp"
+    ],
+    "cls": "instance_AssaultBrokenShore_InstanceMapScript",
+    "method": "OnPlayerEnter",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/AssaultBrokenShore/instance_AssaultBrokenShore.cpp",
+        "old": "void OnPlayerEnter(Player* player) override\n        {\n            if (!player)\n                return;\n\n            player->CastSpell(player, 240155);\n\n            player->AddDelayedEvent(5000, [player]() -> void\n            {\n                player->CastSpell(player, 243303); // summon\n\n                std::list<Creature*> trash;\n                GetCreatureListWithEntryInGrid(trash, player, 118412, 50.0f);\n                for (std::list<Creature*>::iterator itr = trash.begin(); itr != trash.end(); ++itr)\n                    (*itr)->CastSpell(*itr, 243303); // summon\n\n                player->AddDelayedEvent(4000, [player]() -> void\n                {\n                    player->RemoveAura(240188);\n                    player->CreateConversation(4526);\n                });\n            });\n        }",
+        "new": "std::map<ObjectGuid, std::shared_ptr<uint8>> entryAttempts;\n\n        void OnPlayerLeave(Player* player) override\n        {\n            if (player)\n                entryAttempts.erase(player->GetGUID());\n        }\n\n        void OnPlayerEnter(Player* player) override\n        {\n            if (!player)\n                return;\n\n            auto attempt = std::make_shared<uint8>(0);\n            entryAttempts[player->GetGUID()] = attempt;\n            std::weak_ptr<uint8> weakAttempt = attempt;\n            uint32 const mapId = player->GetMapId();\n            uint32 const instanceId = player->GetInstanceId();\n\n            player->CastSpell(player, 240155);\n\n            player->AddDelayedEvent(5000, [player, mapId, instanceId, weakAttempt]() -> void\n            {\n                if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                    return;\n                player->CastSpell(player, 243303); // summon\n\n                std::list<Creature*> trash;\n                GetCreatureListWithEntryInGrid(trash, player, 118412, 50.0f);\n                for (std::list<Creature*>::iterator itr = trash.begin(); itr != trash.end(); ++itr)\n                    (*itr)->CastSpell(*itr, 243303); // summon\n\n                player->AddDelayedEvent(4000, [player, mapId, instanceId, weakAttempt]() -> void\n                {\n                    if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                        return;\n                    player->RemoveAura(240188);\n                    player->CreateConversation(4526);\n                });\n            });\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "NightholdEntry",
+    "title": "Scope Nighthold floor recovery and intro to the current entry",
+    "paths": [
+      "src/server/scripts/Legion/TheNighthold/instance_the_nighthold.cpp"
+    ],
+    "cls": "instance_the_nightnold_InstanceMapScript",
+    "method": "OnPlayerEnter",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/instance_the_nighthold.cpp",
+        "old": "void OnPlayerEnter(Player* player) override\n        {\n            if (player)\n            {\n                if (GetBossState(DATA_KROSUS) != IN_PROGRESS && player->IsAlive() && player->IsWithinBox({-61.94f, 2814.45f, 3.16f }, 60.f, 60.f, 5.0f))\n                {\n                    player->AddDelayedEvent(500, [player]() -> void\n                    {\n                        player->NearTeleportTo(player->GetPositionX(), player->GetPositionY(), 3.2f, player->GetOrientation());\n                    });\n                }\n            }\n\n            if (!player || GetBossState(DATA_SKORPYRON) != NOT_STARTED || introDone)\n                return;\n\n            player->AddDelayedEvent(9000, [player]() -> void\n            {\n                player->CreateConversation(4119);\n            });\n            \n            introDone = true;\n        }",
+        "new": "std::map<ObjectGuid, std::shared_ptr<uint8>> entryAttempts;\n\n        void OnPlayerLeave(Player* player) override\n        {\n            if (player)\n                entryAttempts.erase(player->GetGUID());\n        }\n\n        void OnPlayerEnter(Player* player) override\n        {\n            if (!player)\n                return;\n\n            auto attempt = std::make_shared<uint8>(0);\n            entryAttempts[player->GetGUID()] = attempt;\n            std::weak_ptr<uint8> weakAttempt = attempt;\n            uint32 const mapId = player->GetMapId();\n            uint32 const instanceId = player->GetInstanceId();\n\n            if (GetBossState(DATA_KROSUS) != IN_PROGRESS && player->IsAlive() && player->IsWithinBox({-61.94f, 2814.45f, 3.16f}, 60.f, 60.f, 5.0f))\n            {\n                player->AddDelayedEvent(500, [player, mapId, instanceId, weakAttempt]() -> void\n                {\n                    if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                        return;\n                    auto script = static_cast<instance_the_nightnold_InstanceMapScript*>(player->GetInstanceScript());\n                    if (script && script->GetBossState(DATA_KROSUS) != IN_PROGRESS && player->IsAlive() && player->IsWithinBox({-61.94f, 2814.45f, 3.16f}, 60.f, 60.f, 5.0f))\n                        player->NearTeleportTo(player->GetPositionX(), player->GetPositionY(), 3.2f, player->GetOrientation());\n                });\n            }\n\n            if (GetBossState(DATA_SKORPYRON) != NOT_STARTED || introDone)\n                return;\n\n            player->AddDelayedEvent(9000, [player, mapId, instanceId, weakAttempt]() -> void\n            {\n                if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                    return;\n                auto script = static_cast<instance_the_nightnold_InstanceMapScript*>(player->GetInstanceScript());\n                if (!script || script->introDone || script->GetBossState(DATA_SKORPYRON) != NOT_STARTED)\n                    return;\n                Conversation* conversation = new Conversation;\n                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 4119, player, nullptr, *player))\n                    delete conversation;\n                else\n                    script->introDone = true;\n            });\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "Telarn",
+    "title": "Keep Telarn delayed initialization on the creature lifetime",
+    "paths": [
+      "src/server/scripts/Legion/TheNighthold/boss_high_botanist_telarn.cpp"
+    ],
+    "cls": "boss_high_botanist_telarn",
+    "method": "constructor",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_high_botanist_telarn.cpp",
+        "old": "instance->AddDelayedEvent(500, [=] () -> void { Init(); });",
+        "new": "me->AddDelayedEvent(500, [this] () -> void { if (me->IsAlive()) Init(); });",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "Dramock",
+    "title": "Resolve eligible Dramock participants once at the native credit stage",
+    "paths": [
+      "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp"
+    ],
+    "cls": "npc_dramock",
+    "method": "all",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp",
+        "old": "struct npc_dramock: ScriptedAI\n{\n    explicit npc_dramock(Creature* creature) : ScriptedAI(creature) {}\n\n    EventMap events;\n    std::list<Player*> playerList;\n    std::list<ObjectGuid> playerGUIDs;\n    bool useEvent;\n\n    void Reset() override\n    {\n        DoCast(243958);\n\n        events.Reset();\n        playerList.clear();\n        playerGUIDs.clear();\n        useEvent = false;\n    }\n\n    void MoveInLineOfSight(Unit* who) override\n    {\n        if (!who->IsPlayer())\n            return;\n\n        if (me->GetDistance(who) > 15.0f)\n            return;\n\n        if (who->ToPlayer()->GetQuestStatus(47430) != QUEST_STATUS_INCOMPLETE)\n            return;\n\n        uint32 credit = who->ToPlayer()->GetQuestObjectiveData(47430, me->GetEntry());\n\n        if (credit != 1)\n        {\n            if (!useEvent)\n            {\n                useEvent = true;\n                credit = 0;\n\n                me->AddDelayedEvent(500, [=]() -> void\n                {\n                    playerGUIDs.clear();\n                    playerList.clear();\n\n                    GetPlayerListInGrid(playerList, me, 15.0f);\n                    if (!playerList.empty())\n                        for (auto& player : playerList)\n                            if (player->GetQuestStatus(47430) == QUEST_STATUS_INCOMPLETE)\n                                playerGUIDs.push_back(player->GetGUID());\n\n                    for (auto& guid : playerGUIDs)\n                        Talk(0, guid);\n\n                    events.RescheduleEvent(EVENT_1, 4000);\n                });\n            }\n        }\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        events.Update(diff);\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n            case EVENT_1:\n                for (auto& guid : playerGUIDs)\n                    Talk(1, guid);\n\n                events.RescheduleEvent(EVENT_2, 6000);\n                break;\n            case EVENT_2:\n                for (auto& guid : playerGUIDs)\n                    Talk(2, guid);\n\n                events.RescheduleEvent(EVENT_3, 7000);\n                break;\n            case EVENT_3:\n                for (auto& guid : playerGUIDs)\n                    Talk(3, guid);\n\n                events.RescheduleEvent(EVENT_4, 7000);\n                break;\n            case EVENT_4:\n                Talk(4);\n                events.RescheduleEvent(EVENT_5, 5000);\n                break;\n            case EVENT_5:\n                useEvent = false;\n\n                if (!playerList.empty())\n                    for (auto& player : playerList)\n                        player->KilledMonsterCredit(me->GetEntry());\n                break;\n            }\n        }\n    }\n}",
+        "new": "struct npc_dramock: ScriptedAI\n{\n    explicit npc_dramock(Creature* creature) : ScriptedAI(creature) {}\n\n    EventMap events;\n    std::list<ObjectGuid> playerGUIDs;\n    bool useEvent = false;\n    uint64 observationGeneration = 0;\n\n    void Reset() override\n    {\n        DoCast(243958);\n\n        events.Reset();\n        ++observationGeneration;\n        playerGUIDs.clear();\n        useEvent = false;\n    }\n\n    void MoveInLineOfSight(Unit* who) override\n    {\n        if (!who->IsPlayer())\n            return;\n\n        if (me->GetDistance(who) > 15.0f)\n            return;\n\n        if (who->ToPlayer()->GetQuestStatus(47430) != QUEST_STATUS_INCOMPLETE)\n            return;\n\n        uint32 credit = who->ToPlayer()->GetQuestObjectiveData(47430, me->GetEntry());\n\n        if (credit != 1)\n        {\n            if (!useEvent)\n            {\n                useEvent = true;\n                credit = 0;\n\n                me->AddDelayedEvent(500, [this, generation = ++observationGeneration]() -> void\n                {\n                    if (generation != observationGeneration || !useEvent)\n                        return;\n                    playerGUIDs.clear();\n                    std::list<Player*> playerList;\n\n                    GetPlayerListInGrid(playerList, me, 15.0f);\n                    if (!playerList.empty())\n                        for (auto& player : playerList)\n                            if (player->GetQuestStatus(47430) == QUEST_STATUS_INCOMPLETE)\n                                playerGUIDs.push_back(player->GetGUID());\n\n                    for (auto& guid : playerGUIDs)\n                        Talk(0, guid);\n\n                    events.RescheduleEvent(EVENT_1, 4000);\n                });\n            }\n        }\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        events.Update(diff);\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n            case EVENT_1:\n                for (auto& guid : playerGUIDs)\n                    Talk(1, guid);\n\n                events.RescheduleEvent(EVENT_2, 6000);\n                break;\n            case EVENT_2:\n                for (auto& guid : playerGUIDs)\n                    Talk(2, guid);\n\n                events.RescheduleEvent(EVENT_3, 7000);\n                break;\n            case EVENT_3:\n                for (auto& guid : playerGUIDs)\n                    Talk(3, guid);\n\n                events.RescheduleEvent(EVENT_4, 7000);\n                break;\n            case EVENT_4:\n                Talk(4);\n                events.RescheduleEvent(EVENT_5, 5000);\n                break;\n            case EVENT_5:\n                useEvent = false;\n\n                {\n                    std::list<ObjectGuid> eligiblePlayers;\n                    eligiblePlayers.swap(playerGUIDs);\n                    for (ObjectGuid const& guid : eligiblePlayers)\n                        if (Player* player = ObjectAccessor::GetPlayer(*me, guid))\n                            if (player->GetQuestStatus(47430) == QUEST_STATUS_INCOMPLETE && player->GetQuestObjectiveData(47430, me->GetEntry()) != 1)\n                                player->KilledMonsterCredit(me->GetEntry());\n                }\n                break;\n            }\n        }\n    }\n}",
+        "count": 1
+      }
+    ]
+  }
+]
