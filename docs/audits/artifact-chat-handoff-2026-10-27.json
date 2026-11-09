@@ -1,4 +1,30 @@
 {
+  "latest_warswords_stage_four_2026_11_09": {
+    "audit": "docs/audits/warswords-stage-four-scene-2026-11-09.json",
+    "fix_commit": "5b490fcd2cf2eadd146fd8e60d84121a09dfe5a8",
+    "status": "DEPLOYED; original3s189740 now retains actual1511/944/4 Warrior40043 instance/quest generation. No manual credit/item/quest reset. Paired pinned/native counterfactuals,ASAN38/native12,retained visibility36+72/waves24,actual staged+canonical registered PE/Scepter/seven-lifecycle paths pass. Own15872 ready/graceful0/gone;no new diagnostics.",
+    "cleanup": {
+      "status": "COMPLETE_HASH_VERIFIED",
+      "archive": "build-extractors/bin/Release/fixed/warswords-stage-four-2026-11-09",
+      "archive_manifest_sha256": "a9fec8b43e8e71411d727924ab0a14898a91519852f57fb5e2a4b3914da291e1",
+      "archived_original_files": 457,
+      "removed_files": 66,
+      "logical_removed_bytes": 1243511606,
+      "deletion_manifest": ".codex/warswords-stage-four-2026-11-09/cleanup-deleted.json",
+      "deletion_manifest_sha256": "3c9692d7d70ed283ffba06cc5e1467cde0ea77a3a94e8a6f9c8b8e4dcf19e21b",
+      "retained_rollbacks": [
+        ".codex/release-before-warswords-stage-four-2026-11-09",
+        ".codex/release-before-seven-fixes-2026-11-08",
+        ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+      ],
+      "retained_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;no older user recovery copy deleted",
+      "preserved": "Regression sources/reusable tools,canonical EXEs/MAP/configuration/certificates/DLLs/assets,original required libraries,all OPEN crash/cache/research and mixed log. No Defender/security-boundary change.",
+      "postcheck": "Canonical/protected hashes unchanged;active Crashes empty;no world/bnet running;no log rotated/truncated. No pending deployment or task-owned test server."
+    },
+    "canonical_world_sha256": "55a232ff701b922ef833e11ffee46074b920d244b8d73d13b68558edf2e5ceca",
+    "unresolved": "Authentic living Lady104856/362095 surrender/activation/1906 acceptance/Grash362092 finisher/210247 cleanup remains OPEN;no HP/kill timer invented. Fresh local-source/modernTrinity search and upstream incomplete Lady class did not supply proof. No new video/client review. Preserve LINK2/Slaghammer crash/cache and mixed DBErrors7111/fa3db826 unchanged. Actual client and all36 whole chains remain OPEN.",
+    "next": "Continue authentic Sharasdal living finale if evidence can establish it;otherwise another demonstrable unfinished artifact defect. Previous seven fixes remain deployed. Never use default Test-SlaghammerHandoffNative on the retained OPEN cache."
+  },
   "latest_seven_lifecycle_fixes_2026_11_08": {
   "date": "2026-11-08",
   "request": "Complete about seven additional fixes,then stop and supply a portable new-chat handoff.",

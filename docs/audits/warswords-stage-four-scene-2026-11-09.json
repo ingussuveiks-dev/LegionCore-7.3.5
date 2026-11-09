@@ -22,7 +22,8 @@
   "canonical": {
     "directory": "build-extractors/bin/Release",
     "world_sha256": "55a232ff701b922ef833e11ffee46074b920d244b8d73d13b68558edf2e5ceca",
-    "rollback": ".codex/release-before-warswords-stage-four-2026-11-09"
+    "rollback": ".codex/release-before-warswords-stage-four-2026-11-09",
+    "bnet_sha256": "4cf26c5ed944a1c82df8f240a2bf9daab740186644cccc76d8c3fc146920a29d"
   },
   "diagnostics": {
     "result": "Before/after canonical and own-runtime crash/log snapshots,exit/stdout/stderr review for every test/build/link/start. Final checks have no new/changed crash,appended DBErrors or unexplained server warning/error/assertion;canonical active Crashes empty.",
@@ -36,13 +37,29 @@
     ]
   },
   "cleanup": {
-    "status": "PENDING_HASH_VERIFIED_ARCHIVE_AND_TEMPORARY_OUTPUT_CLEANUP",
-    "planned_archive": "build-extractors/bin/Release/fixed/warswords-stage-four-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/warswords-stage-four-2026-11-09",
+    "archive_manifest_sha256": "a9fec8b43e8e71411d727924ab0a14898a91519852f57fb5e2a4b3914da291e1",
+    "archived_original_files": 457,
+    "removed_files": 66,
+    "logical_removed_bytes": 1243511606,
+    "deletion_manifest": ".codex/warswords-stage-four-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "3c9692d7d70ed283ffba06cc5e1467cde0ea77a3a94e8a6f9c8b8e4dcf19e21b",
+    "retained_rollbacks": [
+      ".codex/release-before-warswords-stage-four-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "retained_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;no older user recovery copy deleted",
+    "preserved": "Regression sources/reusable tools,canonical EXEs/MAP/configuration/certificates/DLLs/assets,original required libraries,all OPEN crash/cache/research and mixed log. No Defender/security-boundary change.",
+    "postcheck": "Canonical/protected hashes unchanged;active Crashes empty;no world/bnet running;no log rotated/truncated. No pending deployment or task-owned test server."
   },
   "pending": [
     "Actual client Warswords fourth-stage scene/audio/timing,departure/re-entry/abandon/retake interactions and whole40043/944 remain separate;no client was operated.",
     "Sharasdal living Lady104856/362095 activation/surrender threshold,accepted209552/1906,Grash105298/362092 finisher and210247 cleanup remain OPEN. Current source and fresh upstream Lady class still provide no authentic complete producer;no threshold,kill timer or progression was invented. Retained native assets/video research is historical evidence,not new video viewing.",
     "Shared LINK2/Slaghammer evidence,other client checks and all36 whole artifact chains remain OPEN."
   ],
-  "continuation": "Continue authentic living-Lady evidence when available,or another independently demonstrable unfinished artifact defect. Prior seven lifecycle fixes remain deployed;do not rerun the default Slaghammer handoff probe or clear the mixed log."
+  "living_lady_reference": {"url":"https://raw.githubusercontent.com/dufernst/LegionCore-7.3.5/master/src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp","review":"Full upstream Lady class lines675..787 reviewed on2026-11-09;older combat/death implementation has no surrender/209457/1906/209487 producer. Not adopted. Local26972/World/assets conclusions are retained Oct31/Nov8 evidence,not new native catalogue executions in this turn."},
+  "continuation": "Continue authentic living-Lady evidence when available,or another independently demonstrable unfinished artifact defect. Prior seven lifecycle fixes remain deployed;do not rerun the default Slaghammer handoff probe or clear the mixed log.",
+  "fix_commit": "5b490fcd2cf2eadd146fd8e60d84121a09dfe5a8"
 }
