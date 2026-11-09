@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Comet",
+  "scope": {
+    "key": "Comet",
+    "file": "spell_mage.cpp",
+    "cls": "spell_mage_comet_storm",
+    "spell": 153595,
+    "title": "Keep delayed Comet Storm impacts on their original map"
+  },
+  "base": "50b42e107",
+  "support_commit": "9fc679b169b7a95486a30e09bf5832cc096d8542",
+  "cause": "Seven150ms-spaced queued XYZ impacts execute against the caster current map;teleporting can apply old coordinates in another map or instance.",
+  "implementation": "Snapshot original caster map+instance and require inWorld/non-predelete/same origin before each native228601 cast. Keep seven impacts,150ms schedule,random spread and original death/native cast handling.",
+  "validation": {
+    "source_command": "tools/tests/Test-NextTenSpellRepairs.ps1 -Case Comet (also -Baseline)",
+    "coverage": "Paired full-class/native FunctionProcessor ASAN matrix for map/instance switch,world loss,predelete,death and unchanged origin,deadline,seven impacts and no duplicates;actual full class compiles against core and compiled registration/closure checked. Cast/world endpoints modeled.",
+    "native_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe NextTenSpellNative",
+    "native_total": "14live bindings/ten names,matching26972 DB2+read-only hotfix;24 registered Flask casts and8 controlled native aura/cooldown contexts. Not full-core ASAN or client traversal.",
+    "scope": "Five whole production files match50b42e107 outside exactly ten selected complete classes;all other classes and registrations retained.",
+    "release": "Original scripts.lib dependencies,no global OutDir;staged/canonical ten-repair PE plus previous17 paths pass. Canonical Scepter and Warlock regressions pass.",
+    "startup": "Owned canonical25956 fresh ready,server shutdown0,exit0,gone,stderr empty;no user process stopped/configuration changed."
+  },
+  "canonical_world_sha256": "ed56fd0f6523cf9767f02ecc8aaa12d9dfab914d5100fc3c01d4aebd116b4d87",
+  "tested_class_sha256": "8d9f4fcc8e3f5d979c8a2b26430fadf714f509b34ac211474a1a09a458af4c0c",
+  "diagnostics": "Every test/build/link/start has canonical+own pre/post crash/log snapshots and reviewed exit/stdout/stderr. Final tests have no new crash/appended DBErrors/server warning/error/assertion. Counterfactual ASAN faults are expected-broken baselines paired with repaired passes. Native fixture missing spell-bonus initialization was traced and repaired;see batch audit for full development evidence.",
+  "client_pending": "Actual Mage comet impacts,failed cast/native hit handling,death,timing/visuals and map transitions.",
+  "progression": "No SQL,character reset,HP threshold,kill timer or quest/loot grant added. Existing native spell hit/credit/group rules retained;Unit queue owners can be player/pet/guardian/NPC. This does not certify every combat alternative in the client.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/next-ten-spell-repairs-2026-11-09"
+  },
+  "shared_open": "Living Lady/authentic1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors and all36 whole chains remain OPEN. No default Slaghammer probe or active-log truncation.",
+  "batch_audit": "docs/audits/next-ten-spell-repairs-2026-11-09.json"
+}

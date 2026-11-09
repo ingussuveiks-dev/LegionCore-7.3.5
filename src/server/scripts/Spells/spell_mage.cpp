@@ -665,13 +665,18 @@ class spell_mage_comet_storm : public SpellScript
         if (!caster || !destination)
             return;
 
+        uint32 mapId = caster->GetMapId();
+        uint32 instanceId = caster->GetInstanceId();
         float x = destination->GetPositionX();
         float y = destination->GetPositionY();
         float z = destination->GetPositionZ();
         for (uint8 i = 0; i < 7; ++i)
         {
-            caster->AddDelayedEvent(150 * (i + 1), [caster, x, y, z]() -> void
+            caster->AddDelayedEvent(150 * (i + 1), [caster, x, y, z, mapId, instanceId]() -> void
             {
+                if (!caster->IsInWorld() || caster->IsPreDelete() ||
+                    caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                    return;
                 caster->CastSpell(x + frand(-3.0f, 3.0f), y + frand(-3.0f, 3.0f), z, SPELL_MAGE_COMET_STORM_VISUAL, true);
             });
         }
