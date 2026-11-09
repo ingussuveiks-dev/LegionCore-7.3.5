@@ -534,6 +534,7 @@ struct boss_matron_folnuna : public ScriptedAI
         events.Reset();
         DespawnAllSummons();
         me->RemoveAllAuras();
+        me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetPower(POWER_ENERGY, 0);
         me->SetReactState(REACT_AGGRESSIVE);
@@ -886,10 +887,12 @@ class spell_folnuna_nausea : public AuraScript
 
     void Tick(AuraEffect const* aurEff)
     {
-        if (auto folnuna = GetCaster()->ToCreature())
+        Unit* caster = GetCaster();
+        if (Creature* folnuna = caster ? caster->ToCreature() : nullptr)
         {
             power = folnuna->GetPower(POWER_ENERGY);
             folnuna->SetPower(POWER_ENERGY, power + energy[i]);
+            i = uint32((i + 1) % energy.size());
         }
     }
 
