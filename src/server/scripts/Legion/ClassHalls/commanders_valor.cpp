@@ -60,7 +60,8 @@ class aura_commanders_valor_location : public AuraScript
     PrepareAuraScript(aura_commanders_valor_location);
     void Update(uint32)
     {
-        if (!CommandersValor::Allowed(GetTarget()->ToPlayer()))
+        Unit* owner = GetUnitOwner();
+        if (!CommandersValor::Allowed(owner ? owner->ToPlayer() : nullptr))
             Remove();
     }
     void Register() override { OnAuraUpdate += AuraUpdateFn(aura_commanders_valor_location::Update); }
