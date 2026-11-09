@@ -2473,7 +2473,7 @@ class spell_item_prydaz_abs : public SpellScriptLoader
 
             void CalculateAmount(AuraEffect const* /*aurEff*/, float & amount, bool & /*canBeRecalculated*/)
             {
-                Unit* caster = GetCaster();
+                Unit* caster = GetUnitOwner();
                 if (auto plr = caster ? caster->ToPlayer() : nullptr)
                 {
                     if (plr->isInTankSpec()) // for tank specs
