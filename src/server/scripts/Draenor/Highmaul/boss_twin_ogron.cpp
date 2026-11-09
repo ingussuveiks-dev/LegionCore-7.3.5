@@ -512,6 +512,7 @@ struct boss_twin_ogron_phemos : public BossAI
 
         _Reset();
 
+        me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetPower(POWER_ENERGY, 98);
         me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
