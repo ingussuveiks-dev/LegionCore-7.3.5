@@ -107,25 +107,33 @@ std::string GetTokNth(std::string &str, int n)
 
 bool FindNth(std::string &str, int n, std::string::size_type &s, std::string::size_type &e)
 {
-    s = str.find("VALUES ('")+9;
-    if (s == std::string::npos) return false;
-
-    do
+    auto values = str.find("VALUES ('");
+    if (n < 1 || values == std::string::npos)
+        return false;
+    s = values + 9;
+    for (int field = 1; field <= n; ++field)
     {
-        e = str.find('\'', s);
-        if (e == std::string::npos) return false;
-    } while (str[e-1] == '\\');
-
-    for (int i = 1; i < n; ++i)
-    {
-        do
+        e = s;
+        while (e < str.size() && str[e] != '\'')
         {
-            s = e+4;
-            e = str.find('\'', s);
-            if (e == std::string::npos) return false;
-        } while (str[e-1] == '\\');
+            if (str[e] == '\\')
+            {
+                if (e + 1 >= str.size())
+                    return false;
+                e += 2;
+            }
+            else
+                ++e;
+        }
+        if (e >= str.size())
+            return false;
+        if (field == n)
+            return true;
+        if (str.compare(e, 4, "', '") != 0)
+            return false;
+        s = e + 4;
     }
-    return true;
+    return false;
 }
 
 std::string GetTableName(std::string &str)
