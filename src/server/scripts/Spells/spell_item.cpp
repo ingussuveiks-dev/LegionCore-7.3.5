@@ -1538,22 +1538,26 @@ class spell_item_brewfest_mount_transformation : public SpellScriptLoader
 
             void HandleDummy(SpellEffIndex /* effIndex */)
             {
-                Player* caster = GetCaster()->ToPlayer();
+                Unit* owner = GetCaster();
+                Player* caster = owner ? owner->ToPlayer() : nullptr;
+                if (!caster)
+                    return;
                 if (caster->HasAuraType(SPELL_AURA_MOUNTED))
                 {
+                    bool fastMount = caster->GetSpeedRate(MOVE_RUN) >= 2.0f;
                     caster->RemoveAurasByType(SPELL_AURA_MOUNTED);
                     uint32 spell_id;
 
                     switch (GetSpellInfo()->Id)
                     {
                         case SPELL_BREWFEST_MOUNT_TRANSFORM:
-                            if (caster->GetSpeedRate(MOVE_RUN) >= 2.0f)
+                            if (fastMount)
                                 spell_id = caster->GetTeam() == ALLIANCE ? SPELL_MOUNT_RAM_100 : SPELL_MOUNT_KODO_100;
                             else
                                 spell_id = caster->GetTeam() == ALLIANCE ? SPELL_MOUNT_RAM_60 : SPELL_MOUNT_KODO_60;
                             break;
                         case SPELL_BREWFEST_MOUNT_TRANSFORM_REVERSE:
-                            if (caster->GetSpeedRate(MOVE_RUN) >= 2.0f)
+                            if (fastMount)
                                 spell_id = caster->GetTeam() == HORDE ? SPELL_MOUNT_RAM_100 : SPELL_MOUNT_KODO_100;
                             else
                                 spell_id = caster->GetTeam() == HORDE ? SPELL_MOUNT_RAM_60 : SPELL_MOUNT_KODO_60;

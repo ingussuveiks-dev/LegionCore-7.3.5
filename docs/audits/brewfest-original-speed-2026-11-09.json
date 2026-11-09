@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Brewfest",
+  "scope": {
+    "key": "Brewfest",
+    "file": "spell_item.cpp",
+    "classes": [
+      "spell_item_brewfest_mount_transformation"
+    ],
+    "spell": 49357,
+    "title": "Preserve original mounted speed for Brewfest transformations"
+  },
+  "base": "797cebe2f",
+  "support_commit": "da8b5fe236f270df633c6e72a3ddaf4976664edd",
+  "cause": "The transformation removes mounted auras before comparing current running speed with the existing2.0 threshold. Native Dismount/UpdateMount removes the mount capability speed aura,so a fast mount falls into the slow branch.",
+  "implementation": "Capture fastMount before removal;use that original decision for normal/reverse faction selection. Retain49357/52845 and43900/43899/49379/49378. Safely reject nonplayer/missing casters.",
+  "validation": {
+    "command": "tools/tests/Test-ThirdTenSpellRepairs.ps1 -Case Brewfest (also -Baseline)",
+    "coverage": "Eight modeled faction/normal/reverse/fast/slow combinations pair original always-slow behavior with repaired selection. Real native core demonstrates2->1 on dismount for both controlled races. Native full mount casting is correctly refused on this bare profile with no usable mount capability;selection casts are source-modeled,not native-proven. PE confirms the actual speed2.0 comparison/cached boolean precede RemoveAurasByType and drive later decisions.",
+    "native_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe ThirdTenSpellNative",
+    "native_total": "12live bindings/11classes,two actual mounted/dismounted speed controls and16 actual recipient/model/cleanup/calc/missing-caster-at-Load contexts;earlier profiles/poses/capability controlled,readonly/TEMP database scope,no character saves. Not full-core ASAN.",
+    "source_scope": "Five whole source files equal797cebe2f outside exactly11selected classes/ten problems. Other registrations/shared quest scripts unchanged.",
+    "release": "Original scripts.lib/final-link dependencies,no global OutDir;staged+canonical ten PE paths and prior27 paths retained;canonical Scepter and existing defensive/Shadow regressions pass.",
+    "startup": "Owned28440 fresh canonical ready,shutdown0,exit0,gone,stderr empty;no user process stopped/protected configuration changed."
+  },
+  "canonical_world_sha256": "435bb556058e4c1b2040967c1a9786c63cff705a1e9e90c8491d3f1b5d97de9f",
+  "tested_class_sha256": {
+    "spell_item_brewfest_mount_transformation": "9f2e1ef44f9d582973a297b00532bad9c59551a5b3d7037783fe3c44bba1a1be"
+  },
+  "aura_contract": "Native Aura::GetCaster resolves unit owner directly for ordinary self-casts. Distinct-caster ownership checks intentionally create a supported separate NPC caster and remove that actor. Neither model faults nor these audits claim observed production/client crashes during ordinary self-use.",
+  "diagnostics": "Before/after canonical+own crash/log snapshots and exit/stdout/stderr review for tests/build/link/start. Final tests add no crash/DBErrors/server warning/error/assertion. Original Ocean ASAN baseline is explicitly expected failing;native fixture initialization/admission and PE inlining/adapter mistakes were traced and corrected;details/evidence retained in batch audit.",
+  "client_pending": "Actual eligible mounted item use,riding/zone/map admission,both factions/reverse variants,pet handling and client speed/appearance.",
+  "progression": "No SQL,HP threshold,kill timer,character reset,item/quest/progression grant or new class/group restriction. Unit queue owners/native cast and credit attribution retained,including player/pet/guardian paths;actual full combat alternatives still need client testing.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/third-ten-spell-repairs-2026-11-09"
+  },
+  "shared_open": "Authentic living Lady/1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors,handshake and all36 whole chains remain OPEN. Default Slaghammer probe not run;no active log truncated.",
+  "batch_audit": "docs/audits/third-ten-spell-repairs-2026-11-09.json"
+}
