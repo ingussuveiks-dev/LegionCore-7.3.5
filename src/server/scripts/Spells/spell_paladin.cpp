@@ -1744,9 +1744,24 @@ struct spell_pal_at_devotion_aura : public spell_pal_at_aura_of_sacrifice
         hasAuraMastery = apply;
     }
 
+    void PruneTargets(Unit* caster, GuidList* affectedList)
+    {
+        affectedList->remove_if([this, caster](ObjectGuid const& guid)
+        {
+            Unit* target = ObjectAccessor::GetUnit(*at, guid);
+            if (target && target->IsAlive() && CheckTarget(caster, target))
+                return false;
+            if (target)
+                target->RemoveAurasDueToSpell(DevotionAura, casterGUID);
+            return true;
+        });
+    }
+
     void HandleAuras(Unit* caster, GuidList* affectedList) override
     {
-       curAmount = hasAuraMastery ? baseAmount : (baseAmount / affectedList->size());
+        PruneTargets(caster, affectedList);
+        curAmount = affectedList->empty() ? 0.0f :
+            (hasAuraMastery ? baseAmount : (baseAmount / affectedList->size()));
 
         for (auto affectedPlayer : *affectedList)
         {
@@ -1766,6 +1781,7 @@ struct spell_pal_at_devotion_aura : public spell_pal_at_aura_of_sacrifice
 
     void HandlePlayerCount(Unit* caster, GuidList* affectedList) override
     {
+        PruneTargets(caster, affectedList);
         if (lastPlayerCount != affectedList->size())
         {
             lastPlayerCount = affectedList->size();
