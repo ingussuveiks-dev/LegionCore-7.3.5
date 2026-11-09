@@ -26,8 +26,51 @@
   "canonical_world_sha256": "6b9779a64d93040aac28b866be04513468f867cb27d25aecda28d1652b7c1c30",
   "patch_sha256": "a620ae85f673811ace9c41cad650d9e4ad2758d7f868e285d095237595393d0b",
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE",
-    "archive": "build-extractors/bin/Release/fixed/eighth-ten-repairs-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/eighth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "8664df6ada5a601d7507c0acb3a15606712d9de6ac053d796d87724ae64eb535",
+    "original_files": 1329,
+    "removed_files": 325,
+    "logical_removed_bytes": 1456731343,
+    "deletion_manifest": ".codex/eighth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "bce0cf7e2039fe0da5cc29ed9364d26a05da5bd90ff3926bada0d5ecb551765e",
+    "retained_rollbacks": [
+      ".codex/release-before-eighth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-seventh-ten-fixes-2026-11-09",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-seventh0abb6ede generation retired after newest pre-eighth6ae65ef6 rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "preserved": "Canonical executables/maps/config/certs/DLL/extracteddata,required original game/scripts libraries/main incrementalcache,reusable regression source,all personal/character/database backups/security and OPEN Lady/LINK2/Slaghammer/mixedlog/SQL evidence. Private test configs deleted,not archived. Original82+corrected94SQL raw snapshots remain outside fixed.",
+    "postcheck": "Protected hashes unchanged;no new canonical crash,no world/bnet process."
   },
-  "batch_audit": "docs/audits/eighth-ten-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/eighth-ten-repairs-2026-11-09.json",
+  "fix_commit": "c60f77783b584ffe187fe63d98bbd7add88ba531",
+  "final_scope_metadata_sha256": "f447e9e97286aa5f8cf69ff3723dc353158510bd52f28c5aa88a746614642053",
+  "final_review": {
+    "status": "PASS",
+    "evidence": ".codex/eighth-ten-fixes-2026-11-09/final-review-driver.log",
+    "sha256": "046159409e46cfbd5fc1088e377a09ea47a89a2145a1a44820fde06ed45bcd27",
+    "supplemental_manifest": "build-extractors/bin/Release/fixed/eighth-ten-repairs-2026-11-09/supplemental-manifest.json",
+    "supplemental_manifest_sha256": "2c2d72ecefa85a1d47c51ea2cdc3a15a768d3b2bbe9f48367babd448385bb041",
+    "supplemental_files": 253,
+    "no_servers_remaining": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "open_sql_original82_and_corrected94_hashes": "PASS",
+    "exact10commits_pushed": "PASS",
+    "prior_handoff_history": "PASS"
+  }
 }

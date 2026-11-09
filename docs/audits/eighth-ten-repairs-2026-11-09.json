@@ -1,0 +1,194 @@
+{
+  "date": "2026-11-09",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "f884e6321d81698f10bf0c1eb69cd2ddad2d9691",
+  "support_commit": "05231e01f7a8720fc700b04e5a8cfd286cf5f8e9",
+  "implementation_head": "7ba5809c9bb5c9a30d1bda71e8abfbd2582fc4b9",
+  "fixes": [
+    {
+      "key": "BossDeath",
+      "title": "Defer referenced spell event deletion during BossAI death cleanup",
+      "paths": [
+        "src/server/game/AI/ScriptedAI/ScriptedCreature.cpp"
+      ],
+      "audit": "docs/audits/boss-death-deferred-spell-events-2026-11-09.json",
+      "commit": "df7ff3421342a1985be2127718b18fd1bbb09192"
+    },
+    {
+      "key": "Ghoul",
+      "title": "Preserve eligible player owner continuation for mobs_ghoul_flayer deaths",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/zone_eastern_plaguelands.cpp"
+      ],
+      "audit": "docs/audits/darrowshire-ghoul-owner-continuation-2026-11-09.json",
+      "commit": "12720925ac82834787b0d4c00ff9b1d5feec421e"
+    },
+    {
+      "key": "Webbed",
+      "title": "Preserve eligible player owner continuation for mob_webbed_creature deaths",
+      "paths": [
+        "src/server/scripts/Kalimdor/zone_bloodmyst_isle.cpp"
+      ],
+      "audit": "docs/audits/webbed-creature-successful-owner-rescue-2026-11-09.json",
+      "commit": "f48dd3adb3fdc9b798ec0a4e9711269a202bc4d2"
+    },
+    {
+      "key": "WebbedPool",
+      "title": "Include the last authored Webbed Creature outcome in random selection",
+      "paths": [
+        "src/server/scripts/Kalimdor/zone_bloodmyst_isle.cpp"
+      ],
+      "audit": "docs/audits/webbed-creature-complete-random-pool-2026-11-09.json",
+      "commit": "c60f77783b584ffe187fe63d98bbd7add88ba531"
+    },
+    {
+      "key": "Baleful",
+      "title": "Preserve eligible player owner continuation for npc_q39049 deaths",
+      "paths": [
+        "src/server/scripts/Legion/mardum.cpp"
+      ],
+      "audit": "docs/audits/baleful-death-owner-continuation-2026-11-09.json",
+      "commit": "8d65562c692baa2fd738faf897adb519f5ae3880"
+    },
+    {
+      "key": "Sentry",
+      "title": "Preserve eligible player owner continuation for npc_lightning_sentry deaths",
+      "paths": [
+        "src/server/scripts/Northrend/zone_grizzly_hills.cpp"
+      ],
+      "audit": "docs/audits/lightning-sentry-owner-golem-credit-2026-11-09.json",
+      "commit": "d8940b47bc4a0aa41712e5bb88b7f3e1e5c7b274"
+    },
+    {
+      "key": "Torloth",
+      "title": "Preserve eligible player owner continuation for mob_torloth_the_magnificent deaths",
+      "paths": [
+        "src/server/scripts/Outland/zone_shadowmoon_valley.cpp"
+      ],
+      "audit": "docs/audits/torloth-charmer-group-continuation-2026-11-09.json",
+      "commit": "c1f0ceeda0653f154bc1cefdf37a4d75b775f836"
+    },
+    {
+      "key": "Dimwind",
+      "title": "Preserve eligible player owner continuation for mob_attacker_dimwind deaths",
+      "paths": [
+        "src/server/scripts/Pandaria/zone_the_wandering_isle.cpp"
+      ],
+      "audit": "docs/audits/dimwind-attacker-owner-guid-2026-11-09.json",
+      "commit": "3574e3dc722159d9671f874926ea638a2b2f969d"
+    },
+    {
+      "key": "Hyjal",
+      "title": "Isolate Hyjal protector summon progress and cast retries per player",
+      "paths": [
+        "src/server/scripts/World/player_special.cpp"
+      ],
+      "audit": "docs/audits/hyjal-protectors-per-player-state-2026-11-09.json",
+      "commit": "f8dfff3f94605a1ee81abcdf8d122456fe1dac13"
+    },
+    {
+      "key": "BloodQueen",
+      "title": "Preserve eligible player owner continuation for boss_blood_queen_lana_thel deaths",
+      "paths": [
+        "src/server/scripts/Northrend/IcecrownCitadel/boss_blood_queen_lana_thel.cpp"
+      ],
+      "audit": "docs/audits/blood-queen-blood-quickening-owner-credit-2026-11-09.json",
+      "commit": "7ba5809c9bb5c9a30d1bda71e8abfbd2582fc4b9"
+    }
+  ],
+  "counting": "Exactly10 independent problems in9production files:BossAI death event force deletion;Ghoul,Webbed rescue,Baleful,Sentry,Torloth,Dimwind,BloodQueen attribution/continuation;separate Webbed32outcome RNG omission;shared Hyjal state.10focused implementation commits individually pushed;test support/archive/handoff are not extra product fixes.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "6b9779a64d93040aac28b866be04513468f867cb27d25aecda28d1652b7c1c30",
+    "bnet_sha256": "6112a43cdd6921d27cb728d804ecd7be1422065f38f5c349fb049224e9c71d31",
+    "rollback": ".codex/release-before-eighth-ten-fixes-2026-11-09",
+    "startup": "Owned14544 freshready/shutdown0/exit0/gone,stderr empty;protected config/cert/DLLhashes unchanged,no user process stopped."
+  },
+  "validation": {
+    "source": "10 pinned f884e6321 expected-broken counterfactuals paired with10 repaired MSVC-ASAN whole selected callback/class cases. BossAI native EventProcessor additionally10 ASAN contexts. Hyjal two players/factions,outside player,failed cast retry only,quest/logout,reentry,and two100-update threads. Controlled endpoints;ASAN is not TSAN or full-core/client traversal.",
+    "native": "Actual BossAI selfcast native Suicide7:death once,two ordinary Unit updates release spell events without prior nondeletable diagnostic.32actual Webbed pool templates/urand31contract and original Hyjal spell/area catalog.7exact selected owner assignments within21real Unit::Kill Player/Pet/Guardian dispatches;second Kill no repeat,28null/unowned/lost owner/ownerless-charmer controls. Full7NPC progression callbacks and Hyjal casts remain source-modeled;no character saves/import.",
+    "release": "Original game.lib/scripts.lib final-linked to staged then canonical Release;verify_eighth_ten_release.py checks10selected linked repairs and prior77 paths. Canonical Scepter,ArtifactTierProgression and ScenarioResumeASAN retained. Main server reached fresh ready and gracefully shutdown0/exit0;task-owned process gone.",
+    "diagnostics": "Every test/build/link/start has canonical+own pre/post crashes/log size/time,exit/stdout/stderr/newDBErrors/server diagnostics. Initial actual BossAI Suicide7 counterfactual emitted exactly expected nondeletable-spell7 leak diagnostic;paired repaired native and canonical start clean. No new crashes. Initial fixture compile/PE linear-switch-table decode failures repaired and rerun;all expected linked-call assertions retained. Mixed canonical DBErrors7111bytes/SHAfa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 unchanged.",
+    "scope": "verify_eighth_ten_scope reverses10edits in9production files to f884e6321. No SQL migration,character rewrite or guessed combat threshold/timer. Local26972 runtime/database/script IDs first;rejected unbound/unsupported candidates,not copied modern APIs."
+  },
+  "diagnostics": {
+    "final": "20pairedsource-ASAN,10EventProcessor-ASAN,nativeBossAI death/32pooltemplates/Hyjalcatalog/21Kill+28controls,staged+canonical10/prior77PE,retainedScepter/ArtifactTier/ScenarioResumeASAN and ownedcanonical startup pass to stated scopes. Each run has before/after own+canonical crashes/log lengths/times,exit/stdout/stderr/newDBErrors/server diagnostics.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 0,
+      "types": {},
+      "review": "Expressions retained verbatim from f884e6321;outside changed behavior. Other historical diagnostics stay visible,not certified fixed.",
+      "entries": []
+    },
+    "expected_counterfactual": {
+      "runtime": "build-extractors/runtime-test/eighthtennative/20261109-173906-464",
+      "finding": "OriginalactualBossAI Suicide7 emitted nondeletable spell7 leak diagnostic during in-flight spell death. Expected failing original run,not an ordinary pass. Paired repaired same native call completes deathonce and normal event updates0queue without diagnostic;resolved evidence archived after matching executable deployment.",
+      "fix_commit": "df7ff3421342a1985be2127718b18fd1bbb09192"
+    },
+    "development": [
+      "Fixture extraction/compile failures corrected before final20passes;prior PE chain linear-disassembled inline switch bytes into out-of-imagebranch. Callsite matcher now ignores only unmapped targets,keepsall expected-call assertions. Actual10/prior77paths complete staged+canonical.",
+      "Localquest5211 actual11064x15 confirmed;27328 objective45438 notthisspirit. SilverHand9737 has noobjectives and was reverted;unbound spiritgossip notchanged.",
+      "Native fixture uses realBossAI Suicide7 lifecycle and realKill with controlled attributionAI,not full7originalNPCprogression. Sourcewholecallbacks and fullHyjalclass separatelyASAN;native casts acceptance notclientacknowledgement.",
+      "Torloth originalordinaryownedpets already worked;counterfactual demonstrates ownerlesscharmer. Dimwind child only;fullparent4wave failure/cleanup remainspending. ExistingSentrynearestgolemownership and explicitotherBossAIforceoverrides outside selectedscope.",
+      "Every focused staged diff/pathset reviewed;10patches individuallycommitted/pushed.No credentials/runtime logs/dumps/characterdata/originalattachment committed."
+    ]
+  },
+  "scouted_rejected": "SilverHand9737 has no native objective;reverted. npc_darrowshire_spirit gossip not bound;not edited. Xavius selfcaster not demonstrated faulty. Default PvP reward policy and explicit encounter force calls need separate native/intent investigation;not changed or counted.",
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/eighth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "8664df6ada5a601d7507c0acb3a15606712d9de6ac053d796d87724ae64eb535",
+    "original_files": 1329,
+    "removed_files": 325,
+    "logical_removed_bytes": 1456731343,
+    "deletion_manifest": ".codex/eighth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "bce0cf7e2039fe0da5cc29ed9364d26a05da5bd90ff3926bada0d5ecb551765e",
+    "retained_rollbacks": [
+      ".codex/release-before-eighth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-seventh-ten-fixes-2026-11-09",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-seventh0abb6ede generation retired after newest pre-eighth6ae65ef6 rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "preserved": "Canonical executables/maps/config/certs/DLL/extracteddata,required original game/scripts libraries/main incrementalcache,reusable regression source,all personal/character/database backups/security and OPEN Lady/LINK2/Slaghammer/mixedlog/SQL evidence. Private test configs deleted,not archived. Original82+corrected94SQL raw snapshots remain outside fixed.",
+    "postcheck": "Protected hashes unchanged;no new canonical crash,no world/bnet process."
+  },
+  "pending": [
+    "Sharasdal living Lady authentic activation/surrender/conversation1906/Grash/cleanup OPEN;no invented HP threshold or killing timer.",
+    "LINK2,Slaghammer crash/cache,mixed DBErrors,intermittent handshake and all36whole artifact chains/client traversal remain OPEN. Default Slaghammer probe not run.",
+    "Prior MariaDB unsigned numeric CAST issue remains OPEN_EXTERNAL_SQL_EXPRESSION;original82 and corrected94 raw snapshots remain hash-verified outside fixed in .codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09. No production DB/query workaround.",
+    "Actual client combat/credit/group/faction/failed actor/cast/retry/reentry/visual/audio/cleanup remains pending. Cast acceptance alone does not prove summon acknowledgement. Explicit encounter force-cleanup overrides outside selected BossAI base remain outside this repair."
+  ],
+  "stop": "Exactly10 repaired,tested to stated scopes,deployed,individually committed/pushed and cleaned;stop after audit/handoff push. No eleventh repair started;actualclient/full36chains and priorOPEN remainvisible.",
+  "final_review": {
+    "status": "PASS",
+    "evidence": ".codex/eighth-ten-fixes-2026-11-09/final-review-driver.log",
+    "sha256": "046159409e46cfbd5fc1088e377a09ea47a89a2145a1a44820fde06ed45bcd27",
+    "supplemental_manifest": "build-extractors/bin/Release/fixed/eighth-ten-repairs-2026-11-09/supplemental-manifest.json",
+    "supplemental_manifest_sha256": "2c2d72ecefa85a1d47c51ea2cdc3a15a768d3b2bbe9f48367babd448385bb041",
+    "supplemental_files": 253,
+    "no_servers_remaining": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "open_sql_original82_and_corrected94_hashes": "PASS",
+    "exact10commits_pushed": "PASS",
+    "prior_handoff_history": "PASS"
+  }
+}
