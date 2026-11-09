@@ -191,14 +191,15 @@ public:
                         if (GetDifficultyID() != DIFFICULTY_HEROIC)
                         {
                             std::map<uint32, uint32> temp_npc_books = {npc_books };
-                            for (uint8 i = 0; i < 2; ++i)
+                            for (uint8 i = 0; i < 2 && !temp_npc_books.empty(); ++i)
                             {
-                                uint32 entry = temp_npc_books[urand(0, temp_npc_books.size())];
+                                auto itr = temp_npc_books.begin();
+                                std::advance(itr, urand(0, uint32(temp_npc_books.size() - 1)));
+                                uint32 entry = itr->second;
+                                temp_npc_books.erase(itr);
                                 me->SummonCreature(entry, me->GetPositionX() + frand(-5, 5), me->GetPositionY() + frand(-5, 5), me->GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3000);
                                 
-                                auto itr = temp_npc_books.find(entry);
-                                if (itr != temp_npc_books.end())
-                                    temp_npc_books.erase(itr);
+
                             }
                         }
                         
