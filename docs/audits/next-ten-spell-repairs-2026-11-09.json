@@ -1,0 +1,168 @@
+{
+  "date": "2026-11-09",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "50b42e107cfb4858706a0fd29ed1d3dfe0d0b710",
+  "support_commit": "9fc679b169b7a95486a30e09bf5832cc096d8542",
+  "implementation_head": "b65c9200a3192ef894cce59da70a8b4f2b58007f",
+  "fixes": [
+    {
+      "key": "Umbral",
+      "file": "spell_generic.cpp",
+      "cls": "spell_gen_umbral_shift",
+      "spell": 253826,
+      "title": "Use the aura owner for Umbral Shift mastery calculation",
+      "slug": "umbral-mastery-calculation",
+      "audit": "docs/audits/umbral-mastery-calculation-2026-11-09.json",
+      "commit": "be53d01649d0d7df193d1811a55a14257fb66577"
+    },
+    {
+      "key": "Shatter",
+      "file": "spell_warrior.cpp",
+      "cls": "spell_warr_shatter_the_bones",
+      "spell": 188639,
+      "title": "Use the aura owner for Shatter the Bones amount calculation",
+      "slug": "shatter-bones-calculation",
+      "audit": "docs/audits/shatter-bones-calculation-2026-11-09.json",
+      "commit": "c8460cce9375008345ff28b9da293b49d5675bac"
+    },
+    {
+      "key": "Flask",
+      "file": "spell_item.cpp",
+      "cls": "spell_item_flask_of_the_north",
+      "spell": 67019,
+      "title": "Admit Monk and Demon Hunter Flask of the North stat choices safely",
+      "slug": "flask-north-legion-classes",
+      "audit": "docs/audits/flask-north-legion-classes-2026-11-09.json",
+      "commit": "7600507bc6e5fa36ca1e0840000935e4cebc963f"
+    },
+    {
+      "key": "Comet",
+      "file": "spell_mage.cpp",
+      "cls": "spell_mage_comet_storm",
+      "spell": 153595,
+      "title": "Keep delayed Comet Storm impacts on their original map",
+      "slug": "comet-storm-origin",
+      "audit": "docs/audits/comet-storm-origin-2026-11-09.json",
+      "commit": "c6675c9a0322239eddb3ae885e42d983047b250d"
+    },
+    {
+      "key": "Flurry",
+      "file": "spell_mage.cpp",
+      "cls": "spell_mage_flurry",
+      "spell": 44614,
+      "title": "Keep queued Flurry bolts on their original instance",
+      "slug": "flurry-queued-origin",
+      "audit": "docs/audits/flurry-queued-origin-2026-11-09.json",
+      "commit": "1d5175591ac0c6b4f3d1900d1318ce244742972b"
+    },
+    {
+      "key": "Storm",
+      "file": "spell_generic.cpp",
+      "cls": "spell_storm_comet",
+      "spell": 232661,
+      "title": "Keep delayed Razor Ice summons on the hit targets original map",
+      "slug": "razor-ice-queued-origin",
+      "audit": "docs/audits/razor-ice-queued-origin-2026-11-09.json",
+      "commit": "aeac54d46e7575eb467ad4f83fec86128cb1b06c"
+    },
+    {
+      "key": "Stomp",
+      "file": "spell_generic.cpp",
+      "cls": "spell_gen_reckless_stomp",
+      "spell": 250863,
+      "title": "Keep delayed Reckless Stomp bolts on their original map",
+      "slug": "reckless-stomp-queued-origin",
+      "audit": "docs/audits/reckless-stomp-queued-origin-2026-11-09.json",
+      "commit": "be3e1c9b5153477288d3c408e59f02ee62164deb"
+    },
+    {
+      "key": "Wailing",
+      "file": "spell_item.cpp",
+      "cls": "spell_item_walling_souls",
+      "spell": 242609,
+      "title": "Do not reduce Wailing Souls cooldown without integer damage absorption",
+      "slug": "wailing-souls-zero-absorb",
+      "audit": "docs/audits/wailing-souls-zero-absorb-2026-11-09.json",
+      "commit": "cbc1389257eaa9fa669e8beb08a68629de30e03f"
+    },
+    {
+      "key": "Dispel",
+      "file": "spell_warlock.cpp",
+      "cls": "spell_warl_unstable_affliction",
+      "spell": 233490,
+      "title": "Keep delayed Unstable Affliction backlash in its original instance",
+      "slug": "unstable-affliction-backlash-origin",
+      "audit": "docs/audits/unstable-affliction-backlash-origin-2026-11-09.json",
+      "commit": "4ad73ecdf38602e2de3f6a484cadcabe09d5b49a"
+    },
+    {
+      "key": "Cookie",
+      "file": "spell_item.cpp",
+      "cls": "spell_item_chocolate_cookie",
+      "spell": 87649,
+      "title": "Evaluate Chocolate Cookie stacks on the actual aura recipient",
+      "slug": "chocolate-cookie-aura-recipient",
+      "audit": "docs/audits/chocolate-cookie-aura-recipient-2026-11-09.json",
+      "commit": "b65c9200a3192ef894cce59da70a8b4f2b58007f"
+    }
+  ],
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "ed56fd0f6523cf9767f02ecc8aaa12d9dfab914d5100fc3c01d4aebd116b4d87",
+    "bnet_sha256": "99954631c07527d73ed4ef24a33fc226afa4d03f3ea25c5633305f157fb52ae8",
+    "rollback": ".codex/release-before-next-ten-fixes-2026-11-09",
+    "owned_startup": "PID25956 fresh ready,server shutdown0,exit0,gone,stderr empty;no user process stopped;configuration/cert/DLL hashes retained."
+  },
+  "validation": [
+    "Ten full-class pinned50b42e107 counterfactuals paired with ten repaired final ASAN runs. Shatter/Cookie original null dereferences and Flask invalid RNG-bound assertion are expected failing baselines,not successful ordinary gameplay. Umbral logs invalid GetTarget/retains mastery,Wailing zero absorb incorrectly reduces cooldown,and five delayed-effect cases follow new maps in baseline.",
+    "Extracted actual Aura GetTarget/GetUnitOwner,calc dispatcher and FunctionProcessor;modeled Unit/Player/world endpoints. Origin/instance/world/predelete changes,missing GUID targets,first deadlines,normal counts,BrainFreeze/T21 snapshots,no duplicate deliveries,original death/native-cast dispatch,all12 Flask classes/Monk alternate/unknown/null and exact cookie91 recipient selection are covered. Real projectile damage or client rendering is not established by models.",
+    "Native complete10classes compile against real Release core;14 live bindings/ten names and matching26972/Hotfix spell data read.24 registered native Flask67019 casts cover all12 classes/Human+Orc;8 actual aura/cooldown contexts cover calculation owner dispatch,absent/present/removed enabler/Shield Block,real distinct cookie caster removal/stacks90/91/92,and zero/fractional/positive actual Player cooldown changes. Native achievement counters/award not asserted.99041 is original criterion operand,not a required SpellInfo row. Earlier fixture state/poses controlled,readonly/TEMP database scope,no character persistence,not full-core ASAN.",
+    "Five whole production files match pinned50b42e107 outside exactly ten selected complete classes. Existing registrations,other shared spells and quest/progression code preserved. Source spells accept Unit queue owners;player/pet/guardian/NPC native combat/credit policy retained,no progression awarded to pets by new code.",
+    "Original generated scripts.lib and final-link inputs,no global OutDir;staged/canonical registered callbacks and actual x64 guards verified. Three owner hooks,all6 delayed closures,both Flurry closures,Wailing1.0 check before division/cooldown,Flask class jump-table choices. Prior17 spell PE paths retained;mandatory canonical Scepter and existing Warlock/Burning Rush/mover regressions pass.",
+    "Owned canonical25956 startup+graceful shutdown passes with no new runtime diagnostics;protected config/cert/DLL and mixed-log hashes unchanged. No persistent SQL,HP threshold,kill timer,character reset,item/quest grant,or actual client operation."
+  ],
+  "diagnostics": {
+    "final": "All tests/build/link/start/cleanup use canonical+own crash/log snapshots and reviewed exit/stdout/stderr. Final runs add no crash/appended DBErrors/unexplained server warning/error/assertion. Active Crashes empty.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN;unchanged/untruncated/outside fixed"
+    },
+    "development": [
+      "Nightwell snapshot candidate rejected:core SCHOOL_ABSORB already disables recalculation. Opening Hand candidate rejected:existing CallSpecialFunction clamps index before lookup. Temporary redundant Opening check reverted in full;neither counted as a product fix.",
+      "Initial fixture compiler failures came from missing modeled symbols/types/methods and actual FunctionProcessor atomic/mutex dependencies;resolved before passing complete immutable source pairs. Initial Stomp edit omitted lambda guard because edit pattern used different increment spelling;regression caught it before Release build/deployment and final guard passes.",
+      "First native fixture erroneously required SpellInfo99041 although it is an existing criterion operand absent from matching data. Corrected requirement;original item criterion unchanged.",
+      "Native second attempt exited ACCESS_VIOLATION. Preserved catalog.log stack points to SpellMgr::GetSpellBonusData -> Unit::CalcAbsorb -> AuraEffect::CalculateAmount while constructing Wailing aura. Shared bootstrap omitted LoadSpellBonusess/LoadSpellThreats;fixture now loads the real readonly tables as canonical server startup does. Final8 actual contexts plus24 registered Flask casts pass,including final immutable run. This was a test bootstrap omission,not suppressed diagnostics or a newly counted product fix.",
+      "Initial local python command was a Windows Store alias and did not execute preparation;used installed Codex runtime Python. Local PE log-label variable collided with diagnostics wrapper name;retained original Server.log.log and switched local helper variable. Actual PE verification already passed and final stage/canonical logs verify full chain return.",
+      "Git whitespace review found two extra EOF blank lines in new support sources before commit. Removed them and reran immutable native validation. No behavioral production change or extra fix counted.",
+      "Seven production C5055 warnings are existing enum/floating-point expressions retained unchanged,including existing Wailing positive cooldown formula. Model/native unused/type-conversion and Scepter C4244/C4389 warnings plus full-link notices reviewed;no logging/check/warning disabled.",
+      "Closeout helper initially compared tracked git diff to a list including the new untracked batch audit. Corrected the pre-stage subset/existence check;the final staged set must still equal exactly the12 requested audit files. No production/runtime mutation occurred on that failed assertion."
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/next-ten-spell-repairs-2026-11-09",
+    "archive_manifest_sha256": "e1c7ea5df6aa8d4f8259909516ef37800f293db441720f3dc1789fa738315db1",
+    "original_files": 1762,
+    "removed_files": 335,
+    "logical_removed_bytes": 1743788908,
+    "deletion_manifest": ".codex/next-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "daac6083daad9bc010b8e02e073fd8cc870f809243473c7313fd1f9e7f778204",
+    "retained_rollbacks": [
+      ".codex/release-before-next-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-ten55a232ff generation retired after newest pre-current e8ff1ea7 rollback verification",
+    "preserved": "Canonical binaries/maps/config/certs/DLLs/data,required original static libraries,reusable test sources,OPEN Lady/LINK2/Slaghammer evidence/security boundaries,personal/character/database backups. No active runtime log truncated. Generated private native configs deleted,not archived.",
+    "postcheck": "Canonical/protected/mixed-log hashes unchanged;no world/bnet process;active Crashes empty."
+  },
+  "pending": [
+    "Actual client checks for each of ten repairs remain in individual audits. No client traversal,gear/UI/visual/audio/projectile/achievement confirmation or all36 whole-chain certification claimed.",
+    "Authentic living Lady104856/spawn362095 activation/surrender/accepted209552-conversation1906/upperGrash362092 finisher/210247 cleanup remains OPEN. No HP percentage or killing timer invented.",
+    "Shared101430/103151 LINK2,Slaghammer crash/cache,mixedDBErrors,handshake and earlier unresolved evidence retained. Default Slaghammer probe was not run;support-only native includes did not overwrite its cache."
+  ],
+  "stop": "Exactly ten new product fixes implemented,verified to stated automated/native scope,deployed,committed and individually pushed;stop after closeout. Regression support/archive/audit commits are not additional product fixes. No eleventh repair started."
+}

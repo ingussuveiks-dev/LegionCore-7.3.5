@@ -28,9 +28,25 @@
   "client_pending": "Actual Mage comet impacts,failed cast/native hit handling,death,timing/visuals and map transitions.",
   "progression": "No SQL,character reset,HP threshold,kill timer or quest/loot grant added. Existing native spell hit/credit/group rules retained;Unit queue owners can be player/pet/guardian/NPC. This does not certify every combat alternative in the client.",
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE",
-    "archive": "build-extractors/bin/Release/fixed/next-ten-spell-repairs-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/next-ten-spell-repairs-2026-11-09",
+    "archive_manifest_sha256": "e1c7ea5df6aa8d4f8259909516ef37800f293db441720f3dc1789fa738315db1",
+    "original_files": 1762,
+    "removed_files": 335,
+    "logical_removed_bytes": 1743788908,
+    "deletion_manifest": ".codex/next-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "daac6083daad9bc010b8e02e073fd8cc870f809243473c7313fd1f9e7f778204",
+    "retained_rollbacks": [
+      ".codex/release-before-next-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-ten55a232ff generation retired after newest pre-current e8ff1ea7 rollback verification",
+    "preserved": "Canonical binaries/maps/config/certs/DLLs/data,required original static libraries,reusable test sources,OPEN Lady/LINK2/Slaghammer evidence/security boundaries,personal/character/database backups. No active runtime log truncated. Generated private native configs deleted,not archived.",
+    "postcheck": "Canonical/protected/mixed-log hashes unchanged;no world/bnet process;active Crashes empty."
   },
   "shared_open": "Living Lady/authentic1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors and all36 whole chains remain OPEN. No default Slaghammer probe or active-log truncation.",
-  "batch_audit": "docs/audits/next-ten-spell-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/next-ten-spell-repairs-2026-11-09.json",
+  "fix_commit": "c6675c9a0322239eddb3ae885e42d983047b250d"
 }
