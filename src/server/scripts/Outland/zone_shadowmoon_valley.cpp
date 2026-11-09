@@ -1354,23 +1354,12 @@ public:
 
         void JustDied(Unit* killer) override
         {
-            switch (killer->GetTypeId())
-            {
-                case TYPEID_UNIT:
-                    if (Unit* owner = killer->GetOwner())
-                        if (owner->IsPlayer())
-                            CAST_PLR(owner)->GroupEventHappens(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, me);
-                    break;
-                case TYPEID_PLAYER:
-                    CAST_PLR(killer)->GroupEventHappens(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, me);
-                    break;
-                default:
-                    break;
-            }
+            if (Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)
+                player->GroupEventHappens(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, me);
 
             if (Creature* LordIllidan = Unit::GetCreature(*me, LordIllidanGUID))
             {
-                LordIllidan->AI()->Talk(3, killer->GetGUID());
+                LordIllidan->AI()->Talk(3, killer ? killer->GetGUID() : ObjectGuid::Empty);
                 LordIllidan->AI()->EnterEvadeMode();
             }
         }
