@@ -1,4 +1,153 @@
 {
+  "latest_twelfth_ten_repairs_2026_11_09": {
+    "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+    "fixes": [
+      {
+        "key": "Hadronox",
+        "title": "Preserve the full Hadronox leech-poison heal",
+        "paths": [
+          "src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_hadronox.cpp"
+        ],
+        "audit": "docs/audits/hadronox-full-width-leech-heal-2026-11-09.json",
+        "commit": "d1d55e616b1098c0dcd8729fb2029132a190b51a"
+      },
+      {
+        "key": "Sentinel",
+        "title": "Preserve Anubisath sentinel inherited healing at high health",
+        "paths": [
+          "src/server/scripts/Kalimdor/TempleOfAhnQiraj/mob_anubisath_sentinel.cpp"
+        ],
+        "audit": "docs/audits/anubisath-sentinel-full-width-inheritance-heal-2026-11-09.json",
+        "commit": "d22fb8f7b60839031c2ff205214962ca7442a858"
+      },
+      {
+        "key": "ValithriaHealth",
+        "title": "Keep Valithria at half of her full health on reset and intro",
+        "paths": [
+          "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp"
+        ],
+        "audit": "docs/audits/valithria-full-width-half-health-2026-11-09.json",
+        "commit": "fb09a582d2e0b8ef4bfed160e88b2b7d7070e653"
+      },
+      {
+        "key": "Firesworn",
+        "title": "Compare Firesworn eruption damage without signed health truncation",
+        "paths": [
+          "src/server/scripts/EasternKingdoms/MoltenCore/boss_garr.cpp"
+        ],
+        "audit": "docs/audits/firesworn-scaled-eruption-threshold-2026-11-09.json",
+        "commit": "c115cc8733468beb32af56b46382f61576458333"
+      },
+      {
+        "key": "Delrissa",
+        "title": "Choose Delrissa lowest-health living healing target consistently",
+        "paths": [
+          "src/server/scripts/EasternKingdoms/MagistersTerrace/boss_priestess_delrissa.cpp"
+        ],
+        "audit": "docs/audits/delrissa-running-minimum-heal-selection-2026-11-09.json",
+        "commit": "cb2d8fb0ef23229979058ec88542ece03dc4fa56"
+      },
+      {
+        "key": "Finkle",
+        "title": "Limit Finkle mixture absorption to actual lethal excess damage",
+        "paths": [
+          "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_chimaeron.cpp"
+        ],
+        "audit": "docs/audits/finkle-mixture-lethal-excess-absorption-2026-11-09.json",
+        "commit": "77ba9914ddbe0583f7d9084c4a202d6f0bea3d45"
+      },
+      {
+        "key": "Council",
+        "title": "Clamp Council possession release threshold before unsigned conversion",
+        "paths": [
+          "src/server/scripts/Pandaria/ThroneOfThunder/boss_council_of_elders.cpp"
+        ],
+        "audit": "docs/audits/council-possession-release-floor-2026-11-09.json",
+        "commit": "48a1c17873d52795c4e3f25416854a0bb4a96f23"
+      },
+      {
+        "key": "Nefarian",
+        "title": "Compute Nefarian remaining health percentage before electrocute gates",
+        "paths": [
+          "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_bwd_nefarian.cpp"
+        ],
+        "audit": "docs/audits/nefarian-scaled-electrocute-checkpoints-2026-11-09.json",
+        "commit": "5e6d93d2c75a78a7ff44d3153e8da0b00f2fbf2c"
+      },
+      {
+        "key": "Reflection",
+        "title": "Admit lethal Shadowy Reflection procs without unsigned health underflow",
+        "paths": [
+          "src/server/scripts/Spells/spell_generic.cpp"
+        ],
+        "audit": "docs/audits/shadowy-reflection-lethal-proc-admission-2026-11-09.json",
+        "commit": "6ae9f2dbf96934c511bdda600b79ebc99a8fc634"
+      },
+      {
+        "key": "ValithriaTrigger",
+        "title": "Retry Valithria intro when its combat trigger cannot spawn",
+        "paths": [
+          "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp"
+        ],
+        "audit": "docs/audits/valithria-failed-combat-trigger-retry-2026-11-09.json",
+        "commit": "ec51cce861f77254ff4b549ad438671fc24e2312"
+      }
+    ],
+    "canonical": {
+      "directory": "build-extractors/bin/Release",
+      "world_sha256": "1553c21d9b373607a568a5b5b2ecc1a5226646e3766bc8de90e74dcbc823b691",
+      "bnet_sha256": "36e9dc6309962a2369c4386327b47858bfd1a0f38240be3f4c58b43c86dbe653",
+      "rollback": ".codex/release-before-twelfth-ten-fixes-2026-11-09",
+      "startup": "Owned5740 fresh ready/shutdown0/exit0/gone,stderr empty,protected hashes unchanged;no user process stopped."
+    },
+    "cleanup": {
+      "status": "COMPLETE_HASH_VERIFIED",
+      "archive": "build-extractors/bin/Release/fixed/twelfth-ten-repairs-2026-11-09",
+      "archive_manifest_sha256": "24d15cc5fa51f5c14fe765a3a9415634f6cc52270d75dbd9bfd6edb548caa788",
+      "original_files": 1684,
+      "removed_files": 426,
+      "logical_removed_bytes": 1165522832,
+      "deletion_manifest": ".codex/twelfth-ten-fixes-2026-11-09/cleanup-deleted.json",
+      "deletion_manifest_sha256": "aee225cf259df99789db7d22ae8d94e08ff1fecd8aded0cd99bf9b391b95fa76",
+      "retained_rollbacks": [
+        ".codex/release-before-twelfth-ten-fixes-2026-11-09",
+        ".codex/release-before-seven-fixes-2026-11-08",
+        ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+      ],
+      "removed_superseded_rollback": ".codex/release-before-eleventh-ten-fixes-2026-11-09",
+      "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-eleventha752b443 retired after newest pre-twelfthee6d4b2a rollback verification",
+      "logs_truncated": 0,
+      "active_crashes_removed": 0,
+      "open_sql_evidence": {
+        "Files": 82,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+        "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+        "ClassificationCorrection": {
+          "Files": 94,
+          "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+          "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+        }
+      },
+      "open_timeloop": {
+        "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+        "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+        "files": 26,
+        "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+        "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+      },
+      "preserved": "Canonical EXE/MAP/config/certs/DLL/extracted data,required main game/scripts libraries/cache,reusable tests,backups and security boundaries. OPEN Lady/LINK2/Slaghammer/mixed DBErrors/SQL/TimeLoop remain. Ninth-batch TimeLoop EXE/symbols retained for concrete investigation. Private test configurations deleted,not archived.",
+      "postcheck": "Canonical/protected/recovery hashes unchanged,no canonical crashes or world/bnet processes."
+    },
+    "pending": [
+      "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold/kill timer.",
+      "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 complete artifact chains remain OPEN. No default Slaghammer probe or mixed-log truncation.",
+      "MariaDB numeric CAST issue:82original+94corrected raw records remain outside fixed and hash-verified;no database workaround.",
+      "TimeLoop105984 script/native32bit healing issue remains OPEN:26raw records and ninth-batch investigation EXE/symbols retained.",
+      "Actual raids/dungeons, ability casts/visuals, Council vehicles, Nefarian electrocute damage/timing, Finkle default absorption and Reflection default222479, Valithria combat-trigger lifecycle and full wipe/retry/reward/group/faction/pet/guardian client traversal remain pending. Controlled cases do not certify whole encounters."
+    ],
+    "stop": "Exactly ten implemented,tested to stated scopes,deployed,individually committed/pushed and cleaned. Stop after final audit/handoff push;no eleventh repair started. Actual client/all36-chain and prior OPEN work remain visible.",
+    "audit": "docs/audits/twelfth-ten-repairs-2026-11-09.json"
+  },
   "latest_eleventh_ten_repairs_2026_11_09": {
     "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
     "fixes": [
