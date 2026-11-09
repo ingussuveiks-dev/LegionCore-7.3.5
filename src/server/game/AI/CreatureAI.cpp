@@ -407,7 +407,9 @@ void CreatureAI::EnterEvadeMode()
 
     if (!me->IsDespawn())
     {
-        me->m_Events.KillAllEvents(true);
+        // A canceled spell can remain referenced until Unit::_UpdateSpells.
+        // Abort now and let the ordinary event update delete it when safe.
+        me->m_Events.KillAllEvents(false);
 
         if (me->IsVisible())
             me->KillAllDelayedCombats();

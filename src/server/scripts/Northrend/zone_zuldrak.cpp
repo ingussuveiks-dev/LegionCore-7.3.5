@@ -617,7 +617,8 @@ public:
         void EnterEvadeMode() override
         {
             if (Creature* pWhisker = me->GetCreature(*me, uiWhisker))
-                pWhisker->RemoveFromWorld();
+                pWhisker->DespawnOrUnsummon();
+            ScriptedAI::EnterEvadeMode();
         }
 
         void MovementInform(uint32 type, uint32 /*pointId*/) override
@@ -691,10 +692,11 @@ public:
         {
             if (uiWhisker)
                 if (Creature* pWhisker = me->GetCreature(*me, uiWhisker))
-                    pWhisker->RemoveFromWorld();
+                    pWhisker->DespawnOrUnsummon();
 
-            if (killer->GetTypeId() == TYPEID_PLAYER)
-                killer->GetCharmerOrOwnerPlayerOrPlayerItself()->GroupEventHappens(QUEST_AMPHITHEATER_ANGUISH_TUSKARRMAGEDDON, killer);
+            if (killer)
+                if (Player* player = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
+                    player->GroupEventHappens(QUEST_AMPHITHEATER_ANGUISH_TUSKARRMAGEDDON, killer);
 
         }
     };
