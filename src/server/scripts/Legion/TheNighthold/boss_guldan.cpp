@@ -836,8 +836,14 @@ public:
                 }
                 case SPELL_EMPOWERED_BOUNDS_OF_FEL_TICK:
                     target->CastSpell(me, SPELL_EMPOWERED_BOUNDS_OF_FEL_KNOCK);
-                    target->AddDelayedEvent(3000, [target, this] () -> void
+                    me->AddDelayedEvent(3000, [this, targetGuid = target->GetGUID()] () -> void
                     {
+                        if (!me->IsAlive())
+                            return;
+                        Unit* target = ObjectAccessor::GetUnit(*me, targetGuid);
+                        if (!target)
+                            return;
+
                         target->CastSpell(target, SPELL_EMPOWERED_BOUNDS_OF_FEL_AT);
                         
                         for (float dif = -3; dif <= 3; dif += 6)
