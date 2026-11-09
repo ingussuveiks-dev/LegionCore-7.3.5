@@ -2336,7 +2336,7 @@ class spell_pri_shadowform : public AuraScript
 
     void UpdateVisuals()
     {
-        Unit* caster = GetCaster();
+        Unit* caster = GetUnitOwner();
         if (!caster)
             return;
 
@@ -2360,7 +2360,7 @@ class spell_pri_shadowform : public AuraScript
 
     void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (auto caster = GetCaster())
+        if (auto caster = GetUnitOwner())
         {
             caster->RemoveAurasDueToSpell(185908);
             caster->RemoveAurasDueToSpell(185909);

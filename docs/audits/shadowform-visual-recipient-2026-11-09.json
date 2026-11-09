@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Shadow",
+  "scope": {
+    "key": "Shadow",
+    "file": "spell_priest.cpp",
+    "classes": [
+      "spell_pri_shadowform"
+    ],
+    "spell": 232698,
+    "title": "Maintain and clean Shadowform visuals on the aura owner"
+  },
+  "base": "797cebe2f",
+  "support_commit": "da8b5fe236f270df633c6e72a3ddaf4976664edd",
+  "cause": "The existing replacement visual controller reads insanity/maintains/removes visuals on the original caster. A distinct surviving232698 recipient can lose refresh and retain all four helpers after caster disappearance.",
+  "implementation": "Use GetUnitOwner in UpdateVisuals and OnRemove;preserve immediate OnApply,one-second refresh,2500/5000/7500 thresholds and185908..185911.",
+  "validation": {
+    "command": "tools/tests/Test-ThirdTenSpellRepairs.ps1 -Case Shadow (also -Baseline)",
+    "coverage": "Source missing caster,exact ascending/descending thresholds and recipient cleanup. Native actual apply/removal dispatch after NPC caster loss maintains base visual and removes all4 real helpers in Human/Orc contexts. Retained ShadowVisualController regression covers initialization,no duplicate refresh,cleanup/re-entry. PE verifies owner path,including compiler-inlined helper copies.",
+    "native_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe ThirdTenSpellNative",
+    "native_total": "12live bindings/11classes,two actual mounted/dismounted speed controls and16 actual recipient/model/cleanup/calc/missing-caster-at-Load contexts;earlier profiles/poses/capability controlled,readonly/TEMP database scope,no character saves. Not full-core ASAN.",
+    "source_scope": "Five whole source files equal797cebe2f outside exactly11selected classes/ten problems. Other registrations/shared quest scripts unchanged.",
+    "release": "Original scripts.lib/final-link dependencies,no global OutDir;staged+canonical ten PE paths and prior27 paths retained;canonical Scepter and existing defensive/Shadow regressions pass.",
+    "startup": "Owned28440 fresh canonical ready,shutdown0,exit0,gone,stderr empty;no user process stopped/protected configuration changed."
+  },
+  "canonical_world_sha256": "435bb556058e4c1b2040967c1a9786c63cff705a1e9e90c8491d3f1b5d97de9f",
+  "tested_class_sha256": {
+    "spell_pri_shadowform": "969c08ec5e319d07261641657b3f0ed2bf03fad219f4692183a4b2b60900d4ec"
+  },
+  "aura_contract": "Native Aura::GetCaster resolves unit owner directly for ordinary self-casts. Distinct-caster ownership checks intentionally create a supported separate NPC caster and remove that actor. Neither model faults nor these audits claim observed production/client crashes during ordinary self-use.",
+  "diagnostics": "Before/after canonical+own crash/log snapshots and exit/stdout/stderr review for tests/build/link/start. Final tests add no crash/DBErrors/server warning/error/assertion. Original Ocean ASAN baseline is explicitly expected failing;native fixture initialization/admission and PE inlining/adapter mistakes were traced and corrected;details/evidence retained in batch audit.",
+  "client_pending": "Actual Priest form/insanity/UI/model,aura application/removal,all visuals and relog. Native earlier class/profile state controlled;no class gameplay traversal claimed.",
+  "progression": "No SQL,HP threshold,kill timer,character reset,item/quest/progression grant or new class/group restriction. Unit queue owners/native cast and credit attribution retained,including player/pet/guardian paths;actual full combat alternatives still need client testing.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/third-ten-spell-repairs-2026-11-09"
+  },
+  "shared_open": "Authentic living Lady/1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors,handshake and all36 whole chains remain OPEN. Default Slaghammer probe not run;no active log truncated.",
+  "batch_audit": "docs/audits/third-ten-spell-repairs-2026-11-09.json"
+}
