@@ -253,14 +253,17 @@ public:
 
             if (HealTimer <= diff)
             {
-                uint32 health = me->GetHealth();
+                uint64 health = me->GetHealth();
                 Unit* target = me;
                 for (uint8 i = 0; i < MAX_ACTIVE_LACKEY; ++i)
                 {
                     if (Unit* pAdd = Unit::GetUnit(*me, m_auiLackeyGUID[i]))
                     {
                         if (pAdd->IsAlive() && pAdd->GetHealth() < health)
+                        {
+                            health = pAdd->GetHealth();
                             target = pAdd;
+                        }
                     }
                 }
 
