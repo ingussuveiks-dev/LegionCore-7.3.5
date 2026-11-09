@@ -3658,6 +3658,9 @@ class spell_item_walling_souls : public AuraScript
 
     void Trigger(AuraEffect* aurEff, DamageInfo & dmgInfo, float & absorbAmount)
     {
+        // DamageInfo accounts absorption in whole damage units.
+        if (absorbAmount < 1.0f)
+            return;
         if (auto caster = GetCaster())
         {
             if (Player* plr = caster->ToPlayer())
