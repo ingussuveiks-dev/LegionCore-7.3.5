@@ -3145,8 +3145,8 @@ void Player::Regenerate(Powers power, float regenTimer, PowerTypeEntry const* po
 
 void Player::RegenerateHealth()
 {
-    uint32 curValue = GetHealth();
-    uint32 maxValue = GetMaxHealth();
+    uint64 curValue = GetHealth();
+    uint64 maxValue = GetMaxHealth();
 
     if (curValue >= maxValue)
         return;
@@ -3186,7 +3186,7 @@ void Player::RegenerateHealth()
     if (addvalue < 0)
         addvalue = 0;
 
-    ModifyHealth(int32(addvalue));
+    ModifyHealth(int64(addvalue));
 }
 
 void Player::ResetAllPowers()
