@@ -1,0 +1,292 @@
+{
+  "date": "2026-11-09",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "1dca42afde1069af4bce6dd93bf42bca8fdffb2e",
+  "support_commit": "f070a122150c673c21804059e3c9e0f00ed0fc1b",
+  "implementation_head": "47a9381c111dca2f4b71491741784b770ac3f7bd",
+  "fixes": [
+    {
+      "key": "Pylon",
+      "title": "Reject non-player targets in Failure Detection Pylon filtering",
+      "paths": [
+        "src/server/scripts/Spells/spell_generic.cpp"
+      ],
+      "audit": "docs/audits/failure-detection-pylon-player-filter-2026-11-09.json",
+      "commit": "673d42aa1b11defa0fba46931b577e59eb4d52b2"
+    },
+    {
+      "key": "Quills",
+      "title": "Resolve Calcified Quills target when its delayed cast executes",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_DemonicInquisition.cpp"
+      ],
+      "audit": "docs/audits/calcified-quills-delayed-target-2026-11-09.json",
+      "commit": "f1e9f840f94af3a21fde7279e4f6c57215213454"
+    },
+    {
+      "key": "Hellfire",
+      "title": "Keep Guldan delayed Hellfire on its boss lifetime",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+      ],
+      "audit": "docs/audits/guldan-hellfire-callback-owner-2026-11-09.json",
+      "commit": "c65d224cb692ae391238749e712c74fb7d1bc120"
+    },
+    {
+      "key": "Bounds",
+      "title": "Keep Guldan delayed empowered bounds on its boss lifetime",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+      ],
+      "audit": "docs/audits/guldan-bounds-callback-owner-2026-11-09.json",
+      "commit": "d086fa6cafc036831bdcf3250f3872845b5cd07d"
+    },
+    {
+      "key": "SeatIntro",
+      "title": "Scope Seat intro callbacks to the original live instance",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/instance_the_seat_of_the_triumvirate.cpp"
+      ],
+      "audit": "docs/audits/seat-intro-instance-lifecycle-2026-11-09.json",
+      "commit": "09dd750172aac61038356ff5e7c6e05420fbf2cf"
+    },
+    {
+      "key": "StyleGreeting",
+      "title": "Resolve Trial of Style contestants before delayed greetings",
+      "paths": [
+        "src/server/scripts/Legion/MicroHolidays/TrialofStyle.cpp"
+      ],
+      "audit": "docs/audits/trial-style-delayed-greetings-2026-11-09.json",
+      "commit": "14516656203e09459e56596ad5872310cffa7836"
+    },
+    {
+      "key": "StormDragon",
+      "title": "Cancel stale Stormheim dragon boarding and restore player control",
+      "paths": [
+        "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp"
+      ],
+      "audit": "docs/audits/stormheim-dragon-boarding-lifecycle-2026-11-09.json",
+      "commit": "bc6560749b726a1bf693030be98792b80b0ba612"
+    },
+    {
+      "key": "Hearthstation",
+      "title": "Initialize Hearthstation owner cleanup and resolve delayed owners",
+      "paths": [
+        "src/server/scripts/World/npcs_special.cpp"
+      ],
+      "audit": "docs/audits/hearthstation-owner-lifecycle-2026-11-09.json",
+      "commit": "2cd1de7b6e19ac28b6d1dea42f0694e72983b2fd"
+    },
+    {
+      "key": "Spider",
+      "title": "Resolve Infant Spider owner before its delayed ride cast",
+      "paths": [
+        "src/server/scripts/World/npcs_special.cpp"
+      ],
+      "audit": "docs/audits/infant-spider-delayed-owner-2026-11-09.json",
+      "commit": "bfff939392f75fae9de3fae881f743562a14839b"
+    },
+    {
+      "key": "StyleTimer",
+      "title": "Scope Trial of Style timed achievement callbacks to their original instance",
+      "paths": [
+        "src/server/scripts/Legion/MicroHolidays/TrialofStyle.cpp"
+      ],
+      "audit": "docs/audits/trial-style-timed-criteria-instance-2026-11-09.json",
+      "commit": "47a9381c111dca2f4b71491741784b770ac3f7bd"
+    }
+  ],
+  "counting": "Exactly ten repairs in seven production files:one Pylon player-target admission and nine callback/owner/instance/boarding lifecycle sequences. Nine identical Style greeting sites count as one repair;Hearthstation initial timer and two owner callbacks are one lifecycle repair. Guldan Hellfire and empowered Bounds are distinct abilities. Payload liveness guards complete these same fixes,not extra repairs. Support/archive/handoff are not product fixes.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "989e699d61bd4a2e0c68c64ad1542d87668c43f20368c2e0bb6f4afa5457a5b0",
+    "bnet_sha256": "54e86bb56b79e09c0f6a41890b704836dfbf3cb838fc2419a3b921b5290c8210",
+    "rollback": ".codex/release-before-thirteenth-ten-fixes-2026-11-09",
+    "startup": "Final owned1948 ready/shutdown0/exit0/gone,stderr empty,protected hashes unchanged;earlier owned6988 also stopped;no user process stopped."
+  },
+  "validation": {
+    "source": "Twenty MSVC ASAN cases:ten pinned1dca42afd counterfactuals paired with ten repaired cases. Actual selected production callbacks/snippets retain complete payloads against controlled Unit/queue/cast/conversation/criteria endpoints. Controls instrument retired objects while keeping memory allocated,or assert wrong-map/duplicate effects;they do not intentionally execute native UAF/null UB. Quills geometry,owned Guldan callbacks/dead-boss behavior,all nine identical greeting sites,Seat create failure/duplicate entries,Stormheim2s+3s boarding cancellation/control restoration,Hearthstation1000ms orphan timer/two finish auras and Spider retry are covered. These are controlled source tests,not actual client traversal.",
+    "native": "Nine selected native cases:complete Failure Detection Pylon199118 Spell area-selector dispatcher on real native Player/owned nonplayer raid candidate,plus eight exact scheduler/capture/lookup/admission snippets on actual Unit FunctionProcessor/ObjectAccessor/map/instance guards. Delayed payloads are replaced with observed endpoints:real raid casts,summons,speech,conversation6054,criteria57838 and toy ride/cleanup are not replayed. Stormheim full boarding/control/path remains source-only. Native player death state and owner fields are controlled inputs,no Player death/reward/save flow. Actual departure removes player registration and all seven pending lookup/map guards skip it. No character save/import/full-core ASAN claim.",
+    "release": "Original main game/scripts libraries and final-link paths retained. Staged and canonical verify_thirteenth_ten_release checks ten repairs plus127 prior selected paths. Exact class scope matters:actual Stormheim dragon override/two generation-and-vehicle guards/control restoration are linked;Vetir is unchanged. Checks include Pylon type guard,Quills/Guldan actor lookup,all nine greeting callbacks,Hearthstation1000 initialization/two lookups,Spider,Seat successful-create commit and Seat/Style original map-instance guards. Final canonical Scepter/ArtifactTier/ScenarioResumeASAN and owned ready/shutdown0/exit0/gone pass.",
+    "diagnostics": "Own/canonical crash/log length-time pre/post,exit/stdout/stderr and appended DBErrors/warnings/errors/assertions checked for every test/build/link/start. Final checks clean,no new crash or unexplained appended runtime diagnostic. Compiler-warning occurrences match baseline expressions;the final C4305/C5055 inventory is retained. Earlier fixture/inspection failures are preserved and corrected,not counted as passing gameplay.",
+    "scope": "Exactly ten repairs in seven production files:one native target admission and nine scoped lifecycle sequences. Nine identical Trial of Style greeting sites count as one repair. Hearthstation timer and two owner callbacks form one owner lifecycle repair. Guldan Hellfire and empowered Bounds are separate ability controllers. No SQL/character rewrite,global player/power policy,quest/item/group credit grant,guessed Lady HP threshold or kill timer. Original actors,spells,geometry,timers,routes and legitimate native group/faction/pet/guardian credit remain intact."
+  },
+  "diagnostics": {
+    "final": "Final twenty source-ASAN cases,nine selected native cases (one complete Pylon Spell selector plus eight exact scheduling/admission snippets with captured payloads),staged/canonical ten repairs plus127prior selected PE paths,Scepter/ArtifactTier/ScenarioResumeASAN and final owned1948 startup pass. Own/canonical crashes/log lengths/times/exit/stdout/stderr/appended diagnostics checked after every run.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 12,
+      "types": {
+        "C4305": 2,
+        "C5055": 10
+      },
+      "review": "Expressions retained verbatim from 1dca42afd;outside changed behavior. Other historical diagnostics stay visible,not certified fixed.",
+      "entries": [
+        {
+          "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+          "line": 1724,
+          "code": "C4305",
+          "message": "'+=': truncation from 'double' to 'float'",
+          "expression": "case SPELL_SOULSEVER:",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "line": 6913,
+          "code": "C5055",
+          "message": "operator '*': deprecated between enumerations and floating-point types",
+          "expression": "_timer = 1.5 * IN_MILLISECONDS;",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "line": 4622,
+          "code": "C5055",
+          "message": "operator '*': deprecated between enumerations and floating-point types",
+          "expression": "duration = auraEff->GetAmount() * MINUTE * IN_MILLISECONDS;",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "line": 4622,
+          "code": "C5055",
+          "message": "operator '*': deprecated between enumerations and floating-point types",
+          "expression": "duration = auraEff->GetAmount() * MINUTE * IN_MILLISECONDS;",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "line": 4731,
+          "code": "C5055",
+          "message": "operator '+': deprecated between enumerations and floating-point types",
+          "expression": "amount = (plr->GetCreateStat(Stats(aurEff->GetMiscValue())) + MainStatValue) * statMod;",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "line": 4736,
+          "code": "C5055",
+          "message": "operator '+': deprecated between enumerations and floating-point types",
+          "expression": "amount = (plr->GetCreateStat(Stats(aurEff->GetMiscValue())) + StaminaStatValue) * statMod;",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+          "line": 1726,
+          "code": "C4305",
+          "message": "'+=': truncation from 'double' to 'float'",
+          "expression": "for (float angle = float(- M_PI / 6); angle < M_PI / 6; angle += M_PI / 24)",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "line": 6913,
+          "code": "C5055",
+          "message": "operator '*': deprecated between enumerations and floating-point types",
+          "expression": "_timer = 1.5 * IN_MILLISECONDS;",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "line": 4622,
+          "code": "C5055",
+          "message": "operator '*': deprecated between enumerations and floating-point types",
+          "expression": "duration = auraEff->GetAmount() * MINUTE * IN_MILLISECONDS;",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "line": 4622,
+          "code": "C5055",
+          "message": "operator '*': deprecated between enumerations and floating-point types",
+          "expression": "duration = auraEff->GetAmount() * MINUTE * IN_MILLISECONDS;",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "line": 4731,
+          "code": "C5055",
+          "message": "operator '+': deprecated between enumerations and floating-point types",
+          "expression": "amount = (plr->GetCreateStat(Stats(aurEff->GetMiscValue())) + MainStatValue) * statMod;",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "line": 4736,
+          "code": "C5055",
+          "message": "operator '+': deprecated between enumerations and floating-point types",
+          "expression": "amount = (plr->GetCreateStat(Stats(aurEff->GetMiscValue())) + StaminaStatValue) * statMod;",
+          "expression_present_in_baseline": true
+        }
+      ]
+    },
+    "development": [
+      "Native scouting rejected three apparent Felhounds filter changes:244471/244578/244072/245149 are natively player-only and reject nonplayers with141. None changed or counted. Failure Detection199118/199119 lack that attribute;199118 native CheckTarget and raid relation admit the controlled owned nonplayer,then its complete real area-selector dispatcher rejects it while retaining the dead Player after repair.",
+      "Initial source extraction selected Vetir PassengerBoarded by global method signature instead of the dragon class. The first PE inspection exposed the untouched dragon callback. Restored Vetir exactly to1dca42afd,scoped extraction/replacement to npc_invasion_stormheim_dragonsAI,added explicit scope assertion,and reran all twenty source cases/native/final build/PE before first deployment. No wrong-Vetir candidate was promoted. Final reversal proves only seven intended files/ten repairs.",
+      "Native owned-candidate fixture requires both creator and summoned-by fields:Unit::GetOwnerGUID reads CREATED_BY,whereas SetOwnerGUID writes SUMMONED_BY. The first fixture assertion failed before Pylon dispatch. Corrected the controlled actor to matching owner fields;production owner semantics unchanged. Actual native Pylon dispatcher then passes live-player/pet exclusion and dead-player retention. Death state is a controlled native field input,not a full Player death path.",
+      "Native FunctionProcessor runs500ms before3500ms regardless of insertion order. A fixture expected Seat before Style and failed after both correct admissions. Changed assertion to per-key occurrence rather than insertion order;actual native departure guards then pass. Source Quills fixture initially put caster and target at the same position,so the authored zero-distance loop queued nothing;corrected independent target position. Earlier failures are development evidence,not successful runs.",
+      "Full sequence review found Unit::Update still dispatches function queues for a corpse. Final Quills/Bounds skip combat payload for a dead boss;Hellfire still removes its own aura/despawns while avoiding a dead-caster combat cast. Added source dead-boss cases and reran final twenty/source,native/build/staged+canonical PE and retained/startup checks. Interim canonical candidate was superseded with original pre-task rollback preserved.",
+      "PE inspection resolves out-of-line lambda operator thunks and checks actual generation load then captured-ticket compare. It verifies all nine direct greeting closures rather than an unrelated expanded helper. Both Stormheim stages resolve real Player/vehicle and preserve route base10993814 plus boolean variant10993815. Native508 has a single seat5746 (ordinary CanEnterOrExit false;existing forced52391 ride retained). Actual boarding/flight/control packets remain source-only/client-pending.",
+      "Local loader/schema trace confirms no static56194/123793/123794 spawns;explicit path IDs read waypoint_data_script,with20/19/13points for10993814/15/16;conversation6054 has one data/actor row. First readonly exploratory query used nonexistent conversation_template;corrected to matching schema without writes. Its initial stderr/SQL capture was overwritten before archival;development-notes.json transcribes the observed1146 and explicitly records that raw-byte limitation. Corrected captures and initial failed driver remain. No server DBErrors appended.",
+      "Compiler warning inventory retains twelve C4305/C5055 occurrences,all baseline expressions. Exact staged path sets reviewed;all ten focused implementation/audit commits individually pushed. Configs,credentials,dumps,characterdata and original attachment excluded. No full encounter/client/36-chain certification."
+    ],
+    "final_review": "PASS hash verification of1500 original archived files and all deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse-scope seven files and no production diff.",
+    "supplemental_archive": {
+      "manifest": "build-extractors/bin/Release/fixed/thirteenth-ten-repairs-2026-11-09/supplemental-manifest.json",
+      "sha256": "5af9ba63c00a831366c7ba5d5d50d24c0eed9dfa061e9e5b73260bb5c0a68661",
+      "files": 31
+    }
+  },
+  "scouted_rejected": "Native matching26972 data proves Felhounds244471/244578/244072/245149 have ONLY_TARGET_PLAYERS and reject a nonplayer with141;their apparent unsafe casts were not counted or modified. Pylon199118/199119 lack that flag and admit native nonplayers;199118 additionally admits an owned raid candidate,so its filter repair is proven. Native scout source/TSV preserved. Prior Ichoron/shared-health/wide-heal and vehicle-backed candidates remain deferred;no partial root workaround. Local matching data resolves selected contracts;no incompatible modern transplant.",
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/thirteenth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "334c8b081fdcb711af78d45e47aae856cf2bca598b3cd791f0daba6bf9aca895",
+    "original_files": 1500,
+    "removed_files": 332,
+    "logical_removed_bytes": 1652233552,
+    "deletion_manifest": ".codex/thirteenth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "70d05f7cf4b614a33529f3c5c53bba738c8f0b78576ea472fac4e92c8a8ee961",
+    "retained_rollbacks": [
+      ".codex/release-before-thirteenth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-twelfth-ten-fixes-2026-11-09",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-twelfthee6d4b2a retired after newest pre-thirteenth rollback hash verification rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical EXE/MAP/config/certs/DLL/extracted data,required main game/scripts libraries/cache,reusable tests,backups and security boundaries. OPEN Lady/LINK2/Slaghammer/mixed DBErrors/SQL/TimeLoop remain. Ninth-batch TimeLoop EXE/symbols retained for concrete investigation. Private test configurations deleted,not archived.",
+    "postcheck": "Canonical/protected/recovery hashes unchanged,no canonical crashes or world/bnet processes."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold/kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 complete artifact chains remain OPEN. No default Slaghammer probe or mixed-log truncation.",
+    "MariaDB numeric CAST issue:82original+94corrected raw records remain outside fixed and hash-verified;no database workaround.",
+    "TimeLoop105984 script/native32bit healing issue remains OPEN:26raw records and ninth-batch investigation EXE/symbols retained.",
+    "Actual Pylon item/resurrection/group use,raid geometry/summons/cleanup,Seat6054 actors/audio/full dungeon,all Trial of Style stage speech and timed criteria,Stormheim vehicle/paths/control/camera/pet/reboarding/final56604,and actual Hearthstation/Spider ride/emotes/aura cleanup/reuse/logout remain client-pending. Native callback payloads are captured endpoints and Stormheim boarding remains source-only;no whole encounter or36-chain claim."
+  ],
+  "stop": "Exactly ten implemented,tested to stated scopes,deployed,separately committed/pushed and cleaned. Stop after final audit/handoff push;no eleventh repair started. Prior OPEN evidence and client/all36-chain checks remain visible."
+}
