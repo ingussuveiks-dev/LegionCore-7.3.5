@@ -987,9 +987,11 @@ class spell_deathwhisper_mana_barrier : public SpellScriptLoader
                 PreventDefaultAction();
                 if (Unit* caster = GetCaster())
                 {
-                    int32 missingHealth = int32(caster->GetMaxHealth() - caster->GetHealth());
+                    int64 missingHealth = int64(caster->GetMaxHealth() - caster->GetHealth());
                     caster->ModifyHealth(missingHealth);
-                    caster->ModifyPower(POWER_MANA, -missingHealth);
+                    // Power is signed 32-bit; spend at most the actual mana pool.
+                    int32 manaCost = int32(std::min<int64>(missingHealth, caster->GetPower(POWER_MANA)));
+                    caster->ModifyPower(POWER_MANA, -manaCost);
                 }
             }
 
