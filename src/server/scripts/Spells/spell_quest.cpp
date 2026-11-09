@@ -1764,7 +1764,7 @@ public:
 
                     if (artifactLevel > 35)
                     {
-                        uint64 free_xp = artifact->GetUInt32Value(ITEM_FIELD_ARTIFACT_XP);
+                        uint64 free_xp = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);
                         for (uint32 i = 36; i <= artifactLevel; i++)
                             if (GtArtifactLevelXPEntry const* cost = sArtifactLevelXPGameTable.GetRow(i))
                                     free_xp += cost->XP;
