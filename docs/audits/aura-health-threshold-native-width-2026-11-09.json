@@ -27,8 +27,59 @@
   "canonical_world_sha256": "cf2333e1259998018e8fae189a1097d83524611bc3da33d97a2f01877c0307a8",
   "patch_sha256": "98c8c5d34b3152298e8e64d378eef0440c38a3c9698dfcc69ca2c1975822bedf",
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE",
-    "archive": "build-extractors/bin/Release/fixed/ninth-ten-repairs-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/ninth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "5058e94e256e621c203c46738925482a2f8cbf375c00a3c8ed6780c3241b03bd",
+    "original_files": 1458,
+    "removed_files": 361,
+    "logical_removed_bytes": 1282415634,
+    "deletion_manifest": ".codex/ninth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "515c4c2609e70a59ad25d7a6c2b7a6e49094e95d4e163c6a2f2a9423cb547915",
+    "retained_rollbacks": [
+      ".codex/release-before-ninth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-eighth-ten-fixes-2026-11-09",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-eighth6ae65ef6 retired after newest pre-ninth6b9779a6 rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical EXE/MAP/config/certs/DLL/extracteddata,required game/scripts libraries/main incrementalcache,reusable tests,personal/character/database backups/security,OPENLady/LINK2/Slaghammer/mixedlog/SQL. TimeLoop runtime files/symbols remain with concrete outstanding native recovery investigation;26textrecords outsidefixed. Private selected-test configs deleted,not archived.",
+    "postcheck": "Protected hashes unchanged;no canonical crash,no world/bnet process."
   },
-  "batch_audit": "docs/audits/ninth-ten-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/ninth-ten-repairs-2026-11-09.json",
+  "fix_commit": "e47150b73de1dfe7bb7aff9681a12dc915299a5b",
+  "final_scope_metadata_sha256": "8839f04b17e74a0283b79d81d4a99c26849230a94718515193739815b0c2d320",
+  "final_review": {
+    "status": "PASS",
+    "evidence": ".codex/ninth-ten-fixes-2026-11-09/final-review-driver.log",
+    "sha256": "31097809c46fbfba4e056e0fb22b69f80e8c344db77aaabebaa42eac40b6391c",
+    "supplemental_manifest": "build-extractors/bin/Release/fixed/ninth-ten-repairs-2026-11-09/supplemental-manifest.json",
+    "supplemental_manifest_sha256": "9e0756909f158f3597642d103c719c7f02f2df0428e4d803efa662180fd19003",
+    "supplemental_files": 233,
+    "no_servers_remaining": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "open_sql_original82_and_corrected94_hashes": "PASS",
+    "open_timeloop26rawhashes_and_runtime_retained": "PASS",
+    "exact10commits_pushed": "PASS",
+    "prior_handoff_history": "PASS"
+  }
 }
