@@ -1632,7 +1632,7 @@ public:
 
         void JustDied(Unit* killer) override
         {
-            Player *pl = killer->ToPlayer();
+            Player *pl = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             if (!pl)
                 return;
             sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2, pl->GetGUID());
