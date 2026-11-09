@@ -1,0 +1,297 @@
+[
+  {
+    "key": "EN",
+    "path": "src/server/scripts/Legion/TheEmeraldNightmare/the_emerald_nightmare.cpp",
+    "cls": "spell_vantus_rune_the_emerald_nightmare",
+    "nested": "spell_vantus_rune_the_emerald_nightmare_AuraScript",
+    "header": "src/server/scripts/Legion/TheEmeraldNightmare/the_emerald_nightmare.h",
+    "map": 1520,
+    "table": [
+      {
+        "rune": 192761,
+        "helper": 208844,
+        "boss": "DATA_NYTHENDRA",
+        "name": "Vantus Rune: Nythendra"
+      },
+      {
+        "rune": 192765,
+        "helper": 208848,
+        "boss": "DATA_RENFERAL",
+        "name": "Vantus Rune: Elerethe Renferal"
+      },
+      {
+        "rune": 192762,
+        "helper": 208845,
+        "boss": "DATA_ILGYNOTH",
+        "name": "Vantus Rune: Il'gynoth, The Heart of Corruption"
+      },
+      {
+        "rune": 191464,
+        "helper": 208843,
+        "boss": "DATA_URSOC",
+        "name": "Vantus Rune: Ursoc"
+      },
+      {
+        "rune": 192763,
+        "helper": 208846,
+        "boss": "DATA_DRAGON_NIGHTMARE",
+        "name": "Vantus Rune: Dragons of Nightmare"
+      },
+      {
+        "rune": 192766,
+        "helper": 208849,
+        "boss": "DATA_CENARIUS",
+        "name": "Vantus Rune: Cenarius"
+      },
+      {
+        "rune": 192764,
+        "helper": 208847,
+        "boss": "DATA_XAVIUS",
+        "name": "Vantus Rune: Xavius"
+      }
+    ],
+    "enum": "enum eData\n{\n    DATA_NYTHENDRA              = 0,\n    DATA_RENFERAL               = 1,\n    DATA_ILGYNOTH               = 2,\n    DATA_URSOC                  = 3,\n    DATA_DRAGON_NIGHTMARE       = 4,\n    DATA_CENARIUS               = 5,\n    DATA_XAVIUS                 = 6,\n    DATA_PRE_EVENT_XAVIUS       = 7,\n    MAX_ENCOUNTER,\n\n    DATA_EYE_ILGYNOTH,\n};"
+  },
+  {
+    "key": "NH",
+    "path": "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp",
+    "cls": "spell_vantus_rune_the_nighthold",
+    "nested": "spell_vantus_rune_the_nighthold_AuraScript",
+    "header": "src/server/scripts/Legion/TheNighthold/the_nighthold.h",
+    "map": 1530,
+    "table": [
+      {
+        "rune": 192767,
+        "helper": 208850,
+        "boss": "DATA_SKORPYRON",
+        "name": "Vantus Rune: Skorpyron"
+      },
+      {
+        "rune": 192768,
+        "helper": 208851,
+        "boss": "DATA_ANOMALY",
+        "name": "Vantus Rune: Chronomatic Anomaly"
+      },
+      {
+        "rune": 192769,
+        "helper": 208852,
+        "boss": "DATA_TRILLIAX",
+        "name": "Vantus Rune: Trilliax"
+      },
+      {
+        "rune": 192770,
+        "helper": 208853,
+        "boss": "DATA_ALURIEL",
+        "name": "Vantus Rune: Spellblade Aluriel"
+      },
+      {
+        "rune": 192774,
+        "helper": 208857,
+        "boss": "DATA_ETRAEUS",
+        "name": "Vantus Rune: Star Augur Etraeus"
+      },
+      {
+        "rune": 192772,
+        "helper": 208855,
+        "boss": "DATA_TELARN",
+        "name": "Vantus Rune: High Botanist Tel'arn"
+      },
+      {
+        "rune": 192773,
+        "helper": 208856,
+        "boss": "DATA_KROSUS",
+        "name": "Vantus Rune: Krosus"
+      },
+      {
+        "rune": 192771,
+        "helper": 208854,
+        "boss": "DATA_TICHONDRIUS",
+        "name": "Vantus Rune: Tichondrius"
+      },
+      {
+        "rune": 192775,
+        "helper": 208858,
+        "boss": "DATA_ELISANDE",
+        "name": "Vantus Rune: Grand Magistrix Elisande"
+      },
+      {
+        "rune": 192776,
+        "helper": 208859,
+        "boss": "DATA_GULDAN",
+        "name": "Vantus Rune: Gul'dan"
+      }
+    ],
+    "enum": "enum eData\n{\n    DATA_SKORPYRON          = 0,\n    DATA_ANOMALY            = 1,\n    DATA_TRILLIAX           = 2,\n\n    DATA_ALURIEL            = 3,\n    DATA_ETRAEUS            = 4,\n    DATA_TELARN             = 5,\n\n    DATA_KROSUS             = 6,\n    DATA_TICHONDRIUS        = 7,\n    DATA_ELISANDE           = 8,\n\n    DATA_GULDAN             = 9,\n\n    MAX_ENCOUNTER,\n\n    DATA_SKORPYRON_PATH,\n    DATA_ANOMALY_SPEED,\n    DATA_ANOMALY_OVERWHELMING,\n    DATA_TRILLIAX_INTRO,\n    DATA_TRILLIAX_IMPRINT_DOOR,\n\n    DATA_STAR_AUGUR_ETRAEUS_PHASE,\n    DATA_STAR_AUGUR_ETRAEUS_GRAVITY_PULL_COUNTER,\n\n    DATA_KROSUS_PLATFORM1,\n    DATA_KROSUS_PLATFORM2,\n    DATA_KROSUS_PLATFORM3,\n    DATA_KROSUS_PLATFORM4,\n    DATA_IMAGE_OF_KADGHAR,\n    DATA_KROSUS_INTRO_TRASH,\n    DATA_CHAOS_MAGE_BELORN,\n    DATA_SUMMONER_XIV,\n    DATA_FELWEAVER_PHARAMERE,\n\n    DATA_TELARN_CALL_OF_NIGHT,\n};"
+  },
+  {
+    "key": "TOV",
+    "path": "src/server/scripts/Legion/TrialOfValor/trial_of_valor.cpp",
+    "cls": "spell_vantus_rune_trial_of_valor",
+    "nested": "spell_vantus_rune_trial_of_valor_AuraScript",
+    "header": "src/server/scripts/Legion/TrialOfValor/trial_of_valor.h",
+    "map": 1648,
+    "table": [
+      {
+        "rune": 229175,
+        "helper": 229187,
+        "boss": "Data::BossIDs::GarmID",
+        "name": "Vantus Rune: Guarm"
+      },
+      {
+        "rune": 229174,
+        "helper": 229186,
+        "boss": "Data::BossIDs::OdynID",
+        "name": "Vantus Rune: Odyn"
+      },
+      {
+        "rune": 229176,
+        "helper": 229188,
+        "boss": "Data::BossIDs::HelyaID",
+        "name": "Vantus Rune: Helya"
+      }
+    ],
+    "enum": "enum BossIDs\n    {\n        OdynID      = 0,\n        GarmID      = 1,\n        HelyaID     = 2,\n\n        Max\n    };"
+  },
+  {
+    "key": "TOS",
+    "path": "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.cpp",
+    "cls": "spell_vantus_rune_tomb_of_sargeras",
+    "nested": "spell_vantus_rune_tomb_of_sargeras_AuraScript",
+    "header": "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.h",
+    "map": 1676,
+    "table": [
+      {
+        "rune": 237820,
+        "helper": 237795,
+        "boss": "DATA_FALLEN_AVATAR",
+        "name": "Vantus Rune: Fallen Avatar"
+      },
+      {
+        "rune": 237821,
+        "helper": 237796,
+        "boss": "DATA_GOROTH",
+        "name": "Vantus Rune: Goroth"
+      },
+      {
+        "rune": 237822,
+        "helper": 237797,
+        "boss": "DATA_SISTERS_OF_THEMOON",
+        "name": "Vantus Rune: Sisters of the Moon"
+      },
+      {
+        "rune": 237823,
+        "helper": 237798,
+        "boss": "DATA_MAIDEN_OF_VIGILANCE",
+        "name": "Vantus Rune: Maiden of Vigilance"
+      },
+      {
+        "rune": 237824,
+        "helper": 237799,
+        "boss": "DATA_HARJATAN",
+        "name": "Vantus Rune: Harjatan"
+      },
+      {
+        "rune": 237825,
+        "helper": 237800,
+        "boss": "DATA_KILJAEDEN",
+        "name": "Vantus Rune: Kil'jaeden"
+      },
+      {
+        "rune": 237826,
+        "helper": 237801,
+        "boss": "DATA_MISTRESS_SASSZINE",
+        "name": "Vantus Rune: Mistress Sassz'ine"
+      },
+      {
+        "rune": 237827,
+        "helper": 237802,
+        "boss": "DATA_THE_DESOLATE_HOST",
+        "name": "Vantus Rune: The Desolate Host"
+      },
+      {
+        "rune": 237828,
+        "helper": 237803,
+        "boss": "DATA_DEMONIC_INQUISITION",
+        "name": "Vantus Rune: Demonic Inquisition"
+      }
+    ],
+    "enum": "enum eData\n{\n    DATA_GOROTH                     = 0,\n    DATA_HARJATAN                   = 1,\n    DATA_MISTRESS_SASSZINE          = 2,\n\n    DATA_DEMONIC_INQUISITION        = 3,\n    DATA_THE_DESOLATE_HOST          = 4,\n    DATA_SISTERS_OF_THEMOON         = 5,\n\n    DATA_MAIDEN_OF_VIGILANCE        = 6,\n    DATA_FALLEN_AVATAR              = 7,\n    DATA_KILJAEDEN                  = 8,\n\n    MAX_ENCOUNTER\n};"
+  },
+  {
+    "key": "Antorus",
+    "path": "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp",
+    "cls": "spell_vantus_rune_antorus",
+    "nested": "spell_vantus_rune_antorus_AuraScript",
+    "header": "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.h",
+    "map": 1712,
+    "table": [
+      {
+        "rune": 250153,
+        "helper": 250152,
+        "boss": "DATA_WORLDBREAKER",
+        "name": "Vantus Rune: Garothi Worldbreaker"
+      },
+      {
+        "rune": 250156,
+        "helper": 250155,
+        "boss": "DATA_FELHOUNDS",
+        "name": "Vantus Rune: Felhounds of Sargeras"
+      },
+      {
+        "rune": 250167,
+        "helper": 250166,
+        "boss": "DATA_ANTORAN",
+        "name": "Vantus Rune: War Council"
+      },
+      {
+        "rune": 250160,
+        "helper": 250159,
+        "boss": "DATA_HASABEL",
+        "name": "Vantus Rune: Portal Keeper Hasabel"
+      },
+      {
+        "rune": 250150,
+        "helper": 250149,
+        "boss": "DATA_EONAR",
+        "name": "Vantus Rune: Eonar the Lifebinder"
+      },
+      {
+        "rune": 250158,
+        "helper": 250157,
+        "boss": "DATA_IMONAR",
+        "name": "Vantus Rune: Imonar the Soulhunter"
+      },
+      {
+        "rune": 250148,
+        "helper": 250147,
+        "boss": "DATA_KINGAROTH",
+        "name": "Vantus Rune: Kin'garoth"
+      },
+      {
+        "rune": 250165,
+        "helper": 250164,
+        "boss": "DATA_VARIMATHRAS",
+        "name": "Vantus Rune: Varimathras"
+      },
+      {
+        "rune": 250163,
+        "helper": 250162,
+        "boss": "DATA_COVEN",
+        "name": "Vantus Rune: The Coven of Shivarra"
+      },
+      {
+        "rune": 250144,
+        "helper": 250143,
+        "boss": "DATA_AGGRAMAR",
+        "name": "Vantus Rune: Aggramar"
+      },
+      {
+        "rune": 250146,
+        "helper": 250145,
+        "boss": "DATA_ARGUS",
+        "name": "Vantus Rune: Argus the Unmaker"
+      }
+    ],
+    "enum": "enum eData\n{\n    DATA_WORLDBREAKER       = 0,\n    DATA_FELHOUNDS,\n    DATA_ANTORAN,\n    \n    DATA_HASABEL,\n    DATA_EONAR,\n    DATA_IMONAR,\n    \n    DATA_KINGAROTH,\n    DATA_VARIMATHRAS,\n    DATA_COVEN,\n    \n    DATA_AGGRAMAR,\n    DATA_ARGUS,\n\n    MAX_ENCOUNTER,\n\n    DATA_COSMETIC_TORMENT\n};"
+  }
+]

@@ -1,0 +1,255 @@
+[
+  {
+    "key": "Valor",
+    "spell": 219567,
+    "title": "Use the aura owner in Commanders Valor update",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/ClassHalls/commanders_valor.cpp",
+        "classes": [
+          "aura_commanders_valor_location"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "Valor",
+        "path": "src/server/scripts/Legion/ClassHalls/commanders_valor.cpp",
+        "cls": "aura_commanders_valor_location"
+      }
+    ]
+  },
+  {
+    "key": "Tirathon",
+    "spell": 190833,
+    "title": "Use the beam aura owner for Tirathons repeated damage",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/VaultoftheWardens/boss_tirathon_saltheril.cpp",
+        "classes": [
+          "spell_tirathon_beam_dmg"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "Tirathon",
+        "path": "src/server/scripts/Legion/VaultoftheWardens/boss_tirathon_saltheril.cpp",
+        "cls": "spell_tirathon_beam_dmg"
+      }
+    ]
+  },
+  {
+    "key": "Frog",
+    "spell": 147655,
+    "title": "Trigger Gulp Frog Toxin at the actual tenth stack",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_generic.cpp",
+        "classes": [
+          "spell_gulp_frog_toxin"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "Frog",
+        "path": "src/server/scripts/Spells/spell_generic.cpp",
+        "cls": "spell_gulp_frog_toxin"
+      }
+    ]
+  },
+  {
+    "key": "Vantus",
+    "spell": 0,
+    "title": "Bind Legion Vantus effects to their own encounter lifecycle",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/the_emerald_nightmare.cpp",
+        "classes": [
+          "spell_vantus_rune_the_emerald_nightmare"
+        ]
+      },
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp",
+        "classes": [
+          "spell_vantus_rune_the_nighthold"
+        ]
+      },
+      {
+        "path": "src/server/scripts/Legion/TrialOfValor/trial_of_valor.cpp",
+        "classes": [
+          "spell_vantus_rune_trial_of_valor"
+        ]
+      },
+      {
+        "path": "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.cpp",
+        "classes": [
+          "spell_vantus_rune_tomb_of_sargeras"
+        ]
+      },
+      {
+        "path": "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp",
+        "classes": [
+          "spell_vantus_rune_antorus"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "VantusEN",
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/the_emerald_nightmare.cpp",
+        "cls": "spell_vantus_rune_the_emerald_nightmare_AuraScript"
+      },
+      {
+        "key": "VantusNH",
+        "path": "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp",
+        "cls": "spell_vantus_rune_the_nighthold_AuraScript"
+      },
+      {
+        "key": "VantusTOV",
+        "path": "src/server/scripts/Legion/TrialOfValor/trial_of_valor.cpp",
+        "cls": "spell_vantus_rune_trial_of_valor_AuraScript"
+      },
+      {
+        "key": "VantusTOS",
+        "path": "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.cpp",
+        "cls": "spell_vantus_rune_tomb_of_sargeras_AuraScript"
+      },
+      {
+        "key": "VantusAntorus",
+        "path": "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp",
+        "cls": "spell_vantus_rune_antorus_AuraScript"
+      }
+    ],
+    "added": [
+      "src/server/scripts/Legion/VantusRuneLifecycle.h"
+    ]
+  },
+  {
+    "key": "Void",
+    "spell": 108968,
+    "title": "Preserve fractional health percentages in Void Shift",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_priest.cpp",
+        "classes": [
+          "spell_pri_void_shift"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "Void",
+        "path": "src/server/scripts/Spells/spell_priest.cpp",
+        "cls": "spell_pri_void_shift"
+      }
+    ]
+  },
+  {
+    "key": "Swift",
+    "spell": 40121,
+    "title": "Calculate Swift Flight passive from the surviving rider",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_druid.cpp",
+        "classes": [
+          "spell_dru_swift_flight_passive"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "Swift",
+        "path": "src/server/scripts/Spells/spell_druid.cpp",
+        "cls": "spell_dru_swift_flight_passive"
+      }
+    ]
+  },
+  {
+    "key": "Zone",
+    "spell": 50461,
+    "title": "Guard unresolved Anti Magic Zone caster during calculation",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_dk.cpp",
+        "classes": [
+          "spell_dk_anti_magic_zone"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "Zone",
+        "path": "src/server/scripts/Spells/spell_dk.cpp",
+        "cls": "spell_dk_anti_magic_zone"
+      }
+    ]
+  },
+  {
+    "key": "Artifact",
+    "spell": 211309,
+    "title": "Guard original artifact stat casters during recalculation",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_generic.cpp",
+        "classes": [
+          "spell_gen_artificial_stamina",
+          "spell_gen_artificial_threat"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "Stamina",
+        "path": "src/server/scripts/Spells/spell_generic.cpp",
+        "cls": "spell_gen_artificial_stamina"
+      },
+      {
+        "key": "Threat",
+        "path": "src/server/scripts/Spells/spell_generic.cpp",
+        "cls": "spell_gen_artificial_threat"
+      }
+    ]
+  },
+  {
+    "key": "Censer",
+    "spell": 148385,
+    "title": "Flag the Censer aura recipient for PvP",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_item.cpp",
+        "classes": [
+          "spell_censer_of_eternal_agony"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "Censer",
+        "path": "src/server/scripts/Spells/spell_item.cpp",
+        "cls": "spell_censer_of_eternal_agony"
+      }
+    ]
+  },
+  {
+    "key": "Maw",
+    "spell": 215405,
+    "title": "Scale Rancid Maw damage upward with distance",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_item.cpp",
+        "classes": [
+          "spell_item_rancid_maw"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "Maw",
+        "path": "src/server/scripts/Spells/spell_item.cpp",
+        "cls": "spell_item_rancid_maw"
+      }
+    ]
+  }
+]
