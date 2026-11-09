@@ -22716,7 +22716,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     InitPrimaryProfessions();                               // to max set before any spell loaded
 
     // init saved position, and fix it later if problematic
-    ObjectGuid::LowType transLowGUID = uint32(fields[f_transguid].GetUInt64());
+    ObjectGuid::LowType transLowGUID = fields[f_transguid].GetUInt64();
 
     Relocate(fields[f_position_x].GetFloat(), fields[f_position_y].GetFloat(), fields[f_position_z].GetFloat(), fields[f_orientation].GetFloat());
 
@@ -22923,7 +22923,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
         }
         else*/
             {
-                TC_LOG_ERROR("entities.player", "Player (guidlow %lu) have problems with transport guid (%lu). Teleport to bind location.", guid.GetCounter(), transLowGUID);
+                TC_LOG_ERROR("entities.player", "Player (guidlow " UI64FMTD ") have problems with transport guid (" UI64FMTD "). Teleport to bind location.", guid.GetCounter(), transLowGUID);
                 RelocateToHomebind();
             }
         }
