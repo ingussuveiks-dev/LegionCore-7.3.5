@@ -1,0 +1,183 @@
+[
+  {
+    "key": "Hadronox",
+    "title": "Preserve the full Hadronox leech-poison heal",
+    "paths": [
+      "src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_hadronox.cpp"
+    ],
+    "cls": "boss_hadronoxAI",
+    "method": "KilledUnit",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_hadronox.cpp",
+        "old": "me->ModifyHealth(int32(me->CountPctFromMaxHealth(10)));",
+        "new": "me->ModifyHealth(int64(me->CountPctFromMaxHealth(10)));"
+      }
+    ]
+  },
+  {
+    "key": "Sentinel",
+    "title": "Preserve Anubisath sentinel inherited healing at high health",
+    "paths": [
+      "src/server/scripts/Kalimdor/TempleOfAhnQiraj/mob_anubisath_sentinel.cpp"
+    ],
+    "cls": "aqsentinelAI",
+    "method": "JustDied",
+    "edits": [
+      {
+        "path": "src/server/scripts/Kalimdor/TempleOfAhnQiraj/mob_anubisath_sentinel.cpp",
+        "old": "sent->ModifyHealth(int32(sent->CountPctFromMaxHealth(50)));",
+        "new": "sent->ModifyHealth(int64(sent->CountPctFromMaxHealth(50)));"
+      }
+    ]
+  },
+  {
+    "key": "ValithriaHealth",
+    "title": "Keep Valithria at half of her full health on reset and intro",
+    "paths": [
+      "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp"
+    ],
+    "cls": "boss_valithria_dreamwalkerAI",
+    "method": "Reset",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp",
+        "old": "me->SetHealth(uint32(me->GetMaxHealth() * 0.50));",
+        "new": "me->SetHealth(me->CountPctFromMaxHealth(50));",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "key": "Firesworn",
+    "title": "Compare Firesworn eruption damage without signed health truncation",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/MoltenCore/boss_garr.cpp"
+    ],
+    "cls": "mob_fireswornAI",
+    "method": "DamageTakenAfterScaling",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/MoltenCore/boss_garr.cpp",
+        "old": "void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType)",
+        "new": "void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override"
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/MoltenCore/boss_garr.cpp",
+        "old": "uint32 const health10pct = me->CountPctFromMaxHealth(10);\n                uint32 health = me->GetHealth();\n                if (int32(health) - int32(damage) < int32(health10pct))",
+        "new": "uint64 const health10pct = me->CountPctFromMaxHealth(10, attacker);\n                uint64 const health = me->GetHealth(attacker);\n                if (damage >= health || health - damage < health10pct)"
+      }
+    ]
+  },
+  {
+    "key": "Delrissa",
+    "title": "Choose Delrissa lowest-health living healing target consistently",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/MagistersTerrace/boss_priestess_delrissa.cpp"
+    ],
+    "cls": "boss_priestess_delrissaAI",
+    "method": "UpdateAI",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/MagistersTerrace/boss_priestess_delrissa.cpp",
+        "old": "uint32 health = me->GetHealth();",
+        "new": "uint64 health = me->GetHealth();"
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/MagistersTerrace/boss_priestess_delrissa.cpp",
+        "old": "if (pAdd->IsAlive() && pAdd->GetHealth() < health)\n                            target = pAdd;",
+        "new": "if (pAdd->IsAlive() && pAdd->GetHealth() < health)\n                        {\n                            health = pAdd->GetHealth();\n                            target = pAdd;\n                        }"
+      }
+    ]
+  },
+  {
+    "key": "Finkle",
+    "title": "Limit Finkle mixture absorption to actual lethal excess damage",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_chimaeron.cpp"
+    ],
+    "cls": "spell_chimaeron_finkles_mixture_AuraScript",
+    "method": "Absorb",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_chimaeron.cpp",
+        "old": "uint32 curHealth = GetTarget()->GetHealth();\n\n            if (curHealth >= 10000)",
+        "new": "uint64 const curHealth = GetTarget()->GetHealth();\n\n            if (curHealth >= 10000 && dmgInfo.GetDamage() >= curHealth)"
+      }
+    ]
+  },
+  {
+    "key": "Council",
+    "title": "Clamp Council possession release threshold before unsigned conversion",
+    "paths": [
+      "src/server/scripts/Pandaria/ThroneOfThunder/boss_council_of_elders.cpp"
+    ],
+    "cls": "boss_council_of_eldersAI",
+    "method": "PassengerBoarded",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/ThroneOfThunder/boss_council_of_elders.cpp",
+        "old": "donehppct = uint32(me->GetHealthPct()) - 25 < 0 ? 1 : uint32(me->GetHealthPct() - 25);",
+        "new": "donehppct = uint32(std::max(1.0f, me->GetHealthPct() - 25.0f));"
+      }
+    ]
+  },
+  {
+    "key": "Nefarian",
+    "title": "Compute Nefarian remaining health percentage before electrocute gates",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_bwd_nefarian.cpp"
+    ],
+    "cls": "boss_bd_nefarianAI",
+    "method": "DamageTakenAfterScaling",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_bwd_nefarian.cpp",
+        "old": "void DamageTaken(Unit* /*who*/, uint32& damage, DamageEffectType dmgType)",
+        "new": "void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override"
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_bwd_nefarian.cpp",
+        "old": "int ptc = (me->GetHealth() - damage) / me->GetMaxHealth() * 100;",
+        "new": "uint64 const health = me->GetHealth(attacker);\n            uint64 const remainingHealth = damage < health ? health - damage : 0;\n            int ptc = me->GetMaxHealth(attacker) ? int(100.0 * remainingHealth / me->GetMaxHealth(attacker)) : 0;"
+      }
+    ]
+  },
+  {
+    "key": "Reflection",
+    "title": "Admit lethal Shadowy Reflection procs without unsigned health underflow",
+    "paths": [
+      "src/server/scripts/Spells/spell_generic.cpp"
+    ],
+    "cls": "spell_gen_shadowy_reflection",
+    "method": "OnProc_0",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_generic.cpp",
+        "old": "if (owner->CountPctFromMaxHealth(50) > (owner->GetHealth() - damage))",
+        "new": "if (damage >= owner->GetHealth() || owner->CountPctFromMaxHealth(50) > owner->GetHealth() - damage)"
+      }
+    ]
+  },
+  {
+    "key": "ValithriaTrigger",
+    "title": "Retry Valithria intro when its combat trigger cannot spawn",
+    "paths": [
+      "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp"
+    ],
+    "cls": "boss_valithria_dreamwalkerAI",
+    "method": "MoveInLineOfSight",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp",
+        "old": "                    if (instance && instance->GetBossState(DATA_VALITHRIA_DREAMWALKER) == NOT_STARTED)\n                        instance->SetBossState(DATA_VALITHRIA_DREAMWALKER, IN_PROGRESS);\n\n                    Talk(SAY_VALITHRIA_ENTER_COMBAT);",
+        "new": "                    combat_trigger = me->SummonCreature(NPC_GREEN_DRAGON_COMBAT_TRIGGER, me->GetPositionX(), me->GetPositionY(),me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 20000);\n                    if (!combat_trigger)\n                        return;\n\n                    if (instance && instance->GetBossState(DATA_VALITHRIA_DREAMWALKER) == NOT_STARTED)\n                        instance->SetBossState(DATA_VALITHRIA_DREAMWALKER, IN_PROGRESS);\n\n                    Talk(SAY_VALITHRIA_ENTER_COMBAT);"
+      },
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp",
+        "old": "                    combat_trigger = me->SummonCreature(NPC_GREEN_DRAGON_COMBAT_TRIGGER, me->GetPositionX(), me->GetPositionY(),me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 20000);\n                    combat_trigger->SetDisplayId(MODEL_INVISIBLE);",
+        "new": "                    combat_trigger->SetDisplayId(MODEL_INVISIBLE);"
+      }
+    ]
+  }
+]
