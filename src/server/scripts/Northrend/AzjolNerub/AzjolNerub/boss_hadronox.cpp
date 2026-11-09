@@ -97,7 +97,7 @@ public:
             if (!Victim || !Victim->HasAura(DUNGEON_MODE(SPELL_LEECH_POISON, H_SPELL_LEECH_POISON)) || !me->IsAlive())
                 return;
 
-            me->ModifyHealth(int32(me->CountPctFromMaxHealth(10)));
+            me->ModifyHealth(int64(me->CountPctFromMaxHealth(10)));
         }
 
         void JustDied(Unit* /*killer*/) override
