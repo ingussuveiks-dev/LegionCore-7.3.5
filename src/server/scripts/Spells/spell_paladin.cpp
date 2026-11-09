@@ -3057,6 +3057,7 @@ class spell_pal_t21_prot : public AuraScript
 
         if (update <= 0)
         {
+            update = 1000;
             if (auto caster = GetCaster())
             {
                 float bp = GetSpellInfo()->Effects[EFFECT_0]->CalcValue(caster);
