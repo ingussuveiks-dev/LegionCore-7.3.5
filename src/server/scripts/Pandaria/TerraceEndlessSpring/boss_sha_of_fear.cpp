@@ -450,6 +450,7 @@ public:
                 DoZoneInCombat();
                 Talk(TALK_AGGRO);
 
+                me->SetPowerType(POWER_ENERGY);
                 me->SetPower(POWER_ENERGY, 0);
                 me->SetInt32Value(UNIT_FIELD_POWER, 0);
                 me->SetMaxPower(POWER_ENERGY, 100);
