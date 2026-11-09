@@ -1,0 +1,172 @@
+{
+  "date": "2026-11-09",
+  "request": "Continue with exactly ten further repairs,then stop.",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "c7f6e2f46",
+  "support_commit": "6ef54f14d",
+  "fixes": [
+    {
+      "key": "Barding",
+      "file": "spell_generic.cpp",
+      "cls": "spell_stonehide_leather_barding",
+      "title": "Guard Stonehide Barding profession duration for nonplayer casters",
+      "spell": 208705,
+      "slug": "stonehide-barding-caster",
+      "audit": "docs/audits/stonehide-barding-caster-2026-11-09.json",
+      "commit": "e386dae17fd6f29f5257661d90993010bdf7eb9a"
+    },
+    {
+      "key": "Blessing",
+      "file": "spell_generic.cpp",
+      "cls": "spell_underlight_blessing",
+      "title": "Update Underlight Blessing from its surviving aura owner",
+      "spell": 201948,
+      "slug": "underlight-blessing-owner",
+      "audit": "docs/audits/underlight-blessing-owner-2026-11-09.json",
+      "commit": "057186d3a2d100883d2b87725c383bb918e9e774"
+    },
+    {
+      "key": "Rod",
+      "file": "spell_generic.cpp",
+      "cls": "spell_underlight_main_aura",
+      "title": "Clean Underlight fishing abilities through the aura owner",
+      "spell": 221477,
+      "slug": "underlight-rod-owner",
+      "audit": "docs/audits/underlight-rod-owner-2026-11-09.json",
+      "commit": "c150c4c485cea6686a681dad914e86cf2d5c5093"
+    },
+    {
+      "key": "Undercurrent",
+      "file": "spell_generic.cpp",
+      "cls": "spell_undercurrent_fishing_tele",
+      "title": "Bind delayed Undercurrent travel to its selected origin",
+      "spell": 216426,
+      "slug": "undercurrent-origin",
+      "audit": "docs/audits/undercurrent-origin-2026-11-09.json",
+      "commit": "421a2a13b8862a3c655fe544f08fa267b7d3c008"
+    },
+    {
+      "key": "Zen",
+      "file": "spell_monk.cpp",
+      "cls": "spell_monk_remove_zen_flight",
+      "title": "Check Zen Flight restrictions through the surviving aura owner",
+      "spell": 125883,
+      "slug": "zen-flight-owner",
+      "audit": "docs/audits/zen-flight-owner-2026-11-09.json",
+      "commit": "cac1b5cf48ea108f5ac507c877779e8c0e397660"
+    },
+    {
+      "key": "T21",
+      "file": "spell_paladin.cpp",
+      "cls": "spell_pal_t21_prot",
+      "title": "Rearm the Paladin T21 update deadline at its native one-second interval",
+      "spell": 251869,
+      "slug": "paladin-t21-refresh",
+      "audit": "docs/audits/paladin-t21-refresh-2026-11-09.json",
+      "commit": "328cc307a2ce826d43b4c708bba01b8592eed672"
+    },
+    {
+      "key": "Whisper",
+      "file": "spell_generic.cpp",
+      "cls": "spell_request_the_master_call_on_you",
+      "title": "Deliver the Masters Call whispers to the actual aura owner",
+      "spell": 217668,
+      "slug": "master-daglop-whisper-owner",
+      "audit": "docs/audits/master-daglop-whisper-owner-2026-11-09.json",
+      "commit": "16b577c46363e5728d593b056766594cea8b25f9"
+    },
+    {
+      "key": "Winning",
+      "file": "spell_generic.cpp",
+      "cls": "spell_gen_winning_hand",
+      "title": "Deliver Winning Hand emotes to the actual aura owner",
+      "spell": 176890,
+      "slug": "winning-hand-owner",
+      "audit": "docs/audits/winning-hand-owner-2026-11-09.json",
+      "commit": "b44aa5a2df37c4cbb1d0d549dc59f74f449cffaf"
+    },
+    {
+      "key": "Gumbo",
+      "file": "spell_generic.cpp",
+      "cls": "spell_gen_gobelin_gumbo",
+      "title": "Keep Goblin Gumbo burps on the aura consumer after caster loss",
+      "spell": 42760,
+      "slug": "goblin-gumbo-owner",
+      "audit": "docs/audits/goblin-gumbo-owner-2026-11-09.json",
+      "commit": "1ad553a2d2c53ce5f8c19b5c755c0685b070f8bc"
+    },
+    {
+      "key": "Selfie",
+      "file": "spell_item.cpp",
+      "cls": "spell_item_camera_selfie",
+      "title": "Clean selfie camera filters and visual kit on the aura owner",
+      "spell": 181765,
+      "slug": "selfie-camera-owner",
+      "audit": "docs/audits/selfie-camera-owner-2026-11-09.json",
+      "commit": "19ff2aadc8c55a5a2ce16286716ad988edb6315d"
+    }
+  ],
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "e8ff1ea74fd8cba0dc2d51e46d0bfca73d7448bf258e4d68cd33760fe49faba4",
+    "bnet_sha256": "b46d12a8bc156c1f1435da1886dbc643af04759c1c66158042b7d397abfabab7",
+    "source_scope": "Exactly ten complete selected classes changed across generic/item/monk/paladin;four whole files otherwise match pinned c7f6e2f46,including registrations. Required original scripts.lib rebuilt and original generated final-link game/scripts/shared/common paths checked;no global OutDir override. Actual selected x64 callbacks/branches verified in staged and canonical EXE/MAP."
+  },
+  "checks": [
+    "All ten pinned c7f6e2f46 full-class counterfactuals paired with current full-class ASAN regressions. Six explicit original null/nonplayer dereferences exit1 with ASAN evidence;four original stale-destination/timer/ownership defects use expected-broken assertions. These are not ordinary passing gameplay runs.",
+    "Source fixtures extract actual AuraScript owner/target getters and actual effect/aura update dispatch. Unit/Player/network/world/text/chance endpoints remain modeled;their limits are stated in each audit.",
+    "Native probe reads all11 bindings/ten ScriptNames and matching26972+read-onlyHotfix SpellInfo effects/targets/descriptions. It compiles unchanged selected classes with public access seams and executes18 Human/Orc controlled Player aura contexts,using a real separate caster then native removal,actual GetCaster/GetUnitOwner and native update callbacks where applicable. Ordinary NPC/missing-caster Barding,rod learn/remove,Zen dungeon refusal,T21 actual2P/4P/Shield transitions,Gumbo clock and owner text/camera cleanup pass. This is not actual equipped gear/class-chain/client traversal.",
+    "Four actual registered216426 casts use native template25 pool180184 at controlled map1600 poses. Actual target-mask64 first self-destination teleport is acknowledged with the native movement handler;499+1ms delivery and final pool-arrival ACK pass. A different selected pool does not replace an outstanding unacknowledged native teleport. No native effect/destination check was disabled or bypassed.",
+    "Staged and canonical ten-feature PE/native hook registrations,dataflow,explicit inlined Barding nonplayer skip,owner getters,1000ms T21 rearm/real4P gates,500ms Undercurrent origin/life/pending guards and selfie visual cleanup pass. Prior seven lifecycle PE paths and full Warswords stage4/arrival/combat/loot/return chain retained;mandatory canonical Scepter source+Release check passes.",
+    "Task-owned canonical PID10624: fresh ready,server shutdown0,exit0,gone,stderr empty. Protected configuration/certificate/DLL hashes unchanged;no user/unknown server stopped. No persistent SQL migration,character reset,item/quest/progression grants or personal backup deletion."
+  ],
+  "aura_contract": "Native Aura::GetCaster returns the unit owner directly for ordinary self-casts. The separate-caster fixes address the supported distinct-caster/surviving-recipient contract;the native probe explicitly constructs an accepted aura and removes that distinct actor. Neither the source ASAN models nor these audits claim observed production/client crashes for ordinary self-use.",
+  "diagnostics": {
+    "final": "Before/after canonical+own crash/log snapshots,exit/stdout/stderr review for every test/build/link/start. Final passing runs have no new/changed crash,appended DBErrors or unexplained server warning/error/assertion. Active canonical Crashes empty.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN LINK2 evidence;unchanged/untruncated/outside fixed"
+    },
+    "development": [
+      "Initial local editing helper assumed Windows cp1252 for UTF8 source and failed before mutation;fixed explicit encoding. Source fixture first lacked Unit fishing-hole method and AuraRemoveMode alias;compiler evidence retained with repaired passing pairs.",
+      "Expected ASAN executable exit1 initially propagated through a successfully verified PowerShell counterfactual assertion. The wrapper now reports the original exit and only normalizes its own test status after verifying the precise expected ASAN fault. Nothing is classified as successful ordinary gameplay.",
+      "First native Zen assertion incorrectly expected flying entitlement to permit flight in actual dungeon1600. Native map policy correctly removes the aura;fixture now requires that real removal. Positive outdoor/pathfinder branches remain source-model/client checks.",
+      "Initial T21 draft consumed its deadline once. Matching native4P description proves it must respond to Shield transitions;that draft was rejected before production build/deployment. Final rearm1000ms and both actual aura-value transitions pass. Prior draft evidence is retained as superseded research,not a second completed product fix.",
+      "Native pool fixture first needed explicit QueryResult bool conversion. Its first running full travel assertion omitted the native initial self-destination ACK;target-mask64 data and actual handler review resolved that fixture omission. Final real ACK/delivery/arrival and distinct pending-destination control pass. There was no missing-destination server error to suppress.",
+      "Five production C5055 warnings are in unchanged legacy generic methods certified outside the ten classes;retained native/model unused/type-conversion and Scepter C4389/C4244 warnings plus new-PDB full-link notices reviewed. No new production warning from these repairs. No warning/logging/check was disabled."
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/ten-lifecycle-fixes-2026-11-09",
+    "archive_manifest_sha256": "a4df99c2326e80561467f0665d7b7f1fb2eda67e8f970c1f6b783c7ccf0b715c",
+    "original_files": 1028,
+    "removed_files": 210,
+    "logical_removed_bytes": 1728636651,
+    "deletion_manifest": ".codex/ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "436759294f96e96741a088b16fa8a74421f0361e91ee8910ac46669e6071e85c",
+    "retained_rollbacks": [
+      ".codex/release-before-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-warswords-stage-four-2026-11-09",
+    "recovery_reason": "Newest pre-ten known-good Release retained;the two explicitly handed-off pre-seven/pre-vehicle-capacity recovery generations remain for outstanding client isolation. The intermediate pre-Warswords generation has no outstanding task use;its exact87b31fa6 executable and five-file content were checked before retirement,with original hashes/deletion manifest and its non-sensitive metadata archived.",
+    "preserved": "Canonical EXE/MAP/configuration/certificates/DLLs/data,required original game/scripts libraries,regression source/reusable tools,all OPEN Lady/LINK2/Slaghammer crash/cache/security boundaries and personal character/database backups. Generated private test configurations were removed,not archived. No active log truncated or rotated.",
+    "postcheck": "Canonical/protected hashes unchanged;active Crashes empty;mixedDBErrors7111/fa3db826 unchanged;owned10624 gone;no world/bnet left;no pending deployment."
+  },
+  "pending": [
+    "Actual client checks for all ten features are listed in the individual audits;no client was operated in this batch. Native/modeled evidence does not certify UI,voice/visual timing,whole artifact acquisition or all36 chains.",
+    "Authentic living Lady104856/spawn362095 activation/surrender threshold/accepted209552-1906/upper Grash362092 finisher/210247 cleanup remains OPEN. No HP percentage,kill timer or automatic progression invented.",
+    "Shared101430/103151 LINK2,Slaghammer crash/cache,prior handshake and all previously recorded unresolved evidence retained. Default Test-SlaghammerHandoffNative was not run;support-only includes do not overwrite its probe cache."
+  ],
+  "stop": "Exactly ten product repairs are complete,committed and deployed;stop after this archive/cleanup/push/handoff. Common tests,PE strengthening and closeout documentation are supporting work,not extra product fixes. No eleventh repair started.",
+  "native_asan_scope": "The native probes use the original Release libraries;whole native-core ASAN is not claimed. ASAN evidence belongs to the separately compiled complete script classes and extracted native getter/update dispatch.",
+  "diagnostic_closeout_archive": {
+    "manifest": "build-extractors/bin/Release/fixed/ten-lifecycle-fixes-2026-11-09/closeout/manifest.json",
+    "sha256": "81662889736f9775a470b56ee2db5d980006a0b9627c43f49ab2c7051174c0a7",
+    "verification": "Final source/destination/source and destination hashes checked;primary1028-original manifest remains unchanged."
+  }
+}

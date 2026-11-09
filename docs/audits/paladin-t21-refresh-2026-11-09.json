@@ -27,10 +27,26 @@
   "tested_class_sha256": "3c5e8675624e0a69c82728ef2eff2e09fe8b7ea8f99600f6c5cd17cb747db83d",
   "diagnostics": "All tests/build/link/start use canonical+own pre/post crash/log snapshots and exit/stdout/stderr review. Final runs add no crash/DBErrors/server warning/error/assertion. Expected failing ASAN baselines are separately labeled;fixture development evidence remains paired with final passes. See batch audit for every reviewed iteration.",
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE",
-    "archive": "build-extractors/bin/Release/fixed/ten-lifecycle-fixes-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/ten-lifecycle-fixes-2026-11-09",
+    "archive_manifest_sha256": "a4df99c2326e80561467f0665d7b7f1fb2eda67e8f970c1f6b783c7ccf0b715c",
+    "original_files": 1028,
+    "removed_files": 210,
+    "logical_removed_bytes": 1728636651,
+    "deletion_manifest": ".codex/ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "436759294f96e96741a088b16fa8a74421f0361e91ee8910ac46669e6071e85c",
+    "retained_rollbacks": [
+      ".codex/release-before-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-warswords-stage-four-2026-11-09",
+    "recovery_reason": "Newest pre-ten known-good Release retained;the two explicitly handed-off pre-seven/pre-vehicle-capacity recovery generations remain for outstanding client isolation. The intermediate pre-Warswords generation has no outstanding task use;its exact87b31fa6 executable and five-file content were checked before retirement,with original hashes/deletion manifest and its non-sensitive metadata archived.",
+    "preserved": "Canonical EXE/MAP/configuration/certificates/DLLs/data,required original game/scripts libraries,regression source/reusable tools,all OPEN Lady/LINK2/Slaghammer crash/cache/security boundaries and personal character/database backups. Generated private test configurations were removed,not archived. No active log truncated or rotated.",
+    "postcheck": "Canonical/protected hashes unchanged;active Crashes empty;mixedDBErrors7111/fa3db826 unchanged;owned10624 gone;no world/bnet left;no pending deployment."
   },
   "client_pending": "Actual Paladin tier equipment,block chance display/combat,Shield transitions and unequip/relog.",
   "shared_open": "Sharasdal living Lady/1906/finisher/authentic threshold,sharedLINK2,Slaghammer crash/cache,mixedDBErrors7111/fa3db826 and all36 whole chains remain OPEN. No SQL/item/quest/progression/character reset added. Native rod learn/remove is its existing ability behavior.",
-  "batch_audit": "docs/audits/ten-lifecycle-fixes-2026-11-09.json"
+  "batch_audit": "docs/audits/ten-lifecycle-fixes-2026-11-09.json",
+  "fix_commit": "328cc307a2ce826d43b4c708bba01b8592eed672"
 }

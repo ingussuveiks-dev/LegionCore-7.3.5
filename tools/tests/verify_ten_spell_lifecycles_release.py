@@ -29,7 +29,9 @@ for cls,methods in owners:
 body=ins('?CalculateMaxDuration@spell_stonehide_leather_barding@@')
 assert sites(body,'?GetCaster@AuraScript@@') and sites(body,'?HasSkill@Player@@')
 skill,=sites(body,'?HasSkill@Player@@')
-assert any(x.mnemonic=='test'and x.op_str=='rax, rax' and body[i+1].mnemonic in ('je','jz')for i,x in enumerate(body[:skill-1])), 'NPC profession path lost its null player guard'
+caster,=sites(body,'?GetCaster@AuraScript@@')
+kind=next(i for i in range(caster+1,skill)if body[i].mnemonic=='cmp'and body[i].op_str=='byte ptr [rax + 0x16], 4')
+assert body[kind+1].mnemonic=='jne'and body[kind+1].operands[0].imm>body[skill].address,'Native inlined ToPlayer must skip HasSkill for a nonplayer caster'
 assert {7200000,165}<=values(body)
 body=ins('?OnUpdate@spell_pal_t21_prot@@')
 cast,=sites(body,'?CastCustomSpell@Unit@@')

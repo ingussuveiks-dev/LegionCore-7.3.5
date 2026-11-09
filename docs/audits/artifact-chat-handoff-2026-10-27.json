@@ -1,4 +1,97 @@
 {
+  "latest_ten_lifecycle_fixes_2026_11_09": {
+    "audit": "docs/audits/ten-lifecycle-fixes-2026-11-09.json",
+    "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+    "fixes": [
+      {
+        "key": "Barding",
+        "title": "Guard Stonehide Barding profession duration for nonplayer casters",
+        "commit": "e386dae17fd6f29f5257661d90993010bdf7eb9a",
+        "audit": "docs/audits/stonehide-barding-caster-2026-11-09.json"
+      },
+      {
+        "key": "Blessing",
+        "title": "Update Underlight Blessing from its surviving aura owner",
+        "commit": "057186d3a2d100883d2b87725c383bb918e9e774",
+        "audit": "docs/audits/underlight-blessing-owner-2026-11-09.json"
+      },
+      {
+        "key": "Rod",
+        "title": "Clean Underlight fishing abilities through the aura owner",
+        "commit": "c150c4c485cea6686a681dad914e86cf2d5c5093",
+        "audit": "docs/audits/underlight-rod-owner-2026-11-09.json"
+      },
+      {
+        "key": "Undercurrent",
+        "title": "Bind delayed Undercurrent travel to its selected origin",
+        "commit": "421a2a13b8862a3c655fe544f08fa267b7d3c008",
+        "audit": "docs/audits/undercurrent-origin-2026-11-09.json"
+      },
+      {
+        "key": "Zen",
+        "title": "Check Zen Flight restrictions through the surviving aura owner",
+        "commit": "cac1b5cf48ea108f5ac507c877779e8c0e397660",
+        "audit": "docs/audits/zen-flight-owner-2026-11-09.json"
+      },
+      {
+        "key": "T21",
+        "title": "Rearm the Paladin T21 update deadline at its native one-second interval",
+        "commit": "328cc307a2ce826d43b4c708bba01b8592eed672",
+        "audit": "docs/audits/paladin-t21-refresh-2026-11-09.json"
+      },
+      {
+        "key": "Whisper",
+        "title": "Deliver the Masters Call whispers to the actual aura owner",
+        "commit": "16b577c46363e5728d593b056766594cea8b25f9",
+        "audit": "docs/audits/master-daglop-whisper-owner-2026-11-09.json"
+      },
+      {
+        "key": "Winning",
+        "title": "Deliver Winning Hand emotes to the actual aura owner",
+        "commit": "b44aa5a2df37c4cbb1d0d549dc59f74f449cffaf",
+        "audit": "docs/audits/winning-hand-owner-2026-11-09.json"
+      },
+      {
+        "key": "Gumbo",
+        "title": "Keep Goblin Gumbo burps on the aura consumer after caster loss",
+        "commit": "1ad553a2d2c53ce5f8c19b5c755c0685b070f8bc",
+        "audit": "docs/audits/goblin-gumbo-owner-2026-11-09.json"
+      },
+      {
+        "key": "Selfie",
+        "title": "Clean selfie camera filters and visual kit on the aura owner",
+        "commit": "19ff2aadc8c55a5a2ce16286716ad988edb6315d",
+        "audit": "docs/audits/selfie-camera-owner-2026-11-09.json"
+      }
+    ],
+    "canonical": {
+      "directory": "build-extractors/bin/Release",
+      "world_sha256": "e8ff1ea74fd8cba0dc2d51e46d0bfca73d7448bf258e4d68cd33760fe49faba4",
+      "bnet_sha256": "b46d12a8bc156c1f1435da1886dbc643af04759c1c66158042b7d397abfabab7",
+      "source_scope": "Exactly ten complete selected classes changed across generic/item/monk/paladin;four whole files otherwise match pinned c7f6e2f46,including registrations. Required original scripts.lib rebuilt and original generated final-link game/scripts/shared/common paths checked;no global OutDir override. Actual selected x64 callbacks/branches verified in staged and canonical EXE/MAP."
+    },
+    "diagnostics": "Owned10624 ready/graceful0/gone;no new crashes/appended failures. Mixed7111/fa3db826 unchanged;LINK2/Slaghammer/Lady remain OPEN. Six original ASAN faults explicitly expected-broken and paired;native18aura+4registered pool casts/staged+canonicalPE/Scepter pass. Actual client/all36 separate.",
+    "cleanup": {
+      "status": "COMPLETE_HASH_VERIFIED",
+      "archive": "build-extractors/bin/Release/fixed/ten-lifecycle-fixes-2026-11-09",
+      "archive_manifest_sha256": "a4df99c2326e80561467f0665d7b7f1fb2eda67e8f970c1f6b783c7ccf0b715c",
+      "original_files": 1028,
+      "removed_files": 210,
+      "logical_removed_bytes": 1728636651,
+      "deletion_manifest": ".codex/ten-fixes-2026-11-09/cleanup-deleted.json",
+      "deletion_manifest_sha256": "436759294f96e96741a088b16fa8a74421f0361e91ee8910ac46669e6071e85c",
+      "retained_rollbacks": [
+        ".codex/release-before-ten-fixes-2026-11-09",
+        ".codex/release-before-seven-fixes-2026-11-08",
+        ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+      ],
+      "removed_intermediate_rollback": ".codex/release-before-warswords-stage-four-2026-11-09",
+      "recovery_reason": "Newest pre-ten known-good Release retained;the two explicitly handed-off pre-seven/pre-vehicle-capacity recovery generations remain for outstanding client isolation. The intermediate pre-Warswords generation has no outstanding task use;its exact87b31fa6 executable and five-file content were checked before retirement,with original hashes/deletion manifest and its non-sensitive metadata archived.",
+      "preserved": "Canonical EXE/MAP/configuration/certificates/DLLs/data,required original game/scripts libraries,regression source/reusable tools,all OPEN Lady/LINK2/Slaghammer crash/cache/security boundaries and personal character/database backups. Generated private test configurations were removed,not archived. No active log truncated or rotated.",
+      "postcheck": "Canonical/protected hashes unchanged;active Crashes empty;mixedDBErrors7111/fa3db826 unchanged;owned10624 gone;no world/bnet left;no pending deployment."
+    },
+    "next": "User explicitly requested exactly ten then stop;the ten are complete. Resume implementation only after a new request. Living-Lady authentic activation/threshold/1906/finisher/cleanup remains the unresolved target;never invent HP/kill timers or run default Slaghammer handoff against the OPEN cache."
+  },
   "latest_warswords_stage_four_2026_11_09": {
     "audit": "docs/audits/warswords-stage-four-scene-2026-11-09.json",
     "fix_commit": "5b490fcd2cf2eadd146fd8e60d84121a09dfe5a8",
