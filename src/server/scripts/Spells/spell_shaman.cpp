@@ -151,6 +151,8 @@ class spell_sha_healing_rain : public SpellScriptLoader
                 if(Unit* caster = GetCaster())
                 {
                     Position const* sumpos = GetExplTargetDest();
+                    if (!sumpos)
+                        return;
                     if(TempSummon* summon = caster->SummonCreature(73400, *sumpos))
                     {
                         if(caster->m_SummonSlot[17])
