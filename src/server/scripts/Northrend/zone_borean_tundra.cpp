@@ -365,7 +365,7 @@ public:
 
         void JustDied(Unit* killer) override
         {
-            Player* player = killer->ToPlayer();
+            Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             if (!player)
                 return;
 
@@ -374,8 +374,8 @@ public:
                 uint8 uiRand = urand(0, 99);
                 if (uiRand < 25)
                 {
-                    player->CastSpell(me, 45532, true);
-                    player->KilledMonsterCredit(WARSONG_PEON, ObjectGuid::Empty);
+                    if (player->CastSpell(me, 45532, true) == SPELL_CAST_OK)
+                        player->KilledMonsterCredit(WARSONG_PEON, ObjectGuid::Empty);
                 }
                 else if (uiRand < 75)
                     player->CastSpell(me, nerubarVictims[urand(0, 2)], true);
