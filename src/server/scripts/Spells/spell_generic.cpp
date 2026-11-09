@@ -8309,7 +8309,8 @@ class spell_request_the_master_call_on_you : public AuraScript
 
     void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Player* player = GetCaster()->ToPlayer();
+        Unit* owner = GetUnitOwner();
+        Player* player = owner ? owner->ToPlayer() : nullptr;
         if (!player)
             return;
 
@@ -8322,7 +8323,8 @@ class spell_request_the_master_call_on_you : public AuraScript
 
     void OnTick(AuraEffect const* /*aurEff*/)
     {
-        Player* player = GetCaster()->ToPlayer();
+        Unit* owner = GetUnitOwner();
+        Player* player = owner ? owner->ToPlayer() : nullptr;
         if (!player)
             return;
 
