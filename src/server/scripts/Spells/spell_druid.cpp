@@ -740,12 +740,14 @@ class spell_dru_swift_flight_passive : public SpellScriptLoader
 
             bool Load() override
             {
-                return GetCaster()->GetTypeId() == TYPEID_PLAYER;
+                Unit* owner = GetUnitOwner();
+                return owner && owner->IsPlayer();
             }
 
             void CalculateAmount(AuraEffect const* /*aurEff*/, float & amount, bool & /*canBeRecalculated*/)
             {
-                if (Player* caster = GetCaster()->ToPlayer())
+                Unit* owner = GetUnitOwner();
+                if (Player* caster = owner ? owner->ToPlayer() : nullptr)
                     if (caster->GetSkillValue(SKILL_RIDING) >= 375)
                         amount = 310;
             }
