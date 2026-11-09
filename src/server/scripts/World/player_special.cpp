@@ -1,4 +1,6 @@
 #include "ScriptPCH.h"
+#include <map>
+#include <mutex>
 #include <ScriptMgr.h>
 #include "GameEventMgr.h"
 #include "Player.h"
@@ -660,59 +662,63 @@ public:
 class player_hyjal_protectors_random : public PlayerScript
 {
 public:
-    player_hyjal_protectors_random() : PlayerScript("player_hyjal_protectors_random") 
-    {
-        checktimer = 5000;
-    }
+    player_hyjal_protectors_random() : PlayerScript("player_hyjal_protectors_random") { }
 
-    uint32 checktimer = 5000;
-    bool summoned;
+    struct Progress
+    {
+        uint32 timer = 5000;
+        uint32 spells[4] = {};
+        uint8 completed = 0;
+    };
+
+    std::map<ObjectGuid, Progress> progress;
+    std::recursive_mutex progressLock;
+
+    void OnLogout(Player* player) override
+    {
+        std::lock_guard<std::recursive_mutex> lock(progressLock);
+        progress.erase(player->GetGUID());
+    }
 
     void OnUpdate(Player* player, uint32 diff) override
     {
-        if (checktimer <= diff)
+        std::lock_guard<std::recursive_mutex> lock(progressLock);
+        if (player->GetCurrentAreaID() != 5087 || player->GetQuestStatus(29128) != QUEST_STATUS_INCOMPLETE)
         {
+            progress.erase(player->GetGUID());
+            return;
+        }
 
-            if (player->GetCurrentAreaID() != 5087)
-            {
-                summoned = false;
-                return;
-            }
+        Progress& state = progress[player->GetGUID()];
+        if (state.timer > diff)
+        {
+            state.timer -= diff;
+            return;
+        }
+        state.timer = 5000;
 
-            bool quest = player->GetQuestStatus(29128) == QUEST_STATUS_INCOMPLETE;
-
-            if (!quest || summoned)
-                return;
-
+        if (!state.spells[0])
+        {
             uint32 random[2] = { 96545, 96546 };
-
             uint32 allianceNpc[33] = { 96622, 96598 ,99021 ,96595 ,96597 ,96608 ,96626 ,96625 ,96627 ,96564 ,96604 ,96596 ,96606 ,96599 ,96624 ,
                 96601, 96623, 96607, 96605, 96586, 96600, 96585, 96610, 96584, 96587, 96628, 99023, 99024, 99032, 99030, 99028, 99027, 99022 };
-
-
             uint32 hordeNpc[33] = { 96622, 96598 ,99021 ,96595 ,96597 ,96608 ,96626 ,96625 ,96627 ,96564 ,96604 ,96596 ,96606 ,96599 ,96624 ,
                 96601 ,96623 ,96607 ,96605 ,96586 ,96600 ,96585 ,96610 ,96584 ,96587 ,96628,96603,96588,96590,96629,96612,96589,96611 };
-
             switch (player->GetTeam())
             {
-            case ALLIANCE:
-                player->CastSpell(player, allianceNpc[urand(0, 32)], true);
-                summoned = true;
-                break;
-            case HORDE:
-                player->CastSpell(player, hordeNpc[urand(0, 32)], true);
-                summoned = true;
-                break;
+                case ALLIANCE: state.spells[0] = allianceNpc[urand(0, 32)]; break;
+                case HORDE: state.spells[0] = hordeNpc[urand(0, 32)]; break;
+                default: return;
             }
-
-            player->CastSpell(player, random[urand(0, 1)], true);
-            player->CastSpell(player, 96544, true);
-            player->CastSpell(player, 96547, true);
-
-            checktimer = 5000;
+            state.spells[1] = random[urand(0, 1)];
+            state.spells[2] = 96544;
+            state.spells[3] = 96547;
         }
-        else
-            checktimer -= diff;
+
+        // Record accepted native casts once; retry only refused casts.
+        for (uint8 i = 0; i < 4; ++i)
+            if (!(state.completed & (1 << i)) && player->CastSpell(player, state.spells[i], true) == SPELL_CAST_OK)
+                state.completed |= uint8(1 << i);
     }
 };
 
