@@ -285,7 +285,7 @@ public:
         {
             if (apply)
             {
-                donehppct = uint32(me->GetHealthPct()) - 25 < 0 ? 1 : uint32(me->GetHealthPct() - 25);
+                donehppct = uint32(std::max(1.0f, me->GetHealthPct() - 25.0f));
                 DoCast(me, SPELL_POSSESSED, true);
                 if (me->HasAura(SPELL_LINGERING_PRESENCE))
                 {
