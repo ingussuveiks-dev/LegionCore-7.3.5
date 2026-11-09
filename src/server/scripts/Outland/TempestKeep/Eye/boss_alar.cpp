@@ -480,11 +480,9 @@ struct npc_ember_of_alar : public ScriptedAI
             {
                 if (Unit* Alar = ObjectAccessor::GetUnit(*me, instance->GetGuidData(DATA_ALAR)))
                 {
-                    int32 AlarHealth = int32(Alar->GetHealth()) - int32(Alar->CountPctFromMaxHealth(3));
-                    if (AlarHealth > 0)
-                        Alar->SetHealth(AlarHealth);
-                    else
-                        Alar->SetHealth(1);
+                    uint64 health = Alar->GetHealth();
+                    uint64 loss = Alar->CountPctFromMaxHealth(3);
+                    Alar->SetHealth(health > loss ? health - loss : 1);
                 }
             }
             toDie = true;
