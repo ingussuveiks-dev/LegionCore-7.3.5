@@ -3154,8 +3154,10 @@ public:
                 return;
 
             caster->CastSpell(caster, SPELL_STRIKE_ANVIL_COSMETIC);
-            if (Player* plr = caster->GetMap()->GetPlayers().begin()->getSource())
-                caster->CastSpell(plr, SPELL_THUNDER_FORGE_CHARGE_TRIGGER);
+            Map::PlayerList const& players = caster->GetMap()->GetPlayers();
+            if (!players.isEmpty())
+                if (Player* plr = players.begin()->getSource())
+                    caster->CastSpell(plr, SPELL_THUNDER_FORGE_CHARGE_TRIGGER);
         }
 
         void Register() override

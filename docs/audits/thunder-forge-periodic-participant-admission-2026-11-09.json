@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Forge",
+  "base": "628367eab803351c364b1543847cfe5a7b3b9b3b",
+  "support_commit": "a698bffbc8ddb9045d2885a8e2d99318d99031ed",
+  "paths": [
+    "src/server/scripts/Scenario/ThunderForge/thunder_forge.cpp"
+  ],
+  "cause": "Forging138869 ticks dereference mapPlayerList end when lastparticipant leaves.",
+  "implementation": "Check actual listempty before firstref;retaincosmetic138875 and original firstparticipant140489charge with nativecastchecks.",
+  "focused_checks_and_limits": "Wholeclasscounterfactual tracksinvalidend access;fixedASANempty/present/missingcaster;realnativeAura periodic empty+presentactorslive. Actualplayercharge/progression/visualacknowledgement pending.",
+  "validation": {
+    "source": "10 pinned628367eab original expected-broken counterfactuals paired with10 repaired MSVCASAN tests.6encounters/11exact abort statements execute entire current native BasicEvent/EventProcessor underASAN:held refs survive cancellation,new scheduled work executes,normalrelease destroysonce. Complete Folnuna/Dread/Forge aura classes plus actual Folnuna reset power setup and exact Tectus queued body. Controlledexternal/grid/playerendpoints,not full6encounterAI/client.",
+    "native": "TenthTenNative:11exact eventabort statements in real Spell7/Unit::Kill death dispatch on controlled30020actors,eachdeathonce and2ordinaryUnitupdates releasequeue0. Three complete aura classes manuallybound to real Aura dispatcher:Folnuna56authored steps sum100/indexwrap;Dread real GUIDgridscan then actor removal;Forge actual empty/present firstparticipant ticks. Exact Tectus8sbody with nativePlayer::Kill target,playeralive,actualdeathobserver1/originalplayerGUID and repeatedcallback no2nddeath. Synthetic loaded-emptygrid state set explicitly because Map::Visit skips created/unloaded grids;no DBspawn loading. No character saves/import or full-coreASAN.",
+    "release": "Original game/scripts libraries linked from requiredpaths;staged+canonical verify_tenth_ten_release checks11nonforcecalls/6encounters,Folnuna power/index,Dread GUIDlookup+hooks,Forge/Tectus exactemptyguards/nativeKill. Prior97selectedpaths retained. Canonical Scepter/ArtifactTierProgression/ScenarioResumeASAN pass. Owned11004 freshready/shutdown0/exit0/gone,stderr empty/protectedhashes unchanged.",
+    "diagnostics": "Every automated/native/source/build/link/PE/start has canonical+own pre/postcrashes/loglength/time,exit/stdout/stderr/newDBErrors/serverdiagnostics review. Pre-fix native20261109-190257-315 completed with exactly11expected nondeletableSpell7 leak errors;wrapper correctlyrejects,not ordinarypass. Finalnative/source/start clean. No newcrashfiles. Tectus original117624native targetA1 killedplayer instead ofboss,found by initially guard-only native attempts;finalnativeKill paired regression killsactual78948once and preservesplayer. ThreeC5055compilewarnings are baselineexpressions.",
+    "scope": "Exactly10 selected issues/10productfiles reverse to628367eab. Existing encounterprerequisites,phases,timers,actorselection/order,group/pet/nativecredit retained. Tectus original8Motes/8s gate retained;use legitimate nativeKill with originalfirstparticipant,false durability and native rewardeligibility. No nearestplayer/newblanketcredit/item/questgrant,SQLmigration or guessedthreshold/timer."
+  },
+  "pending": [
+    "Sharasdal living Lady authentic activation/surrender/conversation1906/Grash/cleanup OPEN;noinventedHP/killingtimer.",
+    "LINK2/Slaghammer crash-cache/mixed7111byteDBErrors/intermittenthandshake/all36wholechains remainOPEN. DefaultSlaghammer probe notrun,no mixedlog truncation.",
+    "PriorMariaDB numeric CAST discrepancy remainsOPEN;original82andcorrected94rawsnapshots outsidefixed unchanged;noDB/queryworkaround.",
+    "PriorTimeLoop105984 script/32bitnativeheal investigation remainsOPEN and unchanged;26rawrecords outsidefixed,allninth-batchTimeLoop runtimes retained for concreteinvestigation. No nativehighheal run attempted.",
+    "Actual client/whole6raidencounters/Folnuna phasecastacceptance/Dread facingvisuals/Forge chargeprogress/Tectus8Motes fight,loot/group/faction/pet/guardian/reentry/failcasts/cleanup remainpending. Nativecontrolleddispatch/sourceASAN/PE/startup do notcertifywholegameplay."
+  ],
+  "canonical_world_sha256": "a752b4435c49bf7417d5d0a0048d85a568513a7e7c74f5142fb93254850a7a3c",
+  "patch_sha256": "9cdc49841017094561c97c3e93a28adca36018ce4a5bfca5eaa1e331eb49522a",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/tenth-ten-repairs-2026-11-09"
+  },
+  "batch_audit": "docs/audits/tenth-ten-repairs-2026-11-09.json"
+}
