@@ -6317,7 +6317,15 @@ class spell_undercurrent_fishing_tele : public SpellScript
         if (auto go = caster->FindNearestGameObjectOfType(GAMEOBJECT_TYPE_FISHINGHOLE, 100.0f))
         {
             Position pos = go->GetPosition();
-            caster->AddDelayedEvent(500, [caster, pos] {
+            uint32 mapId = caster->GetMapId();
+            uint32 instanceId = caster->GetInstanceId();
+            caster->AddDelayedEvent(500, [caster, pos, mapId, instanceId] {
+                if (!caster->IsInWorld() || caster->IsPreDelete() || !caster->IsAlive() ||
+                    caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                    return;
+                if (Player* player = caster->ToPlayer())
+                    if (player->HasPendingTeleport())
+                        return;
                 caster->NearTeleportTo(pos);
             });
         }

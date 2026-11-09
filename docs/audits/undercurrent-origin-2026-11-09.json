@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Undercurrent",
+  "scope": {
+    "key": "Undercurrent",
+    "file": "spell_generic.cpp",
+    "cls": "spell_undercurrent_fishing_tele",
+    "title": "Bind delayed Undercurrent travel to its selected origin",
+    "spell": 216426
+  },
+  "base": "c7f6e2f46",
+  "support_commit": "6ef54f14d7543cb3cbe76069bc31ba370e56bcbe",
+  "cause": "The Player/Unit-owned500ms callback applied fishing-pool XYZ after map/instance/life changes or while another teleport was pending.",
+  "implementation": "Capture the original map/instance;before native NearTeleportTo require in-world/non-predelete/alive/same origin and no pending Player teleport. Preserve native pool search,combat admission,500ms and original Teleport_L effect.",
+  "aura_contract": "Where applicable this repairs the supported separate-caster/surviving-owner aura context. Native Aura::GetCaster returns the owner directly for an ordinary self-cast;these audits do not claim that normal self-casts lose that caster or that a production/client crash was observed. The native probe creates an accepted separate-caster aura then removes that real actor;source counterfactuals have modeled Unit/Player endpoints.",
+  "validation": {
+    "counterfactual": "Pinned c7f6e2f46 complete class;explicit expected-broken stale destination/timer/ownership assertions paired with repaired passing regression.",
+    "source": "Source matrix origin/life/pending/missing-pool/deadline cases;four actual registered native casts use a real template25 pool,initial native self-destination ACK,499+1ms delivery/arrival ACK and a different selected pool during an unacknowledged teleport.",
+    "command": "tools/tests/Test-TenSpellLifecycles.ps1 -Case Undercurrent (also -Baseline for the pinned counterfactual)",
+    "native": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe TenSpellLifecycleNative:all11 live bindings/ten names,matching26972+read-onlyHotfix effects/targets/descriptions,18 controlled Human/Orc native aura contexts plus4 actual registered Undercurrent casts. Earlier profile/poses controlled;no actual gear/client traversal.",
+    "scope": "Test-TenSpellScope.ps1:four whole production files match c7f6e2f46 outside exactly ten selected complete classes;all registrations retained. This issue changes one of those classes.",
+    "release": "Original generated scripts.lib/final-link inputs,no global OutDir;staged+canonical registered hook/callback/dataflow checks pass. Retained prior seven-feature and full Warswords stage4 PE chains plus mandatory canonical Scepter pass.",
+    "startup": "Task-owned canonical PID10624 fresh ready,graceful shutdown0/exit0/gone,stderr empty,protected config/cert/DLL hashes unchanged;no user/unknown server stopped."
+  },
+  "canonical_world_sha256": "e8ff1ea74fd8cba0dc2d51e46d0bfca73d7448bf258e4d68cd33760fe49faba4",
+  "tested_class_sha256": "43937a543772809fd5b30a4ba1b33e20cfb72fb2e5c72552ae16079abf882de0",
+  "diagnostics": "All tests/build/link/start use canonical+own pre/post crash/log snapshots and exit/stdout/stderr review. Final runs add no crash/DBErrors/server warning/error/assertion. Expected failing ASAN baselines are separately labeled;fixture development evidence remains paired with final passes. See batch audit for every reviewed iteration.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/ten-lifecycle-fixes-2026-11-09"
+  },
+  "client_pending": "Actual outdoor fishing nodes,latency/retry/position/visuals and both stages of client teleport acknowledgment.",
+  "shared_open": "Sharasdal living Lady/1906/finisher/authentic threshold,sharedLINK2,Slaghammer crash/cache,mixedDBErrors7111/fa3db826 and all36 whole chains remain OPEN. No SQL/item/quest/progression/character reset added. Native rod learn/remove is its existing ability behavior.",
+  "batch_audit": "docs/audits/ten-lifecycle-fixes-2026-11-09.json"
+}
