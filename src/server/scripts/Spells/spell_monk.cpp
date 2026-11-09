@@ -1055,7 +1055,9 @@ class spell_monk_remove_zen_flight : public SpellScriptLoader
                 {
                     checkTimer = 2000;
         
-                    if (Player* _player = GetCaster()->ToPlayer())
+                    Unit* owner = GetUnitOwner();
+
+                    if (Player* _player = owner ? owner->ToPlayer() : nullptr)
                     {
                         bool canFly = !_player->GetMap()->IsDungeon() && !_player->GetMap()->IsBattlegroundOrArena();
 
