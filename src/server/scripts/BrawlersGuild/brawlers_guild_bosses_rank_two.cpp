@@ -538,10 +538,10 @@ public:
                 if (Player* player = me->GetAnyOwner()->ToPlayer())
                 {
                     summon->GetMotionMaster()->MovePath(player->GetTeamId() == TEAM_ALLIANCE ? a_WP[count_adds] :  h_WP[count_adds], false);
-                    summon->AddDelayedEvent(47000, [summon, player] () -> void
+                    summon->AddDelayedEvent(47000, [summon, team = player->GetTeamId()] () -> void
                     {
                         summon->GetMotionMaster()->Clear();
-                        summon->GetMotionMaster()->MovePath(player->GetTeamId() == TEAM_ALLIANCE ? a_WP[urand(0, 5)] :  h_WP[urand(0, 5)], false);
+                        summon->GetMotionMaster()->MovePath(team == TEAM_ALLIANCE ? a_WP[urand(0, 5)] : h_WP[urand(0, 5)], false);
                     });
                 }
                 
