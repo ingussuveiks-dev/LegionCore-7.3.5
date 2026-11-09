@@ -2189,7 +2189,7 @@ class spell_dk_frost_shield : public SpellScriptLoader
                 if(Unit* caster = GetCaster())
                 {
                     amount += aurEff->GetOldBaseAmount();
-                    int32 health20 = caster->CountPctFromMaxHealth(20); // 20% from max HP
+                    uint64 health20 = caster->CountPctFromMaxHealth(20); // 20% from max HP
                     if (health20 < amount)
                         amount = health20;
                 }
