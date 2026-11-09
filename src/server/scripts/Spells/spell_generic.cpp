@@ -6337,13 +6337,15 @@ class spell_underlight_main_aura : public AuraScript
 
     void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (Player* pla = GetCaster()->ToPlayer())
+        Unit* owner = GetUnitOwner();
+        if (Player* pla = owner ? owner->ToPlayer() : nullptr)
             pla->learnSpell(201891, false);
     }
 
     void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (Player* pla = GetCaster()->ToPlayer())
+        Unit* owner = GetUnitOwner();
+        if (Player* pla = owner ? owner->ToPlayer() : nullptr)
         {
             pla->removeSpell(201891);
             pla->RemoveAura(216441);
