@@ -512,8 +512,10 @@ class spell_tirathon_beam_dmg : public SpellScriptLoader
                 {
                     castTimer = 500;
 
-                    if (GetCaster() && GetTarget())
-                        GetCaster()->CastSpell(GetTarget(), SPELL_LASER_BEAM_BETWEEN_DMG, true);
+                    Unit* caster = GetCaster();
+                    Unit* owner = GetUnitOwner();
+                    if (caster && owner)
+                        caster->CastSpell(owner, SPELL_LASER_BEAM_BETWEEN_DMG, true);
                 }
                 else
                     castTimer -= diff;
