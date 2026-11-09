@@ -349,13 +349,22 @@ public:
                         events.ScheduleEvent(2, 7000);
                         break;
                     case 2:
-                        if (!playersGUID.empty())
+                        if (!me->GetMap()->GetPlayers().isEmpty())
                         {
-                            if (Player* player = me->GetMap()->GetPlayers().begin()->getSource())
-                                AnnounceChampion(player);
+                            while (!playersGUID.empty() && !me->GetPlayer(*me, *playersGUID.begin()))
+                                playersGUID.erase(playersGUID.begin());
+
+                            if (!playersGUID.empty())
+                            {
+                                if (Player* player = me->GetPlayer(*me, *playersGUID.begin()))
+                                    AnnounceChampion(player);
+                                events.ScheduleEvent(2, 8000);
+                            }
+                            else
+                                events.ScheduleEvent(3, 8000);
+                        }
+                        else
                             events.ScheduleEvent(2, 8000);
-                        } else
-                            events.ScheduleEvent(3, 8000);
 
                         break;
                     case 3:

@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Announcer",
+  "base": "ff8303b4081c509390d8bd7ec6cc55e6a49d5630",
+  "support_commit": "3feeb3797c6e8dc2bbbeb5950c26f0ea2ee69656",
+  "paths": [
+    "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.cpp"
+  ],
+  "cause": "Trial of the Champion announcers dereferenced an empty map-player list; a missing first cached roster GUID could also stall event2 forever despite a live participant.",
+  "implementation": "Wait on an empty map, prune unresolved cached roster entries only with an actual participant present, announce only a resolved original roster player, then retain existing event2/3 delays of8000ms.",
+  "focused_checks_and_limits": "Complete source case/player branch, ASAN controlled empty/stale/present/repeated paths, native actual35004/Player lookup and stale-roster counterfactual. Both35004/35005 bindings checked locally. Speech/emote selection, mounting, faction intro and complete challenge remain client-pending.",
+  "validation": {
+    "source": "Test-EleventhTenRepairs: 10 pinned ff8303b40 counterfactuals paired with 10 repaired MSVC AddressSanitizer cases. Resource statements are extracted from the actual callbacks for 15 NPC contexts. Tests preserve original starting values, retry initialization and rejected dragon reset casts. Announcer executes the complete selected event-2 case and original player-announcement branch with controlled player/map/speech endpoints. Baseline PASS means the test asserted the known bad state; it is not an ordinary successful gameplay run.",
+    "native": "EleventhTenNative uses actual Creature::Create templates, Unit resource methods, ObjectAccessor player lookup and real Player objects. All 15 selected NPC bindings match, VehicleId=0, and matching pet_stats has no overriding initializer. Original source leaves ENERGY unaddressable; repaired source yields max100 and authored starts, handles reset/re-entry and native resource updates. Original stale roster stalls with a live map participant; repaired code removes the missing GUID and announces the actual roster player once. Real concrete encounter AIs, full combat, voice selection and client traversal are not exercised. No character save/import.",
+    "release": "Original game/scripts library paths and staged final link retained. verify_eleventh_ten_release checks 13 initialization branches in 11 named callbacks, nine controller repairs, four explicit dragon zero resets and actual roster lookup/prune/retry/8-second event handling. Compiler may fold equivalent helper bodies. Prior107 selected paths remain checked. Final canonical Scepter, ArtifactTierProgression, ScenarioResumeASAN and owned server24600 ready/shutdown0/exit0/gone pass; stderr empty and protected runtime hashes unchanged.",
+    "diagnostics": "Every automated/native/source/build/link/start has canonical and own pre/post crash/log length/time snapshots, exit/stdout/stderr review and appended DBErrors/server diagnostics checked. Final checks are clean. No new crash reports or unexplained runtime diagnostics. Two compiler warnings (C4305,C4858) match baseline source expressions and remain visible. Native source before/after controls are intentional counterfactuals, not hidden failures.",
+    "scope": "Exactly10 scoped repairs: nine explicit resource controllers/groups and one participant-roster lifecycle, in six production files. Metadata reversal reproduces ff8303b40. Original combat/phase/instance gates, amounts, timers, NPC ownership, group/pet/guardian credit and cleanup are retained. Resource initialization grants no progress. No global class-to-power policy, SQL migration, character rewrite or invented HP threshold/kill timer."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN. No guessed HP threshold or kill timer.",
+    "LINK2, Slaghammer crash/cache, mixed7111-byte DBErrors, intermittent handshake and all36 complete artifact chains remain OPEN. No default Slaghammer probe or mixed-log truncation.",
+    "Prior MariaDB numeric CAST discrepancy remains OPEN: original82 and corrected94 raw snapshots remain hash-verified outside fixed. No DB/query workaround.",
+    "Prior TimeLoop105984 script/native32bit healing investigation remains OPEN and unchanged. Its26 raw records and ninth-batch runtime copies remain outside resolved cleanup, with a concrete investigation purpose.",
+    "Actual energy-driven fights, failed ability casts, phase transitions, summon travel/visuals, full wipe/loot/group/faction/pet/guardian behavior and announcer voice/mount/client intro still need client traversal. Controlled resource and roster tests do not certify whole encounters."
+  ],
+  "canonical_world_sha256": "ee6d4b2a85fc51f78b94f756480d172757ce6c991a820420f911fc74106c99a8",
+  "patch_sha256": "ec7f2f7b8a59dcca4fe7b1c34e81411b58c146b8cb8c5a9a144467baab776800",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/eleventh-ten-repairs-2026-11-09"
+  },
+  "batch_audit": "docs/audits/eleventh-ten-repairs-2026-11-09.json"
+}
