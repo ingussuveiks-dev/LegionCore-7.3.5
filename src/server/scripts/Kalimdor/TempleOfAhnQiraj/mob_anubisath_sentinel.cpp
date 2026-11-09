@@ -254,7 +254,7 @@ public:
                     continue;
                 if (sent->isDead())
                     continue;
-                sent->ModifyHealth(int32(sent->CountPctFromMaxHealth(50)));
+                sent->ModifyHealth(int64(sent->CountPctFromMaxHealth(50)));
                 CAST_AI(aqsentinelAI, sent->AI())->GainSentinelAbility(ability);
             }
         }
