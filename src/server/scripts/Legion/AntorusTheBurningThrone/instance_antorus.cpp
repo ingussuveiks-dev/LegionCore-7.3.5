@@ -566,7 +566,7 @@ public:
                 });
 
                 if (!wireframesGuids.empty())
-                    if (Creature* protect = instance->GetCreature(wireframesGuids[urand(0, wireframesGuids.size())]))
+                    if (Creature* protect = instance->GetCreature(wireframesGuids[urand(0, uint32(wireframesGuids.size() - 1))]))
                     {
                         Creature* cre = nullptr;
                         for (const auto& guid : introGuids)
