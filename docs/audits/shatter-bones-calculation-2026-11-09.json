@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Shatter",
+  "scope": {
+    "key": "Shatter",
+    "file": "spell_warrior.cpp",
+    "cls": "spell_warr_shatter_the_bones",
+    "spell": 188639,
+    "title": "Use the aura owner for Shatter the Bones amount calculation"
+  },
+  "base": "50b42e107",
+  "support_commit": "9fc679b169b7a95486a30e09bf5832cc096d8542",
+  "cause": "DoEffectCalcAmount dereferences GetTarget although no AuraApplication exists during calculation;actual accessor returns null.",
+  "implementation": "Use the unit owner with null guard and the existing132404/effect0 Shield Block predicate.",
+  "validation": {
+    "source_command": "tools/tests/Test-NextTenSpellRepairs.ps1 -Case Shatter (also -Baseline)",
+    "coverage": "Expected original ASAN null dereference;repaired native calculation dispatcher produces0/17/0 as actual132404 is added/removed in both races.",
+    "native_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe NextTenSpellNative",
+    "native_total": "14live bindings/ten names,matching26972 DB2+read-only hotfix;24 registered Flask casts and8 controlled native aura/cooldown contexts. Not full-core ASAN or client traversal.",
+    "scope": "Five whole production files match50b42e107 outside exactly ten selected complete classes;all other classes and registrations retained.",
+    "release": "Original scripts.lib dependencies,no global OutDir;staged/canonical ten-repair PE plus previous17 paths pass. Canonical Scepter and Warlock regressions pass.",
+    "startup": "Owned canonical25956 fresh ready,server shutdown0,exit0,gone,stderr empty;no user process stopped/configuration changed."
+  },
+  "canonical_world_sha256": "ed56fd0f6523cf9767f02ecc8aaa12d9dfab914d5100fc3c01d4aebd116b4d87",
+  "tested_class_sha256": "7b313af0b9a2458d5fc1b032e44a18b469f20f09ebe4fe66888bf1b9eb3b0f34",
+  "diagnostics": "Every test/build/link/start has canonical+own pre/post crash/log snapshots and reviewed exit/stdout/stderr. Final tests have no new crash/appended DBErrors/server warning/error/assertion. Counterfactual ASAN faults are expected-broken baselines paired with repaired passes. Native fixture missing spell-bonus initialization was traced and repaired;see batch audit for full development evidence.",
+  "client_pending": "Actual Warrior Shield Slam crit chance,equipment,Shield Block transitions and relog.",
+  "progression": "No SQL,character reset,HP threshold,kill timer or quest/loot grant added. Existing native spell hit/credit/group rules retained;Unit queue owners can be player/pet/guardian/NPC. This does not certify every combat alternative in the client.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/next-ten-spell-repairs-2026-11-09"
+  },
+  "shared_open": "Living Lady/authentic1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors and all36 whole chains remain OPEN. No default Slaghammer probe or active-log truncation.",
+  "batch_audit": "docs/audits/next-ten-spell-repairs-2026-11-09.json"
+}

@@ -363,7 +363,8 @@ class spell_warr_shatter_the_bones : public AuraScript
     void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& canBeRecalculated)
     {
         canBeRecalculated = true;
-        if (!GetTarget()->HasAuraEffect(SPELL_WARRIOR_SHIELD_BLOCK_AURA, EFFECT_0))
+        Unit* target = GetUnitOwner();
+        if (!target || !target->HasAuraEffect(SPELL_WARRIOR_SHIELD_BLOCK_AURA, EFFECT_0))
             amount = 0.0f;
     }
 
