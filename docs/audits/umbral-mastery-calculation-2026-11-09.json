@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Umbral",
+  "scope": {
+    "key": "Umbral",
+    "file": "spell_generic.cpp",
+    "cls": "spell_gen_umbral_shift",
+    "spell": 253826,
+    "title": "Use the aura owner for Umbral Shift mastery calculation"
+  },
+  "base": "50b42e107",
+  "support_commit": "9fc679b169b7a95486a30e09bf5832cc096d8542",
+  "cause": "GetTarget is unavailable in DoEffectCalcAmount. It logs an invalid-hook access and leaves the incoming mastery amount active without253825.",
+  "implementation": "Use GetUnitOwner in the existing recalculation hook;preserve third-item253825 gate and shadow-DR effect.",
+  "validation": {
+    "source_command": "tools/tests/Test-NextTenSpellRepairs.ps1 -Case Umbral (also -Baseline)",
+    "coverage": "Actual native calculation dispatcher:absent/present/removed253825 yields0/321/0 in Human/Orc contexts;matching native data and registered PE hook.",
+    "native_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe NextTenSpellNative",
+    "native_total": "14live bindings/ten names,matching26972 DB2+read-only hotfix;24 registered Flask casts and8 controlled native aura/cooldown contexts. Not full-core ASAN or client traversal.",
+    "scope": "Five whole production files match50b42e107 outside exactly ten selected complete classes;all other classes and registrations retained.",
+    "release": "Original scripts.lib dependencies,no global OutDir;staged/canonical ten-repair PE plus previous17 paths pass. Canonical Scepter and Warlock regressions pass.",
+    "startup": "Owned canonical25956 fresh ready,server shutdown0,exit0,gone,stderr empty;no user process stopped/configuration changed."
+  },
+  "canonical_world_sha256": "ed56fd0f6523cf9767f02ecc8aaa12d9dfab914d5100fc3c01d4aebd116b4d87",
+  "tested_class_sha256": "78581f2c0e91f50b3f0a614932a7fbf4d8c48182af9d5fb44423ec67c5d93127",
+  "diagnostics": "Every test/build/link/start has canonical+own pre/post crash/log snapshots and reviewed exit/stdout/stderr. Final tests have no new crash/appended DBErrors/server warning/error/assertion. Counterfactual ASAN faults are expected-broken baselines paired with repaired passes. Native fixture missing spell-bonus initialization was traced and repaired;see batch audit for full development evidence.",
+  "client_pending": "Actual Umbra-Weaver gear combinations/mastery display/proc and removal/relog.",
+  "progression": "No SQL,character reset,HP threshold,kill timer or quest/loot grant added. Existing native spell hit/credit/group rules retained;Unit queue owners can be player/pet/guardian/NPC. This does not certify every combat alternative in the client.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/next-ten-spell-repairs-2026-11-09"
+  },
+  "shared_open": "Living Lady/authentic1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors and all36 whole chains remain OPEN. No default Slaghammer probe or active-log truncation.",
+  "batch_audit": "docs/audits/next-ten-spell-repairs-2026-11-09.json"
+}

@@ -8508,7 +8508,7 @@ class spell_gen_umbral_shift : public AuraScript
         bool& canBeRecalculated)
     {
         canBeRecalculated = true;
-        if (Unit* target = GetTarget())
+        if (Unit* target = GetUnitOwner())
             if (!target->HasAura(253825))
                 amount = 0.0f;
     }
