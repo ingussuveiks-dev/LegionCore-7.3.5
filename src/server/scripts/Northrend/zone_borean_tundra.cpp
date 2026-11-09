@@ -1342,8 +1342,8 @@ public:
             pLeryssa->SetWalk(false);
             pLeryssa->GetMotionMaster()->MovePoint(0, 3722.114502f, 3564.201660f, 477.441437f);
 
-            if (Player* player = killer->ToPlayer())
-                player->RewardPlayerAndGroupAtEvent(NPC_PRINCE_VALANAR, 0);
+            if (Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)
+                player->RewardPlayerAndGroupAtEvent(NPC_PRINCE_VALANAR, me);
         }
     };
 
