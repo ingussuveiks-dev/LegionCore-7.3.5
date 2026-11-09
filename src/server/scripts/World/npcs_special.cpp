@@ -6812,7 +6812,13 @@ struct npc_infant_spider : public ScriptedAI
     void IsSummonedBy(Unit* owner) override
     {
         check = 200;
-        me->AddDelayedEvent(100, [=]() -> void { DoCast(owner, 46598, true); });
+        if (!owner)
+            return;
+        me->AddDelayedEvent(100, [this, ownerGuid = owner->GetGUID()]() -> void
+        {
+            if (Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid))
+                DoCast(owner, 46598, true);
+        });
     }
 
     void UpdateAI(uint32 diff) override
