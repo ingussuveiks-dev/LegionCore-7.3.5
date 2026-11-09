@@ -6687,15 +6687,17 @@ struct npc_hearthstation : public ScriptedAI
 
     ObjectGuid targetGuid;
     std::string emote;
-    uint32 despawn_timer;
+    uint32 despawn_timer = 1000;
 
     void IsSummonedBy(Unit* owner) override
     {
-        me->AddDelayedEvent(100, [=]() -> void
+        if (!owner)
+            return;
+        me->AddDelayedEvent(100, [this, ownerGuid = owner->GetGUID()]() -> void
         {
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-
-            DoCast(owner, 46598, true);
+            if (Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid))
+                DoCast(owner, 46598, true);
         });
     }
 
@@ -6735,9 +6737,13 @@ struct npc_hearthstation : public ScriptedAI
         {
             if (auto owner = me->GetAnyOwner())
             {
-                me->AddDelayedEvent(1500, [owner]() -> void {
-                    owner->RemoveAurasDueToSpell(246289);
-                    owner->RemoveAurasDueToSpell(246351);
+                me->AddDelayedEvent(1500, [this, ownerGuid = owner->GetGUID()]() -> void
+                {
+                    if (Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid))
+                    {
+                        owner->RemoveAurasDueToSpell(246289);
+                        owner->RemoveAurasDueToSpell(246351);
+                    }
                 });
             }
         }
