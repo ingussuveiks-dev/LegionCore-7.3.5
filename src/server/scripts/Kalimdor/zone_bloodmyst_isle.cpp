@@ -70,8 +70,6 @@ public:
             {
                 case 0:
                     spawnCreatureID = 17681;
-                    if (Player* player = killer->ToPlayer())
-                        player->KilledMonsterCredit(spawnCreatureID, ObjectGuid::Empty);
                     break;
                 case 1:
                 case 2:
@@ -80,7 +78,10 @@ public:
             }
 
             if (spawnCreatureID)
-                me->SummonCreature(spawnCreatureID, 0.0f, 0.0f, 0.0f, me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+                if (me->SummonCreature(spawnCreatureID, 0.0f, 0.0f, 0.0f, me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000))
+                    if (spawnCreatureID == 17681)
+                        if (Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)
+                            player->KilledMonsterCredit(spawnCreatureID, ObjectGuid::Empty);
         }
     };
 
