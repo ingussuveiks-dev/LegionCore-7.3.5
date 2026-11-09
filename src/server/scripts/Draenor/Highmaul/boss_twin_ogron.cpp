@@ -143,6 +143,7 @@ struct boss_twin_ogron_pol : public BossAI
 
         _Reset();
 
+        me->SetPowerType(POWER_ENERGY);
         me->SetPower(POWER_ENERGY, 0);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
