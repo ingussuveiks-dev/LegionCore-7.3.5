@@ -14,7 +14,7 @@
     "source": "10 pinned628367eab original expected-broken counterfactuals paired with10 repaired MSVCASAN tests.6encounters/11exact abort statements execute entire current native BasicEvent/EventProcessor underASAN:held refs survive cancellation,new scheduled work executes,normalrelease destroysonce. Complete Folnuna/Dread/Forge aura classes plus actual Folnuna reset power setup and exact Tectus queued body. Controlledexternal/grid/playerendpoints,not full6encounterAI/client.",
     "native": "TenthTenNative:11exact eventabort statements in real Spell7/Unit::Kill death dispatch on controlled30020actors,eachdeathonce and2ordinaryUnitupdates releasequeue0. Three complete aura classes manuallybound to real Aura dispatcher:Folnuna56authored steps sum100/indexwrap;Dread real GUIDgridscan then actor removal;Forge actual empty/present firstparticipant ticks. Exact Tectus8sbody with nativePlayer::Kill target,playeralive,actualdeathobserver1/originalplayerGUID and repeatedcallback no2nddeath. Synthetic loaded-emptygrid state set explicitly because Map::Visit skips created/unloaded grids;no DBspawn loading. No character saves/import or full-coreASAN.",
     "release": "Original game/scripts libraries linked from requiredpaths;staged+canonical verify_tenth_ten_release checks11nonforcecalls/6encounters,Folnuna power/index,Dread GUIDlookup+hooks,Forge/Tectus exactemptyguards/nativeKill. Prior97selectedpaths retained. Canonical Scepter/ArtifactTierProgression/ScenarioResumeASAN pass. Owned11004 freshready/shutdown0/exit0/gone,stderr empty/protectedhashes unchanged.",
-    "diagnostics": "Every automated/native/source/build/link/PE/start has canonical+own pre/postcrashes/loglength/time,exit/stdout/stderr/newDBErrors/serverdiagnostics review. Pre-fix native20261109-190257-315 completed with exactly11expected nondeletableSpell7 leak errors;wrapper correctlyrejects,not ordinarypass. Finalnative/source/start clean. No newcrashfiles. Tectus original117624native targetA1 killedplayer instead ofboss,found by initially guard-only native attempts;finalnativeKill paired regression killsactual78948once and preservesplayer. ThreeC5055compilewarnings are baselineexpressions.",
+    "diagnostics": "Every automated/native/source/build/link/PE/start has canonical+own pre/postcrashes/loglength/time,exit/stdout/stderr/newDBErrors/serverdiagnostics review. Pre-fix native20261109-190257-315 completed with exactly11expected nondeletableSpell7 leak errors;wrapper correctlyrejects,not ordinarypass. Finalnative/source/start clean. No newcrashfiles. Tectus original117624native targetA1 killedplayer instead ofboss,found by initially guard-only native attempts;finalnativeKill paired regression killsactual78948once and preservesplayer. Three compiler warnings C4305/C4858/C5055 match baseline expressions.",
     "scope": "Exactly10 selected issues/10productfiles reverse to628367eab. Existing encounterprerequisites,phases,timers,actorselection/order,group/pet/nativecredit retained. Tectus original8Motes/8s gate retained;use legitimate nativeKill with originalfirstparticipant,false durability and native rewardeligibility. No nearestplayer/newblanketcredit/item/questgrant,SQLmigration or guessedthreshold/timer."
   },
   "pending": [
@@ -27,8 +27,59 @@
   "canonical_world_sha256": "a752b4435c49bf7417d5d0a0048d85a568513a7e7c74f5142fb93254850a7a3c",
   "patch_sha256": "d7950d781efa62f30e9abb18f8e26082917de778c1981687a34a8269453888d0",
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE",
-    "archive": "build-extractors/bin/Release/fixed/tenth-ten-repairs-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/tenth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "657ba6da12e7178cbc4372938243c0639c73212104e8b7d166e0811c372a978e",
+    "original_files": 1289,
+    "removed_files": 279,
+    "logical_removed_bytes": 2056493965,
+    "deletion_manifest": ".codex/tenth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "bbb6d13ac8490de93a256ae23b3ce01d12bcf0beb17c206ea4be897e555f1baf",
+    "retained_rollbacks": [
+      ".codex/release-before-tenth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-ninth-ten-fixes-2026-11-09",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-ninth6b9779a6 retired after newest pre-tenthcf2333e1 rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical EXE/MAP/config/certs/DLL/extracteddata,required game/scripts libraries/main incrementalcache,reusable tests,personal/character/database backups/security,OPENLady/LINK2/Slaghammer/mixedlog/SQL. Prior ninth-batch TimeLoop runtime files/symbols remain with concrete outstanding native recovery investigation;26textrecords outsidefixed. Private selected-test configs deleted,not archived.",
+    "postcheck": "Protected hashes unchanged;no canonical crash,no world/bnet process."
   },
-  "batch_audit": "docs/audits/tenth-ten-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/tenth-ten-repairs-2026-11-09.json",
+  "fix_commit": "30b42a01fc3580d168ed7e026eeafc4d9b3a8cd9",
+  "final_scope_metadata_sha256": "dfffb86e02cb44de03e546cffc5b3784ed41f7b8e8685ed66835bcf52dea8380",
+  "final_review": {
+    "status": "PASS",
+    "evidence": ".codex/tenth-ten-fixes-2026-11-09/final-review-driver.log",
+    "sha256": "7780ea41b7b56836d7091b2055a1fe174143f10cd2da31441831991cc4f17885",
+    "supplemental_manifest": "build-extractors/bin/Release/fixed/tenth-ten-repairs-2026-11-09/supplemental-manifest.json",
+    "supplemental_manifest_sha256": "8f69be1c6ffe5db792eab394bef6e452775db28adfa78601d7d2568e7a754f45",
+    "supplemental_files": 296,
+    "no_servers_remaining": true,
+    "active_crashes": 0,
+    "mixed_log_unchanged": true,
+    "open_sql_original82_and_corrected94_hashes": "PASS",
+    "open_timeloop26rawhashes_and_runtime_retained": "PASS",
+    "exact10commits_pushed": "PASS",
+    "prior_handoff_history": "PASS"
+  }
 }

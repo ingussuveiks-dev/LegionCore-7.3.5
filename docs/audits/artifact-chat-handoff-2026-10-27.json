@@ -1,4 +1,168 @@
 {
+  "latest_tenth_ten_repairs_2026_11_09": {
+    "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+    "fixes": [
+      {
+        "key": "Avatar",
+        "title": "Defer referenced spell cleanup in Fallen Avatar death",
+        "paths": [
+          "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp"
+        ],
+        "audit": "docs/audits/fallen-avatar-death-spell-event-lifetime-2026-11-09.json",
+        "commit": "59009e93a338fb404972aefd561e9c30377dca8d"
+      },
+      {
+        "key": "Guldan",
+        "title": "Defer Guldan spell event deletion across death and third phase",
+        "paths": [
+          "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+        ],
+        "audit": "docs/audits/guldan-phase-death-spell-event-lifetime-2026-11-09.json",
+        "commit": "d8731c4d87077121ca654db396928db77190ce96"
+      },
+      {
+        "key": "Elisande",
+        "title": "Abort Elisande phase spells without force deleting referenced events",
+        "paths": [
+          "src/server/scripts/Legion/TheNighthold/boss_elisande.cpp"
+        ],
+        "audit": "docs/audits/elisande-phase-spell-event-lifetime-2026-11-09.json",
+        "commit": "0585f98cbcc64866ac3244abeb8f76b34b3f59ba"
+      },
+      {
+        "key": "Augur",
+        "title": "Keep Star Augur transition spells alive until references release",
+        "paths": [
+          "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp"
+        ],
+        "audit": "docs/audits/star-augur-transition-spell-event-lifetime-2026-11-09.json",
+        "commit": "dad320aa11c2da8b4d39d5506f984ea62abbbe4a"
+      },
+      {
+        "key": "LichKing",
+        "title": "Defer Lich King spirit event cleanup during soul transitions",
+        "paths": [
+          "src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp"
+        ],
+        "audit": "docs/audits/lich-king-spirit-spell-event-lifetime-2026-11-09.json",
+        "commit": "6c82143047288b8c8277d6c8980f6efca9ecc7f8"
+      },
+      {
+        "key": "Kaathar",
+        "title": "Safely cancel Tuulani and Nyami spell events before Kaathar escape",
+        "paths": [
+          "src/server/scripts/Draenor/Auchindoun/boss_kaathar.cpp"
+        ],
+        "audit": "docs/audits/kaathar-escape-spell-event-lifetime-2026-11-09.json",
+        "commit": "30b42a01fc3580d168ed7e026eeafc4d9b3a8cd9"
+      },
+      {
+        "key": "Folnuna",
+        "title": "Advance Folnuna authored 56 tick energy curve safely",
+        "paths": [
+          "src/server/scripts/Legion/invasion_point_world_bosses.cpp"
+        ],
+        "audit": "docs/audits/folnuna-authored-energy-lifecycle-2026-11-09.json",
+        "commit": "97fd7a4839791e62bc6adc5483c5571e3033b3d2"
+      },
+      {
+        "key": "DreadSpray",
+        "title": "Resolve Dread Spray targets by GUID instead of retained raw pointers",
+        "paths": [
+          "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_sha_of_fear.cpp"
+        ],
+        "audit": "docs/audits/dread-spray-guid-target-lifecycle-2026-11-09.json",
+        "commit": "9338b61f69211a2dbfd0b3d97cd95aec756d3ff8"
+      },
+      {
+        "key": "Forge",
+        "title": "Guard empty Thunder Forge participant lists before charge ticks",
+        "paths": [
+          "src/server/scripts/Scenario/ThunderForge/thunder_forge.cpp"
+        ],
+        "audit": "docs/audits/thunder-forge-periodic-participant-admission-2026-11-09.json",
+        "commit": "271d67f8ef41bbc1c31f67a4d2b1050f1ece4708"
+      },
+      {
+        "key": "Tectus",
+        "title": "Finish Tectus safely without killing the remaining player",
+        "paths": [
+          "src/server/scripts/Draenor/Highmaul/boss_tectus.cpp"
+        ],
+        "audit": "docs/audits/tectus-finalizer-target-participant-safety-2026-11-09.json",
+        "commit": "9d4263f7d80801dd7b65a4da06b13012e55c3cd6"
+      }
+    ],
+    "canonical": {
+      "directory": "build-extractors/bin/Release",
+      "world_sha256": "a752b4435c49bf7417d5d0a0048d85a568513a7e7c74f5142fb93254850a7a3c",
+      "bnet_sha256": "7fdaeed86b235ab4b2e9f0d23609c1f96916434132a373de1a355473ae2d40d4",
+      "rollback": ".codex/release-before-tenth-ten-fixes-2026-11-09",
+      "startup": "Owned11004 freshready/shutdown0/exit0/gone,stderr empty,protected hashes unchanged;no user process stopped."
+    },
+    "cleanup": {
+      "status": "COMPLETE_HASH_VERIFIED",
+      "archive": "build-extractors/bin/Release/fixed/tenth-ten-repairs-2026-11-09",
+      "archive_manifest_sha256": "657ba6da12e7178cbc4372938243c0639c73212104e8b7d166e0811c372a978e",
+      "original_files": 1289,
+      "removed_files": 279,
+      "logical_removed_bytes": 2056493965,
+      "deletion_manifest": ".codex/tenth-ten-fixes-2026-11-09/cleanup-deleted.json",
+      "deletion_manifest_sha256": "bbb6d13ac8490de93a256ae23b3ce01d12bcf0beb17c206ea4be897e555f1baf",
+      "retained_rollbacks": [
+        ".codex/release-before-tenth-ten-fixes-2026-11-09",
+        ".codex/release-before-seven-fixes-2026-11-08",
+        ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+      ],
+      "removed_superseded_rollback": ".codex/release-before-ninth-ten-fixes-2026-11-09",
+      "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-ninth6b9779a6 retired after newest pre-tenthcf2333e1 rollback verification",
+      "logs_truncated": 0,
+      "active_crashes_removed": 0,
+      "open_sql_evidence": {
+        "Files": 82,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+        "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+        "ClassificationCorrection": {
+          "Files": 94,
+          "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+          "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+        }
+      },
+      "open_timeloop": {
+        "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+        "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+        "files": 26,
+        "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+        "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+      },
+      "preserved": "Canonical EXE/MAP/config/certs/DLL/extracteddata,required game/scripts libraries/main incrementalcache,reusable tests,personal/character/database backups/security,OPENLady/LINK2/Slaghammer/mixedlog/SQL. Prior ninth-batch TimeLoop runtime files/symbols remain with concrete outstanding native recovery investigation;26textrecords outsidefixed. Private selected-test configs deleted,not archived.",
+      "postcheck": "Protected hashes unchanged;no canonical crash,no world/bnet process."
+    },
+    "pending": [
+      "Sharasdal living Lady authentic activation/surrender/conversation1906/Grash/cleanup OPEN;noinventedHP/killingtimer.",
+      "LINK2/Slaghammer crash-cache/mixed7111byteDBErrors/intermittenthandshake/all36wholechains remainOPEN. DefaultSlaghammer probe notrun,no mixedlog truncation.",
+      "PriorMariaDB numeric CAST discrepancy remainsOPEN;original82andcorrected94rawsnapshots outsidefixed unchanged;noDB/queryworkaround.",
+      "PriorTimeLoop105984 script/32bitnativeheal investigation remainsOPEN and unchanged;26rawrecords outsidefixed,allninth-batchTimeLoop runtimes retained for concreteinvestigation. No nativehighheal run attempted.",
+      "Actual client/whole6raidencounters/Folnuna phasecastacceptance/Dread facingvisuals/Forge chargeprogress/Tectus8Motes fight,loot/group/faction/pet/guardian/reentry/failcasts/cleanup remainpending. Nativecontrolleddispatch/sourceASAN/PE/startup do notcertifywholegameplay."
+    ],
+    "stop": "Exactly10 implemented,tested to stated scopes,deployed,individually committed/pushed and cleaned;stop afterfinalaudit/handoffpush. No eleventh repair started;TimeLoop/priorOPEN/client36chains remainvisible.",
+    "audit": "docs/audits/tenth-ten-repairs-2026-11-09.json",
+    "final_review": {
+      "status": "PASS",
+      "evidence": ".codex/tenth-ten-fixes-2026-11-09/final-review-driver.log",
+      "sha256": "7780ea41b7b56836d7091b2055a1fe174143f10cd2da31441831991cc4f17885",
+      "supplemental_manifest": "build-extractors/bin/Release/fixed/tenth-ten-repairs-2026-11-09/supplemental-manifest.json",
+      "supplemental_manifest_sha256": "8f69be1c6ffe5db792eab394bef6e452775db28adfa78601d7d2568e7a754f45",
+      "supplemental_files": 296,
+      "no_servers_remaining": true,
+      "active_crashes": 0,
+      "mixed_log_unchanged": true,
+      "open_sql_original82_and_corrected94_hashes": "PASS",
+      "open_timeloop26rawhashes_and_runtime_retained": "PASS",
+      "exact10commits_pushed": "PASS",
+      "prior_handoff_history": "PASS"
+    }
+  },
   "latest_ninth_ten_repairs_2026_11_09": {
     "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
     "fixes": [
