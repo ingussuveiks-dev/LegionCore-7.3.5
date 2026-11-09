@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Blessing",
+  "scope": {
+    "key": "Blessing",
+    "file": "spell_generic.cpp",
+    "cls": "spell_underlight_blessing",
+    "title": "Update Underlight Blessing from its surviving aura owner",
+    "spell": 201948
+  },
+  "base": "c7f6e2f46",
+  "support_commit": "6ef54f14d7543cb3cbe76069bc31ba370e56bcbe",
+  "cause": "The water/form update dereferenced an unresolved original caster and acted on that caster rather than its surviving unit aura owner.",
+  "implementation": "Read the unit owner and safely select a Player;retain original1.5s water check,188042 transform/removal and native cast behavior.",
+  "aura_contract": "Where applicable this repairs the supported separate-caster/surviving-owner aura context. Native Aura::GetCaster returns the owner directly for an ordinary self-cast;these audits do not claim that normal self-casts lose that caster or that a production/client crash was observed. The native probe creates an accepted separate-caster aura then removes that real actor;source counterfactuals have modeled Unit/Player endpoints.",
+  "validation": {
+    "counterfactual": "Pinned c7f6e2f46 complete class;explicit expected ASAN null/nonplayer dereference exit1,paired with repaired passing regression. Not successful ordinary gameplay.",
+    "source": "Source fixture1499+1ms,water/land/missing owner and missing caster;native real original-caster removal/owner/effect-update on dry land.",
+    "command": "tools/tests/Test-TenSpellLifecycles.ps1 -Case Blessing (also -Baseline for the pinned counterfactual)",
+    "native": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe TenSpellLifecycleNative:all11 live bindings/ten names,matching26972+read-onlyHotfix effects/targets/descriptions,18 controlled Human/Orc native aura contexts plus4 actual registered Undercurrent casts. Earlier profile/poses controlled;no actual gear/client traversal.",
+    "scope": "Test-TenSpellScope.ps1:four whole production files match c7f6e2f46 outside exactly ten selected complete classes;all registrations retained. This issue changes one of those classes.",
+    "release": "Original generated scripts.lib/final-link inputs,no global OutDir;staged+canonical registered hook/callback/dataflow checks pass. Retained prior seven-feature and full Warswords stage4 PE chains plus mandatory canonical Scepter pass.",
+    "startup": "Task-owned canonical PID10624 fresh ready,graceful shutdown0/exit0/gone,stderr empty,protected config/cert/DLL hashes unchanged;no user/unknown server stopped."
+  },
+  "canonical_world_sha256": "e8ff1ea74fd8cba0dc2d51e46d0bfca73d7448bf258e4d68cd33760fe49faba4",
+  "tested_class_sha256": "d914d606b272f70a051b8f818cd865f76afc338e624a16d0048e6125982c3ea2",
+  "diagnostics": "All tests/build/link/start use canonical+own pre/post crash/log snapshots and exit/stdout/stderr review. Final runs add no crash/DBErrors/server warning/error/assertion. Expected failing ASAN baselines are separately labeled;fixture development evidence remains paired with final passes. See batch audit for every reviewed iteration.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/ten-lifecycle-fixes-2026-11-09"
+  },
+  "client_pending": "Actual underwater/surface movement,fish visual and owner cleanup after equipment/location changes.",
+  "shared_open": "Sharasdal living Lady/1906/finisher/authentic threshold,sharedLINK2,Slaghammer crash/cache,mixedDBErrors7111/fa3db826 and all36 whole chains remain OPEN. No SQL/item/quest/progression/character reset added. Native rod learn/remove is its existing ability behavior.",
+  "batch_audit": "docs/audits/ten-lifecycle-fixes-2026-11-09.json"
+}

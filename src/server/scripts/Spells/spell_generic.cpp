@@ -6228,7 +6228,9 @@ class spell_underlight_blessing : public AuraScript
         {
             checkTimer = 1500;
 
-            if (Player* player = GetCaster()->ToPlayer())
+            Unit* owner = GetUnitOwner();
+
+            if (Player* player = owner ? owner->ToPlayer() : nullptr)
             {
                 bool onWater = player->IsInWater();
 
