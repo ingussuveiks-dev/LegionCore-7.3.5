@@ -324,8 +324,10 @@ struct boss_tectus : public BossAI
                     AddDelayedEvent(8 * IN_MILLISECONDS, [this]() -> void
                     {
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC);
-                        if (Player* player = me->GetMap()->GetPlayers().begin()->getSource())
-                            player->CastSpell(me, SuicideNoBloodNoLogging, true);
+                        Map::PlayerList const& players = me->GetMap()->GetPlayers();
+                        if (!players.isEmpty())
+                            if (Player* player = players.begin()->getSource())
+                                player->Kill(me, false);
                     });
                 }
 
