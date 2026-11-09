@@ -590,8 +590,8 @@ public:
                             {
                                 if (Creature* l_Nyami = m_Instance->instance->GetCreature(m_Instance->GetGuidData(DataNyami)))
                                 {
-                                    l_Tuulani->m_Events.KillAllEvents(true);
-                                    l_Nyami->m_Events.KillAllEvents(true);
+                                    l_Tuulani->m_Events.KillAllEvents(false);
+                                    l_Nyami->m_Events.KillAllEvents(false);
                                 }
                             }
                         }
