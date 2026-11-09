@@ -1,0 +1,238 @@
+[
+  {
+    "key": "Avatar",
+    "title": "Defer referenced spell cleanup in Fallen Avatar death",
+    "paths": [
+      "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp"
+    ],
+    "cls": "boss_fallen_avatar",
+    "methods": [
+      "JustDied"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp",
+        "old": "        me->m_Events.KillAllEvents(true);",
+        "new": "        me->m_Events.KillAllEvents(false);"
+      }
+    ],
+    "event_abort": true,
+    "abort_count": 1,
+    "npc": 116939
+  },
+  {
+    "key": "Guldan",
+    "title": "Defer Guldan spell event deletion across death and third phase",
+    "paths": [
+      "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+    ],
+    "cls": "boss_guldanAI",
+    "methods": [
+      "JustDied",
+      "DefaultEvents"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+        "old": "case ROLES_TANK:\n                            spellId = SPELL_RESONANT_BARRIER;\n                            break;\n                        }\n\n                        if (spellId)\n                            player->CastSpell(player, spellId, true);\n                    }\n        }\n        \n        void JustReachedHome() override\n        {\n            std::list<AreaTrigger*> list;\n            me->GetAreaTriggersWithEntryInRange(list, 12376, ObjectGuid::Empty, 120.0f); // fel of sargeras\n            for (auto at : list)\n                at->Remove();\n\n            me->SetControlled(true, UNIT_STATE_ROOT);\n\n            if (IsMythicRaid())\n            {\n                for (uint8 i =0; i < 4; ++i)\n                {\n                    if (GameObject* go = me->GetMap()->GetGameObject(instance->GetGuidData(statuesVisual[i])))\n                        go->SetByteValue(GAMEOBJECT_FIELD_BYTES_1, 0, 1); // pre-activate\n                    \n                    me->AddAura(spellsVisualCharging[i], me);\n                }\n\n                DoCast(SPELL_EYE_OF_AMANTHUL_PEREPHASE_TO_2);\n\n                if (GameObject* go = me->GetMap()->GetGameObject(instance->GetGuidData(GO_EYE_OF_AMANTUL)))\n                    go->SetByteValue(GAMEOBJECT_FIELD_BYTES_1, 0, 0); // activate\n            }\n            else\n            {\n                me->AddAura(SPELL_INTRO_FOCUS_ILLIDAN, me);   \n                DoCast(SPELL_INTRO); \n\n                if (selectedVisual)\n                    selectedVisual->DespawnOrUnsummon();\n\n                if (GameObject* go = me->GetMap()->GetGameObject(instance->GetGuidData(statuesVisual[addDies])))\n                    go->SetByteValue(GAMEOBJECT_FIELD_BYTES_1, 0, 1); // pre-activate\n\n                selectedVisual = me->SummonCreature(NPC_VISUAL_SELECT, positionsOfStatues[addDies]);\n\n                me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_TURN); // visual\n                me->ClearUnitState(UNIT_STATE_CANNOT_TURN); // for correct work\n            }\n            \n        }\n\n        void JustDied(Unit* /*killer*/) override\n        {\n            if (!IsMythicRaid())\n            {\n                _JustDied();\n                DoCast(SPELL_DEAD);\n                DoCast(SPELL_MOVIE);\n\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_FEL_OF_SARGERAS_AURA);\n                std::list<AreaTrigger*> list;\n                me->GetAreaTriggersWithEntryInRange(list, 12376, ObjectGuid::Empty, 120.0f); // fel of sargeras\n                for (auto at : list)\n                    at->Remove();\n            }\n            else\n            {\n                me->SetVisible(false);\n                // me->RemoveAllAreaObjects();\n                me->m_Events.KillAllEvents(true);",
+        "new": "case ROLES_TANK:\n                            spellId = SPELL_RESONANT_BARRIER;\n                            break;\n                        }\n\n                        if (spellId)\n                            player->CastSpell(player, spellId, true);\n                    }\n        }\n        \n        void JustReachedHome() override\n        {\n            std::list<AreaTrigger*> list;\n            me->GetAreaTriggersWithEntryInRange(list, 12376, ObjectGuid::Empty, 120.0f); // fel of sargeras\n            for (auto at : list)\n                at->Remove();\n\n            me->SetControlled(true, UNIT_STATE_ROOT);\n\n            if (IsMythicRaid())\n            {\n                for (uint8 i =0; i < 4; ++i)\n                {\n                    if (GameObject* go = me->GetMap()->GetGameObject(instance->GetGuidData(statuesVisual[i])))\n                        go->SetByteValue(GAMEOBJECT_FIELD_BYTES_1, 0, 1); // pre-activate\n                    \n                    me->AddAura(spellsVisualCharging[i], me);\n                }\n\n                DoCast(SPELL_EYE_OF_AMANTHUL_PEREPHASE_TO_2);\n\n                if (GameObject* go = me->GetMap()->GetGameObject(instance->GetGuidData(GO_EYE_OF_AMANTUL)))\n                    go->SetByteValue(GAMEOBJECT_FIELD_BYTES_1, 0, 0); // activate\n            }\n            else\n            {\n                me->AddAura(SPELL_INTRO_FOCUS_ILLIDAN, me);   \n                DoCast(SPELL_INTRO); \n\n                if (selectedVisual)\n                    selectedVisual->DespawnOrUnsummon();\n\n                if (GameObject* go = me->GetMap()->GetGameObject(instance->GetGuidData(statuesVisual[addDies])))\n                    go->SetByteValue(GAMEOBJECT_FIELD_BYTES_1, 0, 1); // pre-activate\n\n                selectedVisual = me->SummonCreature(NPC_VISUAL_SELECT, positionsOfStatues[addDies]);\n\n                me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_TURN); // visual\n                me->ClearUnitState(UNIT_STATE_CANNOT_TURN); // for correct work\n            }\n            \n        }\n\n        void JustDied(Unit* /*killer*/) override\n        {\n            if (!IsMythicRaid())\n            {\n                _JustDied();\n                DoCast(SPELL_DEAD);\n                DoCast(SPELL_MOVIE);\n\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_FEL_OF_SARGERAS_AURA);\n                std::list<AreaTrigger*> list;\n                me->GetAreaTriggersWithEntryInRange(list, 12376, ObjectGuid::Empty, 120.0f); // fel of sargeras\n                for (auto at : list)\n                    at->Remove();\n            }\n            else\n            {\n                me->SetVisible(false);\n                // me->RemoveAllAreaObjects();\n                me->m_Events.KillAllEvents(false);"
+      },
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+        "old": "                    me->m_Events.KillAllEvents(true);",
+        "new": "                    me->m_Events.KillAllEvents(false);"
+      }
+    ],
+    "event_abort": true,
+    "abort_count": 2,
+    "npc": 104154
+  },
+  {
+    "key": "Elisande",
+    "title": "Abort Elisande phase spells without force deleting referenced events",
+    "paths": [
+      "src/server/scripts/Legion/TheNighthold/boss_elisande.cpp"
+    ],
+    "cls": "boss_elisande",
+    "methods": [
+      "DamageTaken"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_elisande.cpp",
+        "old": "                me->m_Events.KillAllEvents(true);",
+        "new": "                me->m_Events.KillAllEvents(false);"
+      }
+    ],
+    "event_abort": true,
+    "abort_count": 1,
+    "npc": 106643
+  },
+  {
+    "key": "Augur",
+    "title": "Keep Star Augur transition spells alive until references release",
+    "paths": [
+      "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp"
+    ],
+    "cls": "boss_star_augur_etraeus",
+    "methods": [
+      "SpellFinishCast"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp",
+        "old": "case Phase1:\n                        me->m_Events.KillAllEvents(true);",
+        "new": "case Phase1:\n                        me->m_Events.KillAllEvents(false);"
+      },
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp",
+        "old": "case Phase2:\n                        me->m_Events.KillAllEvents(true);",
+        "new": "case Phase2:\n                        me->m_Events.KillAllEvents(false);"
+      },
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp",
+        "old": "case Phase3:\n                        me->m_Events.KillAllEvents(true);",
+        "new": "case Phase3:\n                        me->m_Events.KillAllEvents(false);"
+      }
+    ],
+    "event_abort": true,
+    "abort_count": 3,
+    "npc": 103758
+  },
+  {
+    "key": "LichKing",
+    "title": "Defer Lich King spirit event cleanup during soul transitions",
+    "paths": [
+      "src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp"
+    ],
+    "cls": "boss_the_lich_kingAI",
+    "methods": [
+      "UpdateAI"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp",
+        "old": "                                        summon->m_Events.KillAllEvents(true);",
+        "new": "                                        summon->m_Events.KillAllEvents(false);"
+      },
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp",
+        "old": "                    (*itr)->m_Events.KillAllEvents(true);",
+        "new": "                    (*itr)->m_Events.KillAllEvents(false);"
+      }
+    ],
+    "event_abort": true,
+    "abort_count": 2,
+    "npc": 36597
+  },
+  {
+    "key": "Kaathar",
+    "title": "Safely cancel Tuulani and Nyami spell events before Kaathar escape",
+    "paths": [
+      "src/server/scripts/Draenor/Auchindoun/boss_kaathar.cpp"
+    ],
+    "cls": "boss_kaatharAI",
+    "methods": [
+      "DoAction"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Draenor/Auchindoun/boss_kaathar.cpp",
+        "old": "                                    l_Tuulani->m_Events.KillAllEvents(true);",
+        "new": "                                    l_Tuulani->m_Events.KillAllEvents(false);"
+      },
+      {
+        "path": "src/server/scripts/Draenor/Auchindoun/boss_kaathar.cpp",
+        "old": "                                    l_Nyami->m_Events.KillAllEvents(true);",
+        "new": "                                    l_Nyami->m_Events.KillAllEvents(false);"
+      }
+    ],
+    "event_abort": true,
+    "abort_count": 2,
+    "npc": 75839
+  },
+  {
+    "key": "Folnuna",
+    "title": "Advance Folnuna authored 56 tick energy curve safely",
+    "paths": [
+      "src/server/scripts/Legion/invasion_point_world_bosses.cpp"
+    ],
+    "cls": "spell_folnuna_nausea",
+    "methods": [
+      "Tick"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/invasion_point_world_bosses.cpp",
+        "old": "        DespawnAllSummons();\n        me->RemoveAllAuras();\n        me->SetMaxPower(POWER_ENERGY, 100);",
+        "new": "        DespawnAllSummons();\n        me->RemoveAllAuras();\n        me->SetPowerType(POWER_ENERGY);\n        me->SetMaxPower(POWER_ENERGY, 100);"
+      },
+      {
+        "path": "src/server/scripts/Legion/invasion_point_world_bosses.cpp",
+        "old": "        if (auto folnuna = GetCaster()->ToCreature())\n        {\n            power = folnuna->GetPower(POWER_ENERGY);\n            folnuna->SetPower(POWER_ENERGY, power + energy[i]);\n        }",
+        "new": "        Unit* caster = GetCaster();\n        if (Creature* folnuna = caster ? caster->ToCreature() : nullptr)\n        {\n            power = folnuna->GetPower(POWER_ENERGY);\n            folnuna->SetPower(POWER_ENERGY, power + energy[i]);\n            i = uint32((i + 1) % energy.size());\n        }"
+      }
+    ],
+    "npc": 124514,
+    "spell": 247441
+  },
+  {
+    "key": "DreadSpray",
+    "title": "Resolve Dread Spray targets by GUID instead of retained raw pointers",
+    "paths": [
+      "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_sha_of_fear.cpp"
+    ],
+    "cls": "dread_spray_buff_aura_script",
+    "methods": [
+      "OnTick",
+      "OnApply",
+      "OnRemove"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_sha_of_fear.cpp",
+        "old": "        void OnTick(AuraEffect const* /*aurEff*/)\n        {\n            if (Creature* caster = GetCaster()->ToCreature())\n            {\n                if (dreadspraytriggers.empty())\n                    return;\n\n                Creature* dreadtrigger = dreadspraytriggers.back();\n\n                if (dreadtrigger)\n                {\n                    GetCaster()->SetFacingToObject(dreadtrigger);\n                    GetCaster()->CastSpell(dreadtrigger, 119958, true); // visual is bugged?\n                    dreadspraytriggers.remove(dreadtrigger);\n                }\n            }\n        }\n        void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n        {\n            if (Unit* caster = GetCaster())\n            {\n                if (caster->ToCreature() && caster->ToCreature()->AI())\n                    caster->GetAI()->DoAction(ACTION_REMOVE_DREAD_SPRAY);\n            }\n        }\n        void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n        {\n            if (Unit* caster = GetCaster())\n            {\n                GetCaster()->GetCreatureListWithEntryInGrid(dreadspraytriggers, dread_spray_1_8, 65.0f);\n            }\n        }\n\n    private:\n        std::list<Creature*> dreadspraytriggers;\n",
+        "new": "        void OnTick(AuraEffect const* /*aurEff*/)\n        {\n            Unit* source = GetCaster();\n            Creature* caster = source ? source->ToCreature() : nullptr;\n            if (!caster || dreadspraytriggers.empty())\n                return;\n\n            ObjectGuid guid = dreadspraytriggers.back();\n            dreadspraytriggers.pop_back();\n            if (Creature* dreadtrigger = ObjectAccessor::GetCreature(*caster, guid))\n            {\n                caster->SetFacingToObject(dreadtrigger);\n                caster->CastSpell(dreadtrigger, 119958, true);\n            }\n        }\n        void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n        {\n            dreadspraytriggers.clear();\n            if (Unit* caster = GetCaster())\n            {\n                if (caster->ToCreature() && caster->ToCreature()->AI())\n                    caster->GetAI()->DoAction(ACTION_REMOVE_DREAD_SPRAY);\n            }\n        }\n        void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n        {\n            dreadspraytriggers.clear();\n            if (Unit* caster = GetCaster())\n            {\n                std::list<Creature*> triggers;\n                caster->GetCreatureListWithEntryInGrid(triggers, dread_spray_1_8, 65.0f);\n                for (Creature* trigger : triggers)\n                    dreadspraytriggers.push_back(trigger->GetGUID());\n            }\n        }\n\n    private:\n        std::list<ObjectGuid> dreadspraytriggers;\n"
+      }
+    ],
+    "spell": 120047
+  },
+  {
+    "key": "Forge",
+    "title": "Guard empty Thunder Forge participant lists before charge ticks",
+    "paths": [
+      "src/server/scripts/Scenario/ThunderForge/thunder_forge.cpp"
+    ],
+    "cls": "spell_forging_AuraScript",
+    "methods": [
+      "OnTick"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/ThunderForge/thunder_forge.cpp",
+        "old": "            if (Player* plr = caster->GetMap()->GetPlayers().begin()->getSource())\n                caster->CastSpell(plr, SPELL_THUNDER_FORGE_CHARGE_TRIGGER);",
+        "new": "            Map::PlayerList const& players = caster->GetMap()->GetPlayers();\n            if (!players.isEmpty())\n                if (Player* plr = players.begin()->getSource())\n                    caster->CastSpell(plr, SPELL_THUNDER_FORGE_CHARGE_TRIGGER);"
+      }
+    ],
+    "spell": 138869
+  },
+  {
+    "key": "Tectus",
+    "title": "Finish Tectus safely without killing the remaining player",
+    "paths": [
+      "src/server/scripts/Draenor/Highmaul/boss_tectus.cpp"
+    ],
+    "cls": "boss_tectus",
+    "methods": [
+      "DoAction"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Draenor/Highmaul/boss_tectus.cpp",
+        "old": "                        if (Player* player = me->GetMap()->GetPlayers().begin()->getSource())\n                            player->CastSpell(me, SuicideNoBloodNoLogging, true);",
+        "new": "                        Map::PlayerList const& players = me->GetMap()->GetPlayers();\n                        if (!players.isEmpty())\n                            if (Player* player = players.begin()->getSource())\n                                player->Kill(me, false);"
+      }
+    ],
+    "npc": 78948
+  }
+]

@@ -1,0 +1,100 @@
+{
+  "date": "2026-11-09",
+  "status": "SUPPORT_FOR_EXACTLY_10",
+  "base": "628367eab803351c364b1543847cfe5a7b3b9b3b",
+  "cases": [
+    {
+      "key": "Avatar",
+      "title": "Defer referenced spell cleanup in Fallen Avatar death",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp"
+      ]
+    },
+    {
+      "key": "Guldan",
+      "title": "Defer Guldan spell event deletion across death and third phase",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+      ]
+    },
+    {
+      "key": "Elisande",
+      "title": "Abort Elisande phase spells without force deleting referenced events",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_elisande.cpp"
+      ]
+    },
+    {
+      "key": "Augur",
+      "title": "Keep Star Augur transition spells alive until references release",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp"
+      ]
+    },
+    {
+      "key": "LichKing",
+      "title": "Defer Lich King spirit event cleanup during soul transitions",
+      "paths": [
+        "src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp"
+      ]
+    },
+    {
+      "key": "Kaathar",
+      "title": "Safely cancel Tuulani and Nyami spell events before Kaathar escape",
+      "paths": [
+        "src/server/scripts/Draenor/Auchindoun/boss_kaathar.cpp"
+      ]
+    },
+    {
+      "key": "Folnuna",
+      "title": "Advance Folnuna authored 56 tick energy curve safely",
+      "paths": [
+        "src/server/scripts/Legion/invasion_point_world_bosses.cpp"
+      ]
+    },
+    {
+      "key": "DreadSpray",
+      "title": "Resolve Dread Spray targets by GUID instead of retained raw pointers",
+      "paths": [
+        "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_sha_of_fear.cpp"
+      ]
+    },
+    {
+      "key": "Forge",
+      "title": "Guard empty Thunder Forge participant lists before charge ticks",
+      "paths": [
+        "src/server/scripts/Scenario/ThunderForge/thunder_forge.cpp"
+      ]
+    },
+    {
+      "key": "Tectus",
+      "title": "Finish Tectus safely without killing the remaining player",
+      "paths": [
+        "src/server/scripts/Draenor/Highmaul/boss_tectus.cpp"
+      ]
+    }
+  ],
+  "validation": {
+    "source": "10 pinned628367eab original expected-broken counterfactuals paired with10 repaired MSVCASAN tests.6encounters/11exact abort statements execute entire current native BasicEvent/EventProcessor underASAN:held refs survive cancellation,new scheduled work executes,normalrelease destroysonce. Complete Folnuna/Dread/Forge aura classes plus actual Folnuna reset power setup and exact Tectus queued body. Controlledexternal/grid/playerendpoints,not full6encounterAI/client.",
+    "native": "TenthTenNative:11exact eventabort statements in real Spell7/Unit::Kill death dispatch on controlled30020actors,eachdeathonce and2ordinaryUnitupdates releasequeue0. Three complete aura classes manuallybound to real Aura dispatcher:Folnuna56authored steps sum100/indexwrap;Dread real GUIDgridscan then actor removal;Forge actual empty/present firstparticipant ticks. Exact Tectus8sbody with nativePlayer::Kill target,playeralive,actualdeathobserver1/originalplayerGUID and repeatedcallback no2nddeath. Synthetic loaded-emptygrid state set explicitly because Map::Visit skips created/unloaded grids;no DBspawn loading. No character saves/import or full-coreASAN.",
+    "release": "Original game/scripts libraries linked from requiredpaths;staged+canonical verify_tenth_ten_release checks11nonforcecalls/6encounters,Folnuna power/index,Dread GUIDlookup+hooks,Forge/Tectus exactemptyguards/nativeKill. Prior97selectedpaths retained. Canonical Scepter/ArtifactTierProgression/ScenarioResumeASAN pass. Owned11004 freshready/shutdown0/exit0/gone,stderr empty/protectedhashes unchanged.",
+    "diagnostics": "Every automated/native/source/build/link/PE/start has canonical+own pre/postcrashes/loglength/time,exit/stdout/stderr/newDBErrors/serverdiagnostics review. Pre-fix native20261109-190257-315 completed with exactly11expected nondeletableSpell7 leak errors;wrapper correctlyrejects,not ordinarypass. Finalnative/source/start clean. No newcrashfiles. Tectus original117624native targetA1 killedplayer instead ofboss,found by initially guard-only native attempts;finalnativeKill paired regression killsactual78948once and preservesplayer. ThreeC5055compilewarnings are baselineexpressions.",
+    "scope": "Exactly10 selected issues/10productfiles reverse to628367eab. Existing encounterprerequisites,phases,timers,actorselection/order,group/pet/nativecredit retained. Tectus original8Motes/8s gate retained;use legitimate nativeKill with originalfirstparticipant,false durability and native rewardeligibility. No nearestplayer/newblanketcredit/item/questgrant,SQLmigration or guessedthreshold/timer."
+  },
+  "pending": [
+    "Sharasdal living Lady authentic activation/surrender/conversation1906/Grash/cleanup OPEN;noinventedHP/killingtimer.",
+    "LINK2/Slaghammer crash-cache/mixed7111byteDBErrors/intermittenthandshake/all36wholechains remainOPEN. DefaultSlaghammer probe notrun,no mixedlog truncation.",
+    "PriorMariaDB numeric CAST discrepancy remainsOPEN;original82andcorrected94rawsnapshots outsidefixed unchanged;noDB/queryworkaround.",
+    "PriorTimeLoop105984 script/32bitnativeheal investigation remainsOPEN and unchanged;26rawrecords outsidefixed,allninth-batchTimeLoop runtimes retained for concreteinvestigation. No nativehighheal run attempted.",
+    "Actual client/whole6raidencounters/Folnuna phasecastacceptance/Dread facingvisuals/Forge chargeprogress/Tectus8Motes fight,loot/group/faction/pet/guardian/reentry/failcasts/cleanup remainpending. Nativecontrolleddispatch/sourceASAN/PE/startup do notcertifywholegameplay."
+  ],
+  "open_timeloop": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+    "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+    "files": 26,
+    "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+    "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+  },
+  "scouted_rejected": "PriorTimeLoop andnumericCASTfindings unchangedOPEN;no outsideproduct candidates altered. LocalmatchingSpell7/117624/247441/120047/138869,actualactorbindings andcorecontracts resolvedselected10;no modernAPItransplant.",
+  "batch_audit": "docs/audits/tenth-ten-repairs-2026-11-09.json"
+}
