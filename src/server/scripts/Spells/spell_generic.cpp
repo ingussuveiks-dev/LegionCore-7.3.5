@@ -7362,7 +7362,7 @@ class spell_gen_citizen_costume_alliance_darkmoon : public AuraScript
 
     void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* caster = GetCaster();
+        Unit* caster = GetUnitOwner();
         if (!caster)
             return;
 
@@ -7442,7 +7442,7 @@ class spell_gen_citizen_costume_horde_darkmoon : public AuraScript
 
     void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* caster = GetCaster();
+        Unit* caster = GetUnitOwner();
         if (!caster)
             return;
 

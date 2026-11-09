@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Costumes",
+  "scope": {
+    "key": "Costumes",
+    "file": "spell_generic.cpp",
+    "classes": [
+      "spell_gen_citizen_costume_alliance_darkmoon",
+      "spell_gen_citizen_costume_horde_darkmoon"
+    ],
+    "spell": 70764,
+    "title": "Apply both Darkmoon citizen costumes to their actual recipients"
+  },
+  "base": "797cebe2f",
+  "support_commit": "da8b5fe236f270df633c6e72a3ddaf4976664edd",
+  "cause": "Both faction costume apply callbacks morph the original caster instead of the recipient,and omit the recipient when that separate caster no longer resolves.",
+  "implementation": "Use the unit aura owner in both70764/71084 callbacks;retain Alliance49/Horde53 model tables,ranges and original hooks. Both classes are one shared ownership problem and count as one fix.",
+  "validation": {
+    "command": "tools/tests/Test-ThirdTenSpellRepairs.ps1 -Case Costumes (also -Baseline)",
+    "coverage": "Paired source original/repaired cases cover both faction classes,absent/distinct caster,upper random bounds and missing owner. Native real NPC removal then actual AfterEffectApply dispatch changes both recipients on both Human/Orc profiles. Both PE registrations/getters checked.",
+    "native_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe ThirdTenSpellNative",
+    "native_total": "12live bindings/11classes,two actual mounted/dismounted speed controls and16 actual recipient/model/cleanup/calc/missing-caster-at-Load contexts;earlier profiles/poses/capability controlled,readonly/TEMP database scope,no character saves. Not full-core ASAN.",
+    "source_scope": "Five whole source files equal797cebe2f outside exactly11selected classes/ten problems. Other registrations/shared quest scripts unchanged.",
+    "release": "Original scripts.lib/final-link dependencies,no global OutDir;staged+canonical ten PE paths and prior27 paths retained;canonical Scepter and existing defensive/Shadow regressions pass.",
+    "startup": "Owned28440 fresh canonical ready,shutdown0,exit0,gone,stderr empty;no user process stopped/protected configuration changed."
+  },
+  "canonical_world_sha256": "435bb556058e4c1b2040967c1a9786c63cff705a1e9e90c8491d3f1b5d97de9f",
+  "tested_class_sha256": {
+    "spell_gen_citizen_costume_alliance_darkmoon": "cd9432923ce973e5177c30933804f99646ee6317c496cc94b5f0d69ca90a3d8f",
+    "spell_gen_citizen_costume_horde_darkmoon": "968020f20a027d9b89f4833a5382bc62bc7f42037ff105b91549eb6e741d18ad"
+  },
+  "aura_contract": "Native Aura::GetCaster resolves unit owner directly for ordinary self-casts. Distinct-caster ownership checks intentionally create a supported separate NPC caster and remove that actor. Neither model faults nor these audits claim observed production/client crashes during ordinary self-use.",
+  "diagnostics": "Before/after canonical+own crash/log snapshots and exit/stdout/stderr review for tests/build/link/start. Final tests add no crash/DBErrors/server warning/error/assertion. Original Ocean ASAN baseline is explicitly expected failing;native fixture initialization/admission and PE inlining/adapter mistakes were traced and corrected;details/evidence retained in batch audit.",
+  "client_pending": "Actual both Darkmoon costume sources/race/faction admission,all models/appearance,cancellation/relog and overlapping transforms.",
+  "progression": "No SQL,HP threshold,kill timer,character reset,item/quest/progression grant or new class/group restriction. Unit queue owners/native cast and credit attribution retained,including player/pet/guardian paths;actual full combat alternatives still need client testing.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/third-ten-spell-repairs-2026-11-09"
+  },
+  "shared_open": "Authentic living Lady/1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors,handshake and all36 whole chains remain OPEN. Default Slaghammer probe not run;no active log truncated.",
+  "batch_audit": "docs/audits/third-ten-spell-repairs-2026-11-09.json"
+}
