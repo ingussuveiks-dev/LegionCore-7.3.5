@@ -292,6 +292,7 @@ struct boss_tov_odyn : BossAI
 
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP | UNIT_NPC_FLAG_QUESTGIVER);
+            me->SetPowerType(POWER_ENERGY);
             me->SetPower(POWER_ENERGY, 0);
             me->SetMaxPower(POWER_ENERGY, 100);
             me->setFaction(35);
