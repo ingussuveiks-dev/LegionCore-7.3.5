@@ -1,0 +1,211 @@
+[
+  {
+    "key": "Divine",
+    "title": "Prevent unsigned healing underflow in Divine Intervention",
+    "paths": [
+      "src/server/scripts/Spells/spell_paladin.cpp"
+    ],
+    "cls": "spell_pal_divine_intervention_AuraScript",
+    "method": "Absorb",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_paladin.cpp",
+        "old": "uint32 health20 = target->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->CalcValue(target));",
+        "new": "uint64 health20 = target->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->CalcValue(target));"
+      },
+      {
+        "path": "src/server/scripts/Spells/spell_paladin.cpp",
+        "old": "float bp = health20 - target->GetHealth();\n                    if (bp > 0)",
+        "new": "float bp = target->GetHealth() < health20 ? float(health20 - target->GetHealth()) : 0.0f;\n                    if (bp > 0)"
+      }
+    ],
+    "spell": 213313
+  },
+  {
+    "key": "FrostShield",
+    "title": "Preserve native health width in Frost Shield absorption cap",
+    "paths": [
+      "src/server/scripts/Spells/spell_dk.cpp"
+    ],
+    "cls": "spell_dk_frost_shield_AuraScript",
+    "method": "CalculateAmount",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_dk.cpp",
+        "old": "int32 health20 = caster->CountPctFromMaxHealth(20); // 20% from max HP",
+        "new": "uint64 health20 = caster->CountPctFromMaxHealth(20); // 20% from max HP"
+      }
+    ],
+    "spell": 207203
+  },
+  {
+    "key": "Decimate",
+    "title": "Retain full target health in Stinky and Precious Decimate",
+    "paths": [
+      "src/server/scripts/Northrend/IcecrownCitadel/boss_professor_putricide.cpp"
+    ],
+    "cls": "spell_stinky_precious_decimate_SpellScript",
+    "method": "HandleScript",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_professor_putricide.cpp",
+        "old": "uint32 newHealth = GetHitUnit()->GetMaxHealth() * uint32(GetEffectValue()) / 100;",
+        "new": "uint64 newHealth = GetHitUnit()->GetMaxHealth() * uint32(GetEffectValue()) / 100;"
+      }
+    ],
+    "spell": 71123
+  },
+  {
+    "key": "Alar",
+    "title": "Bound Alar ember health subtraction without signed narrowing",
+    "paths": [
+      "src/server/scripts/Outland/TempestKeep/Eye/boss_alar.cpp"
+    ],
+    "cls": "npc_ember_of_alar",
+    "method": "DamageTaken",
+    "edits": [
+      {
+        "path": "src/server/scripts/Outland/TempestKeep/Eye/boss_alar.cpp",
+        "old": "int32 AlarHealth = int32(Alar->GetHealth()) - int32(Alar->CountPctFromMaxHealth(3));\n                    if (AlarHealth > 0)\n                        Alar->SetHealth(AlarHealth);\n                    else\n                        Alar->SetHealth(1);",
+        "new": "uint64 health = Alar->GetHealth();\n                    uint64 loss = Alar->CountPctFromMaxHealth(3);\n                    Alar->SetHealth(health > loss ? health - loss : 1);"
+      }
+    ],
+    "npc": 19551
+  },
+  {
+    "key": "Garrosh",
+    "title": "Keep complete Garrosh health through realm and final phase transfers",
+    "paths": [
+      "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp"
+    ],
+    "cls": "boss_garrosh_hellscreamAI",
+    "method": "UpdateAI",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp",
+        "old": "uint32 hp = me->GetHealth();\n                            uint32 power",
+        "new": "uint64 hp = me->GetHealth();\n                            uint32 power"
+      },
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp",
+        "old": "uint32 hp = garroshrealm->GetHealth();",
+        "new": "uint64 hp = garroshrealm->GetHealth();"
+      },
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp",
+        "old": "uint32 hp = me->GetHealth();\n                        if (Creature* stormwindgarrosh",
+        "new": "uint64 hp = me->GetHealth();\n                        if (Creature* stormwindgarrosh"
+      }
+    ],
+    "npc": 71865
+  },
+  {
+    "key": "GarroshHeal",
+    "title": "Preserve the native 60 percent Garrosh final phase heal",
+    "paths": [
+      "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp"
+    ],
+    "cls": "boss_garrosh_hellscreamAI",
+    "method": "UpdateAI",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp",
+        "old": "me->ModifyHealth(int32(me->CountPctFromMaxHealth(60)));",
+        "new": "me->ModifyHealth(int64(me->CountPctFromMaxHealth(60)));"
+      }
+    ],
+    "npc": 71865
+  },
+  {
+    "key": "Immerseus",
+    "title": "Prevent Immerseus split health subtraction from wrapping",
+    "paths": [
+      "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_immerseus.cpp"
+    ],
+    "cls": "boss_immerseusAI",
+    "method": "DoAction",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_immerseus.cpp",
+        "old": "uint32 lasthp, berserk;",
+        "new": "uint64 lasthp;\n        uint32 berserk;"
+      },
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_immerseus.cpp",
+        "old": "uint32 modh = me->CountPctFromMaxHealth(float(doneval));\n                    if (lasthp - modh > 0)",
+        "new": "uint64 modh = me->CountPctFromMaxHealth(float(doneval));\n                    if (lasthp > modh)"
+      }
+    ],
+    "npc": 71543
+  },
+  {
+    "key": "Miasma",
+    "title": "Keep Ancient Miasma barriers in native floating point amount range",
+    "paths": [
+      "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_malkorok.cpp"
+    ],
+    "cls": "spell_ancient_miasma_AuraScript",
+    "method": "AfterAbsorb",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_malkorok.cpp",
+        "old": "int32 maxbarrier = int32(GetTarget()->GetMaxHealth());\n                    int32 lastbarrier = aurEffb->GetAmount();\n                    int32 newbarrier = absorbAmount + lastbarrier;",
+        "new": "float maxbarrier = float(GetTarget()->GetMaxHealth());\n                    float lastbarrier = aurEffb->GetAmount();\n                    float newbarrier = absorbAmount + lastbarrier;"
+      },
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_malkorok.cpp",
+        "old": "newbarrier > int32(GetTarget()->CountPctFromMaxHealth(30))",
+        "new": "newbarrier > GetTarget()->CountPctFromMaxHealth(30)"
+      },
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_malkorok.cpp",
+        "old": "newbarrier <= int32(GetTarget()->CountPctFromMaxHealth(30))",
+        "new": "newbarrier <= GetTarget()->CountPctFromMaxHealth(30)"
+      },
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_malkorok.cpp",
+        "old": "GetTarget()->CastCustomSpell(buff, SPELLVALUE_BASE_POINT0, newbarrier);        ",
+        "new": "GetTarget()->CastCustomSpell(GetTarget(), buff, &newbarrier, nullptr, nullptr, true);"
+      }
+    ],
+    "spell": 142861
+  },
+  {
+    "key": "ManaBarrier",
+    "title": "Restore Deathwhisper health without reversing oversized mana costs",
+    "paths": [
+      "src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp"
+    ],
+    "cls": "spell_deathwhisper_mana_barrier_AuraScript",
+    "method": "HandlePeriodicTick",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp",
+        "old": "int32 missingHealth = int32(caster->GetMaxHealth() - caster->GetHealth());\n                    caster->ModifyHealth(missingHealth);\n                    caster->ModifyPower(POWER_MANA, -missingHealth);",
+        "new": "int64 missingHealth = int64(caster->GetMaxHealth() - caster->GetHealth());\n                    caster->ModifyHealth(missingHealth);\n                    // Power is signed 32-bit; spend at most the actual mana pool.\n                    int32 manaCost = int32(std::min<int64>(missingHealth, caster->GetPower(POWER_MANA)));\n                    caster->ModifyPower(POWER_MANA, -manaCost);"
+      }
+    ],
+    "spell": 70842
+  },
+  {
+    "key": "HpThreshold",
+    "title": "Compare aura health threshold procs at native 64 bit width",
+    "paths": [
+      "src/server/game/Spells/Auras/SpellAuraEffects.cpp"
+    ],
+    "cls": "AuraEffect",
+    "method": "HandleAuraProcOnHpBelow",
+    "edits": [
+      {
+        "path": "src/server/game/Spells/Auras/SpellAuraEffects.cpp",
+        "old": "uint32 curCount = target->CountPctFromMaxHealth(GetAmount());",
+        "new": "uint64 curCount = target->CountPctFromMaxHealth(GetAmount());"
+      },
+      {
+        "path": "src/server/game/Spells/Auras/SpellAuraEffects.cpp",
+        "old": "uint32 curHealth = target->GetHealth();\n\n    TC_LOG_DEBUG(\"spells\", \"HandleAuraProcOnHpBelow GetId %u triggered_spell_id %u curCount %u curHealth %u\", GetId(), triggered_spell_id, curCount, curHealth);",
+        "new": "uint64 curHealth = target->GetHealth();\n\n    TC_LOG_DEBUG(\"spells\", \"HandleAuraProcOnHpBelow GetId %u triggered_spell_id %u curCount \" UI64FMTD \" curHealth \" UI64FMTD, GetId(), triggered_spell_id, curCount, curHealth);"
+      }
+    ]
+  }
+]
