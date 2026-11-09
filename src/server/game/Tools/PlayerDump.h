@@ -80,7 +80,7 @@ class TC_GAME_API PlayerDumpWriter : public PlayerDump
         DumpReturn WriteDump(std::string const& file, ObjectGuid::LowType guid);
         DumpReturn WriteDump(ObjectGuid::LowType guid, std::string& dump);
     private:
-        typedef std::set<uint32> GUIDs;
+        typedef std::set<ObjectGuid::LowType> GUIDs;
 
         bool DumpTable(std::string& dump, ObjectGuid::LowType guid, char const*tableFrom, char const*tableTo, DumpTableType type, char const*tableSelect);
         std::string GenerateWhereStr(char const* field, GUIDs const& guids, GUIDs::const_iterator& itr);
@@ -98,7 +98,7 @@ class TC_GAME_API PlayerDumpReader : public PlayerDump
         PlayerDumpReader() {}
 
         DumpReturn LoadDump(std::string const& file, uint32 account, std::string name, ObjectGuid::LowType guid);
-        DumpReturn LoadDump(uint32 account, std::string& dump, std::string name, uint32& guid);
+        DumpReturn LoadDump(uint32 account, std::string& dump, std::string name, ObjectGuid::LowType& guid);
 };
 
 #endif

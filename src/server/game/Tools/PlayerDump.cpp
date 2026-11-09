@@ -189,7 +189,7 @@ uint64 RegisterNewGuid(uint64 oldGuid, std::map<uint64, uint64> &guidMap, uint64
     return newguid;
 }
 
-bool ChangeGuid(std::string &str, int n, std::map<uint64, uint64> &guidMap, uint32 hiGuid, bool nonzero = false)
+bool ChangeGuid(std::string &str, int n, std::map<uint64, uint64> &guidMap, uint64 hiGuid, bool nonzero = false)
 {
     char chritem[21];
     ObjectGuid::LowType oldGuid = strtoull(GetNth(str, n).c_str(), nullptr, 10);
@@ -252,7 +252,7 @@ std::string PlayerDumpWriter::GenerateWhereStr(char const* field, GUIDs const& g
     return wherestr.str();
 }
 
-void StoreGUID(QueryResult result, uint32 field, std::set<uint32>& guids)
+void StoreGUID(QueryResult result, uint32 field, std::set<ObjectGuid::LowType>& guids)
 {
     Field* fields = result->Fetch();
     ObjectGuid::LowType guid = fields[field].GetUInt64();
@@ -260,7 +260,7 @@ void StoreGUID(QueryResult result, uint32 field, std::set<uint32>& guids)
         guids.insert(guid);
 }
 
-void StoreGUID(QueryResult result, uint32 data, uint32 field, std::set<uint32>& guids)
+void StoreGUID(QueryResult result, uint32 data, uint32 field, std::set<ObjectGuid::LowType>& guids)
 {
     Field* fields = result->Fetch();
     std::string dataStr = fields[data].GetString();
@@ -408,14 +408,14 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
     if (!fin)
         return DUMP_FILE_OPEN_ERROR;
 
-    char newguid[20], chraccount[20], newpetid[20], currpetid[20], lastpetid[20], lastfollowerid[20];
+    char newguid[21], chraccount[20], newpetid[20], currpetid[20], lastpetid[20], lastfollowerid[21];
 
     // make sure the same guid doesn't already exist and is safe to use
     bool incHighest = true;
     if (guid != 0 && guid < sObjectMgr->GetGenerator<HighGuid::Player>()->GetNextAfterMaxUsed())
     {
         CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_GUID);
-        stmt->setUInt32(0, guid);
+        stmt->setUInt64(0, guid);
         PreparedQueryResult result = CharacterDatabase.Query(stmt);
         if (result)
             guid = sObjectMgr->GetGenerator<HighGuid::Player>()->GetNextAfterMaxUsed();                     // use first free if exists
@@ -442,11 +442,11 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
 
     // name encoded or empty
 
-    snprintf(newguid, 20, "%lu", guid);
+    snprintf(newguid, sizeof(newguid), UI64FMTD, guid);
     snprintf(chraccount, 20, "%u", account);
     snprintf(newpetid, 20, "%u", sObjectMgr->GeneratePetNumber());
     snprintf(lastpetid, 20, "%s", "");
-    snprintf(lastfollowerid, 20, "%lu", sGarrisonMgr.GenerateFollowerDbId());
+    snprintf(lastfollowerid, sizeof(lastfollowerid), UI64FMTD, sGarrisonMgr.GenerateFollowerDbId());
 
     std::map<uint64, uint64> items;
     std::map<uint64, uint64> mails;
@@ -572,8 +572,8 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
             case DTT_VS_TABLE:
             {
                 uint64 newItemIdNum = sObjectMgr->GenerateVoidStorageItemId();
-                char newItemId[20];
-                snprintf(newItemId, 20, "%lu", newItemIdNum);
+                char newItemId[21];
+                snprintf(newItemId, sizeof(newItemId), UI64FMTD, newItemIdNum);
 
                 if (!ChangeNth(line, 1, newItemId))           // character_void_storage.itemId update
                     ROLLBACK(DUMP_FILE_BROKEN);
@@ -700,20 +700,20 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
     return DUMP_SUCCESS;
 }
 
-DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::string name, uint32& guid)
+DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::string name, ObjectGuid::LowType& guid)
 {
     uint32 charcount = AccountMgr::GetCharactersCount(account);
     if (charcount >= sWorld->getIntConfig(CONFIG_CHARACTERS_PER_REALM))
         return DUMP_TOO_MANY_CHARS;
 
-    char newguid[20], chraccount[20], newpetid[20], currpetid[20], lastpetid[20], lastfollowerid[20];
+    char newguid[21], chraccount[20], newpetid[20], currpetid[20], lastpetid[20], lastfollowerid[21];
 
     // make sure the same guid doesn't already exist and is safe to use
     bool incHighest = true;
     if (guid != 0 && guid < sObjectMgr->GetGenerator<HighGuid::Player>()->GetNextAfterMaxUsed())
     {
         CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_GUID);
-        stmt->setUInt32(0, guid);
+        stmt->setUInt64(0, guid);
         PreparedQueryResult result = CharacterDatabase.Query(stmt);
         if (result)
             guid = sObjectMgr->GetGenerator<HighGuid::Player>()->GetNextAfterMaxUsed();                     // use first free if exists
@@ -739,11 +739,11 @@ DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::st
 
     // name encoded or empty
 
-    snprintf(newguid, 20, "%u", guid);
+    snprintf(newguid, sizeof(newguid), UI64FMTD, guid);
     snprintf(chraccount, 20, "%u", account);
     snprintf(newpetid, 20, "%u", sObjectMgr->GeneratePetNumber());
     snprintf(lastpetid, 20, "%s", "");
-    snprintf(lastfollowerid, 20, "%lu", sGarrisonMgr.GenerateFollowerDbId());
+    snprintf(lastfollowerid, sizeof(lastfollowerid), UI64FMTD, sGarrisonMgr.GenerateFollowerDbId());
 
     std::map<uint64, uint64> items;
     std::map<uint64, uint64> mails;
@@ -901,8 +901,8 @@ DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::st
             case DTT_VS_TABLE:
             {
                 uint64 newItemIdNum = sObjectMgr->GenerateVoidStorageItemId();
-                char newItemId[20];
-                snprintf(newItemId, 20, "%lu", newItemIdNum);
+                char newItemId[21];
+                snprintf(newItemId, sizeof(newItemId), UI64FMTD, newItemIdNum);
 
                 if (!ChangeNth(line, 1, newItemId))           // character_void_storage.itemId update
                 {
