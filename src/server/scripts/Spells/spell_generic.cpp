@@ -4648,7 +4648,8 @@ class spell_gen_artificial_stamina : public SpellScriptLoader
 
             void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)
             {
-                Player* _player = GetCaster()->ToPlayer();
+                Unit* caster = GetCaster();
+                Player* _player = caster ? caster->ToPlayer() : nullptr;
                 if (!_player)
                     return;
 
@@ -4843,7 +4844,8 @@ class spell_gen_artificial_threat : public AuraScript
 
     void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)
     {
-        Player* _player = GetCaster()->ToPlayer();
+        Unit* caster = GetCaster();
+        Player* _player = caster ? caster->ToPlayer() : nullptr;
         if (!_player)
             return;
 
