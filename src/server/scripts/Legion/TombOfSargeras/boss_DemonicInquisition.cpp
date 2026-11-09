@@ -255,8 +255,11 @@ public:
                             calcifiedQuilsTargets.clear();
 
                             DoCast(target, SPELL_CALCIFIED_QUILS);
-                            me->AddDelayedEvent(5000, [this, target]()
+                            me->AddDelayedEvent(5000, [this, targetGuid = target->GetGUID()]()
                             {
+                                if (!me->IsAlive())
+                                    return;
+                                Unit* target = ObjectAccessor::GetUnit(*me, targetGuid);
                                 if (!target)
                                     return;
 
