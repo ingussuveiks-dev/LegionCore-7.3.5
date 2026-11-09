@@ -1426,13 +1426,16 @@ public:
                 if (auto atheris = instance->GetCreature(atherisGUID))
                     atheris->CreateConversation(4978);
 
-                instance->ApplyOnEveryPlayer([&](Player* player)
+                instance->ApplyOnEveryPlayer([mapId = instance->GetId(), instanceId = instance->GetInstanceId()](Player* player)
                 {
-                    player->AddDelayedEvent(500, [=]() -> void
+                    player->AddDelayedEvent(500, [player, mapId, instanceId]() -> void
                     {
+                        if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                            return;
+
                         player->GetAchievementMgr()->StartTimedAchievement(static_cast<CriteriaTimedTypes>(CRITERIA_TIMED_TYPE_EVENT2), 57838);
 
-                        if (auto scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))
+                        if (auto scenario = sScenarioMgr->GetScenario(instanceId))
                             scenario->GetAchievementMgr().StartTimedAchievement(static_cast<CriteriaTimedTypes>(CRITERIA_TIMED_TYPE_EVENT2), 57838);
                     });
                 });

@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "StyleTimer",
+  "base": "1dca42afde1069af4bce6dd93bf42bca8fdffb2e",
+  "support_commit": "f070a122150c673c21804059e3c9e0f00ed0fc1b",
+  "paths": [
+    "src/server/scripts/Legion/MicroHolidays/TrialofStyle.cpp"
+  ],
+  "cause": "A player-owned500ms callback captured the original instance this;after transfer it could touch a dead instance and start player/scenario timers in the wrong context.",
+  "implementation": "Capture player/original map+instance IDs and guard both with live-world admission before starting either timer. Resolve scenario by captured valid instance ID;retain57838 and native timed-event type/500ms;no arbitrary progression grant.",
+  "validation": {
+    "source": "Twenty MSVC ASAN cases:ten pinned1dca42afd counterfactuals paired with ten repaired cases. Actual selected production callbacks/snippets retain complete payloads against controlled Unit/queue/cast/conversation/criteria endpoints. Controls instrument retired objects while keeping memory allocated,or assert wrong-map/duplicate effects;they do not intentionally execute native UAF/null UB. Quills geometry,owned Guldan callbacks/dead-boss behavior,all nine identical greeting sites,Seat create failure/duplicate entries,Stormheim2s+3s boarding cancellation/control restoration,Hearthstation1000ms orphan timer/two finish auras and Spider retry are covered. These are controlled source tests,not actual client traversal.",
+    "native": "Nine selected native cases:complete Failure Detection Pylon199118 Spell area-selector dispatcher on real native Player/owned nonplayer raid candidate,plus eight exact scheduler/capture/lookup/admission snippets on actual Unit FunctionProcessor/ObjectAccessor/map/instance guards. Delayed payloads are replaced with observed endpoints:real raid casts,summons,speech,conversation6054,criteria57838 and toy ride/cleanup are not replayed. Stormheim full boarding/control/path remains source-only. Native player death state and owner fields are controlled inputs,no Player death/reward/save flow. Actual departure removes player registration and all seven pending lookup/map guards skip it. No character save/import/full-core ASAN claim.",
+    "release": "Original main game/scripts libraries and final-link paths retained. Staged and canonical verify_thirteenth_ten_release checks ten repairs plus127 prior selected paths. Exact class scope matters:actual Stormheim dragon override/two generation-and-vehicle guards/control restoration are linked;Vetir is unchanged. Checks include Pylon type guard,Quills/Guldan actor lookup,all nine greeting callbacks,Hearthstation1000 initialization/two lookups,Spider,Seat successful-create commit and Seat/Style original map-instance guards. Final canonical Scepter/ArtifactTier/ScenarioResumeASAN and owned ready/shutdown0/exit0/gone pass.",
+    "diagnostics": "Own/canonical crash/log length-time pre/post,exit/stdout/stderr and appended DBErrors/warnings/errors/assertions checked for every test/build/link/start. Final checks clean,no new crash or unexplained appended runtime diagnostic. Compiler-warning occurrences match baseline expressions;the final C4305/C5055 inventory is retained. Earlier fixture/inspection failures are preserved and corrected,not counted as passing gameplay.",
+    "scope": "Exactly ten repairs in seven production files:one native target admission and nine scoped lifecycle sequences. Nine identical Trial of Style greeting sites count as one repair. Hearthstation timer and two owner callbacks form one owner lifecycle repair. Guldan Hellfire and empowered Bounds are separate ability controllers. No SQL/character rewrite,global player/power policy,quest/item/group credit grant,guessed Lady HP threshold or kill timer. Original actors,spells,geometry,timers,routes and legitimate native group/faction/pet/guardian credit remain intact."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold/kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 complete artifact chains remain OPEN. No default Slaghammer probe or mixed-log truncation.",
+    "MariaDB numeric CAST issue:82original+94corrected raw records remain outside fixed and hash-verified;no database workaround.",
+    "TimeLoop105984 script/native32bit healing issue remains OPEN:26raw records and ninth-batch investigation EXE/symbols retained.",
+    "Actual Pylon item/resurrection/group use,raid geometry/summons/cleanup,Seat6054 actors/audio/full dungeon,all Trial of Style stage speech and timed criteria,Stormheim vehicle/paths/control/camera/pet/reboarding/final56604,and actual Hearthstation/Spider ride/emotes/aura cleanup/reuse/logout remain client-pending. Native callback payloads are captured endpoints and Stormheim boarding remains source-only;no whole encounter or36-chain claim."
+  ],
+  "canonical_world_sha256": "989e699d61bd4a2e0c68c64ad1542d87668c43f20368c2e0bb6f4afa5457a5b0",
+  "patch_sha256": "d75269525e93ccc8ce919701213628f21f0a6901e0908665e6fe3b17830b3791",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/thirteenth-ten-repairs-2026-11-09.json"
+}
