@@ -1115,7 +1115,7 @@ class spell_pal_divine_intervention : public SpellScriptLoader
                     triggerFlags &= ~TRIGGERED_IGNORE_SPELL_AND_CATEGORY_CD;
 
                     target->CastSpell(target, 642, TriggerCastFlags(triggerFlags));
-                    uint32 health20 = target->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->CalcValue(target));
+                    uint64 health20 = target->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->CalcValue(target));
 
                     // hp > 20% - absorb hp till 20%
                     if (target->GetHealth() > health20)
@@ -1124,7 +1124,7 @@ class spell_pal_divine_intervention : public SpellScriptLoader
                     else
                         absorbAmount = dmgInfo.GetDamage();
 
-                    float bp = health20 - target->GetHealth();
+                    float bp = target->GetHealth() < health20 ? float(health20 - target->GetHealth()) : 0.0f;
                     if (bp > 0)
                         target->CastCustomSpell(target, 184250, &bp, nullptr, nullptr, true);
                 }
