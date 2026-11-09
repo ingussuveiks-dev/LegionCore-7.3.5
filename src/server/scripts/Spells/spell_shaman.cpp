@@ -101,18 +101,25 @@ class spell_sha_spirit_link : public SpellScriptLoader
                     if(memberList->empty())
                         return;
 
-                    float totalRaidHealthPct = 0;
-                    for (std::vector<TargetInfoPtr>::iterator ihit = memberList->begin(); ihit != memberList->end(); ++ihit)
+                    // A stale/missed/dead target must not dilute the survivors' average.
+                    std::vector<Unit*> members;
+                    double totalHealthRatio = 0.0;
+                    for (auto const& hit : *memberList)
                     {
-                        if(Unit* member = ObjectAccessor::GetUnit(*caster, (*ihit)->targetGUID))
-                            totalRaidHealthPct += member->GetHealthPct();
+                        if (!hit || hit->missCondition != SPELL_MISS_NONE || !(hit->effectMask & (1 << EFFECT_0)))
+                            continue;
+                        if (Unit* member = ObjectAccessor::GetUnit(*caster, hit->targetGUID))
+                            if (member->IsPlayer() && member->IsAlive())
+                            {
+                                members.push_back(member);
+                                totalHealthRatio += double(member->GetHealth()) / member->GetMaxHealth();
+                            }
                     }
-                    totalRaidHealthPct /= memberList->size() * 100.0f;
-                    for (std::vector<TargetInfoPtr>::iterator ihit = memberList->begin(); ihit != memberList->end(); ++ihit)
-                    {
-                        if(Unit* member = ObjectAccessor::GetUnit(*caster, (*ihit)->targetGUID))
-                            member->SetHealth(uint32(totalRaidHealthPct * member->GetMaxHealth()));
-                    }
+                    if (members.empty())
+                        return;
+                    double ratio = totalHealthRatio / members.size();
+                    for (Unit* member : members)
+                        member->SetHealth(std::max<uint64>(1, uint64(ratio * member->GetMaxHealth())));
                 }
             }
 
