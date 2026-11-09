@@ -529,9 +529,9 @@ public:
             if (!GetTarget())
                 return;
 
-            uint32 curHealth = GetTarget()->GetHealth();
+            uint64 const curHealth = GetTarget()->GetHealth();
 
-            if (curHealth >= 10000)
+            if (curHealth >= 10000 && dmgInfo.GetDamage() >= curHealth)
             {
                 absorbAmount = dmgInfo.GetDamage() - curHealth + 1;
             }
