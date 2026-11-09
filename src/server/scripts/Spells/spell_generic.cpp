@@ -5051,6 +5051,18 @@ class spell_gen_hammer_of_supreme_justice : public SpellScriptLoader
             PrepareAuraScript(spell_gen_hammer_of_supreme_justice_AuraScript);
 
             uint16 m_checkTimer = 3000;
+            uint32 mapId = 0;
+            uint32 instanceId = 0;
+
+            bool Load() override
+            {
+                Unit* owner = GetUnitOwner();
+                if (!owner)
+                    return false;
+                mapId = owner->GetMapId();
+                instanceId = owner->GetInstanceId();
+                return true;
+            }
 
             void OnUpdate(uint32 diff, AuraEffect* /*aurEff*/)
             {
@@ -5060,8 +5072,10 @@ class spell_gen_hammer_of_supreme_justice : public SpellScriptLoader
                     {
                         m_checkTimer = 0;
 
-                        if (GetCaster())
-                            GetCaster()->NearTeleportTo(2281.12f, -5320.15f, 88.82f, 2.32f);
+                        if (Unit* caster = GetCaster())
+                            if (caster->IsInWorld() && !caster->IsPreDelete() &&
+                                caster->GetMapId() == mapId && caster->GetInstanceId() == instanceId)
+                                caster->NearTeleportTo(2281.12f, -5320.15f, 88.82f, 2.32f);
                     }
                     else
                         m_checkTimer -= diff;
