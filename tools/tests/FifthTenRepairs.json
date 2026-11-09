@@ -1,0 +1,65 @@
+[
+  {
+    "key": "Jump",
+    "path": "src/server/game/Movement/MotionMaster.cpp",
+    "cls": "MotionMaster",
+    "extra": [
+      "src/server/game/Movement/MotionMaster.h"
+    ],
+    "title": "Restore the legacy XYZ jump overload without implicit Position conversion"
+  },
+  {
+    "key": "Harjatan",
+    "path": "src/server/scripts/Legion/TombOfSargeras/boss_Harjatan.cpp",
+    "cls": "boss_harjatan",
+    "title": "Keep Harjatan incubation selection inside a nonempty egg cluster"
+  },
+  {
+    "key": "Antorus",
+    "path": "src/server/scripts/Legion/AntorusTheBurningThrone/instance_antorus.cpp",
+    "cls": "instance_antorus",
+    "title": "Bound Antorus intro protector selection to existing GUIDs"
+  },
+  {
+    "key": "Books",
+    "path": "src/server/scripts/Legion/CathedralEternalNight/boss_thrashbite_the_scornful.cpp",
+    "cls": "boss_thrashbite_the_scornful",
+    "title": "Choose two distinct valid Thrashbite books by map iterator"
+  },
+  {
+    "key": "Zao",
+    "path": "src/server/scripts/Pandaria/TempleJadeSerpent/boss_lorewalker_stonestep.cpp",
+    "cls": "mob_zao",
+    "title": "Select an actual remaining sun on every Zao shoot attempt"
+  },
+  {
+    "key": "Cthun",
+    "path": "src/server/scripts/Kalimdor/TempleOfAhnQiraj/boss_cthun.cpp",
+    "cls": "boss_cthun",
+    "title": "Include the final eligible outside-stomach player in Cthun selection"
+  },
+  {
+    "key": "Spirit",
+    "path": "src/server/scripts/Spells/spell_shaman.cpp",
+    "cls": "spell_sha_spirit_link",
+    "title": "Redistribute Spirit Link health only across its living successful targets"
+  },
+  {
+    "key": "Barrier",
+    "path": "src/server/scripts/Spells/spell_dh.cpp",
+    "cls": "spell_dh_soul_barrier",
+    "title": "Guard the original Soul Barrier caster during shield recalculation"
+  },
+  {
+    "key": "Rain",
+    "path": "src/server/scripts/Spells/spell_shaman.cpp",
+    "cls": "spell_sha_healing_rain",
+    "title": "Refuse a missing Healing Rain destination before touching the active summon"
+  },
+  {
+    "key": "Devotion",
+    "path": "src/server/scripts/Spells/spell_paladin.cpp",
+    "cls": "spell_pal_at_devotion_aura",
+    "title": "Exclude stale recipients from Devotion Aura splitting and handle an empty aura"
+  }
+]
