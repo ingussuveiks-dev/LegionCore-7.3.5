@@ -876,7 +876,7 @@ class boss_garrosh_hellscream : public CreatureScript
                         if (Creature* garroshrealm = me->SummonCreature(NPC_GARROSH, gspos[mod]))
                         {
                             garroshrealm->AddAura(SPELL_PHASE_TWO_TRANSFORM, garroshrealm);
-                            uint32 hp = me->GetHealth();
+                            uint64 hp = me->GetHealth();
                             uint32 power = me->GetPower(POWER_ENERGY);
                             garroshrealm->SetHealth(hp);
                             garroshrealm->SetPower(POWER_ENERGY, power);
@@ -922,7 +922,7 @@ class boss_garrosh_hellscream : public CreatureScript
                         {
                             instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, garroshrealm);
                             int32 power = garroshrealm->GetPower(POWER_ENERGY);
-                            uint32 hp = garroshrealm->GetHealth();
+                            uint64 hp = garroshrealm->GetHealth();
                             garroshrealm->DespawnOrUnsummon();
                             instance->SetData(DATA_UPDATE_GARROSH_REALM, 0);
                             me->SetPower(POWER_ENERGY, power);
@@ -996,7 +996,7 @@ class boss_garrosh_hellscream : public CreatureScript
                         instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_GRIPPING_DESPAIR);
                         instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EM_GRIPPING_DESPAIR);
                         instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EXPLOSIVE_DESPAIR_DOT);
-                        uint32 hp = me->GetHealth();
+                        uint64 hp = me->GetHealth();
                         if (Creature* stormwindgarrosh = me->SummonCreature(NPC_GARROSH, lastgtppos.GetPositionX(), lastgtppos.GetPositionY(), lastgtppos.GetPositionZ(), lastgtppos.GetOrientation()))
                         {
                             stormwindgarrosh->SetHealth(hp);
