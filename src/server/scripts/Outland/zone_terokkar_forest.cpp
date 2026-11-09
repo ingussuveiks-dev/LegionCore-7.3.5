@@ -308,7 +308,7 @@ public:
 
         void JustDied(Unit* killer) override
         {
-            Player* player = killer->ToPlayer();
+            Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             if (!player)
                 return;
 
@@ -316,8 +316,8 @@ public:
             {
                 if (rand()%100 < 25)
                 {
-                    me->SummonCreature(QUEST_TARGET, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
-                    player->KilledMonsterCredit(QUEST_TARGET, ObjectGuid::Empty);
+                    if (me->SummonCreature(QUEST_TARGET, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000))
+                        player->KilledMonsterCredit(QUEST_TARGET, ObjectGuid::Empty);
                 }
                 else
                     me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
