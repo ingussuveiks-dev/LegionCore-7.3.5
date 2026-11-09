@@ -138,6 +138,9 @@ struct boss_dragon_ysondre : public BossAI
     void Reset() override
     {
         _Reset();
+        me->SetPowerType(POWER_ENERGY);
+        me->SetMaxPower(POWER_ENERGY, 100);
+        me->SetPower(POWER_ENERGY, 0);
         DoCast(me, SPELL_EMPTY_ENERGY, true);
         eventPhaseHP = 71;
 
