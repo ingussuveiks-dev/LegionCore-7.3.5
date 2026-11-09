@@ -234,7 +234,7 @@ class boss_valithria_dreamwalker : public CreatureScript
                 m_uiStage = 1;
 
                 DoCast(me, SPELL_CORRUPTION);
-                me->SetHealth(uint32(me->GetMaxHealth() * 0.50));
+                me->SetHealth(me->CountPctFromMaxHealth(50));
                 me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_OBS_MOD_HEALTH, true);
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_HEAL_PCT, true);
                 // Glyph of Dispel Magic - not a percent heal by effect, its cast with custom basepoints
@@ -280,7 +280,7 @@ class boss_valithria_dreamwalker : public CreatureScript
 
                     Talk(SAY_VALITHRIA_ENTER_COMBAT);
                     bIntro = true;
-                    me->SetHealth(uint32(me->GetMaxHealth() * 0.50));
+                    me->SetHealth(me->CountPctFromMaxHealth(50));
 
                     m_uiSummonSkeletonTimer = 60000;
                     m_uiSummonSuppressorTimer = 60000;

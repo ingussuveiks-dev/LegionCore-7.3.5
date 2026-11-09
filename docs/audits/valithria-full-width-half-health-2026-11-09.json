@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "ValithriaHealth",
+  "base": "0131dff5f05821b46311ad391a8443817a65b4d9",
+  "support_commit": "e7351316221efa69aad0a1eedbfc3a1013b9e178",
+  "paths": [
+    "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp"
+  ],
+  "cause": "Both reset and intro narrowed half of64bit maximum health to uint32.",
+  "implementation": "Use native CountPctFromMaxHealth(50) for both existing SetHealth calls;keep native float percentage convention and encounter/intro gates.",
+  "validation": {
+    "source": "Test-TwelfthTenRepairs: ten pinned0131dff5f source counterfactuals paired with ten repaired MSVC ASAN cases. Selected complete Hadronox/Sentinel/Firesworn/Council/Nefarian/Valithria-intro callbacks, complete Reflection proc pair and Finkle absorb method; Delrissa complete heal-selection block and both original Valithria half-health statements. Controlled Unit/map/AI/spawn/cast endpoints. Known bad results asserted in controls, not ordinary successful gameplay. Original failed-spawn path uses an instrumented invalid sentinel and records its dereference/consumed intro; no intentional native null dereference/crash.",
+    "native": "TwelfthTenNative passes nine selected cases on native Unit health and actual GUID lookups: Hadronox real normal/heroic poison auras, Sentinel heal/lookup (ability endpoint captured), two Valithria health endpoints, Firesworn nonterminal path, Delrissa running minimum, Nefarian checkpoints, Council threshold, plus Finkle and Shadowy Reflection complete native aura dispatcher handlers. Spell casts/events are controlled where stated; default proc222479 execution, full concrete encounter AIs and actual Council vehicle boarding are not replayed. Valithria failed-spawn/retry is source-ASAN only. No character save/import and no full-core ASAN claim.",
+    "release": "Original main game/scripts libraries and final-link dependencies retained; staged and canonical verify_twelfth_ten_release checks ten new paths and117 prior selected paths. Includes signed64 heal arguments, two full-width half-health calls, actual DamageTakenAfterScaling overrides and target-relative health, running minimum64, bounded absorb/proc branches, clamp before conversion and summon null exit before intro/timers. Canonical Scepter/ArtifactTierProgression/ScenarioResumeASAN and owned startup pass.",
+    "diagnostics": "Every source/native/build/link/start/check has own and canonical crash/log pre/post snapshots and exit/stdout/stderr/appended warnings/errors/assertions/DBErrors review. Final selected tests clean. No new crash reports or unexplained runtime diagnostics. Twelve C5055 warning occurrences across two builds are unchanged baseline expressions and remain visible. Development fixture failures (percentage-operation order, repeated heal timer, constness/constants/signatures/PE helper API) are retained and corrected before final checks.",
+    "scope": "Exactly ten repairs in nine production files. Valithria half-health width and failed-trigger admission are independent failures and separate commits; its two health assignments are one repair. Local matching26972 data, native core signatures and scripts establish the contracts; no modern behavior copied. Damage thresholds run after scaling with attacker-relative health; source cases cover scaled input and null/ordinary overkill. Existing cast amounts, encounter gates, timers, pet/guardian/group credit, faction routes and cleanup remain native. No SQL/character rewrite, guessed Lady HP threshold or kill timer. Native CalculatePct float rounding is preserved; native int32 healing spell pipeline is not widened."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold/kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 complete artifact chains remain OPEN. No default Slaghammer probe or mixed-log truncation.",
+    "MariaDB numeric CAST issue:82original+94corrected raw records remain outside fixed and hash-verified;no database workaround.",
+    "TimeLoop105984 script/native32bit healing issue remains OPEN:26raw records and ninth-batch investigation EXE/symbols retained.",
+    "Actual raids/dungeons, ability casts/visuals, Council vehicles, Nefarian electrocute damage/timing, Finkle default absorption and Reflection default222479, Valithria combat-trigger lifecycle and full wipe/retry/reward/group/faction/pet/guardian client traversal remain pending. Controlled cases do not certify whole encounters."
+  ],
+  "canonical_world_sha256": "1553c21d9b373607a568a5b5b2ecc1a5226646e3766bc8de90e74dcbc823b691",
+  "patch_sha256": "1bd0ac5667c2fe0573703c56d394845ba2a7d3aeb52d483310b8c85321d56cd9",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/twelfth-ten-repairs-2026-11-09.json"
+}
