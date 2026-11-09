@@ -3569,21 +3569,25 @@ class spell_gulp_frog_toxin : public SpellScriptLoader
         {
             PrepareAuraScript(spell_gulp_frog_toxinAuraScript);
 
-            uint32 lastStack;
+            bool killTriggered;
 
             bool Load() override
             {
-                lastStack = 0;
+                killTriggered = false;
                 return true;
             }
 
             void OnStackChange(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
+                if (killTriggered || GetStackAmount() < 10)
+                    return;
                 if (Unit* target = GetTarget())
-                    if(lastStack == 10)
-                        target->CastSpell(target, 147656, false);
-
-                lastStack = GetStackAmount();
+                {
+                    // Latch before the cast: instant death can remove this aura.
+                    killTriggered = true;
+                    if (target->CastSpell(target, 147656, false) != SPELL_CAST_OK)
+                        killTriggered = false;
+                }
             }
 
             void Register() override
