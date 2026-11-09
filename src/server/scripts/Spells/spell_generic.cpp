@@ -8349,7 +8349,8 @@ class spell_gen_winning_hand : public AuraScript
 
     void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Player* player = GetCaster()->ToPlayer();
+        Unit* owner = GetUnitOwner();
+        Player* player = owner ? owner->ToPlayer() : nullptr;
         if (!player)
             return;
 
