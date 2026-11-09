@@ -10,6 +10,11 @@
         "path": "src/server/scripts/Spells/spell_quest.cpp",
         "old": "uint64 free_xp = artifact->GetUInt32Value(ITEM_FIELD_ARTIFACT_XP);",
         "new": "uint64 free_xp = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);"
+      },
+      {
+        "path": "src/server/scripts/Spells/spell_quest.cpp",
+        "old": "free_xp += cost->XP;",
+        "new": "free_xp += uint64(cost->XP);"
       }
     ]
   },

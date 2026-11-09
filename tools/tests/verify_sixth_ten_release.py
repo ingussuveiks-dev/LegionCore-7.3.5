@@ -7,7 +7,7 @@ def op(rows,m,s):return any(x.mnemonic==m and x.op_str==s for x in rows)
 def registered(cls,method):
  rows=ins('?'+method+'@'+cls);assert ref(ins('?Register@'+cls),n['symbol']('?'+method+'@'+cls));return rows
 rows=registered('spell_q_artifact_trait_unlock_SpellScript@spell_q_artifact_trait_unlock@@','HandleOnCast')
-assert sites(rows,'?GetUInt64Value@Object@@') and op(rows,'mov','edx, 0x52') and op(rows,'cvttss2si','r8, xmm0')
+assert sites(rows,'?GetUInt64Value@Object@@') and op(rows,'mov','edx, 0x52') and op(rows,'cvttss2si','rax, xmm0') and op(rows,'add','r9, rax')
 rows=ins('?SearchChainTargets@Spell@@')
 assert sites(rows,'?GetMaxHealth@Unit@@') and sites(rows,'?GetHealth@Unit@@') and op(rows,'sub','r15, rax') and op(rows,'cmp','r15, r12')
 assert sites(rows,'?IsWithinLOSInMap@WorldObject@@') and sites(rows,'?IsWithinDist@WorldObject@@')
@@ -25,7 +25,7 @@ rows=ins('?JustDied@npc_orinoko_tuskbreakerAI@')
 for dep in ['?DespawnOrUnsummon@Creature@@','?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@','?GroupEventHappens@Player@@']:assert sites(rows,dep)
 rows=ins('?DumpTable@PlayerDumpWriter@@');assert len(sites(rows,'?GetUInt64@Field@@'))>=5
 rows=ins('?ChangeGuid@@') # actual signature carries uint64 seed (_K), rather than I
-assert '_K' in next(k for k in n['symbols'] if k.startswith('?ChangeGuid@@'))
+assert next(k for k in n['symbols'] if k.startswith('?ChangeGuid@@')).endswith('@_K_N@Z')
 rows=ins('?ChangePetReference@@');assert sites(rows,'?GeneratePetNumber@ObjectMgr@@') and sites(rows,'?ChangeNth@@')
 rows=ins('?LoadDump@PlayerDumpReader@@');assert len(sites(rows,'?ChangePetReference@@'))==2
 rows=ins('?FindNth@@');assert op(rows,'cmp','r15d, 1') and op(rows,'cmp','rax, -1') and op(rows,'cmp','byte ptr [rcx + rax], 0x5c') and op(rows,'lea','rbx, [rcx + 2]')

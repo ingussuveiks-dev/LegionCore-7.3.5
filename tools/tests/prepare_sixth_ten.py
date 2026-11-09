@@ -12,7 +12,9 @@ low=dump[dump.index('static bool FindTokNth'):dump.index('std::string CreateDump
 (out/'DumpLow.inc').write_text(low,encoding='utf8')
 (out/'DumpStores.inc').write_text(block(dump,'void StoreGUID(QueryResult result, uint32 field,')+'\n'+block(dump,'void StoreGUID(QueryResult result, uint32 data,'),encoding='utf8')
 selected=''
-if case=='Artifact':selected=block(source('src/server/scripts/Spells/spell_quest.cpp'),'class spell_q_artifact_trait_unlock :')+';'
+if case=='Artifact':
+ selected=block(source('src/server/scripts/Spells/spell_quest.cpp'),'class spell_q_artifact_trait_unlock :')+';'
+ if len(sys.argv)>3 and sys.argv[3]=='precision':selected=selected.replace('free_xp += uint64(cost->XP);','free_xp += cost->XP;')
 elif case=='Chain':
  s=source('src/server/game/Spells/Spell.cpp');a=s.index('            uint'+('32'if baseline else'64')+' maxHPDeficit = 0;');b=s.index('\n        }\n        else',a);selected='WorldObject* SelectChain(Unit*m_caster,Unit*nextTarget,std::list<WorldObject*>&tempTargets,float jumpRadius){WorldObject*foundItr=nullptr;'+s[a:b]+'\nreturn foundItr;}'
 elif case=='Regen':selected=block(player,'void Player::RegenerateHealth()')

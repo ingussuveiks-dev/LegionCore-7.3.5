@@ -5,13 +5,13 @@
   "base": "efd389974",
   "support_commit": "9fdeddda617fab913e0b68ed230c813daf1c2602",
   "cause": "Scripted234684 tier unlock read the native64bit AP field through GetUInt32Value,discarding high balance bits.",
-  "implementation": "Read GetUInt64Value;preserve native35rank/quest/tier gate,refund/reset/equip/packet flow.",
+  "implementation": "Read GetUInt64Value;preserve native35rank/quest/tier gate,refund/reset/equip/packet flow. Convert each float table cost to uint64 before integer addition.",
   "focused_checks": "2^40+17 balance retained through source full callback;repeat tier/wrong quest/<35 rejected;actual native Item field control.",
   "validation": {
-    "source": "Test-SixthTenRepairs.ps1:10 pinned efd389974 counterfactuals paired with10 repaired extracted complete methods/classes or exact changed native branches under MSVC-ASAN. External world/cast/group endpoints modeled. Evade rerun after lifetime expansion;existing10-context EventProcessorAbort ASAN passes. Not full-core ASAN/client traversal.",
+    "source": "Test-SixthTenRepairs.ps1:10 pinned efd389974 counterfactuals paired with10 repaired extracted complete methods/classes or exact changed native branches under MSVC-ASAN. External world/cast/group endpoints modeled. Evade rerun after lifetime expansion;existing10-context EventProcessorAbort ASAN passes. Not full-core ASAN/client traversal. Final review corrected artifact fixture XP type from uint64 to matching GameTables.h float. Original GetUInt32 truncation and separate GetUInt64+float-add precision-loss counterfactuals paired with final float-typed full callback pass;initial integer-typed fixture claim superseded. Other9cases unchanged.",
     "native": "Test-MagnarReadinessNative -AdditionalProbe SixthTenNative:immutable original Release library inputs;real Item AP field-width,Field64 collector/remap;actual Player regen,exact resurrection restore block,Chain selection on actual Players;real207498 Absorb dispatcher;full Orinoko AI,actual Whisker TempSummon deletion on evade/death and active55929 reference -> abort -> normal Unit release -> event deletion;real202328 missing-anchor refusal. Synthetic map/profiles/IDs,earlier state controlled. Database stays readonly,no character save/import.",
     "sql": "Native generated four synthetic INSERT statements roundtrip in faithful minimal BIGINT/INT UNSIGNED/name TEMP tables. Separate SELECT+CREATE TEMP-only reader,denied persistent DELETE WHERE0 canary,user dropped finally. Item1099511627993,pet2147483648,owner1099511627793,escaped O'Brien and child link read back correctly. No actual character backup import or persistent DML.",
-    "release": "Original game.lib/scripts.lib final-link paths rebuilt;staged and canonical verify_sixth_ten_release.py checks selected10 paths plus prior57. Unused memory LoadDump overload compiles in library and is source-tested;linker omits it from EXE. Canonical Scepter -VerifyReleaseBinary,ArtifactTierProgression -VerifyReleaseBinary and PetLoadSelection pass.",
+    "release": "Original game.lib/scripts.lib final-link paths rebuilt;staged and canonical verify_sixth_ten_release.py checks selected10 paths plus prior57. Unused memory LoadDump overload compiles in library and is source-tested;linker omits it from EXE. Canonical Scepter -VerifyReleaseBinary,ArtifactTierProgression -VerifyReleaseBinary and PetLoadSelection pass. Final AP callback disassembly converts float cost to uint64 and adds integer r9,rax;canonical final PE and retained tests/start repeated after completion.",
     "scope": "verify_sixth_ten_scope.py reverses metadata edits in9production files to efd389974. Orinoko includes shared CreatureAI deferred spell-event deletion and owner/group credit. Unrelated gates/timers/progression/schema unchanged;no migration.",
     "runtime": "Canonical+own pre/post crashes/log sizes/timestamps and exit/stdout/stderr/newDBErrors/server warning/error/assertion review for tests/build/link/start. Final tests clean. Owned canonical startup ready/graceful shutdown0/exit0/gone;no user process stopped;configs/certs/DLLs retained."
   },
@@ -32,5 +32,6 @@
     "status": "PENDING_BATCH_ARCHIVE",
     "archive": "build-extractors/bin/Release/fixed/sixth-ten-repairs-2026-11-09"
   },
-  "batch_audit": "docs/audits/sixth-ten-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/sixth-ten-repairs-2026-11-09.json",
+  "artifact_precision_completion": "Matching GtArtifactLevelXPEntry::XP is float. Convert cost to uint64 before adding so free_xp never converts to float.2^40+17 plus100 stays2^40+117;intermediate GetUInt64+float sum rounded to2^40. Part of selected Artifact repair,not an eleventh problem."
 }

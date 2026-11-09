@@ -1,12 +1,12 @@
-param([Parameter(Mandatory=$true)][ValidateSet('Artifact','Chain','Regen','Resurrection','Ancestral','Betrug','Evade','DumpIDs','DumpPets','DumpParse')][string]$Case,[switch]$Baseline)
+param([Parameter(Mandatory=$true)][ValidateSet('Artifact','Chain','Regen','Resurrection','Ancestral','Betrug','Evade','DumpIDs','DumpPets','DumpParse')][string]$Case,[switch]$Baseline,[switch]$PrecisionBaseline)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/sixth-ten-repairs/$Case-$(Get-Date -Format yyyyMMdd-HHmmss-fff)";New-Item -ItemType Directory -Force $out|Out-Null
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/evidence" -RuntimeDirectories @($out) -Test {
- $mode=if($Baseline){'baseline'}else{'fixed'}
+ $mode=if($PrecisionBaseline){if($Baseline -or $Case -ne 'Artifact'){throw 'Choose Artifact precision only'};'precision'}elseif($Baseline){'baseline'}else{'fixed'}
  & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/prepare_sixth_ten.py" $out $Case $mode
  if($LASTEXITCODE){throw 'Extraction failed'}
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
- $flags="/DCASE_$($Case.ToUpperInvariant()) /fsanitize=address /Zi";if($Baseline){$flags+=' /DCOUNTERFACTUAL'}
+ $flags="/DCASE_$($Case.ToUpperInvariant()) /fsanitize=address /Zi";if($Baseline){$flags+=' /DCOUNTERFACTUAL'};if($PrecisionBaseline){$flags+=' /DPRECISION_COUNTERFACTUAL'}
  [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /MD $flags /I`"$out`" `"$PSScriptRoot/SixthTenRepairsTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/compiler.pdb`"`nif %errorlevel% neq 0 exit /b %errorlevel%`n`"$out/test.exe`"`n")
  & "$out/run.cmd" *> "$out/run.log";$code=$LASTEXITCODE;Get-Content "$out/run.log" -Tail 7
  if($code){throw "$Case source regression failed: $code"}
