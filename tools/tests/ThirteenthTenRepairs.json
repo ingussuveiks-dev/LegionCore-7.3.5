@@ -1,0 +1,200 @@
+[
+  {
+    "key": "Pylon",
+    "title": "Reject non-player targets in Failure Detection Pylon filtering",
+    "paths": [
+      "src/server/scripts/Spells/spell_generic.cpp"
+    ],
+    "cls": "spell_failure_detection_pylon",
+    "method": "FilterTargets",
+    "kind": "filter",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_generic.cpp",
+        "old": "return target->ToPlayer()->IsAlive();",
+        "new": "return !target || !target->IsPlayer() || target->ToPlayer()->IsAlive();",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "Quills",
+    "title": "Resolve Calcified Quills target when its delayed cast executes",
+    "paths": [
+      "src/server/scripts/Legion/TombOfSargeras/boss_DemonicInquisition.cpp"
+    ],
+    "cls": "boss_demonic_inquisitionAI",
+    "method": "UpdateAI",
+    "kind": "delay",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TombOfSargeras/boss_DemonicInquisition.cpp",
+        "old": "me->AddDelayedEvent(5000, [this, target]()\n                            {\n                                if (!target)",
+        "new": "me->AddDelayedEvent(5000, [this, targetGuid = target->GetGUID()]()\n                            {\n                                if (!me->IsAlive())\n                                    return;\n                                Unit* target = ObjectAccessor::GetUnit(*me, targetGuid);\n                                if (!target)",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "Hellfire",
+    "title": "Keep Guldan delayed Hellfire on its boss lifetime",
+    "paths": [
+      "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+    ],
+    "cls": "boss_guldanAI",
+    "method": "JustSummoned",
+    "kind": "delay",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+        "old": "summon->AddDelayedEvent(3000, [summon, this] () -> void\n                    {\n                        Unit* target = nullptr;",
+        "new": "me->AddDelayedEvent(3000, [this, summonGuid = summon->GetGUID()] () -> void\n                    {\n                        Creature* summon = ObjectAccessor::GetCreature(*me, summonGuid);\n                        if (!summon)\n                            return;\n\n                        Unit* target = nullptr;",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+        "old": "if (target)\n                            me->CastSpell(target, (isEmpowered[1] ? SPELL_EMPOWERED_LIQUID_HELLFIRE_SUMMON_TRIGGER : SPELL_LIQUID_HELLFIRE_SUMMON_TRIGGER));",
+        "new": "if (target && me->IsAlive())\n                            me->CastSpell(target, (isEmpowered[1] ? SPELL_EMPOWERED_LIQUID_HELLFIRE_SUMMON_TRIGGER : SPELL_LIQUID_HELLFIRE_SUMMON_TRIGGER));",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "Bounds",
+    "title": "Keep Guldan delayed empowered bounds on its boss lifetime",
+    "paths": [
+      "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+    ],
+    "cls": "boss_guldanAI",
+    "method": "SpellHitTarget",
+    "kind": "delay",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+        "old": "target->AddDelayedEvent(3000, [target, this] () -> void\n                    {\n                        target->CastSpell(target, SPELL_EMPOWERED_BOUNDS_OF_FEL_AT);",
+        "new": "me->AddDelayedEvent(3000, [this, targetGuid = target->GetGUID()] () -> void\n                    {\n                        if (!me->IsAlive())\n                            return;\n                        Unit* target = ObjectAccessor::GetUnit(*me, targetGuid);\n                        if (!target)\n                            return;\n\n                        target->CastSpell(target, SPELL_EMPOWERED_BOUNDS_OF_FEL_AT);",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "SeatIntro",
+    "title": "Scope Seat intro callbacks to the original live instance",
+    "paths": [
+      "src/server/scripts/Legion/TheSeatOfTheTriumvirate/instance_the_seat_of_the_triumvirate.cpp"
+    ],
+    "cls": "instance_seat_of_the_triumvirate_InstanceMapScript",
+    "method": "OnPlayerEnter",
+    "kind": "delay",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheSeatOfTheTriumvirate/instance_the_seat_of_the_triumvirate.cpp",
+        "old": "void OnPlayerEnter(Player* player) override\n        {\n            if (!convers)\n            {\n                player->AddDelayedEvent(3500, [player, this]() -> void\n                {\n                    if (InstanceScript* instance = player->GetInstanceScript())\n                        if (instance->GetBossState(DATA_ZURAAL) != DONE)\n                        {\n                            convers = true;\n                            Conversation* conversation = new Conversation;\n                            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 6054, player, NULL, *player))\n                                delete conversation;\n                        }\n                });\n            }\n        }",
+        "new": "void OnPlayerEnter(Player* player) override\n        {\n            if (!convers)\n            {\n                uint32 const mapId = player->GetMapId();\n                uint32 const instanceId = player->GetInstanceId();\n                player->AddDelayedEvent(3500, [player, mapId, instanceId]() -> void\n                {\n                    if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                        return;\n\n                    auto current = static_cast<instance_seat_of_the_triumvirate_InstanceMapScript*>(player->GetInstanceScript());\n                    if (!current || current->convers || current->GetBossState(DATA_ZURAAL) == DONE)\n                        return;\n\n                    Conversation* conversation = new Conversation;\n                    if (conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 6054, player, NULL, *player))\n                        current->convers = true;\n                    else\n                        delete conversation;\n                });\n            }\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "StyleGreeting",
+    "title": "Resolve Trial of Style contestants before delayed greetings",
+    "paths": [
+      "src/server/scripts/Legion/MicroHolidays/TrialofStyle.cpp"
+    ],
+    "cls": "npc_atheris_voguesong",
+    "method": "DoAction",
+    "kind": "delay",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/TrialofStyle.cpp",
+        "old": "me->AddDelayedEvent(2000, [=]() -> void { Talk(SAY_HELLO_RIGHT, target->GetGUID()); });",
+        "new": "me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID()]() -> void\n                        {\n                            if (ObjectAccessor::GetPlayer(*me, targetGuid))\n                                Talk(SAY_HELLO_RIGHT, targetGuid);\n                        });",
+        "count": 9
+      }
+    ]
+  },
+  {
+    "key": "StormDragon",
+    "title": "Cancel stale Stormheim dragon boarding and restore player control",
+    "paths": [
+      "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp"
+    ],
+    "cls": "npc_invasion_stormheim_dragonsAI",
+    "method": "PassengerBoarded",
+    "kind": "delay",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp",
+        "old": "void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override\n        {\n            if (who->IsPlayer())                \n            {\n                if (Player* player = who->ToPlayer())\n                {\n                    me->AddDelayedEvent(2000, [this, player] () -> void\n                    {\n                        player->SetClientControl(me, false);                        \n                        me->AddDelayedEvent(3000, [this] () -> void\n                        {\n                            me->GetMotionMaster()->MovePath((urand(1, 2) == 1 ? 10993814 : 10993815), true, irand(-20, 20), irand(-20, 20));\n                        });\n                    });\n                }\n            }\n        }",
+        "new": "uint64 boardingGeneration = 0;\n        ObjectGuid boardedPlayerGuid;\n        bool scriptedControl = false;\n\n        void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override\n        {\n            if (!who || !who->IsPlayer())\n                return;\n\n            if (!apply)\n            {\n                if (who->GetGUID() != boardedPlayerGuid)\n                    return;\n                ++boardingGeneration;\n                if (scriptedControl)\n                    who->ToPlayer()->SetClientControl(who, true);\n                scriptedControl = false;\n                boardedPlayerGuid.Clear();\n                return;\n            }\n\n            if (who->GetVehicleBase() != me || boardedPlayerGuid == who->GetGUID())\n                return;\n\n            boardedPlayerGuid = who->GetGUID();\n            uint64 const generation = ++boardingGeneration;\n            me->AddDelayedEvent(2000, [this, playerGuid = boardedPlayerGuid, generation]() -> void\n            {\n                if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                    return;\n                Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                    return;\n\n                player->SetClientControl(me, false);\n                scriptedControl = true;\n                me->AddDelayedEvent(3000, [this, playerGuid, generation]() -> void\n                {\n                    if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                        return;\n                    Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                    if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                        return;\n\n                    me->GetMotionMaster()->MovePath((urand(1, 2) == 1 ? 10993814 : 10993815), true, irand(-20, 20), irand(-20, 20));\n                });\n            });\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "Hearthstation",
+    "title": "Initialize Hearthstation owner cleanup and resolve delayed owners",
+    "paths": [
+      "src/server/scripts/World/npcs_special.cpp"
+    ],
+    "cls": "npc_hearthstation",
+    "method": "IsSummonedBy",
+    "kind": "delay",
+    "edits": [
+      {
+        "path": "src/server/scripts/World/npcs_special.cpp",
+        "old": "ObjectGuid targetGuid;\n    std::string emote;\n    uint32 despawn_timer;",
+        "new": "ObjectGuid targetGuid;\n    std::string emote;\n    uint32 despawn_timer = 1000;",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/World/npcs_special.cpp",
+        "old": "me->AddDelayedEvent(100, [=]() -> void\n        {\n            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);\n\n            DoCast(owner, 46598, true);\n        });",
+        "new": "if (!owner)\n            return;\n        me->AddDelayedEvent(100, [this, ownerGuid = owner->GetGUID()]() -> void\n        {\n            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);\n            if (Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid))\n                DoCast(owner, 46598, true);\n        });",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/World/npcs_special.cpp",
+        "old": "me->AddDelayedEvent(1500, [owner]() -> void {\n                    owner->RemoveAurasDueToSpell(246289);\n                    owner->RemoveAurasDueToSpell(246351);\n                });",
+        "new": "me->AddDelayedEvent(1500, [this, ownerGuid = owner->GetGUID()]() -> void\n                {\n                    if (Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid))\n                    {\n                        owner->RemoveAurasDueToSpell(246289);\n                        owner->RemoveAurasDueToSpell(246351);\n                    }\n                });",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "Spider",
+    "title": "Resolve Infant Spider owner before its delayed ride cast",
+    "paths": [
+      "src/server/scripts/World/npcs_special.cpp"
+    ],
+    "cls": "npc_infant_spider",
+    "method": "IsSummonedBy",
+    "kind": "delay",
+    "edits": [
+      {
+        "path": "src/server/scripts/World/npcs_special.cpp",
+        "old": "me->AddDelayedEvent(100, [=]() -> void { DoCast(owner, 46598, true); });",
+        "new": "if (!owner)\n            return;\n        me->AddDelayedEvent(100, [this, ownerGuid = owner->GetGUID()]() -> void\n        {\n            if (Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid))\n                DoCast(owner, 46598, true);\n        });",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "StyleTimer",
+    "title": "Scope Trial of Style timed achievement callbacks to their original instance",
+    "paths": [
+      "src/server/scripts/Legion/MicroHolidays/TrialofStyle.cpp"
+    ],
+    "cls": "instance_trial_of_style_InstanceMapScript",
+    "method": "onScenarionNextStep",
+    "kind": "delay",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/TrialofStyle.cpp",
+        "old": "instance->ApplyOnEveryPlayer([&](Player* player)\n                {\n                    player->AddDelayedEvent(500, [=]() -> void\n                    {\n                        player->GetAchievementMgr()->StartTimedAchievement(static_cast<CriteriaTimedTypes>(CRITERIA_TIMED_TYPE_EVENT2), 57838);\n\n                        if (auto scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))\n                            scenario->GetAchievementMgr().StartTimedAchievement(static_cast<CriteriaTimedTypes>(CRITERIA_TIMED_TYPE_EVENT2), 57838);\n                    });\n                });",
+        "new": "instance->ApplyOnEveryPlayer([mapId = instance->GetId(), instanceId = instance->GetInstanceId()](Player* player)\n                {\n                    player->AddDelayedEvent(500, [player, mapId, instanceId]() -> void\n                    {\n                        if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                            return;\n\n                        player->GetAchievementMgr()->StartTimedAchievement(static_cast<CriteriaTimedTypes>(CRITERIA_TIMED_TYPE_EVENT2), 57838);\n\n                        if (auto scenario = sScenarioMgr->GetScenario(instanceId))\n                            scenario->GetAchievementMgr().StartTimedAchievement(static_cast<CriteriaTimedTypes>(CRITERIA_TIMED_TYPE_EVENT2), 57838);\n                    });\n                });",
+        "count": 1
+      }
+    ]
+  }
+]
