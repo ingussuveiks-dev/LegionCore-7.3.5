@@ -640,9 +640,11 @@ struct npc_felhounds_fharg : public boss_felhounds_encounters
                         pos = me->GetNearPosition(10.0f, me->GetRelativeAngle(shatug));
                         if (auto summon = me->SummonCreature(NPC_MOLTEN_TOUCH, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 10.0f, pos.GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 15 * IN_MILLISECONDS))
                         {
-                            me->AddDelayedCombat(1800, [this, summon]() -> void
+                            me->AddDelayedCombat(1800, [this, summonGuid = summon->GetGUID()]() -> void
                             {
-                                if (summon)
+                                if (!me->IsAlive())
+                                    return;
+                                if (Creature* summon = ObjectAccessor::GetCreature(*me, summonGuid))
                                     me->CastSpell(summon, SPELL_MOLTEN_TOUCH_CHANNEL, true);
                             });
                         }
