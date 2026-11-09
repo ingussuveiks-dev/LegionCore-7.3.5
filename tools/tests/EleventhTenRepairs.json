@@ -1,0 +1,338 @@
+[
+  {
+    "key": "Odyn",
+    "title": "Select Odyn energy before resetting the encounter meter",
+    "paths": [
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_odyn.cpp"
+    ],
+    "cls": "boss_tov_odyn",
+    "method": "Reset",
+    "npcs": [
+      114263
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TrialOfValor/boss_tov_odyn.cpp",
+        "old": "            me->SetPower(POWER_ENERGY, 0);\n            me->SetMaxPower(POWER_ENERGY, 100);",
+        "new": "            me->SetPowerType(POWER_ENERGY);\n            me->SetPower(POWER_ENERGY, 0);\n            me->SetMaxPower(POWER_ENERGY, 100);"
+      }
+    ],
+    "contexts": [
+      {
+        "cls": "boss_tov_odyn",
+        "method": "Reset",
+        "npc": 114263,
+        "start": 0
+      }
+    ],
+    "kind": "power"
+  },
+  {
+    "key": "Cenarius",
+    "title": "Initialize Cenarius authored 90 energy checkpoint",
+    "paths": [
+      "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp"
+    ],
+    "cls": "boss_cenarius",
+    "method": "Reset",
+    "npcs": [
+      104636
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp",
+        "old": "void Reset() override\n    {\n        _Reset();\n        firstConv = false;\n        secondPhase = false;\n        powerTimer = 0;\n        powerTick = 1;\n        waveCount = 0;\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetPower(POWER_ENERGY, 90);\n        DoCast(me, SPELL_NIGHTMARE_ENERGY, true);\n        me->SummonCreature(NPC_MALFURION_STORMRAGE, malfurionPos[0]);\n        me->SetReactState(REACT_AGGRESSIVE);\n    }",
+        "new": "void Reset() override\n    {\n        _Reset();\n        firstConv = false;\n        secondPhase = false;\n        powerTimer = 0;\n        powerTick = 1;\n        waveCount = 0;\n        me->SetPowerType(POWER_ENERGY);\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetPower(POWER_ENERGY, 90);\n        DoCast(me, SPELL_NIGHTMARE_ENERGY, true);\n        me->SummonCreature(NPC_MALFURION_STORMRAGE, malfurionPos[0]);\n        me->SetReactState(REACT_AGGRESSIVE);\n    }"
+      }
+    ],
+    "contexts": [
+      {
+        "cls": "boss_cenarius",
+        "method": "Reset",
+        "npc": 104636,
+        "start": 90,
+        "parameter": null
+      }
+    ],
+    "kind": "power"
+  },
+  {
+    "key": "Nightmare",
+    "title": "Initialize corrupted Cenarius forces on their energy resource",
+    "paths": [
+      "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp"
+    ],
+    "cls": "npc_cenarius_forces_of_nightmare",
+    "method": "DefaultEvents",
+    "npcs": [
+      105468,
+      105494,
+      105495
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp",
+        "old": "void DefaultEvents(uint8 powerCount)\n    {\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetPower(POWER_ENERGY, powerCount);\n        DoCast(me, SPELL_DISSOLVE_CLEANSED_IN, true);\n        DoCast(me, SPELL_NIGHTMARE_ENERGY, true);\n        DoCast(me, SPELL_CAST_HELPFUL_SPELL, true);\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);\n    }",
+        "new": "void DefaultEvents(uint8 powerCount)\n    {\n        me->SetPowerType(POWER_ENERGY);\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetPower(POWER_ENERGY, powerCount);\n        DoCast(me, SPELL_DISSOLVE_CLEANSED_IN, true);\n        DoCast(me, SPELL_NIGHTMARE_ENERGY, true);\n        DoCast(me, SPELL_CAST_HELPFUL_SPELL, true);\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);\n    }"
+      }
+    ],
+    "contexts": [
+      {
+        "cls": "npc_cenarius_forces_of_nightmare",
+        "method": "DefaultEvents",
+        "npc": 105468,
+        "start": 50,
+        "parameter": 50
+      },
+      {
+        "cls": "npc_cenarius_forces_of_nightmare",
+        "method": "DefaultEvents",
+        "npc": 105494,
+        "start": 30,
+        "parameter": 30
+      },
+      {
+        "cls": "npc_cenarius_forces_of_nightmare",
+        "method": "DefaultEvents",
+        "npc": 105495,
+        "start": 80,
+        "parameter": 80
+      }
+    ],
+    "kind": "power"
+  },
+  {
+    "key": "Allies",
+    "title": "Initialize cleansed Cenarius allies on their energy resource",
+    "paths": [
+      "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp"
+    ],
+    "cls": "npc_cenarius_allies_of_nature",
+    "method": "IsSummonedBy",
+    "npcs": [
+      106667,
+      106809,
+      106831
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp",
+        "old": "void IsSummonedBy(Unit* summoner) override\n    {\n        ownerGuid = summoner->GetGUID();\n\n        switch (me->GetEntry())\n        {\n            case NPC_ALLIES_WISP:\n                DoCast(me, SPELL_CLEANSING_DETONATE_VIS, true);\n                events.RescheduleEvent(EVENT_1, 1000);\n                break;\n            case NPC_CLEANSED_ANCIENT:\n                spell = SPELL_NATURES_FURY;\n                me->SetMaxPower(POWER_ENERGY, 100);\n                me->SetPower(POWER_ENERGY, 80);\n                DefaultEvents();\n                break;\n            case NPC_EMERALD_DRAKE:\n                spell = SPELL_POISON_BLAST;\n                me->SetMaxPower(POWER_ENERGY, 100);\n                me->SetPower(POWER_ENERGY, 100);\n                SetFlyMode(true);\n                DefaultEvents();\n                break;\n            case NPC_REDEEMED_SISTER:\n                spell = SPELL_JAVELIN_TOSS;\n                me->SetMaxPower(POWER_ENERGY, 100);\n                me->SetPower(POWER_ENERGY, 56);\n                DefaultEvents();\n                break;\n        }\n    }",
+        "new": "void IsSummonedBy(Unit* summoner) override\n    {\n        ownerGuid = summoner->GetGUID();\n\n        switch (me->GetEntry())\n        {\n            case NPC_ALLIES_WISP:\n                DoCast(me, SPELL_CLEANSING_DETONATE_VIS, true);\n                events.RescheduleEvent(EVENT_1, 1000);\n                break;\n            case NPC_CLEANSED_ANCIENT:\n                spell = SPELL_NATURES_FURY;\n                me->SetPowerType(POWER_ENERGY);\n                me->SetMaxPower(POWER_ENERGY, 100);\n                me->SetPower(POWER_ENERGY, 80);\n                DefaultEvents();\n                break;\n            case NPC_EMERALD_DRAKE:\n                spell = SPELL_POISON_BLAST;\n                me->SetPowerType(POWER_ENERGY);\n                me->SetMaxPower(POWER_ENERGY, 100);\n                me->SetPower(POWER_ENERGY, 100);\n                SetFlyMode(true);\n                DefaultEvents();\n                break;\n            case NPC_REDEEMED_SISTER:\n                spell = SPELL_JAVELIN_TOSS;\n                me->SetPowerType(POWER_ENERGY);\n                me->SetMaxPower(POWER_ENERGY, 100);\n                me->SetPower(POWER_ENERGY, 56);\n                DefaultEvents();\n                break;\n        }\n    }"
+      }
+    ],
+    "contexts": [
+      {
+        "cls": "npc_cenarius_allies_of_nature",
+        "method": "IsSummonedBy",
+        "npc": 106667,
+        "start": 80,
+        "parameter": null
+      },
+      {
+        "cls": "npc_cenarius_allies_of_nature",
+        "method": "IsSummonedBy",
+        "npc": 106809,
+        "start": 100,
+        "parameter": null
+      },
+      {
+        "cls": "npc_cenarius_allies_of_nature",
+        "method": "IsSummonedBy",
+        "npc": 106831,
+        "start": 56,
+        "parameter": null
+      }
+    ],
+    "kind": "power"
+  },
+  {
+    "key": "Ysondre",
+    "title": "Initialize Ysondre energy before the native empty-energy spell",
+    "paths": [
+      "src/server/scripts/Legion/TheEmeraldNightmare/boss_dragons_of_nightmare.cpp"
+    ],
+    "cls": "boss_dragon_ysondre",
+    "method": "Reset",
+    "npcs": [
+      102679
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_dragons_of_nightmare.cpp",
+        "old": "void Reset() override\n    {\n        _Reset();\n        DoCast(me, SPELL_EMPTY_ENERGY, true);\n        eventPhaseHP = 71;\n\n        me->GetMotionMaster()->MoveIdle();\n        me->NearTeleportTo(me->GetHomePosition());\n\n        if (auto dragon = me->SummonCreature(helpersList[0], dragonPos[0]))\n            if (CreatureGroup* f = me->GetFormation())\n                f->AddMember(dragon, group_member);\n\n        if (IsMythicRaid())\n        {\n            for (uint8 i = 0; i < 2; ++i)\n                if (auto dragon = me->SummonCreature(helpersList[1 + i], dragonPos[3 + i]))\n                {\n                    dragon->SetReactState(REACT_PASSIVE);\n                    dragon->AI()->SetFlyMode(true);\n                    dragon->SetVisible(false);\n                }\n        }\n        else\n        {\n            if (auto dragon = me->SummonCreature(helpersList[1], dragonPos[1]))\n            {\n                dragon->SetReactState(REACT_PASSIVE);\n                dragon->AI()->SetFlyMode(true);\n                dragon->SetVisible(false);\n            }\n        }\n\n        DespawnTrash();\n    }",
+        "new": "void Reset() override\n    {\n        _Reset();\n        me->SetPowerType(POWER_ENERGY);\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetPower(POWER_ENERGY, 0);\n        DoCast(me, SPELL_EMPTY_ENERGY, true);\n        eventPhaseHP = 71;\n\n        me->GetMotionMaster()->MoveIdle();\n        me->NearTeleportTo(me->GetHomePosition());\n\n        if (auto dragon = me->SummonCreature(helpersList[0], dragonPos[0]))\n            if (CreatureGroup* f = me->GetFormation())\n                f->AddMember(dragon, group_member);\n\n        if (IsMythicRaid())\n        {\n            for (uint8 i = 0; i < 2; ++i)\n                if (auto dragon = me->SummonCreature(helpersList[1 + i], dragonPos[3 + i]))\n                {\n                    dragon->SetReactState(REACT_PASSIVE);\n                    dragon->AI()->SetFlyMode(true);\n                    dragon->SetVisible(false);\n                }\n        }\n        else\n        {\n            if (auto dragon = me->SummonCreature(helpersList[1], dragonPos[1]))\n            {\n                dragon->SetReactState(REACT_PASSIVE);\n                dragon->AI()->SetFlyMode(true);\n                dragon->SetVisible(false);\n            }\n        }\n\n        DespawnTrash();\n    }"
+      }
+    ],
+    "contexts": [
+      {
+        "cls": "boss_dragon_ysondre",
+        "method": "Reset",
+        "npc": 102679,
+        "start": 0,
+        "empty_spell": 205283
+      }
+    ],
+    "kind": "power"
+  },
+  {
+    "key": "Dragons",
+    "title": "Initialize nightmare helper dragon energy before reset casts",
+    "paths": [
+      "src/server/scripts/Legion/TheEmeraldNightmare/boss_dragons_of_nightmare.cpp"
+    ],
+    "cls": "boss_dragon_taerar",
+    "method": "Reset",
+    "npcs": [
+      102681,
+      102682,
+      102683
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_dragons_of_nightmare.cpp",
+        "old": "struct boss_dragon_taerar : public ScriptedAI\n{\n    boss_dragon_taerar(Creature* creature) : ScriptedAI(creature) \n    {\n        instance = me->GetInstanceScript();\n        me->SetSpeed(MOVE_FLIGHT, 2.0f);\n    }\n\n    InstanceScript* instance;\n    EventMap events;\n\n    void Reset() override\n    {\n        me->SetMaxPower(POWER_ENERGY, 100);\n        DoCast(me, SPELL_EMPTY_ENERGY, true);\n    }",
+        "new": "struct boss_dragon_taerar : public ScriptedAI\n{\n    boss_dragon_taerar(Creature* creature) : ScriptedAI(creature) \n    {\n        instance = me->GetInstanceScript();\n        me->SetSpeed(MOVE_FLIGHT, 2.0f);\n    }\n\n    InstanceScript* instance;\n    EventMap events;\n\n    void Reset() override\n    {\n        me->SetPowerType(POWER_ENERGY);\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetPower(POWER_ENERGY, 0);\n        DoCast(me, SPELL_EMPTY_ENERGY, true);\n    }"
+      },
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_dragons_of_nightmare.cpp",
+        "old": "struct boss_dragon_lethon : public ScriptedAI\n{\n    boss_dragon_lethon(Creature* creature) : ScriptedAI(creature) \n    {\n        instance = me->GetInstanceScript();\n        me->SetSpeed(MOVE_FLIGHT, 2.0f);\n    }\n\n    InstanceScript* instance;\n    EventMap events;\n\n    void Reset() override\n    {\n        me->SetMaxPower(POWER_ENERGY, 100);\n        DoCast(me, SPELL_EMPTY_ENERGY, true);\n    }",
+        "new": "struct boss_dragon_lethon : public ScriptedAI\n{\n    boss_dragon_lethon(Creature* creature) : ScriptedAI(creature) \n    {\n        instance = me->GetInstanceScript();\n        me->SetSpeed(MOVE_FLIGHT, 2.0f);\n    }\n\n    InstanceScript* instance;\n    EventMap events;\n\n    void Reset() override\n    {\n        me->SetPowerType(POWER_ENERGY);\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetPower(POWER_ENERGY, 0);\n        DoCast(me, SPELL_EMPTY_ENERGY, true);\n    }"
+      },
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_dragons_of_nightmare.cpp",
+        "old": "struct boss_dragon_emeriss : public ScriptedAI\n{\n    boss_dragon_emeriss(Creature* creature) : ScriptedAI(creature) \n    {\n        instance = me->GetInstanceScript();\n        me->SetSpeed(MOVE_FLIGHT, 2.0f);\n    }\n\n    InstanceScript* instance;\n    EventMap events;\n\n    void Reset() override\n    {\n        me->SetMaxPower(POWER_ENERGY, 100);\n        DoCast(me, SPELL_EMPTY_ENERGY, true);\n        DoCast(me, SPELL_NIGHTMARE_ENERGY, true);\n    }",
+        "new": "struct boss_dragon_emeriss : public ScriptedAI\n{\n    boss_dragon_emeriss(Creature* creature) : ScriptedAI(creature) \n    {\n        instance = me->GetInstanceScript();\n        me->SetSpeed(MOVE_FLIGHT, 2.0f);\n    }\n\n    InstanceScript* instance;\n    EventMap events;\n\n    void Reset() override\n    {\n        me->SetPowerType(POWER_ENERGY);\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetPower(POWER_ENERGY, 0);\n        DoCast(me, SPELL_EMPTY_ENERGY, true);\n        DoCast(me, SPELL_NIGHTMARE_ENERGY, true);\n    }"
+      }
+    ],
+    "contexts": [
+      {
+        "cls": "boss_dragon_taerar",
+        "method": "Reset",
+        "npc": 102681,
+        "start": 0,
+        "empty_spell": 205283
+      },
+      {
+        "cls": "boss_dragon_lethon",
+        "method": "Reset",
+        "npc": 102682,
+        "start": 0,
+        "empty_spell": 205283
+      },
+      {
+        "cls": "boss_dragon_emeriss",
+        "method": "Reset",
+        "npc": 102683,
+        "start": 0,
+        "empty_spell": 205283
+      }
+    ],
+    "kind": "power"
+  },
+  {
+    "key": "ShaFear",
+    "title": "Select Sha of Fear energy for native meter reads and regeneration",
+    "paths": [
+      "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_sha_of_fear.cpp"
+    ],
+    "cls": "boss_sha_of_fearAI",
+    "method": "EnterCombat",
+    "npcs": [
+      60999
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_sha_of_fear.cpp",
+        "old": "                me->SetPower(POWER_ENERGY, 0);\n                me->SetInt32Value(UNIT_FIELD_POWER, 0);\n                me->SetMaxPower(POWER_ENERGY, 100);\n                me->SetInt32Value(UNIT_FIELD_MAX_POWER, 100);",
+        "new": "                me->SetPowerType(POWER_ENERGY);\n                me->SetPower(POWER_ENERGY, 0);\n                me->SetInt32Value(UNIT_FIELD_POWER, 0);\n                me->SetMaxPower(POWER_ENERGY, 100);\n                me->SetInt32Value(UNIT_FIELD_MAX_POWER, 100);"
+      }
+    ],
+    "contexts": [
+      {
+        "cls": "boss_sha_of_fearAI",
+        "method": "EnterCombat",
+        "npc": 60999,
+        "start": 0
+      }
+    ],
+    "kind": "power"
+  },
+  {
+    "key": "Pol",
+    "title": "Initialize Pol native energy and authored starting value",
+    "paths": [
+      "src/server/scripts/Draenor/Highmaul/boss_twin_ogron.cpp"
+    ],
+    "cls": "boss_twin_ogron_pol",
+    "method": "Reset",
+    "npcs": [
+      78238
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Draenor/Highmaul/boss_twin_ogron.cpp",
+        "old": "void Reset() override\n    {\n        m_Events.Reset();\n\n        _Reset();\n\n        me->SetPower(POWER_ENERGY, 0);\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);\n\n        me->SetCanDualWield(false);\n\n        me->CastSpell(me, AggressiveDisposition, true);\n        me->CastSpell(me, Disposition, true);\n\n        m_ShieldChargeScheduled = false;\n        m_InterruptingShoutScheduled = false;\n\n        me->CancelSpellVisualKit(PulverizeLast);\n    }",
+        "new": "void Reset() override\n    {\n        m_Events.Reset();\n\n        _Reset();\n\n        me->SetPowerType(POWER_ENERGY);\n        me->SetPower(POWER_ENERGY, 0);\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);\n\n        me->SetCanDualWield(false);\n\n        me->CastSpell(me, AggressiveDisposition, true);\n        me->CastSpell(me, Disposition, true);\n\n        m_ShieldChargeScheduled = false;\n        m_InterruptingShoutScheduled = false;\n\n        me->CancelSpellVisualKit(PulverizeLast);\n    }"
+      }
+    ],
+    "contexts": [
+      {
+        "cls": "boss_twin_ogron_pol",
+        "method": "Reset",
+        "npc": 78238,
+        "start": 0
+      }
+    ],
+    "kind": "power"
+  },
+  {
+    "key": "Phemos",
+    "title": "Initialize Phemos native energy and authored starting value",
+    "paths": [
+      "src/server/scripts/Draenor/Highmaul/boss_twin_ogron.cpp"
+    ],
+    "cls": "boss_twin_ogron_phemos",
+    "method": "Reset",
+    "npcs": [
+      78237
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Draenor/Highmaul/boss_twin_ogron.cpp",
+        "old": "void Reset() override\n    {\n        if (!m_HomeChanged)\n            m_CosmeticEvents.RescheduleEvent(EventCheckPlayer, 1 * IN_MILLISECONDS);\n\n        m_Events.Reset();\n\n        _Reset();\n\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetPower(POWER_ENERGY, 98);\n        me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);\n\n        me->CastSpell(me, DespawnAreaTriggers, true);\n        me->CastSpell(me, AggressiveDisposition, true);\n        me->CastSpell(me, Disposition, true);\n\n        AddDelayedEvent(2 * IN_MILLISECONDS, [this]() -> void\n        {\n            if (m_TrashsMobs.empty() && !m_Init)\n            {\n                std::list<Creature*> trashList;\n                me->GetCreatureListInGrid(trashList, 250.0f);\n\n                if (!trashList.empty())\n                {\n                    trashList.remove_if([this](Creature* creature) -> bool\n                    {\n                        if (creature == nullptr || creature->GetPositionZ() > gorthenonFloor)\n                            return true;\n\n                        if (creature->GetEntry() == InvisibleStalker)\n                            return true;\n\n                        if (!creature->IsAlive())\n                            return true;\n\n                        return false;\n                    });\n                }\n\n                for (Creature* creature : trashList)\n                    m_TrashsMobs.insert(creature->GetGUID());\n\n                m_Init = true;\n            }\n        });\n\n        m_WhirlwindScheduled = false;\n        m_EnfeeblingRoarScheduled = false;\n\n        m_EnfeeblingRoarTargets.clear();\n\n        m_FirstBlazePos = Position();\n        m_FirstWaveCounter = 0;\n        m_SecondBlazePos = Position();\n        m_SecondWaveCounter = 0;\n\n        me->CancelSpellVisualKit(QuakeVisualID);\n    }",
+        "new": "void Reset() override\n    {\n        if (!m_HomeChanged)\n            m_CosmeticEvents.RescheduleEvent(EventCheckPlayer, 1 * IN_MILLISECONDS);\n\n        m_Events.Reset();\n\n        _Reset();\n\n        me->SetPowerType(POWER_ENERGY);\n        me->SetMaxPower(POWER_ENERGY, 100);\n        me->SetPower(POWER_ENERGY, 98);\n        me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);\n\n        me->CastSpell(me, DespawnAreaTriggers, true);\n        me->CastSpell(me, AggressiveDisposition, true);\n        me->CastSpell(me, Disposition, true);\n\n        AddDelayedEvent(2 * IN_MILLISECONDS, [this]() -> void\n        {\n            if (m_TrashsMobs.empty() && !m_Init)\n            {\n                std::list<Creature*> trashList;\n                me->GetCreatureListInGrid(trashList, 250.0f);\n\n                if (!trashList.empty())\n                {\n                    trashList.remove_if([this](Creature* creature) -> bool\n                    {\n                        if (creature == nullptr || creature->GetPositionZ() > gorthenonFloor)\n                            return true;\n\n                        if (creature->GetEntry() == InvisibleStalker)\n                            return true;\n\n                        if (!creature->IsAlive())\n                            return true;\n\n                        return false;\n                    });\n                }\n\n                for (Creature* creature : trashList)\n                    m_TrashsMobs.insert(creature->GetGUID());\n\n                m_Init = true;\n            }\n        });\n\n        m_WhirlwindScheduled = false;\n        m_EnfeeblingRoarScheduled = false;\n\n        m_EnfeeblingRoarTargets.clear();\n\n        m_FirstBlazePos = Position();\n        m_FirstWaveCounter = 0;\n        m_SecondBlazePos = Position();\n        m_SecondWaveCounter = 0;\n\n        me->CancelSpellVisualKit(QuakeVisualID);\n    }"
+      }
+    ],
+    "contexts": [
+      {
+        "cls": "boss_twin_ogron_phemos",
+        "method": "Reset",
+        "npc": 78237,
+        "start": 98
+      }
+    ],
+    "kind": "power"
+  },
+  {
+    "key": "Announcer",
+    "title": "Recover the champion intro after participants leave or disconnect",
+    "paths": [
+      "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.cpp"
+    ],
+    "cls": "npc_announcer_toc5AI",
+    "method": "UpdateAI",
+    "npcs": [
+      35004,
+      35005
+    ],
+    "kind": "roster",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.cpp",
+        "old": "                    case 2:\n                        if (!playersGUID.empty())\n                        {\n                            if (Player* player = me->GetMap()->GetPlayers().begin()->getSource())\n                                AnnounceChampion(player);\n                            events.ScheduleEvent(2, 8000);\n                        } else\n                            events.ScheduleEvent(3, 8000);\n\n                        break;",
+        "new": "                    case 2:\n                        if (!me->GetMap()->GetPlayers().isEmpty())\n                        {\n                            while (!playersGUID.empty() && !me->GetPlayer(*me, *playersGUID.begin()))\n                                playersGUID.erase(playersGUID.begin());\n\n                            if (!playersGUID.empty())\n                            {\n                                if (Player* player = me->GetPlayer(*me, *playersGUID.begin()))\n                                    AnnounceChampion(player);\n                                events.ScheduleEvent(2, 8000);\n                            }\n                            else\n                                events.ScheduleEvent(3, 8000);\n                        }\n                        else\n                            events.ScheduleEvent(2, 8000);\n\n                        break;"
+      }
+    ]
+  }
+]

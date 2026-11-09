@@ -1,0 +1,100 @@
+{
+  "date": "2026-11-09",
+  "status": "SUPPORT_FOR_EXACTLY_10",
+  "base": "ff8303b4081c509390d8bd7ec6cc55e6a49d5630",
+  "cases": [
+    {
+      "key": "Odyn",
+      "title": "Select Odyn energy before resetting the encounter meter",
+      "paths": [
+        "src/server/scripts/Legion/TrialOfValor/boss_tov_odyn.cpp"
+      ]
+    },
+    {
+      "key": "Cenarius",
+      "title": "Initialize Cenarius authored 90 energy checkpoint",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp"
+      ]
+    },
+    {
+      "key": "Nightmare",
+      "title": "Initialize corrupted Cenarius forces on their energy resource",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp"
+      ]
+    },
+    {
+      "key": "Allies",
+      "title": "Initialize cleansed Cenarius allies on their energy resource",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp"
+      ]
+    },
+    {
+      "key": "Ysondre",
+      "title": "Initialize Ysondre energy before the native empty-energy spell",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_dragons_of_nightmare.cpp"
+      ]
+    },
+    {
+      "key": "Dragons",
+      "title": "Initialize nightmare helper dragon energy before reset casts",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_dragons_of_nightmare.cpp"
+      ]
+    },
+    {
+      "key": "ShaFear",
+      "title": "Select Sha of Fear energy for native meter reads and regeneration",
+      "paths": [
+        "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_sha_of_fear.cpp"
+      ]
+    },
+    {
+      "key": "Pol",
+      "title": "Initialize Pol native energy and authored starting value",
+      "paths": [
+        "src/server/scripts/Draenor/Highmaul/boss_twin_ogron.cpp"
+      ]
+    },
+    {
+      "key": "Phemos",
+      "title": "Initialize Phemos native energy and authored starting value",
+      "paths": [
+        "src/server/scripts/Draenor/Highmaul/boss_twin_ogron.cpp"
+      ]
+    },
+    {
+      "key": "Announcer",
+      "title": "Recover the champion intro after participants leave or disconnect",
+      "paths": [
+        "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.cpp"
+      ]
+    }
+  ],
+  "validation": {
+    "source": "Test-EleventhTenRepairs: 10 pinned ff8303b40 counterfactuals paired with 10 repaired MSVC AddressSanitizer cases. Resource statements are extracted from the actual callbacks for 15 NPC contexts. Tests preserve original starting values, retry initialization and rejected dragon reset casts. Announcer executes the complete selected event-2 case and original player-announcement branch with controlled player/map/speech endpoints. Baseline PASS means the test asserted the known bad state; it is not an ordinary successful gameplay run.",
+    "native": "EleventhTenNative uses actual Creature::Create templates, Unit resource methods, ObjectAccessor player lookup and real Player objects. All 15 selected NPC bindings match, VehicleId=0, and matching pet_stats has no overriding initializer. Original source leaves ENERGY unaddressable; repaired source yields max100 and authored starts, handles reset/re-entry and native resource updates. Original stale roster stalls with a live map participant; repaired code removes the missing GUID and announces the actual roster player once. Real concrete encounter AIs, full combat, voice selection and client traversal are not exercised. No character save/import.",
+    "release": "Original game/scripts library paths and staged final link retained. verify_eleventh_ten_release checks 13 initialization branches in 11 named callbacks, nine controller repairs, four explicit dragon zero resets and actual roster lookup/prune/retry/8-second event handling. Compiler may fold equivalent helper bodies. Prior107 selected paths remain checked. Final canonical Scepter, ArtifactTierProgression, ScenarioResumeASAN and owned server24600 ready/shutdown0/exit0/gone pass; stderr empty and protected runtime hashes unchanged.",
+    "diagnostics": "Every automated/native/source/build/link/start has canonical and own pre/post crash/log length/time snapshots, exit/stdout/stderr review and appended DBErrors/server diagnostics checked. Final checks are clean. No new crash reports or unexplained runtime diagnostics. Two compiler warnings (C4305,C4858) match baseline source expressions and remain visible. Native source before/after controls are intentional counterfactuals, not hidden failures.",
+    "scope": "Exactly10 scoped repairs: nine explicit resource controllers/groups and one participant-roster lifecycle, in six production files. Metadata reversal reproduces ff8303b40. Original combat/phase/instance gates, amounts, timers, NPC ownership, group/pet/guardian credit and cleanup are retained. Resource initialization grants no progress. No global class-to-power policy, SQL migration, character rewrite or invented HP threshold/kill timer."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN. No guessed HP threshold or kill timer.",
+    "LINK2, Slaghammer crash/cache, mixed7111-byte DBErrors, intermittent handshake and all36 complete artifact chains remain OPEN. No default Slaghammer probe or mixed-log truncation.",
+    "Prior MariaDB numeric CAST discrepancy remains OPEN: original82 and corrected94 raw snapshots remain hash-verified outside fixed. No DB/query workaround.",
+    "Prior TimeLoop105984 script/native32bit healing investigation remains OPEN and unchanged. Its26 raw records and ninth-batch runtime copies remain outside resolved cleanup, with a concrete investigation purpose.",
+    "Actual energy-driven fights, failed ability casts, phase transitions, summon travel/visuals, full wipe/loot/group/faction/pet/guardian behavior and announcer voice/mount/client intro still need client traversal. Controlled resource and roster tests do not certify whole encounters."
+  ],
+  "open_timeloop": {
+    "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+    "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+    "files": 26,
+    "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+    "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+  },
+  "scouted_rejected": "Vehicle-backed candidates (including Goroth, Guarm, Krosus and Brackenspore) were excluded because Vehicle::Install is another power initializer; a missing local setter alone is not proof. Wrathion Thunder Forge legacy npc_wrathion is unbound in this data and was not counted. Existing explicit setters in Ilgynoth/Ra-den/Shekzeer and other roles were retained. Matching local core/data resolved the selected contracts; no modern API transplant.",
+  "batch_audit": "docs/audits/eleventh-ten-repairs-2026-11-09.json"
+}
