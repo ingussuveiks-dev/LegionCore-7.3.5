@@ -153,6 +153,8 @@ class spell_item_flask_of_the_north : public SpellScriptLoader
             void HandleDummy(SpellEffIndex /*effIndex*/)
             {
                 Unit* caster = GetCaster();
+                if (!caster)
+                    return;
                 std::vector<uint32> possibleSpells;
                 switch (caster->getClass())
                 {
@@ -167,6 +169,7 @@ class spell_item_flask_of_the_north : public SpellScriptLoader
                         break;
                     case CLASS_ROGUE:
                     case CLASS_HUNTER:
+                    case CLASS_DEMON_HUNTER:
                         possibleSpells.push_back(SPELL_FLASK_OF_THE_NORTH_AP);
                         break;
                     case CLASS_DRUID:
@@ -175,9 +178,12 @@ class spell_item_flask_of_the_north : public SpellScriptLoader
                         possibleSpells.push_back(SPELL_FLASK_OF_THE_NORTH_STR);
                         break;
                     case CLASS_SHAMAN:
+                    case CLASS_MONK:
                         possibleSpells.push_back(SPELL_FLASK_OF_THE_NORTH_SP);
                         possibleSpells.push_back(SPELL_FLASK_OF_THE_NORTH_AP);
                         break;
+                    default:
+                        return;
                 }
 
                 caster->CastSpell(caster, possibleSpells[irand(0, (possibleSpells.size() - 1))], true, NULL);
