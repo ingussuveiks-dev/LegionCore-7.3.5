@@ -170,17 +170,10 @@ class spell_pri_void_shift : public SpellScriptLoader
                         casterPct = caster->GetHealthPct();
                         targetPct = target->GetHealthPct();
 
-                        if (casterPct < basePct)
-                            targetHeal = target->CountPctFromMaxHealth(int32(basePct));
-                        else
-                            targetHeal = target->CountPctFromMaxHealth(int32(casterPct));
+                        targetHeal = CalculatePct(target->GetMaxHealth(), std::max(casterPct, basePct));
+                        casterHeal = CalculatePct(caster->GetMaxHealth(), std::max(targetPct, basePct));
 
-                        if (targetPct < basePct)
-                            casterHeal = int32(caster->CountPctFromMaxHealth(basePct));
-                        else
-                            casterHeal = caster->CountPctFromMaxHealth(int32(targetPct));
-
-                        if (target->GetHealth() > uint32(targetHeal))
+                        if (target->GetHealth() > targetHeal)
                         {
                             targetDamage = target->GetHealth() - targetHeal;
                             targetHeal = 0;
@@ -188,7 +181,7 @@ class spell_pri_void_shift : public SpellScriptLoader
                         else
                             targetHeal -= target->GetHealth();
 
-                        if (caster->GetHealth() > uint32(casterHeal))
+                        if (caster->GetHealth() > casterHeal)
                         {
                             casterDamage = caster->GetHealth() - casterHeal;
                             casterHeal = 0;
