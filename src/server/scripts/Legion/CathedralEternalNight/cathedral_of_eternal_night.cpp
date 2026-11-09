@@ -509,14 +509,16 @@ class spell_coen_summon_spider : public SpellScriptLoader
                         if (Creature* spider = caster->SummonCreature(120016, kokon->GetPositionX(), kokon->GetPositionY(), kokon->GetPositionZ()))
                         {
                             spider->CastSpell(kokon, 218073);
-                            spider->AddDelayedEvent(10000, [spider, kokon, caster] () -> void
+                            spider->AddDelayedEvent(10000, [spider, cocoonGuid = kokon->GetGUID(), casterGuid = caster->GetGUID()] () -> void
                             {
-                                if (!kokon || !spider)
+                                Creature* kokon = ObjectAccessor::GetCreature(*spider, cocoonGuid);
+                                if (!kokon)
                                     return;
-                                
+
                                 spider->CastSpell(kokon, 116894);
                                 kokon->DespawnOrUnsummon(3000);
-                                spider->GetMotionMaster()->MoveJump(spider->GetPositionX(), spider->GetPositionY(), caster->GetPositionZ(), 50, 50);
+                                if (Unit* caster = ObjectAccessor::GetUnit(*spider, casterGuid))
+                                    spider->GetMotionMaster()->MoveJump(spider->GetPositionX(), spider->GetPositionY(), caster->GetPositionZ(), 50, 50);
                             });
                         }
                     }
