@@ -347,7 +347,8 @@ public:
         }
 
         InstanceScript* instance;
-        uint32 lasthp, berserk;
+        uint64 lasthp;
+        uint32 berserk;
         uint8 donecp, donesp, maxpcount;
         std::vector<ObjectGuid> shapoollist;
         float lasthppct;
@@ -498,8 +499,8 @@ public:
                 uint8 doneval = donesp + donecp;
                 if (doneval)
                 {
-                    uint32 modh = me->CountPctFromMaxHealth(float(doneval));
-                    if (lasthp - modh > 0)
+                    uint64 modh = me->CountPctFromMaxHealth(float(doneval));
+                    if (lasthp > modh)
                         me->SetHealth(lasthp - modh);
                     else
                         me->SetHealth(me->CountPctFromMaxHealth(1));
