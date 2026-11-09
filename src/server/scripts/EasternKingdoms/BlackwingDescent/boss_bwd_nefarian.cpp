@@ -268,9 +268,11 @@ public:
             Talk(SAY_KILL - urand(0, 1));
         }
 
-        void DamageTaken(Unit* /*who*/, uint32& damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
         {
-            int ptc = (me->GetHealth() - damage) / me->GetMaxHealth() * 100;
+            uint64 const health = me->GetHealth(attacker);
+            uint64 const remainingHealth = damage < health ? health - damage : 0;
+            int ptc = me->GetMaxHealth(attacker) ? int(100.0 * remainingHealth / me->GetMaxHealth(attacker)) : 0;
             if (ptc < healthPct && healthPct > 0)
             {
                 healthPct = (ptc / 10) * 10;
