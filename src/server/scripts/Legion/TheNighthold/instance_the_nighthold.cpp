@@ -103,28 +103,53 @@ public:
             LoadObjectData(creatureData, objectData);
         }
 
-        void OnPlayerEnter(Player* player) override
+        std::map<ObjectGuid, std::shared_ptr<uint8>> entryAttempts;
+
+        void OnPlayerLeave(Player* player) override
         {
             if (player)
-            {
-                if (GetBossState(DATA_KROSUS) != IN_PROGRESS && player->IsAlive() && player->IsWithinBox({-61.94f, 2814.45f, 3.16f }, 60.f, 60.f, 5.0f))
-                {
-                    player->AddDelayedEvent(500, [player]() -> void
-                    {
-                        player->NearTeleportTo(player->GetPositionX(), player->GetPositionY(), 3.2f, player->GetOrientation());
-                    });
-                }
-            }
+                entryAttempts.erase(player->GetGUID());
+        }
 
-            if (!player || GetBossState(DATA_SKORPYRON) != NOT_STARTED || introDone)
+        void OnPlayerEnter(Player* player) override
+        {
+            if (!player)
                 return;
 
-            player->AddDelayedEvent(9000, [player]() -> void
+            auto attempt = std::make_shared<uint8>(0);
+            entryAttempts[player->GetGUID()] = attempt;
+            std::weak_ptr<uint8> weakAttempt = attempt;
+            uint32 const mapId = player->GetMapId();
+            uint32 const instanceId = player->GetInstanceId();
+
+            if (GetBossState(DATA_KROSUS) != IN_PROGRESS && player->IsAlive() && player->IsWithinBox({-61.94f, 2814.45f, 3.16f}, 60.f, 60.f, 5.0f))
             {
-                player->CreateConversation(4119);
+                player->AddDelayedEvent(500, [player, mapId, instanceId, weakAttempt]() -> void
+                {
+                    if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                        return;
+                    auto script = static_cast<instance_the_nightnold_InstanceMapScript*>(player->GetInstanceScript());
+                    if (script && script->GetBossState(DATA_KROSUS) != IN_PROGRESS && player->IsAlive() && player->IsWithinBox({-61.94f, 2814.45f, 3.16f}, 60.f, 60.f, 5.0f))
+                        player->NearTeleportTo(player->GetPositionX(), player->GetPositionY(), 3.2f, player->GetOrientation());
+                });
+            }
+
+            if (GetBossState(DATA_SKORPYRON) != NOT_STARTED || introDone)
+                return;
+
+            player->AddDelayedEvent(9000, [player, mapId, instanceId, weakAttempt]() -> void
+            {
+                if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                    return;
+                auto script = static_cast<instance_the_nightnold_InstanceMapScript*>(player->GetInstanceScript());
+                if (!script || script->introDone || script->GetBossState(DATA_SKORPYRON) != NOT_STARTED)
+                    return;
+                Conversation* conversation = new Conversation;
+                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 4119, player, nullptr, *player))
+                    delete conversation;
+                else
+                    script->introDone = true;
             });
-            
-            introDone = true;
         }
 
         void OnCreatureCreate(Creature* creature) override
