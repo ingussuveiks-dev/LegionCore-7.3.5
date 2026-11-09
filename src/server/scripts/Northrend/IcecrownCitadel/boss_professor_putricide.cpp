@@ -1629,7 +1629,7 @@ class spell_stinky_precious_decimate : public SpellScriptLoader
             {
                 if (GetHitUnit()->GetHealthPct() > float(GetEffectValue()))
                 {
-                    uint32 newHealth = GetHitUnit()->GetMaxHealth() * uint32(GetEffectValue()) / 100;
+                    uint64 newHealth = GetHitUnit()->GetMaxHealth() * uint32(GetEffectValue()) / 100;
                     GetHitUnit()->SetHealth(newHealth);
                 }
             }
