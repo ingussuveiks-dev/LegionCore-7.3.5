@@ -1,3 +1,4 @@
+#include "../VantusRuneLifecycle.h"
 #include "the_emerald_nightmare.h"
 #include "QuestData.h"
 
@@ -31,142 +32,36 @@ public:
     {
         PrepareAuraScript(spell_vantus_rune_the_emerald_nightmare_AuraScript);
 
-        uint16 checkOnProc;
-        uint16 checkOnRemove;
+        uint32 checkTimer = 1000;
 
-        bool Load()
+        static std::array<LegionVantus::Encounter, 7> const& Encounters()
         {
-            checkOnProc = 1000;
-            checkOnRemove = 1000;
-            return true;
+            static std::array<LegionVantus::Encounter, 7> const entries = {{
+                { 192761, 208844, DATA_NYTHENDRA },
+                { 192765, 208848, DATA_RENFERAL },
+                { 192762, 208845, DATA_ILGYNOTH },
+                { 191464, 208843, DATA_URSOC },
+                { 192763, 208846, DATA_DRAGON_NIGHTMARE },
+                { 192766, 208849, DATA_CENARIUS },
+                { 192764, 208847, DATA_XAVIUS },
+            }};
+            return entries;
         }
 
-        void OnUpdate(uint32 diff, AuraEffect* aurEff)
+        void OnUpdate(uint32 diff, AuraEffect* /*aurEff*/)
         {
-            Unit* player = GetCaster();
-            if (!player)
-                return;
+            LegionVantus::Update(GetUnitOwner(), GetId(), 1520, diff, checkTimer, Encounters());
+        }
 
-            InstanceScript* instance = player->GetInstanceScript();
-            if (!instance)
-                return;
-
-            if (checkOnProc <= diff)
-            {
-                switch (aurEff->GetSpellInfo()->Id)
-                {
-                case 192761:
-                    if (instance->GetBossState(DATA_NYTHENDRA) == IN_PROGRESS && !player->HasAura(208844))
-                        player->CastSpell(player, 208844, false);
-                    break;
-                case 192765:
-                    if (instance->GetBossState(DATA_RENFERAL) == IN_PROGRESS && !player->HasAura(208848))
-                        player->CastSpell(player, 208848, false);
-                    break;
-                case 192762:
-                    if (instance->GetBossState(DATA_ILGYNOTH) == IN_PROGRESS && !player->HasAura(208845))
-                        player->CastSpell(player, 208852, false);
-                    break;
-                case 191464:
-                    if (instance->GetBossState(DATA_URSOC) == IN_PROGRESS && !player->HasAura(208843))
-                        player->CastSpell(player, 208843, false);
-                    break;
-                case 191463:
-                    if (instance->GetBossState(DATA_DRAGON_NIGHTMARE) == IN_PROGRESS && !player->HasAura(208846))
-                        player->CastSpell(player, 208846, false);
-                    break;
-                case 192766:
-                    if (instance->GetBossState(DATA_CENARIUS) == IN_PROGRESS && !player->HasAura(208849))
-                        player->CastSpell(player, 208849, false);
-                    break;
-                case 192764:
-                    if (instance->GetBossState(DATA_XAVIUS) == IN_PROGRESS && !player->HasAura(208847))
-                        player->CastSpell(player, 208847, false);
-                    break;
-                }
-            }
-            else
-                checkOnProc -= diff;
-
-            if (checkOnRemove <= diff)
-            {
-                if (player->HasAura(208844))
-                {
-                    if (instance->GetBossState(DATA_NYTHENDRA) == DONE || instance->GetBossState(DATA_NYTHENDRA) == NOT_STARTED)
-                    {
-                        player->RemoveAura(208844);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-
-                if (player->HasAura(208848))
-                {
-                    if (instance->GetBossState(DATA_RENFERAL) == DONE || instance->GetBossState(DATA_RENFERAL) == NOT_STARTED)
-                    {
-                        player->RemoveAura(208848);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-
-                if (player->HasAura(208846))
-                {
-                    if (instance->GetBossState(DATA_ILGYNOTH) == DONE || instance->GetBossState(DATA_ILGYNOTH) == NOT_STARTED)
-                    {
-                        player->RemoveAura(208846);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-
-                if (player->HasAura(208843))
-                {
-                    if (instance->GetBossState(DATA_URSOC) == DONE || instance->GetBossState(DATA_URSOC) == NOT_STARTED)
-                    {
-                        player->RemoveAura(208843);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-
-                if (player->HasAura(208856))
-                {
-                    if (instance->GetBossState(DATA_DRAGON_NIGHTMARE) == DONE || instance->GetBossState(DATA_DRAGON_NIGHTMARE) == NOT_STARTED)
-                    {
-                        player->RemoveAura(208856);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-
-                if (player->HasAura(208849))
-                {
-                    if (instance->GetBossState(DATA_CENARIUS) == DONE || instance->GetBossState(DATA_CENARIUS) == NOT_STARTED)
-                    {
-                        player->RemoveAura(208849);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-
-                if (player->HasAura(208847))
-                {
-                    if (instance->GetBossState(DATA_XAVIUS) == DONE || instance->GetBossState(DATA_XAVIUS) == NOT_STARTED)
-                    {
-                        player->RemoveAura(208847);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-            }
-            else
-                checkOnRemove -= diff;
+        void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        {
+            LegionVantus::Cleanup(GetUnitOwner(), GetId(), Encounters());
         }
 
         void Register() override
         {
             OnEffectUpdate += AuraEffectUpdateFn(spell_vantus_rune_the_emerald_nightmare_AuraScript::OnUpdate, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+            AfterEffectRemove += AuraEffectRemoveFn(spell_vantus_rune_the_emerald_nightmare_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
         }
     };
 

@@ -1,3 +1,4 @@
+#include "../VantusRuneLifecycle.h"
 #include "tomb_of_sargeras.h"
 #include "WaypointManager.h"
 #include "QuestData.h"
@@ -295,184 +296,38 @@ public:
     {
         PrepareAuraScript(spell_vantus_rune_tomb_of_sargeras_AuraScript);
 
-        uint16 checkOnProc;
-        uint16 checkOnRemove;
+        uint32 checkTimer = 1000;
 
-        bool Load()
+        static std::array<LegionVantus::Encounter, 9> const& Encounters()
         {
-            checkOnProc = 1000;
-            checkOnRemove = 1000;
-            return true;
+            static std::array<LegionVantus::Encounter, 9> const entries = {{
+                { 237820, 237795, DATA_FALLEN_AVATAR },
+                { 237821, 237796, DATA_GOROTH },
+                { 237822, 237797, DATA_SISTERS_OF_THEMOON },
+                { 237823, 237798, DATA_MAIDEN_OF_VIGILANCE },
+                { 237824, 237799, DATA_HARJATAN },
+                { 237825, 237800, DATA_KILJAEDEN },
+                { 237826, 237801, DATA_MISTRESS_SASSZINE },
+                { 237827, 237802, DATA_THE_DESOLATE_HOST },
+                { 237828, 237803, DATA_DEMONIC_INQUISITION },
+            }};
+            return entries;
         }
 
         void OnUpdate(uint32 diff, AuraEffect* /*aurEff*/)
         {
-            Unit* player = GetCaster();
-            if (!player)
-                return;
+            LegionVantus::Update(GetUnitOwner(), GetId(), 1676, diff, checkTimer, Encounters());
+        }
 
-            InstanceScript* instance = player->GetInstanceScript();
-            if (!instance)
-                return;
-
-            if (checkOnProc <= diff)
-            {
-                if (instance->GetBossState(DATA_FALLEN_AVATAR) == IN_PROGRESS)
-                {
-                    if (!player->HasAura(237795) && player->HasAura(237820))
-                    {
-                        player->CastSpell(player, 237795, false);
-                    }
-                }
-                if (instance->GetBossState(DATA_GOROTH) == IN_PROGRESS)
-                {
-                    if (!player->HasAura(237796) && player->HasAura(237821))
-                    {
-                        player->CastSpell(player, 237796, false);
-                    }
-                }
-                if (instance->GetBossState(DATA_SISTERS_OF_THEMOON) == IN_PROGRESS)
-                {
-                    if (!player->HasAura(237797) && player->HasAura(237822))
-                    {
-                        player->CastSpell(player, 237797, false);
-                    }
-                }
-                if (instance->GetBossState(DATA_MAIDEN_OF_VIGILANCE) == IN_PROGRESS)
-                {
-                    if (!player->HasAura(237798) && player->HasAura(237823))
-                    {
-                        player->CastSpell(player, 237798, false);
-                    }
-                }
-                if (instance->GetBossState(DATA_HARJATAN) == IN_PROGRESS)
-                {
-                    if (!player->HasAura(237799) && player->HasAura(237824))
-                    {
-                        player->CastSpell(player, 237799, false);
-                    }
-                }
-                if (instance->GetBossState(DATA_KILJAEDEN) == IN_PROGRESS)
-                {
-                    if (!player->HasAura(237800) && player->HasAura(237825))
-                    {
-                        player->CastSpell(player, 237800, false);
-                    }
-                }
-                if (instance->GetBossState(DATA_MISTRESS_SASSZINE) == IN_PROGRESS)
-                {
-                    if (!player->HasAura(237801) && player->HasAura(237826))
-                    {
-                        player->CastSpell(player, 237801, false);
-                    }
-                }
-                if (instance->GetBossState(DATA_THE_DESOLATE_HOST) == IN_PROGRESS)
-                {
-                    if (!player->HasAura(237802) && player->HasAura(237827))
-                    {
-                        player->CastSpell(player, 237802, false);
-                    }
-                }
-                if (instance->GetBossState(DATA_DEMONIC_INQUISITION) == IN_PROGRESS)
-                {
-                    if (!player->HasAura(237803) && player->HasAura(237828))
-                    {
-                        player->CastSpell(player, 237803, false);
-                    }
-                }
-            }
-            else checkOnProc -= diff;
-
-            if (checkOnRemove <= diff)
-            {
-                if (player->HasAura(237795) && player->HasAura(237820))
-                {
-                    if (instance->GetBossState(DATA_FALLEN_AVATAR) == DONE || instance->GetBossState(DATA_FALLEN_AVATAR) == NOT_STARTED)
-                    {
-                        player->RemoveAura(237795);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-                if (player->HasAura(237796) && player->HasAura(237821))
-                {
-                    if (instance->GetBossState(DATA_GOROTH) == DONE || instance->GetBossState(DATA_GOROTH) == NOT_STARTED)
-                    {
-                        player->RemoveAura(237796);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-                if (player->HasAura(237797) && player->HasAura(237822))
-                {
-                    if (instance->GetBossState(DATA_SISTERS_OF_THEMOON) == DONE || instance->GetBossState(DATA_SISTERS_OF_THEMOON) == NOT_STARTED)
-                    {
-                        player->RemoveAura(237797);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-                if (player->HasAura(237798) && player->HasAura(237823))
-                {
-                    if (instance->GetBossState(DATA_MAIDEN_OF_VIGILANCE) == DONE || instance->GetBossState(DATA_MAIDEN_OF_VIGILANCE) == NOT_STARTED)
-                    {
-                        player->RemoveAura(237798);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-                if (player->HasAura(237799) && player->HasAura(237824))
-                {
-                    if (instance->GetBossState(DATA_HARJATAN) == DONE || instance->GetBossState(DATA_HARJATAN) == NOT_STARTED)
-                    {
-                        player->RemoveAura(237799);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-                if (player->HasAura(237800) && player->HasAura(237825))
-                {
-                    if (instance->GetBossState(DATA_KILJAEDEN) == DONE || instance->GetBossState(DATA_KILJAEDEN) == NOT_STARTED)
-                    {
-                        player->RemoveAura(237800);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-                if (player->HasAura(237801) && player->HasAura(237826))
-                {
-                    if (instance->GetBossState(DATA_MISTRESS_SASSZINE) == DONE || instance->GetBossState(DATA_MISTRESS_SASSZINE) == NOT_STARTED)
-                    {
-                        player->RemoveAura(237801);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-                if (player->HasAura(237802) && player->HasAura(237827))
-                {
-                    if (instance->GetBossState(DATA_THE_DESOLATE_HOST) == DONE || instance->GetBossState(DATA_THE_DESOLATE_HOST) == NOT_STARTED)
-                    {
-                        player->RemoveAura(237802);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-                if (player->HasAura(237803) && player->HasAura(237828))
-                {
-                    if (instance->GetBossState(DATA_DEMONIC_INQUISITION) == DONE || instance->GetBossState(DATA_DEMONIC_INQUISITION) == NOT_STARTED)
-                    {
-                        player->RemoveAura(237803);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-            }
-            else checkOnRemove -= diff;
+        void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        {
+            LegionVantus::Cleanup(GetUnitOwner(), GetId(), Encounters());
         }
 
         void Register() override
         {
             OnEffectUpdate += AuraEffectUpdateFn(spell_vantus_rune_tomb_of_sargeras_AuraScript::OnUpdate, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+            AfterEffectRemove += AuraEffectRemoveFn(spell_vantus_rune_tomb_of_sargeras_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
         }
     };
 

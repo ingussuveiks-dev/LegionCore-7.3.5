@@ -1,0 +1,115 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Vantus",
+  "scope": {
+    "key": "Vantus",
+    "spell": 0,
+    "title": "Bind Legion Vantus effects to their own encounter lifecycle",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/the_emerald_nightmare.cpp",
+        "classes": [
+          "spell_vantus_rune_the_emerald_nightmare"
+        ]
+      },
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp",
+        "classes": [
+          "spell_vantus_rune_the_nighthold"
+        ]
+      },
+      {
+        "path": "src/server/scripts/Legion/TrialOfValor/trial_of_valor.cpp",
+        "classes": [
+          "spell_vantus_rune_trial_of_valor"
+        ]
+      },
+      {
+        "path": "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.cpp",
+        "classes": [
+          "spell_vantus_rune_tomb_of_sargeras"
+        ]
+      },
+      {
+        "path": "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp",
+        "classes": [
+          "spell_vantus_rune_antorus"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "VantusEN",
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/the_emerald_nightmare.cpp",
+        "cls": "spell_vantus_rune_the_emerald_nightmare_AuraScript"
+      },
+      {
+        "key": "VantusNH",
+        "path": "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp",
+        "cls": "spell_vantus_rune_the_nighthold_AuraScript"
+      },
+      {
+        "key": "VantusTOV",
+        "path": "src/server/scripts/Legion/TrialOfValor/trial_of_valor.cpp",
+        "cls": "spell_vantus_rune_trial_of_valor_AuraScript"
+      },
+      {
+        "key": "VantusTOS",
+        "path": "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.cpp",
+        "cls": "spell_vantus_rune_tomb_of_sargeras_AuraScript"
+      },
+      {
+        "key": "VantusAntorus",
+        "path": "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp",
+        "cls": "spell_vantus_rune_antorus_AuraScript"
+      }
+    ],
+    "added": [
+      "src/server/scripts/Legion/VantusRuneLifecycle.h"
+    ]
+  },
+  "base": "8189c1241",
+  "support_commit": "4420f08d03a2a6f9c2ed2963ad804e597d5e57fc",
+  "cause": "Five raid controllers fail to rearm expired timer (999+1 then retries every1ms on failed cast),leave encounter buffs on wrong map/no instance/FAIL,parent removal,and contain mismatched rune/helper IDs including Ilgynoth/Dragons/Etraeus/Guldan.",
+  "implementation": "One shared helper uses native own40rune/helper/boss pairs and original1s period;rearm before work,apply only own actual IN_PROGRESS encounter in expected map,remove own helper otherwise/parent removal. Preserve original native nontriggered casts and weekly39695 SpellScripts.",
+  "focused_checks": "Five paired ASAN subcases cover all40pairs,failed/native retries/exact deadlines/missing original caster/wrong map/noinstance/parent/unrelated cleanup;native all40pairs in actual5raid maps cast+FAIL/retry/parent cleanup and40wrong-map contexts;PE verifies actual40typed tuples/rearm/map/state/registrations.",
+  "validation": {
+    "source": "15 pinned8189c1241 counterfactual subcases paired with15 repaired MSVC-ASAN subcases. Expected original ASAN faults:Valor,Swift,Zone,Stamina,Threat;other10 baseline subcases assert the original broken behavior. Actual aura getters/update/calc dispatch extracted;Unit/Player/world/cast endpoints modeled. Native int32 final hit rounding retained in Maw model. Not full-core ASAN/client traversal.",
+    "native": "Test-MagnarReadinessNative.ps1 -AdditionalProbe FourthTenSpellNative:complete15classes compiled with actual Release core;50live bindings/15names,40 matching native rune/helper names;87 actual owner/calc/deadline/cleanup contexts. All40 Vantus native casts succeed in actual5raid maps,FAIL cleanup/retry and parent removal pass. Earlier player profile,actualDB-spawn poses,boss states and removed NPC caster are controlled without SetBossState/SaveToDB or character saves;readonly/TEMP DB scope. Positive beam damage/Frog death/Void helper/Maw hit remain source-modeled/client-pending.",
+    "scope": "Test-FourthTenSpellScope.ps1:12whole cpp files equal8189c1241 outside exactly15selected outer classes and shared-helper include. Original five Vantus weekly quest39695 admission/completion unchanged. Vantus helper is the only new product file.",
+    "release": "Original generated scripts.lib and final-link inputs;staged then canonical verify_fourth_ten_spell_repairs_release.py checks registered native callbacks/40compiled typed rune-helper-boss pairs/map/state/rearm/cleanup/stack latch/calculation/distance plus prior37spell paths. Mandatory canonical Scepter and retained CommandersValor pass.",
+    "runtime": "Canonical owned26172 fresh ready,graceful server shutdown0,exit0,gone,stderr empty;no user process stopped. Configuration/cert/DLL preserved. Every test/build/link/start uses canonical+own crash/log baselines and after-exit appended DBErrors/server warnings/errors/assertions review. Final runs add none. Mixed7111-byte DBErrors stays OPEN/unchanged/untruncated."
+  },
+  "canonical_world_sha256": "63424b82d89269453abb259daf585d8ad003df9b6dd09723cb7bbecbb68332dd",
+  "tested_class_sha256": {
+    "src/server/scripts/Legion/TheEmeraldNightmare/the_emerald_nightmare.cpp": {
+      "spell_vantus_rune_the_emerald_nightmare": "0569199636c528f17b487deb3ca932671b312cb8194e3e98de0aaf511ade935b"
+    },
+    "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp": {
+      "spell_vantus_rune_the_nighthold": "4bd85a2c90447d47642b9b919df0846299b20f8005afd64d492c55f36456fa28"
+    },
+    "src/server/scripts/Legion/TrialOfValor/trial_of_valor.cpp": {
+      "spell_vantus_rune_trial_of_valor": "736df0565ce8b799e525ec7c3444c5562e111e1dfdf2c45fcf71d42143a47548"
+    },
+    "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.cpp": {
+      "spell_vantus_rune_tomb_of_sargeras": "5b845057516ac9e3c63dfc57bba56995c384249687c1492e6c7e94e03b2fb96b"
+    },
+    "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp": {
+      "spell_vantus_rune_antorus": "ed5406ae91868e2588ae35a12debe505768a378215f70fe65028fdf3080abbe6"
+    }
+  },
+  "client_pending": "Actual rune item use/weekly gating,real encounter transitions/wipes/reset/death/logout/reentry,both factions/groups/pets,all40encounters,visual/stat effects. Native state controlled,not real boss traversal.",
+  "aura_contract": "Self-cast Aura::GetCaster resolves its owner directly. Missing-caster tests use supported distinct NPC caster/recipient and remove the NPC. These controlled faults are not claims of observed ordinary self-use production crashes.",
+  "progression": "No SQL,HP threshold,kill timer,character reset,item/quest/progression grant,new class/group gate or altered spell credit. Native caster/player/pet/guardian/group rules retained;actual full combat alternatives remain client checks.",
+  "pending": [
+    "Authentic living Lady104856/spawn362095 activation/surrender/accepted209552-conversation1906/upperGrash362092 finisher/210247 cleanup remains OPEN. No invented HP threshold or killing timer.",
+    "Shared101430/103151 LINK2,Slaghammer crash/cache,mixed DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run;support-only includes preserve its cache.",
+    "Pre-existing C4305 at boss_tirathon_saltheril.cpp:466 is outside selected beam class and unchanged from8189c1241. Five-argument MoveJump chooses Position overload via implicit float-to-Position,so25 narrows to hasOrientation=true;trajectory/arguments need a separate authentic movement repair. It remains explicitly OPEN and is not hidden or counted as repaired. Other12 C5055 warnings are unchanged enum/float expressions outside selected edits."
+  ],
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/fourth-ten-spell-repairs-2026-11-09"
+  },
+  "batch_audit": "docs/audits/fourth-ten-spell-repairs-2026-11-09.json"
+}

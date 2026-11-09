@@ -1,3 +1,4 @@
+#include "../VantusRuneLifecycle.h"
 #include "trial_of_valor.h"
 #include "QuestData.h"
 #include "GossipDef.h"
@@ -125,86 +126,32 @@ public:
     {
         PrepareAuraScript(spell_vantus_rune_trial_of_valor_AuraScript);
 
-        uint16 checkOnProc;
-        uint16 checkOnRemove;
+        uint32 checkTimer = 1000;
 
-        bool Load()
+        static std::array<LegionVantus::Encounter, 3> const& Encounters()
         {
-            checkOnProc = 1000;
-            checkOnRemove = 1000;
-            return true;
+            static std::array<LegionVantus::Encounter, 3> const entries = {{
+                { 229175, 229187, Data::BossIDs::GarmID },
+                { 229174, 229186, Data::BossIDs::OdynID },
+                { 229176, 229188, Data::BossIDs::HelyaID },
+            }};
+            return entries;
         }
 
-        void OnUpdate(uint32 diff, AuraEffect* aurEff)
+        void OnUpdate(uint32 diff, AuraEffect* /*aurEff*/)
         {
-            Unit* player = GetCaster();
-            if (!player)
-                return;
+            LegionVantus::Update(GetUnitOwner(), GetId(), 1648, diff, checkTimer, Encounters());
+        }
 
-            InstanceScript* instance = player->GetInstanceScript();
-            if (!instance)
-                return;
-
-            if (checkOnProc <= diff)
-            {
-                switch (aurEff->GetSpellInfo()->Id)
-                {
-                case 229175:
-                    if (instance->GetBossState(Data::BossIDs::GarmID) == IN_PROGRESS && !player->HasAura(229187))
-                        player->CastSpell(player, 229187, false);
-                    break;
-                case 229174:
-                    if (instance->GetBossState(Data::BossIDs::OdynID) == IN_PROGRESS && !player->HasAura(229186))
-                        player->CastSpell(player, 229186, false);
-                    break;
-                case 229176:
-                    if (instance->GetBossState(Data::BossIDs::HelyaID) == IN_PROGRESS && !player->HasAura(229188))
-                        player->CastSpell(player, 229188, false);
-                    break;
-                }
-            }
-            else
-                checkOnProc -= diff;
-
-            if (checkOnRemove <= diff)
-            {
-                if (player->HasAura(229187))
-                {
-                    if (instance->GetBossState(Data::BossIDs::GarmID) == DONE || instance->GetBossState(Data::BossIDs::GarmID) == NOT_STARTED)
-                    {
-                        player->RemoveAura(229187);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-
-                if (player->HasAura(229186))
-                {
-                    if (instance->GetBossState(Data::BossIDs::OdynID) == DONE || instance->GetBossState(Data::BossIDs::OdynID) == NOT_STARTED)
-                    {
-                        player->RemoveAura(229186);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-
-                if (player->HasAura(229188))
-                {
-                    if (instance->GetBossState(Data::BossIDs::HelyaID) == DONE || instance->GetBossState(Data::BossIDs::HelyaID) == NOT_STARTED)
-                    {
-                        player->RemoveAura(229188);
-                        checkOnProc = 1000;
-                        checkOnRemove = 1000;
-                    }
-                }
-            }
-            else
-                checkOnRemove -= diff;
+        void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        {
+            LegionVantus::Cleanup(GetUnitOwner(), GetId(), Encounters());
         }
 
         void Register() override
         {
             OnEffectUpdate += AuraEffectUpdateFn(spell_vantus_rune_trial_of_valor_AuraScript::OnUpdate, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+            AfterEffectRemove += AuraEffectRemoveFn(spell_vantus_rune_trial_of_valor_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
