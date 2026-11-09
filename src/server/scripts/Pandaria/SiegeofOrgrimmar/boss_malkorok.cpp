@@ -928,24 +928,24 @@ public:
             {
                 if (AuraEffect* aurEffb = GetTarget()->GetAura(SPELL_ANCIENT_BARRIER)->GetEffect(0))
                 {
-                    int32 maxbarrier = int32(GetTarget()->GetMaxHealth());
-                    int32 lastbarrier = aurEffb->GetAmount();
-                    int32 newbarrier = absorbAmount + lastbarrier;
+                    float maxbarrier = float(GetTarget()->GetMaxHealth());
+                    float lastbarrier = aurEffb->GetAmount();
+                    float newbarrier = absorbAmount + lastbarrier;
                     uint32 buff = 0;
                     if (newbarrier >= maxbarrier)
                     {
                         newbarrier = maxbarrier;
                         buff = ancientbarrierbar[2];
                     }
-                    else if (newbarrier < maxbarrier && newbarrier > int32(GetTarget()->CountPctFromMaxHealth(30)))
+                    else if (newbarrier < maxbarrier && newbarrier > GetTarget()->CountPctFromMaxHealth(30))
                         buff = ancientbarrierbar[1];
-                    else if (newbarrier <= int32(GetTarget()->CountPctFromMaxHealth(30)))
+                    else if (newbarrier <= GetTarget()->CountPctFromMaxHealth(30))
                         buff = ancientbarrierbar[0];
 
                     for (uint8 n = 0; n < 3; n++)
                         GetTarget()->RemoveAurasDueToSpell(ancientbarrierbar[n]);
                     aurEffb->SetAmount(newbarrier);
-                    GetTarget()->CastCustomSpell(buff, SPELLVALUE_BASE_POINT0, newbarrier);        
+                    GetTarget()->CastCustomSpell(GetTarget(), buff, &newbarrier, nullptr, nullptr, true);
                 }
             }
         }
