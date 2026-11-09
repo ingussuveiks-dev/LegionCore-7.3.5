@@ -197,6 +197,7 @@ struct boss_cenarius : public BossAI
         powerTimer = 0;
         powerTick = 1;
         waveCount = 0;
+        me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetPower(POWER_ENERGY, 90);
         DoCast(me, SPELL_NIGHTMARE_ENERGY, true);
