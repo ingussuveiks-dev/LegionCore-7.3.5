@@ -27,10 +27,53 @@
     "src/server/game/Spells/Spell.cpp"
   ],
   "patch_sha256": "e0b745d694d4533186e0cb415ab2187a1456e03f423807032cf71587f01f48f8",
-  "canonical_world_sha256": "687321401905e9df2b01f19cb6cc9d4c8ea6bd0554846e6e88b639215fa96e67",
+  "canonical_world_sha256": "0abb6ede931fddf29bca9bfcc7df56d0c778c3cf60fabcb6ad489056743d1d92",
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE",
-    "archive": "build-extractors/bin/Release/fixed/sixth-ten-repairs-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/sixth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "1b94898d7af84dff420068c90ca1f11ca0137ca5cffaf96d500b5e9bd9bd383a",
+    "original_files": 1372,
+    "completion_manifest_sha256": "cb09dd7df0218b17562abc9703ca0cc7ed5adddb2922a901221e5469d4052c37",
+    "completion_files": 1593,
+    "removed_files": 319,
+    "logical_removed_bytes": 2491886220,
+    "deletion_manifests": [
+      {
+        "path": ".codex/sixth-ten-fixes-2026-11-09/cleanup-deleted.json",
+        "sha256": "1c3680de0e6cb641d3df35e76d1a6275023a0f2b2871cae25c99d7c3bab4b49e"
+      },
+      {
+        "path": ".codex/sixth-ten-fixes-2026-11-09/extra-cleanup-deleted.json",
+        "sha256": "014a3b99765d5fbd67bc16739bbbb70fe94159c98eefb90b4c55882933877ddd"
+      }
+    ],
+    "retained_rollbacks": [
+      ".codex/release-before-sixth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-fifth-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fifth63424b82 generation retired after newest pre-sixthcf7855ad rollback verification",
+    "logs_truncated": 1,
+    "resolved_own_logs": [
+      {
+        "FixCommit": "9b122b39b4481594ca4bcf50ee833e81034f283b",
+        "ArchivedSHA256": "26D0BF6148F109BA5CF6E35F3505BD2530320443AC462358BB716035D068947B",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\sixthtennative\\20261109-153400-929\\logs\\DBErrors.log",
+        "Cause": "Correct readonly core rejected TEMP DDL/DML;separate TEMP-only connection now passes paired native+SQL QA"
+      }
+    ],
+    "preserved": "Canonical EXE/MAP/config/cert/DLL/data,original required game/scripts libraries/main incremental build cache,reusable tests,personal/character/database backups,security and OPEN Lady/LINK2/Slaghammer evidence. Private test configs deleted,not archived. Only wholly reviewed task-owned readonly-TEMP failure DBErrors cleared after original-byte/hash archive;canonical mixed log unchanged.",
+    "postcheck": "No owned/user world/bnet process,canonical active Crashes empty;final Release/config/library/mixed-log hashes retained.",
+    "final_review_evidence": {
+      "snapshots": 412,
+      "manifest": "build-extractors/bin/Release/fixed/sixth-ten-repairs-2026-11-09/final-review/manifest.json",
+      "manifest_sha256": "35ff8dfbd4a13d2df7f738e86a2f5e6e1d51f848b29356324b3f03ebc83d30fd",
+      "scope": "Completed initial+extra cleanup/final-review diagnostics and task scripts;source/destination/source hashes verified at snapshot time;overlap with earlier originals deliberate."
+    }
   },
-  "batch_audit": "docs/audits/sixth-ten-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/sixth-ten-repairs-2026-11-09.json",
+  "fix_commit": "a77f209fada44f8c5d2db6d4b00183223d80e1cb",
+  "followup_commits": [],
+  "final_scope_metadata_sha256": "66bf3f9caf365054f1120b2e4a8708cc50fde3275e743c3c58fda1e24e5728fb"
 }

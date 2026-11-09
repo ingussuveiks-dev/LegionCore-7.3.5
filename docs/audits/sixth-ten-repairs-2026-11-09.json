@@ -1,0 +1,205 @@
+{
+  "date": "2026-11-09",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "efd3899744e9312a36ef8f3e66c536c64243e8b9",
+  "support_commit": "9fdeddda617fab913e0b68ed230c813daf1c2602",
+  "implementation_head": "2b7f80874230934323ac885e989dc8dd27d1ba08",
+  "fixes": [
+    {
+      "key": "Artifact",
+      "title": "Preserve the full artifact AP balance during scripted tier unlock",
+      "paths": [
+        "src/server/scripts/Spells/spell_quest.cpp"
+      ],
+      "audit": "docs/audits/artifact-tier-ap-width-2026-11-09.json",
+      "commit": "6d99d8757e1bfe3ef8a7cef40dfbc9d6d2be9f99",
+      "followup_commits": [
+        "2b7f80874230934323ac885e989dc8dd27d1ba08"
+      ]
+    },
+    {
+      "key": "Chain",
+      "title": "Compare native 64 bit health deficits when selecting Chain Heal jumps",
+      "paths": [
+        "src/server/game/Spells/Spell.cpp"
+      ],
+      "audit": "docs/audits/chain-heal-health-deficit-width-2026-11-09.json",
+      "commit": "a77f209fada44f8c5d2db6d4b00183223d80e1cb"
+    },
+    {
+      "key": "Regen",
+      "title": "Keep regeneration health and its native delta in 64 bits",
+      "paths": [
+        "src/server/game/Entities/Player/Player.cpp"
+      ],
+      "audit": "docs/audits/player-regeneration-health-width-2026-11-09.json",
+      "commit": "0cb3580edf48d4224ae70c4331cc6f442e5d3061"
+    },
+    {
+      "key": "Resurrection",
+      "title": "Restore resurrection health without narrowing it to 32 bits",
+      "paths": [
+        "src/server/game/Entities/Player/Player.cpp"
+      ],
+      "audit": "docs/audits/resurrection-health-width-2026-11-09.json",
+      "commit": "0d4fead117073fd02071dc22ee90d9c411e9ad34"
+    },
+    {
+      "key": "Ancestral",
+      "title": "Avoid narrowing and overflow in the Ancestral Protection damage limit",
+      "paths": [
+        "src/server/scripts/Spells/spell_shaman.cpp"
+      ],
+      "audit": "docs/audits/ancestral-protection-health-limit-2026-11-09.json",
+      "commit": "fb61e90f47ed28ca9e8d1ee14c7427a08d9bcb3b"
+    },
+    {
+      "key": "Betrug",
+      "title": "Require a valid accepted Betrug anchor before moving Mighty Smash players",
+      "paths": [
+        "src/server/scripts/Legion/VioletHoldLegion/boss_fel_lord_betrug.cpp"
+      ],
+      "audit": "docs/audits/betrug-smash-pad-admission-2026-11-09.json",
+      "commit": "20866bba4155d9039dd26e28ccc98254375a0345"
+    },
+    {
+      "key": "Evade",
+      "title": "Complete Orinoko companion cleanup and player owner quest credit",
+      "paths": [
+        "src/server/scripts/Northrend/zone_zuldrak.cpp",
+        "src/server/game/AI/CreatureAI.cpp"
+      ],
+      "audit": "docs/audits/orinoko-evade-companion-lifecycle-2026-11-09.json",
+      "commit": "86c03d57d99d4196e0edb6e80c7ed79f9354339a"
+    },
+    {
+      "key": "DumpIDs",
+      "title": "Preserve full GUID widths across character dump collection and remapping",
+      "paths": [
+        "src/server/game/Tools/PlayerDump.h",
+        "src/server/game/Tools/PlayerDump.cpp"
+      ],
+      "audit": "docs/audits/player-dump-64bit-identifiers-2026-11-09.json",
+      "commit": "106897cfcdb8f4c479404d17acf19e92e54f370e"
+    },
+    {
+      "key": "DumpPets",
+      "title": "Keep imported pets, declined owners and child rows on one valid PetNumber map",
+      "paths": [
+        "src/server/game/Tools/PlayerDump.h",
+        "src/server/game/Tools/PlayerDump.cpp"
+      ],
+      "audit": "docs/audits/player-dump-pet-reference-mapping-2026-11-09.json",
+      "commit": "be939b1e65e3c6a4cb5b7a633e9081fc820b684c"
+    },
+    {
+      "key": "DumpParse",
+      "title": "Parse escaped dump fields without losing columns or wrapping a missing VALUES prefix",
+      "paths": [
+        "src/server/game/Tools/PlayerDump.cpp"
+      ],
+      "audit": "docs/audits/player-dump-escaped-values-parser-2026-11-09.json",
+      "commit": "9b122b39b4481594ca4bcf50ee833e81034f283b"
+    }
+  ],
+  "counting": "Exactly10 distinct problems:5 health/AP arithmetic paths,Betrug pad admission,Orinoko/base evade lifecycle with owner credit,and3 dump defects(ID width,pet mapping,escaped parsing).9production files.10initial focused implementation commits plus one completion commit for the same Artifact repair after correcting the XP fixture type;support/test/archive/handoff commits do not count. No eleventh problem started.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "0abb6ede931fddf29bca9bfcc7df56d0c778c3cf60fabcb6ad489056743d1d92",
+    "bnet_sha256": "a36f1544a7fc57624ba69303fc45bd46c704009baa71eef095a76462a2847484",
+    "rollback": ".codex/release-before-sixth-ten-fixes-2026-11-09",
+    "owned_startup": "Final owned PID6624 fresh ready,server shutdown0,exit0,gone,stderr empty;earlier owned20992 also clean. Final start repeated after Artifact precision completion. No user process stopped;protected config/cert/DLL hashes retained."
+  },
+  "validation": {
+    "source": "Test-SixthTenRepairs.ps1:10 pinned efd389974 counterfactuals paired with10 repaired extracted complete methods/classes or exact changed native branches under MSVC-ASAN. External world/cast/group endpoints modeled. Evade rerun after lifetime expansion;existing10-context EventProcessorAbort ASAN passes. Not full-core ASAN/client traversal. Final review corrected artifact fixture XP type from uint64 to matching GameTables.h float. Original GetUInt32 truncation and separate GetUInt64+float-add precision-loss counterfactuals paired with final float-typed full callback pass;initial integer-typed fixture claim superseded. Other9cases unchanged.",
+    "native": "Test-MagnarReadinessNative -AdditionalProbe SixthTenNative:immutable original Release library inputs;real Item AP field-width,Field64 collector/remap;actual Player regen,exact resurrection restore block,Chain selection on actual Players;real207498 Absorb dispatcher;full Orinoko AI,actual Whisker TempSummon deletion on evade/death and active55929 reference -> abort -> normal Unit release -> event deletion;real202328 missing-anchor refusal. Synthetic map/profiles/IDs,earlier state controlled. Database stays readonly,no character save/import.",
+    "sql": "Native generated four synthetic INSERT statements roundtrip in faithful minimal BIGINT/INT UNSIGNED/name TEMP tables. Separate SELECT+CREATE TEMP-only reader,denied persistent DELETE WHERE0 canary,user dropped finally. Item1099511627993,pet2147483648,owner1099511627793,escaped O'Brien and child link read back correctly. No actual character backup import or persistent DML.",
+    "release": "Original game.lib/scripts.lib final-link paths rebuilt;staged and canonical verify_sixth_ten_release.py checks selected10 paths plus prior57. Unused memory LoadDump overload compiles in library and is source-tested;linker omits it from EXE. Canonical Scepter -VerifyReleaseBinary,ArtifactTierProgression -VerifyReleaseBinary and PetLoadSelection pass. Final AP callback disassembly converts float cost to uint64 and adds integer r9,rax;canonical final PE and retained tests/start repeated after completion.",
+    "scope": "verify_sixth_ten_scope.py reverses metadata edits in9production files to efd389974. Orinoko includes shared CreatureAI deferred spell-event deletion and owner/group credit. Unrelated gates/timers/progression/schema unchanged;no migration.",
+    "runtime": "Canonical+own pre/post crashes/log sizes/timestamps and exit/stdout/stderr/newDBErrors/server warning/error/assertion review for tests/build/link/start. Final tests clean. Owned canonical startup ready/graceful shutdown0/exit0/gone;no user process stopped;configs/certs/DLLs retained."
+  },
+  "data": "Matching26972 DB2/native catalog spell234684/207498/202328 and bindings;native world templates30020/30113/92879/102446. Character schema-only readback BIGINTguid/item/owner,INTunsigned PetNumber. No personal rows exported. Fixes follow local typed health/ID/event contracts;newer Trinity behavior not transplanted.",
+  "artifact_precision_completion": "Matching GtArtifactLevelXPEntry::XP is float. Convert cost to uint64 before adding so free_xp never converts to float.2^40+17 plus100 stays2^40+117;intermediate GetUInt64+float sum rounded to2^40. Part of selected Artifact repair,not an eleventh problem.",
+  "diagnostics": {
+    "final": "Final source/native/SQL/build/link/staged+canonical PE/retained/runtime tests pass to stated scopes. Canonical+own pre/post crashes/log lengths/timestamps,exit/stdout/stderr,newDBErrors/server warning/error/assertion review retained. Active canonical Crashes empty;no server remains.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated/outside fixed"
+    },
+    "compiler": {
+      "warnings": 35,
+      "types": {
+        "C4018": 14,
+        "C5055": 16,
+        "C4146": 2,
+        "C4309": 3
+      },
+      "status": "All35 warned source expressions are present verbatim in efd389974;other historical diagnostics remain visible,not certified fixed. Test-only modeled unused-parameter/local warnings retained in raw output. No checks/logs disabled.",
+      "evidence": ".codex/sixth-ten-fixes-2026-11-09/compiler-warnings.json",
+      "sha256": "0a07ebe8692235b9456112a1d6f20278e7c3ed41b9d69ecac5e96cfb296fff3b"
+    },
+    "development": [
+      "Readonly native core correctly rejected TEMP DDL/DML(errno1792);subsequent missingtable SELECT1146 led to ABORTED/c0000005 capture,without a new crash file. Repaired test architecture keeps native core readonly and executes generated SQL through separate least-privilege TEMP-only reader with denied persistent-DML canary and finally DROP USER. Final native+SQL passes pair the original failed ordinary run;one own wholly reviewed DBErrors archived/hash-verified then cleared. Canonical mixed log unchanged.",
+      "Native actual Orinoko evade emitted non-deletable55929 leak diagnostic. Native investigation found CreatureAI::EnterEvadeMode force-deleted still-referenced spell events. Selected lifecycle repair now aborts nonforcibly;existing EventProcessor retains aborted event until normal Unit::_UpdateSpells releases the reference. Final real activeImpale->evade->release and native cleanup have no diagnostics;EventProcessor10-context ASAN passes. Earlier fixture-only CastStop cleanup did not repair it and was not presented as passing.",
+      "Initial native compile lacked the extracted quest12935 constant;corrected producer imports the actual constant. Native assertion expecting every event empty was too broad because unrelated scheduled events remain;final assertion requires the actual current-spell reference release and final diagnostics/destruction. No product check bypassed.",
+      "Dump file and memory switch branches were both traced;file error path retains fclose rollback. Complete uint64 flow includes API/prepared bindings/format buffers/collector/seed. Matching schema read only;no real backup exported/imported. Orphan pet child/declined references refuse missing main pet instead of fabricating progression/state.",
+      "Final AP review found fixture XP uint64 differed from matching native GameTables float. Corrected fixture,added separate GetUInt64+float-add precision-loss counterfactual,and converted table cost before integer addition. Final full callback preserves2^40+17+100. Rebuilt scripts/original final link,repeated native,staged+canonical PE,Scepter/ArtifactTier/PetLoad and clean owned startup. Initial integer-typed quantitative fixture claim superseded;native Item field-width control remains valid. Same selected Artifact repair,one focused completion commit.",
+      "Initial scouting creature_text query used entry instead of actual CreatureID;corrected schema-only query found no30020 speech rows. This authentic-data gap remains OPEN. No guessed speech,HP threshold,kill timer,credit grant or missing-table workaround was introduced.",
+      "Patch staging first failed on Windows line endings before product staging;regenerated LF patches and checked exact staged path sets. Ten implementation commits individually pushed,one Artifact completion separately pushed;runtime/config/dumps/character data/original user attachment excluded. Initial compile/model/PE expectation failures retained with final passing scopes."
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/sixth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "1b94898d7af84dff420068c90ca1f11ca0137ca5cffaf96d500b5e9bd9bd383a",
+    "original_files": 1372,
+    "completion_manifest_sha256": "cb09dd7df0218b17562abc9703ca0cc7ed5adddb2922a901221e5469d4052c37",
+    "completion_files": 1593,
+    "removed_files": 319,
+    "logical_removed_bytes": 2491886220,
+    "deletion_manifests": [
+      {
+        "path": ".codex/sixth-ten-fixes-2026-11-09/cleanup-deleted.json",
+        "sha256": "1c3680de0e6cb641d3df35e76d1a6275023a0f2b2871cae25c99d7c3bab4b49e"
+      },
+      {
+        "path": ".codex/sixth-ten-fixes-2026-11-09/extra-cleanup-deleted.json",
+        "sha256": "014a3b99765d5fbd67bc16739bbbb70fe94159c98eefb90b4c55882933877ddd"
+      }
+    ],
+    "retained_rollbacks": [
+      ".codex/release-before-sixth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-fifth-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fifth63424b82 generation retired after newest pre-sixthcf7855ad rollback verification",
+    "logs_truncated": 1,
+    "resolved_own_logs": [
+      {
+        "FixCommit": "9b122b39b4481594ca4bcf50ee833e81034f283b",
+        "ArchivedSHA256": "26D0BF6148F109BA5CF6E35F3505BD2530320443AC462358BB716035D068947B",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\sixthtennative\\20261109-153400-929\\logs\\DBErrors.log",
+        "Cause": "Correct readonly core rejected TEMP DDL/DML;separate TEMP-only connection now passes paired native+SQL QA"
+      }
+    ],
+    "preserved": "Canonical EXE/MAP/config/cert/DLL/data,original required game/scripts libraries/main incremental build cache,reusable tests,personal/character/database backups,security and OPEN Lady/LINK2/Slaghammer evidence. Private test configs deleted,not archived. Only wholly reviewed task-owned readonly-TEMP failure DBErrors cleared after original-byte/hash archive;canonical mixed log unchanged.",
+    "postcheck": "No owned/user world/bnet process,canonical active Crashes empty;final Release/config/library/mixed-log hashes retained.",
+    "final_review_evidence": {
+      "snapshots": 412,
+      "manifest": "build-extractors/bin/Release/fixed/sixth-ten-repairs-2026-11-09/final-review/manifest.json",
+      "manifest_sha256": "35ff8dfbd4a13d2df7f738e86a2f5e6e1d51f848b29356324b3f03ebc83d30fd",
+      "scope": "Completed initial+extra cleanup/final-review diagnostics and task scripts;source/destination/source hashes verified at snapshot time;overlap with earlier originals deliberate."
+    }
+  },
+  "pending": [
+    "Authentic living Lady activation/surrender/conversation1906/Grash finisher/cleanup remains OPEN;no HP threshold or kill timer invented.",
+    "Shared LINK2/Slaghammer crash/cache,mixed canonical7111-byte DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run,its cache preserved.",
+    "Orinoko SAY_CALL_FOR_HELP=-1571032 narrows into uint8;actual matching creature_text has no CreatureID30020 rows. Missing speech remains OPEN;no invented text/group. LowHP speech path was not invoked in fixture.",
+    "Actual client/combat/visual/audio/equipment/group/pet/guardian/retry/reentry/full-instance traversal remains pending. Controlled native/source endpoints do not certify all alternate gameplay paths.",
+    "35compiler warning occurrences reference source expressions present verbatim in efd389974;inventory retained. Historical warnings stay visible,not certified repaired."
+  ],
+  "stop": "Exactly10 distinct product repairs implemented,tested to stated scopes,deployed,committed/pushed and cleaned. Stop after final audit/handoff push;client/whole-chain checks remain pending."
+}
