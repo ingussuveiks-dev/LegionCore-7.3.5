@@ -1,0 +1,209 @@
+{
+  "date": "2026-11-09",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "ff8303b4081c509390d8bd7ec6cc55e6a49d5630",
+  "support_commit": "3feeb3797c6e8dc2bbbeb5950c26f0ea2ee69656",
+  "implementation_head": "062203107207125482793a7536fc22701274e291",
+  "fixes": [
+    {
+      "key": "Odyn",
+      "title": "Select Odyn energy before resetting the encounter meter",
+      "paths": [
+        "src/server/scripts/Legion/TrialOfValor/boss_tov_odyn.cpp"
+      ],
+      "audit": "docs/audits/odyn-encounter-energy-initialization-2026-11-09.json",
+      "commit": "c9a2525a54c85884b74e86064dd786467afe0a46"
+    },
+    {
+      "key": "Cenarius",
+      "title": "Initialize Cenarius authored 90 energy checkpoint",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp"
+      ],
+      "audit": "docs/audits/cenarius-boss-energy-initialization-2026-11-09.json",
+      "commit": "b8a2dfe434a06a97e5fb85603a975c1d9d7f0dfc"
+    },
+    {
+      "key": "Nightmare",
+      "title": "Initialize corrupted Cenarius forces on their energy resource",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp"
+      ],
+      "audit": "docs/audits/cenarius-nightmare-forces-energy-initialization-2026-11-09.json",
+      "commit": "b0dce54548e49d388330dcea28e81eb60911352d"
+    },
+    {
+      "key": "Allies",
+      "title": "Initialize cleansed Cenarius allies on their energy resource",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_cenarius.cpp"
+      ],
+      "audit": "docs/audits/cenarius-allies-energy-initialization-2026-11-09.json",
+      "commit": "87009dcefd68479d28d64ae179e12c1731b20d2a"
+    },
+    {
+      "key": "Ysondre",
+      "title": "Initialize Ysondre energy before the native empty-energy spell",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_dragons_of_nightmare.cpp"
+      ],
+      "audit": "docs/audits/ysondre-primary-energy-reset-2026-11-09.json",
+      "commit": "ecb9e2f4a51c1dcbccb523e2c70a2e6a45916aa2"
+    },
+    {
+      "key": "Dragons",
+      "title": "Initialize nightmare helper dragon energy before reset casts",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_dragons_of_nightmare.cpp"
+      ],
+      "audit": "docs/audits/nightmare-helper-dragon-energy-reset-2026-11-09.json",
+      "commit": "876f4da9f1570b9726074a0145f536d466dafdc7"
+    },
+    {
+      "key": "ShaFear",
+      "title": "Select Sha of Fear energy for native meter reads and regeneration",
+      "paths": [
+        "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_sha_of_fear.cpp"
+      ],
+      "audit": "docs/audits/sha-of-fear-energy-admission-2026-11-09.json",
+      "commit": "35569da69f37a7fd17471a9a5f9060319029bd0e"
+    },
+    {
+      "key": "Pol",
+      "title": "Initialize Pol native energy and authored starting value",
+      "paths": [
+        "src/server/scripts/Draenor/Highmaul/boss_twin_ogron.cpp"
+      ],
+      "audit": "docs/audits/twin-ogron-pol-energy-initialization-2026-11-09.json",
+      "commit": "3a781ca347005327d73780994a17139ecfd4a379"
+    },
+    {
+      "key": "Phemos",
+      "title": "Initialize Phemos native energy and authored starting value",
+      "paths": [
+        "src/server/scripts/Draenor/Highmaul/boss_twin_ogron.cpp"
+      ],
+      "audit": "docs/audits/twin-ogron-phemos-energy-initialization-2026-11-09.json",
+      "commit": "dfce7fe44c5e1d26b87a82c6fbfd120ba9c9fdc0"
+    },
+    {
+      "key": "Announcer",
+      "title": "Recover the champion intro after participants leave or disconnect",
+      "paths": [
+        "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.cpp"
+      ],
+      "audit": "docs/audits/champion-announcer-participant-roster-recovery-2026-11-09.json",
+      "commit": "062203107207125482793a7536fc22701274e291"
+    }
+  ],
+  "counting": "Exactly ten scoped repairs in six production files: nine independently authored resource controllers/groups (15 actual native NPC contexts), plus one champion participant-roster lifecycle. The nine controllers share the same native power-type contract; these are not ten unrelated root causes. Three corrupted forces, three cleansed allies and three helper dragons each count as one group repair. Primary Ysondre and helper dragons have separate reset controllers. Support/archive/handoff are not additional product fixes.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "ee6d4b2a85fc51f78b94f756480d172757ce6c991a820420f911fc74106c99a8",
+    "bnet_sha256": "3b6a3320a98c39625031a36a37959309484d313d9f2b94373ce91f9526879069",
+    "rollback": ".codex/release-before-eleventh-ten-fixes-2026-11-09",
+    "startup": "Owned24600 fresh ready/shutdown0/exit0/gone;stderr empty;protected hashes unchanged;no user process stopped."
+  },
+  "validation": {
+    "source": "Test-EleventhTenRepairs: 10 pinned ff8303b40 counterfactuals paired with 10 repaired MSVC AddressSanitizer cases. Resource statements are extracted from the actual callbacks for 15 NPC contexts. Tests preserve original starting values, retry initialization and rejected dragon reset casts. Announcer executes the complete selected event-2 case and original player-announcement branch with controlled player/map/speech endpoints. Baseline PASS means the test asserted the known bad state; it is not an ordinary successful gameplay run.",
+    "native": "EleventhTenNative uses actual Creature::Create templates, Unit resource methods, Unit::GetPlayer native player lookup and real Player objects. All 15 selected NPC bindings match, VehicleId=0, and matching pet_stats has no overriding initializer. Original source leaves ENERGY unaddressable; repaired source yields max100 and authored starts, handles reset/re-entry and native resource updates. Original stale roster stalls with a live map participant; repaired code removes the missing GUID and announces the actual roster player once. Real concrete encounter AIs, full combat, voice selection and client traversal are not exercised. No character save/import.",
+    "release": "Original game/scripts library paths and staged final link retained. verify_eleventh_ten_release checks 13 initialization branches in 11 named callbacks, nine controller repairs, four explicit dragon zero resets and actual roster lookup/prune/retry/8-second event handling. Compiler may fold equivalent helper bodies. Prior107 selected paths remain checked. Final canonical Scepter, ArtifactTierProgression, ScenarioResumeASAN and owned server24600 ready/shutdown0/exit0/gone pass; stderr empty and protected runtime hashes unchanged.",
+    "diagnostics": "Every automated/native/source/build/link/start has canonical and own pre/post crash/log length/time snapshots, exit/stdout/stderr review and appended DBErrors/server diagnostics checked. Final checks are clean. No new crash reports or unexplained runtime diagnostics. Two compiler warnings (C4305,C4858) match baseline source expressions and remain visible. Native source before/after controls are intentional counterfactuals, not hidden failures.",
+    "scope": "Exactly10 scoped repairs: nine explicit resource controllers/groups and one participant-roster lifecycle, in six production files. Metadata reversal reproduces ff8303b40. Original combat/phase/instance gates, amounts, timers, NPC ownership, group/pet/guardian credit and cleanup are retained. Resource initialization grants no progress. No global class-to-power policy, SQL migration, character rewrite or invented HP threshold/kill timer."
+  },
+  "diagnostics": {
+    "final": "Final20 paired source-ASAN controls,15 actual native nonvehicle resource contexts plus real Player roster, staged/canonical ten new and107 prior selected PE paths,Scepter/ArtifactTier/ScenarioResumeASAN and final owned canonical startup pass to stated scopes. Per-run pre/post crashes/log lengths/times/exit/stdout/stderr/appended warnings/errors/assertions/DBErrors retained.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 2,
+      "types": {
+        "C4305": 1,
+        "C4858": 1
+      },
+      "review": "Expressions retained verbatim from ff8303b40;outside changed behavior. Other historical diagnostics stay visible,not certified fixed.",
+      "entries": [
+        {
+          "path": "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.cpp",
+          "line": 1130,
+          "code": "C4305",
+          "message": "'argument': truncation from 'double' to 'float'",
+          "expression": "case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2) + 0.5f);",
+          "expression_present_in_baseline": true
+        },
+        {
+          "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_sha_of_fear.cpp",
+          "line": 1738,
+          "code": "C4858",
+          "message": "discarding return value: This member function returns a bool indicating whether the collection is empty and has no other effects. It is not useful to call this member function and discard the return value. Use the 'clear()' member function if you want to erase all elements.",
+          "expression": "targets.empty();",
+          "expression_present_in_baseline": true
+        }
+      ]
+    },
+    "development": [
+      "Producer matching was corrected for compiler-equivalent Taerar/Lethon Reset source blocks and distinct ally starting-value branches. SharedDefines must be read as UTF8; the initial read failure did not mutate product code. Source host outer braces corrected a dangling-else fixture error before final20 passing cases. Earlier failed fixture attempts remain archived as development evidence, not successful tests.",
+      "Rejected native dragon reset casts were explicitly considered: primary and helper resets now set zero before the retained205283 spell. The interim deployed candidate was superseded by final linked/deployed binary and all final checks reran; original pre-task rollback remains unchanged.",
+      "Native cases call selected actual resource statements on real Creature templates, not complete concrete AI Reset/constructor sequences. Matching ScriptNames,Vehicle0/noVehicleKit,no pet_stats initializer and Cenarius cosmetic225782 no-shapeshift were checked. This supports the selected initialization repair and does not certify combat, phases, movement, rewards or full encounters.",
+      "Native announcer uses actual Player and Unit::GetPlayer lookup; speech/event endpoints are captured. Source fixture instruments empty-list access as a bad sentinel read; no actual native undefined empty-list dereference or client voice traversal was attempted. Stale-roster baseline stalls despite a real live participant; repaired case announces actual roster participant once with original8000ms cadence.",
+      "Two compiler warnings C4305/C4858 predate this batch and remain visible. No new runtime crash or unexplained appended diagnostic. No SQL migration, progress grant, global power-type substitution or character rewrite."
+    ],
+    "final_review": "PASS hash verification of1501 original archived files and all deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse-scope six files and no production diff.",
+    "supplemental_archive": {
+      "manifest": "build-extractors/bin/Release/fixed/eleventh-ten-repairs-2026-11-09/supplemental-manifest.json",
+      "sha256": "fc455ba77559ab882fbe6d20a9471d4284119bf230bf3a140447d93e5323121f",
+      "files": 31
+    }
+  },
+  "scouted_rejected": "Vehicle-backed candidates (including Goroth, Guarm, Krosus and Brackenspore) were excluded because Vehicle::Install is another power initializer; a missing local setter alone is not proof. Wrathion Thunder Forge legacy npc_wrathion is unbound in this data and was not counted. Existing explicit setters in Ilgynoth/Ra-den/Shekzeer and other roles were retained. Matching local core/data resolved the selected contracts; no modern API transplant.",
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/eleventh-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "be9bed0334ed08082c4042e23bc7a7ff66e163f474ecab591656f67a83027578",
+    "original_files": 1501,
+    "removed_files": 362,
+    "logical_removed_bytes": 1719935530,
+    "deletion_manifest": ".codex/eleventh-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "9794da6aa450e3ba7e855e0703f607c4f0d1b1f63d6c0f1e446568e704484298",
+    "retained_rollbacks": [
+      ".codex/release-before-eleventh-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-tenth-ten-fixes-2026-11-09",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-tenthcf2333e1 retired after newest pre-eleventha752b443 rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical EXE/MAP/config/certs/DLL/extracted data, required main libraries/cache, reusable tests, backups and security boundaries. OPEN Lady/LINK2/Slaghammer/mixed log/SQL/TimeLoop remain. Ninth-batch TimeLoop binaries/symbols retained for outstanding native recovery investigation. Private test configs deleted, not archived.",
+    "postcheck": "Canonical/protected/recovery hashes unchanged;no canonical crash or world/bnet process."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN. No guessed HP threshold or kill timer.",
+    "LINK2, Slaghammer crash/cache, mixed7111-byte DBErrors, intermittent handshake and all36 complete artifact chains remain OPEN. No default Slaghammer probe or mixed-log truncation.",
+    "Prior MariaDB numeric CAST discrepancy remains OPEN: original82 and corrected94 raw snapshots remain hash-verified outside fixed. No DB/query workaround.",
+    "Prior TimeLoop105984 script/native32bit healing investigation remains OPEN and unchanged. Its26 raw records and ninth-batch runtime copies remain outside resolved cleanup, with a concrete investigation purpose.",
+    "Actual energy-driven fights, failed ability casts, phase transitions, summon travel/visuals, full wipe/loot/group/faction/pet/guardian behavior and announcer voice/mount/client intro still need client traversal. Controlled resource and roster tests do not certify whole encounters."
+  ],
+  "stop": "Exactly ten implemented, tested to stated scopes, deployed, separately committed/pushed and cleaned. Stop after final audit/handoff push; no eleventh repair started. Prior OPEN evidence and actual client/all36-chain checks remain visible."
+}
