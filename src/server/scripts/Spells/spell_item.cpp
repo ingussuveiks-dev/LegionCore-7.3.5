@@ -3317,7 +3317,7 @@ class spell_item_faded_wizard_hat : public AuraScript
 
     void OnApply(AuraEffect const*, AuraEffectHandleModes /*mode*/)
     {
-        Unit* caster = GetCaster();
+        Unit* caster = GetUnitOwner();
         if (!caster)
             return;
 

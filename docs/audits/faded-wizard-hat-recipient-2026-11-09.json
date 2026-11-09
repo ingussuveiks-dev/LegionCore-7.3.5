@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Hat",
+  "scope": {
+    "key": "Hat",
+    "file": "spell_item.cpp",
+    "classes": [
+      "spell_item_faded_wizard_hat"
+    ],
+    "spell": 74589,
+    "title": "Apply the Faded Wizard Hat model to the aura recipient"
+  },
+  "base": "797cebe2f",
+  "support_commit": "da8b5fe236f270df633c6e72a3ddaf4976664edd",
+  "cause": "The aura apply handler changes the original caster display instead of the74589 recipient and skips the surviving recipient when a separate caster disappears.",
+  "implementation": "Select GetUnitOwner for the existing16-model choice. Preserve original apply hook/type/mode and random range.",
+  "validation": {
+    "command": "tools/tests/Test-ThirdTenSpellRepairs.ps1 -Case Hat (also -Baseline)",
+    "coverage": "Source absent/distinct caster,actual recipient,first/last random entries and missing owner. Native original NPC caster removed and actual EffectApply dispatcher changes recipient display while leaving source display intact. PE owner getter/registration verified.",
+    "native_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe ThirdTenSpellNative",
+    "native_total": "12live bindings/11classes,two actual mounted/dismounted speed controls and16 actual recipient/model/cleanup/calc/missing-caster-at-Load contexts;earlier profiles/poses/capability controlled,readonly/TEMP database scope,no character saves. Not full-core ASAN.",
+    "source_scope": "Five whole source files equal797cebe2f outside exactly11selected classes/ten problems. Other registrations/shared quest scripts unchanged.",
+    "release": "Original scripts.lib/final-link dependencies,no global OutDir;staged+canonical ten PE paths and prior27 paths retained;canonical Scepter and existing defensive/Shadow regressions pass.",
+    "startup": "Owned28440 fresh canonical ready,shutdown0,exit0,gone,stderr empty;no user process stopped/protected configuration changed."
+  },
+  "canonical_world_sha256": "435bb556058e4c1b2040967c1a9786c63cff705a1e9e90c8491d3f1b5d97de9f",
+  "tested_class_sha256": {
+    "spell_item_faded_wizard_hat": "86a197e9d594bb3e5ac007d2c5501f6df7e2a949b035f6f71bce437f73cfe41d"
+  },
+  "aura_contract": "Native Aura::GetCaster resolves unit owner directly for ordinary self-casts. Distinct-caster ownership checks intentionally create a supported separate NPC caster and remove that actor. Neither model faults nor these audits claim observed production/client crashes during ordinary self-use.",
+  "diagnostics": "Before/after canonical+own crash/log snapshots and exit/stdout/stderr review for tests/build/link/start. Final tests add no crash/DBErrors/server warning/error/assertion. Original Ocean ASAN baseline is explicitly expected failing;native fixture initialization/admission and PE inlining/adapter mistakes were traced and corrected;details/evidence retained in batch audit.",
+  "client_pending": "Actual hat use,all16 model/render variants,ordinary self use,overlapping transform/shapeshift behavior and expiration/relog.",
+  "progression": "No SQL,HP threshold,kill timer,character reset,item/quest/progression grant or new class/group restriction. Unit queue owners/native cast and credit attribution retained,including player/pet/guardian paths;actual full combat alternatives still need client testing.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/third-ten-spell-repairs-2026-11-09"
+  },
+  "shared_open": "Authentic living Lady/1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors,handshake and all36 whole chains remain OPEN. Default Slaghammer probe not run;no active log truncated.",
+  "batch_audit": "docs/audits/third-ten-spell-repairs-2026-11-09.json"
+}
