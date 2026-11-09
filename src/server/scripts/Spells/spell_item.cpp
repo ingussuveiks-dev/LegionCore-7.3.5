@@ -3355,7 +3355,7 @@ class spell_item_demon_hunters_aspect : public AuraScript
         if (!player)
             return;
 
-        player->SetDisplayId(player->GetNativeDisplayId());
+        player->RestoreDisplayId();
     }
 
     void Register() override
