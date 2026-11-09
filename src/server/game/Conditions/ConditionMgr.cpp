@@ -544,7 +544,7 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo)
                 {
                     if (Item* artifact = player->GetItemByEntry(ConditionValue1))
                     {
-                        uint32 count = 0;
+                        uint64 count = 0;
                         if (artifact->IsEquipped())
                             count = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);
 
@@ -555,7 +555,7 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo)
                 {
                     if (Item* artifact = player->GetArtifactWeapon())
                     {
-                        uint32 count = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);
+                        uint64 count = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);
                         condMeets = count >= ConditionValue2 && (!ConditionValue3 || count < ConditionValue3);
                     }
                 }
