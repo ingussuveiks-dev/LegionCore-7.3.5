@@ -1100,7 +1100,7 @@ class boss_the_lich_king : public CreatureScript
                                     Creature* summon = ObjectAccessor::GetCreature(*me, *i);
                                     if (summon && summon->GetEntry() == NPC_VILE_SPIRIT)
                                     {
-                                        summon->m_Events.KillAllEvents(true);
+                                        summon->m_Events.KillAllEvents(false);
                                         summon->m_Events.AddEvent(new VileSpiritActivateEvent(summon), summon->m_Events.CalculateTime(50000));
                                         summon->GetMotionMaster()->MoveRandom(10.0f);
                                         summon->SetReactState(REACT_PASSIVE);
@@ -3111,7 +3111,7 @@ class spell_the_lich_king_restore_soul : public SpellScriptLoader
                 GetCaster()->GetCreatureListWithEntryInGrid(spirits, NPC_WICKED_SPIRIT, 200.0f);
                 for (std::list<Creature*>::iterator itr = spirits.begin(); itr != spirits.end(); ++itr)
                 {
-                    (*itr)->m_Events.KillAllEvents(true);
+                    (*itr)->m_Events.KillAllEvents(false);
                     (*itr)->SetReactState(REACT_PASSIVE);
                     (*itr)->AI()->EnterEvadeMode();
                 }
