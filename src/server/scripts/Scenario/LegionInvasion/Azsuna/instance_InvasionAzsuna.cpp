@@ -29,22 +29,44 @@ public:
             BombsTimer = urand(45000, 90000);
         }
 
+        std::map<ObjectGuid, std::shared_ptr<uint8>> entryAttempts;
+
+        void OnPlayerLeave(Player* player) override
+        {
+            if (player)
+                entryAttempts.erase(player->GetGUID());
+        }
+
         void OnPlayerEnter(Player* player) override
         {
             if (!player)
                 return;
 
+            auto attempt = std::make_shared<uint8>(0);
+            entryAttempts[player->GetGUID()] = attempt;
+            std::weak_ptr<uint8> weakAttempt = attempt;
+            uint32 const mapId = player->GetMapId();
+            uint32 const instanceId = player->GetInstanceId();
+
             if (player->GetQuestStatus(46199) != QUEST_STATUS_INCOMPLETE)
             {
-                player->AddDelayedEvent(2000, [player]() -> void
+                player->AddDelayedEvent(2000, [player, mapId, instanceId, weakAttempt]() -> void
                 {
+                    if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                        return;
+                    if (player->GetQuestStatus(46199) == QUEST_STATUS_INCOMPLETE)
+                        return;
                     player->TeleportTo(1220, -834.95f, 4277.59f, 746.25f, 1.0f);
                 });
                 return;
             }
-            
-            player->AddDelayedEvent(5000, [player]() -> void
+
+            player->AddDelayedEvent(5000, [player, mapId, instanceId, weakAttempt]() -> void
             {
+                if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                    return;
+                if (player->GetQuestStatus(46199) != QUEST_STATUS_INCOMPLETE)
+                    return;
                 player->CreateConversation(4587);
             });
         }
