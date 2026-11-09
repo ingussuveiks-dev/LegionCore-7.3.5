@@ -1,0 +1,60 @@
+// Actual matching26972 data, native Aura owner/caster resolution and callbacks.
+// Earlier character state is in memory; no character/database persistence.
+#define SLAGHAMMER_COMPANION_SUPPORT_ONLY
+#include "SlaghammerCompanionNative.cpp"
+#include "SpellScript.h"
+#include "PlayerDefines.h"
+#include "ScriptsData.h"
+#include "MovementPackets.h"
+#include <memory>
+namespace ScriptsTen {
+enum {GOBELING_GUMBO_BURP=42755};
+#include "TenSpellScripts.inc"
+}
+struct TenScriptsTag{using Type=std::vector<AuraScript*> Aura::*;friend Type Access(TenScriptsTag);};
+template struct FixtureAccess<TenScriptsTag,&Aura::m_loadedScripts>;
+struct TenQueueTag{using Type=FunctionProcessor Unit::*;friend Type Access(TenQueueTag);};
+template struct FixtureAccess<TenQueueTag,&Unit::m_Functions>;
+template<class T>struct TenBound{
+ T script;Aura* aura;std::string name;
+ TenBound(Unit& caster,Player& owner,uint32 id,char const* n):aura(caster.AddAura(id,&owner)),name(n){
+  Require(aura,"Native selected aura refused");script._Init(&name,id);Require(script._Load(aura),"Native selected script Load refused");script._Register();auto& list=aura->*Access(TenScriptsTag{});Require(list.empty(),"Unexpected automatically registered script in fixture");list.push_back(&script);
+ }
+ ~TenBound(){(aura->*Access(TenScriptsTag{})).clear();}
+};
+int main(int argc,char**argv){try{
+ InitializeAltheaGuardsNative(argc,argv);Require(sObjectMgr->LoadTrinityStrings(),"Native strings absent");
+ WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");Shadow("spell_proc_event","1");WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");sSpellMgr->LoadSpellProcEvents();
+ auto bindings=WorldDatabase.Query(
+#include "TenSpellBindings.inc"
+ );Require(bool(bindings),"Selected live bindings absent");std::set<std::string> names;do{auto f=bindings->Fetch();names.insert(f[1].GetString());std::cout<<"BIND "<<f[0].GetUInt32()<<" "<<f[1].GetString()<<'\n';}while(bindings->NextRow());Require(names.size()==10,"Not all ten selected scripts are live bound");
+ for(uint32 id:{208705u,201948u,221477u,216426u,125883u,251869u,217668u,176890u,42760u,181765u,188042u,201891u,216441u,253331u,251870u,54649u,42755u}){
+  auto info=sSpellMgr->GetSpellInfo(id);Require(info,"Selected matching26972 spell absent");std::cout<<"CATALOG "<<id;for(unsigned i=0;i<3;++i)std::cout<<" effect"<<i<<"="<<info->Effects[i]->Effect<<"/"<<info->Effects[i]->ApplyAuraName<<"/"<<info->Effects[i]->TargetA.GetTarget();std::cout<<'\n';auto row=sSpellStore.LookupEntry(id);Require(row,"Native Spell row missing");std::cout<<"DESCRIPTION "<<id<<" "<<row->Description->Str[LOCALE_enUS]<<'\n';
+ }
+ for(uint32 id=121859;id<=121885;++id)Require(sBroadcastTextStore.LookupEntry(id),"Authored whisper broadcast missing");Require(sBroadcastTextStore.LookupEntry(90915),"Winning Hand broadcast missing");
+ auto poolRow=WorldDatabase.Query("SELECT entry FROM gameobject_template WHERE type=25 AND displayId<>0 ORDER BY entry LIMIT 1");Require(bool(poolRow),"Native fishing-hole template absent");auto poolEntry=poolRow->Fetch()[0].GetUInt32();auto filter=std::string("entry=")+std::to_string(poolEntry);
+ WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ WRITE");Shadow("gameobject_template",filter.c_str());Shadow("spell_script_names","spell_id=216426");WorldDatabase.DirectExecute("SET SESSION TRANSACTION READ ONLY");sObjectMgr->LoadGameObjectTemplate();sSpellMgr->LoadSpellTargetPositions();sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());new GenericSpellScriptLoader<ScriptsTen::spell_undercurrent_fishing_tele>("spell_undercurrent_fishing_tele");sScriptMgr->SwapScriptContext(true);sScriptDataStore->LoadSpellScriptNames();HashMapHolder<GameObject>::SetSize(10000);
+ std::cout<<"UNDERCURRENT mask="<<sSpellMgr->GetSpellInfo(216426)->GetExplicitTargetMask()<<" target-position="<<bool(sSpellMgr->GetSpellTargetPosition(216426))<<" pool="<<poolEntry<<'\n';
+ dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1600,{}}});MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1600,{}}});
+ unsigned cases=0;for(unsigned race:{unsigned(RACE_HUMAN),unsigned(RACE_ORC)}){
+  MapInstanced parent(1600,300);InstanceMap map(1600,300,9999800+race,DIFFICULTY_N_SCENARIO,&parent);auto session=Session();{
+   NativePlayer p(session,map,995,{50,803,805,0});p.SetByteValue(UNIT_FIELD_BYTES_0,0,race);p.setFactionForRace(race);
+   auto withSource=[&](auto operation){Actor source(&map,299,1001+cases,{51,803,805,0});Require(map.AddToMap(static_cast<Creature*>(&source)),"Original caster admission failed");operation(source);if(source.IsInWorld())map.RemoveFromMap(static_cast<Creature*>(&source),false);p.RemoveAllAuras();++cases;};
+   withSource([&](Actor& source){TenBound<ScriptsTen::spell_stonehide_leather_barding>b(source,p,208705,"spell_stonehide_leather_barding");Require(b.script.GetCaster()==&source&&!source.ToPlayer(),"Native NPC caster control missing");int32 duration=0;b.script.CalculateMaxDuration(duration);Require(duration==7200000,"NPC duration not ordinary2h");map.RemoveFromMap(static_cast<Creature*>(&source),false);Require(!b.script.GetCaster(),"Caster absence not native");b.script.CalculateMaxDuration(duration);Require(duration==7200000,"Missing caster duration");});
+   withSource([&](Actor& source){TenBound<ScriptsTen::spell_underlight_blessing>b(source,p,201948,"spell_underlight_blessing");map.RemoveFromMap(static_cast<Creature*>(&source),false);Require(!b.script.GetCaster()&&b.script.GetUnitOwner()==&p,"Native surviving owner/caster absence missing");b.aura->CallScriptEffectUpdateHandlers(1500,b.aura->GetEffect(EFFECT_0));Require(b.script.checkTimer==1500,"Native blessing timer not rearmed");});
+   withSource([&](Actor& source){TenBound<ScriptsTen::spell_underlight_main_aura>b(source,p,221477,"spell_underlight_main_aura");map.RemoveFromMap(static_cast<Creature*>(&source),false);Require(!b.script.GetCaster(),"Native missing rod caster");b.script.HandleEffectApply(nullptr,AURA_EFFECT_HANDLE_REAL);Require(p.HasSpell(201891),"Owner did not learn native Undercurrent");b.script.HandleEffectRemove(nullptr,AURA_EFFECT_HANDLE_REAL);Require(!p.HasSpell(201891)&&!p.HasAura(216441),"Owner rod cleanup failed");});
+   withSource([&](Actor& source){using T=ScriptsTen::spell_monk_remove_zen_flight::spell_monk_remove_zen_flight_AuraScript;TenBound<T>b(source,p,125883,"spell_monk_remove_zen_flight");map.RemoveFromMap(static_cast<Creature*>(&source),false);Require(!b.script.GetCaster(),"Native missing Zen caster");p.learnSpell(90267,false);b.aura->CallScriptAuraUpdateHandlers(1000);Require(!p.HasAura(125883)&&b.script.checkTimer==2000,"Native dungeon Zen restriction failed");});
+   withSource([&](Actor& source){TenBound<ScriptsTen::spell_pal_t21_prot>b(p,p,251869,"spell_pal_t21_prot");b.aura->CallScriptAuraUpdateHandlers(1001);Require(b.script.update==1000&&p.HasAura(253331),"Native T21 bounded refresh missing");auto buff=p.GetAura(253331);auto first=buff->GetEffect(EFFECT_0)->GetAmount();b.aura->CallScriptAuraUpdateHandlers(50);Require(b.script.update==950&&p.GetAura(253331)==buff&&buff->GetEffect(EFFECT_0)->GetAmount()==first,"Native T21 repeated before next deadline");Require(p.AddAura(251870,&p),"Native4Pdriver missing");b.aura->CallScriptAuraUpdateHandlers(950);auto raised=p.GetAura(253331)->GetEffect(EFFECT_0)->GetAmount();Require(raised>first,"Native4Pnot raised without Shield");Require(p.AddAura(132403,&p),"Native Shield of the Righteous missing");b.aura->CallScriptAuraUpdateHandlers(1000);Require(p.GetAura(253331)->GetEffect(EFFECT_0)->GetAmount()==first,"Native Shield did not disable4Pextra");p.RemoveAura(132403);b.aura->CallScriptAuraUpdateHandlers(1000);Require(p.GetAura(253331)->GetEffect(EFFECT_0)->GetAmount()==raised,"Native Shield expiry did not restore4P");});
+   withSource([&](Actor& source){TenBound<ScriptsTen::spell_request_the_master_call_on_you>b(source,p,217668,"spell_request_the_master_call_on_you");map.RemoveFromMap(static_cast<Creature*>(&source),false);Require(!b.script.GetCaster(),"Native missing whisper caster");b.script.OnApply(nullptr,AURA_EFFECT_HANDLE_REAL);b.script.OnTick(nullptr);});
+   withSource([&](Actor& source){TenBound<ScriptsTen::spell_gen_winning_hand>b(source,p,176890,"spell_gen_winning_hand");map.RemoveFromMap(static_cast<Creature*>(&source),false);Require(!b.script.GetCaster(),"Native missing emote caster");b.script.OnApply(nullptr,AURA_EFFECT_HANDLE_REAL);});
+   withSource([&](Actor& source){using T=ScriptsTen::spell_gen_gobelin_gumbo::spell_gen_gobelin_gumbo_AuraScript;TenBound<T>b(source,p,42760,"spell_gen_gobelin_gumbo");map.RemoveFromMap(static_cast<Creature*>(&source),false);Require(!b.script.GetCaster(),"Native missing Gumbo caster");b.aura->CallScriptEffectUpdateHandlers(1000,b.aura->GetEffect(EFFECT_0));Require(b.script.burpTimer==9000,"Native owner Gumbo timer stalled");});
+   withSource([&](Actor& source){using T=ScriptsTen::spell_item_camera_selfie::spell_item_camera_selfie_AuraScript;TenBound<T>b(source,p,181765,"spell_item_camera_selfie");Require(p.AddAura(181767,&p),"Native camera filter absent");map.RemoveFromMap(static_cast<Creature*>(&source),false);Require(!b.script.GetCaster(),"Native missing camera caster");b.script.OnRemove(nullptr,AURA_EFFECT_HANDLE_REAL);Require(!p.HasAura(181767),"Native owner selfie filter leaked");});
+   auto dest=p.GetPosition();dest.m_positionX+=10;auto pool=map.SummonGameObject(poolEntry,dest,0,0,0,0,1,300);Require(pool&&p.FindNearestGameObjectOfType(GAMEOBJECT_TYPE_FISHINGHOLE,100)==pool,"Actual nearest native pool missing");auto queued=(p.*Access(TenQueueTag{})).SizeQueue();Require(p.CastSpell(&p,216426,true)==SPELL_CAST_OK,"Actual registered Undercurrent cast refused");Require((p.*Access(TenQueueTag{})).SizeQueue()==queued+1,"Actual cast did not queue selected pool");
+   // Native target mask64 first emits its self-destination teleport. A real
+   // client acknowledges it before the script's separate500ms delivery.
+   Require(p.IsBeingTeleportedNear(),"Native initial self-destination request absent");WorldPackets::Movement::MoveTeleportAck ack{WorldPacket(CMSG_MOVE_TELEPORT_ACK)};ack.MoverGUID=p.GetGUID();session->HandleMoveTeleportAck(ack);Require(!p.IsBeingTeleported(),"Native initial acknowledgement failed");(p.*Access(TenQueueTag{})).Update(499);Require(!p.IsBeingTeleported(),"Undercurrent delivered before500ms");(p.*Access(TenQueueTag{})).Update(1);Require(p.IsBeingTeleportedNear()&&p.GetTeleportDest().GetExactDist(dest)<0.001f,"Native selected-pool teleport not requested");session->HandleMoveTeleportAck(ack);Require(!p.IsBeingTeleported()&&p.GetExactDist(dest)<0.001f,"Native pool arrival ACK failed");
+   auto pendingOrigin=p.GetPosition();map.GameObjectRelocation(pool,pendingOrigin.GetPositionX()+20,pendingOrigin.GetPositionY(),pendingOrigin.GetPositionZ(),0);Require(p.CastSpell(&p,216426,true)==SPELL_CAST_OK&&p.IsBeingTeleportedNear(),"Native overlapping teleport control absent");(p.*Access(TenQueueTag{})).Update(500);Require(p.GetTeleportDest().GetExactDist(pendingOrigin)<0.001f,"Late callback replaced an unacknowledged native teleport");session->HandleMoveTeleportAck(ack);pool->Delete();map.RemoveAllObjectsInRemoveList();
+  }session->SetPlayer(nullptr);delete session;
+ }
+ Require(cases==18,"Native coverage count changed");CloseAltheaNative();std::cout<<"PASS native ten-feature bindings/catalog plus18 Human/Orc original-caster removal/actual Aura getters+dispatch,ordinary NPC duration,rod learn/remove,Zen dungeon refusal,T21 bounded refresh/real4P/Shield transitions,Gumbo clock,owner text/cleanup paths;four registered Undercurrent casts with actual pool selection,initial self-ACK,499+1ms delivery/arrival ACK and pending-ACK refusal. Poses/earlier state controlled;underwater swim,real-world pools,packet presentation/full client remain modeled or pending\n";return 0;
+}catch(std::exception const&e){std::cerr<<e.what()<<std::endl;return 1;}}
