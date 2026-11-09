@@ -712,14 +712,18 @@ public:
                     summon->GetClosePoint(x, y, z, summon->GetObjectSize() / 3, 2);
                     summon->GetMotionMaster()->MovePoint(0, x, y, z + 6.0f);
 
-                    summon->AddDelayedEvent(3000, [summon, this] () -> void
+                    me->AddDelayedEvent(3000, [this, summonGuid = summon->GetGUID()] () -> void
                     {
+                        Creature* summon = ObjectAccessor::GetCreature(*me, summonGuid);
+                        if (!summon)
+                            return;
+
                         Unit* target = nullptr;
                         target = SelectTarget(SELECT_TARGET_FARTHEST, urand(1, 2), 0.0f, true);
                         if (!target)
                             target = SelectTarget(SELECT_TARGET_FARTHEST, 0, 0.0f, true);
 
-                        if (target)
+                        if (target && me->IsAlive())
                             me->CastSpell(target, (isEmpowered[1] ? SPELL_EMPOWERED_LIQUID_HELLFIRE_SUMMON_TRIGGER : SPELL_LIQUID_HELLFIRE_SUMMON_TRIGGER));
 
                         summon->RemoveAurasDueToSpell(SPELL_LIQUID_HELLFIRE_SUMMON_AT);
