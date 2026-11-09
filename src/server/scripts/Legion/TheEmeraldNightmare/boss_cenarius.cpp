@@ -721,12 +721,14 @@ struct npc_cenarius_allies_of_nature : public ScriptedAI
                 break;
             case NPC_CLEANSED_ANCIENT:
                 spell = SPELL_NATURES_FURY;
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->SetPower(POWER_ENERGY, 80);
                 DefaultEvents();
                 break;
             case NPC_EMERALD_DRAKE:
                 spell = SPELL_POISON_BLAST;
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->SetPower(POWER_ENERGY, 100);
                 SetFlyMode(true);
@@ -734,6 +736,7 @@ struct npc_cenarius_allies_of_nature : public ScriptedAI
                 break;
             case NPC_REDEEMED_SISTER:
                 spell = SPELL_JAVELIN_TOSS;
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->SetPower(POWER_ENERGY, 56);
                 DefaultEvents();
