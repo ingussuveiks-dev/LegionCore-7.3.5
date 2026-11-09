@@ -33,9 +33,25 @@
   "client_pending": "Actual eligible mounted item use,riding/zone/map admission,both factions/reverse variants,pet handling and client speed/appearance.",
   "progression": "No SQL,HP threshold,kill timer,character reset,item/quest/progression grant or new class/group restriction. Unit queue owners/native cast and credit attribution retained,including player/pet/guardian paths;actual full combat alternatives still need client testing.",
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE",
-    "archive": "build-extractors/bin/Release/fixed/third-ten-spell-repairs-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/third-ten-spell-repairs-2026-11-09",
+    "archive_manifest_sha256": "2e77ac4c4207d4174a5e76db15b3b4e5af9b6ec797d359b4f3351971b12429a8",
+    "original_files": 2438,
+    "removed_files": 412,
+    "logical_removed_bytes": 2165102488,
+    "deletion_manifest": ".codex/third-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "7452aaf8b1be1c2ad0d53efd868572a04ba205ebd8c31ab320058ad6bde772d5",
+    "retained_rollbacks": [
+      ".codex/release-before-third-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-next-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-next e8ff1ea7 generation retired after newest pre-third ed56fd0f rollback verification",
+    "preserved": "Canonical EXE/MAP/config/cert/DLL/data,required original game/scripts libraries,reusable test source,OPEN Lady/LINK2/Slaghammer/security evidence and personal/character/database backups. No active log truncated. Private native configs deleted,not archived.",
+    "postcheck": "Protected/canonical/mixed-log hashes retained;active Crashes empty,no world/bnet process."
   },
   "shared_open": "Authentic living Lady/1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors,handshake and all36 whole chains remain OPEN. Default Slaghammer probe not run;no active log truncated.",
-  "batch_audit": "docs/audits/third-ten-spell-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/third-ten-spell-repairs-2026-11-09.json",
+  "fix_commit": "27bd56408c2ca63501458c9e4f042fe8412db85b"
 }

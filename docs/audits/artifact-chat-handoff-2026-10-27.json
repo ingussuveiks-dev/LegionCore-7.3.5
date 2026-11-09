@@ -1,4 +1,102 @@
 {
+  "latest_third_ten_spell_repairs_2026_11_09": {
+    "audit": "docs/audits/third-ten-spell-repairs-2026-11-09.json",
+    "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+    "fixes": [
+      {
+        "key": "Brewfest",
+        "title": "Preserve original mounted speed for Brewfest transformations",
+        "commit": "27bd56408c2ca63501458c9e4f042fe8412db85b",
+        "audit": "docs/audits/brewfest-original-speed-2026-11-09.json"
+      },
+      {
+        "key": "Aspect",
+        "title": "Restore active transforms when Demon Hunters Aspect ends",
+        "commit": "f89f6023b05813bd3b27482290b2b4954e5c815c",
+        "audit": "docs/audits/demon-aspect-transform-cleanup-2026-11-09.json"
+      },
+      {
+        "key": "Hat",
+        "title": "Apply the Faded Wizard Hat model to the aura recipient",
+        "commit": "a711ac4dc46f33fbc36aa89bab673c5fc3fc1b2c",
+        "audit": "docs/audits/faded-wizard-hat-recipient-2026-11-09.json"
+      },
+      {
+        "key": "Costumes",
+        "title": "Apply both Darkmoon citizen costumes to their actual recipients",
+        "commit": "65dcdeb48b986a658f15ab118af36656cb777dc5",
+        "audit": "docs/audits/darkmoon-citizen-recipients-2026-11-09.json"
+      },
+      {
+        "key": "Ocean",
+        "title": "Keep Oceans Embrace helpers on the surviving aura recipient",
+        "commit": "b4c46fc4b1f9e10707c772e75dbaa5afbb507d3a",
+        "audit": "docs/audits/ocean-embrace-recipient-2026-11-09.json"
+      },
+      {
+        "key": "Shadow",
+        "title": "Maintain and clean Shadowform visuals on the aura owner",
+        "commit": "c4d6fd07de37c07ac48ee4b0762609be7d8a4089",
+        "audit": "docs/audits/shadowform-visual-recipient-2026-11-09.json"
+      },
+      {
+        "key": "Glacial",
+        "title": "Keep queued Glacial Advance impacts on their original map",
+        "commit": "ac19b54de5e811704964c090946086cab35fd50d",
+        "audit": "docs/audits/glacial-advance-origin-2026-11-09.json"
+      },
+      {
+        "key": "Breath",
+        "title": "Keep queued Breath of Fire effects in their original instance",
+        "commit": "d321d84f209793714f41213dd2ab3741fb6b0053",
+        "audit": "docs/audits/breath-of-fire-origin-2026-11-09.json"
+      },
+      {
+        "key": "Hammer",
+        "title": "Reject stale Hammer of Supreme Justice teleport coordinates",
+        "commit": "a23d404ae81a876effa7c8f6825db1f2e745c5a3",
+        "audit": "docs/audits/supreme-justice-teleport-origin-2026-11-09.json"
+      },
+      {
+        "key": "Prydaz",
+        "title": "Calculate Prydaz absorption from its actual aura recipient",
+        "commit": "7aa2dd90fc701f3dc4dbdba0db8662e7082182db",
+        "audit": "docs/audits/prydaz-shield-recipient-2026-11-09.json"
+      }
+    ],
+    "canonical": {
+      "directory": "build-extractors/bin/Release",
+      "world_sha256": "435bb556058e4c1b2040967c1a9786c63cff705a1e9e90c8491d3f1b5d97de9f",
+      "bnet_sha256": "4f4252413db56d4276f882e9bd9a9282d03ad05e1236d2e8d58f512cc36306a1",
+      "rollback": ".codex/release-before-third-ten-fixes-2026-11-09",
+      "owned_startup": "PID28440 fresh ready,server shutdown0,exit0,gone,stderr empty. Protected config/cert/DLL hashes retained,no user process stopped."
+    },
+    "cleanup": {
+      "status": "COMPLETE_HASH_VERIFIED",
+      "archive": "build-extractors/bin/Release/fixed/third-ten-spell-repairs-2026-11-09",
+      "archive_manifest_sha256": "2e77ac4c4207d4174a5e76db15b3b4e5af9b6ec797d359b4f3351971b12429a8",
+      "original_files": 2438,
+      "removed_files": 412,
+      "logical_removed_bytes": 2165102488,
+      "deletion_manifest": ".codex/third-ten-fixes-2026-11-09/cleanup-deleted.json",
+      "deletion_manifest_sha256": "7452aaf8b1be1c2ad0d53efd868572a04ba205ebd8c31ab320058ad6bde772d5",
+      "retained_rollbacks": [
+        ".codex/release-before-third-ten-fixes-2026-11-09",
+        ".codex/release-before-seven-fixes-2026-11-08",
+        ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+      ],
+      "removed_intermediate_rollback": ".codex/release-before-next-ten-fixes-2026-11-09",
+      "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-next e8ff1ea7 generation retired after newest pre-third ed56fd0f rollback verification",
+      "preserved": "Canonical EXE/MAP/config/cert/DLL/data,required original game/scripts libraries,reusable test source,OPEN Lady/LINK2/Slaghammer/security evidence and personal/character/database backups. No active log truncated. Private native configs deleted,not archived.",
+      "postcheck": "Protected/canonical/mixed-log hashes retained;active Crashes empty,no world/bnet process."
+    },
+    "pending": [
+      "Actual client/gear/item/visual/audio/movement/combat checks remain in every focused audit. Source models/native controlled contexts do not certify real riding/profession admission,all transform variants,equipped item healing/absorption,packet presentation or any complete artifact chain.",
+      "Authentic living Lady104856/spawn362095 activation/surrender/accepted209552-conversation1906/upperGrash362092 finisher/210247 cleanup remains OPEN. No HP percentage or killing timer invented.",
+      "Shared101430/103151 LINK2,Slaghammer crash/cache,mixedDBErrors,handshake and all36 whole chains retain their unresolved evidence. Default Slaghammer probe was not run;support-only includes did not overwrite its cache."
+    ],
+    "stop": "Exactly10 new product repairs implemented,verified to stated source/native scope,deployed,committed and individually pushed;stop after audit/cleanup/push handoff. No eleventh product repair started."
+  },
   "latest_next_ten_spell_repairs_2026_11_09": {
     "audit": "docs/audits/next-ten-spell-repairs-2026-11-09.json",
     "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",

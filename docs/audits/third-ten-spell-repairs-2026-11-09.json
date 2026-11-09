@@ -1,0 +1,192 @@
+{
+  "date": "2026-11-09",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "797cebe2f5b5abed9338d1b333db47a4b4d99cb2",
+  "support_commit": "da8b5fe236f270df633c6e72a3ddaf4976664edd",
+  "implementation_head": "7aa2dd90fc701f3dc4dbdba0db8662e7082182db",
+  "fixes": [
+    {
+      "key": "Brewfest",
+      "file": "spell_item.cpp",
+      "classes": [
+        "spell_item_brewfest_mount_transformation"
+      ],
+      "spell": 49357,
+      "title": "Preserve original mounted speed for Brewfest transformations",
+      "slug": "brewfest-original-speed",
+      "audit": "docs/audits/brewfest-original-speed-2026-11-09.json",
+      "commit": "27bd56408c2ca63501458c9e4f042fe8412db85b"
+    },
+    {
+      "key": "Aspect",
+      "file": "spell_item.cpp",
+      "classes": [
+        "spell_item_demon_hunters_aspect"
+      ],
+      "spell": 113095,
+      "title": "Restore active transforms when Demon Hunters Aspect ends",
+      "slug": "demon-aspect-transform-cleanup",
+      "audit": "docs/audits/demon-aspect-transform-cleanup-2026-11-09.json",
+      "commit": "f89f6023b05813bd3b27482290b2b4954e5c815c"
+    },
+    {
+      "key": "Hat",
+      "file": "spell_item.cpp",
+      "classes": [
+        "spell_item_faded_wizard_hat"
+      ],
+      "spell": 74589,
+      "title": "Apply the Faded Wizard Hat model to the aura recipient",
+      "slug": "faded-wizard-hat-recipient",
+      "audit": "docs/audits/faded-wizard-hat-recipient-2026-11-09.json",
+      "commit": "a711ac4dc46f33fbc36aa89bab673c5fc3fc1b2c"
+    },
+    {
+      "key": "Costumes",
+      "file": "spell_generic.cpp",
+      "classes": [
+        "spell_gen_citizen_costume_alliance_darkmoon",
+        "spell_gen_citizen_costume_horde_darkmoon"
+      ],
+      "spell": 70764,
+      "title": "Apply both Darkmoon citizen costumes to their actual recipients",
+      "slug": "darkmoon-citizen-recipients",
+      "audit": "docs/audits/darkmoon-citizen-recipients-2026-11-09.json",
+      "commit": "65dcdeb48b986a658f15ab118af36656cb777dc5"
+    },
+    {
+      "key": "Ocean",
+      "file": "spell_item.cpp",
+      "classes": [
+        "spell_item_ocean_embrace"
+      ],
+      "spell": 242459,
+      "title": "Keep Oceans Embrace helpers on the surviving aura recipient",
+      "slug": "ocean-embrace-recipient",
+      "audit": "docs/audits/ocean-embrace-recipient-2026-11-09.json",
+      "commit": "b4c46fc4b1f9e10707c772e75dbaa5afbb507d3a"
+    },
+    {
+      "key": "Shadow",
+      "file": "spell_priest.cpp",
+      "classes": [
+        "spell_pri_shadowform"
+      ],
+      "spell": 232698,
+      "title": "Maintain and clean Shadowform visuals on the aura owner",
+      "slug": "shadowform-visual-recipient",
+      "audit": "docs/audits/shadowform-visual-recipient-2026-11-09.json",
+      "commit": "c4d6fd07de37c07ac48ee4b0762609be7d8a4089"
+    },
+    {
+      "key": "Glacial",
+      "file": "spell_dk.cpp",
+      "classes": [
+        "spell_dk_glacial_advance"
+      ],
+      "spell": 194913,
+      "title": "Keep queued Glacial Advance impacts on their original map",
+      "slug": "glacial-advance-origin",
+      "audit": "docs/audits/glacial-advance-origin-2026-11-09.json",
+      "commit": "ac19b54de5e811704964c090946086cab35fd50d"
+    },
+    {
+      "key": "Breath",
+      "file": "spell_monk.cpp",
+      "classes": [
+        "spell_monk_breath_of_fire"
+      ],
+      "spell": 115181,
+      "title": "Keep queued Breath of Fire effects in their original instance",
+      "slug": "breath-of-fire-origin",
+      "audit": "docs/audits/breath-of-fire-origin-2026-11-09.json",
+      "commit": "d321d84f209793714f41213dd2ab3741fb6b0053"
+    },
+    {
+      "key": "Hammer",
+      "file": "spell_generic.cpp",
+      "classes": [
+        "spell_gen_hammer_of_supreme_justice"
+      ],
+      "spell": 195558,
+      "title": "Reject stale Hammer of Supreme Justice teleport coordinates",
+      "slug": "supreme-justice-teleport-origin",
+      "audit": "docs/audits/supreme-justice-teleport-origin-2026-11-09.json",
+      "commit": "a23d404ae81a876effa7c8f6825db1f2e745c5a3"
+    },
+    {
+      "key": "Prydaz",
+      "file": "spell_item.cpp",
+      "classes": [
+        "spell_item_prydaz_abs"
+      ],
+      "spell": 207472,
+      "title": "Calculate Prydaz absorption from its actual aura recipient",
+      "slug": "prydaz-shield-recipient",
+      "audit": "docs/audits/prydaz-shield-recipient-2026-11-09.json",
+      "commit": "7aa2dd90fc701f3dc4dbdba0db8662e7082182db"
+    }
+  ],
+  "counting": "Exactly10 independent product fixes in11complete classes;both Darkmoon faction costumes are one ownership problem. Support/test/archive/handoff commits do not count as product fixes.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "435bb556058e4c1b2040967c1a9786c63cff705a1e9e90c8491d3f1b5d97de9f",
+    "bnet_sha256": "4f4252413db56d4276f882e9bd9a9282d03ad05e1236d2e8d58f512cc36306a1",
+    "rollback": ".codex/release-before-third-ten-fixes-2026-11-09",
+    "owned_startup": "PID28440 fresh ready,server shutdown0,exit0,gone,stderr empty. Protected config/cert/DLL hashes retained,no user process stopped."
+  },
+  "validation": [
+    "Ten pinned797cebe2f full-class counterfactuals paired with ten final repaired ASAN runs. Ocean original missing-caster dereference is an explicit expected ASAN nonzero executable baseline,paired with repaired pass. Other9 original behaviors are expected-broken speed/recipient/model/origin assertions. These are not successful ordinary gameplay runs.",
+    "Actual Aura GetTarget/GetUnitOwner,calc/effect-update dispatcher and FunctionProcessor extracted;Unit/Player/world/cast endpoints modeled. Source matrix covers8Brewfest faction/normal/reverse/speed combinations,both faction costumes and upper random bounds,Ocean6specs/item absence/helper cleanup,Shadow exact ascending/descending thresholds,owner Prydaz tank/non-tank/HP/nonplayer/distinct caster,queued original map/instance/world/predelete/death handling/counts/no-repeat,Glacial native cast metadata and Hammer2999+1ms/one-shot/missing-caster-at-Load admission.",
+    "Native full11classes compile against actual Release core;12live bindings/11names and matching26972+readonly Hotfix data read. Two actual mounted/dismounted speed controls prove2->1 through native Dismount/UpdateMount;16 real aura owner/model/cleanup/calc/missing-caster-at-Load contexts cover Human/Orc controlled profiles. Native aspect removal preserves another actual16739 transform;real actor removal does not lose owner model/cleanup/shield calculation. Native earlier class/profile/poses and mount-capability pointer are controlled;readonly/TEMP database scope,no character saves,not full-core ASAN.",
+    "Native full mount casting on this bare profile is correctly refused. Source SpellInfo::CheckLocation requires player GetMountCapability for the actual mount type;missing riding/area eligibility yields NOT_HERE81. Triggered bool normally maps that to DONT_REPORT30;the fixture removes only the do-not-report flag to observe81 and asserts the refusal. No admission check is bypassed or disabled. Real full item/mount cast success remains client-pending;selection is covered by source8cases plus actual native2->1 speed evidence and compiled decision ordering.",
+    "Whole five production files match797cebe2f outside exactly11selected classes/ten problems. All other shared scripts and registrations retained. Original generated scripts.lib/final-link dependencies used,no global OutDir. Staged+canonical PE verifies7registered owner hooks,Shadow inlined helper paths,Aspect RestoreDisplayId,four actual queued closures including DK adapter->lambda operator,Hammer owner-origin Load and pre-teleport guards,Brewfest speed2.0 comparison/cached decision before dismount. Previous27 spell PE paths retained.",
+    "Mandatory canonical Scepter source+Release verification passes. Retained LegendaryDefensive/Prydaz native-extracted school absorb loop passes across8schools,capacity/overflow/depletion/bypass and25/15percent calculation. Retained ShadowVisualController passes immediate apply,ascending/descending thresholds,no redundant recasts,cleanup/re-entry. Existing fixture assertions unchanged;owner getter seams were added.",
+    "Owned canonical28440 ready/graceful shutdown0/exit0/gone/stderr empty. No new runtime diagnostic,SQL migration,character reset,HP threshold,kill timer,item/quest/progression grant or actual client operation. Original Unit/player/pet/guardian/native spell-hit/credit/group behavior retained where applicable;real full combat variants still need client tests."
+  ],
+  "aura_contract": "Ordinary self-cast Aura::GetCaster resolves the unit owner directly. Recipient fixes address supported distinct-caster/recipient contexts;native tests explicitly remove a real NPC caster. No observed ordinary self-use production/client crash is claimed.",
+  "diagnostics": {
+    "final": "Every source/native/build/link/runtime/cleanup check records canonical+own crash/log baselines and reviews exits/stdout/stderr/appended DBErrors/server warnings/errors/assertions. Final runs add no unexplained failure/new crash;canonical Crashes empty.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN;unchanged/untruncated/outside fixed"
+    },
+    "development": [
+      "Initial analysis helper used a regex Match slice as if it were a list;fixed explicit groups before production edits. Initial source host compilation needed explicit mixed-enum list types,Unit::ClearSpellTargets and const CustomSpellValues signature. All are fixture-only corrections paired with final full-class ASAN passes.",
+      "Native first attempts lacked the ordinary player UNIT_FIELD_MOD_TIME_RATE=1 initialization,so UpdateSpeed produced infinity. Source Player creation/login initialization confirms the required1.0 value;fixture now sets native time/casting rates1.0. Actual dismount controls now show2->1. No core gameplay formula was changed to accommodate the fixture.",
+      "Initial native full Brewfest target-aura expectations failed because the controlled bare profile has no usable mount capability. Investigated masked DONT_REPORT30 via test-only removal of its do-not-report flag;actual NOT_HERE81 matches SpellInfo::CheckLocation/GetMountCapability,not the initially hypothesized NO_MOUNTS_ALLOWED103. Final regression asserts the genuine refusal and separates native speed evidence from source-modeled faction/speed selection. No error suppressed or admission bypassed.",
+      "Native Hat fixture initially selected AfterEffectApply although its production hook is EffectApply. Corrected to the actual native dispatcher before final recipient proof;the production hook/type/mode was retained.",
+      "Hammer initial draft captured GetCaster at Load. Full missing-actor review found it would disable a valid owner aura if the caster initially did not resolve. Final Load snapshots GetUnitOwner origin;native actor is removed before script Load and that path passes. Model initially reloaded after migration,incorrectly resetting its origin;moved that Load check before the transition and final original/repaired matrix passes.",
+      "Local edit helper initially read UTF8 generic source using Windows cp1252 and failed before mutation. Explicit UTF8 fixed it. An already-running first build completed with the earlier Hammer draft;the final owner-load implementation was then rebuilt through original library paths and verified in actual canonical PE. No stale-library draft promoted.",
+      "PE inspection initially addressed the wrong composed-helper dictionary;corrected its instructions handle. Subsequent checks accounted for compiler-inlined Shadow UpdateVisuals and actual Glacial _Do_call tail adapter->lambda operator. Final checks trace the genuine owner/helper/guard/cast paths,not just embedded strings.",
+      "Whitespace review removed extra EOF blank lines in existing test fixtures before support commit. Ten initial production C5055 enum/floating arithmetic warnings plus4repeated generic warnings are unchanged expressions outside11selected classes. Native/model type-conversion/unused and existing Scepter warnings reviewed. No diagnostic/check disabled."
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/third-ten-spell-repairs-2026-11-09",
+    "archive_manifest_sha256": "2e77ac4c4207d4174a5e76db15b3b4e5af9b6ec797d359b4f3351971b12429a8",
+    "original_files": 2438,
+    "removed_files": 412,
+    "logical_removed_bytes": 2165102488,
+    "deletion_manifest": ".codex/third-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "7452aaf8b1be1c2ad0d53efd868572a04ba205ebd8c31ab320058ad6bde772d5",
+    "retained_rollbacks": [
+      ".codex/release-before-third-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-next-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-next e8ff1ea7 generation retired after newest pre-third ed56fd0f rollback verification",
+    "preserved": "Canonical EXE/MAP/config/cert/DLL/data,required original game/scripts libraries,reusable test source,OPEN Lady/LINK2/Slaghammer/security evidence and personal/character/database backups. No active log truncated. Private native configs deleted,not archived.",
+    "postcheck": "Protected/canonical/mixed-log hashes retained;active Crashes empty,no world/bnet process."
+  },
+  "pending": [
+    "Actual client/gear/item/visual/audio/movement/combat checks remain in every focused audit. Source models/native controlled contexts do not certify real riding/profession admission,all transform variants,equipped item healing/absorption,packet presentation or any complete artifact chain.",
+    "Authentic living Lady104856/spawn362095 activation/surrender/accepted209552-conversation1906/upperGrash362092 finisher/210247 cleanup remains OPEN. No HP percentage or killing timer invented.",
+    "Shared101430/103151 LINK2,Slaghammer crash/cache,mixedDBErrors,handshake and all36 whole chains retain their unresolved evidence. Default Slaghammer probe was not run;support-only includes did not overwrite its cache."
+  ],
+  "stop": "Exactly10 new product repairs implemented,verified to stated source/native scope,deployed,committed and individually pushed;stop after audit/cleanup/push handoff. No eleventh product repair started."
+}
