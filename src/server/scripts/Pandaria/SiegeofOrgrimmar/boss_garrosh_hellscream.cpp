@@ -982,7 +982,7 @@ class boss_garrosh_hellscream : public CreatureScript
                     case EVENT_INTRO_PHASE_FOUR:
                     {
                         checkevade = 0;
-                        me->ModifyHealth(int32(me->CountPctFromMaxHealth(60)));
+                        me->ModifyHealth(int64(me->CountPctFromMaxHealth(60)));
                         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
                         me->SetPower(POWER_ENERGY, 0);
                         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);

@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "GarroshHeal",
+  "base": "846511e03f8149e08f3d9ca37469fdfb172a256a",
+  "support_commit": "6a4e9c150ea0136cfba595f0f67cccdb5d167802",
+  "paths": [
+    "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp"
+  ],
+  "cause": "Independent60percent finalphase ModifyHealth cast toint32 could turn intendedheal into damage.",
+  "implementation": "Cast native percentage to int64 matching ModifyHealth;retain authored60percent and maxhealthclamp.",
+  "focused_checks_and_limits": "Independent counterfactual originalhealswrong,source1b+7.2b=>8.2b/ordinary/maxcap;actualnative endpoint same. Distinct from cached realm copies;separatecommit.",
+  "validation": {
+    "source": "10 original846511e03 expected-broken counterfactuals paired with10 fixed MSVCASAN cases. Entire selected callbacks and Immerseus DoAction extracted;Garrosh exact enter/return/final health dataflows and independent60percent heal statement. Controlled external endpoints. Final fixture uses actual Util::CalculatePct float arithmetic;retains native percentage precision rather than insisting on exact double arithmetic. Not full-core ASAN/client encounters.",
+    "native": "NinthTenNative:four complete original aura classes manually attached to real Aura objects and native calc/absorb/afterabsorb/periodic dispatcher contexts(Frost,Divine,Miasma,ManaBarrier);actual core type468 applies trigger214624 at controlled highhealth threshold. Exact Decimate source method/Alar-Garrosh-Immerseus selected sourceblocks exercise real Unit endpoints;GarroshHeal actual native CountPct/ModifyHealth endpoint. Matching26972 IDs/effects/bindings. Synthetic profiles/large health/controlled amounts,no character saves/import. Full10encounters/progression not traversed.",
+    "release": "Original game/scripts libraries final-linked from their required paths;staged then canonical verify_ninth_ten_release.py verifies10actual paths plus prior87selected paths. Canonical Scepter,ArtifactTierProgression,ScenarioResumeASAN pass. Owned canonical25612 freshready/graceful shutdown0/exit0/gone;stderr empty,protected hashes unchanged.",
+    "diagnostics": "All automated/source/native/build/PE/start tests have canonical+own before/after crashes/log lengths/times,exit/stdout/stderr/newDBErrors/server warnings/errors/assertions reviewed. Final runs clean. Initial native fixture c0000005 in GetSpellBonusData was caused by omitted native spell-bonus initialization,paired sameprobe after LoadSpellBonusess/LoadSpellThreats passes. No new crashreport files. Initial native exact17b assertion corrected to native float-percentage tolerance after tracing Util::CalculatePct;production math not changed.6C5055 warnings are retained baseline expressions.",
+    "scope": "Exactly10 fixes in9productfiles;metadata reverse reproduces846511e03. Existing thresholds/proportions/timers/actors/credit/group/pet/faction conditions retained. No SQL migration,character data rewrite,guessedHP threshold or killingtimer. Postbuild Miasma whitespace-only cleanup changes no compiled behavior;current linked path checked."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup OPEN;no invented threshold/timer.",
+    "LINK2,Slaghammer crash/cache,mixed7111byteDBErrors,intermittent handshake and all36wholechains/client checks OPEN. No default Slaghammer probe;no mixedlog truncation.",
+    "Prior MariaDB numeric CAST discrepancy OPEN;original82andcorrected94snapshots retained outside fixed at .codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09;no DB/query workaround.",
+    "Scouted TimeLoop105984 source lethality/maxheal narrowing remains OPEN and reverted:full highhealth recovery also depends on signed32bit native EffectHeal/addhealth/m_healing. No native highheal run attempted or broader corehealing change.26rawsource records retained outside fixed and TimeLoop runtime copies retained for focused investigation,not counted or certified fixed.",
+    "Actual client/faction/group/pet/guardian/one-hit/phase/retry/reentry/death/visual/aura cleanup and full raids remain pending. Synthetic >2^31/>2^32 health tests establish type/branch contracts,not actual equipped-player health or whole encounter fidelity."
+  ],
+  "canonical_world_sha256": "cf2333e1259998018e8fae189a1097d83524611bc3da33d97a2f01877c0307a8",
+  "patch_sha256": "0c08bd5a131cddd428ebdf5ffce68bffdde261e7f8b557e7e6eb5b10d07290a4",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/ninth-ten-repairs-2026-11-09"
+  },
+  "batch_audit": "docs/audits/ninth-ten-repairs-2026-11-09.json"
+}
