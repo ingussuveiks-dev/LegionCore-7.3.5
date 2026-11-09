@@ -7053,7 +7053,7 @@ class spell_gen_shadowy_reflection : public AuraScript
                 {
                     if (!owner->HasSpellCooldown(222479))
                     {
-                        if (owner->CountPctFromMaxHealth(50) > (owner->GetHealth() - damage))
+                        if (damage >= owner->GetHealth() || owner->CountPctFromMaxHealth(50) > owner->GetHealth() - damage)
                         {
                             isProc = true;
                             return;
