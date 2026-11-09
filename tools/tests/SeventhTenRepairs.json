@@ -1,0 +1,171 @@
+[
+  {
+    "key": "ArtifactCondition",
+    "title": "Evaluate artifact power conditions without truncating the native AP balance",
+    "paths": [
+      "src/server/game/Conditions/ConditionMgr.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/game/Conditions/ConditionMgr.cpp",
+        "old": "        case CONDITION_ARTIFACT_POWER:\n        {\n            if (Player* player = object->ToPlayer())\n            {\n                if (ConditionValue1)\n                {\n                    if (Item* artifact = player->GetItemByEntry(ConditionValue1))\n                    {\n                        uint32 count = 0;\n                        if (artifact->IsEquipped())\n                            count = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);\n\n                        condMeets = count >= ConditionValue2 && (!ConditionValue3 || count < ConditionValue3);\n                    }\n                }\n                else\n                {\n                    if (Item* artifact = player->GetArtifactWeapon())\n                    {\n                        uint32 count = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);\n                        condMeets = count >= ConditionValue2 && (!ConditionValue3 || count < ConditionValue3);\n                    }\n                }\n            }\n            break;\n        }\n",
+        "new": "        case CONDITION_ARTIFACT_POWER:\n        {\n            if (Player* player = object->ToPlayer())\n            {\n                if (ConditionValue1)\n                {\n                    if (Item* artifact = player->GetItemByEntry(ConditionValue1))\n                    {\n                        uint64 count = 0;\n                        if (artifact->IsEquipped())\n                            count = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);\n\n                        condMeets = count >= ConditionValue2 && (!ConditionValue3 || count < ConditionValue3);\n                    }\n                }\n                else\n                {\n                    if (Item* artifact = player->GetArtifactWeapon())\n                    {\n                        uint64 count = artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);\n                        condMeets = count >= ConditionValue2 && (!ConditionValue3 || count < ConditionValue3);\n                    }\n                }\n            }\n            break;\n        }\n"
+      }
+    ]
+  },
+  {
+    "key": "Transport",
+    "title": "Keep the complete saved transport counter through login presence checks",
+    "paths": [
+      "src/server/game/Entities/Player/Player.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/game/Entities/Player/Player.cpp",
+        "old": "ObjectGuid::LowType transLowGUID = uint32(fields[f_transguid].GetUInt64());",
+        "new": "ObjectGuid::LowType transLowGUID = fields[f_transguid].GetUInt64();"
+      },
+      {
+        "path": "src/server/game/Entities/Player/Player.cpp",
+        "old": "\"Player (guidlow %lu) have problems with transport guid (%lu). Teleport to bind location.\"",
+        "new": "\"Player (guidlow \" UI64FMTD \") have problems with transport guid (\" UI64FMTD \"). Teleport to bind location.\""
+      }
+    ]
+  },
+  {
+    "key": "Talbot",
+    "title": "Keep Talbot finale owner and native group credit on pet killing blows",
+    "paths": [
+      "src/server/scripts/Northrend/zone_borean_tundra.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/zone_borean_tundra.cpp",
+        "old": "       void JustDied(Unit* killer) override\n       {\n            if (!LeryssaGUID || !ArlosGUID)\n                return;\n\n            Creature* pLeryssa = Unit::GetCreature(*me, LeryssaGUID);\n            Creature* pArlos = Unit::GetCreature(*me, ArlosGUID);\n            if (!pLeryssa || !pArlos)\n                return;\n\n            pArlos->AI()->Talk(SAY_ARLOS_1);\n            pArlos->AI()->Talk(SAY_ARLOS_2);\n            pLeryssa->AI()->Talk(SAY_LERYSSA_1);\n            pArlos->Kill(pArlos, false);\n            pLeryssa->RemoveAura(SPELL_STUN);\n            pLeryssa->ClearUnitState(UNIT_STATE_STUNNED);\n            pLeryssa->SetWalk(false);\n            pLeryssa->GetMotionMaster()->MovePoint(0, 3722.114502f, 3564.201660f, 477.441437f);\n\n            if (Player* player = killer->ToPlayer())\n                player->RewardPlayerAndGroupAtEvent(NPC_PRINCE_VALANAR, 0);\n        }",
+        "new": "       void JustDied(Unit* killer) override\n       {\n            if (!LeryssaGUID || !ArlosGUID)\n                return;\n\n            Creature* pLeryssa = Unit::GetCreature(*me, LeryssaGUID);\n            Creature* pArlos = Unit::GetCreature(*me, ArlosGUID);\n            if (!pLeryssa || !pArlos)\n                return;\n\n            pArlos->AI()->Talk(SAY_ARLOS_1);\n            pArlos->AI()->Talk(SAY_ARLOS_2);\n            pLeryssa->AI()->Talk(SAY_LERYSSA_1);\n            pArlos->Kill(pArlos, false);\n            pLeryssa->RemoveAura(SPELL_STUN);\n            pLeryssa->ClearUnitState(UNIT_STATE_STUNNED);\n            pLeryssa->SetWalk(false);\n            pLeryssa->GetMotionMaster()->MovePoint(0, 3722.114502f, 3564.201660f, 477.441437f);\n\n            if (Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)\n                player->RewardPlayerAndGroupAtEvent(NPC_PRINCE_VALANAR, me);\n        }"
+      }
+    ],
+    "cls": "npc_counselor_talbot",
+    "npc": 25301,
+    "quest": 12019
+  },
+  {
+    "key": "Netherweb",
+    "title": "Resolve the eligible player owner for mob_netherweb_victim death continuation",
+    "paths": [
+      "src/server/scripts/Outland/zone_terokkar_forest.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Outland/zone_terokkar_forest.cpp",
+        "old": "        void JustDied(Unit* killer) override\n        {\n            Player* player = killer->ToPlayer();\n            if (!player)\n                return;\n\n            if (player->GetQuestStatus(10873) == QUEST_STATUS_INCOMPLETE)\n            {\n                if (rand()%100 < 25)\n                {\n                    me->SummonCreature(QUEST_TARGET, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);\n                    player->KilledMonsterCredit(QUEST_TARGET, ObjectGuid::Empty);\n                }\n                else\n                    me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);\n\n                if (rand()%100 < 75)\n                    me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);\n\n                me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);\n            }\n        }",
+        "new": "        void JustDied(Unit* killer) override\n        {\n            Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;\n            if (!player)\n                return;\n\n            if (player->GetQuestStatus(10873) == QUEST_STATUS_INCOMPLETE)\n            {\n                if (rand()%100 < 25)\n                {\n                    if (me->SummonCreature(QUEST_TARGET, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000))\n                        player->KilledMonsterCredit(QUEST_TARGET, ObjectGuid::Empty);\n                }\n                else\n                    me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);\n\n                if (rand()%100 < 75)\n                    me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);\n\n                me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);\n            }\n        }"
+      }
+    ],
+    "cls": "mob_netherweb_victim",
+    "npc": 22355,
+    "quest": 10873
+  },
+  {
+    "key": "Nerubar",
+    "title": "Resolve the eligible player owner for mob_nerubar_victim death continuation",
+    "paths": [
+      "src/server/scripts/Northrend/zone_borean_tundra.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/zone_borean_tundra.cpp",
+        "old": "        void JustDied(Unit* killer) override\n        {\n            Player* player = killer->ToPlayer();\n            if (!player)\n                return;\n\n            if (player->GetQuestStatus(11611) == QUEST_STATUS_INCOMPLETE)\n            {\n                uint8 uiRand = urand(0, 99);\n                if (uiRand < 25)\n                {\n                    player->CastSpell(me, 45532, true);\n                    player->KilledMonsterCredit(WARSONG_PEON, ObjectGuid::Empty);\n                }\n                else if (uiRand < 75)\n                    player->CastSpell(me, nerubarVictims[urand(0, 2)], true);\n            }\n        }",
+        "new": "        void JustDied(Unit* killer) override\n        {\n            Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;\n            if (!player)\n                return;\n\n            if (player->GetQuestStatus(11611) == QUEST_STATUS_INCOMPLETE)\n            {\n                uint8 uiRand = urand(0, 99);\n                if (uiRand < 25)\n                {\n                    if (player->CastSpell(me, 45532, true) == SPELL_CAST_OK)\n                        player->KilledMonsterCredit(WARSONG_PEON, ObjectGuid::Empty);\n                }\n                else if (uiRand < 75)\n                    player->CastSpell(me, nerubarVictims[urand(0, 2)], true);\n            }\n        }"
+      }
+    ],
+    "cls": "mob_nerubar_victim",
+    "npc": 25284,
+    "quest": 11611
+  },
+  {
+    "key": "Beliash",
+    "title": "Resolve the eligible player owner for npc_q93221_beliash death continuation",
+    "paths": [
+      "src/server/scripts/Legion/mardum.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/mardum.cpp",
+        "old": "        void JustDied(Unit* killer) override\n        {\n            if (Creature* Tyranna = ObjectAccessor::GetCreature(*me, TyrannaGuid))\n            {\n                Tyranna->DespawnOrUnsummon(500);\n                TyrannaGuid = ObjectGuid::Empty;\n            }\n            Player* player = killer->ToPlayer();\n            if (!player)\n                return;\n\n            Talk(TEXT_GENERIC_1, player->GetGUID());\n\n            std::list<Player*> playerList;\n            me->GetPlayerListInGrid(playerList, 60.0f);\n            for (auto plr : playerList)\n            {\n                plr->KilledMonsterCredit(CREDIT);\n                plr->CastSpell(plr, SPELL_AT_DEATH, true);\n            }\n        }",
+        "new": "        void JustDied(Unit* killer) override\n        {\n            if (Creature* Tyranna = ObjectAccessor::GetCreature(*me, TyrannaGuid))\n            {\n                Tyranna->DespawnOrUnsummon(500);\n                TyrannaGuid = ObjectGuid::Empty;\n            }\n            Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;\n            if (!player)\n                return;\n\n            Talk(TEXT_GENERIC_1, player->GetGUID());\n\n            std::list<Player*> playerList;\n            me->GetPlayerListInGrid(playerList, 60.0f);\n            for (auto plr : playerList)\n            {\n                plr->KilledMonsterCredit(CREDIT);\n                plr->CastSpell(plr, SPELL_AT_DEATH, true);\n            }\n        }"
+      }
+    ],
+    "cls": "npc_q93221_beliash",
+    "npc": 93221,
+    "quest": 38766
+  },
+  {
+    "key": "Caza",
+    "title": "Resolve the eligible player owner for npc_q39495_caza death continuation",
+    "paths": [
+      "src/server/scripts/Legion/mardum.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/mardum.cpp",
+        "old": "        void JustDied(Unit* killer) override\n        {\n            Player *player = killer->ToPlayer();\n            if (!player)\n                return;\n            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2, player->GetGUID());\n            player->KilledMonsterCredit(CREDIT);\n            player->CastSpell(player, SPELL_AT_DEATH, false);\n        }",
+        "new": "        void JustDied(Unit* killer) override\n        {\n            Player *player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;\n            if (!player)\n                return;\n            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2, player->GetGUID());\n            player->KilledMonsterCredit(CREDIT);\n            player->CastSpell(player, SPELL_AT_DEATH, false);\n        }"
+      }
+    ],
+    "cls": "npc_q39495_caza",
+    "npc": 96441,
+    "quest": 39495
+  },
+  {
+    "key": "Prolifica",
+    "title": "Resolve the eligible player owner for npc_q39495_prolifica death continuation",
+    "paths": [
+      "src/server/scripts/Legion/mardum.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/mardum.cpp",
+        "old": "        void JustDied(Unit* killer) override\n        {\n            Player *pl = killer->ToPlayer();\n            if (!pl)\n                return;\n            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2, pl->GetGUID());\n            \n            Conversation* conversation = new Conversation;\n            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 585, pl, NULL, *pl))\n                delete conversation;\n            if (Creature* tr = pl->SummonCreature(103432, 1807.34f, 1245.43f, 87.27f, 4.85f, TEMPSUMMON_MANUAL_DESPAWN, 0, pl->GetGUID(), NULL))\n            {\n              //  tr->AddPlayerInPersonnalVisibilityList(pl->GetGUID());\n                tr->GetMotionMaster()->MovePoint(0, 1814.97f, 1211.79f, 83.19f);\n            }\n            if (Creature* tr = pl->SummonCreature(103432, 1805.83f, 1241.35f, 87.03f, 4.85f, TEMPSUMMON_MANUAL_DESPAWN, 0, pl->GetGUID(), NULL))\n            {\n              //  tr->AddPlayerInPersonnalVisibilityList(pl->GetGUID());\n                tr->GetMotionMaster()->MovePoint(0, 1808.91f, 1204.31f, 82.97f);\n            }\n            if (Creature* tr = pl->SummonCreature(96278, 1809.17f, 1238.59f, 85.88f, 4.85f, TEMPSUMMON_MANUAL_DESPAWN, 0, pl->GetGUID(), NULL))\n            {\n              //  tr->AddPlayerInPersonnalVisibilityList(pl->GetGUID());\n                tr->GetMotionMaster()->MovePoint(0, 1811.69f, 1195.42f, 80.83f);\n            }\n\n        }",
+        "new": "        void JustDied(Unit* killer) override\n        {\n            Player *pl = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;\n            if (!pl)\n                return;\n            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2, pl->GetGUID());\n            \n            Conversation* conversation = new Conversation;\n            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 585, pl, NULL, *pl))\n                delete conversation;\n            if (Creature* tr = pl->SummonCreature(103432, 1807.34f, 1245.43f, 87.27f, 4.85f, TEMPSUMMON_MANUAL_DESPAWN, 0, pl->GetGUID(), NULL))\n            {\n              //  tr->AddPlayerInPersonnalVisibilityList(pl->GetGUID());\n                tr->GetMotionMaster()->MovePoint(0, 1814.97f, 1211.79f, 83.19f);\n            }\n            if (Creature* tr = pl->SummonCreature(103432, 1805.83f, 1241.35f, 87.03f, 4.85f, TEMPSUMMON_MANUAL_DESPAWN, 0, pl->GetGUID(), NULL))\n            {\n              //  tr->AddPlayerInPersonnalVisibilityList(pl->GetGUID());\n                tr->GetMotionMaster()->MovePoint(0, 1808.91f, 1204.31f, 82.97f);\n            }\n            if (Creature* tr = pl->SummonCreature(96278, 1809.17f, 1238.59f, 85.88f, 4.85f, TEMPSUMMON_MANUAL_DESPAWN, 0, pl->GetGUID(), NULL))\n            {\n              //  tr->AddPlayerInPersonnalVisibilityList(pl->GetGUID());\n                tr->GetMotionMaster()->MovePoint(0, 1811.69f, 1195.42f, 80.83f);\n            }\n\n        }"
+      }
+    ],
+    "cls": "npc_q39495_prolifica",
+    "npc": 98986,
+    "quest": 39495
+  },
+  {
+    "key": "Immolanth",
+    "title": "Resolve the eligible player owner for npc_q39683 death continuation",
+    "paths": [
+      "src/server/scripts/Legion/warden_prison.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/warden_prison.cpp",
+        "old": "        void JustDied(Unit* killer) override\n        {\n            Player *player = killer->ToPlayer();\n            if (!player)\n                return;\n\n            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_3, player->GetGUID());\n            player->CastSpell(player, REWARD_SPELL, true);\n            player->CastSpell(player, REWARD_SPELL2, true);\n            player->KilledMonsterCredit(CREDIT);\n        }",
+        "new": "        void JustDied(Unit* killer) override\n        {\n            Player *player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;\n            if (!player)\n                return;\n\n            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_3, player->GetGUID());\n            player->CastSpell(player, REWARD_SPELL, true);\n            player->CastSpell(player, REWARD_SPELL2, true);\n            player->KilledMonsterCredit(CREDIT);\n        }"
+      }
+    ],
+    "cls": "npc_q39683",
+    "npc": 96682,
+    "quest": 39683
+  },
+  {
+    "key": "Bastillax",
+    "title": "Resolve the eligible player owner for npc_q39694 death continuation",
+    "paths": [
+      "src/server/scripts/Legion/warden_prison.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/warden_prison.cpp",
+        "old": "        void JustDied(Unit* killer) override\n        {\n            Player *player = killer->ToPlayer();\n            if (!player)\n                return;\n\n            Talk(2);\n\n            std::list<Player*> playerList;\n            me->GetPlayerListInGrid(playerList, 60.0f);\n            for (auto plr : playerList)\n            {\n                plr->CastSpell(plr, REWARD_SPELL, true);\n                plr->CastSpell(plr, REWARD_SPELL2, true);\n                plr->KilledMonsterCredit(CREDIT);\n                plr->KilledMonsterCredit(CREDIT2);\n            }\n        }",
+        "new": "        void JustDied(Unit* killer) override\n        {\n            Player *player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;\n            if (!player)\n                return;\n\n            Talk(2);\n\n            std::list<Player*> playerList;\n            me->GetPlayerListInGrid(playerList, 60.0f);\n            for (auto plr : playerList)\n            {\n                plr->CastSpell(plr, REWARD_SPELL, true);\n                plr->CastSpell(plr, REWARD_SPELL2, true);\n                plr->KilledMonsterCredit(CREDIT);\n                plr->KilledMonsterCredit(CREDIT2);\n            }\n        }"
+      }
+    ],
+    "cls": "npc_q39694",
+    "npc": 96783,
+    "quest": 39694
+  }
+]
