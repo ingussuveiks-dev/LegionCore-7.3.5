@@ -1,0 +1,98 @@
+{
+  "date": "2026-11-09",
+  "status": "SUPPORT_FOR_EXACTLY_10",
+  "base": "efd3899744e9312a36ef8f3e66c536c64243e8b9",
+  "cases": [
+    {
+      "key": "Artifact",
+      "title": "Preserve the full artifact AP balance during scripted tier unlock",
+      "paths": [
+        "src/server/scripts/Spells/spell_quest.cpp"
+      ]
+    },
+    {
+      "key": "Chain",
+      "title": "Compare native 64 bit health deficits when selecting Chain Heal jumps",
+      "paths": [
+        "src/server/game/Spells/Spell.cpp"
+      ]
+    },
+    {
+      "key": "Regen",
+      "title": "Keep regeneration health and its native delta in 64 bits",
+      "paths": [
+        "src/server/game/Entities/Player/Player.cpp"
+      ]
+    },
+    {
+      "key": "Resurrection",
+      "title": "Restore resurrection health without narrowing it to 32 bits",
+      "paths": [
+        "src/server/game/Entities/Player/Player.cpp"
+      ]
+    },
+    {
+      "key": "Ancestral",
+      "title": "Avoid narrowing and overflow in the Ancestral Protection damage limit",
+      "paths": [
+        "src/server/scripts/Spells/spell_shaman.cpp"
+      ]
+    },
+    {
+      "key": "Betrug",
+      "title": "Require a valid accepted Betrug anchor before moving Mighty Smash players",
+      "paths": [
+        "src/server/scripts/Legion/VioletHoldLegion/boss_fel_lord_betrug.cpp"
+      ]
+    },
+    {
+      "key": "Evade",
+      "title": "Complete Orinoko companion cleanup and player owner quest credit",
+      "paths": [
+        "src/server/scripts/Northrend/zone_zuldrak.cpp",
+        "src/server/game/AI/CreatureAI.cpp"
+      ]
+    },
+    {
+      "key": "DumpIDs",
+      "title": "Preserve full GUID widths across character dump collection and remapping",
+      "paths": [
+        "src/server/game/Tools/PlayerDump.h",
+        "src/server/game/Tools/PlayerDump.cpp"
+      ]
+    },
+    {
+      "key": "DumpPets",
+      "title": "Keep imported pets, declined owners and child rows on one valid PetNumber map",
+      "paths": [
+        "src/server/game/Tools/PlayerDump.h",
+        "src/server/game/Tools/PlayerDump.cpp"
+      ]
+    },
+    {
+      "key": "DumpParse",
+      "title": "Parse escaped dump fields without losing columns or wrapping a missing VALUES prefix",
+      "paths": [
+        "src/server/game/Tools/PlayerDump.cpp"
+      ]
+    }
+  ],
+  "validation": {
+    "source": "Test-SixthTenRepairs.ps1:10 pinned efd389974 counterfactuals paired with10 repaired extracted complete methods/classes or exact changed native branches under MSVC-ASAN. External world/cast/group endpoints modeled. Evade rerun after lifetime expansion;existing10-context EventProcessorAbort ASAN passes. Not full-core ASAN/client traversal.",
+    "native": "Test-MagnarReadinessNative -AdditionalProbe SixthTenNative:immutable original Release library inputs;real Item AP field-width,Field64 collector/remap;actual Player regen,exact resurrection restore block,Chain selection on actual Players;real207498 Absorb dispatcher;full Orinoko AI,actual Whisker TempSummon deletion on evade/death and active55929 reference -> abort -> normal Unit release -> event deletion;real202328 missing-anchor refusal. Synthetic map/profiles/IDs,earlier state controlled. Database stays readonly,no character save/import.",
+    "sql": "Native generated four synthetic INSERT statements roundtrip in faithful minimal BIGINT/INT UNSIGNED/name TEMP tables. Separate SELECT+CREATE TEMP-only reader,denied persistent DELETE WHERE0 canary,user dropped finally. Item1099511627993,pet2147483648,owner1099511627793,escaped O'Brien and child link read back correctly. No actual character backup import or persistent DML.",
+    "release": "Original game.lib/scripts.lib final-link paths rebuilt;staged and canonical verify_sixth_ten_release.py checks selected10 paths plus prior57. Unused memory LoadDump overload compiles in library and is source-tested;linker omits it from EXE. Canonical Scepter -VerifyReleaseBinary,ArtifactTierProgression -VerifyReleaseBinary and PetLoadSelection pass.",
+    "scope": "verify_sixth_ten_scope.py reverses metadata edits in9production files to efd389974. Orinoko includes shared CreatureAI deferred spell-event deletion and owner/group credit. Unrelated gates/timers/progression/schema unchanged;no migration.",
+    "runtime": "Canonical+own pre/post crashes/log sizes/timestamps and exit/stdout/stderr/newDBErrors/server warning/error/assertion review for tests/build/link/start. Final tests clean. Owned canonical startup ready/graceful shutdown0/exit0/gone;no user process stopped;configs/certs/DLLs retained."
+  },
+  "pending": [
+    "Authentic living Lady activation/surrender/conversation1906/Grash finisher/cleanup remains OPEN;no HP threshold or kill timer invented.",
+    "Shared LINK2/Slaghammer crash/cache,mixed canonical7111-byte DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run,its cache preserved.",
+    "Orinoko SAY_CALL_FOR_HELP=-1571032 narrows into uint8;actual matching creature_text has no CreatureID30020 rows. Missing speech remains OPEN;no invented text/group. LowHP speech path was not invoked in fixture.",
+    "Actual client/combat/visual/audio/equipment/group/pet/guardian/retry/reentry/full-instance traversal remains pending. Controlled native/source endpoints do not certify all alternate gameplay paths.",
+    "35compiler warning occurrences reference source expressions present verbatim in efd389974;inventory retained. Historical warnings stay visible,not certified repaired."
+  ],
+  "data": "Matching26972 DB2/native catalog spell234684/207498/202328 and bindings;native world templates30020/30113/92879/102446. Character schema-only readback BIGINTguid/item/owner,INTunsigned PetNumber. No personal rows exported. Fixes follow local typed health/ID/event contracts;newer Trinity behavior not transplanted.",
+  "development": "Initial native TEMP DDL/DML was rejected by correct readonly core connection and subsequent missingtable query aborted. Corrected probe stays readonly and generates SQL for separate restricted TEMP-only connection. Original own errors retained with paired finalnative+SQL passes. Real native evade leak diagnostics led to shared CreatureAI cause repair,not suppression. Fixture initially expected all events empty although unrelated events remain;assertion now verifies actual current-spell release and final clean diagnostics. Initial compile/schema/PE/test fixture failures retained;not successful ordinary tests.",
+  "batch_audit": "docs/audits/sixth-ten-repairs-2026-11-09.json"
+}
