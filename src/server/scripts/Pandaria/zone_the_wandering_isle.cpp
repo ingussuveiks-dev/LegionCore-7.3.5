@@ -487,11 +487,12 @@ public:
 
         void JustDied(Unit* killer)
         {
-            if (killer->GetTypeId() != TYPEID_PLAYER || !me->ToTempSummon())
+            Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            if (!player || !me->ToTempSummon())
                 return;
 
             if (Creature* owner = me->GetMap()->GetCreature(me->ToTempSummon()->GetSummonerGUID()))
-                owner->AI()->SetGUID(killer->GetGUID(), 0);
+                owner->AI()->SetGUID(player->GetGUID(), 0);
         }
     };
 };

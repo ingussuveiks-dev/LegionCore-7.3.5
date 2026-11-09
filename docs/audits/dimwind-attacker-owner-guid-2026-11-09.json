@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Dimwind",
+  "base": "f884e6321d81698f10bf0c1eb69cd2ddad2d9691",
+  "support_commit": "05231e01f7a8720fc700b04e5a8cfd286cf5f8e9",
+  "paths": [
+    "src/server/scripts/Pandaria/zone_the_wandering_isle.cpp"
+  ],
+  "cause": "TempSummon54130 passed petGUID or skipped owner contribution to actual MinDimwind summoner.",
+  "implementation": "Resolve eligible owner and send actual playerGUID only to existing TempSummon NPC summoner;ordinary database scamps remain excluded.",
+  "focused_checks_and_limits": "Native29419 objective54855;whole child callback guards/pet/null/missing NPC. Parent4wave failedspawn/despawn/progression not repaired or certified;client fullwave pending.",
+  "validation": {
+    "source": "10 pinned f884e6321 expected-broken counterfactuals paired with10 repaired MSVC-ASAN whole selected callback/class cases. BossAI native EventProcessor additionally10 ASAN contexts. Hyjal two players/factions,outside player,failed cast retry only,quest/logout,reentry,and two100-update threads. Controlled endpoints;ASAN is not TSAN or full-core/client traversal.",
+    "native": "Actual BossAI selfcast native Suicide7:death once,two ordinary Unit updates release spell events without prior nondeletable diagnostic.32actual Webbed pool templates/urand31contract and original Hyjal spell/area catalog.7exact selected owner assignments within21real Unit::Kill Player/Pet/Guardian dispatches;second Kill no repeat,28null/unowned/lost owner/ownerless-charmer controls. Full7NPC progression callbacks and Hyjal casts remain source-modeled;no character saves/import.",
+    "release": "Original game.lib/scripts.lib final-linked to staged then canonical Release;verify_eighth_ten_release.py checks10selected linked repairs and prior77 paths. Canonical Scepter,ArtifactTierProgression and ScenarioResumeASAN retained. Main server reached fresh ready and gracefully shutdown0/exit0;task-owned process gone.",
+    "diagnostics": "Every test/build/link/start has canonical+own pre/post crashes/log size/time,exit/stdout/stderr/newDBErrors/server diagnostics. Initial actual BossAI Suicide7 counterfactual emitted exactly expected nondeletable-spell7 leak diagnostic;paired repaired native and canonical start clean. No new crashes. Initial fixture compile/PE linear-switch-table decode failures repaired and rerun;all expected linked-call assertions retained. Mixed canonical DBErrors7111bytes/SHAfa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 unchanged.",
+    "scope": "verify_eighth_ten_scope reverses10edits in9production files to f884e6321. No SQL migration,character rewrite or guessed combat threshold/timer. Local26972 runtime/database/script IDs first;rejected unbound/unsupported candidates,not copied modern APIs."
+  },
+  "pending": [
+    "Sharasdal living Lady authentic activation/surrender/conversation1906/Grash/cleanup OPEN;no invented HP threshold or killing timer.",
+    "LINK2,Slaghammer crash/cache,mixed DBErrors,intermittent handshake and all36whole artifact chains/client traversal remain OPEN. Default Slaghammer probe not run.",
+    "Prior MariaDB unsigned numeric CAST issue remains OPEN_EXTERNAL_SQL_EXPRESSION;original82 and corrected94 raw snapshots remain hash-verified outside fixed in .codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09. No production DB/query workaround.",
+    "Actual client combat/credit/group/faction/failed actor/cast/retry/reentry/visual/audio/cleanup remains pending. Cast acceptance alone does not prove summon acknowledgement. Explicit encounter force-cleanup overrides outside selected BossAI base remain outside this repair."
+  ],
+  "canonical_world_sha256": "6b9779a64d93040aac28b866be04513468f867cb27d25aecda28d1652b7c1c30",
+  "patch_sha256": "2c7953dba06676023c74c8f81e97c3de5a1e89a23dac22a75cad09f54ce9b79b",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/eighth-ten-repairs-2026-11-09"
+  },
+  "batch_audit": "docs/audits/eighth-ten-repairs-2026-11-09.json"
+}
