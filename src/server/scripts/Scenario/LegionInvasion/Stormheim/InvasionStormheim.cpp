@@ -200,22 +200,53 @@ public:
 
         }
         
+        uint64 boardingGeneration = 0;
+        ObjectGuid boardedPlayerGuid;
+        bool scriptedControl = false;
+
         void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
         {
-            if (who->IsPlayer())                
+            if (!who || !who->IsPlayer())
+                return;
+
+            if (!apply)
             {
-                if (Player* player = who->ToPlayer())
-                {
-                    me->AddDelayedEvent(2000, [this, player] () -> void
-                    {
-                        player->SetClientControl(me, false);                        
-                        me->AddDelayedEvent(3000, [this] () -> void
-                        {
-                            me->GetMotionMaster()->MovePath((urand(1, 2) == 1 ? 10993814 : 10993815), true, irand(-20, 20), irand(-20, 20));
-                        });
-                    });
-                }
+                if (who->GetGUID() != boardedPlayerGuid)
+                    return;
+                ++boardingGeneration;
+                if (scriptedControl)
+                    who->ToPlayer()->SetClientControl(who, true);
+                scriptedControl = false;
+                boardedPlayerGuid.Clear();
+                return;
             }
+
+            if (who->GetVehicleBase() != me || boardedPlayerGuid == who->GetGUID())
+                return;
+
+            boardedPlayerGuid = who->GetGUID();
+            uint64 const generation = ++boardingGeneration;
+            me->AddDelayedEvent(2000, [this, playerGuid = boardedPlayerGuid, generation]() -> void
+            {
+                if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)
+                    return;
+                Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
+                if (!player || !player->IsAlive() || player->GetVehicleBase() != me)
+                    return;
+
+                player->SetClientControl(me, false);
+                scriptedControl = true;
+                me->AddDelayedEvent(3000, [this, playerGuid, generation]() -> void
+                {
+                    if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)
+                        return;
+                    Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
+                    if (!player || !player->IsAlive() || player->GetVehicleBase() != me)
+                        return;
+
+                    me->GetMotionMaster()->MovePath((urand(1, 2) == 1 ? 10993814 : 10993815), true, irand(-20, 20), irand(-20, 20));
+                });
+            });
         }
         
         void MovementInform(uint32 moveType, uint32 pointId) override
