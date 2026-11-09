@@ -3325,13 +3325,13 @@ class spell_gen_gobelin_gumbo : public SpellScriptLoader
 
             void OnUpdate(uint32 diff, AuraEffect* aurEff)
             {
-                if (GetCaster())
+                if (Unit* owner = GetUnitOwner())
                 {
                     if (burpTimer <= diff)
                     {
                         burpTimer = 10000;
                         if (roll_chance_i(30))
-                            GetCaster()->CastSpell(GetCaster(), GOBELING_GUMBO_BURP, true);
+                            owner->CastSpell(owner, GOBELING_GUMBO_BURP, true);
                     }
                     else
                         burpTimer -= diff;
