@@ -19,6 +19,7 @@ $source=$source.Substring($source.IndexOf('class npc_vigfus_bladewind_last :'))
 foreach($entry in @(@('EncounterReady','bool IsEncounterReady('),@('CanAIAttack','bool CanAIAttack('),@('AttackStart','void AttackStart('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]))}
 [IO.File]::WriteAllText("$out/Visibility.inc",$(if($Baseline){''}else{Block $source 'bool CanBeVisibleFor('}))
 $source=Source 'src/server/scripts/Scenario/Artifacts/Warrior/Warswords/instance_warswords.cpp'
+if(!$Baseline){. "$PSScriptRoot/WarswordsStageFourScope.ps1";$source=Remove-WarswordsStageFourScope $source}
 foreach($entry in @(@('Create','void OnCreatureCreate('),@('Step','void onScenarionNextStep('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]))}
 [IO.File]::WriteAllText("$out/Remove.inc",$(if($Baseline){''}else{Block $source 'void OnCreatureRemove('}))
 $source=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw

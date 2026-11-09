@@ -7,6 +7,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "MapManager.h"
+#include <memory>
 
 namespace WarswordsArrival
 {
@@ -52,6 +53,7 @@ public:
         WarswordsWaves::State waves;
         bool myscenario;
         WorldLocation graveyard;
+        std::shared_ptr<uint8> sceneLifetime = std::make_shared<uint8>();
 
         WorldLocation* GetClosestGraveYard(float /*x*/, float /*y*/, float /*z*/) override
         {
@@ -91,6 +93,7 @@ public:
 
         void Initialize() override
         {
+            sceneLifetime = std::make_shared<uint8>();
             waves.Reset();
             myscenario = false;
         }
@@ -141,11 +144,23 @@ public:
                     for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
                     {
                         Player* player = i->getSource();
-                        if (!player || !player->CanContact())
+                        if (!WarswordsArrival::IsParticipant(player, instance->GetInstanceId(), this))
                             continue;
 
-                        player->AddDelayedEvent(3000, [player]() -> void
+                        uint32 instanceId = instance->GetInstanceId();
+                        auto attempt = player->GetQuestCancellationReceipt(40043);
+                        std::weak_ptr<uint8> lifetime = sceneLifetime;
+                        player->AddDelayedEvent(3000, [player, instanceId, script = this, attempt, lifetime]() -> void
                         {
+                            // The Player owns the queue, but can leave this story
+                            // before it runs. Never dereference the old instance.
+                            if (lifetime.expired() || !attempt || attempt->load() ||
+                                !WarswordsArrival::IsParticipant(player, instanceId, script) ||
+                                attempt != player->GetQuestCancellationReceipt(40043))
+                                return;
+                            Scenario* scenario = sScenarioMgr->GetScenario(instanceId);
+                            if (!scenario || scenario->GetCurrentStep() != 4)
+                                return;
                             player->CastSpell(player, 189740); // scene
                         });
                         break;

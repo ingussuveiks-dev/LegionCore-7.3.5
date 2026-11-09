@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CHECKS_PASS_CLIENT_PENDING",
+  "base": "6a5b1f80bae9c464d04926619a554ca474f4e42f",
+  "scope": "Only Warswords map1511/scenario944 step4 deferred189740 admission in the shared instance script. Original three-second delay, first eligible participant, native scene, arrival/waves/bosses/graveyards/acquisition remain intact.",
+  "cause": "The instance queued an unconditional Player-owned189740 self-cast. The Player and its native function queue can survive quest cancellation/retake or departure from the originating story. Pinned full callback/native tests also demonstrate that advancing the stage or resetting the original instance does not cancel the old request. This is a reproduced stale scene admission defect, not an observed production crash.",
+  "local_evidence": [
+    "Current local scripts and prior warswords-arrival-admission-2026-10-25 explicitly left189740 callbacks for a separate audit. Existing WarswordsArrival::IsParticipant defines40043/Warrior/1511/944/native contact/alive/teleport/map/instance/script admission.",
+    "Actual matching26972 SpellInfo loaded with read-only Hotfix:189740 effect0=6/aura430/misc1060;effects1/2 empty. Native SpellMgr::LoadSpellScene and ordinary native CastSpell produce the real scene aura. No invented scene/quest/kill effect was substituted.",
+    "Native Player::SetQuestStatus(NONE) calls CancelQuestObjects;GetQuestCancellationReceipt distinguishes a subsequent accepted attempt. Native Unit::AddDelayedEvent uses its FunctionProcessor;the actual queue and registered complete instance were executed. No persistent character writes/reset or live SQL migration."
+  ],
+  "implementation": "Require the existing actual participant policy before selecting the recipient. Capture the original instance id/script identity, exact quest cancellation receipt and weak instance generation. Before the original self-cast require a surviving generation,uncancelled identical receipt,the same participant context and current step4. Initialize replaces the generation;instance destruction expires it. The queued function never dereferences its captured old instance script. Same live original-instance re-entry with the same quest attempt can still qualify;this is not a persisted encounter checkpoint or a new active-scene cleanup controller.",
+  "checks": {
+    "counterfactual_source": "Pinned6a5b1f80b complete transition plus native FunctionProcessor,three explicitly expected-broken foreign-map/cancelled-quest/destroyed-instance cases. Cast service controlled;not successful gameplay.",
+    "source": "38 ASAN cases compile complete current transition and unchanged participant helper plus native FunctionProcessor. Original2999+1ms deadline and one queue dispatch,valid incomplete/complete quest,foreign map/instance/script/scenario,death/contact/logout/teleport/class/quest status,abandon/retake,reset/destruction,fresh attempt and eligible selection behind a foreign-class visitor. Map/Player/cast services controlled.",
+    "native_counterfactual": "Twelve Human/Orc whole registered pinned-instance/native Player/queue/real scene cases. Original189740 aura still appears after actual cancellation/retake,stage advance and reset;ordinary controls pass. Expected-broken contexts are paired with the repaired native regression.",
+    "native_repaired": "Twelve current whole registered instance/native Player/quest receipt/FunctionProcessor/26972 scene cases. Ordinary incomplete/complete quests retain the actual189740 aura after3s;cancelled or retaken attempts,advanced stage and reset do not. No item/progress mutation. Stage/poses controlled;not client traversal.",
+    "retained": "36 final-boss visibility and72 first-boss re-entry source contexts pass. Their older isolated transition is retained only after exact current callback and whole-instance delta certificate;current transition/whole registered instance are executed by the new suite. Existing24 ASAN tracked-wave contexts and matching26972 native criterion catalog pass.",
+    "release": "Original generated scripts/Release/scripts.lib rebuilt without global OutDir;separate world/bnet final links verify original dependency paths. Matching staged and canonical EXE/MAP checked. Selected registered instance/vtable/native Scenario dispatcher and real deferred callback prove original3000ms/40043,initial+late participant gate,weak generation and cancellation before old-script comparison,exact receipt identity,live stage4 before native189740 self-cast. Retained full Warswords visibility/arrival/combat/loot/return PE chain and mandatory canonical Scepter plus prior seven-lifecycle PE checks pass.",
+    "runtime": "Task-owned canonical PID15872 fresh ready,server shutdown0,exit0,gone,stderr empty;protected configuration/certificates/DLL hashes unchanged. No user or unknown process stopped."
+  },
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "55a232ff701b922ef833e11ffee46074b920d244b8d73d13b68558edf2e5ceca",
+    "rollback": ".codex/release-before-warswords-stage-four-2026-11-09"
+  },
+  "diagnostics": {
+    "result": "Before/after canonical and own-runtime crash/log snapshots,exit/stdout/stderr review for every test/build/link/start. Final checks have no new/changed crash,appended DBErrors or unexplained server warning/error/assertion;canonical active Crashes empty.",
+    "preserved_open": "Canonical mixed DBErrors.log7111 bytes SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 retained unchanged/untruncated. Shared101430/103151 LINK2,Slaghammer crash/cache and living-Lady research remain OPEN outside fixed.",
+    "development": [
+      "First new native fixture used a nonexistent SPELL_AURA_PLAY_SCENE enum;replaced with this core's actual SPELL_AURA_ACTIVATE_SCENE430. Original compiler diagnostic retained with passing rerun.",
+      "Initial fixture asserted absolute queue size1,but actual Player already has native queued work. Corrected to require exactly one additional request;original failed assertion retained with passing native pairs.",
+      "A repaired native run passed its behavior assertions but its input certificate rejected a concurrent explicit memory-header addition. Result not accepted as final;the subsequent immutable-input native run passes.",
+      "First composed PE wrapper requested instructions from the wrong returned namespace. Corrected to the existing visibility verifier's instruction decoder;full staged and canonical chains pass. No production check or failure log suppressed.",
+      "Retained fixture C4100 unused seer,Scepter C4389/C4244 signed-width warnings in unchanged native route/fixture code,and first full-link PDB notice retained. Production build adds no compiler warning."
+    ]
+  },
+  "cleanup": {
+    "status": "PENDING_HASH_VERIFIED_ARCHIVE_AND_TEMPORARY_OUTPUT_CLEANUP",
+    "planned_archive": "build-extractors/bin/Release/fixed/warswords-stage-four-2026-11-09"
+  },
+  "pending": [
+    "Actual client Warswords fourth-stage scene/audio/timing,departure/re-entry/abandon/retake interactions and whole40043/944 remain separate;no client was operated.",
+    "Sharasdal living Lady104856/362095 activation/surrender threshold,accepted209552/1906,Grash105298/362092 finisher and210247 cleanup remain OPEN. Current source and fresh upstream Lady class still provide no authentic complete producer;no threshold,kill timer or progression was invented. Retained native assets/video research is historical evidence,not new video viewing.",
+    "Shared LINK2/Slaghammer evidence,other client checks and all36 whole artifact chains remain OPEN."
+  ],
+  "continuation": "Continue authentic living-Lady evidence when available,or another independently demonstrable unfinished artifact defect. Prior seven lifecycle fixes remain deployed;do not rerun the default Slaghammer handoff probe or clear the mixed log."
+}
