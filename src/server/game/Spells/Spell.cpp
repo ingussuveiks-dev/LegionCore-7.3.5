@@ -2115,12 +2115,12 @@ void Spell::SearchChainTargets(std::list<WorldObject*>& targets, uint32 chainTar
 
         if (isChainHeal)
         {
-            uint32 maxHPDeficit = 0;
+            uint64 maxHPDeficit = 0;
             for (auto& tempTarget : tempTargets)
             {
                 if (Unit* unitTarget = tempTarget->ToUnit())
                 {
-                    uint32 deficit = unitTarget->GetMaxHealth(m_caster) - unitTarget->GetHealth(m_caster);
+                    uint64 deficit = unitTarget->GetMaxHealth(m_caster) - unitTarget->GetHealth(m_caster);
                     if ((deficit > maxHPDeficit || !foundItr) && nextTarget->IsWithinDist(unitTarget, jumpRadius) && nextTarget->IsWithinLOSInMap(unitTarget))
                     {
                         foundItr = unitTarget;
