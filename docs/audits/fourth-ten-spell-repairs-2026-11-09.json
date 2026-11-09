@@ -1,0 +1,359 @@
+{
+  "date": "2026-11-09",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "8189c1241c4130cb04816c20ff852fdaea7dfdba",
+  "support_commit": "4420f08d03a2a6f9c2ed2963ad804e597d5e57fc",
+  "implementation_head": "8bb9d2dd234a4c7ddc0da948532dff4888343378",
+  "fixes": [
+    {
+      "key": "Valor",
+      "spell": 219567,
+      "title": "Use the aura owner in Commanders Valor update",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/ClassHalls/commanders_valor.cpp",
+          "classes": [
+            "aura_commanders_valor_location"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "key": "Valor",
+          "path": "src/server/scripts/Legion/ClassHalls/commanders_valor.cpp",
+          "cls": "aura_commanders_valor_location"
+        }
+      ],
+      "slug": "commanders-valor-update-owner",
+      "audit": "docs/audits/commanders-valor-update-owner-2026-11-09.json",
+      "commit": "522a9a4b7b34d12254848213ac008014327e6732"
+    },
+    {
+      "key": "Tirathon",
+      "spell": 190833,
+      "title": "Use the beam aura owner for Tirathons repeated damage",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/VaultoftheWardens/boss_tirathon_saltheril.cpp",
+          "classes": [
+            "spell_tirathon_beam_dmg"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "key": "Tirathon",
+          "path": "src/server/scripts/Legion/VaultoftheWardens/boss_tirathon_saltheril.cpp",
+          "cls": "spell_tirathon_beam_dmg"
+        }
+      ],
+      "slug": "tirathon-beam-update-owner",
+      "audit": "docs/audits/tirathon-beam-update-owner-2026-11-09.json",
+      "commit": "dec569f0163fcf2f059e93ad1d406d122a2f9a7e"
+    },
+    {
+      "key": "Frog",
+      "spell": 147655,
+      "title": "Trigger Gulp Frog Toxin at the actual tenth stack",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "classes": [
+            "spell_gulp_frog_toxin"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "key": "Frog",
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "cls": "spell_gulp_frog_toxin"
+        }
+      ],
+      "slug": "gulp-frog-tenth-stack",
+      "audit": "docs/audits/gulp-frog-tenth-stack-2026-11-09.json",
+      "commit": "2b53a2047fa2b399a01c69752e3665da858db4c2"
+    },
+    {
+      "key": "Vantus",
+      "spell": 0,
+      "title": "Bind Legion Vantus effects to their own encounter lifecycle",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/TheEmeraldNightmare/the_emerald_nightmare.cpp",
+          "classes": [
+            "spell_vantus_rune_the_emerald_nightmare"
+          ]
+        },
+        {
+          "path": "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp",
+          "classes": [
+            "spell_vantus_rune_the_nighthold"
+          ]
+        },
+        {
+          "path": "src/server/scripts/Legion/TrialOfValor/trial_of_valor.cpp",
+          "classes": [
+            "spell_vantus_rune_trial_of_valor"
+          ]
+        },
+        {
+          "path": "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.cpp",
+          "classes": [
+            "spell_vantus_rune_tomb_of_sargeras"
+          ]
+        },
+        {
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp",
+          "classes": [
+            "spell_vantus_rune_antorus"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "key": "VantusEN",
+          "path": "src/server/scripts/Legion/TheEmeraldNightmare/the_emerald_nightmare.cpp",
+          "cls": "spell_vantus_rune_the_emerald_nightmare_AuraScript"
+        },
+        {
+          "key": "VantusNH",
+          "path": "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp",
+          "cls": "spell_vantus_rune_the_nighthold_AuraScript"
+        },
+        {
+          "key": "VantusTOV",
+          "path": "src/server/scripts/Legion/TrialOfValor/trial_of_valor.cpp",
+          "cls": "spell_vantus_rune_trial_of_valor_AuraScript"
+        },
+        {
+          "key": "VantusTOS",
+          "path": "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.cpp",
+          "cls": "spell_vantus_rune_tomb_of_sargeras_AuraScript"
+        },
+        {
+          "key": "VantusAntorus",
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp",
+          "cls": "spell_vantus_rune_antorus_AuraScript"
+        }
+      ],
+      "added": [
+        "src/server/scripts/Legion/VantusRuneLifecycle.h"
+      ],
+      "slug": "legion-vantus-encounter-lifecycle",
+      "audit": "docs/audits/legion-vantus-encounter-lifecycle-2026-11-09.json",
+      "commit": "32c8a024f5ed8b22bbdf6f57f4d768db9fa94e97"
+    },
+    {
+      "key": "Void",
+      "spell": 108968,
+      "title": "Preserve fractional health percentages in Void Shift",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "classes": [
+            "spell_pri_void_shift"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "key": "Void",
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "cls": "spell_pri_void_shift"
+        }
+      ],
+      "slug": "void-shift-fractional-health",
+      "audit": "docs/audits/void-shift-fractional-health-2026-11-09.json",
+      "commit": "3cb5ef10318e841afae892acbe287a65c687b0e1"
+    },
+    {
+      "key": "Swift",
+      "spell": 40121,
+      "title": "Calculate Swift Flight passive from the surviving rider",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_druid.cpp",
+          "classes": [
+            "spell_dru_swift_flight_passive"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "key": "Swift",
+          "path": "src/server/scripts/Spells/spell_druid.cpp",
+          "cls": "spell_dru_swift_flight_passive"
+        }
+      ],
+      "slug": "swift-flight-owner-calculation",
+      "audit": "docs/audits/swift-flight-owner-calculation-2026-11-09.json",
+      "commit": "7580ff3b789a903c45e1a4ddb4514b80e10745c1"
+    },
+    {
+      "key": "Zone",
+      "spell": 50461,
+      "title": "Guard unresolved Anti Magic Zone caster during calculation",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_dk.cpp",
+          "classes": [
+            "spell_dk_anti_magic_zone"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "key": "Zone",
+          "path": "src/server/scripts/Spells/spell_dk.cpp",
+          "cls": "spell_dk_anti_magic_zone"
+        }
+      ],
+      "slug": "anti-magic-zone-caster-guard",
+      "audit": "docs/audits/anti-magic-zone-caster-guard-2026-11-09.json",
+      "commit": "21b2f04bd27e2b13b6f9367ec91834599d0b1ddb"
+    },
+    {
+      "key": "Artifact",
+      "spell": 211309,
+      "title": "Guard original artifact stat casters during recalculation",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "classes": [
+            "spell_gen_artificial_stamina",
+            "spell_gen_artificial_threat"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "key": "Stamina",
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "cls": "spell_gen_artificial_stamina"
+        },
+        {
+          "key": "Threat",
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "cls": "spell_gen_artificial_threat"
+        }
+      ],
+      "slug": "artifact-stat-caster-guards",
+      "audit": "docs/audits/artifact-stat-caster-guards-2026-11-09.json",
+      "commit": "e71cd33e3199d8537ea97f0612602095562c2aec"
+    },
+    {
+      "key": "Censer",
+      "spell": 148385,
+      "title": "Flag the Censer aura recipient for PvP",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_item.cpp",
+          "classes": [
+            "spell_censer_of_eternal_agony"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "key": "Censer",
+          "path": "src/server/scripts/Spells/spell_item.cpp",
+          "cls": "spell_censer_of_eternal_agony"
+        }
+      ],
+      "slug": "censer-pvp-recipient",
+      "audit": "docs/audits/censer-pvp-recipient-2026-11-09.json",
+      "commit": "748cfcb3c8bc78d43d2c74615325b43142adbfad"
+    },
+    {
+      "key": "Maw",
+      "spell": 215405,
+      "title": "Scale Rancid Maw damage upward with distance",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_item.cpp",
+          "classes": [
+            "spell_item_rancid_maw"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "key": "Maw",
+          "path": "src/server/scripts/Spells/spell_item.cpp",
+          "cls": "spell_item_rancid_maw"
+        }
+      ],
+      "slug": "rancid-maw-distance-curve",
+      "audit": "docs/audits/rancid-maw-distance-curve-2026-11-09.json",
+      "commit": "8bb9d2dd234a4c7ddc0da948532dff4888343378"
+    }
+  ],
+  "counting": "Exactly10 independent problems in15outer classes/12cpp+one shared header. Five Vantus raid controllers are one encounter-lifecycle fix;Stamina/Threat original-caster guards are one shared problem. Support/archive/handoff commits do not count.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "63424b82d89269453abb259daf585d8ad003df9b6dd09723cb7bbecbb68332dd",
+    "bnet_sha256": "4b25eaf7502d2a51b9493dc8f3e4044d711d7d9fce551ebe2bc0b3e513b18f5c",
+    "rollback": ".codex/release-before-fourth-ten-fixes-2026-11-09",
+    "owned_startup": "PID26172 fresh ready,server shutdown0,exit0,gone,stderr empty;protected configuration/cert/DLL retained;no user process stopped."
+  },
+  "validation": {
+    "source": "15 pinned8189c1241 counterfactual subcases paired with15 repaired MSVC-ASAN subcases. Expected original ASAN faults:Valor,Swift,Zone,Stamina,Threat;other10 baseline subcases assert the original broken behavior. Actual aura getters/update/calc dispatch extracted;Unit/Player/world/cast endpoints modeled. Native int32 final hit rounding retained in Maw model. Not full-core ASAN/client traversal.",
+    "native": "Test-MagnarReadinessNative.ps1 -AdditionalProbe FourthTenSpellNative:complete15classes compiled with actual Release core;50live bindings/15names,40 matching native rune/helper names;87 actual owner/calc/deadline/cleanup contexts. All40 Vantus native casts succeed in actual5raid maps,FAIL cleanup/retry and parent removal pass. Earlier player profile,actualDB-spawn poses,boss states and removed NPC caster are controlled without SetBossState/SaveToDB or character saves;readonly/TEMP DB scope. Positive beam damage/Frog death/Void helper/Maw hit remain source-modeled/client-pending.",
+    "scope": "Test-FourthTenSpellScope.ps1:12whole cpp files equal8189c1241 outside exactly15selected outer classes and shared-helper include. Original five Vantus weekly quest39695 admission/completion unchanged. Vantus helper is the only new product file.",
+    "release": "Original generated scripts.lib and final-link inputs;staged then canonical verify_fourth_ten_spell_repairs_release.py checks registered native callbacks/40compiled typed rune-helper-boss pairs/map/state/rearm/cleanup/stack latch/calculation/distance plus prior37spell paths. Mandatory canonical Scepter and retained CommandersValor pass.",
+    "runtime": "Canonical owned26172 fresh ready,graceful server shutdown0,exit0,gone,stderr empty;no user process stopped. Configuration/cert/DLL preserved. Every test/build/link/start uses canonical+own crash/log baselines and after-exit appended DBErrors/server warnings/errors/assertions review. Final runs add none. Mixed7111-byte DBErrors stays OPEN/unchanged/untruncated."
+  },
+  "catalog": "Matching Legion26972 Spell/SpellEffect/ItemSparse/ItemEffect plus readonly local hotfix/world;catalog-final.tsv contains50bindings. Legacy comment142723 is ABSENT and not selected/bound;actual VoidShift108968/118594 confirmed.191463 is Blade Dancer Spawn;actual Dragons rune192763/helper208846 confirmed. Native bindings assert selected219567 too. No SQL migration needed.",
+  "aura_contract": "Self-cast Aura::GetCaster resolves its owner directly. Missing-caster tests use supported distinct NPC caster/recipient and remove the NPC. These controlled faults are not claims of observed ordinary self-use production crashes.",
+  "diagnostics": {
+    "final": "All final automated/native/Release/runtime checks pass to stated scope. Canonical+own pre/post crash/log snapshots,exit/stdout/stderr/appended DBErrors/server warning/error/assertion review retained. Active Crashes empty;no new runtime diagnostic. Compiler warnings separately reviewed below.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN/unchanged/untruncated/outside fixed"
+    },
+    "development": [
+      "Scouting catalog initially treated legacy comment142723 as required and exited5. It is absent in matching data and unbound;actual108968/118594 selected. Final catalog explicitly prints ABSENT for legacy/scouting references and native asserts every selected binding/40pair. Initial source host generation had unquoted PowerShell dispatch string and duplicate AuraUpdate body;corrected before final tests. Missing fake SPELL_FAILED_BAD_TARGETS and EFFECT_3 constants caused compilation failures only;added exact existing constants.",
+      "Five original ASAN null faults are explicitly expected failing counterfactuals,paired with15 repaired passing subcases;they are not ordinary successful gameplay. Initial Maw fixture used floating SetHitDamage although native API takes int32. Corrected endpoint signature/final expectation to62 at1.25yards,then reran all30 baseline/repaired subcases. Final EOF whitespace-only cleanup leaves tested bodies unchanged.",
+      "Native initial compile used SpellInfo::SpellName as if localized array and selected outer Stamina instead of nested AuraScript. Corrected to actual char pointer/nested class. Initial wrong-map test dispatched AuraUpdate instead of registered EffectUpdate;corrected to native effect dispatcher. Actual40wrong-map contexts then passed. Added positive actual-map40cast/FAIL/retry/parent cleanup;initial difficulty enum name corrected to native DIFFICULTY_NORMAL_RAID. Final87contexts pass without persistent state mutation.",
+      "Initial orchestration insertion also repeated preparation in two unrelated existing conditional branches. Diff review restored both original branches and retained exactly one new pre-hash preparation branch;native rerun with immutable input hashes passes. Producer verifies captured per-raid enum body against live header before extraction. No concurrent source/library mutation during final native probe.",
+      "Initial PE assertion used a nonexistent underscored Frog nested class spelling. Corrected to actual spell_gulp_frog_toxinAuraScript;staged and canonical composed checks now return through complete verifier. Compiler-inlined Vantus tables are read from callback-referenced native image data,including all40typed boss values. Source scope separately keeps weekly39695 cast logic unchanged.",
+      "Release build reports13 pre-existing warnings outside changed classes:12C5055 enum/float expressions and C4305 at Tirathon466. The latter is traced to old five-argument MoveJump selecting Position overload via implicit first float conversion,with25=>bool;left visible as a separate OPEN authentic movement investigation,not a new eleventh repair. No warning/check disabled. Model/native/Scepter test type-conversion/unused/shadowing and initial missing-PDB full-link notices reviewed;final native stderr empty.",
+      "Focused implementation commits are assembled from selected complete classes only,so Frog/Artifact and Censer/Maw remain separate despite shared source files. Every staged file list/diff/check reviewed;runtime data,credentials and user attachment excluded. Ten commits individually pushed to origin/main."
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/fourth-ten-spell-repairs-2026-11-09",
+    "archive_manifest_sha256": "1c406ae63ce4ef2e4e53bac16a4a7ab26bdbe74288c07db091f68509a8d8b300",
+    "original_files": 4745,
+    "removed_files": 461,
+    "logical_removed_bytes": 1616907045,
+    "deletion_manifest": ".codex/fourth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "0e9937094d31382374b44dca47aadb9dfb68a3f8e2979001497cf09652063268",
+    "retained_rollbacks": [
+      ".codex/release-before-fourth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-third-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-third ed56fd0f generation retired after newest pre-fourth435bb556 rollback verification",
+    "preserved": "Canonical EXE/MAP/config/cert/DLL/data,required original game/scripts libraries,reusable test source,OPEN Lady/LINK2/Slaghammer/security evidence and personal/character/database backups. No active log truncated. Private native configs deleted,not archived.",
+    "postcheck": "Protected/canonical/mixed-log hashes retained;active Crashes empty,no world/bnet process.",
+    "supplemental_evidence": {
+      "snapshots": 230,
+      "manifest": "build-extractors/bin/Release/fixed/fourth-ten-spell-repairs-2026-11-09/supplemental-manifest.json",
+      "manifest_sha256": "d2307aad530522052ad75ee4f2d206f677aad6b898d0d0aa58012ad28a37d1ac",
+      "scope": "Task scripts,raw logs and completed cleanup/final-review diagnostics;copied source/destination/source hashes verified;some overlap with primary snapshots."
+    }
+  },
+  "pending": [
+    "Authentic living Lady104856/spawn362095 activation/surrender/accepted209552-conversation1906/upperGrash362092 finisher/210247 cleanup remains OPEN. No invented HP threshold or killing timer.",
+    "Shared101430/103151 LINK2,Slaghammer crash/cache,mixed DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run;support-only includes preserve its cache.",
+    "Pre-existing C4305 at boss_tirathon_saltheril.cpp:466 is outside selected beam class and unchanged from8189c1241. Five-argument MoveJump chooses Position overload via implicit float-to-Position,so25 narrows to hasOrientation=true;trajectory/arguments need a separate authentic movement repair. It remains explicitly OPEN and is not hidden or counted as repaired. Other12 C5055 warnings are unchanged enum/float expressions outside selected edits.",
+    "Actual client item/form/gear/visual/audio/combat/flight tests remain in each focused audit. Native controlled states and source-ASAN do not certify whole boss encounters or any complete artifact chain. No client traversal claimed."
+  ],
+  "stop": "Exactly10 product repairs implemented,verified to stated source/native scope,deployed,committed and individually pushed;stop after audit/cleanup/push handoff. No eleventh product repair started."
+}

@@ -32,7 +32,7 @@
   "support_commit": "4420f08d03a2a6f9c2ed2963ad804e597d5e57fc",
   "cause": "Both artificial Stamina/Threat recalculations dereference unresolved original caster;recipient may legitimately differ.",
   "implementation": "Safe original caster conversion in both classes;retain cast-item GUID/equipped lookup,PvP exclusion,traits*0.75/traits and101cap. One shared caster-safety problem counted once.",
-  "focused_checks": "Two expected original ASAN faults paired with missing/NPC/PvP/item/trait/cap source cases;native actual removed NPC caster safe calculations;both compiled null guards retain GetCaster rather than owner.",
+  "focused_checks": "Two expected original ASAN faults paired with missing-caster/PvP/item/trait/cap source cases;native actual removed NPC caster safe calculations;both compiled null guards retain GetCaster rather than owner.",
   "validation": {
     "source": "15 pinned8189c1241 counterfactual subcases paired with15 repaired MSVC-ASAN subcases. Expected original ASAN faults:Valor,Swift,Zone,Stamina,Threat;other10 baseline subcases assert the original broken behavior. Actual aura getters/update/calc dispatch extracted;Unit/Player/world/cast endpoints modeled. Native int32 final hit rounding retained in Maw model. Not full-core ASAN/client traversal.",
     "native": "Test-MagnarReadinessNative.ps1 -AdditionalProbe FourthTenSpellNative:complete15classes compiled with actual Release core;50live bindings/15names,40 matching native rune/helper names;87 actual owner/calc/deadline/cleanup contexts. All40 Vantus native casts succeed in actual5raid maps,FAIL cleanup/retry and parent removal pass. Earlier player profile,actualDB-spawn poses,boss states and removed NPC caster are controlled without SetBossState/SaveToDB or character saves;readonly/TEMP DB scope. Positive beam damage/Frog death/Void helper/Maw hit remain source-modeled/client-pending.",
@@ -56,8 +56,30 @@
     "Pre-existing C4305 at boss_tirathon_saltheril.cpp:466 is outside selected beam class and unchanged from8189c1241. Five-argument MoveJump chooses Position overload via implicit float-to-Position,so25 narrows to hasOrientation=true;trajectory/arguments need a separate authentic movement repair. It remains explicitly OPEN and is not hidden or counted as repaired. Other12 C5055 warnings are unchanged enum/float expressions outside selected edits."
   ],
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE",
-    "archive": "build-extractors/bin/Release/fixed/fourth-ten-spell-repairs-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/fourth-ten-spell-repairs-2026-11-09",
+    "archive_manifest_sha256": "1c406ae63ce4ef2e4e53bac16a4a7ab26bdbe74288c07db091f68509a8d8b300",
+    "original_files": 4745,
+    "removed_files": 461,
+    "logical_removed_bytes": 1616907045,
+    "deletion_manifest": ".codex/fourth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "0e9937094d31382374b44dca47aadb9dfb68a3f8e2979001497cf09652063268",
+    "retained_rollbacks": [
+      ".codex/release-before-fourth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-third-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-third ed56fd0f generation retired after newest pre-fourth435bb556 rollback verification",
+    "preserved": "Canonical EXE/MAP/config/cert/DLL/data,required original game/scripts libraries,reusable test source,OPEN Lady/LINK2/Slaghammer/security evidence and personal/character/database backups. No active log truncated. Private native configs deleted,not archived.",
+    "postcheck": "Protected/canonical/mixed-log hashes retained;active Crashes empty,no world/bnet process.",
+    "supplemental_evidence": {
+      "snapshots": 230,
+      "manifest": "build-extractors/bin/Release/fixed/fourth-ten-spell-repairs-2026-11-09/supplemental-manifest.json",
+      "manifest_sha256": "d2307aad530522052ad75ee4f2d206f677aad6b898d0d0aa58012ad28a37d1ac",
+      "scope": "Task scripts,raw logs and completed cleanup/final-review diagnostics;copied source/destination/source hashes verified;some overlap with primary snapshots."
+    }
   },
-  "batch_audit": "docs/audits/fourth-ten-spell-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/fourth-ten-spell-repairs-2026-11-09.json",
+  "fix_commit": "e71cd33e3199d8537ea97f0612602095562c2aec"
 }

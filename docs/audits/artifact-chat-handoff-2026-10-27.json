@@ -1,4 +1,109 @@
 {
+  "latest_fourth_ten_spell_repairs_2026_11_09": {
+    "audit": "docs/audits/fourth-ten-spell-repairs-2026-11-09.json",
+    "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+    "fixes": [
+      {
+        "key": "Valor",
+        "title": "Use the aura owner in Commanders Valor update",
+        "commit": "522a9a4b7b34d12254848213ac008014327e6732",
+        "audit": "docs/audits/commanders-valor-update-owner-2026-11-09.json"
+      },
+      {
+        "key": "Tirathon",
+        "title": "Use the beam aura owner for Tirathons repeated damage",
+        "commit": "dec569f0163fcf2f059e93ad1d406d122a2f9a7e",
+        "audit": "docs/audits/tirathon-beam-update-owner-2026-11-09.json"
+      },
+      {
+        "key": "Frog",
+        "title": "Trigger Gulp Frog Toxin at the actual tenth stack",
+        "commit": "2b53a2047fa2b399a01c69752e3665da858db4c2",
+        "audit": "docs/audits/gulp-frog-tenth-stack-2026-11-09.json"
+      },
+      {
+        "key": "Vantus",
+        "title": "Bind Legion Vantus effects to their own encounter lifecycle",
+        "commit": "32c8a024f5ed8b22bbdf6f57f4d768db9fa94e97",
+        "audit": "docs/audits/legion-vantus-encounter-lifecycle-2026-11-09.json"
+      },
+      {
+        "key": "Void",
+        "title": "Preserve fractional health percentages in Void Shift",
+        "commit": "3cb5ef10318e841afae892acbe287a65c687b0e1",
+        "audit": "docs/audits/void-shift-fractional-health-2026-11-09.json"
+      },
+      {
+        "key": "Swift",
+        "title": "Calculate Swift Flight passive from the surviving rider",
+        "commit": "7580ff3b789a903c45e1a4ddb4514b80e10745c1",
+        "audit": "docs/audits/swift-flight-owner-calculation-2026-11-09.json"
+      },
+      {
+        "key": "Zone",
+        "title": "Guard unresolved Anti Magic Zone caster during calculation",
+        "commit": "21b2f04bd27e2b13b6f9367ec91834599d0b1ddb",
+        "audit": "docs/audits/anti-magic-zone-caster-guard-2026-11-09.json"
+      },
+      {
+        "key": "Artifact",
+        "title": "Guard original artifact stat casters during recalculation",
+        "commit": "e71cd33e3199d8537ea97f0612602095562c2aec",
+        "audit": "docs/audits/artifact-stat-caster-guards-2026-11-09.json"
+      },
+      {
+        "key": "Censer",
+        "title": "Flag the Censer aura recipient for PvP",
+        "commit": "748cfcb3c8bc78d43d2c74615325b43142adbfad",
+        "audit": "docs/audits/censer-pvp-recipient-2026-11-09.json"
+      },
+      {
+        "key": "Maw",
+        "title": "Scale Rancid Maw damage upward with distance",
+        "commit": "8bb9d2dd234a4c7ddc0da948532dff4888343378",
+        "audit": "docs/audits/rancid-maw-distance-curve-2026-11-09.json"
+      }
+    ],
+    "canonical": {
+      "directory": "build-extractors/bin/Release",
+      "world_sha256": "63424b82d89269453abb259daf585d8ad003df9b6dd09723cb7bbecbb68332dd",
+      "bnet_sha256": "4b25eaf7502d2a51b9493dc8f3e4044d711d7d9fce551ebe2bc0b3e513b18f5c",
+      "rollback": ".codex/release-before-fourth-ten-fixes-2026-11-09",
+      "owned_startup": "PID26172 fresh ready,server shutdown0,exit0,gone,stderr empty;protected configuration/cert/DLL retained;no user process stopped."
+    },
+    "cleanup": {
+      "status": "COMPLETE_HASH_VERIFIED",
+      "archive": "build-extractors/bin/Release/fixed/fourth-ten-spell-repairs-2026-11-09",
+      "archive_manifest_sha256": "1c406ae63ce4ef2e4e53bac16a4a7ab26bdbe74288c07db091f68509a8d8b300",
+      "original_files": 4745,
+      "removed_files": 461,
+      "logical_removed_bytes": 1616907045,
+      "deletion_manifest": ".codex/fourth-ten-fixes-2026-11-09/cleanup-deleted.json",
+      "deletion_manifest_sha256": "0e9937094d31382374b44dca47aadb9dfb68a3f8e2979001497cf09652063268",
+      "retained_rollbacks": [
+        ".codex/release-before-fourth-ten-fixes-2026-11-09",
+        ".codex/release-before-seven-fixes-2026-11-08",
+        ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+      ],
+      "removed_intermediate_rollback": ".codex/release-before-third-ten-fixes-2026-11-09",
+      "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-third ed56fd0f generation retired after newest pre-fourth435bb556 rollback verification",
+      "preserved": "Canonical EXE/MAP/config/cert/DLL/data,required original game/scripts libraries,reusable test source,OPEN Lady/LINK2/Slaghammer/security evidence and personal/character/database backups. No active log truncated. Private native configs deleted,not archived.",
+      "postcheck": "Protected/canonical/mixed-log hashes retained;active Crashes empty,no world/bnet process.",
+      "supplemental_evidence": {
+        "snapshots": 230,
+        "manifest": "build-extractors/bin/Release/fixed/fourth-ten-spell-repairs-2026-11-09/supplemental-manifest.json",
+        "manifest_sha256": "d2307aad530522052ad75ee4f2d206f677aad6b898d0d0aa58012ad28a37d1ac",
+        "scope": "Task scripts,raw logs and completed cleanup/final-review diagnostics;copied source/destination/source hashes verified;some overlap with primary snapshots."
+      }
+    },
+    "pending": [
+      "Authentic living Lady104856/spawn362095 activation/surrender/accepted209552-conversation1906/upperGrash362092 finisher/210247 cleanup remains OPEN. No invented HP threshold or killing timer.",
+      "Shared101430/103151 LINK2,Slaghammer crash/cache,mixed DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run;support-only includes preserve its cache.",
+      "Pre-existing C4305 at boss_tirathon_saltheril.cpp:466 is outside selected beam class and unchanged from8189c1241. Five-argument MoveJump chooses Position overload via implicit float-to-Position,so25 narrows to hasOrientation=true;trajectory/arguments need a separate authentic movement repair. It remains explicitly OPEN and is not hidden or counted as repaired. Other12 C5055 warnings are unchanged enum/float expressions outside selected edits.",
+      "Actual client item/form/gear/visual/audio/combat/flight tests remain in each focused audit. Native controlled states and source-ASAN do not certify whole boss encounters or any complete artifact chain. No client traversal claimed."
+    ],
+    "stop": "Exactly10 product repairs implemented,verified to stated source/native scope,deployed,committed and individually pushed;stop after audit/cleanup/push handoff. No eleventh product repair started."
+  },
   "latest_third_ten_spell_repairs_2026_11_09": {
     "audit": "docs/audits/third-ten-spell-repairs-2026-11-09.json",
     "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
