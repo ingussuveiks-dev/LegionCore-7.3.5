@@ -797,7 +797,9 @@ void BossAI::_JustDied()
     me->SummonCreatureGroupDespawn(CREATURE_SUMMON_GROUP_RESET);
     me->SummonCreatureGroupDespawn(CREATURE_SUMMON_GROUP_COMBAT);
     me->RemoveAllAreaObjects();
-    me->m_Events.KillAllEvents(true);
+    // A death can run inside an executing spell (for example Suicide7).
+    // Abort now; the normal event update deletes it after references release.
+    me->m_Events.KillAllEvents(false);
 
     events.Reset();
     scheduler.CancelAll();
