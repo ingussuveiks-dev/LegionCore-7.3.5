@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Zone",
+  "scope": {
+    "key": "Zone",
+    "spell": 50461,
+    "title": "Guard unresolved Anti Magic Zone caster during calculation",
+    "edits": [
+      {
+        "path": "src/server/scripts/Spells/spell_dk.cpp",
+        "classes": [
+          "spell_dk_anti_magic_zone"
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "key": "Zone",
+        "path": "src/server/scripts/Spells/spell_dk.cpp",
+        "cls": "spell_dk_anti_magic_zone"
+      }
+    ]
+  },
+  "base": "8189c1241",
+  "support_commit": "4420f08d03a2a6f9c2ed2963ad804e597d5e57fc",
+  "cause": "Calculation dereferences unresolved original caster before ToPlayer.",
+  "implementation": "Guard original caster;retain original caster Strength,legacy136800+4Strength fallback/formula and75percent absorb hook. Never substitute party recipient stats.",
+  "focused_checks": "Expected original ASAN fault paired with missing/NPC fallback and original player Strength123=>137292 source cases;native missing-caster calc136800;PE null guard before player/stat access.",
+  "validation": {
+    "source": "15 pinned8189c1241 counterfactual subcases paired with15 repaired MSVC-ASAN subcases. Expected original ASAN faults:Valor,Swift,Zone,Stamina,Threat;other10 baseline subcases assert the original broken behavior. Actual aura getters/update/calc dispatch extracted;Unit/Player/world/cast endpoints modeled. Native int32 final hit rounding retained in Maw model. Not full-core ASAN/client traversal.",
+    "native": "Test-MagnarReadinessNative.ps1 -AdditionalProbe FourthTenSpellNative:complete15classes compiled with actual Release core;50live bindings/15names,40 matching native rune/helper names;87 actual owner/calc/deadline/cleanup contexts. All40 Vantus native casts succeed in actual5raid maps,FAIL cleanup/retry and parent removal pass. Earlier player profile,actualDB-spawn poses,boss states and removed NPC caster are controlled without SetBossState/SaveToDB or character saves;readonly/TEMP DB scope. Positive beam damage/Frog death/Void helper/Maw hit remain source-modeled/client-pending.",
+    "scope": "Test-FourthTenSpellScope.ps1:12whole cpp files equal8189c1241 outside exactly15selected outer classes and shared-helper include. Original five Vantus weekly quest39695 admission/completion unchanged. Vantus helper is the only new product file.",
+    "release": "Original generated scripts.lib and final-link inputs;staged then canonical verify_fourth_ten_spell_repairs_release.py checks registered native callbacks/40compiled typed rune-helper-boss pairs/map/state/rearm/cleanup/stack latch/calculation/distance plus prior37spell paths. Mandatory canonical Scepter and retained CommandersValor pass.",
+    "runtime": "Canonical owned26172 fresh ready,graceful server shutdown0,exit0,gone,stderr empty;no user process stopped. Configuration/cert/DLL preserved. Every test/build/link/start uses canonical+own crash/log baselines and after-exit appended DBErrors/server warnings/errors/assertions review. Final runs add none. Mixed7111-byte DBErrors stays OPEN/unchanged/untruncated."
+  },
+  "canonical_world_sha256": "63424b82d89269453abb259daf585d8ad003df9b6dd09723cb7bbecbb68332dd",
+  "tested_class_sha256": {
+    "src/server/scripts/Spells/spell_dk.cpp": {
+      "spell_dk_anti_magic_zone": "dfc9b6e88c78217623cc27ebfc016610bc5546e5a91048cd848ca281cef642d2"
+    }
+  },
+  "client_pending": "Actual DK/party zone absorption/capacity/expiration/recast and missing actor;this narrow guard does not certify overall legacy AMZ balance fidelity.",
+  "aura_contract": "Self-cast Aura::GetCaster resolves its owner directly. Missing-caster tests use supported distinct NPC caster/recipient and remove the NPC. These controlled faults are not claims of observed ordinary self-use production crashes.",
+  "progression": "No SQL,HP threshold,kill timer,character reset,item/quest/progression grant,new class/group gate or altered spell credit. Native caster/player/pet/guardian/group rules retained;actual full combat alternatives remain client checks.",
+  "pending": [
+    "Authentic living Lady104856/spawn362095 activation/surrender/accepted209552-conversation1906/upperGrash362092 finisher/210247 cleanup remains OPEN. No invented HP threshold or killing timer.",
+    "Shared101430/103151 LINK2,Slaghammer crash/cache,mixed DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run;support-only includes preserve its cache.",
+    "Pre-existing C4305 at boss_tirathon_saltheril.cpp:466 is outside selected beam class and unchanged from8189c1241. Five-argument MoveJump chooses Position overload via implicit float-to-Position,so25 narrows to hasOrientation=true;trajectory/arguments need a separate authentic movement repair. It remains explicitly OPEN and is not hidden or counted as repaired. Other12 C5055 warnings are unchanged enum/float expressions outside selected edits."
+  ],
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/fourth-ten-spell-repairs-2026-11-09"
+  },
+  "batch_audit": "docs/audits/fourth-ten-spell-repairs-2026-11-09.json"
+}

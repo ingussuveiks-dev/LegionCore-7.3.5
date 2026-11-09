@@ -497,7 +497,8 @@ class spell_dk_anti_magic_zone : public SpellScriptLoader
             {
                 SpellInfo const* talentSpell = sSpellMgr->GetSpellInfo(51052);
                 amount = 136800;
-                if (Player* player = GetCaster()->ToPlayer())
+                Unit* caster = GetCaster();
+                if (Player* player = caster ? caster->ToPlayer() : nullptr)
                      amount += int32(player->GetStat(STAT_STRENGTH) * 4);
             }
 
