@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Cookie",
+  "scope": {
+    "key": "Cookie",
+    "file": "spell_item.cpp",
+    "cls": "spell_item_chocolate_cookie",
+    "spell": 87649,
+    "title": "Evaluate Chocolate Cookie stacks on the actual aura recipient"
+  },
+  "base": "50b42e107",
+  "support_commit": "9fc679b169b7a95486a30e09bf5832cc096d8542",
+  "cause": "Stack callback dereferences unresolved original caster and can credit a distinct caster instead of actual player recipient of87649. Ordinary self-cast owner fastpath does not lose its caster;no production self-use crash claimed.",
+  "implementation": "Resolve Player from GetUnitOwner safely. Preserve exact91-stack gate and existing criterion99041;no new achievement/quest grant added.",
+  "validation": {
+    "source_command": "tools/tests/Test-NextTenSpellRepairs.ps1 -Case Cookie (also -Baseline)",
+    "coverage": "Expected original ASAN missing-caster fault;source actual recipient90/91/92,nonplayer/missing owner and criterion selection;native real separate NPC caster removed,GetCaster null/GetUnitOwner player and real SetStackAmount90/91/92 in both races. Native achievement counters/award not asserted;source counters modeled.99041 is existing criterion operand,not a required SpellInfo row.",
+    "native_command": "tools/tests/Test-MagnarReadinessNative.ps1 -AdditionalProbe NextTenSpellNative",
+    "native_total": "14live bindings/ten names,matching26972 DB2+read-only hotfix;24 registered Flask casts and8 controlled native aura/cooldown contexts. Not full-core ASAN or client traversal.",
+    "scope": "Five whole production files match50b42e107 outside exactly ten selected complete classes;all other classes and registrations retained.",
+    "release": "Original scripts.lib dependencies,no global OutDir;staged/canonical ten-repair PE plus previous17 paths pass. Canonical Scepter and Warlock regressions pass.",
+    "startup": "Owned canonical25956 fresh ready,server shutdown0,exit0,gone,stderr empty;no user process stopped/configuration changed."
+  },
+  "canonical_world_sha256": "ed56fd0f6523cf9767f02ecc8aaa12d9dfab914d5100fc3c01d4aebd116b4d87",
+  "tested_class_sha256": "cd2d7b518b2963b5ccb5ac85bf7bf2a2964035aed39b4aefc52565bc03f0aa1c",
+  "diagnostics": "Every test/build/link/start has canonical+own pre/post crash/log snapshots and reviewed exit/stdout/stderr. Final tests have no new crash/appended DBErrors/server warning/error/assertion. Counterfactual ASAN faults are expected-broken baselines paired with repaired passes. Native fixture missing spell-bonus initialization was traced and repaired;see batch audit for full development evidence.",
+  "client_pending": "Actual cookie consumption/stack91 achievement delivery,self-use,distinct caster,expiration/relog and nonduplicate criterion behavior.",
+  "progression": "No SQL,character reset,HP threshold,kill timer or quest/loot grant added. Existing native spell hit/credit/group rules retained;Unit queue owners can be player/pet/guardian/NPC. This does not certify every combat alternative in the client.",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/next-ten-spell-repairs-2026-11-09"
+  },
+  "shared_open": "Living Lady/authentic1906/Grash,LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors and all36 whole chains remain OPEN. No default Slaghammer probe or active-log truncation.",
+  "batch_audit": "docs/audits/next-ten-spell-repairs-2026-11-09.json"
+}

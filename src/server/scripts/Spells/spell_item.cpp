@@ -2335,7 +2335,8 @@ public:
 
         void OnStackChange(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
-            Player* caster = GetCaster()->ToPlayer();
+            Unit* owner = GetUnitOwner();
+            Player* caster = owner ? owner->ToPlayer() : nullptr;
             if (!caster)
                 return;
 
