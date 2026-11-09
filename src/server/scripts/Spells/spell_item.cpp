@@ -3193,7 +3193,7 @@ public:
 
         void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
         {
-            if (Unit* caster = GetCaster())
+            if (Unit* caster = GetUnitOwner())
             {
                 for (uint32 filters : { 181767, 181779, 181773 })
                 {
