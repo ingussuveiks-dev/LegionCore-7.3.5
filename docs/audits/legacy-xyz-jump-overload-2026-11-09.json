@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-09",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "Jump",
+  "scope": {
+    "key": "Jump",
+    "path": "src/server/game/Movement/MotionMaster.cpp",
+    "cls": "MotionMaster",
+    "extra": [
+      "src/server/game/Movement/MotionMaster.h"
+    ],
+    "title": "Restore the legacy XYZ jump overload without implicit Position conversion"
+  },
+  "base": "bc19ca10b",
+  "support_commit": "94faf37a97d5ce2a31efbe506280a78ff8161e4c",
+  "cause": "Five scalar arguments implicitly bind Position(X),Y,Z,id=speedXY,hasOrientation=bool(speedZ),since this core only had Position and six-float overloads. Tirathon Drelanim466 exposed the truncation;many legacy callers silently land atY/Z0 with wrong speeds/id.",
+  "implementation": "Restore exact five-float XYZ/speedXY/speedZ overload forwarding0orientation,authored speeds,EVENT_JUMP1004/no facing to existing native implementation. Leave Position/six-float signatures unchanged.",
+  "focused_checks": "Pinned real overload declarations/Position constructor demonstrate corrupt XYZ/speeds/id/facing;fixed five-float and explicit Position/six-float contracts pass. Actual native actor spline endpoint53/803/805 and velocity20 pass;PE verifies real Drelanim caller->five-float->native implementation.",
+  "validation": {
+    "source": "Test-FifthTenRepairs.ps1:ten pinned bc19ca10b counterfactuals paired with ten repaired MSVC-ASAN cases. Harjatan/Antorus original heap bounds faults and Barrier/Rain original controlled null faults are expected failing executable baselines;other six demonstrate incorrect original behavior. Extracted complete changed methods/event branches/classes;world/cast/rng endpoints controlled. Not full-core ASAN/client traversal.",
+    "native": "Test-MagnarReadinessNative.ps1 -AdditionalProbe FifthTenNative:actual Release core XYZ spline destination+velocity,Spirit stale/missed/64bit health,Devotion actual210320 helper effects on two recipients/mastery/empty,removed real NPC caster then Barrier calc dispatcher,Rain explicit no-destination refusal. Four spell bindings and AT11305 validated. Bare profiles,map,earlier target states controlled;readonly/TEMP DB,no character saves. Boss branches are source-modeled,not native encounter traversal.",
+    "scope": "verify_fifth_ten_scope.py:ten complete production files equal bc19ca10b outside selected classes and exact five-float overload/declaration. All boss timers/progression/death/credit/cleanup and other scripts unchanged. Native group/target lists retained.",
+    "release": "Original game.lib/scripts.lib rebuilt through original generated paths;staged and canonical verify_fifth_ten_release.py verifies all ten paths plus prior47spell fixes. Actual Tirathon Drelanim DoAction calls new five-float overload. Existing Position/six-float APIs retained. Canonical Scepter,HeroicLeap ASAN,Charge ASAN and actual both-ship floor regressions pass.",
+    "runtime": "Owned canonical PID32732 fresh ready,graceful server shutdown0,exit0,gone,stderr empty. Canonical+own before/after crashes/log lengths/timestamps and appended DBErrors/server warnings/errors/assertions reviewed for tests/build/link/start. No new final runtime diagnostic;config/cert/DLL preserved,no user process stopped."
+  },
+  "canonical_world_sha256": "cf7855ad7145f66a8957bf66ea984a36eb2e11c0ad92f82c9280b736a9039a8f",
+  "tested_body_sha256": "a364d8bc226b3a684985d6ba37ba6b7655451153ee8bcde5c2f7e571d6abcb99",
+  "client_pending": "Actual Drelanim jump/voice/outro and other legacy callers across maps,decks/vehicles/roots/collision/arrival id/camera/pet. No guessed coordinates/speeds or movement shortcuts added.",
+  "aura_contract": "Ordinary self-cast Aura::GetCaster directly resolves owner. Barrier missing-caster test deliberately removes a separate real NPC caster. Rain no-destination tests directly invoke a controlled missing-destination script context. Neither claims observed ordinary self-use production crashes.",
+  "progression": "Native boss/scenario death/credit/group/player/pet/guardian attribution and timers retained. No SQL,character reset,Lady HP threshold,killing timer,item/quest/progression grant. Spirit health-sharing1HP rounding floor explicitly documented.",
+  "pending": [
+    "Authentic living Lady104856 activation/surrender/accepted209552-conversation1906/Grash finisher/210247 cleanup remains OPEN;no Lady HP threshold or kill timer invented.",
+    "Shared101430/103151 LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run;support-only includes preserve its cache.",
+    "Actual client/combat/item/form/visual/audio/reentry/group/pet/guardian/failed-cast/whole-chain verification remains separate in each focused audit. Source models/native controlled endpoints do not prove full boss/scenario traversal.",
+    "Full header rebuild exposes364 pre-existing compiler warnings. Each warned expression is present verbatim in bc19ca10b;compiler-warnings.json retains paths/line/code/expression. These other historical diagnostics remain visible and are not certified repaired. Old Tirathon466 five-argument narrowing is resolved by the new native overload and is no longer emitted."
+  ],
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE",
+    "archive": "build-extractors/bin/Release/fixed/fifth-ten-repairs-2026-11-09"
+  },
+  "batch_audit": "docs/audits/fifth-ten-repairs-2026-11-09.json"
+}

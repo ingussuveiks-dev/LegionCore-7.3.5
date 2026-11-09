@@ -521,6 +521,11 @@ void MotionMaster::MoveJumpTo(float angle, float speedXY, float speedZ)
     MoveJump(x, y, z, 0.0f, speedXY, speedZ);
 }
 
+void MotionMaster::MoveJump(float x, float y, float z, float speedXY, float speedZ)
+{
+    MoveJump(x, y, z, 0.0f, speedXY, speedZ, EVENT_JUMP, false);
+}
+
 void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, float speedZ, uint32 id /*= EVENT_JUMP*/, bool hasOrientation /* = false*/,
     JumpArrivalCastArgs const* arrivalCast /*= nullptr*/, Movement::SpellEffectExtraData const* spellEffectExtraData /*= nullptr*/)
 {
