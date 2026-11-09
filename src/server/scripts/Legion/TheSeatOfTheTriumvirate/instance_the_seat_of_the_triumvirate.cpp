@@ -176,16 +176,22 @@ public:
         {
             if (!convers)
             {
-                player->AddDelayedEvent(3500, [player, this]() -> void
+                uint32 const mapId = player->GetMapId();
+                uint32 const instanceId = player->GetInstanceId();
+                player->AddDelayedEvent(3500, [player, mapId, instanceId]() -> void
                 {
-                    if (InstanceScript* instance = player->GetInstanceScript())
-                        if (instance->GetBossState(DATA_ZURAAL) != DONE)
-                        {
-                            convers = true;
-                            Conversation* conversation = new Conversation;
-                            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 6054, player, NULL, *player))
-                                delete conversation;
-                        }
+                    if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                        return;
+
+                    auto current = static_cast<instance_seat_of_the_triumvirate_InstanceMapScript*>(player->GetInstanceScript());
+                    if (!current || current->convers || current->GetBossState(DATA_ZURAAL) == DONE)
+                        return;
+
+                    Conversation* conversation = new Conversation;
+                    if (conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 6054, player, NULL, *player))
+                        current->convers = true;
+                    else
+                        delete conversation;
                 });
             }
         }
