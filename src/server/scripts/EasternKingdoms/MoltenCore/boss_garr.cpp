@@ -117,11 +117,11 @@ class mob_firesworn : public CreatureScript
                 immolateTimer = 4000;                              //These times are probably wrong
             }
 
-            void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType)
+            void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
             {
-                uint32 const health10pct = me->CountPctFromMaxHealth(10);
-                uint32 health = me->GetHealth();
-                if (int32(health) - int32(damage) < int32(health10pct))
+                uint64 const health10pct = me->CountPctFromMaxHealth(10, attacker);
+                uint64 const health = me->GetHealth(attacker);
+                if (damage >= health || health - damage < health10pct)
                 {
                     damage = 0;
                     DoCastVictim(SPELL_ERUPTION);
