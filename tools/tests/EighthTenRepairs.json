@@ -1,0 +1,171 @@
+[
+  {
+    "key": "BossDeath",
+    "title": "Defer referenced spell event deletion during BossAI death cleanup",
+    "paths": [
+      "src/server/game/AI/ScriptedAI/ScriptedCreature.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/game/AI/ScriptedAI/ScriptedCreature.cpp",
+        "old": "void BossAI::_JustDied()\n{\n    me->SummonCreatureGroupDespawn(CREATURE_SUMMON_GROUP_RESET);\n    me->SummonCreatureGroupDespawn(CREATURE_SUMMON_GROUP_COMBAT);\n    me->RemoveAllAreaObjects();\n    me->m_Events.KillAllEvents(true);\n\n    events.Reset();\n    scheduler.CancelAll();\n    summons.DespawnAll();\n    if (instance)\n    {\n        instance->SetBossState(_bossId, DONE);\n        instance->SaveToDB();\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, me);\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_SET_ALLOWING_RELEASE, me, false);\n    }\n}",
+        "new": "void BossAI::_JustDied()\n{\n    me->SummonCreatureGroupDespawn(CREATURE_SUMMON_GROUP_RESET);\n    me->SummonCreatureGroupDespawn(CREATURE_SUMMON_GROUP_COMBAT);\n    me->RemoveAllAreaObjects();\n    // A death can run inside an executing spell (for example Suicide7).\n    // Abort now; the normal event update deletes it after references release.\n    me->m_Events.KillAllEvents(false);\n\n    events.Reset();\n    scheduler.CancelAll();\n    summons.DespawnAll();\n    if (instance)\n    {\n        instance->SetBossState(_bossId, DONE);\n        instance->SaveToDB();\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, me);\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_SET_ALLOWING_RELEASE, me, false);\n    }\n}"
+      }
+    ]
+  },
+  {
+    "key": "Ghoul",
+    "title": "Preserve eligible player owner continuation for mobs_ghoul_flayer deaths",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/zone_eastern_plaguelands.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/zone_eastern_plaguelands.cpp",
+        "old": "void JustDied(Unit* killer)\n        {\n            if (killer->GetTypeId() == TYPEID_PLAYER)\n                me->SummonCreature(11064, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 60000);\n        }",
+        "new": "void JustDied(Unit* killer)\n        {\n            if (killer && killer->GetCharmerOrOwnerPlayerOrPlayerItself())\n                me->SummonCreature(11064, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 60000);\n        }"
+      }
+    ],
+    "cls": "mobs_ghoul_flayer",
+    "npc": 8531,
+    "quest": 5211
+  },
+  {
+    "key": "Webbed",
+    "title": "Preserve eligible player owner continuation for mob_webbed_creature deaths",
+    "paths": [
+      "src/server/scripts/Kalimdor/zone_bloodmyst_isle.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Kalimdor/zone_bloodmyst_isle.cpp",
+        "old": "void JustDied(Unit* killer)\n        {\n            uint32 spawnCreatureID = 0;\n\n            switch (urand(0, 2))\n            {\n                case 0:\n                    spawnCreatureID = 17681;\n                    if (Player* player = killer->ToPlayer())\n                        player->KilledMonsterCredit(spawnCreatureID, ObjectGuid::Empty);\n                    break;\n                case 1:\n                case 2:\n                    spawnCreatureID = possibleSpawns[urand(0, 30)];\n                    break;\n            }\n\n            if (spawnCreatureID)\n                me->SummonCreature(spawnCreatureID, 0.0f, 0.0f, 0.0f, me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);\n        }",
+        "new": "void JustDied(Unit* killer)\n        {\n            uint32 spawnCreatureID = 0;\n\n            switch (urand(0, 2))\n            {\n                case 0:\n                    spawnCreatureID = 17681;\n                    break;\n                case 1:\n                case 2:\n                    spawnCreatureID = possibleSpawns[urand(0, 30)];\n                    break;\n            }\n\n            if (spawnCreatureID)\n                if (me->SummonCreature(spawnCreatureID, 0.0f, 0.0f, 0.0f, me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000))\n                    if (spawnCreatureID == 17681)\n                        if (Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)\n                            player->KilledMonsterCredit(spawnCreatureID, ObjectGuid::Empty);\n        }"
+      }
+    ],
+    "cls": "mob_webbed_creature",
+    "npc": 17680,
+    "quest": 9670
+  },
+  {
+    "key": "WebbedPool",
+    "title": "Include the last authored Webbed Creature outcome in random selection",
+    "paths": [
+      "src/server/scripts/Kalimdor/zone_bloodmyst_isle.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Kalimdor/zone_bloodmyst_isle.cpp",
+        "old": "possibleSpawns[urand(0, 30)]",
+        "new": "possibleSpawns[urand(0, uint32(sizeof(possibleSpawns) / sizeof(possibleSpawns[0]) - 1))]"
+      }
+    ],
+    "cls": "mob_webbed_creature",
+    "npc": 17680
+  },
+  {
+    "key": "Baleful",
+    "title": "Preserve eligible player owner continuation for npc_q39049 deaths",
+    "paths": [
+      "src/server/scripts/Legion/mardum.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/mardum.cpp",
+        "old": "void JustDied(Unit* attacker) override\n        {\n            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2);\n\n            Player *player = attacker->ToPlayer();\n            if (!player)\n                return;\n\n            if (player->GetQuestStatus(QUEST) != QUEST_STATUS_INCOMPLETE)\n                return;\n\n            player->KilledMonsterCredit(CREDIT);\n            player->CastSpell(player, SPELL_LEARN, false);\n        }",
+        "new": "void JustDied(Unit* attacker) override\n        {\n            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2);\n\n            Player *player = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;\n            if (!player)\n                return;\n\n            if (player->GetQuestStatus(QUEST) != QUEST_STATUS_INCOMPLETE)\n                return;\n\n            player->KilledMonsterCredit(CREDIT);\n            player->CastSpell(player, SPELL_LEARN, false);\n        }"
+      }
+    ],
+    "cls": "npc_q39049",
+    "npc": 93105,
+    "quest": 39049
+  },
+  {
+    "key": "Sentry",
+    "title": "Preserve eligible player owner continuation for npc_lightning_sentry deaths",
+    "paths": [
+      "src/server/scripts/Northrend/zone_grizzly_hills.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/zone_grizzly_hills.cpp",
+        "old": "void JustDied(Unit* killer) override\n        {\n            if (killer->ToPlayer() && killer->ToPlayer()->GetTypeId() == TYPEID_PLAYER)\n            {\n                if (me->FindNearestCreature(NPC_WAR_GOLEM, 10.0f, true))\n                {\n                    if (killer->ToPlayer()->GetQuestStatus(QUEST_OR_MAYBE_WE_DONT_A) == QUEST_STATUS_INCOMPLETE ||\n                        killer->ToPlayer()->GetQuestStatus(QUEST_OR_MAYBE_WE_DONT_H) == QUEST_STATUS_INCOMPLETE)\n                        killer->ToPlayer()->KilledMonsterCredit(NPC_WAR_GOLEM, ObjectGuid::Empty);\n                }\n            }\n        }",
+        "new": "void JustDied(Unit* killer) override\n        {\n            if (Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)\n            {\n                if (me->FindNearestCreature(NPC_WAR_GOLEM, 10.0f, true))\n                {\n                    if (player->GetQuestStatus(QUEST_OR_MAYBE_WE_DONT_A) == QUEST_STATUS_INCOMPLETE ||\n                        player->GetQuestStatus(QUEST_OR_MAYBE_WE_DONT_H) == QUEST_STATUS_INCOMPLETE)\n                        player->KilledMonsterCredit(NPC_WAR_GOLEM, ObjectGuid::Empty);\n                }\n            }\n        }"
+      }
+    ],
+    "cls": "npc_lightning_sentry",
+    "npc": 26407,
+    "quest": 12138
+  },
+  {
+    "key": "Torloth",
+    "title": "Preserve eligible player owner continuation for mob_torloth_the_magnificent deaths",
+    "paths": [
+      "src/server/scripts/Outland/zone_shadowmoon_valley.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Outland/zone_shadowmoon_valley.cpp",
+        "old": "void JustDied(Unit* killer) override\n        {\n            switch (killer->GetTypeId())\n            {\n                case TYPEID_UNIT:\n                    if (Unit* owner = killer->GetOwner())\n                        if (owner->IsPlayer())\n                            CAST_PLR(owner)->GroupEventHappens(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, me);\n                    break;\n                case TYPEID_PLAYER:\n                    CAST_PLR(killer)->GroupEventHappens(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, me);\n                    break;\n                default:\n                    break;\n            }\n\n            if (Creature* LordIllidan = Unit::GetCreature(*me, LordIllidanGUID))\n            {\n                LordIllidan->AI()->Talk(3, killer->GetGUID());\n                LordIllidan->AI()->EnterEvadeMode();\n            }\n        }",
+        "new": "void JustDied(Unit* killer) override\n        {\n            if (Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)\n                player->GroupEventHappens(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, me);\n\n            if (Creature* LordIllidan = Unit::GetCreature(*me, LordIllidanGUID))\n            {\n                LordIllidan->AI()->Talk(3, killer ? killer->GetGUID() : ObjectGuid::Empty);\n                LordIllidan->AI()->EnterEvadeMode();\n            }\n        }"
+      }
+    ],
+    "cls": "mob_torloth_the_magnificent",
+    "npc": 22076,
+    "quest": 10781
+  },
+  {
+    "key": "Dimwind",
+    "title": "Preserve eligible player owner continuation for mob_attacker_dimwind deaths",
+    "paths": [
+      "src/server/scripts/Pandaria/zone_the_wandering_isle.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/zone_the_wandering_isle.cpp",
+        "old": "void JustDied(Unit* killer)\n        {\n            if (killer->GetTypeId() != TYPEID_PLAYER || !me->ToTempSummon())\n                return;\n\n            if (Creature* owner = me->GetMap()->GetCreature(me->ToTempSummon()->GetSummonerGUID()))\n                owner->AI()->SetGUID(killer->GetGUID(), 0);\n        }",
+        "new": "void JustDied(Unit* killer)\n        {\n            Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;\n            if (!player || !me->ToTempSummon())\n                return;\n\n            if (Creature* owner = me->GetMap()->GetCreature(me->ToTempSummon()->GetSummonerGUID()))\n                owner->AI()->SetGUID(player->GetGUID(), 0);\n        }"
+      }
+    ],
+    "cls": "mob_attacker_dimwind",
+    "npc": 54130,
+    "quest": 29419
+  },
+  {
+    "key": "Hyjal",
+    "title": "Isolate Hyjal protector summon progress and cast retries per player",
+    "paths": [
+      "src/server/scripts/World/player_special.cpp"
+    ],
+    "cls": "player_hyjal_protectors_random",
+    "edits": [
+      {
+        "path": "src/server/scripts/World/player_special.cpp",
+        "old": "#include \"ScriptPCH.h\"",
+        "new": "#include \"ScriptPCH.h\"\n#include <map>\n#include <mutex>"
+      },
+      {
+        "path": "src/server/scripts/World/player_special.cpp",
+        "old": "class player_hyjal_protectors_random : public PlayerScript\n{\npublic:\n    player_hyjal_protectors_random() : PlayerScript(\"player_hyjal_protectors_random\") \n    {\n        checktimer = 5000;\n    }\n\n    uint32 checktimer = 5000;\n    bool summoned;\n\n    void OnUpdate(Player* player, uint32 diff) override\n    {\n        if (checktimer <= diff)\n        {\n\n            if (player->GetCurrentAreaID() != 5087)\n            {\n                summoned = false;\n                return;\n            }\n\n            bool quest = player->GetQuestStatus(29128) == QUEST_STATUS_INCOMPLETE;\n\n            if (!quest || summoned)\n                return;\n\n            uint32 random[2] = { 96545, 96546 };\n\n            uint32 allianceNpc[33] = { 96622, 96598 ,99021 ,96595 ,96597 ,96608 ,96626 ,96625 ,96627 ,96564 ,96604 ,96596 ,96606 ,96599 ,96624 ,\n                96601, 96623, 96607, 96605, 96586, 96600, 96585, 96610, 96584, 96587, 96628, 99023, 99024, 99032, 99030, 99028, 99027, 99022 };\n\n\n            uint32 hordeNpc[33] = { 96622, 96598 ,99021 ,96595 ,96597 ,96608 ,96626 ,96625 ,96627 ,96564 ,96604 ,96596 ,96606 ,96599 ,96624 ,\n                96601 ,96623 ,96607 ,96605 ,96586 ,96600 ,96585 ,96610 ,96584 ,96587 ,96628,96603,96588,96590,96629,96612,96589,96611 };\n\n            switch (player->GetTeam())\n            {\n            case ALLIANCE:\n                player->CastSpell(player, allianceNpc[urand(0, 32)], true);\n                summoned = true;\n                break;\n            case HORDE:\n                player->CastSpell(player, hordeNpc[urand(0, 32)], true);\n                summoned = true;\n                break;\n            }\n\n            player->CastSpell(player, random[urand(0, 1)], true);\n            player->CastSpell(player, 96544, true);\n            player->CastSpell(player, 96547, true);\n\n            checktimer = 5000;\n        }\n        else\n            checktimer -= diff;\n    }\n};",
+        "new": "class player_hyjal_protectors_random : public PlayerScript\n{\npublic:\n    player_hyjal_protectors_random() : PlayerScript(\"player_hyjal_protectors_random\") { }\n\n    struct Progress\n    {\n        uint32 timer = 5000;\n        uint32 spells[4] = {};\n        uint8 completed = 0;\n    };\n\n    std::map<ObjectGuid, Progress> progress;\n    std::recursive_mutex progressLock;\n\n    void OnLogout(Player* player) override\n    {\n        std::lock_guard<std::recursive_mutex> lock(progressLock);\n        progress.erase(player->GetGUID());\n    }\n\n    void OnUpdate(Player* player, uint32 diff) override\n    {\n        std::lock_guard<std::recursive_mutex> lock(progressLock);\n        if (player->GetCurrentAreaID() != 5087 || player->GetQuestStatus(29128) != QUEST_STATUS_INCOMPLETE)\n        {\n            progress.erase(player->GetGUID());\n            return;\n        }\n\n        Progress& state = progress[player->GetGUID()];\n        if (state.timer > diff)\n        {\n            state.timer -= diff;\n            return;\n        }\n        state.timer = 5000;\n\n        if (!state.spells[0])\n        {\n            uint32 random[2] = { 96545, 96546 };\n            uint32 allianceNpc[33] = { 96622, 96598 ,99021 ,96595 ,96597 ,96608 ,96626 ,96625 ,96627 ,96564 ,96604 ,96596 ,96606 ,96599 ,96624 ,\n                96601, 96623, 96607, 96605, 96586, 96600, 96585, 96610, 96584, 96587, 96628, 99023, 99024, 99032, 99030, 99028, 99027, 99022 };\n            uint32 hordeNpc[33] = { 96622, 96598 ,99021 ,96595 ,96597 ,96608 ,96626 ,96625 ,96627 ,96564 ,96604 ,96596 ,96606 ,96599 ,96624 ,\n                96601 ,96623 ,96607 ,96605 ,96586 ,96600 ,96585 ,96610 ,96584 ,96587 ,96628,96603,96588,96590,96629,96612,96589,96611 };\n            switch (player->GetTeam())\n            {\n                case ALLIANCE: state.spells[0] = allianceNpc[urand(0, 32)]; break;\n                case HORDE: state.spells[0] = hordeNpc[urand(0, 32)]; break;\n                default: return;\n            }\n            state.spells[1] = random[urand(0, 1)];\n            state.spells[2] = 96544;\n            state.spells[3] = 96547;\n        }\n\n        // Record accepted native casts once; retry only refused casts.\n        for (uint8 i = 0; i < 4; ++i)\n            if (!(state.completed & (1 << i)) && player->CastSpell(player, state.spells[i], true) == SPELL_CAST_OK)\n                state.completed |= uint8(1 << i);\n    }\n};"
+      }
+    ]
+  },
+  {
+    "key": "BloodQueen",
+    "title": "Preserve eligible player owner continuation for boss_blood_queen_lana_thel deaths",
+    "paths": [
+      "src/server/scripts/Northrend/IcecrownCitadel/boss_blood_queen_lana_thel.cpp"
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_blood_queen_lana_thel.cpp",
+        "old": "void JustDied(Unit* killer) override\n            {\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_UNCONTROLLABLE_FRENZY);\n                _JustDied();\n                Talk(SAY_DEATH);\n                CleanAuras();\n                // Blah, credit the quest\n                if (_creditBloodQuickening)\n                {\n                    instance->SetData(DATA_BLOOD_QUICKENING_STATE, DONE);\n                    if (Player* player = killer->ToPlayer())\n                        player->RewardPlayerAndGroupAtEvent(NPC_INFILTRATOR_MINCHAR_BQ, player);\n                    if (Creature* minchar = me->FindNearestCreature(NPC_INFILTRATOR_MINCHAR_BQ, 200.0f))\n                    {\n                        minchar->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, 0);\n                        minchar->SetAnimTier(AnimTier::Ground);\n                        minchar->SetCanFly(false);\n                        minchar->RemoveAllAuras();\n                        minchar->GetMotionMaster()->MoveCharge(4629.3711f, 2782.6089f, 401.5301f, SPEED_CHARGE/3.0f);\n                    }\n                }\n            }",
+        "new": "void JustDied(Unit* killer) override\n            {\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_UNCONTROLLABLE_FRENZY);\n                _JustDied();\n                Talk(SAY_DEATH);\n                CleanAuras();\n                // Blah, credit the quest\n                if (_creditBloodQuickening)\n                {\n                    instance->SetData(DATA_BLOOD_QUICKENING_STATE, DONE);\n                    if (Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)\n                        player->RewardPlayerAndGroupAtEvent(NPC_INFILTRATOR_MINCHAR_BQ, player);\n                    if (Creature* minchar = me->FindNearestCreature(NPC_INFILTRATOR_MINCHAR_BQ, 200.0f))\n                    {\n                        minchar->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, 0);\n                        minchar->SetAnimTier(AnimTier::Ground);\n                        minchar->SetCanFly(false);\n                        minchar->RemoveAllAuras();\n                        minchar->GetMotionMaster()->MoveCharge(4629.3711f, 2782.6089f, 401.5301f, SPEED_CHARGE/3.0f);\n                    }\n                }\n            }"
+      }
+    ],
+    "cls": "boss_blood_queen_lana_thel",
+    "npc": 37955,
+    "quest": 24874
+  }
+]

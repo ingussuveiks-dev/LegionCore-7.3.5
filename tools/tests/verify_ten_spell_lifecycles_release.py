@@ -8,7 +8,18 @@ n=nested['n'];ins=n['instructions'];symbols=n['symbols'];resolve=n['resolve']
 def sites(rows,prefix):
  targets={resolve(v)for k,v in symbols.items()if k.startswith(prefix)}
  assert targets,prefix
- return [i for i,x in enumerate(rows)if x.mnemonic in ('call','jmp')and x.operands[0].type==CS_OP_IMM and resolve(x.operands[0].imm)in targets]
+ # MSVC may place switch-table bytes inside a runtime-function range. A
+ # linear decode can interpret those bytes as an out-of-image branch. Such
+ # a target cannot name a linked dependency; retain every expected-call check.
+ result=[]
+ for i,x in enumerate(rows):
+  if x.mnemonic not in ('call','jmp') or x.operands[0].type!=CS_OP_IMM:continue
+  try:target=resolve(x.operands[0].imm)
+  except ValueError as error:
+   if not str(error).startswith('Address outside PE:'):raise
+   continue
+  if target in targets:result.append(i)
+ return result
 def values(rows):return{o.imm for x in rows for o in x.operands if o.type==CS_OP_IMM}
 def ref(rows,address):return any(x.mnemonic=='lea'and o.type==CS_OP_MEM and o.mem.base==X86_REG_RIP and resolve(x.address+x.size+o.mem.disp)==address for x in rows for o in x.operands)
 owners=[
