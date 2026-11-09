@@ -311,8 +311,8 @@ public:
                                         egg->CastSpellDelay(egg, eggsCasts[color], false, 100);
                                     }
                             }
-                            else
-                                if (Creature* egg = instance->instance->GetCreature(eggs[i][urand(0, eggs[i].size())]))
+                            else if (!eggs[i].empty())
+                                if (Creature* egg = instance->instance->GetCreature(eggs[i][urand(0, uint32(eggs[i].size() - 1))]))
                                 {
                                     if (!egg->IsAlive())
                                         egg->Respawn(true);
