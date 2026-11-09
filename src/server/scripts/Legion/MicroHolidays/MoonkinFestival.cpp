@@ -170,16 +170,16 @@ struct npc_dramock: ScriptedAI
     explicit npc_dramock(Creature* creature) : ScriptedAI(creature) {}
 
     EventMap events;
-    std::list<Player*> playerList;
     std::list<ObjectGuid> playerGUIDs;
-    bool useEvent;
+    bool useEvent = false;
+    uint64 observationGeneration = 0;
 
     void Reset() override
     {
         DoCast(243958);
 
         events.Reset();
-        playerList.clear();
+        ++observationGeneration;
         playerGUIDs.clear();
         useEvent = false;
     }
@@ -204,10 +204,12 @@ struct npc_dramock: ScriptedAI
                 useEvent = true;
                 credit = 0;
 
-                me->AddDelayedEvent(500, [=]() -> void
+                me->AddDelayedEvent(500, [this, generation = ++observationGeneration]() -> void
                 {
+                    if (generation != observationGeneration || !useEvent)
+                        return;
                     playerGUIDs.clear();
-                    playerList.clear();
+                    std::list<Player*> playerList;
 
                     GetPlayerListInGrid(playerList, me, 15.0f);
                     if (!playerList.empty())
@@ -257,9 +259,14 @@ struct npc_dramock: ScriptedAI
             case EVENT_5:
                 useEvent = false;
 
-                if (!playerList.empty())
-                    for (auto& player : playerList)
-                        player->KilledMonsterCredit(me->GetEntry());
+                {
+                    std::list<ObjectGuid> eligiblePlayers;
+                    eligiblePlayers.swap(playerGUIDs);
+                    for (ObjectGuid const& guid : eligiblePlayers)
+                        if (Player* player = ObjectAccessor::GetPlayer(*me, guid))
+                            if (player->GetQuestStatus(47430) == QUEST_STATUS_INCOMPLETE && player->GetQuestObjectiveData(47430, me->GetEntry()) != 1)
+                                player->KilledMonsterCredit(me->GetEntry());
+                }
                 break;
             }
         }
