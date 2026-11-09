@@ -1,0 +1,297 @@
+{
+  "date": "2026-11-09",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "f382f0c19e5b3b9702e6d580b7f649b8662e1e7a",
+  "support_commit": "8bde88b9de0b7628674587e752fbef70690bb5ab",
+  "implementation_head": "f566659b1447243971a1f250522923457b767e58",
+  "fixes": [
+    {
+      "key": "Molten",
+      "title": "Resolve the Molten Touch summon before the delayed channel",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_felhounds.cpp"
+      ],
+      "audit": "docs/audits/molten-touch-delayed-summon-2026-11-09.json",
+      "commit": "1a3286ba94c7b9e1a915cd92349475575807a040"
+    },
+    {
+      "key": "Brawler",
+      "title": "Retain faction values instead of a player pointer in Brawlers route callbacks",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp"
+      ],
+      "audit": "docs/audits/brawlers-delayed-faction-route-2026-11-09.json",
+      "commit": "71762f6fe9b161e8320dd9c0feca9171bbd9313c"
+    },
+    {
+      "key": "Cocoon",
+      "title": "Resolve Cathedral cocoon and caster at spider release",
+      "paths": [
+        "src/server/scripts/Legion/CathedralEternalNight/cathedral_of_eternal_night.cpp"
+      ],
+      "audit": "docs/audits/cathedral-spider-release-lifetime-2026-11-09.json",
+      "commit": "903cfdfb1d47d934690a9e108b03800e125fb9f8"
+    },
+    {
+      "key": "StormEntry",
+      "title": "Cancel stale Stormheim invasion entry callbacks",
+      "paths": [
+        "src/server/scripts/Scenario/LegionInvasion/Stormheim/instance_InvasionStormheim.cpp"
+      ],
+      "audit": "docs/audits/stormheim-invasion-entry-attempt-2026-11-09.json",
+      "commit": "7a1c7c6a7cab76bb4adc117e8a93bf29b4a97fc9"
+    },
+    {
+      "key": "AzsunaEntry",
+      "title": "Cancel stale Azsuna invasion entry callbacks",
+      "paths": [
+        "src/server/scripts/Scenario/LegionInvasion/Azsuna/instance_InvasionAzsuna.cpp"
+      ],
+      "audit": "docs/audits/azsuna-invasion-entry-attempt-2026-11-09.json",
+      "commit": "484bd81111a033b6c604daf206d02f10c5703cb2"
+    },
+    {
+      "key": "HMEntry",
+      "title": "Cancel stale HighMountain invasion entry callbacks",
+      "paths": [
+        "src/server/scripts/Scenario/LegionInvasion/HighMountain/instance_InvasionHM.cpp"
+      ],
+      "audit": "docs/audits/highmountain-invasion-entry-attempt-2026-11-09.json",
+      "commit": "8748227c4569e0afe534804f69252b6c97f8259d"
+    },
+    {
+      "key": "AssaultEntry",
+      "title": "Cancel stale Broken Shore assault intro stages",
+      "paths": [
+        "src/server/scripts/Scenario/AssaultBrokenShore/instance_AssaultBrokenShore.cpp"
+      ],
+      "audit": "docs/audits/broken-shore-assault-entry-attempt-2026-11-09.json",
+      "commit": "07017485127aa36e885e0221a35b4bfb0adfead0"
+    },
+    {
+      "key": "NightholdEntry",
+      "title": "Scope Nighthold floor recovery and intro to the current entry",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/instance_the_nighthold.cpp"
+      ],
+      "audit": "docs/audits/nighthold-entry-floor-intro-2026-11-09.json",
+      "commit": "55e42e16959d76a291accf998b8ca3dddec3598a"
+    },
+    {
+      "key": "Telarn",
+      "title": "Keep Telarn delayed initialization on the creature lifetime",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_high_botanist_telarn.cpp"
+      ],
+      "audit": "docs/audits/telarn-initialization-owner-2026-11-09.json",
+      "commit": "2039231873c7770e16dfa23d9dd254d809b3a094"
+    },
+    {
+      "key": "Dramock",
+      "title": "Resolve eligible Dramock participants once at the native credit stage",
+      "paths": [
+        "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp"
+      ],
+      "audit": "docs/audits/dramock-participant-credit-lifetime-2026-11-09.json",
+      "commit": "f566659b1447243971a1f250522923457b767e58"
+    }
+  ],
+  "counting": "Exactly ten independent repairs in ten production files;callbacks of one authored entry sequence count once. Support,archive and handoff are not product fixes.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "418a4825affb739eddf1dc60d606e6734b65c9424e83baa2e332df44ea9952de",
+    "bnet_sha256": "ae3882b692b167feab4d2c57ecf29c0d0b3c15d43551c618811040de1cbaa767",
+    "rollback": ".codex/release-before-fourteenth-ten-fixes-2026-11-09",
+    "startup": "Owned PID=25032 reached fresh ready\nPASS owned PID=25032 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "validation": {
+    "source": "Twenty MSVC ASAN cases:ten pinned f382f0c19 expected-broken counterfactuals paired with ten repaired cases. Exact production callback bodies and full selected entry/Dramock methods run against controlled queues/Unit/cast/route/conversation/credit endpoints. Retired storage stays allocated and instrumented;controls do not execute intentional native UAF. Covers missing actors,dead boss,immutable both-faction routes,cocoon cleanup without caster,origin/leave/reentry,current quest changes,nested Assault cancellation,Nighthold late floor and failed-create retry,Dramock Reset/departure/abandonment/duplicate finish. Not actual client traversal.",
+    "native": "Nine selected native cases:Molten actual Unit combat queue and summon GUID lookup,Cathedral two actual ObjectAccessor lookups,Brawlers native faction-value capture,five real Player-queue entry-token/origin guards,and Dramock current native quest/objective/GUID snapshot consumption. Reads matching26972 spells/quests and real47430 objectives. Observed payload endpoints replace encounter casts,movement,conversations and credit;entry quest branches and full Telarn ownership remain source-only. Real departure and instance-token destruction covered. Transient Player/controlled state only;no character saves/full-core ASAN or whole encounter claim.",
+    "release": "Original main game/scripts libraries built at actual final-link inputs;staged and canonical PE verify these ten repairs plus137 prior selected paths. Telarn constructor is inlined in actual GenericCreatureScript factory;it schedules the Creature function queue,not InstanceScript. Ten original-map closures across three invasion,two Assault and two Nighthold stages retain weak-attempt/current-map-instance guards. Canonical Scepter,ArtifactTier,ScenarioResumeASAN and owned canonical fresh ready/graceful shutdown0/exit0/gone pass.",
+    "diagnostics": "Every source/native/build/link/PE/retained/start check has before/after canonical and own crash/log snapshots,exit/stdout/stderr and appended warnings/errors/assertions/DBErrors review. Final checks clean;earlier fixture/PE-assumption failures remain development evidence. Compiler inventory retained. Mixed7111-byte DBErrors remains OPEN/untruncated.",
+    "scope": "Exactly ten independent repairs in ten production files:Molten ability,Brawlers faction route,Cathedral release,three invasion entry controllers,Assault entry,Nighthold entry,Telarn initialization,Dramock roster. All original timers/IDs/native group and faction rules retained. No SQL or character rewrite,no guessed Lady health/kill timer. Multiple callbacks within one authored entry sequence count once."
+  },
+  "diagnostics": {
+    "final": "Twenty source-ASAN cases,nine native cases with captured payloads,staged/canonical ten repairs plus137prior PE paths,Scepter/ArtifactTier/ScenarioResumeASAN and owned canonical ready/shutdown0/exit0/gone pass;every test has crash/log/exit/stdout/stderr/appended diagnostic review.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 0,
+      "types": {},
+      "review": "Main incremental build warnings checked against f382f0c19. Ten retained-fixture warnings are byte-equivalent messages/file/line to the previous passing batch;their production and fixture sources unchanged. Diagnostics retained without suppression;not claimed repaired.",
+      "entries": [],
+      "retained_fixture_warnings": [
+        {
+          "log": "artifact-tier.log",
+          "file": "ArtifactTierProgressionTest.cpp",
+          "line": 65,
+          "code": "C4458",
+          "message": "declaration of 'item' hides class member",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "artifact-tier.log",
+          "file": "AutoTier.inc",
+          "line": 33,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint8', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 26,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 27,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 28,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 29,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'int' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "AddScenario.inc",
+          "line": 7,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        }
+      ]
+    },
+    "development": [
+      "Initial scoped edit preparation named the Felhounds shared base before locating actual npc_felhounds_fharg. Scope assertion rejected before edits;corrected actual class. No wrong-class production candidate was built or deployed.",
+      "First Cocoon source fixture incorrectly marked caster retired before capturing GUID for a second setup;production captures it while valid. Corrected fixture departure timing and reran all20 cases. Initial assertion exit and diagnostic snapshots retained,not called a passing ordinary run.",
+      "Native bootstrap initially loaded only earlier Althea quest subset;catalog check rejected missing selected quests. Added four scoped quest IDs to readonly loader. Native faction fixture set only raw faction;setFactionForRace now initializes actual TeamId before testing immutable capture. Native47430 real objectives then loaded readonly and verified122390/amount1. Initial failed captures and final passing captures preserved.",
+      "PE verification initially assumed non-inlined Telarn constructor and AddFunction call. Actual optimized constructor is in GenericCreatureScript GetAI and uses AddDelayedEvent at Creature Unit::m_Functions+0x36a0;check follows actual factory and callback. Dramock lambda operator is out-of-line;expanded thunk checks generation load/compare and Reset increment. Initial PE-assumption failures preserved and resolved,not runtime faults.",
+      "First focused git apply rejected CRLF patch context before staging any production repair. Normalized patch files to LF and resumed from the already-pushed support commit;ten independent implementation commits then reviewed/pushed. Original failed driver retained;no history rewrite.",
+      "Two archive copies encountered still-open outer driver logs before any deletion. First exclusion named only finish.log and missed renamed finish-retry.log. Preserved both partial copied trees/per-file hash manifests,excluded finish*.log and ran the driver without redirected output. Complete archive/cleanup then verified all copied hashes before deleting only selected regenerable artifacts. Resolved housekeeping lock failures,not server faults.",
+      "File-lock errors were emitted in tool stderr;the two redirected outer logs are zero bytes and do not preserve original stderr. Observed messages/cause are transcribed in initial-copy metadata and here. No claim that those absent raw stderr bytes were archived;original partial-copy bytes and per-file hash manifests remain verified.",
+      "Matching local26972/core and readonly DB catalogs resolve selected IDs,bindings,conversation rows and both factions ten waypoint routes. GitHub main/local history matched f382f0c19 before work. No modern-core transplant or live SQL migration. Main incremental build has zero warnings;ten retained-fixture warnings exactly match previous passing messages/file/line and unchanged fixture/core sources. No warning suppression or claim that baseline diagnostics are repaired.",
+      "Scouted Antorus singleton eventDone and Brawlers repeated Reset count lifecycle remain explicitly OPEN/not counted. Selected native payloads are observed endpoints;full concrete AI,combat/movement/scene/credit/client/36-chain verification remains pending. No unsolicited credit/item/character rewrites."
+    ],
+    "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,initial-copy snapshots,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse-scope ten files and no production diff.",
+    "supplemental_archives": [
+      {
+        "manifest": "build-extractors/bin/Release/fixed/fourteenth-ten-repairs-2026-11-09/supplemental-manifest.json",
+        "sha256": "d95dc891d4d0b109d5960805f157dd804a26c61d6017ad4f10744026049dbc2f",
+        "files": 24
+      },
+      {
+        "manifest": "build-extractors/bin/Release/fixed/fourteenth-ten-repairs-2026-11-09/supplemental-manifest-2.json",
+        "sha256": "03ee87fbd8f716ff89e64317d15ef679138ed338a08d5d6f690d22c027d6ca39",
+        "files": 12
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/fourteenth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "80bd573e8a632b8e27487f4354367187067d90be39b830e7db24f6fb5457c065",
+    "original_files": 927,
+    "removed_files": 222,
+    "logical_removed_bytes": 1408032846,
+    "deletion_manifest": ".codex/fourteenth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "06be38888b0b696a0128a4ba76fc0b33b85368620cf3955c9feaa3f6920c597c",
+    "retained_rollbacks": [
+      ".codex/release-before-fourteenth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-thirteenth-ten-fixes-2026-11-09",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-thirteenth1553c21d retired after newest pre-fourteenth rollback hash verification rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical EXE/MAP/config/certs/DLL/data,main game/scripts libraries,tests/backups/security. OPEN Lady/LINK2/Slaghammer/mixed DBErrors/SQL/TimeLoop retained;TimeLoop ninth-batch EXE/symbols retained. Private test configs deleted,not archived.",
+    "initial_copy_archives": [
+      {
+        "Resolution": "Retain original partial copy;exclude active driver from complete archive retry",
+        "Files": 74,
+        "Directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\fourteenth-ten-repairs-2026-11-09-initial-archive-copy",
+        "ManifestSHA256": "05DB99196F6AAC7F8C95C8EF51650A0A36B0E18956B31BE38505526FC66882AF",
+        "Cause": "Active finish.log was locked;no deletions executed before failure"
+      },
+      {
+        "Files": 74,
+        "ManifestSHA256": "C0B81921ACBDFCB76AE01286D4DCEFC60115A28BFAA5BE35A29983BD73C8B1DE",
+        "Cause": "Renamed active finish-retry.log was locked;no deletions executed",
+        "Resolution": "Preserve second original partial copy;exclude finish*.log;run driver without redirected output",
+        "Directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\fourteenth-ten-repairs-2026-11-09-second-archive-copy"
+      }
+    ]
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 complete artifact chains remain OPEN;no default Slaghammer probe or mixed-log truncation.",
+    "MariaDB unsigned CAST:82original+94corrected raw records remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing:26raw records and ninth-batch investigation EXE/symbols retained.",
+    "Actual client Molten channel/raid,cocoon visuals/release/jump,Brawlers both-faction full round,three invasion admission/conversation/travel,Assault actors/spells/nested intro,Nighthold floor/full raid/audio and Telarn encounter,Dramock speech/credit/group/retry require traversal. Pet/guardian/group kill credit paths are unchanged;this batch does not certify them.",
+    "Scouted Antorus eventobject_antorus_into has singleton-wide eventDone consumed before prerequisites and foreign-instance async callbacks. Full per-eventobject/per-instance ownership,retry and summon deduplication need a separate repair;left unchanged and not counted.",
+    "Brawlers count_adds starts0 in constructor and three scripted summons use0..2 in six-entry arrays. Reset does not reset count_adds;reuse may need a separate controller reset/summon-cleanup audit. This batch changes only delayed immutable faction capture and does not certify repeated Reset lifecycle."
+  ],
+  "stop": "Exactly ten implemented,tested to stated scopes,deployed,separately committed/pushed and cleaned. Stop after audit/handoff push;no eleventh repair started. Existing OPEN and client/all36 checks remain visible."
+}

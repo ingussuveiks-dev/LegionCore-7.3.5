@@ -27,7 +27,59 @@
   "canonical_world_sha256": "418a4825affb739eddf1dc60d606e6734b65c9424e83baa2e332df44ea9952de",
   "patch_sha256": "c3d1bb7f4bad465741258e3538f92d1a3f25cedc41494fbde435fb8a80280862",
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/fourteenth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "80bd573e8a632b8e27487f4354367187067d90be39b830e7db24f6fb5457c065",
+    "original_files": 927,
+    "removed_files": 222,
+    "logical_removed_bytes": 1408032846,
+    "deletion_manifest": ".codex/fourteenth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "06be38888b0b696a0128a4ba76fc0b33b85368620cf3955c9feaa3f6920c597c",
+    "retained_rollbacks": [
+      ".codex/release-before-fourteenth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-thirteenth-ten-fixes-2026-11-09",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-thirteenth1553c21d retired after newest pre-fourteenth rollback hash verification rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical EXE/MAP/config/certs/DLL/data,main game/scripts libraries,tests/backups/security. OPEN Lady/LINK2/Slaghammer/mixed DBErrors/SQL/TimeLoop retained;TimeLoop ninth-batch EXE/symbols retained. Private test configs deleted,not archived.",
+    "initial_copy_archives": [
+      {
+        "Resolution": "Retain original partial copy;exclude active driver from complete archive retry",
+        "Files": 74,
+        "Directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\fourteenth-ten-repairs-2026-11-09-initial-archive-copy",
+        "ManifestSHA256": "05DB99196F6AAC7F8C95C8EF51650A0A36B0E18956B31BE38505526FC66882AF",
+        "Cause": "Active finish.log was locked;no deletions executed before failure"
+      },
+      {
+        "Files": 74,
+        "ManifestSHA256": "C0B81921ACBDFCB76AE01286D4DCEFC60115A28BFAA5BE35A29983BD73C8B1DE",
+        "Cause": "Renamed active finish-retry.log was locked;no deletions executed",
+        "Resolution": "Preserve second original partial copy;exclude finish*.log;run driver without redirected output",
+        "Directory": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\fourteenth-ten-repairs-2026-11-09-second-archive-copy"
+      }
+    ]
   },
-  "batch_audit": "docs/audits/fourteenth-ten-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/fourteenth-ten-repairs-2026-11-09.json",
+  "fix_commit": "2039231873c7770e16dfa23d9dd254d809b3a094",
+  "final_scope_metadata_sha256": "e565e02e3cde6012717a49eb9cb6df5bd5b11ac64cb4518dbbdeb71e00566729"
 }
