@@ -406,12 +406,12 @@ struct boss_star_augur_etraeus : BossAI
                 switch (PhaseID)
                 {
                     case Phase1:
-                        me->m_Events.KillAllEvents(true);
+                        me->m_Events.KillAllEvents(false);
                         CallPhase1Tasks();
                         ModerateGoVisuals();
                         break;
                     case Phase2:
-                        me->m_Events.KillAllEvents(true);
+                        me->m_Events.KillAllEvents(false);
                         CallPhase2Tasks();
                         ModerateGoVisuals();
                         summons.DespawnEntry(NPC_ICE_CRYSTAL);
@@ -419,7 +419,7 @@ struct boss_star_augur_etraeus : BossAI
                             DoCast(me, SPELL_FEL_EMBER_AURA, true);
                         break;
                     case Phase3:
-                        me->m_Events.KillAllEvents(true);
+                        me->m_Events.KillAllEvents(false);
                         CallPhase3Tasks();
                         ModerateGoVisuals();
                         DoCast(me, SpellVoidShiftAT_2, true);
