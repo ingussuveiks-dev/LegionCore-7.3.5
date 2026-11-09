@@ -606,6 +606,7 @@ struct npc_cenarius_forces_of_nightmare : public ScriptedAI
 
     void DefaultEvents(uint8 powerCount)
     {
+        me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetPower(POWER_ENERGY, powerCount);
         DoCast(me, SPELL_DISSOLVE_CLEANSED_IN, true);
