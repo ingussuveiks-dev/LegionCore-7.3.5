@@ -717,6 +717,8 @@ public:
             {
                 if (Unit* target = GetHitUnit())
                 {
+                    uint32 mapId = caster->GetMapId();
+                    uint32 instanceId = caster->GetInstanceId();
                     if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(228354))
                     {
                         float damage = 1.f;
@@ -741,8 +743,11 @@ public:
 
                         ObjectGuid targetGUID = target->GetGUID();
                         float secondDamage = damage + CalculatePct(damage, dmgMod);
-                        caster->AddDelayedEvent(300, [caster, targetGUID, secondDamage, brainFreeze = brainFreeze]() -> void
+                        caster->AddDelayedEvent(300, [caster, targetGUID, secondDamage, brainFreeze = brainFreeze, mapId, instanceId]() -> void
                         {
+                            if (!caster->IsInWorld() || caster->IsPreDelete() ||
+                                caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                                return;
                             Unit* target = ObjectAccessor::GetUnit(*caster, targetGUID);
                             if (!target)
                                 return;
@@ -756,8 +761,11 @@ public:
                         });
 
                         float thirdDamage = damage + CalculatePct(damage, dmgMod * 2.0f);
-                        caster->AddDelayedEvent(600, [caster, targetGUID, thirdDamage, brainFreeze = brainFreeze]() -> void
+                        caster->AddDelayedEvent(600, [caster, targetGUID, thirdDamage, brainFreeze = brainFreeze, mapId, instanceId]() -> void
                         {
+                            if (!caster->IsInWorld() || caster->IsPreDelete() ||
+                                caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                                return;
                             Unit* target = ObjectAccessor::GetUnit(*caster, targetGUID);
                             if (!target)
                                 return;
