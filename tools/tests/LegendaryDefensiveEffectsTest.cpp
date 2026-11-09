@@ -55,6 +55,7 @@ struct Prydaz {
     Unit* unit;
     SpellInfo info;
     Unit* GetCaster() { return unit; }
+    Unit* GetUnitOwner() { return unit; }
     SpellInfo* GetSpellInfo() { return &info; }
 #include "Prydaz.inc"
 };

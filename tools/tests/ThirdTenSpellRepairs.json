@@ -1,0 +1,93 @@
+[
+  {
+    "key": "Brewfest",
+    "file": "spell_item.cpp",
+    "classes": [
+      "spell_item_brewfest_mount_transformation"
+    ],
+    "spell": 49357,
+    "title": "Preserve original mounted speed for Brewfest transformations"
+  },
+  {
+    "key": "Aspect",
+    "file": "spell_item.cpp",
+    "classes": [
+      "spell_item_demon_hunters_aspect"
+    ],
+    "spell": 113095,
+    "title": "Restore active transforms when Demon Hunters Aspect ends"
+  },
+  {
+    "key": "Hat",
+    "file": "spell_item.cpp",
+    "classes": [
+      "spell_item_faded_wizard_hat"
+    ],
+    "spell": 74589,
+    "title": "Apply the Faded Wizard Hat model to the aura recipient"
+  },
+  {
+    "key": "Costumes",
+    "file": "spell_generic.cpp",
+    "classes": [
+      "spell_gen_citizen_costume_alliance_darkmoon",
+      "spell_gen_citizen_costume_horde_darkmoon"
+    ],
+    "spell": 70764,
+    "title": "Apply both Darkmoon citizen costumes to their actual recipients"
+  },
+  {
+    "key": "Ocean",
+    "file": "spell_item.cpp",
+    "classes": [
+      "spell_item_ocean_embrace"
+    ],
+    "spell": 242459,
+    "title": "Keep Oceans Embrace helpers on the surviving aura recipient"
+  },
+  {
+    "key": "Shadow",
+    "file": "spell_priest.cpp",
+    "classes": [
+      "spell_pri_shadowform"
+    ],
+    "spell": 232698,
+    "title": "Maintain and clean Shadowform visuals on the aura owner"
+  },
+  {
+    "key": "Glacial",
+    "file": "spell_dk.cpp",
+    "classes": [
+      "spell_dk_glacial_advance"
+    ],
+    "spell": 194913,
+    "title": "Keep queued Glacial Advance impacts on their original map"
+  },
+  {
+    "key": "Breath",
+    "file": "spell_monk.cpp",
+    "classes": [
+      "spell_monk_breath_of_fire"
+    ],
+    "spell": 115181,
+    "title": "Keep queued Breath of Fire effects in their original instance"
+  },
+  {
+    "key": "Hammer",
+    "file": "spell_generic.cpp",
+    "classes": [
+      "spell_gen_hammer_of_supreme_justice"
+    ],
+    "spell": 195558,
+    "title": "Reject stale Hammer of Supreme Justice teleport coordinates"
+  },
+  {
+    "key": "Prydaz",
+    "file": "spell_item.cpp",
+    "classes": [
+      "spell_item_prydaz_abs"
+    ],
+    "spell": 207472,
+    "title": "Calculate Prydaz absorption from its actual aura recipient"
+  }
+]

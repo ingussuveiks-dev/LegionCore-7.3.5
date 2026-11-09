@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-09",
+  "status": "SUPPORT_FOR_EXACTLY_TEN_PRODUCT_REPAIRS",
+  "base": "797cebe2f",
+  "scope": "Ten independent issues in11complete classes;both Darkmoon faction costumes count together. Extract actual Aura getters/calc/update dispatcher and FunctionProcessor;modeled Unit/Player/world endpoints plus actual native core/data and registered PE paths.",
+  "validation": [
+    "20 final paired full-class ASAN source regressions pass;Ocean original null dereference is an explicitly expected failing counterfactual paired with repaired pass. Other nine baseline assertions demonstrate stale map,recipient/model or speed behavior.",
+    "Native12bindings/11classes,matching26972/readonly data;two actual2->1 mount-speed controls and16 actual owner/model/cleanup/calc/missing-caster-at-Load contexts in Human/Orc controlled profiles. Not full-core ASAN or client traversal.",
+    "Brewfest actual full mount casting on this bare profile is correctly refused:CheckLocation/GetMountCapability requires real riding/area eligibility. Triggered bool masks NOT_HERE81 as DONT_REPORT30;test-only removal of DONT_REPORT exposes the true refusal without bypassing checks. Full native selection casts are not claimed.",
+    "Source eight Brewfest faction/normal/reverse/speed combinations;both Darkmoon variants and upper model bounds;Ocean6specs/item-missing/removal;Shadow thresholds;Prydaz tank/non-tank and distinct-caster stats;queued clocks/origin/world/death handling and exactly-once.",
+    "Staged/canonical third-ten PE plus prior27 spell paths,Scepter Release and retained LegendaryDefensive/Prydaz all-school absorption/ShadowVisual regressions pass. Existing fixture assertions retained;only owner getter seams added.",
+    "Owned canonical28440 ready/shutdown0/exit0/gone/stderr empty;protected runtime hashes unchanged,no new runtime diagnostics."
+  ],
+  "limits": "Actual equipped items,profession/riding/admission,morph/visual/achievement packet rendering and client combat/transfers remain pending. Native earlier profile/poses and mount capability are controlled;read-only/TEMP database scope,no character saves.",
+  "batch": "docs/audits/third-ten-spell-repairs-2026-11-09.json"
+}

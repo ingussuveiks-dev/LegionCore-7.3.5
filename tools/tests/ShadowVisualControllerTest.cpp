@@ -26,6 +26,7 @@ struct AuraScript
     Hook OnAuraUpdate, AfterEffectRemove, AfterEffectApply;
     virtual void Register() {}
     Unit* GetCaster() { return casterFixture; }
+    Unit* GetUnitOwner() { return casterFixture; }
 };
 #define PrepareAuraScript(name) public:
 #define AuraUpdateFn(...) 0
