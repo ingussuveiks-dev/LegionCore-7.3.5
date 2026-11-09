@@ -6201,7 +6201,8 @@ class spell_stonehide_leather_barding : public AuraScript
 
         if (Unit* caster = GetCaster())
         {
-            if (caster->ToPlayer()->HasSkill(165))
+            Player* player = caster->ToPlayer();
+            if (player && player->HasSkill(165))
             {
                 duration = duration * 4;
             }
