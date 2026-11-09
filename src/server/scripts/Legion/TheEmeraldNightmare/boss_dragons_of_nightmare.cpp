@@ -331,7 +331,9 @@ struct boss_dragon_taerar : public ScriptedAI
 
     void Reset() override
     {
+        me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
+        me->SetPower(POWER_ENERGY, 0);
         DoCast(me, SPELL_EMPTY_ENERGY, true);
     }
 
@@ -472,7 +474,9 @@ struct boss_dragon_lethon : public ScriptedAI
 
     void Reset() override
     {
+        me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
+        me->SetPower(POWER_ENERGY, 0);
         DoCast(me, SPELL_EMPTY_ENERGY, true);
     }
 
@@ -611,7 +615,9 @@ struct boss_dragon_emeriss : public ScriptedAI
 
     void Reset() override
     {
+        me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
+        me->SetPower(POWER_ENERGY, 0);
         DoCast(me, SPELL_EMPTY_ENERGY, true);
         DoCast(me, SPELL_NIGHTMARE_ENERGY, true);
     }
