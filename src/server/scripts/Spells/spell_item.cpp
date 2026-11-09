@@ -4018,8 +4018,6 @@ class spell_item_rancid_maw : public SpellScript
 {
     PrepareSpellScript(spell_item_rancid_maw);
 
-    uint8 perc;
-
     void HandleDamage(SpellEffIndex /*effIndex*/)
     {
         auto caster = GetCaster();
@@ -4028,12 +4026,8 @@ class spell_item_rancid_maw : public SpellScript
 
         if (Unit* target = GetHitUnit())
         {
-            if (caster->GetDistance(target) >= 20)
-                perc = 100;
-            else
-                perc = 100 - caster->GetDistance(target);
-
-            SetHitDamage(CalculatePct(GetHitDamage(), perc));
+            float scale = std::min(caster->GetDistance(target), 20.0f) / 20.0f;
+            SetHitDamage(GetHitDamage() * scale);
         }
     }
 
