@@ -6006,11 +6006,16 @@ class spell_storm_comet : public SpellScript
         Unit* target = GetHitUnit();
         if (!target)
             return;
+        uint32 mapId = target->GetMapId();
+        uint32 instanceId = target->GetInstanceId();
         uint8 count = urand(23, 27);
         for (uint8 i = 1; i <= count; ++i)
         {
-            target->AddDelayedEvent(10 * i, [target]() -> void
+            target->AddDelayedEvent(10 * i, [target, mapId, instanceId]() -> void
             {
+                if (!target->IsInWorld() || target->IsPreDelete() ||
+                    target->GetMapId() != mapId || target->GetInstanceId() != instanceId)
+                    return;
                 Position pos(target->GetPosition());
                 target->MovePosition(pos, frand(4, 7), static_cast<float>(rand_norm()) * static_cast<float>(2 * M_PI));
                 target->SummonCreature(116806, pos, TEMPSUMMON_TIMED_DESPAWN, 20000);
