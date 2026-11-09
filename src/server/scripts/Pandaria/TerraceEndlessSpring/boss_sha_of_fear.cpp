@@ -1367,23 +1367,22 @@ public:
 
         void OnTick(AuraEffect const* /*aurEff*/)
         {
-            if (Creature* caster = GetCaster()->ToCreature())
+            Unit* source = GetCaster();
+            Creature* caster = source ? source->ToCreature() : nullptr;
+            if (!caster || dreadspraytriggers.empty())
+                return;
+
+            ObjectGuid guid = dreadspraytriggers.back();
+            dreadspraytriggers.pop_back();
+            if (Creature* dreadtrigger = ObjectAccessor::GetCreature(*caster, guid))
             {
-                if (dreadspraytriggers.empty())
-                    return;
-
-                Creature* dreadtrigger = dreadspraytriggers.back();
-
-                if (dreadtrigger)
-                {
-                    GetCaster()->SetFacingToObject(dreadtrigger);
-                    GetCaster()->CastSpell(dreadtrigger, 119958, true); // visual is bugged?
-                    dreadspraytriggers.remove(dreadtrigger);
-                }
+                caster->SetFacingToObject(dreadtrigger);
+                caster->CastSpell(dreadtrigger, 119958, true);
             }
         }
         void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
+            dreadspraytriggers.clear();
             if (Unit* caster = GetCaster())
             {
                 if (caster->ToCreature() && caster->ToCreature()->AI())
@@ -1392,14 +1391,18 @@ public:
         }
         void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
+            dreadspraytriggers.clear();
             if (Unit* caster = GetCaster())
             {
-                GetCaster()->GetCreatureListWithEntryInGrid(dreadspraytriggers, dread_spray_1_8, 65.0f);
+                std::list<Creature*> triggers;
+                caster->GetCreatureListWithEntryInGrid(triggers, dread_spray_1_8, 65.0f);
+                for (Creature* trigger : triggers)
+                    dreadspraytriggers.push_back(trigger->GetGUID());
             }
         }
 
     private:
-        std::list<Creature*> dreadspraytriggers;
+        std::list<ObjectGuid> dreadspraytriggers;
 
         void Register()
         {
