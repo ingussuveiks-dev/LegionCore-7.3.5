@@ -1218,10 +1218,11 @@ class spell_sha_ancestral_protection : public AuraScript
 
         if (Unit* target = GetTarget())
         {
-            uint32 damageLimit = target->GetMaxHealth() * 2;
-            uint32 damage = dmgInfo.GetDamage();
+            uint64 maxHealth = target->GetMaxHealth();
+            uint64 damage = dmgInfo.GetDamage();
 
-            if (damageLimit < damage)
+            // Compare with twice max health without overflowing either width.
+            if (damage > maxHealth && damage - maxHealth > maxHealth)
                 canProc = false;
         }
     }
