@@ -376,7 +376,7 @@ struct boss_elisande : BossAI
                 ++phase;
                 events.Reset();
                 me->KillAllDelayedEvents();
-                me->m_Events.KillAllEvents(true);
+                me->m_Events.KillAllEvents(false);
                 me->StopAttack(true);
                 events.RescheduleEvent(EVENT_CHANGE_PHASE_1, 100);
                 Talk(phase == 2 ? SAY_CHANGE_PHASE_2 : SAY_CHANGE_PHASE_3);
