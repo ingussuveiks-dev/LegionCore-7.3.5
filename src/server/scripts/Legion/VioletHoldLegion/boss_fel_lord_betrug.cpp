@@ -306,7 +306,8 @@ public:
     {
         PrepareSpellScript(spell_betrug_mighty_smash_SpellScript);
 
-        uint8 bPos, pPos;
+        uint8 bPos = 0, pPos = 0;
+        bool positionsReady = false;
         uint8 targetHit = 0;
         uint8 targetHitCount = 0;
 
@@ -332,24 +333,30 @@ public:
             if (!GetCaster())
                 return;
 
+            positionsReady = false;
             if (Creature* trigger = GetCaster()->FindNearestCreature(92879, 70.0f))
             {
                 for (uint8 i = 0; i < 4; i++)
                     if (trigger->GetDistance(jumpPos[i]) < 20.0f)
+                    {
                         bPos = i;
+                        positionsReady = true;
+                    }
+                if (!positionsReady)
+                    return;
 
                 if (bPos > 1)
                     pPos = bPos - 2;
                 else
                     pPos = bPos + 2;
 
-                GetCaster()->CastSpell(trigger, SPELL_MIGHTY_SMASH_JUMP_1, true);
+                positionsReady = GetCaster()->CastSpell(trigger, SPELL_MIGHTY_SMASH_JUMP_1, true) == SPELL_CAST_OK;
             }
         }
 
         void HandleOnHit()
         {
-            if (!GetCaster() || !GetHitUnit() || !targetHit)
+            if (!GetCaster() || !GetHitUnit() || !targetHit || !positionsReady)
                 return;
 
             targetHitCount++;
