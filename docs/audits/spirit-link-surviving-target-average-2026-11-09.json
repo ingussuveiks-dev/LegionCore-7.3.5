@@ -32,8 +32,30 @@
     "Full header rebuild exposes364 pre-existing compiler warnings. Each warned expression is present verbatim in bc19ca10b;compiler-warnings.json retains paths/line/code/expression. These other historical diagnostics remain visible and are not certified repaired. Old Tirathon466 five-argument narrowing is resolved by the new native overload and is no longer emitted."
   ],
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE",
-    "archive": "build-extractors/bin/Release/fixed/fifth-ten-repairs-2026-11-09"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/fifth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "045333c5c9650a2e55f58ba411cb46aec819edefa7bb42f1a70c82796470f430",
+    "original_files": 1275,
+    "removed_files": 321,
+    "logical_removed_bytes": 1073661528,
+    "deletion_manifest": ".codex/fifth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "f3bfddec070994329051b4c673f61a8b89938419998a5572b15b6b27310e8578",
+    "retained_rollbacks": [
+      ".codex/release-before-fifth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-fourth-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fourth435bb556 generation retired after newest pre-fifth63424b82 rollback verification",
+    "preserved": "Canonical EXE/MAP/config/cert/DLL/data,required original game/scripts libraries/main incremental build cache,reusable test source,OPEN Lady/LINK2/Slaghammer/security evidence and personal/character/database backups. Private test configs deleted,not archived. No active log truncated.",
+    "postcheck": "Canonical/protected/mixed-log hashes retained;active Crashes empty,no world/bnet process.",
+    "supplemental_evidence": {
+      "snapshots": 250,
+      "manifest": "build-extractors/bin/Release/fixed/fifth-ten-repairs-2026-11-09/supplemental-manifest.json",
+      "manifest_sha256": "848c916a21aa821336d84145d5ce81ad888fd2ba1dcc64a0a89cb26d4a20dc12",
+      "scope": "Task scripts/raw logs/completed cleanup/final-review diagnostics;source/destination/source hashes verified;some overlap with primary snapshots."
+    }
   },
-  "batch_audit": "docs/audits/fifth-ten-repairs-2026-11-09.json"
+  "batch_audit": "docs/audits/fifth-ten-repairs-2026-11-09.json",
+  "fix_commit": "5e7a5230ad5267071d888c311bd922f7d871fd8e"
 }

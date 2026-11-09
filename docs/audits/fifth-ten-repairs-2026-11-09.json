@@ -1,0 +1,187 @@
+{
+  "date": "2026-11-09",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "bc19ca10b1059acba04d2efcb06a44b8137d8241",
+  "support_commit": "94faf37a97d5ce2a31efbe506280a78ff8161e4c",
+  "implementation_head": "31ed0a230b3818551bf6087cda5c00df8443d7e3",
+  "fixes": [
+    {
+      "key": "Jump",
+      "path": "src/server/game/Movement/MotionMaster.cpp",
+      "cls": "MotionMaster",
+      "extra": [
+        "src/server/game/Movement/MotionMaster.h"
+      ],
+      "title": "Restore the legacy XYZ jump overload without implicit Position conversion",
+      "slug": "legacy-xyz-jump-overload",
+      "audit": "docs/audits/legacy-xyz-jump-overload-2026-11-09.json",
+      "commit": "2f2c43bb02a9ee5b0dfc916b049dc80a47164ce4"
+    },
+    {
+      "key": "Harjatan",
+      "path": "src/server/scripts/Legion/TombOfSargeras/boss_Harjatan.cpp",
+      "cls": "boss_harjatan",
+      "title": "Keep Harjatan incubation selection inside a nonempty egg cluster",
+      "slug": "harjatan-incubation-egg-bounds",
+      "audit": "docs/audits/harjatan-incubation-egg-bounds-2026-11-09.json",
+      "commit": "23cf804f26c3f6bd20e1d7fb5f013c69b437a66e"
+    },
+    {
+      "key": "Antorus",
+      "path": "src/server/scripts/Legion/AntorusTheBurningThrone/instance_antorus.cpp",
+      "cls": "instance_antorus",
+      "title": "Bound Antorus intro protector selection to existing GUIDs",
+      "slug": "antorus-intro-protector-bounds",
+      "audit": "docs/audits/antorus-intro-protector-bounds-2026-11-09.json",
+      "commit": "72195d9e71a7ce6acfdf06786cc4cec89234da03"
+    },
+    {
+      "key": "Books",
+      "path": "src/server/scripts/Legion/CathedralEternalNight/boss_thrashbite_the_scornful.cpp",
+      "cls": "boss_thrashbite_the_scornful",
+      "title": "Choose two distinct valid Thrashbite books by map iterator",
+      "slug": "thrashbite-distinct-book-selection",
+      "audit": "docs/audits/thrashbite-distinct-book-selection-2026-11-09.json",
+      "commit": "b2253a59758143eaed529153446ba219287246aa"
+    },
+    {
+      "key": "Zao",
+      "path": "src/server/scripts/Pandaria/TempleJadeSerpent/boss_lorewalker_stonestep.cpp",
+      "cls": "mob_zao",
+      "title": "Select an actual remaining sun on every Zao shoot attempt",
+      "slug": "zao-sun-selection-bounds",
+      "audit": "docs/audits/zao-sun-selection-bounds-2026-11-09.json",
+      "commit": "d996a94802b2aa7299a85d2ab18fd934c4bd23d8"
+    },
+    {
+      "key": "Cthun",
+      "path": "src/server/scripts/Kalimdor/TempleOfAhnQiraj/boss_cthun.cpp",
+      "cls": "boss_cthun",
+      "title": "Include the final eligible outside-stomach player in Cthun selection",
+      "slug": "cthun-full-outside-target-selection",
+      "audit": "docs/audits/cthun-full-outside-target-selection-2026-11-09.json",
+      "commit": "5588c1777059a4f3b1d9b2de40f86ff29c51d03f"
+    },
+    {
+      "key": "Spirit",
+      "path": "src/server/scripts/Spells/spell_shaman.cpp",
+      "cls": "spell_sha_spirit_link",
+      "title": "Redistribute Spirit Link health only across its living successful targets",
+      "slug": "spirit-link-surviving-target-average",
+      "audit": "docs/audits/spirit-link-surviving-target-average-2026-11-09.json",
+      "commit": "5e7a5230ad5267071d888c311bd922f7d871fd8e"
+    },
+    {
+      "key": "Barrier",
+      "path": "src/server/scripts/Spells/spell_dh.cpp",
+      "cls": "spell_dh_soul_barrier",
+      "title": "Guard the original Soul Barrier caster during shield recalculation",
+      "slug": "soul-barrier-caster-recalculation",
+      "audit": "docs/audits/soul-barrier-caster-recalculation-2026-11-09.json",
+      "commit": "168e91db6c7c6de005d5c596771fe2e578d1e722"
+    },
+    {
+      "key": "Rain",
+      "path": "src/server/scripts/Spells/spell_shaman.cpp",
+      "cls": "spell_sha_healing_rain",
+      "title": "Refuse a missing Healing Rain destination before touching the active summon",
+      "slug": "healing-rain-missing-destination",
+      "audit": "docs/audits/healing-rain-missing-destination-2026-11-09.json",
+      "commit": "52fcab13a2e31dee2ad996f1e43bd9bc405219b2"
+    },
+    {
+      "key": "Devotion",
+      "path": "src/server/scripts/Spells/spell_paladin.cpp",
+      "cls": "spell_pal_at_devotion_aura",
+      "title": "Exclude stale recipients from Devotion Aura splitting and handle an empty aura",
+      "slug": "devotion-aura-resolved-recipients",
+      "audit": "docs/audits/devotion-aura-resolved-recipients-2026-11-09.json",
+      "commit": "31ed0a230b3818551bf6087cda5c00df8443d7e3"
+    }
+  ],
+  "counting": "Exactly10 product repairs:one shared movement API defect,five independent encounter selections,and four distinct spell/aura target/lifetime issues. Ten complete production files;Spirit/Rain share a file and stay in separate commits. Support/test/archive/handoff commits do not count.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "cf7855ad7145f66a8957bf66ea984a36eb2e11c0ad92f82c9280b736a9039a8f",
+    "bnet_sha256": "3a737eaeb70bc1d91b105f7631071e1da766c1921c6d69643ee5bfd036c2d40e",
+    "rollback": ".codex/release-before-fifth-ten-fixes-2026-11-09",
+    "owned_startup": "PID32732 fresh ready,server shutdown0,exit0,gone,stderr empty;config/cert/DLL retained;no user process stopped."
+  },
+  "validation": {
+    "source": "Test-FifthTenRepairs.ps1:ten pinned bc19ca10b counterfactuals paired with ten repaired MSVC-ASAN cases. Harjatan/Antorus original heap bounds faults and Barrier/Rain original controlled null faults are expected failing executable baselines;other six demonstrate incorrect original behavior. Extracted complete changed methods/event branches/classes;world/cast/rng endpoints controlled. Not full-core ASAN/client traversal.",
+    "native": "Test-MagnarReadinessNative.ps1 -AdditionalProbe FifthTenNative:actual Release core XYZ spline destination+velocity,Spirit stale/missed/64bit health,Devotion actual210320 helper effects on two recipients/mastery/empty,removed real NPC caster then Barrier calc dispatcher,Rain explicit no-destination refusal. Four spell bindings and AT11305 validated. Bare profiles,map,earlier target states controlled;readonly/TEMP DB,no character saves. Boss branches are source-modeled,not native encounter traversal.",
+    "scope": "verify_fifth_ten_scope.py:ten complete production files equal bc19ca10b outside selected classes and exact five-float overload/declaration. All boss timers/progression/death/credit/cleanup and other scripts unchanged. Native group/target lists retained.",
+    "release": "Original game.lib/scripts.lib rebuilt through original generated paths;staged and canonical verify_fifth_ten_release.py verifies all ten paths plus prior47spell fixes. Actual Tirathon Drelanim DoAction calls new five-float overload. Existing Position/six-float APIs retained. Canonical Scepter,HeroicLeap ASAN,Charge ASAN and actual both-ship floor regressions pass.",
+    "runtime": "Owned canonical PID32732 fresh ready,graceful server shutdown0,exit0,gone,stderr empty. Canonical+own before/after crashes/log lengths/timestamps and appended DBErrors/server warnings/errors/assertions reviewed for tests/build/link/start. No new final runtime diagnostic;config/cert/DLL preserved,no user process stopped."
+  },
+  "data": "Matching26972 Spell/SpellEffect/ItemSparse/ItemEffect plus readonly local Hotfix/world. Native four selected spell bindings,AT11305;readonly live boss15727/99013/116407/117194/58826 and instance1712 bindings. No migration. Goren161775 was scouted and rejected for explicit-target conversion:actual effect0 uses implicit NEARBY_ENTRY38;its source unchanged. Local newer Trinity Movement API differs and was not copied. Repairs follow this core typed API/container/target contracts.",
+  "aura_contract": "Ordinary self-cast Aura::GetCaster directly resolves owner. Barrier missing-caster test deliberately removes a separate real NPC caster. Rain no-destination tests directly invoke a controlled missing-destination script context. Neither claims observed ordinary self-use production crashes.",
+  "resolved_prior_open": "Prior fourth-batch Tirathon466 C4305 is resolved by exact five-float overload. Native Drelanim99013 caller and real core spline destination/velocity verified;existing Position/six-float overloads retained. This resolves that API defect,not actual client traversal of every jump/encounter.",
+  "diagnostics": {
+    "final": "All final source/native/build/link/runtime tests pass to stated scope. Canonical+own pre/post crash/log snapshots,exit/stdout/stderr/appended DBErrors/server warning/error/assertion review retained. No new final runtime diagnostic. Active Crashes empty.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN/unchanged/untruncated/outside fixed"
+    },
+    "compiler": {
+      "warnings": 364,
+      "types": {
+        "C4305": 16,
+        "C5055": 303,
+        "C4018": 35,
+        "C4146": 1,
+        "C4477": 5,
+        "C4834": 1,
+        "C4309": 1,
+        "C4858": 1,
+        "C4805": 1
+      },
+      "expression_readback": "All364warned source expressions are present verbatim in bc19ca10b;inventory paths/line/code/expression retained locally. Full MotionMaster header rebuild recompiled unchanged code. No diagnostic/check disabled. Other historical warnings stay visible and are not certified repaired.",
+      "evidence": ".codex/fifth-ten-fixes-2026-11-09/compiler-warnings.json",
+      "sha256": "bbe9f574e89aaa44bdaf130e7f4aa0e8fc7a99297166fe38cea61ae586b97694"
+    },
+    "development": [
+      "First scouting native catalog queried creature_template.name,which this schema does not have;actual names live in creature_template_wdb.Name1. Probe emitted MySQL ABORTED marker and exited ACCESS_VIOLATION;no canonical/own crash report or new server/DB log was generated. Verified actual schema and ObjectMgr loader,changed readonly query to correct joined Name1 table,and final matching catalog succeeds. Failure output preserved;not presented as a successful ordinary test.",
+      "Four original ASAN bounds/null executable faults are explicitly expected counterfactuals and paired with repaired passes. Source host initially omitted WorldObject alias,CastSpell optional arguments,and AreaTrigger GetSpellInfo/base spellId;these compile failures were corrected to native API shapes. Original native header declarations/Position constructor are extracted,not reconstructed,for overload regression. Final20source runs pass.",
+      "Initial Antorus model called empty-list second update before its5000..7000ms timer expired;fixed fixture resets deadline before checking empty path. Production interval unchanged. CThun baseline fixture was strengthened to assert actual first-versus-last two-candidate exclusion rather than merely a nonnull result. Final empty/singleton/end-bound paths pass.",
+      "Native initial test tried to construct aggregate TriggerCastData from flags;corrected by assigning its actual triggerFlags field. Native MoveSpline velocity is protected,so test-only friend access reads the real field. Final actual spline/health/effect/calc/refusal endpoints pass,without bypassing core cast admission or persistent writes.",
+      "Initial PE nonempty assertion searched only15instructions before Harjatan RNG;actual nonempty compare precedes two map lookups and lies17instructions earlier. Inspection traced it and bounded search30instructions. Final staged/canonical checks locate actual count-1 calls and guard paths;no product code changed to satisfy verifier.",
+      "Initial retained-test log label reused variable name overwritten inside diagnostic wrapper,so Leap/Charge stdout shared a file. Reran both with literal separate output paths and their own before/after diagnostics;final independent raw logs retained. Source/node/world endpoints remain modeled where stated. Native/boss/client scopes remain distinct.",
+      "Every focused staged file list/diff/check reviewed;Jump uses exact two API files,other problems complete selected class/struct slices,so Spirit/Rain stay separate in shared shaman.cpp. Runtime logs/config/dumps/character data/user attachment excluded. Ten implementation commits individually pushed to origin/main."
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/fifth-ten-repairs-2026-11-09",
+    "archive_manifest_sha256": "045333c5c9650a2e55f58ba411cb46aec819edefa7bb42f1a70c82796470f430",
+    "original_files": 1275,
+    "removed_files": 321,
+    "logical_removed_bytes": 1073661528,
+    "deletion_manifest": ".codex/fifth-ten-fixes-2026-11-09/cleanup-deleted.json",
+    "deletion_manifest_sha256": "f3bfddec070994329051b4c673f61a8b89938419998a5572b15b6b27310e8578",
+    "retained_rollbacks": [
+      ".codex/release-before-fifth-ten-fixes-2026-11-09",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_intermediate_rollback": ".codex/release-before-fourth-ten-fixes-2026-11-09",
+    "recovery_reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fourth435bb556 generation retired after newest pre-fifth63424b82 rollback verification",
+    "preserved": "Canonical EXE/MAP/config/cert/DLL/data,required original game/scripts libraries/main incremental build cache,reusable test source,OPEN Lady/LINK2/Slaghammer/security evidence and personal/character/database backups. Private test configs deleted,not archived. No active log truncated.",
+    "postcheck": "Canonical/protected/mixed-log hashes retained;active Crashes empty,no world/bnet process.",
+    "supplemental_evidence": {
+      "snapshots": 250,
+      "manifest": "build-extractors/bin/Release/fixed/fifth-ten-repairs-2026-11-09/supplemental-manifest.json",
+      "manifest_sha256": "848c916a21aa821336d84145d5ce81ad888fd2ba1dcc64a0a89cb26d4a20dc12",
+      "scope": "Task scripts/raw logs/completed cleanup/final-review diagnostics;source/destination/source hashes verified;some overlap with primary snapshots."
+    }
+  },
+  "pending": [
+    "Authentic living Lady104856 activation/surrender/accepted209552-conversation1906/Grash finisher/210247 cleanup remains OPEN;no Lady HP threshold or kill timer invented.",
+    "Shared101430/103151 LINK2,Slaghammer crash/cache,mixed7111-byte DBErrors,intermittent handshake and all36whole chains remain OPEN. Default Slaghammer probe not run;support-only includes preserve its cache.",
+    "Actual client/combat/item/form/visual/audio/reentry/group/pet/guardian/failed-cast/whole-chain verification remains separate in each focused audit. Source models/native controlled endpoints do not prove full boss/scenario traversal.",
+    "Full header rebuild exposes364 pre-existing compiler warnings. Each warned expression is present verbatim in bc19ca10b;compiler-warnings.json retains paths/line/code/expression. These other historical diagnostics remain visible and are not certified repaired. Old Tirathon466 five-argument narrowing is resolved by the new native overload and is no longer emitted."
+  ],
+  "stop": "Exactly10 product repairs implemented,tested to stated source/native scope,deployed,committed and individually pushed. Stop after audit/cleanup/push handoff;no eleventh repair started."
+}
