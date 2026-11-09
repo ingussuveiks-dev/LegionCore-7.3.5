@@ -3996,13 +3996,13 @@ class spell_censer_of_eternal_agony : public AuraScript
 
     void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (auto caster = GetCaster())
+        if (auto caster = GetUnitOwner())
             caster->SetPvP(true);
     }
 
     void HandlePeriodicTick(AuraEffect const* aurEff)
     {
-        if (auto caster = GetCaster())
+        if (auto caster = GetUnitOwner())
             caster->SetPvP(true);
     }
 
