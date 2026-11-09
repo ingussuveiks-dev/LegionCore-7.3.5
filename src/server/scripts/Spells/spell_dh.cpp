@@ -957,7 +957,8 @@ class spell_dh_soul_barrier : public SpellScriptLoader
 
             void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)
             {
-                if (Player* plr = GetCaster()->ToPlayer())
+                Unit* caster = GetCaster();
+                if (Player* plr = caster ? caster->ToPlayer() : nullptr)
                 {
                     amount = GetSpellInfo()->Effects[EFFECT_0]->BonusCoefficientFromAP * plr->GetTotalAttackPowerValue(BASE_ATTACK);
 
