@@ -562,7 +562,7 @@ struct mob_zao : public BossAI
             case EVENT_ZAO_ATTACK:
                 if (!suns.empty())
                 {
-                    uint32 rand = urand(0, suns.size());
+                    uint32 rand = urand(0, uint32(suns.size() - 1));
                     ObjectGuid guid_target;
                     for (GuidList::const_iterator guid = suns.begin(); guid != suns.end(); ++guid)
                     {
