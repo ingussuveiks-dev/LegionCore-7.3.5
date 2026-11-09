@@ -610,7 +610,7 @@ public:
 
         void JustDied(Unit* killer) override
         {
-            Player *player = killer->ToPlayer();
+            Player *player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             if (!player)
                 return;
 
