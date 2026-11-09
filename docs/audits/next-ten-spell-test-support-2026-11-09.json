@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-09",
+  "status": "SUPPORT_FOR_EXACTLY_TEN_PRODUCT_REPAIRS",
+  "base": "50b42e107",
+  "purpose": "Extract the complete ten production classes;run paired expected-broken/repaired ASAN regressions with real Aura owner/target getters,calc dispatcher and FunctionProcessor,plus actual native core/data and staged/canonical x64 paths. Every invocation records canonical/own pre/post diagnostics. No actual client traversal or full-core ASAN claimed.",
+  "validation": [
+    "20 paired final source runs pass;two expected ASAN null faults and one invalid RNG-range assertion are labeled counterfactuals,not successful gameplay.",
+    "Native14 live bindings/ten names and matching26972 data;24 registered Flask casts,all12 classes,Human/Orc;8 native aura calculation/Shield/enabler,cookie caster removal/stacks and actual cooldown contexts.",
+    "Staged/canonical PE callbacks+registrations,prior17 spell paths,mandatory canonical Scepter and Warlock regression pass;owned canonical25956 ready/shutdown0/exit0/gone/stderr empty."
+  ],
+  "limits": "Item-use profession admission/equipped gear,projectile/cast/summon presentation and achievement receipt need actual client checks. Source Unit/Player/world endpoints are modeled. Native bootstrap uses controlled in-memory earlier state and read-only/TEMP database views;no character persistence.",
+  "batch": "docs/audits/next-ten-spell-repairs-2026-11-09.json"
+}

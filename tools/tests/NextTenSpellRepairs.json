@@ -1,0 +1,72 @@
+[
+  {
+    "key": "Umbral",
+    "file": "spell_generic.cpp",
+    "cls": "spell_gen_umbral_shift",
+    "spell": 253826,
+    "title": "Use the aura owner for Umbral Shift mastery calculation"
+  },
+  {
+    "key": "Shatter",
+    "file": "spell_warrior.cpp",
+    "cls": "spell_warr_shatter_the_bones",
+    "spell": 188639,
+    "title": "Use the aura owner for Shatter the Bones amount calculation"
+  },
+  {
+    "key": "Flask",
+    "file": "spell_item.cpp",
+    "cls": "spell_item_flask_of_the_north",
+    "spell": 67019,
+    "title": "Admit Monk and Demon Hunter Flask of the North stat choices safely"
+  },
+  {
+    "key": "Comet",
+    "file": "spell_mage.cpp",
+    "cls": "spell_mage_comet_storm",
+    "spell": 153595,
+    "title": "Keep delayed Comet Storm impacts on their original map"
+  },
+  {
+    "key": "Flurry",
+    "file": "spell_mage.cpp",
+    "cls": "spell_mage_flurry",
+    "spell": 44614,
+    "title": "Keep queued Flurry bolts on their original instance"
+  },
+  {
+    "key": "Storm",
+    "file": "spell_generic.cpp",
+    "cls": "spell_storm_comet",
+    "spell": 232661,
+    "title": "Keep delayed Razor Ice summons on the hit targets original map"
+  },
+  {
+    "key": "Stomp",
+    "file": "spell_generic.cpp",
+    "cls": "spell_gen_reckless_stomp",
+    "spell": 250863,
+    "title": "Keep delayed Reckless Stomp bolts on their original map"
+  },
+  {
+    "key": "Wailing",
+    "file": "spell_item.cpp",
+    "cls": "spell_item_walling_souls",
+    "spell": 242609,
+    "title": "Do not reduce Wailing Souls cooldown without integer damage absorption"
+  },
+  {
+    "key": "Dispel",
+    "file": "spell_warlock.cpp",
+    "cls": "spell_warl_unstable_affliction",
+    "spell": 233490,
+    "title": "Keep delayed Unstable Affliction backlash in its original instance"
+  },
+  {
+    "key": "Cookie",
+    "file": "spell_item.cpp",
+    "cls": "spell_item_chocolate_cookie",
+    "spell": 87649,
+    "title": "Evaluate Chocolate Cookie stacks on the actual aura recipient"
+  }
+]
