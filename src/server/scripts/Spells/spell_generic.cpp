@@ -5815,13 +5815,18 @@ class spell_gen_reckless_stomp : public SpellScriptLoader
         {
             if (Unit* caster = GetCaster())
             {
+                uint32 mapId = caster->GetMapId();
+                uint32 instanceId = caster->GetInstanceId();
                 uint32 spellId = GetSpellInfo()->Effects[Index]->BasePoints;
 
                 for (uint8 i = 0; i < 10; i++)
                     caster->CastSpell(caster, spellId, true);
 
-                caster->AddDelayedEvent(50, [caster, spellId]() -> void
+                caster->AddDelayedEvent(50, [caster, spellId, mapId, instanceId]() -> void
                 {
+                    if (!caster->IsInWorld() || caster->IsPreDelete() ||
+                        caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                        return;
                     for (uint8 i = 0; i < 10; i++)
                         caster->CastSpell(caster, spellId, true);
                 });
