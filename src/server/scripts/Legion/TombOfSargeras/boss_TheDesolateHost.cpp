@@ -1228,9 +1228,9 @@ struct npc_tos_soul_residue : ScriptedAI
             summoner->GetAI()->DoAction(ACTION_2);
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
     {
-        if (damage >= me->GetHealth())
+        if (damage >= me->GetHealth(attacker))
         {
             damage = 0;
 
@@ -1246,7 +1246,8 @@ struct npc_tos_soul_residue : ScriptedAI
                     if (summoner->IsCreature())
                         summoner->ToCreature()->AI()->SummonedCreatureDies(me, nullptr);
 
-                me->AddDelayedEvent(5000, [=] () -> void { me->DespawnOrUnsummon(); });
+                Creature* residue = me;
+                residue->AddDelayedEvent(5000, [residue]() { residue->DespawnOrUnsummon(); });
             }
         }
     }
