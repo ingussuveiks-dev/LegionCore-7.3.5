@@ -382,8 +382,9 @@ struct npc_ymiron_risen_warrior : public ScriptedAI
 
     void IsSummonedBy(Unit* summoner)
     {
-        AddDelayedEvent(100, [=] () -> void
+        AddDelayedEvent(100, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (me)
             {
                 me->SendPlaySpellVisualKit(2000, 59548, 4);
@@ -391,8 +392,9 @@ struct npc_ymiron_risen_warrior : public ScriptedAI
             }
         });
 
-        AddDelayedEvent(3000, [=] () -> void
+        AddDelayedEvent(3000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (me && me->IsAlive() && me->isInCombat())
             {
                 me->SetReactState(REACT_AGGRESSIVE);
@@ -441,6 +443,9 @@ struct npc_ymiron_risen_warrior : public ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //97163
