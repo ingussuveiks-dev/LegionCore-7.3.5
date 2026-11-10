@@ -140,9 +140,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -831,9 +831,9 @@ public:
             DoCast(me, SPELL_ACID_RAIN_S_VISUAL, true);
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -890,9 +890,9 @@ public:
             me->DespawnOrUnsummon();
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -961,9 +961,9 @@ public:
             DoCast(me, SPELL_ICY_GROUND_AT, true);
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
