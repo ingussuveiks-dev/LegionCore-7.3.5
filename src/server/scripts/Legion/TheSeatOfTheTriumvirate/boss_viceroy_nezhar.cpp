@@ -277,12 +277,12 @@ public:
         { 
             if (summoner->GetEntry() == NPC_NEZHAR)
             {
-                me->AddDelayedEvent(500, [this] {
-                    me->SummonCreature(NPC_ALLERIA_E1, 6114.09f, 10367.71f, 19.89f, 3.89f);
-                    me->SummonCreature(NPC_LURA_LOCUSWALKER, 6120.97f, 10359.79f, 19.89f, 3.87f);
+                me->AddDelayedEvent(500, [actor = me] {
+                    actor->SummonCreature(NPC_ALLERIA_E1, 6114.09f, 10367.71f, 19.89f, 3.89f);
+                    actor->SummonCreature(NPC_LURA_LOCUSWALKER, 6120.97f, 10359.79f, 19.89f, 3.87f);
                 });
-                me->AddDelayedEvent(2000, [this] {
-                    me->DespawnOrUnsummon();
+                me->AddDelayedEvent(2000, [actor = me] {
+                    actor->DespawnOrUnsummon();
                 });
             }
             if (summoner->GetEntry() == NPC_LURA)
