@@ -303,34 +303,43 @@ public:
             }
         }
 
-        void DamageTaken(Unit* pDoneBy, uint32 &uiDamage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*type*/) override
         {
-            if (m_bIsDuelInProgress && pDoneBy->IsControlledByPlayer())
+            if (!m_bIsDuelInProgress)
+                return;
+            Player* player = attacker ? attacker->GetAffectingPlayer() : nullptr;
+            if (!player || !player->IsInWorld() || !player->IsAlive() || player->GetMap() != me->GetMap() ||
+                player->GetGUID() != m_uiDuelerGUID || lose)
             {
-                if (pDoneBy->GetGUID() != m_uiDuelerGUID && pDoneBy->GetOwnerGUID() != m_uiDuelerGUID) // other players cannot help
-                    uiDamage = 0;
-                else if (uiDamage >= me->GetHealth())
-                {
-                    uiDamage = 0;
-
-                    if (!lose)
-                    {
-                        if (Player* plr = pDoneBy->ToPlayer())
-                            plr->KilledMonsterCredit(108722);
-
-                        pDoneBy->RemoveGameObject(SPELL_DUEL_FLAG, true);
-                        pDoneBy->AttackStop();
-                        me->CastSpell(pDoneBy, SPELL_DUEL_VICTORY, true);
-                        lose = true;
-                        me->CastSpell(me, 7267, true);
-                        me->RestoreFaction();
-                    }
-                }
+                damage = 0;
+                return;
             }
+            if (damage < me->GetHealth(attacker))
+                return;
+            damage = 0;
+            lose = true;
+            player->KilledMonsterCredit(108722);
+            player->RemoveGameObject(SPELL_DUEL_FLAG, true);
+            player->AttackStop();
+            if (attacker != player)
+                attacker->AttackStop();
+            me->CastSpell(player, SPELL_DUEL_VICTORY, true);
+            me->CastSpell(me, 7267, true);
+            me->RestoreFaction();
         }
 
         void UpdateAI(uint32 uiDiff) override
         {
+            if (m_bIsDuelInProgress && !lose)
+            {
+                Player* player = ObjectAccessor::GetPlayer(*me, m_uiDuelerGUID);
+                if (!player || !player->IsAlive())
+                {
+                    EnterEvadeMode();
+                    return;
+                }
+            }
+
             if (!UpdateVictim())
             {
                 if (m_bIsDuelInProgress)
