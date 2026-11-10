@@ -83,6 +83,7 @@ class boss_karsh_steelbender : public CreatureScript
                 DoCast(me, SPELL_QUICKSILVER_ARMOR);
                 bHeat = false;
                 stacksDone = false;
+                CheckTimer = 2000;
                 if (instance)
                     instance->SetData(DATA_KARSH, NOT_STARTED);
             }
