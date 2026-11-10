@@ -141,7 +141,7 @@ struct boss_sisters_of_the_moon : BossAI
         {
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC);
-            me->AddDelayedCombat(500, [=] () -> void { DoAction(ACTION_1); });
+            me->AddDelayedCombat(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; DoAction(ACTION_1); });
         }
     }
 
@@ -201,7 +201,7 @@ struct boss_sisters_of_the_moon : BossAI
                             sister->DespawnOrUnsummon(200);
                         }
                     }
-                    AddDelayedCombat(5000, [=] () -> void { DoAction(ACTION_1); });
+                    AddDelayedCombat(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; DoAction(ACTION_1); });
                 }
                 break;
             }
@@ -318,6 +318,9 @@ struct boss_sisters_of_the_moon : BossAI
                 berserkTimer -= diff;
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //118523
