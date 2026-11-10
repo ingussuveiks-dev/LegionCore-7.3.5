@@ -168,7 +168,7 @@ struct boss_worldbreaker : BossAI
         _JustDied();
         RemoveDebuffs();
 
-        me->AddDelayedEvent(1000, [this]() -> void { me->CastSpell(me, SPELL_OUTRO_CONV, true); });
+        me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->CastSpell(me, SPELL_OUTRO_CONV, true); });
 
     }
 
@@ -177,7 +177,7 @@ struct boss_worldbreaker : BossAI
         RemoveDebuffs();
         me->RemoveAllAurasExceptType(SPELL_AURA_CONTROL_VEHICLE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NON_ATTACKABLE);
-        me->AddDelayedEvent(3000, [this]() -> void { me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NON_ATTACKABLE); });
+        me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NON_ATTACKABLE); });
         BossAI::EnterEvadeMode();
     }
 
@@ -208,8 +208,8 @@ struct boss_worldbreaker : BossAI
                 me->SetVisible(true);
                 me->CastSpell(me, SPELL_INTRO, true);
                 me->CastSpell(me, SPELL_CONV, true);
-                me->AddDelayedEvent(500, [this]() -> void{ me->CastSpell(me, SPELL_ERADICATION_INTRO_CAST); });
-                me->AddDelayedEvent(8000, [this]() -> void { EnterEvadeMode(); });
+                me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void{ if (aiLifetimeGuard.expired()) return; me->CastSpell(me, SPELL_ERADICATION_INTRO_CAST); });
+                me->AddDelayedEvent(8000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; EnterEvadeMode(); });
                 break;
             }
         }
@@ -456,6 +456,9 @@ struct boss_worldbreaker : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //122773, 122778
