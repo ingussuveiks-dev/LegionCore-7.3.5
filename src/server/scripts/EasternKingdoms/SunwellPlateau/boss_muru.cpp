@@ -255,9 +255,9 @@ public:
                 instance->SetData(DATA_MURU_EVENT, IN_PROGRESS);
         }
 
-        void DamageTaken(Unit* /*done_by*/, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage > me->GetHealth() && Phase == 1)
+            if (damage >= me->GetHealth(attacker) && Phase == 1)
             {
                 damage = 0;
                 Phase = 2;
