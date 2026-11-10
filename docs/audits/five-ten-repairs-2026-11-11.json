@@ -2,7 +2,7 @@
   "date": "2026-11-11",
   "request": "Five successive groups of ten new fixes,then stop. MariaDB promotion deferred by the user.",
   "authorized_fixes": 50,
-  "completed_fixes": 10,
+  "completed_fixes": 20,
   "status": "IN_PROGRESS",
   "batches": [
     {
@@ -109,6 +109,113 @@
         "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and deferred MariaDB candidate evidence.",
         "closeout_manifest_sha256": "d0b17ebc5c2bfafb11f1ca7bcedcc06efb441c949822c9c930289da50f641a30",
         "resolution_sha256": "776fabab6a0b20a40c3ec5eb6523279d6eec249877a0e1ebabd36bda933c2eb3",
+        "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
+      }
+    },
+    {
+      "number": 2,
+      "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+      "audit": "docs\\audits\\thirtyeighth-ten-repairs-2026-11-11.json",
+      "fixes": [
+        {
+          "key": "NpcDecimaxLifetime",
+          "title": "Cancel npc_decimax callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/invasion_point_argus.cpp",
+          "audit": "docs\\audits\\npc-decimax-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "ec084dc72ffbb6e6cee45f7ad2f901c832490271"
+        },
+        {
+          "key": "BossAntoranHighCommandLifetime",
+          "title": "Cancel boss_antoran_high_command callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_antoran.cpp",
+          "audit": "docs\\audits\\boss-antoran-high-command-ai-lifetime-2026-11-11.json",
+          "callback_count": 2,
+          "commit": "fcc8424bb85d1c6d50837ba90b5b56a940551f24"
+        },
+        {
+          "key": "BossCovenShivarresLifetime",
+          "title": "Cancel boss_coven_shivarres callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_coven_shivarres.cpp",
+          "audit": "docs\\audits\\boss-coven-shivarres-ai-lifetime-2026-11-11.json",
+          "callback_count": 2,
+          "commit": "b454e60ff3eb63a61b43f19be096406287095dfe"
+        },
+        {
+          "key": "NpcDeathMetalKnightLifetime",
+          "title": "Cancel npc_death_metal_knight callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/MicroHolidays/DarkMoonConcertBlightBoar.cpp",
+          "audit": "docs\\audits\\npc-death-metal-knight-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "1f7506ef8f5fc65227a8fedb3a954888506f8467"
+        },
+        {
+          "key": "NpcMoonkinHatchlingLifetime",
+          "title": "Cancel npc_moonkin_hatchling callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp",
+          "audit": "docs\\audits\\npc-moonkin-hatchling-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "444e009a6508324ec33a825ef7a05000600f9dd4"
+        },
+        {
+          "key": "BossHighBotanistTelarnLifetime",
+          "title": "Cancel boss_high_botanist_telarn callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TheNighthold/boss_high_botanist_telarn.cpp",
+          "audit": "docs\\audits\\boss-high-botanist-telarn-ai-lifetime-2026-11-11.json",
+          "callback_count": 2,
+          "commit": "d25d5e79d5ea161b4f85b4d574d14adc0aeea3f0"
+        },
+        {
+          "key": "NpcAvataraMaidenLifetime",
+          "title": "Cancel npc_avatara_maiden callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp",
+          "audit": "docs\\audits\\npc-avatara-maiden-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "098bebbe3337717d4c883587e7096ae1420db545"
+        },
+        {
+          "key": "NpcTosTadpoleLifetime",
+          "title": "Cancel npc_tos_tadpole callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TombOfSargeras/boss_Harjatan.cpp",
+          "audit": "docs\\audits\\npc-tos-tadpole-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "0cde80449dee3213ec0849f26dab3104f71c7d85"
+        },
+        {
+          "key": "BossSistersOfTheMoonLifetime",
+          "title": "Cancel boss_sisters_of_the_moon callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TombOfSargeras/boss_SistersoftheMoon.cpp",
+          "audit": "docs\\audits\\boss-sisters-of-the-moon-ai-lifetime-2026-11-11.json",
+          "callback_count": 2,
+          "commit": "acca00452b11bd241e0371a8388a47713bff57c1"
+        },
+        {
+          "key": "BossTheDesolateHostGenericLifetime",
+          "title": "Cancel boss_the_desolate_host_generic callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TombOfSargeras/boss_TheDesolateHost.cpp",
+          "audit": "docs\\audits\\boss-the-desolate-host-generic-ai-lifetime-2026-11-11.json",
+          "callback_count": 2,
+          "commit": "8df9c391e2ffa94ebda9172dff1f6a9cf9ed8079"
+        }
+      ],
+      "canonical": {
+        "bnetserver.exe": "278b11f064055f97dd9ad421068d4d84f8cfe5fd8ef5d974ac60d352c7ece5e9",
+        "bnetserver.map": "28a6e1ef28fe35016cd8201f3d6c5f64250de48a82903d3b56dc3fed865a14ea",
+        "worldserver.exe": "75fbcce62ef8ec55d59469d3ae489f0afbcb24170e0b38d9562caa3a5fac85db",
+        "worldserver.map": "5fec4d682b9955d467505798bb1767f3fe9a5a964282a245bb2d09496aba68ad"
+      },
+      "cleanup": {
+        "archive": "build-extractors\\bin\\Release\\fixed\\thirtyeighth-ten-repairs-2026-11-11",
+        "manifest_sha256": "fbd471e17d1752e08d09934e278e6d1a07f48b2baec35b9d9a41bbe60e2652e5",
+        "archived_files": 470,
+        "removed_files": 169,
+        "logical_removed_bytes": 431600906,
+        "deletion_manifest": ".codex\\thirtyeighth-ten-fixes-2026-11-11\\cleanup-deleted.json",
+        "deletion_manifest_sha256": "946dc15f5088c03cd8339dcbf78169cdcaa246280615650b57147c6354a84b01",
+        "removed_superseded_recoveries": [],
+        "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and deferred MariaDB candidate evidence.",
+        "closeout_manifest_sha256": "20b67204d1d667b5ee9589834359462cb209d8e2606e74be755be7c16a3cd26a",
+        "resolution_sha256": "8a75504a6cb1bceb1d852a4f158a8c0e448a68377d5a007313a1d828ad15c47c",
         "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
       }
     }
