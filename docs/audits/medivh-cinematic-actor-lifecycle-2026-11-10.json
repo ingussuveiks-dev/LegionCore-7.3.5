@@ -35,7 +35,58 @@
   "canonical_world_sha256": "c196458d7ba139600a32508db82508132c5a3050c6c300cb2af9a7fdde0d6934",
   "patch_sha256": "a431ba4b758116efb4b3b86ca7d8266e2aba4f463c6b8cf5251809e023d72237",
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/twentieth-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "435fe4f0573130828a0b059189e6d35958dcfc2963420d6a6e935f0bdb61d068",
+    "original_files": 784,
+    "removed_files": 144,
+    "logical_removed_bytes": 1333348942,
+    "deletion_manifest": ".codex/twentieth-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "d7cb71b94cc70a1a0f050493981d215f6fe84d46b159235650c5a62b96c08d0e",
+    "retained_rollbacks": [
+      ".codex/release-before-twentieth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-nineteenth-ten-fixes-2026-11-10",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fourteenth989e699d retired after newest pre-twentieth rollback hash verification rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained.",
+    "additional_catalog": {
+      "manifest": ".codex/twentieth-ten-fixes-2026-11-10/late-cleanup.json",
+      "manifest_sha256": "6e4b89ad2355d4218341eb80bfb06f4ee4db0cc2f2edf74507d5bae32b8e2a84",
+      "removed_files": 3,
+      "logical_removed_bytes": 1470911,
+      "scope": "Three exact task-owned native catalog EXE/OBJ/generated recipe files;hash checked,not running,non-reparse;source/logs retained;canonical unchanged."
+    }
   },
-  "batch_audit": "docs/audits/twentieth-ten-repairs-2026-11-10.json"
+  "batch_audit": "docs/audits/twentieth-ten-repairs-2026-11-10.json",
+  "fix_commit": "b563b703e02ae4421c5557dd9bc576f0e35d588d",
+  "final_scope_metadata_sha256": "1e2e40d817279d9b9d25c3423fd3131234d756535c60f1dc739097bf954d68e4",
+  "additional_catalog": {
+    "status": "READ_ONLY_NATIVE_CATALOG_EXIT0",
+    "spell": 30977,
+    "effects": "Matching raw26972 DB2:periodic5400/1000ms,direct280800,trigger16806;duration360000ms. Original spell/actors/timers unchanged.",
+    "binding": "Live17651/17652 records and champion -1850008 speech present.",
+    "limitation": "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "development": "Initial temporary helper renamed a main that relies on implicit main return;its invalid exit is preserved as a fixture failure. Corrected standalone original main exited0. No new/changed crash or appended server/DBErrors;three regenerable probe artifacts removed with manifest."
+  }
 }
