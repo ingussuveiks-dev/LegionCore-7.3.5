@@ -75,6 +75,7 @@ public:
             phaseLowMana = false;
             notspellhited = true;
             overChargeCount = 0;
+            CheckTimer = 1000;
             me->SetReactState(REACT_AGGRESSIVE);
             me->RemoveAurasDueToSpell(SPELL_WITHERING_CONSUMPTION);
             me->RemoveAurasDueToSpell(SPELL_OVERCHARGE);
