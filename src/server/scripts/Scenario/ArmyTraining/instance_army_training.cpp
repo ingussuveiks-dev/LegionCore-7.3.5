@@ -292,8 +292,10 @@ public:
             //pplayer->CastSpell(pplayer, SPELL_TELE_END, true);
 
             pplayer->CreateConversation(CONV_TELE);
-            pplayer->AddDelayedEvent(4000, [pplayer]() -> void
+            pplayer->AddDelayedEvent(4000, [pplayer, mapId = pplayer->GetMapId(), instanceId = pplayer->GetInstanceId()]() -> void
             {
+                if (!pplayer->IsInWorld() || pplayer->GetMapId() != mapId || pplayer->GetInstanceId() != instanceId || pplayer->IsBeingTeleported())
+                    return;
                 pplayer->TeleportTo(1626, 2085.09f, 5399.86f, 47.33f, 6.04f, TELE_TO_SEAMLESS);
             });
 

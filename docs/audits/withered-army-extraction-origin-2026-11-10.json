@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "ArmyExit",
+  "base": "f55f0ea70cb931ea0ebd56258834e56f1bf78d1c",
+  "support_commit": "a4ddf84a4d87cc12ef40e7b375a9a50b39c06bdd",
+  "paths": [
+    "src/server/scripts/Scenario/ArmyTraining/instance_army_training.cpp"
+  ],
+  "cause": "Player-owned4second terminal extraction could overwrite a later map/instance/pending transfer.",
+  "implementation": "Capture original map/instance,require live-world matching source and no pending teleport;retain native seamless1626 exit,4seconds and independent chest/reward bookkeeping.",
+  "validation": {
+    "source": "20 MSVC ASAN cases:ten pinned f55f0ea70 instrumented counterfactuals and ten repaired source extracts. Hatchling sentinel/Reset;all3Mimiron identical source sites and full-width bounds;Crypt/Squad controls detect unrepresentable uint32 before executing float-cast UB;Sinestra native-width heal/mana/phase and nonlethal/lethal focus;Twin normal/full/large-ratio/zero-max controls;Anub safe sentinel instrumentation/empty+missing+present4s retry;Army/Eonar origin/death/pending-transfer guards. Source endpoints controlled;not client traversal.",
+    "native": "10 selected native cases:full production Hatchling AI InitializeAI/Reset/idle UpdateAI;actual native Unit Get/Set/ModifyHealth and ModifyPower for six health repairs;actual empty/nonempty GuidList/ObjectAccessor with captured Anub cast and actual Player FunctionProcessor/world guards with captured Army teleport/Eonar buff. Matching26972 spells and readonly bindings checked. Mimiron full three DoAction sequences,real spell/heal/death dispatch,raid/quest/group/pet/client traversal not replayed;no character writes/full-core ASAN.",
+    "release": "Original main game/scripts libraries and actual final-link paths;staged/canonical PE verifies these10 plus157 prior selected paths. Explicit writes/conversions/64bit call arguments,capped mana/Twin ratio,Anub pre-selection guard+retry and origin guards checked. Canonical Scepter/ArtifactTier/ScenarioResumeASAN and owned fresh ready/shutdown0/exit0/gone pass.",
+    "diagnostics": "All test/build/link/PE/runtime runs have before/after canonical+own crash/log/exit/stdout/stderr/appended diagnostic review. Final diagnostics clean;earlier fixture extraction/compile failures retained. Compiler warnings reviewed without suppression. Mixed7111byte DBErrors and all OPEN evidence unchanged.",
+    "scope": "10 repairs in9 files. All3 Mimiron assembly sites count once. Sinestra barrier refill and Pyrrhic Focus are independent abilities. Authored float percentages,timers/phase and native kill/group/pet credit retained;no SQL/character rewrite or guessed Lady HP/kill timer."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Prior scouted Antorus eventobject_antorus_into singleton eventDone/per-instance async ownership and Brawlers Master count_adds/repeated Reset lifecycle remain OPEN/unmodified/not counted. This batch changes Oso and Ray,not Master.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps."
+  ],
+  "canonical_world_sha256": "fd57657a7e53962f83580b9a0b25068b4cd16364568a5809d9a0fcc6aec20418",
+  "patch_sha256": "8dea03e6b21c5127533155d2617bb2b86b972ddb8c9ad5b3c25693b89f6363cc",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/sixteenth-ten-repairs-2026-11-10.json"
+}
