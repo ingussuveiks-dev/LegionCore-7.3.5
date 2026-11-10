@@ -1,0 +1,313 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "51fde19dd7f6f6b6d11d775eaed69d5c62ad9643",
+  "batch_number": 4,
+  "authorized_total": 50,
+  "support_commit": "d726ffa75c2fd3bd61390aa8c67570eea928cb76",
+  "implementation_head": "acfebf9a349d1e01f024072d8367459f3927ad00",
+  "fixes": [
+    {
+      "key": "KarazhanChessLifetime",
+      "title": "Cancel KarazhanChess callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/ReturnToKarazhan/karazhan_chess.cpp"
+      ],
+      "audit": "docs/audits/karazhan-chess-ai-lifetime-2026-11-10.json",
+      "commit": "cc2e9fdf86aa3d1cdde9a06b9ecac2a99d814c4a"
+    },
+    {
+      "key": "AnomalySpeedLifetime",
+      "title": "Cancel AnomalySpeed callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_chronomatic_anomaly.cpp"
+      ],
+      "audit": "docs/audits/anomaly-speed-ai-lifetime-2026-11-10.json",
+      "commit": "2590eb5c95f36415b15fda3e8ffad3497b287af3"
+    },
+    {
+      "key": "GuldanControllerLifetime",
+      "title": "Cancel GuldanController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+      ],
+      "audit": "docs/audits/guldan-controller-ai-lifetime-2026-11-10.json",
+      "commit": "a94abc9bea7a4fea0e9888547697859a7b5bd577"
+    },
+    {
+      "key": "SolarCollapseLifetime",
+      "title": "Cancel SolarCollapse callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_high_botanist_telarn.cpp"
+      ],
+      "audit": "docs/audits/solar-collapse-ai-lifetime-2026-11-10.json",
+      "commit": "539bc5847f473cf6888bea86b45fc2f7ac8b645d"
+    },
+    {
+      "key": "SkorpyronControllerLifetime",
+      "title": "Cancel SkorpyronController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_skorpyron.cpp"
+      ],
+      "audit": "docs/audits/skorpyron-controller-ai-lifetime-2026-11-10.json",
+      "commit": "97038e8de58709d20f127b01f5af41f26725677b"
+    },
+    {
+      "key": "ThalyssraNightholdLifetime",
+      "title": "Cancel ThalyssraNighthold callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp"
+      ],
+      "audit": "docs/audits/thalyssra-nighthold-ai-lifetime-2026-11-10.json",
+      "commit": "615b8e3dd76d9d0b89e5a54c95154cb6556ee015"
+    },
+    {
+      "key": "LuraControllerLifetime",
+      "title": "Cancel LuraController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_lura.cpp"
+      ],
+      "audit": "docs/audits/lura-controller-ai-lifetime-2026-11-10.json",
+      "commit": "67080a560e31b587fdf28fae46a33583186464a1"
+    },
+    {
+      "key": "SaprishControllerLifetime",
+      "title": "Cancel SaprishController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_saprish.cpp"
+      ],
+      "audit": "docs/audits/saprish-controller-ai-lifetime-2026-11-10.json",
+      "commit": "972ea86af6332e58ca4d32c2d4c5c4716da12df3"
+    },
+    {
+      "key": "LocuswalkerOutroLifetime",
+      "title": "Cancel LocuswalkerOutro callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_saprish.cpp"
+      ],
+      "audit": "docs/audits/locuswalker-outro-ai-lifetime-2026-11-10.json",
+      "commit": "1138ff4ee8a6a513999c971e18a3ae99e6499b18"
+    },
+    {
+      "key": "NezharControllerLifetime",
+      "title": "Cancel NezharController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_viceroy_nezhar.cpp"
+      ],
+      "audit": "docs/audits/nezhar-controller-ai-lifetime-2026-11-10.json",
+      "commit": "acfebf9a349d1e01f024072d8367459f3927ad00"
+    }
+  ],
+  "counting": "Ten live-bound lifetime problems/9 implementation files.65 source registration guards:63 are emitted,while two defensive Chess rook guards remain behind the pre-existing unconditional return and are not counted as live Release paths. Chess family counts once;no rook behavior enabled. Original logic/gates/delays preserved,with only optional trailing-blank normalization on changed lines.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "0248e0b9851117a60ca06e5782d9d420bd8054cabdfab259feadc2ffabc703b8",
+    "bnet_sha256": "21eabe9eae9d37a65012ea1ecc5c8b88998c5b5537dd93d43a59e90f4b6f4f6a",
+    "rollback": ".codex/release-before-thirtyfifth-ten-fixes-2026-11-10",
+    "startup": "Owned PID=2128 reached fresh ready\nPASS owned PID=2128 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "validation": {
+    "source": "20 final MSVC ASAN groups:10 expected-broken capture/guard projections reproduce65 heap-use-after-free subprocesses after deleting the original AI frame;10 repaired projection groups exercise live admission,retired rejection,Unit-style cancellation and same-address frame replacement for all65 registrations. Each baseline requires nonzero exit,AddressSanitizer heap-use-after-free andABORTING. The controlled123ms probe clock and observer payload are fixture-only;these tests do NOT execute production encounter bodies or immutable capture arguments. Complete real class/registration bytes checked against pinned/current source;source reverse proof and Release compilation cover unchanged bodies. Two of65 projected registrations belong to pre-existing unreachable Chess rook code;they are defensive source projections only,not live gameplay evidence. Six reachable Chess closures provide the actual lifetime repair.",
+    "native": "65 production weak-capture/first-guard projections installed in actual CreatureAI frames. Creature::AIM_Initialize deletes/replaces source AI,actual Unit event/combat queues run/cancel the callbacks. Live source admits one controlled payload,retired source admits none,cancellation remains native,surviving temporarily inactive AI retains original admission. Other Unit queue owner used where the registration is not syntactic me. Native payload is an observer,not registered encounter execution/full-core ASAN/client traversal;no character writes. Native event-queue probes also put the actual Unit in CORPSE before registering an event on its surviving AI;entry is admitted,so the new lifetime condition itself does not block corpse outros. This directly exercises Unit death-state and queue APIs,not the original encounter outro body.65 projections include the two unreachable rook source sites.",
+    "release": "Original main libraries built with selected-source snapshots and hash checks,staged link then canonical deployment. Actual linked production 63 emitted callback weak-control null/expired branches must lead to a return epilogue before payload calls or captured-AI dereference. Complete source reverse proof admits only weak capture,entry guard and private per-instance anchor,plus optional trailing-blank cleanup on modified guard/capture lines;authored parameters and payload tokens preserved. Prior347 selected checks retained,total357. Matching live ScriptName catalog read-only;inherited handlers verified through their bound derived actors. Canonical Scepter/ArtifactTier/ScenarioResumeASAN and owned fresh ready/shutdown0/exit0/gone.",
+    "diagnostics": "All declared builds/tests/native/PE/start checks have before/after canonical+own crash/log length/timestamp/exit/stdout/stderr/appended warning/error/assertion/DBErrors review. Expected ASAN UAF controls remain labelled counterfactuals,paired with repaired passes. Preserve all unexplained evidence;OPEN raw records and mixed7111-byte DBErrors unchanged/untruncated. Known compiler warnings retained and reviewed.",
+    "scope": "Ten live-bound lifetime problems/9 implementation files.65 source registration guards:63 are emitted,while two defensive Chess rook guards remain behind the pre-existing unconditional return and are not counted as live Release paths. Chess family counts once;no rook behavior enabled. Original logic/gates/delays preserved,with only optional trailing-blank normalization on changed lines."
+  },
+  "diagnostics": {
+    "final": "Final declared regressions,linked binary checks,retained checks and owned startup passed with canonical+own crash/log/exit/stdout/stderr/appended-diagnostic review.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 1,
+      "types": {
+        "C4305": 1
+      },
+      "review": "Main incremental build warnings checked against f55f0ea70. Ten retained-fixture warnings are byte-equivalent messages/file/line to the previous passing batch;their production and fixture sources unchanged. Diagnostics retained without suppression;not claimed repaired.",
+      "entries": [
+        {
+          "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+          "line": 1752,
+          "code": "C4305",
+          "message": "'+=': truncation from 'double' to 'float'",
+          "expression": "for (float angle = float(- M_PI / 6); angle < M_PI / 6; angle += M_PI / 24)",
+          "expression_present_in_baseline": true
+        }
+      ],
+      "retained_fixture_warnings": [
+        {
+          "log": "artifact-tier.log",
+          "file": "ArtifactTierProgressionTest.cpp",
+          "line": 65,
+          "code": "C4458",
+          "message": "declaration of 'item' hides class member",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "artifact-tier.log",
+          "file": "AutoTier.inc",
+          "line": 33,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint8', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 26,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 27,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 28,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 29,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'int' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "AddScenario.inc",
+          "line": 7,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        }
+      ]
+    },
+    "development": [
+      "Inspected all active Unit-owned this captures,including nested and parameterized captures;comments/strings masked before brace/capture scanning. AI-owned schedulers and already protected lifetime callbacks excluded. Private per-AI shared anchor has only weak captures;normal automatic destruction expires old admission without retaining or rebinding the old AI.",
+      "The guard tests explicitly project production capture/guard onto a controlled body;they do not pretend to execute encounter logic. Payload/gate/delay bytes are separately reverse-verified and compiled into main Release. Native actual AI destruction and Unit queue APIs plus source ASAN/ABA and linked production guard checks cover complementary boundaries.",
+      "Development extraction/fixture/PE failures,if any,remain in local task logs and reviewed archives;final declared checks must pass. Known compiler diagnostics retained without suppression.",
+      "PE inspection exposed pre-existing unreachable Chess rook code:two source closures are eliminated after its unconditional return. Metadata explicitly marks both compiled_count0 and source scope asserts the return remains unchanged;all63 emitted closures still must pass. No missing gate was ignored.",
+      "Guldan large delegated lambda operators use an RBP-derived stack frame and long register prologue. Expanded only stack-derived epilogue recognition with strict null/zero-use returns and no payload calls/AI dereference before admission. All emitted gates pass;original binary remains an expected-broken control."
+    ],
+    "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse scope of all selected files and no production diff.",
+    "supplemental_archives": [
+      {
+        "manifest": "build-extractors/bin/Release/fixed/thirtyfifth-ten-repairs-2026-11-10/supplemental-manifest.json",
+        "sha256": "3a0e38d777a3572edf89c363050013fc3db3100abc7227f204adb47473aa98a5",
+        "files": 19
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/thirtyfifth-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "7bbb0231bd5fda24817a86e3db12f55baea5ed8a8124d5778876f7992447ddc5",
+    "original_files": 691,
+    "removed_files": 106,
+    "logical_removed_bytes": 834484827,
+    "deletion_manifest": ".codex/thirtyfifth-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "e8c39589906cffcae7f56cbe82464a8650bf14bbfc010e0a3b7a768bc85697a4",
+    "retained_rollbacks": [
+      ".codex/release-before-thirtyfifth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-thirtyfourth-ten-fixes-2026-11-10",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-thirtyfourth rollback retired after newest pre-thirtyfifth recovery hash verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified.",
+    "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state.",
+    "All ten actual client sequences remain pending:phoenix detonation/sleep/wake/targets;Artruis full faction choice/ally death/urn/group/reset;Ko ragh suppression-field visual/timing and real death;Broken Shore actual invitations/sparring/guardian/group/faction and lost-player cleanup;Neptulon wipe/restart;Blaze egg/real healing/wake;heroic Siamat actual2s death/achievement;Whitemane/Durand native resurrection movement/cast acknowledgment and absent partner recovery;Snowdrift actual waves/training jump/home/completion/loot/re-entry;Felmyst actual air/ground death. Missing-partner or failed-cast recovery outside the repaired Artruis/duel scopes is not certified.",
+    "All ten actual client encounters remain pending:Aggramar heroic/normal remnants/eruption;both Argus modules real aura/cast/area scale/mote/pulse timing and AI replacement;Eonar actual Paraxis wipe/restart;Worldbreaker both weapon modes/controller;Hyrja both defenders/pulls/reset/controller;Ichor explosion/eye damage;Desolate eruption/phase owner cleanup;Festerface actual recongealing/retry;Fallen Crusader real revive/feign interaction;Algalon real star/black-hole phases/spawn/cleanup. Failed essential casts or missing controller recovery outside the explicitly exercised boundaries is not certified. No whole36-chain or authentic Lady claim.",
+    "All ten actual client encounters remain pending:Muru portal/Entropius/reset/failure paths;Harbinger actual repentance/cast acknowledgment/controller removal;Anomaly fragments/rift/interrupts;Elisande full rewind dialogue/objects/echoes and absent actors;Telarn infusions/effects;Eadric/Paletress actual return/bind/loot;Black Knight real resurrection/ghouls/timers;Ingvar Annhylde ritual/failed resurrection;Keleseth actual18-22s resurrection/heal/cast failures;Amber real consume123156/visuals/retry. Missing essential actors or failed native casts outside the exercised boundaries remain unverified. No whole36-chain/authentic Lady certification.",
+    "All ten actual client encounters remain pending:Xavius10stack and Naraxas6stack criteria/real aura deaths;Bronjahm4souls/achievement;Svala actual ritual damage/movement/criterion;Magtheridon real soul-transfer target/effect;Raigonn phase handoff/vehicle;Elegon charge movement/controller/focus links/reset;Living Sand repeated real storms/targets/visuals;Durumu real cone/aura/blue death freeze;Ra den actual flare. Essential failed-cast/missing-controller recovery outside tested admission boundaries is not certified. Existing Elegon energy-charge active field is assigned by native IsSummonedBy;ordinary unowned placement/out-of-contract initialization remains separately unverified. No whole-chain/authentic Lady claim.",
+    "All ten actual client/controller sequences remain pending:Aysa training/boss callbacks,Warsong four faction/event actors,Felfire contact/death actual spell effects,Kalecgos paired realm/banish/enrage/reset/self-kill,Norushen blind-hatred/residual/healer challenge completion/real exhaustion aura,Durumu full cones/eyes/movement/cleanup,Ji Kun nests/feed/jump/fall rescue/pet/camera/re-entry,Jinrokh actual water-font behavior,Paragons actual eerie fog,Megaera body/acid-rain/torrent/ice cleanup. Megaera head damage/phase logic is a separate unchanged raw-handler scope,not certified by support-actor protection. No full registered content/client encounter or36-chain/authentic Lady certification.",
+    "All ten actual client sequences remain pending:Stitches current-owner rot tick/full brawl;Ooliss pursuit root/walk timing/death/reset;all Ogrewatch shield modes;Failure Pylon resurrection/cast/despawn;Antoran mine detonation;both Argus edge modes;all4 Eonar crystal interactions;Dargrul actual wall/stun/GO cleanup;all3 Skorpyron scorp recovery/death;Lich King real trap lifecycle. This change removes AI lifetime dependency for selected actor-owned operations;it does not certify arbitrary encounter resets,cast acknowledgment or unrelated AI/member callbacks. No whole36-chain or authentic Lady claim.",
+    "All actual client sequences for this batch remain pending:HasabelOutro,ImonarShips,TichondriusSpire,ElisandeOrb,SasszineJellyfish,CordanaLight,ArmyMinions,EvalaMinion,DeepbeardRecovery,SmashspiteBat. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "All actual client sequences for this batch remain pending:KaelthasIntro,DomatraxIntro,DrokDialogue,InquisitionDialogue,MaidenEnrage,SaprishTrap,NezharTentacle,EvalaVisibility,DaglopRide,ChengChallenge. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "Hasabel actual Felcrush portal positions/difficulty/wave timings and real spawn success remain client pending;the uncounted follow-up repairs queue lifetime only. Evala actual Player-target tomb/raid credit and Inquisition entire fight/missile rendering/collision remain separate from controlled actor/target native tests.",
+    "All actual client sequences for this batch remain pending:AggramarActors,VarimathrasShadow,TrilliaxOutro,MaylaDialogue,AzsunaFighter,EventTeleporter,WorldbreakerTriggers,VizaduumDoor,ZuraalWalker,LuraAlleria. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "All actual client sequences for this batch remain pending:GGEngineering,TheramoreGuard,NezharVoidtender,SaprishCompanions,BankerRift,NightholdTrash,LuraPortal,NezharPortal,SottWalkerAfterNezhar,CoreDelayTalk. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "Native proxy boundaries do not prove real nearest GO/NPC selection or successful summons/spells. Full GG/totem brawl,Theramore Songweaver dialogue/portal,Saprish shared health combat,Nezhar shielding/portals,Banker summon/owner appearance,Nighthold beam targets,Lura portal child combat and walker door movement remain client pending. Core text audibility/whisper client delivery remains pending. Unregistered/unbound npc_night_hold_flame_core was not included or registered here.",
+    "All actual client sequences for this batch remain pending:KingarothDialogue,MaievCathedral,MephistrothIntro,GalindreRecovery,KarazhanKhadgar,ElisandeEvade,GiantLasher,KiljaedenPresenters,ApocronVolley,EpicusIntro. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "Actual client/full encounters for:ZuraalBossLifetime,SelinCrystalLifetime,MedivhCinematicLifetime,DeathwingRollLifetime,AntorusBattleshipLifetime,ArgusControllerLifetime,CovenControllerLifetime,EonarBonusLifetime,FelhoundsControllerLifetime,ImonarControllerLifetime. Admission projections do not certify body behavior,actor/cast success,dialogue,movement,credit,reset/abandon/group/pet/faction alternatives or whole36 chains. Those original paths are byte-preserved and still require content/client traversal. Weak admission prevents entry after AI destruction;it is not an extra Reset policy or a cross-thread lifetime lease. Unit queue execution/source AI replacement retain native map-thread serialization. Authentic living Lady remains OPEN.",
+    "Actual client/full encounters for:IncineratorStalkerLifetime,VarimathrasDialogueLifetime,WorldbreakerControllerLifetime,IllysannaControllerLifetime,IllidanCathedralLifetime,ThrashbiteControllerLifetime,CathedralFirstLifetime,HelyaMawLifetime,MaidenKarazhanLifetime,ElfyraControllerLifetime. Admission projections do not certify body behavior,actor/cast success,dialogue,movement,credit,reset/abandon/group/pet/faction alternatives or whole36 chains. Those original paths are byte-preserved and still require content/client traversal. Weak admission prevents entry after AI destruction;it is not an extra Reset policy or a cross-thread lifetime lease. Unit queue execution/source AI replacement retain native map-thread serialization. Authentic living Lady remains OPEN.",
+    "Actual client/full encounters for:KarazhanChessLifetime,AnomalySpeedLifetime,GuldanControllerLifetime,SolarCollapseLifetime,SkorpyronControllerLifetime,ThalyssraNightholdLifetime,LuraControllerLifetime,SaprishControllerLifetime,LocuswalkerOutroLifetime,NezharControllerLifetime. Admission projections do not certify body behavior,actor/cast success,dialogue,movement,credit,reset/abandon/group/pet/faction alternatives or whole36 chains. Those original paths are byte-preserved and still require content/client traversal. Weak admission prevents entry after AI destruction;it is not an extra Reset policy or a cross-thread lifetime lease. Unit queue execution/source AI replacement retain native map-thread serialization. Authentic living Lady remains OPEN.",
+    "Chess NPC_CHESS_ROOK retains its pre-existing unconditional return. Its disabled movement/attack branch and the two non-emitted callbacks are not repaired/activated/certified by this lifetime change;Rook gameplay and full Chess encounter remain OPEN."
+  ],
+  "continuation": "Completed 4 of five authorized ten-fix batches;continue remaining batches until50 total. This audit certifies only stated automated/native scopes,not client/whole-chain traversal."
+}

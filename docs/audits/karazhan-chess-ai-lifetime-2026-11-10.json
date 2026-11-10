@@ -55,7 +55,43 @@
   "canonical_world_sha256": "0248e0b9851117a60ca06e5782d9d420bd8054cabdfab259feadc2ffabc703b8",
   "patch_sha256": "7caf9f0195a1ef000b2a27279c4b3947f1cc742e737553764ec9a12ac348e347",
   "cleanup": {
-    "status": "PENDING_BATCH_ARCHIVE"
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/thirtyfifth-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "7bbb0231bd5fda24817a86e3db12f55baea5ed8a8124d5778876f7992447ddc5",
+    "original_files": 691,
+    "removed_files": 106,
+    "logical_removed_bytes": 834484827,
+    "deletion_manifest": ".codex/thirtyfifth-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "e8c39589906cffcae7f56cbe82464a8650bf14bbfc010e0a3b7a768bc85697a4",
+    "retained_rollbacks": [
+      ".codex/release-before-thirtyfifth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-thirtyfourth-ten-fixes-2026-11-10",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-thirtyfourth rollback retired after newest pre-thirtyfifth recovery hash verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
   },
-  "batch_audit": "docs/audits/thirtyfifth-ten-repairs-2026-11-10.json"
+  "batch_audit": "docs/audits/thirtyfifth-ten-repairs-2026-11-10.json",
+  "fix_commit": "cc2e9fdf86aa3d1cdde9a06b9ecac2a99d814c4a",
+  "final_scope_metadata_sha256": "610f08c28638e2617a02c8509853438cbc65bee1e066b3e60a8b96860887fe0d"
 }
