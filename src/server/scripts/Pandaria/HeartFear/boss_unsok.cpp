@@ -461,9 +461,9 @@ public:
             DoCast(me, SPELL_REDUCE_CRIT_CHANCE, true);
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 if (!explose)
                 {
