@@ -90,6 +90,7 @@ struct npc_atheris_voguesong : ScriptedAI
         uint8 count;
     };
 
+    uint64 stageEffectGeneration = 0;
     bool intro;
     uint32 generateTheme;
     uint32 numberTheme;
@@ -115,8 +116,25 @@ struct npc_atheris_voguesong : ScriptedAI
     ObjectGuid SecondPlace;
     ObjectGuid ThirdPlace;
 
+    void QueueStageEffect(Player* target)
+    {
+        me->AddDelayedEvent(500, [this, targetGuid = target->GetGUID(), generation = stageEffectGeneration]() -> void
+        {
+            if (generation != stageEffectGeneration)
+                return;
+            if (Player* target = ObjectAccessor::GetPlayer(*me, targetGuid))
+            {
+                if (target->HasAura(261939))
+                    target->CastSpell(target, SPELL_STAGE_FIRE, true);
+                else if (target->HasAura(261938))
+                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
+            }
+        });
+    }
+
     void Reset() override
     {
+        ++stageEffectGeneration;
         events.Reset();
 
         generateTheme       = 0;
@@ -252,14 +270,7 @@ struct npc_atheris_voguesong : ScriptedAI
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
-                    target->AddDelayedEvent(500, [target]() -> void
-                    {
-                        if (target->HasAura(261939))
-                            target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                        else
-                            if (target->HasAura(261938))
-                                target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                    });
+                    QueueStageEffect(target);
                 }
             }
 
@@ -270,14 +281,7 @@ struct npc_atheris_voguesong : ScriptedAI
                     target->RemoveAura(SPELL_VOTE);
                     target->RemoveAura(SPELL_MORPH);
                     target->CastSpell(target, 241848, false);
-                    target->AddDelayedEvent(500, [target]() -> void
-                    {
-                        if (target->HasAura(261939))
-                            target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                        else
-                            if (target->HasAura(261938))
-                                target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                    });
+                    QueueStageEffect(target);
 
                     if (auto nastasia = instance->instance->GetCreature(instance->GetGuidData(121325)))
                         nastasia->AI()->Talk(SAY_HELLO_LEFT, target->GetGUID());
@@ -449,14 +453,7 @@ struct npc_atheris_voguesong : ScriptedAI
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
                     }
                 }
 
@@ -467,14 +464,7 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241848, false);
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
 
                         if (auto nastasia = instance->instance->GetCreature(instance->GetGuidData(121325)))
                             nastasia->AI()->Talk(SAY_HELLO_LEFT, target->GetGUID());
@@ -520,14 +510,7 @@ struct npc_atheris_voguesong : ScriptedAI
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
                     }
                 }
 
@@ -538,14 +521,7 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241848, false);
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
 
                         if (auto nastasia = instance->instance->GetCreature(instance->GetGuidData(121325)))
                             nastasia->AI()->Talk(SAY_HELLO_LEFT, target->GetGUID());
@@ -591,14 +567,7 @@ struct npc_atheris_voguesong : ScriptedAI
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
                     }
                 }
 
@@ -609,14 +578,7 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241848, false);
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
 
                         if (auto nastasia = instance->instance->GetCreature(instance->GetGuidData(121325)))
                             nastasia->AI()->Talk(SAY_HELLO_LEFT, target->GetGUID());
@@ -662,14 +624,7 @@ struct npc_atheris_voguesong : ScriptedAI
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
                     }
                 }
 
@@ -680,14 +635,7 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241848, false);
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
 
                         if (auto nastasia = instance->instance->GetCreature(instance->GetGuidData(121325)))
                             nastasia->AI()->Talk(SAY_HELLO_LEFT, target->GetGUID());
@@ -733,14 +681,7 @@ struct npc_atheris_voguesong : ScriptedAI
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
                     }
                 }
 
@@ -751,14 +692,7 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241848, false);
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
 
                         if (auto nastasia = instance->instance->GetCreature(instance->GetGuidData(121325)))
                             nastasia->AI()->Talk(SAY_HELLO_LEFT, target->GetGUID());
@@ -804,14 +738,7 @@ struct npc_atheris_voguesong : ScriptedAI
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
                     }
                 }
 
@@ -822,14 +749,7 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241848, false);
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
 
                         if (auto nastasia = instance->instance->GetCreature(instance->GetGuidData(121325)))
                             nastasia->AI()->Talk(SAY_HELLO_LEFT, target->GetGUID());
@@ -875,14 +795,7 @@ struct npc_atheris_voguesong : ScriptedAI
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
                     }
                 }
 
@@ -893,14 +806,7 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241848, false);
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
 
                         if (auto nastasia = instance->instance->GetCreature(instance->GetGuidData(121325)))
                             nastasia->AI()->Talk(SAY_HELLO_LEFT, target->GetGUID());
@@ -946,14 +852,7 @@ struct npc_atheris_voguesong : ScriptedAI
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
                     }
                 }
 
@@ -964,14 +863,7 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241848, false);
-                        target->AddDelayedEvent(500, [target]() -> void
-                        {
-                            if (target->HasAura(261939))
-                                target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                            else
-                                if (target->HasAura(261938))
-                                    target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                        });
+                        QueueStageEffect(target);
 
                         if (auto nastasia = instance->instance->GetCreature(instance->GetGuidData(121325)))
                             nastasia->AI()->Talk(SAY_HELLO_LEFT, target->GetGUID());
@@ -1036,14 +928,7 @@ struct npc_atheris_voguesong : ScriptedAI
                     Talk(SAY_SECOND_PLACE, target->GetGUID());
                     target->RemoveAura(SPELL_MORPH);
                     target->CastSpell(target, 242147, false);
-                    target->AddDelayedEvent(500, [target]() -> void
-                    {
-                        if (target->HasAura(261939))
-                            target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                        else
-                            if (target->HasAura(261938))
-                                target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                    });
+                    QueueStageEffect(target);
                 }
                 events.RescheduleEvent(EVENT_MOVE_BACK, 4000);
                 break;
@@ -1064,14 +949,7 @@ struct npc_atheris_voguesong : ScriptedAI
                     }
                     target->RemoveAura(SPELL_MORPH);
                     target->CastSpell(target, 242146, false);
-                    target->AddDelayedEvent(500, [target]() -> void
-                    {
-                        if (target->HasAura(261939))
-                            target->CastSpell(target, SPELL_STAGE_FIRE, true);
-                        else
-                            if (target->HasAura(261938))
-                                target->CastSpell(target, SPELL_STAGE_SPOTLIGHT, true);
-                    });
+                    QueueStageEffect(target);
 
                     instance->SetBossState(DATA_TRIAL_OF_STYLE, DONE);
                     events.RescheduleEvent(EVENT_CONSOLATION_PLACE, 1000);
