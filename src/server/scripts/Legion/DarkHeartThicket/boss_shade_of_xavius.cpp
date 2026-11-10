@@ -127,14 +127,14 @@ public:
             }
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
             if (HealthBelowPct(51) && !finalPhase)
             {
                 finalPhase = true;
                 events.RescheduleEvent(EVENT_FINAL_PHASE, 1000);
             }
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 if (Aura const* aura = me->GetAura(221315))
                 {
