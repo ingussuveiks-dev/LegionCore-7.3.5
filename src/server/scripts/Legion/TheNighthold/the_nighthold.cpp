@@ -55,11 +55,13 @@ struct npc_nighthold_talysra_helper : ScriptedAI
             break;
         case PATH_OPEN_DOOR:
             ZoneTalk(3);
-            me->AddDelayedEvent(13000, [this]() -> void
+            me->AddDelayedEvent(13000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 ZoneTalk(4);
-                me->AddDelayedEvent(13000, [this]() -> void
+                me->AddDelayedEvent(13000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     ZoneTalk(5);
                 });
             });
@@ -79,13 +81,15 @@ struct npc_nighthold_talysra_helper : ScriptedAI
         switch (action)
         {
         case ACTION_OPEN_DOOR_SECOND:
-            me->AddDelayedEvent(3000, [this]() -> void
+            me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 ZoneTalk(2);
             });
 
-            me->AddDelayedEvent(6500, [this]() -> void
+            me->AddDelayedEvent(6500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->CastSpell(me, 230980);
                 if (InstanceScript* instance = me->GetInstanceScript())
                     if (GameObject* go = me->GetMap()->GetGameObject(instance->GetGuidData(GO_ANOMALY_PRE)))
@@ -155,6 +159,9 @@ struct npc_nighthold_talysra_helper : ScriptedAI
     }
 
     void UpdateAI(uint32 /*diff*/) override { }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //225665, 225673 - down
