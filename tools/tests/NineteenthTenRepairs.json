@@ -1,0 +1,226 @@
+[
+  {
+    "key": "InfernoPause",
+    "paths": [
+      "src/server/scripts/Northrend/Ulduar/Ulduar/boss_flame_leviathan.cpp"
+    ],
+    "cls": "npc_mimirons_infernoAI",
+    "title": "Read and decrement Mimiron inferno timers only in their active state",
+    "slug": "mimiron-inferno-active-timers",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_flame_leviathan.cpp",
+        "old": "            if (pauseTimer <= diff && pause)\n            {\n                pause = false;\n                infernoTimer = 0;\n                infernoCount = 0;\n            }\n            else pauseTimer -= diff;",
+        "new": "            if (pause)\n            {\n                if (pauseTimer <= diff)\n                {\n                    pause = false;\n                    infernoTimer = 0;\n                    infernoCount = 0;\n                }\n                else pauseTimer -= diff;\n            }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_flame_leviathan.cpp",
+        "old": "            if (infernoTimer <= diff && !pause)\n            {",
+        "new": "            if (pause)\n                return;\n\n            if (infernoTimer <= diff)\n            {",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "HodirTimer",
+    "paths": [
+      "src/server/scripts/Northrend/Ulduar/Ulduar/boss_flame_leviathan.cpp"
+    ],
+    "cls": "npc_hodirs_furyAI",
+    "title": "Initialize Hodir fury roaming timer after its initial random movement",
+    "slug": "hodir-fury-initial-roam-timer",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_flame_leviathan.cpp",
+        "old": "        uint32 pauseTimer;\n        uint32 freezeTimer;",
+        "new": "        uint32 pauseTimer = 60000;\n        uint32 freezeTimer;",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "YmironWalk",
+    "paths": [
+      "src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_ymiron.cpp"
+    ],
+    "cls": "boss_ymironAI",
+    "title": "Clear King Ymiron walking transition state on reset",
+    "slug": "ymiron-walking-reset-state",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_ymiron.cpp",
+        "old": "            m_bIsPause = false;\n            m_bIsActiveWithBJORN = false;",
+        "new": "            m_bIsWalking = false;\n            m_bIsPause = false;\n            m_bIsActiveWithBJORN = false;",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "YmironPrisoner",
+    "paths": [
+      "src/server/scripts/Legion/MawofSouls/boss_ymiron_the_fallen_king.cpp"
+    ],
+    "cls": "npc_mos_seacursed_slaver",
+    "title": "Resolve Ymiron slaver prisoner by GUID after the chain break delay",
+    "slug": "ymiron-slaver-prisoner-lifetime",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/MawofSouls/boss_ymiron_the_fallen_king.cpp",
+        "old": "AddDelayedEvent(2000, [this, prisoner] () -> void",
+        "new": "AddDelayedEvent(2000, [this, prisonerGuid = prisoner->GetGUID()] () -> void",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Legion/MawofSouls/boss_ymiron_the_fallen_king.cpp",
+        "old": "                        if (prisoner && prisoner->IsAlive() && !prisoner->isInCombat())\n                        {",
+        "new": "                        if (Creature* prisoner = ObjectAccessor::GetCreature(*me, prisonerGuid))\n                        if (prisoner->IsAlive() && !prisoner->isInCombat())\n                        {",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "OperaAssistant",
+    "paths": [
+      "src/server/scripts/Legion/ReturnToKarazhan/instance_return_to_karazhan.cpp"
+    ],
+    "cls": "instance_return_to_karazhan_InstanceMapScript",
+    "title": "Resolve the released Opera assistant again before delayed movement",
+    "slug": "opera-assistant-delayed-lifetime",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/ReturnToKarazhan/instance_return_to_karazhan.cpp",
+        "old": "                                            AddDelayedEvent(2000, [this, decor, pos]() -> void\n                                            {\n                                                decor->GetMotionMaster()->MovePoint(1, pos);\n                                            });",
+        "new": "                                            AddDelayedEvent(2000, [this, decorGuid = decor->GetGUID(), pos]() -> void\n                                            {\n                                                if (Creature* decor = instance->GetCreature(decorGuid))\n                                                    if (decor->IsAlive())\n                                                        decor->GetMotionMaster()->MovePoint(1, pos);\n                                            });",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "OperaBrute",
+    "paths": [
+      "src/server/scripts/Legion/ReturnToKarazhan/boss_opera_hall.cpp"
+    ],
+    "cls": "boss_rtk_cogglestonAI",
+    "title": "Resolve Opera Brute before Bellas delayed transformation",
+    "slug": "opera-brute-delayed-lifetime",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/ReturnToKarazhan/boss_opera_hall.cpp",
+        "old": "bella->AddDelayedEvent(19000, [bella, brute] () -> void\n                    {\n                        bella->AI()->Talk(6);\n                        brute->UpdateEntry(NPC_ADEM);\n                    });",
+        "new": "bella->AddDelayedEvent(19000, [bella, bruteGuid = brute->GetGUID()] () -> void\n                    {\n                        bella->AI()->Talk(6);\n                        if (Creature* brute = ObjectAccessor::GetCreature(*bella, bruteGuid))\n                            if (brute->IsAlive())\n                                brute->UpdateEntry(NPC_ADEM);\n                    });",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "OdynCombat",
+    "paths": [
+      "src/server/scripts/Legion/TrialOfValor/instance_trial_of_valor.cpp"
+    ],
+    "cls": "instance_trial_of_valor_InstanceMapScript",
+    "title": "Keep delayed Odyn victory combat cleanup within its original instance",
+    "slug": "odyn-delayed-combat-origin",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TrialOfValor/instance_trial_of_valor.cpp",
+        "old": "player->AddDelayedEvent(100, [player]() -> void\n                        {\n                            player->CombatStop",
+        "new": "player->AddDelayedEvent(100, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void\n                        {\n                            if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                                return;\n                            player->CombatStop",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "AssaultCallbacks",
+    "paths": [
+      "src/server/scripts/Scenario/AssaultBrokenShore/instance_AssaultBrokenShore.cpp"
+    ],
+    "cls": "instance_AssaultBrokenShore_InstanceMapScript",
+    "title": "Scope Broken Shore assault stage callbacks to their original instance",
+    "slug": "assault-stage-delayed-origin",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/AssaultBrokenShore/instance_AssaultBrokenShore.cpp",
+        "old": "player->AddDelayedEvent(5000, [player]() -> void\n                            {\n                                player->CreateConversation(4831);",
+        "new": "player->AddDelayedEvent(5000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void\n                            {\n                                if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                                    return;\n                                player->CreateConversation(4831);",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Scenario/AssaultBrokenShore/instance_AssaultBrokenShore.cpp",
+        "old": "player->AddDelayedEvent(7000, [player]() -> void\n                            {\n                                player->CreateConversation(4832);",
+        "new": "player->AddDelayedEvent(7000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void\n                            {\n                                if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                                    return;\n                                player->CreateConversation(4832);",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Scenario/AssaultBrokenShore/instance_AssaultBrokenShore.cpp",
+        "old": "player->AddDelayedEvent(4000, [player]() -> void\n                            {\n                                player->CreateConversation(4892);",
+        "new": "player->AddDelayedEvent(4000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void\n                            {\n                                if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                                    return;\n                                player->CreateConversation(4892);",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Scenario/AssaultBrokenShore/instance_AssaultBrokenShore.cpp",
+        "old": "player->AddDelayedEvent(4000, [player]() -> void\n                            {\n                                player->CastSpell(player, 243824);",
+        "new": "player->AddDelayedEvent(4000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void\n                            {\n                                if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)\n                                    return;\n                                player->CastSpell(player, 243824);",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "BrokenIntro",
+    "paths": [
+      "src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp"
+    ],
+    "cls": "instance_broken_islands_InstanceMapScript",
+    "title": "Keep all three Broken Shore intro conversations in the accepted instance",
+    "slug": "broken-islands-intro-origin",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp",
+        "old": "player->AddDelayedEvent(5000, [player]() -> void\n                {\n                    if (player->GetMapId() != 1460)",
+        "new": "player->AddDelayedEvent(5000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void\n                {\n                    if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp",
+        "old": "player->AddDelayedEvent(15000, [player]() -> void\n                    {\n                        if (player->GetMapId() != 1460)",
+        "new": "player->AddDelayedEvent(15000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void\n                    {\n                        if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp",
+        "old": "player->AddDelayedEvent(13100, [player]() -> void\n                        {\n                            if (player->GetMapId() != 1460)",
+        "new": "player->AddDelayedEvent(13100, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void\n                        {\n                            if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "VetirRide",
+    "paths": [
+      "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp"
+    ],
+    "cls": "npc_invasion_stormheim_vetirAI",
+    "title": "Separate Vetir boarding and dismount control and guard delayed extraction",
+    "slug": "vetir-ride-control-extraction",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp",
+        "old": "                    PlayerOn = true;\n                    Start(false, true, player->GetGUID());  // 10993813",
+        "new": "                    if (Unit* owner = me->GetAnyOwner())\n                        if (owner != player)\n                            return;\n                    if (!apply)\n                    {\n                        PlayerOn = false;\n                        player->SetClientControl(player, true);\n                        return;\n                    }\n                    PlayerOn = true;\n                    Start(false, true, player->GetGUID());  // 10993813",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp",
+        "old": "player->AddDelayedEvent(1000, [player] {\n\n                                player->TeleportTo",
+        "new": "player->AddDelayedEvent(1000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()] {\n                                if (!player->IsInWorld() || !player->IsAlive() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId || player->IsBeingTeleported())\n                                    return;\n\n                                player->TeleportTo",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp",
+        "old": "                if (Player* player = GetPlayerForEscort())\n                    player->SetClientControl(me, 0);",
+        "new": "                if (Player* player = GetPlayerForEscort())\n                    if (player->IsAlive() && player->GetVehicleBase() == me)\n                        player->SetClientControl(me, 0);",
+        "count": 1
+      }
+    ]
+  }
+]
