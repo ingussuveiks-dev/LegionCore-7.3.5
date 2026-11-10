@@ -336,8 +336,8 @@ public:
 
         void IsSummonedBy(Unit* summoner) override
         {
-            me->AddDelayedEvent(500, [this] {
-                DoCast(me, SPELL_UNSTABLE_ENTRANCE);
+            me->AddDelayedEvent(500, [actor = me] {
+                { if (auto ai = actor->AI()) ai->DoCast(actor, SPELL_UNSTABLE_ENTRANCE); }
             });
         }
 
