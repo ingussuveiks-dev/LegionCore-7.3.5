@@ -597,6 +597,7 @@ public:
         void Reset()
         {
             DespawnTimer = 15000;
+            NeedForAHack = 0;
             SpellTimer = 5000;
             Phase = 0;
 
