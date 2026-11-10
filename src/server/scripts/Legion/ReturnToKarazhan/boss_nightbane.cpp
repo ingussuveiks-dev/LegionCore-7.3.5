@@ -281,9 +281,11 @@ public:
 
         EventMap events;
 
+        bool cinematicStarted = false;
+
         void sGossipSelect(Player* player, uint32 sender, uint32 action) override
         {
-            if (!player->HasAura(229077))
+            if (cinematicStarted || !player->HasAura(229077))
                 return;
 
             if (player->GetGroup() && !player->GetGroup()->IsLeader(player->GetGUID()))
@@ -297,12 +299,15 @@ public:
             if (PlList.isEmpty())
                 return;
             
+            Creature* nightbane = me->SummonCreature(115213, -11170.30f, -1868.32f, 106.51f, 5.37f, TEMPSUMMON_DEAD_DESPAWN);
+            if (!nightbane)
+                return;
+            cinematicStarted = true;
+            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
                 if (Player* pPlayer = i->getSource())
                     pPlayer->CastSpell(pPlayer, 232663); // achieve
-            
-            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-            if (Creature* nightbane = me->SummonCreature(115213, -11170.30f, -1868.32f, 106.51f, 5.37f, TEMPSUMMON_DEAD_DESPAWN))
+
             {
                 nightbane->AI()->SetFlyMode(true);
                 nightbane->AI()->Talk(0);
@@ -336,12 +341,18 @@ public:
                     nightbane->AI()->Talk(3);
                 });
                 
-                me->AddDelayedEvent(75000, [this, nightbane] () -> void
+                me->AddDelayedEvent(75000, [this, nightbaneGuid = nightbane->GetGUID()] () -> void
                 {
+                    Creature* nightbane = ObjectAccessor::GetCreature(*me, nightbaneGuid);
+                    if (!nightbane)
+                        return;
                     me->CastSpell(nightbane, 30971);
                     nightbane->CastSpell(nightbane, 30969);
-                    nightbane->AddDelayedEvent(1000, [this, nightbane] () -> void
+                    me->AddDelayedEvent(1000, [this, nightbaneGuid] () -> void
                     {
+                        Creature* nightbane = ObjectAccessor::GetCreature(*me, nightbaneGuid);
+                        if (!nightbane)
+                            return;
                         nightbane->CastSpell(me, 30971);
                         me->CastSpell(me, 30973);
                         nightbane->CastSpell(me, 30930);
@@ -355,12 +366,15 @@ public:
                     Talk(4);
                 });
                 
-                me->AddDelayedEvent(81000, [this, nightbane] () -> void
+                me->AddDelayedEvent(81000, [this, nightbaneGuid = nightbane->GetGUID()] () -> void
                 {
                     me->RemoveAura(30972);
-                    me->CastSpell(nightbane, 30977);
-                    nightbane->AI()->Talk(4);
-                    nightbane->GetMotionMaster()->MovePoint(0, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
+                    if (Creature* nightbane = ObjectAccessor::GetCreature(*me, nightbaneGuid))
+                    {
+                        me->CastSpell(nightbane, 30977);
+                        nightbane->AI()->Talk(4);
+                        nightbane->GetMotionMaster()->MovePoint(0, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
+                    }
                     me->AddDelayedEvent(4000, [this] () -> void
                     {
                         me->SetWalk(true);
