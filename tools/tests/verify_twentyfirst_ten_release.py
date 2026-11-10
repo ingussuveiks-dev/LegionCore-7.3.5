@@ -17,7 +17,18 @@ assert not sites(r,'?DoZoneInCombat@'),'outdoor duel no zone-combat fallback'
 r=ins('?Reset@npc_valiantAI@');assert sites(r,'?Clear@ObjectGuid@@')and any(x.mnemonic=='mov'and '0x44]'in x.op_str and x.op_str.endswith(', 1')for x in r),'reset retires old challenger'
 r=ins('?KilledUnit@npc_valiantAI@');assert sites(r,'??9ObjectGuid@@')and sites(r,'?Clear@ObjectGuid@@')and sites(r,'?SetFlag@Object@@'),'loss restores gossip and applies only to actual challenger identity'
 r=hook('npc_tg_helperAI');assert op(r,'cmp','rax, 1')and any(x.mnemonic=='jbe'for x in r)and sites(r,'?SetHealth@Unit@@'),'bounded one-health survival and native full-health restore'
-assert op(ins('?Reset@boss_tsulongAI@'),'mov','byte ptr [rbx + 0x1bc], 0'),'initialized alternating evade state'
+# Derive this private member from the real alternating update, since unrelated
+# boss-state fields can change its class offset without changing this behavior.
+import re
+tsulong_update=ins('?UpdateAI@boss_tsulongAI@');tsulong_toggles=[]
+for at,x in enumerate(tsulong_update[:-1]):
+ match=re.fullmatch(r'byte ptr \[r\w+ \+ (0x[0-9a-f]+)\], 1',x.op_str) if x.mnemonic=='xor' else None
+ if match:tsulong_toggles.append((match[1],at))
+assert len(tsulong_toggles)==1,'one actual alternating evade toggle'
+tsulong_member,tsulong_toggle=tsulong_toggles[0]
+assert tsulong_update[tsulong_toggle+1].mnemonic=='je','alternate ticks skip the remaining update'
+tsulong_reset=ins('?Reset@boss_tsulongAI@')
+assert op(tsulong_reset,'mov','rbx, rcx') and op(tsulong_reset,'mov','byte ptr [rbx + '+tsulong_member+'], 0'),'reset initializes the same actual alternating member'
 r=hook('npc_master_cheng_q31840');assert len(sites(r,'?GetAffectingPlayer@Unit@@'))==2 and sites(r,'?GetAnyOwner@Unit@@')and sites(r,'?KilledMonsterCredit@Player@@')and op(r,'cmp','rax, rdi')and op(r,'mov','byte ptr [rsi + 0x38], 1')and 6000 in values(r),'actual summoner/winner owner match,once and native cleanup'
 for cls in ['boss_chijiAI','boss_xuenAI','boss_yulonAI','boss_niuzaoAI']:
  r=hook(cls);assert sites(r,'?GetAffectingPlayer@Unit@@')and sites(r,'?GeneratePersonalLoot@Unit@@')and sites(r,'?QuestCredit@'+cls+'@'),'native eligible looter and own victory path '+cls

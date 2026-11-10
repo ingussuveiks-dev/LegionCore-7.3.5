@@ -191,7 +191,7 @@ public:
 
         int32 nightphasetimer;
         int32 dayphasetimer;
-        uint8 phase;
+        uint8 phase = PHASE_NONE;
         bool firstSpecialEnabled;
         bool secondSpecialEnabled;
         bool inFly;
@@ -199,11 +199,7 @@ public:
         bool won;
 
         int32 energybar;
-        int32 dayhealth;
-        int32 nighthealth;
 
-        int32 healtoreduce;
-        int32 currenthealth;
 
         void Reset()
         {
@@ -217,6 +213,7 @@ public:
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
             inFly = false;
             won = false;
+            phase = PHASE_NONE;
             me->SetDisableGravity(true);
             me->SetCanFly(true);
             me->RemoveAurasDueToSpell(SPELL_DREAD_SHADOWS);
@@ -273,11 +270,6 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
-        {
-            currenthealth = me->GetHealth();
-            dayhealth = me->GetMaxHealth() - me->GetHealth();
-        }
 
         void EnterCombat(Unit* attacker)
         {
@@ -436,7 +428,7 @@ public:
             if (action == ACTION_WIN_DAY)
                 events.ScheduleEvent(EVENT_WIN_DAY, 500);
 
-            if (action == PHASE_DAY_ACTIVATION)
+            if (action == PHASE_DAY_ACTIVATION && phase == PHASE_NIGHT)
             {
                 phase = PHASE_DAY;
                 Talk(VO_TES_SERPENT_EVENT_NIGHTTODAY);
@@ -466,7 +458,9 @@ public:
                 me->SetDisplayId(DISPLAY_TSULON_DAY);
                 me->setFaction(1665);
                 //me->RemoveAura(SPELL_SHA_ACTIVE);
-                me->SetHealth(dayhealth);
+                // Invert the current native health at the actual transition.
+                // A pre-damage or previous-tick cache can omit the last hit/heal.
+                me->SetHealth(me->GetMaxHealth() - me->GetHealth());
                 me->AddUnitMovementFlag(MOVEMENTFLAG_ROOT);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
                 me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_TURN);
@@ -477,7 +471,7 @@ public:
                 me->SetInt32Value(UNIT_FIELD_MAX_POWER, 100);
                 me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
             }
-            if (action == PHASE_NIGHT_ACTIVATION)
+            if (action == PHASE_NIGHT_ACTIVATION && phase == PHASE_DAY)
             {               
                 phase = PHASE_NIGHT;
                 Talk(VO_TES_SERPENT_EVENT_DAYTONIGHT);
@@ -490,7 +484,9 @@ public:
                 me->SetDisplayId(DISPLAY_TSULON_NIGHT);
 
                 me->setFaction(16);
-                me->SetHealth(nighthealth);
+                // Invert the current native health at the actual transition.
+                // A pre-damage or previous-tick cache can omit the last hit/heal.
+                me->SetHealth(me->GetMaxHealth() - me->GetHealth());
                 me->SetSpeed(MOVE_RUN, 1.12f, true);   
                 me->SetDisplayId(DISPLAY_TSULON_NIGHT);
                 me->SetReactState(REACT_AGGRESSIVE);
@@ -648,7 +644,6 @@ public:
             {
                 if (!won)
                 {
-                    nighthealth = me->GetMaxHealth() - me->GetHealth();
 
                     if (me->GetUInt32Value(UNIT_FIELD_POWER) == 100)
                     {

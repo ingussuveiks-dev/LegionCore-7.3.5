@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "base": "3d9746b2c3d81dd4685756e2c7fd00f96cce9d6e",
+  "cause": "Tsulong copied native64 health/complements into signed32 day/night caches. DamageTaken captured health before the last damage,while the day cache was sampled on an earlier update before the last heal. A no-hit first transition could read an uninitialized cache.",
+  "fix": "Remove four unused/stale32bit health fields and the pre-damage/per-tick snapshots. At each actual phase action invert current native maxhealth-health directly in64bits. Require the opposite current phase before consuming the action,so repeated/wrong-phase signals cannot invert twice. Initialize/reset the phase checkpoint. Preserve authored zero complement;do not invent a minimum HP or change victory thresholds.",
+  "evidence": "Matching current native Creature health/field access and bound actual NPC62442/boss_tsulong;local authored two-phase complement mechanics and all real timers/auras/faction/root cleanup. No modern behavior or external implementation imported.",
+  "validation": {
+    "native": "Complete actual production boss class,real Creature/Map996/Spell/AI APIs:20 health ranges through1099511627793,controlled final hit after old snapshot and heal before transition,both phases,duplicate action refusal,actual faction/root cleanup,reset/invalid phase and first no-hit zero-health alive complement/recovery. Entrance phase and incoming hit/heal endpoints controlled;no full combat/client or core scaling certification. No character/account persistent writes. Pinned3d974 complete class reproduces both ordinary stale-hit and large signed32 errors as expected-broken controls.",
+    "release": "Original main scripts.lib and staged final link,source hashes stable,no globalOutDir. Full staged and canonical PE chains retain367prior checks plus Rook and new actual64 phase read/subtract/SetHealth/checkpoint gates. Previous21 verifier pinned evade flag at1bc;health-cache removal moves it to1ac. It now derives the actual XOR1/alternate-tick member from linked UpdateAI and requires Reset to clear the same member,retaining the behavior check without freezing a class layout.",
+    "source": "Exact pinned-to-current scope proof admits only selected cache removal,two current64 complements,opposite-phase guards and phase initialization/reset. All other encounter timers,spells,death/loot/group paths and other classes byte-preserved after line-ending normalization.",
+    "runtime": "Canonical Scepter -VerifyReleaseBinary passes. Owned25144 fresh ready/shutdown0/exit0/gone,empty stderr,configuration/certs/DLL hashes unchanged. No world/bnet process left. Actual raid damage/heal combat,scaling/pets/guardians/groups,factions,resets,wipes,loot and client visuals/audio remain separate checks.",
+    "diagnostics": "All declared native/build/link/PE/deploy/scope/start tests have canonical+own before/after crash/log snapshots. No new crashes,appendedDBErrors/server warnings/errors/assertions. Initial PE rejection was the obsolete private-field offset;paired derived proof and whole chain pass. Mixed7111-byte DBErrors and original OPEN evidence unchanged/untruncated."
+  },
+  "canonical": {
+    "worldserver.exe": "d7b9405f1856acf303c7cfbbbf498857f7a76cfcfea290656350991e0e225249",
+    "worldserver.map": "e9d1014b262c793438954e7ad306b076535b64673304f4e0b6c5bd80398a4114",
+    "bnetserver.exe": "4ddc3cd74e8d1b335fb86253df53612a018d5a28a85334197b3bfd7e27fa7459",
+    "bnetserver.map": "6d9b57a34ef4f9eea126d83b0dcc8e689e10c346bd547f150750e6a22072e0fe"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\tsulong-health-transition-2026-11-10",
+    "manifest_sha256": "58cc2013b85d015f835a12c8aec1abbc3d0f7d50d4483fe7bb7fbd1f3287e3ff",
+    "archived_files": 218,
+    "removed_files": 72,
+    "logical_removed_bytes": 872752519,
+    "deletion_manifest": ".codex\\tsulong-health-2026-11-10\\deletion-manifest.json",
+    "deletion_manifest_sha256": "3d982d7275f36f46852819752994f45d2175248982e2827621b3904efb8826c5",
+    "retained": "Newest pre-Tsulong rollback and pre-Rook rollback for pending client checks;main libraries,canonical runtime,reusable tests,all OPEN Lady/LINK2/Slaghammer/handshake/SQL/TimeLoop evidence preserved. Isolated MariaDB candidate still has a concrete deployment investigation purpose and is unrelated to this archive."
+  },
+  "pending": [
+    "Whole Tsulong encounter/client traversal not certified by controlled native phase calls. Native death/loot/group/owner paths unchanged.",
+    "Authentic living Lady and all36 client chains remain OPEN;no guessed surrender threshold or kill timer.",
+    "Twin Emperors/Meljarak sharing,Freya loot/extreme arithmetic,TimeLoop and other inherited OPEN cases remain separate. MariaDB CAST root repair is isolated and not installed by this commit."
+  ]
+}
