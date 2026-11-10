@@ -2390,7 +2390,7 @@ public:
                 if (AuraEffect* aurEffb = GetTarget()->GetAura(entry)->GetEffect(0))
                 {
                     GetTarget()->ApplySpellImmune(0, IMMUNITY_ID, SPELL_DESECRATED, true);
-                    int32 newamount = int32(GetTarget()->CountPctFromMaxHealth(80));
+                    float newamount = float(GetTarget()->CountPctFromMaxHealth(80));
                     aurEffb->SetAmount(newamount); 
                     if (InstanceScript* instance = GetTarget()->GetInstanceScript())
                         if (Creature* garrosh = GetTarget()->GetCreature(*GetTarget(), instance->GetGuidData(DATA_GARROSH)))
@@ -2404,8 +2404,8 @@ public:
         {
             if (GetTarget() && aurEff->GetAmount())
             {
-                uint32 hpmod = GetTarget()->CountPctFromMaxHealth(20);
-                GetTarget()->SetHealth(uint32(aurEff->GetAmount()) + hpmod);
+                uint64 hpmod = GetTarget()->CountPctFromMaxHealth(20);
+                GetTarget()->SetHealth(uint64(std::max(0.0f, aurEff->GetAmount())) + hpmod);
             }
         }
 
