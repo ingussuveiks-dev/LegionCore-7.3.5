@@ -380,8 +380,9 @@ public:
             if (Creature* beamTarget = summoner->SummonCreature(68553, me->GetPosition()))
                 beamTarget->CastSpell(me, SPELL_WEB_BEAM_TRASH, true);
 
-            AddDelayedEvent(500, [=] () -> void
+            AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (me)
                     me->GetMotionMaster()->MoveTakeoff(1, me->GetPositionX(), me->GetPositionY(), 574.2f);
             });
@@ -422,6 +423,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
