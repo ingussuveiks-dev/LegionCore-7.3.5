@@ -3763,9 +3763,9 @@ struct npc_new_year_2019_evala_minion : public VehicleAI
         me->SetAnimTier(AnimTier::Fly);
         me->SetSpeed(MOVE_FLIGHT, 0.2f);
         me->GetMotionMaster()->MovePoint(1, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 70.f);
-        me->AddDelayedEvent(14000, [this]() -> void
+        me->AddDelayedEvent(14000, [actor = me]() -> void
         {
-            me->SetSpeed(MOVE_FLIGHT, 1.8f);
+            actor->SetSpeed(MOVE_FLIGHT, 1.8f);
         });
     }
 
