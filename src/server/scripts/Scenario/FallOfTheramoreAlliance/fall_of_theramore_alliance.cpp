@@ -72,8 +72,9 @@ struct theramore_invader_typeAI : public ScriptedAI
                 Talk(TALK_INTRO);
 
                 delay = 0;
-                me->AddDelayedEvent(delay += 4500, [this]()
+                me->AddDelayedEvent(delay += 4500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (TempSummon* bunny = me->SummonCreature(NPC_GENERAL_BUNNY_JMF, BunnyPosition, TEMPSUMMON_MANUAL_DESPAWN))
                     {
                         me->SetFacingTo(me->GetAngle(bunny));
@@ -108,8 +109,9 @@ struct theramore_invader_typeAI : public ScriptedAI
                     });
 
                     delay = 0;
-                    me->AddDelayedEvent(delay += 3500, [this]()
+                    me->AddDelayedEvent(delay += 3500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         Talk(TALK_SPECIAL_2);
                     });
 
@@ -118,8 +120,9 @@ struct theramore_invader_typeAI : public ScriptedAI
                         Warlord->AI()->Talk(TALK_SPECIAL_1);
                     });
 
-                    me->AddDelayedEvent(delay += 3000, [this]()
+                    me->AddDelayedEvent(delay += 3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         Talk(TALK_SPECIAL_3);
                     });
 
@@ -170,6 +173,9 @@ struct theramore_invader_typeAI : public ScriptedAI
 
         return ObjectGuid::Empty;
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 class npc_theramore_invader_base : public CreatureScript
