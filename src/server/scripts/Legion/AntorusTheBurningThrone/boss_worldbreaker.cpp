@@ -517,9 +517,9 @@ struct npc_worldbreaker_annihilation_decimator : ScriptedAI
         }
     }
 
-    void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
     {
-        if (damage >= me->GetHealth())
+        if (damage >= me->GetHealth(attacker))
         {
             damage = 0;
 
@@ -544,7 +544,8 @@ struct npc_worldbreaker_annihilation_decimator : ScriptedAI
                 }
 
                 if (auto owner = me->GetAnyOwner())
-                    owner->GetAI()->DoAction(me->GetEntry() == NPC_WORLDBREAKER_ANNIHILATOR ? ACTION_1 : ACTION_2);
+                    if (auto ai = owner->GetAI())
+                        ai->DoAction(me->GetEntry() == NPC_WORLDBREAKER_ANNIHILATOR ? ACTION_1 : ACTION_2);
             }
         }
     }
