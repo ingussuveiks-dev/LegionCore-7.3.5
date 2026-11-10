@@ -1225,7 +1225,7 @@ struct npc_elisande_epocheric_orb : ScriptedAI
                         owner->CastSpell(me, SPELL_EPOCHERIC_ORB_BIG_DMG, true);
                 }
                 at->Despawn();
-                me->AddDelayedEvent(1000, [this] () -> void { me->DespawnOrUnsummon(); });
+                me->AddDelayedEvent(1000, [actor = me] () -> void { actor->DespawnOrUnsummon(); });
             }
         }
     }
