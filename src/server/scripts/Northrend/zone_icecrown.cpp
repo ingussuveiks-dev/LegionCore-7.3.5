@@ -958,6 +958,7 @@ public:
         {
         uiChargeTimer = 7000;
         uiShieldBreakerTimer = 10000;
+        uiDefendTimer = 10000;
         }
 
         void MovementInform(uint32 uiType, uint32 /*uiId*/) override
