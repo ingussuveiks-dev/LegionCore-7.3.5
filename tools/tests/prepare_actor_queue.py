@@ -16,10 +16,12 @@ def generate(plan_path,base,out,case=None,baseline=False,native_name=None):
     end=full.index('};',m.end())+2;arrays.append(full[m.start():end])
   con=ns['constants'](e,''.join(codes)+''.join(arrays))+''.join(arrays)
   if native:
+   if e['key']=='ApocronVolley':codes=[c.replace('urand(', 'ActorQueueRand(')for c in codes]
    con=re.sub(r'constexpr uint32 (?:UNIT_\w+|REACT_\w+|GAMEOBJECT_FIELD_\w+)=\d+;\n','',con)
-   codes=[re.sub(r'actor->(DespawnOrUnsummon|CastSpell|RemoveAura|ClearUnitState|SetWalk|SetVisible|SetSpeed|RemoveFlag|Kill|SummonCreature|GetMotionMaster|SetReactState|HandleEmoteCommand|setFaction|CreateConversation|SetPower|PlayOneShotAnimKit|SendPlaySpellVisualKit|NearTeleportTo|FindNearestCreature|FindNearestGameObject|SetUInt32Value|SetMaxHealth|SetHealth)\(',r'Observe::\1(actor,',c)for c in codes]
-   codes=[re.sub(r'ai->(Talk|DoCast|AttackStart)\(',r'Observe::\1(actor,',c).replace('(actor,)', '(actor)')for c in codes]
+   codes=[re.sub(r'actor->(DespawnOrUnsummon|CastSpell|RemoveAura|ClearUnitState|SetWalk|SetVisible|SetSpeed|RemoveFlag|Kill|SummonCreature|GetMotionMaster|SetReactState|HandleEmoteCommand|setFaction|CreateConversation|SetPower|PlayOneShotAnimKit|SendPlaySpellVisualKit|NearTeleportTo|FindNearestCreature|FindNearestGameObject|SetUInt32Value|SetMaxHealth|SetHealth|SetHomePosition|FindNearestPlayer|RemoveAurasDueToSpell)\(',r'Observe::\1(actor,',c)for c in codes]
+   codes=[re.sub(r'ai->(Talk|DoCast|AttackStart|EnterEvadeMode)\(',r'Observe::\1(actor,',c).replace('(actor,)', '(actor)')for c in codes]
 
+   if e['key']=='EpicusIntro':codes=[c.replace('Observe::Talk(actor,','Observe::Talk(razrubait,')for c in codes]
    codes=[c.replace('GameObject* go = Observe::FindNearestGameObject','auto go = Observe::FindNearestGameObject')for c in codes]
    codes=[re.sub(r'(totem|alleria)->(CastSpell|RemoveFlag|RemoveAurasDueToSpell)\(',r'Observe::\2(\1,',c).replace('sCreatureTextMgr->SendChat(actor,','Observe::SendChat(actor,')for c in codes]
    codes=[re.sub(r'target->SummonCreature\(',r'Observe::SummonCreature(target,',c)for c in codes]
