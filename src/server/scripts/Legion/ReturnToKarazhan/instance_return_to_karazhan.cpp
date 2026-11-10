@@ -241,9 +241,11 @@ public:
                                             Position pos;
                                             pos = decor->GetNearPosition(5.0f, 0.0f);
 
-                                            AddDelayedEvent(2000, [this, decor, pos]() -> void
+                                            AddDelayedEvent(2000, [this, decorGuid = decor->GetGUID(), pos]() -> void
                                             {
-                                                decor->GetMotionMaster()->MovePoint(1, pos);
+                                                if (Creature* decor = instance->GetCreature(decorGuid))
+                                                    if (decor->IsAlive())
+                                                        decor->GetMotionMaster()->MovePoint(1, pos);
                                             });
                                         }
                                     }
