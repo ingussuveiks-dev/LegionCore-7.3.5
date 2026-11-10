@@ -1414,8 +1414,9 @@ public:
         {
             WalkCount = 0;
 
-            me->AddDelayedEvent(10, [this] () -> void
+            me->AddDelayedEvent(10, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 DelayOperation();
             });
 
@@ -1823,6 +1824,9 @@ public:
 
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action)
