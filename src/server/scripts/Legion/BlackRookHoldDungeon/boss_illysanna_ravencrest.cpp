@@ -87,7 +87,7 @@ struct boss_illysanna_ravencrest : public BossAI
     boss_illysanna_ravencrest(Creature* creature) : BossAI(creature, DATA_ILLYSANNA)
     {
         if (me->IsAlive())
-            me->AddDelayedEvent(500, [this]() -> void { Intro(); });
+            me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Intro(); });
     }
 
     std::list<ObjectGuid> trashGuidList;
@@ -250,8 +250,9 @@ struct boss_illysanna_ravencrest : public BossAI
                 {
                     DoActionSummon(NPC_COMMANDER_SHEMDAHSOHN, true);
 
-                    me->AddDelayedEvent(3000, [this]() -> void
+                    me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         for (auto guid : trashGuidList)
                         {
                             if (auto trash = Creature::GetCreature(*me, guid))
@@ -264,8 +265,9 @@ struct boss_illysanna_ravencrest : public BossAI
                             }
                         }
                     });
-                    me->AddDelayedEvent(5000, [this]() -> void
+                    me->AddDelayedEvent(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         for (auto guid : trashGuidList)
                         {
                             if (auto trash = Creature::GetCreature(*me, guid))
@@ -324,8 +326,8 @@ struct boss_illysanna_ravencrest : public BossAI
                     DoCast(SPELL_DARK_RUSH_FILTER);
                     for (auto id : {EVENT_BRUTAL_GLAIVE, EVENT_VENGEFUL_SHEAR, EVENT_PHASE_FLY})
                         events.RescheduleEvent(id, 9000, true);
-                    me->AddDelayedCombat(5500, [this]() -> void { SetCombatMovement(false); });
-                    me->AddDelayedCombat(8500, [this]() -> void { SetCombatMovement(true); });
+                    me->AddDelayedCombat(5500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; SetCombatMovement(false); });
+                    me->AddDelayedCombat(8500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; SetCombatMovement(true); });
                     events.RescheduleEvent(EVENT_DARK_RUSH_1, 30000);
                     events.RescheduleEvent(EVENT_DARK_RUSH_2, 6000);
                     break;
@@ -369,6 +371,9 @@ struct boss_illysanna_ravencrest : public BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //100436
