@@ -385,9 +385,9 @@ public:
 
         void IsSummonedBy(Unit* summoner) override
         {
-            me->AddDelayedEvent(1500, [this] {
-                if (Creature* nezhar = me->FindNearestCreature(NPC_NEZHAR, 100.0f, true))
-                    DoCast(nezhar, SPELL_DARK_PROTECT);
+            me->AddDelayedEvent(1500, [actor = me] {
+                if (Creature* nezhar = actor->FindNearestCreature(NPC_NEZHAR, 100.0f, true))
+                    { if (auto ai = actor->AI()) ai->DoCast(nezhar, SPELL_DARK_PROTECT); }
             });
         }
 
