@@ -1557,7 +1557,7 @@ public:
 
             // The squad uses friendly faction in the sniff, so record the
             // achievement failure without applying hostile spell damage.
-            creature->SetHealth(uint32(creature->GetMaxHealth() * 0.9f));
+            creature->SetHealth(uint64(creature->GetMaxHealth() * 0.9f));
             if (InstanceScript* instance = creature->GetInstanceScript())
                 instance->DoUpdateWorldState(static_cast<WorldStates>(WORLDSTATE_FEW_PROUD_GOB_SQUAD), 0);
         }
