@@ -139,9 +139,9 @@ public:
                 instance->SetData(DATA_INGVAR_EVENT, NOT_STARTED);
         }
 
-        void DamageTaken(Unit* /*done_by*/, uint32 &damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth() && !bIsUndead)
+            if (damage >= me->GetHealth(attacker) && !bIsUndead)
             {
                 //DoCast(me, SPELL_INGVAR_FEIGN_DEATH, true);  // Dont work ???
                 // visuel hack
