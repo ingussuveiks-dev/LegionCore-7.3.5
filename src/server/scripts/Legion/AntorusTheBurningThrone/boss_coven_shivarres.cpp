@@ -495,8 +495,9 @@ struct boss_coven_shivarres_generic : ScriptedAI
 
         if (me->GetEntry() == NPC_THURAYA)
         {
-            me->AddDelayedCombat(2000, [this] () -> void
+            me->AddDelayedCombat(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->SetDisableGravity(true);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                 me->RemoveAurasAllDots();
@@ -554,10 +555,11 @@ struct boss_coven_shivarres_generic : ScriptedAI
                 events.Reset();
                 me->StopAttack(true, true);
 
-                me->AddDelayedCombat(100, [this] () -> void { me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE); });
+                me->AddDelayedCombat(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE); });
 
-                me->AddDelayedCombat(2000, [this] () -> void
+                me->AddDelayedCombat(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->SetAnimTier(AnimTier::Fly);
                     me->SetDisableGravity(true);
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
@@ -565,8 +567,9 @@ struct boss_coven_shivarres_generic : ScriptedAI
                 });
             }
 
-            me->AddDelayedCombat(3000, [this, actionId] () -> void
+            me->AddDelayedCombat(3000, [this, actionId, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->GetMotionMaster()->MoveJump(tormentPos[actionId], 25.0f, 15.0f, actionId, tormentPos[actionId].GetOrientation());
             });
         }
@@ -623,8 +626,9 @@ struct boss_coven_shivarres_generic : ScriptedAI
                 me->CastSpell(pos, SPELL_SHADOW_BLADES_SUMMON, true, nullptr, nullptr, owner->GetGUID());
                 angle += 0.15f;
             }
-            me->AddDelayedCombat(1000, [this] () -> void
+            me->AddDelayedCombat(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 castPause = false;
                 me->SetReactState(REACT_AGGRESSIVE);
             }); 
@@ -695,8 +699,9 @@ struct boss_coven_shivarres_generic : ScriptedAI
                         if (auto summoner = me->GetAnyOwner())
                             summoner->GetAI()->DoAction(ACTION_ENCOUNTERS_SWITCH_BOSS);
 
-                        me->AddDelayedCombat(2000, [this] () -> void
+                        me->AddDelayedCombat(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             me->GetMotionMaster()->MoveJump(-12634.5f, -2819.86f, 2475.45f, 25.0f, 15.0f, ACTION_TORMENT_END);
                         });
                     }
@@ -786,6 +791,9 @@ struct boss_coven_shivarres_generic : ScriptedAI
         else
             DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //125837, 123503, 124164, 124166
