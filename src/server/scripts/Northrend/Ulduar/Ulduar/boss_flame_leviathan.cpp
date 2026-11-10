@@ -1103,7 +1103,7 @@ public:
             pause = false;
         }
         
-        uint32 pauseTimer;
+        uint32 pauseTimer = 60000;
         uint32 freezeTimer;
         uint32 chaseTimer;
         bool pause;

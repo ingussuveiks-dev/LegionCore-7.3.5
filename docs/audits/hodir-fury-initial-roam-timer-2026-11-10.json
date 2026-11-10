@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "HodirTimer",
+  "base": "f4a93175707728bfe6303cc9eaf2d15df26e607e",
+  "support_commit": "0e974e95365ac23a32e02dabba8aae819b5487c7",
+  "paths": [
+    "src/server/scripts/Northrend/Ulduar/Ulduar/boss_flame_leviathan.cpp"
+  ],
+  "cause": "Initialize Hodir fury roaming timer after its initial random movement;pinned source counterfactual reproduces the selected defect.",
+  "implementation": "Initialize Hodir fury roaming timer after its initial random movement;review exact bounded edits in linked focused commit.",
+  "validation": {
+    "source": "20 MSVC ASAN selected source cases:10 pinned expected-broken controls and10 fixed. Full Inferno/Hodir timer bodies;Ymiron selected Reset state;three real callback bodies with retired/missing actor instrumentation;Odyn/four Assault/three nested BrokenIntro live/wrong-instance/world-departure paths;Vetir actual selected PassengerBoarded/UpdateAI/extraction with observed escort and control endpoints. Counterfactual uninitialized timer/bool reads replaced with diagnostic sentinel;no native UAF/UB executed.",
+    "native": "Actual native actors/ObjectAccessor/Map resolution,dead target skipping,assistant movement,Unit FunctionProcessor queues;actual native Player world-departure rejection and control restoration;selected Inferno/Hodir bodies with captured summon endpoint and selected Ymiron state. Original escort Start/Update endpoints observed,not full route. Positive live prisoner combat/Brute transformation/conversation/quest/transfer/full client traversal not executed;no character writes/full-core ASAN.",
+    "release": "Original main game/scripts libraries and staged/canonical PE verifies10 changed paths plus187 prior selected paths. Actual active timer gates/inlined constructor/reset;GUID lookup and alive guards;original-instance comparisons in all selected callbacks;Vetir dismount branch and actual seat check. Canonical Scepter/ArtifactTier/ScenarioResumeASAN and owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crashes/log lengths,timestamps,exit/stdout/stderr/appended warnings/errors/assertions/DBErrors. Fixture compile/extraction/PE preparation failures retained;final regressions clean. Compiler warnings reviewed. Mixed7111byte DBErrors and previous OPEN evidence preserved.",
+    "scope": "10 independent controllers/defects in9files. Three BrokenIntro callbacks count once;four Assault callbacks count once;Vetir boarding/removal/mover/extraction one ride lifecycle repair;Inferno active timer guards one repair. Existing actor,quest,conversation,timer/faction/pet/group credit unchanged;no SQL or guessed Lady HP/kill timer."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Antorus eventobject_antorus_into singleton eventDone/per-instance asynchronous ownership remains OPEN. Master roster/reset/report lifetime repaired here at stated selected scopes;actual arena/client traversal pending.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Existing Argent Champion surrender uses raw damage,strict greater-than and unsafe owner ToPlayer;separately OPEN,not repaired or client-certified by defensive timer work.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending."
+  ],
+  "canonical_world_sha256": "090ccc4111215b80235f83ab110675d774cad478a54b9a1936f9d1d8db7f8422",
+  "patch_sha256": "f4dc607ea8e7d2c59d25d2e2c1367272e18bbd9b2b23d238e3e3e98d64452f7d",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/nineteenth-ten-repairs-2026-11-10.json"
+}
