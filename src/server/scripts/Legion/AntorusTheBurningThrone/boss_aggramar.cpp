@@ -546,9 +546,9 @@ struct npc_aggramar_ember_of_taeshalach : ScriptedAI
         }
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
     {
-        if (IsHeroicPlusRaid() && damage >= me->GetHealth())
+        if (IsHeroicPlusRaid() && damage >= me->GetHealth(attacker))
         {
             damage = 0;
 
