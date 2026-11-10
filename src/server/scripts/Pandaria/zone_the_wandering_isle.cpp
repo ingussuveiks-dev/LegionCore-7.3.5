@@ -4465,9 +4465,12 @@ public:
             sCreatureTextMgr->SendChat(me, TEXT_GENERIC_1);
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (!damage)
+                return;
+
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
             else
                 damage = 1;
