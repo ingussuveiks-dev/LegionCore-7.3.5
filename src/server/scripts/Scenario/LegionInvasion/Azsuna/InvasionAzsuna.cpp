@@ -152,11 +152,11 @@ public:
         void IsSummonedBy(Unit* summoner) override
         {
             SetFlyMode(true);
-            me->AddDelayedEvent(3000, [this] () -> void
+            me->AddDelayedEvent(3000, [actor = me] () -> void
             {
-                me->SetReactState(REACT_PASSIVE);
-                me->GetMotionMaster()->MovePoint(1, 1436.24f +irand(-2, 2), 6172.45f + irand(-2, 2), 1.71f);
-                me->CastSpell(me, 237720);
+                actor->SetReactState(REACT_PASSIVE);
+                actor->GetMotionMaster()->MovePoint(1, 1436.24f +irand(-2, 2), 6172.45f + irand(-2, 2), 1.71f);
+                actor->CastSpell(actor, 237720);
             });
         }
         
