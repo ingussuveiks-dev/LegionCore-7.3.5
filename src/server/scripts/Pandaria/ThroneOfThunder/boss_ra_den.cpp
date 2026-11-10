@@ -494,9 +494,9 @@ class npc_crackling_stalker : public CreatureScript
                 events.RescheduleEvent(EVENT_CRACKLE, 10000);
             }
 
-            void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+            void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
             {
-                if (damage >= me->GetHealth() && !done)
+                if (damage >= me->GetHealth(attacker) && !done)
                 {
                     done = true;
                     DoCast(me, SPELL_CAUTERIZING_FLARE);
