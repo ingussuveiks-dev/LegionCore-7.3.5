@@ -1,0 +1,276 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "b0f910cb28cd7794b5aec265fc33af69bce4e3c9",
+  "batch_number": 3,
+  "authorized_total": 50,
+  "support_commit": "015cf664f476fc3aa8fc6121aa5ed776b3e3df31",
+  "implementation_head": "d884e2c68d1436378f4bb3b5aca0f4ed79526dfb",
+  "fixes": [
+    {
+      "key": "ToppsRay",
+      "title": "Project Topps charge through the actual target direction without division by zero",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_six.cpp"
+      ],
+      "audit": "docs/audits/topps-charge-direction-2026-11-10.json",
+      "commit": "0c9bc4c0c42ef4e4cff2f31146585bde3dd34b4b"
+    },
+    {
+      "key": "FocusAction",
+      "title": "Activate Empyreal Focus only for the authored action",
+      "paths": [
+        "src/server/scripts/Pandaria/MogushanVault/boss_elegon.cpp"
+      ],
+      "audit": "docs/audits/elegon-focus-action-admission-2026-11-10.json",
+      "commit": "b4805a33e5c3c34aa8454afc55b50a11fee3420e"
+    },
+    {
+      "key": "LeiShiAction",
+      "title": "End Lei Shi hide only on its termination action",
+      "paths": [
+        "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_lei_shi.cpp"
+      ],
+      "audit": "docs/audits/lei-shi-hide-action-admission-2026-11-10.json",
+      "commit": "de50bd25d70cfc762f59e24082633424b4cc089b"
+    },
+    {
+      "key": "LoryHealth",
+      "title": "Preserve full-width wounded jungle lory health",
+      "paths": [
+        "src/server/scripts/Scenario/UngaIngoo/instance_unga_ingoo.cpp"
+      ],
+      "audit": "docs/audits/unga-lory-health-width-2026-11-10.json",
+      "commit": "740846d7b83c3f2c51fc6d24db84597d03c29a3f"
+    },
+    {
+      "key": "MeljarakHeal",
+      "title": "Keep Meljarak soldier healing full width through the shared helper",
+      "paths": [
+        "src/server/scripts/Pandaria/HeartFear/boss_lord_meljarak.cpp"
+      ],
+      "audit": "docs/audits/meljarak-shared-heal-width-2026-11-10.json",
+      "commit": "41a9b33cd352e65dc69b2436387ce4a5bd04fbe5"
+    },
+    {
+      "key": "GarroshAbsorb",
+      "title": "Preserve Touch of Yshaarj absorb and resulting health widths",
+      "paths": [
+        "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp"
+      ],
+      "audit": "docs/audits/garrosh-touch-absorb-health-width-2026-11-10.json",
+      "commit": "b7d718bec4e8907f7b5d719e5a5f0e2c10d06949"
+    },
+    {
+      "key": "NightmotherLanding",
+      "title": "Always arm Nightmother landing recovery when takeoff starts",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_elerethe_renferal.cpp"
+      ],
+      "audit": "docs/audits/nightmother-takeoff-landing-recovery-2026-11-10.json",
+      "commit": "d7b387a5ae947813ac005171215b6acbef561de9"
+    },
+    {
+      "key": "GlowcapStack",
+      "title": "Handle exactly one hundred Glowcap stacks in the existing drain bracket",
+      "paths": [
+        "src/server/scripts/Legion/MicroHolidays/GlowcapFestival.cpp"
+      ],
+      "audit": "docs/audits/glowcap-hundred-stack-drain-2026-11-10.json",
+      "commit": "03662b8be1e031a4291cd53f08b4bc4cd8c2d23d"
+    },
+    {
+      "key": "FreyaHealth",
+      "title": "Preserve Freya elder health bonus at native health width",
+      "paths": [
+        "src/server/scripts/Northrend/Ulduar/Ulduar/boss_freya.cpp"
+      ],
+      "audit": "docs/audits/freya-elder-health-width-2026-11-10.json",
+      "commit": "51fa649c847cb5f1eb1d5f638911896fd2915640"
+    },
+    {
+      "key": "MasterRoster",
+      "title": "Reset and track Master illusion deaths exactly once per attempt",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp"
+      ],
+      "audit": "docs/audits/brawlers-master-illusion-lifecycle-2026-11-10.json",
+      "commit": "d884e2c68d1436378f4bb3b5aca0f4ed79526dfb"
+    }
+  ],
+  "counting": "10 independent defects in10 files;Master reset/roster/exactly-once pending report is one controller lifecycle repair;Touch absorb application and remaining health width count once. Focus action admission is separate from prior reset initialization;Nightmother failed-target takeoff is separate from prior uninitialized landing timer. Authored numeric thresholds/timings/credit/faction retained;no SQL or Lady timing guesses.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "df31fc6636ea02d15d3cb58a268eebc45bbb4356186584b7162a1ae3b5e9f0ac",
+    "bnet_sha256": "f543e423130d755b852dd7b4446962a6f91e319b9a08f7f7ec4b3aa130c77a36",
+    "rollback": ".codex/release-before-eighteenth-ten-fixes-2026-11-10",
+    "startup": "Owned PID=13380 reached fresh ready\nPASS owned PID=13380 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "validation": {
+    "source": "20 MSVC ASAN cases:10 pinned expected-broken controls and10 fixed selected production snippets. Axis/coincident/nonaxis Topps;wrong/matching actions;64bit wounded/quarter/elder health and Touch absorb;failed/successful-target takeoff;100-stack and neighboring brackets;Master repeated/stale death/reset roster model anchored to production guards. Old signed32 absorb conversion instrumented before UB. Action payloads and Master lifecycle are selected models,not complete original AI dispatch.",
+    "native": "Native actual Position geometry,Unit health64 and failed-target takeoff for selected snippets;action/stack/amount endpoints and Master roster remain observed/model boundaries. Full shared-soldier helper graph,real AuraEffect application/removal,real death/brawler report and complete encounter/client traversal not executed;no character writes/full-core ASAN.",
+    "release": "Original game/scripts libraries;staged+canonical PE verifies10 changed paths plus177 prior selected paths. Source scope reverses exact edits to b0f910cb2. Canonical Scepter/ArtifactTier/ScenarioResumeASAN and owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crashes/logs/exit/stdout/stderr/appended diagnostics for declared tests;compiler warnings reviewed. Initial PE inspection used wrong helper class prefix;corrected to actual npc_soldierAI. Final checks clean;mixed7111 DBErrors and all other OPEN evidence unchanged.",
+    "scope": "10 independent defects in10 files;Master reset/roster/exactly-once pending report is one controller lifecycle repair;Touch absorb application and remaining health width count once. Focus action admission is separate from prior reset initialization;Nightmother failed-target takeoff is separate from prior uninitialized landing timer. Authored numeric thresholds/timings/credit/faction retained;no SQL or Lady timing guesses."
+  },
+  "diagnostics": {
+    "final": "Final declared regressions,linked binary checks,retained checks and owned startup passed with canonical+own crash/log/exit/stdout/stderr/appended-diagnostic review.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 0,
+      "types": {},
+      "review": "Main incremental build warnings checked against f55f0ea70. Ten retained-fixture warnings are byte-equivalent messages/file/line to the previous passing batch;their production and fixture sources unchanged. Diagnostics retained without suppression;not claimed repaired.",
+      "entries": [],
+      "retained_fixture_warnings": [
+        {
+          "log": "artifact-tier.log",
+          "file": "ArtifactTierProgressionTest.cpp",
+          "line": 65,
+          "code": "C4458",
+          "message": "declaration of 'item' hides class member",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "artifact-tier.log",
+          "file": "AutoTier.inc",
+          "line": 33,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint8', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 26,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 27,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 28,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 29,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'int' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "AddScenario.inc",
+          "line": 7,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        }
+      ]
+    },
+    "development": [
+      "Local SpellEffectInfo BasePoints and AuraEffect amounts are float;DarkHeart apparent integer division rejected unchanged. Four health paths traced to native SetHealth64;Meljarak helper parameter widened with caller.",
+      "Master Reset cancels actor-owned pending work and despawns old roster/area triggers before rebuilding. Native source roster test is explicitly a model anchored to exact production guards;real arena/pet/group/failed-spawn traversal not claimed.",
+      "Initial PE helper name typo corrected;old absorb signed conversion instrumented before undefined conversion,not executed as UB."
+    ],
+    "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse-scope nine files and no production diff.",
+    "supplemental_archives": [
+      {
+        "manifest": "build-extractors/bin/Release/fixed/eighteenth-ten-repairs-2026-11-10/supplemental-manifest.json",
+        "sha256": "0028150b177d0234aa1f6c9416e3763bfb06a9fea90f066903503523fecc5998",
+        "files": 19
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/eighteenth-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "4e5d04b88f5f30af73085980e7f945eb74f3d27aca98a516b3da1a7c902db48f",
+    "original_files": 506,
+    "removed_files": 106,
+    "logical_removed_bytes": 811208204,
+    "deletion_manifest": ".codex/eighteenth-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "7ff40b2dd7fc2b5e34611c7161a1d238fd04e921454f66ff385a34f3ea4f810a",
+    "retained_rollbacks": [
+      ".codex/release-before-eighteenth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-seventeenth-ten-fixes-2026-11-10",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fourteenth989e699d retired after newest pre-eighteenth rollback hash verification rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Antorus eventobject_antorus_into singleton eventDone/per-instance asynchronous ownership remains OPEN. Master roster/reset/report lifetime repaired here at stated selected scopes;actual arena/client traversal pending.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Existing Argent Champion surrender uses raw damage,strict greater-than and unsafe owner ToPlayer;separately OPEN,not repaired or client-certified by defensive timer work.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending."
+  ],
+  "continuation": "Completed 3 of five authorized ten-fix batches;continue remaining batches until50 total. This audit certifies only stated automated/native scopes,not client/whole-chain traversal."
+}
