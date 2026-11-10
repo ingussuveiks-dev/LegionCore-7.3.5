@@ -322,28 +322,28 @@ struct npc_master_cheng_q31840 : public ScriptedAI
         }
     }
 
-    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*type*/) override
     {
-        if (damage >= me->GetHealth())
+        if (challengeDone)
         {
             damage = 0;
-            if (!challengeDone)
-            {
-                challengeDone = true;
-                me->StopAttack();
-                if (auto unit = me->GetAnyOwner())
-                {
-                    if (auto plr = unit->ToPlayer())
-                    {
-                        Talk(4);
-                        me->setFaction(35);
-                        me->HandleEmoteCommand(2);
-                        plr->KilledMonsterCredit(me->GetEntry());
-                        me->DespawnOrUnsummon(6000);
-                    }
-                }
-            }
+            return;
         }
+        if (damage < me->GetHealth(attacker))
+            return;
+        damage = 0;
+        Unit* summoner = me->GetAnyOwner();
+        Player* player = summoner ? summoner->GetAffectingPlayer() : nullptr;
+        Player* winner = attacker ? attacker->GetAffectingPlayer() : nullptr;
+        if (!player || !player->IsAlive() || winner != player)
+            return;
+        challengeDone = true;
+        me->StopAttack();
+        Talk(4);
+        me->setFaction(35);
+        me->HandleEmoteCommand(2);
+        player->KilledMonsterCredit(me->GetEntry());
+        me->DespawnOrUnsummon(6000);
     }
 
     void OnEnterCombat(Player* player, Unit* /*target*/)
