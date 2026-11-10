@@ -321,6 +321,8 @@ public:
 
         void Reset() override
         {
+            uiResurectTimer = 0;
+            uiResurectPhase = 0;
             //! HACK: Creature's can't have MOVEMENTFLAG_FLYING
             me->AddUnitMovementFlag(MOVEMENTFLAG_FLYING | MOVEMENTFLAG_HOVER);
             me->SetSpeed(MOVE_SWIM, 1.0f);
