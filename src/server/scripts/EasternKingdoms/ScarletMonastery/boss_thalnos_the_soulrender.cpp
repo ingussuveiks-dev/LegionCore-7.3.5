@@ -282,9 +282,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* /*who*/, uint32& damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType)
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
 
