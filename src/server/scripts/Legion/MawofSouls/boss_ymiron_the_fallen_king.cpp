@@ -556,7 +556,7 @@ struct npc_ymiron_seacursed_slaver : public ScriptedAI
                     me->SetFacingTo(prisoner);
                     DoCast(prisoner, SPELL_BREAK_CHAINS, true);
 
-                    AddDelayedEvent(2000, [this, prisoner] () -> void
+                    AddDelayedEvent(2000, [this, prisonerGuid = prisoner->GetGUID()] () -> void
                     {
                         if (me && me->IsAlive())
                         {
@@ -564,7 +564,8 @@ struct npc_ymiron_seacursed_slaver : public ScriptedAI
                             me->AI()->DoZoneInCombat(me, 30.0f);
                         }
 
-                        if (prisoner && prisoner->IsAlive() && !prisoner->isInCombat())
+                        if (Creature* prisoner = ObjectAccessor::GetCreature(*me, prisonerGuid))
+                        if (prisoner->IsAlive() && !prisoner->isInCombat())
                         {
                             if (auto go = prisoner->FindNearestGameObject(245064, 20.0f))
                                 go->SetGoState(GO_STATE_ACTIVE);
