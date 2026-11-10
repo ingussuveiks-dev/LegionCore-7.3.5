@@ -131,19 +131,24 @@ struct npc_atbt_battleship : public ScriptedAI
         me->SetCanFly(true);
         me->GetMotionMaster()->MovePoint(0, -3312.39f, 9992.18f, -87.09f); 
 
-        me->AddDelayedEvent(urand(2000, 3000), [this]() -> void
+        me->AddDelayedEvent(urand(2000, 3000), [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             uint8 i = 0;
             for (float y = 10099.79f; y >= 9980.05f; y -= frand(2, 7))
             {
-                me->AddDelayedEvent(100 * ++i, [this, y]() -> void
+                me->AddDelayedEvent(100 * ++i, [this, y, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     float x = frand(-3305.59f, -3286.11f);
                     me->CastSpell(x, y, -115.73f, 249933, true);
                 });
             }
         });
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 // 128289
