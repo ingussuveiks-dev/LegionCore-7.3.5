@@ -86,8 +86,9 @@ struct npc_tos_kadghar_1 : ScriptedAI
                 add->GetMotionMaster()->MovePoint(0, 6087.42f, -796.14f, 2971.72f);
 
 
-        me->AddDelayedEvent(8500, [this]() -> void
+        me->AddDelayedEvent(8500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->GetMotionMaster()->Clear();
             me->GetMotionMaster()->MovePoint(0, introPositions[0].GetPositionX() + 217.0f, introPositions[0].GetPositionY(), introPositions[0].GetPositionZ());
             for (uint8 i = 0; i < 4; ++i)
@@ -98,8 +99,9 @@ struct npc_tos_kadghar_1 : ScriptedAI
                 }
         });
 
-        me->AddDelayedEvent(25000, [this]() -> void
+        me->AddDelayedEvent(25000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (Creature* egvin = me->SummonCreature(NPC_EGVIN, 6213.44f, -795.67f, 2975.00, 3.18f))
             {
                 egvin->CastSpell(egvin, 241351);
@@ -123,7 +125,7 @@ struct npc_tos_kadghar_1 : ScriptedAI
             IntroDone = true;
             me->CastStop();
             me->CastSpell(introPositions[0], SPELL_INTRO_TELEPORT, false);
-            me->AddDelayedEvent(1000, [this] {me->SetFacingTo(6.25f); });
+            me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] { if (aiLifetimeGuard.expired()) return;me->SetFacingTo(6.25f); });
 
             for (uint8 i = 0; i < 4; ++i)
                 if (auto add = me->GetMap()->GetCreature(instance->GetGuidData(introEntries[i])))
@@ -163,12 +165,13 @@ struct npc_tos_kadghar_1 : ScriptedAI
                 go->SetByteValue(GAMEOBJECT_FIELD_BYTES_1, 0, 1);
 
 
-            me->AddDelayedEvent(2000, [this] () -> void
+            me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 Talk(1);
                 me->CastStop();
                 me->CastSpell(introPositions[0], SPELL_INTRO_TELEPORT, false);
-                me->AddDelayedEvent(1000, [this] {me->SetFacingTo(6.25f); });
+                me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] { if (aiLifetimeGuard.expired()) return;me->SetFacingTo(6.25f); });
 
                 for (uint8 i =0; i < 4; ++i)
                     if (auto add = me->GetMap()->GetCreature(instance->GetGuidData(introEntries[i])))
@@ -205,8 +208,9 @@ struct npc_tos_kadghar_1 : ScriptedAI
 
             
 
-            me->AddDelayedEvent(7000, [this]() -> void
+            me->AddDelayedEvent(7000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (auto boss = me->GetMap()->GetCreature(instance->GetGuidData(DATA_GOROTH)))
                 {
                     boss->SetVisible(true);
@@ -220,7 +224,8 @@ struct npc_tos_kadghar_1 : ScriptedAI
                     });
                 }
 
-                me->AddDelayedEvent(1000, [this]() -> void {
+                me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void {
+                    if (aiLifetimeGuard.expired()) return;
                     if (auto summoner = me->GetMap()->GetCreature(instance->GetGuidData(NPC_BREACH_IN_WINDOW)))
                         summoner->AI()->DoAction(1);
                 });
@@ -250,6 +255,9 @@ struct npc_tos_kadghar_1 : ScriptedAI
             egvin->CastSpell(egvin, 240060);
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 // 269783
