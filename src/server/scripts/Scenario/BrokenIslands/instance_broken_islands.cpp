@@ -175,21 +175,21 @@ public:
             if (!firstEnter)
             {
                 firstEnter = true;
-                player->AddDelayedEvent(5000, [player]() -> void
+                player->AddDelayedEvent(5000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void
                 {
-                    if (player->GetMapId() != 1460)
+                    if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
                         return;
 
                     player->CreateConversation(player->GetTeam() == ALLIANCE ? 923 : 3598);
-                    player->AddDelayedEvent(15000, [player]() -> void
+                    player->AddDelayedEvent(15000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void
                     {
-                        if (player->GetMapId() != 1460)
+                        if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
                             return;
 
                         player->CreateConversation(player->GetTeam() == ALLIANCE ? 924 : 3599);
-                        player->AddDelayedEvent(13100, [player]() -> void
+                        player->AddDelayedEvent(13100, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void
                         {
-                            if (player->GetMapId() != 1460)
+                            if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
                                 return;
 
                             player->CreateConversation(player->GetTeam() == ALLIANCE ? 925 : 3600);
