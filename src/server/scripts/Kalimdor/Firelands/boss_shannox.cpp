@@ -955,6 +955,7 @@ class npc_shannox_crystal_prison : public CreatureScript
             }
 
             ObjectGuid trappedUnit;
+            bool released = false;
             uint32 existenceCheckTimer;
             bool bDog;
             uint32 dogTimer;
@@ -966,6 +967,8 @@ class npc_shannox_crystal_prison : public CreatureScript
 
             void SetGUID(ObjectGuid const& guid, int32 type)
             {
+                if (released)
+                    return;
                 trappedUnit = guid;
                 existenceCheckTimer = 1000;
 
@@ -978,12 +981,16 @@ class npc_shannox_crystal_prison : public CreatureScript
 
             void JustDied(Unit* /*killer*/)
             {
+                if (released)
+                    return;
+                released = true;
                 if (!bDog)
                     DoCast(me, SPELL_CREATE_EMBERSTONE_FRAGMENT, true);
                 bDog = false;
-                if (Unit* unit = ObjectAccessor::GetUnit(*me, trappedUnit))
+                Unit* unit = ObjectAccessor::GetUnit(*me, trappedUnit);
+                trappedUnit.Clear();
+                if (unit)
                 {
-                    trappedUnit.Clear();
                     unit->RemoveAurasDueToSpell(SPELL_CRYSTAL_PRISON_TRAP);
                 }
                 me->DespawnOrUnsummon(800);
@@ -1002,6 +1009,7 @@ class npc_shannox_crystal_prison : public CreatureScript
                         JustDied(me);
                         return;
                     }
+                    existenceCheckTimer = 1000;
                 }
                 else
                     existenceCheckTimer -= diff;
