@@ -1487,12 +1487,12 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
             if (me->GetEntry() != NPC_AZURE_FOG)
                 return;
 
-            if (damage >= me->GetHealth() && !explose)
+            if (damage >= me->GetHealth(attacker) && !explose)
             {
                 explose = true;
                 DoCast(me, SPELL_FLASH_FREEZE, true);
