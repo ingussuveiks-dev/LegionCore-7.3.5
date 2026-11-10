@@ -1,0 +1,285 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "2a416922b1f4139c6e910a6e4099e056ba91b907",
+  "support_commit": "7333f46c3ab51a29f87b429f9395cdfae7defcb2",
+  "implementation_head": "c6b1ec59426e939307bc60563e18397aa1becc67",
+  "fixes": [
+    {
+      "key": "ValEntry",
+      "title": "Cancel stale Valsharah invasion entry attempts",
+      "paths": [
+        "src/server/scripts/Scenario/LegionInvasion/Valshara/instance_InvasionValshara.cpp"
+      ],
+      "audit": "docs/audits/valsharah-invasion-entry-attempt-2026-11-10.json",
+      "commit": "037781bfb37e247d00dc5f9f729bc5681be075c2"
+    },
+    {
+      "key": "MawEntry",
+      "title": "Scope Maw of Souls entrance recovery to its current entry",
+      "paths": [
+        "src/server/scripts/Legion/MawofSouls/instance_maw_of_souls.cpp"
+      ],
+      "audit": "docs/audits/maw-entrance-recovery-attempt-2026-11-10.json",
+      "commit": "552036886a3dcab08ce3f71b4f6ef0e9d63d45cd"
+    },
+    {
+      "key": "StyleEffects",
+      "title": "Keep delayed Trial of Style effects on the stage actor lifetime",
+      "paths": [
+        "src/server/scripts/Legion/MicroHolidays/TrialofStyle.cpp"
+      ],
+      "audit": "docs/audits/trial-style-delayed-stage-effects-2026-11-10.json",
+      "commit": "dce10f3a01c76aa7f09dfddff34e2cf96703091c"
+    },
+    {
+      "key": "Inquisition",
+      "title": "Resolve the attacker and source before the delayed paired boss pull",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_DemonicInquisition.cpp"
+      ],
+      "audit": "docs/audits/inquisition-delayed-partner-pull-2026-11-10.json",
+      "commit": "4f2bfe15064950452effd4bf28b5801ffc82c7f1"
+    },
+    {
+      "key": "Nightbane",
+      "title": "Resolve both cinematic actors and retain Nightbane summon retry",
+      "paths": [
+        "src/server/scripts/Legion/ReturnToKarazhan/boss_nightbane.cpp"
+      ],
+      "audit": "docs/audits/nightbane-cinematic-actor-lifecycle-2026-11-10.json",
+      "commit": "4353caf28a4bd9a1d85d7405061086e9521b834b"
+    },
+    {
+      "key": "AvatarIntro",
+      "title": "Resolve Fallen Avatar across Kiljaeden intro delays",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp"
+      ],
+      "audit": "docs/audits/fallen-avatar-intro-actor-lifecycle-2026-11-10.json",
+      "commit": "1152e87cf3d7847a6f7a910b6dbe5f3218db6285"
+    },
+    {
+      "key": "Khadgar",
+      "title": "Keep Guldan phase three figure callback on its boss lifetime",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+      ],
+      "audit": "docs/audits/guldan-khadgar-figure-owner-2026-11-10.json",
+      "commit": "28e4cf91d3ec83a8a36fed0ec0617406f205691f"
+    },
+    {
+      "key": "OsoIntro",
+      "title": "Scope Oso intro attempts and helper cleanup to the boss",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_one.cpp"
+      ],
+      "audit": "docs/audits/oso-intro-reset-lifecycle-2026-11-10.json",
+      "commit": "03efe8265657f7c088371e5cf820f794e8a998b2"
+    },
+    {
+      "key": "RaydVisual",
+      "title": "Capture the current Ray D Tear morph spell in delayed cleanup",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_seven.cpp"
+      ],
+      "audit": "docs/audits/rayd-immutable-morph-cleanup-2026-11-10.json",
+      "commit": "9965ad520804039045bc88faa0bb94ca4bf030e0"
+    },
+    {
+      "key": "RaydRotation",
+      "title": "Bound Ray D Tear repeated rotation to its paired spell catalogs",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_seven.cpp"
+      ],
+      "audit": "docs/audits/rayd-bounded-spell-rotation-2026-11-10.json",
+      "commit": "c6b1ec59426e939307bc60563e18397aa1becc67"
+    }
+  ],
+  "counting": "Exactly ten repairs in nine production files. Twenty Style callsites count once;Ray visual capture and independent rotation bounds count separately. Nightbane admission/lifetime and Oso reset/readiness each count as one sequence repair. Support/archive/handoff are not product fixes.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "ae633a28cb944d4675cd1e481fb3b0eb2344ad068e75c15c0c68b932ad9c5397",
+    "bnet_sha256": "fbb7d2fc0aa53b1f23376482e429e75b32ea51ba23ccfca471fe005ed5f181c6",
+    "rollback": ".codex/release-before-fifteenth-ten-fixes-2026-11-10",
+    "startup": "Owned PID=5540 reached fresh ready\nPASS owned PID=5540 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+    "interim": "Earlier owned7680 ready/shutdown0/exit0/gone;initial test records preserved under interim-canonical before final promotion. No user server stopped."
+  },
+  "validation": {
+    "source": "Twenty MSVC ASAN cases:ten pinned2a416922b counterfactuals paired with ten repaired cases. Selected actual production entry/Reset/cinematic/LOS/rotation methods or callback bodies execute against controlled Unit/queue/cast/achievement/movement endpoints. Retired storage remains allocated/instrumented;Ray counterfactual stops before its11th out-of-bounds read. Covers origin-instance/leave/reentry/quest change,Maw late position/boss recheck,Style departure/Reset and20 declared callsites,Inquisition null/missing/pet-like attacker/evaded source/already-engaged partner,Nightbane failed-spawn retry/duplicate admission/missing image cleanup,Avatar missing boss/independent cleanup/27+3+10second endpoints,Khadgar failed figure/all four colors/five distinct actors/dead boss,Oso reset/missing or failed helper/dead boss,immutable morph and32 rotation steps. Controlled endpoints are not actual client traversal/full concrete core AI.",
+    "native": "Nine selected native cases on real Unit FunctionProcessor/ObjectAccessor and transient Player/Creature:Valsharah/Maw weak attempt/origin/leave/reentry/destruction,Style actor-owned Player lookup/generation,Inquisition source+Player/nonplayer attacker guards,Khadgar boss-owned helper lookup,Nightbane75+1second lookup,Avatar27+3+10seconds with independent Kiljaeden13second cleanup,Oso generation and immutable Ray morph. Actual map removal tested. Matching26972 spell catalog includes cinematic/raid/stage spells and both complete Ray catalogs. Payloads are observed endpoints,not actual casts,combat entry,conversations,credits or movement. Ray full rotation and complete gossip/scene admission remain source-only. No character saves/full-core ASAN/client claim.",
+    "release": "Original main game/scripts libraries and actual final-link inputs used. Final staged/canonical PE verifies ten repairs plus147 prior selected paths,including actual Ray modulo10/paired order timing,Oso old function/summon cleanup and6second readiness,three Nightbane GUID closures/successful-summon one-shot gate,Avatar independent cleanup,all Khadgar colors and Style new helper. Prior greeting verifier is scoped to original DoAction1+UpdateAI8 callbacks,retaining all nine while the new helper has its own check. Final canonical Scepter/ArtifactTier/ScenarioResumeASAN and task-owned fresh ready/graceful shutdown0/exit0/gone pass. Initial deployment/start was superseded after full Oso Reset review;original pre-task rollback retained.",
+    "diagnostics": "Automated/source/native/build/link/PE/retained/start runs use canonical+own crash/log pre/post snapshots,exit/stdout/stderr and appended DBErrors/server warnings/errors/assertions review. Final runs clean;early extraction/fake endpoint/PE assumption failures retained as development evidence,not passing ordinary runs. Initial native bootstrap preparation failed before any engine process and later gained an outer diagnostic wrapper as well. Compiler warnings retained/reviewed against baseline;none suppressed. Mixed7111-byte DBErrors remains OPEN/untruncated.",
+    "scope": "Exactly ten repairs in nine production files. Twenty identical Style stage-cue callsites count once. Nightbane cinematic admission/two-actor lifetime and Oso reset/helper readiness are one sequence repair each. Ray immutable morph cleanup and independent unbounded rotation are separate defects/commits in one file. Original timers/IDs/group/faction/native pet/guardian progression are preserved;no SQL/character rewrite,guessed Lady HP threshold or kill timer."
+  },
+  "diagnostics": {
+    "final": "Twenty paired source-ASAN cases,nine native cases with observed endpoints,final staged/canonical ten repairs plus147prior selected paths,Scepter/ArtifactTier/ScenarioResumeASAN and owned canonical startup pass. Crash/log/exit/stdout/stderr/appended diagnostics reviewed;no new unexplained server failure.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 1,
+      "types": {
+        "C4305": 1
+      },
+      "review": "Main incremental build warnings checked against 2a416922b. Ten retained-fixture warnings are byte-equivalent messages/file/line to the previous passing batch;their production and fixture sources unchanged. Diagnostics retained without suppression;not claimed repaired.",
+      "entries": [
+        {
+          "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+          "line": 1729,
+          "code": "C4305",
+          "message": "'+=': truncation from 'double' to 'float'",
+          "expression": "for (float angle = float(- M_PI / 6); angle < M_PI / 6; angle += M_PI / 24)",
+          "expression_present_in_baseline": true
+        }
+      ],
+      "retained_fixture_warnings": [
+        {
+          "log": "artifact-tier.log",
+          "file": "ArtifactTierProgressionTest.cpp",
+          "line": 65,
+          "code": "C4458",
+          "message": "declaration of 'item' hides class member",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "artifact-tier.log",
+          "file": "AutoTier.inc",
+          "line": 33,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint8', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 26,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 27,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 28,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 29,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'int' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "AddScenario.inc",
+          "line": 7,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        }
+      ]
+    },
+    "development": [
+      "Initial extraction lacked QuestDef/EventMap enum definitions and fake InstanceScript/cinematicStarted/RemoveAurasDueToSpell endpoints. Corrected test support using matching native headers and reran final20 cases. Fake retired Avatar instrumentation initially did not observe AddDelayedEvent on retired storage;added explicit Touch instrumentation while keeping storage allocated. Initial assertion/compiler/extraction failures retained,not passing runtime claims.",
+      "Initial source extraction used first Reset in a multi-class file. Native extraction rejected absent Oso6second callback. Scoped every extraction to exact declared class;no wrong-class production edit was made. Reversal proves exactly nine production files and ten scoped repairs.",
+      "Initial native-harness branch insertion matched an earlier inline Fourteenth quest-ID condition and duplicated bootstrap text. Restored pinned harness and inserted only the exact seven-line probe block;added one scoped45856 quest. Helper line-count assertion corrected7rather than8. Final harness diff contains ValidateSet plus one producer/input branch/quest line;whole subsequent native runs also have an outer diagnostic wrapper. Early preparation failures launched no native engine process.",
+      "New Style helper added one distinct Player-lookup callback. The old all-method nine-greeting PE selector rejected10. Scoped the original checks to actual DoAction1 and UpdateAI8 while retaining all nine direct greetings;new QueueStageEffect has its own generation/lookup/linked-caller check. Inquisition PE initially expected immediate source-null test,but compiler saved result inRSI,performed attacker lookup and then tested bothRSI/RBX;updated to actual three live/two combat guards. Original failures preserved;no bypass of affected behavior.",
+      "Full Oso sequence review extended the same repair to failed helper spawn/readiness,tracked summon cleanup and prior delayed Grizzly movement. Final Reset clears this boss Unit queue before new attempt and retains6seconds. Rebuilt/relinked final binary,retested all20 source cases/nine native selected cases,then final staged/canonical PE and retained/start checks. Initial canonical candidate superseded with original rollback unchanged.",
+      "Local matching26972 data/core and readonly catalog establish all actor/instance bindings,4587 and spell catalogs. Native120second round plus7second initial/11second minimum recurrence proves11th Ray access at117seconds;counterfactual detects bound before executing undefined access. Modulo continues the already-recurring paired rotation with first10 order intact. No modern transplant or live SQL/character rewrite.",
+      "Main/retained compiler warnings are reviewed against pinned expressions/previous passing fixtures and retained without suppression. Earlier fixture failures remain original runtime/test evidence. Full concrete AI/casts/movement/dialogue/achievement/client and36whole-chain checks remain pending."
+    ],
+    "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse-scope nine files and no production diff.",
+    "supplemental_archives": [
+      {
+        "manifest": "build-extractors/bin/Release/fixed/fifteenth-ten-repairs-2026-11-10/supplemental-manifest.json",
+        "sha256": "c380b97abacd0cbb7a6d077309621b10ed2fedc7975b02f66a1034bb884917f3",
+        "files": 19
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/fifteenth-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "402bd677be270d23d5d52412088bb6ce78171d4912cedb2418b80806feb1c63c",
+    "original_files": 1823,
+    "removed_files": 400,
+    "logical_removed_bytes": 1549678436,
+    "deletion_manifest": ".codex/fifteenth-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "b15b80ffb3fd056c9e312e175ce8d9254c5b256ca2d3c6586b6fef3ecfa07356",
+    "retained_rollbacks": [
+      ".codex/release-before-fifteenth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-fourteenth-ten-fixes-2026-11-09",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fourteenth989e699d retired after newest pre-fifteenth rollback hash verification rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical EXE/MAP/config/certs/DLL/data,required main libraries,reusable tests,backups and security. OPEN Lady/LINK2/Slaghammer/mixed DBErrors/SQL/TimeLoop preserved;TimeLoop ninth-batch EXE/symbols retained. Private test configs deleted,not archived."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Prior scouted Antorus eventobject_antorus_into singleton eventDone/per-instance async ownership and Brawlers Master count_adds/repeated Reset lifecycle remain OPEN/unmodified/not counted. This batch changes Oso and Ray,not Master."
+  ],
+  "stop": "Exactly ten implemented,tested to stated scopes,deployed,separately committed/pushed and cleaned;stop after final audit/handoff push. No eleventh repair started;all previous OPEN evidence/client checks retained."
+}

@@ -1,4 +1,153 @@
 {
+  "latest_fifteenth_ten_repairs_2026_11_10": {
+    "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+    "fixes": [
+      {
+        "key": "ValEntry",
+        "title": "Cancel stale Valsharah invasion entry attempts",
+        "paths": [
+          "src/server/scripts/Scenario/LegionInvasion/Valshara/instance_InvasionValshara.cpp"
+        ],
+        "audit": "docs/audits/valsharah-invasion-entry-attempt-2026-11-10.json",
+        "commit": "037781bfb37e247d00dc5f9f729bc5681be075c2"
+      },
+      {
+        "key": "MawEntry",
+        "title": "Scope Maw of Souls entrance recovery to its current entry",
+        "paths": [
+          "src/server/scripts/Legion/MawofSouls/instance_maw_of_souls.cpp"
+        ],
+        "audit": "docs/audits/maw-entrance-recovery-attempt-2026-11-10.json",
+        "commit": "552036886a3dcab08ce3f71b4f6ef0e9d63d45cd"
+      },
+      {
+        "key": "StyleEffects",
+        "title": "Keep delayed Trial of Style effects on the stage actor lifetime",
+        "paths": [
+          "src/server/scripts/Legion/MicroHolidays/TrialofStyle.cpp"
+        ],
+        "audit": "docs/audits/trial-style-delayed-stage-effects-2026-11-10.json",
+        "commit": "dce10f3a01c76aa7f09dfddff34e2cf96703091c"
+      },
+      {
+        "key": "Inquisition",
+        "title": "Resolve the attacker and source before the delayed paired boss pull",
+        "paths": [
+          "src/server/scripts/Legion/TombOfSargeras/boss_DemonicInquisition.cpp"
+        ],
+        "audit": "docs/audits/inquisition-delayed-partner-pull-2026-11-10.json",
+        "commit": "4f2bfe15064950452effd4bf28b5801ffc82c7f1"
+      },
+      {
+        "key": "Nightbane",
+        "title": "Resolve both cinematic actors and retain Nightbane summon retry",
+        "paths": [
+          "src/server/scripts/Legion/ReturnToKarazhan/boss_nightbane.cpp"
+        ],
+        "audit": "docs/audits/nightbane-cinematic-actor-lifecycle-2026-11-10.json",
+        "commit": "4353caf28a4bd9a1d85d7405061086e9521b834b"
+      },
+      {
+        "key": "AvatarIntro",
+        "title": "Resolve Fallen Avatar across Kiljaeden intro delays",
+        "paths": [
+          "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp"
+        ],
+        "audit": "docs/audits/fallen-avatar-intro-actor-lifecycle-2026-11-10.json",
+        "commit": "1152e87cf3d7847a6f7a910b6dbe5f3218db6285"
+      },
+      {
+        "key": "Khadgar",
+        "title": "Keep Guldan phase three figure callback on its boss lifetime",
+        "paths": [
+          "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+        ],
+        "audit": "docs/audits/guldan-khadgar-figure-owner-2026-11-10.json",
+        "commit": "28e4cf91d3ec83a8a36fed0ec0617406f205691f"
+      },
+      {
+        "key": "OsoIntro",
+        "title": "Scope Oso intro attempts and helper cleanup to the boss",
+        "paths": [
+          "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_one.cpp"
+        ],
+        "audit": "docs/audits/oso-intro-reset-lifecycle-2026-11-10.json",
+        "commit": "03efe8265657f7c088371e5cf820f794e8a998b2"
+      },
+      {
+        "key": "RaydVisual",
+        "title": "Capture the current Ray D Tear morph spell in delayed cleanup",
+        "paths": [
+          "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_seven.cpp"
+        ],
+        "audit": "docs/audits/rayd-immutable-morph-cleanup-2026-11-10.json",
+        "commit": "9965ad520804039045bc88faa0bb94ca4bf030e0"
+      },
+      {
+        "key": "RaydRotation",
+        "title": "Bound Ray D Tear repeated rotation to its paired spell catalogs",
+        "paths": [
+          "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_seven.cpp"
+        ],
+        "audit": "docs/audits/rayd-bounded-spell-rotation-2026-11-10.json",
+        "commit": "c6b1ec59426e939307bc60563e18397aa1becc67"
+      }
+    ],
+    "canonical": {
+      "directory": "build-extractors/bin/Release",
+      "world_sha256": "ae633a28cb944d4675cd1e481fb3b0eb2344ad068e75c15c0c68b932ad9c5397",
+      "bnet_sha256": "fbb7d2fc0aa53b1f23376482e429e75b32ea51ba23ccfca471fe005ed5f181c6",
+      "rollback": ".codex/release-before-fifteenth-ten-fixes-2026-11-10",
+      "startup": "Owned PID=5540 reached fresh ready\nPASS owned PID=5540 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged",
+      "interim": "Earlier owned7680 ready/shutdown0/exit0/gone;initial test records preserved under interim-canonical before final promotion. No user server stopped."
+    },
+    "cleanup": {
+      "status": "COMPLETE_HASH_VERIFIED",
+      "archive": "build-extractors/bin/Release/fixed/fifteenth-ten-repairs-2026-11-10",
+      "archive_manifest_sha256": "402bd677be270d23d5d52412088bb6ce78171d4912cedb2418b80806feb1c63c",
+      "original_files": 1823,
+      "removed_files": 400,
+      "logical_removed_bytes": 1549678436,
+      "deletion_manifest": ".codex/fifteenth-ten-fixes-2026-11-10/cleanup-deleted.json",
+      "deletion_manifest_sha256": "b15b80ffb3fd056c9e312e175ce8d9254c5b256ca2d3c6586b6fef3ecfa07356",
+      "retained_rollbacks": [
+        ".codex/release-before-fifteenth-ten-fixes-2026-11-10",
+        ".codex/release-before-seven-fixes-2026-11-08",
+        ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+      ],
+      "removed_superseded_rollback": ".codex/release-before-fourteenth-ten-fixes-2026-11-09",
+      "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fourteenth989e699d retired after newest pre-fifteenth rollback hash verification rollback verification",
+      "logs_truncated": 0,
+      "active_crashes_removed": 0,
+      "open_sql_evidence": {
+        "Files": 82,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+        "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+        "ClassificationCorrection": {
+          "Files": 94,
+          "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+          "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+        }
+      },
+      "open_timeloop": {
+        "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+        "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+        "files": 26,
+        "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+        "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+      },
+      "preserved": "Canonical EXE/MAP/config/certs/DLL/data,required main libraries,reusable tests,backups and security. OPEN Lady/LINK2/Slaghammer/mixed DBErrors/SQL/TimeLoop preserved;TimeLoop ninth-batch EXE/symbols retained. Private test configs deleted,not archived."
+    },
+    "pending": [
+      "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+      "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+      "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+      "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+      "Prior scouted Antorus eventobject_antorus_into singleton eventDone/per-instance async ownership and Brawlers Master count_adds/repeated Reset lifecycle remain OPEN/unmodified/not counted. This batch changes Oso and Ray,not Master."
+    ],
+    "stop": "Exactly ten implemented,tested to stated scopes,deployed,separately committed/pushed and cleaned;stop after final audit/handoff push. No eleventh repair started;all previous OPEN evidence/client checks retained.",
+    "audit": "docs/audits/fifteenth-ten-repairs-2026-11-10.json"
+  },
   "latest_fourteenth_ten_repairs_2026_11_09": {
     "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
     "fixes": [
