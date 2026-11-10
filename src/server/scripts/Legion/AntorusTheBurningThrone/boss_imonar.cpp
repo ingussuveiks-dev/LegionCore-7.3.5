@@ -547,7 +547,7 @@ struct npc_imonar_ship_generic : public ScriptedAI
         if (me->GetEntry() == NPC_BOMBING_RUN)
         {
             me->CastSpellDelay(me, SPELL_CHARGED_BLASTS_FILTER, true, 500);
-            me->AddDelayedCombat(12000, [this]() -> void { if (me) me->SetVisible(false); });
+            me->AddDelayedCombat(12000, [actor = me]() -> void { if (actor) actor->SetVisible(false); });
         }
         else if (me->GetEntry() == NPC_ARTILLERY_STRIKE)
             me->CastSpellDelay(me, SPELL_SHIP_SHRAPNEL_BLAST, false, 1500);
@@ -589,7 +589,7 @@ struct npc_imonar_ship_generic : public ScriptedAI
                     me->CastSpell(player, SPELL_SHIP_SHRAPNEL_BLAST_MISSILE_1, true, nullptr, nullptr, owner->GetGUID());
             }
 
-            me->AddDelayedCombat(8000, [this]() -> void { if (me) me->DespawnOrUnsummon(); });
+            me->AddDelayedCombat(8000, [actor = me]() -> void { if (actor) actor->DespawnOrUnsummon(); });
         }
     }
 
