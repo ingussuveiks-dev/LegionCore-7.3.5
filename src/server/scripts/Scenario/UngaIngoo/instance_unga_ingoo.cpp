@@ -131,7 +131,7 @@ class instance_unga_ingoo : public InstanceMapScript
                         break;
                     case NPC_TRAINED_JUNGLE_LORY:
                         creature->setRegeneratingHealth(false);
-                        creature->SetHealth((uint32)creature->GetMaxHealth() * 0.1f);
+                        creature->SetHealth(uint64(creature->GetMaxHealth() * 0.1f));
                         creature->GetMotionMaster()->MoveRandom(4.0f);
                         break;
                     case NPC_UNGA_BREW_KEG:
