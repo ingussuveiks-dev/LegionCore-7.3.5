@@ -390,6 +390,8 @@ class npc_daakara_vortex : public CreatureScript
 
             void Reset()
             {
+                bStart = false;
+                startTimer = 2000;
             }
             
             void SetGUID(ObjectGuid const& guid, int32 data)
