@@ -204,9 +204,9 @@ struct npc_raigonn_weak_spot : public ScriptedAI
         me->SetReactState(REACT_PASSIVE);
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*dmgType*/) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
     {
-        if (damage >= me->GetHealth())
+        if (damage >= me->GetHealth(attacker))
             if (instance)
                 if (auto raigonn = instance->instance->GetCreature(instance->GetGuidData(NPC_RAIGONN)))
                     raigonn->AI()->DoAction(ACTION_WEAK_SPOT_DEAD);
