@@ -418,7 +418,7 @@ struct npc_soldierAI : ScriptedAI
         }
     }
 
-    void SendHealSoldiers(InstanceScript* instance, Creature* caller, uint32 callerEntry, ObjectGuid callerGuid, uint32 modhealth)
+    void SendHealSoldiers(InstanceScript* instance, Creature* caller, uint32 callerEntry, ObjectGuid callerGuid, uint64 modhealth)
     {
         if (caller && instance)
         {
@@ -525,7 +525,7 @@ class npc_generic_soldier : public CreatureScript
             {
                 if (spell->Id == SPELL_HEAL_TR_EF)
                 {
-                    uint32 modhealth = me->GetMaxHealth()/4;
+                    uint64 modhealth = me->GetMaxHealth()/4;
                     SendHealSoldiers(pInstance, me, me->GetEntry(), me->GetGUID(), modhealth);
                 }
             }
