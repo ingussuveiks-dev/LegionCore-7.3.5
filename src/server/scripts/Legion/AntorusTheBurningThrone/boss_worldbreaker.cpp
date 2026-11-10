@@ -669,10 +669,10 @@ struct npc_worldbreaker_annihilation_trigger : public ScriptedAI
 
     void DespawnMe()
     {
-        me->AddDelayedCombat(200, [this]() -> void
+        me->AddDelayedCombat(200, [actor = me]() -> void
         {
-            if (me)
-                me->DespawnOrUnsummon();
+            if (actor)
+                actor->DespawnOrUnsummon();
         });
     }
 
@@ -717,12 +717,12 @@ struct npc_worldbreaker_surging_fel_trigger : public ScriptedAI
         {
             DoCast(me, SPELL_SURGING_FEL_AT, true);
 
-            me->AddDelayedCombat(4000, [this]() -> void
+            me->AddDelayedCombat(4000, [actor = me]() -> void
             {
-                if (me)
+                if (actor)
                 {
-                    me->CastSpell(me, SPELL_SURGING_FEL_SUMMON, true);
-                    me->CastSpell(me, SPELL_SURGING_FEL_DMG, true);
+                    actor->CastSpell(actor, SPELL_SURGING_FEL_SUMMON, true);
+                    actor->CastSpell(actor, SPELL_SURGING_FEL_DMG, true);
                 }
             });
         }
