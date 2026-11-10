@@ -421,7 +421,8 @@ public:
                             });
                         }
                         
-                        phase++;
+                        static_assert(sizeof(Spells_Rayd) == sizeof(Spells_Morph), "Ray D Tear spell and morph rotations must match");
+                        phase = (phase + 1) % (sizeof(Spells_Rayd) / sizeof(Spells_Rayd[0]));
                         events.RescheduleEvent(EVENT_1, urand(11000, 12000));
                         break;
                 }
