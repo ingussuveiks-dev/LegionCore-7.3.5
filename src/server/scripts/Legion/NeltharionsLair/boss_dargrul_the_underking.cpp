@@ -340,10 +340,10 @@ struct npc_dargrul_crystal_wall : public ScriptedAI
 
         despawn = true;
 
-        me->AddDelayedEvent(200, [this] () -> void
+        me->AddDelayedEvent(200, [actor = me] () -> void
         {
-            if (me)
-                me->DespawnOrUnsummon();
+            if (actor)
+                actor->DespawnOrUnsummon();
         });
     }
 
