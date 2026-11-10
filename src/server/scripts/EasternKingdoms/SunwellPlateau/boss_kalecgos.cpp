@@ -341,9 +341,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* done_by, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* done_by, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth() && done_by != me)
+            if (damage >= me->GetHealth(done_by) && done_by != me)
             {
                 damage = 0;
                 me->SetHealth(1);
@@ -641,9 +641,9 @@ public:
             Talk(SAY_SATH_AGGRO);
         }
 
-        void DamageTaken(Unit* done_by, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* done_by, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth() && done_by != me)
+            if (damage >= me->GetHealth(done_by) && done_by != me)
             {
                 damage = 0;
                 me->SetHealth(1);
