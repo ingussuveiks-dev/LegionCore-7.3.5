@@ -570,9 +570,9 @@ public:
                         break;
                     case EVENT_5:
                         DoCast(SPELL_PROTECT_SHIELD);    
-                        me->AddDelayedEvent(100, [this] () -> void
+                        me->AddDelayedEvent(100, [actor = me] () -> void
                         {
-                            me->RemoveAura(SPELL_PROTECT_SHIELD_BUFF);
+                            actor->RemoveAura(SPELL_PROTECT_SHIELD_BUFF);
                         });
                         events.RescheduleEvent(EVENT_6, 1000);
                         break;
