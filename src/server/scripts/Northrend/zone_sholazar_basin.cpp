@@ -535,6 +535,7 @@ struct npc_artruis_Q12581 : public ScriptedAI
     bool hp50 = false;
     bool hp30 = false;
     bool cankill = false;
+    bool releasePending = false;
 
     void EnterCombat(Unit* /*who*/) override
     {
@@ -570,10 +571,11 @@ struct npc_artruis_Q12581 : public ScriptedAI
             events.Reset();
             me->RemoveAurasDueToSpell(SPELL_ARTRUIS_IMMUN);
             cankill = true;
+            releasePending = false;
         }
     }
 
-    void DamageTaken(Unit* damager, uint32 &damage, DamageEffectType dmgType)
+    void DamageTakenAfterScaling(Unit* damager, uint32 &damage, DamageEffectType dmgType) override
     {
         if (me->HealthBelowPct(75) && !hp75)
         {
@@ -585,31 +587,38 @@ struct npc_artruis_Q12581 : public ScriptedAI
             hp50 = true;
             Talk(SAY_50);
         }
-        if (damage >= me->GetHealth() || me->HealthBelowPct(30))
+        if (damage >= me->GetHealth(damager) || me->HealthBelowPct(30))
         {
             if (!cankill)
-                damage = 0;
-
-            if (!hp30)
             {
-                hp30 = true;
-                Talk(SAY_30_1);
-                Talk(SAY_30_2);
-                me->InterruptNonMeleeSpells(false);
-                DoCast(SPELL_ARTRUIS_IMMUN);
-                if (auto jaloot = me->FindNearestCreature(NPC_JALOOT, 40.f))
+                damage = 0;
+                if (hp30)
+                    return;
+                releasePending = true;
+                if (!me->HasAura(SPELL_ARTRUIS_IMMUN))
                 {
-                    if (auto zephik = me->FindNearestCreature(NPC_ZEPHIK, 40.f))
-                    {
-                        if (jaloot->IsAIEnabled && zephik->IsAIEnabled)
-                        {
-                            jaloot->AI()->DoAction(ACTION_1);
-                            zephik->AI()->DoAction(ACTION_1);
-                        }
-                    }
+                    me->InterruptNonMeleeSpells(false);
+                    DoCast(SPELL_ARTRUIS_IMMUN);
                 }
+                TryReleaseAdds();
             }
         }
+    }
+
+    void TryReleaseAdds()
+    {
+        if (!releasePending || hp30 || cankill)
+            return;
+        Creature* jaloot = me->FindNearestCreature(NPC_JALOOT, 40.f);
+        Creature* zephik = me->FindNearestCreature(NPC_ZEPHIK, 40.f);
+        if (!jaloot || !zephik || !jaloot->IsAIEnabled || !zephik->IsAIEnabled)
+            return;
+        hp30 = true;
+        releasePending = false;
+        Talk(SAY_30_1);
+        Talk(SAY_30_2);
+        jaloot->AI()->DoAction(ACTION_1);
+        zephik->AI()->DoAction(ACTION_1);
     }
 
     void Reset() override
@@ -619,6 +628,7 @@ struct npc_artruis_Q12581 : public ScriptedAI
         hp50 = false;
         hp30 = false;
         cankill = false;
+        releasePending = false;
         me->RemoveAurasDueToSpell(SPELL_ARTRUIS_IMMUN);
     }
 
@@ -650,6 +660,7 @@ struct npc_artruis_Q12581 : public ScriptedAI
 
     void UpdateAI(uint32 diff) override
     {
+        TryReleaseAdds();
         if (!UpdateVictim())
             return;
 
