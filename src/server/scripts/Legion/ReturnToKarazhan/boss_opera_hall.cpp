@@ -539,22 +539,22 @@ public:
         {
             me->NearTeleportTo(-10892.7f, -1762.93f, 90.47f, me->GetOrientation());
 
-            me->AddDelayedEvent(100, [this]() -> void
+            me->AddDelayedEvent(100, [actor = me]() -> void
             {
-                if (me && me->IsAlive())
+                if (actor && actor->IsAlive())
                 {
-                    Talk(SAY_MAGNIFICENT);
-                    Talk(SAY_MAGNIFICENT_WARN);
-                    DoCast(me, SPELL_MAGIC_MAGNIFICENT_IMMUNE, true);
-                    DoCast(SPELL_MAGIC_MAGNIFICENT_DMG);
+                    { if (auto ai = actor->AI()) ai->Talk(SAY_MAGNIFICENT); }
+                    { if (auto ai = actor->AI()) ai->Talk(SAY_MAGNIFICENT_WARN); }
+                    { if (auto ai = actor->AI()) ai->DoCast(actor, SPELL_MAGIC_MAGNIFICENT_IMMUNE, true); }
+                    { if (auto ai = actor->AI()) ai->DoCast(SPELL_MAGIC_MAGNIFICENT_DMG); }
                 }
             });
 
             // Remove Immune
-            me->AddDelayedEvent(5000, [this]() -> void
+            me->AddDelayedEvent(5000, [actor = me]() -> void
             {
-                if (me && me->IsAlive())
-                    me->RemoveAurasDueToSpell(SPELL_MAGIC_MAGNIFICENT_IMMUNE);
+                if (actor && actor->IsAlive())
+                    actor->RemoveAurasDueToSpell(SPELL_MAGIC_MAGNIFICENT_IMMUNE);
             });
         }
 
