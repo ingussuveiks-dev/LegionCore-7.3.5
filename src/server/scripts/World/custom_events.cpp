@@ -3182,8 +3182,12 @@ struct boss_new_year_2019_evala : public ScriptedAI
         {
         case SPELL_EVALA_ICY_TOMB_TS:
             target->CastSpell(target, SPELL_EVALA_ICY_TOMB_STUN, true);
-            me->AddDelayedCombat(500, [this, target]() -> void
+            me->AddDelayedCombat(500, [actor = me, targetGuid = target->GetGUID()]() -> void
             {
+                Unit* target = ObjectAccessor::GetUnit(*actor, targetGuid);
+                if (!target || !target->IsInWorld() || !target->IsAlive() || target->GetMap() != actor->GetMap())
+                    return;
+
                 if (auto tomb = target->SummonCreature(npc_evala_tomb, target->GetPosition()))
                     tomb->SetReactState(REACT_PASSIVE);
             });
@@ -3243,9 +3247,9 @@ struct boss_new_year_2019_evala : public ScriptedAI
     {
         CreatureAI::EnterEvadeMode();
         me->SetVisible(false);
-        me->AddDelayedEvent(8000, [this]() -> void
+        me->AddDelayedEvent(8000, [actor = me]() -> void
         {
-            me->SetVisible(true);
+            actor->SetVisible(true);
         });
     }
 
@@ -3296,9 +3300,9 @@ struct boss_new_year_2019_evala : public ScriptedAI
         me->GenerateNonDuplicatePoints(randVzones, me->GetPosition(), count, 10.f, 34.f, 12.f);
         for (auto pos : randVzones)
         {
-            me->AddDelayedEvent(10, [this, pos]() -> void
+            me->AddDelayedEvent(10, [actor = me, pos]() -> void
             {
-                if (auto vz = me->SummonCreature(npc_evala_void_zone, pos))
+                if (auto vz = actor->SummonCreature(npc_evala_void_zone, pos))
                 {
                     vz->SetReactState(REACT_PASSIVE);
                 }
@@ -3374,9 +3378,9 @@ struct boss_new_year_2019_evala : public ScriptedAI
             case EVALA_CHARGES:
             {
                 DoCast(me, SPELL_EVALA_NEG_CHARGE_TS, true);
-                me->AddDelayedCombat(500, [this]() -> void
+                me->AddDelayedCombat(500, [actor = me]() -> void
                 {
-                    DoCast(me, SPELL_EVALA_POS_CHARGE_TS, true);
+                    { if (auto ai = actor->AI()) ai->DoCast(actor, SPELL_EVALA_POS_CHARGE_TS, true); }
                 });
                 events.RescheduleEvent(EVALA_CHARGES, urand(28000, 33000));
                 break;
