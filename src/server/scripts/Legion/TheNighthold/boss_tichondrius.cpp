@@ -488,10 +488,10 @@ struct npc_tichonrius_fel_spire : ScriptedAI
                         me->RemoveAurasDueToSpell(SPELL_FEL_SPIRE_TICK_AT);
                         me->RemoveAurasDueToSpell(SPELL_SUM_GO_FEL_SPIRE);
                         DoCast(me, SPELL_FEL_SPIRE_DESTROYED, true);
-                        me->AddDelayedEvent(3000, [this] () -> void
+                        me->AddDelayedEvent(3000, [actor = me] () -> void
                         {
-                            if (me)
-                                me->DespawnOrUnsummon();
+                            if (actor)
+                                actor->DespawnOrUnsummon();
                         });
                     }
                 }
