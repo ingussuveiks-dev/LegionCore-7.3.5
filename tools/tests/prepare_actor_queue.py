@@ -12,10 +12,11 @@ def generate(plan_path,base,out,case=None,baseline=False,native_name=None):
   con=ns['constants'](e,''.join(codes))
   if native:
    con=re.sub(r'constexpr uint32 (?:UNIT_\w+|REACT_\w+)=\d+;\n','',con)
-   codes=[re.sub(r'actor->(DespawnOrUnsummon|CastSpell|RemoveAura|ClearUnitState|SetWalk)\(',r'Observe::\1(actor,',c)for c in codes]
+   codes=[re.sub(r'actor->(DespawnOrUnsummon|CastSpell|RemoveAura|ClearUnitState|SetWalk|SetVisible|SetSpeed|RemoveFlag|Kill|GetMotionMaster)\(',r'Observe::\1(actor,',c)for c in codes]
    codes=[c.replace('(actor,)', '(actor)')for c in codes]
   decl='struct Frame:NullCreatureAI{explicit Frame(Creature*c):NullCreatureAI(c){}'if native else'struct Frame{Creature*me;explicit Frame(Creature*c):me(c){}'
   decl+='void Queue(uint32 index){switch(index){'+''.join('case '+str(i)+':'+c+'break;'for i,c in enumerate(codes))+'default:throw std::runtime_error("unknown callback index");}}};'
+  decl+='static uint32 const effects[]={'+','.join(str(c.get('effects',1))for c in e['callbacks'])+'};'
   decl+='static uint32 const delays[]={'+','.join(str(c['delay'])for c in e['callbacks'])+'};'
   return con+decl
  if case:
