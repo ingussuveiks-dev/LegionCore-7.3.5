@@ -219,31 +219,31 @@ public:
             if (me->GetEntry() != 67490)
                 return;
             
-            me->AddDelayedEvent(1000, [this] () -> void
+            me->AddDelayedEvent(1000, [actor = me] () -> void
             {
-                if (Creature* razrubait = me->SummonCreature(67526, me->GetPositionX() + irand(-5, 5), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation()))
+                if (Creature* razrubait = actor->SummonCreature(67526, actor->GetPositionX() + irand(-5, 5), actor->GetPositionY(), actor->GetPositionZ(), actor->GetOrientation()))
                 {
                     razrubait->SetReactState(REACT_PASSIVE);
-                    razrubait->AI()->Talk(0);
+                    if (auto ai = razrubait->AI()) ai->Talk(0);
                     razrubait->AddDelayedEvent(2000, [razrubait] () -> void
                     {
-                        razrubait->AI()->Talk(1);
+                        if (auto ai = razrubait->AI()) ai->Talk(1);
                     });
                     
                     razrubait->AddDelayedEvent(5000, [razrubait] () -> void
                     {
-                        razrubait->AI()->Talk(2);
+                        if (auto ai = razrubait->AI()) ai->Talk(2);
                     });
                     
                     razrubait->AddDelayedEvent(8000, [razrubait] () -> void
                     {
-                        razrubait->AI()->Talk(3);
+                        if (auto ai = razrubait->AI()) ai->Talk(3);
                         razrubait->CastSpell(razrubait, 84768);
                         razrubait->DespawnOrUnsummon(1500);
                     });
                 }
-                DoCast(SPELL_INTRO_INVIS);
-                DoCast(SPELL_INTRO_SCALE);
+                { if (auto ai = actor->AI()) ai->DoCast(SPELL_INTRO_INVIS); }
+                { if (auto ai = actor->AI()) ai->DoCast(SPELL_INTRO_SCALE); }
             });
         }
 
