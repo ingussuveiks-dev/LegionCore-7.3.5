@@ -1399,9 +1399,9 @@ struct npc_argus_reorigination_module : ScriptedAI
 
     void Reset() override {}
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
     {
-        if (damage >= me->GetHealth())
+        if (damage >= me->GetHealth(attacker))
         {
             damage = 0;
             ReoriginationPulse();
@@ -1438,11 +1438,12 @@ struct npc_argus_reorigination_module : ScriptedAI
                     me->CastSpell(me, SPELL_APOCALYPSIS_PULSE_DMG, true);
                     me->CastSpell(me, SPELL_APOCALYPSIS_ZONE_AT, true);
 
-                    me->AddDelayedCombat(100, [this]() -> void
+                    Creature* module = me;
+                    float size = apocalypsisSize;
+                    module->AddDelayedCombat(100, [module, size]()
                     {
-                        if (me)
-                            if (auto at = me->GetAreaObject(SPELL_APOCALYPSIS_ZONE_AT))
-                                at->SetSphereScale(apocalypsisSize, 1000, true);
+                        if (auto at = module->GetAreaObject(SPELL_APOCALYPSIS_ZONE_AT))
+                            at->SetSphereScale(size, 1000, true);
                     });
                 }
                 else
@@ -1478,10 +1479,10 @@ struct npc_argus_reorigination_module : ScriptedAI
         if (isMythicModule)
         {
             me->RemoveAurasDueToSpell(SPELL_APOCALYPSIS_MODULE_PERIODIC);
-            me->CastSpell(me, SPELL_APOCALYPSIS_MODULE_REMOVE);
-
+            // Snapshot the source radius before an instant cast can finish.
             if (auto at = me->GetAreaObject(SPELL_APOCALYPSIS_MODULE_AT))
                 apocalypsisSize = at->GetRadius();
+            me->CastSpell(me, SPELL_APOCALYPSIS_MODULE_REMOVE);
         }
         else
         {
