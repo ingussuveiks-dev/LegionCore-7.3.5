@@ -395,8 +395,9 @@ struct npc_death_metal_knight : public ScriptedAI
             Talk(SAY_DEATH_METAL_KNIGHT_INTRO_1);
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-            me->AddDelayedEvent(15000, [=]() -> void
+            me->AddDelayedEvent(15000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->SetWalk(true);
                 me->GetMotionMaster()->MovePoint(1, -4179.04f, 6026.6616f, 6.154604f);
             });
@@ -473,6 +474,9 @@ struct npc_death_metal_knight : public ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 struct npc_darkmoon_ghoul : public ScriptedAI
