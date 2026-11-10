@@ -1,0 +1,204 @@
+[
+  {
+    "key": "KarshTimer",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/BlackrockCaverns/boss_karsh_steelbender.cpp"
+    ],
+    "cls": "boss_karsh_steelbenderAI",
+    "title": "Initialize Karsh armor achievement polling on every reset",
+    "fields": {
+      "CheckTimer": 2000
+    },
+    "slug": "karsh-armor-reset-timer",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackrockCaverns/boss_karsh_steelbender.cpp",
+        "old": "                bHeat = false;\n                stacksDone = false;",
+        "new": "                bHeat = false;\n                stacksDone = false;\n                CheckTimer = 2000;",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "IvanyrTimer",
+    "paths": [
+      "src/server/scripts/Legion/TheArcway/boss_ivanyr.cpp"
+    ],
+    "cls": "boss_ivanyrAI",
+    "title": "Initialize Ivanyr achievement polling through Reset",
+    "fields": {
+      "CheckTimer": 1000
+    },
+    "slug": "ivanyr-achievement-reset-timer",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheArcway/boss_ivanyr.cpp",
+        "old": "            overChargeCount = 0;",
+        "new": "            overChargeCount = 0;\n            CheckTimer = 1000;",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "MillificentTimer",
+    "paths": [
+      "src/server/scripts/Legion/VioletHoldLegion/boss_millificent_manastorm.cpp"
+    ],
+    "cls": "boss_millificent_manastormAI",
+    "title": "Initialize Millificent achievement polling through Reset",
+    "fields": {
+      "CheckTimer": 2000
+    },
+    "slug": "millificent-achievement-reset-timer",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/VioletHoldLegion/boss_millificent_manastorm.cpp",
+        "old": "            angrycomplete = false;\n\n            if (instance->GetData",
+        "new": "            angrycomplete = false;\n            CheckTimer = 2000;\n\n            if (instance->GetData",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "ElderTimers",
+    "paths": [
+      "src/server/scripts/Legion/TombOfSargeras/boss_Harjatan.cpp"
+    ],
+    "cls": "npc_elder_murk_eyeAI",
+    "title": "Initialize Elder Murk Eye activation and evade timers on reset",
+    "fields": {
+      "CheckTimer": 2000,
+      "EvadeTimer": 5000
+    },
+    "slug": "elder-murk-eye-reset-timers",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TombOfSargeras/boss_Harjatan.cpp",
+        "old": "            me->RemoveAura(241393);",
+        "new": "            me->RemoveAura(241393);\n            CheckTimer = 2000;\n            EvadeTimer = 5000;",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "NightmotherTimer",
+    "paths": [
+      "src/server/scripts/Legion/TheEmeraldNightmare/boss_elerethe_renferal.cpp"
+    ],
+    "cls": "npc_en_nightmother",
+    "title": "Clear Nightmother landing timer on reset",
+    "fields": {
+      "jumpTimer": 0
+    },
+    "slug": "nightmother-landing-reset-timer",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_elerethe_renferal.cpp",
+        "old": "        me->SetCanFly(false);\n    }\n\n    void EnterCombat",
+        "new": "        me->SetCanFly(false);\n        jumpTimer = 0;\n    }\n\n    void EnterCombat",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "ChampionTimer",
+    "paths": [
+      "src/server/scripts/Northrend/zone_icecrown.cpp"
+    ],
+    "cls": "npc_argent_championAI",
+    "title": "Initialize Argent Champion defensive refresh timer on reset",
+    "fields": {
+      "uiDefendTimer": 10000
+    },
+    "slug": "argent-champion-defend-reset-timer",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/zone_icecrown.cpp",
+        "old": "struct npc_argent_championAI : public ScriptedAI\n    {\n        npc_argent_championAI(Creature* pCreature) : ScriptedAI(pCreature)\n        {\n        me->CastSpell(me, SPELL_DEFEND_CHAMPION, true);\n        me->CastSpell(me, SPELL_DEFEND_CHAMPION, true);\n        pCreature->GetMotionMaster()->MovePoint(0,8552.469727f,1124.128784f,556.787598f); // TODO (Trouver les coordonnees exactes)\n        pCreature->setFaction(35); //wrong faction in db?\n        }\n\n        uint32 uiChargeTimer;\n        uint32 uiShieldBreakerTimer;\n        uint32 uiDefendTimer;\n\n        void Reset() override\n        {\n        uiChargeTimer = 7000;\n        uiShieldBreakerTimer = 10000;",
+        "new": "struct npc_argent_championAI : public ScriptedAI\n    {\n        npc_argent_championAI(Creature* pCreature) : ScriptedAI(pCreature)\n        {\n        me->CastSpell(me, SPELL_DEFEND_CHAMPION, true);\n        me->CastSpell(me, SPELL_DEFEND_CHAMPION, true);\n        pCreature->GetMotionMaster()->MovePoint(0,8552.469727f,1124.128784f,556.787598f); // TODO (Trouver les coordonnees exactes)\n        pCreature->setFaction(35); //wrong faction in db?\n        }\n\n        uint32 uiChargeTimer;\n        uint32 uiShieldBreakerTimer;\n        uint32 uiDefendTimer;\n\n        void Reset() override\n        {\n        uiChargeTimer = 7000;\n        uiShieldBreakerTimer = 10000;\n        uiDefendTimer = 10000;",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "BlackHoleState",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_muru.cpp"
+    ],
+    "cls": "npc_blackholeAI",
+    "title": "Reset Entropius black hole to its authored spawn stage",
+    "fields": {
+      "NeedForAHack": 0
+    },
+    "slug": "entropius-black-hole-reset-stage",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_muru.cpp",
+        "old": "            DespawnTimer = 15000;",
+        "new": "            DespawnTimer = 15000;\n            NeedForAHack = 0;",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "VortexState",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/ZulAman/boss_daakara.cpp"
+    ],
+    "cls": "npc_daakara_vortexAI",
+    "title": "Reset Daakara vortex passive activation state",
+    "fields": {
+      "bStart": 0,
+      "startTimer": 2000
+    },
+    "slug": "daakara-vortex-reset-stage",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/ZulAman/boss_daakara.cpp",
+        "old": "            void Reset()\n            {\n            }\n            \n            void SetGUID",
+        "new": "            void Reset()\n            {\n                bStart = false;\n                startTimer = 2000;\n            }\n            \n            void SetGUID",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "FocusState",
+    "paths": [
+      "src/server/scripts/Pandaria/MogushanVault/boss_elegon.cpp"
+    ],
+    "cls": "npc_empyreal_focusAI",
+    "title": "Initialize Empyreal Focus idle state before deactivation polling",
+    "fields": {
+      "active": 1
+    },
+    "slug": "elegon-focus-reset-state",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/MogushanVault/boss_elegon.cpp",
+        "old": "struct npc_empyreal_focusAI : public Scripted_NoMovementAI\n        {\n            npc_empyreal_focusAI(Creature* creature) : Scripted_NoMovementAI(creature)\n            {\n                instance = creature->GetInstanceScript();\n                me->SetReactState(REACT_PASSIVE);\n                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC);\n            }\n\n            InstanceScript* instance;\n            bool active;\n            uint16 CheckTimer;\n            ObjectGuid targetfocusGUID;\n\n            void Reset() override \n            {\n                CheckTimer = 1000;",
+        "new": "struct npc_empyreal_focusAI : public Scripted_NoMovementAI\n        {\n            npc_empyreal_focusAI(Creature* creature) : Scripted_NoMovementAI(creature)\n            {\n                instance = creature->GetInstanceScript();\n                me->SetReactState(REACT_PASSIVE);\n                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC);\n            }\n\n            InstanceScript* instance;\n            bool active;\n            uint16 CheckTimer;\n            ObjectGuid targetfocusGUID;\n\n            void Reset() override \n            {\n                CheckTimer = 1000;\n                active = true;",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "SapperTimer",
+    "paths": [
+      "src/server/scripts/Pandaria/SiegeNiuzaoTemple/boss_general_pavalak.cpp"
+    ],
+    "cls": "npc_pavalak_amber_sapper",
+    "title": "Keep Pavalak sapper return timer inactive until arrival",
+    "fields": {
+      "moveTimer": 0
+    },
+    "slug": "pavalak-sapper-return-reset-timer",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/SiegeNiuzaoTemple/boss_general_pavalak.cpp",
+        "old": "        me->SetReactState(REACT_PASSIVE);\n    }\n\n    void IsSummonedBy",
+        "new": "        me->SetReactState(REACT_PASSIVE);\n        moveTimer = 0;\n    }\n\n    void IsSummonedBy",
+        "count": 1
+      }
+    ]
+  }
+]
