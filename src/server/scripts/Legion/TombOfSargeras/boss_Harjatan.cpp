@@ -452,8 +452,9 @@ struct npc_tos_tadpole : ScriptedAI
     {
         me->SetReactState(REACT_PASSIVE);
 
-        me->AddDelayedEvent(1500, [this]()-> void
+        me->AddDelayedEvent(1500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()-> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (Unit* target = me->GetTargetUnit())
             {
                 me->GetMotionMaster()->MoveFollow(target, 0, 0);
@@ -494,6 +495,9 @@ struct npc_tos_tadpole : ScriptedAI
                 timer -= diff;
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 // 121071 achievement npc
