@@ -1,0 +1,322 @@
+[
+  {
+    "key": "NefarianTimers",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_bwd_nefarian.cpp"
+    ],
+    "cls": "boss_bd_nefarianAI",
+    "title": "Keep Nefarian phase timers inactive outside their owning phase",
+    "slug": "nefarian-phase-timer-lifecycle",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_bwd_nefarian.cpp",
+        "old": "if (phase == PHASE_GROUND && m_uiDistanceCheckTimer <= diff)\n            {\n                if (me->FindNearestCreature(NPC_ONYXIA, 50.0f, true) && onyxiaAlive && !me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))\n                    me->AddAura(SPELL_CHILDREN_OF_DEATHWING_ONY, me);\n\n                else if (!me->FindNearestCreature(NPC_ONYXIA, 50.0f, true) && onyxiaAlive)\n                if (me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))\n                    me->RemoveAura(SPELL_CHILDREN_OF_DEATHWING_ONY);\n\n                m_uiDistanceCheckTimer = 5000;\n            }\n            else m_uiDistanceCheckTimer -= diff;",
+        "new": "if (phase == PHASE_GROUND)\n            {\n                if (m_uiDistanceCheckTimer <= diff)\n                {\n                    if (me->FindNearestCreature(NPC_ONYXIA, 50.0f, true) && onyxiaAlive && !me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))\n                        me->AddAura(SPELL_CHILDREN_OF_DEATHWING_ONY, me);\n\n                    else if (!me->FindNearestCreature(NPC_ONYXIA, 50.0f, true) && onyxiaAlive)\n                    if (me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))\n                        me->RemoveAura(SPELL_CHILDREN_OF_DEATHWING_ONY);\n\n                    m_uiDistanceCheckTimer = 5000;\n                }\n                else m_uiDistanceCheckTimer -= diff;\n            }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_bwd_nefarian.cpp",
+        "old": "if (phase == PHASE_GROUND && m_uiOnyxiaCheckTimer <= diff && !secondPhase)\n            {\n                if (me->FindNearestCreature(NPC_ONYXIA, 250.0f, true))\n                    onyxiaAlive = true;\n                else\n                {\n                    onyxiaAlive = false;\n                    Talk(SAY_AIR_PHASE);\n\n                    if (me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))\n                        me->RemoveAura(SPELL_CHILDREN_OF_DEATHWING_ONY);\n\n                    events.RescheduleEvent(EVENT_LIFTOFF, 1000, PHASE_GROUND);\n                    secondPhase = true;\n                }\n                m_uiOnyxiaCheckTimer = 1000;\n            }\n            else m_uiOnyxiaCheckTimer -= diff;",
+        "new": "if (phase == PHASE_GROUND && !secondPhase)\n            {\n                if (m_uiOnyxiaCheckTimer <= diff)\n                {\n                    if (me->FindNearestCreature(NPC_ONYXIA, 250.0f, true))\n                        onyxiaAlive = true;\n                    else\n                    {\n                        onyxiaAlive = false;\n                        Talk(SAY_AIR_PHASE);\n\n                        if (me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))\n                            me->RemoveAura(SPELL_CHILDREN_OF_DEATHWING_ONY);\n\n                        events.RescheduleEvent(EVENT_LIFTOFF, 1000, PHASE_GROUND);\n                        secondPhase = true;\n                    }\n                    m_uiOnyxiaCheckTimer = 1000;\n                }\n                else m_uiOnyxiaCheckTimer -= diff;\n            }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_bwd_nefarian.cpp",
+        "old": "if (phase == PHASE_FLIGHT && m_uiChromaticCheckTimer <= diff && !finalPhase)\n            {\n                if (!me->FindNearestCreature(NPC_CHROMATIC_PROTO, 150.0f))\n                {\n                    events.RescheduleEvent(EVENT_LAND, 10000, PHASE_FLIGHT);\n                    finalPhase = true;\n                }\n                m_uiChromaticCheckTimer = 1000;\n            }\n            else m_uiChromaticCheckTimer -= diff;",
+        "new": "if (phase == PHASE_FLIGHT && !finalPhase)\n            {\n                if (m_uiChromaticCheckTimer <= diff)\n                {\n                    if (!me->FindNearestCreature(NPC_CHROMATIC_PROTO, 150.0f))\n                    {\n                        events.RescheduleEvent(EVENT_LAND, 10000, PHASE_FLIGHT);\n                        finalPhase = true;\n                    }\n                    m_uiChromaticCheckTimer = 1000;\n                }\n                else m_uiChromaticCheckTimer -= diff;\n            }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "AnnHyldeTimers",
+    "paths": [
+      "src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_ingvar_the_plunderer.cpp"
+    ],
+    "cls": "mob_annhylde_the_callerAI",
+    "title": "Keep AnnHylde resurrection idle until actual arrival",
+    "slug": "annhylde-resurrection-reset-state",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_ingvar_the_plunderer.cpp",
+        "old": "            //! HACK: Creature's can't have MOVEMENTFLAG_FLYING",
+        "new": "            uiResurectTimer = 0;\n            uiResurectPhase = 0;\n            //! HACK: Creature's can't have MOVEMENTFLAG_FLYING",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "TrollReturn",
+    "paths": [
+      "src/server/scripts/Maelstrom/LostIsles/kezan.cpp"
+    ],
+    "cls": "npc_defiant_trollAI",
+    "title": "Issue the defiant trolls return movement only once after work expires",
+    "slug": "defiant-troll-return-once",
+    "edits": [
+      {
+        "path": "src/server/scripts/Maelstrom/LostIsles/kezan.cpp",
+        "old": "                if(workTimer > diff)\n                    workTimer -= diff;\n                else\n                {\n                    me->GetMotionMaster()->MoveTargetedHome();\n                }",
+        "new": "                if (workTimer)\n                {\n                    if (workTimer > diff)\n                        workTimer -= diff;\n                    else\n                    {\n                        workTimer = 0;\n                        me->GetMotionMaster()->MoveTargetedHome();\n                    }\n                }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "BalloonBoard",
+    "paths": [
+      "src/server/scripts/Legion/MicroHolidays/SpringBalloonFestival.cpp"
+    ],
+    "cls": "npc_chens",
+    "title": "Bind all balloon queues to their successful summon and live waiting player",
+    "slug": "spring-balloon-board-identity",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/SpringBalloonFestival.cpp",
+        "old": "                        me->SummonCreature(118365, 5259.373f, -668.9254f, 163.235f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void\n                                        {\n                                            if (auto balloon = g_player->FindNearestCreature(118365, 40.0f))\n                                                g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "new": "                        Creature* balloon = me->SummonCreature(118365, 5259.373f, -668.9254f, 163.235f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n                        if (!balloon)\n                        {\n                            timer = 2000;\n                            return;\n                        }\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void\n                                        {\n                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())\n                                                return;\n                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))\n                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))\n                                                    g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/SpringBalloonFestival.cpp",
+        "old": "                        me->SummonCreature(118297, -9516.056f, -1008.158f, 102.724f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void\n                                        {\n                                            if (auto balloon = g_player->FindNearestCreature(118297, 40.0f))\n                                                g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "new": "                        Creature* balloon = me->SummonCreature(118297, -9516.056f, -1008.158f, 102.724f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n                        if (!balloon)\n                        {\n                            timer = 2000;\n                            return;\n                        }\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void\n                                        {\n                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())\n                                                return;\n                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))\n                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))\n                                                    g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/SpringBalloonFestival.cpp",
+        "old": "                        me->SummonCreature(118366, 547.6684f, -653.8698f, 257.4579f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void\n                                        {\n                                            if (auto balloon = g_player->FindNearestCreature(118366, 40.0f))\n                                                g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "new": "                        Creature* balloon = me->SummonCreature(118366, 547.6684f, -653.8698f, 257.4579f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n                        if (!balloon)\n                        {\n                            timer = 2000;\n                            return;\n                        }\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void\n                                        {\n                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())\n                                                return;\n                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))\n                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))\n                                                    g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/SpringBalloonFestival.cpp",
+        "old": "                        me->SummonCreature(118363, 470.5434f, 6518.068f, 39.03863f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void\n                                        {\n                                            if (auto balloon = g_player->FindNearestCreature(118363, 40.0f))\n                                                g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "new": "                        Creature* balloon = me->SummonCreature(118363, 470.5434f, 6518.068f, 39.03863f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n                        if (!balloon)\n                        {\n                            timer = 2000;\n                            return;\n                        }\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void\n                                        {\n                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())\n                                                return;\n                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))\n                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))\n                                                    g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/SpringBalloonFestival.cpp",
+        "old": "                        me->SummonCreature(118359, 1661.786f, 4788.782f, 138.8493f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void\n                                        {\n                                            if (auto balloon = g_player->FindNearestCreature(118359, 40.0f))\n                                                g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "new": "                        Creature* balloon = me->SummonCreature(118359, 1661.786f, 4788.782f, 138.8493f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n                        if (!balloon)\n                        {\n                            timer = 2000;\n                            return;\n                        }\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void\n                                        {\n                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())\n                                                return;\n                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))\n                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))\n                                                    g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/SpringBalloonFestival.cpp",
+        "old": "                        me->SummonCreature(118364, 4506.38f, 4856.669f, 662.1934f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void\n                                        {\n                                            if (auto balloon = g_player->FindNearestCreature(118364, 40.0f))\n                                                g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "new": "                        Creature* balloon = me->SummonCreature(118364, 4506.38f, 4856.669f, 662.1934f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n                        if (!balloon)\n                        {\n                            timer = 2000;\n                            return;\n                        }\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void\n                                        {\n                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())\n                                                return;\n                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))\n                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))\n                                                    g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/SpringBalloonFestival.cpp",
+        "old": "                        me->SummonCreature(118367, 3838.949f, 2060.948f, 254.2826f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void\n                                        {\n                                            if (auto balloon = g_player->FindNearestCreature(118367, 40.0f))\n                                                g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "new": "                        Creature* balloon = me->SummonCreature(118367, 3838.949f, 2060.948f, 254.2826f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);\n                        if (!balloon)\n                        {\n                            timer = 2000;\n                            return;\n                        }\n\n                        for (auto& guid : guidTemp)\n                        {\n                            if (++i <= 3)\n                            {\n                                if (auto g_player = ObjectAccessor::GetPlayer(*me, guid))\n                                {\n                                    if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))\n                                    {\n                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void\n                                        {\n                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())\n                                                return;\n                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))\n                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))\n                                                    g_player->CastSpell(balloon, 234947, true);\n                                        });",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "ShannoxPrison",
+    "paths": [
+      "src/server/scripts/Kalimdor/Firelands/boss_shannox.cpp"
+    ],
+    "cls": "npc_shannox_crystal_prisonAI",
+    "title": "Release Shannox prison once even when its trapped actor disappears",
+    "slug": "shannox-prison-release-once",
+    "edits": [
+      {
+        "path": "src/server/scripts/Kalimdor/Firelands/boss_shannox.cpp",
+        "old": "void JustDied(Unit* /*killer*/)\n            {\n                if (!bDog)\n                    DoCast(me, SPELL_CREATE_EMBERSTONE_FRAGMENT, true);\n                bDog = false;\n                if (Unit* unit = ObjectAccessor::GetUnit(*me, trappedUnit))\n                {\n                    trappedUnit.Clear();\n                    unit->RemoveAurasDueToSpell(SPELL_CRYSTAL_PRISON_TRAP);\n                }\n                me->DespawnOrUnsummon(800);\n            }",
+        "new": "void JustDied(Unit* /*killer*/)\n            {\n                if (released)\n                    return;\n                released = true;\n                if (!bDog)\n                    DoCast(me, SPELL_CREATE_EMBERSTONE_FRAGMENT, true);\n                bDog = false;\n                Unit* unit = ObjectAccessor::GetUnit(*me, trappedUnit);\n                trappedUnit.Clear();\n                if (unit)\n                {\n                    unit->RemoveAurasDueToSpell(SPELL_CRYSTAL_PRISON_TRAP);\n                }\n                me->DespawnOrUnsummon(800);\n            }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Kalimdor/Firelands/boss_shannox.cpp",
+        "old": "ObjectGuid trappedUnit;",
+        "new": "ObjectGuid trappedUnit;\n            bool released = false;",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Kalimdor/Firelands/boss_shannox.cpp",
+        "old": "void UpdateAI(uint32 diff)\n            {\n                if (!trappedUnit)\n                    return;\n\n                if (existenceCheckTimer <= diff)\n                {\n                    Unit* unit = ObjectAccessor::GetUnit(*me, trappedUnit);\n                    if (!unit || unit->isDead() || !unit->HasAura(SPELL_CRYSTAL_PRISON_TRAP))\n                    {\n                        JustDied(me);\n                        return;\n                    }\n                }\n                else\n                    existenceCheckTimer -= diff;\n\n                if (bDog)\n                {\n                    if (dogTimer <= diff)\n                        JustDied(me);\n                    else\n                        dogTimer -= diff;\n                }\n            }",
+        "new": "void UpdateAI(uint32 diff)\n            {\n                if (!trappedUnit)\n                    return;\n\n                if (existenceCheckTimer <= diff)\n                {\n                    Unit* unit = ObjectAccessor::GetUnit(*me, trappedUnit);\n                    if (!unit || unit->isDead() || !unit->HasAura(SPELL_CRYSTAL_PRISON_TRAP))\n                    {\n                        JustDied(me);\n                        return;\n                    }\n                    existenceCheckTimer = 1000;\n                }\n                else\n                    existenceCheckTimer -= diff;\n\n                if (bDog)\n                {\n                    if (dogTimer <= diff)\n                        JustDied(me);\n                    else\n                        dogTimer -= diff;\n                }\n            }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Kalimdor/Firelands/boss_shannox.cpp",
+        "old": "void SetGUID(ObjectGuid const& guid, int32 type)\n            {\n                trappedUnit = guid;\n                existenceCheckTimer = 1000;\n\n                if (type == DATA_TRAPPED_DOG)\n                {\n                    bDog = true;\n                    dogTimer = 10000;\n                }\n            }",
+        "new": "void SetGUID(ObjectGuid const& guid, int32 type)\n            {\n                if (released)\n                    return;\n                trappedUnit = guid;\n                existenceCheckTimer = 1000;\n\n                if (type == DATA_TRAPPED_DOG)\n                {\n                    bDog = true;\n                    dogTimer = 10000;\n                }\n            }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "MaloriakFreeze",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_maloriak.cpp"
+    ],
+    "cls": "npc_maloriak_flash_freezeAI",
+    "title": "Release Maloriak flash freeze once with an absent prisoner",
+    "slug": "maloriak-freeze-release-once",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_maloriak.cpp",
+        "old": "void JustDied(Unit* /*killer*/)\n        {\n            if (Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer))\n            {\n                trappedPlayer.Clear();\n                player->RemoveAurasDueToSpell(SPELL_FLASH_FREEZE);\n            }\n            DoCast(me, SPELL_SHATTER);\n            me->DespawnOrUnsummon(800);\n        }",
+        "new": "void JustDied(Unit* /*killer*/)\n        {\n            if (released)\n                return;\n            released = true;\n            Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer);\n            trappedPlayer.Clear();\n            if (player)\n            {\n                player->RemoveAurasDueToSpell(SPELL_FLASH_FREEZE);\n            }\n            DoCast(me, SPELL_SHATTER);\n            me->DespawnOrUnsummon(800);\n        }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_maloriak.cpp",
+        "old": "ObjectGuid trappedPlayer;",
+        "new": "ObjectGuid trappedPlayer;\n        bool released = false;",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_maloriak.cpp",
+        "old": "void UpdateAI(uint32 diff)\n        {\n            if (!trappedPlayer)\n                return;\n\n            if (existenceCheckTimer <= diff)\n            {\n                Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer);\n                if (!player || player->isDead() || !player->HasAura(SPELL_FLASH_FREEZE))\n                {\n                    JustDied(me);\n                    me->DespawnOrUnsummon();\n                    return;\n                }\n            }\n            else\n                existenceCheckTimer -= diff;\n        }",
+        "new": "void UpdateAI(uint32 diff)\n        {\n            if (!trappedPlayer)\n                return;\n\n            if (existenceCheckTimer <= diff)\n            {\n                Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer);\n                if (!player || player->isDead() || !player->HasAura(SPELL_FLASH_FREEZE))\n                {\n                    JustDied(me);\n                    me->DespawnOrUnsummon();\n                    return;\n                }\n                existenceCheckTimer = 1000;\n            }\n            else\n                existenceCheckTimer -= diff;\n        }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackwingDescent/boss_maloriak.cpp",
+        "old": "void SetGUID(ObjectGuid const& guid, int32 type)\n        {\n            if (type == DATA_TRAPPED_PLAYER)\n            {\n                trappedPlayer = guid;\n                existenceCheckTimer = 1000;\n            }\n        }",
+        "new": "void SetGUID(ObjectGuid const& guid, int32 type)\n        {\n            if (released)\n                return;\n            if (type == DATA_TRAPPED_PLAYER)\n            {\n                trappedPlayer = guid;\n                existenceCheckTimer = 1000;\n            }\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "SindragosaTomb",
+    "paths": [
+      "src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp"
+    ],
+    "cls": "npc_ice_tombAI",
+    "title": "Retire Sindragosa tomb identity even after the prisoner leaves",
+    "slug": "sindragosa-tomb-release-state",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp",
+        "old": "void JustDied(Unit* /*killer*/) override\n            {\n                me->RemoveAllGameObjects();\n\n                if (Player* player = ObjectAccessor::GetPlayer(*me, _trappedPlayerGUID))\n                {\n                    _trappedPlayerGUID.Clear();\n                    player->RemoveAurasDueToSpell(SPELL_ICE_TOMB_DAMAGE);\n                    player->RemoveAurasDueToSpell(SPELL_ASPHYXIATION);\n                }\n            }",
+        "new": "void JustDied(Unit* /*killer*/) override\n            {\n                if (released)\n                    return;\n                released = true;\n                me->RemoveAllGameObjects();\n                Player* player = ObjectAccessor::GetPlayer(*me, _trappedPlayerGUID);\n                _trappedPlayerGUID.Clear();\n                if (player)\n                {\n                    player->RemoveAurasDueToSpell(SPELL_ICE_TOMB_DAMAGE);\n                    player->RemoveAurasDueToSpell(SPELL_ASPHYXIATION);\n                }\n            }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp",
+        "old": "ObjectGuid _trappedPlayerGUID;",
+        "new": "ObjectGuid _trappedPlayerGUID;\n            bool released = false;",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp",
+        "old": "void SetGUID(ObjectGuid const& guid, int32 type/* = 0 */) override\n            {\n                if (type == DATA_TRAPPED_PLAYER)\n                {\n                    _trappedPlayerGUID = guid;\n                    _existenceCheckTimer = 1000;\n                }\n            }",
+        "new": "void SetGUID(ObjectGuid const& guid, int32 type/* = 0 */) override\n            {\n                if (released)\n                    return;\n                if (type == DATA_TRAPPED_PLAYER)\n                {\n                    _trappedPlayerGUID = guid;\n                    _existenceCheckTimer = 1000;\n                }\n            }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "HagaraTomb",
+    "paths": [
+      "src/server/scripts/Kalimdor/CavernsOfTime/DragonSoul/boss_hagara.cpp"
+    ],
+    "cls": "npc_hagara_the_stormbinder_icy_tombAI",
+    "title": "Release Hagara tomb once and rearm its live prisoner check",
+    "slug": "hagara-tomb-release-once",
+    "edits": [
+      {
+        "path": "src/server/scripts/Kalimdor/CavernsOfTime/DragonSoul/boss_hagara.cpp",
+        "old": "void JustDied(Unit* /*killer*/)\n            {\n                if (Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer))\n                {\n                    trappedPlayer.Clear();\n                    player->RemoveAura(SPELL_ICY_TOMB);\n                }\n                me->DespawnOrUnsummon(800);\n            }",
+        "new": "void JustDied(Unit* /*killer*/)\n            {\n                if (released)\n                    return;\n                released = true;\n                Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer);\n                trappedPlayer.Clear();\n                if (player)\n                {\n                    player->RemoveAura(SPELL_ICY_TOMB);\n                }\n                me->DespawnOrUnsummon(800);\n            }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Kalimdor/CavernsOfTime/DragonSoul/boss_hagara.cpp",
+        "old": "ObjectGuid trappedPlayer;",
+        "new": "ObjectGuid trappedPlayer;\n            bool released = false;",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Kalimdor/CavernsOfTime/DragonSoul/boss_hagara.cpp",
+        "old": "void UpdateAI(uint32 diff)\n            {\n                if (!trappedPlayer)\n                    return;\n\n                if (existenceCheckTimer <= diff)\n                {\n                    Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer);\n                    if (!player || player->isDead() || !player->HasAura(SPELL_ICY_TOMB))\n                    {\n                        JustDied(me);\n                        me->DespawnOrUnsummon();\n                        return;\n                    }\n                }\n                else\n                    existenceCheckTimer -= diff;\n            }",
+        "new": "void UpdateAI(uint32 diff)\n            {\n                if (!trappedPlayer)\n                    return;\n\n                if (existenceCheckTimer <= diff)\n                {\n                    Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer);\n                    if (!player || player->isDead() || !player->HasAura(SPELL_ICY_TOMB))\n                    {\n                        JustDied(me);\n                        me->DespawnOrUnsummon();\n                        return;\n                    }\n                    existenceCheckTimer = 1000;\n                }\n                else\n                    existenceCheckTimer -= diff;\n            }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Kalimdor/CavernsOfTime/DragonSoul/boss_hagara.cpp",
+        "old": "void SetGUID(ObjectGuid const& guid, int32 type)\n            {\n                if (type == DATA_TRAPPED_PLAYER)\n                {\n                    trappedPlayer = guid;\n                    existenceCheckTimer = 1000;\n                }\n            }",
+        "new": "void SetGUID(ObjectGuid const& guid, int32 type)\n            {\n                if (released)\n                    return;\n                if (type == DATA_TRAPPED_PLAYER)\n                {\n                    trappedPlayer = guid;\n                    existenceCheckTimer = 1000;\n                }\n            }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "MedivhSequence",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/Karazhan/karazhan.cpp"
+    ],
+    "cls": "npc_image_of_medivhAI",
+    "title": "Initialize and safely abort the Medivh cinematic without phantom quest completion",
+    "slug": "medivh-cinematic-actor-lifecycle",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/Karazhan/karazhan.cpp",
+        "old": "        void Reset() override\n        {\n            ArcanagosGUID.Clear();",
+        "new": "        void AbortEvent()\n        {\n            EventStarted = false;\n            if (instance && instance->GetGuidData(DATA_IMAGE_OF_MEDIVH) == me->GetGUID())\n                instance->SetGuidData(DATA_IMAGE_OF_MEDIVH, ObjectGuid::Empty);\n            me->DespawnOrUnsummon();\n        }\n\n        void Reset() override\n        {\n            EventStarted = false;\n            Step = YellTimer = FireMedivhTimer = FireArcanagosTimer = 0;\n            ArcanagosGUID.Clear();",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/Karazhan/karazhan.cpp",
+        "old": "void StartEvent()\n        {\n            Step = 1;\n            EventStarted = true;\n            Creature* Arcanagos = me->SummonCreature(MOB_ARCANAGOS, ArcanagosPos[0], ArcanagosPos[1], ArcanagosPos[2], 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 20000);\n            if (!Arcanagos)\n                return;\n            ArcanagosGUID = Arcanagos->GetGUID();\n            Arcanagos->SetDisableGravity(true);\n            (*Arcanagos).GetMotionMaster()->MovePoint(0, ArcanagosPos[0], ArcanagosPos[1], ArcanagosPos[2]);\n            Arcanagos->SetOrientation(ArcanagosPos[3]);\n            me->SetOrientation(MedivPos[3]);\n            YellTimer = 10000;\n        }",
+        "new": "void StartEvent()\n        {\n            if (EventStarted)\n                return;\n            Creature* Arcanagos = me->SummonCreature(MOB_ARCANAGOS, ArcanagosPos[0], ArcanagosPos[1], ArcanagosPos[2], 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 20000);\n            if (!Arcanagos)\n            {\n                AbortEvent();\n                return;\n            }\n            Step = 1;\n            EventStarted = true;\n            ArcanagosGUID = Arcanagos->GetGUID();\n            Arcanagos->SetDisableGravity(true);\n            (*Arcanagos).GetMotionMaster()->MovePoint(0, ArcanagosPos[0], ArcanagosPos[1], ArcanagosPos[2]);\n            Arcanagos->SetOrientation(ArcanagosPos[3]);\n            me->SetOrientation(MedivPos[3]);\n            YellTimer = 10000;\n        }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/Karazhan/karazhan.cpp",
+        "old": "            Map* map = me->GetMap();\n            switch (Step)",
+        "new": "            Map* map = me->GetMap();\n            if (Step >= 2 && (!arca || !arca->IsAlive()))\n            {\n                AbortEvent();\n                return 9999999;\n            }\n            switch (Step)",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/Karazhan/karazhan.cpp",
+        "old": "            if (YellTimer <= diff)\n            {\n                if (EventStarted)",
+        "new": "            if (!EventStarted)\n                return;\n\n            if (YellTimer <= diff)\n            {\n                if (EventStarted)",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/Karazhan/karazhan.cpp",
+        "old": "if (FireArcanagosTimer <= diff)\n                {\n                    if (arca)\n                        arca->CastSpell(me, SPELL_FIRE_BALL, false);\n                    FireArcanagosTimer = 6000;\n                }\n                else\n                    FireArcanagosTimer -= diff;",
+        "new": "if (FireArcanagosTimer)\n                {\n                    if (FireArcanagosTimer <= diff)\n                    {\n                        if (arca)\n                            arca->CastSpell(me, SPELL_FIRE_BALL, false);\n                        FireArcanagosTimer = 6000;\n                    }\n                    else\n                        FireArcanagosTimer -= diff;\n                }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/Karazhan/karazhan.cpp",
+        "old": "if (FireMedivhTimer <= diff)\n                {\n                    if (arca)\n                        DoCast(arca, SPELL_FIRE_BALL, false);\n\n                    FireMedivhTimer = 5000;\n                }\n                else\n                    FireMedivhTimer -= diff;",
+        "new": "if (FireMedivhTimer)\n                {\n                    if (FireMedivhTimer <= diff)\n                    {\n                        if (arca)\n                            DoCast(arca, SPELL_FIRE_BALL, false);\n\n                        FireMedivhTimer = 5000;\n                    }\n                    else\n                        FireMedivhTimer -= diff;\n                }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "ChampionSurrender",
+    "paths": [
+      "src/server/scripts/Northrend/zone_icecrown.cpp"
+    ],
+    "cls": "npc_argent_championAI",
+    "title": "Resolve scaled lethal champion hits to player owners and award surrender once",
+    "slug": "argent-champion-scaled-surrender",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/zone_icecrown.cpp",
+        "old": "void DamageTaken(Unit* pDoneBy, uint32& uiDamage, DamageEffectType dmgType) override\n        {\n            if(pDoneBy)\n            {\n                if (uiDamage > me->GetHealth() && (pDoneBy->GetTypeId() == TYPEID_PLAYER || pDoneBy->GetOwner()))\n                {\n                    DoScriptText(NPC_ARGENT_CHAMPION_TEXT_SAY_WIN, me);\n                    uiDamage = 0;\n\n                    if(pDoneBy->GetOwner())\n                        (pDoneBy->GetOwner())->ToPlayer()->KilledMonsterCredit(NPC_ARGENT_CHAMPION_CREDIT, ObjectGuid::Empty);\n                    if(pDoneBy->GetTypeId() == TYPEID_PLAYER)\n                        pDoneBy->ToPlayer()->KilledMonsterCredit(NPC_ARGENT_CHAMPION_CREDIT, ObjectGuid::Empty);\n\n                    me->setFaction(35);\n                    me->DespawnOrUnsummon(5000);\n                    me->SetHomePosition(me->GetPositionX(),me->GetPositionY(),me->GetPositionZ(),me->GetOrientation());\n                    EnterEvadeMode();\n                }\n            }\n        }",
+        "new": "void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override\n        {\n            if (surrendered)\n            {\n                damage = 0;\n                return;\n            }\n            Player* player = attacker ? attacker->GetAffectingPlayer() : nullptr;\n            if (!player || damage < me->GetHealth(attacker))\n                return;\n\n            surrendered = true;\n            damage = 0;\n            DoScriptText(NPC_ARGENT_CHAMPION_TEXT_SAY_WIN, me);\n            player->RewardPlayerAndGroupAtEvent(NPC_ARGENT_CHAMPION_CREDIT, me);\n            me->setFaction(35);\n            me->DespawnOrUnsummon(5000);\n            me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());\n            me->CombatStop(true);\n            me->DeleteThreatList();\n        }",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Northrend/zone_icecrown.cpp",
+        "old": "        uint32 uiDefendTimer;\n\n        void Reset() override\n        {\n        uiChargeTimer = 7000;",
+        "new": "        uint32 uiDefendTimer;\n        bool surrendered = false;\n\n        void Reset() override\n        {\n        surrendered = false;\n        uiChargeTimer = 7000;",
+        "count": 1
+      }
+    ]
+  }
+]
