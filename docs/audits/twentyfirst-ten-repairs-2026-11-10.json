@@ -1,0 +1,603 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "38ab2461febc96c43fc4e627ec57de407fbc168b",
+  "batch_number": 1,
+  "authorized_total": 10,
+  "support_commit": "95119f4accdbb0c703810795d84924861a69e167",
+  "implementation_head": "91355128a3b11bb3545c043a358e0760a6f5b164",
+  "fixes": [
+    {
+      "key": "AntorusIntro",
+      "title": "Own Antorus introduction state and delayed attempts per raid instance",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp",
+        "src/server/scripts/Legion/AntorusTheBurningThrone/instance_antorus.cpp",
+        "src/server/scripts/Legion/AntorusTheBurningThrone/AntorusIntro.h"
+      ],
+      "audit": "docs/audits/antorus-instance-intro-lifecycle-2026-11-10.json",
+      "commit": "6f80354b863bf677c7ef5cdfb056c6153e6e1647"
+    },
+    {
+      "key": "ArgentValiant",
+      "title": "Resolve scaled Argent Valiant surrender to eligible player owners once",
+      "paths": [
+        "src/server/scripts/Northrend/zone_icecrown.cpp"
+      ],
+      "audit": "docs/audits/argent-valiant-scaled-surrender-2026-11-10.json",
+      "commit": "03888eca9f3b1ca8c3a8810cb0cdbb422da91bd0"
+    },
+    {
+      "key": "CityValiant",
+      "title": "Bind city Valiant combat and scaled surrender to the actual challenger",
+      "paths": [
+        "src/server/scripts/Northrend/zone_icecrown.cpp"
+      ],
+      "audit": "docs/audits/city-valiant-challenger-lifecycle-2026-11-10.json",
+      "commit": "97b6ec4e3a71385198f3d4f6d3adfbcb0b291252"
+    },
+    {
+      "key": "TournamentHelper",
+      "title": "Protect tournament helpers from exact and scaled lethal hits",
+      "paths": [
+        "src/server/scripts/Northrend/zone_icecrown.cpp"
+      ],
+      "audit": "docs/audits/tournament-helper-scaled-survival-2026-11-10.json",
+      "commit": "d41e1bf1779a01f9bc525c8bf08338584725d8fc"
+    },
+    {
+      "key": "TsulongEvade",
+      "title": "Initialize Tsulongs alternating evade check on reset",
+      "paths": [
+        "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_tsulong.cpp"
+      ],
+      "audit": "docs/audits/tsulong-evade-reset-state-2026-11-10.json",
+      "commit": "4915e2120919345001cf88dfca06048dbabc6410"
+    },
+    {
+      "key": "ChengChallenge",
+      "title": "Protect scaled training-challenge surrender and credit only its summoner",
+      "paths": [
+        "src/server/scripts/Pandaria/zone_kun_lai_summit.cpp"
+      ],
+      "audit": "docs/audits/cheng-scaled-challenge-surrender-2026-11-10.json",
+      "commit": "960a14c6de9e307820307fd3ab2ddfbdd8aa6445"
+    },
+    {
+      "key": "ChiJi",
+      "title": "Keep Chi Ji surrender and participant credit valid for pet killing blows",
+      "paths": [
+        "src/server/scripts/Pandaria/zone_timeless_isle.cpp"
+      ],
+      "audit": "docs/audits/chi-ji-scaled-owner-victory-2026-11-10.json",
+      "commit": "3a49d5b7aa18f924a35baf7548683015a1f482de"
+    },
+    {
+      "key": "Xuen",
+      "title": "Keep Xuen surrender and participant credit valid for pet killing blows",
+      "paths": [
+        "src/server/scripts/Pandaria/zone_timeless_isle.cpp"
+      ],
+      "audit": "docs/audits/xuen-scaled-owner-victory-2026-11-10.json",
+      "commit": "db3afd5f15e903d5c2ba05fecddf09d2e16801fd"
+    },
+    {
+      "key": "Yulon",
+      "title": "Keep Yulon surrender and participant credit valid for pet killing blows",
+      "paths": [
+        "src/server/scripts/Pandaria/zone_timeless_isle.cpp"
+      ],
+      "audit": "docs/audits/yulon-scaled-owner-victory-2026-11-10.json",
+      "commit": "0f5eb27eadf91eea823d5a85d169132316d76512"
+    },
+    {
+      "key": "Niuzao",
+      "title": "Keep Niuzao surrender and participant credit valid for pet killing blows",
+      "paths": [
+        "src/server/scripts/Pandaria/zone_timeless_isle.cpp"
+      ],
+      "audit": "docs/audits/niuzao-scaled-owner-victory-2026-11-10.json",
+      "commit": "91355128a3b11bb3545c043a358e0760a6f5b164"
+    }
+  ],
+  "counting": "10 independent controllers in7 implementation files including one new header. Antorus13 entry branches and its instance queue/retry support count as ONE repair. Argent Valiant,city Valiant,tournament helpers,Tsulong,Cheng,and four independent Celestial encounters each count once. No SQL/character rewrite or invented Lady threshold/timer.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "67256fd8bedea576eade09215a862b04b4b08d337bdce3d204fa703f2ca83b71",
+    "bnet_sha256": "ec1e36cfce99c6628f0e59113115f82bd271d58bf3eda4533b28c3a7fbf06b54",
+    "rollback": ".codex/release-before-twentyfirst-ten-fixes-2026-11-10",
+    "startup": "Owned PID=25768 reached fresh ready\nPASS owned PID=25768 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "validation": {
+    "source": "20 MSVC ASAN selected production contracts:10 pinned38ab controls and10 repaired. Full Antorus header+OnTrigger with controlled boundaries covers per-instance/entry admission,pending/repeated events,native post-callback affected sets,prerequisites,failed conversations/casts/partial summons,no duplicate accepted trio,ordered1s/50s stages,player map/death cancellation and shared world progression after departure. Actual selected damage/QuestCredit bodies cover exact/scaled/player/pet/two-level guardian,repeated hits,missing/unowned threat rows/dedup,challenger death versus pet loss,retry/admission and helper1HP underflow. Tsulong selected Reset assignment initialized from an explicit sentinel,not executed indeterminate memory.",
+    "native": "Actual matching Release Unit::GetHealth(attacker),GetAffectingPlayer,actual Player and Creature CREATED_BY owner chains representing pet/two-level guardian ownership,ThreatManager participant enumeration,ObjectAccessor GUID lookups,EventObject affected sets,and InstanceScript FunctionProcessor/fresh Player lookup. All9 selected reset/combat handlers plus actual Antorus header admission/failure/queue lifecycle exercised. Speech,quest/group credit,62724 spell,loot,parent actions,combat start/evade and summon endpoints observed. Full original registered encounter/quest/client traversal and full-core ASAN not established;no character writes.",
+    "release": "Original main game/scripts libraries rebuilt;no OutDir override. Staged/canonical PE verifies10 changed controllers and207 prior selected checks,total217. Final linked gossip reaches actual challenger start;Antorus actual instance inherits owned state/queue and callbacks freshly resolve Player/EO;exact-lethal scaling hooks and native participant-owner credit/loot remain linked. Canonical Scepter,ArtifactTier,ScenarioResumeASAN and owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crash/log timestamps/lengths,exit/stdout/stderr/appended warnings/errors/assertions/DBErrors reviewed. Final declared checks clean. Fixture-only compilation/ASAN bad-free/EO holder setup errors and blocked readonly template insert retained with causes and passing repaired regressions. Canonical mixed7111-byte DBErrors and all previous OPEN evidence unchanged.",
+    "scope": "10 independent controllers in7 implementation files including one new header. Antorus13 entry branches and its instance queue/retry support count as ONE repair. Argent Valiant,city Valiant,tournament helpers,Tsulong,Cheng,and four independent Celestial encounters each count once. No SQL/character rewrite or invented Lady threshold/timer."
+  },
+  "diagnostics": {
+    "final": "Final declared regressions,linked binary checks,retained checks and owned startup passed with canonical+own crash/log/exit/stdout/stderr/appended-diagnostic review.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 1,
+      "types": {
+        "C5055": 1
+      },
+      "review": "Main incremental build warnings checked against f55f0ea70. Ten retained-fixture warnings are byte-equivalent messages/file/line to the previous passing batch;their production and fixture sources unchanged. Diagnostics retained without suppression;not claimed repaired.",
+      "entries": [
+        {
+          "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_tsulong.cpp",
+          "line": 300,
+          "code": "C5055",
+          "message": "operator '*': deprecated between enumerations and floating-point types",
+          "expression": "dayphasetimer = 1.2 * IN_MILLISECONDS;",
+          "expression_present_in_baseline": true
+        }
+      ],
+      "retained_fixture_warnings": [
+        {
+          "log": "artifact-tier.log",
+          "file": "ArtifactTierProgressionTest.cpp",
+          "line": 65,
+          "code": "C4458",
+          "message": "declaration of 'item' hides class member",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "artifact-tier.log",
+          "file": "AutoTier.inc",
+          "line": 33,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint8', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 26,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 27,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 28,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 29,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'int' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "AddScenario.inc",
+          "line": 7,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        }
+      ],
+      "selected_fixture_review": {
+        "entries": [
+          {
+            "case": "AntorusIntro",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(53): warning C4189: 'd': local variable is initialized but not referenced"
+          },
+          {
+            "case": "AntorusIntro",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "AntorusIntro",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(42): warning C4505: 'Hit': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "AntorusIntro",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(53): warning C4189: 'd': local variable is initialized but not referenced"
+          },
+          {
+            "case": "AntorusIntro",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "AntorusIntro",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(42): warning C4505: 'Hit': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "ArgentValiant",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\ArgentValiant-20261110-115157-181\\Constants.inc(1): warning C4245: 'initializing': conversion from 'int' to 'const uint32', signed/unsigned mismatch"
+          },
+          {
+            "case": "ArgentValiant",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\ArgentValiant-20261110-115157-181\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "ArgentValiant",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "ArgentValiant",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\ArgentValiant-20261110-115159-470\\Constants.inc(1): warning C4245: 'initializing': conversion from 'int' to 'const uint32', signed/unsigned mismatch"
+          },
+          {
+            "case": "ArgentValiant",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "CityValiant",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\CityValiant-20261110-115201-707\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "CityValiant",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "CityValiant",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "CityValiant",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(42): warning C4505: 'Hit': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "CityValiant",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "CityValiant",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "TournamentHelper",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\TournamentHelper-20261110-115206-185\\Selected.inc(5): warning C4244: '=': conversion from 'uint64' to 'uint32', possible loss of data"
+          },
+          {
+            "case": "TournamentHelper",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\TournamentHelper-20261110-115206-185\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "TournamentHelper",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "TournamentHelper",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "TournamentHelper",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "TournamentHelper",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "TsulongEvade",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(53): warning C4189: 'd': local variable is initialized but not referenced"
+          },
+          {
+            "case": "TsulongEvade",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "TsulongEvade",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "TsulongEvade",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(42): warning C4505: 'Hit': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "TsulongEvade",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(53): warning C4189: 'd': local variable is initialized but not referenced"
+          },
+          {
+            "case": "TsulongEvade",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "TsulongEvade",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "TsulongEvade",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(42): warning C4505: 'Hit': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "ChengChallenge",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\ChengChallenge-20261110-115215-051\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "ChengChallenge",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\ChengChallenge-20261110-115215-051\\Selected.inc(1): warning C4100: 'attacker': unreferenced parameter"
+          },
+          {
+            "case": "ChengChallenge",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "ChengChallenge",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "ChengChallenge",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "ChengChallenge",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "ChiJi",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\ChiJi-20261110-115219-508\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "ChiJi",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "ChiJi",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "ChiJi",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\ChiJi-20261110-115221-709\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "ChiJi",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "ChiJi",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Xuen",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\Xuen-20261110-115224-008\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "Xuen",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Xuen",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Xuen",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\Xuen-20261110-115226-242\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "Xuen",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Xuen",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Yulon",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\Yulon-20261110-115228-653\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "Yulon",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Yulon",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Yulon",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\Yulon-20261110-115231-016\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "Yulon",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Yulon",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Niuzao",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\Niuzao-20261110-115233-221\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "Niuzao",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Niuzao",
+            "mode": "baseline",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Niuzao",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\twentyfirst-ten-repairs\\Niuzao-20261110-115235-463\\Selected.inc(1): warning C4100: 'dmgType': unreferenced parameter"
+          },
+          {
+            "case": "Niuzao",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(35): warning C4505: 'frand': unreferenced function with internal linkage has been removed"
+          },
+          {
+            "case": "Niuzao",
+            "mode": "fixed",
+            "diagnostic": "C:\\wamp64\\www\\LegionCore-7.3.5\\tools\\tests/TwentyFirstTenRepairsTest.cpp(38): warning C4505: 'DoScriptText': unreferenced function with internal linkage has been removed"
+          }
+        ],
+        "explanation": "C4189/C4505 are unused per-case fixture variables/helpers,C4100 retained selected-body unused parameters. C4245 comes from original negative speech IDs represented as uint32 by catalog extraction,passed back to observed int32 speech endpoint;production original speech IDs/types unchanged. C4244 occurs only in the pinned old helper implicit uint64-to-uint32 damage cap;repaired cap casts explicitly after health<=uint32 damage proves representability. These compile warnings are visible,not disabled;final executable assertions/ASAN/native contracts passed."
+      }
+    },
+    "development": [
+      "Final review found the city gossip call still routed through the removed DoAction because the initial extractor matched the nested AI prefix. Fixed the actual outer gossip binding,scoped metadata to the full outer class,and added linked caller and challenger/pet-loss controls. No untested generic zone-combat fallback remains.",
+      "Native EventObject probe initially omitted its HashMapHolder capacity,so source lookup could not rearm;exception teardown then diagnosed an in-world EO. Fixed fixture setup and normal cleanup. Actual native templates are now loaded before Create;otherwise Create uses AddEventObjectTemplate and attempts a persistent world INSERT,correctly blocked by the readonly DB. Both1792 lines are this identified fixture path,not unsignedCAST;final readonly run clean. Canonical logs unaffected.",
+      "Source fixture initially used a local lambda default argument,omitted original TYPEID_PLAYER/ObjectGuid/static GetPlayer dependencies,and freed a stack boss when cleaning allocated summons by numeric GUID range. Corrected fixture with explicit allocation ownership;ASAN report retained,final20 pass. Native Map::AddToMap<EventObject> lacks a linked explicit specialization;probe uses actual Create/AddToWorld/ObjectAccessor and normal RemoveFromWorld.",
+      "Read-only MariaDB catalog confirmed13 Antorus EO templates800..812,all actual script bindings,conversation_data5545/5522/5524/5608/5703,and only66138 currently bound to Cheng script. Other shared trainer entries remain unchanged. Catalog probes initially assumed creature name/conversation_template fields;corrected to local schema. No migration applied.",
+      "Final sequence review traced CreatureAI::UpdateVictim:CombatStop alone prevents its evade path and leaves removed gossip hidden after challenger death. Repaired CityValiant loss to restore gossip and enter native evade;added source/native loss-to-next-round/flag checks. Earlier automated claims are superseded by final reruns and repromotion;pre-task recovery retained.",
+      "Reverse-scope verification caught four unrelated French gossip strings recoded by a Windows default-encoding edit. Reconstructed the complete Icecrown file from pinned UTF8 base plus the three exact planned edits. Scope now checks their preservation;final native/build/PE/canonical passes use the corrected source. No unrelated dialogue text changed.",
+      "PE stage inspection initially searched captured default-spell IDs only inside lambdas;those constants live in OnTrigger capture initialization. Verifier now checks caller constants together with callback instructions. Actual authored spell IDs/timers unchanged.",
+      "First archive attempt selected its own actively redirected outer finish log and stopped before any deletion. Verified each already-copied snapshot against original bytes,moved the partial snapshot to an explicit task-owned archive-first-attempt directory with a hash manifest,and reran with a nonmatching outer log name. Final fixed archive includes those original diagnostics and recovery manifest;326 deletions and protected/recovery/OPEN hashes verified clean."
+    ],
+    "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse scope of all selected files and no production diff.",
+    "supplemental_archives": [
+      {
+        "manifest": "build-extractors/bin/Release/fixed/twentyfirst-ten-repairs-2026-11-10/supplemental-manifest.json",
+        "sha256": "d637179f7ef9e23fe1f89b58815432ea66b44ca30835355741eae31f65fde353",
+        "files": 21
+      },
+      {
+        "manifest": "build-extractors/bin/Release/fixed/twentyfirst-ten-repairs-2026-11-10/supplemental-manifest-2.json",
+        "sha256": "8f8a99e2c51ce5ed0d42131cfbe1119bc994881de00ae57cedd006a9a3b881df",
+        "files": 3
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/twentyfirst-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "dd68b1aa766b58e14bc1be6eac43f20efea7f62e01351136dd510fd688020a81",
+    "original_files": 1954,
+    "removed_files": 326,
+    "logical_removed_bytes": 1898013385,
+    "deletion_manifest": ".codex/twentyfirst-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "74ea7b71cbd186d5b8ecbaf51ce554b7f27cc761561b9eb4c564d944f4a85f33",
+    "retained_rollbacks": [
+      ".codex/release-before-twentyfirst-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-twentieth-ten-fixes-2026-11-10",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-twentieth rollback retired after newest pre-twentyfirst recovery hash verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
+  },
+  "pending": [
+    "Antorus eventobject_antorus_into singleton eventDone/per-instance asynchronous ownership remains OPEN. Master roster/reset/report lifetime repaired here at stated selected scopes;actual arena/client traversal pending.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state."
+  ],
+  "continuation": "STOP after these10 authorized repairs;client/whole-chain scopes remain pending as recorded."
+}

@@ -1,4 +1,155 @@
 {
+  "latest_twentyfirst_ten_repairs_2026_11_10": {
+    "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+    "batch_number": 1,
+    "authorized_total": 10,
+    "fixes": [
+      {
+        "key": "AntorusIntro",
+        "title": "Own Antorus introduction state and delayed attempts per raid instance",
+        "paths": [
+          "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp",
+          "src/server/scripts/Legion/AntorusTheBurningThrone/instance_antorus.cpp",
+          "src/server/scripts/Legion/AntorusTheBurningThrone/AntorusIntro.h"
+        ],
+        "audit": "docs/audits/antorus-instance-intro-lifecycle-2026-11-10.json",
+        "commit": "6f80354b863bf677c7ef5cdfb056c6153e6e1647"
+      },
+      {
+        "key": "ArgentValiant",
+        "title": "Resolve scaled Argent Valiant surrender to eligible player owners once",
+        "paths": [
+          "src/server/scripts/Northrend/zone_icecrown.cpp"
+        ],
+        "audit": "docs/audits/argent-valiant-scaled-surrender-2026-11-10.json",
+        "commit": "03888eca9f3b1ca8c3a8810cb0cdbb422da91bd0"
+      },
+      {
+        "key": "CityValiant",
+        "title": "Bind city Valiant combat and scaled surrender to the actual challenger",
+        "paths": [
+          "src/server/scripts/Northrend/zone_icecrown.cpp"
+        ],
+        "audit": "docs/audits/city-valiant-challenger-lifecycle-2026-11-10.json",
+        "commit": "97b6ec4e3a71385198f3d4f6d3adfbcb0b291252"
+      },
+      {
+        "key": "TournamentHelper",
+        "title": "Protect tournament helpers from exact and scaled lethal hits",
+        "paths": [
+          "src/server/scripts/Northrend/zone_icecrown.cpp"
+        ],
+        "audit": "docs/audits/tournament-helper-scaled-survival-2026-11-10.json",
+        "commit": "d41e1bf1779a01f9bc525c8bf08338584725d8fc"
+      },
+      {
+        "key": "TsulongEvade",
+        "title": "Initialize Tsulongs alternating evade check on reset",
+        "paths": [
+          "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_tsulong.cpp"
+        ],
+        "audit": "docs/audits/tsulong-evade-reset-state-2026-11-10.json",
+        "commit": "4915e2120919345001cf88dfca06048dbabc6410"
+      },
+      {
+        "key": "ChengChallenge",
+        "title": "Protect scaled training-challenge surrender and credit only its summoner",
+        "paths": [
+          "src/server/scripts/Pandaria/zone_kun_lai_summit.cpp"
+        ],
+        "audit": "docs/audits/cheng-scaled-challenge-surrender-2026-11-10.json",
+        "commit": "960a14c6de9e307820307fd3ab2ddfbdd8aa6445"
+      },
+      {
+        "key": "ChiJi",
+        "title": "Keep Chi Ji surrender and participant credit valid for pet killing blows",
+        "paths": [
+          "src/server/scripts/Pandaria/zone_timeless_isle.cpp"
+        ],
+        "audit": "docs/audits/chi-ji-scaled-owner-victory-2026-11-10.json",
+        "commit": "3a49d5b7aa18f924a35baf7548683015a1f482de"
+      },
+      {
+        "key": "Xuen",
+        "title": "Keep Xuen surrender and participant credit valid for pet killing blows",
+        "paths": [
+          "src/server/scripts/Pandaria/zone_timeless_isle.cpp"
+        ],
+        "audit": "docs/audits/xuen-scaled-owner-victory-2026-11-10.json",
+        "commit": "db3afd5f15e903d5c2ba05fecddf09d2e16801fd"
+      },
+      {
+        "key": "Yulon",
+        "title": "Keep Yulon surrender and participant credit valid for pet killing blows",
+        "paths": [
+          "src/server/scripts/Pandaria/zone_timeless_isle.cpp"
+        ],
+        "audit": "docs/audits/yulon-scaled-owner-victory-2026-11-10.json",
+        "commit": "0f5eb27eadf91eea823d5a85d169132316d76512"
+      },
+      {
+        "key": "Niuzao",
+        "title": "Keep Niuzao surrender and participant credit valid for pet killing blows",
+        "paths": [
+          "src/server/scripts/Pandaria/zone_timeless_isle.cpp"
+        ],
+        "audit": "docs/audits/niuzao-scaled-owner-victory-2026-11-10.json",
+        "commit": "91355128a3b11bb3545c043a358e0760a6f5b164"
+      }
+    ],
+    "canonical": {
+      "directory": "build-extractors/bin/Release",
+      "world_sha256": "67256fd8bedea576eade09215a862b04b4b08d337bdce3d204fa703f2ca83b71",
+      "bnet_sha256": "ec1e36cfce99c6628f0e59113115f82bd271d58bf3eda4533b28c3a7fbf06b54",
+      "rollback": ".codex/release-before-twentyfirst-ten-fixes-2026-11-10",
+      "startup": "Owned PID=25768 reached fresh ready\nPASS owned PID=25768 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+    },
+    "cleanup": {
+      "status": "COMPLETE_HASH_VERIFIED",
+      "archive": "build-extractors/bin/Release/fixed/twentyfirst-ten-repairs-2026-11-10",
+      "archive_manifest_sha256": "dd68b1aa766b58e14bc1be6eac43f20efea7f62e01351136dd510fd688020a81",
+      "original_files": 1954,
+      "removed_files": 326,
+      "logical_removed_bytes": 1898013385,
+      "deletion_manifest": ".codex/twentyfirst-ten-fixes-2026-11-10/cleanup-deleted.json",
+      "deletion_manifest_sha256": "74ea7b71cbd186d5b8ecbaf51ce554b7f27cc761561b9eb4c564d944f4a85f33",
+      "retained_rollbacks": [
+        ".codex/release-before-twentyfirst-ten-fixes-2026-11-10",
+        ".codex/release-before-seven-fixes-2026-11-08",
+        ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+      ],
+      "removed_superseded_rollback": ".codex/release-before-twentieth-ten-fixes-2026-11-10",
+      "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-twentieth rollback retired after newest pre-twentyfirst recovery hash verification",
+      "logs_truncated": 0,
+      "active_crashes_removed": 0,
+      "open_sql_evidence": {
+        "Files": 82,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+        "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+        "ClassificationCorrection": {
+          "Files": 94,
+          "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+          "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+        }
+      },
+      "open_timeloop": {
+        "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+        "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+        "files": 26,
+        "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+        "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+      },
+      "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
+    },
+    "pending": [
+      "Antorus eventobject_antorus_into singleton eventDone/per-instance asynchronous ownership remains OPEN. Master roster/reset/report lifetime repaired here at stated selected scopes;actual arena/client traversal pending.",
+      "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+      "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+      "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state."
+    ],
+    "continuation": "STOP after these10 authorized repairs;client/whole-chain scopes remain pending as recorded.",
+    "audit": "docs/audits/twentyfirst-ten-repairs-2026-11-10.json"
+  },
   "latest_twentieth_ten_repairs_2026_11_10": {
     "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
     "batch_number": 5,
