@@ -864,8 +864,9 @@ struct npc_avatara_maiden : public ScriptedAI
         events.RescheduleEvent(EVENT_1, 1000);   
 
         if (who)
-            me->AddDelayedCombat(500, [&]() -> void
+            me->AddDelayedCombat(500, [&, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (Unit* owner = me->GetAnyOwner())
                     if (!owner->isInCombat())
                         DoZoneInCombat(owner->ToCreature());
@@ -917,6 +918,9 @@ struct npc_avatara_maiden : public ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 
