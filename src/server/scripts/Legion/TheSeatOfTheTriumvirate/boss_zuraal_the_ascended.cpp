@@ -631,15 +631,15 @@ public:
         {
             if (summoner->GetEntry() == NPC_LURA_INTROPORTAL)
             {
-                me->AddDelayedEvent(2000, [this] {
-                    me->GetMotionMaster()->MovePoint(0, openDoor[1]);
+                me->AddDelayedEvent(2000, [actor = me] {
+                    actor->GetMotionMaster()->MovePoint(0, openDoor[1]);
                 });
-                me->AddDelayedEvent(12000, [this] {
-                    if (Creature* doorSt = me->FindNearestCreature(NPC_DOOR_ST, 60.0f, true))
-                        DoCast(doorSt, SPELL_OPEN_DOOR_VISUAL);
+                me->AddDelayedEvent(12000, [actor = me] {
+                    if (Creature* doorSt = actor->FindNearestCreature(NPC_DOOR_ST, 60.0f, true))
+                        { if (auto ai = actor->AI()) ai->DoCast(doorSt, SPELL_OPEN_DOOR_VISUAL); }
                 });
-                me->AddDelayedEvent(60000, [this] {
-                    me->DespawnOrUnsummon();
+                me->AddDelayedEvent(60000, [actor = me] {
+                    actor->DespawnOrUnsummon();
                 });
             }
         }
