@@ -535,6 +535,8 @@ public:
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
             me->RemoveAura(241416);
             me->RemoveAura(241393);
+            CheckTimer = 2000;
+            EvadeTimer = 5000;
         }
 
         void EnterCombat(Unit* /*who*/) override

@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "ElderTimers",
+  "base": "4a7cae7e4d9764af0e172be4d87af103290d2b73",
+  "support_commit": "3d41ec6467be1c5fdd2a7f8cd1b8cc3b4425efba",
+  "paths": [
+    "src/server/scripts/Legion/TombOfSargeras/boss_Harjatan.cpp"
+  ],
+  "cause": "Reset did not initialize CheckTimer, EvadeTimer before its AI read or retry;native InitializeAI dispatches Reset.",
+  "implementation": "Initialize Elder Murk Eye activation and evade timers on reset;preserve authored existing values {'CheckTimer': 2000, 'EvadeTimer': 5000} and unrelated events/credit/cleanup.",
+  "validation": {
+    "source": "20 MSVC ASAN reset contracts:10 pinned instrumented controls and10 repaired source selections;12 state fields across10 independent controllers. Sentinel instruments indeterminate old state without UB. Both first-use and repeated Reset checked. These selected assignment extracts do not replay complete AI UpdateAI or encounter side effects.",
+    "native": "Actual native Actor/ScriptedAI InitializeAI virtual Reset dispatch and repeated Reset with production state assignments for10 controllers/12fields. Does not execute original full Reset side effects or full UpdateAI,casts,death,quest/pet/group progression/client encounter;no character writes/full-core ASAN.",
+    "release": "Original game/scripts libraries/staged+canonical PE verifies10 production Reset writes plus167 prior selected paths;canonical Scepter/ArtifactTier/ScenarioResumeASAN and fresh owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crash/log snapshots,exit/stdout/stderr/appended diagnostics for every declared check. Mixed7111 DBErrors remains OPEN unchanged. Fixture preparation corrections retained separately;compiler warnings reviewed.",
+    "scope": "Ten independent actor controllers with missing reset initialization;12 fields count as10 fixes. Four unused Initialize helpers never ran from native AI Reset;existing authored values retained. No new timing,quest credit,HP threshold or SQL."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Prior scouted Antorus eventobject_antorus_into singleton eventDone/per-instance async ownership and Brawlers Master count_adds/repeated Reset lifecycle remain OPEN/unmodified/not counted. This batch changes Oso and Ray,not Master.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Existing Argent Champion surrender uses raw damage,strict greater-than and unsafe owner ToPlayer;separately OPEN,not repaired or client-certified by defensive timer work.",
+    "Existing Nightmother failed-target takeoff can lack a landing timer;separately OPEN. Empyreal Focus constant ACTION_1 condition and reset aura/flag lifecycle require separate review. This batch certifies initial reset state only."
+  ],
+  "canonical_world_sha256": "ff5e47cf81f633ec9200f1af846d34a2efa8c04bf950c8bb98b87068dd20fdf4",
+  "patch_sha256": "358bc843d7536ad04dc9e1cdbf975298a87f1838cdd2ae67917284fd90b3b687",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/seventeenth-ten-repairs-2026-11-10.json"
+}
