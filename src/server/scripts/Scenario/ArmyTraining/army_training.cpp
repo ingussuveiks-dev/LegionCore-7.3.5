@@ -236,10 +236,10 @@ struct npc_army_training_minions : public ScriptedAI
 
             me->CastSpell(me, SPELL_VISUAL_PICKUP_CHEST, false);
 
-            me->AddDelayedEvent(3000, [this]() -> void
+            me->AddDelayedEvent(3000, [actor = me]() -> void
             {
-                me->Kill(me);
-                //JustDied(me);
+                actor->Kill(actor);
+                //JustDied(actor);
             });
         }
     }
