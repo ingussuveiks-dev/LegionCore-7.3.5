@@ -71,15 +71,15 @@ public:
                         });
                     }
                     
-                me->AddDelayedEvent(5000, [this] () -> void
+                me->AddDelayedEvent(5000, [actor = me] () -> void
                 {
-                    me->SetHomePosition(me->GetPositionX() - 14.0f, me->GetPositionY(), 334.53f, me->GetOrientation());
-                    me->GetMotionMaster()->MoveJump(me->GetPositionX() - 14.0f, me->GetPositionY(), 334.53f, 5.0f, 15.0f);
+                    actor->SetHomePosition(actor->GetPositionX() - 14.0f, actor->GetPositionY(), 334.53f, actor->GetOrientation());
+                    actor->GetMotionMaster()->MoveJump(actor->GetPositionX() - 14.0f, actor->GetPositionY(), 334.53f, 5.0f, 15.0f);
                 });
                 
-                me->AddDelayedEvent(18000, [this] () -> void
+                me->AddDelayedEvent(18000, [actor = me] () -> void
                 {
-                    DoCast(240738);
+                    { if (auto ai = actor->AI()) ai->DoCast(240738); }
                 });
             }
         }
