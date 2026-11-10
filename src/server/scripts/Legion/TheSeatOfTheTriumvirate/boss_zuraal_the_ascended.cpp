@@ -696,18 +696,18 @@ public:
 
         void IsSummonedBy(Unit* summoner) override
         {
-            me->AddDelayedEvent(7500, [this] {
-                me->SetWalk(false);
-                me->GetMotionMaster()->MovePoint(0, assaultStart[2]);
+            me->AddDelayedEvent(7500, [actor = me] {
+                actor->SetWalk(false);
+                actor->GetMotionMaster()->MovePoint(0, assaultStart[2]);
             });
 
-            me->AddDelayedEvent(10500, [this]() -> void
+            me->AddDelayedEvent(10500, [actor = me]() -> void
             {
-                me->GetMotionMaster()->MovePoint(0, assaultStart[3]);
+                actor->GetMotionMaster()->MovePoint(0, assaultStart[3]);
             });
 
-            me->AddDelayedEvent(17000, [this] {
-                me->DespawnOrUnsummon();
+            me->AddDelayedEvent(17000, [actor = me] {
+                actor->DespawnOrUnsummon();
             });
         }
 
