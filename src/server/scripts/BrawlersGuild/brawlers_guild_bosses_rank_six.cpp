@@ -122,10 +122,14 @@ public:
                         {
                             pos = owner->GetPosition();
                             float switch_x = pos.GetPositionX() - me->GetPositionX();
-                            float abs_switch_x = (switch_x < 0 ? switch_x * -1 : switch_x); 
                             float switch_y = pos.GetPositionY() - me->GetPositionY();
-                            float abs_switch_y = (switch_y < 0 ? switch_y * -1 : switch_y); 
-                            pos.Relocate(pos.GetPositionX() + (switch_x/abs_switch_x)*70.0f,  pos.GetPositionY() + (switch_y/abs_switch_y)*70.0f);
+                            float directionLength = std::hypot(switch_x, switch_y);
+                            if (directionLength == 0.0f)
+                            {
+                                events.RescheduleEvent(EVENT_1, 3000);
+                                break;
+                            }
+                            pos.Relocate(pos.GetPositionX() + switch_x / directionLength * 70.0f, pos.GetPositionY() + switch_y / directionLength * 70.0f);
                             bool can_cast = false;
                             if (owner->GetTeamId() == TEAM_ALLIANCE)
                             {
