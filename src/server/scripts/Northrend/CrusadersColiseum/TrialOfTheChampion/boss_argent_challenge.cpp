@@ -220,7 +220,7 @@ public:
             Talk(SAY_COMMON_KILL);
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32 & damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32 & damage, DamageEffectType dmgType) override
         {
             if(defeated)
             {
@@ -229,7 +229,7 @@ public:
             }
 
             // Prevent damage from finishing hit and mark creature as defeated
-            if(damage >= me->GetHealth())
+            if(damage >= me->GetHealth(attacker))
             {
                 damage = 0;
                 defeated = true;
@@ -424,7 +424,7 @@ public:
             Talk(SAY_COMMON_KILL);
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32 & damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32 & damage, DamageEffectType dmgType) override
         {
             if(defeated)
             {
@@ -433,7 +433,7 @@ public:
             }
 
             // Prevent damage from finishing hit and mark creature as defeated
-            if(damage >= me->GetHealth())
+            if(damage >= me->GetHealth(attacker))
             {
                 damage = 0;
                 defeated = true;
