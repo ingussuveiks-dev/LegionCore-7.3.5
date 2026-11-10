@@ -497,10 +497,10 @@ struct npc_skorpyron_generic_scorp : public ScriptedAI
             DoCast(me, SPELL_BURROW, true);
             //>>>Hack
             me->AddUnitState(UNIT_STATE_STUNNED);
-            me->AddDelayedEvent(1500, [this]() -> void
+            me->AddDelayedEvent(1500, [actor = me]() -> void
             {
-                if (me && me->IsAlive())
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
+                if (actor && actor->IsAlive())
+                    actor->ClearUnitState(UNIT_STATE_STUNNED);
             });
             //<<<Hack
             me->RemoveAurasDueToSpell(SPELL_SHROUDED);
