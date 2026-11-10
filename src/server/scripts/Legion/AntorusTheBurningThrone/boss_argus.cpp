@@ -319,8 +319,9 @@ struct boss_argus : BossAI
 
         me->GetMap()->LoadGrid(3092.1f, -9635.22f);
 
-        me->AddDelayedEvent(1000, [this]() -> void
+        me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             instance->DoCastSpellOnPlayers(SPELL_OUTRO);
 
             instance->instance->ApplyOnEveryPlayer([&](Player* player)
@@ -450,7 +451,7 @@ struct boss_argus : BossAI
                 {
                     golganneth->CastSpell(golganneth, SPELL_GOLGANNETH_WRATH_DUMMY, true);
                 }
-                me->AddDelayedCombat(5000, [this]() -> void { me->RemoveAllAreaObjects(); });
+                me->AddDelayedCombat(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->RemoveAllAreaObjects(); });
                 me->RemoveAurasDueToSpell(SPELL_P1_ENERGY_CONTROLLER);
                 DefaultEvents();
             }
@@ -522,7 +523,8 @@ struct boss_argus : BossAI
                 events.RescheduleEvent(EVENT_END_OF_ALL_THINGS, 20000);
                 break;
             case SPELL_P3_ARCANE_DISSOLVE_OUT:
-                me->AddDelayedCombat(6000, [this]() -> void {
+                me->AddDelayedCombat(6000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void {
+					if (aiLifetimeGuard.expired()) return;
 					if (IsMythicRaid()) 
 						PrepareEventsPhaseFour(); 
 					});
@@ -616,8 +618,9 @@ struct boss_argus : BossAI
         me->SetFacingTo(0.0f);
         me->RemoveAurasDueToSpell(SPELL_P3_ARCANE_DISSOLVE_OUT);
         me->SetAnimKitId(ANIM_ARGUS_REAP_SOUL);
-        me->AddDelayedCombat(4000, [this]() -> void
+        me->AddDelayedCombat(4000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             instance->instance->ApplyOnEveryPlayer([&](Player* player)
             {
                 if (!player->IsAlive())
@@ -629,8 +632,9 @@ struct boss_argus : BossAI
         });
         me->CastSpellDelay(me, SPELL_REAP_SOUL_DUMMY, false, 1000);
         me->CastSpellDelay(me, SPELL_GRASP_OF_THE_UNMAKER, true, 4500);
-        me->AddDelayedCombat(10000, [this]() -> void
+        me->AddDelayedCombat(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->GetMotionMaster()->MoveJump(2843.37f, -4567.70f, 291.94f, 30.0f, 0.0f);
             me->SetDisableGravity(false);
         });
@@ -849,13 +853,15 @@ struct boss_argus : BossAI
                     me->RemoveAurasDueToSpell(SPELL_P4_ARCANE_DISSOLVE_OUT);
                     me->SetDisplayId(me->GetNativeDisplayId());
                     me->SetPower(me->GetPowerType(), IsMythicRaid() ? 0 : 75);
-                    me->AddDelayedCombat(1000, [this]() -> void
+                    me->AddDelayedCombat(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         instance->DoCastSpellOnPlayers(SPELL_GHOST_TRACKER);
                         instance->SendEncounterUnit(ENCOUNTER_FRAME_SET_ALLOWING_RELEASE, me, true);
                     });
-                    me->AddDelayedCombat(4000, [this]() -> void
+                    me->AddDelayedCombat(4000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                         me->CastSpell(me, SPELL_END_OF_ALL_THINGS);
                     });
@@ -905,6 +911,9 @@ struct boss_argus : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //126268, 125886, 125893, 126266, 126267
