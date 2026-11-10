@@ -613,8 +613,9 @@ struct npc_ilgynoth_tentacles : public ScriptedAI
                             Position groundPos;
                             me->GetClosePoint(groundPos.m_positionX, groundPos.m_positionY, groundPos.m_positionZ, 1.0f, dist, angle + frand(-0.12f, 0.12f));
                             dist += 0.54f;
-                            AddDelayedEvent(50 * i, [this, groundPos] () -> void
+                            AddDelayedEvent(50 * i, [this, groundPos, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                             {
+                                if (aiLifetimeGuard.expired()) return;
                                 if (me && me->IsAlive() && me->isInCombat())
                                     me->CastSpell(groundPos, SPELL_GROUND_SLAM_VISUAL, true);
                             });
@@ -635,6 +636,9 @@ struct npc_ilgynoth_tentacles : public ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //105591
