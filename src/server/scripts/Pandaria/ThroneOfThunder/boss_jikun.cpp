@@ -286,9 +286,9 @@ public:
             summon.Summon(sum);
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -661,9 +661,9 @@ public:
             DoCast(me, SPELL_FEED_POOL_SPAWN_N, true);
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -956,9 +956,9 @@ public:
             DoCast(me, SPELL_JUMP_TO_B_PLATFORM, true);
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -992,9 +992,9 @@ public:
 
         void Reset(){}
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -1091,9 +1091,9 @@ public:
                 me->DespawnOrUnsummon();
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -1138,9 +1138,9 @@ public:
                 summoner->ToCreature()->DespawnOrUnsummon();
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
