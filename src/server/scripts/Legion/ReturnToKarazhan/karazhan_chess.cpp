@@ -451,10 +451,10 @@ public:
             {
                 IntroDone = true;
                 Talk(0);
-                me->AddDelayedEvent(5000, [this] () -> void
+                me->AddDelayedEvent(5000, [actor = me] () -> void
                 {
-                    Talk(1);
-                    me->DespawnOrUnsummon(5000);
+                    { if (auto ai = actor->AI()) ai->Talk(1); }
+                    actor->DespawnOrUnsummon(5000);
                 });
             }
 
