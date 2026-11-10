@@ -1,0 +1,566 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_50_AUTOMATED_CLIENT_PENDING",
+  "request": "Five additional consecutive batches of ten repairs;stop after50.",
+  "base": "4ce09b5362699afd09f6e800134150668a55772e",
+  "implementation_head": "ab661700aa3c02b1f1d23fa8353a718222d0e99e",
+  "batches": [
+    {
+      "number": 1,
+      "audit": "docs/audits/twentysecond-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "implementation_files": 10,
+      "support_commit": "0defd65aa6422e82e934086c879e458bd702ffc7",
+      "implementation_head": "d8366e92d36c9ce99eb5bb796264d9b6fd392e7e"
+    },
+    {
+      "number": 2,
+      "audit": "docs/audits/twentythird-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "implementation_files": 10,
+      "support_commit": "23b28878533ed209827d30c1a81b38b4847383bd",
+      "implementation_head": "2883b31016cce4381d9c419c40ced6645483a91e"
+    },
+    {
+      "number": 3,
+      "audit": "docs/audits/twentyfourth-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "implementation_files": 10,
+      "support_commit": "e4bb8cabbde97b424709fffa943f87698c77bc6a",
+      "implementation_head": "ac8e6aed75cef9b43f2cc2fb528039443f211f59"
+    },
+    {
+      "number": 4,
+      "audit": "docs/audits/twentyfifth-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "implementation_files": 10,
+      "support_commit": "e5dd6e6263174e1f631888bd43f4bb9059acbd9f",
+      "implementation_head": "9b93b8987bac8ee9f64722906e73aff2a44c8cbb"
+    },
+    {
+      "number": 5,
+      "audit": "docs/audits/twentysixth-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "implementation_files": 10,
+      "support_commit": "8e534bde71ace6f391d625a0b44519e6dd3eb52a",
+      "implementation_head": "ab661700aa3c02b1f1d23fa8353a718222d0e99e"
+    }
+  ],
+  "fixes": [
+    {
+      "key": "EnergizedPhoenix",
+      "title": "Preserve energized phoenix sleep and wake through scaled lethal hits",
+      "paths": [
+        "src/server/scripts/Draenor/zone_spires_of_arak.cpp"
+      ],
+      "audit": "docs/audits/energized-phoenix-scaled-sleep-2026-11-10.json",
+      "commit": "1d5d05cd6e057b16be9f20fc985f1fd2ea57690a"
+    },
+    {
+      "key": "ArtruisRelease",
+      "title": "Protect Artruis native branch and retry missing actors before consuming release",
+      "paths": [
+        "src/server/scripts/Northrend/zone_sholazar_basin.cpp"
+      ],
+      "audit": "docs/audits/artruis-scaled-release-retry-2026-11-10.json",
+      "commit": "6ff8183f3739a4065c40aa4a78c0bea6bb68f2f1"
+    },
+    {
+      "key": "KoraghAnomaly",
+      "title": "Trigger the native volatile anomaly explosion on exact and scaled lethal hits",
+      "paths": [
+        "src/server/scripts/Draenor/Highmaul/boss_koragh.cpp"
+      ],
+      "audit": "docs/audits/koragh-anomaly-scaled-exact-explosion-2026-11-10.json",
+      "commit": "26e309478d70ac6d1edbf3411a91ec039b19459d"
+    },
+    {
+      "key": "BrokenDuel",
+      "title": "Credit Broken Shore sparring victory for the challengers pet and guardian",
+      "paths": [
+        "src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp"
+      ],
+      "audit": "docs/audits/broken-shore-duel-scaled-owner-victory-2026-11-10.json",
+      "commit": "29c31d7b89e07eedbf78340e239f3d61ab2dab23"
+    },
+    {
+      "key": "NeptulonFailure",
+      "title": "Retain Neptulons native failure reset on scaled lethal damage",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/ThroneoftheTides/boss_ozumat.cpp"
+      ],
+      "audit": "docs/audits/neptulon-scaled-failure-reset-2026-11-10.json",
+      "commit": "507fc05647e7168f035ab4361c83e94f64286b0d"
+    },
+    {
+      "key": "BlazeEgg",
+      "title": "Protect Blaze of the Heavens egg transition from scaled lethal damage",
+      "paths": [
+        "src/server/scripts/Kalimdor/LostCityOfTheTolvir/boss_high_prophet_barim.cpp"
+      ],
+      "audit": "docs/audits/blaze-scaled-egg-transition-2026-11-10.json",
+      "commit": "9ee12d1a3e05cd05f23e71f86c4929d335ed4c07"
+    },
+    {
+      "key": "SiamatCharge",
+      "title": "Keep the heroic servants native charge before its delayed death",
+      "paths": [
+        "src/server/scripts/Kalimdor/LostCityOfTheTolvir/boss_siamat.cpp"
+      ],
+      "audit": "docs/audits/siamat-servant-scaled-charge-2026-11-10.json",
+      "commit": "308cf590751694a496149a6e07d4845e2155a90a"
+    },
+    {
+      "key": "WhitemaneResurrection",
+      "title": "Preserve Durand fake death and Whitemane resurrection through scaled hits",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/ScarletMonastery/boss_high_inquisitor_whitemane.cpp"
+      ],
+      "audit": "docs/audits/whitemane-durand-scaled-resurrection-2026-11-10.json",
+      "commit": "b229563151ecab413a5cee7181b77004cb7c9ac3"
+    },
+    {
+      "key": "SnowdriftSurrenders",
+      "title": "Keep Snowdrift training counters and surrender actors intact after scaled hits",
+      "paths": [
+        "src/server/scripts/Pandaria/ShadopanMonastery/boss_master_snowdrift.cpp"
+      ],
+      "audit": "docs/audits/snowdrift-scaled-surrender-lifecycle-2026-11-10.json",
+      "commit": "7362f7c37ec8ac51b53aa1140e13f2537f21d1ad"
+    },
+    {
+      "key": "FelmystFlight",
+      "title": "Keep Felmyst flight death protection after damage normalization",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_felmyst.cpp"
+      ],
+      "audit": "docs/audits/felmyst-scaled-flight-protection-2026-11-10.json",
+      "commit": "d8366e92d36c9ce99eb5bb796264d9b6fd392e7e"
+    },
+    {
+      "key": "AggramarRemnants",
+      "title": "Preserve heroic Aggramar embers molten remnants after scaled lethal hits",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_aggramar.cpp"
+      ],
+      "audit": "docs/audits/aggramar-ember-scaled-remnants-2026-11-10.json",
+      "commit": "7df1d8f1d52a1961b65864602afb40ef7e961ef6"
+    },
+    {
+      "key": "ArgusPulse",
+      "title": "Preserve Argus module pulse on normalized lethal damage",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_argus.cpp"
+      ],
+      "audit": "docs/audits/argus-module-scaled-pulse-2026-11-10.json",
+      "commit": "7e38f9dfd93c337dad65d00cde722f3cd701130d"
+    },
+    {
+      "key": "EonarWipe",
+      "title": "Keep Eonars native wipe path intact under normalized lethal damage",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp"
+      ],
+      "audit": "docs/audits/eonar-scaled-wipe-protection-2026-11-10.json",
+      "commit": "1a0988da0d9c11d971ebf7e02457f61fb33eefa3"
+    },
+    {
+      "key": "WorldbreakerWeapons",
+      "title": "Protect Worldbreaker weapon destruction and native owner actions after scaling",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_worldbreaker.cpp"
+      ],
+      "audit": "docs/audits/worldbreaker-weapons-scaled-destruction-2026-11-10.json",
+      "commit": "b4ee612dbff02f0d3734b2b8e5cc778a28ee2966"
+    },
+    {
+      "key": "HyrjaAscendance",
+      "title": "Keep Hyrja defenders ascendance exactly once with valid native owners",
+      "paths": [
+        "src/server/scripts/Legion/HallsofValor/boss_hyrja.cpp"
+      ],
+      "audit": "docs/audits/hyrja-defenders-scaled-ascendance-2026-11-10.json",
+      "commit": "948359efcf57ef34c69790bb3f424c1b9abae13e"
+    },
+    {
+      "key": "IlgynothIchor",
+      "title": "Retain Nightmare Ichor explosion before normalized lethal damage",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_ilgynoth.cpp"
+      ],
+      "audit": "docs/audits/ilgynoth-ichor-scaled-explosion-2026-11-10.json",
+      "commit": "be10920c2c5f8353170a77ceb5c6baeb1fb2918b"
+    },
+    {
+      "key": "DesolateResidue",
+      "title": "Retain Desolate Host residue eruption and owner notification after scaling",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_TheDesolateHost.cpp"
+      ],
+      "audit": "docs/audits/desolate-residue-scaled-eruption-2026-11-10.json",
+      "commit": "a162535f4647d9f9a4408f1ba02fd98ba49f4ff2"
+    },
+    {
+      "key": "FesterfaceGoo",
+      "title": "Keep Festerface goo recongealing alive through normalized lethal hits",
+      "paths": [
+        "src/server/scripts/Legion/VioletHoldLegion/boss_festerface.cpp"
+      ],
+      "audit": "docs/audits/festerface-goo-scaled-recongealing-2026-11-10.json",
+      "commit": "e4bb3a8fe5ada93da3b448d445f9d1b9a0fdb6e3"
+    },
+    {
+      "key": "FallenCrusader",
+      "title": "Keep the Fallen Crusaders native feign-death transition after scaling",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/ScarletMonastery/boss_thalnos_the_soulrender.cpp"
+      ],
+      "audit": "docs/audits/fallen-crusader-scaled-feign-death-2026-11-10.json",
+      "commit": "c8bb57a002b53fc0bd75f59862fb3e1e3e009f80"
+    },
+    {
+      "key": "CollapsingStar",
+      "title": "Protect collapsing star black-hole transition and its pending cleanup",
+      "paths": [
+        "src/server/scripts/Northrend/Ulduar/Ulduar/boss_algalon_the_observer.cpp"
+      ],
+      "audit": "docs/audits/algalon-star-scaled-collapse-2026-11-10.json",
+      "commit": "2883b31016cce4381d9c419c40ced6645483a91e"
+    },
+    {
+      "key": "MuruTransition",
+      "title": "Muru scaled entropius transition",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_muru.cpp"
+      ],
+      "audit": "docs/audits/muru-scaled-entropius-transition-2026-11-10.json",
+      "commit": "488354b31f39205f2add574a4cabfb4ce0d8b771"
+    },
+    {
+      "key": "HarbingerRelease",
+      "title": "Barim harbinger scaled release",
+      "paths": [
+        "src/server/scripts/Kalimdor/LostCityOfTheTolvir/boss_high_prophet_barim.cpp"
+      ],
+      "audit": "docs/audits/barim-harbinger-scaled-release-2026-11-10.json",
+      "commit": "90116780c731f2b6c274a9282c34f0cf9451deb5"
+    },
+    {
+      "key": "WaningParticle",
+      "title": "Anomaly particle scaled rift",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_chronomatic_anomaly.cpp"
+      ],
+      "audit": "docs/audits/anomaly-particle-scaled-rift-2026-11-10.json",
+      "commit": "8cd363798f0e8fbbf2269d8f5401b5520ac64c09"
+    },
+    {
+      "key": "ElisandeRewind",
+      "title": "Elisande scaled rewind transition",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_elisande.cpp"
+      ],
+      "audit": "docs/audits/elisande-scaled-rewind-transition-2026-11-10.json",
+      "commit": "3b77266e04ba414058dc4bc83061f14cd7f1b692"
+    },
+    {
+      "key": "PlasmaExplosion",
+      "title": "Telarn sphere scaled explosion",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_high_botanist_telarn.cpp"
+      ],
+      "audit": "docs/audits/telarn-sphere-scaled-explosion-2026-11-10.json",
+      "commit": "92d47d455d0dc8d268c4b0d225a15fe1c3a68980"
+    },
+    {
+      "key": "ArgentChallenge",
+      "title": "Argent challenge scaled surrender",
+      "paths": [
+        "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/boss_argent_challenge.cpp"
+      ],
+      "audit": "docs/audits/argent-challenge-scaled-surrender-2026-11-10.json",
+      "commit": "506f48b45024c2e1622d057892c9b7f44f1894e2"
+    },
+    {
+      "key": "BlackKnightResurrection",
+      "title": "Black knight scaled resurrection",
+      "paths": [
+        "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/boss_black_knight.cpp"
+      ],
+      "audit": "docs/audits/black-knight-scaled-resurrection-2026-11-10.json",
+      "commit": "1dd8f6eb4f41d3898a5ba21cd4b3ab5f5564e614"
+    },
+    {
+      "key": "IngvarResurrection",
+      "title": "Ingvar scaled resurrection",
+      "paths": [
+        "src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_ingvar_the_plunderer.cpp"
+      ],
+      "audit": "docs/audits/ingvar-scaled-resurrection-2026-11-10.json",
+      "commit": "42e7ddf048d3123db7c45465791949e738ea04fc"
+    },
+    {
+      "key": "KelesethSkeleton",
+      "title": "Keleseth skeleton scaled feign",
+      "paths": [
+        "src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_keleseth.cpp"
+      ],
+      "audit": "docs/audits/keleseth-skeleton-scaled-feign-2026-11-10.json",
+      "commit": "1901cd6b0d84e9b0287920b72a74a5b2d89e32a7"
+    },
+    {
+      "key": "LivingAmber",
+      "title": "Unsok amber scaled explosion",
+      "paths": [
+        "src/server/scripts/Pandaria/HeartFear/boss_unsok.cpp"
+      ],
+      "audit": "docs/audits/unsok-amber-scaled-explosion-2026-11-10.json",
+      "commit": "ac8e6aed75cef9b43f2cc2fb528039443f211f59"
+    },
+    {
+      "key": "XaviusStacked",
+      "title": "Xavius scaled stacked finale",
+      "paths": [
+        "src/server/scripts/Legion/DarkHeartThicket/boss_shade_of_xavius.cpp"
+      ],
+      "audit": "docs/audits/xavius-scaled-stacked-finale-2026-11-10.json",
+      "commit": "13d789a478209496386a04eb4fd3f1c0006a4277"
+    },
+    {
+      "key": "NaraxasRavenous",
+      "title": "Naraxas scaled ravenous death",
+      "paths": [
+        "src/server/scripts/Legion/NeltharionsLair/boss_naraxas.cpp"
+      ],
+      "audit": "docs/audits/naraxas-scaled-ravenous-death-2026-11-10.json",
+      "commit": "d8b3e680cc366e9519fdc77ee286fcd1e2b5001f"
+    },
+    {
+      "key": "BronjahmSoulpower",
+      "title": "Bronjahm scaled soulpower death",
+      "paths": [
+        "src/server/scripts/Northrend/FrozenHalls/ForgeOfSouls/boss_bronjahm.cpp"
+      ],
+      "audit": "docs/audits/bronjahm-scaled-soulpower-death-2026-11-10.json",
+      "commit": "e2f31008344e113c35090229c2b96300b5e43d7e"
+    },
+    {
+      "key": "SvalaRitualHulk",
+      "title": "Svala scaled ritual hulk",
+      "paths": [
+        "src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_svala.cpp"
+      ],
+      "audit": "docs/audits/svala-scaled-ritual-hulk-2026-11-10.json",
+      "commit": "b3518d5d1fa2ee68573147fee255977595d26ae1"
+    },
+    {
+      "key": "ChannelerTransfer",
+      "title": "Magtheridon scaled soul transfer",
+      "paths": [
+        "src/server/scripts/Outland/HellfireCitadel/MagtheridonsLair/boss_magtheridon.cpp"
+      ],
+      "audit": "docs/audits/magtheridon-scaled-soul-transfer-2026-11-10.json",
+      "commit": "7352c2cc2928da2ef3b8ec3d4b57c708060d3e4d"
+    },
+    {
+      "key": "RaigonnWeakSpot",
+      "title": "Raigonn scaled weak spot",
+      "paths": [
+        "src/server/scripts/Pandaria/GateSettingSun/boss_raigonn.cpp"
+      ],
+      "audit": "docs/audits/raigonn-scaled-weak-spot-2026-11-10.json",
+      "commit": "f30401bd75a319436694a82563938bc082dcae45"
+    },
+    {
+      "key": "ElegonDischarge",
+      "title": "Elegon scaled charge focus",
+      "paths": [
+        "src/server/scripts/Pandaria/MogushanVault/boss_elegon.cpp"
+      ],
+      "audit": "docs/audits/elegon-scaled-charge-focus-2026-11-10.json",
+      "commit": "47d091da643261fd17707c4c267e3001dfe1bccd"
+    },
+    {
+      "key": "LivingSandReturn",
+      "title": "Living sand scaled trap return",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_council_of_elders.cpp"
+      ],
+      "audit": "docs/audits/living-sand-scaled-trap-return-2026-11-10.json",
+      "commit": "36d4d4d8db70486f21e2914f4451d36712b27fd6"
+    },
+    {
+      "key": "AzureFogFreeze",
+      "title": "Durumu scaled azure freeze",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_durumu.cpp"
+      ],
+      "audit": "docs/audits/durumu-scaled-azure-freeze-2026-11-10.json",
+      "commit": "b1f72d0c41ba38559f438a3bcfd520c653b0c43d"
+    },
+    {
+      "key": "CracklingFlare",
+      "title": "Raden scaled crackling flare",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_ra_den.cpp"
+      ],
+      "audit": "docs/audits/raden-scaled-crackling-flare-2026-11-10.json",
+      "commit": "9b93b8987bac8ee9f64722906e73aff2a44c8cbb"
+    },
+    {
+      "key": "AysaSurvival",
+      "title": "Aysa scaled training survival",
+      "paths": [
+        "src/server/scripts/Pandaria/zone_the_wandering_isle.cpp"
+      ],
+      "audit": "docs/audits/aysa-scaled-training-survival-2026-11-10.json",
+      "commit": "2efc5498bf3c65626446f1c98bf22ad42b094ba8"
+    },
+    {
+      "key": "WarsongActors",
+      "title": "Warsong scaled event actors",
+      "paths": [
+        "src/server/scripts/World/custom_events.cpp"
+      ],
+      "audit": "docs/audits/warsong-scaled-event-actors-2026-11-10.json",
+      "commit": "c05f084a51c94078b78e5e84f3b531c8c10b9943"
+    },
+    {
+      "key": "FelfireFission",
+      "title": "Kiljaeden scaled felfire fission",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_kiljaeden.cpp"
+      ],
+      "audit": "docs/audits/kiljaeden-scaled-felfire-fission-2026-11-10.json",
+      "commit": "f8d8bf2be7002ad9617784d27693c82292b281d2"
+    },
+    {
+      "key": "KalecgosBanish",
+      "title": "Kalecgos scaled paired banish",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_kalecgos.cpp"
+      ],
+      "audit": "docs/audits/kalecgos-scaled-paired-banish-2026-11-10.json",
+      "commit": "36d852903430744c14e792942545f21bc552c40b"
+    },
+    {
+      "key": "NorushenActors",
+      "title": "Norushen scaled trial controllers",
+      "paths": [
+        "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_norushen.cpp"
+      ],
+      "audit": "docs/audits/norushen-scaled-trial-controllers-2026-11-10.json",
+      "commit": "df7fa1aa962ba8b117fd29049f3442ec3cc7c969"
+    },
+    {
+      "key": "DurumuEyes",
+      "title": "Durumu scaled eye controllers",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_durumu.cpp"
+      ],
+      "audit": "docs/audits/durumu-scaled-eye-controllers-2026-11-10.json",
+      "commit": "1e53fc0addaf995e367f375510afd304e94e237c"
+    },
+    {
+      "key": "JiKunHelpers",
+      "title": "Jikun scaled support actors",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_jikun.cpp"
+      ],
+      "audit": "docs/audits/jikun-scaled-support-actors-2026-11-10.json",
+      "commit": "b7d90e2c8936d05b956beca5e02bc71de6a97832"
+    },
+    {
+      "key": "JinrokhFont",
+      "title": "Jinrokh scaled mogu font",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_jinrokh.cpp"
+      ],
+      "audit": "docs/audits/jinrokh-scaled-mogu-font-2026-11-10.json",
+      "commit": "343f3b12fa6edfc3e85aff7f6297b47f4b7bf565"
+    },
+    {
+      "key": "ParagonFog",
+      "title": "Paragons scaled eerie fog",
+      "paths": [
+        "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_paragons_of_the_klaxxi.cpp"
+      ],
+      "audit": "docs/audits/paragons-scaled-eerie-fog-2026-11-10.json",
+      "commit": "d2b6061ded4baba7bbb6949fadc2774d8ec9097a"
+    },
+    {
+      "key": "MegaeraHazards",
+      "title": "Megaera scaled body hazards",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_megaera.cpp"
+      ],
+      "audit": "docs/audits/megaera-scaled-body-hazards-2026-11-10.json",
+      "commit": "ab661700aa3c02b1f1d23fa8353a718222d0e99e"
+    }
+  ],
+  "validation": {
+    "source_cases": 100,
+    "counterfactual_controls": 50,
+    "repaired_cases": 50,
+    "native_selected_cases": 50,
+    "linked_selected_checks": 267,
+    "scope": "Source extracts/instrumented controls and native selected scopes vary by issue;some assignment/state/credit/queue/payload boundaries are modeled or captured. See each batch validation. These counts do not mean50 full native encounters or actual client traversals.",
+    "canonical": "Each batch original main-library Release build,canonical binary check,Scepter/ArtifactTier/ScenarioResumeASAN and owned fresh ready/shutdown0/exit0/gone;all final diagnostic checks passed."
+  },
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "33084f47e3b86101af811078ff85bc833dcc93548c71b725d51b4e0ce8fdf7b7",
+    "bnet_sha256": "41a9cc0ebbfefdbaa3ed19599b614fe1ca627069f3c4ce7a319a68ad59262a4f",
+    "rollback": ".codex/release-before-twentysixth-ten-fixes-2026-11-10",
+    "startup": "Owned PID=15692 reached fresh ready\nPASS owned PID=15692 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "diagnostics": {
+    "path": "build-extractors/bin/Release/logs/DBErrors.log",
+    "bytes": 7111,
+    "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "status": "OPEN unchanged/untruncated"
+  },
+  "cleanup": {
+    "logical_removed_bytes": 5135530178,
+    "removed_files": 1197,
+    "archives": [
+      "build-extractors/bin/Release/fixed/twentysecond-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/twentythird-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/twentyfourth-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/twentyfifth-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/twentysixth-ten-repairs-2026-11-10"
+    ],
+    "retained_rollbacks": [
+      ".codex/release-before-twentysixth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "logs_truncated": 0,
+    "active_crashes_removed": 0
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified.",
+    "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state.",
+    "All ten actual client sequences remain pending:phoenix detonation/sleep/wake/targets;Artruis full faction choice/ally death/urn/group/reset;Ko ragh suppression-field visual/timing and real death;Broken Shore actual invitations/sparring/guardian/group/faction and lost-player cleanup;Neptulon wipe/restart;Blaze egg/real healing/wake;heroic Siamat actual2s death/achievement;Whitemane/Durand native resurrection movement/cast acknowledgment and absent partner recovery;Snowdrift actual waves/training jump/home/completion/loot/re-entry;Felmyst actual air/ground death. Missing-partner or failed-cast recovery outside the repaired Artruis/duel scopes is not certified.",
+    "All ten actual client encounters remain pending:Aggramar heroic/normal remnants/eruption;both Argus modules real aura/cast/area scale/mote/pulse timing and AI replacement;Eonar actual Paraxis wipe/restart;Worldbreaker both weapon modes/controller;Hyrja both defenders/pulls/reset/controller;Ichor explosion/eye damage;Desolate eruption/phase owner cleanup;Festerface actual recongealing/retry;Fallen Crusader real revive/feign interaction;Algalon real star/black-hole phases/spawn/cleanup. Failed essential casts or missing controller recovery outside the explicitly exercised boundaries is not certified. No whole36-chain or authentic Lady claim.",
+    "All ten actual client encounters remain pending:Muru portal/Entropius/reset/failure paths;Harbinger actual repentance/cast acknowledgment/controller removal;Anomaly fragments/rift/interrupts;Elisande full rewind dialogue/objects/echoes and absent actors;Telarn infusions/effects;Eadric/Paletress actual return/bind/loot;Black Knight real resurrection/ghouls/timers;Ingvar Annhylde ritual/failed resurrection;Keleseth actual18-22s resurrection/heal/cast failures;Amber real consume123156/visuals/retry. Missing essential actors or failed native casts outside the exercised boundaries remain unverified. No whole36-chain/authentic Lady certification.",
+    "All ten actual client encounters remain pending:Xavius10stack and Naraxas6stack criteria/real aura deaths;Bronjahm4souls/achievement;Svala actual ritual damage/movement/criterion;Magtheridon real soul-transfer target/effect;Raigonn phase handoff/vehicle;Elegon charge movement/controller/focus links/reset;Living Sand repeated real storms/targets/visuals;Durumu real cone/aura/blue death freeze;Ra den actual flare. Essential failed-cast/missing-controller recovery outside tested admission boundaries is not certified. Existing Elegon energy-charge active field is assigned by native IsSummonedBy;ordinary unowned placement/out-of-contract initialization remains separately unverified. No whole-chain/authentic Lady claim.",
+    "All ten actual client/controller sequences remain pending:Aysa training/boss callbacks,Warsong four faction/event actors,Felfire contact/death actual spell effects,Kalecgos paired realm/banish/enrage/reset/self-kill,Norushen blind-hatred/residual/healer challenge completion/real exhaustion aura,Durumu full cones/eyes/movement/cleanup,Ji Kun nests/feed/jump/fall rescue/pet/camera/re-entry,Jinrokh actual water-font behavior,Paragons actual eerie fog,Megaera body/acid-rain/torrent/ice cleanup. Megaera head damage/phase logic is a separate unchanged raw-handler scope,not certified by support-actor protection. No full registered content/client encounter or36-chain/authentic Lady certification."
+  ],
+  "continuation": "STOP:all five authorized batches/50 repairs completed. Client traversal,Lady authentic finale,OPEN LINK2/Slaghammer,intermittent handshake,mixed DBErrors and all36 whole chains remain explicitly unverified/open as scoped in audits."
+}

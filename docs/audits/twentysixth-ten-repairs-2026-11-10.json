@@ -1,0 +1,731 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "78c6abe9a8154ea4585feb0a2134e4504f0a8f9f",
+  "batch_number": 5,
+  "authorized_total": 50,
+  "support_commit": "8e534bde71ace6f391d625a0b44519e6dd3eb52a",
+  "implementation_head": "ab661700aa3c02b1f1d23fa8353a718222d0e99e",
+  "fixes": [
+    {
+      "key": "AysaSurvival",
+      "title": "Aysa scaled training survival",
+      "paths": [
+        "src/server/scripts/Pandaria/zone_the_wandering_isle.cpp"
+      ],
+      "audit": "docs/audits/aysa-scaled-training-survival-2026-11-10.json",
+      "commit": "2efc5498bf3c65626446f1c98bf22ad42b094ba8"
+    },
+    {
+      "key": "WarsongActors",
+      "title": "Warsong scaled event actors",
+      "paths": [
+        "src/server/scripts/World/custom_events.cpp"
+      ],
+      "audit": "docs/audits/warsong-scaled-event-actors-2026-11-10.json",
+      "commit": "c05f084a51c94078b78e5e84f3b531c8c10b9943"
+    },
+    {
+      "key": "FelfireFission",
+      "title": "Kiljaeden scaled felfire fission",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_kiljaeden.cpp"
+      ],
+      "audit": "docs/audits/kiljaeden-scaled-felfire-fission-2026-11-10.json",
+      "commit": "f8d8bf2be7002ad9617784d27693c82292b281d2"
+    },
+    {
+      "key": "KalecgosBanish",
+      "title": "Kalecgos scaled paired banish",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_kalecgos.cpp"
+      ],
+      "audit": "docs/audits/kalecgos-scaled-paired-banish-2026-11-10.json",
+      "commit": "36d852903430744c14e792942545f21bc552c40b"
+    },
+    {
+      "key": "NorushenActors",
+      "title": "Norushen scaled trial controllers",
+      "paths": [
+        "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_norushen.cpp"
+      ],
+      "audit": "docs/audits/norushen-scaled-trial-controllers-2026-11-10.json",
+      "commit": "df7fa1aa962ba8b117fd29049f3442ec3cc7c969"
+    },
+    {
+      "key": "DurumuEyes",
+      "title": "Durumu scaled eye controllers",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_durumu.cpp"
+      ],
+      "audit": "docs/audits/durumu-scaled-eye-controllers-2026-11-10.json",
+      "commit": "1e53fc0addaf995e367f375510afd304e94e237c"
+    },
+    {
+      "key": "JiKunHelpers",
+      "title": "Jikun scaled support actors",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_jikun.cpp"
+      ],
+      "audit": "docs/audits/jikun-scaled-support-actors-2026-11-10.json",
+      "commit": "b7d90e2c8936d05b956beca5e02bc71de6a97832"
+    },
+    {
+      "key": "JinrokhFont",
+      "title": "Jinrokh scaled mogu font",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_jinrokh.cpp"
+      ],
+      "audit": "docs/audits/jinrokh-scaled-mogu-font-2026-11-10.json",
+      "commit": "343f3b12fa6edfc3e85aff7f6297b47f4b7bf565"
+    },
+    {
+      "key": "ParagonFog",
+      "title": "Paragons scaled eerie fog",
+      "paths": [
+        "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_paragons_of_the_klaxxi.cpp"
+      ],
+      "audit": "docs/audits/paragons-scaled-eerie-fog-2026-11-10.json",
+      "commit": "d2b6061ded4baba7bbb6949fadc2774d8ec9097a"
+    },
+    {
+      "key": "MegaeraHazards",
+      "title": "Megaera scaled body hazards",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_megaera.cpp"
+      ],
+      "audit": "docs/audits/megaera-scaled-body-hazards-2026-11-10.json",
+      "commit": "ab661700aa3c02b1f1d23fa8353a718222d0e99e"
+    }
+  ],
+  "counting": "Exactly ten independent bound encounter/controller problems in10 implementation files/30 damage handlers. Shared Kalecgos pair,Norushen6 actors,Durumu7 eyes,Ji Kun6 support actors andMegaera4 body/hazards each count as ONE problem. Aysa/Warsong/Felfire/Jinrokh font/Paragon fog each once. Flash Stalker has no matching live binding and is not changed/countable;Ragewing/Ammunae considered but not selected. No SQL/character rewrite,invented story timers or Lady threshold.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "33084f47e3b86101af811078ff85bc833dcc93548c71b725d51b4e0ce8fdf7b7",
+    "bnet_sha256": "41a9cc0ebbfefdbaa3ed19599b614fe1ca627069f3c4ce7a319a68ad59262a4f",
+    "rollback": ".codex/release-before-twentysixth-ten-fixes-2026-11-10",
+    "startup": "Owned PID=15692 reached fresh ready\nPASS owned PID=15692 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "validation": {
+    "source": "20 MSVC ASAN grouped cases:10 pinned raw-hook expected-broken controls plus10 repaired cases covering all30 real production bodies. Modeled0.1 normalization,exact/oversized lethal,ordinary nonlethal,one-health,zero damage,health aboveUINT32_MAX,Aysa one-damage cap,paired native self-kill exemption,and nonlethal fission rejection. All30 controls expose raw/template-health mismatch. Full client encounters are not modeled.",
+    "native": "All30 extracted production callbacks installed through actual Creature::AIM_Initialize as native CreatureAI and dispatched by30 actual Unit::DealDamage calls. Actual Player/pet/two-level guardian,health/flags,one-health,zero/nonlethal/large-health paths;Felfire actual death with one observed fission;three Norushen low-health exhaustion/accepted-aura repeat checks;actual TempSummon guard followed by explicit UnSummon/removal. Spells/aura acceptance are observed endpoints and other content AI methods inherit NullCreatureAI;this proves the selected damage dispatch,not activated level scaling,full registered content AI/full-core ASAN or client encounters;no character writes.",
+    "release": "Original main libraries rebuilt with source snapshots/hash checks and staged link. Actual PE verifies30 final-damage/target-relative unsigned policies/no raw hooks,Aysa zero admission/native one cap,Felfire native effect/contact Kill,paired one-health banish and original self-kill exemption,Norushen30percent/148424 aura gate. Prior257 selected checks retained,total267. Actual readonly MariaDB37 templates/all30 selected ScriptNames. Canonical ArtifactTier/ScenarioResumeASAN/Scepter plus owned fresh ready/shutdown0/exit0/gone.",
+    "diagnostics": "All tests/builds/links/PE/start have canonical+own before/after crash/log lengths/timestamps/exit/stdout/stderr/appended diagnostics and DBErrors review. Initial PE matcher expected branches for a branchless unsigned training cap;actual instructions reviewed and exact flag-based unsigned implementation accepted. Source/native checks passed on first run. Main compiler warnings compared with baseline expressions;final checks clean. OPEN evidence and mixed7111-byte DBErrors unchanged/untruncated.",
+    "scope": "Exactly ten independent bound encounter/controller problems in10 implementation files/30 damage handlers. Shared Kalecgos pair,Norushen6 actors,Durumu7 eyes,Ji Kun6 support actors andMegaera4 body/hazards each count as ONE problem. Aysa/Warsong/Felfire/Jinrokh font/Paragon fog each once. Flash Stalker has no matching live binding and is not changed/countable;Ragewing/Ammunae considered but not selected. No SQL/character rewrite,invented story timers or Lady threshold."
+  },
+  "diagnostics": {
+    "final": "Final declared regressions,linked binary checks,retained checks and owned startup passed with canonical+own crash/log/exit/stdout/stderr/appended-diagnostic review.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 0,
+      "types": {},
+      "review": "Main incremental build warnings checked against f55f0ea70. Ten retained-fixture warnings are byte-equivalent messages/file/line to the previous passing batch;their production and fixture sources unchanged. Diagnostics retained without suppression;not claimed repaired.",
+      "entries": [],
+      "retained_fixture_warnings": [
+        {
+          "log": "artifact-tier.log",
+          "file": "ArtifactTierProgressionTest.cpp",
+          "line": 65,
+          "code": "C4458",
+          "message": "declaration of 'item' hides class member",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "artifact-tier.log",
+          "file": "AutoTier.inc",
+          "line": 33,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint8', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 26,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 27,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 28,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 29,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'int' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "AddScenario.inc",
+          "line": 7,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        }
+      ],
+      "selected_fixture_warnings": {
+        "count": 87,
+        "types": {
+          "C4100": 87
+        },
+        "review": "All87 warnings are unused attacker/dmgType parameters in extracted production callback signatures,including pinned raw controls;required native signatures deliberately retained. No warnings suppressed;full compiler output archived. No new native compiler or runtime warning.",
+        "entries": [
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/AysaSurvival-20261110-135811-214/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/AysaSurvival-20261110-135811-214/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/AysaSurvival-20261110-135813-514/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135833-436/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135835-869/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135835-869/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135835-869/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135835-869/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135835-869/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135835-869/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/DurumuEyes-20261110-135835-869/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/FelfireFission-20261110-135819-910/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/FelfireFission-20261110-135822-079/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135838-097/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135840-489/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135840-489/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135840-489/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135840-489/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135840-489/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JiKunHelpers-20261110-135840-489/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JinrokhFont-20261110-135842-623/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JinrokhFont-20261110-135842-623/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/JinrokhFont-20261110-135844-771/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/KalecgosBanish-20261110-135824-319/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/KalecgosBanish-20261110-135824-319/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/KalecgosBanish-20261110-135826-576/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/KalecgosBanish-20261110-135826-576/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135851-154/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135851-154/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135851-154/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135851-154/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135851-154/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135851-154/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135851-154/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135851-154/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135853-358/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135853-358/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135853-358/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/MegaeraHazards-20261110-135853-358/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135828-785/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135831-171/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135831-171/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135831-171/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135831-171/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135831-171/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/NorushenActors-20261110-135831-171/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/ParagonFog-20261110-135846-924/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/ParagonFog-20261110-135846-924/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/ParagonFog-20261110-135849-045/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/WarsongActors-20261110-135815-661/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/WarsongActors-20261110-135815-661/run.log",
+            "code": "C4100",
+            "message": "'attacker': unreferenced parameter"
+          },
+          {
+            "log": "build-extractors/runtime-test/twentysixth-ten-repairs/WarsongActors-20261110-135817-805/run.log",
+            "code": "C4100",
+            "message": "'dmgType': unreferenced parameter"
+          }
+        ]
+      }
+    },
+    "development": [
+      "Traced all30 local guard users,Reset/IsSummonedBy/DoAction/UpdateAI and explicit despawn/kill paths,then verified actual live bindings and linked callbacks. Matching Unit::DealDamage normalizes after raw DamageTaken;each selected guard used raw/template health. Source controls reproduce mismatch;native tests exercise actual final dispatch with installed extracted policies on neutral test creatures.",
+      "Aysa raw cap could turn zero input into one damage;final hook now preserves zero and existing one-damage nonlethal policy. Felfire strict> becomes exact-inclusive final lethal. Paired scripted self-kills remain exempt. Existing native progression,spawns,casts,timers,flags and explicit cleanup paths remain unchanged. Tests do not claim actual client traversal or activated scaling."
+    ],
+    "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse scope of all selected files and no production diff.",
+    "supplemental_archives": [
+      {
+        "manifest": "build-extractors/bin/Release/fixed/twentysixth-ten-repairs-2026-11-10/supplemental-manifest.json",
+        "sha256": "b42b91650c9510590698bfe4ec59349d67eb0c142844052f62bb2fba840361a9",
+        "files": 20
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/twentysixth-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "0613f063c12a6f3880705e064507b3e57d7c9e94abad022e1a791f2dafd12136",
+    "original_files": 537,
+    "removed_files": 106,
+    "logical_removed_bytes": 815129676,
+    "deletion_manifest": ".codex/twentysixth-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "36d568933bfdc54b078fe8a811d9b2800eacdd83b0fe1434ff6a72cb2413b426",
+    "retained_rollbacks": [
+      ".codex/release-before-twentysixth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-twentyfifth-ten-fixes-2026-11-10",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-twentyfifth rollback retired after newest pre-twentysixth recovery hash verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified.",
+    "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state.",
+    "All ten actual client sequences remain pending:phoenix detonation/sleep/wake/targets;Artruis full faction choice/ally death/urn/group/reset;Ko ragh suppression-field visual/timing and real death;Broken Shore actual invitations/sparring/guardian/group/faction and lost-player cleanup;Neptulon wipe/restart;Blaze egg/real healing/wake;heroic Siamat actual2s death/achievement;Whitemane/Durand native resurrection movement/cast acknowledgment and absent partner recovery;Snowdrift actual waves/training jump/home/completion/loot/re-entry;Felmyst actual air/ground death. Missing-partner or failed-cast recovery outside the repaired Artruis/duel scopes is not certified.",
+    "All ten actual client encounters remain pending:Aggramar heroic/normal remnants/eruption;both Argus modules real aura/cast/area scale/mote/pulse timing and AI replacement;Eonar actual Paraxis wipe/restart;Worldbreaker both weapon modes/controller;Hyrja both defenders/pulls/reset/controller;Ichor explosion/eye damage;Desolate eruption/phase owner cleanup;Festerface actual recongealing/retry;Fallen Crusader real revive/feign interaction;Algalon real star/black-hole phases/spawn/cleanup. Failed essential casts or missing controller recovery outside the explicitly exercised boundaries is not certified. No whole36-chain or authentic Lady claim.",
+    "All ten actual client encounters remain pending:Muru portal/Entropius/reset/failure paths;Harbinger actual repentance/cast acknowledgment/controller removal;Anomaly fragments/rift/interrupts;Elisande full rewind dialogue/objects/echoes and absent actors;Telarn infusions/effects;Eadric/Paletress actual return/bind/loot;Black Knight real resurrection/ghouls/timers;Ingvar Annhylde ritual/failed resurrection;Keleseth actual18-22s resurrection/heal/cast failures;Amber real consume123156/visuals/retry. Missing essential actors or failed native casts outside the exercised boundaries remain unverified. No whole36-chain/authentic Lady certification.",
+    "All ten actual client encounters remain pending:Xavius10stack and Naraxas6stack criteria/real aura deaths;Bronjahm4souls/achievement;Svala actual ritual damage/movement/criterion;Magtheridon real soul-transfer target/effect;Raigonn phase handoff/vehicle;Elegon charge movement/controller/focus links/reset;Living Sand repeated real storms/targets/visuals;Durumu real cone/aura/blue death freeze;Ra den actual flare. Essential failed-cast/missing-controller recovery outside tested admission boundaries is not certified. Existing Elegon energy-charge active field is assigned by native IsSummonedBy;ordinary unowned placement/out-of-contract initialization remains separately unverified. No whole-chain/authentic Lady claim.",
+    "All ten actual client/controller sequences remain pending:Aysa training/boss callbacks,Warsong four faction/event actors,Felfire contact/death actual spell effects,Kalecgos paired realm/banish/enrage/reset/self-kill,Norushen blind-hatred/residual/healer challenge completion/real exhaustion aura,Durumu full cones/eyes/movement/cleanup,Ji Kun nests/feed/jump/fall rescue/pet/camera/re-entry,Jinrokh actual water-font behavior,Paragons actual eerie fog,Megaera body/acid-rain/torrent/ice cleanup. Megaera head damage/phase logic is a separate unchanged raw-handler scope,not certified by support-actor protection. No full registered content/client encounter or36-chain/authentic Lady certification."
+  ],
+  "continuation": "STOP:all five authorized batches/50 repairs complete. Actual client traversal and explicitly OPEN issues remain pending as scoped in audits."
+}
