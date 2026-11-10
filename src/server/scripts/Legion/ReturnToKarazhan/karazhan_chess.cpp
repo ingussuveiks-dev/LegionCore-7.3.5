@@ -72,11 +72,13 @@ public:
                                     if (switchy > MIN_Y && switchy < MAX_Y)
                                     {
                                         me->GetMotionMaster()->MoveJump(switchx, switchy, z, 10, 10);
-                                        me->AddDelayedEvent(3000, [this] () -> void
+                                        me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                                         {
+                                            if (aiLifetimeGuard.expired()) return;
                                             me->CastSpell(me, 229298);
-                                            me->AddDelayedEvent(500, [this] () -> void
+                                            me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                                             {
+                                                if (aiLifetimeGuard.expired()) return;
                                                 for (uint8 _up_down = 0; _up_down <= 1; ++_up_down)
                                                 {
                                                     int8 _updown = (_up_down == 0 ? -1 : 1);
@@ -138,11 +140,13 @@ public:
                                     float z = me->GetPositionZ();
                                     // me->UpdateGroundPositionZ(switchx, switchy, z);
                                     me->GetMotionMaster()->MoveJump(switchx, switchy, z, 10, 10);
-                                    me->AddDelayedEvent(3000, [this] () -> void
+                                    me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                                     {
+                                        if (aiLifetimeGuard.expired()) return;
                                         me->CastSpell(me, (me->GetEntry() == NPC_CHESS_ELEPHANT_DARK ? 229558 : 229544));
-                                        me->AddDelayedEvent(500, [this] () -> void
+                                        me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                                         {
+                                            if (aiLifetimeGuard.expired()) return;
                                             for (uint8 _up_down = 0; _up_down <= 1; ++_up_down)
                                             {
                                                 int8 _updown = (_up_down == 0 ? -1 : 1);
@@ -205,11 +209,13 @@ public:
                                     float z = me->GetPositionZ();
                                     // me->UpdateGroundPositionZ(switchx, switchy, z);
                                     me->GetMotionMaster()->MoveJump(switchx, switchy, z, 10, 10);
-                                    me->AddDelayedEvent(3000, [this] () -> void
+                                    me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                                     {
+                                        if (aiLifetimeGuard.expired()) return;
                                         me->CastSpell(me, 229567);
-                                        me->AddDelayedEvent(500, [this] () -> void
+                                        me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                                         {
+                                            if (aiLifetimeGuard.expired()) return;
                                             for (uint8 _vertical_horizont = 0; _vertical_horizont <= 1; ++_vertical_horizont)
                                             {
                                                 for (uint8 _sign_ = 0; _sign_ <= 1; ++_sign_)
@@ -266,10 +272,12 @@ public:
                                     float z = me->GetPositionZ();
                                     // me->UpdateGroundPositionZ(switchx, switchy, z);
                                     me->GetMotionMaster()->MoveJump(switchx, switchy, z, 10, 10);
-                                    me->AddDelayedEvent(3000, [this] () -> void
+                                    me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                                     {
-                                        me->AddDelayedEvent(500, [this] () -> void
+                                        if (aiLifetimeGuard.expired()) return;
+                                        me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                                         {
+                                            if (aiLifetimeGuard.expired()) return;
                                             // like rook
                                             for (uint8 _vertical_horizont = 0; _vertical_horizont <= 1; ++_vertical_horizont)
                                             {
@@ -335,6 +343,9 @@ public:
             me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 6.24f);
         }
 
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
