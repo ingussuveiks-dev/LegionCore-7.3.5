@@ -1050,11 +1050,13 @@ public:
             if (Creature* staff = me->FindNearestCreature(125131, 30.0f, true))
                 me->GetMotionMaster()->MoveFollow(staff, 2.0f, 2.0f);
 
-            me->AddDelayedEvent(2500, [this] {
+            me->AddDelayedEvent(2500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                if (aiLifetimeGuard.expired()) return;
                 DoCast(me, 249967);
             });
 
-            me->AddDelayedEvent(4000, [this] {
+            me->AddDelayedEvent(4000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                if (aiLifetimeGuard.expired()) return;
                 if (instance)
                 {
                     Conversation* conversation = new Conversation;
@@ -1063,12 +1065,16 @@ public:
                 }
             });
 
-            me->AddDelayedEvent(38000, [this] {
+            me->AddDelayedEvent(38000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                if (aiLifetimeGuard.expired()) return;
                 me->DespawnOrUnsummon();
             });
         }
 
         void UpdateAI(uint32 diff) override {}
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
