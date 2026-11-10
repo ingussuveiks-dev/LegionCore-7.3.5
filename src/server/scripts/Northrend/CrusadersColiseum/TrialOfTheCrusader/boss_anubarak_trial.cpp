@@ -346,12 +346,15 @@ class boss_anubarak_trial : public CreatureScript
                             /* WORKAROUND
                             * - The correct implementation is more likely the comment below but it needs spell knowledge
                             */
-                            GuidList::iterator i = _burrowGUID.begin();
-                            uint32 at = urand(0, _burrowGUID.size()-1);
-                            for (uint32 k = 0; k < at; k++)
-                                ++i;
-                            if (Creature* pBurrow = ObjectAccessor::GetCreature(*me, *i))
-                                pBurrow->CastSpell(pBurrow, 66340, false);
+                            if (!_burrowGUID.empty())
+                            {
+                                GuidList::iterator i = _burrowGUID.begin();
+                                uint32 at = urand(0, _burrowGUID.size()-1);
+                                for (uint32 k = 0; k < at; k++)
+                                    ++i;
+                                if (Creature* pBurrow = ObjectAccessor::GetCreature(*me, *i))
+                                    pBurrow->CastSpell(pBurrow, 66340, false);
+                            }
 
                             events.ScheduleEvent(EVENT_SUMMON_SCARAB, 4*IN_MILLISECONDS, 0, PHASE_SUBMERGED);
 
