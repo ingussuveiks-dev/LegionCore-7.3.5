@@ -1,4 +1,5 @@
 #include "antorus.h"
+#include "AntorusIntro.h"
 
 #define MIN_X -4356.93f
 #define MAX_X -3638.09f
@@ -77,9 +78,9 @@ public:
         return new instance_antorus_InstanceMapScript(map);
     }
 
-    struct instance_antorus_InstanceMapScript : InstanceScript
+    struct instance_antorus_InstanceMapScript : AntorusIntroInstance
     {
-        explicit instance_antorus_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
+        explicit instance_antorus_InstanceMapScript(InstanceMap* map) : AntorusIntroInstance(map)
         {
             SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);

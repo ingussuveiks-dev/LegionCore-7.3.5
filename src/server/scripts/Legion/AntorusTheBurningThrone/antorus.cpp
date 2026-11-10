@@ -1,5 +1,6 @@
 #include "../VantusRuneLifecycle.h"
 #include "antorus.h"
+#include "AntorusIntro.h"
 #include "QuestData.h"
 
 // 127233
@@ -367,170 +368,187 @@ class spell_atbt_anihilation : public SpellScript
 class eventobject_antorus_into : public EventObjectScript
 {
 public:
-    eventobject_antorus_into() : EventObjectScript("eventobject_antorus_into") {}
-
-    bool eventDone = false;
+    eventobject_antorus_into() : EventObjectScript("eventobject_antorus_into") { }
 
     bool OnTrigger(Player* player, EventObject* eo, bool enter) override
     {
         if (!enter)
             return true;
-
-        if (eventDone)
-            return true;
-
-        if (eo->GetEntry() != 805 && eo->GetEntry() != 815 && eo->GetEntry() != 816)
-            eventDone = true;
-
-        InstanceScript* instance = player->GetInstanceScript();
-        if (!instance)
+        auto script = dynamic_cast<AntorusIntroInstance*>(player->GetInstanceScript());
+        if (!script || player->GetMap() != eo->GetMap() || !player->IsAlive())
             return false;
 
-        switch (eo->GetEntry())
+        uint32 entry = eo->GetEntry();
+        if (entry == 805)
         {
-        case 800:
-            player->CreateConversation(5545);
-            player->AddDelayedEvent(7000, [player]() -> void
-            {
-                player->CreateConversation(5522);
-            });
-            break;
-        case 801:
-            player->AddDelayedEvent(1000, [player]() -> void
-            {
-                player->CreateConversation(5524);
-            });
-            break;
-        case 802:
-            player->AddDelayedEvent(8000, [player, instance]() -> void
-            {
-                instance->instance->LoadGrid(-3705.06f, 1357.21f);
-                if (Creature* cre = instance->instance->GetCreature(instance->GetGuidData(NPC_HASABEL)))
-                    cre->AI()->ZoneTalk(0);
-            });
-            break;
-        case 803:
-            if (instance->GetBossState(DATA_HASABEL) != DONE)
-            {
-                eventDone = false;
-                return false;
-            }
-            eo->SummonCreature(NPC_IMAGE_OF_EONAR, eo->GetPosition(), TEMPSUMMON_TIMED_DESPAWN, 21000);
-            break;
-        case 804:
-            if (Creature* eonar = eo->SummonCreature(NPC_EONAR_EVENT, -4299.92f, -11179.68f, 817.63f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 40000))
-            {
-                player->CreateConversation(5703);
-                eonar->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-            }
-            break;
-        case 805:
             if (!player->HasAura(SPELL_SURGE_OF_LIFE_OVERRIDE))
             {
                 std::list<Creature*> mobs;
                 player->GetCreatureListWithEntryInGrid(mobs, 127681, 30.0f);
-                for (auto& npc : mobs)
+                for (auto npc : mobs)
                     npc->CastSpell(player, SPELL_BLESSING_LIFEBINDER_VISUAL, true);
             }
-            break;
-        case 806:
-            player->AddDelayedEvent(1000, [player]() -> void
-            {
-                player->CastSpell(player, 249441);
-            });
-            break;
-        case 807:
-            if (instance->GetBossState(DATA_IMONAR) == DONE)
-                break;
-            instance->instance->LoadGrid(-10599.29f, 9036.34f);
-            player->CreateConversation(5608);
+            return true;
+        }
+        if (entry < 800 || entry > 812 || script->IntroPlayed(entry))
+            return true;
+        if (!script->BeginIntro(entry, player, eo))
+            return true;
 
-            if (Creature* cre = eo->SummonCreature(NPC_IMONAR_INTRO, -10574.15f, 8606.92f, 1909.52f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 30000))
-            {
-                instance->instance->LoadGrid(-10754.15f, 8606.92f);
-                cre->GetMotionMaster()->MovePoint(0, -10572.75f, 8715.77f, 1891.68f);
-                cre->AddDelayedEvent(9000, [cre]() -> void
+        switch (entry)
+        {
+            case 800:
+                if (!script->IntroStarted(entry))
                 {
-                    InstanceScript* script = cre->GetInstanceScript();
-                    if (!script)
-                        return;
-                    
-                    if (Creature* boss = script->instance->GetCreature(script->GetGuidData(NPC_IMONAR)))
+                    if (!AntorusIntroInstance::StartConversation(player, 5545))
                     {
+                        script->FinishIntro(entry, false);
+                        break;
+                    }
+                    script->SetIntroStarted(entry);
+                }
+                script->QueueIntroPlayer(entry, player, 7000, [script, entry](Player* target)
+                {
+                    script->FinishIntro(entry, AntorusIntroInstance::StartConversation(target, 5522));
+                });
+                break;
+            case 801:
+                script->QueueIntroPlayer(entry, player, 1000, [script, entry](Player* target)
+                {
+                    script->FinishIntro(entry, AntorusIntroInstance::StartConversation(target, 5524));
+                });
+                break;
+            case 802:
+                script->QueueIntroWorld(entry, 8000, [script]()
+                {
+                    script->instance->LoadGrid(-3705.06f, 1357.21f);
+                    if (Creature* boss = script->instance->GetCreature(script->GetGuidData(NPC_HASABEL)))
+                    {
+                        boss->AI()->ZoneTalk(0);
+                        return true;
+                    }
+                    return false;
+                });
+                break;
+            case 803:
+                script->FinishIntro(entry, script->GetBossState(DATA_HASABEL) == DONE &&
+                    eo->SummonCreature(NPC_IMAGE_OF_EONAR, eo->GetPosition(), TEMPSUMMON_TIMED_DESPAWN, 21000));
+                break;
+            case 804:
+                if (Creature* eonar = eo->SummonCreature(NPC_EONAR_EVENT, -4299.92f, -11179.68f, 817.63f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 40000))
+                {
+                    // This optional conversation must not discard the accepted actor.
+                    player->CreateConversation(5703);
+                    eonar->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                    script->FinishIntro(entry, true);
+                }
+                else
+                    script->FinishIntro(entry, false);
+                break;
+            case 807:
+                if (script->GetBossState(DATA_IMONAR) == DONE)
+                {
+                    script->FinishIntro(entry, true);
+                    break;
+                }
+                script->instance->LoadGrid(-10599.29f, 9036.34f);
+                if (Creature* intro = eo->SummonCreature(NPC_IMONAR_INTRO, -10574.15f, 8606.92f, 1909.52f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 30000))
+                {
+                    if (!script->IntroStarted(entry) && AntorusIntroInstance::StartConversation(player, 5608))
+                        script->SetIntroStarted(entry);
+                    script->instance->LoadGrid(-10754.15f, 8606.92f);
+                    intro->GetMotionMaster()->MovePoint(0, -10572.75f, 8715.77f, 1891.68f);
+                    ObjectGuid guid = intro->GetGUID();
+                    script->QueueIntroWorld(entry, 9000, [script, guid]()
+                    {
+                        Creature* intro = script->instance->GetCreature(guid);
+                        Creature* boss = script->instance->GetCreature(script->GetGuidData(NPC_IMONAR));
+                        if (!intro || !intro->IsAlive() || !boss || !boss->IsAlive())
+                            return false;
                         boss->SetVisible(true);
                         boss->CastSpell(boss, 249569);
                         boss->AI()->Talk(0);
-                    }
-
-                    cre->AddDelayedEvent(3000, [cre]() -> void
+                        intro->AddDelayedEvent(3000, [intro]()
+                        {
+                            intro->GetMotionMaster()->MovePoint(0, -10791.75f, 8883.12f, 2056.20f);
+                        });
+                        return true;
+                    }, [script, guid]()
                     {
-                        cre->GetMotionMaster()->MovePoint(0, -10791.75f, 8883.12f, 2056.20f);
-                    });
-                });
-            }
-            break;
-        case 808:
-            player->AddDelayedEvent(1000, [player]() -> void
-            {
-                player->CastSpell(player, 249802);
-            });
-            break;
-        case 809:
-            player->AddDelayedEvent(1000, [player]() -> void
-            {
-                player->CastSpell(player, 250695);
-            });
-            instance->instance->LoadGrid(-12694.59f, -3597.12f);
-            break;      
-        case 810:
-        {
-            player->AddDelayedEvent(1000, [player]() -> void
-            {
-                player->CastSpell(player, 250797);
-            });
-            uint32 const entries[3]{ 125683, 124913, 125682 };
-            Position const pos[3]{
-                {-12639.84f, -3029.82f, 2498.75f, 1.57f},
-                {-12631.39f, -3029.82f, 2498.97f, 1.57f},
-                {-12626.20f, -3029.82f, 2498.97f, 1.57f }
-            };
-            for (uint8 i = 0; i < 3; ++i)
-                if (Creature* cre = eo->SummonCreature(entries[i], pos[i]))
-                {
-                    cre->SetReactState(REACT_ATTACK_OFF);
-                    cre->AddDelayedEvent(1000, [cre]() -> void
-                    {
-                        cre->GetMotionMaster()->MovePoint(1, cre->GetPositionX(), -2947.84f + frand(-3.0f, 3.0f), 2499.12f);
+                        if (Creature* intro = script->instance->GetCreature(guid))
+                            intro->DespawnOrUnsummon();
                     });
                 }
-
-            break;
-        }
-        case 811:
-            player->AddDelayedEvent(1000, [player]() -> void
+                else
+                    script->FinishIntro(entry, false);
+                break;
+            case 810:
             {
-                player->CastSpell(player, 250698);
-            });
-            break;
-        case 812:
-            instance->instance->LoadGrid(-12633.20f, -2231.10f);
-            player->AddDelayedEvent(1000, [player]() -> void
-            {
-                player->CastSpell(player, 250700);
-                player->AddDelayedEvent(50000, [player]() -> void
+                if (!script->IntroStarted(entry))
                 {
-                    player->CastSpell(player, 250728);
+                    uint32 const entries[3]{125683, 124913, 125682};
+                    Position const pos[3]{
+                        {-12639.84f, -3029.82f, 2498.75f, 1.57f},
+                        {-12631.39f, -3029.82f, 2498.97f, 1.57f},
+                        {-12626.20f, -3029.82f, 2498.97f, 1.57f}
+                    };
+                    std::vector<Creature*> actors;
+                    for (uint8 i = 0; i < 3; ++i)
+                        if (Creature* actor = eo->SummonCreature(entries[i], pos[i]))
+                            actors.push_back(actor);
+                    if (actors.size() != 3)
+                    {
+                        for (Creature* actor : actors)
+                            actor->DespawnOrUnsummon();
+                        script->FinishIntro(entry, false);
+                        break;
+                    }
+                    for (Creature* actor : actors)
+                    {
+                        actor->SetReactState(REACT_ATTACK_OFF);
+                        actor->AddDelayedEvent(1000, [actor]()
+                        {
+                            actor->GetMotionMaster()->MovePoint(1, actor->GetPositionX(), -2947.84f + frand(-3.0f, 3.0f), 2499.12f);
+                        });
+                    }
+                    script->SetIntroStarted(entry);
+                }
+                script->QueueIntroPlayer(entry, player, 1000, [script, entry](Player* target)
+                {
+                    script->FinishIntro(entry, target->CastSpell(target, 250797) == SPELL_CAST_OK);
                 });
-            });
-            break;
-        //case 815:
-        //    if (instance->GetBossState(DATA_WORLDBREAKER) == DONE && instance->GetBossState(DATA_FELHOUNDS) == DONE)
-        //        player->TeleportTo(1712, -2891.32f, 10767.63f, 124.0f, player->GetOrientation());
-        //    break;
-        //case 816:
-        //    if (instance->GetBossState(DATA_WORLDBREAKER) == DONE && instance->GetBossState(DATA_FELHOUNDS) == DONE)
-        //        player->TeleportTo(1712, -2891.07f, 10768.03f, -90.78f, player->GetOrientation());
-        //    break;
+                break;
+            }
+            case 812:
+                script->instance->LoadGrid(-12633.20f, -2231.10f);
+                script->QueueIntroPlayer(entry, player, 1000, [script, entry](Player* target)
+                {
+                    if (!script->IntroStarted(entry))
+                    {
+                        if (target->CastSpell(target, 250700) != SPELL_CAST_OK)
+                        {
+                            script->FinishIntro(entry, false);
+                            return;
+                        }
+                        script->SetIntroStarted(entry);
+                    }
+                    script->QueueIntroPlayer(entry, target, 50000, [script, entry](Player* target)
+                    {
+                        script->FinishIntro(entry, target->CastSpell(target, 250728) == SPELL_CAST_OK);
+                    });
+                });
+                break;
+            default:
+            {
+                uint32 spell = entry == 806 ? 249441 : entry == 808 ? 249802 : entry == 809 ? 250695 : 250698;
+                if (entry == 809)
+                    script->instance->LoadGrid(-12694.59f, -3597.12f);
+                script->QueueIntroPlayer(entry, player, 1000, [script, entry, spell](Player* target)
+                {
+                    script->FinishIntro(entry, target->CastSpell(target, spell) == SPELL_CAST_OK);
+                });
+                break;
+            }
         }
         return true;
     }
