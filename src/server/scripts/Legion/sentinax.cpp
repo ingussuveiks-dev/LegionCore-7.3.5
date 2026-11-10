@@ -213,7 +213,8 @@ public:
             {
                 if (second_wave) // reset state
                 {
-                     me->AddDelayedEvent(10000, [this] () -> void {
+                     me->AddDelayedEvent(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void {
+                        if (aiLifetimeGuard.expired()) return;
                         summons.DespawnAll();
                      });
                      
@@ -234,8 +235,9 @@ public:
                 second_wave = true;
                 
                 for (int32 id : {_action, secondAction})
-                    me->AddDelayedEvent(6000, [this, id]() -> void
+                    me->AddDelayedEvent(6000, [this, id, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         secondWave(id);
                     });
             }
@@ -265,7 +267,8 @@ public:
             if (action == 1)
             {
                 me->KillAllDelayedEvents();
-                me->AddDelayedEvent(10000, [this] () -> void {
+                me->AddDelayedEvent(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void {
+                  if (aiLifetimeGuard.expired()) return;
                   summons.DespawnAll();
                 });
                 
@@ -302,8 +305,9 @@ public:
                 }
             }
             
-            me->AddDelayedEvent(3000, [this, action]() -> void
+            me->AddDelayedEvent(3000, [this, action, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 firstWave(action);
                 if (GameObject* go = me->SummonGameObject(GOB_PORTAL, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f, 0))
                 {
@@ -452,6 +456,9 @@ public:
 
             }
         };
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
