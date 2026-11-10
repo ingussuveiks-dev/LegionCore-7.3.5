@@ -198,14 +198,14 @@ public:
             if (!HasTaunted && me->IsWithinDistInMap(who, 30.0f))
             {
                 HasTaunted = true;
-                me->AddDelayedEvent(3000, [this] {
-                    Talk(SAY_INTRO1);
+                me->AddDelayedEvent(3000, [actor = me] {
+                    { if (auto ai = actor->AI()) ai->Talk(SAY_INTRO1); }
                 });
-                me->AddDelayedEvent(10000, [this] {
-                    Talk(SAY_INTRO2);
+                me->AddDelayedEvent(10000, [actor = me] {
+                    { if (auto ai = actor->AI()) ai->Talk(SAY_INTRO2); }
                 });
-                me->AddDelayedEvent(18000, [this] {
-                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+                me->AddDelayedEvent(18000, [actor = me] {
+                    actor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
                 });
             }
 
