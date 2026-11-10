@@ -901,11 +901,11 @@ public:
         {
             if (action == ACTION_ACTIVE)
             {
-                me->RemoveAurasDueToSpell(SPELL_SAND_TRAP_VISUAL);
-                me->RemoveAurasDueToSpell(SPELL_SAND_TRAP_AT);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_REMOVE_CLIENT_CONTROL);
                 if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
                 {
+                    me->RemoveAurasDueToSpell(SPELL_SAND_TRAP_VISUAL);
+                    me->RemoveAurasDueToSpell(SPELL_SAND_TRAP_AT);
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_REMOVE_CLIENT_CONTROL);
                     me->SetReactState(REACT_AGGRESSIVE);
                     me->Attack(target, true);
                     me->GetMotionMaster()->MoveChase(target);
@@ -914,10 +914,17 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth() && !done)
+            if (done)
             {
+                damage = 0;
+                return;
+            }
+
+            if (damage >= me->GetHealth(attacker) && !done)
+            {
+                damage = 0;
                 done = true;
                 me->StopAttack();
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_REMOVE_CLIENT_CONTROL);
