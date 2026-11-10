@@ -43,6 +43,15 @@ public:
             {
                 if (Player* player = who->ToPlayer())
                 {
+                    if (Unit* owner = me->GetAnyOwner())
+                        if (owner != player)
+                            return;
+                    if (!apply)
+                    {
+                        PlayerOn = false;
+                        player->SetClientControl(player, true);
+                        return;
+                    }
                     PlayerOn = true;
                     Start(false, true, player->GetGUID());  // 10993813
                 }
@@ -60,7 +69,9 @@ public:
                             if (Vehicle* vehicle = me->GetVehicleKit())
                                 vehicle->RemoveAllPassengers();
                             me->DespawnOrUnsummon(1000);
-                            player->AddDelayedEvent(1000, [player] {
+                            player->AddDelayedEvent(1000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()] {
+                                if (!player->IsInWorld() || !player->IsAlive() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId || player->IsBeingTeleported())
+                                    return;
 
                                 player->TeleportTo(1220, 4951.40f, 380.97f, 74.63f, 4.13f, TELE_TO_SEAMLESS);
                                 player->CastSpell(player, 232864);
@@ -75,7 +86,8 @@ public:
             if (PlayerOn)
             {
                 if (Player* player = GetPlayerForEscort())
-                    player->SetClientControl(me, 0);
+                    if (player->IsAlive() && player->GetVehicleBase() == me)
+                        player->SetClientControl(me, 0);
                 PlayerOn = false;
             }
              
