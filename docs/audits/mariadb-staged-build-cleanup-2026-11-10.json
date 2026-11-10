@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-10",
+  "status": "STAGED_MARIADB_REPAIR_NOT_INSTALLED",
+  "removed_root": ".codex\\mariadb-cast-fix-2026-11-10\\build",
+  "removed_files": 3695,
+  "logical_removed_bytes": 943024743,
+  "deletion_manifest": ".codex\\open-diagnostics\\mariadb-unsigned-cast-superseded-build-2026-11-10\\deletion-manifest.json",
+  "deletion_manifest_sha256": "e13e76fa25ee8b27f5a6e4c7a4ecc50f89ec2827c52c415b9a69b63b2a1b2718",
+  "preserved_evidence_manifest": ".codex\\open-diagnostics\\mariadb-unsigned-cast-superseded-build-2026-11-10\\evidence-manifest.json",
+  "preserved_evidence_manifest_sha256": "4de549f5e4cd1b6f9a539b578ab86fdbc4eca1a37c6f938d2e23a286fa357e45",
+  "reason": "Only superseded first system-OpenSSL build output;final pinned bundledWolfSSL candidate and build retained for pending live promotion/recovery. No service or user/unknown process stopped. No active runtime/data/configuration directory removed.",
+  "retained": "Final promotion DLL/PDB/manifest,stock wrapper/DLL rollback control,final bundledWolfSSL incremental build and source provenance,isolated empty test database for outstanding promotion reproduction,all original raw OPEN protocol evidence. Original installedDLL and canonical Release/mixedDBErrors hashes unchanged.",
+  "unresolved": "User-owned wampmariadb64 still running;confirmation required before DLL replacement. This cleanup does not close the live unsigned CAST bug and is archived outside fixed."
+}
