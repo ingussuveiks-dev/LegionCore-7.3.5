@@ -466,10 +466,10 @@ public:
             // DoCast(SPELL_SHARE_DMG);
             if (me->GetEntry() == 67488)
             {
-                me->AddDelayedEvent(700, [this] () -> void
+                me->AddDelayedEvent(700, [actor = me] () -> void
                 {
-                    if (Unit* owner = me->GetAnyOwner())
-                        AttackStart(owner);
+                    if (Unit* owner = actor->GetAnyOwner())
+                        { if (auto ai = actor->AI()) ai->AttackStart(owner); }
                 });
             }
         }
@@ -599,9 +599,9 @@ public:
                             count_teleports++;
                         }
 
-                        me->AddDelayedEvent(700, [this] ()-> void
+                        me->AddDelayedEvent(700, [actor = me] ()-> void
                         {
-                            if (Creature* totem = me->FindNearestCreature(67500, 30.0f, true))
+                            if (Creature* totem = actor->FindNearestCreature(67500, 30.0f, true))
                             {
                                 totem->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                                 totem->CastSpell(totem, SPELL_ACTIVATE_TOTEM);
