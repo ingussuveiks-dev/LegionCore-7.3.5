@@ -181,8 +181,9 @@ public:
         {
             SetCanSeeEvenInPassiveMode(true);
             
-            me->AddDelayedEvent(1000, [this] () -> void
+            me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 eventDone = !me->HasAura(237597);
                 if (!eventDone)
                 {
@@ -213,14 +214,18 @@ public:
                         (*itr)->SetHomePosition(me->GetPositionX() + frand(-3, 3), me->GetPositionY() + frand(-3, 3), me->GetPositionZ(), (*itr)->GetOrientation()+frand(0, 1));
                     }
                     
-                me->AddDelayedEvent(1000, [this] () -> void
+                me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->CastSpell(me, 240373, true);
                     me->DespawnOrUnsummon(4000);
                 });
             }
         }
         
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
