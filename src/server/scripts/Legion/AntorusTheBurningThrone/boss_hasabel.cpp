@@ -238,7 +238,7 @@ struct boss_hasabel : BossAI
         Talk(SAY_DEATH);
         _JustDied();
         TeleportPlayers();
-        me->AddDelayedEvent(1000, [this]() -> void { me->CastSpell(me, SPELL_OUTRO_CONV, true); });
+        me->AddDelayedEvent(1000, [actor = me]() -> void { actor->CastSpell(actor, SPELL_OUTRO_CONV, true); });
     }
 
     void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
