@@ -405,7 +405,8 @@ class npc_spine_of_deathwing_deathwing : public CreatureScript
 
                 DespawnCreatures(NPC_HIDEOUS_AMALGAMATION);
 
-                me->AddDelayedEvent(5000, [this] {
+                me->AddDelayedEvent(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     rollright = false;
                     rollleft = false;
                     rolling = false;
@@ -520,6 +521,9 @@ class npc_spine_of_deathwing_deathwing : public CreatureScript
                     float _range;
                     bool _withAura;
             };
+        private:
+            // Unit-owned queues may outlive this AI object.
+            std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
         };
 };
 
