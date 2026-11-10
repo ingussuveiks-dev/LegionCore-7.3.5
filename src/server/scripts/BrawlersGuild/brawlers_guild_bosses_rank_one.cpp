@@ -262,27 +262,35 @@ public:
     {
         boss_brawguild_osoAI(Creature* creature) : BrawlersBossAI(creature) {}
         
+        uint64 introGeneration = 0;
+
         void Reset() override
-        {           
+        {
+            me->KillAllDelayedEvents();
+            ++introGeneration;
             events.Reset();
-            if (Creature* morozec = me->SummonCreature(117759, me->GetPositionX() + 3.0f, me->GetPositionY() + 3.0f, me->GetPositionZ(), me->GetOrientation()))
+            _Reset();
+            Creature* morozec = me->SummonCreature(117759, me->GetPositionX() + 3.0f, me->GetPositionY() + 3.0f, me->GetPositionZ(), me->GetOrientation());
+            me->SetReactState(REACT_PASSIVE);
+            if (morozec && me->GetAnyOwner())
+                morozec->AI()->Talk(0, me->GetAnyOwner()->GetGUID());
+            me->AddDelayedEvent(6000, [this, morozecGuid = morozec ? morozec->GetGUID() : ObjectGuid::Empty, generation = introGeneration]() -> void
             {
-                me->SetReactState(REACT_PASSIVE);
-                if (me->GetAnyOwner())
-                    morozec->AI()->Talk(0, me->GetAnyOwner()->GetGUID());
-                morozec->AddDelayedEvent(6000, [morozec, this] () -> void
+                if (generation != introGeneration || !me->IsAlive())
+                    return;
+                if (Creature* morozec = ObjectAccessor::GetCreature(*me, morozecGuid))
                 {
                     me->SetFacingTo(morozec);
                     me->CastSpell(morozec, 93330);
                     morozec->CastSpell(morozec, 234213);
                     morozec->DespawnOrUnsummon(1000);
-                    me->SetReactState(REACT_AGGRESSIVE);
-                    if (me->GetAnyOwner())
-                        AttackStart(me->GetAnyOwner());
-                    if (Creature* moroz = me->FindNearestCreature(117860, 30.0f, true))
-                        moroz->AI()->Talk(0);
-                });
-            }
+                }
+                me->SetReactState(REACT_AGGRESSIVE);
+                if (me->GetAnyOwner())
+                    AttackStart(me->GetAnyOwner());
+                if (Creature* moroz = me->FindNearestCreature(117860, 30.0f, true))
+                    moroz->AI()->Talk(0);
+            });
         }
 
         void EnterCombat(Unit* /*who*/) override
