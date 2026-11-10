@@ -159,9 +159,9 @@ public:
             Reset();
             _EnterCombat();
             
-            me->AddDelayedCombat(1000, [this]()->void
+            me->AddDelayedCombat(1000, [actor = me]()->void
             {
-                me->CastSpell(me, SPELL_ELUNES_LIGHT, true);
+                actor->CastSpell(actor, SPELL_ELUNES_LIGHT, true);
             });
 
             ScheduleEvents();
