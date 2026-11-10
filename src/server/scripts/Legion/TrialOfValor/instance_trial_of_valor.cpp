@@ -223,8 +223,10 @@ public:
                     RestoreOdynVictoryActors();
                     instance->ApplyOnEveryPlayer([&](Player* player)
                     {
-                        player->AddDelayedEvent(100, [player]() -> void
+                        player->AddDelayedEvent(100, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void
                         {
+                            if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                                return;
                             player->CombatStop(true);
                             player->getHostileRefManager().deleteReferences();
                         });
