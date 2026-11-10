@@ -129,11 +129,15 @@ class npc_defiant_troll : public CreatureScript
             //If work send working animation
             if (work)
             {
-                if(workTimer > diff)
-                    workTimer -= diff;
-                else
+                if (workTimer)
                 {
-                    me->GetMotionMaster()->MoveTargetedHome();
+                    if (workTimer > diff)
+                        workTimer -= diff;
+                    else
+                    {
+                        workTimer = 0;
+                        me->GetMotionMaster()->MoveTargetedHome();
+                    }
                 }
                 return;
             }
