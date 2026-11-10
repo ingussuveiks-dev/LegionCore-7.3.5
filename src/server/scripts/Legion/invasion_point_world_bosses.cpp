@@ -593,7 +593,7 @@ struct boss_matron_folnuna : public ScriptedAI
                     if (auto trigger = me->SummonCreature(124537, 4408.702f, 6490.092f, 40.38989f, 1.38464f, TEMPSUMMON_TIMED_DESPAWN, 15000))
                         DoCast(trigger, SPELL_SLIMBERING_GASP, false);
 
-                    me->AddDelayedCombat(500, [=]() -> void { me->SetPower(POWER_ENERGY, 0); });
+                    me->AddDelayedCombat(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetPower(POWER_ENERGY, 0); });
                 }
             }
         }
@@ -674,6 +674,9 @@ struct boss_matron_folnuna : public ScriptedAI
 
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //247549
