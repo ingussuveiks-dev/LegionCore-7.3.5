@@ -953,9 +953,11 @@ public:
         uint32 uiChargeTimer;
         uint32 uiShieldBreakerTimer;
         uint32 uiDefendTimer;
+        bool surrendered = false;
 
         void Reset() override
         {
+        surrendered = false;
         uiChargeTimer = 7000;
         uiShieldBreakerTimer = 10000;
         uiDefendTimer = 10000;
@@ -969,26 +971,26 @@ public:
         me->setFaction(14);
         }
 
-        void DamageTaken(Unit* pDoneBy, uint32& uiDamage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
         {
-            if(pDoneBy)
+            if (surrendered)
             {
-                if (uiDamage > me->GetHealth() && (pDoneBy->GetTypeId() == TYPEID_PLAYER || pDoneBy->GetOwner()))
-                {
-                    DoScriptText(NPC_ARGENT_CHAMPION_TEXT_SAY_WIN, me);
-                    uiDamage = 0;
-
-                    if(pDoneBy->GetOwner())
-                        (pDoneBy->GetOwner())->ToPlayer()->KilledMonsterCredit(NPC_ARGENT_CHAMPION_CREDIT, ObjectGuid::Empty);
-                    if(pDoneBy->GetTypeId() == TYPEID_PLAYER)
-                        pDoneBy->ToPlayer()->KilledMonsterCredit(NPC_ARGENT_CHAMPION_CREDIT, ObjectGuid::Empty);
-
-                    me->setFaction(35);
-                    me->DespawnOrUnsummon(5000);
-                    me->SetHomePosition(me->GetPositionX(),me->GetPositionY(),me->GetPositionZ(),me->GetOrientation());
-                    EnterEvadeMode();
-                }
+                damage = 0;
+                return;
             }
+            Player* player = attacker ? attacker->GetAffectingPlayer() : nullptr;
+            if (!player || damage < me->GetHealth(attacker))
+                return;
+
+            surrendered = true;
+            damage = 0;
+            DoScriptText(NPC_ARGENT_CHAMPION_TEXT_SAY_WIN, me);
+            player->RewardPlayerAndGroupAtEvent(NPC_ARGENT_CHAMPION_CREDIT, me);
+            me->setFaction(35);
+            me->DespawnOrUnsummon(5000);
+            me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
+            me->CombatStop(true);
+            me->DeleteThreatList();
         }
 
         void KilledUnit(Unit* /*victim*/) override
