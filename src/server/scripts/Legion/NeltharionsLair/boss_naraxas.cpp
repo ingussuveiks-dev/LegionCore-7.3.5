@@ -171,7 +171,7 @@ struct boss_naraxas : public BossAI
         summons.Summon(summon);
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
     {
         if (me->HealthBelowPct(berserkPct))
         {
@@ -179,7 +179,7 @@ struct boss_naraxas : public BossAI
             DoCast(me, SPELL_FRENZY, true);
         }
 
-        if (damage >= me->GetHealth())
+        if (damage >= me->GetHealth(attacker))
         {
             if (Aura const* aura = me->GetAura(SPELL_RAVENOUS))
             {
