@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "MedivhSequence",
+  "base": "f38d9173743174d40727c39801e1ef91e9a286b0",
+  "support_commit": "4d00d4c9c2ae8600755158c79483ea5f8425488b",
+  "paths": [
+    "src/server/scripts/EasternKingdoms/Karazhan/karazhan.cpp"
+  ],
+  "cause": "Idle dialogue/fire timers and event flag were uninitialized;failed summon consumed stage;missing actor later dereferenced and could admit phantom completion after naive guards.",
+  "implementation": "Initialize idle state;activate only after successful summon;abort lost/dead partner before later steps,release only this actors instance claim for legitimate re-entry;arm fire clocks only in authored stages.",
+  "validation": {
+    "source": "20 final MSVC ASAN selected source cases:10 instrumented pinned controls and10 repaired contracts. Inactive phase and consumed-phase timers;resurrection idle reset;ten ticks issue one return;all7 original balloon providers/failed summon/waiting aura/existing vehicle/missing exact actor;four absent-prisoner repeated death/late-binding guards;Medivh failed/successful one-shot activation,reset clocks/lost partner abort;target-relative exact lethal/player/pet/nested guardian/reentrant/NPC-owner surrender. Native-boundary payloads remain modeled. Earlier fixture failures retained;final champion body uses GetAffectingPlayer.",
+    "native": "Actual actors/Player FunctionProcessor queues;7 exact ObjectAccessor balloon lookups;four prisoner lookups/aura removals;actual Unit GetAffectingPlayer for player/nested guardian ownership and target-relative GetHealth,with captured progression endpoint. Phase/reset/return/Medivh selected bodies exercised. Balloon summon/waiting-aura/ride,home movement,fragment/shatter,speech and credit are observed boundaries. Full original quest/group/death/scenario/camera/client traversal not replayed;no character writes/full-core ASAN.",
+    "release": "Original main libraries rebuilt after final GetAffectingPlayer correction. Staged/canonical PE verifies10 changed lifecycles plus197 earlier selected checks,total207. Checks include four release guards/unconditional identity retirement/late bind rejection,all7 balloon origin/seat/aura/GUID checks,Medivh successful activation/abort and actual post-scaling champion owner/group-credit hook. Canonical Scepter/ArtifactTier/ScenarioResumeASAN and owned fresh ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crash/log length/timestamp/exit/stdout/stderr/appended warning/error/assertion/DBErrors checks. Final checks clean. Native fixture static observer compile error,source TYPEID enum input,PE inlined StartEvent inspection and owner-field correction preserved. Mixed7111byte DBErrors and all other OPEN evidence unchanged;compiler warnings retained/reviewed.",
+    "scope": "10 independent controller/lifecycle repairs in10 files. All7 balloon providers are ONE shared queue identity repair. Four prison actors belong to separate encounters and each counts once despite multiple cleanup/poll/rebind changes. Medivh state/actor failure/fire clocks one sequence repair;champion scaling/owner/exactly-once credit one surrender repair. No guessed Lady threshold/kill timer,SQL,character rewrite or full36-chain claim."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Antorus eventobject_antorus_into singleton eventDone/per-instance asynchronous ownership remains OPEN. Master roster/reset/report lifetime repaired here at stated selected scopes;actual arena/client traversal pending.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified."
+  ],
+  "canonical_world_sha256": "c196458d7ba139600a32508db82508132c5a3050c6c300cb2af9a7fdde0d6934",
+  "patch_sha256": "a431ba4b758116efb4b3b86ca7d8266e2aba4f463c6b8cf5251809e023d72237",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/twentieth-ten-repairs-2026-11-10.json"
+}

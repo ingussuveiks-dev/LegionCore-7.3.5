@@ -499,8 +499,18 @@ public:
 
         bool EventStarted;
 
+        void AbortEvent()
+        {
+            EventStarted = false;
+            if (instance && instance->GetGuidData(DATA_IMAGE_OF_MEDIVH) == me->GetGUID())
+                instance->SetGuidData(DATA_IMAGE_OF_MEDIVH, ObjectGuid::Empty);
+            me->DespawnOrUnsummon();
+        }
+
         void Reset() override
         {
+            EventStarted = false;
+            Step = YellTimer = FireMedivhTimer = FireArcanagosTimer = 0;
             ArcanagosGUID.Clear();
 
             if (instance && !instance->GetGuidData(DATA_IMAGE_OF_MEDIVH))
@@ -532,11 +542,16 @@ public:
 
         void StartEvent()
         {
-            Step = 1;
-            EventStarted = true;
+            if (EventStarted)
+                return;
             Creature* Arcanagos = me->SummonCreature(MOB_ARCANAGOS, ArcanagosPos[0], ArcanagosPos[1], ArcanagosPos[2], 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 20000);
             if (!Arcanagos)
+            {
+                AbortEvent();
                 return;
+            }
+            Step = 1;
+            EventStarted = true;
             ArcanagosGUID = Arcanagos->GetGUID();
             Arcanagos->SetDisableGravity(true);
             (*Arcanagos).GetMotionMaster()->MovePoint(0, ArcanagosPos[0], ArcanagosPos[1], ArcanagosPos[2]);
@@ -549,6 +564,11 @@ public:
         {
             Unit* arca = Unit::GetUnit(*me, ArcanagosGUID);
             Map* map = me->GetMap();
+            if (Step >= 2 && (!arca || !arca->IsAlive()))
+            {
+                AbortEvent();
+                return 9999999;
+            }
             switch (Step)
             {
             case 0: return 9999999;
@@ -628,6 +648,9 @@ public:
         void UpdateAI(uint32 diff) override
         {
 
+            if (!EventStarted)
+                return;
+
             if (YellTimer <= diff)
             {
                 if (EventStarted)
@@ -640,24 +663,30 @@ public:
             {
                 Unit* arca = Unit::GetUnit(*me, ArcanagosGUID);
 
-                if (FireArcanagosTimer <= diff)
+                if (FireArcanagosTimer)
                 {
-                    if (arca)
-                        arca->CastSpell(me, SPELL_FIRE_BALL, false);
-                    FireArcanagosTimer = 6000;
+                    if (FireArcanagosTimer <= diff)
+                    {
+                        if (arca)
+                            arca->CastSpell(me, SPELL_FIRE_BALL, false);
+                        FireArcanagosTimer = 6000;
+                    }
+                    else
+                        FireArcanagosTimer -= diff;
                 }
-                else
-                    FireArcanagosTimer -= diff;
 
-                if (FireMedivhTimer <= diff)
+                if (FireMedivhTimer)
                 {
-                    if (arca)
-                        DoCast(arca, SPELL_FIRE_BALL, false);
+                    if (FireMedivhTimer <= diff)
+                    {
+                        if (arca)
+                            DoCast(arca, SPELL_FIRE_BALL, false);
 
-                    FireMedivhTimer = 5000;
+                        FireMedivhTimer = 5000;
+                    }
+                    else
+                        FireMedivhTimer -= diff;
                 }
-                else
-                    FireMedivhTimer -= diff;
             }
         }
     };
