@@ -869,7 +869,7 @@ struct npc_tos_erupting_reflection : public ScriptedAI
 
     void IsSummonedBy(Unit* summoner) override
     {
-        me->AddDelayedEvent(500, [this] () -> void { me->HandleEmoteCommand(EMOTE_ONESHOT_BATTLE_ROAR); });
+        me->AddDelayedEvent(500, [actor = me] () -> void { actor->HandleEmoteCommand(EMOTE_ONESHOT_BATTLE_ROAR); });
         me->SetReactState(REACT_AGGRESSIVE, 2000);
     }
 
@@ -916,7 +916,7 @@ struct npc_tos_wailing_reflection : public ScriptedAI
 
     void IsSummonedBy(Unit* summoner) override
     {
-        me->AddDelayedEvent(500, [this] () -> void { me->HandleEmoteCommand(EMOTE_ONESHOT_BATTLE_ROAR); });
+        me->AddDelayedEvent(500, [actor = me] () -> void { actor->HandleEmoteCommand(EMOTE_ONESHOT_BATTLE_ROAR); });
         me->SetReactState(REACT_AGGRESSIVE, 2000);
 
         sorrowfulWailTimer = 16000;
@@ -1033,7 +1033,7 @@ struct npc_tos_hopeless_reflection : public ScriptedAI
                     me->CastSpell(me, SPELL_HOPELESSNESS_AT, true);
                     me->CastSpell(me, SPELL_LINGERING_HOPE, true);
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    me->AddDelayedEvent(500, [this] () -> void { me->SetVisible(false); });
+                    me->AddDelayedEvent(500, [actor = me] () -> void { actor->SetVisible(false); });
                 }
             }
             else
@@ -1123,10 +1123,10 @@ struct npc_tos_stage4_illidan_stormrage : public ScriptedAI
     {
         me->PlayOneShotAnimKit(ILLIDAN_ANIM_1);
 
-        me->AddDelayedEvent(500, [this] () -> void
+        me->AddDelayedEvent(500, [actor = me] () -> void
         {
-            Talk(SAY_ILLIDAN_STAGE_4);
-            me->CastSpell(me, SPELL_CURSED_SIGHT, true);
+            { if (auto ai = actor->AI()) ai->Talk(SAY_ILLIDAN_STAGE_4); }
+            actor->CastSpell(actor, SPELL_CURSED_SIGHT, true);
         });
     }
 
