@@ -1,0 +1,214 @@
+[
+  {
+    "key": "ToppsRay",
+    "paths": [
+      "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_six.cpp"
+    ],
+    "cls": "boss_brawguild_toppsAI",
+    "title": "Project Topps charge through the actual target direction without division by zero",
+    "slug": "topps-charge-direction",
+    "edits": [
+      {
+        "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_six.cpp",
+        "old": "                            float abs_switch_x = (switch_x < 0 ? switch_x * -1 : switch_x); \n                            float switch_y = pos.GetPositionY() - me->GetPositionY();\n                            float abs_switch_y = (switch_y < 0 ? switch_y * -1 : switch_y); \n                            pos.Relocate(pos.GetPositionX() + (switch_x/abs_switch_x)*70.0f,  pos.GetPositionY() + (switch_y/abs_switch_y)*70.0f);",
+        "new": "                            float switch_y = pos.GetPositionY() - me->GetPositionY();\n                            float directionLength = std::hypot(switch_x, switch_y);\n                            if (directionLength == 0.0f)\n                            {\n                                events.RescheduleEvent(EVENT_1, 3000);\n                                break;\n                            }\n                            pos.Relocate(pos.GetPositionX() + switch_x / directionLength * 70.0f, pos.GetPositionY() + switch_y / directionLength * 70.0f);",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "FocusAction",
+    "paths": [
+      "src/server/scripts/Pandaria/MogushanVault/boss_elegon.cpp"
+    ],
+    "cls": "npc_empyreal_focusAI",
+    "title": "Activate Empyreal Focus only for the authored action",
+    "slug": "elegon-focus-action-admission",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/MogushanVault/boss_elegon.cpp",
+        "old": "                if (ACTION_1)",
+        "new": "                if (action == ACTION_1)",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "LeiShiAction",
+    "paths": [
+      "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_lei_shi.cpp"
+    ],
+    "cls": "boss_lei_shiAI",
+    "title": "End Lei Shi hide only on its termination action",
+    "slug": "lei-shi-hide-action-admission",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_lei_shi.cpp",
+        "old": "            if (ACTION_TERMINATE_HIDE_PHASE)",
+        "new": "            if (action == ACTION_TERMINATE_HIDE_PHASE)",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "LoryHealth",
+    "paths": [
+      "src/server/scripts/Scenario/UngaIngoo/instance_unga_ingoo.cpp"
+    ],
+    "cls": "instance_unga_ingoo_InstanceMapScript",
+    "title": "Preserve full-width wounded jungle lory health",
+    "slug": "unga-lory-health-width",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/UngaIngoo/instance_unga_ingoo.cpp",
+        "old": "creature->SetHealth((uint32)creature->GetMaxHealth() * 0.1f);",
+        "new": "creature->SetHealth(uint64(creature->GetMaxHealth() * 0.1f));",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "MeljarakHeal",
+    "paths": [
+      "src/server/scripts/Pandaria/HeartFear/boss_lord_meljarak.cpp"
+    ],
+    "cls": "npc_generic_soldierAI",
+    "title": "Keep Meljarak soldier healing full width through the shared helper",
+    "slug": "meljarak-shared-heal-width",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/HeartFear/boss_lord_meljarak.cpp",
+        "old": "ObjectGuid callerGuid, uint32 modhealth)",
+        "new": "ObjectGuid callerGuid, uint64 modhealth)",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Pandaria/HeartFear/boss_lord_meljarak.cpp",
+        "old": "uint32 modhealth = me->GetMaxHealth()/4;",
+        "new": "uint64 modhealth = me->GetMaxHealth()/4;",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "GarroshAbsorb",
+    "paths": [
+      "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp"
+    ],
+    "cls": "spell_touch_of_yshaarj_AuraScript",
+    "title": "Preserve Touch of Yshaarj absorb and resulting health widths",
+    "slug": "garrosh-touch-absorb-health-width",
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp",
+        "old": "int32 newamount = int32(GetTarget()->CountPctFromMaxHealth(80));",
+        "new": "float newamount = float(GetTarget()->CountPctFromMaxHealth(80));",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_garrosh_hellscream.cpp",
+        "old": "uint32 hpmod = GetTarget()->CountPctFromMaxHealth(20);\n                GetTarget()->SetHealth(uint32(aurEff->GetAmount()) + hpmod);",
+        "new": "uint64 hpmod = GetTarget()->CountPctFromMaxHealth(20);\n                GetTarget()->SetHealth(uint64(std::max(0.0f, aurEff->GetAmount())) + hpmod);",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "NightmotherLanding",
+    "paths": [
+      "src/server/scripts/Legion/TheEmeraldNightmare/boss_elerethe_renferal.cpp"
+    ],
+    "cls": "npc_en_nightmother",
+    "title": "Always arm Nightmother landing recovery when takeoff starts",
+    "slug": "nightmother-takeoff-landing-recovery",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_elerethe_renferal.cpp",
+        "old": "                    me->StopAttack(true);\n                    me->SetDisableGravity(true);\n                    me->SetCanFly(true);\n                    me->GetMotionMaster()->MoveTakeoff(1, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 32.0f);",
+        "new": "                    me->StopAttack(true);\n                    jumpTimer = 6000;\n                    me->SetDisableGravity(true);\n                    me->SetCanFly(true);\n                    me->GetMotionMaster()->MoveTakeoff(1, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 32.0f);",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_elerethe_renferal.cpp",
+        "old": "                        jumpTimer = 6000;\n                        events.DelayEvent(EVENT_1, 7000);",
+        "new": "                        events.DelayEvent(EVENT_1, 7000);",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "GlowcapStack",
+    "paths": [
+      "src/server/scripts/Legion/MicroHolidays/GlowcapFestival.cpp"
+    ],
+    "cls": "npc_fshoo",
+    "title": "Handle exactly one hundred Glowcap stacks in the existing drain bracket",
+    "slug": "glowcap-hundred-stack-drain",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/GlowcapFestival.cpp",
+        "old": "aura->GetStackAmount() >= 50 && aura->GetStackAmount() < 100",
+        "new": "aura->GetStackAmount() >= 50 && aura->GetStackAmount() <= 100",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "FreyaHealth",
+    "paths": [
+      "src/server/scripts/Northrend/Ulduar/Ulduar/boss_freya.cpp"
+    ],
+    "cls": "boss_freyaAI",
+    "title": "Preserve Freya elder health bonus at native health width",
+    "slug": "freya-elder-health-width",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_freya.cpp",
+        "old": "me->SetMaxHealth(me->GetMaxHealth() + (uint32)(me->GetMaxHealth() * EldersCount * 20 / 100));",
+        "new": "me->SetMaxHealth(me->GetMaxHealth() + (me->GetMaxHealth() * EldersCount * 20 / 100));",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "MasterRoster",
+    "paths": [
+      "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp"
+    ],
+    "cls": "boss_brawguild_masterAI",
+    "title": "Reset and track Master illusion deaths exactly once per attempt",
+    "slug": "brawlers-master-illusion-lifecycle",
+    "edits": [
+      {
+        "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp",
+        "old": "        uint8 phase_of_sphere;\n        uint32 timer_check;",
+        "new": "        uint8 phase_of_sphere;\n        uint32 timer_check;\n        std::set<ObjectGuid> activeAddGuids;",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp",
+        "old": "            timer_check = 500;\n            if (me->GetEntry() == 115645)",
+        "new": "            me->KillAllDelayedEvents();\n            _Reset();\n            activeAddGuids.clear();\n            count_adds = 0;\n            phase_of_sphere = 0;\n            timer_check = 500;\n            if (me->GetEntry() == 115645)",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp",
+        "old": "            if (summon->GetEntry() != 115637)\n                return;\n\n            if (Unit* owner",
+        "new": "            if (summon->GetEntry() != 115637 || count_adds >= 3 || !activeAddGuids.insert(summon->GetGUID()).second)\n                return;\n\n            if (Unit* owner",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp",
+        "old": "            if (summon->GetEntry() != 115637)\n                return;\n            \n            \n            count_adds--;",
+        "new": "            if (summon->GetEntry() != 115637 || activeAddGuids.erase(summon->GetGUID()) != 1)\n                return;\n\n            count_adds--;",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp",
+        "old": "                    player->AddDelayedEvent(700, [player] () -> void\n                    {\n                        if (player && player->IsAlive())\n                            if (BrawlersGuild* brawlerGuild = player->GetBrawlerGuild())\n                                brawlerGuild->BossReport(player->GetGUID(), true);\n                    });",
+        "new": "                    me->AddDelayedEvent(700, [this, playerGuid = player->GetGUID()] () -> void\n                    {\n                        if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))\n                            if (player->IsAlive() && me->GetAnyOwner() == player)\n                                if (BrawlersGuild* brawlerGuild = player->GetBrawlerGuild())\n                                    brawlerGuild->BossReport(player->GetGUID(), true);\n                    });",
+        "count": 1
+      }
+    ]
+  }
+]
