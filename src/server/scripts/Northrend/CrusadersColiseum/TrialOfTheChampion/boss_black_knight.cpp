@@ -329,9 +329,15 @@ public:
                 DoMeleeAttackIfReady();
         }
 
-        void DamageTaken(Unit* /*pDoneBy*/, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
-            if (damage > me->GetHealth() && uiPhase <= PHASE_SKELETON)
+            if (resurrectInProgress)
+            {
+                damage = 0;
+                return;
+            }
+
+            if (damage >= me->GetHealth(attacker) && uiPhase <= PHASE_SKELETON)
             {
                 damage = 0;
                 me->SetHealth(0);
