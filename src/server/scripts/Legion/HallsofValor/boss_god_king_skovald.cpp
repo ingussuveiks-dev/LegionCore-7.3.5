@@ -111,8 +111,9 @@ public:
 
             if (!intro)
             {
-                AddDelayedEvent(10000, [=] () -> void
+                AddDelayedEvent(10000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NON_ATTACKABLE);
                     me->SetReactState(REACT_DEFENSIVE);
                 });
@@ -355,6 +356,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
