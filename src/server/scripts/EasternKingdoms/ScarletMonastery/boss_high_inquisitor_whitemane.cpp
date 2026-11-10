@@ -138,9 +138,9 @@ public:
             me->NearTeleportTo(me->GetHomePosition());
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
-            if ((damage >= me->GetHealth() && !Resurrect) || ResurrectCheck)
+            if ((damage >= me->GetHealth(attacker) && !Resurrect) || ResurrectCheck)
             {
                 damage = 0;
                 me->SetHealth(me->CountPctFromMaxHealth(50));
@@ -287,9 +287,9 @@ public:
             events.RescheduleEvent(EVENT_FLASH_OF_STEEL, 10000);
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
 
