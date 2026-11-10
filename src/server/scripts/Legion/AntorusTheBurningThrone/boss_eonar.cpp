@@ -1619,10 +1619,10 @@ struct npc_eonar_focusing_crystal : public ScriptedAI
             if (auto owner = me->GetAnyOwner())
                 owner->GetAI()->DoAction(ACTION_CRYSTAL_DISABLE);
 
-            me->AddDelayedEvent(3000, [this] () -> void
+            me->AddDelayedEvent(3000, [actor = me] () -> void
             {
-                if (me)
-                    me->DespawnOrUnsummon();
+                if (actor)
+                    actor->DespawnOrUnsummon();
             });
         }
     }
