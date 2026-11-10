@@ -115,17 +115,20 @@ public:
         {
             _EnterCombat();
             events.RescheduleEvent(EVENT_BLAST, urand(10000, 18000));
-            me->AddDelayedEvent(1500, [this] {
+            me->AddDelayedEvent(1500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                if (aiLifetimeGuard.expired()) return;
                 DoCast(SPELL_CALL);
             });
-            me->AddDelayedEvent(3500, [this] {
+            me->AddDelayedEvent(3500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                if (aiLifetimeGuard.expired()) return;
                 me->SummonCreature(NPC_VOID_PORTAL, voidP[0]);
             });
         }
 
         void CleanUp()
         {
-            me->AddDelayedEvent(6000, [this] {
+            me->AddDelayedEvent(6000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                if (aiLifetimeGuard.expired()) return;
                 me->RemoveAurasDueToSpell(SPELL_CHANNEL);
                 me->RemoveAurasDueToSpell(SPELL_STACKS);
                 me->RemoveAurasDueToSpell(SPELL_IMMUNITY);
@@ -163,7 +166,8 @@ public:
         void ResetAdds()
         {
             me->SummonCreature(NPC_LURA_INTROPORTAL, riftIntro[2], TEMPSUMMON_TIMED_DESPAWN, 2500);
-            me->AddDelayedEvent(1000, [this] {
+            me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                if (aiLifetimeGuard.expired()) return;
                 me->SummonCreature(NPC_LURA_ALLERIA, aw[0]);
                 me->SummonCreature(NPC_LURA_LOCUSWALKER, aw[1]);
             });
@@ -173,7 +177,8 @@ public:
         {
             if (spellInfo->Id == SPELL_CALL)
             {
-                me->AddDelayedEvent(500, [this] {
+                me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     DoCast(me, SPELL_IMMUNITY);
                     DoCast(me, SPELL_CHANNEL);
                 });
@@ -211,7 +216,8 @@ public:
             switch (action)
             {
             case 1:
-                me->AddDelayedEvent(2000, [this] {
+                me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     if (instance)
                     {
                         Conversation* conversation = new Conversation;
@@ -219,14 +225,16 @@ public:
                             delete conversation;
                     }
                 });
-                me->AddDelayedEvent(24000, [this] {
+                me->AddDelayedEvent(24000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
                 });
                 break;
             case 2:
                 if (me->isInCombat())
                 {
-                    me->AddDelayedEvent(1500, [this] {
+                    me->AddDelayedEvent(1500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         ++shieldsbreaked;
                         me->InterruptSpell(CURRENT_CHANNELED_SPELL);
                         me->RemoveAurasDueToSpell(SPELL_STACKS);
@@ -239,14 +247,17 @@ public:
             case 3:
                 if (me->isInCombat())
                 {
-                    me->AddDelayedEvent(1500, [this] {
+                    me->AddDelayedEvent(1500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         DoCast(SPELL_CALL);
                     });
-                    me->AddDelayedEvent(2000, [this] {
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         DoCast(me, SPELL_IMMUNITY);
                         DoCast(me, SPELL_CHANNEL);
                     });
-                    me->AddDelayedEvent(3500, [this] {
+                    me->AddDelayedEvent(3500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->SummonCreature(NPC_VOID_PORTAL, voidP[0]);
                         me->SummonCreature(NPC_VOID_PORTAL, voidP[1]);
                     });
@@ -255,8 +266,9 @@ public:
             case 4:
                 if (me->isInCombat())
                 {
-                    me->AddDelayedEvent(2000, [this]
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->SetControlled(0, UNIT_STATE_ROOT);
                         DoCast(me, SPELL_CHANNEL);
                     });
@@ -312,6 +324,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
