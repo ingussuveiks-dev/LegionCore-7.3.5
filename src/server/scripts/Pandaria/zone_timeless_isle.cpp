@@ -593,12 +593,17 @@ public:
             }
         }
 
-        void DamageTaken(Unit* who, uint32& damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* who, uint32& damage, DamageEffectType dmgType)
         {
-            if (!who || !who->IsPlayer())
+            Player* looter = who ? who->GetAffectingPlayer() : nullptr;
+            if (!looter)
+            {
+                if (damage >= me->GetHealth(who))
+                    damage = 0;
                 return;
+            }
 
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(who))
             {
                 damage = 0;
 
@@ -608,7 +613,7 @@ public:
                     QuestCredit();
                     me->setFaction(35);
                     me->RemoveAllAuras();
-                    me->GeneratePersonalLoot(me, (Player*)who);
+                    me->GeneratePersonalLoot(me, looter);
                     Talk(SAY_XUEN_END);
                     if (auto Shao = me->GetAnyOwner())
                         Shao->GetAI()->DoAction(ACTION_XUEN_END);
@@ -619,14 +624,15 @@ public:
 
         void QuestCredit()
         {
+            std::set<ObjectGuid> credited;
             std::list<HostileReference*> ThreatList = me->getThreatManager().getThreatList();
-            for (std::list<HostileReference*>::const_iterator itr = ThreatList.begin(); itr != ThreatList.end(); ++itr)
+            for (HostileReference* reference : ThreatList)
             {
-                Player *pTarget = Player::GetPlayer(*me, (*itr)->getUnitGuid());
-                if (!pTarget)
-                    return;
-
-                pTarget->KilledMonsterCredit(me->GetEntry());
+                Unit* participant = ObjectAccessor::GetUnit(*me, reference->getUnitGuid());
+                Player* player = participant ? participant->GetAffectingPlayer() : nullptr;
+                if (!player || !credited.insert(player->GetGUID()).second)
+                    continue;
+                player->KilledMonsterCredit(me->GetEntry());
             }
         }
 
