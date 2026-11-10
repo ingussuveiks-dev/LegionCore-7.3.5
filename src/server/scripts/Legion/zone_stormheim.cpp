@@ -454,8 +454,9 @@ public:
                                             me->CastSpell(target, SPELL_SEADOG_SCUTTLE_TRIG);
                                         }
 
-                                        me->AddDelayedEvent(5000, [this]() -> void
+                                        me->AddDelayedEvent(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                                         {
+                                            if (aiLifetimeGuard.expired()) return;
                                             if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 70.0f, true))
                                             {
                                                 me->CastSpell(target, SPELL_SEADOG_SCUTTLE);
@@ -463,8 +464,9 @@ public:
                                             }
                                         });
 
-                                        me->AddDelayedEvent(10000, [this]() -> void
+                                        me->AddDelayedEvent(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                                         {
+                                            if (aiLifetimeGuard.expired()) return;
                                             if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 70.0f, true))
                                             {
                                                 me->CastSpell(target, SPELL_SEADOG_SCUTTLE);
@@ -472,8 +474,9 @@ public:
                                             }
                                         });
 
-                                        me->AddDelayedEvent(15000, [this] () -> void
+                                        me->AddDelayedEvent(15000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                                         {
+                                            if (aiLifetimeGuard.expired()) return;
                                             me->SetReactState(REACT_AGGRESSIVE);
                                         });
                                         break;
@@ -493,6 +496,9 @@ public:
 
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
