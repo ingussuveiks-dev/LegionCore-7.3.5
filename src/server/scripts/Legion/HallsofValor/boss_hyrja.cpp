@@ -290,20 +290,24 @@ public:
         {
             events.Reset();
 
-            if (Unit* summoner = me->GetAnyOwner())
-                if (summoner->GetAI()->GetData(DATA_HYRJA_EVENT_COMPLETE) == 1)
-                    SpiritForm();
+            if (!ascendance)
+                if (Unit* owner = me->GetAnyOwner())
+                    if (Creature* summoner = owner->ToCreature())
+                        if (summoner->IsAIEnabled && summoner->AI()->GetData(DATA_HYRJA_EVENT_COMPLETE) == 1)
+                            SpiritForm();
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 if (!ascendance)
                 {
                     ascendance = true;
-                    if (Unit* summoner = me->GetAnyOwner())
-                        summoner->ToCreature()->AI()->DoAction(true);
+                    if (Unit* owner = me->GetAnyOwner())
+                        if (Creature* summoner = owner->ToCreature())
+                            if (summoner->IsAIEnabled)
+                                summoner->AI()->DoAction(true);
 
                     EnterEvadeMode();
                     SpiritForm();
@@ -321,6 +325,7 @@ public:
 
         void SpiritForm()
         {
+            ascendance = true;
             Talk(1);
             me->StopAttack();
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NON_ATTACKABLE);
