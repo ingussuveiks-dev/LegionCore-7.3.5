@@ -267,10 +267,10 @@ public:
                         illidan->DespawnOrUnsummon(25000);
                     });
                     
-                    me->AddDelayedEvent(3000, [this]()-> void
+                    me->AddDelayedEvent(3000, [actor = me]()-> void
                     {
-                        me->GetMotionMaster()->MovePath(PATH_FROM_THIRD, false, frand(-3, 3), frand(-3, 3));
-                        me->DespawnOrUnsummon(25000);
+                        actor->GetMotionMaster()->MovePath(PATH_FROM_THIRD, false, frand(-3, 3), frand(-3, 3));
+                        actor->DespawnOrUnsummon(25000);
                     });
                 
             }
@@ -290,26 +290,26 @@ public:
                 {
                     case 120312: // second boss
                     {
-                        me->AddDelayedEvent(1000, [this]()-> void
+                        me->AddDelayedEvent(1000, [actor = me]()-> void
                         {
-                            DoCast(243561);
+                            { if (auto ai = actor->AI()) ai->DoCast(243561); }
                         });
                         
-                        me->AddDelayedEvent(2000, [this]()-> void
+                        me->AddDelayedEvent(2000, [actor = me]()-> void
                         {
-                            Talk(0);
+                            { if (auto ai = actor->AI()) ai->Talk(0); }
                         });
                         
-                        me->AddDelayedEvent(3000, [this]()-> void
+                        me->AddDelayedEvent(3000, [actor = me]()-> void
                         {
-                            me->GetMotionMaster()->MovePath(PATH_MAIEV_SECOND_BOSS, false);
+                            actor->GetMotionMaster()->MovePath(PATH_MAIEV_SECOND_BOSS, false);
                         });
                         
-                        me->AddDelayedEvent(25000, [this]()-> void
+                        me->AddDelayedEvent(25000, [actor = me]()-> void
                         {
-                            Talk(1);
-                            DoCast(240727);
-                            me->DespawnOrUnsummon(2000);
+                            { if (auto ai = actor->AI()) ai->Talk(1); }
+                            { if (auto ai = actor->AI()) ai->DoCast(240727); }
+                            actor->DespawnOrUnsummon(2000);
                         });
                         break;
                     }
@@ -322,10 +322,10 @@ public:
                             {
                                 illidan->GetMotionMaster()->MovePath(PATH_TO_THIRD_BOSS ,false, frand(-3, 3), frand(-3, 3));
                                 
-                                me->AddDelayedEvent(500, [this] () -> void
+                                me->AddDelayedEvent(500, [actor = me] () -> void
                                 {
-                                    me->GetMotionMaster()->MovePath(PATH_TO_THIRD_BOSS, false, frand(-3, 3), frand(-3, 3));
-                                    me->CreateConversation(4910);
+                                    actor->GetMotionMaster()->MovePath(PATH_TO_THIRD_BOSS, false, frand(-3, 3), frand(-3, 3));
+                                    actor->CreateConversation(4910);
                                 });
                             }
                         } 
