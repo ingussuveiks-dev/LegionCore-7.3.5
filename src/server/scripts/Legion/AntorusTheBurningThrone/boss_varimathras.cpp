@@ -294,23 +294,23 @@ struct npc_shadow_of_varimathras : public ScriptedAI
         {
             DoCast(me, SPELL_ALONE_IN_DARKNESS_VISUAL, true);
 
-            me->AddDelayedEvent(100, [this] () -> void
+            me->AddDelayedEvent(100, [actor = me] () -> void
             {
-                me->PlayOneShotAnimKit(13242);
-                me->SendPlaySpellVisualKit(83768, 0);
+                actor->PlayOneShotAnimKit(13242);
+                actor->SendPlaySpellVisualKit(83768, 0);
             });
         }
 
         if (me->GetEntry() == NPC_SHADOW_OF_VARIMATHRAS_2)
         {
             DoCast(me, SPELL_MARKED_PREY_VISUAL, true);
-            me->AddDelayedEvent(100, [this] () -> void { me->PlayOneShotAnimKit(13252); });
+            me->AddDelayedEvent(100, [actor = me] () -> void { actor->PlayOneShotAnimKit(13252); });
         }
 
         if (!IsMythicRaid())
         {
-            me->AddDelayedEvent(600, [this] () -> void { me->NearTeleportTo(0.0f, 0.0f, 0.0f, 0.0f); });
-            me->AddDelayedEvent(800, [this] () -> void { me->DespawnOrUnsummon(); });
+            me->AddDelayedEvent(600, [actor = me] () -> void { actor->NearTeleportTo(0.0f, 0.0f, 0.0f, 0.0f); });
+            me->AddDelayedEvent(800, [actor = me] () -> void { actor->DespawnOrUnsummon(); });
         }
         else
         {
