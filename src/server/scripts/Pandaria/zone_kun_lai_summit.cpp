@@ -287,11 +287,11 @@ struct npc_master_cheng_q31840 : public ScriptedAI
     void IsSummonedBy(Unit* summoner) override
     {
         me->SetLevel(summoner->getLevel());
-        me->AddDelayedEvent(2000, [this]() -> void
+        me->AddDelayedEvent(2000, [actor = me]() -> void
         {
-            Talk(1);
-            me->SetWalk(true);
-            me->GetMotionMaster()->MovePoint(1, 3943.22f, 1836.45f, 904.33f);
+            { if (auto ai = actor->AI()) ai->Talk(1); }
+            actor->SetWalk(true);
+            actor->GetMotionMaster()->MovePoint(1, 3943.22f, 1836.45f, 904.33f);
         });
     }
 
@@ -306,17 +306,17 @@ struct npc_master_cheng_q31840 : public ScriptedAI
             {
                 me->SetHomePosition(me->GetPosition());
                 me->SetFacingToObject(owner);
-                me->AddDelayedEvent(1000, [this]() -> void
+                me->AddDelayedEvent(1000, [actor = me]() -> void
                 {
-                    Talk(2);
+                    { if (auto ai = actor->AI()) ai->Talk(2); }
                 });
-                me->AddDelayedEvent(8000, [this]() -> void
+                me->AddDelayedEvent(8000, [actor = me]() -> void
                 {
-                    me->HandleEmoteCommand(2);
+                    actor->HandleEmoteCommand(2);
                 });
-                me->AddDelayedEvent(10000, [this]() -> void
+                me->AddDelayedEvent(10000, [actor = me]() -> void
                 {
-                    me->setFaction(14);
+                    actor->setFaction(14);
                 });
             }
         }
