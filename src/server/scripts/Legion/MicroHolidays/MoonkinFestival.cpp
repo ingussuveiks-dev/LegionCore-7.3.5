@@ -407,6 +407,7 @@ struct npc_moonkin_hatchling_pet : ScriptedAI
     void Reset() override
     {
         checking = 1000;
+        SpellVisualCast = 0;
     }
 
     void EnterEvadeMode() override
