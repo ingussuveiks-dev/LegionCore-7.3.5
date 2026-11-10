@@ -8,8 +8,9 @@ struct npc_moonkin_hatchling : ScriptedAI
 
     void Reset() override
     {
-        me->AddDelayedEvent(1000, [=]() -> void
+        me->AddDelayedEvent(1000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (me->FindNearestCreature(122241, 40.0f, true))
                 me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_DANCE);
             else
@@ -19,6 +20,9 @@ struct npc_moonkin_hatchling : ScriptedAI
             }
         });
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //122139
