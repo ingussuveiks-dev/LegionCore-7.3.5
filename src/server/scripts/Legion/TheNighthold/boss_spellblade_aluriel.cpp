@@ -469,8 +469,9 @@ public:
                         uint32 multiTimer = 2100;
                         for (uint8 i = 0; i < 2; i++)
                         {
-                            AddDelayedEvent(multiTimer, [this] () -> void
+                            AddDelayedEvent(multiTimer, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                             {
+                                if (aiLifetimeGuard.expired()) return;
                                 if (me && me->IsAlive() && me->isInCombat())
                                     DoCast(me, SPELL_REPLICATE_ARCANE_ORB_FILTER, true);
                             });
@@ -505,6 +506,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
