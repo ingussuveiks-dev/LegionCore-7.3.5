@@ -599,7 +599,7 @@ public:
             }
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
             if (IsHeroicPlusRaid() && !interruptActive && me->GetHealthPct() <= 30)
             {
@@ -608,7 +608,7 @@ public:
                 me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, true);
             }
 
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
                 me->SetHealth(me->CountPctFromMaxHealth(5));
