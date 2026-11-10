@@ -158,7 +158,7 @@ struct boss_twinemperorsAI : public ScriptedAI
         }
     }
 
-    void SpellHit(Unit* caster, const SpellInfo* entry)
+    void SpellHit(Unit* caster, SpellInfo const* entry)
     {
         if (caster == me)
             return;
@@ -167,24 +167,18 @@ struct boss_twinemperorsAI : public ScriptedAI
         if (entry->Id != SPELL_HEAL_BROTHER || !pOtherBoss)
             return;
 
-        // add health so we keep same percentage for both brothers
-        uint32 mytotal = me->GetMaxHealth(), histotal = pOtherBoss->GetMaxHealth();
-        float mult = ((float)mytotal) / ((float)histotal);
-        if (mult < 1)
-            mult = 1.0f/mult;
-        #define HEAL_BROTHER_AMOUNT 30000.0f
-        uint32 largerAmount = (uint32)((HEAL_BROTHER_AMOUNT * mult) - HEAL_BROTHER_AMOUNT);
+        uint64 mytotal = me->GetMaxHealth();
+        uint64 histotal = pOtherBoss->GetMaxHealth();
+        uint64 smallerMax = std::min(mytotal, histotal);
+        if (!smallerMax)
+            return;
 
-        if (mytotal > histotal)
-        {
-            uint32 h = me->GetHealth()+largerAmount;
-            me->SetHealth(std::min(mytotal, h));
-        }
-        else
-        {
-            uint32 h = pOtherBoss->GetHealth()+largerAmount;
-            pOtherBoss->SetHealth(std::min(histotal, h));
-        }
+        Creature* larger = mytotal > histotal ? me : pOtherBoss;
+        uint64 missingHealth = larger->GetMaxHealth() - larger->GetHealth();
+        double ratio = double(std::max(mytotal, histotal)) / double(smallerMax);
+        double compensation = 30000.0 * (ratio - 1.0);
+        uint64 largerAmount = compensation >= double(missingHealth) ? missingHealth : uint64(compensation);
+        larger->SetHealth(larger->GetHealth() + largerAmount);
     }
 
     void TryHealBrother(uint32 diff)
