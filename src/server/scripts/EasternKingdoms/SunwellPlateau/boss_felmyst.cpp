@@ -212,9 +212,9 @@ public:
                 events.RescheduleEvent(EVENT_FLIGHT_SEQUENCE, 1);
         }
 
-        void DamageTaken(Unit*, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (phase != PHASE_GROUND && damage >= me->GetHealth())
+            if (phase != PHASE_GROUND && damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
