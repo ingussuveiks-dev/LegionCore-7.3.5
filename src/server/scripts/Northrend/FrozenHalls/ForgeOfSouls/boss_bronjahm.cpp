@@ -131,9 +131,9 @@ class boss_bronjahm : public CreatureScript
                 }
             }
 
-            void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
+            void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
             {
-                if (damage >= me->GetHealth() && soulcount >= 4 && !soulpower)
+                if (damage >= me->GetHealth(attacker) && soulcount >= 4 && !soulpower)
                     soulpower = true;
 
                 if (events.IsInPhase(PHASE_1) && !HealthAbovePct(30))
