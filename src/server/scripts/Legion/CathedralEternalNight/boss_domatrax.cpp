@@ -179,15 +179,15 @@ public:
             me->SetVisible(true);
             DoCast(SPELL_INTRO);
             
-            me->AddDelayedEvent(1000, [this]()-> void
+            me->AddDelayedEvent(1000, [actor = me]()-> void
             {
-                Talk(SAY_INTRO);
+                { if (auto ai = actor->AI()) ai->Talk(SAY_INTRO); }
             });
             
-            me->AddDelayedEvent(3000, [this]()-> void
+            me->AddDelayedEvent(3000, [actor = me]()-> void
             {
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_SELECTABLE);
-                me->SetReactState(REACT_DEFENSIVE);
+                actor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_SELECTABLE);
+                actor->SetReactState(REACT_DEFENSIVE);
             });
             
         }
