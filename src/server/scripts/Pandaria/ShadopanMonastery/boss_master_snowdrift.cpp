@@ -329,9 +329,9 @@ struct boss_master_snowdrift : public BossAI
         }
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*dmgType*/) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
     {
-        if (damage >= me->GetHealth())
+        if (damage >= me->GetHealth(attacker))
         {
             damage = 0;
 
@@ -480,22 +480,25 @@ struct npc_snowdrift_novice : public ScriptedAI
         }
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
     {
-        if (damage >= me->GetHealth())
+        if (!stillInFight)
         {
             damage = 0;
+            return;
+        }
+        if (damage >= me->GetHealth(attacker))
+        {
+            damage = 0;
+            stillInFight = false;
             me->SetReactState(REACT_PASSIVE);
             me->AttackStop();
             me->setFaction(35);
             me->HandleEmoteCommand(EMOTE_ONESHOT_BOW);
             eventEmote = true;
             me->RemoveAllAuras();
-            if (instance && stillInFight)
-            {
-                stillInFight = false;
+            if (instance)
                 instance->SetData(DATA_DEFEATED_NOVICE, 1);
-            }
             events.RescheduleEvent(EVENT_FORFEIT_JUMP, 2000);
         }
     }
@@ -598,24 +601,27 @@ struct npc_snowdrift_miniboss : public ScriptedAI
         }
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*dmgType*/) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
     {
         if (!stillInFight)
-            return;
-
-        if (damage >= me->GetHealth())
         {
             damage = 0;
+            return;
+        }
+
+        if (damage >= me->GetHealth(attacker))
+        {
+            damage = 0;
+            stillInFight = false;
             EnterEvadeMode();
             me->setFaction(35);
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-            stillInFight = false;
 
             if (instance)
                 instance->SetData(DATA_DEFEATED_MINIBOSS, 1);
 
-            if (auto position = instance->instance->GetCreature(instance->GetGuidData(DATA_RANDOM_MINIBOSS_POS)))
+            if (auto position = instance ? instance->instance->GetCreature(instance->GetGuidData(DATA_RANDOM_MINIBOSS_POS)) : nullptr)
             {
                 me->GetMotionMaster()->MovePoint(POINT_MINIBOSS_DEFEATED, position->GetPositionX(), position->GetPositionY(), position->GetPositionZ());
                 me->SetHomePosition(position->GetPositionX(), position->GetPositionY(), position->GetPositionZ(), position->GetOrientation());
