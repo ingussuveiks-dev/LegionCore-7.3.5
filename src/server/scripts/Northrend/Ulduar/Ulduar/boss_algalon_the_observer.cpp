@@ -632,9 +632,14 @@ class npc_collapsing_star : public CreatureScript
                 me->CastSpell(me, SPELL_COLLAPSE, TRIGGERED_FULL_MASK);
             }
             
-            void DamageTaken(Unit * attacker, uint32 &damage, DamageEffectType dmgType) override
+            void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
             {
-                if (damage >= me->GetHealth() && !_dying)
+                if (_dying)
+                {
+                    damage = 0;
+                    return;
+                }
+                if (damage >= me->GetHealth(attacker))
                 {
                     me->GetMotionMaster()->Initialize();
                     _dying = true;
@@ -644,8 +649,11 @@ class npc_collapsing_star : public CreatureScript
                     DoCast(me, SPELL_BLACK_HOLE_SPAWN_VISUAL, true);
                     DoCastAOE(SPELL_BLACK_HOLE_EXPLOSION);
                     Position pos = me->GetPosition();
-                    if (Unit * Algalon = me->ToTempSummon()->GetSummoner())
-                        Algalon->SummonCreature(32953, pos, TEMPSUMMON_CORPSE_DESPAWN);
+                    if (TempSummon* summon = me->ToTempSummon())
+                        if (Unit* owner = summon->GetSummoner())
+                            if (Creature* Algalon = owner->ToCreature())
+                                if (Algalon->IsAlive())
+                                    Algalon->SummonCreature(32953, pos, TEMPSUMMON_CORPSE_DESPAWN);
                     me->DespawnOrUnsummon(1000);
                 }
             }
