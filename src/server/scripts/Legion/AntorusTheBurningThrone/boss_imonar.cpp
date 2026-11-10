@@ -253,15 +253,17 @@ struct boss_imonar : BossAI
         _JustDied();
         SetVisibleTeleporter(true);
         instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EMPOWERED_SHOCK_LANCE);
-        me->AddDelayedEvent(3000, [this]() -> void
+        me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             instance->instance->LoadGrid(-10608.08f, 9002.58f);
             instance->instance->LoadGrid(-10574.31f, 8488.62f);
             me->CastSpell(me, SPELL_OUTRO_CONV, true);
         });
 
-        me->AddDelayedEvent(10000, [this] () -> void
+        me->AddDelayedEvent(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (auto go = instance->instance->GetGameObject(instance->GetGuidData(GO_ARCANE_BARRIER_VISUAL)))
                 go->SetAnimKitId(6132);
         });
@@ -530,6 +532,9 @@ struct boss_imonar : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //124704, 124889
