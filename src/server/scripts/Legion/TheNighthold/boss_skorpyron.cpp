@@ -207,8 +207,9 @@ struct boss_skorpyron : BossAI
             else
                 entry = NPC_CRYSTALLINE_SCORPID;
 
-            me->AddDelayedEvent(20000, [this, entry, path]() -> void
+            me->AddDelayedEvent(20000, [this, entry, path, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (me->IsAlive() && me->isInCombat())
                     if (Creature* scrop = me->SummonCreature(entry, 121.33f + frand(-0.3f, 0.3f), 3418.02f + frand(-0.3f, 0.3f), -250.12f, 2.36f))
                     {
@@ -276,8 +277,9 @@ struct boss_skorpyron : BossAI
 
         if (spell->Id == SPELL_SHOCKWAVE)
         {
-            me->AddDelayedEvent(200, [this]() -> void
+            me->AddDelayedEvent(200, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 summons.DespawnEntry(NPC_CRYSTALLINE_SHARD);
                 if (IsMythicRaid())
                 {
@@ -294,8 +296,9 @@ struct boss_skorpyron : BossAI
     {
         Position TargetPosition{x, y, z, 0.0f};
 
-        me->AddDelayedEvent(40 * idx, [this, TargetPosition]() -> void
+        me->AddDelayedEvent(40 * idx, [this, TargetPosition, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             WorldPackets::Spells::PlaySpellVisual visual;
             visual.Source = me->GetGUID();
             visual.Target = ObjectGuid::Empty;
@@ -400,6 +403,9 @@ struct boss_skorpyron : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //103217, 103224, 103225
