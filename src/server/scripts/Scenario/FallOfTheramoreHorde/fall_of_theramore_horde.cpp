@@ -113,9 +113,9 @@ struct theramore_guard_typeAI : public ScriptedAI
                 Talk(TALK_INTRO);
                 me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
-                me->AddDelayedEvent(3000, [this]()
+                me->AddDelayedEvent(3000, [actor = me]()
                 {
-                    Talk(TALK_SPECIAL_1);
+                    { if (auto ai = actor->AI()) ai->Talk(TALK_SPECIAL_1); }
                 });
                 break;
             }
@@ -128,22 +128,22 @@ struct theramore_guard_typeAI : public ScriptedAI
                 if (InstanceScript* _instance = me->GetInstanceScript())
                     _instance->SetData(DATA_FLY_SPY, DONE);
 
-                me->AddDelayedEvent(4000, [this]()
+                me->AddDelayedEvent(4000, [actor = me]()
                 {
-                    Talk(TALK_SPECIAL_3);
-                    me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_CUSTOM_SPELL_01);
+                    { if (auto ai = actor->AI()) ai->Talk(TALK_SPECIAL_3); }
+                    actor->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_CUSTOM_SPELL_01);
                 });
 
-                me->AddDelayedEvent(11500, [this]()
+                me->AddDelayedEvent(11500, [actor = me]()
                 {
-                    Talk(TALK_SPECIAL_4);
+                    { if (auto ai = actor->AI()) ai->Talk(TALK_SPECIAL_4); }
                 });
 
-                me->AddDelayedEvent(14500, [this]()
+                me->AddDelayedEvent(14500, [actor = me]()
                 {
-                    Talk(TALK_SPECIAL_5);
-                    DoCast(me, SPELL_PORTAL_ORGRIMMAR, false);
-                    me->DespawnOrUnsummon(5 * IN_MILLISECONDS);
+                    { if (auto ai = actor->AI()) ai->Talk(TALK_SPECIAL_5); }
+                    { if (auto ai = actor->AI()) ai->DoCast(actor, SPELL_PORTAL_ORGRIMMAR, false); }
+                    actor->DespawnOrUnsummon(5 * IN_MILLISECONDS);
                 });
                 break;
             }
