@@ -1,0 +1,591 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_50_AUTOMATED_CLIENT_PENDING",
+  "request": "Five additional consecutive batches of ten repairs;stop after50.",
+  "base": "09e0bf8604de220de85ddc32e9339ccf3616c8d3",
+  "implementation_head": "feaf0d637e8944fe267239e4c79ec342d3d62ef2",
+  "batches": [
+    {
+      "number": 1,
+      "audit": "docs/audits/twentyseventh-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "implementation_files": 10,
+      "support_commit": "6bdf5495fef7f03c6e9fa9e3f6efcdb0e9dfc1c6",
+      "implementation_head": "66ef10efa386349c479ea0aca6de5a39be001328"
+    },
+    {
+      "number": 2,
+      "audit": "docs/audits/twentyeighth-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "implementation_files": 10,
+      "support_commit": "d14553745b38f25c512c1b6e05bf98eaacd21324",
+      "implementation_head": "20ca6d2baa130cfee9cfd1aa759407596b090f85"
+    },
+    {
+      "number": 3,
+      "audit": "docs/audits/twentyninth-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "implementation_files": 10,
+      "support_commit": "00f2c485f133d455d3fff271f5b01369addec910",
+      "implementation_head": "845714fc93d8b854996b537a6f8ae1caa049c61b"
+    },
+    {
+      "number": 4,
+      "audit": "docs/audits/thirtieth-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "implementation_files": 10,
+      "support_commit": "f465cb86b3f1db190d1d11c12a35de804f7115b0",
+      "implementation_head": "4409c736cb3b9e876c71e8d29605bfbbfb4646a6"
+    },
+    {
+      "number": 5,
+      "audit": "docs/audits/thirtyfirst-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "implementation_files": 9,
+      "support_commit": "ae7726be227d1a2262b9bdbbf40247a4597621f2",
+      "implementation_head": "feaf0d637e8944fe267239e4c79ec342d3d62ef2"
+    }
+  ],
+  "fixes": [
+    {
+      "key": "StitchesRot",
+      "title": "Keep StitchesRot deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_four.cpp"
+      ],
+      "audit": "docs/audits/stitches-rot-deferred-actor-2026-11-10.json",
+      "commit": "da0b690261a7de5af8da39ce9ffc9a9ce86891ce"
+    },
+    {
+      "key": "OolissPursuit",
+      "title": "Keep OolissPursuit deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_one.cpp"
+      ],
+      "audit": "docs/audits/ooliss-pursuit-deferred-actor-2026-11-10.json",
+      "commit": "07e354a90abf0f092ed71590796f8658c1ecb0fc"
+    },
+    {
+      "key": "OgrewatchShield",
+      "title": "Keep OgrewatchShield deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_six.cpp"
+      ],
+      "audit": "docs/audits/ogrewatch-shield-deferred-actor-2026-11-10.json",
+      "commit": "81344de7f39945bf136d86ac0eafaaea6786392c"
+    },
+    {
+      "key": "FailurePylon",
+      "title": "Keep FailurePylon deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/World/npcs_special.cpp"
+      ],
+      "audit": "docs/audits/failure-pylon-deferred-actor-2026-11-10.json",
+      "commit": "947dbeba225b2306e56588e540b44884af6bfed8"
+    },
+    {
+      "key": "EntropicMine",
+      "title": "Keep EntropicMine deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_antoran.cpp"
+      ],
+      "audit": "docs/audits/entropic-mine-deferred-actor-2026-11-10.json",
+      "commit": "aaf10eccf79801c046f1912f843ec0548178bb4e"
+    },
+    {
+      "key": "ArgusEdge",
+      "title": "Keep ArgusEdge deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_argus.cpp"
+      ],
+      "audit": "docs/audits/argus-edge-deferred-actor-2026-11-10.json",
+      "commit": "495929c444903a7a64c3f5b30659f7836834bc9f"
+    },
+    {
+      "key": "EonarCrystal",
+      "title": "Keep EonarCrystal deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp"
+      ],
+      "audit": "docs/audits/eonar-crystal-deferred-actor-2026-11-10.json",
+      "commit": "6283c5b13b53116d2601c324aec8072980541e06"
+    },
+    {
+      "key": "DargrulWall",
+      "title": "Keep DargrulWall deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/NeltharionsLair/boss_dargrul_the_underking.cpp"
+      ],
+      "audit": "docs/audits/dargrul-wall-deferred-actor-2026-11-10.json",
+      "commit": "b5591bd58a18cbf47c36609ef2b81c858ceef078"
+    },
+    {
+      "key": "SkorpyronScorp",
+      "title": "Keep SkorpyronScorp deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_skorpyron.cpp"
+      ],
+      "audit": "docs/audits/skorpyron-scorp-deferred-actor-2026-11-10.json",
+      "commit": "4ecc23cb11f91dc9c8649e2447efd53fb233b895"
+    },
+    {
+      "key": "LichTrap",
+      "title": "Keep LichTrap deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp"
+      ],
+      "audit": "docs/audits/lich-trap-deferred-actor-2026-11-10.json",
+      "commit": "66ef10efa386349c479ea0aca6de5a39be001328"
+    },
+    {
+      "key": "HasabelOutro",
+      "title": "Keep HasabelOutro deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_hasabel.cpp"
+      ],
+      "audit": "docs/audits/hasabel-outro-deferred-actor-2026-11-10.json",
+      "commit": "96a604f882e044472ec0a3b03075f2ea890c3103"
+    },
+    {
+      "key": "ImonarShips",
+      "title": "Keep ImonarShips deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_imonar.cpp"
+      ],
+      "audit": "docs/audits/imonar-ships-deferred-actor-2026-11-10.json",
+      "commit": "81f27e42217f9b4e2a08525934ac5c782907013f"
+    },
+    {
+      "key": "TichondriusSpire",
+      "title": "Keep TichondriusSpire deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_tichondrius.cpp"
+      ],
+      "audit": "docs/audits/tichondrius-spire-deferred-actor-2026-11-10.json",
+      "commit": "14bebdf51ceb439d4a9c1046b8ec8cbd9563e420"
+    },
+    {
+      "key": "ElisandeOrb",
+      "title": "Keep ElisandeOrb deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_elisande.cpp"
+      ],
+      "audit": "docs/audits/elisande-orb-deferred-actor-2026-11-10.json",
+      "commit": "89b6f3be065f9ac6b93ef6982b82f5f7ce0e77fc"
+    },
+    {
+      "key": "SasszineJellyfish",
+      "title": "Keep SasszineJellyfish deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_MistressSasszine.cpp"
+      ],
+      "audit": "docs/audits/sasszine-jellyfish-deferred-actor-2026-11-10.json",
+      "commit": "c717d23f9d776bb843abb936ee4f7d477ad256ef"
+    },
+    {
+      "key": "CordanaLight",
+      "title": "Keep CordanaLight deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/VaultoftheWardens/boss_cordana.cpp"
+      ],
+      "audit": "docs/audits/cordana-light-deferred-actor-2026-11-10.json",
+      "commit": "37213ca043194338e1affd870e77d9f261c0e09f"
+    },
+    {
+      "key": "ArmyMinions",
+      "title": "Keep ArmyMinions deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Scenario/ArmyTraining/army_training.cpp"
+      ],
+      "audit": "docs/audits/army-minions-deferred-actor-2026-11-10.json",
+      "commit": "18f8e8a6f01c815d11df2bed2cc2958009c33fa4"
+    },
+    {
+      "key": "EvalaMinion",
+      "title": "Keep EvalaMinion deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/World/custom_events.cpp"
+      ],
+      "audit": "docs/audits/evala-minion-deferred-actor-2026-11-10.json",
+      "commit": "acdea06ad74837471f14ffc337e0a891f0887abe"
+    },
+    {
+      "key": "DeepbeardRecovery",
+      "title": "Keep DeepbeardRecovery deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/EyeofAzshara/boss_king_deepbeard.cpp"
+      ],
+      "audit": "docs/audits/deepbeard-recovery-deferred-actor-2026-11-10.json",
+      "commit": "1f74c0e30526b609891fd327ad005952c791df73"
+    },
+    {
+      "key": "SmashspiteBat",
+      "title": "Keep SmashspiteBat deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/BlackRookHoldDungeon/boss_smashspite_the_hateful.cpp"
+      ],
+      "audit": "docs/audits/smashspite-bat-deferred-actor-2026-11-10.json",
+      "commit": "20ca6d2baa130cfee9cfd1aa759407596b090f85"
+    },
+    {
+      "key": "KaelthasIntro",
+      "title": "Keep KaelthasIntro deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/MagistersTerrace/boss_felblood_kaelthas.cpp"
+      ],
+      "audit": "docs/audits/kaelthas-intro-deferred-actor-2026-11-10.json",
+      "commit": "0c366ba2a2429b76523a7af814e302e58520a3eb"
+    },
+    {
+      "key": "DomatraxIntro",
+      "title": "Keep DomatraxIntro deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/CathedralEternalNight/boss_domatrax.cpp"
+      ],
+      "audit": "docs/audits/domatrax-intro-deferred-actor-2026-11-10.json",
+      "commit": "e87d54838302fd32e7e254320826934625b261c8"
+    },
+    {
+      "key": "DrokDialogue",
+      "title": "Keep DrokDialogue deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Scenario/FallOfTheramoreHorde/fall_of_theramore_horde.cpp"
+      ],
+      "audit": "docs/audits/drok-dialogue-deferred-actor-2026-11-10.json",
+      "commit": "2e75fe13f8413fc55d2c48cf6f992b916adb6a7c"
+    },
+    {
+      "key": "InquisitionDialogue",
+      "title": "Keep InquisitionDialogue deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_DemonicInquisition.cpp"
+      ],
+      "audit": "docs/audits/inquisition-dialogue-deferred-actor-2026-11-10.json",
+      "commit": "a71e717e1210788762b2148075b4ea993cfd9204"
+    },
+    {
+      "key": "MaidenEnrage",
+      "title": "Keep MaidenEnrage deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_MaidenofVigilance.cpp"
+      ],
+      "audit": "docs/audits/maiden-enrage-deferred-actor-2026-11-10.json",
+      "commit": "0c4c74cb20ebe184f96348aa94c4a55b57562ba3"
+    },
+    {
+      "key": "SaprishTrap",
+      "title": "Keep SaprishTrap deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_saprish.cpp"
+      ],
+      "audit": "docs/audits/saprish-trap-deferred-actor-2026-11-10.json",
+      "commit": "1de89d18360711165462417f0092b8f311e0dd77"
+    },
+    {
+      "key": "NezharTentacle",
+      "title": "Keep NezharTentacle deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_viceroy_nezhar.cpp"
+      ],
+      "audit": "docs/audits/nezhar-tentacle-deferred-actor-2026-11-10.json",
+      "commit": "85195c3f8fba7fc876efa8e521c61db5332a57fe"
+    },
+    {
+      "key": "EvalaVisibility",
+      "title": "Keep EvalaVisibility deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/World/custom_events.cpp"
+      ],
+      "audit": "docs/audits/evala-visibility-deferred-actor-2026-11-10.json",
+      "commit": "f0714108c4d08ec7626dc75ad8d80bba5696b686"
+    },
+    {
+      "key": "DaglopRide",
+      "title": "Keep DaglopRide deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/World/npcs_special.cpp"
+      ],
+      "audit": "docs/audits/daglop-ride-deferred-actor-2026-11-10.json",
+      "commit": "dcd40ea8bf1a7fd9c6b76d9d7759df0829bf3460"
+    },
+    {
+      "key": "ChengChallenge",
+      "title": "Keep ChengChallenge deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Pandaria/zone_kun_lai_summit.cpp"
+      ],
+      "audit": "docs/audits/cheng-challenge-deferred-actor-2026-11-10.json",
+      "commit": "a6e9830c421b1127482c244868bb997347143d55"
+    },
+    {
+      "key": "AggramarActors",
+      "title": "Keep AggramarActors deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_aggramar.cpp"
+      ],
+      "audit": "docs/audits/aggramar-actors-deferred-actor-2026-11-10.json",
+      "commit": "6a5ca9c464cc803e2adaf914f6c655b7993a3a86"
+    },
+    {
+      "key": "VarimathrasShadow",
+      "title": "Keep VarimathrasShadow deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_varimathras.cpp"
+      ],
+      "audit": "docs/audits/varimathras-shadow-deferred-actor-2026-11-10.json",
+      "commit": "10d8f8e6add86c423883b9861d53726e85072014"
+    },
+    {
+      "key": "TrilliaxOutro",
+      "title": "Keep TrilliaxOutro deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_trilliax.cpp"
+      ],
+      "audit": "docs/audits/trilliax-outro-deferred-actor-2026-11-10.json",
+      "commit": "9d006ab59014d30abfb769cd9e07c0e2f9e765af"
+    },
+    {
+      "key": "MaylaDialogue",
+      "title": "Keep MaylaDialogue deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Scenario/LegionInvasion/HighMountain/InvasionHM.cpp"
+      ],
+      "audit": "docs/audits/mayla-dialogue-deferred-actor-2026-11-10.json",
+      "commit": "e18dd564a1827057a3b92640a69b692346cc788a"
+    },
+    {
+      "key": "AzsunaFighter",
+      "title": "Keep AzsunaFighter deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Scenario/LegionInvasion/Azsuna/InvasionAzsuna.cpp"
+      ],
+      "audit": "docs/audits/azsuna-fighter-deferred-actor-2026-11-10.json",
+      "commit": "bf0f28150725b543a6ed99cfbd8ac2ba075bb60e"
+    },
+    {
+      "key": "EventTeleporter",
+      "title": "Keep EventTeleporter deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/World/custom_events.cpp"
+      ],
+      "audit": "docs/audits/event-teleporter-deferred-actor-2026-11-10.json",
+      "commit": "a04edf59fea6f4009812011be383f4d85c53314e"
+    },
+    {
+      "key": "WorldbreakerTriggers",
+      "title": "Keep WorldbreakerTriggers deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_worldbreaker.cpp"
+      ],
+      "audit": "docs/audits/worldbreaker-triggers-deferred-actor-2026-11-10.json",
+      "commit": "32c560fb852b8f4e212d85890700a2d707c64a95"
+    },
+    {
+      "key": "VizaduumDoor",
+      "title": "Keep VizaduumDoor deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/ReturnToKarazhan/boss_vizaduum_the_watcher.cpp"
+      ],
+      "audit": "docs/audits/vizaduum-door-deferred-actor-2026-11-10.json",
+      "commit": "2bf18b0af3f9ab16137fe8694068e5c7ba575218"
+    },
+    {
+      "key": "ZuraalWalker",
+      "title": "Keep ZuraalWalker deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_zuraal_the_ascended.cpp"
+      ],
+      "audit": "docs/audits/zuraal-walker-deferred-actor-2026-11-10.json",
+      "commit": "806270d52d8c66fa5c640b2f0718f326f972cf15"
+    },
+    {
+      "key": "LuraAlleria",
+      "title": "Keep LuraAlleria deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_lura.cpp"
+      ],
+      "audit": "docs/audits/lura-alleria-deferred-actor-2026-11-10.json",
+      "commit": "4409c736cb3b9e876c71e8d29605bfbbfb4646a6"
+    },
+    {
+      "key": "GGEngineering",
+      "title": "Keep GGEngineering deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_four.cpp"
+      ],
+      "audit": "docs/audits/g-g-engineering-deferred-actor-2026-11-10.json",
+      "commit": "d68f0382dc9e01b4e89179175192f592867fb7c9"
+    },
+    {
+      "key": "TheramoreGuard",
+      "title": "Keep TheramoreGuard deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Scenario/FallOfTheramoreHorde/fall_of_theramore_horde.cpp"
+      ],
+      "audit": "docs/audits/theramore-guard-deferred-actor-2026-11-10.json",
+      "commit": "33b7ec9faaa0853a9645badac358456d9538a46e"
+    },
+    {
+      "key": "NezharVoidtender",
+      "title": "Keep NezharVoidtender deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_viceroy_nezhar.cpp"
+      ],
+      "audit": "docs/audits/nezhar-voidtender-deferred-actor-2026-11-10.json",
+      "commit": "00ef3678d075c3cb05c1114419dd06cce3a21540"
+    },
+    {
+      "key": "SaprishCompanions",
+      "title": "Keep SaprishCompanions deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_saprish.cpp"
+      ],
+      "audit": "docs/audits/saprish-companions-deferred-actor-2026-11-10.json",
+      "commit": "ac718448c818f9e3cb1adf237df5944441b7bed4"
+    },
+    {
+      "key": "BankerRift",
+      "title": "Keep BankerRift deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/World/custom_events.cpp"
+      ],
+      "audit": "docs/audits/banker-rift-deferred-actor-2026-11-10.json",
+      "commit": "a08d80cbf5067d10e4961c5ab063fc0bdaf515ad"
+    },
+    {
+      "key": "NightholdTrash",
+      "title": "Keep NightholdTrash deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp"
+      ],
+      "audit": "docs/audits/nighthold-trash-deferred-actor-2026-11-10.json",
+      "commit": "37975bd07fb40b5ef80f4ba083c09b03acb939c5"
+    },
+    {
+      "key": "LuraPortal",
+      "title": "Keep LuraPortal deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_lura.cpp"
+      ],
+      "audit": "docs/audits/lura-portal-deferred-actor-2026-11-10.json",
+      "commit": "1ac727aff7c320239b797f7b6c6293362df5891b"
+    },
+    {
+      "key": "NezharPortal",
+      "title": "Keep NezharPortal deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_viceroy_nezhar.cpp"
+      ],
+      "audit": "docs/audits/nezhar-portal-deferred-actor-2026-11-10.json",
+      "commit": "a0edb8655dc879ada8337c7718e065287e8c29ba"
+    },
+    {
+      "key": "SottWalkerAfterNezhar",
+      "title": "Keep SottWalkerAfterNezhar deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_zuraal_the_ascended.cpp"
+      ],
+      "audit": "docs/audits/sott-walker-after-nezhar-deferred-actor-2026-11-10.json",
+      "commit": "0768786227695621c7098746eabe08bd720afa69"
+    },
+    {
+      "key": "CoreDelayTalk",
+      "title": "Keep delayed creature text independent of retired AI",
+      "paths": [
+        "src/server/game/AI/CreatureAI.cpp"
+      ],
+      "audit": "docs/audits/core-delay-talk-actor-lifetime-2026-11-10.json",
+      "commit": "feaf0d637e8944fe267239e4c79ec342d3d62ef2"
+    }
+  ],
+  "validation": {
+    "source_cases": 100,
+    "counterfactual_controls": 50,
+    "repaired_cases": 50,
+    "native_selected_cases": 50,
+    "linked_selected_checks": 317,
+    "scope": "Source extracts/instrumented controls and native selected scopes vary by issue;some assignment/state/credit/queue/payload boundaries are modeled or captured. See each batch validation. These counts do not mean50 full native encounters or actual client traversals. Actor-owned queue expressions are extracted from production;native AIM_Initialize actually deletes the former AI. Cast/summon/visual/movement/lookup boundary proxies remain explicit. Actual linked core DelayTalk/SendChat is independently exercised. Additional Hasabel follow-up extends a previously counted issue and is NOT a51st primary fix.",
+    "canonical": "Each batch original main-library Release build,canonical binary check,Scepter/ArtifactTier/ScenarioResumeASAN and owned fresh ready/shutdown0/exit0/gone;all final diagnostic checks passed.",
+    "primary_root_callbacks": 92
+  },
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "cd8c0bb656e689420b4b9e1c7665f9c507bb383b905b287219f196d3cc7fbe03",
+    "bnet_sha256": "04f1f5f5e833ca8bfdddc1f8d18eacb3b606f1da981eb8aeb09ba5b42aa87486",
+    "rollback": ".codex/release-before-thirtyfirst-ten-fixes-2026-11-10",
+    "startup": "Owned PID=30220 reached fresh ready\nPASS owned PID=30220 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "diagnostics": {
+    "path": "build-extractors/bin/Release/logs/DBErrors.log",
+    "bytes": 7111,
+    "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "status": "OPEN unchanged/untruncated"
+  },
+  "cleanup": {
+    "logical_removed_bytes": 5252862559,
+    "removed_files": 1020,
+    "archives": [
+      "build-extractors/bin/Release/fixed/twentyseventh-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/twentyeighth-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/twentyninth-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/thirtieth-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/thirtyfirst-ten-repairs-2026-11-10"
+    ],
+    "retained_rollbacks": [
+      ".codex/release-before-thirtyfirst-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "logs_truncated": 0,
+    "active_crashes_removed": 0
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified.",
+    "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state.",
+    "All ten actual client sequences remain pending:phoenix detonation/sleep/wake/targets;Artruis full faction choice/ally death/urn/group/reset;Ko ragh suppression-field visual/timing and real death;Broken Shore actual invitations/sparring/guardian/group/faction and lost-player cleanup;Neptulon wipe/restart;Blaze egg/real healing/wake;heroic Siamat actual2s death/achievement;Whitemane/Durand native resurrection movement/cast acknowledgment and absent partner recovery;Snowdrift actual waves/training jump/home/completion/loot/re-entry;Felmyst actual air/ground death. Missing-partner or failed-cast recovery outside the repaired Artruis/duel scopes is not certified.",
+    "All ten actual client encounters remain pending:Aggramar heroic/normal remnants/eruption;both Argus modules real aura/cast/area scale/mote/pulse timing and AI replacement;Eonar actual Paraxis wipe/restart;Worldbreaker both weapon modes/controller;Hyrja both defenders/pulls/reset/controller;Ichor explosion/eye damage;Desolate eruption/phase owner cleanup;Festerface actual recongealing/retry;Fallen Crusader real revive/feign interaction;Algalon real star/black-hole phases/spawn/cleanup. Failed essential casts or missing controller recovery outside the explicitly exercised boundaries is not certified. No whole36-chain or authentic Lady claim.",
+    "All ten actual client encounters remain pending:Muru portal/Entropius/reset/failure paths;Harbinger actual repentance/cast acknowledgment/controller removal;Anomaly fragments/rift/interrupts;Elisande full rewind dialogue/objects/echoes and absent actors;Telarn infusions/effects;Eadric/Paletress actual return/bind/loot;Black Knight real resurrection/ghouls/timers;Ingvar Annhylde ritual/failed resurrection;Keleseth actual18-22s resurrection/heal/cast failures;Amber real consume123156/visuals/retry. Missing essential actors or failed native casts outside the exercised boundaries remain unverified. No whole36-chain/authentic Lady certification.",
+    "All ten actual client encounters remain pending:Xavius10stack and Naraxas6stack criteria/real aura deaths;Bronjahm4souls/achievement;Svala actual ritual damage/movement/criterion;Magtheridon real soul-transfer target/effect;Raigonn phase handoff/vehicle;Elegon charge movement/controller/focus links/reset;Living Sand repeated real storms/targets/visuals;Durumu real cone/aura/blue death freeze;Ra den actual flare. Essential failed-cast/missing-controller recovery outside tested admission boundaries is not certified. Existing Elegon energy-charge active field is assigned by native IsSummonedBy;ordinary unowned placement/out-of-contract initialization remains separately unverified. No whole-chain/authentic Lady claim.",
+    "All ten actual client/controller sequences remain pending:Aysa training/boss callbacks,Warsong four faction/event actors,Felfire contact/death actual spell effects,Kalecgos paired realm/banish/enrage/reset/self-kill,Norushen blind-hatred/residual/healer challenge completion/real exhaustion aura,Durumu full cones/eyes/movement/cleanup,Ji Kun nests/feed/jump/fall rescue/pet/camera/re-entry,Jinrokh actual water-font behavior,Paragons actual eerie fog,Megaera body/acid-rain/torrent/ice cleanup. Megaera head damage/phase logic is a separate unchanged raw-handler scope,not certified by support-actor protection. No full registered content/client encounter or36-chain/authentic Lady certification.",
+    "All ten actual client sequences remain pending:Stitches current-owner rot tick/full brawl;Ooliss pursuit root/walk timing/death/reset;all Ogrewatch shield modes;Failure Pylon resurrection/cast/despawn;Antoran mine detonation;both Argus edge modes;all4 Eonar crystal interactions;Dargrul actual wall/stun/GO cleanup;all3 Skorpyron scorp recovery/death;Lich King real trap lifecycle. This change removes AI lifetime dependency for selected actor-owned operations;it does not certify arbitrary encounter resets,cast acknowledgment or unrelated AI/member callbacks. No whole36-chain or authentic Lady claim.",
+    "All actual client sequences for this batch remain pending:HasabelOutro,ImonarShips,TichondriusSpire,ElisandeOrb,SasszineJellyfish,CordanaLight,ArmyMinions,EvalaMinion,DeepbeardRecovery,SmashspiteBat. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "All actual client sequences for this batch remain pending:KaelthasIntro,DomatraxIntro,DrokDialogue,InquisitionDialogue,MaidenEnrage,SaprishTrap,NezharTentacle,EvalaVisibility,DaglopRide,ChengChallenge. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "Hasabel actual Felcrush portal positions/difficulty/wave timings and real spawn success remain client pending;the uncounted follow-up repairs queue lifetime only. Evala actual Player-target tomb/raid credit and Inquisition entire fight/missile rendering/collision remain separate from controlled actor/target native tests.",
+    "All actual client sequences for this batch remain pending:AggramarActors,VarimathrasShadow,TrilliaxOutro,MaylaDialogue,AzsunaFighter,EventTeleporter,WorldbreakerTriggers,VizaduumDoor,ZuraalWalker,LuraAlleria. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "All actual client sequences for this batch remain pending:GGEngineering,TheramoreGuard,NezharVoidtender,SaprishCompanions,BankerRift,NightholdTrash,LuraPortal,NezharPortal,SottWalkerAfterNezhar,CoreDelayTalk. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "Native proxy boundaries do not prove real nearest GO/NPC selection or successful summons/spells. Full GG/totem brawl,Theramore Songweaver dialogue/portal,Saprish shared health combat,Nezhar shielding/portals,Banker summon/owner appearance,Nighthold beam targets,Lura portal child combat and walker door movement remain client pending. Core text audibility/whisper client delivery remains pending. Unregistered/unbound npc_night_hold_flame_core was not included or registered here."
+  ],
+  "continuation": "STOP:all five authorized batches/50 repairs completed. Client traversal,Lady authentic finale,OPEN LINK2/Slaghammer,intermittent handshake,mixed DBErrors and all36 whole chains remain explicitly unverified/open as scoped in audits.",
+  "additional_followups": [
+    {
+      "commit": "845714fc93d8b854996b537a6f8ae1caa049c61b",
+      "audit": "docs/audits/hasabel-deferred-wave-followup-2026-11-10.json",
+      "counted_as_new_problem": false,
+      "extends": {
+        "key": "HasabelOutro",
+        "title": "Keep HasabelOutro deferred actor work independent of replaced AI",
+        "paths": [
+          "src/server/scripts/Legion/AntorusTheBurningThrone/boss_hasabel.cpp"
+        ],
+        "audit": "docs/audits/hasabel-outro-deferred-actor-2026-11-10.json",
+        "commit": "96a604f882e044472ec0a3b03075f2ea890c3103"
+      },
+      "batch_audit": "docs/audits/twentyninth-ten-repairs-2026-11-10.json"
+    }
+  ]
+}
