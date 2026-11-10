@@ -151,8 +151,9 @@ struct npc_stormheim_havi_actor : SmartAI
     {
         // Unit-owned events continue while PossessedAI is active and are
         // cancelled with the creature. Never rerun the native boarding list.
-        me->AddDelayedEvent(500,[this]
+        me->AddDelayedEvent(500,[this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]
         {
+            if (aiLifetimeGuard.expired()) return;
             age += 500;
             if (CheckSession()) Monitor();
         });
@@ -163,6 +164,9 @@ struct npc_stormheim_havi_actor : SmartAI
         SmartAI::PassengerBoarded(passenger,seat,apply);
     }
     void SpellHit(Unit* caster, SpellInfo const* spell) override;
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 namespace StormheimTrials
