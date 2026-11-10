@@ -86,10 +86,10 @@ public:
                     case EVENT_2:
                     {
                         //>>>Hack
-                        me->AddDelayedEvent(2400, [this]() -> void
+                        me->AddDelayedEvent(2400, [actor = me]() -> void
                         {
-                            if (me && me->IsAlive())
-                                me->ClearUnitState(UNIT_STATE_ROOT);
+                            if (actor && actor->IsAlive())
+                                actor->ClearUnitState(UNIT_STATE_ROOT);
                         });
                         //<<<Hack
 
@@ -97,9 +97,9 @@ public:
                             me->CastSpell(owner, SPELL_HORRIFIC_PURSUIT);
                         
                         me->SetWalk(true);
-                        me->AddDelayedEvent(2400 + 7500, [this]() -> void
+                        me->AddDelayedEvent(2400 + 7500, [actor = me]() -> void
                         {
-                            me->SetWalk(false);
+                            actor->SetWalk(false);
                         });
                         break;
                     }
