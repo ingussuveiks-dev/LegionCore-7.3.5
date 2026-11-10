@@ -1,0 +1,11 @@
+--- a/sql/item_func.h
++++ b/sql/item_func.h
+@@ -1497,7 +1497,7 @@ class Item_func_unsigned :public Item_func_signed
+   }
+   const Type_handler *type_handler() const override
+   {
+-    if (max_char_length() <= MY_INT32_NUM_DECIMAL_DIGITS - 1)
++    if (max_char_length() < MY_INT32_NUM_DECIMAL_DIGITS - 1)
+       return &type_handler_ulong;
+     return &type_handler_ulonglong;
+   }
