@@ -2851,12 +2851,16 @@ struct npc_decimax : ScriptedAI
         use = true;
         //me->SetReactState(REACT_PASSIVE); // �������� �������� � ������ �� �� 250242.
         DoCast(250242);
-        me->AddDelayedEvent(3000, [=]() -> void
+        me->AddDelayedEvent(3000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (auto c = me->FindNearestCreature(126007, 500.0f))
                 c->CastSpell(me, 250234, true);
         });
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 struct npc_temporal_anomaly : ScriptedAI
