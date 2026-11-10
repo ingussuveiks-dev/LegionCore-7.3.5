@@ -176,8 +176,9 @@ public:
             uint8 count = urand(3, 6);
             for (uint8 i = 1; i <= count; ++i)
             {
-                me->AddDelayedEvent(10 * i, [this]() -> void
+                me->AddDelayedEvent(10 * i, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Unit* target = SelectTarget(SELECT_TARGET_TOPAGGRO, 0, 50.0f, true);
                     if (!target)
                         return;
@@ -245,7 +246,8 @@ public:
         {
             _JustDied();
             Talk(SAY_DEATH);
-            me->AddDelayedEvent(2000, [this] {
+            me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                if (aiLifetimeGuard.expired()) return;
                 DoCast(SPELL_SUM_STAFF);
             });
             
@@ -318,7 +320,8 @@ public:
                     events.RescheduleEvent(EVENT_GHOSTSTRIKE_PRECAST, 35000);
                     break;
                 case EVENT_GHOSTSTRIKE_CHARGE:
-                        me->AddDelayedEvent(500, [this] {
+                        me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                            if (aiLifetimeGuard.expired()) return;
                             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true, SPELL_GHOSTSTRIKE_MARKED))
                             {
                                 DoCast(target, SPELL_CHARGE);
@@ -330,7 +333,8 @@ public:
                                     target->DealDamage(target, urand(415160, 484839));
                             }
                         });
-                        me->AddDelayedEvent(1500, [this] {
+                        me->AddDelayedEvent(1500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                            if (aiLifetimeGuard.expired()) return;
                             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true, SPELL_GHOSTSTRIKE_MARKED))
                             {
                                 DoCast(target, SPELL_CHARGE);
@@ -341,7 +345,8 @@ public:
                                     target->DealDamage(target, urand(415160, 484839));
                             }
                         });
-                        me->AddDelayedEvent(1500, [this] {
+                        me->AddDelayedEvent(1500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                            if (aiLifetimeGuard.expired()) return;
                             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true, SPELL_GHOSTSTRIKE_MARKED))
                             {
                                 DoCast(target, SPELL_CHARGE);
@@ -358,6 +363,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
