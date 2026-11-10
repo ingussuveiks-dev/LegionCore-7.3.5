@@ -184,10 +184,10 @@ void CreatureAI::DelayTalk(uint32 delayTimer, uint8 id, ObjectGuid WhisperGuid)
 {
     delayTimer *= IN_MILLISECONDS;
 
-    me->AddDelayedEvent(delayTimer, [this, id, WhisperGuid]() -> void
+    me->AddDelayedEvent(delayTimer, [actor = me, id, WhisperGuid]() -> void
     {
-        if (me && me->IsAlive())
-            Talk(id, WhisperGuid);
+        if (actor && actor->IsAlive())
+            sCreatureTextMgr->SendChat(actor, id, WhisperGuid);
     });
 }
 
