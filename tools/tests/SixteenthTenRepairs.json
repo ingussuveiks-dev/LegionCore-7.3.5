@@ -1,0 +1,184 @@
+[
+  {
+    "key": "HatchlingTimer",
+    "title": "Initialize Moonkin hatchling visual timing on every reset",
+    "paths": [
+      "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp"
+    ],
+    "cls": "npc_moonkin_hatchling_pet",
+    "method": "Reset",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp",
+        "old": "void Reset() override\n    {\n        checking = 1000;\n    }",
+        "new": "void Reset() override\n    {\n        checking = 1000;\n        SpellVisualCast = 0;\n    }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "MimironHealth",
+    "title": "Preserve all three Mimiron assembled health values at native width",
+    "paths": [
+      "src/server/scripts/Northrend/Ulduar/Ulduar/boss_mimiron.cpp"
+    ],
+    "cls": "boss_leviathan_mkAI",
+    "method": "DoAction",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_mimiron.cpp",
+        "old": "me->SetHealth(int32(me->GetMaxHealth() / 2));",
+        "new": "me->SetHealth(me->GetMaxHealth() / 2);",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "key": "CryptHealth",
+    "title": "Preserve wounded Shado Pan bootstrap health at native width",
+    "paths": [
+      "src/server/scripts/Scenario/CryptOfForgottenKings/instance_crypt_of_forgotten_kings.cpp"
+    ],
+    "cls": "instance_crypt_of_forgotten_kings_InstanceMapScript",
+    "method": "OnCreatureCreate",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/CryptOfForgottenKings/instance_crypt_of_forgotten_kings.cpp",
+        "old": "creature->SetHealth(uint32(creature->GetMaxHealth() * 0.1f));",
+        "new": "creature->SetHealth(uint64(creature->GetMaxHealth() * 0.1f));",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "SquadHealth",
+    "title": "Keep Ragefire squad ember health within the native health width",
+    "paths": [
+      "src/server/scripts/Scenario/TheSecretsOfRagefire/the_secrets_of_ragefire.cpp"
+    ],
+    "cls": "sat_ragefire_emberstrikesAI",
+    "method": "OnUnitEnter",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/TheSecretsOfRagefire/the_secrets_of_ragefire.cpp",
+        "old": "creature->SetHealth(uint32(creature->GetMaxHealth() * 0.9f));",
+        "new": "creature->SetHealth(uint64(creature->GetMaxHealth() * 0.9f));",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "SinestraBarrier",
+    "title": "Restore Sinestra barrier health without reversing oversized mana costs",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp"
+    ],
+    "cls": "spell_sinestra_mana_barrier_AuraScript",
+    "method": "HandlePeriodicTick",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp",
+        "old": "int32 missingHealth = int32(caster->GetMaxHealth() - caster->GetHealth());",
+        "new": "int64 missingHealth = int64(caster->GetMaxHealth() - caster->GetHealth());",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp",
+        "old": "caster->ModifyPower(POWER_MANA, -missingHealth);",
+        "new": "int32 manaCost = int32(std::min<int64>(missingHealth, caster->GetPower(POWER_MANA)));\n                    caster->ModifyPower(POWER_MANA, -manaCost);",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "PyrrhicFocus",
+    "title": "Preserve Pyrrhic Focus health costs without signed reversal",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp"
+    ],
+    "cls": "spell_sinestra_pyrrhic_focus_AuraScript",
+    "method": "HandlePeriodicTick",
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp",
+        "old": "uint32 addHealth = uint32(0.01f * caster->GetMaxHealth());",
+        "new": "uint64 addHealth = uint64(0.01f * caster->GetMaxHealth());",
+        "count": 1
+      },
+      {
+        "path": "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp",
+        "old": "caster->ModifyHealth(-int32(addHealth));",
+        "new": "caster->ModifyHealth(-int64(addHealth));",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "TwinHeal",
+    "title": "Bound Twin Emperor proportional healing at native health width",
+    "paths": [
+      "src/server/scripts/Kalimdor/TempleOfAhnQiraj/boss_twinemperors.cpp"
+    ],
+    "cls": "boss_twinemperorsAI",
+    "method": "SpellHit",
+    "edits": [
+      {
+        "path": "src/server/scripts/Kalimdor/TempleOfAhnQiraj/boss_twinemperors.cpp",
+        "old": "void SpellHit(Unit* caster, const SpellInfo* entry)\n    {\n        if (caster == me)\n            return;\n\n        Creature* pOtherBoss = GetOtherBoss();\n        if (entry->Id != SPELL_HEAL_BROTHER || !pOtherBoss)\n            return;\n\n        // add health so we keep same percentage for both brothers\n        uint32 mytotal = me->GetMaxHealth(), histotal = pOtherBoss->GetMaxHealth();\n        float mult = ((float)mytotal) / ((float)histotal);\n        if (mult < 1)\n            mult = 1.0f/mult;\n        #define HEAL_BROTHER_AMOUNT 30000.0f\n        uint32 largerAmount = (uint32)((HEAL_BROTHER_AMOUNT * mult) - HEAL_BROTHER_AMOUNT);\n\n        if (mytotal > histotal)\n        {\n            uint32 h = me->GetHealth()+largerAmount;\n            me->SetHealth(std::min(mytotal, h));\n        }\n        else\n        {\n            uint32 h = pOtherBoss->GetHealth()+largerAmount;\n            pOtherBoss->SetHealth(std::min(histotal, h));\n        }\n    }",
+        "new": "void SpellHit(Unit* caster, SpellInfo const* entry)\n    {\n        if (caster == me)\n            return;\n\n        Creature* pOtherBoss = GetOtherBoss();\n        if (entry->Id != SPELL_HEAL_BROTHER || !pOtherBoss)\n            return;\n\n        uint64 mytotal = me->GetMaxHealth();\n        uint64 histotal = pOtherBoss->GetMaxHealth();\n        uint64 smallerMax = std::min(mytotal, histotal);\n        if (!smallerMax)\n            return;\n\n        Creature* larger = mytotal > histotal ? me : pOtherBoss;\n        uint64 missingHealth = larger->GetMaxHealth() - larger->GetHealth();\n        double ratio = double(std::max(mytotal, histotal)) / double(smallerMax);\n        double compensation = 30000.0 * (ratio - 1.0);\n        uint64 largerAmount = compensation >= double(missingHealth) ? missingHealth : uint64(compensation);\n        larger->SetHealth(larger->GetHealth() + largerAmount);\n    }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "AnubBurrow",
+    "title": "Retain Anubarak scarab retry when no burrow exists",
+    "paths": [
+      "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/boss_anubarak_trial.cpp"
+    ],
+    "cls": "boss_anubarak_trialAI",
+    "method": "UpdateAI",
+    "edits": [
+      {
+        "path": "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/boss_anubarak_trial.cpp",
+        "old": "                            GuidList::iterator i = _burrowGUID.begin();\n                            uint32 at = urand(0, _burrowGUID.size()-1);\n                            for (uint32 k = 0; k < at; k++)\n                                ++i;\n                            if (Creature* pBurrow = ObjectAccessor::GetCreature(*me, *i))\n                                pBurrow->CastSpell(pBurrow, 66340, false);",
+        "new": "                            if (!_burrowGUID.empty())\n                            {\n                                GuidList::iterator i = _burrowGUID.begin();\n                                uint32 at = urand(0, _burrowGUID.size()-1);\n                                for (uint32 k = 0; k < at; k++)\n                                    ++i;\n                                if (Creature* pBurrow = ObjectAccessor::GetCreature(*me, *i))\n                                    pBurrow->CastSpell(pBurrow, 66340, false);\n                            }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "ArmyExit",
+    "title": "Scope delayed Withered Army extraction to the source instance",
+    "paths": [
+      "src/server/scripts/Scenario/ArmyTraining/instance_army_training.cpp"
+    ],
+    "cls": "instance_army_training_InstanceMapScript",
+    "method": "onScenarionNextStep",
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/ArmyTraining/instance_army_training.cpp",
+        "old": "pplayer->AddDelayedEvent(4000, [pplayer]() -> void\n            {",
+        "new": "pplayer->AddDelayedEvent(4000, [pplayer, mapId = pplayer->GetMapId(), instanceId = pplayer->GetInstanceId()]() -> void\n            {\n                if (!pplayer->IsInWorld() || pplayer->GetMapId() != mapId || pplayer->GetInstanceId() != instanceId || pplayer->IsBeingTeleported())\n                    return;",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "EonarDive",
+    "title": "Keep delayed Eonar Swift Feet within the original live instance",
+    "paths": [
+      "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp"
+    ],
+    "cls": "spell_eonar_dive_down_jump",
+    "method": "HandleScript",
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp",
+        "old": "caster->AddDelayedEvent(1000, [caster]() -> void { caster->CastSpellDuration(caster, SPELL_SWIFT_FEET, true, 6000, 3); });",
+        "new": "caster->AddDelayedEvent(1000, [caster, mapId = caster->GetMapId(), instanceId = caster->GetInstanceId()]() -> void\n        {\n            if (!caster->IsInWorld() || !caster->IsAlive() || caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)\n                return;\n            caster->CastSpellDuration(caster, SPELL_SWIFT_FEET, true, 6000, 3);\n        });",
+        "count": 1
+      }
+    ]
+  }
+]

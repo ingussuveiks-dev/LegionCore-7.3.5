@@ -1,0 +1,27 @@
+#define SLAGHAMMER_COMPANION_SUPPORT_ONLY
+#include "SlaghammerCompanionNative.cpp"
+static std::vector<std::string>records;
+static void Record(char const*s){records.emplace_back(s);}
+struct ObservedEvents{uint32 count=0,delay=0;void ScheduleEvent(uint32,uint32 n,uint32,uint32){++count;delay=n;}};
+struct NativeBase{Creature*me;Creature*other=nullptr;ObservedEvents events;uint32 prevented=0;explicit NativeBase(Creature*u):me(u){}Unit*GetCaster(){return me;}Creature*GetOtherBoss(){return other;}void PreventDefaultAction(){++prevented;}};
+#include "SixteenthNativeScripts.inc"
+#include "SixteenthHatchling.inc"
+using namespace SixteenthNative;
+struct PhaseAI16:NullCreatureAI{using NullCreatureAI::NullCreatureAI;uint32 phase=1;uint32 GetData(uint32)const override{return phase;}};
+struct QueueTag16{using Type=FunctionProcessor Unit::*;friend Type Access(QueueTag16);};template struct FixtureAccess<QueueTag16,&Unit::m_Functions>;
+static void Pump16(Unit&u,uint32 n){(u.*Access(QueueTag16{})).Update(n);}
+int main(int argc,char**argv){try{
+ InitializeAltheaGuardsNative(argc,argv);for(uint32 id:{87299u,87323u,7393u,66340u,246330u,254497u,248225u,243383u})Require(sSpellMgr->GetSpellInfo(id),"Matching26972 selected spell absent");
+ dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1600,{}}});MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1600,{}}});MapInstanced parent(1600,300);InstanceMap map(1600,300,9999775,DIFFICULTY_N_SCENARIO,&parent);
+ Actor a(&map,299,10611,{52,803,805,0}),b(&map,299,10612,{53,803,805,0}),hatchling(&map,122859,10613,{54,803,805,0});for(Creature*u:{static_cast<Creature*>(&a),static_cast<Creature*>(&b),static_cast<Creature*>(&hatchling)})Require(map.AddToMap(u),"Native actor insertion");
+ Require(a.AIM_Initialize(new PhaseAI16(&a)),"Native phase AI");
+ Require(hatchling.AIM_Initialize(new SixteenthHatchling::npc_moonkin_hatchling_pet(&hatchling)),"Full native hatchling AI initialization");auto petAI=static_cast<SixteenthHatchling::npc_moonkin_hatchling_pet*>(hatchling.AI());Require(petAI->SpellVisualCast==0&&petAI->checking==1000,"Native InitializeAI dispatches repaired Reset");petAI->UpdateAI(500);Require(petAI->checking==500&&petAI->SpellVisualCast==4000,"Native idle update keeps authored visual cadence");petAI->SpellVisualCast=8;petAI->Reset();Require(!petAI->SpellVisualCast,"Native repeated Reset");
+ a.SetMaxHealth(9000000000ULL);NMimironHealth mimic(&a);mimic.Run(&a);Require(a.GetHealth()==4500000000ULL,"Native half-health remains64bit");
+ a.SetMaxHealth(uint64(1)<<40);NCryptHealth crypt(&a);crypt.Run(&a);Require(a.GetHealth()==uint64(a.GetMaxHealth()*0.1f)&&a.GetHealth()>UINT32_MAX,"Native wounded bootstrap width");NSquadHealth squad(&a);squad.Run(&a);Require(a.GetHealth()==uint64(a.GetMaxHealth()*0.9f)&&a.GetHealth()>UINT32_MAX,"Native squad bootstrap width");
+ a.SetPowerType(POWER_MANA);a.SetMaxPower(POWER_MANA,1000);a.SetPower(POWER_MANA,1000);a.SetMaxHealth(5000000000ULL);a.SetHealth(2000000000ULL);NSinestraBarrier barrier(&a);barrier.HandlePeriodicTick(nullptr);Require(a.GetHealth()==5000000000ULL&&!a.GetPower(POWER_MANA)&&barrier.prevented==1,"Real ModifyHealth64 and bounded ModifyPower32");static_cast<PhaseAI16*>(a.AI())->phase=2;a.SetHealth(100);a.SetPower(POWER_MANA,123);barrier.HandlePeriodicTick(nullptr);Require(a.GetHealth()==5000000000ULL&&a.GetPower(POWER_MANA)==123,"Native phase exemption preserved");
+ a.SetMaxHealth(300000000000ULL);a.SetHealth(100000000000ULL);NPyrrhicFocus focus(&a);focus.HandlePeriodicTick(nullptr);Require(a.GetHealth()==100000000000ULL-uint64(0.01f*a.GetMaxHealth()),"Native nonlethal health drain64");
+ a.SetMaxHealth(10000000000ULL);a.SetHealth(9000000000ULL);b.SetMaxHealth(5000000000ULL);b.SetHealth(4000000000ULL);NTwinHeal twin(&a);twin.other=&b;twin.SpellHit(&hatchling,sSpellMgr->GetSpellInfo(7393));Require(a.GetHealth()==9000030000ULL&&b.GetHealth()==4000000000ULL,"Native proportional compensation64");
+ NAnubBurrow burrow(&a);burrow.Run();Require(burrow.events.count==1&&burrow.events.delay==4000,"Actual empty GuidList retains retry without sentinel read");burrow._burrowGUID.push_back(b.GetGUID());burrow.Run();Require(records.back()=="AnubBurrow"&&burrow.events.count==2,"Actual ObjectAccessor burrow lookup;cast endpoint captured");
+ auto session=Session();{NativePlayer p(session,map,998,{50,803,805,0});NArmyExit exit(&a);NEonarDive dive(&a);exit.Start(&p);dive.Start(&p);Pump16(p,4000);Require(std::count(records.begin(),records.end(),"ArmyExit")==1&&std::count(records.begin(),records.end(),"EonarDive")==1,"Actual Player-owned queued origin guards");auto n=records.size();exit.Start(&p);dive.Start(&p);p.Unit::RemoveFromWorld();sObjectAccessor->RemoveObject(static_cast<Player*>(&p));Pump16(p,4000);Require(records.size()==n,"Real departure rejects pending extraction/buff");}session->SetPlayer(nullptr);delete session;
+ CloseAltheaNative();std::cout<<"PASS native ten selected cases:full hatchling AI Reset/idle update;real Unit health/power mutations for six arithmetic repairs;actual GuidList/ObjectAccessor and Player queues for three guarded controllers with observed cast/teleport endpoints. Mimiron3 full DoAction/raid AI and real scenario/death/cast/client traversal remain pending. No character writes/full-core ASAN\n";return 0;
+ }catch(std::exception const&e){std::cerr<<e.what()<<std::endl;return 1;}}
