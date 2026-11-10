@@ -1,0 +1,108 @@
+{
+  "date": "2026-11-10",
+  "status": "SUPPORT_FOR_EXACTLY_10",
+  "base": "f28383efd341c8481a566a23777d75fe0cfa0a8f",
+  "batch_number": 2,
+  "authorized_total": 50,
+  "cases": [
+    {
+      "key": "AggramarRemnants",
+      "title": "Preserve heroic Aggramar embers molten remnants after scaled lethal hits",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_aggramar.cpp"
+      ]
+    },
+    {
+      "key": "ArgusPulse",
+      "title": "Preserve Argus module pulse on normalized lethal damage",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_argus.cpp"
+      ]
+    },
+    {
+      "key": "EonarWipe",
+      "title": "Keep Eonars native wipe path intact under normalized lethal damage",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp"
+      ]
+    },
+    {
+      "key": "WorldbreakerWeapons",
+      "title": "Protect Worldbreaker weapon destruction and native owner actions after scaling",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_worldbreaker.cpp"
+      ]
+    },
+    {
+      "key": "HyrjaAscendance",
+      "title": "Keep Hyrja defenders ascendance exactly once with valid native owners",
+      "paths": [
+        "src/server/scripts/Legion/HallsofValor/boss_hyrja.cpp"
+      ]
+    },
+    {
+      "key": "IlgynothIchor",
+      "title": "Retain Nightmare Ichor explosion before normalized lethal damage",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_ilgynoth.cpp"
+      ]
+    },
+    {
+      "key": "DesolateResidue",
+      "title": "Retain Desolate Host residue eruption and owner notification after scaling",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_TheDesolateHost.cpp"
+      ]
+    },
+    {
+      "key": "FesterfaceGoo",
+      "title": "Keep Festerface goo recongealing alive through normalized lethal hits",
+      "paths": [
+        "src/server/scripts/Legion/VioletHoldLegion/boss_festerface.cpp"
+      ]
+    },
+    {
+      "key": "FallenCrusader",
+      "title": "Keep the Fallen Crusaders native feign-death transition after scaling",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/ScarletMonastery/boss_thalnos_the_soulrender.cpp"
+      ]
+    },
+    {
+      "key": "CollapsingStar",
+      "title": "Protect collapsing star black-hole transition and its pending cleanup",
+      "paths": [
+        "src/server/scripts/Northrend/Ulduar/Ulduar/boss_algalon_the_observer.cpp"
+      ]
+    }
+  ],
+  "validation": {
+    "source": "20 final MSVC ASAN cases:10 pinned raw-hook controls plus10 repaired selected contracts. All ten real damage bodies;Argus pulse/expiry/SpellFinishCast including synchronous finish and100ms callback after heap AI-frame destruction;Hyrja Reset/SpiritForm restored latch and NPC/player owners;Desolate5s callback after heap AI-frame destruction;normal/heroic,mythic both weapon entries,once-only actions/counters/spells,failed Goo aura casts/retry,and star late-hit/non-TempSummon/owner-type paths. Native normalization is modeled0.1 in source controls,not a full encounter replay.",
+    "native": "Actual positive target-relative Unit health,Creature/Player/TempSummon ownership,actual owning Creature AI dispatch,actual unit/combat FunctionProcessor queues executing after selected AI-state objects are deleted. Real TempSummon299 is created under task-owned NPC,owner resolved and safely unsummoned. Casts,aura acceptance,area radius/scale acknowledgment,spawn/despawn/movement/Eonar filtering/instance progress are observed boundaries;not full registered AI replacement,native damage/activated scaling/full-core ASAN or client traversal;no character writes.",
+    "release": "Original main libraries rebuilt and linked with pre-build source snapshots/hash checks. Actual PE verifies all ten new final-damage callbacks/no raw overrides,heroic/mythic/gate/owner states,Argus pre-cast radius and immutable actor+float closure,Desolate direct actor closure,star pending/summoner gate. Prior227 selected checks retained,total237. All ten live bindings confirmed read-only,including14 template entries. Canonical Scepter/ArtifactTier/ScenarioResumeASAN and fresh owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crash/log length/timestamp/exit/stdout/stderr/appended diagnostics and DBErrors. Final declared checks clean. Fixture-only AuraRemoveMode header path and AttackStop dependency errors fixed/retested;initial source snapshot path guard rejected doubled separator before build and was corrected without weakening target validation. Source snapshots/compiler diagnostics retained. Mixed7111-byte DBErrors and all previous OPEN evidence unchanged.",
+    "scope": "Ten independently bound actor/encounter lifecycles in ten implementation files/ten final-damage handlers. Argus pulse,source-radius ordering and100ms actor-owned callback count as ONE module lifecycle;Desolate eruption/notification/5s actor-owned cleanup count as ONE residue lifecycle. Shared Worldbreaker weapons and both Hyrja defenders each count once. No SQL/character edits,invented story delays or Lady threshold."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified.",
+    "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state.",
+    "All ten actual client sequences remain pending:phoenix detonation/sleep/wake/targets;Artruis full faction choice/ally death/urn/group/reset;Ko ragh suppression-field visual/timing and real death;Broken Shore actual invitations/sparring/guardian/group/faction and lost-player cleanup;Neptulon wipe/restart;Blaze egg/real healing/wake;heroic Siamat actual2s death/achievement;Whitemane/Durand native resurrection movement/cast acknowledgment and absent partner recovery;Snowdrift actual waves/training jump/home/completion/loot/re-entry;Felmyst actual air/ground death. Missing-partner or failed-cast recovery outside the repaired Artruis/duel scopes is not certified.",
+    "All ten actual client encounters remain pending:Aggramar heroic/normal remnants/eruption;both Argus modules real aura/cast/area scale/mote/pulse timing and AI replacement;Eonar actual Paraxis wipe/restart;Worldbreaker both weapon modes/controller;Hyrja both defenders/pulls/reset/controller;Ichor explosion/eye damage;Desolate eruption/phase owner cleanup;Festerface actual recongealing/retry;Fallen Crusader real revive/feign interaction;Algalon real star/black-hole phases/spawn/cleanup. Failed essential casts or missing controller recovery outside the explicitly exercised boundaries is not certified. No whole36-chain or authentic Lady claim."
+  ],
+  "batch_audit": "docs/audits/twentythird-ten-repairs-2026-11-10.json"
+}
