@@ -2786,8 +2786,9 @@ struct npc_invasion_point_bunny : ScriptedAI
             if (me->GetCurrentZoneID() == 9128 || me->GetCurrentZoneID() == 9299)
                 timer2 = 16000;
 
-            me->AddDelayedEvent(5000, [=]() -> void
+            me->AddDelayedEvent(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (me->GetCurrentZoneID() == 9127 || me->GetCurrentZoneID() == 9298)
                     timer1 = 34000;
             });
@@ -2820,6 +2821,9 @@ struct npc_invasion_point_bunny : ScriptedAI
                 timer2 -= diff;
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 struct npc_demonhunter_argus_invasion : ScriptedAI
