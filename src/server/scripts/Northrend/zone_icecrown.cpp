@@ -578,49 +578,63 @@ public:
         uint32 uiChargeTimer;
         uint32 uiShieldBreakerTimer;
         uint32 uiDefendTimer;
+        bool defeated = false;
+        ObjectGuid challenger;
 
         void Reset() override
         {
+            challenger.Clear();
+            defeated = true;
             uiChargeTimer = 7000;
             uiShieldBreakerTimer = 10000;
             uiDefendTimer = 10000;
             me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         }
 
-        void DamageTaken(Unit* pDoneBy, uint32& uiDamage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*type*/) override
         {
-            if(pDoneBy)
+            Player* player = attacker ? attacker->GetAffectingPlayer() : nullptr;
+            if (defeated || !player || !player->IsAlive() || player->GetGUID() != challenger)
             {
-                if (uiDamage > me->GetHealth() && (pDoneBy->GetTypeId() == TYPEID_PLAYER || pDoneBy->GetOwner()))
-                {
-                    uiDamage = 0;
-
-                    if(pDoneBy->GetOwner())
-                        pDoneBy->GetOwner()->CastSpell(pDoneBy->GetOwner(), 62724, true);
-                    if(pDoneBy->GetTypeId() == TYPEID_PLAYER)
-                        pDoneBy->CastSpell(pDoneBy, 62724, true);
-
-                    me->setFaction(35);
-                    me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                    EnterEvadeMode();
-                }
+                damage = 0;
+                return;
             }
-        }
-
-        void KilledUnit(Unit* /*victim*/) override
-        {
+            if (damage < me->GetHealth(attacker))
+                return;
+            defeated = true;
+            damage = 0;
+            player->CastSpell(player, 62724, true);
             me->setFaction(35);
-            me->CombatStop(true);
+            me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            EnterEvadeMode();
         }
 
-        void DoAction(int32 const /*param*/) override
+        void KilledUnit(Unit* victim) override
         {
+            if (!victim || victim->GetGUID() != challenger)
+                return;
+            challenger.Clear();
+            defeated = true;
+            me->setFaction(35);
+            me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            EnterEvadeMode();
+        }
+
+        bool StartChallenge(Player* player)
+        {
+            if (!player || !player->IsAlive() || player->GetMap() != me->GetMap() || me->isInCombat())
+                return false;
+            challenger = player->GetGUID();
+            defeated = false;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             me->setFaction(14);
             me->setActive(true);
             me->SetReactState(REACT_AGGRESSIVE);
-            DoZoneInCombat();
+            me->SetInCombatWith(player);
+            player->SetInCombatWith(me);
+            AttackStart(player);
+            return true;
         }
 
         void DoMeleeAttackIfReady()
@@ -685,7 +699,7 @@ public:
         {
             case 90909090:
                 player->CLOSE_GOSSIP_MENU();
-                ((npc_valiantAI*)creature->AI())->DoAction(action);
+                static_cast<npc_valiantAI*>(creature->AI())->StartChallenge(player);
                 break;
             default:
                 return false;                                   // nothing defined      -> trinity core handling
