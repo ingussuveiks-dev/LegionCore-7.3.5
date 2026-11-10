@@ -633,6 +633,7 @@ class npc_empyreal_focus : public CreatureScript
             void Reset() override 
             {
                 CheckTimer = 1000;
+                active = true;
             }
 
             void DoAction(const int32 action) override
