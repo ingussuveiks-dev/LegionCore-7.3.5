@@ -164,7 +164,8 @@ public:
             switch (action)
             {
             case 1:
-                me->AddDelayedEvent(10000, [this] {
+                me->AddDelayedEvent(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     for (uint8 n = 0; n < 5; n++)
                         if (Creature* orc = me->SummonCreature(C_COUNCIL_ENFORCER, orcpos[n]))
                         {
@@ -174,7 +175,8 @@ public:
                             orc->GetMotionMaster()->MovePoint(0, x, y, z);
                         }
                 });
-                me->AddDelayedEvent(12000, [this] {
+                me->AddDelayedEvent(12000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     for (uint8 n = 0; n < 5; n++)
                         if (Creature* orc = me->SummonCreature(C_COUNCIL_ENFORCER, orcpos[n]))
                         {
@@ -183,7 +185,8 @@ public:
                             orc->GetMotionMaster()->MovePoint(0, x, y, z);
                         }
                 });
-                me->AddDelayedEvent(13000, [this] {
+                me->AddDelayedEvent(13000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     for (uint8 n = 0; n < 5; n++)
                         if (Creature* orc = me->SummonCreature(C_COUNCIL_ENFORCER, orcpos[n]))
                         {
@@ -192,7 +195,8 @@ public:
                             orc->GetMotionMaster()->MovePoint(0, x, y, z);
                         }
                 });
-                me->AddDelayedEvent(13000, [this] {
+                me->AddDelayedEvent(13000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     for (uint8 n = 0; n < 5; n++)
                         if (Creature* orc = me->SummonCreature(C_COUNCIL_ENFORCER, orcpos[n]))
                         {
@@ -201,17 +205,20 @@ public:
                             orc->GetMotionMaster()->MovePoint(0, x, y, z);
                         }
                 });
-                me->AddDelayedEvent(18000, [this] {
+                me->AddDelayedEvent(18000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(SAY_ORCS_ENTER);
                 });
-                me->AddDelayedEvent(23000, [this] {
+                me->AddDelayedEvent(23000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Creature* orc = me->FindNearestCreature(C_COUNCIL_ENFORCER, 29.0f, true))
                         orc->AI()->Talk(1);
                     DoAction(2);
                 });
                 break;
             case 2:
-                me->AddDelayedEvent(5000, [this] {
+                me->AddDelayedEvent(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     std::list<Creature*> creaList;
                     GetCreatureListWithEntryInGrid(creaList, me, C_COUNCIL_ENFORCER, 100.0f);
                     for (std::list<Creature*>::iterator itr = creaList.begin(); itr != creaList.end(); ++itr)
@@ -297,6 +304,9 @@ public:
                 } else Check_Timer -= diff;
             }
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
 };
