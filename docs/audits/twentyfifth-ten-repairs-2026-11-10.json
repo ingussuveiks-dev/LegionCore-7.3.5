@@ -1,0 +1,286 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "b7cb7fd2b251ce7114c1b29f09bbf1e33c32141f",
+  "batch_number": 4,
+  "authorized_total": 50,
+  "support_commit": "e5dd6e6263174e1f631888bd43f4bb9059acbd9f",
+  "implementation_head": "9b93b8987bac8ee9f64722906e73aff2a44c8cbb",
+  "fixes": [
+    {
+      "key": "XaviusStacked",
+      "title": "Xavius scaled stacked finale",
+      "paths": [
+        "src/server/scripts/Legion/DarkHeartThicket/boss_shade_of_xavius.cpp"
+      ],
+      "audit": "docs/audits/xavius-scaled-stacked-finale-2026-11-10.json",
+      "commit": "13d789a478209496386a04eb4fd3f1c0006a4277"
+    },
+    {
+      "key": "NaraxasRavenous",
+      "title": "Naraxas scaled ravenous death",
+      "paths": [
+        "src/server/scripts/Legion/NeltharionsLair/boss_naraxas.cpp"
+      ],
+      "audit": "docs/audits/naraxas-scaled-ravenous-death-2026-11-10.json",
+      "commit": "d8b3e680cc366e9519fdc77ee286fcd1e2b5001f"
+    },
+    {
+      "key": "BronjahmSoulpower",
+      "title": "Bronjahm scaled soulpower death",
+      "paths": [
+        "src/server/scripts/Northrend/FrozenHalls/ForgeOfSouls/boss_bronjahm.cpp"
+      ],
+      "audit": "docs/audits/bronjahm-scaled-soulpower-death-2026-11-10.json",
+      "commit": "e2f31008344e113c35090229c2b96300b5e43d7e"
+    },
+    {
+      "key": "SvalaRitualHulk",
+      "title": "Svala scaled ritual hulk",
+      "paths": [
+        "src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_svala.cpp"
+      ],
+      "audit": "docs/audits/svala-scaled-ritual-hulk-2026-11-10.json",
+      "commit": "b3518d5d1fa2ee68573147fee255977595d26ae1"
+    },
+    {
+      "key": "ChannelerTransfer",
+      "title": "Magtheridon scaled soul transfer",
+      "paths": [
+        "src/server/scripts/Outland/HellfireCitadel/MagtheridonsLair/boss_magtheridon.cpp"
+      ],
+      "audit": "docs/audits/magtheridon-scaled-soul-transfer-2026-11-10.json",
+      "commit": "7352c2cc2928da2ef3b8ec3d4b57c708060d3e4d"
+    },
+    {
+      "key": "RaigonnWeakSpot",
+      "title": "Raigonn scaled weak spot",
+      "paths": [
+        "src/server/scripts/Pandaria/GateSettingSun/boss_raigonn.cpp"
+      ],
+      "audit": "docs/audits/raigonn-scaled-weak-spot-2026-11-10.json",
+      "commit": "f30401bd75a319436694a82563938bc082dcae45"
+    },
+    {
+      "key": "ElegonDischarge",
+      "title": "Elegon scaled charge focus",
+      "paths": [
+        "src/server/scripts/Pandaria/MogushanVault/boss_elegon.cpp"
+      ],
+      "audit": "docs/audits/elegon-scaled-charge-focus-2026-11-10.json",
+      "commit": "47d091da643261fd17707c4c267e3001dfe1bccd"
+    },
+    {
+      "key": "LivingSandReturn",
+      "title": "Living sand scaled trap return",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_council_of_elders.cpp"
+      ],
+      "audit": "docs/audits/living-sand-scaled-trap-return-2026-11-10.json",
+      "commit": "36d4d4d8db70486f21e2914f4451d36712b27fd6"
+    },
+    {
+      "key": "AzureFogFreeze",
+      "title": "Durumu scaled azure freeze",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_durumu.cpp"
+      ],
+      "audit": "docs/audits/durumu-scaled-azure-freeze-2026-11-10.json",
+      "commit": "b1f72d0c41ba38559f438a3bcfd520c653b0c43d"
+    },
+    {
+      "key": "CracklingFlare",
+      "title": "Raden scaled crackling flare",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_ra_den.cpp"
+      ],
+      "audit": "docs/audits/raden-scaled-crackling-flare-2026-11-10.json",
+      "commit": "9b93b8987bac8ee9f64722906e73aff2a44c8cbb"
+    }
+  ],
+  "counting": "Ten independent bound encounter problems/10 implementation files/11 final-damage handlers. Elegon charge and focus share ONE discharge/inactivation lifecycle;Living Sand lethal protection/target admission/reuse count as ONE trap lifecycle. No SQL,character rewrite,new story timers or Lady threshold.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "33c3961c0a7122dd3030f9669f5c0a96fefed2f5f3679d1117fe3f082614c811",
+    "bnet_sha256": "82456505391b4bb056d6e1dac9480304036439bbbf265c8f54a77cc2d484dc9d",
+    "rollback": ".codex/release-before-twentyfifth-ten-fixes-2026-11-10",
+    "startup": "Owned PID=21372 reached fresh ready\nPASS owned PID=21372 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "validation": {
+    "source": "20 final MSVC ASAN cases:10 pinned raw-hook expected-broken controls plus10 repaired real extracts. Modeled0.1 normalization;native stack10/6 and soul4 thresholds,missing/low auras,wrong/null ritual attacker,nonlethal transfer rejection,missing instance/controller,both Elegon actors/once/reactivation,Living Sand late damage/missing target/accepted target/repeat return,blue-vs-red fog and one flare. Full native damage/scaling/client encounters are not simulated.",
+    "native": "Ten selected actual Unit/Creature/Player/pet/guardian health/ownership/flags/entry paths and actual instance-map GUID lookup/controller AI action. Aura stacks,casts,movement,event scheduling are observed endpoints;no achievement or quest grants,character writes,full native damage/activated scaling/full-core ASAN or full registered encounter/client replay.",
+    "release": "Original main libraries rebuilt with source snapshots/hash verification,staged link and actual PE11 final handlers/no raw. Checks preserve ten-stack/six-stack/four-soul/Svala-only/blue-fog native gates,once effects,and verify real target branch precedes both Living Sand aura removals. Prior247 selected paths retained,total257. Readonly DB confirms12 templates/all11 ScriptNames. Canonical ArtifactTier/ScenarioResumeASAN/Scepter plus owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crashes/log length/timestamp/exit/stdout/stderr/appended server diagnostics and DBErrors reviewed. Native fixture SelectTarget enum/ReactStates extraction mismatch corrected and rerun;initial compiler failure retained and paired with final passing check. Compiler warnings reviewed against unchanged baseline expressions. Final declared checks clean;OPEN evidence/mixed7111-byte DBErrors unchanged/untruncated.",
+    "scope": "Ten independent bound encounter problems/10 implementation files/11 final-damage handlers. Elegon charge and focus share ONE discharge/inactivation lifecycle;Living Sand lethal protection/target admission/reuse count as ONE trap lifecycle. No SQL,character rewrite,new story timers or Lady threshold."
+  },
+  "diagnostics": {
+    "final": "Final declared regressions,linked binary checks,retained checks and owned startup passed with canonical+own crash/log/exit/stdout/stderr/appended-diagnostic review.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 0,
+      "types": {},
+      "review": "Main incremental build warnings checked against f55f0ea70. Ten retained-fixture warnings are byte-equivalent messages/file/line to the previous passing batch;their production and fixture sources unchanged. Diagnostics retained without suppression;not claimed repaired.",
+      "entries": [],
+      "retained_fixture_warnings": [
+        {
+          "log": "artifact-tier.log",
+          "file": "ArtifactTierProgressionTest.cpp",
+          "line": 65,
+          "code": "C4458",
+          "message": "declaration of 'item' hides class member",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "artifact-tier.log",
+          "file": "AutoTier.inc",
+          "line": 33,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint8', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 26,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 27,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 28,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 29,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'int' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "AddScenario.inc",
+          "line": 7,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        }
+      ]
+    },
+    "development": [
+      "Matched all11 ScriptNames in actual MariaDB before counting. Traced native Reset/combat/GetData or achievement consumer,phase,death and cleanup. Each former template-health comparison ran before normalization;now final damage uses attacker-relative health and original eligible-killer gates.",
+      "Living Sand also lacked damage rejection and removed trap effects before target selection. Retain living actor/queued-hit immunity and defer effect removal to an accepted native target;do not invent health,targets or progression. Final source/native tests include both missing and accepted target and later reactivation."
+    ],
+    "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse scope of all selected files and no production diff.",
+    "supplemental_archives": [
+      {
+        "manifest": "build-extractors/bin/Release/fixed/twentyfifth-ten-repairs-2026-11-10/supplemental-manifest.json",
+        "sha256": "9adaf504754167a7e19263177f2e24f349c6a03605835830700d21daa9a846e2",
+        "files": 19
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/twentyfifth-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "3e5060d2b7c351471fc6949bec9ceab1a003e6eab89c4c5e175cb4a4a4cd5e9e",
+    "original_files": 874,
+    "removed_files": 192,
+    "logical_removed_bytes": 1023263222,
+    "deletion_manifest": ".codex/twentyfifth-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "c75e1695ccdd51ebd29f2da3c7c16048c66123434b8c4b5a1f499bfb9d19d57a",
+    "retained_rollbacks": [
+      ".codex/release-before-twentyfifth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-twentyfourth-ten-fixes-2026-11-10",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-twentyfourth rollback retired after newest pre-twentyfifth recovery hash verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified.",
+    "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state.",
+    "All ten actual client sequences remain pending:phoenix detonation/sleep/wake/targets;Artruis full faction choice/ally death/urn/group/reset;Ko ragh suppression-field visual/timing and real death;Broken Shore actual invitations/sparring/guardian/group/faction and lost-player cleanup;Neptulon wipe/restart;Blaze egg/real healing/wake;heroic Siamat actual2s death/achievement;Whitemane/Durand native resurrection movement/cast acknowledgment and absent partner recovery;Snowdrift actual waves/training jump/home/completion/loot/re-entry;Felmyst actual air/ground death. Missing-partner or failed-cast recovery outside the repaired Artruis/duel scopes is not certified.",
+    "All ten actual client encounters remain pending:Aggramar heroic/normal remnants/eruption;both Argus modules real aura/cast/area scale/mote/pulse timing and AI replacement;Eonar actual Paraxis wipe/restart;Worldbreaker both weapon modes/controller;Hyrja both defenders/pulls/reset/controller;Ichor explosion/eye damage;Desolate eruption/phase owner cleanup;Festerface actual recongealing/retry;Fallen Crusader real revive/feign interaction;Algalon real star/black-hole phases/spawn/cleanup. Failed essential casts or missing controller recovery outside the explicitly exercised boundaries is not certified. No whole36-chain or authentic Lady claim.",
+    "All ten actual client encounters remain pending:Muru portal/Entropius/reset/failure paths;Harbinger actual repentance/cast acknowledgment/controller removal;Anomaly fragments/rift/interrupts;Elisande full rewind dialogue/objects/echoes and absent actors;Telarn infusions/effects;Eadric/Paletress actual return/bind/loot;Black Knight real resurrection/ghouls/timers;Ingvar Annhylde ritual/failed resurrection;Keleseth actual18-22s resurrection/heal/cast failures;Amber real consume123156/visuals/retry. Missing essential actors or failed native casts outside the exercised boundaries remain unverified. No whole36-chain/authentic Lady certification.",
+    "All ten actual client encounters remain pending:Xavius10stack and Naraxas6stack criteria/real aura deaths;Bronjahm4souls/achievement;Svala actual ritual damage/movement/criterion;Magtheridon real soul-transfer target/effect;Raigonn phase handoff/vehicle;Elegon charge movement/controller/focus links/reset;Living Sand repeated real storms/targets/visuals;Durumu real cone/aura/blue death freeze;Ra den actual flare. Essential failed-cast/missing-controller recovery outside tested admission boundaries is not certified. Existing Elegon energy-charge active field is assigned by native IsSummonedBy;ordinary unowned placement/out-of-contract initialization remains separately unverified. No whole-chain/authentic Lady claim."
+  ],
+  "continuation": "Completed 4 of five authorized ten-fix batches;continue remaining batches until50 total. This audit certifies only stated automated/native scopes,not client/whole-chain traversal."
+}
