@@ -232,7 +232,8 @@
       "Final scope uses localmatching data/core first. CreatureAISelector selects registered scripted AI before AIName fallback,so Artruis SmartAI and Siamat AggressorAI columns do not bypass their ScriptName handlers. All selected ScriptNames confirmed by read-only MariaDB catalog;0..0 scaling rows are not claimed active native level scaling.",
       "The initial Death Challenge candidate had no live ScriptName binding and its hook was absent from actual PE. Removed/reverted it before counted implementation and saved only an ignored deferred patch;no guessed SQL binding. Replaced by live-bound Ko ragh79956 exact-lethal explosion defect. Final13 PE hooks must all exist.",
       "Source fixture first needed matching PET_FOLLOW_DIST from PetDefines,POINT_MOTION_TYPE from MotionMaster,observed AI IsSummonedBy/GetOrientation dependencies and separate size_t/uint32 auto declarations. Native fixture needed the actual unused-by-handler Felmyst flight enum for its alternative-path test. All compile failures preserved;final reruns pass.",
-      "Full sequence review added Artruis accepted-release hold to avoid rearming a committed pair,and Broken duel live same-map owner admission/fresh lost/dead challenger evade. Phoenix sleep consumes once and disables its move poll until native wake;Snowdrift late hits do not re-credit/restart jumps or kill retired actors. No authored threshold,spell or story delay invented."
+      "Full sequence review added Artruis accepted-release hold to avoid rearming a committed pair,and Broken duel live same-map owner admission/fresh lost/dead challenger evade. Phoenix sleep consumes once and disables its move poll until native wake;Snowdrift late hits do not re-credit/restart jumps or kill retired actors. No authored threshold,spell or story delay invented.",
+      "Post-push final status check detected Git autocrlf stat dirtiness on the reverted/unlinked Death Challenge file,despite byte identity to HEAD and no staged/working diff. Verified original bytes,restored only that exact unmodified file through Git to its expected checkout EOL,and verified normalized bytes plus clean status. No Death Challenge implementation or SQL deployed;ten counted fixes unchanged. Closeout91d4184d1 was already pushed;recovery records the completed status without reapplying or recounting fixes."
     ],
     "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse scope of all selected files and no production diff.",
     "supplemental_archives": [
@@ -240,6 +241,11 @@
         "manifest": "build-extractors/bin/Release/fixed/twentysecond-ten-repairs-2026-11-10/supplemental-manifest.json",
         "sha256": "14a25ce02b860ff770f0c07dc07e81fe06d816d03bfc28b949d27784937a8882",
         "files": 19
+      },
+      {
+        "manifest": "build-extractors/bin/Release/fixed/twentysecond-ten-repairs-2026-11-10/supplemental-manifest-2.json",
+        "sha256": "1e19a37b9d46b5986f0486c9132e05d32cf4276c71e1433fa01948d0cf20cc92",
+        "files": 3
       }
     ]
   },
