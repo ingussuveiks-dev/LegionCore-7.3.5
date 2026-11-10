@@ -376,10 +376,15 @@ public:
             }
         }
 
-        void DamageTaken(Unit* who, uint32& damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* who, uint32& damage, DamageEffectType dmgType)
         {
-            if (!who || !who->IsPlayer())
+            Player* looter = who ? who->GetAffectingPlayer() : nullptr;
+            if (!looter)
+            {
+                if (damage >= me->GetHealth(who))
+                    damage = 0;
                 return;
+            }
 
             if (me->HealthBelowPct(66) && !bEvent_1)
             {
@@ -395,7 +400,7 @@ public:
                 DoCast(SPELL_CRANE_RUSH);
             }
 
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(who))
             {
                 damage = 0;
 
@@ -406,7 +411,7 @@ public:
                     me->setFaction(35);
                     me->RemoveAllAuras();
                     summons.DespawnAll();
-                    me->GeneratePersonalLoot(me, (Player*)who);
+                    me->GeneratePersonalLoot(me, looter);
                     Talk(SAY_CHIJI_END);
                     if (auto Shao = me->GetAnyOwner())
                         Shao->GetAI()->DoAction(ACTION_CHIJI_END);
@@ -417,14 +422,15 @@ public:
 
         void QuestCredit()
         {
+            std::set<ObjectGuid> credited;
             std::list<HostileReference*> ThreatList = me->getThreatManager().getThreatList();
-            for (std::list<HostileReference*>::const_iterator itr = ThreatList.begin(); itr != ThreatList.end(); ++itr)
+            for (HostileReference* reference : ThreatList)
             {
-                Player *pTarget = Player::GetPlayer(*me, (*itr)->getUnitGuid());
-                if (!pTarget)
-                    return;
-
-                pTarget->KilledMonsterCredit(me->GetEntry());
+                Unit* participant = ObjectAccessor::GetUnit(*me, reference->getUnitGuid());
+                Player* player = participant ? participant->GetAffectingPlayer() : nullptr;
+                if (!player || !credited.insert(player->GetGUID()).second)
+                    continue;
+                player->KilledMonsterCredit(me->GetEntry());
             }
         }
 
