@@ -1315,11 +1315,11 @@ class spell_sinestra_pyrrhic_focus : public SpellScriptLoader
                 PreventDefaultAction();
                 if (Unit* caster = GetCaster())
                 {
-                    uint32 addHealth = uint32(0.01f * caster->GetMaxHealth());
+                    uint64 addHealth = uint64(0.01f * caster->GetMaxHealth());
                     if (caster->GetHealth() <= addHealth)
                         caster->Kill(caster);
                     else
-                        caster->ModifyHealth(-int32(addHealth));
+                        caster->ModifyHealth(-int64(addHealth));
                 }
             }
 
