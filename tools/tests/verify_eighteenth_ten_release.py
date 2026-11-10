@@ -11,7 +11,9 @@ r=ins('?HandleOnApply@spell_touch_of_yshaarj_AuraScript@');assert op(r,'cvtsi2ss
 r=ins('?AfterAbsorb@spell_touch_of_yshaarj_AuraScript@');assert op(r,'maxss','xmm0, xmm6')and op(r,'cvttss2si','rdx, xmm0')and op(r,'add','rdx, rsi')and sites(r,'?SetHealth@Unit@@')
 r=ins('?UpdateAI@npc_en_nightmother@');at=next(i for i,x in enumerate(r)if x.mnemonic=='mov'and x.op_str=='dword ptr [rbx + 0x58], 0x1770');assert sites(r[at:at+35],'?SetCanFly@Unit@@'),'landing timer armed before target lookup'
 r=ins('?UpdateAI@npc_fshoo@');at=next(i for i,x in enumerate(r)if x.mnemonic=='cmp'and x.op_str=='ax, 0x64');assert r[at+1].mnemonic=='jbe'and op(r[at:at+12],'add','eax, 4'),'100 enters authored middle bracket'
-r=ins('?EnterCombat@boss_freyaAI@');assert op(r,'imul','rcx, rax')and op(r,'add','rdx, rdi')and sites(r,'?SetMaxHealth@Unit@@')
+# The original native-width multiply also overflowed before division/addition.
+from verify_freya_health_math import verify_freya_health_math
+verify_freya_health_math(ins,sites,values)
 r=ins('?Reset@boss_brawguild_masterAI@');assert sites(r,'?_Reset@BrawlersBossAI@@')and op(r,'mov','word ptr [rdi + 0xc0], 0')
 r=ins('?JustSummoned@boss_brawguild_masterAI@');assert op(r,'cmp','byte ptr [rsi + 0xc0], 3')and any(x.mnemonic=='jae'for x in r)
 r=ins('?SummonedCreatureDies@boss_brawguild_masterAI@');assert any(x.mnemonic=='cmp'and '0xc8]'in x.op_str for x in r)or any('0xc8]'in x.op_str for x in r)

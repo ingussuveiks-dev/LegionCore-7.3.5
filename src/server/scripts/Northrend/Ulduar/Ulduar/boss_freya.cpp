@@ -23,6 +23,7 @@ SD%Comments:
 EndScriptData */
 
 #include "ulduar.h"
+#include <limits>
 
 enum Yells
 {
@@ -364,7 +365,18 @@ public:
             {
                 DoScriptText(SAY_AGGRO_WITH_ELDER, me);
                 // each Elder left up will increase the health of both Freya and her adds. (20% per Elder)
-                me->SetMaxHealth(me->GetMaxHealth() + (me->GetMaxHealth() * EldersCount * 20 / 100));
+                // Twenty percent is one fifth. Divide before multiplying and
+                // bound the bonus by the remaining native health range.
+                uint64 const health = me->GetMaxHealth();
+                uint64 const room = std::numeric_limits<uint64>::max() - health;
+                uint64 const fifth = health / 5;
+                uint64 bonus = room;
+                if (fifth <= room / EldersCount)
+                {
+                    bonus = fifth * EldersCount;
+                    bonus += std::min(room - bonus, health % 5 * EldersCount / 5);
+                }
+                me->SetMaxHealth(health + bonus);
                 me->SetFullHealth();
                 me->LowerPlayerDamageReq(me->GetMaxHealth());
             }

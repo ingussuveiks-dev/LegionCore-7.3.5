@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "base": "278371694",
+  "cause": "Freya used health*EldersCount*20/100 and added that bonus in uint64. Intermediate multiplication could overflow even when the final authored20percent-per-elder result fit;the final addition could wrap at the native limit. Merely widening the initial health expression in an earlier audit did not close this arithmetic case.",
+  "fix": "Use exact one-fifth decomposition. Bound whole fifth*elder multiplication against remaining native64 room before multiplication,then add at most the remaining room from the exact remainder fifth. Preserve ordinary integer rounding,0elder bypass,existing20percent-per-live-elder policy,fullhealth and native loot counter call. Saturation only at representable UINT64_MAX;no arbitrary gameplay health cap.",
+  "validation": {
+    "native": "Complete actual production boss_freya class with real Creature/Map603/Spell/aura APIs and actual32906 ScriptName readback. Controlled health and elder count0..3;67inputs include small rounding,32bit,40bit,old intermediate-product boundary,64bit addition boundary and UINT64_MAX. Independent boost128bit exact reference;original pinned278371694 class fails16/67 as explicitly expected-broken control. Repaired67/67 exact/saturated maxhealth/fullhealth and preexisting loot branch pass,with real Reset between attempts. No persistent character/account writes;elder discovery/count endpoints controlled,not a full raid.",
+    "scope": "Exact pinned source delta allows only explicit limits include and replacement of the single health expression. Real elder lookup/alive checks,zero-elder speech branch,all timers/reset/auras/fullhealth/loot and native death/owner/group paths plus all other NPC/spell classes unchanged.",
+    "release": "Original scripts.lib rebuilt and staged original-input final link;0compiler warning/error lines in focused build. Full staged/canonical composed PE retains counter/Tsulong/Rook/prior367 checks. Actual maxhealth64,nonzero elder admission,divide-by-five magic,unsigned room/count division gate before multiplication,exact remainder fifth,min clamp and64bit SetMaxHealth verified. Old18 verifier required the previous overflowing multiply/add register shape;replaced only that selected health check with the shared stronger actual-math proof. No bypass of the rest of the chain.",
+    "runtime": "Canonical Scepter -VerifyReleaseBinary passes;owned32544 fresh ready/shutdown0/exit0/gone,empty stderr,protected runtime hashes unchanged. No user/unknown process stopped.",
+    "diagnostics": "Before/after canonical+own crash/log snapshots for native/build/link/PE/scope/deploy/Scepter/start. No new crashes,appendedDBErrors/server warnings/errors/assertions. Initial fixture accessed protected BossAI events;corrected to real public Reset and paired successful original/repaired controls. Initial PE rejection was its obsolete multiply shape;paired full strengthened chain passes. Scepter inherited harness warnings retained. Mixed7111byteDBErrors and OPEN evidence unmodified."
+  },
+  "canonical": {
+    "worldserver.exe": "acc7d561a180bb509b6ed6d4bff7760df77a5b1eeeafdd928529d80b757f6aea",
+    "worldserver.map": "123a9268bc3136f4227c571b68fe4dc7ed73528bcb5a84ee64af2d048246b9bc",
+    "bnetserver.exe": "fc44267a593de94762957b4e39dd0d1bc78eff8176a9c332e340060364948336",
+    "bnetserver.map": "b583826f463d76f6895aa4cdeb3cf3152a9af464a550a26aa4d1eac50f9205be"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\freya-elder-health-2026-11-10",
+    "manifest_sha256": "1545145d28aea20708860160a7a78511e8fe8813514a5a20e5beff6ea34a145a",
+    "archived_files": 181,
+    "removed_files": 57,
+    "logical_removed_bytes": 551161822,
+    "deletion_manifest": ".codex\\freya-elder-health-2026-11-10\\deletion-manifest.json",
+    "deletion_manifest_sha256": "0f30584538de49b2611a1ba8ff26e3fd72efd2ab03388521bad2a933d626c848",
+    "fix_commit_resolution": "Local fixed archive resolution.json records the focused commit after creation.",
+    "retained": "Pre-Freya rollback needed for client recovery;canonical assets/main libraries/reusable test sources/all Lady/LINK2/Slaghammer/TimeLoop/SQL/handshake OPEN evidence retained."
+  },
+  "pending": [
+    "Full Freya elder discovery/combat/scaling,player/pet/guardian and group kills,wipes/re-entry,loot/achievements and client visuals remain client checks.67controlled arithmetic attempts do not certify a whole encounter.",
+    "Authentic living Lady and missingLINK2 remain evidence-blocked;no guessed threshold,timer or missing payload. All36whole client chains and intermittent handshake remain unverified.",
+    "MariaDB corrected DLL staged but user service still running;live promotion requires stop confirmation. TimeLoop/TwinEmperors/Meljarak are separate unclosed investigations."
+  ]
+}
