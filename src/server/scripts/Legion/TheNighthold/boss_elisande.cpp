@@ -630,10 +630,10 @@ struct boss_elisande : BossAI
                 events.Reset();
                 me->StopAttack(true);
                 DoCast(me, SPELL_TERMINATE, true);
-                me->AddDelayedCombat(60000, [this] () -> void
+                me->AddDelayedCombat(60000, [actor = me] () -> void
                 {
-                    if (me && me->IsAlive() && me->isInCombat())
-                        me->AI()->EnterEvadeMode();
+                    if (actor && actor->IsAlive() && actor->isInCombat())
+                        if (auto ai = actor->AI()) ai->EnterEvadeMode();
                 });
             }
             else
