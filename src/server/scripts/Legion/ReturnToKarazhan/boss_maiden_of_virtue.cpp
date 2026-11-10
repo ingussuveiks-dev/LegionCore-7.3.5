@@ -93,8 +93,9 @@ public:
                 mediv->CastSpell(mediv, 229596);
                 mediv->CastSpell(mediv, 107674);
             }
-            me->AddDelayedEvent(3000, [this] () -> void
+            me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 Map::PlayerList const& players = me->GetMap()->GetPlayers();
                 if (!players.isEmpty())
                 {
@@ -172,6 +173,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
