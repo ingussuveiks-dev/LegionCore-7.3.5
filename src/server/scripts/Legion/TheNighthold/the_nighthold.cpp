@@ -295,17 +295,17 @@ struct npc_night_hold_chaos_mage_beleron : ScriptedAI
 
         if(me->IsAlive() && me->IsVisible())
         {
-            me->AddDelayedEvent(1500, [this]() -> void
+            me->AddDelayedEvent(1500, [actor = me]() -> void
             {
                 Creature* nearest = nullptr;
 
                 std::list<Creature*> creatureList;
-                GetCreatureListWithEntryInGrid(creatureList, me, 111581, 70.0f);
+                GetCreatureListWithEntryInGrid(creatureList, actor, 111581, 70.0f);
                 for (auto creature : creatureList)
                     if (!nearest || creature->GetPositionZ() >= 5.0f)
                         nearest = creature;
 
-                me->CastSpell(nearest, SpellEmpowering);
+                actor->CastSpell(nearest, SpellEmpowering);
             });
         }
     }
@@ -403,18 +403,18 @@ struct npc_night_hold_summoner_xiv : ScriptedAI
 
         if(me->IsAlive() && me->IsVisible())
         {
-            me->AddDelayedEvent(1500, [this]() -> void
+            me->AddDelayedEvent(1500, [actor = me]() -> void
             {
 
                 Creature* nearest = nullptr;
 
                 std::list<Creature*> creatureList;
-                GetCreatureListWithEntryInGrid(creatureList, me, 111581, 70.0f);
+                GetCreatureListWithEntryInGrid(creatureList, actor, 111581, 70.0f);
                 for (auto creature : creatureList)
                     if (!nearest || creature->GetPositionZ() >= 5.0f)
                         nearest = creature;
 
-                me->CastSpell(nearest, SpellEmpowering);
+                actor->CastSpell(nearest, SpellEmpowering);
             });
         }
     }
@@ -510,17 +510,17 @@ struct npc_night_hold_felweaver_pharamere : ScriptedAI
 
         if(me->IsAlive() && me->IsVisible())
         {
-            me->AddDelayedEvent(1500, [this]() -> void
+            me->AddDelayedEvent(1500, [actor = me]() -> void
             {
                 Creature* nearest = nullptr;
 
                 std::list<Creature*> creatureList;
-                GetCreatureListWithEntryInGrid(creatureList, me, 111581, 70.0f);
+                GetCreatureListWithEntryInGrid(creatureList, actor, 111581, 70.0f);
                 for (auto creature : creatureList)
                     if (!nearest || creature->GetPositionZ() >= 5.0f)
                         nearest = creature;
 
-                me->CastSpell(nearest, SpellEmpowering);
+                actor->CastSpell(nearest, SpellEmpowering);
             });
         }
     }
