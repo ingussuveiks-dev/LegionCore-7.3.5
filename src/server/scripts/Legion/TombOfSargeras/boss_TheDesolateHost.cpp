@@ -157,7 +157,7 @@ struct boss_the_desolate_host_generic : BossAI
         {
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-            me->AddDelayedEvent(500, [=] () -> void { DoAction(ACTION_1); });
+            me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; DoAction(ACTION_1); });
         }
     }
 
@@ -245,7 +245,7 @@ struct boss_the_desolate_host_generic : BossAI
                             boss->DespawnOrUnsummon(200);
                         }
                     }
-                    AddDelayedEvent(15000, [=] () -> void { DoAction(ACTION_1); });
+                    AddDelayedEvent(15000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; DoAction(ACTION_1); });
                 }
                 break;
             }
@@ -399,6 +399,9 @@ struct boss_the_desolate_host_generic : BossAI
                 berserkTimer -= diff;
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //118460
