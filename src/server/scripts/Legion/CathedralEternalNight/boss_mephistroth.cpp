@@ -287,8 +287,9 @@ public:
     {
         npc_mephistroth_illidanAI(Creature* creature) : ScriptedAI(creature) 
         {
-            me->AddDelayedEvent(100, [this] ()-> void
+            me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] ()-> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->CastSpell(me, SPELL_ILLIDAN_SPAWN);
             });
         }
@@ -298,8 +299,9 @@ public:
         void Reset() override
         {
             me->SetReactState(REACT_PASSIVE);
-            me->AddDelayedEvent(2000, [this] () -> void
+            me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 DoCast(SPELL_PREPARE);
                 events.RescheduleEvent(EVENT_1, 1000);
             });
@@ -330,14 +332,18 @@ public:
                             meph->RemoveAurasDueToSpell(SPELL_CREEPING_SHADOWS);
                         }
                         
-                    me->AddDelayedEvent(3000, [this] () -> void
+                    me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->CastSpell(me, SPELL_ILLIDAN_DESPAWN);
                         me->DespawnOrUnsummon(2100);
                     });
                 }
             }
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
