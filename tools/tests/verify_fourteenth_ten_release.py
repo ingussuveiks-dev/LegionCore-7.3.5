@@ -31,8 +31,14 @@ intro=[expanded(s)for s in night if sites(expanded(s),'?CreateConversation@Conve
 r=intro[0];create,=sites(r,'?CreateConversation@Conversation@@');assert r[create+1].mnemonic=='test'and r[create+2].mnemonic=='jne';assert any(x.mnemonic=='mov'and x.op_str=='byte ptr [rdi + 0x388], 1'for x in r[create:]),'commit intro only after successful native creation'
 telarn=[s for s in callbacks('boss_high_botanist_telarn','')if '???0boss_high_botanist_telarn' in s];assert len(telarn)==1
 r=expanded(telarn[0]);assert any(x.mnemonic=='cmp'and x.op_str.endswith('+ 0xa18], 0')for x in r),'constructor callback alive admission'
-ctor=ins('?GetAI@?$GenericCreatureScript@Uboss_high_botanist_telarn@@@@');assert sites(ctor,'?AddDelayedEvent@FunctionProcessor@@')and 500 in values(ctor),'actual creature function queue initialization'
-assert any(x.mnemonic=='mov'and x.op_str=='rcx, qword ptr [rdi + 0x20]'for x in ctor)and any(x.mnemonic=='add'and x.op_str=='rcx, 0x36a0'for x in ctor),'constructor queues on actual Creature Unit::m_Functions'
+factory=ins('?GetAI@?$GenericCreatureScript@Uboss_high_botanist_telarn@@@@')
+# The lifetime anchor can move this formerly inlined constructor out of GetAI.
+# Follow its actual factory call;keep the original500ms/Unit queue proof.
+ctor=ins('??0boss_high_botanist_telarn@@')if sites(factory,'??0boss_high_botanist_telarn@@')else factory
+assert sites(ctor,'?AddDelayedEvent@FunctionProcessor@@')and 500 in values(ctor),'actual creature function queue initialization'
+inline_queue=any(x.mnemonic=='mov'and x.op_str=='rcx, qword ptr [rdi + 0x20]'for x in ctor)and any(x.mnemonic=='add'and x.op_str=='rcx, 0x36a0'for x in ctor)
+outlined_queue=any(x.mnemonic=='mov'and x.op_str=='rdx, qword ptr [rbx + 0x20]'for x in ctor)and any(x.mnemonic=='lea'and x.op_str=='rcx, [rdx + 0x36a0]'for x in ctor)
+assert inline_queue or outlined_queue,'constructor queues on actual Creature Unit::m_Functions'
 r=ins('?UpdateAI@npc_dramock@@');assert sites(r,'?GetPlayer@ObjectAccessor@@')and sites(r,'?GetQuestStatus@Player@@')and sites(r,'?GetReqKillOrCastCurrentCount@Player@@')and sites(r,'?KilledMonsterCredit@Player@@')and 47430 in values(r),'native current quest/objective/credit dispatch'
 snapshot,=callbacks('npc_dramock','MoveInLineOfSight');r=expanded(snapshot);assert any(x.mnemonic=='mov'and x.op_str=='rax, qword ptr [rcx + 0x70]'for x in r)and any(x.mnemonic=='cmp'and 'rax'in x.op_str for x in r),'pending snapshot generation checked'
 assert any(x.mnemonic=='inc'and '0x70]'in x.op_str for x in ins('?Reset@npc_dramock@@')),'Reset invalidates pending snapshot'
