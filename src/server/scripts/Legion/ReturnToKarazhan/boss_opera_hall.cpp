@@ -1123,10 +1123,12 @@ public:
                         brute->AI()->Talk(5);
                     });
                     
-                    bella->AddDelayedEvent(19000, [bella, brute] () -> void
+                    bella->AddDelayedEvent(19000, [bella, bruteGuid = brute->GetGUID()] () -> void
                     {
                         bella->AI()->Talk(6);
-                        brute->UpdateEntry(NPC_ADEM);
+                        if (Creature* brute = ObjectAccessor::GetCreature(*bella, bruteGuid))
+                            if (brute->IsAlive())
+                                brute->UpdateEntry(NPC_ADEM);
                     });
                     
                     brute->AddDelayedEvent(25000, [brute] () -> void
