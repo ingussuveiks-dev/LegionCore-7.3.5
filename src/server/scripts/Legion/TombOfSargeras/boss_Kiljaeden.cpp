@@ -411,8 +411,9 @@ struct boss_tos_kiljaeden : BossAI
             DoCast(me, SPELL_NETHER_GALE, true);
             me->SetSpeed(MOVE_FLIGHT, 5.0f, true);
 
-            me->AddDelayedCombat(4000, [this] () -> void
+            me->AddDelayedCombat(4000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->GetMotionMaster()->MovePoint(2, flyPos[randList.front()], false);
             });
         }
@@ -433,12 +434,13 @@ struct boss_tos_kiljaeden : BossAI
                 // Rupturing Singularity
                 for (auto timer : {8000, 13000, 26000, 31000, 36000, 41000})
                 {
-                    me->AddDelayedCombat(timer, [this] () -> void { RupturingSingularity(); });
+                    me->AddDelayedCombat(timer, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; RupturingSingularity(); });
                 }
             }
 
-            me->AddDelayedCombat(delayTimer, [this] () -> void
+            me->AddDelayedCombat(delayTimer, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 flymove = true;
                 me->GetMotionMaster()->MovePoint(3, flyPos[randList.back()], false);
             });
@@ -461,12 +463,13 @@ struct boss_tos_kiljaeden : BossAI
                 // Rupturing Singularity
                 for (auto timer : {7000, 12000})
                 {
-                    me->AddDelayedCombat(timer, [this] () -> void { RupturingSingularity(); });
+                    me->AddDelayedCombat(timer, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; RupturingSingularity(); });
                 }
             }
 
-            me->AddDelayedCombat(delayTimer, [this] () -> void
+            me->AddDelayedCombat(delayTimer, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 flymove = true;
                 me->GetMotionMaster()->MovePoint(4, flyPos[4], false);
             });
@@ -739,10 +742,10 @@ struct boss_tos_kiljaeden : BossAI
                     for (uint8 i = 0; i < 5; ++i)
                     {
                         centrPos.SimplePosXYRelocationByAngle(pos, frand(15.0f, 35.0f), frand(0.0f, 6.28f));
-                        me->AddDelayedCombat(3000, [this, pos] () -> void { me->SummonCreature(NPC_SHADOWSOUL, pos); });
+                        me->AddDelayedCombat(3000, [this, pos, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; me->SummonCreature(NPC_SHADOWSOUL, pos); });
                     }
                     centrPos.SimplePosXYRelocationByAngle(pos, frand(15.0f, 35.0f), frand(0.0f, 6.28f));
-                    me->AddDelayedCombat(7000, [this, pos] () -> void { me->SummonCreature(NPC_STAGE4_ILLIDAN_STORMRAGE, pos); });
+                    me->AddDelayedCombat(7000, [this, pos, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; me->SummonCreature(NPC_STAGE4_ILLIDAN_STORMRAGE, pos); });
                     break;
                 }
                 case EVENT_DARKNESS_THOUSAND_SOULS:
@@ -811,6 +814,9 @@ struct boss_tos_kiljaeden : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //120839
