@@ -122,12 +122,12 @@ public:
             {
                 if (delay)
                 {
-                    me->AddDelayedEvent(1000, [this] () -> void
+                    me->AddDelayedEvent(1000, [actor = me] () -> void
                     {
-                        if (me)
+                        if (actor)
                         {
-                            me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_TURN);
-                            me->ClearUnitState(UNIT_STATE_ROOT | UNIT_STATE_CANNOT_TURN);
+                            actor->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_TURN);
+                            actor->ClearUnitState(UNIT_STATE_ROOT | UNIT_STATE_CANNOT_TURN);
                         }
                     });
                 }
