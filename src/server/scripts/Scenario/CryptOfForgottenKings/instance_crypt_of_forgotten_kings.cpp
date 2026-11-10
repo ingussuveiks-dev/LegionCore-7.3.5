@@ -100,7 +100,7 @@ class instance_crypt_of_forgotten_kings : public InstanceMapScript
                         break;
                     case NPC_WOUNDED_SHADO_PAN:
                         creature->setRegeneratingHealth(false);
-                        creature->SetHealth(uint32(creature->GetMaxHealth() * 0.1f));
+                        creature->SetHealth(uint64(creature->GetMaxHealth() * 0.1f));
                         creature->SetStandState(UNIT_STAND_STATE_DEAD);
                         break;
                 }
