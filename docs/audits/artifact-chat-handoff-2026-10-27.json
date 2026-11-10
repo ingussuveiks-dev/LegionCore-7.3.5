@@ -1,4 +1,155 @@
 {
+  "latest_sixteenth_ten_repairs_2026_11_10": {
+    "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+    "batch_number": 1,
+    "authorized_total": 50,
+    "fixes": [
+      {
+        "key": "HatchlingTimer",
+        "title": "Initialize Moonkin hatchling visual timing on every reset",
+        "paths": [
+          "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp"
+        ],
+        "audit": "docs/audits/moonkin-hatchling-reset-timer-2026-11-10.json",
+        "commit": "96c325abcc91ed4c2b8b0bd74987f7b13b5ad5f8"
+      },
+      {
+        "key": "MimironHealth",
+        "title": "Preserve all three Mimiron assembled health values at native width",
+        "paths": [
+          "src/server/scripts/Northrend/Ulduar/Ulduar/boss_mimiron.cpp"
+        ],
+        "audit": "docs/audits/mimiron-assembled-health-width-2026-11-10.json",
+        "commit": "d2b8506cd9bf427257a4f5975320477e22799f88"
+      },
+      {
+        "key": "CryptHealth",
+        "title": "Preserve wounded Shado Pan bootstrap health at native width",
+        "paths": [
+          "src/server/scripts/Scenario/CryptOfForgottenKings/instance_crypt_of_forgotten_kings.cpp"
+        ],
+        "audit": "docs/audits/crypt-wounded-health-width-2026-11-10.json",
+        "commit": "0e1fb36322b93d825b3f342117269dc7e399f3b7"
+      },
+      {
+        "key": "SquadHealth",
+        "title": "Keep Ragefire squad ember health within the native health width",
+        "paths": [
+          "src/server/scripts/Scenario/TheSecretsOfRagefire/the_secrets_of_ragefire.cpp"
+        ],
+        "audit": "docs/audits/ragefire-squad-health-width-2026-11-10.json",
+        "commit": "a639dbe2928359f626f55189504da83713876b84"
+      },
+      {
+        "key": "SinestraBarrier",
+        "title": "Restore Sinestra barrier health without reversing oversized mana costs",
+        "paths": [
+          "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp"
+        ],
+        "audit": "docs/audits/sinestra-barrier-health-mana-width-2026-11-10.json",
+        "commit": "e9be596acb5096f1cad45d20562c68c893c79210"
+      },
+      {
+        "key": "PyrrhicFocus",
+        "title": "Preserve Pyrrhic Focus health costs without signed reversal",
+        "paths": [
+          "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp"
+        ],
+        "audit": "docs/audits/sinestra-pyrrhic-health-cost-width-2026-11-10.json",
+        "commit": "3f8390b65674b3b988961640769ae1ff099f5a85"
+      },
+      {
+        "key": "TwinHeal",
+        "title": "Bound Twin Emperor proportional healing at native health width",
+        "paths": [
+          "src/server/scripts/Kalimdor/TempleOfAhnQiraj/boss_twinemperors.cpp"
+        ],
+        "audit": "docs/audits/twin-emperor-healing-compensation-width-2026-11-10.json",
+        "commit": "b11f783e9fa67256b584d43b827986f5ec95f2f1"
+      },
+      {
+        "key": "AnubBurrow",
+        "title": "Retain Anubarak scarab retry when no burrow exists",
+        "paths": [
+          "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/boss_anubarak_trial.cpp"
+        ],
+        "audit": "docs/audits/anubarak-empty-burrow-selection-2026-11-10.json",
+        "commit": "43e26c1fb392474c796b9fa3b5a432b8276b997e"
+      },
+      {
+        "key": "ArmyExit",
+        "title": "Scope delayed Withered Army extraction to the source instance",
+        "paths": [
+          "src/server/scripts/Scenario/ArmyTraining/instance_army_training.cpp"
+        ],
+        "audit": "docs/audits/withered-army-extraction-origin-2026-11-10.json",
+        "commit": "8fb0c538e156bebc8eb356bc90ed460b5c0c172f"
+      },
+      {
+        "key": "EonarDive",
+        "title": "Keep delayed Eonar Swift Feet within the original live instance",
+        "paths": [
+          "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp"
+        ],
+        "audit": "docs/audits/eonar-delayed-swift-feet-origin-2026-11-10.json",
+        "commit": "e8caca3e75912bf27598784b959b976d7882e008"
+      }
+    ],
+    "canonical": {
+      "directory": "build-extractors/bin/Release",
+      "world_sha256": "fd57657a7e53962f83580b9a0b25068b4cd16364568a5809d9a0fcc6aec20418",
+      "bnet_sha256": "7a8bf1e428dbdfc09fa505274f8aedf1ad3e759c2b1d6fef09b021add8940111",
+      "rollback": ".codex/release-before-sixteenth-ten-fixes-2026-11-10",
+      "startup": "Owned PID=20508 reached fresh ready\nPASS owned PID=20508 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+    },
+    "cleanup": {
+      "status": "COMPLETE_HASH_VERIFIED",
+      "archive": "build-extractors/bin/Release/fixed/sixteenth-ten-repairs-2026-11-10",
+      "archive_manifest_sha256": "cde7197d8b5ce0fa509a21f3ab388c7a8daf990c5e2b3366c26440bfb557aa83",
+      "original_files": 984,
+      "removed_files": 232,
+      "logical_removed_bytes": 1041179769,
+      "deletion_manifest": ".codex/sixteenth-ten-fixes-2026-11-10/cleanup-deleted.json",
+      "deletion_manifest_sha256": "bfc484f5557424d658f9884a8bdaedace7fbfb5fe4dfad6db2a8a8e997bd8758",
+      "retained_rollbacks": [
+        ".codex/release-before-sixteenth-ten-fixes-2026-11-10",
+        ".codex/release-before-seven-fixes-2026-11-08",
+        ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+      ],
+      "removed_superseded_rollback": ".codex/release-before-fifteenth-ten-fixes-2026-11-10",
+      "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fourteenth989e699d retired after newest pre-sixteenth rollback hash verification rollback verification",
+      "logs_truncated": 0,
+      "active_crashes_removed": 0,
+      "open_sql_evidence": {
+        "Files": 82,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+        "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+        "ClassificationCorrection": {
+          "Files": 94,
+          "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+          "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+        }
+      },
+      "open_timeloop": {
+        "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+        "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+        "files": 26,
+        "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+        "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+      },
+      "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
+    },
+    "pending": [
+      "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+      "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+      "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+      "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+      "Prior scouted Antorus eventobject_antorus_into singleton eventDone/per-instance async ownership and Brawlers Master count_adds/repeated Reset lifecycle remain OPEN/unmodified/not counted. This batch changes Oso and Ray,not Master.",
+      "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps."
+    ],
+    "continuation": "Completed 1 of five authorized ten-fix batches;continue remaining batches until50 total. This audit certifies only stated automated/native scopes,not client/whole-chain traversal.",
+    "audit": "docs/audits/sixteenth-ten-repairs-2026-11-10.json"
+  },
   "latest_fifteenth_ten_repairs_2026_11_10": {
     "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
     "fixes": [

@@ -1,0 +1,272 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "f55f0ea70cb931ea0ebd56258834e56f1bf78d1c",
+  "batch_number": 1,
+  "authorized_total": 50,
+  "support_commit": "a4ddf84a4d87cc12ef40e7b375a9a50b39c06bdd",
+  "implementation_head": "e8caca3e75912bf27598784b959b976d7882e008",
+  "fixes": [
+    {
+      "key": "HatchlingTimer",
+      "title": "Initialize Moonkin hatchling visual timing on every reset",
+      "paths": [
+        "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp"
+      ],
+      "audit": "docs/audits/moonkin-hatchling-reset-timer-2026-11-10.json",
+      "commit": "96c325abcc91ed4c2b8b0bd74987f7b13b5ad5f8"
+    },
+    {
+      "key": "MimironHealth",
+      "title": "Preserve all three Mimiron assembled health values at native width",
+      "paths": [
+        "src/server/scripts/Northrend/Ulduar/Ulduar/boss_mimiron.cpp"
+      ],
+      "audit": "docs/audits/mimiron-assembled-health-width-2026-11-10.json",
+      "commit": "d2b8506cd9bf427257a4f5975320477e22799f88"
+    },
+    {
+      "key": "CryptHealth",
+      "title": "Preserve wounded Shado Pan bootstrap health at native width",
+      "paths": [
+        "src/server/scripts/Scenario/CryptOfForgottenKings/instance_crypt_of_forgotten_kings.cpp"
+      ],
+      "audit": "docs/audits/crypt-wounded-health-width-2026-11-10.json",
+      "commit": "0e1fb36322b93d825b3f342117269dc7e399f3b7"
+    },
+    {
+      "key": "SquadHealth",
+      "title": "Keep Ragefire squad ember health within the native health width",
+      "paths": [
+        "src/server/scripts/Scenario/TheSecretsOfRagefire/the_secrets_of_ragefire.cpp"
+      ],
+      "audit": "docs/audits/ragefire-squad-health-width-2026-11-10.json",
+      "commit": "a639dbe2928359f626f55189504da83713876b84"
+    },
+    {
+      "key": "SinestraBarrier",
+      "title": "Restore Sinestra barrier health without reversing oversized mana costs",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp"
+      ],
+      "audit": "docs/audits/sinestra-barrier-health-mana-width-2026-11-10.json",
+      "commit": "e9be596acb5096f1cad45d20562c68c893c79210"
+    },
+    {
+      "key": "PyrrhicFocus",
+      "title": "Preserve Pyrrhic Focus health costs without signed reversal",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp"
+      ],
+      "audit": "docs/audits/sinestra-pyrrhic-health-cost-width-2026-11-10.json",
+      "commit": "3f8390b65674b3b988961640769ae1ff099f5a85"
+    },
+    {
+      "key": "TwinHeal",
+      "title": "Bound Twin Emperor proportional healing at native health width",
+      "paths": [
+        "src/server/scripts/Kalimdor/TempleOfAhnQiraj/boss_twinemperors.cpp"
+      ],
+      "audit": "docs/audits/twin-emperor-healing-compensation-width-2026-11-10.json",
+      "commit": "b11f783e9fa67256b584d43b827986f5ec95f2f1"
+    },
+    {
+      "key": "AnubBurrow",
+      "title": "Retain Anubarak scarab retry when no burrow exists",
+      "paths": [
+        "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/boss_anubarak_trial.cpp"
+      ],
+      "audit": "docs/audits/anubarak-empty-burrow-selection-2026-11-10.json",
+      "commit": "43e26c1fb392474c796b9fa3b5a432b8276b997e"
+    },
+    {
+      "key": "ArmyExit",
+      "title": "Scope delayed Withered Army extraction to the source instance",
+      "paths": [
+        "src/server/scripts/Scenario/ArmyTraining/instance_army_training.cpp"
+      ],
+      "audit": "docs/audits/withered-army-extraction-origin-2026-11-10.json",
+      "commit": "8fb0c538e156bebc8eb356bc90ed460b5c0c172f"
+    },
+    {
+      "key": "EonarDive",
+      "title": "Keep delayed Eonar Swift Feet within the original live instance",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp"
+      ],
+      "audit": "docs/audits/eonar-delayed-swift-feet-origin-2026-11-10.json",
+      "commit": "e8caca3e75912bf27598784b959b976d7882e008"
+    }
+  ],
+  "counting": "10 repairs in9 files. All3 Mimiron assembly sites count once. Sinestra barrier refill and Pyrrhic Focus are independent abilities. Authored float percentages,timers/phase and native kill/group/pet credit retained;no SQL/character rewrite or guessed Lady HP/kill timer.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "fd57657a7e53962f83580b9a0b25068b4cd16364568a5809d9a0fcc6aec20418",
+    "bnet_sha256": "7a8bf1e428dbdfc09fa505274f8aedf1ad3e759c2b1d6fef09b021add8940111",
+    "rollback": ".codex/release-before-sixteenth-ten-fixes-2026-11-10",
+    "startup": "Owned PID=20508 reached fresh ready\nPASS owned PID=20508 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "validation": {
+    "source": "20 MSVC ASAN cases:ten pinned f55f0ea70 instrumented counterfactuals and ten repaired source extracts. Hatchling sentinel/Reset;all3Mimiron identical source sites and full-width bounds;Crypt/Squad controls detect unrepresentable uint32 before executing float-cast UB;Sinestra native-width heal/mana/phase and nonlethal/lethal focus;Twin normal/full/large-ratio/zero-max controls;Anub safe sentinel instrumentation/empty+missing+present4s retry;Army/Eonar origin/death/pending-transfer guards. Source endpoints controlled;not client traversal.",
+    "native": "10 selected native cases:full production Hatchling AI InitializeAI/Reset/idle UpdateAI;actual native Unit Get/Set/ModifyHealth and ModifyPower for six health repairs;actual empty/nonempty GuidList/ObjectAccessor with captured Anub cast and actual Player FunctionProcessor/world guards with captured Army teleport/Eonar buff. Matching26972 spells and readonly bindings checked. Mimiron full three DoAction sequences,real spell/heal/death dispatch,raid/quest/group/pet/client traversal not replayed;no character writes/full-core ASAN.",
+    "release": "Original main game/scripts libraries and actual final-link paths;staged/canonical PE verifies these10 plus157 prior selected paths. Explicit writes/conversions/64bit call arguments,capped mana/Twin ratio,Anub pre-selection guard+retry and origin guards checked. Canonical Scepter/ArtifactTier/ScenarioResumeASAN and owned fresh ready/shutdown0/exit0/gone pass.",
+    "diagnostics": "All test/build/link/PE/runtime runs have before/after canonical+own crash/log/exit/stdout/stderr/appended diagnostic review. Final diagnostics clean;earlier fixture extraction/compile failures retained. Compiler warnings reviewed without suppression. Mixed7111byte DBErrors and all OPEN evidence unchanged.",
+    "scope": "10 repairs in9 files. All3 Mimiron assembly sites count once. Sinestra barrier refill and Pyrrhic Focus are independent abilities. Authored float percentages,timers/phase and native kill/group/pet credit retained;no SQL/character rewrite or guessed Lady HP/kill timer."
+  },
+  "diagnostics": {
+    "final": "Final declared regressions,linked binary checks,retained checks and owned startup passed with canonical+own crash/log/exit/stdout/stderr/appended-diagnostic review.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 0,
+      "types": {},
+      "review": "Main incremental build warnings checked against f55f0ea70. Ten retained-fixture warnings are byte-equivalent messages/file/line to the previous passing batch;their production and fixture sources unchanged. Diagnostics retained without suppression;not claimed repaired.",
+      "entries": [],
+      "retained_fixture_warnings": [
+        {
+          "log": "artifact-tier.log",
+          "file": "ArtifactTierProgressionTest.cpp",
+          "line": 65,
+          "code": "C4458",
+          "message": "declaration of 'item' hides class member",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "artifact-tier.log",
+          "file": "AutoTier.inc",
+          "line": 33,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint8', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 26,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 27,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 28,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 29,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'int' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "AddScenario.inc",
+          "line": 7,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        }
+      ]
+    },
+    "development": [
+      "AuraEffect GetAmount/GetBaseAmount are float in this core;the apparent Coven integer division candidate was rejected unchanged. Matching local data resolves selected fixes;GitHub main/local history matchedf55before work.",
+      "Initial extraction lacked IN_MILLISECONDS/Common and TELE_TO_SEAMLESS/Player enum inputs;resolved with native values. Native fixture used incorrect lowercase setPowerType;corrected to actual SetPowerType before passing run. TYPE_PHASE is0. Earlier source/native preparation errors preserved and not called successful engine tests.",
+      "Counterfactual float-to32 conversion is instrumented before UB;no native high-health baseline overflow or unsafe list dereference was executed. Full native Hatchling AI and actual health/power mutations passed;other native payload endpoints remain explicitly captured."
+    ],
+    "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse-scope nine files and no production diff.",
+    "supplemental_archives": [
+      {
+        "manifest": "build-extractors/bin/Release/fixed/sixteenth-ten-repairs-2026-11-10/supplemental-manifest.json",
+        "sha256": "7c895fdfd3602635c3dbed3bcf4d6e001f4d1525555d10365896ff018dd61d23",
+        "files": 19
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/sixteenth-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "cde7197d8b5ce0fa509a21f3ab388c7a8daf990c5e2b3366c26440bfb557aa83",
+    "original_files": 984,
+    "removed_files": 232,
+    "logical_removed_bytes": 1041179769,
+    "deletion_manifest": ".codex/sixteenth-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "bfc484f5557424d658f9884a8bdaedace7fbfb5fe4dfad6db2a8a8e997bd8758",
+    "retained_rollbacks": [
+      ".codex/release-before-sixteenth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-fifteenth-ten-fixes-2026-11-10",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fourteenth989e699d retired after newest pre-sixteenth rollback hash verification rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Prior scouted Antorus eventobject_antorus_into singleton eventDone/per-instance async ownership and Brawlers Master count_adds/repeated Reset lifecycle remain OPEN/unmodified/not counted. This batch changes Oso and Ray,not Master.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps."
+  ],
+  "continuation": "Completed 1 of five authorized ten-fix batches;continue remaining batches until50 total. This audit certifies only stated automated/native scopes,not client/whole-chain traversal."
+}
