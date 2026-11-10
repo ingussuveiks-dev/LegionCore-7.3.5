@@ -17,6 +17,7 @@
  */
 
 #include "heart_of_fear.h"
+#include "Player.h"
 
 enum eSpells
 {
@@ -122,6 +123,7 @@ class boss_lord_meljarak : public CreatureScript
 
             SummonList summons;
             uint8 soldierDied, soldierControlCount;
+            uint8 defeatedSquads = 0;
             bool windBomb, checkSoldier;
 
             void Reset()
@@ -130,6 +132,7 @@ class boss_lord_meljarak : public CreatureScript
                 events.Reset();
                 summons.DespawnAll();
                 soldierDied = 0;
+                defeatedSquads = 0;
                 windBomb = false;
                 SummonSoldiers();
 
@@ -197,9 +200,26 @@ class boss_lord_meljarak : public CreatureScript
                 }
             }
 
+            static uint8 SquadBit(uint32 entry)
+            {
+                return entry == NPC_ZARTHIK ? 1 : entry == NPC_SRATHIK ? 2 : entry == NPC_KORTHIK ? 4 : 0;
+            }
+
+            void SoldierDied(uint32 entry)
+            {
+                uint8 const bit = SquadBit(entry);
+                if (!bit || !me->IsAlive() || (defeatedSquads & bit))
+                    return;
+                defeatedSquads |= bit;
+                DoAction(ACTION_1);
+                DoCast(me, IsHeroic() ? SPELL_RECKLESSNESS_H : SPELL_RECKLESSNESS, true);
+                DoAction(entry == NPC_ZARTHIK ? ACTION_2 : entry == NPC_SRATHIK ? ACTION_3 : ACTION_4);
+            }
+
             void JustSummoned(Creature* summoned)
             {
                 summons.Summon(summoned);
+                defeatedSquads &= ~SquadBit(summoned->GetEntry());
 
                 if (me->isInCombat())
                 {
@@ -352,99 +372,94 @@ struct npc_soldierAI : ScriptedAI
 {
     npc_soldierAI(Creature* creature) : ScriptedAI(creature){}
 
-    void SendDamageSoldiers(InstanceScript* instance, Creature* caller, uint32 callerEntry, ObjectGuid callerGuid, uint32 damage)
+    bool sharedDeathHandled = false;
+
+    std::vector<Creature*> LivingSquad(InstanceScript* instance)
     {
-        if (caller && instance)
+        uint32 first = me->GetEntry() == NPC_SRATHIK ? NPC_SRATHIK_1 :
+            me->GetEntry() == NPC_ZARTHIK ? NPC_ZARTHIK_1 :
+            me->GetEntry() == NPC_KORTHIK ? NPC_KORTHIK_1 : 0;
+        std::vector<Creature*> result;
+        if (instance && first)
+            for (uint32 n = first; n < first + 3; ++n)
+                if (Creature* soldier = ObjectAccessor::GetCreature(*me, instance->GetGuidData(n)))
+                    if (soldier != me && soldier->IsAlive() && soldier->GetEntry() == me->GetEntry() &&
+                        std::find(result.begin(), result.end(), soldier) == result.end())
+                        result.push_back(soldier);
+        return result;
+    }
+
+    static void RegisterSharedDamage(Unit* attacker, Creature* target, uint64 damage)
+    {
+        if (!attacker || !damage || (target->IsControlledByPlayer() && !target->IsVehicle()))
+            return;
+        if (Player* owner = attacker->GetAffectingPlayer())
         {
-            switch (callerEntry)
-            {
-            case NPC_SRATHIK:
-                for (uint32 n = NPC_SRATHIK_1; n <= NPC_SRATHIK_3; n++)
-                    if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                        if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
-                            soldier->SetHealth(soldier->GetHealth() - damage);
-                break;
-            case NPC_ZARTHIK:
-                for (uint32 n = NPC_ZARTHIK_1; n <= NPC_ZARTHIK_3; n++)
-                    if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                        if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
-                            soldier->SetHealth(soldier->GetHealth() - damage);
-                break;
-            case NPC_KORTHIK:
-                for (uint32 n = NPC_KORTHIK_1; n <= NPC_KORTHIK_3; n++)
-                    if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                        if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
-                            soldier->SetHealth(soldier->GetHealth() - damage);
-                break;
-            }
+            if (!target->hasLootRecipient())
+                target->SetLootRecipient(owner);
+            target->LowerPlayerDamageReq(damage);
         }
     }
 
-    void SendDiedSoldiers(InstanceScript* instance, Creature* caller, uint32 callerEntry, ObjectGuid callerGuid)
+    void SendDamageSoldiers(InstanceScript* instance, Unit* attacker, uint32 damage)
     {
-        if (caller && instance)
+        if (!attacker || !damage)
+            return;
+        if (!attacker->IsControlledByPlayer())
+            RegisterSharedDamage(attacker, me, std::min<uint64>(damage, me->GetHealth()));
+        auto soldiers = LivingSquad(instance);
+        bool lethal = uint64(damage) >= me->GetHealth() ||
+            std::any_of(soldiers.begin(), soldiers.end(), [damage](Creature* soldier) { return uint64(damage) >= soldier->GetHealth(); });
+        if (lethal)
         {
-            Creature* meljarak = caller->GetCreature(*caller, instance->GetGuidData(NPC_MELJARAK));
-            if (!meljarak || !meljarak->IsAlive())
+            // A normal direct death retains its native spell/proc dispatch.
+            if (uint64(damage) >= me->GetHealth() && me->IsAIEnabled && me->AI() == this)
                 return;
-
-            meljarak->AI()->DoAction(ACTION_1);
-            meljarak->CastSpell(meljarak, meljarak->GetMap()->IsHeroic() ? SPELL_RECKLESSNESS_H : SPELL_RECKLESSNESS, true);
-
-            switch (callerEntry)
-            {
-                case NPC_ZARTHIK:
-                    meljarak->AI()->DoAction(ACTION_2);
-                    for (uint32 n = NPC_ZARTHIK_1; n <= NPC_ZARTHIK_3; n++)
-                        if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
-                                soldier->Kill(soldier, true);
-                    break;
-                case NPC_SRATHIK:
-                    meljarak->AI()->DoAction(ACTION_3);
-                    for (uint32 n = NPC_SRATHIK_1; n <= NPC_SRATHIK_3; n++)
-                        if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
-                                soldier->Kill(soldier, true);
-                    break;
-                case NPC_KORTHIK:
-                    meljarak->AI()->DoAction(ACTION_4);
-                    for (uint32 n = NPC_KORTHIK_1; n <= NPC_KORTHIK_3; n++)
-                        if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
-                                soldier->Kill(soldier, true);
-                    break;
-            }
+            if (attacker->IsControlledByPlayer())
+                RegisterSharedDamage(attacker, me, std::min<uint64>(damage, me->GetHealth()));
+            attacker->Kill(me);
+            // The original AI may be suspended or disabled during native charm.
+            SendDiedSoldiers(instance, attacker);
+            return;
         }
-    }
-
-    void SendHealSoldiers(InstanceScript* instance, Creature* caller, uint32 callerEntry, ObjectGuid callerGuid, uint64 modhealth)
-    {
-        if (caller && instance)
+        for (Creature* soldier : soldiers)
         {
-            switch (callerEntry)
-            {
-                case NPC_SRATHIK:
-                    for (uint32 n = NPC_SRATHIK_1; n <= NPC_SRATHIK_3; n++)
-                        if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
-                                soldier->SetHealth(soldier->GetHealth() + modhealth);
-                    break;
-                case NPC_ZARTHIK:
-                    for (uint32 n = NPC_ZARTHIK_1; n <= NPC_ZARTHIK_3; n++)
-                        if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
-                                soldier->SetHealth(soldier->GetHealth() + modhealth);
-                    break;
-                case NPC_KORTHIK:
-                    for (uint32 n = NPC_KORTHIK_1; n <= NPC_KORTHIK_3; n++)
-                        if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
-                                soldier->SetHealth(soldier->GetHealth() + modhealth);
-                    break;
-            }
+            soldier->SetHealth(soldier->GetHealth() - damage);
+            RegisterSharedDamage(attacker, soldier, damage);
         }
     }
+
+    void SendDiedSoldiers(InstanceScript* instance, Unit* killer)
+    {
+        if (me->IsAlive() || sharedDeathHandled)
+            return;
+        sharedDeathHandled = true;
+        if (instance)
+            if (Creature* boss = ObjectAccessor::GetCreature(*me, instance->GetGuidData(NPC_MELJARAK)))
+                if (auto ai = dynamic_cast<boss_lord_meljarak::boss_lord_meljarakAI*>(boss->AI()))
+                    ai->SoldierDied(me->GetEntry());
+
+        for (Creature* soldier : LivingSquad(instance))
+        {
+            if (me->IsDamageEnoughForLootingAndReward() && !soldier->IsDamageEnoughForLootingAndReward())
+                soldier->LowerPlayerDamageReq(1);
+            if (!soldier->hasLootRecipient())
+                if (Player* recipient = me->GetLootRecipient())
+                    soldier->SetLootRecipient(recipient);
+            (killer ? killer : me)->Kill(soldier);
+        }
+    }
+
+    void SendHealSoldiers(InstanceScript* instance, uint64 modhealth)
+    {
+        for (Creature* soldier : LivingSquad(instance))
+        {
+            uint64 const health = soldier->GetHealth();
+            uint64 const maximum = soldier->GetMaxHealth();
+            soldier->SetHealth(health + std::min(modhealth, maximum - std::min(health, maximum)));
+        }
+    }
+
 };
 
 class npc_generic_soldier : public CreatureScript
@@ -465,6 +480,8 @@ class npc_generic_soldier : public CreatureScript
 
             void Reset()
             {
+                sharedDeathHandled = false;
+                events.Reset();
                 me->RemoveAurasDueToSpell(SPELL_HASTE);
             }
             
@@ -496,19 +513,21 @@ class npc_generic_soldier : public CreatureScript
 
             void DoAction(const int32 action)
             {
-                if (action == ACTION_1)
+                if (action == ACTION_1 && me->IsAlive())
                 {
                     DoResetThreat();
                     DoCast(SPELL_KORTHIK_STRIKE);
                 }
             }
 
-            void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+            void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
             {
-                if (damage >= me->GetHealth())
-                    SendDiedSoldiers(pInstance, me, me->GetEntry(), me->GetGUID());
-                else
-                    SendDamageSoldiers(pInstance, me, me->GetEntry(), me->GetGUID(), damage);
+                SendDamageSoldiers(pInstance, attacker, damage);
+            }
+
+            void JustDied(Unit* killer) override
+            {
+                SendDiedSoldiers(pInstance, killer);
             }
 
             bool CheckMeIsInControl()
@@ -526,7 +545,7 @@ class npc_generic_soldier : public CreatureScript
                 if (spell->Id == SPELL_HEAL_TR_EF)
                 {
                     uint64 modhealth = me->GetMaxHealth()/4;
-                    SendHealSoldiers(pInstance, me, me->GetEntry(), me->GetGUID(), modhealth);
+                    SendHealSoldiers(pInstance, modhealth);
                 }
             }
 

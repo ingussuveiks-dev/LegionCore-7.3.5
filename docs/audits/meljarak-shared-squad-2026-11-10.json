@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_SHARED_SQUAD_REPAIR_HEROIC_MEND_AND_CLIENT_SEPARATE",
+  "base": "d83751688",
+  "cause": [
+    "Raw pre-scaled unsigned mirrored damage wrapped a low-health sibling back to full health;direct self-kills lost real killer/owner death and loot semantics.",
+    "Normal and heroic native Recklessness entry-targets38 had no13conditions,allowing a coincident Player to receive the boss debuff.",
+    "45s heroic execution sent Korthik strike/threat-reset commands to the retained dead squad;the dispatch now admits living soldiers only.",
+    "Shared native64 quarter-health addition could wrap before SetHealth;it now clamps to actual remaining room before adding."
+  ],
+  "repair": "Final-scaled same-amount mirroring,full-width bounded subtraction and native Kill from the actual killer,GetAffectingPlayer tags/contributions,existing first tags/native group rules. Ordinary direct lethal retains core spell/procs;explicit fallback handles disabled/suspended AI. Actual JustDied and per-actor flag prevent replay;boss per-entry mask changes watchful-eye/recklessness/heroic scheduling once per generation and resets on actual replacement/Reset. Living same-entry/nonself/deduplicated instance slots only;all other original CC,timers,poses,casts and45s events pinned. No custom quest/item/progression grant or HP threshold/timer.",
+  "data": {
+    "migration": "sql\\updates\\world\\2026_11_10_02_meljarak_recklessness_targets.sql",
+    "sha256": "73f8e4be958711b18594ca3bea6a3c608f5c1868aba91a5ac97fe00d52ba0a53",
+    "sha1": "feae368b48d592d98d23fef7c1a49a35c24c3315",
+    "binding": "122354effects0+1 mask3,125873effects0+1+2 mask7:source13/condition31/TYPEID_UNIT3/62397. Native26972effects38 verified;missing source13 rows reproduced actual wrong-player debuffs in both modes. Actual updater applied one migration after matching EXE promotion;final original live inventory2exact rows passes.",
+    "guard": "No overwrite of custom/unknown/duplicate conditions:explicit SIGNAL1644 before DML;missing/existing/partial/repeat/comment/unrelated TEMP states checked through real raw CAPI,not hidden logs.",
+    "sources": "Matching local26972data,live/base SQL,complete boss/soldier/Heart of Fear instance mappings/native Kill/scaling/loot. Local Trinity HEAD eaa32415b0f93f6d26294e1e9e4083be3dba0745 has no matching Meljarak script;no modern code/data copied."
+  },
+  "checks": {
+    "native": "162whole-class deaths:three types,normal/heroic,Player/pet/guardian/secondary owner and native group/NPC negative variants,source/other-first/scaled one-hit,repeated death/Kill.54actual native final-scaled/wide-health/quarter-heal contexts throughUINT64_MAX,normal actual triggered heal vs unlinked native control,zero/null/living-death admission.6actual Reset9summon/native instance slot/normal-vs-45s heroic replacement/retry generations;old corpses cannot consume replacements.36wrong/self/duplicate/destroyed/disabled/suspended/NPC-final-owner controls. Exactly4matching script bindings. Five raw TEMP SQL cases with2explicit refusals;actual live readback after real updater.",
+    "baseline": "Pinned d83751688complete original boss/soldier classes reproduce54unsigned underflow/clamp cases and both normal/heroic coincident-player wrong Recklessness casts as expected-broken counterfactuals,not ordinary successful runs.",
+    "limits": "Bare Human/Warrior sessions and in-memory already-loaded raid binds;fixture persistence returns empty save string and account tables are private TEMP. Native damage multiplier inputs and normal heal self-cast clocks controlled. No character/account/item receipt writes. Group ownership assertions use native tags/eligibility/Kill;complete raid drops,spell-specific linked-kill procs and client traversal remain separate.",
+    "release": "Original scripts.lib rebuilt without global OutDir;original final inputs linked,source/library hashes and immutable staged/canonical EXE+MAP checked. Complete prior367+Rook/Tsulong/counter/Freya/health/Twin chain returned;real soldier A8after-scaling/130death vtables,native64 helpers/death/generation/admission and updated stronger typed heal-room proof. No core/header/packet changes in this fix.",
+    "runtime": "Canonical own20316 ready/updater/shutdown0/exit0/gone,empty stderr,protected conf/cert/DLL hashes unchanged;Scepter passes. Its inherited generated AddScenario.inc signed/unsigned warning matches prior Twin evidence. Script builds/native regressions have no new unexplained warnings/errors. Ready banner still prior generated revision metadata;actual implementation established by source/library/EXE identities.",
+    "diagnostics": "Before/after canonical+own crash/log snapshots for tests/build/link/start. Final runs have no new/changed crash or unexplained appended DBErrors/server warnings/errors/assertions. Early private failures investigated:wrong API names/protected EventMap access/macro parsing;wrong initial heroic effect mask;SQL nonexistent ErrorType caused native abort;manual201/202guardian GUID collision with real TempSummon counters caused stale instance registration/cleanup AV;actual heal needed real SpellBonus/Threat loaders (fixture AV). Distinct manual GUIDs,cleanup order,matching schema/masks and native loaders paired with passing repaired regressions. Wrong normal-profile expectation on heroic122147 explained by matching35pct/area data and retained OPEN outside fixed;no SpellMgr target rewrite. PE inspection filename inspect.py shadowed stdlib and initial death-slot guesses were corrected to actual data table130;final complete proof passed. Mixed canonical7111bytes unchanged;one wholly reviewed private1054log archived/hash-verified then cleared.",
+    "assertion_only_confirmation": "Final actual live run162/54/6/36 passes with no diagnostic fallback/recast in the assertion path. Same canonical implementation;new native temporary outputs archived/hash-verified and removed."
+  },
+  "canonical": {
+    "bnetserver.exe": "6f70f9ddb716e1d51a91b3e7557a2d1a521da80d2860dfcd4e25f772f1a9dc24",
+    "bnetserver.map": "40f21c57908cc641064223e5f08ec320d3ef3cf96e1909aaeaa641430d5bf849",
+    "connection_patcher.exe": "82f4613d53c345891194ac4362d790cbdb19ea77aba24dda953768d126803188",
+    "mapextractor.exe": "6154917619366263ebf1c688d5e817fc3e48c7e4963e17f209c97cde6403cc67",
+    "mmaps_generator.exe": "79ebed6c0820e073e188cb2ca83e735eead072b94ed8ad126b788886dd98aa74",
+    "vmap4assembler.exe": "c95cf785a01ed64d86ff4b1f798b5be0a453b1ffaa2ebda13e481eae9ee44eaf",
+    "vmap4extractor.exe": "89900c962e3184e7ffa87077d17c9545911c4dd2da51166eceee1271f9e76408",
+    "worldserver.before-faction-quest-fix-20260929-153915.exe": "d6649023e6020294c6980484528095c595b098900c55cca99326a166c60b71b0",
+    "worldserver.before-gossip-fix-20260929-100029.exe": "aedee64ed911231d510be20c8232c58676deea7b6e21712feecb2d3442553ec6",
+    "worldserver.before-relic-enchant-fix-20260929-144506.exe": "5604e3bbc04932d85d24f4cc4f7878dc2ee1decbdb8c552507a246f8fd431b97",
+    "worldserver.exe": "f299c4c40904070b316c50579438f4dff528d76390f8440d7f3c3d8a708a4284",
+    "worldserver.map": "d26095a06ee519fd9baaa6673a5988d1f66072a754461bd3c8cfe637beaf906c"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\meljarak-2026-11-10",
+    "manifest_sha256": "ff379ddba828e2791bf1206d6e5396fb65f415113f91cf8874a8893d0ed7a5eb",
+    "archived_files": 1105,
+    "removed_files": 470,
+    "logical_removed_bytes": 4510034832,
+    "deletion_manifest": ".codex\\meljarak-2026-11-10\\deletion-manifest.json",
+    "deletion_manifest_sha256": "4b9d90126f80baf6b00df028a2ebab26386b6ac6fbe26c2432d27648109711dc",
+    "reviewed_private_log_cleanup": [
+      {
+        "path": "build-extractors\\runtime-test\\meljaraknative\\20261110-232737-859\\logs\\DBErrors.log",
+        "sha256": "c354efc8c9551f9eaa35bb63d0af81afb12e5ddb0cc508344c1e73ff94a46e98",
+        "archive": "build-extractors\\bin\\Release\\fixed\\meljarak-2026-11-10\\build-extractors\\runtime-test\\meljaraknative\\20261110-232737-859\\logs\\DBErrors.log"
+      }
+    ],
+    "removed_superseded_recovery": ".codex\\release-before-twin-emperors-2026-11-10",
+    "retained": "Latest pre-Meljarak(Twin),pre-health-delta(Freya),pre-Rook copies for concrete recovery/client purposes. Canonical runtime/data/config/certs/DLLs,main required libraries,reusable public test sources,protected original Slaghammer cache,all OPEN Lady/LINK2/TimeLoop/handshake/MariaDB staged promotion package retained.",
+    "commit_resolution": "Ignored fixed resolution.json written after focused commit/push.",
+    "confirmation": {
+      "manifest_sha256": "cb89f2050c6b21c979d94b37fbfc6e81392d5c091dd641423d8a42f6350107a4",
+      "files": 37,
+      "removed_files": 19,
+      "logical_removed_bytes": 207849480,
+      "deletion_manifest": ".codex\\meljarak-2026-11-10\\confirmation-deletion.json",
+      "deletion_manifest_sha256": "0fc756d3654208acc7cca8f660a75549d3ad244e6ab91536605848ebb79b155f"
+    }
+  },
+  "open": {
+    "heroic_mend": {
+      "directory": ".codex\\open-diagnostics\\meljarak-heroic-mend-2026-11-10",
+      "manifest_sha256": "bd0549b857b582541a15cf8b82059fa6ba521d22582acacd51fced050a4c2cff",
+      "scope": "Matching122147heroic35pct/TargetA22/TargetB7 versus current scripted quarter helper;whole122193->122147recipient/possible sharing/real healer sequence requires separate authentic review/client. Normal actual triggered heal and full-width scripted quarter helper pass;no claim of whole heroic Mend fidelity."
+    },
+    "other": [
+      "Authentic living Lady surrender/conversation1906/Grash impact/cleanup and missing LINK2/Slaghammer historical crash evidence remain open;no invented payload or threshold.",
+      "TimeLoop32bit spell-healing pipeline and actual intermittent handshake root remain open. All36artifact chains/full client raid traversal remain unverified.",
+      "MariaDB root DLL tested/staged under5cc72f230;user wampmariadb64 still running,explicit stop confirmation required before replacement. No user service/process stopped."
+    ]
+  },
+  "completed_date": "2026-11-11"
+}

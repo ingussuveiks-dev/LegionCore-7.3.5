@@ -6,7 +6,8 @@ def op(rows,m,s):return any(x.mnemonic==m and x.op_str==s for x in rows)
 r=ins('?UpdateAI@boss_brawguild_toppsAI@');assert op(r,'divss','xmm6, xmm0')and op(r,'divss','xmm7, xmm0')and 3000 in values(r),'shared nonzero direction length and coincident retry'
 assert op(ins('?DoAction@npc_empyreal_focusAI@'),'cmp','edx, 1');assert op(ins('?DoAction@boss_lei_shiAI@'),'cmp','edx, 3')
 r=ins('?OnCreatureCreate@instance_unga_ingoo_InstanceMapScript@');assert op(r,'cvttss2si','rdx, xmm0')and sites(r,'?SetHealth@Unit@@')
-r=ins('?SpellHit@npc_generic_soldierAI@');assert op(r,'shr','rbx, 2')and op(r,'mov','qword ptr [rsp + 0x28], rbx')and sites(r,'?SendHealSoldiers@npc_soldierAI@@');assert any('_K@Z'in s for s in p['n']['symbols']if s.startswith('?SendHealSoldiers@npc_soldierAI@@'))
+from verify_meljarak_heal import verify_meljarak_heal
+verify_meljarak_heal(ins,sites,values)
 r=ins('?HandleOnApply@spell_touch_of_yshaarj_AuraScript@');assert op(r,'cvtsi2ss','xmm1, rax')and op(r,'movss','dword ptr [r14 + 0x1c], xmm1')
 r=ins('?AfterAbsorb@spell_touch_of_yshaarj_AuraScript@');assert op(r,'maxss','xmm0, xmm6')and op(r,'cvttss2si','rdx, xmm0')and op(r,'add','rdx, rsi')and sites(r,'?SetHealth@Unit@@')
 r=ins('?UpdateAI@npc_en_nightmother@');at=next(i for i,x in enumerate(r)if x.mnemonic=='mov'and x.op_str=='dword ptr [rbx + 0x58], 0x1770');assert sites(r[at:at+35],'?SetCanFly@Unit@@'),'landing timer armed before target lookup'
