@@ -638,7 +638,7 @@ class npc_empyreal_focus : public CreatureScript
 
             void DoAction(const int32 action) override
             {
-                if (ACTION_1)
+                if (action == ACTION_1)
                 {
                     active = true;
                     targetfocusGUID.Clear();
