@@ -106,6 +106,7 @@ public:
             _Reset();
             enrage = false;
             angrycomplete = false;
+            CheckTimer = 2000;
 
             if (instance->GetData(DATA_MAIN_EVENT_PHASE) == IN_PROGRESS)
                 me->SetReactState(REACT_DEFENSIVE);
