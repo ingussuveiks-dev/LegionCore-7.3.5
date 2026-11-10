@@ -530,7 +530,8 @@ public:
             switch (action)
             {
             case 1:
-                me->AddDelayedEvent(6500, [this] {
+                me->AddDelayedEvent(6500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(SAY_3);
                     if (instance)
                         instance->SetBossState(DATA_ALLERIA1, DONE);
@@ -543,7 +544,8 @@ public:
                     Conversation* conversation = new Conversation;
                     if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 5632, me, NULL, *me))
                         delete conversation;
-                    me->AddDelayedEvent(18000, [this] {
+                    me->AddDelayedEvent(18000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     });
                 }
@@ -556,34 +558,40 @@ public:
             if (summoner->GetEntry() == NPC_ZURAAL)
             {
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                me->AddDelayedEvent(1000, [this] {
+                me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(SAY_1);
                 });
 
-                me->AddDelayedEvent(3500, [this] {
+                me->AddDelayedEvent(3500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(SAY_2);
                 });
 
-                me->AddDelayedEvent(6500, [this]() -> void
+                me->AddDelayedEvent(6500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->SetWalk(false);
                     me->GetMotionMaster()->MovePoint(0, assaultStart[2]);
                 });
 
-                me->AddDelayedEvent(10000, [this]() -> void
+                me->AddDelayedEvent(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->GetMotionMaster()->MovePoint(0, assaultStart[3]);
                 });
 
-                me->AddDelayedEvent(15000, [this]() -> void
+                me->AddDelayedEvent(15000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->DespawnOrUnsummon();
                 });
             }
             if (summoner->GetEntry() == NPC_LURA_INTROPORTAL)
             {
                 me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                me->AddDelayedEvent(2000, [this] {
+                me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     if (instance)
                     {
                         me->GetMotionMaster()->MovePoint(0, openDoor[0]);
@@ -592,24 +600,30 @@ public:
                             delete conversation;
                     }
                 });
-                me->AddDelayedEvent(26000, [this] {
+                me->AddDelayedEvent(26000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Creature* doorSt = me->FindNearestCreature(NPC_DOOR_ST, 60.0f, true))
                         DoCast(doorSt, SPELL_OPEN_DOOR_VISUAL);
                 });
-                me->AddDelayedEvent(34000, [this] {
+                me->AddDelayedEvent(34000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Creature* doorSt = me->FindNearestCreature(NPC_DOOR_ST, 60.0f, true))
                     {
                         me->InterruptSpell(CURRENT_CHANNELED_SPELL);
                         me->Kill(doorSt);
                     }
                 });
-                me->AddDelayedEvent(60000, [this] {
+                me->AddDelayedEvent(60000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     me->DespawnOrUnsummon();
                 });
             }
         }
 
         void UpdateAI(uint32 diff) override {}
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
