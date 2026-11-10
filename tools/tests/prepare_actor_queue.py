@@ -4,7 +4,7 @@ import ast,json,re,subprocess
 def generate(plan_path,base,out,case=None,baseline=False,native_name=None):
  r=Path(__file__).resolve().parents[2];out=Path(out);out.mkdir(parents=True,exist_ok=True);plan=json.loads(Path(plan_path).read_text(encoding='utf8'))
  def source(e,old):return subprocess.check_output(['git','-C',str(r),'show',base+':'+e['paths'][0]]).decode('utf8')if old else(r/e['paths'][0]).read_text(encoding='utf-8-sig')
- tree=ast.parse((r/'tools/tests/prepare_fifteenth.py').read_text(encoding='utf8'));ns=dict(r=r,source=source,re=re);exec(compile(ast.Module(body=[x for x in tree.body if isinstance(x,ast.FunctionDef)and x.name=='constants'],type_ignores=[]),'native-enums','exec'),ns)
+ tree=ast.parse((r/'tools/tests/prepare_fifteenth.py').read_text(encoding='utf8'));fn=next(x for x in tree.body if isinstance(x,ast.FunctionDef)and x.name=='constants');fn.body.insert(-1,ast.parse("used |= values.keys() & set(re.findall(r'\\b[A-Za-z_]\\w*\\b',code))").body[0]);ns=dict(r=r,source=source,re=re);exec(compile(ast.fix_missing_locations(ast.Module(body=[fn],type_ignores=[])),'native-enums','exec'),ns)
  def emit(e,native):
   full=source(e,baseline);codes=[]
   for cb in e['callbacks']:
@@ -12,10 +12,14 @@ def generate(plan_path,base,out,case=None,baseline=False,native_name=None):
   con=ns['constants'](e,''.join(codes))
   if native:
    con=re.sub(r'constexpr uint32 (?:UNIT_\w+|REACT_\w+)=\d+;\n','',con)
-   codes=[re.sub(r'actor->(DespawnOrUnsummon|CastSpell|RemoveAura|ClearUnitState|SetWalk|SetVisible|SetSpeed|RemoveFlag|Kill|GetMotionMaster)\(',r'Observe::\1(actor,',c)for c in codes]
-   codes=[c.replace('(actor,)', '(actor)')for c in codes]
+   codes=[re.sub(r'actor->(DespawnOrUnsummon|CastSpell|RemoveAura|ClearUnitState|SetWalk|SetVisible|SetSpeed|RemoveFlag|Kill|SummonCreature|GetMotionMaster|SetReactState|HandleEmoteCommand|setFaction)\(',r'Observe::\1(actor,',c)for c in codes]
+   codes=[re.sub(r'ai->(Talk|DoCast|AttackStart)\(',r'Observe::\1(actor,',c).replace('(actor,)', '(actor)')for c in codes]
+
+   codes=[re.sub(r'target->SummonCreature\(',r'Observe::SummonCreature(target,',c)for c in codes]
   decl='struct Frame:NullCreatureAI{explicit Frame(Creature*c):NullCreatureAI(c){}'if native else'struct Frame{Creature*me;explicit Frame(Creature*c):me(c){}'
-  decl+='void Queue(uint32 index){switch(index){'+''.join('case '+str(i)+':'+c+'break;'for i,c in enumerate(codes))+'default:throw std::runtime_error("unknown callback index");}}};'
+
+  if not native:decl+='void Talk(uint32 n){me->Talk(n);}void DoCast(uint32 n){me->DoCast(n);}void DoCast(Unit*u,uint32 n,bool b=false){me->DoCast(u,n,b);}'
+  decl+='void Queue(uint32 index){switch(index){'+''.join('case '+str(i)+':{'+e['callbacks'][i].get('setup','')+c+'break;}'for i,c in enumerate(codes))+'default:throw std::runtime_error("unknown callback index");}}};'
   decl+='static uint32 const effects[]={'+','.join(str(c.get('effects',1))for c in e['callbacks'])+'};'
   decl+='static uint32 const delays[]={'+','.join(str(c['delay'])for c in e['callbacks'])+'};'
   return con+decl
