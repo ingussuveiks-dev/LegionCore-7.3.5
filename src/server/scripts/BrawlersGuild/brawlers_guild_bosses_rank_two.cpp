@@ -438,9 +438,15 @@ public:
         uint8 count_adds;
         uint8 phase_of_sphere;
         uint32 timer_check;
+        std::set<ObjectGuid> activeAddGuids;
         
         void Reset() override
         {
+            me->KillAllDelayedEvents();
+            _Reset();
+            activeAddGuids.clear();
+            count_adds = 0;
+            phase_of_sphere = 0;
             timer_check = 500;
             if (me->GetEntry() == 115645)
             {
@@ -528,7 +534,7 @@ public:
         {
             summons.Summon(summon);
             
-            if (summon->GetEntry() != 115637)
+            if (summon->GetEntry() != 115637 || count_adds >= 3 || !activeAddGuids.insert(summon->GetGUID()).second)
                 return;
 
             if (Unit* owner = me->GetAnyOwner())
@@ -600,10 +606,9 @@ public:
         
         void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
         {
-            if (summon->GetEntry() != 115637)
+            if (summon->GetEntry() != 115637 || activeAddGuids.erase(summon->GetGUID()) != 1)
                 return;
-            
-            
+
             count_adds--;
             if (count_adds == 0)
             {
@@ -613,11 +618,12 @@ public:
                 {
                     me->KillAllDelayedEvents();
                     Player* player = me->GetAnyOwner()->ToPlayer();
-                    player->AddDelayedEvent(700, [player] () -> void
+                    me->AddDelayedEvent(700, [this, playerGuid = player->GetGUID()] () -> void
                     {
-                        if (player && player->IsAlive())
-                            if (BrawlersGuild* brawlerGuild = player->GetBrawlerGuild())
-                                brawlerGuild->BossReport(player->GetGUID(), true);
+                        if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))
+                            if (player->IsAlive() && me->GetAnyOwner() == player)
+                                if (BrawlersGuild* brawlerGuild = player->GetBrawlerGuild())
+                                    brawlerGuild->BossReport(player->GetGUID(), true);
                     });
                 }
             }
