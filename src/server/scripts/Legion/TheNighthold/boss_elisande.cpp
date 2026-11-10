@@ -360,11 +360,17 @@ struct boss_elisande : BossAI
         }
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
     {
+        if (switchPhase)
+        {
+            damage = 0;
+            return;
+        }
+
         if (phase < 3)
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
                 me->SetHealth(me->CountPctFromMaxHealth(10));
