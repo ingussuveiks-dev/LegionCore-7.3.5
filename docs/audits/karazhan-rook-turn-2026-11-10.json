@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "base": "be9d35ed166a2d07fd5360b2438e76a0c291b739",
+  "cause": "Rook115407 returned unconditionally on native229468. Its disabled branch also used incorrect axis precedence,unsigned decrement/no-op moves,duplicate center tiles and incomplete board-edge rays. A fixed3000ms callback was not an arrival acknowledgement.",
+  "fix": "Finite nonzero cardinal move within original board bounds. Bind turn to native jump229329 and exact spline identity/completed endpoint. Wait for Map to commit cross-cell relocation;then start ordinary native500ms229567. Only its successful self-hit creates one center plus four bounded unique229570 rays as triggered children,retaining native2000ms warnings and existing9005/action0/moment8/229568 damage. Reset/death/interruption/AI replacement cancel admission;next native pulse can retry an interrupted cast. No delayed rook AI capture,manual damage,kill or progression grant. Rook home is updated only after the committed landing pose;shared pieces retain their original home callback.",
+  "sources": {
+    "local": "Matching26972 typed Spell/Effect/Misc/Duration/CastTimes plus read-only Hotfix,live five ScriptName bindings/spawns and9005 action;native Unit spline/Map relocation/Effect generator/SpellHit dispatch traced. Local newer Trinity ReturnToKarazhan has no matching rook implementation. No donor code imported.",
+    "native_description": "229567 explicitly describes cardinal tiles with229570 duration and229568 damage.229570 effect179 uses9005 with2000ms duration;229567 has500ms cast. Native referenced229541 has no Spell row;existing core debug-only missing-trigger behavior is unchanged and not silently replaced. Rook visual fidelity/this inherited client-side reference remain unverified.",
+    "reference": "No external implementation or new gameplay video used for the rook behavior;matching native spell descriptions and real dispatch/data are the behavior evidence."
+  },
+  "checks": {
+    "asan": "Complete production Chess AI extracted unchanged into controlled movement/cast adapters. Pinned be9d35 disabled-rook counterfactual produces zero movement/attack. Repaired1344 seeded board positions verify legal nonzero moves,all distinct cardinal tiles through board edges,repeated pulses/hits,foreign motion/caster,uncompleted/replaced/cancelled splines,reset/death,failed-cast retry,delayed cross-cell pose,and four byte-preserved shared figure branches including retired-AI callbacks. Endpoint adapters are not full-core ASAN.",
+    "native": "Complete production AI with real Creature/Map1651/MotionMaster/MoveSpline/Spell events/AreaTrigger loaders:42 poses,actual spline completion and cross-cell Map relocation,ordinary500ms cast,exactly12 unique cardinal area objects/native2000ms duration. Actual interrupted/reset/dead/replaced-AI/interrupted-parent controls emit zero fields;interrupted cast retries. No character/account persistent writes,client login or actual victim damage certification. All42 native cases also require the actual home pose to equal landing;interrupted-cast retry and native area destination uniqueness are explicitly checked.",
+    "release": "Original main scripts.lib rebuilt without OutDir override;staged link uses original main dependencies. Staged and canonical actual PE complete prior367 checks plus rook motion/pose/cast/field checks. Source scope preserves King/intro/registration and four shared branches,retains six reachable weak guards. The two former dormant rook closures are removed,so historical35 source projection metadata is not rewritten or passed off as current encounter execution.",
+    "retained": "Canonical ArtifactTierProgression,ScenarioResume ASAN and Scepter -VerifyReleaseBinary pass. Owned21976 fresh ready/shutdown0/exit0/gone,empty stderr;no server left. Configuration/certs/DLL hashes unchanged. Final home-aware Release rechecked with complete staged/canonical367+rook PE,Scepter and owned14140 fresh ready/shutdown0/exit0/gone;configuration/certs/DLLs retained.",
+    "diagnostics": "Before/after canonical+own crash/log snapshots for source/native/catalog/build/link/PE/deploy/retained/start. No new crashes,appended DBErrors or server warnings/errors/assertions. Mixed7111-byte log unchanged and untruncated.",
+    "development": "Fixture builds initially lacked SetHomePosition and used wrong AreaTrigger header;production integration initially duplicated existing MovementInform,then merged preserving its home update. Native test exposed queued cross-cell pose and blocked child casts during parent SpellHit;paired repairs wait for committed pose and use triggered child fields. PE test initially named void CastSpell instead of actual SpellCastResult overload. Scope fixture normalized CRLF then the sole final-newline addition. All these failures are paired with passing final checks. Initial read-only World name-column query failed1054;corrected to Name1,helper reused stdout/stderr so that original SQL stderr was not retained as a separate file;tool transcript documents it. No DB mutation or diagnostic suppression. An extra native home invariant then reproduced stale home across cells;paired source/native repair moves the rook-only home update after Map commitment. Earlier archive remains hash-verified;home follow-up evidence has its own manifest."
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\karazhan-rook-2026-11-10",
+    "manifest_sha256": "9102f8e7130ac826e40b94613249fff22843259fc99c9b5b26484a3a7d86a19b",
+    "archived_files": 452,
+    "removed_files": 192,
+    "logical_removed_bytes": 1552170069,
+    "deletion_manifest": ".codex\\open-issues-2026-11-10\\rook-deletion-manifest.json",
+    "deletion_manifest_sha256": "2aa14c944ab38293bf884f62904840a367bfe928cf274bbf7aff677008ca21d2",
+    "retained": "Current pre-rook rollback plus previous explicitly retained recovery copies,main required libraries,canonical runtime,all OPEN raw diagnostics. SQL public-source/root-cause research stays outside fixed. Retained shared regression outputs will be reviewed/cleaned at overall follow-up closeout.",
+    "home_followup": {
+      "manifest_sha256": "da50dac92ebfb1cfb403c3e8036a8d63925bb7f81059a3e97253c60790e23fbc",
+      "archived_files": 332,
+      "removed_files": 51,
+      "logical_removed_bytes": 549721456,
+      "deletion_manifest": ".codex\\open-issues-2026-11-10\\rook-home-deletion-manifest.json",
+      "deletion_manifest_sha256": "2fd28dd165e3cb9df8897d1ddc7f1ae03b951ab105d8add9f2e3bb2eea032c94"
+    }
+  },
+  "canonical": {
+    "worldserver.exe": "d78594a772f264da353d461f49cd88751c80a588a1fab7bec0bc09f67cf864bd",
+    "worldserver.map": "29b5f58312895f7d12ae560c4152bf6f8c70b55a2a07f8879ee520e4055c3aad",
+    "bnetserver.exe": "e34273d32717f123c7fef0e8e5a082567df925c588c7120840321304ba804e49",
+    "bnetserver.map": "9efdce7533083552d8647cf169f70af3b183caed40751438bfd6219358ef0015"
+  },
+  "db_errors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+  "pending": [
+    "Actual Chess movement/floor/rendering,warning/damage victim behavior,king vulnerability and full encounter still require client traversal. Native tests do not certify those visuals or whole combat.",
+    "Authentic living Sharasdal activation/surrender/1906/Grash/cleanup remains OPEN;no threshold or kill timer guessed. Sampled frames are not continuous gameplay/audio evidence.",
+    "LINK2/Slaghammer,intermittent handshake,mixed DBErrors,SQL unsigned result-width issue,TimeLoop and named raid damage/health issues remain open under their existing audits. All36 full chains remain client-pending."
+  ]
+}
