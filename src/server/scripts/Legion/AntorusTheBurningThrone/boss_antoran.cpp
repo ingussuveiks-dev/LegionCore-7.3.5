@@ -823,7 +823,7 @@ struct npc_command_entropic_mine : ScriptedAI
                     if (auto owner = me->GetAnyOwner())
                         me->CastSpell(me, SPELL_ENTROPIC_BLAST_DOT, true, nullptr, nullptr, owner->GetGUID());
 
-                    me->AddDelayedEvent(500, [this] () -> void { if (me) me->DespawnOrUnsummon(); });
+                    me->AddDelayedEvent(500, [actor = me] () -> void { if (actor) actor->DespawnOrUnsummon(); });
                 }
             }
             else
