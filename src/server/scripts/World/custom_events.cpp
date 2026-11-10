@@ -5232,10 +5232,10 @@ struct npc_events_banker_rift : public ScriptedAI
 
     void IsSummonedBy(Unit* summoner) override
     {
-        me->AddDelayedEvent(2000, [this]() -> void
+        me->AddDelayedEvent(2000, [actor = me]() -> void
         {
-            if (auto sum = me->SummonCreature(me->GetEntry() == 542003 ? 542004 : 542005, me->GetPosition(), TEMPSUMMON_TIMED_DESPAWN, 660000))
-                if (auto owner = me->GetAnyOwner())
+            if (auto sum = actor->SummonCreature(actor->GetEntry() == 542003 ? 542004 : 542005, actor->GetPosition(), TEMPSUMMON_TIMED_DESPAWN, 660000))
+                if (auto owner = actor->GetAnyOwner())
                     if (auto player = owner->ToPlayer())
                         sum->setFaction(player->GetTeam() == ALLIANCE ? 12 : 29);
         });
