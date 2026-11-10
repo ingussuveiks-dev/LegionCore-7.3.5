@@ -478,23 +478,30 @@ struct boss_fallen_avatar : BossAI
         if (me->IsAlive() && !me->isInCombat() && who->GetDistance(me) <= 19.0f)
             AttackStart(who);
 
-        if (me->GetDistance(who) < 100.0f && !IntroDone)
+        if (me->IsAlive() && me->GetDistance(who) < 100.0f && !IntroDone)
         {
-            IntroDone = true;
             if (Creature* kiljedan = instance->instance->GetCreature(instance->GetGuidData(NPC_KILDJEDAN_AVATARA)))
             {
+                IntroDone = true;
                 kiljedan->CastSpell(kiljedan, 242902);
-                kiljedan->AddDelayedEvent(27000, [kiljedan, this]() -> void
+                kiljedan->AddDelayedEvent(27000, [kiljedan, avatarGuid = me->GetGUID()]() -> void
                 {
-                    kiljedan->CastSpell(me, 240897);
-                    me->AddDelayedEvent(3000, [this]() -> void
-                    {
-                        me->SetAnimKitId(12758);     
-                        me->AddDelayedEvent(10000, [this]() -> void
+                    if (Creature* avatar = ObjectAccessor::GetCreature(*kiljedan, avatarGuid))
+                        if (avatar->IsAlive())
                         {
-                            DoCast(SPELL_VISUAL_SWORD);
-                        });
-                    });
+                            kiljedan->CastSpell(avatar, 240897);
+                            avatar->AddDelayedEvent(3000, [avatar]() -> void
+                            {
+                                if (!avatar->IsAlive())
+                                    return;
+                                avatar->SetAnimKitId(12758);
+                                avatar->AddDelayedEvent(10000, [avatar]() -> void
+                                {
+                                    if (avatar->IsAlive())
+                                        avatar->AI()->DoCast(SPELL_VISUAL_SWORD);
+                                });
+                            });
+                        }
 
                     kiljedan->AddDelayedEvent(13000, [kiljedan]() -> void
                     {

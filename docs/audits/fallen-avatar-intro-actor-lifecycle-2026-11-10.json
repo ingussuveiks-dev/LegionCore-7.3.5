@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "AvatarIntro",
+  "base": "2a416922b1f4139c6e910a6e4099e056ba91b907",
+  "support_commit": "7333f46c3ab51a29f87b429f9395cdfae7defcb2",
+  "paths": [
+    "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp"
+  ],
+  "cause": "Kiljaeden-owned27second closure retained Avatar AI;IntroDone was consumed even when Kiljaeden was missing.",
+  "implementation": "Capture only Avatar full GUID,resolve live actor at27seconds and use that actor own3/10second queues/current AI for animation/sword. Preserve Kiljaeden own13second cleanup even when Avatar disappears. Consume IntroDone only with present actor/live Avatar;native player LOS/attack admission and authored IDs/timers retained.",
+  "validation": {
+    "source": "Twenty MSVC ASAN cases:ten pinned2a416922b counterfactuals paired with ten repaired cases. Selected actual production entry/Reset/cinematic/LOS/rotation methods or callback bodies execute against controlled Unit/queue/cast/achievement/movement endpoints. Retired storage remains allocated/instrumented;Ray counterfactual stops before its11th out-of-bounds read. Covers origin-instance/leave/reentry/quest change,Maw late position/boss recheck,Style departure/Reset and20 declared callsites,Inquisition null/missing/pet-like attacker/evaded source/already-engaged partner,Nightbane failed-spawn retry/duplicate admission/missing image cleanup,Avatar missing boss/independent cleanup/27+3+10second endpoints,Khadgar failed figure/all four colors/five distinct actors/dead boss,Oso reset/missing or failed helper/dead boss,immutable morph and32 rotation steps. Controlled endpoints are not actual client traversal/full concrete core AI.",
+    "native": "Nine selected native cases on real Unit FunctionProcessor/ObjectAccessor and transient Player/Creature:Valsharah/Maw weak attempt/origin/leave/reentry/destruction,Style actor-owned Player lookup/generation,Inquisition source+Player/nonplayer attacker guards,Khadgar boss-owned helper lookup,Nightbane75+1second lookup,Avatar27+3+10seconds with independent Kiljaeden13second cleanup,Oso generation and immutable Ray morph. Actual map removal tested. Matching26972 spell catalog includes cinematic/raid/stage spells and both complete Ray catalogs. Payloads are observed endpoints,not actual casts,combat entry,conversations,credits or movement. Ray full rotation and complete gossip/scene admission remain source-only. No character saves/full-core ASAN/client claim.",
+    "release": "Original main game/scripts libraries and actual final-link inputs used. Final staged/canonical PE verifies ten repairs plus147 prior selected paths,including actual Ray modulo10/paired order timing,Oso old function/summon cleanup and6second readiness,three Nightbane GUID closures/successful-summon one-shot gate,Avatar independent cleanup,all Khadgar colors and Style new helper. Prior greeting verifier is scoped to original DoAction1+UpdateAI8 callbacks,retaining all nine while the new helper has its own check. Final canonical Scepter/ArtifactTier/ScenarioResumeASAN and task-owned fresh ready/graceful shutdown0/exit0/gone pass. Initial deployment/start was superseded after full Oso Reset review;original pre-task rollback retained.",
+    "diagnostics": "Automated/source/native/build/link/PE/retained/start runs use canonical+own crash/log pre/post snapshots,exit/stdout/stderr and appended DBErrors/server warnings/errors/assertions review. Final runs clean;early extraction/fake endpoint/PE assumption failures retained as development evidence,not passing ordinary runs. Initial native bootstrap preparation failed before any engine process and later gained an outer diagnostic wrapper as well. Compiler warnings retained/reviewed against baseline;none suppressed. Mixed7111-byte DBErrors remains OPEN/untruncated.",
+    "scope": "Exactly ten repairs in nine production files. Twenty identical Style stage-cue callsites count once. Nightbane cinematic admission/two-actor lifetime and Oso reset/helper readiness are one sequence repair each. Ray immutable morph cleanup and independent unbounded rotation are separate defects/commits in one file. Original timers/IDs/group/faction/native pet/guardian progression are preserved;no SQL/character rewrite,guessed Lady HP threshold or kill timer."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Prior scouted Antorus eventobject_antorus_into singleton eventDone/per-instance async ownership and Brawlers Master count_adds/repeated Reset lifecycle remain OPEN/unmodified/not counted. This batch changes Oso and Ray,not Master."
+  ],
+  "canonical_world_sha256": "ae633a28cb944d4675cd1e481fb3b0eb2344ad068e75c15c0c68b932ad9c5397",
+  "patch_sha256": "9268b96ac5d5e51e9c3ecf05bcd683822c0b01c570f37b8a1cead286984feba3",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/fifteenth-ten-repairs-2026-11-10.json"
+}
