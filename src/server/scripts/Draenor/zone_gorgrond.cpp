@@ -223,11 +223,11 @@ public:
 
         void IsSummonedBy(Unit* summoner)
         {
-            me->AddDelayedEvent(13000, [this] () -> void
+            me->AddDelayedEvent(13000, [actor = me] () -> void
             {
-                me->RemoveAurasDueToSpell(SPELL_WAITED_FINISH);
-                if (Player* pl = me->FindNearestPlayer(70.0f, true))
-                    AttackStart(pl);
+                actor->RemoveAurasDueToSpell(SPELL_WAITED_FINISH);
+                if (Player* pl = actor->FindNearestPlayer(70.0f, true))
+                    { if (auto ai = actor->AI()) ai->AttackStart(pl); }
             });
         }
 
