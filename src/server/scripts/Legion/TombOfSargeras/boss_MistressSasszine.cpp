@@ -684,9 +684,9 @@ struct npc_sasszine_electrifying_jellyfish : public ScriptedAI
     {
         if (spell->Id == SPELL_THUNDERING_SHOCK)
         {
-            me->AddDelayedEvent(1000, [this] () -> void
+            me->AddDelayedEvent(1000, [actor = me] () -> void
             {
-                me->SetVisible(false);
+                actor->SetVisible(false);
             });
         }
     }
