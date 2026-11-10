@@ -4479,9 +4479,9 @@ public:
                 if (auto plr = owner->ToPlayer())
                     me->setFaction(plr->GetTeam() == HORDE ? 85 : 11);
             
-            me->AddDelayedEvent(100, [this]() -> void
+            me->AddDelayedEvent(100, [actor = me]() -> void
             {
-                DoCast(me, 142156);
+                { if (auto ai = actor->AI()) ai->DoCast(actor, 142156); }
             });
         }
     };
