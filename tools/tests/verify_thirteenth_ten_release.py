@@ -26,7 +26,8 @@ r=ins('?FilterTargets@spell_failure_detection_pylon@@');assert any(x.mnemonic=='
 lookup_callbacks('boss_demonic_inquisitionAI','UpdateAI','?GetUnit@ObjectAccessor@@',1)
 lookup_callbacks('boss_guldanAI','JustSummoned','?GetCreature@ObjectAccessor@@',1)
 bounds=lookup_callbacks('boss_guldanAI','SpellHitTarget','?GetUnit@ObjectAccessor@@',1)[0];assert 104252 in values(bounds),'original bounds summon entry retained'
-lookup_callbacks('npc_atheris_voguesong','', '?GetPlayer@ObjectAccessor@@',9,True)
+lookup_callbacks('npc_atheris_voguesong','DoAction', '?GetPlayer@ObjectAccessor@@',1,True)
+lookup_callbacks('npc_atheris_voguesong','UpdateAI', '?GetPlayer@ObjectAccessor@@',8,True)
 lookup_callbacks('npc_hearthstation','IsSummonedBy','?GetUnit@ObjectAccessor@@',1)
 lookup_callbacks('npc_hearthstation','SpellFinishCast','?GetUnit@ObjectAccessor@@',1)
 lookup_callbacks('npc_infant_spider','IsSummonedBy','?GetUnit@ObjectAccessor@@',1)
