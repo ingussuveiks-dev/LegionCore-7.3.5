@@ -169,7 +169,7 @@ struct npc_fshoo : ScriptedAI
                     {
                         if (aura->GetStackAmount() > 100)
                             timeCount = 5;
-                        else if (aura->GetStackAmount() >= 50 && aura->GetStackAmount() < 100)
+                        else if (aura->GetStackAmount() >= 50 && aura->GetStackAmount() <= 100)
                             timeCount = 4;
                         else if (aura->GetStackAmount() < 50 || !me->HasAura(235202))
                             timeCount = 3;
