@@ -567,9 +567,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -647,9 +647,9 @@ public:
 
         void EnterCombat(Unit* who){}
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -771,9 +771,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -1429,12 +1429,12 @@ public:
             //    summoner->ToPlayer()->SendEncounterUnitForPlayer(ENCOUNTER_FRAME_ENGAGE, me);
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
             if (HealthBelowPct(30) && !me->HasAura(SPELL_PROTECTORS_EXHAUSTED))
                 DoCast(me, SPELL_PROTECTORS_EXHAUSTED, true);
 
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -1515,12 +1515,12 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
             if (HealthBelowPct(30) && !me->HasAura(SPELL_PROTECTORS_EXHAUSTED))
                 DoCast(me, SPELL_PROTECTORS_EXHAUSTED, true);
 
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -1613,12 +1613,12 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
             if (HealthBelowPct(30) && !me->HasAura(SPELL_PROTECTORS_EXHAUSTED))
                 DoCast(me, SPELL_PROTECTORS_EXHAUSTED, true);
 
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
