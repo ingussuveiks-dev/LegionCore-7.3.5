@@ -346,8 +346,9 @@ struct boss_fallen_avatar : BossAI
         }
 
         me->CreateConversation(4955);// 14^09
-        me->AddDelayedEvent(30000, [this]() -> void
+        me->AddDelayedEvent(30000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (Creature* kiljedan = instance->instance->GetCreature(instance->GetGuidData(NPC_KILDJEDAN_AVATARA)))
             {
                 kiljedan->GetMotionMaster()->MovePoint(0, 6748.58f, -795.00f, 1527.00f);
@@ -358,8 +359,9 @@ struct boss_fallen_avatar : BossAI
             }
         });
 
-        me->AddDelayedEvent(58000, [this]() -> void
+        me->AddDelayedEvent(58000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (Creature* velen = summons.GetCreature(121170))
             {
                 velen->SetCanFly(false);
@@ -371,8 +373,9 @@ struct boss_fallen_avatar : BossAI
             }
         });
 
-        me->AddDelayedEvent(115000, [this]() -> void
+        me->AddDelayedEvent(115000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             for (auto id : { 121171, 121169})
                 if (Creature* add = summons.GetCreature(id))
                 {
@@ -541,8 +544,9 @@ struct boss_fallen_avatar : BossAI
 
                 me->RemoveAurasDueToSpell(74426); // hack
 
-                me->AddDelayedCombat(500, [this]() -> void
+                me->AddDelayedCombat(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     SetCombatMovement(true);
                     me->GetMotionMaster()->Clear();
                     me->GetMotionMaster()->MoveJump({me->GetPositionX(), me->GetPositionY(), 1509.9f}, 40,  40);
@@ -558,14 +562,16 @@ struct boss_fallen_avatar : BossAI
                     if (IsMythicRaid())
                         events.RescheduleEvent(EVENT_RAIN, 16000);
 
-                    me->AddDelayedCombat(2000, [this]() -> void
+                    me->AddDelayedCombat(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         DoCast(me, SPELL_SEAR, true);
                     });
                     me->SetDisplayId(74497);
 
-                    me->AddDelayedCombat(5000, [this]() -> void
+                    me->AddDelayedCombat(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                      if (aiLifetimeGuard.expired()) return;
                       //  me->GetMotionMaster()->MovementExpired();
                         for (auto pair : perephaseEvent)
                             if (Creature* cre = me->SummonCreature(pair.first, pair.second.first))
@@ -577,8 +583,9 @@ struct boss_fallen_avatar : BossAI
                         me->CastSpellDelay(me, SPELL_CONVERS_EVENT_1, false, 3000);
                     });
 
-                    me->AddDelayedCombat(7000, [this]() -> void
+                    me->AddDelayedCombat(7000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         instance->instance->ApplyOnEveryPlayer([](Player* player) -> void
                         {
                             if (player->GetPositionZ() >= 1643.75f)
@@ -626,8 +633,9 @@ struct boss_fallen_avatar : BossAI
                     isSecondPhase = true;
                     DoCast(SPELL_REMOVE_BEAMS);
                     DoCast(SPELL_CONSUME);
-                    me->AddDelayedEvent(500, [this]() -> void
+                    me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         DoCast(SPELL_ANNIHILATION);
                     });
 
@@ -748,8 +756,9 @@ struct boss_fallen_avatar : BossAI
                         events.Reset();
                         DoCast(SPELL_REMOVE_BEAMS);
                         DoCast(SPELL_CONSUME);
-                        me->AddDelayedEvent(500, [this]() -> void
+                        me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             DoCast(SPELL_ANNIHILATION);
                         });
 
@@ -795,8 +804,9 @@ struct boss_fallen_avatar : BossAI
                 case EVENT_TOUCH_OF_SARGERAS:
                 {
                     DoCast(SPELL_TOUCH_OF_SARGERAS_CAST);
-                    me->AddDelayedCombat(2500, [this]() -> void
+                    me->AddDelayedCombat(2500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         std::vector<Position> positions = sargerasPositions;
 
                         Trinity::Containers::RandomResizeList(positions, IsMythicRaid() ? 4 : 3);
@@ -814,8 +824,9 @@ struct boss_fallen_avatar : BossAI
                     uint8 i = 1;
                     for (const auto& pair : blocks)
                     {
-                        me->AddDelayedCombat(i++ * 50 + 10, [this, pair]() -> void
+                        me->AddDelayedCombat(i++ * 50 + 10, [this, pair, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             me->CastSpell(pair.second.GetPositionX() + frand(-3, 3), pair.second.GetPositionY() + frand(-3, 3), pair.second.GetPositionZ(), SPELL_RAIN_OF_THE_DESTROYER_SUM, true);
                         });
                     }
@@ -827,6 +838,9 @@ struct boss_fallen_avatar : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 // 117264
