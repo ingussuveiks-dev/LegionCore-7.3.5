@@ -1,0 +1,290 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "828ecbbf58ba7f5ce66ad9e46152bfc2afae8ca7",
+  "batch_number": 2,
+  "authorized_total": 50,
+  "support_commit": "d14553745b38f25c512c1b6e05bf98eaacd21324",
+  "implementation_head": "20ca6d2baa130cfee9cfd1aa759407596b090f85",
+  "fixes": [
+    {
+      "key": "HasabelOutro",
+      "title": "Keep HasabelOutro deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_hasabel.cpp"
+      ],
+      "audit": "docs/audits/hasabel-outro-deferred-actor-2026-11-10.json",
+      "commit": "96a604f882e044472ec0a3b03075f2ea890c3103"
+    },
+    {
+      "key": "ImonarShips",
+      "title": "Keep ImonarShips deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_imonar.cpp"
+      ],
+      "audit": "docs/audits/imonar-ships-deferred-actor-2026-11-10.json",
+      "commit": "81f27e42217f9b4e2a08525934ac5c782907013f"
+    },
+    {
+      "key": "TichondriusSpire",
+      "title": "Keep TichondriusSpire deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_tichondrius.cpp"
+      ],
+      "audit": "docs/audits/tichondrius-spire-deferred-actor-2026-11-10.json",
+      "commit": "14bebdf51ceb439d4a9c1046b8ec8cbd9563e420"
+    },
+    {
+      "key": "ElisandeOrb",
+      "title": "Keep ElisandeOrb deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_elisande.cpp"
+      ],
+      "audit": "docs/audits/elisande-orb-deferred-actor-2026-11-10.json",
+      "commit": "89b6f3be065f9ac6b93ef6982b82f5f7ce0e77fc"
+    },
+    {
+      "key": "SasszineJellyfish",
+      "title": "Keep SasszineJellyfish deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_MistressSasszine.cpp"
+      ],
+      "audit": "docs/audits/sasszine-jellyfish-deferred-actor-2026-11-10.json",
+      "commit": "c717d23f9d776bb843abb936ee4f7d477ad256ef"
+    },
+    {
+      "key": "CordanaLight",
+      "title": "Keep CordanaLight deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/VaultoftheWardens/boss_cordana.cpp"
+      ],
+      "audit": "docs/audits/cordana-light-deferred-actor-2026-11-10.json",
+      "commit": "37213ca043194338e1affd870e77d9f261c0e09f"
+    },
+    {
+      "key": "ArmyMinions",
+      "title": "Keep ArmyMinions deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Scenario/ArmyTraining/army_training.cpp"
+      ],
+      "audit": "docs/audits/army-minions-deferred-actor-2026-11-10.json",
+      "commit": "18f8e8a6f01c815d11df2bed2cc2958009c33fa4"
+    },
+    {
+      "key": "EvalaMinion",
+      "title": "Keep EvalaMinion deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/World/custom_events.cpp"
+      ],
+      "audit": "docs/audits/evala-minion-deferred-actor-2026-11-10.json",
+      "commit": "acdea06ad74837471f14ffc337e0a891f0887abe"
+    },
+    {
+      "key": "DeepbeardRecovery",
+      "title": "Keep DeepbeardRecovery deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/EyeofAzshara/boss_king_deepbeard.cpp"
+      ],
+      "audit": "docs/audits/deepbeard-recovery-deferred-actor-2026-11-10.json",
+      "commit": "1f74c0e30526b609891fd327ad005952c791df73"
+    },
+    {
+      "key": "SmashspiteBat",
+      "title": "Keep SmashspiteBat deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/BlackRookHoldDungeon/boss_smashspite_the_hateful.cpp"
+      ],
+      "audit": "docs/audits/smashspite-bat-deferred-actor-2026-11-10.json",
+      "commit": "20ca6d2baa130cfee9cfd1aa759407596b090f85"
+    }
+  ],
+  "counting": "Ten independent live-bound actor/controller lifetime problems/10 implementation files/11 callback expressions. All callbacks/variants in each selected actor count once. No SQL,character writes,progression grants,invented story delays or Lady threshold.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "2b56daa0dadd1bb446b02c4dbb2f85b0810d365b926ea33c1037bdb360dc7294",
+    "bnet_sha256": "a569697941b8909c2550c9aec4b6593c95e3d6a59e4bf6a5c307f4c52846e523",
+    "rollback": ".codex/release-before-twentyeighth-ten-fixes-2026-11-10",
+    "startup": "Owned PID=32112 reached fresh ready\nPASS owned PID=32112 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "validation": {
+    "source": "20 final MSVC ASAN groups:10 pinned expected-broken groups exercise11 actual heap-use-after-free subprocesses after deleting original AI frame;10 repaired groups execute all11 real production expressions after actual AI-frame destruction. Original timers/no early firing/one-shot/cancellation and payload endpoint counts retained. Baselines require nonzero exit,AddressSanitizer heap-use-after-free andABORTING markers;not passing ordinary runs. Payload/client scopes separate.",
+    "native": "11 actual Unit-owned event/combat queues scheduled by extracted production callbacks in installed CreatureAI. AIM_Initialize actually deletes/replaces original AI before queue execution;original delays/one-shot and correct native Unit cancellation API per queue. Owner/root/walk/flag paths native;cast,aura,visibility,speed,movement,self-kill,despawn endpoints observed as scoped by fixture. No full registered encounter/full-core ASAN/client traversal/character writes.",
+    "release": "Original main libraries rebuilt with source snapshots/hash checks and staged link. Actual PE confirms all11 closures load captured Creature directly without retired AI->me dependency;original native calls/timers remain in source/linked scopes. Prior277 selected checks retained,total287. All selected ScriptNames confirmed read-only against real MariaDB before counting;exact template rows retained in catalog.tsv. Canonical ArtifactTier/ScenarioResumeASAN/Scepter plus owned fresh ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crash/log length/timestamp/exit/stdout/stderr/appended server diagnostics and DBErrors on all declared tests/build/link/PE/runtime. Pinned ASAN UAF reports are expected counterfactuals,paired with repaired passes and archived only after matching Release verification. Final declared checks clean;reviewed compiler diagnostics retained. OPEN raw evidence and mixed7111-byte DBErrors unchanged/untruncated.",
+    "scope": "Ten independent live-bound actor/controller lifetime problems/10 implementation files/11 callback expressions. All callbacks/variants in each selected actor count once. No SQL,character writes,progression grants,invented story delays or Lady threshold."
+  },
+  "diagnostics": {
+    "final": "Final declared regressions,linked binary checks,retained checks and owned startup passed with canonical+own crash/log/exit/stdout/stderr/appended-diagnostic review.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 0,
+      "types": {},
+      "review": "Main incremental build warnings checked against f55f0ea70. Ten retained-fixture warnings are byte-equivalent messages/file/line to the previous passing batch;their production and fixture sources unchanged. Diagnostics retained without suppression;not claimed repaired.",
+      "entries": [],
+      "retained_fixture_warnings": [
+        {
+          "log": "artifact-tier.log",
+          "file": "ArtifactTierProgressionTest.cpp",
+          "line": 65,
+          "code": "C4458",
+          "message": "declaration of 'item' hides class member",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "artifact-tier.log",
+          "file": "AutoTier.inc",
+          "line": 33,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint8', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 26,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 27,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 28,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 29,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'int' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "AddScenario.inc",
+          "line": 7,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        }
+      ]
+    },
+    "development": [
+      "Traced matching local producers/gates/Reset/death/explicit cleanup and original payloads;all selected live ScriptNames confirmed before counting. Every selected actor-owned callback retained AI this;capture owning actor and preserve original parameters,timers and fresh owner reads. Actual AIM_Initialize/native Unit queues prove the lifetime boundary.",
+      "Shared source/native fixtures extend supported actor endpoints without suppressing diagnostics. See retained failed-development logs and final passing source/native/PE/retained/start checks.",
+      "Initial native fixture incorrectly expected KillAllDelayedEvents to clear a combat queue. Native Unit exposes separate KillAllDelayedCombats;fixture now uses the correct API per queue and all11 native callbacks/cancellations pass. Original failing native exit1 and its diagnostics retained;no production check disabled."
+    ],
+    "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse scope of all selected files and no production diff.",
+    "supplemental_archives": [
+      {
+        "manifest": "build-extractors/bin/Release/fixed/twentyeighth-ten-repairs-2026-11-10/supplemental-manifest.json",
+        "sha256": "2fcd997a81644693c4a1072af074a79e96a5d8ac7ea05522553d627eb201e57e",
+        "files": 19
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/twentyeighth-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "86c9a74b681ea9cffd257d862436850324f4f4ae24027841ff0cd3951ee741f1",
+    "original_files": 548,
+    "removed_files": 110,
+    "logical_removed_bytes": 985990277,
+    "deletion_manifest": ".codex/twentyeighth-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "671b148c0cc3b205d638d6414a7b4be6c14f149a7db0b7d120916b6348fdabd0",
+    "retained_rollbacks": [
+      ".codex/release-before-twentyeighth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-twentyseventh-ten-fixes-2026-11-10",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-twentyseventh rollback retired after newest pre-twentyeighth recovery hash verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified.",
+    "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state.",
+    "All ten actual client sequences remain pending:phoenix detonation/sleep/wake/targets;Artruis full faction choice/ally death/urn/group/reset;Ko ragh suppression-field visual/timing and real death;Broken Shore actual invitations/sparring/guardian/group/faction and lost-player cleanup;Neptulon wipe/restart;Blaze egg/real healing/wake;heroic Siamat actual2s death/achievement;Whitemane/Durand native resurrection movement/cast acknowledgment and absent partner recovery;Snowdrift actual waves/training jump/home/completion/loot/re-entry;Felmyst actual air/ground death. Missing-partner or failed-cast recovery outside the repaired Artruis/duel scopes is not certified.",
+    "All ten actual client encounters remain pending:Aggramar heroic/normal remnants/eruption;both Argus modules real aura/cast/area scale/mote/pulse timing and AI replacement;Eonar actual Paraxis wipe/restart;Worldbreaker both weapon modes/controller;Hyrja both defenders/pulls/reset/controller;Ichor explosion/eye damage;Desolate eruption/phase owner cleanup;Festerface actual recongealing/retry;Fallen Crusader real revive/feign interaction;Algalon real star/black-hole phases/spawn/cleanup. Failed essential casts or missing controller recovery outside the explicitly exercised boundaries is not certified. No whole36-chain or authentic Lady claim.",
+    "All ten actual client encounters remain pending:Muru portal/Entropius/reset/failure paths;Harbinger actual repentance/cast acknowledgment/controller removal;Anomaly fragments/rift/interrupts;Elisande full rewind dialogue/objects/echoes and absent actors;Telarn infusions/effects;Eadric/Paletress actual return/bind/loot;Black Knight real resurrection/ghouls/timers;Ingvar Annhylde ritual/failed resurrection;Keleseth actual18-22s resurrection/heal/cast failures;Amber real consume123156/visuals/retry. Missing essential actors or failed native casts outside the exercised boundaries remain unverified. No whole36-chain/authentic Lady certification.",
+    "All ten actual client encounters remain pending:Xavius10stack and Naraxas6stack criteria/real aura deaths;Bronjahm4souls/achievement;Svala actual ritual damage/movement/criterion;Magtheridon real soul-transfer target/effect;Raigonn phase handoff/vehicle;Elegon charge movement/controller/focus links/reset;Living Sand repeated real storms/targets/visuals;Durumu real cone/aura/blue death freeze;Ra den actual flare. Essential failed-cast/missing-controller recovery outside tested admission boundaries is not certified. Existing Elegon energy-charge active field is assigned by native IsSummonedBy;ordinary unowned placement/out-of-contract initialization remains separately unverified. No whole-chain/authentic Lady claim.",
+    "All ten actual client/controller sequences remain pending:Aysa training/boss callbacks,Warsong four faction/event actors,Felfire contact/death actual spell effects,Kalecgos paired realm/banish/enrage/reset/self-kill,Norushen blind-hatred/residual/healer challenge completion/real exhaustion aura,Durumu full cones/eyes/movement/cleanup,Ji Kun nests/feed/jump/fall rescue/pet/camera/re-entry,Jinrokh actual water-font behavior,Paragons actual eerie fog,Megaera body/acid-rain/torrent/ice cleanup. Megaera head damage/phase logic is a separate unchanged raw-handler scope,not certified by support-actor protection. No full registered content/client encounter or36-chain/authentic Lady certification.",
+    "All ten actual client sequences remain pending:Stitches current-owner rot tick/full brawl;Ooliss pursuit root/walk timing/death/reset;all Ogrewatch shield modes;Failure Pylon resurrection/cast/despawn;Antoran mine detonation;both Argus edge modes;all4 Eonar crystal interactions;Dargrul actual wall/stun/GO cleanup;all3 Skorpyron scorp recovery/death;Lich King real trap lifecycle. This change removes AI lifetime dependency for selected actor-owned operations;it does not certify arbitrary encounter resets,cast acknowledgment or unrelated AI/member callbacks. No whole36-chain or authentic Lady claim.",
+    "All actual client sequences for this batch remain pending:HasabelOutro,ImonarShips,TichondriusSpire,ElisandeOrb,SasszineJellyfish,CordanaLight,ArmyMinions,EvalaMinion,DeepbeardRecovery,SmashspiteBat. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN."
+  ],
+  "continuation": "Completed 2 of five authorized ten-fix batches;continue remaining batches until50 total. This audit certifies only stated automated/native scopes,not client/whole-chain traversal."
+}
