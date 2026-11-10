@@ -224,9 +224,9 @@ public:
             DoCast(SPELL_BONE_ARMOR);
         }
 
-        void DamageTaken(Unit* /*done_by*/, uint32 &damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
 
