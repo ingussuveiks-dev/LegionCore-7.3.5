@@ -863,14 +863,14 @@ class npc_theramore_captain_drok : public CreatureScript
                     Talk(TALK_INTRO);
 
                     delay = 0;
-                    me->AddDelayedEvent(2500, [this]()
+                    me->AddDelayedEvent(2500, [actor = me]()
                     {
-                        Talk(TALK_SPECIAL_1);
+                        { if (auto ai = actor->AI()) ai->Talk(TALK_SPECIAL_1); }
                     });
 
-                    me->AddDelayedEvent(6000, [this]()
+                    me->AddDelayedEvent(6000, [actor = me]()
                     {
-                        Talk(TALK_SPECIAL_2);
+                        { if (auto ai = actor->AI()) ai->Talk(TALK_SPECIAL_2); }
                     });
                 }
             }
