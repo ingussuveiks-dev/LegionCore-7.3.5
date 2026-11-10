@@ -224,8 +224,9 @@ public:
                 {
                     _range += 2;
                     pos = me->GetNearPosition(_range, angle + frand(-0.7f, 0.7f));
-                    me->AddDelayedEvent(i * 100, [this, pos]() -> void
+                    me->AddDelayedEvent(i * 100, [this, pos, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->CastSpell(pos, 246135, true);
                     });
                 }
@@ -354,6 +355,9 @@ public:
                 DoSpellAttackIfReady(249298);
         }
 
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
