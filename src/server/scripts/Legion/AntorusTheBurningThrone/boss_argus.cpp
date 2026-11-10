@@ -1100,7 +1100,7 @@ struct npc_arugs_edge_of_obliteration : ScriptedAI
                     pos = me->GetNearPosition(90.0f, 0.0f);
                     me->CastSpell(pos, SPELL_EDGE_OF_ANNIHILATION_DMG, true);
                     me->CastSpell(pos, SPELL_EDGE_OF_ANNIHILATION_CHARGE, true);
-                    me->AddDelayedEvent(3000, [this]() -> void { me->DespawnOrUnsummon(); });
+                    me->AddDelayedEvent(3000, [actor = me]() -> void { actor->DespawnOrUnsummon(); });
                 }
                 else
                 {
