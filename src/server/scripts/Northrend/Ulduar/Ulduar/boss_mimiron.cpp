@@ -862,7 +862,7 @@ public:
                         DoCast(me, SPELL_EMERGENCY_MODE);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                     me->SetReactState(REACT_AGGRESSIVE);
-                    me->SetHealth(int32(me->GetMaxHealth() / 2));
+                    me->SetHealth(me->GetMaxHealth() / 2);
                     me->SetSpeed(MOVE_RUN, 1.0f, true);
                     me->SetStandState(UNIT_STAND_STATE_STAND);
                     phase = PHASE_LEVIATHAN_ASSEMBLED;
@@ -1109,7 +1109,7 @@ public:
                     break;
                 case DO_VX001_ASSEMBLED:
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-                    me->SetHealth(int32(me->GetMaxHealth() / 2));
+                    me->SetHealth(me->GetMaxHealth() / 2);
                     me->SetStandState(UNIT_STAND_STATE_STAND);
                     phase = PHASE_VX001_ASSEMBLED;
                     events.SetPhase(PHASE_VX001_ASSEMBLED);
@@ -1358,7 +1358,7 @@ public:
                         DoCast(me, SPELL_EMERGENCY_MODE);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                     me->SetReactState(REACT_AGGRESSIVE);
-                    me->SetHealth(int32(me->GetMaxHealth() / 2));
+                    me->SetHealth(me->GetMaxHealth() / 2);
                     me->SetStandState(UNIT_STAND_STATE_STAND);
                     phase = PHASE_AERIAL_ASSEMBLED;
                     events.SetPhase(PHASE_AERIAL_ASSEMBLED);
