@@ -5953,8 +5953,8 @@ struct npc_failure_detection_pylon : public ScriptedAI
         }
         if (spell->Id == 199923)
         {
-            me->AddDelayedEvent(2500, [this] {
-                me->DespawnOrUnsummon(500);
+            me->AddDelayedEvent(2500, [actor = me] {
+                actor->DespawnOrUnsummon(500);
             });
         }
     }
