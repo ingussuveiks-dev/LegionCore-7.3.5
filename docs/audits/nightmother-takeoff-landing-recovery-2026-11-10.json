@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "NightmotherLanding",
+  "base": "b0f910cb28cd7794b5aec265fc33af69bce4e3c9",
+  "support_commit": "015cf664f476fc3aa8fc6121aa5ed776b3e3df31",
+  "paths": [
+    "src/server/scripts/Legion/TheEmeraldNightmare/boss_elerethe_renferal.cpp"
+  ],
+  "cause": "Always arm Nightmother landing recovery when takeoff starts;pinned source counterfactual reproduces the selected defect.",
+  "implementation": "Always arm Nightmother landing recovery when takeoff starts;review exact bounded edits in linked focused commit.",
+  "validation": {
+    "source": "20 MSVC ASAN cases:10 pinned expected-broken controls and10 fixed selected production snippets. Axis/coincident/nonaxis Topps;wrong/matching actions;64bit wounded/quarter/elder health and Touch absorb;failed/successful-target takeoff;100-stack and neighboring brackets;Master repeated/stale death/reset roster model anchored to production guards. Old signed32 absorb conversion instrumented before UB. Action payloads and Master lifecycle are selected models,not complete original AI dispatch.",
+    "native": "Native actual Position geometry,Unit health64 and failed-target takeoff for selected snippets;action/stack/amount endpoints and Master roster remain observed/model boundaries. Full shared-soldier helper graph,real AuraEffect application/removal,real death/brawler report and complete encounter/client traversal not executed;no character writes/full-core ASAN.",
+    "release": "Original game/scripts libraries;staged+canonical PE verifies10 changed paths plus177 prior selected paths. Source scope reverses exact edits to b0f910cb2. Canonical Scepter/ArtifactTier/ScenarioResumeASAN and owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crashes/logs/exit/stdout/stderr/appended diagnostics for declared tests;compiler warnings reviewed. Initial PE inspection used wrong helper class prefix;corrected to actual npc_soldierAI. Final checks clean;mixed7111 DBErrors and all other OPEN evidence unchanged.",
+    "scope": "10 independent defects in10 files;Master reset/roster/exactly-once pending report is one controller lifecycle repair;Touch absorb application and remaining health width count once. Focus action admission is separate from prior reset initialization;Nightmother failed-target takeoff is separate from prior uninitialized landing timer. Authored numeric thresholds/timings/credit/faction retained;no SQL or Lady timing guesses."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Antorus eventobject_antorus_into singleton eventDone/per-instance asynchronous ownership remains OPEN. Master roster/reset/report lifetime repaired here at stated selected scopes;actual arena/client traversal pending.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Existing Argent Champion surrender uses raw damage,strict greater-than and unsafe owner ToPlayer;separately OPEN,not repaired or client-certified by defensive timer work.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending."
+  ],
+  "canonical_world_sha256": "df31fc6636ea02d15d3cb58a268eebc45bbb4356186584b7162a1ae3b5e9f0ac",
+  "patch_sha256": "f7df3a4004d62b27d668916190060a506b80847a2ba0baa5c3040e7f2d12cda0",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/eighteenth-ten-repairs-2026-11-10.json"
+}

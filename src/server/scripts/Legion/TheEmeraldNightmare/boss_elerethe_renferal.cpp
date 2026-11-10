@@ -864,13 +864,13 @@ struct npc_en_nightmother : public ScriptedAI
                 case EVENT_2:
                 {
                     me->StopAttack(true);
+                    jumpTimer = 6000;
                     me->SetDisableGravity(true);
                     me->SetCanFly(true);
                     me->GetMotionMaster()->MoveTakeoff(1, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 32.0f);
                     if (Unit* target = SelectTarget(SELECT_TARGET_TOPAGGRO))
                     {
                         me->CastSpell(target, 223022, true);
-                        jumpTimer = 6000;
                         events.DelayEvent(EVENT_1, 7000);
                     }
                     events.RescheduleEvent(EVENT_2, 29000);
