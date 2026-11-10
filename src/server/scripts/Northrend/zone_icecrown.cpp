@@ -1958,12 +1958,13 @@ class npc_tg_helper : public CreatureScript
         {
             npc_tg_helperAI(Creature* creature) : ScriptedAI(creature) { }
 
-            void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+            void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*type*/) override
             {
-                if (damage > me->GetHealth())
+                uint64 health = me->GetHealth(attacker);
+                if (damage >= health)
                 {
-                    damage = me->GetHealth() - 1;
-                    me->SetHealth(me->GetMaxHealth());
+                    damage = health > 1 ? uint32(health - 1) : 0;
+                    me->SetFullHealth();
                 }
             }
         };
