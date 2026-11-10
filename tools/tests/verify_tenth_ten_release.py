@@ -12,6 +12,9 @@ for e in plan:
  if e['key']=='LichKing':prefixes+=['?HandleScript@spell_the_lich_king_restore_soul_SpellScript@']
  count=0
  for prefix in prefixes:
+  # Elisande's retained event-abort path moved to the final-damage hook.
+  if prefix=='?DamageTaken@boss_elisande@' and not any(s.startswith(prefix)for s in n['symbols']):
+   prefix='?DamageTakenAfterScaling@boss_elisande@'
   rows=ins(prefix)
   for at in sites(rows,'?KillAllEvents@EventProcessor@@'):
    assert op(rows[max(0,at-7):at],'xor','edx, edx'),(e['key'],'non-force argument')

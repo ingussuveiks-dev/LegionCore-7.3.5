@@ -1,0 +1,109 @@
+{
+  "date": "2026-11-10",
+  "status": "SUPPORT_FOR_EXACTLY_10",
+  "base": "49890c95fd21b88c46501617b0278277bede2f7f",
+  "batch_number": 3,
+  "authorized_total": 50,
+  "cases": [
+    {
+      "key": "MuruTransition",
+      "title": "Muru scaled entropius transition",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_muru.cpp"
+      ]
+    },
+    {
+      "key": "HarbingerRelease",
+      "title": "Barim harbinger scaled release",
+      "paths": [
+        "src/server/scripts/Kalimdor/LostCityOfTheTolvir/boss_high_prophet_barim.cpp"
+      ]
+    },
+    {
+      "key": "WaningParticle",
+      "title": "Anomaly particle scaled rift",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_chronomatic_anomaly.cpp"
+      ]
+    },
+    {
+      "key": "ElisandeRewind",
+      "title": "Elisande scaled rewind transition",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_elisande.cpp"
+      ]
+    },
+    {
+      "key": "PlasmaExplosion",
+      "title": "Telarn sphere scaled explosion",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_high_botanist_telarn.cpp"
+      ]
+    },
+    {
+      "key": "ArgentChallenge",
+      "title": "Argent challenge scaled surrender",
+      "paths": [
+        "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/boss_argent_challenge.cpp"
+      ]
+    },
+    {
+      "key": "BlackKnightResurrection",
+      "title": "Black knight scaled resurrection",
+      "paths": [
+        "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/boss_black_knight.cpp"
+      ]
+    },
+    {
+      "key": "IngvarResurrection",
+      "title": "Ingvar scaled resurrection",
+      "paths": [
+        "src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_ingvar_the_plunderer.cpp"
+      ]
+    },
+    {
+      "key": "KelesethSkeleton",
+      "title": "Keleseth skeleton scaled feign",
+      "paths": [
+        "src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_keleseth.cpp"
+      ]
+    },
+    {
+      "key": "LivingAmber",
+      "title": "Unsok amber scaled explosion",
+      "paths": [
+        "src/server/scripts/Pandaria/HeartFear/boss_unsok.cpp"
+      ]
+    }
+  ],
+  "validation": {
+    "source": "20 final MSVC ASAN cases:10 pinned raw-hook expected-broken controls plus10 repaired real production extracts. Modeled0.1 normalization exposes skipped lethal transitions;exact lethal,pending/late damage,final-phase death,Harbinger reentrant controller,all four particle fragments,both Argent variants,Elisande two rewinds/third-phase pending,Black Knight two resurrections/final ghost,and Telarn chaos/nature/combined/missing-owner paths. Native full damage/scaling and whole encounters are not simulated.",
+    "native": "Ten selected actual Unit/Creature/Player/pet/guardian health/ownership/flags paths and actual controller AI dispatch. Casts,spawn/despawn,movement,binds,criteria and event scheduling are observed boundaries;not full registered AI,full native damage/activated scaling/full-core ASAN/client traversal;no character writes.",
+    "release": "Original main libraries rebuilt with source snapshots/hash verification and staged link;actual PE checks11 final damage/no raw handlers,native effects/timers/pending latches. Retained Elisande nonforce event-abort verification follows the new hook without weakening its11-call requirement. Prior237 selected paths retained,total247. Readonly MariaDB confirms12 live templates/all11 ScriptNames. Canonical Scepter/ArtifactTier/ScenarioResumeASAN and owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crash/log/exit/stdout/stderr/appended diagnostics on all declared tests/builds/start. Fixture-only missing enum/alias/InstanceScript dependencies corrected/retested;PE fixture initially assumed a virtual SetGuidData direct symbol and missed the earlier Elisande hook relocation,corrected with retained-call and actual compiled checks. One overlapping PE output open was rejected;preserved diagnostics and sequential rerun. Main compiler warnings reviewed against unchanged baseline expressions;final checks clean. Mixed7111-byte DBErrors and all OPEN evidence retained unchanged.",
+    "scope": "Ten distinct bound encounter lifecycles/10 implementation files/11 final-damage handlers. Eadric and Paletress are both variants of ONE Argent challenge problem. No SQL,character data,invented timers or Lady threshold."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified.",
+    "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state.",
+    "All ten actual client sequences remain pending:phoenix detonation/sleep/wake/targets;Artruis full faction choice/ally death/urn/group/reset;Ko ragh suppression-field visual/timing and real death;Broken Shore actual invitations/sparring/guardian/group/faction and lost-player cleanup;Neptulon wipe/restart;Blaze egg/real healing/wake;heroic Siamat actual2s death/achievement;Whitemane/Durand native resurrection movement/cast acknowledgment and absent partner recovery;Snowdrift actual waves/training jump/home/completion/loot/re-entry;Felmyst actual air/ground death. Missing-partner or failed-cast recovery outside the repaired Artruis/duel scopes is not certified.",
+    "All ten actual client encounters remain pending:Aggramar heroic/normal remnants/eruption;both Argus modules real aura/cast/area scale/mote/pulse timing and AI replacement;Eonar actual Paraxis wipe/restart;Worldbreaker both weapon modes/controller;Hyrja both defenders/pulls/reset/controller;Ichor explosion/eye damage;Desolate eruption/phase owner cleanup;Festerface actual recongealing/retry;Fallen Crusader real revive/feign interaction;Algalon real star/black-hole phases/spawn/cleanup. Failed essential casts or missing controller recovery outside the explicitly exercised boundaries is not certified. No whole36-chain or authentic Lady claim.",
+    "All ten actual client encounters remain pending:Muru portal/Entropius/reset/failure paths;Harbinger actual repentance/cast acknowledgment/controller removal;Anomaly fragments/rift/interrupts;Elisande full rewind dialogue/objects/echoes and absent actors;Telarn infusions/effects;Eadric/Paletress actual return/bind/loot;Black Knight real resurrection/ghouls/timers;Ingvar Annhylde ritual/failed resurrection;Keleseth actual18-22s resurrection/heal/cast failures;Amber real consume123156/visuals/retry. Missing essential actors or failed native casts outside the exercised boundaries remain unverified. No whole36-chain/authentic Lady certification."
+  ],
+  "batch_audit": "docs/audits/twentyfourth-ten-repairs-2026-11-10.json"
+}
