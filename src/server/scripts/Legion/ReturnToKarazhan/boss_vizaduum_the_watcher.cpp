@@ -147,9 +147,9 @@ public:
                     khadgar->CastSpell(khadgar, 229650);
                 who->CreateConversation(3937);
 
-                me->AddDelayedEvent(15000, [this] () -> void
+                me->AddDelayedEvent(15000, [actor = me] () -> void
                 {
-                    if (GameObject* go = me->FindNearestGameObject(266593, 150.0f))
+                    if (GameObject* go = actor->FindNearestGameObject(266593, 150.0f))
                         go->SetByteValue(GAMEOBJECT_FIELD_BYTES_1, 0, 0);
                 });
             }
