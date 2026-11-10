@@ -297,10 +297,10 @@ public:
             {
                 for (uint8 i = 0; i < 5; ++i)
                 {
-                    me->AddDelayedEvent(250 * i, [this, i] () -> void
+                    me->AddDelayedEvent(250 * i, [actor = me, i] () -> void
                     {
-                        if (me && me->IsAlive())
-                            me->CastSpell(scrubberPos[i], SPELL_TIDY_UP_SUM, true);
+                        if (actor && actor->IsAlive())
+                            actor->CastSpell(scrubberPos[i], SPELL_TIDY_UP_SUM, true);
                     });
                 }
             }
@@ -365,9 +365,9 @@ public:
                     case EVENT_ANNIHILATION:
                         me->CreateConversation(CONV_ANNIGILATION);
                         DoCast(me, SPELL_ANNIHILATION_AT, true);
-                        me->AddDelayedEvent(16500, [this] ()  -> void
+                        me->AddDelayedEvent(16500, [actor = me] ()  -> void
                         {
-                            me->CreateConversation(urand(0,1) == 1 ? CONV_AFTER_ANNIG : CONV_AFTER_ANNIG_1);
+                            actor->CreateConversation(urand(0,1) == 1 ? CONV_AFTER_ANNIG : CONV_AFTER_ANNIG_1);
                         });
                         break;
                     case EVENT_TOXIC_SLICE:
