@@ -501,9 +501,10 @@ public:
         {
             DoCast(me, SPELL_PORT_VISUAL, true);
             DoCast(me, SPELL_ADD_PEREODIC);
-            me->AddDelayedEvent(1000, [this] {
-                if (Creature* grward = me->SummonCreature(NPC_VOID_PORTAL_ADD, me->GetPositionX() + frand(2, 4), me->GetPositionY() + frand(2, 4), me->GetPositionZ(), me->GetOrientation()))
-                    grward->AI()->DoZoneInCombat();
+            me->AddDelayedEvent(1000, [actor = me] {
+                if (Creature* grward = actor->SummonCreature(NPC_VOID_PORTAL_ADD, actor->GetPositionX() + frand(2, 4), actor->GetPositionY() + frand(2, 4), actor->GetPositionZ(), actor->GetOrientation()))
+                    if (auto ai = grward->AI())
+                        ai->DoZoneInCombat();
             });
         }
 
@@ -526,9 +527,9 @@ public:
                         alleria->CastSpell(me, SPELL_CLOSE_PORTAL);
                     else
                     {
-                        me->AddDelayedEvent(7000, [this] {
-                            if (Creature* alleria = me->FindNearestCreature(NPC_LURA_ALLERIA, 100.0f, true))
-                                alleria->CastSpell(me, SPELL_CLOSE_PORTAL);
+                        me->AddDelayedEvent(7000, [actor = me] {
+                            if (Creature* alleria = actor->FindNearestCreature(NPC_LURA_ALLERIA, 100.0f, true))
+                                alleria->CastSpell(actor, SPELL_CLOSE_PORTAL);
                         });
                     }
             }
