@@ -229,13 +229,17 @@ public:
                         if (Player* player = i->getSource())
                         {
                             player->CreateConversation(4829);
-                            player->AddDelayedEvent(5000, [player]() -> void
+                            player->AddDelayedEvent(5000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void
                             {
+                                if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                                    return;
                                 player->CreateConversation(4831);
                             });
 
-                            player->AddDelayedEvent(7000, [player]() -> void
+                            player->AddDelayedEvent(7000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void
                             {
+                                if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                                    return;
                                 player->CreateConversation(4832);
                             });
                             break;
@@ -300,14 +304,18 @@ public:
                     for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
                         if (Player* player = i->getSource())
                         {
-                            player->AddDelayedEvent(4000, [player]() -> void
+                            player->AddDelayedEvent(4000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void
                             {
+                                if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                                    return;
                                 player->CreateConversation(4892);
                                 player->CompleteQuest(46734);
                             });
 
-                            player->AddDelayedEvent(4000, [player]() -> void
+                            player->AddDelayedEvent(4000, [player, mapId = player->GetMapId(), instanceId = player->GetInstanceId()]() -> void
                             {
+                                if (!player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                                    return;
                                 player->CastSpell(player, 243824);
                             });
                         }
