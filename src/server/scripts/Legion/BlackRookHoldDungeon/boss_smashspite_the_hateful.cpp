@@ -258,7 +258,7 @@ struct npc_brh_fel_bat : public ScriptedAI
     void LastWPReached() override
     {
         despawnTimer = 10000;
-        me->AddDelayedEvent(200, [this] () -> void { me->GetMotionMaster()->MoveRandom(10.0f); });
+        me->AddDelayedEvent(200, [actor = me] () -> void { actor->GetMotionMaster()->MoveRandom(10.0f); });
     }
 
     void SpellHit(Unit* caster, SpellInfo const* spell) override
