@@ -1268,7 +1268,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         if (victim->IsPlayer())
             victim->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, damage);
 
-        victim->ModifyHealth(-static_cast<int32>(damage), this);
+        victim->ModifyHealth(-static_cast<int64>(damage), this);
 
         if (damagetype == DIRECT_DAMAGE || damagetype == SPELL_DIRECT_DAMAGE)
             victim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DIRECT_DAMAGE, spellProto ? spellProto->Id : 0, spellProto ? spellProto->Id : 0);
@@ -15233,35 +15233,29 @@ bool Unit::_IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell) co
 
 int64 Unit::ModifyHealth(int64 dVal, Unit* victim /*= NULL*/, uint32 spellId /*= 0*/)
 {
-    int64 gain = 0;
-
     if (dVal == 0)
         return 0;
 
-    int64 curHealth = static_cast<int64>(GetHealth(victim));
-    int64 val = dVal + curHealth;
-    bool canModHP = true;
-
-    if (val <= 0)
+    uint64 const current = GetHealth(victim);
+    int64 gain = 0;
+    if (dVal < 0)
     {
-        SetHealth(0, spellId);
-        gain -= curHealth;
-        canModHP = false;
+        // Keep current health unsigned and handle INT64_MIN without negating it.
+        uint64 const loss = std::min(uint64(-(dVal + 1)) + 1, current);
+        if (loss == current)
+            SetHealth(0, spellId);
+        else
+            SetHealthScal(current - loss, victim, spellId);
+        gain = loss ? -int64(loss - 1) - 1 : 0;
     }
-
-    if (canModHP)
+    else
     {
-        int64 maxHealth = static_cast<int64>(GetMaxHealth(victim));
-
-        if (val < maxHealth)
+        uint64 const maximum = GetMaxHealth(victim);
+        uint64 const amount = std::min<uint64>(uint64(dVal), maximum > current ? maximum - current : 0);
+        if (amount)
         {
-            SetHealthScal(val, victim, spellId);
-            gain = val - curHealth;
-        }
-        else if (curHealth != maxHealth)
-        {
-            SetHealthScal(maxHealth, victim, spellId);
-            gain = maxHealth - curHealth;
+            SetHealthScal(current + amount, victim, spellId);
+            gain = int64(amount);
         }
     }
 
@@ -15281,27 +15275,18 @@ int64 Unit::ModifyHealth(int64 dVal, Unit* victim /*= NULL*/, uint32 spellId /*=
 
 int64 Unit::GetHealthGain(int64 dVal)
 {
-    int64 gain = 0;
-
     if (dVal == 0)
         return 0;
 
-    int64 curHealth = static_cast<int64>(GetHealth());
-
-    int64 val = dVal + curHealth;
-    if (val <= 0)
+    uint64 const current = GetHealth();
+    if (dVal < 0)
     {
-        return -curHealth;
+        uint64 const loss = std::min(uint64(-(dVal + 1)) + 1, current);
+        return loss ? -int64(loss - 1) - 1 : 0;
     }
 
-    int64 maxHealth = static_cast<int64>(GetMaxHealth());
-
-    if (val < maxHealth)
-        gain = dVal;
-    else if (curHealth != maxHealth)
-        gain = maxHealth - curHealth;
-
-    return gain;
+    uint64 const maximum = GetMaxHealth();
+    return int64(std::min<uint64>(uint64(dVal), maximum > current ? maximum - current : 0));
 }
 
 void Unit::VisualForPower(Powers power, int32 curentVal, int32 modVal, int32 maxPower, bool generate/* = false*/, SpellInfo const* spellInfo/* = nullptr*/)

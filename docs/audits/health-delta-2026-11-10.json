@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "base": "0f4776548",
+  "cause": "ModifyHealth/GetHealthGain narrowed native unsigned64 current/max health to int64 and added a signed delta before bounds checks. UINT64_MAX minus1 became zero;large positive predictions overflowed. Nonlethal Unit::DealDamage also negated an int32 cast of already-normalized uint32 damage,turning damage aboveINT32_MAX into healing or signed overflow. TwinEmperors wide native regression exposed the shared underlying cause.",
+  "fix": "Keep current/max health unsigned64. Bound positive amounts against remaining room before addition and negative magnitudes against current health before subtraction,includingINT64_MIN without signed negation overflow. Return the exact bounded signed delta. Keep native target-relative SetHealthScal,zero-health alive semantics,owner health packets and API/layout. Widen normalized nonlethal damage to int64 before negation;retain existing float normalization/upper clamp. Self-contained methods preserve existing whole-method native test hosts.",
+  "validation": {
+    "native": "Actual current Release Unit::ModifyHealth/GetHealthGain on real Creature/Map:280cases throughUINT64_MAX,all signed delta boundaries includingINT64_MIN/MAX,exact prediction/application and no death-state change. Four actual nonlethal Unit::DealDamage cases throughUINT32_MAX retain native float normalization rounding and return value. Three full native DealHeal ordinary/overheal/unsigned-highhealth gains pass. No persistent character/item receipt writes. Original compiled pre-build API reproduced all three defects;reusable baseline also extracts complete pinned0f477 methods and the precise old nonlethal callsite component against real native health endpoints,explicitly separate from the repaired full Unit damage test.",
+    "retained": "99Grash ASAN/full production actor context matrices pass with actual exported owner/quest lease/DealHeal/ModifyHealth/Notify/current+suspended lifecycle/FunctionProcessor bodies. Criteria/registry/geometry/motion endpoints controlled;no whole Sharasdal/client claim.",
+    "scope": "Exact Unit diff allows only two health methods and the nonlethal argument width;Unit.h/API/fields,SetHealth/SetHealthScal,heal notifications,kill/owner/group/proc/packet code unchanged. Counter source verifier now pins its real admission block and entire native Kill function,rather than rejecting unrelated Unit method repairs. All other counter source files remain fully pinned.",
+    "release": "Original game.lib rebuilt,existing committed Freya scripts.lib retained. Staged and canonical full PE chains retain367prior+Rook/Tsulong/counter/Freya and verify actual unsigned64 gap/loss clamps,SetHealth/SetHealthScal endpoints,prediction38/40reads and nonlethal64negation. TwinEmperors source is still a separate unlinked work in progress,not part of this canonical binary.17compiler warning lines match unchanged pinned source lines outside the repair.",
+    "runtime": "Final canonical Scepter -VerifyReleaseBinary passes;owned16924 fresh ready/shutdown0/exit0/gone,empty stderr,protected runtime hashes unchanged. Initial helper-form canonical11076 also passed;final self-contained form retested and promoted. No user/unknown process stopped.",
+    "diagnostics": "Before/after canonical+own crash/log snapshots for declared native/build/link/PE/scope/deploy/Scepter/start tests. No new crash,appendedDBErrors/server warning/error/assertion. Initial native damage fixture expected raw values instead of existing float normalization;corrected expected normalized boundaries. Reusable baseline first omitted explicit arguments whose defaults exist only in the declaration;corrected. Initial Grash host did not export a new helper dependency;methods made self-contained and99ASANcases pass. Original failed records preserved/paired. Twin test fixture AV/binding errors and missing native encounter715 remain in their own still-open evidence,not swept into this fixed archive."
+  },
+  "canonical": {
+    "worldserver.exe": "14717b97dbd14a41569daafec3567ab4cd439790cbc519c40acee7b204b24c14",
+    "worldserver.map": "876b426335e5261553aa3ef1b93d0e985049c54b3c306751fd0eb2b9830f04f8",
+    "bnetserver.exe": "51d784194e4e670a45c214d54db83430411eec70f449498b9afa82fceda185c3",
+    "bnetserver.map": "5e4192e990b03a976e9500c6c4d553f11945a9013363d89e2d3d61b242fa8593"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\health-delta-2026-11-10",
+    "manifest_sha256": "0b3ad7ca09501de49d68a417f73d1a67d0f6017509e8d75cc324ea2f58b3b810",
+    "archived_files": 426,
+    "removed_files": 154,
+    "logical_removed_bytes": 1384846025,
+    "deletion_manifest": ".codex\\health-delta-2026-11-10\\deletion-manifest.json",
+    "deletion_manifest_sha256": "363b1a848fb8e11c0bc65a5369cde974205385e21e96fa5be53bd687fe473c0f",
+    "fix_commit_resolution": "Local fixed archive resolution.json records the focused commit after creation.",
+    "retained": "Pre-health-delta rollback,main libraries,canonical assets,reusable test sources,all still-open Twin/Lady/LINK2/Slaghammer/TimeLoop/SQL/handshake evidence."
+  },
+  "pending": [
+    "This does not widen SpellEffectHeal/m_healing32bit or repair full-health TimeLoop large-heal/protocol/proc handling. Actual client health/target-relative scaling/healing visuals remain separate.",
+    "TwinEmperors owner/shared native Kill repair and missing native715 encounter data are still under test,not included in the retained committed scripts.lib.",
+    "MariaDB root candidate remains staged pending user service-stop confirmation. Authentic living Lady/missingLINK2/Slaghammer evidence,intermittent handshake and all36whole client chains remain open. Mixed7111byteDBErrors unchanged."
+  ]
+}
