@@ -346,9 +346,9 @@ public:
                 if (instance)
                     if (instance->GetBossState(DATA_LURA) == IN_PROGRESS)
                     {
-                        me->AddDelayedEvent(5000, [this] {
-                            me->SummonCreature(NPC_LURA_ALLERIA, aw[0]);
-                            me->SummonCreature(NPC_LURA_LOCUSWALKER, aw[1]);
+                        me->AddDelayedEvent(5000, [actor = me] {
+                            actor->SummonCreature(NPC_LURA_ALLERIA, aw[0]);
+                            actor->SummonCreature(NPC_LURA_LOCUSWALKER, aw[1]);
                         });
                     }
                 break;
@@ -372,30 +372,30 @@ public:
 
                 if (casted == 1)
                 {
-                    me->AddDelayedEvent(5000, [this] {
-                        me->SetPower(POWER_ENERGY, 100);
+                    me->AddDelayedEvent(5000, [actor = me] {
+                        actor->SetPower(POWER_ENERGY, 100);
                     });
 
-                    me->AddDelayedEvent(5500, [this] {
-                        if (Creature* lura = me->FindNearestCreature(NPC_LURA, 100.0f, true))
-                            DoCast(lura, SPELL_BREAK_SHIELD);
+                    me->AddDelayedEvent(5500, [actor = me] {
+                        if (Creature* lura = actor->FindNearestCreature(NPC_LURA, 100.0f, true))
+                            { if (auto ai = actor->AI()) ai->DoCast(lura, SPELL_BREAK_SHIELD); }
                     });
                 }
                 if (casted == 2)
                 {
-                    me->AddDelayedEvent(5000, [this] {
-                        me->SetPower(POWER_ENERGY, 50);
+                    me->AddDelayedEvent(5000, [actor = me] {
+                        actor->SetPower(POWER_ENERGY, 50);
                     });
                 }
                 if (casted == 3)
                 {
-                    me->AddDelayedEvent(5000, [this] {
-                        me->SetPower(POWER_ENERGY, 100);
+                    me->AddDelayedEvent(5000, [actor = me] {
+                        actor->SetPower(POWER_ENERGY, 100);
                     });
 
-                    me->AddDelayedEvent(5500, [this] {
-                        if (Creature* lura = me->FindNearestCreature(NPC_LURA, 100.0f, true))
-                            DoCast(lura, SPELL_BREAK_SHIELD);
+                    me->AddDelayedEvent(5500, [actor = me] {
+                        if (Creature* lura = actor->FindNearestCreature(NPC_LURA, 100.0f, true))
+                            { if (auto ai = actor->AI()) ai->DoCast(lura, SPELL_BREAK_SHIELD); }
                     });
                 }
             }
