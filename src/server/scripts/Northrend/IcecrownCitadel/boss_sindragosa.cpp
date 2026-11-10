@@ -619,6 +619,8 @@ class npc_ice_tomb : public CreatureScript
 
             void SetGUID(ObjectGuid const& guid, int32 type/* = 0 */) override
             {
+                if (released)
+                    return;
                 if (type == DATA_TRAPPED_PLAYER)
                 {
                     _trappedPlayerGUID = guid;
@@ -635,11 +637,14 @@ class npc_ice_tomb : public CreatureScript
 
             void JustDied(Unit* /*killer*/) override
             {
+                if (released)
+                    return;
+                released = true;
                 me->RemoveAllGameObjects();
-
-                if (Player* player = ObjectAccessor::GetPlayer(*me, _trappedPlayerGUID))
+                Player* player = ObjectAccessor::GetPlayer(*me, _trappedPlayerGUID);
+                _trappedPlayerGUID.Clear();
+                if (player)
                 {
-                    _trappedPlayerGUID.Clear();
                     player->RemoveAurasDueToSpell(SPELL_ICE_TOMB_DAMAGE);
                     player->RemoveAurasDueToSpell(SPELL_ASPHYXIATION);
                 }
@@ -668,6 +673,7 @@ class npc_ice_tomb : public CreatureScript
 
         private:
             ObjectGuid _trappedPlayerGUID;
+            bool released = false;
             uint32 _existenceCheckTimer;
         };
 
