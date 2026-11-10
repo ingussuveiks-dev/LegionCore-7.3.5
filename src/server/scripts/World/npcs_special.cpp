@@ -5655,12 +5655,12 @@ public:
         {
             if (summon->GetEntry() == 91184)
             {
-                me->AddDelayedEvent(1000, [this] {
-                    Talk(1);
-                    me->SetReactState(REACT_PASSIVE);
+                me->AddDelayedEvent(1000, [actor = me] {
+                    { if (auto ai = actor->AI()) ai->Talk(1); }
+                    actor->SetReactState(REACT_PASSIVE);
                 });
-                me->AddDelayedEvent(2000, [this] {
-                    me->GetMotionMaster()->MovePoint(1, -519.28f, 5607.60f, 4.59f);
+                me->AddDelayedEvent(2000, [actor = me] {
+                    actor->GetMotionMaster()->MovePoint(1, -519.28f, 5607.60f, 4.59f);
                 });
             }
         }
@@ -5688,8 +5688,8 @@ public:
                 switch (id)
                 {
                 case 0:
-                    me->AddDelayedEvent(1500, [this] {
-                        DoCast(181029);
+                    me->AddDelayedEvent(1500, [actor = me] {
+                        { if (auto ai = actor->AI()) ai->DoCast(181029); }
                     });
                     break;
                 case 1:
