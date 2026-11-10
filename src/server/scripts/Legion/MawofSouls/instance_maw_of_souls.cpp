@@ -48,10 +48,33 @@ public:
             LoadDoorData(doorData);
         }
 
+        std::map<ObjectGuid, std::shared_ptr<uint8>> entryAttempts;
+
+        void OnPlayerLeave(Player* player) override
+        {
+            if (player)
+                entryAttempts.erase(player->GetGUID());
+        }
+
         void OnPlayerEnter(Player* player) override
         {
+            if (!player)
+                return;
+
+            auto attempt = std::make_shared<uint8>(0);
+            entryAttempts[player->GetGUID()] = attempt;
+            std::weak_ptr<uint8> weakAttempt = attempt;
+            uint32 const mapId = player->GetMapId();
+            uint32 const instanceId = player->GetInstanceId();
             if (GetBossState(DATA_YMIRON) == DONE && player->GetDistance(7188.54f, 7317.84f, 23.66f) < 25.0f)
-                player->AddDelayedEvent(500, [player] () -> void { if (player) player->RepopAtGraveyard(); });
+                player->AddDelayedEvent(500, [player, mapId, instanceId, weakAttempt]() -> void
+                {
+                    if (weakAttempt.expired() || !player->IsInWorld() || player->GetMapId() != mapId || player->GetInstanceId() != instanceId)
+                        return;
+                    InstanceScript* script = player->GetInstanceScript();
+                    if (script && script->GetBossState(DATA_YMIRON) == DONE && player->GetDistance(7188.54f, 7317.84f, 23.66f) < 25.0f)
+                        player->RepopAtGraveyard();
+                });
         }
 
         void OnCreatureCreate(Creature* creature) override
