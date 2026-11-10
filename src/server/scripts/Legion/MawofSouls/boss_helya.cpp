@@ -436,7 +436,7 @@ struct boss_helya : public BossAI
                         poolSaveMap.erase(summon->GetGUID());
                     }
                     else
-                        me->AddDelayedCombat(5000, [this]() -> void { SummonGrasping(); });
+                        me->AddDelayedCombat(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; SummonGrasping(); });
                 }
                 break;
             }
@@ -790,8 +790,9 @@ struct boss_helya : public BossAI
                     me->SetFacingTo(facing[urand(0, 2)]);
                     me->CastSpell(me, SPELL_CORRUPTED_BELLOW);
                     events.RescheduleEvent(EVENT_CORRUPTED_BELLOW, 21000);
-                    me->AddDelayedCombat(8000, [this]() -> void
+                    me->AddDelayedCombat(8000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->SetFacingTo(4.71f);
                         me->SetReactState(REACT_AGGRESSIVE);
                     });
@@ -801,6 +802,9 @@ struct boss_helya : public BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //98363, 99801, 100354, 100360, 100362, 100188
