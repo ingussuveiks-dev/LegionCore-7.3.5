@@ -218,14 +218,14 @@ struct boss_aggramar : BossAI
         Talk(SAY_DEATH);
         _JustDied();
 
-        me->AddDelayedEvent(3000, [this]() -> void
+        me->AddDelayedEvent(3000, [actor = me]() -> void
         {
             for (uint8 i = 0; i < 4; ++i)
-                me->SummonCreature(entryOutro[i], outroPos[i]);
+                actor->SummonCreature(entryOutro[i], outroPos[i]);
 
-            me->AddDelayedEvent(1000, [this]() -> void
+            actor->AddDelayedEvent(1000, [actor]() -> void
             {
-                me->CastSpell(me, SPELL_OUTRO_CONV, true);
+                actor->CastSpell(actor, SPELL_OUTRO_CONV, true);
             });
         });
     }
@@ -542,7 +542,7 @@ struct npc_aggramar_ember_of_taeshalach : ScriptedAI
                 me->CastSpell(me, SPELL_BLAZING_ERUPTION, true, nullptr, nullptr, owner->GetGUID());
 
             me->StopMoving();
-            me->AddDelayedEvent(500, [this] () -> void { me->DespawnOrUnsummon(); });
+            me->AddDelayedEvent(500, [actor = me] () -> void { actor->DespawnOrUnsummon(); });
         }
     }
 
