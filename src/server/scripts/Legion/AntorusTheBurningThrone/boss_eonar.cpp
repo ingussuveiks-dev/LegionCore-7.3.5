@@ -1878,7 +1878,12 @@ class spell_eonar_dive_down_jump : public SpellScript
         if (!caster)
             return;
 
-        caster->AddDelayedEvent(1000, [caster]() -> void { caster->CastSpellDuration(caster, SPELL_SWIFT_FEET, true, 6000, 3); });
+        caster->AddDelayedEvent(1000, [caster, mapId = caster->GetMapId(), instanceId = caster->GetInstanceId()]() -> void
+        {
+            if (!caster->IsInWorld() || !caster->IsAlive() || caster->GetMapId() != mapId || caster->GetInstanceId() != instanceId)
+                return;
+            caster->CastSpellDuration(caster, SPELL_SWIFT_FEET, true, 6000, 3);
+        });
     }
 
     void Register() override
