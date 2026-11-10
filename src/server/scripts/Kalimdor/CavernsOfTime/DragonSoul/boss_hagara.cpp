@@ -1317,6 +1317,8 @@ class npc_hagara_the_stormbinder_icy_tomb : public CreatureScript
 
             void SetGUID(ObjectGuid const& guid, int32 type)
             {
+                if (released)
+                    return;
                 if (type == DATA_TRAPPED_PLAYER)
                 {
                     trappedPlayer = guid;
@@ -1326,9 +1328,13 @@ class npc_hagara_the_stormbinder_icy_tomb : public CreatureScript
 
             void JustDied(Unit* /*killer*/)
             {
-                if (Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer))
+                if (released)
+                    return;
+                released = true;
+                Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer);
+                trappedPlayer.Clear();
+                if (player)
                 {
-                    trappedPlayer.Clear();
                     player->RemoveAura(SPELL_ICY_TOMB);
                 }
                 me->DespawnOrUnsummon(800);
@@ -1348,6 +1354,7 @@ class npc_hagara_the_stormbinder_icy_tomb : public CreatureScript
                         me->DespawnOrUnsummon();
                         return;
                     }
+                    existenceCheckTimer = 1000;
                 }
                 else
                     existenceCheckTimer -= diff;
@@ -1355,6 +1362,7 @@ class npc_hagara_the_stormbinder_icy_tomb : public CreatureScript
 
         private:
             ObjectGuid trappedPlayer;
+            bool released = false;
             uint32 existenceCheckTimer;
         };
 };
