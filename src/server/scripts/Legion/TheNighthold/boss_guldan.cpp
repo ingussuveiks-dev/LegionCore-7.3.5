@@ -1364,8 +1364,11 @@ public:
             {
                 khadgar->CastSpell(khadgar, 227671);
                 khadgar->GetMotionMaster()->MoveFall();
-                khadgar->AddDelayedEvent(2000, [this, khadgar] () -> void
+                me->AddDelayedEvent(2000, [this, khadgarGuid = khadgar->GetGUID()] () -> void
                 {
+                    Creature* khadgar = ObjectAccessor::GetCreature(*me, khadgarGuid);
+                    if (!khadgar || !me->IsAlive())
+                        return;
                     khadgar->RemoveAurasDueToSpell(227671);
                     khadgar->AI()->Talk(3);
                     
