@@ -293,8 +293,9 @@ struct boss_eonar : public ScriptedAI
                 if (auto paraxisShip = instance->instance->GetGameObject(instance->GetGuidData(GO_EONAR_PARAXIS_SHIP)))
                     paraxisShip->SetVisible(false);
 
-                me->AddDelayedEvent(500, [this]() -> void
+                me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     instance->instance->ApplyOnEveryPlayer([&](Player* player)
                     {
                         me->CastSpell(player, SPELL_EONAR_BONUS_ROLL, true);
@@ -378,6 +379,9 @@ struct boss_eonar : public ScriptedAI
             }
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //124445
