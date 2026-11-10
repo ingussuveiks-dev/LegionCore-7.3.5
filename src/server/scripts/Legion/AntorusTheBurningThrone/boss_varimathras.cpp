@@ -98,8 +98,9 @@ struct boss_varimathras : BossAI
         Talk(SAY_DEATH);
         _JustDied();
 
-        me->AddDelayedEvent(1000, [this]() -> void
+        me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (auto azara = instance->instance->GetCreature(instance->GetGuidData(NPC_AZARA)))
                 azara->AI()->Talk(0);
         }); 
@@ -276,6 +277,9 @@ struct boss_varimathras : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //122590, 122643
