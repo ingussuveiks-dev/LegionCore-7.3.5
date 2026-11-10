@@ -28,9 +28,9 @@ public:
 
          void DoAction(int32 const action) override
          {
-            me->AddDelayedEvent(3000, [this]() -> void
+            me->AddDelayedEvent(3000, [actor = me]() -> void
             {
-                me->CreateConversation(4684);
+                actor->CreateConversation(4684);
             });
             me->RemoveAura(68442);
             me->GetMotionMaster()->MovePath(10993802, false); // 12
