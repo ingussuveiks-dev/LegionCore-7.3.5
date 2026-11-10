@@ -820,6 +820,7 @@ struct npc_en_nightmother : public ScriptedAI
         me->SetReactState(REACT_AGGRESSIVE);
         me->SetDisableGravity(false);
         me->SetCanFly(false);
+        jumpTimer = 0;
     }
 
     void EnterCombat(Unit* /*who*/) override
