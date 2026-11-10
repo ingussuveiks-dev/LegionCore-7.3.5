@@ -62,8 +62,8 @@ def verify_plan(p,plan):
   found=[]
   for cls,method in sorted({(c['cls'],c['method'])for c in e['callbacks']}):
    for name in p['callbacks'](cls,method):
-    if not name.endswith('EEAAXXZ'):continue
-    if method==cls and '???0'+cls+'@@'not in name:continue
+    if not name.endswith('EEAAXXZ')or cls+'@'not in name or method+'@'not in name:continue
+    if method==cls and '???0'+cls+'@'not in name:continue
     if has_lifetime_gate(p,p['expanded'](name)):found.append(name)
   assert len(found)==len(e['callbacks']),(e['key'],'actual guarded closures',len(found),'expected',len(e['callbacks']))
   seen+=found
