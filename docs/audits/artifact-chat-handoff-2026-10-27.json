@@ -1,4 +1,19 @@
 {
+  "latest_five_ten_repairs_2026_11_11": {
+    "status": "IN_PROGRESS",
+    "completed_fixes": 10,
+    "authorized_fixes": 50,
+    "audit": "docs\\audits\\five-ten-repairs-2026-11-11.json",
+    "latest_batch_audit": "docs\\audits\\thirtyseventh-ten-repairs-2026-11-11.json",
+    "last_fix_commit": "f60ed05d4ad0a7c374c253d2049ed2926d502e83",
+    "MariaDB": "USER_DEFERRED_NO_SERVICE_STOP_OR_DLL_REPLACEMENT",
+    "pending": [
+      "MariaDB server.dll replacement explicitly deferred by the user;service and candidate untouched.",
+      "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+      "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+      "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+    ]
+  },
   "latest_thirtysixth_ten_repairs_2026_11_10": {
     "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
     "batch_number": 5,

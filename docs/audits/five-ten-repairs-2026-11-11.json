@@ -1,0 +1,122 @@
+{
+  "date": "2026-11-11",
+  "request": "Five successive groups of ten new fixes,then stop. MariaDB promotion deferred by the user.",
+  "authorized_fixes": 50,
+  "completed_fixes": 10,
+  "status": "IN_PROGRESS",
+  "batches": [
+    {
+      "number": 1,
+      "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+      "audit": "docs\\audits\\thirtyseventh-ten-repairs-2026-11-11.json",
+      "fixes": [
+        {
+          "key": "NpcInvasionPointBunnyLifetime",
+          "title": "Cancel npc_invasion_point_bunny callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/invasion_point_argus.cpp",
+          "audit": "docs\\audits\\npc-invasion-point-bunny-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "59000cc5b2d292c11418ed13118b6ec596e03ddc"
+        },
+        {
+          "key": "BossMatronFolnunaLifetime",
+          "title": "Cancel boss_matron_folnuna callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/invasion_point_world_bosses.cpp",
+          "audit": "docs\\audits\\boss-matron-folnuna-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "3ff8df6a4b2db0f5b8209fea4121ade6461d9872"
+        },
+        {
+          "key": "NpcStormheimHaviActorLifetime",
+          "title": "Cancel npc_stormheim_havi_actor callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/stormheim_trials.cpp",
+          "audit": "docs\\audits\\npc-stormheim-havi-actor-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "adad9cf891c1b8591a39d16f6afa07372919f9a1"
+        },
+        {
+          "key": "BossGodKingSkovaldLifetime",
+          "title": "Cancel boss_god_king_skovald callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/HallsofValor/boss_god_king_skovald.cpp",
+          "audit": "docs\\audits\\boss-god-king-skovald-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "74f5dfc535200f4a4080d6a98dd7ab43d7e70c0a"
+        },
+        {
+          "key": "NpcYmironRisenWarriorLifetime",
+          "title": "Cancel npc_ymiron_risen_warrior callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/MawofSouls/boss_ymiron_the_fallen_king.cpp",
+          "audit": "docs\\audits\\npc-ymiron-risen-warrior-ai-lifetime-2026-11-11.json",
+          "callback_count": 2,
+          "commit": "0674796c574f1859895474f390efa2dacaf15a38"
+        },
+        {
+          "key": "BossRtkMidnightLifetime",
+          "title": "Cancel boss_rtk_midnight callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/ReturnToKarazhan/boss_attumen_the_huntsman.cpp",
+          "audit": "docs\\audits\\boss-rtk-midnight-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "95e6249496684462aba6e70ad15e4206ed05fa90"
+        },
+        {
+          "key": "NpcNaltiraViciousManafangIntroLifetime",
+          "title": "Cancel npc_naltira_vicious_manafang_intro callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TheArcway/boss_naltira.cpp",
+          "audit": "docs\\audits\\npc-naltira-vicious-manafang-intro-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "3ef06736d18449082e910df3c5c9df7342da1429"
+        },
+        {
+          "key": "NpcIlgynothTentaclesLifetime",
+          "title": "Cancel npc_ilgynoth_tentacles callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TheEmeraldNightmare/boss_ilgynoth.cpp",
+          "audit": "docs\\audits\\npc-ilgynoth-tentacles-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "4784e8d6c60b5c8203c6a42708538635173f9d84"
+        },
+        {
+          "key": "BossSpellbladeAlurielLifetime",
+          "title": "Cancel boss_spellblade_aluriel callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TheNighthold/boss_spellblade_aluriel.cpp",
+          "audit": "docs\\audits\\boss-spellblade-aluriel-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "c4c5d37d0c187d7c588ea8aad3b5514f5761567d"
+        },
+        {
+          "key": "BossTichonriusLifetime",
+          "title": "Cancel boss_tichonrius callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TheNighthold/boss_tichondrius.cpp",
+          "audit": "docs\\audits\\boss-tichonrius-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "f60ed05d4ad0a7c374c253d2049ed2926d502e83"
+        }
+      ],
+      "canonical": {
+        "bnetserver.exe": "a21a35dcaa8d760c3ddb04e4c5dccd5d5ab0da52e2bf081886f10470601a4776",
+        "bnetserver.map": "accbc94f8bf6ee0010a1dc36f754aa9c18af6cb184786724974e9f86984e51b1",
+        "worldserver.exe": "24359db79ccddaa98991e2502c2e45deb90df7930da253a2cff073c74b743c8b",
+        "worldserver.map": "b1e7f7d7006f24e2bc9a09819807bf8ef60b2e35f671fcd1f3353109006ad222"
+      },
+      "cleanup": {
+        "archive": "build-extractors\\bin\\Release\\fixed\\thirtyseventh-ten-repairs-2026-11-11",
+        "manifest_sha256": "5fb3aebd244e5727e6d55106da527d68f09ef8050390e368f3295c23e0c347df",
+        "archived_files": 447,
+        "removed_files": 169,
+        "logical_removed_bytes": 430935673,
+        "deletion_manifest": ".codex\\thirtyseventh-ten-fixes-2026-11-11\\cleanup-deleted.json",
+        "deletion_manifest_sha256": "6575da20d4f23ad5e70a079a72156d8bb548f0009b5428270e146f9460c12ef5",
+        "removed_superseded_recoveries": [],
+        "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and deferred MariaDB candidate evidence.",
+        "closeout_manifest_sha256": "d0b17ebc5c2bfafb11f1ca7bcedcc06efb441c949822c9c930289da50f641a30",
+        "resolution_sha256": "776fabab6a0b20a40c3ec5eb6523279d6eec249877a0e1ebabd36bda933c2eb3",
+        "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
+      }
+    }
+  ],
+  "pending": [
+    "MariaDB server.dll replacement explicitly deferred by the user;service and candidate untouched.",
+    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ]
+}
