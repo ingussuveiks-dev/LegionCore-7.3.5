@@ -2153,8 +2153,8 @@ public:
         void IsSummonedBy(Unit* summoner) override
         {
             DoCast(73530);
-            me->AddDelayedEvent(30000, [this] {
-                me->DespawnOrUnsummon(500);
+            me->AddDelayedEvent(30000, [actor = me] {
+                actor->DespawnOrUnsummon(500);
             });
         }
     };
