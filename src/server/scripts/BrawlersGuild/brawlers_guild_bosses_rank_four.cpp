@@ -709,10 +709,10 @@ public:
                             owner->RemoveAurasDueToSpell(SPELL_AURA_OF_ROT_TICK);
                             owner->RemoveAurasDueToSpell(SPELL_AURA_OF_ROT_DMG);
                         }                  
-                        me->AddDelayedEvent(1000, [this] () -> void
+                        me->AddDelayedEvent(1000, [actor = me] () -> void
                         {
-                            if (Unit* owner = me->GetAnyOwner())
-                                me->CastSpell(owner, SPELL_AURA_OF_ROT_TICK);
+                            if (Unit* owner = actor->GetAnyOwner())
+                                actor->CastSpell(owner, SPELL_AURA_OF_ROT_TICK);
                         });
                         break;
                 }
