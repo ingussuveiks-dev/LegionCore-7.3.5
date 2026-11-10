@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "base": "5cc72f230",
+  "cause": "This core accumulates player damage in uint32 and permits loot/reward only while the value is positive. A uint64 maxhealth argument such as4294967296 truncated to0 at the32bit parameter;UINT32_MAX followed by1 wrapped the accumulated counter to0. Native64 raid callers include Freya and other shared encounters.",
+  "fix": "Accept uint64 damage and add at most UINT32_MAX-currentCounter. Preserve exact ordinary sums,positive eligibility,zero handling,explicit resets and the existing32bit member/class layout. No native remaining-health threshold or new player/group reward rule imported.",
+  "validation": {
+    "native": "Real unspawned Creature constructor and actual inline API;no DB/player/loot grants. Final pinned full original header selected explicitly,signature static_assert uint32 vs uint64;both original failures reproduced. Repaired zero,73+9 exact sum,seven boundary values throughUINT64_MAX,21subsequent updates with exact/saturated expectations and reuse/reset pass. Both actual class size15160 and counter byteoffset14776 match.",
+    "scope": "Pinned exact header delta;Unit.cpp,Creature.cpp,Player.cpp,Spell.cpp and KillRewarder.cpp byte-preserved. Traced post-scaling min(health,damage),player-controlled damage,owner/pet/guardian kill resolution,native group/raid recipient selection and corpse-loot gating. This is source preservation and controlled native API verification,not client combat/group traversal.",
+    "release": "Original game.lib and scripts.lib rebuilt withoutOutDir override,staged final link uses original libraries. Full staged/canonical composed PE chain retains prior367,Rook and Tsulong checks;new native64 raid argument,UINT32_MAX-current remaining room,unsigned64 clamp and final32bit store verified at actual Freya/core damage callers.",
+    "runtime": "Canonical Scepter -VerifyReleaseBinary passes. Owned worldserver15680 fresh ready,shutdown0,exit0/gone,stderr empty. Configuration/certificates/DLLs unchanged. No user/unknown world/bnet stopped.",
+    "diagnostics": "Before/after canonical+own crash/log snapshots;no new/changed crashes,appendedDBErrors/server warnings/errors/assertions.359build warning lines belong to unchanged source with prior compiler/category context;none originates in the selected header delta. Scepter inherited harness conversion warnings retained. Initial native fixture lacked standard/bootstrap includes;PCH bootstrap then preloaded the current header,detected by original-API static_assert after repair. Explicit uniquely named pinned header and matching native dependencies corrected the fixture;final original/repaired controls pass. Failed fixture records retained and distinguished from successful runs."
+  },
+  "canonical": {
+    "worldserver.exe": "f5599c292d4b509252cb46e83e2caa6fea105259fc043ef2fc24f16d83feb517",
+    "worldserver.map": "2bbd53b21bb05219d1d75881647ccde4dec00e26bd13ade30d236aa71a20a2df",
+    "bnetserver.exe": "01cbcc147047e78f57b3e24be2117456d2f3a422d6c4d9004c8b9db60f9d279b",
+    "bnetserver.map": "8bfe2279a947f1f3e966ea8eb0cc4ada42d7a96619265a984e150c2911b8e348"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\native-loot-damage-2026-11-10",
+    "manifest_sha256": "91d0f9ed4e436d0d1375aa310a41dc6da2f2d11ae4ebab589e1929cfe5aee82e",
+    "archived_files": 195,
+    "removed_files": 14,
+    "logical_removed_bytes": 186765960,
+    "deletion_manifest": ".codex\\native-loot-damage-2026-11-10\\deletion-manifest.json",
+    "deletion_manifest_sha256": "89d06a202fb0e78702d34dce298927bd638ece0384948c30133a463953cc3ad0",
+    "retained": "Latest pre-counter rollback and earlier pre-Tsulong/pre-Rook recovery for pending client checks. Main libraries,canonical assets,all original OPEN Lady/LINK2/Slaghammer/handshake/SQL/TimeLoop evidence preserved. MariaDB staged candidate retained for pending authorized deployment.",
+    "fix_commit_resolution": "Local fixed archive resolution.json records the focused commit after creation."
+  },
+  "pending": [
+    "Actual encounter/client loot,pet/guardian/group kills,reset/re-entry and unrelated raid traversal remain client checks.",
+    "Freya extreme maxhealth multiplication is a separate OPEN arithmetic issue;this change closes its shared counter truncation/wrap only.",
+    "Authentic living Lady,missingLINK2/Slaghammer evidence,TimeLoop/full36clientchains and other inherited OPEN audits remain separate.",
+    "MariaDB service is still user-owned/running;replacement candidate not installed without stop confirmation. Mixed7111byteDBErrors remains unchanged/untruncated."
+  ]
+}

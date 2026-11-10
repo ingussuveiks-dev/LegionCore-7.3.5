@@ -26,6 +26,7 @@
 #include "LootMgr.h"
 #include "MapObject.h"
 #include "Unit.h"
+#include <limits>
 
 class BattlePetInstance;
 class CreatureAI;
@@ -820,9 +821,12 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         void SetDisableReputationGain(bool disable) { DisableReputationGain = disable; }
         bool IsReputationGainDisabled() { return DisableReputationGain; }
         bool IsDamageEnoughForLootingAndReward() const { return m_PlayerDamageReq > 0; }
-        void LowerPlayerDamageReq(uint32 unDamage)
+        void LowerPlayerDamageReq(uint64 unDamage)
         {
-            m_PlayerDamageReq += unDamage;
+            // This core accumulates damage and tests for a positive value.
+            // Preserve eligibility when either a hit or the sum exceeds uint32.
+            uint64 const remaining = std::numeric_limits<uint32>::max() - m_PlayerDamageReq;
+            m_PlayerDamageReq += uint32(std::min(unDamage, remaining));
         }
         void ResetPlayerDamageReq() { m_PlayerDamageReq = 0; }
         uint32 m_PlayerDamageReq;
