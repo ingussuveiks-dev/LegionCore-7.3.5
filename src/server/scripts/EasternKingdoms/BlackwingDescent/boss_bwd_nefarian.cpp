@@ -383,48 +383,57 @@ public:
                 }
             }
 
-            if (phase == PHASE_GROUND && m_uiDistanceCheckTimer <= diff)
+            if (phase == PHASE_GROUND)
             {
-                if (me->FindNearestCreature(NPC_ONYXIA, 50.0f, true) && onyxiaAlive && !me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))
-                    me->AddAura(SPELL_CHILDREN_OF_DEATHWING_ONY, me);
-
-                else if (!me->FindNearestCreature(NPC_ONYXIA, 50.0f, true) && onyxiaAlive)
-                if (me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))
-                    me->RemoveAura(SPELL_CHILDREN_OF_DEATHWING_ONY);
-
-                m_uiDistanceCheckTimer = 5000;
-            }
-            else m_uiDistanceCheckTimer -= diff;
-
-            if (phase == PHASE_GROUND && m_uiOnyxiaCheckTimer <= diff && !secondPhase)
-            {
-                if (me->FindNearestCreature(NPC_ONYXIA, 250.0f, true))
-                    onyxiaAlive = true;
-                else
+                if (m_uiDistanceCheckTimer <= diff)
                 {
-                    onyxiaAlive = false;
-                    Talk(SAY_AIR_PHASE);
+                    if (me->FindNearestCreature(NPC_ONYXIA, 50.0f, true) && onyxiaAlive && !me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))
+                        me->AddAura(SPELL_CHILDREN_OF_DEATHWING_ONY, me);
 
+                    else if (!me->FindNearestCreature(NPC_ONYXIA, 50.0f, true) && onyxiaAlive)
                     if (me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))
                         me->RemoveAura(SPELL_CHILDREN_OF_DEATHWING_ONY);
 
-                    events.RescheduleEvent(EVENT_LIFTOFF, 1000, PHASE_GROUND);
-                    secondPhase = true;
+                    m_uiDistanceCheckTimer = 5000;
                 }
-                m_uiOnyxiaCheckTimer = 1000;
+                else m_uiDistanceCheckTimer -= diff;
             }
-            else m_uiOnyxiaCheckTimer -= diff;
 
-            if (phase == PHASE_FLIGHT && m_uiChromaticCheckTimer <= diff && !finalPhase)
+            if (phase == PHASE_GROUND && !secondPhase)
             {
-                if (!me->FindNearestCreature(NPC_CHROMATIC_PROTO, 150.0f))
+                if (m_uiOnyxiaCheckTimer <= diff)
                 {
-                    events.RescheduleEvent(EVENT_LAND, 10000, PHASE_FLIGHT);
-                    finalPhase = true;
+                    if (me->FindNearestCreature(NPC_ONYXIA, 250.0f, true))
+                        onyxiaAlive = true;
+                    else
+                    {
+                        onyxiaAlive = false;
+                        Talk(SAY_AIR_PHASE);
+
+                        if (me->HasAura(SPELL_CHILDREN_OF_DEATHWING_ONY))
+                            me->RemoveAura(SPELL_CHILDREN_OF_DEATHWING_ONY);
+
+                        events.RescheduleEvent(EVENT_LIFTOFF, 1000, PHASE_GROUND);
+                        secondPhase = true;
+                    }
+                    m_uiOnyxiaCheckTimer = 1000;
                 }
-                m_uiChromaticCheckTimer = 1000;
+                else m_uiOnyxiaCheckTimer -= diff;
             }
-            else m_uiChromaticCheckTimer -= diff;
+
+            if (phase == PHASE_FLIGHT && !finalPhase)
+            {
+                if (m_uiChromaticCheckTimer <= diff)
+                {
+                    if (!me->FindNearestCreature(NPC_CHROMATIC_PROTO, 150.0f))
+                    {
+                        events.RescheduleEvent(EVENT_LAND, 10000, PHASE_FLIGHT);
+                        finalPhase = true;
+                    }
+                    m_uiChromaticCheckTimer = 1000;
+                }
+                else m_uiChromaticCheckTimer -= diff;
+            }
 
             events.Update(diff);
 
