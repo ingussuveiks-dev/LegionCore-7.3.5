@@ -228,7 +228,12 @@ struct npc_chens : ScriptedAI
                         uint8 i = 0;
                         std::list<ObjectGuid> guidTemp = guidList;
                         guidTemp.resize(3);
-                        me->SummonCreature(118365, 5259.373f, -668.9254f, 163.235f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        Creature* balloon = me->SummonCreature(118365, 5259.373f, -668.9254f, 163.235f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        if (!balloon)
+                        {
+                            timer = 2000;
+                            return;
+                        }
 
                         for (auto& guid : guidTemp)
                         {
@@ -238,10 +243,13 @@ struct npc_chens : ScriptedAI
                                 {
                                     if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))
                                     {
-                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void
+                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void
                                         {
-                                            if (auto balloon = g_player->FindNearestCreature(118365, 40.0f))
-                                                g_player->CastSpell(balloon, 234947, true);
+                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())
+                                                return;
+                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))
+                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))
+                                                    g_player->CastSpell(balloon, 234947, true);
                                         });
                                     }
                                 }
@@ -323,7 +331,12 @@ struct npc_scgnottz : ScriptedAI
                         uint8 i = 0;
                         std::list<ObjectGuid> guidTemp = guidList;
                         guidTemp.resize(3);
-                        me->SummonCreature(118297, -9516.056f, -1008.158f, 102.724f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        Creature* balloon = me->SummonCreature(118297, -9516.056f, -1008.158f, 102.724f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        if (!balloon)
+                        {
+                            timer = 2000;
+                            return;
+                        }
 
                         for (auto& guid : guidTemp)
                         {
@@ -333,10 +346,13 @@ struct npc_scgnottz : ScriptedAI
                                 {
                                     if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))
                                     {
-                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void
+                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void
                                         {
-                                            if (auto balloon = g_player->FindNearestCreature(118297, 40.0f))
-                                                g_player->CastSpell(balloon, 234947, true);
+                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())
+                                                return;
+                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))
+                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))
+                                                    g_player->CastSpell(balloon, 234947, true);
                                         });
                                     }
                                 }
@@ -418,7 +434,12 @@ struct npc_lin_cloudwalker : ScriptedAI
                         uint8 i = 0;
                         std::list<ObjectGuid> guidTemp = guidList;
                         guidTemp.resize(3);
-                        me->SummonCreature(118366, 547.6684f, -653.8698f, 257.4579f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        Creature* balloon = me->SummonCreature(118366, 547.6684f, -653.8698f, 257.4579f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        if (!balloon)
+                        {
+                            timer = 2000;
+                            return;
+                        }
 
                         for (auto& guid : guidTemp)
                         {
@@ -428,10 +449,13 @@ struct npc_lin_cloudwalker : ScriptedAI
                                 {
                                     if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))
                                     {
-                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void
+                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void
                                         {
-                                            if (auto balloon = g_player->FindNearestCreature(118366, 40.0f))
-                                                g_player->CastSpell(balloon, 234947, true);
+                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())
+                                                return;
+                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))
+                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))
+                                                    g_player->CastSpell(balloon, 234947, true);
                                         });
                                     }
                                 }
@@ -514,7 +538,12 @@ struct npc_rungle : ScriptedAI
                         uint8 i = 0;
                         std::list<ObjectGuid> guidTemp = guidList;
                         guidTemp.resize(3);
-                        me->SummonCreature(118363, 470.5434f, 6518.068f, 39.03863f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        Creature* balloon = me->SummonCreature(118363, 470.5434f, 6518.068f, 39.03863f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        if (!balloon)
+                        {
+                            timer = 2000;
+                            return;
+                        }
 
                         for (auto& guid : guidTemp)
                         {
@@ -524,10 +553,13 @@ struct npc_rungle : ScriptedAI
                                 {
                                     if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))
                                     {
-                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void
+                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void
                                         {
-                                            if (auto balloon = g_player->FindNearestCreature(118363, 40.0f))
-                                                g_player->CastSpell(balloon, 234947, true);
+                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())
+                                                return;
+                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))
+                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))
+                                                    g_player->CastSpell(balloon, 234947, true);
                                         });
                                     }
                                 }
@@ -609,7 +641,12 @@ struct npc_zang_cloudwalker : ScriptedAI
                         uint8 i = 0;
                         std::list<ObjectGuid> guidTemp = guidList;
                         guidTemp.resize(3);
-                        me->SummonCreature(118359, 1661.786f, 4788.782f, 138.8493f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        Creature* balloon = me->SummonCreature(118359, 1661.786f, 4788.782f, 138.8493f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        if (!balloon)
+                        {
+                            timer = 2000;
+                            return;
+                        }
 
                         for (auto& guid : guidTemp)
                         {
@@ -619,10 +656,13 @@ struct npc_zang_cloudwalker : ScriptedAI
                                 {
                                     if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))
                                     {
-                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void
+                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void
                                         {
-                                            if (auto balloon = g_player->FindNearestCreature(118359, 40.0f))
-                                                g_player->CastSpell(balloon, 234947, true);
+                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())
+                                                return;
+                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))
+                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))
+                                                    g_player->CastSpell(balloon, 234947, true);
                                         });
                                     }
                                 }
@@ -704,7 +744,12 @@ struct npc_hemet_nesingwary : ScriptedAI
                         uint8 i = 0;
                         std::list<ObjectGuid> guidTemp = guidList;
                         guidTemp.resize(3);
-                        me->SummonCreature(118364, 4506.38f, 4856.669f, 662.1934f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        Creature* balloon = me->SummonCreature(118364, 4506.38f, 4856.669f, 662.1934f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        if (!balloon)
+                        {
+                            timer = 2000;
+                            return;
+                        }
 
                         for (auto& guid : guidTemp)
                         {
@@ -714,10 +759,13 @@ struct npc_hemet_nesingwary : ScriptedAI
                                 {
                                     if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))
                                     {
-                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void
+                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void
                                         {
-                                            if (auto balloon = g_player->FindNearestCreature(118364, 40.0f))
-                                                g_player->CastSpell(balloon, 234947, true);
+                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())
+                                                return;
+                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))
+                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))
+                                                    g_player->CastSpell(balloon, 234947, true);
                                         });
                                     }
                                 }
@@ -799,7 +847,12 @@ struct npc_emi_lan : ScriptedAI
                         uint8 i = 0;
                         std::list<ObjectGuid> guidTemp = guidList;
                         guidTemp.resize(3);
-                        me->SummonCreature(118367, 3838.949f, 2060.948f, 254.2826f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        Creature* balloon = me->SummonCreature(118367, 3838.949f, 2060.948f, 254.2826f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                        if (!balloon)
+                        {
+                            timer = 2000;
+                            return;
+                        }
 
                         for (auto& guid : guidTemp)
                         {
@@ -809,10 +862,13 @@ struct npc_emi_lan : ScriptedAI
                                 {
                                     if (g_player->HasAura(SPELL_WAINTING_FOR_BALLOON))
                                     {
-                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player]()-> void
+                                        g_player->AddDelayedEvent(i * 400 + 1, [g_player, balloonGuid = balloon->GetGUID(), mapId = g_player->GetMapId(), instanceId = g_player->GetInstanceId()]()-> void
                                         {
-                                            if (auto balloon = g_player->FindNearestCreature(118367, 40.0f))
-                                                g_player->CastSpell(balloon, 234947, true);
+                                            if (!g_player->IsInWorld() || !g_player->IsAlive() || g_player->GetMapId() != mapId || g_player->GetInstanceId() != instanceId || !g_player->HasAura(SPELL_WAINTING_FOR_BALLOON) || g_player->GetVehicle())
+                                                return;
+                                            if (Creature* balloon = ObjectAccessor::GetCreature(*g_player, balloonGuid))
+                                                if (balloon->IsAlive() && g_player->IsWithinDistInMap(balloon, 40.0f))
+                                                    g_player->CastSpell(balloon, 234947, true);
                                         });
                                     }
                                 }
