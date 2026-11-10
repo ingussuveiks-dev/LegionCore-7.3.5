@@ -9,8 +9,14 @@ $start.RedirectStandardInput=$true;$start.RedirectStandardOutput=$true;$start.Re
 # Keep per-query results out of the client's exit-time stdout buffer as well
 # as draining both OS pipes. A prepared SIGNAL under --force reproduced a
 # missing final result despite a clean exit and completed pipe-copy tasks.
+# Native defaults selectors are parsed before ordinary options and must be
+# first. Keep the caller's selector ahead of our streaming option.
+$firstOrdinaryArgument=0
+if($Arguments.Count -and ($Arguments[0] -eq '--no-defaults' -or $Arguments[0].StartsWith('--defaults-file=') -or $Arguments[0].StartsWith('--defaults-extra-file='))){
+ $start.ArgumentList.Add($Arguments[0]);$firstOrdinaryArgument=1
+}
 $start.ArgumentList.Add('--unbuffered')
-foreach($argument in $Arguments){$start.ArgumentList.Add($argument)}
+for($index=$firstOrdinaryArgument;$index -lt $Arguments.Count;++$index){$start.ArgumentList.Add($Arguments[$index])}
 $process=[Diagnostics.Process]::new();$process.StartInfo=$start
 $outputStream=$null;$errorStream=$null;$started=$false
 try{

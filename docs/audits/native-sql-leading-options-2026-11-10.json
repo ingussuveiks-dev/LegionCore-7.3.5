@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-10",
+  "status": "TEST_TOOL_FIXED",
+  "base": "3d9746b2c3d81dd4685756e2c7fd00f96cce9d6e",
+  "cause": "Invoke-NativeSqlFiles unconditionally prepended --unbuffered. MariaDB11.4.9 requires --no-defaults/--defaults-file/--defaults-extra-file before ordinary options and rejected callers supplying these correct leading selectors.",
+  "fix": "Preserve the first supplied native defaults selector,then insert --unbuffered and the remaining unchanged arguments. Keep complete stdin/stdout/stderr draining,actual native exit and early-close handling.",
+  "tests": "Three actual MariaDB selector-parser failures on pinned3d974 helper paired with six clean MariaDB/MySQL8 parser/help runs. MySQL8 accepts the old ordering and is retained as a compatibility control;do not claim six broken baselines. Baseline --help can print usage and return0 despite a selector diagnostic,so counterfactual checks real stderr;fixed requires0 and empty stderr. Empty stdin avoids any DB login or credentials for this parser-only test. Separate retained real SQL tests cover full1MiB results,pre/post-error tails,scalar failure exit,6early-stdin-close cases and80prepared SIGNAL counterfactuals across both clients. All pass.",
+  "development": "Initial parser fixture also connected to the development DB;explicit no-defaults exposed a MariaDB client passwordless-TLS warning. Its original context stays outside fixed and is not claimed repaired by argument ordering. Final parser test uses native help with no connection;actual SQL streaming remains covered by retained original connection-context tests. Fixture initially assumed empty stdout/nonzero help exit and identical broken MySQL8 behavior;actual clients reviewed and assertions narrowed to observed native parser failures and clean compatibility controls.",
+  "production": "No engine,C++,SQL migration,credentials,configuration or installed DB binary change by this repair. Separate Tsulong source and isolated MariaDB CAST candidate are not certified by this tooling commit.",
+  "diagnostics": "Every declared test has before/after canonical and own crash/log snapshots. All final tests complete,no new canonical/test crashes or appended DBErrors/server diagnostics. Expected SQL1054/1644 baselines are retained explicitly;mixed7111-byte DBErrors and original Lady/LINK2/Slaghammer/SQL/TimeLoop evidence unchanged.",
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\native-sql-leading-options-2026-11-10",
+    "manifest_sha256": "69d4d84a3ffd4b668742e8a9626359835f17ffc2ce02e17d565ed912082c627f",
+    "files": 345,
+    "unresolved_initial_connection_contexts": [
+      "build-extractors\\runtime-test\\native-sql-leading-options\\20261110-200421-927",
+      "build-extractors\\runtime-test\\native-sql-leading-options\\20261110-200422-563"
+    ]
+  },
+  "cleanup": "No executable,symbol or native test server created by these parser/SQL-helper tests. Non-sensitive text fixtures retained;credentials read locally only and restored environment in finally. No original DB service stopped."
+}
