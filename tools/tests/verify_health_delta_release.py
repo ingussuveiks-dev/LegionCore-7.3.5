@@ -10,5 +10,8 @@ assert sites(r,'?GetHealth@Unit@@') and sites(r,'?GetMaxHealth@Unit@@'),'retain 
 gain=ins('?GetHealthGain@Unit@@');assert {0x38,0x40}<=set(values(gain))
 for m,s in [('sub','rcx, rdi'),('cmp','rax, rdi'),('cmovbe','rcx, rdx'),('cmovb','rbx, rcx'),('cmp','rax, rbx'),('cmovb','rbx, rax')]:assert op(gain,m,s),(m,s)
 damage=ins('?DealDamage@Unit@@');at,=sites(damage,'?ModifyHealth@Unit@@');window=damage[at-8:at]
-assert op(window,'mov','edx, r10d') and op(window,'neg','rdx') and not any(x.mnemonic=='movsxd' for x in window),'zero-extend normalized32 damage before64bit negation'
+# The later post-callback life checks reload the same normalized stack value
+# directly instead of keeping it in r10d across the alternate return path.
+load=op(window,'mov','edx, r10d') or op(window,'mov','edx, dword ptr [rsp + 0x60]')
+assert load and op(window,'neg','rdx') and not any(x.mnemonic=='movsxd' for x in window),'zero-extend normalized32 damage before64bit negation'
 print('PASS linked native health deltas:unsigned64 current/max comparisons,remaining-room clamp before addition,bounded negative magnitude before subtraction,prediction with native38/40fields and real nonlethal damage64negation. Complete Freya/counter/Tsulong/Rook/prior367 chain retained;native280API and four normalized damage boundaries separate from client/full spell-healing scope.')

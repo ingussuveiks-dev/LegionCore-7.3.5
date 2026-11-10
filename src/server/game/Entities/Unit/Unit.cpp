@@ -1213,23 +1213,23 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         if (InstanceScript* instance = creature->GetInstanceScript())
         {
             instance->OnCreatureDamageTaken(creature, this, damage);
-            if (!damage)
-                return 0;
+            if (!damage || !creature->IsAlive())
+                return damage;
         }
 
         if (creature->AI())
         {
             creature->AI()->DamageTakenAfterScaling(this, damage, damagetype);
-            if (!damage)
-                return 0;
+            if (!damage || !creature->IsAlive())
+                return damage;
         }
         // The original content AI is suspended, not removed, during native
         // charm. Apply its final damage policy after the temporary AI's hook.
         if (creature->i_disabledAI && creature->i_disabledAI != creature->AI())
         {
             reinterpret_cast<CreatureAI*>(creature->i_disabledAI)->DamageTakenAfterScaling(this, damage, damagetype);
-            if (!damage)
-                return 0;
+            if (!damage || !creature->IsAlive())
+                return damage;
         }
     }
 

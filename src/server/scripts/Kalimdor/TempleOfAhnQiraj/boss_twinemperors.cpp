@@ -30,6 +30,8 @@ EndScriptData */
 
 #include "Item.h"
 #include "Spell.h"
+#include "Player.h"
+#include <boost/multiprecision/cpp_int.hpp>
 
 #define SPELL_HEAL_BROTHER          7393
 #define SPELL_TWIN_TELEPORT         800                     // CTRA watches for this spell to start its teleport timer
@@ -74,6 +76,7 @@ struct boss_twinemperorsAI : public ScriptedAI
     bool AfterTeleport;
     uint32 AfterTeleportTimer;
     bool DontYellWhenDead;
+    bool deathHandled = false;
     uint32 Abuse_Bug_Timer, BugsTimer;
     bool tspellcasted;
     uint32 EnrageTimer;
@@ -93,6 +96,7 @@ struct boss_twinemperorsAI : public ScriptedAI
         BugsTimer = 2000;
         me->ClearUnitState(UNIT_STATE_STUNNED);
         DontYellWhenDead = false;
+        deathHandled = false;
         EnrageTimer = 15*60000;
     }
 
@@ -104,32 +108,97 @@ struct boss_twinemperorsAI : public ScriptedAI
             return NULL;
     }
 
-    void DamageTaken(Unit* /*done_by*/, uint32 &damage, DamageEffectType dmgType)
+    Creature* GetLivingBrother()
     {
-        Unit* pOtherBoss = GetOtherBoss();
-        if (pOtherBoss)
-        {
-            float dPercent = ((float)damage) / ((float)me->GetMaxHealth());
-            int odmg = (int)(dPercent * ((float)pOtherBoss->GetMaxHealth()));
-            int ohealth = pOtherBoss->GetHealth()-odmg;
-            pOtherBoss->SetHealth(ohealth > 0 ? ohealth : 0);
-            if (ohealth <= 0)
-            {
-                pOtherBoss->setDeathState(JUST_DIED);
-                pOtherBoss->SetFlag(OBJECT_FIELD_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
-            }
-        }
+        Creature* other = GetOtherBoss();
+        return other && other != me && other->IsAlive() &&
+            other->GetEntry() == (IAmVeklor() ? 15275u : 15276u) ? other : nullptr;
     }
 
-    void JustDied(Unit* /*killer*/)
+    static void RegisterSharedDamage(Unit* attacker, Creature* target, uint64 damage)
     {
-        Creature* pOtherBoss = GetOtherBoss();
-        if (pOtherBoss)
+        if (!attacker || !damage || (target->IsControlledByPlayer() && !target->IsVehicle()))
+            return;
+
+        Player* owner = attacker->GetAffectingPlayer();
+        if (!owner)
+            return;
+
+        // Owned guardians need not have the controllable-unit flag. Resolve
+        // the real owner for tagging; native Kill retains group reward rules.
+        if (!target->hasLootRecipient())
+            target->SetLootRecipient(owner);
+        target->LowerPlayerDamageReq(damage);
+    }
+
+    void CopySharedEligibility(Creature* other)
+    {
+        // This core's damage requirement is a positive boolean accumulator.
+        // A real eligible death also qualifies its linked brother, including
+        // a final hit whose rounded proportional damage was zero.
+        if (me->IsDamageEnoughForLootingAndReward() && !other->IsDamageEnoughForLootingAndReward())
+            other->LowerPlayerDamageReq(1);
+        if (!other->hasLootRecipient())
+            if (Player* recipient = me->GetLootRecipient())
+                other->SetLootRecipient(recipient);
+    }
+
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
+    {
+        Creature* other = GetLivingBrother();
+        uint64 const maximum = me->GetMaxHealth();
+        if (!attacker || !damage || !maximum)
+            return;
+
+        // Native damage registers controlled units later. Also retain owned
+        // pet/guardian contributions when that control flag is absent.
+        if (!attacker->IsControlledByPlayer())
+            RegisterSharedDamage(attacker, me, std::min<uint64>(damage, me->GetHealth()));
+        if (!other)
+            return;
+
+        // The product can exceed uint64 even though the bounded result fits.
+        // Retain the authored proportional integer damage after core scaling.
+        boost::multiprecision::uint128_t const shared =
+            boost::multiprecision::uint128_t(damage) * other->GetMaxHealth() / maximum;
+        // Let an ordinary direct killing hit keep its native SpellInfo/procs.
+        // Our real JustDied then propagates the linked death to the brother.
+        if (uint64(damage) >= me->GetHealth() && me->IsAIEnabled && me->AI() == this)
+            return;
+        if (uint64(damage) < me->GetHealth() && shared < other->GetHealth())
         {
-            pOtherBoss->SetHealth(0);
-            pOtherBoss->setDeathState(JUST_DIED);
-            pOtherBoss->SetFlag(OBJECT_FIELD_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
-            CAST_AI(boss_twinemperorsAI, pOtherBoss->AI())->DontYellWhenDead = true;
+            uint64 const mirrored = uint64(shared);
+            other->SetHealth(other->GetHealth() - mirrored);
+            RegisterSharedDamage(attacker, other, mirrored);
+            return;
+        }
+
+        // Either brother can reach zero first after differing heals/rounding.
+        // Register this real hit before ending both actors through native Kill.
+        // The core stops applying damage to an actor killed by this callback,
+        // preserving the actual hit result without processing a second death.
+        if (attacker->IsControlledByPlayer())
+            RegisterSharedDamage(attacker, me, std::min<uint64>(damage, me->GetHealth()));
+        RegisterSharedDamage(attacker, other, other->GetHealth());
+        CopySharedEligibility(other);
+        attacker->Kill(other);
+        // A suspended/replaced brother AI need not dispatch our JustDied.
+        if (me->IsAlive())
+            attacker->Kill(me);
+    }
+
+    void JustDied(Unit* killer) override
+    {
+        if (me->IsAlive() || deathHandled)
+            return;
+        deathHandled = true;
+
+        if (Creature* other = GetLivingBrother())
+        {
+            if (auto ai = dynamic_cast<boss_twinemperorsAI*>(other->AI()))
+                ai->DontYellWhenDead = true;
+            CopySharedEligibility(other);
+            (killer ? killer : me)->Kill(other);
         }
         if (!DontYellWhenDead)                              // I hope AI is not threaded
             DoPlaySoundToSet(me, IAmVeklor() ? SOUND_VL_DEATH : SOUND_VN_DEATH);

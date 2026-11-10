@@ -1,0 +1,72 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_CPP_AND_LIVE_DATA_AUTOMATED_CLIENT_PENDING",
+  "base": "5a55c0163",
+  "causes": [
+    "Twin damage used pre-scaling float/int32 mirror subtraction and manual other-boss death/loot flags,losing wide health and native death/reward callbacks.",
+    "Owned pets/guardians need not carry the controllable-unit flag. Owner/secondary-owner contributions and first-tag/group credit needed explicit native ownership resolution in this shared encounter.",
+    "The matching project already had native encounter715->Veklor15276,but only at difficulty3(10Normal),which omitted the actual40Player map531 encounter list. DB2native715 is Map531,Difficulty0,Bit6."
+  ],
+  "fix": "Mirror final scaled damage with exact128bit product/division and native64 subtraction. Resolve GetAffectingPlayer,retain existing first tags/native saturated damage eligibility and core group rules. Let ordinary direct lethal hits continue through native Kill with original SpellInfo/procs;JustDied propagates the linked death. Brother-first or missing/replaced/suspended AI paths use native Kill for both,with a living/self/opposite-entry guard and one-use reset checkpoint. Three core instance/current/suspended post-damage checks stop an ended life while returning actual normalized damage. No manual corpse/loot flags,guessed HP threshold,kill timer,nearest-player credit or direct quest/item grants.",
+  "data": {
+    "migration": "sql\\updates\\world\\2026_11_10_01_twin_emperors_encounter.sql",
+    "sha256": "63271fd7bc33467da3c388007e2c561780090cbd0f4fc14231628fe111a46a57",
+    "sha1": "ae4c1ee87ad2828d7250d8f3203a4d5c6777f304",
+    "before": "(715,3,0,15276,0,Veklor comment)",
+    "after": "Only difficulty changes to-1;matching project Veklor15276 credit and existing comment retained. Missing-row insertion supported. Unknown or duplicate715data explicitly SIGNAL1644 before mutation.",
+    "order": "SQL stayed outside live updater until exact PE-verified new EXE promotion;owned canonical start applied one update,then full native live data receipt/regressions pass.",
+    "sources": [
+      "Actual local Legion26972 DungeonEncounter715/MapDifficulty531,live/base2024matching715row and native loader/Unit::Kill/instance mapping.",
+      "Local TrinityCore eaa32415b0f93f6d26294e1e9e4083be3dba0745 retains the same obsolete manual mirror. Historical3.3.5/4.3.4SQL maps715to15275 as a reference;that differing target was not copied over the matching project15276binding."
+    ]
+  },
+  "validation": {
+    "native": "Complete production two emperor classes;actual Creature/Unit::DealDamage/Kill/Map531/loot/reference/owner/group dispatch.288independent128bit-reference arithmetic cases throughUINT64_MAX,controlled0.5/1/2multipliers,54paired deaths across both directions and Player/pet/guardian/secondary solo/group plus NPC no-award,three death orders,actual killer GUIDs/native715bit6/template loot owner/group,hit return,repeat Kill/death/reset. Six missing/wrong/self pair cases,twelve destroyed/replaced/current/suspended/instance callback alternatives,zero/null attacker admission. Exactly two matching live ScriptName bindings.",
+    "data": "Actual native raw CAPI on connection-private verified TEMP tables:legacy/missing/already-correct,repeat/comment/unrelated preservation,four explicit1644wrong/duplicate refusals before mutation. Positive whole-class shadow tests and final actual live715readback pass.",
+    "limits": "Bare Human/Warrior sessions,poses,pair GUIDs,already-loaded in-memory raid admission binds and virtual multiplier inputs controlled. This tests the actual core scaling division/callback order,not every real level profile. No character/account/item receipt writes. Complete encounter casts/immunities/healing/AI timing/travel/client visuals/audio,spell-specific linked-kill proc fidelity and full raid traversal remain client checks.",
+    "source": "Exact selected methods/death checkpoint/dependencies only;original healing/timers/abilities/immunities/routes/sound tail/registrations preserved. Unit diff exactly three post-callback life checks;all other health/owner/group/kill/proc/packet code retained. Existing health/counter scope certificates updated only for this separately checked contract.",
+    "release": "Original game/scripts libraries and source hashes,staged original-input link,immutable staged/canonical EXE+MAP hashes. Complete prior367+Rook/Tsulong/counter/Freya/health checks retained. New both real vtables slotA8,128bit operations/native64 fields,owner/tap/saturation,native Kill/checkpoint/reset/fallback and all3core real-damage return guards verified.17inherited Unit compiler warnings map to unchanged pinned source;no selected emperor compiler warnings.",
+    "runtime": "Canonical Scepter passes;owned32444 updater/fresh ready/shutdown0/exit0/gone,empty stderr,protected runtime hashes unchanged. Retained native280health+4damage+3heal matrix passes. No user/unknown server stopped or left running. Ready banner still uses prior generated revision metadata;actual deployed implementation is identified by source/library/EXE hashes and linked paths,not by that banner.",
+    "diagnostics": "Final native/build/link/PE/scope/updater/start runs have canonical+own before/after snapshots,no new crash or unexplained appended diagnostics. Original full-class pinned0f477 expected-broken mirror/callback and pre-scaling controls retained. Two early fixture AVs were investigated:missing encounter loader vector,then stale in-memory admission bind references during assertion cleanup. Real loaders/in-memory loaded binds/RAII unload corrected them. Initial missing-save warnings,wrong IsDead test name,pet control-flag assumption,unknown715guard refusal,old raw-damage expectation,PE namespace/data-vtable and register-shape selectors are paired with corrected passing regressions. These failures were not ordinary passing runs. Two fully reviewed private1644logs archived/hashed then cleared;canonical mixed7111byteDBErrors remains untouched."
+  },
+  "canonical": {
+    "worldserver.exe": "489f00a84a37730f5582eada981f3836ca4cfb22d7907d71a7b544bb50c642e6",
+    "worldserver.map": "68de4ba5f88ecc6a18af05393168f115b5db3f82ecf0caf541e84962d7fa6b96",
+    "bnetserver.exe": "f656078e0f58b6c1bdd8036d7710e31ed90ac0018f91d5c4b1ae75591be238d0",
+    "bnetserver.map": "bb59315a7a9ca86d3fe5ecc7d2c6cd29185a609ad95614fce06c48712c1a1a5f"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\twin-emperors-2026-11-10",
+    "manifest_sha256": "48400a792f630c3d69dbcbacdc251727c061b3c3d35562c382bda4d4b9dc2353",
+    "archived_files": 834,
+    "removed_files": 372,
+    "logical_removed_bytes": 4384431839,
+    "deletion_manifest": ".codex\\twin-emperors-2026-11-10\\deletion-manifest.json",
+    "deletion_manifest_sha256": "14892b4cbf95d48a9f82abca4194d244b039c8e9019c139ef0ef6db5b028bf47",
+    "cleared_reviewed_private_error_logs": [
+      {
+        "path": "build-extractors\\runtime-test\\twinemperorsnative\\20261110-221823-790\\logs\\DBErrors.log",
+        "previous_sha256": "664b0c02f715c1809e684f7cb33b6832719711a6e17d9eb439f9f02dcf89895a",
+        "archive": "build-extractors\\bin\\Release\\fixed\\twin-emperors-2026-11-10\\build-extractors\\runtime-test\\twinemperorsnative\\20261110-221823-790\\logs\\DBErrors.log"
+      },
+      {
+        "path": "build-extractors\\runtime-test\\twinemperorsnative\\20261110-222030-376\\logs\\DBErrors.log",
+        "previous_sha256": "2d8e93ef86fa27284f4f9034b96a92f61bc8c54e2356e005bd256a016506493d",
+        "archive": "build-extractors\\bin\\Release\\fixed\\twin-emperors-2026-11-10\\build-extractors\\runtime-test\\twinemperorsnative\\20261110-222030-376\\logs\\DBErrors.log"
+      }
+    ],
+    "removed_superseded_rollbacks": [
+      ".codex\\release-before-tsulong-health-2026-11-10",
+      ".codex\\release-before-native-loot-damage-2026-11-10",
+      ".codex\\release-before-freya-elder-health-2026-11-10"
+    ],
+    "retained": "Latest pre-Twin and pre-health-delta recovery plus pre-Rook recovery for pending client mechanics. Main libraries,canonical data/config/certs/DLLs,all reusable sources,original protected Slaghammer cache,OPEN Lady video/LINK2/TimeLoop/SQL/handshake evidence and staged MariaDB final DLL/symbols/build remain. Binary rollback needs corresponding encounter-data review;no automatic data rollback performed.",
+    "fix_commit_resolution": "Local fixed resolution.json records focused commit after creation."
+  },
+  "pending": [
+    "Actual full Twin Emperors/client raid and all36artifact chains not certified by controlled native cases.",
+    "Authentic living Lady surrender/conversation1906/Grash impact and missingLINK2/Slaghammer evidence remain open;no guessed payload,HP threshold or kill timer.",
+    "TimeLoop32bit spell-healing pipeline,Meljarak sharing and other scouted audits remain separate. Native signed-delta repair5a55c0163 does not claim these complete.",
+    "MariaDB unsignedCAST DLL tested/staged but user wampmariadb64 remains running;explicit stop confirmation needed before replacement. Intermittent client handshake root remains unproven."
+  ]
+}
