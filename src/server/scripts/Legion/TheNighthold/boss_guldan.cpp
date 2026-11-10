@@ -443,8 +443,9 @@ public:
             me->CastStop();
             me->RemoveAllAuras();
             
-            me->AddDelayedEvent(12 * MINUTE*IN_MILLISECONDS, [this]() -> void
+            me->AddDelayedEvent(12 * MINUTE*IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (me->IsAlive() && me->isInCombat())
                     me->CastSpell(me, SPELL_BERSERK);
 
@@ -591,21 +592,25 @@ public:
                 
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                 
-                me->AddDelayedEvent(10000, [this] () -> void
+                me->AddDelayedEvent(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Creature* illidan = me->GetMap()->GetCreature(instance->GetGuidData(NPC_CRYSTALL_OF_ILLIDAN)))
                     {
                         me->CastSpell(illidan, SPELL_INTRO_FOCUS_ILLIDAN);
                         Talk(0);
                         
-                        me->AddDelayedEvent(23000, [this] () -> void
+                        me->AddDelayedEvent(23000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             Talk(1);
-                            me->AddDelayedEvent(18000, [this] () -> void
+                            me->AddDelayedEvent(18000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                             {
+                                if (aiLifetimeGuard.expired()) return;
                                 Talk(2);
-                                me->AddDelayedEvent(16000, [this] () -> void
+                                me->AddDelayedEvent(16000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                                 {
+                                    if (aiLifetimeGuard.expired()) return;
                                     Talk(3);
                                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                                     DoCast(SPELL_INTRO);
@@ -712,8 +717,9 @@ public:
                     summon->GetClosePoint(x, y, z, summon->GetObjectSize() / 3, 2);
                     summon->GetMotionMaster()->MovePoint(0, x, y, z + 6.0f);
 
-                    me->AddDelayedEvent(3000, [this, summonGuid = summon->GetGUID()] () -> void
+                    me->AddDelayedEvent(3000, [this, summonGuid = summon->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         Creature* summon = ObjectAccessor::GetCreature(*me, summonGuid);
                         if (!summon)
                             return;
@@ -824,8 +830,9 @@ public:
                 case SPELL_BOUNDS_OF_FEL_DMG_AOE:
                 {
                     ObjectGuid guid = target->GetGUID();
-                    me->AddDelayedEvent(1000, [this, guid]() -> void
+                    me->AddDelayedEvent(1000, [this, guid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         for (auto add_guid : addsBoundsOfFel[guid])
                             if (Creature* add = me->GetMap()->GetCreature(add_guid))
                                 add->DespawnOrUnsummon();
@@ -836,8 +843,9 @@ public:
                 }
                 case SPELL_EMPOWERED_BOUNDS_OF_FEL_TICK:
                     target->CastSpell(me, SPELL_EMPOWERED_BOUNDS_OF_FEL_KNOCK);
-                    me->AddDelayedEvent(3000, [this, targetGuid = target->GetGUID()] () -> void
+                    me->AddDelayedEvent(3000, [this, targetGuid = target->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         if (!me->IsAlive())
                             return;
                         Unit* target = ObjectAccessor::GetUnit(*me, targetGuid);
@@ -1112,8 +1120,9 @@ public:
                         DisableRotation(9000);
 
                         DoCast(SPELL_FEL_EFFLUX);
-                        me->AddDelayedEvent(2010, [this] () -> void // hack. If spell hit player, when dmg started - boss rotating again
+                        me->AddDelayedEvent(2010, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void // hack. If spell hit player, when dmg started - boss rotating again
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             DisableRotation(9000);
                         });
                         
@@ -1180,8 +1189,9 @@ public:
                     case EVENT_BLACK_HARVEST:
                         Talk(SAY_BLACK_HARVEST);
                         DoCast(SPELL_BLACK_HARVEST);
-                        me->AddDelayedEvent(2000, [this] () -> void
+                        me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (!souls.size())
                                 return;
 
@@ -1202,8 +1212,9 @@ public:
                                         soul->DespawnOrUnsummon(1000);
                                     });
                                     
-                                    me->AddDelayedEvent(3000, [this, pos_cast]()-> void
+                                    me->AddDelayedEvent(3000, [this, pos_cast, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()-> void
                                     {
+                                        if (aiLifetimeGuard.expired()) return;
                                         me->CastSpell(pos_cast, SPELL_BLACK_HARVEST_SOUL, false);
                                     });
                                 }
@@ -1305,8 +1316,9 @@ public:
                         point.m_positionZ = me->GetPositionZ();
 
                         Creature* _me = me;
-                        me->AddDelayedCombat(urand(i, i + 2)*timer / 12 + urand(j, timer), [this, _me, point]() -> void
+                        me->AddDelayedCombat(urand(i, i + 2)*timer / 12 + urand(j, timer), [this, _me, point, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (_me && !isDead)
                                 _me->PlaySpellVisual(point, STORM_OF_THE_DESTROYER_VISUAL, 0.75f, ObjectGuid::Empty, true);
                         });
@@ -1318,15 +1330,15 @@ public:
             {
                 case 10:
                     visual_id = STORM_OF_THE_DESTROYER_ORPHAN_1;
-                    me->AddDelayedCombat(timer, [this] () -> void { DoVisualCircle(10.0f, 20.0f); });
+                    me->AddDelayedCombat(timer, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; DoVisualCircle(10.0f, 20.0f); });
                     break;
                 case 20:
                     visual_id = STORM_OF_THE_DESTROYER_ORPHAN_2;
-                    me->AddDelayedCombat(timer, [this] () -> void { DoVisualCircle(20.0f, 30.0f); });
+                    me->AddDelayedCombat(timer, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; DoVisualCircle(20.0f, 30.0f); });
                     break;
                 case 30:
                     visual_id = STORM_OF_THE_DESTROYER_ORPHAN_3;
-                    me->AddDelayedCombat(timer, [this] () -> void { DoVisualCircle(30.0f, 60.0f); });
+                    me->AddDelayedCombat(timer, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; DoVisualCircle(30.0f, 60.0f); });
                     break;
                 case 60:
                     visual_id = STORM_OF_THE_DESTROYER_ORPHAN_4;
@@ -1336,8 +1348,9 @@ public:
             if (!visual_id)
                 return;
             
-            me->AddDelayedCombat(timer, [this, visual_id] () -> void
+            me->AddDelayedCombat(timer, [this, visual_id, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (isDead || !UpdateVictim())
                     return;
 
@@ -1351,8 +1364,9 @@ public:
             me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_TURN); // visual
             me->AddUnitState(UNIT_STATE_CANNOT_TURN); // for correct work
             
-            me->AddDelayedEvent(timer, [this] () -> void
+            me->AddDelayedEvent(timer, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_TURN); // visual
                 me->ClearUnitState(UNIT_STATE_CANNOT_TURN); // for correct work
             });
@@ -1364,8 +1378,9 @@ public:
             {
                 khadgar->CastSpell(khadgar, 227671);
                 khadgar->GetMotionMaster()->MoveFall();
-                me->AddDelayedEvent(2000, [this, khadgarGuid = khadgar->GetGUID()] () -> void
+                me->AddDelayedEvent(2000, [this, khadgarGuid = khadgar->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Creature* khadgar = ObjectAccessor::GetCreature(*me, khadgarGuid);
                     if (!khadgar || !me->IsAlive())
                         return;
@@ -1409,8 +1424,9 @@ public:
         
         void EventPerephaseToSecond()
         {
-            me->AddDelayedEvent(IsMythicRaid() ? 2000 : 13000, [this]()-> void
+            me->AddDelayedEvent(IsMythicRaid() ? 2000 : 13000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()-> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (GameObject* go = me->GetMap()->GetGameObject(instance->GetGuidData(GO_ROOM)))  // destroy room
                     go->SetDestructibleState(GO_DESTRUCTIBLE_DESTROYED, nullptr, false);
                 
@@ -1420,8 +1436,9 @@ public:
                 DoCast(SPELL_EYE_OF_AMANTHUL_PHASE_2);
                 me->RemoveAurasDueToSpell(SPELL_EYE_OF_AMANTHUL_PEREPHASE_TO_2);
                 
-                me->AddDelayedEvent(6000, [this] () -> void
+                me->AddDelayedEvent(6000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     can_regenerate_energy = true;
                     
                     Talk(SAY_PHASE_2_START);
@@ -1451,23 +1468,26 @@ public:
                     go->SetByteValue(GAMEOBJECT_FIELD_BYTES_1, 0, 3); // broken
                 });
             }
-            me->AddDelayedEvent(9000, [this] () -> void
+            me->AddDelayedEvent(9000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_RESONANT_BARRIER);
                 instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TIME_DILATION);
                 instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_SCATTERING_FIELD);
 
                 DoCast(SPELL_EYE_OF_AMANTHUL_PHASE_3_1); 
-                me->AddDelayedEvent(5000, [this] () -> void
+                me->AddDelayedEvent(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(SAY_PHASE_3_START);
                     if(!IsLfrRaid())
                         me->CastSpell(282.23f, 3135.16f, 465.93f, SPELL_WELL_OF_SOULS);
                     
                     me->SetControlled(false, UNIT_STATE_ROOT);
                     
-                    me->AddDelayedEvent(4000, [this] () -> void
+                    me->AddDelayedEvent(4000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         CreateKhadgarAndFigure();                        
                     });
                 });
@@ -1513,6 +1533,9 @@ public:
                 stormTimer = stormTimersMythic;
             }
         }
+   private:
+       // Unit-owned queues may outlive this AI object.
+       std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
    };
 
     CreatureAI* GetAI(Creature* creature) const override
