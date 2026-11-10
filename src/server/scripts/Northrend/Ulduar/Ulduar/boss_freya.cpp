@@ -364,7 +364,7 @@ public:
             {
                 DoScriptText(SAY_AGGRO_WITH_ELDER, me);
                 // each Elder left up will increase the health of both Freya and her adds. (20% per Elder)
-                me->SetMaxHealth(me->GetMaxHealth() + (uint32)(me->GetMaxHealth() * EldersCount * 20 / 100));
+                me->SetMaxHealth(me->GetMaxHealth() + (me->GetMaxHealth() * EldersCount * 20 / 100));
                 me->SetFullHealth();
                 me->LowerPlayerDamageReq(me->GetMaxHealth());
             }
