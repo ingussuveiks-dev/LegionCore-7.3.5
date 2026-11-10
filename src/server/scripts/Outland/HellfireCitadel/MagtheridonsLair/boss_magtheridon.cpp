@@ -529,9 +529,9 @@ class mob_hellfire_channeler : public CreatureScript
                 summon->AI()->AttackStart(me->getVictim());
             }
 
-            void DamageTaken(Unit*, uint32 &damage, DamageEffectType dmgType)
+            void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
             {
-                if (damage >= me->GetHealth())
+                if (damage >= me->GetHealth(attacker))
                     DoCast(me, SPELL_SOUL_TRANSFER, true);
             }
 
