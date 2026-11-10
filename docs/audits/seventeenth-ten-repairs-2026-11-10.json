@@ -1,0 +1,273 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "base": "4a7cae7e4d9764af0e172be4d87af103290d2b73",
+  "batch_number": 2,
+  "authorized_total": 50,
+  "support_commit": "3d41ec6467be1c5fdd2a7f8cd1b8cc3b4425efba",
+  "implementation_head": "2971cfd7630b190fd76fe270c7d325eb7f37ddb1",
+  "fixes": [
+    {
+      "key": "KarshTimer",
+      "title": "Initialize Karsh armor achievement polling on every reset",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/BlackrockCaverns/boss_karsh_steelbender.cpp"
+      ],
+      "audit": "docs/audits/karsh-armor-reset-timer-2026-11-10.json",
+      "commit": "9d02ef08b90c90fe86aae4db1cc396b2bb6a0d60"
+    },
+    {
+      "key": "IvanyrTimer",
+      "title": "Initialize Ivanyr achievement polling through Reset",
+      "paths": [
+        "src/server/scripts/Legion/TheArcway/boss_ivanyr.cpp"
+      ],
+      "audit": "docs/audits/ivanyr-achievement-reset-timer-2026-11-10.json",
+      "commit": "ec863ee4b6ccad62fe972cbea1097f77bba746c7"
+    },
+    {
+      "key": "MillificentTimer",
+      "title": "Initialize Millificent achievement polling through Reset",
+      "paths": [
+        "src/server/scripts/Legion/VioletHoldLegion/boss_millificent_manastorm.cpp"
+      ],
+      "audit": "docs/audits/millificent-achievement-reset-timer-2026-11-10.json",
+      "commit": "15648ac71da7399d107c3541ca6dc6a865e1442f"
+    },
+    {
+      "key": "ElderTimers",
+      "title": "Initialize Elder Murk Eye activation and evade timers on reset",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_Harjatan.cpp"
+      ],
+      "audit": "docs/audits/elder-murk-eye-reset-timers-2026-11-10.json",
+      "commit": "c315d6e15d4e3a4785288f237008239b5d80192d"
+    },
+    {
+      "key": "NightmotherTimer",
+      "title": "Clear Nightmother landing timer on reset",
+      "paths": [
+        "src/server/scripts/Legion/TheEmeraldNightmare/boss_elerethe_renferal.cpp"
+      ],
+      "audit": "docs/audits/nightmother-landing-reset-timer-2026-11-10.json",
+      "commit": "7dcd3597163d8ba732773b5e956bebe23e96dabd"
+    },
+    {
+      "key": "ChampionTimer",
+      "title": "Initialize Argent Champion defensive refresh timer on reset",
+      "paths": [
+        "src/server/scripts/Northrend/zone_icecrown.cpp"
+      ],
+      "audit": "docs/audits/argent-champion-defend-reset-timer-2026-11-10.json",
+      "commit": "98e7303344650bc46eb3bb2f90b8a116ab2fe2df"
+    },
+    {
+      "key": "BlackHoleState",
+      "title": "Reset Entropius black hole to its authored spawn stage",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_muru.cpp"
+      ],
+      "audit": "docs/audits/entropius-black-hole-reset-stage-2026-11-10.json",
+      "commit": "98dcbf21e9d4efae15eb15dd0d9874a5d965c1ac"
+    },
+    {
+      "key": "VortexState",
+      "title": "Reset Daakara vortex passive activation state",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/ZulAman/boss_daakara.cpp"
+      ],
+      "audit": "docs/audits/daakara-vortex-reset-stage-2026-11-10.json",
+      "commit": "1cc4836b10bca6d68880c9a41a6c1a88a05baa54"
+    },
+    {
+      "key": "FocusState",
+      "title": "Initialize Empyreal Focus idle state before deactivation polling",
+      "paths": [
+        "src/server/scripts/Pandaria/MogushanVault/boss_elegon.cpp"
+      ],
+      "audit": "docs/audits/elegon-focus-reset-state-2026-11-10.json",
+      "commit": "fff9e11b0be5861d3526c9a01b1e20a41edfe58c"
+    },
+    {
+      "key": "SapperTimer",
+      "title": "Keep Pavalak sapper return timer inactive until arrival",
+      "paths": [
+        "src/server/scripts/Pandaria/SiegeNiuzaoTemple/boss_general_pavalak.cpp"
+      ],
+      "audit": "docs/audits/pavalak-sapper-return-reset-timer-2026-11-10.json",
+      "commit": "2971cfd7630b190fd76fe270c7d325eb7f37ddb1"
+    }
+  ],
+  "counting": "Ten independent actor controllers with missing reset initialization;12 fields count as10 fixes. Four unused Initialize helpers never ran from native AI Reset;existing authored values retained. No new timing,quest credit,HP threshold or SQL.",
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "ff5e47cf81f633ec9200f1af846d34a2efa8c04bf950c8bb98b87068dd20fdf4",
+    "bnet_sha256": "78b03db9888d0798019324cc9352dd34d16284fa19f826fbb7bd12392cc38830",
+    "rollback": ".codex/release-before-seventeenth-ten-fixes-2026-11-10",
+    "startup": "Owned PID=29596 reached fresh ready\nPASS owned PID=29596 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "validation": {
+    "source": "20 MSVC ASAN reset contracts:10 pinned instrumented controls and10 repaired source selections;12 state fields across10 independent controllers. Sentinel instruments indeterminate old state without UB. Both first-use and repeated Reset checked. These selected assignment extracts do not replay complete AI UpdateAI or encounter side effects.",
+    "native": "Actual native Actor/ScriptedAI InitializeAI virtual Reset dispatch and repeated Reset with production state assignments for10 controllers/12fields. Does not execute original full Reset side effects or full UpdateAI,casts,death,quest/pet/group progression/client encounter;no character writes/full-core ASAN.",
+    "release": "Original game/scripts libraries/staged+canonical PE verifies10 production Reset writes plus167 prior selected paths;canonical Scepter/ArtifactTier/ScenarioResumeASAN and fresh owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crash/log snapshots,exit/stdout/stderr/appended diagnostics for every declared check. Mixed7111 DBErrors remains OPEN unchanged. Fixture preparation corrections retained separately;compiler warnings reviewed.",
+    "scope": "Ten independent actor controllers with missing reset initialization;12 fields count as10 fixes. Four unused Initialize helpers never ran from native AI Reset;existing authored values retained. No new timing,quest credit,HP threshold or SQL."
+  },
+  "diagnostics": {
+    "final": "Final declared regressions,linked binary checks,retained checks and owned startup passed with canonical+own crash/log/exit/stdout/stderr/appended-diagnostic review.",
+    "mixed_open_log": {
+      "path": "build-extractors/bin/Release/logs/DBErrors.log",
+      "bytes": 7111,
+      "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "status": "OPEN unchanged/untruncated"
+    },
+    "compiler": {
+      "count": 0,
+      "types": {},
+      "review": "Main incremental build warnings checked against f55f0ea70. Ten retained-fixture warnings are byte-equivalent messages/file/line to the previous passing batch;their production and fixture sources unchanged. Diagnostics retained without suppression;not claimed repaired.",
+      "entries": [],
+      "retained_fixture_warnings": [
+        {
+          "log": "artifact-tier.log",
+          "file": "ArtifactTierProgressionTest.cpp",
+          "line": 65,
+          "code": "C4458",
+          "message": "declaration of 'item' hides class member",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "artifact-tier.log",
+          "file": "AutoTier.inc",
+          "line": 33,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint8', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 26,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 27,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 28,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 29,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'int' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scepter.log",
+          "file": "AddScenario.inc",
+          "line": 7,
+          "code": "C4389",
+          "message": "'!=': signed/unsigned mismatch",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        },
+        {
+          "log": "scenario-resume.log",
+          "file": "BrokenShoreClassRoute.h",
+          "line": 30,
+          "code": "C4244",
+          "message": "'argument': conversion from 'uint32' to 'uint16', possible loss of data",
+          "identical_to_previous_pass": true
+        }
+      ]
+    },
+    "development": [
+      "Local UnitAI InitializeAI calls Reset,not arbitrary Initialize;selected four unused helpers traced. Guard-initialized StaticOrb,Corla,Tadpole,Melandrus and Maraudon helper-initialized candidates rejected unchanged.",
+      "Ignored preparation script corrected ambiguous anchors/UTF8 reads before building;source/native fixture state scope explicitly limited."
+    ],
+    "final_review": "PASS hash verification of all original archived files and deletions/canonical/protected/recovery hashes,SQL82+94 andTimeLoop26 OPEN raw evidence,unchanged mixed7111,no servers/crashes,all ten focused commits ancestors of origin/main,exact prior handoff history,reverse-scope nine files and no production diff.",
+    "supplemental_archives": [
+      {
+        "manifest": "build-extractors/bin/Release/fixed/seventeenth-ten-repairs-2026-11-10/supplemental-manifest.json",
+        "sha256": "1cce617823242ca1bb18f2bf0a472a66539842e6c5c6a06397d3e9c24a86487f",
+        "files": 19
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED",
+    "archive": "build-extractors/bin/Release/fixed/seventeenth-ten-repairs-2026-11-10",
+    "archive_manifest_sha256": "4067973b2cf536e71ed2e1538ebded4c28f12bbcc07f21c440cf6f7a4f0c8ab3",
+    "original_files": 503,
+    "removed_files": 106,
+    "logical_removed_bytes": 806759281,
+    "deletion_manifest": ".codex/seventeenth-ten-fixes-2026-11-10/cleanup-deleted.json",
+    "deletion_manifest_sha256": "10efe73364a82993a881c9379ca830e7a1e80d68df555a46ebaa3b0e251c2234",
+    "retained_rollbacks": [
+      ".codex/release-before-seventeenth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "removed_superseded_rollback": ".codex/release-before-sixteenth-ten-fixes-2026-11-10",
+    "reason": "Newest pre-fix rollback plus two explicitly handed-off recovery generations for outstanding seven-feature and vehicle-capacity client checks;superseded task-owned pre-fourteenth989e699d retired after newest pre-seventeenth rollback hash verification rollback verification",
+    "logs_truncated": 0,
+    "active_crashes_removed": 0,
+    "open_sql_evidence": {
+      "Files": 82,
+      "Path": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09",
+      "ManifestSHA256": "F488DAD5A3BC257CAD85A6527D122E15F19EDFEAA7C61F9FBDE8918882B06458",
+      "ClassificationCorrection": {
+        "Files": 94,
+        "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
+        "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
+      }
+    },
+    "open_timeloop": {
+      "path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-health-width-2026-11-09",
+      "manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "files": 26,
+      "scope": "Original TimeLoop105984 truncates remaining health into int32 and maxhealth into int32. Source counterfactual observed false consumption at4b HP/damage1. Candidate reverted before selected10: native Spell::EffectHeal uses int32 addhealth and m_healing,so widening only script heal amount cannot establish full high-health recovery. No native lethal/high-heal run attempted;no production or core-healing change. Separate investigation required;all actual client/raid checks pending.",
+      "retained_runtime": "build-extractors/runtime-test/ninth-ten-repairs/TimeLoop-*;counterfactual/proposed-source executables and symbols retained for focused investigation;not selected/deployed fixes."
+    },
+    "preserved": "Canonical binaries/maps/config/certs/DLL/data,required main libraries,reusable tests,backups/security. All OPEN evidence retained;private configs deleted,not archived;TimeLoop ninth-batch investigation EXE/symbols retained."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Prior scouted Antorus eventobject_antorus_into singleton eventDone/per-instance async ownership and Brawlers Master count_adds/repeated Reset lifecycle remain OPEN/unmodified/not counted. This batch changes Oso and Ray,not Master.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Existing Argent Champion surrender uses raw damage,strict greater-than and unsafe owner ToPlayer;separately OPEN,not repaired or client-certified by defensive timer work.",
+    "Existing Nightmother failed-target takeoff can lack a landing timer;separately OPEN. Empyreal Focus constant ACTION_1 condition and reset aura/flag lifecycle require separate review. This batch certifies initial reset state only."
+  ],
+  "continuation": "Completed 2 of five authorized ten-fix batches;continue remaining batches until50 total. This audit certifies only stated automated/native scopes,not client/whole-chain traversal."
+}
