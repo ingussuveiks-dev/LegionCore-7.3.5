@@ -606,14 +606,15 @@ struct npc_harbinger_of_darkness : public ScriptedAI
             barim->AI()->EnterEvadeMode();
     }
 
-    void DamageTaken(Unit* /*done_by*/, uint32 &damage, DamageEffectType /*dmgType*/)
+    void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType /*dmgType*/) override
     {
-        if (damage >= me->GetHealth())
+        if (damage >= me->GetHealth(attacker))
         {
             damage = 0;
 
             if (!Dead)
             {
+                Dead = true;
                 if (instance)
                 {
                     instance->SetGuidData(DATA_HARBINGER, ObjectGuid::Empty);
@@ -622,7 +623,6 @@ struct npc_harbinger_of_darkness : public ScriptedAI
                         barim->AI()->DoAction(ACTION_REPENTANCE_DONE);
                 }
 
-                Dead = true;
                 events.Reset();
                 me->SetReactState(REACT_PASSIVE);
                 me->AttackStop();
