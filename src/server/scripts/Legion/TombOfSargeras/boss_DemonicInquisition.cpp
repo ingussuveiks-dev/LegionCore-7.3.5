@@ -123,9 +123,9 @@ public:
                     events.RescheduleEvent(EVENT_TORMENTING_BURST, 9000);
                     if (IsHeroicRaid() || IsMythicRaid())
                         events.RescheduleEvent(EVENT_SUFFOCATING_DARK, 10000);
-                    me->AddDelayedEvent(6500, [this]() -> void
+                    me->AddDelayedEvent(6500, [actor = me]() -> void
                     {
-                        Talk(0);
+                        { if (auto ai = actor->AI()) ai->Talk(0); }
                     });
                     break;
             }
@@ -257,18 +257,20 @@ public:
                             calcifiedQuilsTargets.clear();
 
                             DoCast(target, SPELL_CALCIFIED_QUILS);
-                            me->AddDelayedEvent(5000, [this, targetGuid = target->GetGUID()]()
+                            me->AddDelayedEvent(5000, [actor = me, targetGuid = target->GetGUID()]()
                             {
-                                if (!me->IsAlive())
+                                if (!actor->IsAlive())
                                     return;
-                                Unit* target = ObjectAccessor::GetUnit(*me, targetGuid);
-                                if (!target)
+                                Unit* target = ObjectAccessor::GetUnit(*actor, targetGuid);
+                                if (!target || !target->IsInWorld() || target->GetMap() != actor->GetMap())
                                     return;
 
                                 Position pos = target->GetPosition();
-                                float diff_x = pos.GetPositionX() - me->GetPositionX();
-                                float diff_y = pos.GetPositionY() - me->GetPositionY();
+                                float diff_x = pos.GetPositionX() - actor->GetPositionX();
+                                float diff_y = pos.GetPositionY() - actor->GetPositionY();
                                 float dist = sqrt(diff_x * diff_x + diff_y * diff_y);
+                                if (dist == 0.0f)
+                                    return;
                                 for (float mod = 2 / dist, time = 0; mod < 60.0f / dist; mod += (2 / dist), time++)
                                 {
                                     for (float i = -0.5f; i <= 0.5f; i += 0.2f)
@@ -278,9 +280,9 @@ public:
 
                                         float new_x = mod*diff_x*sqrt(3) / 2 - i * mod *diff_y / 2;
                                         float new_y = i * mod *diff_x / 2 + mod* diff_y * sqrt(3) / 2;
-                                        me->AddDelayedEvent(1 + time * 50, [=]()
+                                        actor->AddDelayedEvent(1 + time * 50, [=]()
                                         {
-                                            me->CastSpell({ me->GetPositionX() + new_x + frand(-2, 2), me->GetPositionY() + new_y + frand(-2, 2), me->GetPositionZ(), 0 }, 233435, true);
+                                            actor->CastSpell({ actor->GetPositionX() + new_x + frand(-2, 2), actor->GetPositionY() + new_y + frand(-2, 2), actor->GetPositionZ(), 0 }, 233435, true);
 
                                         });
                                     }
