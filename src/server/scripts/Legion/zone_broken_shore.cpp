@@ -176,25 +176,25 @@ public:
                         break;
                     case EVENT_3:
                         DoCast(241498);
-                        me->AddDelayedEvent(2100, [this] () -> void
+                        me->AddDelayedEvent(2100, [actor = me] () -> void
                         {
                             uint8 r = urand(5, 11);
                             for (uint8 i = 0; i < r; ++i)
-                                DoCast(241507);
+                                { if (auto ai = actor->AI()) ai->DoCast(241507); }
                         });
 
-                        me->AddDelayedEvent(3100, [this] () -> void
+                        me->AddDelayedEvent(3100, [actor = me] () -> void
                         {
                             uint8 r = urand(5, 11);
                             for (uint8 i = 0; i < r; ++i)
-                                DoCast(241507);
+                                { if (auto ai = actor->AI()) ai->DoCast(241507); }
                         });
 
-                        me->AddDelayedEvent(4100, [this] () -> void
+                        me->AddDelayedEvent(4100, [actor = me] () -> void
                         {
                             uint8 r = urand(8, 11);
                             for (uint8 i = 0; i < r; ++i)
-                                DoCast(241507);
+                                { if (auto ai = actor->AI()) ai->DoCast(241507); }
                         });
 
                         events.RescheduleEvent(EVENT_3, 16000); // 241498 script (241507)
