@@ -1,0 +1,577 @@
+{
+  "date": "2026-11-10",
+  "status": "COMPLETE_EXACTLY_50_AUTOMATED_CLIENT_PENDING",
+  "request": "Another five consecutive groups of ten;stop after50.",
+  "base": "33e2d08e24a0cd91de74140af18c5272d087778e",
+  "implementation_head": "845bc14bb632fab5beed2e9bd1fb2d90c29d449a",
+  "batches": [
+    {
+      "number": 1,
+      "audit": "docs/audits/thirtysecond-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "support_commit": "5b4069f7d7cbff919c0e33b94cea86d195b035ad",
+      "implementation_head": "6ff37cfadffee6bee659200b39bfd823f5a2eb4c"
+    },
+    {
+      "number": 2,
+      "audit": "docs/audits/thirtythird-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "support_commit": "8f9b92347b65eec23d0290c7215a989df3481f5d",
+      "implementation_head": "091fbeef6db0f386ac5a961e47b58ef80e8aa66c"
+    },
+    {
+      "number": 3,
+      "audit": "docs/audits/thirtyfourth-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "support_commit": "9e556c25c758e810e105f1e12aceddeb35f90f31",
+      "implementation_head": "0cd64a46b2b02eae083b3d8c8ef9a9e6a97bd8a2"
+    },
+    {
+      "number": 4,
+      "audit": "docs/audits/thirtyfifth-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "support_commit": "d726ffa75c2fd3bd61390aa8c67570eea928cb76",
+      "implementation_head": "acfebf9a349d1e01f024072d8367459f3927ad00"
+    },
+    {
+      "number": 5,
+      "audit": "docs/audits/thirtysixth-ten-repairs-2026-11-10.json",
+      "fixes": 10,
+      "support_commit": "a62eecd91407928dc919ebf3e36790f0e566842b",
+      "implementation_head": "845bc14bb632fab5beed2e9bd1fb2d90c29d449a"
+    }
+  ],
+  "fixes": [
+    {
+      "key": "KingarothDialogue",
+      "title": "Keep KingarothDialogue deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_kingaroth.cpp"
+      ],
+      "audit": "docs/audits/kingaroth-dialogue-deferred-actor-2026-11-10.json",
+      "commit": "c9804c40d4b49a3bbbdc959eda823aa2eee2f609"
+    },
+    {
+      "key": "MaievCathedral",
+      "title": "Keep MaievCathedral deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/CathedralEternalNight/cathedral_of_eternal_night.cpp"
+      ],
+      "audit": "docs/audits/maiev-cathedral-deferred-actor-2026-11-10.json",
+      "commit": "c4efcc6b576bf44fc4f7ffcef0be825a0146b294"
+    },
+    {
+      "key": "MephistrothIntro",
+      "title": "Keep MephistrothIntro deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/CathedralEternalNight/cathedral_of_eternal_night.cpp"
+      ],
+      "audit": "docs/audits/mephistroth-intro-deferred-actor-2026-11-10.json",
+      "commit": "3eef6a035562f1984fc40891cef7a4a8c67d709f"
+    },
+    {
+      "key": "GalindreRecovery",
+      "title": "Keep GalindreRecovery deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/ReturnToKarazhan/boss_opera_hall.cpp"
+      ],
+      "audit": "docs/audits/galindre-recovery-deferred-actor-2026-11-10.json",
+      "commit": "b7c165f1a1979eed8054d3e0746c7c8343a28e24"
+    },
+    {
+      "key": "KarazhanKhadgar",
+      "title": "Keep KarazhanKhadgar deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/ReturnToKarazhan/karazhan_chess.cpp"
+      ],
+      "audit": "docs/audits/karazhan-khadgar-deferred-actor-2026-11-10.json",
+      "commit": "4574aafb6018ce3bb0832a39cd56aef619c7cfd7"
+    },
+    {
+      "key": "ElisandeEvade",
+      "title": "Keep ElisandeEvade deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_elisande.cpp"
+      ],
+      "audit": "docs/audits/elisande-evade-deferred-actor-2026-11-10.json",
+      "commit": "348b66fe97bc8f3c9bdb4ec6685c13cf5158d2d9"
+    },
+    {
+      "key": "GiantLasher",
+      "title": "Keep GiantLasher deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Draenor/zone_gorgrond.cpp"
+      ],
+      "audit": "docs/audits/giant-lasher-deferred-actor-2026-11-10.json",
+      "commit": "a39c49f25bae36066063b2d6e2e9aa2cd22c8b79"
+    },
+    {
+      "key": "KiljaedenPresenters",
+      "title": "Keep KiljaedenPresenters deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_Kiljaeden.cpp"
+      ],
+      "audit": "docs/audits/kiljaeden-presenters-deferred-actor-2026-11-10.json",
+      "commit": "d40fbb65d879c37a778434c063605c2d5bb16c8b"
+    },
+    {
+      "key": "ApocronVolley",
+      "title": "Keep ApocronVolley deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/Legion/zone_broken_shore.cpp"
+      ],
+      "audit": "docs/audits/apocron-volley-deferred-actor-2026-11-10.json",
+      "commit": "eeb1e79425ca58a57a5a3ad9b932e799216685ed"
+    },
+    {
+      "key": "EpicusIntro",
+      "title": "Keep EpicusIntro deferred actor work independent of replaced AI",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_seven.cpp"
+      ],
+      "audit": "docs/audits/epicus-intro-deferred-actor-2026-11-10.json",
+      "commit": "6ff37cfadffee6bee659200b39bfd823f5a2eb4c"
+    },
+    {
+      "key": "ZuraalBossLifetime",
+      "title": "Cancel ZuraalBoss callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_zuraal_the_ascended.cpp"
+      ],
+      "audit": "docs/audits/zuraal-boss-ai-lifetime-2026-11-10.json",
+      "commit": "a825309854dc3bced2253d608478ab63ae088f17"
+    },
+    {
+      "key": "SelinCrystalLifetime",
+      "title": "Cancel SelinCrystal callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/MagistersTerrace/boss_selin_fireheart.cpp"
+      ],
+      "audit": "docs/audits/selin-crystal-ai-lifetime-2026-11-10.json",
+      "commit": "49a76f515fec8e88c80cd72f3691f1518b8f9bf7"
+    },
+    {
+      "key": "MedivhCinematicLifetime",
+      "title": "Cancel MedivhCinematic callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Kalimdor/CavernsOfTime/DarkPortal/dark_portal.cpp"
+      ],
+      "audit": "docs/audits/medivh-cinematic-ai-lifetime-2026-11-10.json",
+      "commit": "e6c1a98c0f1b01ca98e0ee2475eeeb37244f326a"
+    },
+    {
+      "key": "DeathwingRollLifetime",
+      "title": "Cancel DeathwingRoll callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Kalimdor/CavernsOfTime/DragonSoul/boss_spine_of_deathwing.cpp"
+      ],
+      "audit": "docs/audits/deathwing-roll-ai-lifetime-2026-11-10.json",
+      "commit": "de4b7d7bf1872739bdf1a47daa5ee5f9ba2c3564"
+    },
+    {
+      "key": "AntorusBattleshipLifetime",
+      "title": "Cancel AntorusBattleship callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/antorus.cpp"
+      ],
+      "audit": "docs/audits/antorus-battleship-ai-lifetime-2026-11-10.json",
+      "commit": "8efcbc8d867008b88a52098373d0d8cb749e3dec"
+    },
+    {
+      "key": "ArgusControllerLifetime",
+      "title": "Cancel ArgusController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_argus.cpp"
+      ],
+      "audit": "docs/audits/argus-controller-ai-lifetime-2026-11-10.json",
+      "commit": "392765894f298897293cbd04422f0f846922c60d"
+    },
+    {
+      "key": "CovenControllerLifetime",
+      "title": "Cancel CovenController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_coven_shivarres.cpp"
+      ],
+      "audit": "docs/audits/coven-controller-ai-lifetime-2026-11-10.json",
+      "commit": "c774d833edfa170ef6778bb613383d81212f15dc"
+    },
+    {
+      "key": "EonarBonusLifetime",
+      "title": "Cancel EonarBonus callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp"
+      ],
+      "audit": "docs/audits/eonar-bonus-ai-lifetime-2026-11-10.json",
+      "commit": "8420cc0e88ab76b25b3c5d4e7992b1fef884fc9f"
+    },
+    {
+      "key": "FelhoundsControllerLifetime",
+      "title": "Cancel FelhoundsController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_felhounds.cpp"
+      ],
+      "audit": "docs/audits/felhounds-controller-ai-lifetime-2026-11-10.json",
+      "commit": "a20ce1f331e60d7c46e17f47c61b3dc6c2208b98"
+    },
+    {
+      "key": "ImonarControllerLifetime",
+      "title": "Cancel ImonarController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_imonar.cpp"
+      ],
+      "audit": "docs/audits/imonar-controller-ai-lifetime-2026-11-10.json",
+      "commit": "091fbeef6db0f386ac5a961e47b58ef80e8aa66c"
+    },
+    {
+      "key": "IncineratorStalkerLifetime",
+      "title": "Cancel IncineratorStalker callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_kingaroth.cpp"
+      ],
+      "audit": "docs/audits/incinerator-stalker-ai-lifetime-2026-11-10.json",
+      "commit": "1ae2c600c5323570faf4c6f2382f2b8db5eb787c"
+    },
+    {
+      "key": "VarimathrasDialogueLifetime",
+      "title": "Cancel VarimathrasDialogue callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_varimathras.cpp"
+      ],
+      "audit": "docs/audits/varimathras-dialogue-ai-lifetime-2026-11-10.json",
+      "commit": "31cd1d8e1888c5c8880bf0d1207ca74eb0cb397a"
+    },
+    {
+      "key": "WorldbreakerControllerLifetime",
+      "title": "Cancel WorldbreakerController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_worldbreaker.cpp"
+      ],
+      "audit": "docs/audits/worldbreaker-controller-ai-lifetime-2026-11-10.json",
+      "commit": "eb9fcf8958f4041ce96d706cb987b69a0f3e11a1"
+    },
+    {
+      "key": "IllysannaControllerLifetime",
+      "title": "Cancel IllysannaController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/BlackRookHoldDungeon/boss_illysanna_ravencrest.cpp"
+      ],
+      "audit": "docs/audits/illysanna-controller-ai-lifetime-2026-11-10.json",
+      "commit": "f9b09355ffa226603c903ba801172414ad7ad7cb"
+    },
+    {
+      "key": "IllidanCathedralLifetime",
+      "title": "Cancel IllidanCathedral callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/CathedralEternalNight/boss_mephistroth.cpp"
+      ],
+      "audit": "docs/audits/illidan-cathedral-ai-lifetime-2026-11-10.json",
+      "commit": "ace277a233a83c862b3e3293974419ffffe338cd"
+    },
+    {
+      "key": "ThrashbiteControllerLifetime",
+      "title": "Cancel ThrashbiteController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/CathedralEternalNight/boss_thrashbite_the_scornful.cpp"
+      ],
+      "audit": "docs/audits/thrashbite-controller-ai-lifetime-2026-11-10.json",
+      "commit": "ac0a1a67ecd9190fed3613917a3f1a275f8a43dc"
+    },
+    {
+      "key": "CathedralFirstLifetime",
+      "title": "Cancel CathedralFirst callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/CathedralEternalNight/cathedral_of_eternal_night.cpp"
+      ],
+      "audit": "docs/audits/cathedral-first-ai-lifetime-2026-11-10.json",
+      "commit": "39efe92b729cd7c46656018485b951aad747a75b"
+    },
+    {
+      "key": "HelyaMawLifetime",
+      "title": "Cancel HelyaMaw callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/MawofSouls/boss_helya.cpp"
+      ],
+      "audit": "docs/audits/helya-maw-ai-lifetime-2026-11-10.json",
+      "commit": "dd1b45cbe9f82a435360fa6c8d0a46d9c7c5f04f"
+    },
+    {
+      "key": "MaidenKarazhanLifetime",
+      "title": "Cancel MaidenKarazhan callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/ReturnToKarazhan/boss_maiden_of_virtue.cpp"
+      ],
+      "audit": "docs/audits/maiden-karazhan-ai-lifetime-2026-11-10.json",
+      "commit": "080bc8b5f2d9345989a26181b4880ccb2302c93f"
+    },
+    {
+      "key": "ElfyraControllerLifetime",
+      "title": "Cancel ElfyraController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/ReturnToKarazhan/boss_opera_hall.cpp"
+      ],
+      "audit": "docs/audits/elfyra-controller-ai-lifetime-2026-11-10.json",
+      "commit": "0cd64a46b2b02eae083b3d8c8ef9a9e6a97bd8a2"
+    },
+    {
+      "key": "KarazhanChessLifetime",
+      "title": "Cancel KarazhanChess callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/ReturnToKarazhan/karazhan_chess.cpp"
+      ],
+      "audit": "docs/audits/karazhan-chess-ai-lifetime-2026-11-10.json",
+      "commit": "cc2e9fdf86aa3d1cdde9a06b9ecac2a99d814c4a"
+    },
+    {
+      "key": "AnomalySpeedLifetime",
+      "title": "Cancel AnomalySpeed callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_chronomatic_anomaly.cpp"
+      ],
+      "audit": "docs/audits/anomaly-speed-ai-lifetime-2026-11-10.json",
+      "commit": "2590eb5c95f36415b15fda3e8ffad3497b287af3"
+    },
+    {
+      "key": "GuldanControllerLifetime",
+      "title": "Cancel GuldanController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+      ],
+      "audit": "docs/audits/guldan-controller-ai-lifetime-2026-11-10.json",
+      "commit": "a94abc9bea7a4fea0e9888547697859a7b5bd577"
+    },
+    {
+      "key": "SolarCollapseLifetime",
+      "title": "Cancel SolarCollapse callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_high_botanist_telarn.cpp"
+      ],
+      "audit": "docs/audits/solar-collapse-ai-lifetime-2026-11-10.json",
+      "commit": "539bc5847f473cf6888bea86b45fc2f7ac8b645d"
+    },
+    {
+      "key": "SkorpyronControllerLifetime",
+      "title": "Cancel SkorpyronController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_skorpyron.cpp"
+      ],
+      "audit": "docs/audits/skorpyron-controller-ai-lifetime-2026-11-10.json",
+      "commit": "97038e8de58709d20f127b01f5af41f26725677b"
+    },
+    {
+      "key": "ThalyssraNightholdLifetime",
+      "title": "Cancel ThalyssraNighthold callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/the_nighthold.cpp"
+      ],
+      "audit": "docs/audits/thalyssra-nighthold-ai-lifetime-2026-11-10.json",
+      "commit": "615b8e3dd76d9d0b89e5a54c95154cb6556ee015"
+    },
+    {
+      "key": "LuraControllerLifetime",
+      "title": "Cancel LuraController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_lura.cpp"
+      ],
+      "audit": "docs/audits/lura-controller-ai-lifetime-2026-11-10.json",
+      "commit": "67080a560e31b587fdf28fae46a33583186464a1"
+    },
+    {
+      "key": "SaprishControllerLifetime",
+      "title": "Cancel SaprishController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_saprish.cpp"
+      ],
+      "audit": "docs/audits/saprish-controller-ai-lifetime-2026-11-10.json",
+      "commit": "972ea86af6332e58ca4d32c2d4c5c4716da12df3"
+    },
+    {
+      "key": "LocuswalkerOutroLifetime",
+      "title": "Cancel LocuswalkerOutro callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_saprish.cpp"
+      ],
+      "audit": "docs/audits/locuswalker-outro-ai-lifetime-2026-11-10.json",
+      "commit": "1138ff4ee8a6a513999c971e18a3ae99e6499b18"
+    },
+    {
+      "key": "NezharControllerLifetime",
+      "title": "Cancel NezharController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_viceroy_nezhar.cpp"
+      ],
+      "audit": "docs/audits/nezhar-controller-ai-lifetime-2026-11-10.json",
+      "commit": "acfebf9a349d1e01f024072d8367459f3927ad00"
+    },
+    {
+      "key": "AlleriaZuraalLifetime",
+      "title": "Cancel AlleriaZuraal callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TheSeatOfTheTriumvirate/boss_zuraal_the_ascended.cpp"
+      ],
+      "audit": "docs/audits/alleria-zuraal-ai-lifetime-2026-11-10.json",
+      "commit": "f1fb39903e69a2d993b5c1c9629affea334cac98"
+    },
+    {
+      "key": "AvatarControllerLifetime",
+      "title": "Cancel AvatarController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp"
+      ],
+      "audit": "docs/audits/avatar-controller-ai-lifetime-2026-11-10.json",
+      "commit": "45b30c1e34b6280c1a1b7deb8552eaff9498963b"
+    },
+    {
+      "key": "KiljaedenControllerLifetime",
+      "title": "Cancel KiljaedenController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_Kiljaeden.cpp"
+      ],
+      "audit": "docs/audits/kiljaeden-controller-ai-lifetime-2026-11-10.json",
+      "commit": "1ecf830839ad5586e7c3dbc669af4cda66d1167b"
+    },
+    {
+      "key": "DesolateControllerLifetime",
+      "title": "Cancel DesolateController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_TheDesolateHost.cpp"
+      ],
+      "audit": "docs/audits/desolate-controller-ai-lifetime-2026-11-10.json",
+      "commit": "efa6282390df4af049b595d4056daad716bc2ad4"
+    },
+    {
+      "key": "KhadgarTombLifetime",
+      "title": "Cancel KhadgarTomb callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.cpp"
+      ],
+      "audit": "docs/audits/khadgar-tomb-ai-lifetime-2026-11-10.json",
+      "commit": "6d7646c6b703b54c86ba6cac7b867b1b454de885"
+    },
+    {
+      "key": "SentinaxPortalLifetime",
+      "title": "Cancel SentinaxPortal callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/sentinax.cpp"
+      ],
+      "audit": "docs/audits/sentinax-portal-ai-lifetime-2026-11-10.json",
+      "commit": "c08bf7b9c167419a522cd6cb8253f02809bbf9d8"
+    },
+    {
+      "key": "SoultakersControllerLifetime",
+      "title": "Cancel SoultakersController callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/zone_stormheim.cpp"
+      ],
+      "audit": "docs/audits/soultakers-controller-ai-lifetime-2026-11-10.json",
+      "commit": "e5e1e8ef83f52366ce2594a129cb1e70717d21b3"
+    },
+    {
+      "key": "AkamaBTLifetime",
+      "title": "Cancel AkamaBT callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Outland/BlackTemple/boss_illidan.cpp"
+      ],
+      "audit": "docs/audits/akama-b-t-ai-lifetime-2026-11-10.json",
+      "commit": "7dc28b44f30f8453cd916c7cc79233f93c347c9a"
+    },
+    {
+      "key": "TheramoreInvadersLifetime",
+      "title": "Cancel TheramoreInvaders callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Scenario/FallOfTheramoreAlliance/fall_of_theramore_alliance.cpp"
+      ],
+      "audit": "docs/audits/theramore-invaders-ai-lifetime-2026-11-10.json",
+      "commit": "82cdc152e4dd4b148c00d977d52da3b9f40bf112"
+    },
+    {
+      "key": "MonkeyKingDialogueLifetime",
+      "title": "Cancel MonkeyKingDialogue callbacks after their source AI is retired",
+      "paths": [
+        "src/server/scripts/Legion/ReturnToKarazhan/boss_opera_hall.cpp"
+      ],
+      "audit": "docs/audits/monkey-king-dialogue-ai-lifetime-2026-11-10.json",
+      "commit": "845bc14bb632fab5beed2e9bd1fb2d90c29d449a"
+    }
+  ],
+  "validation": {
+    "source_groups": 100,
+    "expected_broken_groups": 50,
+    "repaired_groups": 50,
+    "source_callback_registrations": 189,
+    "body_expression_groups": 10,
+    "admission_projection_groups": 40,
+    "native_selected_problem_groups": 50,
+    "linked_selected_checks": 367,
+    "scope": "First batch extracts actual production expressions with mocked/observed endpoints. Remaining40 problems project only exact weak capture/first admission onto controlled observer payload;they do NOT execute complete registered encounter bodies or immutable argument behavior. MSVC ASAN checks real frame deletion and same-address reuse;native probes use actual Creature::AIM_Initialize,Unit event/combat cancellation,surviving inactive AI and corpse/event admission. Full production classes are reverse-verified for only lifetime changes and compiled into main libraries;linked gates precede payload access. Two pre-existing unreachable Chess rook closures are marked non-emitted and are not live Release paths. No full-core ASAN or actual client traversal claim.",
+    "canonical": "Each batch original main-library Release build,canonical linked check,Scepter/ArtifactTier/ScenarioResumeASAN and owned fresh ready/shutdown0/exit0/gone;final post-test diagnostics clean."
+  },
+  "canonical": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "e971a45a65c7c66a1650eac5e3e2f2c419c23a3d27883086321e78d4c73321e1",
+    "bnet_sha256": "a366ece36565852c636700590faaf857adfdbf968255727ec5e5f668e3955813",
+    "rollback": ".codex/release-before-thirtysixth-ten-fixes-2026-11-10",
+    "startup": "Owned PID=17248 reached fresh ready\nPASS owned PID=17248 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+  },
+  "diagnostics": {
+    "path": "build-extractors/bin/Release/logs/DBErrors.log",
+    "bytes": 7111,
+    "sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "status": "OPEN unchanged/untruncated"
+  },
+  "cleanup": {
+    "logical_removed_bytes": 4367580508,
+    "removed_files": 617,
+    "archives": [
+      "build-extractors/bin/Release/fixed/thirtysecond-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/thirtythird-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/thirtyfourth-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/thirtyfifth-ten-repairs-2026-11-10",
+      "build-extractors/bin/Release/fixed/thirtysixth-ten-repairs-2026-11-10"
+    ],
+    "retained_rollbacks": [
+      ".codex/release-before-thirtysixth-ten-fixes-2026-11-10",
+      ".codex/release-before-seven-fixes-2026-11-08",
+      ".codex/release-before-vehicle-aura-capacity-2026-11-08"
+    ],
+    "logs_truncated": 0,
+    "active_crashes_removed": 0
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified.",
+    "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state.",
+    "All ten actual client sequences remain pending:phoenix detonation/sleep/wake/targets;Artruis full faction choice/ally death/urn/group/reset;Ko ragh suppression-field visual/timing and real death;Broken Shore actual invitations/sparring/guardian/group/faction and lost-player cleanup;Neptulon wipe/restart;Blaze egg/real healing/wake;heroic Siamat actual2s death/achievement;Whitemane/Durand native resurrection movement/cast acknowledgment and absent partner recovery;Snowdrift actual waves/training jump/home/completion/loot/re-entry;Felmyst actual air/ground death. Missing-partner or failed-cast recovery outside the repaired Artruis/duel scopes is not certified.",
+    "All ten actual client encounters remain pending:Aggramar heroic/normal remnants/eruption;both Argus modules real aura/cast/area scale/mote/pulse timing and AI replacement;Eonar actual Paraxis wipe/restart;Worldbreaker both weapon modes/controller;Hyrja both defenders/pulls/reset/controller;Ichor explosion/eye damage;Desolate eruption/phase owner cleanup;Festerface actual recongealing/retry;Fallen Crusader real revive/feign interaction;Algalon real star/black-hole phases/spawn/cleanup. Failed essential casts or missing controller recovery outside the explicitly exercised boundaries is not certified. No whole36-chain or authentic Lady claim.",
+    "All ten actual client encounters remain pending:Muru portal/Entropius/reset/failure paths;Harbinger actual repentance/cast acknowledgment/controller removal;Anomaly fragments/rift/interrupts;Elisande full rewind dialogue/objects/echoes and absent actors;Telarn infusions/effects;Eadric/Paletress actual return/bind/loot;Black Knight real resurrection/ghouls/timers;Ingvar Annhylde ritual/failed resurrection;Keleseth actual18-22s resurrection/heal/cast failures;Amber real consume123156/visuals/retry. Missing essential actors or failed native casts outside the exercised boundaries remain unverified. No whole36-chain/authentic Lady certification.",
+    "All ten actual client encounters remain pending:Xavius10stack and Naraxas6stack criteria/real aura deaths;Bronjahm4souls/achievement;Svala actual ritual damage/movement/criterion;Magtheridon real soul-transfer target/effect;Raigonn phase handoff/vehicle;Elegon charge movement/controller/focus links/reset;Living Sand repeated real storms/targets/visuals;Durumu real cone/aura/blue death freeze;Ra den actual flare. Essential failed-cast/missing-controller recovery outside tested admission boundaries is not certified. Existing Elegon energy-charge active field is assigned by native IsSummonedBy;ordinary unowned placement/out-of-contract initialization remains separately unverified. No whole-chain/authentic Lady claim.",
+    "All ten actual client/controller sequences remain pending:Aysa training/boss callbacks,Warsong four faction/event actors,Felfire contact/death actual spell effects,Kalecgos paired realm/banish/enrage/reset/self-kill,Norushen blind-hatred/residual/healer challenge completion/real exhaustion aura,Durumu full cones/eyes/movement/cleanup,Ji Kun nests/feed/jump/fall rescue/pet/camera/re-entry,Jinrokh actual water-font behavior,Paragons actual eerie fog,Megaera body/acid-rain/torrent/ice cleanup. Megaera head damage/phase logic is a separate unchanged raw-handler scope,not certified by support-actor protection. No full registered content/client encounter or36-chain/authentic Lady certification.",
+    "All ten actual client sequences remain pending:Stitches current-owner rot tick/full brawl;Ooliss pursuit root/walk timing/death/reset;all Ogrewatch shield modes;Failure Pylon resurrection/cast/despawn;Antoran mine detonation;both Argus edge modes;all4 Eonar crystal interactions;Dargrul actual wall/stun/GO cleanup;all3 Skorpyron scorp recovery/death;Lich King real trap lifecycle. This change removes AI lifetime dependency for selected actor-owned operations;it does not certify arbitrary encounter resets,cast acknowledgment or unrelated AI/member callbacks. No whole36-chain or authentic Lady claim.",
+    "All actual client sequences for this batch remain pending:HasabelOutro,ImonarShips,TichondriusSpire,ElisandeOrb,SasszineJellyfish,CordanaLight,ArmyMinions,EvalaMinion,DeepbeardRecovery,SmashspiteBat. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "All actual client sequences for this batch remain pending:KaelthasIntro,DomatraxIntro,DrokDialogue,InquisitionDialogue,MaidenEnrage,SaprishTrap,NezharTentacle,EvalaVisibility,DaglopRide,ChengChallenge. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "Hasabel actual Felcrush portal positions/difficulty/wave timings and real spawn success remain client pending;the uncounted follow-up repairs queue lifetime only. Evala actual Player-target tomb/raid credit and Inquisition entire fight/missile rendering/collision remain separate from controlled actor/target native tests.",
+    "All actual client sequences for this batch remain pending:AggramarActors,VarimathrasShadow,TrilliaxOutro,MaylaDialogue,AzsunaFighter,EventTeleporter,WorldbreakerTriggers,VizaduumDoor,ZuraalWalker,LuraAlleria. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "All actual client sequences for this batch remain pending:GGEngineering,TheramoreGuard,NezharVoidtender,SaprishCompanions,BankerRift,NightholdTrash,LuraPortal,NezharPortal,SottWalkerAfterNezhar,CoreDelayTalk. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "Native proxy boundaries do not prove real nearest GO/NPC selection or successful summons/spells. Full GG/totem brawl,Theramore Songweaver dialogue/portal,Saprish shared health combat,Nezhar shielding/portals,Banker summon/owner appearance,Nighthold beam targets,Lura portal child combat and walker door movement remain client pending. Core text audibility/whisper client delivery remains pending. Unregistered/unbound npc_night_hold_flame_core was not included or registered here.",
+    "All actual client sequences for this batch remain pending:KingarothDialogue,MaievCathedral,MephistrothIntro,GalindreRecovery,KarazhanKhadgar,ElisandeEvade,GiantLasher,KiljaedenPresenters,ApocronVolley,EpicusIntro. Selected queue lifetime/timing/endpoint checks do not certify full encounters,movement/camera/pets,spell/text acknowledgment,optional actor failures or all36 artifact chains. Explicit native cancellation semantics retained. Authentic Lady remains OPEN.",
+    "Actual client/full encounters for:ZuraalBossLifetime,SelinCrystalLifetime,MedivhCinematicLifetime,DeathwingRollLifetime,AntorusBattleshipLifetime,ArgusControllerLifetime,CovenControllerLifetime,EonarBonusLifetime,FelhoundsControllerLifetime,ImonarControllerLifetime. Admission projections do not certify body behavior,actor/cast success,dialogue,movement,credit,reset/abandon/group/pet/faction alternatives or whole36 chains. Those original paths are byte-preserved and still require content/client traversal. Weak admission prevents entry after AI destruction;it is not an extra Reset policy or a cross-thread lifetime lease. Unit queue execution/source AI replacement retain native map-thread serialization. Authentic living Lady remains OPEN.",
+    "Actual client/full encounters for:IncineratorStalkerLifetime,VarimathrasDialogueLifetime,WorldbreakerControllerLifetime,IllysannaControllerLifetime,IllidanCathedralLifetime,ThrashbiteControllerLifetime,CathedralFirstLifetime,HelyaMawLifetime,MaidenKarazhanLifetime,ElfyraControllerLifetime. Admission projections do not certify body behavior,actor/cast success,dialogue,movement,credit,reset/abandon/group/pet/faction alternatives or whole36 chains. Those original paths are byte-preserved and still require content/client traversal. Weak admission prevents entry after AI destruction;it is not an extra Reset policy or a cross-thread lifetime lease. Unit queue execution/source AI replacement retain native map-thread serialization. Authentic living Lady remains OPEN.",
+    "Actual client/full encounters for:KarazhanChessLifetime,AnomalySpeedLifetime,GuldanControllerLifetime,SolarCollapseLifetime,SkorpyronControllerLifetime,ThalyssraNightholdLifetime,LuraControllerLifetime,SaprishControllerLifetime,LocuswalkerOutroLifetime,NezharControllerLifetime. Admission projections do not certify body behavior,actor/cast success,dialogue,movement,credit,reset/abandon/group/pet/faction alternatives or whole36 chains. Those original paths are byte-preserved and still require content/client traversal. Weak admission prevents entry after AI destruction;it is not an extra Reset policy or a cross-thread lifetime lease. Unit queue execution/source AI replacement retain native map-thread serialization. Authentic living Lady remains OPEN.",
+    "Chess NPC_CHESS_ROOK retains its pre-existing unconditional return. Its disabled movement/attack branch and the two non-emitted callbacks are not repaired/activated/certified by this lifetime change;Rook gameplay and full Chess encounter remain OPEN.",
+    "Actual client/full encounters for:AlleriaZuraalLifetime,AvatarControllerLifetime,KiljaedenControllerLifetime,DesolateControllerLifetime,KhadgarTombLifetime,SentinaxPortalLifetime,SoultakersControllerLifetime,AkamaBTLifetime,TheramoreInvadersLifetime,MonkeyKingDialogueLifetime. Admission projections do not certify body behavior,actor/cast success,dialogue,movement,credit,reset/abandon/group/pet/faction alternatives or whole36 chains. Those original paths are byte-preserved and still require content/client traversal. Weak admission prevents entry after AI destruction;it is not an extra Reset policy or a cross-thread lifetime lease. Unit queue execution/source AI replacement retain native map-thread serialization. Authentic living Lady remains OPEN."
+  ],
+  "continuation": "STOP:all five authorized groups/50 primary repairs complete. Lady authentic finale,LINK2/Slaghammer,handshake,mixed DBErrors,explicit source findings and all36 full client chains remain OPEN as scoped."
+}
