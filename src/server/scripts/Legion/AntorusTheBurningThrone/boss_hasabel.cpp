@@ -364,7 +364,7 @@ struct boss_hasabel : BossAI
 
             for (auto pos : posList)
             {
-                me->AddDelayedCombat(delay, [this, pos]() -> void { me->SummonCreature(NPC_TRIG_FELCRUSH_PORTAL, pos, TEMPSUMMON_TIMED_DESPAWN, 12000); });
+                me->AddDelayedCombat(delay, [actor = me, pos]() -> void { actor->SummonCreature(NPC_TRIG_FELCRUSH_PORTAL, pos, TEMPSUMMON_TIMED_DESPAWN, 12000); });
                 delay += 2000;
             }
         }
