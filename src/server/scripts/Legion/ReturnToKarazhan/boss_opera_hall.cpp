@@ -643,8 +643,9 @@ public:
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
 
                 //Summon Vehicle
-                me->AddDelayedEvent(100, [this]() -> void
+                me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Creature* broom = me->SummonCreature(NPC_CRONE_BROOM, me->GetPosition()))
                     {
                         DoCast(me, SPELL_RIDE_VEH_BROOM, true);
@@ -728,6 +729,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
