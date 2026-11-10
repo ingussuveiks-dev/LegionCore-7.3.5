@@ -935,12 +935,12 @@ struct npc_highmaul_koragh_volatile_anomaly : public ScriptedAI
             AttackStart(target);
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
     {
         if (m_Exploded)
             return;
 
-        if (damage > me->GetHealth() && !me->HasAura(SuppressionFieldSilence))
+        if (damage >= me->GetHealth(attacker) && !me->HasAura(SuppressionFieldSilence))
         {
             m_Exploded = true;
             me->CastSpell(me, AlphaFadeOut, true);
