@@ -329,8 +329,9 @@ struct boss_tichonrius : BossAI
                         centrPos.SimplePosXYRelocationByAngle(pos, 20.0f, angle);
                         angle += float(M_PI / 2);
 
-                        AddDelayedEvent(500 * i, [this, pos]() -> void
+                        AddDelayedEvent(500 * i, [this, pos, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             me->CastSpell(pos, SPELL_SUM_FEL_SPIRE, true);
                         });
                     }
@@ -359,6 +360,9 @@ struct boss_tichonrius : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //108934
