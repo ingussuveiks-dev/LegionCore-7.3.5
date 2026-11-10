@@ -133,9 +133,9 @@ struct boss_maiden_of_vigilance : BossAI
         Talk(SAY_AGGRO);
         _EnterCombat();
 
-        me->AddDelayedEvent(480000, [this]() -> void
+        me->AddDelayedEvent(480000, [actor = me]() -> void
         {
-            DoCast(me, SPELL_ENRAGE, true);
+            { if (auto ai = actor->AI()) ai->DoCast(actor, SPELL_ENRAGE, true); }
         });
         
         if (!IsLfrRaid())
@@ -386,9 +386,9 @@ struct boss_maiden_of_vigilance : BossAI
                 case EVENT_SECOND_PHASE:
                     events.Reset();
                     Talk(SAY_SECOND_PHASE);
-                    me->AddDelayedEvent(8000, [this]()
+                    me->AddDelayedEvent(8000, [actor = me]()
                     {
-                        Talk(SAY_SECOND_PHASE_LATER);
+                        { if (auto ai = actor->AI()) ai->Talk(SAY_SECOND_PHASE_LATER); }
                     });
                     wrathOfCreatorsCasts = 0;
                     if (++countOfTeleports % 2)
@@ -413,9 +413,9 @@ struct boss_maiden_of_vigilance : BossAI
                     me->CastSpell(target, (isFelFragment ? SPELL_FEL_FRAGMENT : SPELL_LIGHT_FRAGMENT));
                     Position pos(target->GetPosition());
                     ObjectGuid guid = target->GetGUID();
-                    me->AddDelayedEvent(3000, [this, guid, isFelFragment, pos]() -> void
+                    me->AddDelayedEvent(3000, [actor = me, guid, isFelFragment, pos]() -> void
                     {
-                        me->SummonCreature((isFelFragment ? NPC_ESSENCE_FEL : NPC_ESSENCE_LIGHT), pos, guid, TEMPSUMMON_TIMED_DESPAWN, 10000);
+                        actor->SummonCreature((isFelFragment ? NPC_ESSENCE_FEL : NPC_ESSENCE_LIGHT), pos, guid, TEMPSUMMON_TIMED_DESPAWN, 10000);
                     });
                     break;
                 }
