@@ -111,7 +111,8 @@ public:
         {
             _JustDied();
             Talk(SAY_DEATH);
-            me->AddDelayedEvent(500, [this] {
+            me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                if (aiLifetimeGuard.expired()) return;
                 me->SummonCreature(NPC_LURA_INTROPORTAL, 6122.06f, 10366.60f, 19.92f, 3.93f);
             });
         }
@@ -139,11 +140,13 @@ public:
                 pause = true;
                 cast = true;
                 Talk(SAY_CAST);
-                me->AddDelayedEvent(500, [this] {
+                me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     me->InterruptSpell(CURRENT_GENERIC_SPELL);
                     DoCast(me, SPELL_ETERNAL_TWILIGHT);
                 });
-                me->AddDelayedEvent(5000, [this] {
+                me->AddDelayedEvent(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     cast = false;
                 });
             }
@@ -160,8 +163,9 @@ public:
             uint8 count = 3;
             for (uint8 i = 1; i <= count; ++i)
             {
-                me->AddDelayedEvent(10 * i, [this]() -> void
+                me->AddDelayedEvent(10 * i, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Unit* target = me->FindNearestCreature(122832, 100.0f);
                     if (!target)
                         return;
@@ -230,6 +234,9 @@ public:
             if (!pause || !cast)
                 DoSpellAttackIfReady(SPELL_DARK_BLAST);
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
