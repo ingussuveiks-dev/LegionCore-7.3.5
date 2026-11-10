@@ -278,12 +278,12 @@ struct npc_servant_of_siamat : public ScriptedAI
         events.ScheduleEvent(EVENT_LIGHTNING_NOVA, 5000);
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32 &damage, DamageEffectType /*dmgType*/) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType /*dmgType*/) override
     {
         if (!IsHeroic())
             return;
 
-        if (damage >= me->GetHealth())
+        if (damage >= me->GetHealth(attacker))
         {
             damage = 0;
             me->SetHealth(1);
