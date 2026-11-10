@@ -208,6 +208,7 @@ public:
         void Reset()
         {
             _Reset();
+            _evadeCheck = false;
             events.Reset();
             summons.DespawnAll();
 

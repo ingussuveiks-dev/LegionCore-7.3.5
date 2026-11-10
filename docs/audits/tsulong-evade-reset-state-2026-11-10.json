@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "TsulongEvade",
+  "base": "38ab2461febc96c43fc4e627ec57de407fbc168b",
+  "support_commit": "95119f4accdbb0c703810795d84924861a69e167",
+  "paths": [
+    "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_tsulong.cpp"
+  ],
+  "cause": "First alternating evade check read an uninitialized private bool.",
+  "implementation": "Reset _evadeCheck=false immediately after native _Reset;preserve existing alternating check cadence and combat behavior.",
+  "validation": {
+    "source": "20 MSVC ASAN selected production contracts:10 pinned38ab controls and10 repaired. Full Antorus header+OnTrigger with controlled boundaries covers per-instance/entry admission,pending/repeated events,native post-callback affected sets,prerequisites,failed conversations/casts/partial summons,no duplicate accepted trio,ordered1s/50s stages,player map/death cancellation and shared world progression after departure. Actual selected damage/QuestCredit bodies cover exact/scaled/player/pet/two-level guardian,repeated hits,missing/unowned threat rows/dedup,challenger death versus pet loss,retry/admission and helper1HP underflow. Tsulong selected Reset assignment initialized from an explicit sentinel,not executed indeterminate memory.",
+    "native": "Actual matching Release Unit::GetHealth(attacker),GetAffectingPlayer,actual Player and Creature CREATED_BY owner chains representing pet/two-level guardian ownership,ThreatManager participant enumeration,ObjectAccessor GUID lookups,EventObject affected sets,and InstanceScript FunctionProcessor/fresh Player lookup. All9 selected reset/combat handlers plus actual Antorus header admission/failure/queue lifecycle exercised. Speech,quest/group credit,62724 spell,loot,parent actions,combat start/evade and summon endpoints observed. Full original registered encounter/quest/client traversal and full-core ASAN not established;no character writes.",
+    "release": "Original main game/scripts libraries rebuilt;no OutDir override. Staged/canonical PE verifies10 changed controllers and207 prior selected checks,total217. Final linked gossip reaches actual challenger start;Antorus actual instance inherits owned state/queue and callbacks freshly resolve Player/EO;exact-lethal scaling hooks and native participant-owner credit/loot remain linked. Canonical Scepter,ArtifactTier,ScenarioResumeASAN and owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crash/log timestamps/lengths,exit/stdout/stderr/appended warnings/errors/assertions/DBErrors reviewed. Final declared checks clean. Fixture-only compilation/ASAN bad-free/EO holder setup errors and blocked readonly template insert retained with causes and passing repaired regressions. Canonical mixed7111-byte DBErrors and all previous OPEN evidence unchanged.",
+    "scope": "10 independent controllers in7 implementation files including one new header. Antorus13 entry branches and its instance queue/retry support count as ONE repair. Argent Valiant,city Valiant,tournament helpers,Tsulong,Cheng,and four independent Celestial encounters each count once. No SQL/character rewrite or invented Lady threshold/timer."
+  },
+  "pending": [
+    "Antorus eventobject_antorus_into singleton eventDone/per-instance asynchronous ownership remains OPEN. Master roster/reset/report lifetime repaired here at stated selected scopes;actual arena/client traversal pending.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state."
+  ],
+  "canonical_world_sha256": "67256fd8bedea576eade09215a862b04b4b08d337bdce3d204fa703f2ca83b71",
+  "patch_sha256": "b15388113c9b0f560fdef6a236b01155d76b8da9431681814eb1a7ae1e59fe2b",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/twentyfirst-ten-repairs-2026-11-10.json"
+}
