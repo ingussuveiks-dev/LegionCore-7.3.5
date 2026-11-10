@@ -194,7 +194,7 @@ struct boss_antoran_high_command : BossAI
             me->SetReactState(REACT_PASSIVE);
             me->SetDisplayId(INVISIBLE_MODEL);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE);
-            me->AddDelayedEvent(500, [=] () -> void { DoAction(ACTION_ENCOUNTERS_SUMMON); });
+            me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; DoAction(ACTION_ENCOUNTERS_SUMMON); });
         }
     }
 
@@ -274,7 +274,7 @@ struct boss_antoran_high_command : BossAI
                     events.Reset();
                     summons.DespawnAll();
                     checkBossPositionTimer = 0;
-                    AddDelayedEvent(5000, [=] () -> void { DoAction(ACTION_ENCOUNTERS_SUMMON); });
+                    AddDelayedEvent(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; DoAction(ACTION_ENCOUNTERS_SUMMON); });
                 }
                 break;
             }
@@ -514,6 +514,9 @@ struct boss_antoran_high_command : BossAI
             }
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //122367
