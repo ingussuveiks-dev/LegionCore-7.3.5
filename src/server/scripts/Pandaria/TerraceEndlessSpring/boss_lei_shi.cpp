@@ -305,7 +305,7 @@ public:
                 events.ScheduleEvent(EVENT_SPRAY, 2000);
 
             }
-            if (ACTION_TERMINATE_HIDE_PHASE)
+            if (action == ACTION_TERMINATE_HIDE_PHASE)
             {
                 me->RemoveAura(SPELL_HIDE);
                 me->RemoveAura(SPELL_HIDE_STACKS);
