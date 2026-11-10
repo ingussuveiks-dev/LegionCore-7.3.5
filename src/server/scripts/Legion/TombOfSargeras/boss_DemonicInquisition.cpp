@@ -138,12 +138,14 @@ public:
 
             if (Creature* other = instance->instance->GetCreature(instance->GetGuidData(me->GetEntry() == NPC_BELAK ? NPC_ATRIGAN : NPC_BELAK)))
             {
-                other->AddDelayedEvent(100, [other,who]() -> void
-                {
-                    if (who)
-                        if(!other->isInCombat())
-                            other->AI()->EnterCombat(who);
-                });
+                if (who)
+                    other->AddDelayedEvent(100, [other, attackerGuid = who->GetGUID(), sourceGuid = me->GetGUID()]() -> void
+                    {
+                        Creature* source = ObjectAccessor::GetCreature(*other, sourceGuid);
+                        Unit* attacker = ObjectAccessor::GetUnit(*other, attackerGuid);
+                        if (source && source->IsAlive() && source->isInCombat() && other->IsAlive() && !other->isInCombat() && attacker && attacker->IsAlive())
+                            other->AI()->EnterCombat(attacker);
+                    });
             }
         }
 
