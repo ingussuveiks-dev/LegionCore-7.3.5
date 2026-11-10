@@ -31,10 +31,20 @@ def has_lifetime_gate(p,rows):
   if not m or i+1>=len(rows)or rows[i+1].mnemonic not in ['je','jz']:continue
   start=i
   while start and rows[start].address==rows[start-1].address+rows[start-1].size:start-=1
-  if i-start>28:continue
+  if i-start>128:continue
   reg=m[1];nulls=[j for j in range(max(start,i-8),i-1)if rows[j].mnemonic=='test'and rows[j].op_str==reg+', '+reg and rows[j+1].mnemonic in ['je','jz']]
   if not nulls:continue
-  if not epilogue(target(rows[i+1]))or not any(epilogue(target(rows[j+1]))for j in nulls):continue
+  stack={'rsp'}
+  aliases={'eax':'rax','ebx':'rbx','ecx':'rcx','edx':'rdx','edi':'rdi','esi':'rsi','ebp':'rbp','esp':'rsp'}
+  for y in rows[start:i]:
+   before=set(stack)
+   for regId in y.regs_access()[1]:
+    reg=aliases.get(y.reg_name(regId),re.sub(r'(r\d+)[dwb]$',r'\1',y.reg_name(regId)))
+    if reg!='rsp':stack.discard(reg)
+   if y.mnemonic in ['lea','mov']:
+    m=re.fullmatch(r'(r\w+), (?:\[(r\w+)[^]]*\]|(r\w+))',y.op_str)
+    if m and(m[2]or m[3])in before:stack.add(m[1])
+  if not epilogue(target(rows[i+1]),stack)or not any(epilogue(target(rows[j+1]),stack)for j in nulls):continue
   # No payload call may precede the admission in this function body.
   if any(y.mnemonic=='call'and(target(y)is None or n['resolve'](target(y))not in runtime_helpers)for y in rows[start:i]):continue
   # Loading a dangling pointer value is harmless;dereferencing it is not.
@@ -65,6 +75,6 @@ def verify_plan(p,plan):
     if not name.endswith('EEAAXXZ')or cls+'@'not in name or method+'@'not in name:continue
     if method==cls and '???0'+cls+'@'not in name:continue
     if has_lifetime_gate(p,p['expanded'](name)):found.append(name)
-  assert len(found)==len(e['callbacks']),(e['key'],'actual guarded closures',len(found),'expected',len(e['callbacks']))
+  expected=sum(c.get('compiled_count',1)for c in e['callbacks']);assert len(found)==expected,(e['key'],'actual guarded closures',len(found),'expected',expected)
   seen+=found
  return seen
