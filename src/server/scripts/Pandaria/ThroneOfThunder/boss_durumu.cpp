@@ -805,9 +805,9 @@ public:
 
         void EnterEvadeMode(){}
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -896,9 +896,9 @@ public:
 
         void EnterEvadeMode(){}
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -990,9 +990,9 @@ public:
 
         void EnterEvadeMode(){}
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -1083,9 +1083,9 @@ public:
 
         void Reset(){}
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -1380,9 +1380,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -1561,9 +1561,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
@@ -1647,9 +1647,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32 &damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth(attacker))
                 damage = 0;
         }
 
