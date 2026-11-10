@@ -415,9 +415,9 @@ public:
                         {
                             last_spell = Spells_Morph[phase];
                             visual->CastSpell(visual, last_spell);
-                            visual->AddDelayedEvent(6000, [visual, this] () -> void
+                            visual->AddDelayedEvent(6000, [visual, spellId = last_spell]() -> void
                             {
-                                visual->RemoveAura(last_spell);
+                                visual->RemoveAura(spellId);
                             });
                         }
                         
