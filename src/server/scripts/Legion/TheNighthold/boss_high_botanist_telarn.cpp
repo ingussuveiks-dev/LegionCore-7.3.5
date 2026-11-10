@@ -1400,8 +1400,9 @@ struct npc_telarn_solar_collapse_stalker : public ScriptedAI
         events.RescheduleEvent(EVENT_1, 1500); //12c-25y, 12c-20y, 6c-15y, 6c-10y, 6c-5y, 1c-0y
         events.RescheduleEvent(EVENT_2, 15000); //Despawn Event
 
-        me->AddDelayedEvent(100, [this] () -> void
+        me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (me)
             {
                 Position pos;
@@ -1442,8 +1443,9 @@ struct npc_telarn_solar_collapse_stalker : public ScriptedAI
             pos = me->GetNearPosition(range, angle * i);
             me->CastSpell(pos, SPELL_SOLAR_COLLAPSE_MISSLE_1, true);
 
-            me->AddDelayedEvent(500, [this, idx, pos] () -> void
+            me->AddDelayedEvent(500, [this, idx, pos, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (me && idx == 6) // The last tick has a personal visual
                     me->PlayOrphanSpellVisual(pos, 0.0f, { pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() - 0.1f }, 58170, 1.0f, ObjectGuid::Empty, true);
             });
@@ -1469,6 +1471,9 @@ struct npc_telarn_solar_collapse_stalker : public ScriptedAI
             }
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //109804, 111993
