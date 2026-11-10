@@ -398,6 +398,7 @@ struct npc_pavalak_amber_sapper : public ScriptedAI
     void Reset() override
     {
         me->SetReactState(REACT_PASSIVE);
+        moveTimer = 0;
     }
 
     void IsSummonedBy(Unit* summoner) override
