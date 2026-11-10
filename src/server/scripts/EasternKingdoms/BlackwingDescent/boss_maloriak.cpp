@@ -556,6 +556,7 @@ public:
         }
 
         ObjectGuid trappedPlayer;
+        bool released = false;
         uint32 existenceCheckTimer;
 
         void Reset()
@@ -565,6 +566,8 @@ public:
 
         void SetGUID(ObjectGuid const& guid, int32 type)
         {
+            if (released)
+                return;
             if (type == DATA_TRAPPED_PLAYER)
             {
                 trappedPlayer = guid;
@@ -574,9 +577,13 @@ public:
 
         void JustDied(Unit* /*killer*/)
         {
-            if (Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer))
+            if (released)
+                return;
+            released = true;
+            Player* player = ObjectAccessor::GetPlayer(*me, trappedPlayer);
+            trappedPlayer.Clear();
+            if (player)
             {
-                trappedPlayer.Clear();
                 player->RemoveAurasDueToSpell(SPELL_FLASH_FREEZE);
             }
             DoCast(me, SPELL_SHATTER);
@@ -597,6 +604,7 @@ public:
                     me->DespawnOrUnsummon();
                     return;
                 }
+                existenceCheckTimer = 1000;
             }
             else
                 existenceCheckTimer -= diff;
