@@ -1045,15 +1045,21 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            if (pauseTimer <= diff && pause)
+            if (pause)
             {
-                pause = false;
-                infernoTimer = 0;
-                infernoCount = 0;
+                if (pauseTimer <= diff)
+                {
+                    pause = false;
+                    infernoTimer = 0;
+                    infernoCount = 0;
+                }
+                else pauseTimer -= diff;
             }
-            else pauseTimer -= diff;
         
-            if (infernoTimer <= diff && !pause)
+            if (pause)
+                return;
+
+            if (infernoTimer <= diff)
             {
                 if (Creature* pTrigger = DoSummonFlyer(NPC_MIMIRON_TARGET_BEACON, me, 80, 0, 20000, TEMPSUMMON_TIMED_DESPAWN))
                     pTrigger->CastSpell(me, SPELL_MIMIRON_S_INFERNO, true);
