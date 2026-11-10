@@ -157,13 +157,18 @@ public:
         npc_energized_phoenixAI(Creature* creature) : ScriptedAI(creature) {}
 
         EventMap events;
-        bool moveComplete;
-        uint32 moveTimer;
+        bool moveComplete = true;
+        bool sleeping = false;
+        uint32 moveTimer = 0;
 		ObjectGuid targetMove;
 
         void Reset()
         {
             events.Reset();
+            moveComplete = true;
+            sleeping = false;
+            moveTimer = 0;
+            targetMove.Clear();
         }
 
         void EnterCombat(Unit* unit)
@@ -171,12 +176,19 @@ public:
         }
 
 
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType)
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            if (sleeping)
+            {
+                damage = 0;
+                return;
+            }
+            if (damage >= me->GetHealth(attacker))
             {
                 damage = 0;
 
+                sleeping = true;
+                moveComplete = true;
                 me->CastStop();
                 me->SetHealth(me->GetMaxHealth());
                 me->CastSpell(me, 167629, true);
@@ -206,6 +218,7 @@ public:
                     }
             }
 
+            sleeping = false;
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_REMOVE_CLIENT_CONTROL);
             me->SetDisplayId(me->GetNativeDisplayId());
 
@@ -245,6 +258,7 @@ public:
 
                     if (me->GetDistance(target) < 3.0f)
                     {
+                        sleeping = true;
                         moveComplete = true;
 
                         me->CastStop();

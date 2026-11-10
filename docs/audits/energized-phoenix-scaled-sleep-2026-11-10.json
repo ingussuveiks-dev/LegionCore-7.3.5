@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-10",
+  "status": "DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "case": "EnergizedPhoenix",
+  "base": "4ce09b5362699afd09f6e800134150668a55772e",
+  "support_commit": "0defd65aa6422e82e934086c879e458bd702ffc7",
+  "paths": [
+    "src/server/scripts/Draenor/zone_spires_of_arak.cpp"
+  ],
+  "cause": "Pre-normalization lethal comparison bypassed sleep;the old move poll could continue after sleep and idle timers were uninitialized.",
+  "implementation": "Use final target-relative lethal guard,once sleep state and disabled movement while sleeping;native wake clears state and rearms2000ms;idle reset initializes state.",
+  "validation": {
+    "source": "20 MSVC ASAN selected cases:10 pinned raw-hook counterfactuals and10 repaired contracts. Source controls model native0.1 damage normalization before death versus old raw hook. All13 selected damage bodies plus actual phoenix wake/reset/poll,Artruis accepted-pair/reset/unlock/shielded-update preamble,Broken duel liveness/abandon preamble and Whitemane arrival. Covers exact/scaled lethal,player/pet/two-level guardian,once-only casts/credit/counters,missing/disabled actors,normal-versus-heroic/ground/flight,silenced anomaly and retired training actors. These are extracted-body contracts,not full native combat/client traversal.",
+    "native": "Actual Unit::GetHealth(attacker),positive represented health,actual Player and Creature CREATED_BY two-level owner chains,actual Artruis nearest-creature grid/AI lookup and Whitemane partner GUID lookup. Ten cases/13 handlers plus selected retry/reset/wake/arrival/lost-challenger paths. Casts,speech,quest/group/instance credit,phase/timer events,despawn/movement/evade boundaries observed;not full native Unit::DealDamage/activated level-scaling,full registered encounter or full-core ASAN;no character writes.",
+    "release": "Original main game/scripts libraries and final staged links. All13 changed normalized-damage callbacks must exist in actual PE and old raw overrides must be absent. Live SQL confirms all selected bindings,including Ko ragh79956. New10 problem checks retain prior217,total227. Canonical matching binary,Scepter,ArtifactTier,ScenarioResumeASAN and fresh owned ready/shutdown0/exit0/gone.",
+    "diagnostics": "Before/after canonical+own crash/log timestamps/lengths,exit/stdout/stderr and appended diagnostics/DBErrors. Final declared checks clean. Fixture constant/header dependencies and compile issues retained with repaired passing runs;no runtime symptom hidden. Mixed7111-byte DBErrors and OPEN SQL82+94/TimeLoop26/Lady/LINK2/Slaghammer/handshake evidence preserved.",
+    "scope": "Ten independently bound problems in ten implementation files/13 affected damage callbacks. Whitemane+Durand count as ONE resurrection encounter;Snowdrift boss+novice+miniboss count as ONE surrender/counter lifecycle;phoenix sleep/wake/idle timer count as ONE. Dropped dormant/unlinked Death Challenge candidate is NOT counted/deployed. No SQL/character edits or guessed Lady HP/timer."
+  },
+  "pending": [
+    "Authentic living Sharasdal Lady activation/surrender/conversation1906/Grash/cleanup remains OPEN;no guessed HP threshold or kill timer.",
+    "LINK2,Slaghammer crash/cache,intermittent handshake,mixed7111-byte DBErrors and all36 whole artifact chains remain OPEN. No default Slaghammer probe or log truncation.",
+    "MariaDB unsigned CAST82original+94corrected raw snapshots remain hash-verified outside fixed;no workaround. TimeLoop105984/native32bit healing26raw records and ninth-batch EXE/symbols retained.",
+    "Actual Valsharah entry/admission,live Maw graveyard behavior,all Trial of Style stages/bonuses/awards,Demonic Inquisition combat and pet/guardian pulls,full Nightbane achievement/dialogue/cast/arrival sequence,Fallen Avatar full intro/combat,Guldan phase3 figures/colors,Oso full round/helper/jumps/reset and Ray full rotation/visuals/faction/pet outcomes remain client-pending. Existing native kill/group credit paths unchanged;no whole encounter/36-chain certification.",
+    "Twin Emperors existing damage redistribution int32/scale path remains separately OPEN/unmodified;this batch verifies heal compensation only. All ten client/whole encounter sequences remain pending,including Hatchling flight/combat/equipment,reassembly,scenario wounded/squad visuals,Sinestra phases,Anub combat/extraction and Eonar jumps.",
+    "Nightmother missing-target landing and Focus constant-action defects repaired here. Focus reset aura/flag/full encounter lifecycle remains separately unverified.",
+    "Existing Freya LowerPlayerDamageReq takes uint32 and very-large-health multiplication can exceed uint64;health bonus truncation repaired for represented arithmetic,loot-credit/extreme-width pipeline remains separately OPEN.",
+    "Meljarak existing damage-sharing underflow/native scaling/death path remains separately OPEN;this batch repairs heal transfer width only. Garrosh full aura removal/player control/encounter remains client pending.",
+    "Broken Shore firstEnter is still a shared initial presenter flag;initial presenter departure/retry semantics and whole client intro remain OPEN/unverified. This batch scopes existing queued conversations to their original live instance.",
+    "Vetir native boarding camera/pet/escort route,abandon/reentry and client extraction/cast failure behavior remain client pending;selected mover/extraction guards do not certify the full ride. All ten actual encounters remain client-pending.",
+    "Argent Champion scaled surrender/eligible ownership is repaired at stated source/native/PE scopes;actual mounted duel,group eligibility/retry/client turn-in remain pending.",
+    "All7 balloon actual seats,failed cast/retry behavior,flight/camera/group queue/client traversal remain pending;this repair prevents failed-summon fallback and delayed wrong-actor boarding.",
+    "Four prison actual shatter/fragment/dog timeout/client encounter and Medivh full dialogue/quest9645/cinematic remain client pending. No whole artifact chain or Lady finale is certified.",
+    "Actual Conflagration target health/scaling/immunity,spell success/survival,flight/voice/dialogue and full9645 traversal were not replayed;remain explicitly client/unverified. This additional catalog is not a passing whole cinematic test.",
+    "All10 actual client mounted duels/helper survival,Tsulong alternating evade/full day-night combat,Cheng summon/movement/abandon/retry and four Celestial full fights/loot/quest counters/parent reset remain client-pending. Source/native selected paths do not certify full encounter traversal.",
+    "Antorus per-instance admission/queue/retry repaired at stated scopes;actual5545/5522/5524 dialogue acceptance/audio/presentation,Hasabel/Eonar/Imonar actors,three-actor movement,spell scenes,raid reset/re-entry/group client traversal remain pending. World lifecycle can finish without the initiating player;optional presentation failures do not suppress accepted world actors.",
+    "Tsulong existing signed32 day/night health bookkeeping is separately OPEN/unmodified;this repair initializes only its alternating evade-check state.",
+    "All ten actual client sequences remain pending:phoenix detonation/sleep/wake/targets;Artruis full faction choice/ally death/urn/group/reset;Ko ragh suppression-field visual/timing and real death;Broken Shore actual invitations/sparring/guardian/group/faction and lost-player cleanup;Neptulon wipe/restart;Blaze egg/real healing/wake;heroic Siamat actual2s death/achievement;Whitemane/Durand native resurrection movement/cast acknowledgment and absent partner recovery;Snowdrift actual waves/training jump/home/completion/loot/re-entry;Felmyst actual air/ground death. Missing-partner or failed-cast recovery outside the repaired Artruis/duel scopes is not certified."
+  ],
+  "canonical_world_sha256": "1aaca5a187d82641724ab7a49d685a5d552170180ea238014e633c8256cf4c54",
+  "patch_sha256": "df037b3cc45f1c890feece3cb419c0b0c300b11dcd1c6538cf17d476c362b0e2",
+  "cleanup": {
+    "status": "PENDING_BATCH_ARCHIVE"
+  },
+  "batch_audit": "docs/audits/twentysecond-ten-repairs-2026-11-10.json"
+}
