@@ -187,9 +187,9 @@ struct boss_kingaroth : BossAI
         me->StopMoving();
         me->SetDisableGravity(true);
 
-        me->AddDelayedEvent(3000, [this]() -> void
+        me->AddDelayedEvent(3000, [actor = me]() -> void
         {
-            me->CastSpell(me, SPELL_OUTRO_CONV, true);
+            actor->CastSpell(actor, SPELL_OUTRO_CONV, true);
         });
     }
 
@@ -458,9 +458,9 @@ struct boss_kingaroth : BossAI
                     me->CastSpell(me, SPELL_APOCALYPSE_PROTOCOL);
                     DoActionSummon(NPC_INCINERATOR_STALKER, ACTION_2); //Despawn AT
                     DoActionSummon(NPC_INFERNAL_TOWER_1, ACTION_1); //Move UP
-                    me->AddDelayedCombat(35000, [this]() -> void
+                    me->AddDelayedCombat(35000, [actor = me]() -> void
                     {
-                        Talk(SAY_PHASE_2_PREPARE_TRAP);
+                        { if (auto ai = actor->AI()) ai->Talk(SAY_PHASE_2_PREPARE_TRAP); }
                     });
                     break;
                 }
