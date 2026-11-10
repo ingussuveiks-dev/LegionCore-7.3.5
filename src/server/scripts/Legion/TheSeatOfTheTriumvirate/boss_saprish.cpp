@@ -786,12 +786,15 @@ public:
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_START, me);
                 if (auto saprish = instance->instance->GetCreature(instance->GetGuidData(NPC_SAPRISH)))
                 {
-                    me->AddDelayedCombat(500, [this, saprish]() -> void
+                    me->AddDelayedCombat(500, [actor = me, saprishGuid = saprish->GetGUID()]() -> void
                     {
+                        Creature* saprish = ObjectAccessor::GetCreature(*actor, saprishGuid);
+                        if (!saprish || !saprish->IsInWorld() || !saprish->IsAlive() || saprish->GetMap() != actor->GetMap())
+                            return;
                         if (auto hp = saprish->GetMaxHealth())
                         {
-                            me->SetMaxHealth(hp);
-                            me->SetHealth(hp);
+                            actor->SetMaxHealth(hp);
+                            actor->SetHealth(hp);
                         }
                     });
                 }
@@ -901,12 +904,15 @@ public:
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_START, me);
                 if (auto saprish = instance->instance->GetCreature(instance->GetGuidData(NPC_SAPRISH)))
                 {
-                    me->AddDelayedCombat(500, [this, saprish]() -> void
+                    me->AddDelayedCombat(500, [actor = me, saprishGuid = saprish->GetGUID()]() -> void
                     {
+                        Creature* saprish = ObjectAccessor::GetCreature(*actor, saprishGuid);
+                        if (!saprish || !saprish->IsInWorld() || !saprish->IsAlive() || saprish->GetMap() != actor->GetMap())
+                            return;
                         if (auto hp = saprish->GetMaxHealth())
                         {
-                            me->SetMaxHealth(hp);
-                            me->SetHealth(hp);
+                            actor->SetMaxHealth(hp);
+                            actor->SetHealth(hp);
                         }
                     });
                 }
@@ -938,8 +944,8 @@ public:
         {
             if (spellInfo->Id == SPELL_SWOOP)
             {
-                me->AddDelayedEvent(1500, [this] {
-                    DoCast(SPELL_SWOOP_DAMAGE);
+                me->AddDelayedEvent(1500, [actor = me] {
+                    { if (auto ai = actor->AI()) ai->DoCast(SPELL_SWOOP_DAMAGE); }
                 });
             }
             if (spellInfo->Id == SPELL_SWOOP_DAMAGE)
