@@ -415,9 +415,9 @@ struct npc_blaze_of_the_heavens : public ScriptedAI
         }
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32 &damage, DamageEffectType /*dmgType*/) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32 &damage, DamageEffectType /*dmgType*/) override
     {
-        if (damage >= me->GetHealth())
+        if (damage >= me->GetHealth(attacker))
         {
             damage = 0;
             me->SetHealth(1);
