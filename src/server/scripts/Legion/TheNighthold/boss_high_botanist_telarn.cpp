@@ -188,7 +188,7 @@ struct boss_high_botanist_telarn : BossAI
                 me->SetVisible(false);
             }
             if (instance)
-                me->AddDelayedEvent(500, [this] () -> void { if (me->IsAlive()) Init(); });
+                me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; if (me->IsAlive()) Init(); });
         }
     }
 
@@ -320,7 +320,7 @@ struct boss_high_botanist_telarn : BossAI
                         }
                     }
                     RemoveAurasPlayers();
-                    AddDelayedEvent(5000, [=] () -> void { DoAction(ACTION_1); });
+                    AddDelayedEvent(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; DoAction(ACTION_1); });
                 }
                 break;
             }
@@ -495,6 +495,9 @@ struct boss_high_botanist_telarn : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //109038
