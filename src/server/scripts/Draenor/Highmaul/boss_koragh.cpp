@@ -156,8 +156,9 @@ struct boss_koragh : public BossAI
 
         summons.DespawnAll();
 
-        AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (m_RitualistGuids.empty() && !m_Init)
             {
                 std::list<Creature*> breakerList;
@@ -211,8 +212,9 @@ struct boss_koragh : public BossAI
             }
         });
 
-        AddDelayedEvent(2 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(2 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (me->GetReactState() == REACT_AGGRESSIVE)
                 return;
 
@@ -327,8 +329,9 @@ struct boss_koragh : public BossAI
                         me->RemoveAura(SuppressionFieldAura);
                         me->CastSpell(me, SuppressionFieldMissile, true);
 
-                        AddDelayedEvent(2 * IN_MILLISECONDS, [this]() -> void
+                        AddDelayedEvent(2 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (Unit* target = SelectTarget(SELECT_TARGET_TOPAGGRO))
                             {
                                 me->GetMotionMaster()->Clear();
@@ -385,8 +388,9 @@ struct boss_koragh : public BossAI
                 me->RemoveAura(SuppressionFieldAura);
                 me->CastSpell(me, SuppressionFieldMissile, true);
 
-                AddDelayedEvent(2 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(2 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Unit* target = SelectTarget(SELECT_TARGET_TOPAGGRO))
                     {
                         me->GetMotionMaster()->Clear();
@@ -591,8 +595,9 @@ struct boss_koragh : public BossAI
                 {
                     me->CastSpell(target, ExpelMagicFrostAreaTrigger, false);
 
-                    AddDelayedEvent(1500, [this]() -> void
+                    AddDelayedEvent(1500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->CastSpell(me, ExpelMagicFrostDamage, true);
                     });
                 }
@@ -634,6 +639,9 @@ struct boss_koragh : public BossAI
 
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Breaker Ritualist <Breaker of Fel> - 86330
