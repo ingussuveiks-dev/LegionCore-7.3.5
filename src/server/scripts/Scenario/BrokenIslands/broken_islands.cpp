@@ -1448,8 +1448,9 @@ public:
                 {
                     currentWP = 0;
 
-                    me->AddDelayedEvent(3000, [this]() -> void
+                    me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         if (Creature* targ = me->FindNearestCreature(90716, 40.0f, true))
                             targ->AI()->Talk(0);
 
@@ -1483,8 +1484,9 @@ public:
                                 pair.second->follow_dist = abs(float(urand(2, 3) * 3) / cos(pair.second->follow_angle));
                             }
 
-                        me->AddDelayedEvent(3000, [this]() -> void
+                        me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             GetNPCAroundAndDoAction([](Creature* cre) {cre->GetMotionMaster()->Clear();  cre->GetMotionMaster()->MovePath(439146, false, irand(-1, 1), irand(-1, 1)); }, 3);
                         });
                         currentWP = 439146;
@@ -1494,8 +1496,9 @@ public:
                 if (moveType == WAYPOINT_MOTION_TYPE && currentWP == 439146 && pointId == 10)
                 {
                     currentWP = 0;
-                    me->AddDelayedEvent(2000, [this]() -> void
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         GetNPCAroundAndDoAction([](Creature* cre) {cre->GetMotionMaster()->Clear(); cre->SetReactState(REACT_AGGRESSIVE); }, 3);
                     });
                 }
@@ -1548,8 +1551,9 @@ public:
                                 }
                             }
 
-                        me->AddDelayedEvent(22000, [this]() -> void
+                        me->AddDelayedEvent(22000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             DoCast(199718);
                             me->GetMotionMaster()->MovePath(439137, false);
                             currentWP = 439137;
@@ -1584,8 +1588,9 @@ public:
                     if (auto commander = script->instance->GetCreature(script->GetGuidData(90705)))
                         commander->AI()->DoAction(true);
 
-                me->AddDelayedEvent(8000, [this] () -> void
+                me->AddDelayedEvent(8000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     std::list<Creature*> targets;
                     me->GetCreatureListInGrid(targets, 150.0f);
                     targets.remove_if([this](Creature* target) -> bool
@@ -1621,8 +1626,9 @@ public:
                     me->SetHomePosition({ 538.84f, 2107.58f, 3.0f });
 
 
-                    me->AddDelayedEvent(11000, [this] () -> void
+                    me->AddDelayedEvent(11000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         DoCast(183988);
                         GetNPCAroundAndDoAction([](Creature*){}, 3);
                     });
@@ -1731,8 +1737,9 @@ public:
                     GetNPCAroundAndDoAction([](Creature* creature) {}, 5);
                     me->GetMotionMaster()->Clear();
 
-                    me->AddDelayedEvent(5000, [this]() -> void
+                    me->AddDelayedEvent(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->SummonGameObject(242549, 1536.26f, 1776.97f, 37.263f, 2.03f, 0.0f, 0.0f, 0.0f, 0.0f, DAY);
 
                         me->GetMotionMaster()->MovePath(439141, false); // 3
@@ -1768,8 +1775,9 @@ public:
         {
             CreatureAI::EnterEvadeMode();
 
-            me->AddDelayedEvent(100, [this]() -> void
+            me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (me->isInCombat())
                     return;
 
@@ -1794,8 +1802,9 @@ public:
                 return !target || !target->IsAlive() || target->isTrigger() || !target->IsVisible();
             });
 
-            me->AddDelayedEvent(100, [this]() -> void
+            me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (me->isInCombat())
                     return;
 
@@ -1849,6 +1858,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 };
 
