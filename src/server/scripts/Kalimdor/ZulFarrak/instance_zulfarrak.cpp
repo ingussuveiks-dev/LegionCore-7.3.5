@@ -330,8 +330,11 @@ public:
                 {
                     Position pos = {pyramidSpawns[i][2], pyramidSpawns[i][3], 8.87f, 0};
                     TempSummon* ts = instance->SummonCreature(uint32(pyramidSpawns[i][1]), pos);
-                    ts->GetMotionMaster()->MoveRandom(10);
-                    addsAtBase.push_back(ts->GetGUID());
+                    if (ts)
+                    {
+                        ts->GetMotionMaster()->MoveRandom(10);
+                        addsAtBase.push_back(ts->GetGUID());
+                    }
                 }
             }
         }
