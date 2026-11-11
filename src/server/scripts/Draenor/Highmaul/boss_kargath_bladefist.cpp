@@ -1595,7 +1595,7 @@ struct npc_highmaul_ravenous_bloodmaw : public ScriptedAI
 
                 me->GetMotionMaster()->MoveJump(x, y, arenaFloor, 15.0f, 25.0f, me->GetOrientation());
 
-                AddDelayedEvent(2 * IN_MILLISECONDS, [this]() -> void { me->CastSpell(me, OnTheHunt, false); });
+                AddDelayedEvent(2 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->CastSpell(me, OnTheHunt, false); });
                 break;
             }
             case InterruptRavenous:
@@ -1607,8 +1607,9 @@ struct npc_highmaul_ravenous_bloodmaw : public ScriptedAI
 
                 me->CastSpell(me, SpellInflamed, true);
 
-                AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Position pos;
                     float x = me->GetPositionX() + (7.0f * cos(me->GetOrientation()));
                     float y = me->GetPositionY() + (7.0f * sin(me->GetOrientation()));
@@ -1712,6 +1713,9 @@ struct npc_highmaul_ravenous_bloodmaw : public ScriptedAI
             p_Path.push_back(point);
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Kargath Bladefist (trigger) - 78846
