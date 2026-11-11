@@ -2,8 +2,8 @@
   "date": "2026-11-11",
   "request": "Five successive groups of ten new fixes,then stop. MariaDB promotion deferred by the user.",
   "authorized_fixes": 50,
-  "completed_fixes": 50,
-  "status": "COMPLETE_50_AUTOMATED_CLIENT_PENDING",
+  "completed_fixes": 46,
+  "status": "CORRECTED_46_CONFIRMED_4_WITHDRAWN",
   "batches": [
     {
       "number": 1,
@@ -110,7 +110,8 @@
         "closeout_manifest_sha256": "d0b17ebc5c2bfafb11f1ca7bcedcc06efb441c949822c9c930289da50f641a30",
         "resolution_sha256": "776fabab6a0b20a40c3ec5eb6523279d6eec249877a0e1ebabd36bda933c2eb3",
         "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
-      }
+      },
+      "confirmed_fixes": 10
     },
     {
       "number": 2,
@@ -217,7 +218,8 @@
         "closeout_manifest_sha256": "20b67204d1d667b5ee9589834359462cb209d8e2606e74be755be7c16a3cd26a",
         "resolution_sha256": "8a75504a6cb1bceb1d852a4f158a8c0e448a68377d5a007313a1d828ad15c47c",
         "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
-      }
+      },
+      "confirmed_fixes": 10
     },
     {
       "number": 3,
@@ -326,7 +328,8 @@
         "closeout_manifest_sha256": "407262b2e88c165a929c86c400e5c71ea86a89439e5462937470cf3f3fb17cb9",
         "resolution_sha256": "dd5169caf357dc669f779fb56f8a310e78435184cb3e9f1319f28e7d5a3aee38",
         "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
-      }
+      },
+      "confirmed_fixes": 10
     },
     {
       "number": 4,
@@ -403,7 +406,8 @@
           "path": "src/server/scripts/Draenor/Highmaul/boss_brackenspore.cpp",
           "audit": "docs\\audits\\npc-highmaul-living-mushroom-ai-lifetime-2026-11-11.json",
           "callback_count": 4,
-          "commit": "b3002ba5a50f7888cc94af34d1e24689340f0d05"
+          "commit": "b3002ba5a50f7888cc94af34d1e24689340f0d05",
+          "status": "WITHDRAWN_NOT_A_UNIT_QUEUE_UAF"
         },
         {
           "key": "NpcAshranMisirinStouttoeLifetime",
@@ -411,7 +415,8 @@
           "path": "src/server/scripts/OutdoorPvP/Ashran/AshranNPCAlliance.cpp",
           "audit": "docs\\audits\\npc-ashran-misirin-stouttoe-ai-lifetime-2026-11-11.json",
           "callback_count": 3,
-          "commit": "f92a594c79384770d3d8ba6cb8d0a7730257cda1"
+          "commit": "f92a594c79384770d3d8ba6cb8d0a7730257cda1",
+          "status": "WITHDRAWN_NOT_A_UNIT_QUEUE_UAF"
         }
       ],
       "canonical": {
@@ -435,7 +440,8 @@
         "closeout_manifest_sha256": "0264155e46b54f9ac9e6b94a57a281fad3bd4c8c92d9aacea34085d34c1092d6",
         "resolution_sha256": "ccae149731c4e828ac131611c85f734da138f57c8e03d6ca9367053c82255a34",
         "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
-      }
+      },
+      "confirmed_fixes": 8
     },
     {
       "number": 5,
@@ -496,7 +502,8 @@
           "path": "src/server/scripts/Draenor/Highmaul/boss_brackenspore.cpp",
           "audit": "docs\\audits\\npc-highmaul-rejuvenating-mushroom-ai-lifetime-2026-11-11.json",
           "callback_count": 4,
-          "commit": "2e1b5ace7967553b9757b040c7d42d26206e9ceb"
+          "commit": "2e1b5ace7967553b9757b040c7d42d26206e9ceb",
+          "status": "WITHDRAWN_NOT_A_UNIT_QUEUE_UAF"
         },
         {
           "key": "NpcAshranOfficerIronoreLifetime",
@@ -504,7 +511,8 @@
           "path": "src/server/scripts/OutdoorPvP/Ashran/AshranNPCAlliance.cpp",
           "audit": "docs\\audits\\npc-ashran-officer-ironore-ai-lifetime-2026-11-11.json",
           "callback_count": 1,
-          "commit": "b692c9dfbd52a3c769046d92e7c014b1478a87df"
+          "commit": "b692c9dfbd52a3c769046d92e7c014b1478a87df",
+          "status": "WITHDRAWN_NOT_A_UNIT_QUEUE_UAF"
         },
         {
           "key": "NpcInvasionStormheimDragonsLifetime",
@@ -544,7 +552,8 @@
         "closeout_manifest_sha256": "abe483605ea05f9b449af17137af0fb00ad908f1f2b974dbd78989c00b7f381c",
         "resolution_sha256": "047d7e023425cf183ee99c5c9a6316b347e773d6d20e99022e3d8ebb947bcb03",
         "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
-      }
+      },
+      "confirmed_fixes": 8
     }
   ],
   "pending": [
@@ -552,5 +561,40 @@
     "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
     "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
     "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ],
+  "reported_original_fixes": 50,
+  "withdrawn_fixes": [
+    {
+      "key": "NpcHighmaulLivingMushroomLifetime",
+      "classes": [
+        "npc_highmaul_living_mushroom"
+      ],
+      "binding": "npc_highmaul_living_mushroom",
+      "callbacks": 4
+    },
+    {
+      "key": "NpcAshranMisirinStouttoeLifetime",
+      "classes": [
+        "npc_ashran_misirin_stouttoeAI"
+      ],
+      "binding": "npc_ashran_misirin_stouttoe",
+      "callbacks": 3
+    },
+    {
+      "key": "NpcHighmaulRejuvenatingMushroomLifetime",
+      "classes": [
+        "npc_highmaul_rejuvenating_mushroom"
+      ],
+      "binding": "npc_highmaul_rejuvenating_mushroom",
+      "callbacks": 4
+    },
+    {
+      "key": "NpcAshranOfficerIronoreLifetime",
+      "classes": [
+        "npc_ashran_officer_ironoreAI"
+      ],
+      "binding": "npc_ashran_officer_ironore",
+      "callbacks": 1
+    }
   ]
 }

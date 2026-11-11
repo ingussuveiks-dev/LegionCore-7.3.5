@@ -1,7 +1,7 @@
 {
   "latest_five_ten_repairs_2026_11_11": {
-    "status": "COMPLETE_50_AUTOMATED_CLIENT_PENDING",
-    "completed_fixes": 50,
+    "status": "CORRECTED_46_CONFIRMED_4_WITHDRAWN",
+    "completed_fixes": 46,
     "authorized_fixes": 50,
     "audit": "docs\\audits\\five-ten-repairs-2026-11-11.json",
     "latest_batch_audit": "docs\\audits\\fortyfirst-ten-repairs-2026-11-11.json",
@@ -9799,5 +9799,11 @@
       "retained": "Installed DLL,verified original rollback pair,candidate DLL/PDB/manifest,pinned source archives/extracted source and regression tools;private SQL logs/crash directories and historical mixed/OPEN protocol/TLS records retained. Real Wamp datadir/config except separately audited one option,canonical game runtime/shared libraries/character backups and protected Slaghammer untouched."
     },
     "pending": "Living Lady,LINK2/Slaghammer,TimeLoop32bit healing,heroic Mend,intermittent client handshake,original passwordless-TLS client warning and all36whole-chain client checks remain separate OPEN work."
+  },
+  "latest_cosmetic_queue_ownership_correction_2026_11_11": {
+    "audit": "docs/audits/cosmetic-queue-ownership-correction-2026-11-11.json",
+    "status": "SOURCE_CORRECTED_NATIVE_OWNERSHIP_CHECK_PENDING_CANONICAL_PROMOTION",
+    "confirmed_previous_request_fixes": 46,
+    "withdrawn_previous_claims": 4
   }
 }

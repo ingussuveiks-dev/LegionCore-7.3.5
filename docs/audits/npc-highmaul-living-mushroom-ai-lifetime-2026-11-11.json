@@ -1,6 +1,6 @@
 {
   "date": "2026-11-11",
-  "status": "DEPLOYED_AI_LIFETIME_REPAIR_AUTOMATED_CLIENT_PENDING",
+  "status": "WITHDRAWN_NOT_A_UNIT_QUEUE_UAF",
   "key": "NpcHighmaulLivingMushroomLifetime",
   "title": "Cancel npc_highmaul_living_mushroom callbacks after source AI retirement",
   "paths": [
@@ -15,8 +15,8 @@
       78884
     ]
   },
-  "cause": "CreatureAI delegate queues are Unit-owned;AIM_Destroy/default/SmartAI/BossAI destructors do not cancel those Unit queues. Explicit or implicit raw this capture could enter the old actor body after original AI deletion,including replacement by Null/Possessed AI. Existing non-null me/alive/generation checks dereference this too late.",
-  "repair": "Capture a weak per-AI token at scheduling;first statement rejects expired original AI before any payload/member access. Token lifetime follows that exact AI,not current AI identity. Surviving suspended AI and corpse outro semantics remain admitted;normal original predicates/credit remain.",
+  "cause": "Delegated AddDelayedEvent resolves to CosmeticAI::AddDelayedEvent,whose queue is an AI member and is destroyed with it. Unit-queue projection was invalid for this case.",
+  "repair": "Original guard was redundant. Removed it to restore original CosmeticAI callback bodies,delays and class layout. Do not count this as a confirmed UAF repair.",
   "callback_count": 4,
   "registrations": [
     {
@@ -68,5 +68,6 @@
     "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
     "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
     "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
-  ]
+  ],
+  "classification_correction": "docs/audits/cosmetic-queue-ownership-correction-2026-11-11.json"
 }

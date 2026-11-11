@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-11",
+  "status": "SOURCE_CORRECTED_NATIVE_OWNERSHIP_VERIFIED_CANONICAL_PROMOTION_PENDING",
+  "reported_original_fixes": 50,
+  "confirmed_lifetime_fixes": 46,
+  "withdrawn": [
+    {
+      "key": "NpcHighmaulLivingMushroomLifetime",
+      "classes": [
+        "npc_highmaul_living_mushroom"
+      ],
+      "binding": "npc_highmaul_living_mushroom",
+      "callbacks": 4
+    },
+    {
+      "key": "NpcAshranMisirinStouttoeLifetime",
+      "classes": [
+        "npc_ashran_misirin_stouttoeAI"
+      ],
+      "binding": "npc_ashran_misirin_stouttoe",
+      "callbacks": 3
+    },
+    {
+      "key": "NpcHighmaulRejuvenatingMushroomLifetime",
+      "classes": [
+        "npc_highmaul_rejuvenating_mushroom"
+      ],
+      "binding": "npc_highmaul_rejuvenating_mushroom",
+      "callbacks": 4
+    },
+    {
+      "key": "NpcAshranOfficerIronoreLifetime",
+      "classes": [
+        "npc_ashran_officer_ironoreAI"
+      ],
+      "binding": "npc_ashran_officer_ironore",
+      "callbacks": 1
+    }
+  ],
+  "cause": "CosmeticAI declares its own nonvirtual AddDelayedEvent(uint32,...) and stores callbacks in its _timedDelayedOperations vector. Its destructor destroys that vector. Explicit me->AddDelayedEvent would use Unit,but these four actors call the AI-owned overload. The previous generic NullCreatureAI/Unit projection did not reproduce their queue ownership.",
+  "correction": "Removed four redundant guards without changing original payloads/delays. Four previous fix classifications withdrawn,not silently replaced. Native probe exercises real CosmeticAI queue dispatch/destruction and separation from a surviving Unit queue. Existing native/PE suites omit withdrawn cases;source/audit history remains visible.",
+  "new_request": "Next5x10 request remains50genuine new fixes. This correction is not counted among them. No current batch source repair is deployed yet.",
+  "limits": "Legacy archived fixture outputs remain historical evidence of an invalid projection,not proof of a production CosmeticAI UAF. Full content/client traversal remains pending.",
+  "native_evidence": {
+    "source": "tools/tests/CosmeticQueueOwnershipNative.cpp",
+    "log": ".codex/second-five-ten-2026-11-11/cosmetic-ownership.log",
+    "result": "Actual CosmeticAI owns/releases callback on destruction;surviving Unit queue remains independent. No projection of CosmeticAI onto Unit queue."
+  }
+}

@@ -396,13 +396,10 @@ public:
 
         void ScheduleAllTalks()
         {
-            AddDelayedEvent(7 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(First); });
-            AddDelayedEvent(48 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(Second); });
-            AddDelayedEvent(60 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(Third); });
+            AddDelayedEvent(7 * IN_MILLISECONDS, [this]() -> void { Talk(First); });
+            AddDelayedEvent(48 * IN_MILLISECONDS, [this]() -> void { Talk(Second); });
+            AddDelayedEvent(60 * IN_MILLISECONDS, [this]() -> void { Talk(Third); });
         }
-    private:
-        // Unit-owned queues may outlive this AI object.
-        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
@@ -497,16 +494,13 @@ public:
 
         void Reset() override
         {
-            AddDelayedEvent(30 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(0); });
+            AddDelayedEvent(30 * IN_MILLISECONDS, [this]() -> void { Talk(0); });
         }
 
         void LastOperationCalled() override
         {
             Reset();
         }
-    private:
-        // Unit-owned queues may outlive this AI object.
-        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override

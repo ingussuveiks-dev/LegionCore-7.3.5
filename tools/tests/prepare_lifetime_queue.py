@@ -22,5 +22,7 @@ def generate(plan_path,base,out,case=None,baseline=False,native_name=None):
   decl+='static bool const other[]={'+','.join('false'if c['queue_owner']=='me'else'true'for c in e['callbacks'])+'};'
   return decl
  if case:
-  e=next(e for e in plan if e['key']==case);(out/'Selected.inc').write_bytes(emit(e,False).encode())
- else:(out/(native_name+'Scripts.inc')).write_bytes(('namespace '+native_name+'{'+''.join('namespace '+e['key']+'{'+emit(e,True)+'}'for e in plan)+'}').encode())
+  e=next(e for e in plan if e['key']==case)
+  if e.get('withdrawn'):raise ValueError('Withdrawn case: '+e['withdrawal_reason'])
+  (out/'Selected.inc').write_bytes(emit(e,False).encode())
+ else:(out/(native_name+'Scripts.inc')).write_bytes(('namespace '+native_name+'{'+''.join('namespace '+e['key']+'{'+emit(e,True)+'}'for e in plan if not e.get('withdrawn'))+'}').encode())

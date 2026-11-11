@@ -1,6 +1,6 @@
 {
   "date": "2026-11-11",
-  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "status": "CORRECTED_8_CONFIRMED_2_WITHDRAWN",
   "batch": 4,
   "authorized_total": 50,
   "base": "a5093ee000ccf8323be2c3f5242229e0d2c20a7e",
@@ -124,5 +124,12 @@
     "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
     "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
   ],
-  "support_commit": "0f2534ed00738e60a443ec23922eaf064032879d"
+  "support_commit": "0f2534ed00738e60a443ec23922eaf064032879d",
+  "reported_original_fixes": 10,
+  "confirmed_fixes": 8,
+  "withdrawn_fixes": [
+    "NpcHighmaulLivingMushroomLifetime",
+    "NpcAshranMisirinStouttoeLifetime"
+  ],
+  "classification_correction": "docs/audits/cosmetic-queue-ownership-correction-2026-11-11.json"
 }

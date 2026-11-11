@@ -73,6 +73,7 @@ def has_lifetime_gate(p,rows):
 def verify_plan(p,plan):
  seen=[]
  for e in plan:
+  if e.get('withdrawn'):continue
   found=[]
   for cls,method in sorted({(c['cls'],c['method'])for c in e['callbacks']}):
    for name in p['callbacks'](cls,method):

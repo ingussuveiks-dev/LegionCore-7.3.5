@@ -492,7 +492,9 @@
     "binding": "npc_highmaul_living_mushroom",
     "entries": [
       78884
-    ]
+    ],
+    "withdrawn": true,
+    "withdrawal_reason": "Delegated AddDelayedEvent resolves to CosmeticAI::AddDelayedEvent,whose queue is an AI member and is destroyed with it. Unit-queue projection was invalid for this case."
   },
   {
     "key": "NpcAshranMisirinStouttoeLifetime",
@@ -577,6 +579,8 @@
     "binding": "npc_ashran_misirin_stouttoe",
     "entries": [
       88682
-    ]
+    ],
+    "withdrawn": true,
+    "withdrawal_reason": "Delegated AddDelayedEvent resolves to CosmeticAI::AddDelayedEvent,whose queue is an AI member and is destroyed with it. Unit-queue projection was invalid for this case."
   }
 ]
