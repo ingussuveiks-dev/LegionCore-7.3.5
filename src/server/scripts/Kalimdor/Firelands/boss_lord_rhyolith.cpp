@@ -274,7 +274,7 @@ class boss_lord_rhyolith : public CreatureScript
                     me->StopMoving();
                     events.Reset();
 
-                    uint32 _health = me->GetHealth();
+                    uint64 _health = me->GetHealth();
                     
                     if (Creature* pRhyolith = me->SummonCreature(NPC_RHYOLITH_2, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()))
                     {
