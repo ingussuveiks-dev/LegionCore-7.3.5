@@ -858,7 +858,7 @@ public:
             if (pLiquid)
             {
                 pLiquid->CastSpell(pLiquid, SPELL_LIQUID_PYRITE, true);
-                pLiquid->GetMotionMaster()->MoveFall(pKiller->GetPositionZ());
+                pLiquid->GetMotionMaster()->MoveFall();
             }
         }
 
