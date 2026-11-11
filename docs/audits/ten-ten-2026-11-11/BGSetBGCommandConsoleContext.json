@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-11",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "key": "BGSetBGCommandConsoleContext",
+  "batch": 1,
+  "authorized_total": 100,
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "title": "Reject HandleBGSetBGCommand without an in-game player context",
+  "paths": [
+    "src/server/scripts/Commands/cs_misc.cpp"
+  ],
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 1 -Case BGSetBGCommandConsoleContext",
+  "counterfactual": "Add -Baseline;expected-broken control,not ordinary successful gameplay",
+  "checks": {
+    "asan": "10 complete extracted production classes/methods;300sustained plus interleaved/reapply/free/missing-caster Indomitable cases and nine command no-session/no-player/valid-context/argument/native-effect endpoint matrices.",
+    "baseline": "All10pinned64c2counterfactuals fail repaired expectations or expected ASAN null-session access;not ordinary passing gameplay.",
+    "native": "Actual registered command tables through native CliHandler ExecuteCommandInTable for9commands,including false parent/true leaf dispatch behavior;localized error exactly once. Real AuraScript instances,GetCaster/CanFreeMove and periodic dispatcher for90044 with observed original90045child cast;interleaved instances,free/recontrolled state,300saturation and reapplication.",
+    "linked": "Actual nine command context gates/custom error and actual per-instance+initialized/bounded Indomitable field;staged PE hash equals deployed canonical.",
+    "retained": "Exact previous50scope and independent65file unsigned64healing amendment compose through a separately verified new10amendment. Canonical Scepter VerifyReleaseBinary passed.",
+    "runtime": "Owned canonicalPID20208 fresh ready,graceful shutdown0,exit0/gone,empty stderr;no new crash/DBErrors/server warnings/errors/assertions. No user server stopped."
+  },
+  "scope": "In-game BG/area-object/client behavior and full Sinestra encounter remain separate from these native/ASAN checks. Command permissions and registration flags unchanged;no SQL/schema/packet/character changes.",
+  "canonical_worldserver_sha256": "c177ed368ee915a49fa06c59fd64e5fb4ef17f0a35d89aa451d30b644b9038ee",
+  "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch01;archive after focused commits",
+  "pending": "Actual client BG/area actions/visuals and whole encounter traversal;all unrelated Lady/LINK2/Slaghammer/handshake/36chain evidence and mixed DBErrors remain OPEN."
+}

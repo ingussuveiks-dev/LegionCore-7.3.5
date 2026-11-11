@@ -3966,6 +3966,13 @@ public:
 
     static bool HandleBGSetBGCommand(ChatHandler* handler, char const* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         Player* player = handler->GetSession()->GetPlayer();
         if (Battleground* bg = player->GetBattleground())
             bg->SetBG(true);
