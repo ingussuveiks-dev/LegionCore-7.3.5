@@ -2165,8 +2165,9 @@ public:
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_UNK_15);
                 me->SetReactState(REACT_AGGRESSIVE);
                 if(!me->isInCombat())
-                    me->AddDelayedEvent(5000, [this]() -> void
+                    me->AddDelayedEvent(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         if (!me->isInCombat())
                             InCombatAlliance(true);
                     });
@@ -2339,6 +2340,9 @@ public:
                 }
 
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 };
 
