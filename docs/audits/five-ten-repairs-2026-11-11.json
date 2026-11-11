@@ -2,7 +2,7 @@
   "date": "2026-11-11",
   "request": "Five successive groups of ten new fixes,then stop. MariaDB promotion deferred by the user.",
   "authorized_fixes": 50,
-  "completed_fixes": 30,
+  "completed_fixes": 40,
   "status": "IN_PROGRESS",
   "batches": [
     {
@@ -325,6 +325,115 @@
         "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and deferred MariaDB candidate evidence.",
         "closeout_manifest_sha256": "407262b2e88c165a929c86c400e5c71ea86a89439e5462937470cf3f3fb17cb9",
         "resolution_sha256": "dd5169caf357dc669f779fb56f8a310e78435184cb3e9f1319f28e7d5a3aee38",
+        "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
+      }
+    },
+    {
+      "number": 4,
+      "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+      "audit": "docs\\audits\\fortieth-ten-repairs-2026-11-11.json",
+      "fixes": [
+        {
+          "key": "NpcDemonHunterValLifetime",
+          "title": "Cancel npc_demon_hunter_val callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/invasion_point_argus.cpp",
+          "audit": "docs\\audits\\npc-demon-hunter-val-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "2ac9a8cc2a01643e5e6b4a570743864d6fcdbe2f"
+        },
+        {
+          "key": "NpcPewkewLifetime",
+          "title": "Cancel npc_pewkew callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp",
+          "audit": "docs\\audits\\npc-pewkew-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "ebf2c7e4422da9b3a6c1a966caa51b924078b927"
+        },
+        {
+          "key": "NpcTichonriusFelswornSpellguardLifetime",
+          "title": "Cancel npc_tichonrius_felsworn_spellguard callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TheNighthold/boss_tichondrius.cpp",
+          "audit": "docs\\audits\\npc-tichonrius-felsworn-spellguard-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "f7272041bc11a51be8367220322ede3ceb6c8683"
+        },
+        {
+          "key": "NpcTosBreachLifetime",
+          "title": "Cancel npc_tos_breach callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TombOfSargeras/tomb_of_sargeras.cpp",
+          "audit": "docs\\audits\\npc-tos-breach-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "d5f2a5b75240a258f844ad310777e9cb81cdb64f"
+        },
+        {
+          "key": "NpcStrikingTentacleLifetime",
+          "title": "Cancel npc_striking_tentacle callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp",
+          "audit": "docs\\audits\\npc-striking-tentacle-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "be115d741378efe011ccf1055bf82005aae6f1c0"
+        },
+        {
+          "key": "NpcTovHymdallLifetime",
+          "title": "Cancel npc_tov_hymdall callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TrialOfValor/boss_tov_odyn.cpp",
+          "audit": "docs\\audits\\npc-tov-hymdall-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "e34f1e4d22eaac4373a1c85f528cf676fb0feb16"
+        },
+        {
+          "key": "BossHeadlessHorsemanLifetime",
+          "title": "Cancel boss_headless_horseman callbacks after source AI retirement",
+          "path": "src/server/scripts/EasternKingdoms/ScarletMonastery/boss_headless_horseman.cpp",
+          "audit": "docs\\audits\\boss-headless-horseman-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "0c63a667c808fda5337fb2a0719dff4a4ae223b6"
+        },
+        {
+          "key": "NpcFreedProtodrakeLifetime",
+          "title": "Cancel npc_freed_protodrake callbacks after source AI retirement",
+          "path": "src/server/scripts/Northrend/zone_storm_peaks.cpp",
+          "audit": "docs\\audits\\npc-freed-protodrake-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "7fdf5eaf1e039b1d976cadc4c43837493d45079b"
+        },
+        {
+          "key": "NpcHighmaulLivingMushroomLifetime",
+          "title": "Cancel npc_highmaul_living_mushroom callbacks after source AI retirement",
+          "path": "src/server/scripts/Draenor/Highmaul/boss_brackenspore.cpp",
+          "audit": "docs\\audits\\npc-highmaul-living-mushroom-ai-lifetime-2026-11-11.json",
+          "callback_count": 4,
+          "commit": "b3002ba5a50f7888cc94af34d1e24689340f0d05"
+        },
+        {
+          "key": "NpcAshranMisirinStouttoeLifetime",
+          "title": "Cancel npc_ashran_misirin_stouttoe callbacks after source AI retirement",
+          "path": "src/server/scripts/OutdoorPvP/Ashran/AshranNPCAlliance.cpp",
+          "audit": "docs\\audits\\npc-ashran-misirin-stouttoe-ai-lifetime-2026-11-11.json",
+          "callback_count": 3,
+          "commit": "f92a594c79384770d3d8ba6cb8d0a7730257cda1"
+        }
+      ],
+      "canonical": {
+        "bnetserver.exe": "9fe155f555119159e77a139e37b611e12d456be334f923b2ed71c81e7646119e",
+        "bnetserver.map": "b306be6a07fd8d506176ca1331c81aabe4d998cb2b3ed55366fbfb0231397f28",
+        "worldserver.exe": "3cb035060e12a9e70b0c4a37f92134a23f81c602b05d48322c3a3706ce9631bd",
+        "worldserver.map": "e19ea4b70066a7951b03811afbd503602ebd558928dabb327e91f71b86906378"
+      },
+      "cleanup": {
+        "archive": "build-extractors\\bin\\Release\\fixed\\fortieth-ten-repairs-2026-11-11",
+        "manifest_sha256": "48a30bcac46aecdef424f871c25e2d42603fb567d2c5b269142d13fe73fd5333",
+        "archived_files": 456,
+        "removed_files": 174,
+        "logical_removed_bytes": 610292497,
+        "deletion_manifest": ".codex\\fortieth-ten-fixes-2026-11-11\\cleanup-deleted.json",
+        "deletion_manifest_sha256": "d6a95c062ae1affac4a6f98bc9ccac4ab2156cb17ccc4230bd0512181b6a8b2d",
+        "removed_superseded_recoveries": [
+          ".codex\\release-before-thirtyninth-ten-fixes-2026-11-11"
+        ],
+        "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and deferred MariaDB candidate evidence.",
+        "closeout_manifest_sha256": "0264155e46b54f9ac9e6b94a57a281fad3bd4c8c92d9aacea34085d34c1092d6",
+        "resolution_sha256": "ccae149731c4e828ac131611c85f734da138f57c8e03d6ca9367053c82255a34",
         "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
       }
     }
