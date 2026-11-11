@@ -209,7 +209,7 @@ public:
         void JustDied(Unit* who) override
         {
             Talk(0);
-            if (InstanceScript* instance = who->GetInstanceScript())
+            if (InstanceScript* instance = me->GetInstanceScript())
             {
                 instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49959);
                 instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49960);
