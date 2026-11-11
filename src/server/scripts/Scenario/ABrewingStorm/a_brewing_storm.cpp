@@ -491,11 +491,12 @@ struct npc_viletongue_sauroks : public ScriptedAI
     npc_viletongue_sauroks(Creature* creature) : ScriptedAI(creature) { }
 
     EventMap events, nonCombatEvents;
-    bool poisoned;
+    bool poisoned = false;
 
     void Reset() override
     {
         events.Reset();
+        poisoned = false;
     }
 
     void EnterCombat(Unit* who) override
@@ -519,10 +520,12 @@ struct npc_viletongue_sauroks : public ScriptedAI
     {
         if (me->GetEntry() == NPC_VILETONGUE_SKIRMISHER && !poisoned && HealthBelowPct(50))
         {
-            poisoned = true;
-
             if (attacker)
-                me->CastSpell(attacker, SPELL_VILETONGUE_STING, false);
+            {
+                poisoned = true;
+                if (me->CastSpell(attacker, SPELL_VILETONGUE_STING, false) != SPELL_CAST_OK)
+                    poisoned = false;
+            }
         }
     }
 
