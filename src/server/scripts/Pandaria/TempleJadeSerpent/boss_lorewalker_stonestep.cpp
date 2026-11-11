@@ -189,7 +189,7 @@ struct boss_lorewalker_stonestep : public BossAI
             events.RescheduleEvent(EVENT_21, 9000);
             break;
         case ACTION_6:
-            me->AddDelayedCombat(6000, [=]() -> void { Talk(EVENT_SUN_4); });
+            me->AddDelayedCombat(6000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(EVENT_SUN_4); });
             break;
         }
     }
@@ -431,6 +431,9 @@ struct boss_lorewalker_stonestep : public BossAI
             }
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 struct mob_sun : public BossAI
