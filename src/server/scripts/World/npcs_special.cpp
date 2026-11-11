@@ -2836,22 +2836,23 @@ class npc_ebon_gargoyle : public CreatureScript
         {
             npc_ebon_gargoyleAI(Creature* creature) : CasterAI(creature) {}
 
-            uint32 despawnTimer;
+            uint32 despawnTimer = 0;
             bool checkTarget;
             ObjectGuid ownerGuid;
             ObjectGuid mainTargetGUID;
-            uint32 targetCheckTime;
+            uint32 targetCheckTime = 0;
 
             void InitializeAI() override
             {
                 checkTarget = false;
+                despawnTimer = 0;
+                targetCheckTime = 0;
                 mainTargetGUID.Clear();
                 CasterAI::InitializeAI();
                 ownerGuid = me->GetOwnerGUID();
                 if (!ownerGuid)
                     return;
-                // Not needed to be despawned now
-                despawnTimer = 0;
+
             }
 
             // Fly away when dismissed

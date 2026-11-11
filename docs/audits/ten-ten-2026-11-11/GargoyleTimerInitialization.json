@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-12",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "key": "GargoyleTimerInitialization",
+  "batch": 4,
+  "authorized_total": 100,
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "title": "Initialize Gargoyle dismissal and target-check clocks before owner admission",
+  "paths": [
+    "src/server/scripts/World/npcs_special.cpp"
+  ],
+  "binding": "npc_ebon_gargoyle",
+  "spells": null,
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 4 -Case GargoyleTimerInitialization",
+  "counterfactual": "Add -Baseline;expected-broken control",
+  "checks": {
+    "asan": "Ten actual production class/method scopes:initialized/reset Bonechiller andSaurok latches;player/pet/twolevelguardian/NPC/null floor matrix;failed/busy/missingattacker/reentrant poison retry;Gargoyle initialization/dismiss/recheck clocks;Avatar500msUnitcombatqueue lifetime;Ahune3ticks/child/removal;Drain real-player/no-caster/no-NPC-source paths;Lilet13s+16s/finite4texts/departed/destroyed/differentmap/reconnected owner;Sadist500ms/reset;a2instance3participant scorechange/settle/decrease/end matrix;6clone slot/packedappearance/reapply/missingcaster/playeritem paths.",
+    "baseline": "All10pinned64c2counterfactuals fail repaired expectations or expected ASAN/UAF accesses. Setup extraction/fixture compile corrections retained. ExplicitExecute initialization candidate was withdrawn:actualfactory value-initialization alreadyzeros it andbaselinepasses. UnboundBrokenIsles/FlameCore/outdoorScarab claimswithdrawn;notcounted.",
+    "native": "Actual11registration families with2liveAhnQiraj instancecontrollers;real6childAuraScripts41054/63418/69893/45205/69896/57594throughnativeAuraapply/removaldipatcher;nativeUnit2uint32slot layout,appearance/visual halves,reapply/caster disappearance andfailedinitialapply. ActualLiletAI/connected-playerObjectAccessorlookup/timing andrealUnitcombatqueue/AIMretirement forfullAvatarregistration;spell/speech/encounter endpointsobserved. Nativeplayergear/spatial/fullclient remainseparate. Allfirst30nativechecks retained.",
+    "linked": "Same9e1563Release:actuallatch resets,petowner floor,failed-cast rearm,bothGargoyle clockzeros beforeowner gate,Avatar weakclosure beforeAIstate,nullablecaster gates,currentLilet playerlookup,Sadist500ms withoutper-tickzero,twoScarab snapshotsbeforeall-playerdispatch,andclonepackedfieldreads/casterindependentrestore/reapplybit. First30linkedchecksretained.",
+    "retained": "Exact65fileunsigned64healingandprevious50sourceamendmentspassthroughnew40normalization;canonicalScepterVerifyReleaseBinarypassed.",
+    "runtime": "Task-ownedcanonicalfreshready,gracefulshutdown0,exit0/gone,emptystderr;nonewcrash,DBErrorsorunexplainedserverwarnings/errors/assertions. Nouserprocessstopped.",
+    "investigation": "Nativeeffect0probe initiallymistookparentDUMMY41055/63416/69891/45206/69892forAuraIDs. CoreSpellMgr/EffectDummy andactualScriptName rowsidentifyrealchildAuraIDs,nowrepaired;57594isalreadyAura. InitialunsupportednativeAuraasserts retained andpairedwith6actualpassingAura cases. ParentcoreDummyroute direction/stride isseparatenextrepair;notclaimedasverifiedwholeweaponcopychain."
+  },
+  "canonical_worldserver_sha256": "9e1563a6d2045b283e892869c7bb2fac8e17999598d98417b2bba7688c948255",
+  "scope": "Originalauthored thresholds/timers/childspells/nativeowner credit andgameplaygates preserved;failedpoison requestsretry,allactualparticipantsreceivescoreupdates andnativeclonefieldpairsrestoreexactly. No SQL/schema/packet/character changes. Ten repairs include one sharedtwoinstanceScarabfamily andone6childweaponAura lifecyclefamily;reference/unbound/alreadycorrect candidatesnotcounted.",
+  "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch04;archive afterfocusedcommits",
+  "pending": "Actualclientcombat/dialogue/ScarabUI/weaponvisualsandfullencountertraversal;separateparentDummycopyroute investigation next;all unrelated Lady/LINK2/Slaghammer/handshake/36chain evidence andmixedDBErrors remain OPEN."
+}
