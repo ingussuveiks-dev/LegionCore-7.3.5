@@ -38,7 +38,7 @@ struct BattlegroundSAScore final : public BattlegroundScore
 protected:
     BattlegroundSAScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), DemolishersDestroyed(0), GatesDestroyed(0) { }
 
-    void UpdateScore(uint32 type, uint32 value) override;
+    void UpdateScore(uint32 type, uint64 value) override;
 
     void BuildObjectivesBlock(std::vector<int32>& stats) override;
 

@@ -40,7 +40,7 @@ void CancelIntroHeal()
     _introHealTimer = _introHealTries = 0;
 }
 
-void OnHealApplied(Unit* who, uint32 /*amount*/, int64 /*gain*/) override
+void OnHealApplied(Unit* who, uint64 /*amount*/, uint64 /*gain*/) override
 {
     ObserveWoundHeal();
     Scenario* scenario = IntroHealScenario();

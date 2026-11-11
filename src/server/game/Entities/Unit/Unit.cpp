@@ -17,6 +17,7 @@
  */
 
 #include "Unit.h"
+#include "HealingAmount.h"
 #include "Anticheat.h"
 #include "AreaTriggerAI.h"
 #include "Battlefield.h"
@@ -160,9 +161,10 @@ static bool isDamageCapAura[TOTAL_AURAS];
 static bool procPrepared = InitTriggerAuraData();
 // ReSharper restore CppDeclaratorNeverUsed
 
-DamageInfo::DamageInfo(Unit* _attacker, Unit* _victim, uint32 _damage, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask, DamageEffectType _damageType, uint32 m_damageBeforeHit) :
-    m_attacker(_attacker), m_victim(_victim), m_damage(_damage), m_overHeal{ 0 }, m_spellInfo(_spellInfo), m_schoolMask(_schoolMask), m_damageType(_damageType), m_attackType(BASE_ATTACK), m_damageBeforeHit(m_damageBeforeHit)
+DamageInfo::DamageInfo(Unit* _attacker, Unit* _victim, uint64 _damage, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask, DamageEffectType _damageType, uint32 m_damageBeforeHit, bool healing) :
+    m_attacker(_attacker), m_victim(_victim), m_damage(healing ? _damage : std::min<uint64>(_damage, UINT32_MAX)), m_overHeal{ 0 }, m_spellInfo(_spellInfo), m_schoolMask(_schoolMask), m_damageType(_damageType), m_attackType(BASE_ATTACK), m_damageBeforeHit(m_damageBeforeHit)
 {
+    m_isHealing = healing;
     m_absorb = 0;
     m_resist = 0;
     m_block = 0;
@@ -185,41 +187,46 @@ m_block(dmgInfo.blocked), m_cleanDamage(dmgInfo.cleanDamage), m_damageBeforeHit(
 {
 }
 
-void DamageInfo::ModifyDamage(int32 amount)
+void DamageInfo::ModifyDamage(int64 amount)
 {
-    // Allow restoring damage after absorption even when the absorbable part
-    // reached zero. Use a wide intermediate for the full uint32 damage range.
-    m_damage = uint32(std::max<int64>(0, std::min<int64>(
-        int64(m_damage) + amount, std::numeric_limits<uint32>::max())));
+    if (amount < 0)
+        m_damage -= std::min(m_damage, uint64(-(amount + 1)) + 1);
+    else
+        m_damage = std::min(HealingAmount::Add(m_damage, uint64(amount)),
+            m_isHealing ? std::numeric_limits<uint64>::max() : uint64(UINT32_MAX));
 }
 
-void DamageInfo::AbsorbDamage(int64 amount)
+void DamageInfo::AbsorbHealing(uint64 amount)
 {
-    // Endurance of Niuzao restores a rejected absorption through this API.
-    if (amount < 0)
-    {
-        uint64 const requested = uint64(-(amount + 1)) + 1;
-        uint32 const restored = uint32(std::min<uint64>(requested,
-            std::min<uint64>(m_absorb, std::numeric_limits<uint32>::max() - m_damage)));
-        m_absorb -= restored;
-        m_damage += restored;
-        return;
-    }
-    uint32 const absorbed = uint32(std::max<int64>(0, std::min<int64>(amount, GetDamage())));
+    uint64 const absorbed = std::min(amount, std::min(m_damage, UINT64_MAX - m_absorb));
     m_absorb += absorbed;
     m_damage -= absorbed;
 }
 
+void DamageInfo::AbsorbDamage(int64 amount)
+{
+    if (amount < 0)
+    {
+        uint64 const requested = uint64(-(amount + 1)) + 1;
+        uint64 const limit = m_isHealing ? UINT64_MAX : uint64(UINT32_MAX);
+        uint64 const restored = std::min(requested, std::min(m_absorb, limit - m_damage));
+        m_absorb -= restored;
+        m_damage += restored;
+    }
+    else
+        AbsorbHealing(uint64(amount));
+}
+
 void DamageInfo::ResistDamage(uint32 amount)
 {
-    amount = std::min(amount, GetDamage());
+    amount = uint32(std::min<uint64>(amount, GetDamage()));
     m_resist += amount;
     m_damage -= amount;
 }
 
 void DamageInfo::BlockDamage(uint32 amount)
 {
-    amount = std::min(amount, GetDamage());
+    amount = uint32(std::min<uint64>(amount, GetDamage()));
     m_block += amount;
     m_damage -= amount;
 }
@@ -1797,8 +1804,16 @@ SpellCastResult Unit::CastSpell(SpellCastTargets const& targets, SpellInfo const
 
     Spell* spell = new Spell(this, spellInfo, triggerData);
     if (value)
+    {
         for (CustomSpellValues::const_iterator itr = value->begin(); itr != value->end(); ++itr)
             spell->SetSpellValue(itr->first, itr->second, itr->second);
+        for (auto const& healing : value->GetHealingMods())
+            if (!spell->SetHealingValue(healing.first, healing.second))
+            {
+                delete spell;
+                return SPELL_FAILED_ERROR;
+            }
+    }
 
     return spell->prepare(&targets);
 }
@@ -1831,8 +1846,16 @@ SpellCastResult Unit::CastSpell(SpellCastTargets const& targets, SpellInfo const
 
     Spell* spell = new Spell(this, spellInfo, triggerData);
     if (value)
+    {
         for (CustomSpellValues::const_iterator itr = value->begin(); itr != value->end(); ++itr)
             spell->SetSpellValue(itr->first, itr->second, itr->second);
+        for (auto const& healing : value->GetHealingMods())
+            if (!spell->SetHealingValue(healing.first, healing.second))
+            {
+                delete spell;
+                return SPELL_FAILED_ERROR;
+            }
+    }
 
     // uint32 _ms = getMSTimeDiff(_s, getMSTime());
     return spell->prepare(&targets);
@@ -2998,17 +3021,17 @@ void Unit::CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffe
     *absorb = dmgInfo.GetAbsorb();
 }
 
-void Unit::CalcHealAbsorb(Unit* victim, const SpellInfo* healSpell, uint32 &healAmount, uint32 &absorb)
+void Unit::CalcHealAbsorb(Unit* victim, const SpellInfo* healSpell, uint64 &healAmount, uint64 &absorb)
 {
     if (!healAmount)
         return;
 
-    uint32 RemainingHeal = healAmount;
+    uint64 RemainingHeal = healAmount;
 
     // Need remove expired auras after
     bool existExpired = false;
 
-    DamageInfo dmgInfo = DamageInfo(this, victim, healAmount, healSpell, SpellSchoolMask(healSpell->GetMisc(m_spawnMode)->MiscData.SchoolMask), SPELL_DIRECT_DAMAGE, 0);
+    DamageInfo dmgInfo = DamageInfo(this, victim, healAmount, healSpell, SpellSchoolMask(healSpell->GetMisc(m_spawnMode)->MiscData.SchoolMask), SPELL_DIRECT_DAMAGE, 0, true);
 
     // absorb without mana cost
     auto vHealAbsorb = CopyAuraEffectList(victim->GetAuraEffectsByType(SPELL_AURA_SCHOOL_HEAL_ABSORB));
@@ -3032,11 +3055,11 @@ void Unit::CalcHealAbsorb(Unit* victim, const SpellInfo* healSpell, uint32 &heal
 
         // currentAbsorb - damage can be absorbed by shield
         // If need absorb less damage
-        uint32 const absorbed = uint32(std::min<double>(RemainingHeal, std::max(0.0, double(currentAbsorb))));
+        uint64 const absorbed = std::min(RemainingHeal, HealingAmount::FromFloat(currentAbsorb));
         currentAbsorb = float(absorbed);
         RemainingHeal -= absorbed;
 
-        dmgInfo.AbsorbDamage(absorbed);
+        dmgInfo.AbsorbHealing(absorbed);
 
         tempAbsorb = currentAbsorb;
         absorbAurEff->GetBase()->CallScriptEffectAfterAbsorbHandlers(absorbAurEff, aurApp, dmgInfo, tempAbsorb);
@@ -7332,7 +7355,7 @@ void Unit::HealFromSoulLeech(float ownerAbsorb, float petAbsorb)
 //victim may be NULL
 bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect* triggeredByAura, SpellInfo const* procSpell, uint32 procFlag, uint32 procEx, double cooldown, Spell* spell)
 {
-    uint32 damage = dmgInfoProc->GetDamage() + dmgInfoProc->GetAbsorb();
+    uint64 damage = HealingAmount::Add(dmgInfoProc->GetDamage(), dmgInfoProc->GetAbsorb());
     SpellInfo const* dummySpell = triggeredByAura->GetSpellInfo();
     uint32 effIndex = triggeredByAura->GetEffIndex();
     float triggerAmount = triggeredByAura->GetAmount();
@@ -10280,7 +10303,7 @@ bool Unit::HandleModDamagePctTakenAuraProc(Unit* victim, DamageInfo* dmgInfoProc
     uint32 triggered_spell_id = 0;
     Unit* target = victim;
     float basepoints0 = 0;
-    uint32 damage = dmgInfoProc->GetDamage() + dmgInfoProc->GetAbsorb();
+    uint64 damage = HealingAmount::Add(dmgInfoProc->GetDamage(), dmgInfoProc->GetAbsorb());
 
     switch (dummySpell->ClassOptions.SpellClassSet)
     {
@@ -10430,7 +10453,7 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, DamageInfo* dmgInfoProc, AuraEff
 
     Unit*  target = nullptr;
     float  basepoints0 = 0;
-    uint32 damage = dmgInfoProc->GetDamage();
+    uint64 damage = dmgInfoProc->GetDamage();
     uint16 stack_for_trigger = 0;
 
     if (triggeredByAura->GetAuraType() == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
@@ -12269,16 +12292,16 @@ void Unit::SetCharm(Unit* charm, bool apply)
     }
 }
 
-int64 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto)
+uint64 Unit::DealHeal(Unit* victim, uint64 addhealth, SpellInfo const* spellProto)
 {
-    int64 gain = 0;
+    uint64 gain = 0;
 
     if (victim->IsAIEnabled)
     {
         victim->GetAI()->HealReceived(this, addhealth);
         if (InstanceScript* instance = GetInstanceScript())
             if (instance->CheckDamageManager())
-                instance->UpdateDamageManager(victim->GetGUID(), -int64(addhealth), true);
+                instance->UpdateDamageManager(victim->GetGUID(), addhealth, true);
     }
 
     if (IsAIEnabled)
@@ -12286,9 +12309,9 @@ int64 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto
 
     if (addhealth)
     {
-        gain = victim->ModifyHealth(int64(addhealth), this);
+        gain = victim->AddHealth(addhealth, this);
         if (Creature* creature = victim->ToCreature())
-            creature->NotifyHealApplied(this, addhealth, gain);
+            creature->NotifyHealApplied64(this, addhealth, gain);
     }
 
     Unit* unit = this;
@@ -12303,10 +12326,10 @@ int64 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto
 
         // use the actual gain, as the overheal shall not be counted, skip gain 0 (it ignored anyway in to criteria)
         if (gain)
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_HEALING_DONE, gain, 0, 0, victim);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_HEALING_DONE, HealingAmount::CounterValue(gain), 0, 0, victim);
 
         if (addhealth)
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_HIGHEST_HEAL_CASTED, addhealth);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_HIGHEST_HEAL_CASTED, HealingAmount::CounterValue(addhealth));
     }
 
     if (IsPlayer() && addhealth > 0 && (!spellProto || spellProto->Id != 146347))
@@ -12326,9 +12349,9 @@ int64 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto
     if (Player* player = victim->ToPlayer())
     {
         if (gain)
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_TOTAL_HEALING_RECEIVED, gain);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_TOTAL_HEALING_RECEIVED, HealingAmount::CounterValue(gain));
         if (addhealth)
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_HIGHEST_HEALING_RECEIVED, addhealth);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_HIGHEST_HEALING_RECEIVED, HealingAmount::CounterValue(addhealth));
     }
 
     return gain;
@@ -12610,15 +12633,15 @@ void Unit::UnsummonAllTotems()
     }
 }
 
-void Unit::SendHealSpellLog(Unit* victim, uint32 spellID, uint32 health, uint32 overHeal, uint32 absorbed, bool crit)
+void Unit::SendHealSpellLog(Unit* victim, uint32 spellID, uint64 health, uint64 overHeal, uint64 absorbed, bool crit)
 {
     WorldPackets::CombatLog::SpellHealLog spellHealLog;
     spellHealLog.TargetGUID = victim->GetGUID();
     spellHealLog.CasterGUID = GetGUID();
     spellHealLog.SpellID = spellID;
-    spellHealLog.Health = health;
-    spellHealLog.OverHeal = overHeal;
-    spellHealLog.Absorbed = absorbed;
+    spellHealLog.Health = HealingAmount::CombatLogValue(health);
+    spellHealLog.OverHeal = HealingAmount::CombatLogValue(overHeal);
+    spellHealLog.Absorbed = HealingAmount::CombatLogValue(absorbed);
     spellHealLog.Crit = crit;
     spellHealLog.LogData.Initialize(victim);
 
@@ -12629,17 +12652,17 @@ void Unit::SendHealSpellLog(Unit* victim, uint32 spellID, uint32 health, uint32 
     SendCombatLogMessage(&spellHealLog);
 }
 
-int64 Unit::HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical)
+uint64 Unit::HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint64 addHealth, bool critical)
 {
-    uint32 absorb = 0;
-    int64 gain = 0;
+    uint64 absorb = 0;
+    uint64 gain = 0;
     // calculate heal absorb and reduce healing
     CalcHealAbsorb(victim, spellInfo, addHealth, absorb);
 
     if (spellInfo)
     {
         gain = DealHeal(victim, addHealth, spellInfo);
-        SendHealSpellLog(victim, spellInfo->Id, addHealth, uint32(addHealth - gain), absorb, critical);
+        SendHealSpellLog(victim, spellInfo->Id, addHealth, addHealth - gain, absorb, critical);
     }
 
     return gain;
@@ -13843,7 +13866,8 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
     return uint32(std::max(heal, 0.0f));
 }
 
-uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, uint32 healamount, DamageEffectType damagetype, SpellEffIndex effIndex, uint32 stack)
+template<class Amount>
+Amount Unit::SpellHealingBonusTakenImpl(Unit* caster, SpellInfo const* spellProto, Amount healamount, DamageEffectType damagetype, SpellEffIndex effIndex, uint32 stack)
 {
     float TakenTotalMod = 1.0f;
 
@@ -13878,7 +13902,10 @@ uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, u
         // No bonus healing for SPELL_DAMAGE_CLASS_NONE class spells by default
         if (spellProto->Categories.DefenseType == SPELL_DAMAGE_CLASS_NONE)
         {
-            healamount = uint32(std::max((float(healamount) * TakenTotalMod), 0.0f));
+            if constexpr (sizeof(Amount) == 4)
+                healamount = uint32(std::max((float(healamount) * TakenTotalMod), 0.0f));
+            else
+                healamount = HealingAmount::Apply(healamount, 0, TakenTotalMod);
             return healamount;
         }
     }
@@ -13926,8 +13953,34 @@ uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, u
             TakenTotal = 0;
     }
 
-    float heal = float(int32(healamount) + TakenTotal) * TakenTotalMod;
-    return uint32(std::max(heal, 0.0f));
+    if constexpr (sizeof(Amount) == 4)
+    {
+        float heal = float(int32(healamount) + TakenTotal) * TakenTotalMod;
+        return uint32(std::max(heal, 0.0f));
+    }
+    else
+        return HealingAmount::Apply(healamount, TakenTotal, TakenTotalMod);
+}
+
+uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* info, uint32 amount, DamageEffectType type, SpellEffIndex effect, uint32 stack)
+{
+    return SpellHealingBonusTakenImpl(caster, info, amount, type, effect, stack);
+}
+
+uint64 Unit::SpellHealingBonusTaken64(Unit* caster, SpellInfo const* info, uint64 amount, DamageEffectType type, SpellEffIndex effect, uint32 stack)
+{
+    return SpellHealingBonusTakenImpl(caster, info, amount, type, effect, stack);
+}
+
+uint64 Unit::SpellCriticalHealingBonus64(SpellInfo const* info, uint64 amount)
+{
+    uint64 bonus = HealingAmount::Apply(amount, 0, GetOwner() ?
+        GetOwner()->GetTotalAuraMultiplier(SPELL_AURA_MOD_CRITICAL_HEAl_PCT) :
+        GetTotalAuraMultiplier(SPELL_AURA_MOD_CRITICAL_HEAl_PCT));
+    if (Player* owner = GetSpellModOwner())
+        owner->ApplySpellMod(info->Id, SPELLMOD_CRIT_DAMAGE_BONUS, bonus);
+    return HealingAmount::Add(HealingAmount::Apply(amount, 0,
+        GetTotalAuraMultiplier(SPELL_AURA_MOD_CRITICAL_HEALING_AMOUNT)), bonus);
 }
 
 int32 Unit::SpellBaseHealingBonusDone(SpellSchoolMask schoolMask, bool calcVers/* = true*/)
@@ -15238,6 +15291,16 @@ bool Unit::_IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell) co
             return creatureTarget->GetCreatureTemplate()->TypeFlags[0] & CREATURE_TYPEFLAGS_TREAT_AS_RAID_UNIT || creatureTarget->GetCreatureTemplate()->TypeFlags[0] & CREATURE_TYPEFLAGS_CAN_ASSIST;
    
     return true;
+}
+
+uint64 Unit::AddHealth(uint64 amount, Unit* healer, uint32 spellId)
+{
+    uint64 const current = GetHealth(healer);
+    uint64 const maximum = GetMaxHealth(healer);
+    uint64 const gain = std::min(amount, maximum > current ? maximum - current : 0);
+    if (gain)
+        SetHealthScal(current + gain, healer, spellId);
+    return gain;
 }
 
 int64 Unit::ModifyHealth(int64 dVal, Unit* victim /*= NULL*/, uint32 spellId /*= 0*/)
@@ -19419,7 +19482,7 @@ bool Unit::InitTamedPet(Pet* pet, uint8 level, uint32 spell_id)
 
 bool Unit::SpellProcTriggered(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect* triggeredByAura, SpellInfo const* procSpell, uint32 procFlag, uint32 procEx, double cooldown)
 {
-    uint32 damage = dmgInfoProc->GetDamage();
+    uint64 damage = dmgInfoProc->GetDamage();
     int32 addpowertype = dmgInfoProc->GetAddPType();
     SpellInfo const* dummySpell = triggeredByAura->GetSpellInfo();
     uint32 effIndex = triggeredByAura->GetEffIndex();

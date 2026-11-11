@@ -127,7 +127,7 @@ class BattlegroundBFGScore final : public BattlegroundScore
     protected:
         BattlegroundBFGScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), BasesAssaulted(0), BasesDefended(0) { }
 
-        void UpdateScore(uint32 type, uint32 value) override
+        void UpdateScore(uint32 type, uint64 value) override
         {
             switch (type)
             {
@@ -179,7 +179,7 @@ class BattlegroundBattleForGilneas : public Battleground
         bool SetupBattleground() override;
         void EndBattleground(uint32 winner) override;
 
-        bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
+        bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;
         void FillInitialWorldStates(WorldPackets::WorldState::InitWorldStates& packet) override;
 
         void EventPlayerClickedOnFlag(Player* source, GameObject* /*object*/, bool& canRemove) override;

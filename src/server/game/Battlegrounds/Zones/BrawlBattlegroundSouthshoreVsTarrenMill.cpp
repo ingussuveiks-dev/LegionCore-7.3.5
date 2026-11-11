@@ -34,7 +34,7 @@ struct BrawlBattlegroundSouthshoreVsTarrenMillScore final : BattlegroundScore
 protected:
     BrawlBattlegroundSouthshoreVsTarrenMillScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team) { }
 
-    void UpdateScore(uint32 type, uint32 value) override
+    void UpdateScore(uint32 type, uint64 value) override
     {
         BattlegroundScore::UpdateScore(type, value);
     }
@@ -128,7 +128,7 @@ void BrawlBattlegroundSouthshoreVsTarrenMill::HandleKillPlayer(Player* player, P
     }
 }
 
-bool BrawlBattlegroundSouthshoreVsTarrenMill::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor)
+bool BrawlBattlegroundSouthshoreVsTarrenMill::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor)
 {
     if (!Battleground::UpdatePlayerScore(player, type, value, doAddHonor))
         return false;

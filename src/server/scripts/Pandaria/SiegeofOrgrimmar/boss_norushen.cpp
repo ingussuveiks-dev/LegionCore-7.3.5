@@ -1448,7 +1448,7 @@ public:
             }
         }
 
-        void HealReceived(Unit* /*done_by*/, uint32& addhealth)
+        void HealReceived(Unit* /*done_by*/, uint64& addhealth)
         {
             float newpct = GetHealthPctWithHeal(addhealth);
             if (newpct > 30.0f && me->HasAura(SPELL_PROTECTORS_EXHAUSTED))
@@ -1524,7 +1524,7 @@ public:
                 damage = 0;
         }
 
-        void HealReceived(Unit* /*done_by*/, uint32& addhealth)
+        void HealReceived(Unit* /*done_by*/, uint64& addhealth)
         {
             float newpct = GetHealthPctWithHeal(addhealth);
             if (newpct > 30.0f && me->HasAura(SPELL_PROTECTORS_EXHAUSTED))
@@ -1622,7 +1622,7 @@ public:
                 damage = 0;
         }
 
-        void HealReceived(Unit* /*done_by*/, uint32& addhealth)
+        void HealReceived(Unit* /*done_by*/, uint64& addhealth)
         {
             float newpct = GetHealthPctWithHeal(addhealth);
             if (newpct > 30.0f && me->HasAura(SPELL_PROTECTORS_EXHAUSTED))

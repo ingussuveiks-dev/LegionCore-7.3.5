@@ -20,6 +20,7 @@
 #define __SPELL_H
 
 #include "GridDefines.h"
+#include "Optional.h"
 #include "SharedDefines.h"
 #include "SpellScript.h"
 #include "ObjectMgr.h"
@@ -150,6 +151,7 @@ struct SpellValue
     uint32    MaxAffectedTargets;
     float     RadiusMod;
     uint8     AuraStackAmount;
+    std::map<uint8, uint64> HealingBasePoints;
 };
 
 enum SpellState
@@ -539,6 +541,9 @@ class TC_GAME_API Spell
         void CleanupTargetList();
 
         void SetSpellValue(SpellValueMod mod, float value, bool lockValue = false);
+        bool SetHealingValue(SpellEffIndex effect, uint64 amount);
+        uint64 GetHealingAmount64() const;
+        void SetHealingAmount64(uint64 amount) { m_healing = 0; m_exactHealing = amount; }
         uint32 GetCountDispel() const { return m_count_dispeling; }
         bool GetInterupted() const { return m_interupted; }
         bool GetCastedFromStealth() const { return m_castedFromStealth; }
@@ -640,6 +645,7 @@ class TC_GAME_API Spell
         // Damage and healing in effects need just calculate
         int32 m_damage;           // Damge   in effects count here
         int32 m_healing;          // Healing in effects count here
+        Optional<uint64> m_exactHealing;
         int32 m_final_damage;     // Final damage in effects count here
         int32 m_absorb;           // Absorb
         int32 m_resist;           // Resist

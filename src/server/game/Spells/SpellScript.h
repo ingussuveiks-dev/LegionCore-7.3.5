@@ -450,6 +450,8 @@ class TC_GAME_API SpellScript : public _SpellScript
         // setter/getter for for heal done by spell to target of spell hit
         // returns healing calculated before hit, and real dmg done after hit
         int32 GetHitHeal();
+        uint64 GetHitHeal64();
+        void SetHitHeal64(uint64 heal);
         void SetHitHeal(int32 heal);
         void PreventHitHeal() { SetHitHeal(0); }
         Spell* GetSpell() { return m_spell; }

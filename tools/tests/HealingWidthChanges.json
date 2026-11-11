@@ -1,0 +1,1306 @@
+{
+  "baseline": "4d61d0dfb1696950c55bbff2ff56ccd30ce1862a",
+  "scope": "Exact unsigned64 fixed-heal channel; native health/absorb/proc/AI/score amounts; ordinary effect/packet schemas retained",
+  "changes": [
+    {
+      "path": "src/server/game/AI/CoreAI/UnitAI.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 231,
+          "old": "        virtual void HealReceived(Unit* /*done_by*/, uint32& /*addhealth*/) {}\n",
+          "new": "        virtual void HealReceived(Unit* /*done_by*/, uint64& /*addhealth*/) {}\n"
+        },
+        {
+          "line": 234,
+          "old": "        virtual void HealDone(Unit* /*done_to*/, uint32& /*addhealth*/) {}\n",
+          "new": "        virtual void HealDone(Unit* /*done_to*/, uint64& /*addhealth*/) {}\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/AI/CreatureAI.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 229,
+          "old": "    virtual void OnHealApplied(Unit* /*healer*/, uint32 /*amount*/, int64 /*gain*/) {}\n",
+          "new": "    virtual void OnHealApplied(Unit* /*healer*/, uint64 /*amount*/, uint64 /*gain*/) {}\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/AI/SmartScripts/SmartAI.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 765,
+          "old": "void SmartAI::HealReceived(Unit* doneBy, uint32& addhealth)\n",
+          "new": "void SmartAI::HealReceived(Unit* doneBy, uint64& addhealth)\n"
+        },
+        {
+          "line": 767,
+          "old": "    GetScript()->ProcessEventsFor(SMART_EVENT_RECEIVE_HEAL, doneBy, addhealth);\n",
+          "new": "    // The authored event range has uint32 endpoints. A larger heal cannot\n    // match it; narrowing would incorrectly select a small-heal event.\n    if (addhealth <= UINT32_MAX)\n        GetScript()->ProcessEventsFor(SMART_EVENT_RECEIVE_HEAL, doneBy, uint32(addhealth));\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/AI/SmartScripts/SmartAI.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 112,
+          "old": "        void HealReceived(Unit* doneBy, uint32& addhealth) override;\n",
+          "new": "        void HealReceived(Unit* doneBy, uint64& addhealth) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Battleground.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 19,
+          "old": "",
+          "new": "#include \"HealingAmount.h\"\n"
+        },
+        {
+          "line": 1713,
+          "old": "        playerData.HealingDone = score.second->HealingDone;\n",
+          "new": "        playerData.HealingDone = uint32(std::min<uint64>(score.second->HealingDone, UINT32_MAX));\n"
+        },
+        {
+          "line": 1761,
+          "old": "bool Battleground::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)\n",
+          "new": "bool Battleground::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Battleground.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 429,
+          "old": "    virtual bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true);\n",
+          "new": "    virtual bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/BattlegroundScore.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 18,
+          "old": "",
+          "new": "#include \"HealingAmount.h\"\n"
+        },
+        {
+          "line": 19,
+          "old": "uint32 BattlegroundScore::GetScore(uint32 type) const\n",
+          "new": "uint64 BattlegroundScore::GetScore(uint32 type) const\n"
+        },
+        {
+          "line": 43,
+          "old": "void BattlegroundScore::UpdateScore(uint32 type, uint32 value)\n",
+          "new": "void BattlegroundScore::UpdateScore(uint32 type, uint64 value)\n"
+        },
+        {
+          "line": 63,
+          "old": "            HealingDone += value;\n",
+          "new": "            HealingDone = HealingAmount::Add(HealingDone, value);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/BattlegroundScore.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 67,
+          "old": "    virtual uint32 GetScore(uint32 type) const;\n",
+          "new": "    virtual uint64 GetScore(uint32 type) const;\n"
+        },
+        {
+          "line": 72,
+          "old": "    virtual void UpdateScore(uint32 type, uint32 value);\n",
+          "new": "    virtual void UpdateScore(uint32 type, uint64 value);\n"
+        },
+        {
+          "line": 82,
+          "old": "    uint32 HealingDone;\n",
+          "new": "    uint64 HealingDone;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundAlteracValley.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 456,
+          "old": "bool BattlegroundAlteracValley::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)\n",
+          "new": "bool BattlegroundAlteracValley::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundAlteracValley.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 1385,
+          "old": "        void UpdateScore(uint32 type, uint32 value) override\n",
+          "new": "        void UpdateScore(uint32 type, uint64 value) override\n"
+        },
+        {
+          "line": 1451,
+          "old": "        bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;\n",
+          "new": "        bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundArathiBasin.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 33,
+          "old": "void BattlegroundABScore::UpdateScore(uint32 type, uint32 value)\n",
+          "new": "void BattlegroundABScore::UpdateScore(uint32 type, uint64 value)\n"
+        },
+        {
+          "line": 468,
+          "old": "bool BattlegroundArathiBasin::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)\n",
+          "new": "bool BattlegroundArathiBasin::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundArathiBasin.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 173,
+          "old": "    void UpdateScore(uint32 type, uint32 value) override;\n",
+          "new": "    void UpdateScore(uint32 type, uint64 value) override;\n"
+        },
+        {
+          "line": 215,
+          "old": "    bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;\n",
+          "new": "    bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundBattleForGilneas.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 365,
+          "old": "bool BattlegroundBattleForGilneas::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)\n",
+          "new": "bool BattlegroundBattleForGilneas::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundBattleForGilneas.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 129,
+          "old": "        void UpdateScore(uint32 type, uint32 value) override\n",
+          "new": "        void UpdateScore(uint32 type, uint64 value) override\n"
+        },
+        {
+          "line": 181,
+          "old": "        bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;\n",
+          "new": "        bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundDeepwindGorge.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 62,
+          "old": "bool BattlegroundDeepwindGorge::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)\n",
+          "new": "bool BattlegroundDeepwindGorge::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundDeepwindGorge.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 138,
+          "old": "        void UpdateScore(uint32 type, uint32 value) override\n",
+          "new": "        void UpdateScore(uint32 type, uint64 value) override\n"
+        },
+        {
+          "line": 188,
+          "old": "    bool UpdatePlayerScore(Player* player, uint32 type, uint32 addvalue, bool doAddHonor) override;\n",
+          "new": "    bool UpdatePlayerScore(Player* player, uint32 type, uint64 addvalue, bool doAddHonor) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundEyeOfTheStorm.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 777,
+          "old": "bool BattlegroundEyeOfTheStorm::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)\n",
+          "new": "bool BattlegroundEyeOfTheStorm::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundEyeOfTheStorm.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 330,
+          "old": "        void UpdateScore(uint32 type, uint32 value) override\n",
+          "new": "        void UpdateScore(uint32 type, uint64 value) override\n"
+        },
+        {
+          "line": 376,
+          "old": "        bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;\n",
+          "new": "        bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundIsleOfConquest.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 385,
+          "old": "bool BattlegroundIsleOfConquest::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)\n",
+          "new": "bool BattlegroundIsleOfConquest::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundIsleOfConquest.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 853,
+          "old": "        void UpdateScore(uint32 type, uint32 value) override\n",
+          "new": "        void UpdateScore(uint32 type, uint64 value) override\n"
+        },
+        {
+          "line": 901,
+          "old": "        bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;\n",
+          "new": "        bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundKotmoguTemplate.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 108,
+          "old": "    void UpdateScore(uint32 type, uint32 value) override\n",
+          "new": "    void UpdateScore(uint32 type, uint64 value) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundSeethingShore.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 131,
+          "old": "void BattlegoundSeethingShoreScore::UpdateScore(uint32 type, uint32 value)\n",
+          "new": "void BattlegoundSeethingShoreScore::UpdateScore(uint32 type, uint64 value)\n"
+        },
+        {
+          "line": 452,
+          "old": "bool BattlegroundSeethingShore::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)\n",
+          "new": "bool BattlegroundSeethingShore::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundSeethingShore.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 13,
+          "old": "    void UpdateScore(uint32 type, uint32 value) override;\n",
+          "new": "    void UpdateScore(uint32 type, uint64 value) override;\n"
+        },
+        {
+          "line": 38,
+          "old": "    bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;\n",
+          "new": "    bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundSilvershardMines.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 27,
+          "old": "void BattleGroundSSMScore::UpdateScore(uint32 type, uint32 value)\n",
+          "new": "void BattleGroundSSMScore::UpdateScore(uint32 type, uint64 value)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundSilvershardMines.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 204,
+          "old": "    void UpdateScore(uint32 type, uint32 value) override;\n",
+          "new": "    void UpdateScore(uint32 type, uint64 value) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundStrandOfTheAncients.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 30,
+          "old": "void BattlegroundSAScore::UpdateScore(uint32 type, uint32 value)\n",
+          "new": "void BattlegroundSAScore::UpdateScore(uint32 type, uint64 value)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundStrandOfTheAncients.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 40,
+          "old": "    void UpdateScore(uint32 type, uint32 value) override;\n",
+          "new": "    void UpdateScore(uint32 type, uint64 value) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundTwinPeaks.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 25,
+          "old": "void BattlegroundTPScore::UpdateScore(uint32 type, uint32 value)\n",
+          "new": "void BattlegroundTPScore::UpdateScore(uint32 type, uint64 value)\n"
+        },
+        {
+          "line": 379,
+          "old": "bool BattlegroundTwinPeaks::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)\n",
+          "new": "bool BattlegroundTwinPeaks::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundTwinPeaks.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 110,
+          "old": "    void UpdateScore(uint32 type, uint32 value) override;\n",
+          "new": "    void UpdateScore(uint32 type, uint64 value) override;\n"
+        },
+        {
+          "line": 149,
+          "old": "    bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;\n",
+          "new": "    bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundWarsongGulch.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 29,
+          "old": "void BattlegroundWGScore::UpdateScore(uint32 type, uint32 value)\n",
+          "new": "void BattlegroundWGScore::UpdateScore(uint32 type, uint64 value)\n"
+        },
+        {
+          "line": 516,
+          "old": "bool BattlegroundWarsongGulch::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)\n",
+          "new": "bool BattlegroundWarsongGulch::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BattlegroundWarsongGulch.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 136,
+          "old": "    void UpdateScore(uint32 type, uint32 value) override;\n",
+          "new": "    void UpdateScore(uint32 type, uint64 value) override;\n"
+        },
+        {
+          "line": 173,
+          "old": "    bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;\n",
+          "new": "    bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BrawlBattlegroundShadoPan.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 98,
+          "old": "    void UpdateScore(uint32 type, uint32 value) override\n",
+          "new": "    void UpdateScore(uint32 type, uint64 value) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BrawlBattlegroundSouthshoreVsTarrenMill.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 36,
+          "old": "    void UpdateScore(uint32 type, uint32 value) override\n",
+          "new": "    void UpdateScore(uint32 type, uint64 value) override\n"
+        },
+        {
+          "line": 130,
+          "old": "bool BrawlBattlegroundSouthshoreVsTarrenMill::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor)\n",
+          "new": "bool BrawlBattlegroundSouthshoreVsTarrenMill::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Battlegrounds/Zones/BrawlBattlegroundSouthshoreVsTarrenMill.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 20,
+          "old": "    bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;\n",
+          "new": "    bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Entities/Creature/Creature.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 1287,
+          "old": "    if (!amount || gain < 0)\n",
+          "new": "    if (gain >= 0)\n        NotifyHealApplied64(healer, amount, uint64(gain));\n}\n\nvoid Creature::NotifyHealApplied64(Unit* healer, uint64 amount, uint64 gain)\n{\n    if (!amount || gain > amount)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Entities/Creature/Creature.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 625,
+          "old": "",
+          "new": "        void NotifyHealApplied64(Unit* healer, uint64 amount, uint64 gain);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Entities/Player/Player.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 19,
+          "old": "",
+          "new": "#include \"HealingAmount.h\"\n"
+        },
+        {
+          "line": 28119,
+          "old": "    basevalue = T(float(basevalue + totalflat) * totalmul);\n",
+          "new": "    if constexpr (std::is_same<T, uint64>::value)\n        basevalue = HealingAmount::ApplySpellMod(basevalue, totalflat, totalmul);\n    else\n        basevalue = T(float(basevalue + totalflat) * totalmul);\n"
+        },
+        {
+          "line": 28127,
+          "old": "",
+          "new": "template TC_GAME_API void Player::ApplySpellMod(uint32 spellId, SpellModOp op, uint64& basevalue, Spell* spell) const;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Entities/Unit/Unit.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 19,
+          "old": "",
+          "new": "#include \"HealingAmount.h\"\n"
+        },
+        {
+          "line": 162,
+          "old": "DamageInfo::DamageInfo(Unit* _attacker, Unit* _victim, uint32 _damage, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask, DamageEffectType _damageType, uint32 m_damageBeforeHit) :\n    m_attacker(_attacker), m_victim(_victim), m_damage(_damage), m_overHeal{ 0 }, m_spellInfo(_spellInfo), m_schoolMask(_schoolMask), m_damageType(_damageType), m_attackType(BASE_ATTACK), m_damageBeforeHit(m_damageBeforeHit)\n",
+          "new": "DamageInfo::DamageInfo(Unit* _attacker, Unit* _victim, uint64 _damage, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask, DamageEffectType _damageType, uint32 m_damageBeforeHit, bool healing) :\n    m_attacker(_attacker), m_victim(_victim), m_damage(healing ? _damage : std::min<uint64>(_damage, UINT32_MAX)), m_overHeal{ 0 }, m_spellInfo(_spellInfo), m_schoolMask(_schoolMask), m_damageType(_damageType), m_attackType(BASE_ATTACK), m_damageBeforeHit(m_damageBeforeHit)\n"
+        },
+        {
+          "line": 165,
+          "old": "",
+          "new": "    m_isHealing = healing;\n"
+        },
+        {
+          "line": 187,
+          "old": "void DamageInfo::ModifyDamage(int32 amount)\n",
+          "new": "void DamageInfo::ModifyDamage(int64 amount)\n"
+        },
+        {
+          "line": 189,
+          "old": "    // Allow restoring damage after absorption even when the absorbable part\n    // reached zero. Use a wide intermediate for the full uint32 damage range.\n    m_damage = uint32(std::max<int64>(0, std::min<int64>(\n        int64(m_damage) + amount, std::numeric_limits<uint32>::max())));\n",
+          "new": "    if (amount < 0)\n        m_damage -= std::min(m_damage, uint64(-(amount + 1)) + 1);\n    else\n        m_damage = std::min(HealingAmount::Add(m_damage, uint64(amount)),\n            m_isHealing ? std::numeric_limits<uint64>::max() : uint64(UINT32_MAX));\n}\n\nvoid DamageInfo::AbsorbHealing(uint64 amount)\n{\n    uint64 const absorbed = std::min(amount, std::min(m_damage, UINT64_MAX - m_absorb));\n    m_absorb += absorbed;\n    m_damage -= absorbed;\n"
+        },
+        {
+          "line": 197,
+          "old": "    // Endurance of Niuzao restores a rejected absorption through this API.\n",
+          "new": ""
+        },
+        {
+          "line": 201,
+          "old": "        uint32 const restored = uint32(std::min<uint64>(requested,\n            std::min<uint64>(m_absorb, std::numeric_limits<uint32>::max() - m_damage)));\n",
+          "new": "        uint64 const limit = m_isHealing ? UINT64_MAX : uint64(UINT32_MAX);\n        uint64 const restored = std::min(requested, std::min(m_absorb, limit - m_damage));\n"
+        },
+        {
+          "line": 205,
+          "old": "        return;\n",
+          "new": ""
+        },
+        {
+          "line": 207,
+          "old": "    uint32 const absorbed = uint32(std::max<int64>(0, std::min<int64>(amount, GetDamage())));\n    m_absorb += absorbed;\n    m_damage -= absorbed;\n",
+          "new": "    else\n        AbsorbHealing(uint64(amount));\n"
+        },
+        {
+          "line": 214,
+          "old": "    amount = std::min(amount, GetDamage());\n",
+          "new": "    amount = uint32(std::min<uint64>(amount, GetDamage()));\n"
+        },
+        {
+          "line": 221,
+          "old": "    amount = std::min(amount, GetDamage());\n",
+          "new": "    amount = uint32(std::min<uint64>(amount, GetDamage()));\n"
+        },
+        {
+          "line": 1799,
+          "old": "",
+          "new": "    {\n"
+        },
+        {
+          "line": 1801,
+          "old": "",
+          "new": "        for (auto const& healing : value->GetHealingMods())\n            if (!spell->SetHealingValue(healing.first, healing.second))\n            {\n                delete spell;\n                return SPELL_FAILED_ERROR;\n            }\n    }\n"
+        },
+        {
+          "line": 1833,
+          "old": "",
+          "new": "    {\n"
+        },
+        {
+          "line": 1835,
+          "old": "",
+          "new": "        for (auto const& healing : value->GetHealingMods())\n            if (!spell->SetHealingValue(healing.first, healing.second))\n            {\n                delete spell;\n                return SPELL_FAILED_ERROR;\n            }\n    }\n"
+        },
+        {
+          "line": 3000,
+          "old": "void Unit::CalcHealAbsorb(Unit* victim, const SpellInfo* healSpell, uint32 &healAmount, uint32 &absorb)\n",
+          "new": "void Unit::CalcHealAbsorb(Unit* victim, const SpellInfo* healSpell, uint64 &healAmount, uint64 &absorb)\n"
+        },
+        {
+          "line": 3005,
+          "old": "    uint32 RemainingHeal = healAmount;\n",
+          "new": "    uint64 RemainingHeal = healAmount;\n"
+        },
+        {
+          "line": 3010,
+          "old": "    DamageInfo dmgInfo = DamageInfo(this, victim, healAmount, healSpell, SpellSchoolMask(healSpell->GetMisc(m_spawnMode)->MiscData.SchoolMask), SPELL_DIRECT_DAMAGE, 0);\n",
+          "new": "    DamageInfo dmgInfo = DamageInfo(this, victim, healAmount, healSpell, SpellSchoolMask(healSpell->GetMisc(m_spawnMode)->MiscData.SchoolMask), SPELL_DIRECT_DAMAGE, 0, true);\n"
+        },
+        {
+          "line": 3034,
+          "old": "        uint32 const absorbed = uint32(std::min<double>(RemainingHeal, std::max(0.0, double(currentAbsorb))));\n",
+          "new": "        uint64 const absorbed = std::min(RemainingHeal, HealingAmount::FromFloat(currentAbsorb));\n"
+        },
+        {
+          "line": 3038,
+          "old": "        dmgInfo.AbsorbDamage(absorbed);\n",
+          "new": "        dmgInfo.AbsorbHealing(absorbed);\n"
+        },
+        {
+          "line": 7334,
+          "old": "    uint32 damage = dmgInfoProc->GetDamage() + dmgInfoProc->GetAbsorb();\n",
+          "new": "    uint64 damage = HealingAmount::Add(dmgInfoProc->GetDamage(), dmgInfoProc->GetAbsorb());\n"
+        },
+        {
+          "line": 10282,
+          "old": "    uint32 damage = dmgInfoProc->GetDamage() + dmgInfoProc->GetAbsorb();\n",
+          "new": "    uint64 damage = HealingAmount::Add(dmgInfoProc->GetDamage(), dmgInfoProc->GetAbsorb());\n"
+        },
+        {
+          "line": 10432,
+          "old": "    uint32 damage = dmgInfoProc->GetDamage();\n",
+          "new": "    uint64 damage = dmgInfoProc->GetDamage();\n"
+        },
+        {
+          "line": 12271,
+          "old": "int64 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto)\n",
+          "new": "uint64 Unit::DealHeal(Unit* victim, uint64 addhealth, SpellInfo const* spellProto)\n"
+        },
+        {
+          "line": 12273,
+          "old": "    int64 gain = 0;\n",
+          "new": "    uint64 gain = 0;\n"
+        },
+        {
+          "line": 12280,
+          "old": "                instance->UpdateDamageManager(victim->GetGUID(), -int64(addhealth), true);\n",
+          "new": "                instance->UpdateDamageManager(victim->GetGUID(), addhealth, true);\n"
+        },
+        {
+          "line": 12288,
+          "old": "        gain = victim->ModifyHealth(int64(addhealth), this);\n",
+          "new": "        gain = victim->AddHealth(addhealth, this);\n"
+        },
+        {
+          "line": 12290,
+          "old": "            creature->NotifyHealApplied(this, addhealth, gain);\n",
+          "new": "            creature->NotifyHealApplied64(this, addhealth, gain);\n"
+        },
+        {
+          "line": 12305,
+          "old": "            player->UpdateAchievementCriteria(CRITERIA_TYPE_HEALING_DONE, gain, 0, 0, victim);\n",
+          "new": "            player->UpdateAchievementCriteria(CRITERIA_TYPE_HEALING_DONE, HealingAmount::CounterValue(gain), 0, 0, victim);\n"
+        },
+        {
+          "line": 12308,
+          "old": "            player->UpdateAchievementCriteria(CRITERIA_TYPE_HIGHEST_HEAL_CASTED, addhealth);\n",
+          "new": "            player->UpdateAchievementCriteria(CRITERIA_TYPE_HIGHEST_HEAL_CASTED, HealingAmount::CounterValue(addhealth));\n"
+        },
+        {
+          "line": 12328,
+          "old": "            player->UpdateAchievementCriteria(CRITERIA_TYPE_TOTAL_HEALING_RECEIVED, gain);\n",
+          "new": "            player->UpdateAchievementCriteria(CRITERIA_TYPE_TOTAL_HEALING_RECEIVED, HealingAmount::CounterValue(gain));\n"
+        },
+        {
+          "line": 12330,
+          "old": "            player->UpdateAchievementCriteria(CRITERIA_TYPE_HIGHEST_HEALING_RECEIVED, addhealth);\n",
+          "new": "            player->UpdateAchievementCriteria(CRITERIA_TYPE_HIGHEST_HEALING_RECEIVED, HealingAmount::CounterValue(addhealth));\n"
+        },
+        {
+          "line": 12612,
+          "old": "void Unit::SendHealSpellLog(Unit* victim, uint32 spellID, uint32 health, uint32 overHeal, uint32 absorbed, bool crit)\n",
+          "new": "void Unit::SendHealSpellLog(Unit* victim, uint32 spellID, uint64 health, uint64 overHeal, uint64 absorbed, bool crit)\n"
+        },
+        {
+          "line": 12618,
+          "old": "    spellHealLog.Health = health;\n    spellHealLog.OverHeal = overHeal;\n    spellHealLog.Absorbed = absorbed;\n",
+          "new": "    spellHealLog.Health = HealingAmount::CombatLogValue(health);\n    spellHealLog.OverHeal = HealingAmount::CombatLogValue(overHeal);\n    spellHealLog.Absorbed = HealingAmount::CombatLogValue(absorbed);\n"
+        },
+        {
+          "line": 12631,
+          "old": "int64 Unit::HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical)\n",
+          "new": "uint64 Unit::HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint64 addHealth, bool critical)\n"
+        },
+        {
+          "line": 12633,
+          "old": "    uint32 absorb = 0;\n    int64 gain = 0;\n",
+          "new": "    uint64 absorb = 0;\n    uint64 gain = 0;\n"
+        },
+        {
+          "line": 12641,
+          "old": "        SendHealSpellLog(victim, spellInfo->Id, addHealth, uint32(addHealth - gain), absorb, critical);\n",
+          "new": "        SendHealSpellLog(victim, spellInfo->Id, addHealth, addHealth - gain, absorb, critical);\n"
+        },
+        {
+          "line": 13845,
+          "old": "uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, uint32 healamount, DamageEffectType damagetype, SpellEffIndex effIndex, uint32 stack)\n",
+          "new": "template<class Amount>\nAmount Unit::SpellHealingBonusTakenImpl(Unit* caster, SpellInfo const* spellProto, Amount healamount, DamageEffectType damagetype, SpellEffIndex effIndex, uint32 stack)\n"
+        },
+        {
+          "line": 13880,
+          "old": "            healamount = uint32(std::max((float(healamount) * TakenTotalMod), 0.0f));\n",
+          "new": "            if constexpr (sizeof(Amount) == 4)\n                healamount = uint32(std::max((float(healamount) * TakenTotalMod), 0.0f));\n            else\n                healamount = HealingAmount::Apply(healamount, 0, TakenTotalMod);\n"
+        },
+        {
+          "line": 13928,
+          "old": "    float heal = float(int32(healamount) + TakenTotal) * TakenTotalMod;\n    return uint32(std::max(heal, 0.0f));\n",
+          "new": "    if constexpr (sizeof(Amount) == 4)\n    {\n        float heal = float(int32(healamount) + TakenTotal) * TakenTotalMod;\n        return uint32(std::max(heal, 0.0f));\n    }\n    else\n        return HealingAmount::Apply(healamount, TakenTotal, TakenTotalMod);\n}\n\nuint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* info, uint32 amount, DamageEffectType type, SpellEffIndex effect, uint32 stack)\n{\n    return SpellHealingBonusTakenImpl(caster, info, amount, type, effect, stack);\n}\n\nuint64 Unit::SpellHealingBonusTaken64(Unit* caster, SpellInfo const* info, uint64 amount, DamageEffectType type, SpellEffIndex effect, uint32 stack)\n{\n    return SpellHealingBonusTakenImpl(caster, info, amount, type, effect, stack);\n}\n\nuint64 Unit::SpellCriticalHealingBonus64(SpellInfo const* info, uint64 amount)\n{\n    uint64 bonus = HealingAmount::Apply(amount, 0, GetOwner() ?\n        GetOwner()->GetTotalAuraMultiplier(SPELL_AURA_MOD_CRITICAL_HEAl_PCT) :\n        GetTotalAuraMultiplier(SPELL_AURA_MOD_CRITICAL_HEAl_PCT));\n    if (Player* owner = GetSpellModOwner())\n        owner->ApplySpellMod(info->Id, SPELLMOD_CRIT_DAMAGE_BONUS, bonus);\n    return HealingAmount::Add(HealingAmount::Apply(amount, 0,\n        GetTotalAuraMultiplier(SPELL_AURA_MOD_CRITICAL_HEALING_AMOUNT)), bonus);\n"
+        },
+        {
+          "line": 15240,
+          "old": "",
+          "new": "}\n\nuint64 Unit::AddHealth(uint64 amount, Unit* healer, uint32 spellId)\n{\n    uint64 const current = GetHealth(healer);\n    uint64 const maximum = GetMaxHealth(healer);\n    uint64 const gain = std::min(amount, maximum > current ? maximum - current : 0);\n    if (gain)\n        SetHealthScal(current + gain, healer, spellId);\n    return gain;\n"
+        },
+        {
+          "line": 19421,
+          "old": "    uint32 damage = dmgInfoProc->GetDamage();\n",
+          "new": "    uint64 damage = dmgInfoProc->GetDamage();\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Entities/Unit/Unit.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 187,
+          "old": "",
+          "new": "        // Exact amounts for fixed HEAL effects (native NO_DONE_BONUS).\n        void AddHealingMod(SpellEffIndex effect, uint64 amount) { _healing.emplace_back(effect, amount); }\n        std::vector<std::pair<SpellEffIndex, uint64>> const& GetHealingMods() const { return _healing; }\n    private:\n        std::vector<std::pair<SpellEffIndex, uint64>> _healing;\n"
+        },
+        {
+          "line": 761,
+          "old": "    uint32 m_damage;\n    uint32 m_overHeal;\n",
+          "new": "    uint64 m_damage;\n    uint64 m_overHeal;\n"
+        },
+        {
+          "line": 767,
+          "old": "    uint32 m_absorb;\n",
+          "new": "    uint64 m_absorb;\n"
+        },
+        {
+          "line": 779,
+          "old": "",
+          "new": "    bool m_isHealing = false;\n"
+        },
+        {
+          "line": 781,
+          "old": "    explicit DamageInfo(Unit* _attacker, Unit* _victim, uint32 _damage, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask, DamageEffectType _damageType, uint32 m_damageBeforeHit);\n",
+          "new": "    explicit DamageInfo(Unit* _attacker, Unit* _victim, uint64 _damage, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask, DamageEffectType _damageType, uint32 m_damageBeforeHit, bool healing = false);\n"
+        },
+        {
+          "line": 785,
+          "old": "    void ModifyDamage(int32 amount);\n",
+          "new": "    void ModifyDamage(int64 amount);\n    void AbsorbHealing(uint64 amount);\n"
+        },
+        {
+          "line": 793,
+          "old": "    void SetOverHeal(uint32 amount) { m_overHeal = amount; }\n",
+          "new": "    void SetOverHeal(uint64 amount) { m_overHeal = amount; }\n"
+        },
+        {
+          "line": 803,
+          "old": "    uint32 GetDamage() const { return m_damage; };\n    uint32 GetAbsorb() const { return m_absorb; };\n",
+          "new": "    uint64 GetDamage() const { return m_damage; };\n    uint64 GetAbsorb() const { return m_absorb; };\n"
+        },
+        {
+          "line": 813,
+          "old": "    uint32 GetOverHeal() const { return m_overHeal; };\n",
+          "new": "    uint64 GetOverHeal() const { return m_overHeal; };\n"
+        },
+        {
+          "line": 822,
+          "old": "    uint32 m_heal;\n    uint32 m_absorb;\n",
+          "new": "    uint64 m_heal;\n    uint64 m_absorb;\n"
+        },
+        {
+          "line": 827,
+          "old": "    explicit HealInfo(Unit* _healer, Unit* _target, uint32 _heal, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask)\n",
+          "new": "    explicit HealInfo(Unit* _healer, Unit* _target, uint64 _heal, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask)\n"
+        },
+        {
+          "line": 832,
+          "old": "    void AbsorbHeal(uint32 amount)\n",
+          "new": "    void AbsorbHeal(uint64 amount)\n"
+        },
+        {
+          "line": 839,
+          "old": "    uint32 GetHeal() const { return m_heal; };\n",
+          "new": "    uint64 GetHeal() const { return m_heal; };\n"
+        },
+        {
+          "line": 1380,
+          "old": "        int64 DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto = nullptr);\n",
+          "new": "        uint64 DealHeal(Unit* victim, uint64 addhealth, SpellInfo const* spellProto = nullptr);\n"
+        },
+        {
+          "line": 1482,
+          "old": "        void SendHealSpellLog(Unit* victim, uint32 SpellID, uint32 Damage, uint32 OverHeal, uint32 Absorb, bool critical = false);\n        int64 HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical = false);\n",
+          "new": "        void SendHealSpellLog(Unit* victim, uint32 SpellID, uint64 Damage, uint64 OverHeal, uint64 Absorb, bool critical = false);\n        uint64 HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint64 addHealth, bool critical = false);\n"
+        },
+        {
+          "line": 2147,
+          "old": "",
+          "new": "        uint64 SpellCriticalHealingBonus64(SpellInfo const* spellProto, uint64 amount);\n        uint64 SpellHealingBonusTaken64(Unit* caster, SpellInfo const* spellProto, uint64 amount, DamageEffectType type, SpellEffIndex effect, uint32 stack = 1);\n        template<class Amount> Amount SpellHealingBonusTakenImpl(Unit* caster, SpellInfo const* spellProto, Amount amount, DamageEffectType type, SpellEffIndex effect, uint32 stack);\n        uint64 AddHealth(uint64 amount, Unit* healer = nullptr, uint32 spellId = 0);\n"
+        },
+        {
+          "line": 2172,
+          "old": "        void CalcHealAbsorb(Unit* victim, const SpellInfo* spellProto, uint32 &healAmount, uint32 &absorb);\n",
+          "new": "        void CalcHealAbsorb(Unit* victim, const SpellInfo* spellProto, uint64 &healAmount, uint64 &absorb);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Instances/InstanceScript.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 1161,
+          "old": "void InstanceScript::UpdateDamageManager(ObjectGuid caller, int64 damage, bool heal)\n",
+          "new": "void InstanceScript::UpdateDamageManager(ObjectGuid caller, uint64 damage, bool heal)\n"
+        },
+        {
+          "line": 1188,
+          "old": "            else if (damage < 0)\n",
+          "new": "            else if (heal)\n"
+        },
+        {
+          "line": 1192,
+          "old": "                uint64 const amount = uint64(-(damage + 1)) + 1;\n",
+          "new": "                uint64 const amount = damage;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Instances/InstanceScript.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 332,
+          "old": "        void UpdateDamageManager(ObjectGuid caller, int64 damage, bool heal = false);\n",
+          "new": "        void UpdateDamageManager(ObjectGuid caller, uint64 damage, bool heal = false);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Spells/Auras/SpellAuraEffects.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 8197,
+          "old": "        int64 gain = caster->HealBySpell(caster, GetSpellInfo(), heal);\n",
+          "new": "        uint64 gain = caster->HealBySpell(caster, GetSpellInfo(), heal);\n"
+        },
+        {
+          "line": 8309,
+          "old": "                                        uint32 _heal = damage;\n                                        uint32 _absorb = 0;\n",
+          "new": "                                        uint64 _heal = damage;\n                                        uint64 _absorb = 0;\n"
+        },
+        {
+          "line": 8312,
+          "old": "                                        int64 _gain = caster->DealHeal(unit, _heal, GetSpellInfo());\n",
+          "new": "                                        uint64 _gain = caster->DealHeal(unit, _heal, GetSpellInfo());\n"
+        },
+        {
+          "line": 8444,
+          "old": "    uint32 absorb = 0;\n    auto heal = uint32(damage);\n",
+          "new": "    uint64 absorb = 0;\n    uint64 heal = uint32(damage);\n"
+        },
+        {
+          "line": 8450,
+          "old": "    int64 gain = caster->DealHeal(target, heal, GetSpellInfo());\n",
+          "new": "    uint64 gain = caster->DealHeal(target, heal, GetSpellInfo());\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Spells/Spell.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 51,
+          "old": "",
+          "new": "#include \"HealingAmount.h\"\n"
+        },
+        {
+          "line": 2572,
+          "old": "",
+          "new": "    m_exactHealing = target->exactHealing;\n"
+        },
+        {
+          "line": 2705,
+          "old": "        bool dmgSpell = m_damage || m_healing;\n",
+          "new": "        bool dmgSpell = m_damage || m_healing || (m_exactHealing && *m_exactHealing);\n"
+        },
+        {
+          "line": 2712,
+          "old": "        else if (!m_healing)\n",
+          "new": "        else if (!m_healing && !(m_exactHealing && *m_exactHealing))\n"
+        },
+        {
+          "line": 2844,
+          "old": "    if (m_healing > 0)\n",
+          "new": "    if (m_healing > 0 || (m_exactHealing && *m_exactHealing))\n"
+        },
+        {
+          "line": 2846,
+          "old": "        uint32 addhealth = m_healing;\n",
+          "new": "        uint64 addhealth = GetHealingAmount64();\n"
+        },
+        {
+          "line": 2850,
+          "old": "            addhealth = caster->SpellCriticalHealingBonus(m_spellInfo, addhealth);\n",
+          "new": "            addhealth = m_exactHealing ? caster->SpellCriticalHealingBonus64(m_spellInfo, addhealth) :\n                caster->SpellCriticalHealingBonus(m_spellInfo, uint32(addhealth));\n"
+        },
+        {
+          "line": 2855,
+          "old": "        int64 gain = caster->HealBySpell(unitTarget, m_spellInfo, addhealth, target->HasMask(TARGET_INFO_CRIT));\n",
+          "new": "        uint64 gain = caster->HealBySpell(unitTarget, m_spellInfo, addhealth, target->HasMask(TARGET_INFO_CRIT));\n"
+        },
+        {
+          "line": 2857,
+          "old": "        uint32 overHeal = addhealth - gain;\n        m_healing = gain;\n",
+          "new": "        uint64 overHeal = addhealth - gain;\n        if (m_exactHealing) { m_exactHealing = gain; m_healing = 0; }\n        else m_healing = int32(gain); // Retain the legacy script API for ordinary effects.\n"
+        },
+        {
+          "line": 2866,
+          "old": "            DamageInfo dmgInfoProc = DamageInfo(m_caster, unitTarget, addhealth, m_spellInfo, SpellSchoolMask(m_spellInfo->GetMisc(m_diffMode)->MiscData.SchoolMask), SPELL_DIRECT_DAMAGE, target->damageBeforeHit);\n",
+          "new": "            DamageInfo dmgInfoProc = DamageInfo(m_caster, unitTarget, addhealth, m_spellInfo, SpellSchoolMask(m_spellInfo->GetMisc(m_diffMode)->MiscData.SchoolMask), SPELL_DIRECT_DAMAGE, target->damageBeforeHit, true);\n"
+        },
+        {
+          "line": 9400,
+          "old": "",
+          "new": "            m_exactHealing.reset();\n"
+        },
+        {
+          "line": 9439,
+          "old": "",
+          "new": "            if (m_exactHealing)\n            {\n                uint64 amount = *m_exactHealing;\n                if (m_applyMultiplierMask & (1 << i))\n                    amount = HealingAmount::Apply(amount, 0, multiplier[i]);\n                targetInfo->exactHealing = HealingAmount::Add(targetInfo->exactHealing.value_or(0), amount);\n            }\n"
+        },
+        {
+          "line": 9447,
+          "old": "    if (targetInfo->damage || canCritTo)\n",
+          "new": "    if (targetInfo->damage || (targetInfo->exactHealing && *targetInfo->exactHealing) || canCritTo)\n"
+        },
+        {
+          "line": 9569,
+          "old": "",
+          "new": "}\n\nuint64 Spell::GetHealingAmount64() const\n{\n    return HealingAmount::Add(m_exactHealing.value_or(0), m_healing > 0 ? uint64(m_healing) : 0);\n}\n\nbool Spell::SetHealingValue(SpellEffIndex effect, uint64 amount)\n{\n    if (uint32(effect) >= MAX_SPELL_EFFECTS ||\n        m_spellInfo->GetEffect(effect, m_diffMode)->Effect != SPELL_EFFECT_HEAL ||\n        (!m_spellInfo->HasAttribute(SPELL_ATTR3_NO_DONE_BONUS) &&\n         !m_spellInfo->HasAttribute(SPELL_ATTR6_NO_DONE_PCT_DAMAGE_MODS)))\n    {\n        TC_LOG_ERROR(\"spells\", \"Exact healing value requires a fixed native HEAL effect: spell %u effect %u\", m_spellInfo->Id, uint32(effect));\n        return false;\n    }\n    m_spellValue->HealingBasePoints[uint8(effect)] = amount;\n    return true;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Spells/Spell.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 22,
+          "old": "",
+          "new": "#include \"Optional.h\"\n"
+        },
+        {
+          "line": 152,
+          "old": "",
+          "new": "    std::map<uint8, uint64> HealingBasePoints;\n"
+        },
+        {
+          "line": 541,
+          "old": "",
+          "new": "        bool SetHealingValue(SpellEffIndex effect, uint64 amount);\n        uint64 GetHealingAmount64() const;\n        void SetHealingAmount64(uint64 amount) { m_healing = 0; m_exactHealing = amount; }\n"
+        },
+        {
+          "line": 642,
+          "old": "",
+          "new": "        Optional<uint64> m_exactHealing;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Spells/SpellEffects.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 68,
+          "old": "",
+          "new": "#include \"HealingAmount.h\"\n"
+        },
+        {
+          "line": 2494,
+          "old": "",
+          "new": "\n        auto exact = m_spellValue->HealingBasePoints.find(uint8(effIndex));\n        if (exact != m_spellValue->HealingBasePoints.end())\n        {\n            uint64 amount = exact->second;\n            if (m_spellInfo->AttributesCu[0] & SPELL_ATTR0_CU_SHARE_DAMAGE)\n            {\n                uint32 count = 0;\n                for (auto const& target : m_UniqueTargetInfo)\n                    if (target->effectMask & (1 << effIndex)) ++count;\n                if (!count) return;\n                amount /= count;\n            }\n            amount = HealingAmount::Apply(amount, 0, caster->GetProcStatsMultiplier(m_spellInfo->Id));\n            amount = unitTarget->SpellHealingBonusTaken64(caster, m_spellInfo, amount, HEAL, effIndex);\n            m_exactHealing = HealingAmount::Add(m_exactHealing.value_or(0), amount);\n            return;\n        }\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Spells/SpellScript.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 740,
+          "old": "",
+          "new": "    m_spell->m_exactHealing.reset();\n}\n\nuint64 SpellScript::GetHitHeal64()\n{\n    if (!IsInTargetHook())\n    {\n        TC_LOG_ERROR(\"scripts\", \"Script: `%s` Spell: `%u`: GetHitHeal64 outside target hook\", m_scriptName->c_str(), m_scriptSpellId);\n        return 0;\n    }\n    return m_spell->GetHealingAmount64();\n}\n\nvoid SpellScript::SetHitHeal64(uint64 heal)\n{\n    if (!IsInTargetHook())\n    {\n        TC_LOG_ERROR(\"scripts\", \"Script: `%s` Spell: `%u`: SetHitHeal64 outside target hook\", m_scriptName->c_str(), m_scriptSpellId);\n        return;\n    }\n    m_spell->SetHealingAmount64(heal);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Spells/SpellScript.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 452,
+          "old": "",
+          "new": "        uint64 GetHitHeal64();\n        void SetHitHeal64(uint64 heal);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Spells/SpellTargetInfo.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 24,
+          "old": "",
+          "new": "#include \"Optional.h\"\n"
+        },
+        {
+          "line": 83,
+          "old": "",
+          "new": "    Optional<uint64> exactHealing;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Draenor/Highmaul/boss_brackenspore.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 904,
+          "old": "    void HealReceived(Unit* /*healer*/, uint32& heal) override\n",
+          "new": "    void HealReceived(Unit* /*healer*/, uint64& heal) override\n"
+        },
+        {
+          "line": 971,
+          "old": "    void HealReceived(Unit* /*healer*/, uint32& heal) override\n",
+          "new": "    void HealReceived(Unit* /*healer*/, uint64& heal) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/EasternKingdoms/ShadowfangKeep/boss_baron_ashbury.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 95,
+          "old": "            void HealReceived(Unit* healer, uint32 &heal)\n",
+          "new": "            void HealReceived(Unit* healer, uint64&heal)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Kalimdor/CavernsOfTime/DragonSoul/boss_madness_of_deathwing.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 2152,
+          "old": "            void HealReceived(Unit* /*who*/, uint32& heal)\n",
+          "new": "            void HealReceived(Unit* /*who*/, uint64& heal)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Kalimdor/CavernsOfTime/DragonSoul/boss_ultraxion.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 984,
+          "old": "                    float healAmount = int32(victim->GetMaxHealth());\n                    victim->CastCustomSpell(victim, SPELL_TIMELOOP_HEAL, &healAmount, NULL, NULL, true, NULL, aurEff);\n",
+          "new": "                    CustomSpellValues values;\n                    values.AddHealingMod(EFFECT_0, victim->GetMaxHealth());\n                    victim->CastCustomSpell(SPELL_TIMELOOP_HEAL, values, victim, true, nullptr, aurEff);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Kalimdor/LostCityOfTheTolvir/boss_high_prophet_barim.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 401,
+          "old": "    void HealReceived(Unit* /*healer*/, uint32& heal) override\n",
+          "new": "    void HealReceived(Unit* /*healer*/, uint64& heal) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_hasabel.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 804,
+          "old": "    void HealReceived(Unit* /*healer*/, uint32& heal) override\n",
+          "new": "    void HealReceived(Unit* /*healer*/, uint64& heal) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Legion/MicroHolidays/GlowcapFestival.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 147,
+          "old": "    void HealReceived(Unit* who, uint32& /*addhealth*/) override\n",
+          "new": "    void HealReceived(Unit* who, uint64& /*addhealth*/) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/boss_grand_champions.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 1209,
+          "old": "        void HealReceived(Unit* healer, uint32 & addHealth) override\n",
+          "new": "        void HealReceived(Unit* healer, uint64& addHealth) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_scourgelord_tyrannus.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 538,
+          "old": "        void HealDone(Unit* /*target*/, uint32& addHealth) override\n",
+          "new": "        void HealDone(Unit* /*target*/, uint64& addHealth) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_norushen.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 1450,
+          "old": "        void HealReceived(Unit* /*done_by*/, uint32& addhealth)\n",
+          "new": "        void HealReceived(Unit* /*done_by*/, uint64& addhealth)\n"
+        },
+        {
+          "line": 1526,
+          "old": "        void HealReceived(Unit* /*done_by*/, uint32& addhealth)\n",
+          "new": "        void HealReceived(Unit* /*done_by*/, uint64& addhealth)\n"
+        },
+        {
+          "line": 1624,
+          "old": "        void HealReceived(Unit* /*done_by*/, uint32& addhealth)\n",
+          "new": "        void HealReceived(Unit* /*done_by*/, uint64& addhealth)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/Sheylun.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 276,
+          "old": "        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int64 /*gain*/) override { ObserveWoundHeal(); }\n",
+          "new": "        void OnHealApplied(Unit* /*who*/, uint64 /*amount*/, uint64 /*gain*/) override { ObserveWoundHeal(); }\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_taran_intro.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 42,
+          "old": "void OnHealApplied(Unit* who, uint32 /*amount*/, int64 /*gain*/) override\n",
+          "new": "void OnHealApplied(Unit* who, uint64 /*amount*/, uint64 /*gain*/) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 304,
+          "old": "        void HealReceived(Unit*, uint32& addhealth) override\n",
+          "new": "        void HealReceived(Unit*, uint64& addhealth) override\n"
+        },
+        {
+          "line": 675,
+          "old": "        void HealReceived(Unit*, uint32& addhealth) override\n",
+          "new": "        void HealReceived(Unit*, uint64& addhealth) override\n"
+        },
+        {
+          "line": 847,
+          "old": "        void HealReceived(Unit*, uint32& addhealth) override\n",
+          "new": "        void HealReceived(Unit*, uint64& addhealth) override\n"
+        },
+        {
+          "line": 1251,
+          "old": "        void HealReceived(Unit*, uint32& addhealth) override\n",
+          "new": "        void HealReceived(Unit*, uint64& addhealth) override\n"
+        },
+        {
+          "line": 1381,
+          "old": "        void HealReceived(Unit* who, uint32& addhealth) override\n",
+          "new": "        void HealReceived(Unit* who, uint64& addhealth) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Priest/Tuure/Tuure.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 158,
+          "old": "        void HealReceived(Unit* who, uint32& addhealth) override\n",
+          "new": "        void HealReceived(Unit* who, uint64& addhealth) override\n"
+        },
+        {
+          "line": 346,
+          "old": "        void HealReceived(Unit* who, uint32& addhealth) override\n",
+          "new": "        void HealReceived(Unit* who, uint64& addhealth) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 191,
+          "old": "        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int64 /*gain*/) override\n",
+          "new": "        void OnHealApplied(Unit* /*who*/, uint64 /*amount*/, uint64 /*gain*/) override\n"
+        },
+        {
+          "line": 608,
+          "old": "        void OnHealApplied(Unit* who, uint32 /*amount*/, int64 /*gain*/) override\n",
+          "new": "        void OnHealApplied(Unit* who, uint64 /*amount*/, uint64 /*gain*/) override\n"
+        },
+        {
+          "line": 867,
+          "old": "        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int64 /*gain*/) override\n",
+          "new": "        void OnHealApplied(Unit* /*who*/, uint64 /*amount*/, uint64 /*gain*/) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Spells/spell_dk.cpp",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 24,
+          "old": "",
+          "new": "#include \"HealingAmount.h\"\n"
+        },
+        {
+          "line": 421,
+          "old": "                absorbAmount = std::min(CalculatePct(dmgInfo.GetDamage(), absorbPct), uint32(aurEff->GetAmount()));\n",
+          "new": "                absorbAmount = std::min<uint64>(CalculatePct(dmgInfo.GetDamage(), absorbPct),\n                    HealingAmount::FromFloat(aurEff->GetAmount()));\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Spells/HealingAmount.h",
+      "encoding": "utf8",
+      "edits": [
+        {
+          "line": 0,
+          "old": "",
+          "new": "#ifndef LEGION_HEALING_AMOUNT_H\n#define LEGION_HEALING_AMOUNT_H\n\n#include \"Define.h\"\n#include <algorithm>\n#include <boost/multiprecision/cpp_int.hpp>\n#include <cmath>\n#include <cstring>\n#include <limits>\n\nnamespace HealingAmount\n{\n    inline uint64 Add(uint64 left, uint64 right)\n    {\n        return left + std::min(right, std::numeric_limits<uint64>::max() - left);\n    }\n\n    inline uint64 FromFloat(float amount)\n    {\n        if (!(amount > 0.0f))\n            return 0;\n        if (double(amount) >= double(std::numeric_limits<uint64>::max()))\n            return std::numeric_limits<uint64>::max();\n        return uint64(amount);\n    }\n\n    // Keep the former rounding for its valid ordinary range. Above that range,\n    // multiply by the exact binary32 factor without rounding the integer input.\n    inline uint64 Apply(uint64 amount, int64 flat, float factor)\n    {\n        using boost::multiprecision::int128_t;\n        using boost::multiprecision::uint128_t;\n        int128_t sum = int128_t(amount) + flat;\n        if (sum <= 0 || !(factor > 0.0f))\n            return 0;\n        if (!std::isfinite(factor))\n            return std::numeric_limits<uint64>::max();\n        if (amount <= uint64(INT32_MAX) && sum <= INT32_MAX)\n        {\n            float legacy = float(int32(sum)) * factor;\n            if (legacy < 4294967296.0f)\n                return uint64(legacy);\n        }\n\n        uint32 bits;\n        std::memcpy(&bits, &factor, sizeof(bits));\n        int exponent = int((bits >> 23) & 255);\n        uint32 mantissa = bits & 0x7fffff;\n        if (exponent)\n            mantissa |= 0x800000;\n        exponent = exponent ? exponent - 150 : -149;\n        uint128_t product = uint128_t(sum) * mantissa;\n        uint128_t maximum = std::numeric_limits<uint64>::max();\n        if (exponent >= 0)\n        {\n            if (exponent >= 64 || product > (maximum >> exponent))\n                return std::numeric_limits<uint64>::max();\n            product <<= exponent;\n        }\n        else\n            product = -exponent >= 128 ? 0 : product >> -exponent;\n        return product > maximum ? std::numeric_limits<uint64>::max() : uint64(product);\n    }\n\n    inline int32 CombatLogValue(uint64 amount)\n    {\n        return int32(std::min<uint64>(amount, INT32_MAX));\n    }\n\n    // AchievementMgr's native progress accumulator saturates at UINT32_MAX.\n    // Preserve that domain boundary instead of wrapping a wider heal on entry.\n    inline uint32 CounterValue(uint64 amount)\n    {\n        return uint32(std::min<uint64>(amount, UINT32_MAX));\n    }\n\n    inline boost::multiprecision::cpp_rational FloatRatio(float value)\n    {\n        uint32 bits; std::memcpy(&bits, &value, sizeof(bits));\n        int exponent = int((bits >> 23) & 255);\n        uint32 mantissa = bits & 0x7fffff;\n        if (exponent) mantissa |= 0x800000;\n        exponent = exponent ? exponent - 150 : -149;\n        boost::multiprecision::cpp_rational result(mantissa);\n        if (exponent >= 0) result *= boost::multiprecision::cpp_int(1) << exponent;\n        else result /= boost::multiprecision::cpp_int(1) << -exponent;\n        return bits >> 31 ? -result : result;\n    }\n\n    inline uint64 ApplySpellMod(uint64 amount, float flat, float factor)\n    {\n        if (!flat) return Apply(amount, 0, factor);\n        if (!(factor > 0.0f) || std::isnan(flat)) return 0;\n        if (!std::isfinite(factor) || !std::isfinite(flat))\n            return flat < 0 ? 0 : UINT64_MAX;\n        if (amount <= uint64(INT32_MAX))\n        {\n            float legacy = float(amount + flat) * factor;\n            if (legacy >= 0.0f && legacy < 4294967296.0f) return uint64(legacy);\n        }\n        boost::multiprecision::cpp_rational result =\n            (boost::multiprecision::cpp_rational(amount) + FloatRatio(flat)) * FloatRatio(factor);\n        if (result <= 0) return 0;\n        if (result >= boost::multiprecision::cpp_rational(UINT64_MAX)) return UINT64_MAX;\n        return uint64(boost::multiprecision::numerator(result) / boost::multiprecision::denominator(result));\n    }\n}\n#endif\n"
+        }
+      ]
+    }
+  ]
+}

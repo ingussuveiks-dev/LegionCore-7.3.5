@@ -28,7 +28,7 @@
 #include "WorldStatePackets.h"
 #include <G3D/Quat.h>
 
-void BattlegroundSAScore::UpdateScore(uint32 type, uint32 value)
+void BattlegroundSAScore::UpdateScore(uint32 type, uint64 value)
 {
     switch (type)
     {

@@ -129,7 +129,7 @@ namespace WorldStatesBG
 
 BattlegoundSeethingShoreScore::BattlegoundSeethingShoreScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team) { }
 
-void BattlegoundSeethingShoreScore::UpdateScore(uint32 type, uint32 value)
+void BattlegoundSeethingShoreScore::UpdateScore(uint32 type, uint64 value)
 {
     switch (type)
     {
@@ -450,7 +450,7 @@ void BattlegroundSeethingShore::RelocateDeadPlayers(ObjectGuid guideGuid)
     ghostList.clear();
 }
 
-bool BattlegroundSeethingShore::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)
+bool BattlegroundSeethingShore::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)
 {
     if (!Battleground::UpdatePlayerScore(player, type, value, doAddHonor))
         return false;

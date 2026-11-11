@@ -26,7 +26,7 @@ $fields=@'
         uint32 _introRetry = 0, _introTries = 0, _gossipActions = 0;
         FunctionProcessor _healFunctions;
 '@
-$normalized=$normalized.Replace($fields,'')
+$normalized=$normalized.Replace($fields.Replace("`r",''),'')
 if(($normalized -replace '\s','') -cne ($old -replace '\s','')){throw 'Unrelated Grash fields, hooks, movement/combat or factory changed'}
 $whole=$source.Replace($current,$old).Replace((Block $source 'namespace SharasdalGrash'),'')
 foreach($header in @('ObjectAccessor.h','Scenario.h','ScenarioMgr.h','WaypointManager.h')){$whole=$whole.Replace("#include `"$header`"",'')}
@@ -44,7 +44,7 @@ foreach($entry in @(@('Owner','Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItse
 $heal=Get-HealApiBlock $core;$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal boundary missing'}
 [IO.File]::WriteAllText("$out/DealHeal.inc",$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}")
 $creature=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
-[IO.File]::WriteAllText("$out/Notify.inc",(Block $creature 'void Creature::NotifyHealApplied('))
+[IO.File]::WriteAllText("$out/Notify.inc",(Get-HealApiNotifyBlock $creature))
 [IO.File]::WriteAllText("$out/Lifecycle.inc",(Block $creature 'if (i_AI || i_disabledAI)'))
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))

@@ -17,8 +17,11 @@ struct Unit;struct Player;struct Creature;
 struct ObjectGuid{uint64 high=0,low=0;bool IsPlayer()const{return high==1;}bool IsEmpty()const{return !high&&!low;}void Clear(){high=low=0;}explicit operator bool()const{return !IsEmpty();}bool operator==(ObjectGuid other)const{return high==other.high&&low==other.low;}};
 struct Map{}liveMap,otherMap;
 struct CreatureAI{
+ // Test-only bridge for pinned ordinary32 actors;real64callbacks run independently.
+ virtual void OnHealApplied(Unit* who,uint64 amount,uint64 gain){assert(amount<=UINT32_MAX&&gain<=INT64_MAX);OnHealApplied(who,uint32(amount),int64(gain));}
+
  virtual uint32 GetData(uint32)const{return 0;}
- virtual ~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}virtual void HealDone(Unit*,uint32&){}virtual void OnHealApplied(Unit*,uint32,int32){}/*Pinned ordinary-health actors retain their legacy unused gain declaration. Current64actors override directly;real wide ABI is tested in NativeHealApi.*/virtual void OnHealApplied(Unit* who,uint32 amount,int64 gain){assert(gain>=INT32_MIN&&gain<=INT32_MAX);OnHealApplied(who,amount,int32(gain));}virtual void UpdateLifecycle(uint32){}virtual void Reset(){}virtual void EnterCombat(Unit*){}virtual void DoAction(int32){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}virtual void MovementInform(uint32,uint32){}virtual void UpdateAI(uint32){}virtual void sGossipSelect(Player*,uint32,uint32){}
+ virtual ~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}/*Bounded pinned-fixture ABI bridge;full64 native tests are separate.*/virtual void HealReceived(Unit* who,uint64& amount){assert(amount<=UINT32_MAX);uint32 legacy=uint32(amount);HealReceived(who,legacy);amount=legacy;}virtual void HealDone(Unit*,uint32&){}/*Bounded pinned-fixture ABI bridge;full64 native tests are separate.*/virtual void HealDone(Unit* who,uint64& amount){assert(amount<=UINT32_MAX);uint32 legacy=uint32(amount);HealDone(who,legacy);amount=legacy;}virtual void OnHealApplied(Unit*,uint32,int32){}/*Pinned ordinary-health actors retain their legacy unused gain declaration. Current64actors override directly;real wide ABI is tested in NativeHealApi.*/virtual void OnHealApplied(Unit* who,uint32 amount,int64 gain){assert(gain>=INT32_MIN&&gain<=INT32_MAX);OnHealApplied(who,amount,int32(gain));}virtual void UpdateLifecycle(uint32){}virtual void Reset(){}virtual void EnterCombat(Unit*){}virtual void DoAction(int32){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}virtual void MovementInform(uint32,uint32){}virtual void UpdateAI(uint32){}virtual void sGossipSelect(Player*,uint32,uint32){}
  std::vector<uint32> speech;void Talk(uint32 line){speech.push_back(line);}void AttackStart(Unit*){}
 };
 struct InstanceScript{bool CheckDamageManager()const{return false;}void UpdateDamageManager(ObjectGuid,int32,bool){}void HandleGameObject(ObjectGuid,bool){}uint32 getScenarionStep()const;};
@@ -68,7 +71,7 @@ struct Creature:Unit{
  float GetPositionX()const{return 0;}float GetPositionY()const{return 0;}float GetPositionZ()const{return z;}float GetOrientation()const{return 0;}void SetHomePosition(float,float,float,float){}
  Creature* FindNearestCreature(uint32 id,float,bool=true){return id==102826?erunak:id==104853?adel:nullptr;}
  Player* FindNearestPlayer(float){return nearest;}struct GO{ObjectGuid GetGUID()const{return {};}};GO* FindNearestGameObject(uint32,float){return nullptr;}
- Motion* GetMotionMaster(){return &motion;}void NotifyHealApplied(Unit*,uint32,int64);
+ Motion* GetMotionMaster(){return &motion;}void NotifyHealApplied(Unit*,uint32,int64);void NotifyHealApplied64(Unit*,uint64,uint64);
  void Tick(uint32 diff=0){CreatureAI* i_AI=primary;
 #include "Lifecycle.inc"
  }

@@ -1,4 +1,26 @@
 {
+  "latest_time_loop_full_heal_2026_11_11": {
+    "status": "TECHNICAL_SOURCE_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
+    "audit": "docs/audits/time-loop-full-healing-2026-11-11.json",
+    "fix_commit": "THIS_COMMIT",
+    "completed": "Actual native105992full-heal path now preserves unsigned64amounts through native modifiers,crit,absorb,proc,health and AI;preexisting nonlethal guard retained",
+    "canonical": {
+      "worldserver.exe": "d10242d6019f2fa1021897408fb043dc2434d40b0bdd3d767eaf8138dcb35eb1",
+      "worldserver.map": "0f5052ffc44165cba3fff94303b718640a0074bec23737842610d8d4a9fa12e2",
+      "bnetserver.exe": "9ee74cfa05f880c2933fc44b852a6cbe1edfde399704ab3f218a666aafaa8602",
+      "bnetserver.map": "a9c6450a633265a7f7371414c24219de13a0e82e031484d814aedc9276781796"
+    },
+    "diagnostics": "Final owned worldserver PID4052 reached fresh ready,server shutdown0,exit0,gone and empty stderr. Every test/build/PE wrapped with before/after canonical+own crash/log inventory. No new canonical crash,DBErrors append or unexplained server warnings/errors/assertions. MixedDBErrors remains7111bytes/SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1. Existing compiler/controlled fixture warnings remain visible;failed setup compilations are retained and paired with repaired runs.",
+    "remaining": [
+      "Actual TimeLoop raid/client visuals,combat-log presentation and full encounter traversal are pending;native proof does not establish these.",
+      "Other legacy spells still use signed32/float effect amounts;this repair adds an exact fixed-heal channel and does not claim all spells are64correct.",
+      "Sharasdal living Lady authentic activation/surrender/conversation1906/Grash finisher/cleanup remains OPEN;no invented HP threshold or kill timer.",
+      "Shared101430/103151LINK2 original action payloads remain OPEN;Slaghammer cache/original evidence preserved.",
+      "Intermittent actual client handshake cause and all36whole artifact chains remain unverified. User MariaDB remains running;no user/unknown server stopped."
+    ],
+    "next": "Seek original living-Lady producer/continuous behavior evidence and native LINK2actions. Actual client TimeLoop/handshake/36chains remain separate. Preserve mixedDBErrors and unrelated OPEN evidence.",
+    "history": "Earlier latest_* and old TimeLoop OPEN manifests are historical;see new resolution record after archive. Do not count these tests as new independent ten-fix batches."
+  },
   "latest_native_heal_timeloop_followup_2026_11_11": {
     "status": "TWO_FOCUSED_REPAIRS_DEPLOYED_TIMELOOP_FULL_HEAL_AND_OTHER_OPEN_REMAIN",
     "audit": "docs/audits/native-heal-timeloop-followup-2026-11-11.json",

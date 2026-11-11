@@ -30,7 +30,7 @@ int main(int argc,char**argv){try{
   if(sample[0]==4000000000ull&&sample[2]==1)Require(absorb==1&&!player.HasAura(105984),"Pinned false consumption absent");
 #else
   Require(resist==0&&absorb==(lethal?sample[2]:0)&&player.HasAura(105984)==!lethal,"Actual TimeLoop consume/absorb decision differs from lethal boundary");
-  if(sample[0]==1000)Require(player.GetHealth()==(lethal?1000:sample[1]),"Ordinary actual105992heal changed");
+  Require(player.GetHealth()==(lethal?sample[0]:sample[1]),"Actual105992full heal changed");
 #endif
  }
 #ifndef TIME_LOOP_BASELINE
@@ -45,5 +45,11 @@ int main(int argc,char**argv){try{
  std::cout<<"PASS "<<boundaries<<" native wide nonlethal/repeat boundaries throughUINT64_MAX;ordinary lethal105992heal retained\n";
 #endif
  player.RemoveAllAuras();player.CombatStop(true);attacker.CombatStop(true);
- }session->SetPlayer(nullptr);delete session;CloseAltheaNative();std::cout<<"PASS native TimeLoop decision regression;actual aura/105992cast observed. Wide105992full healing remains OPEN and is not certified by this threshold repair\n";return 0;
+ }session->SetPlayer(nullptr);delete session;CloseAltheaNative();
+#ifdef TIME_LOOP_BASELINE
+ std::cout<<"PASS expected-broken pinned TimeLoop false-consumption counterfactual;not repaired full-heal proof\n";
+#else
+ std::cout<<"PASS native TimeLoop unsigned decision,actual full105992heal and one-use aura;full modifier/absorb matrix is Test-TimeLoopHealing;client remains separate\n";
+#endif
+ return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}

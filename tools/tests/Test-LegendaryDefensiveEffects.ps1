@@ -40,7 +40,7 @@ cl /nologo /EHsc /std:c++17 /W4 /I"$output" "$PSScriptRoot/LegendaryDefensiveEff
 if errorlevel 1 exit /b 1
 "$output/LegendaryDefensiveEffectsTest.exe"
 if errorlevel 1 exit /b 1
-cl /nologo /EHsc /std:c++17 /W4 /I"$output" "$PSScriptRoot/PrydazAbsorptionTest.cpp" /Fe"$output/PrydazAbsorptionTest.exe" /Fo"$output/PrydazAbsorptionTest.obj"
+cl /nologo /EHsc /std:c++17 /W4 /DNOMINMAX /I"$repo/src/common" /I"$repo/src/server/game/Spells" /I"C:/local/boost_1_85_0" /I"$output" "$PSScriptRoot/PrydazAbsorptionTest.cpp" /Fe"$output/PrydazAbsorptionTest.exe" /Fo"$output/PrydazAbsorptionTest.obj"
 if errorlevel 1 exit /b 1
 "$output/PrydazAbsorptionTest.exe"
 exit /b %errorlevel%

@@ -1,0 +1,387 @@
+{
+  "date": "2026-11-11",
+  "request": "Labi turpini",
+  "status": "TECHNICAL_SOURCE_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
+  "fix_commit": "THIS_COMMIT",
+  "baseline": "4d61d0dfb1696950c55bbff2ff56ccd30ce1862a",
+  "issue": "TimeLoop105984 lethal self-heal105992 lost max health through signed32/float payload and signed effect/target/heal/proc amounts",
+  "canonical": {
+    "worldserver.exe": "d10242d6019f2fa1021897408fb043dc2434d40b0bdd3d767eaf8138dcb35eb1",
+    "worldserver.map": "0f5052ffc44165cba3fff94303b718640a0074bec23737842610d8d4a9fa12e2",
+    "bnetserver.exe": "9ee74cfa05f880c2933fc44b852a6cbe1edfde399704ab3f218a666aafaa8602",
+    "bnetserver.map": "a9c6450a633265a7f7371414c24219de13a0e82e031484d814aedc9276781796"
+  },
+  "implementation": [
+    "Exact uint64 CustomSpellValues healing payload for native HEAL effects with NO_DONE_BONUS/NO_DONE_PCT attributes;both actual cast routes validate before prepare. TimeLoop uses one native105992self cast,no direct full-health grant or repeated chunk casts.",
+    "Optional exact effect/target amount alongside unchanged ordinary signed32 effect counters. Native healing-taken,share/chain multiplier and native crit selection/bonus/Player spell-mod eligibility and charge handling remain. Exact binary32 factors use integer/rational arithmetic above the valid ordinary float range;ordinary rounding remains in that valid range.",
+    "Native unsigned64 positive health room/application,gain,absorb,DamageInfo/HealInfo/proc payloads,pre/post-heal AI and BG healing totals;physical damage remains bounded32,including constructor and absorption undo after positive modifications. Signed ModifyHealth and normal damage paths remain separate.",
+    "AI virtual slot order retained:79 selected prior identities unchanged,only HealReceived/HealDone parameter widths evolve at their original slots;default final-heal hook remains0x288. All production overrides are updated. Quest consumer amount/gain parameters remain unused;no quest/story/timer/credit/loot change.",
+    "7.3.5 SpellHealLog signed32 fields saturate only at serialization;BG wire and native AchievementMgr32 accumulator inputs saturate at their own32domain boundary. Actual health,healing records and BG healing totals retain64. No packet/schema/SQL/ScriptName migration.",
+    "SmartAI authored healing-event ranges have uint32 endpoints;a wider heal cannot match them and must not wrap into a smaller event. Existing event payloads/timers unchanged."
+  ],
+  "matching_data": "Native26972:105984effect0aura118/healing-taken+1pct andeffect1aura69;105992effect0HEAL10/self1/base100/NO_DONE_BONUS,defenseNONE which this core can crit. Parent+1pct remains present during child cast.",
+  "tests": {
+    "actual_time_loop": "256 contexts:8maximums throughUINT64_MAX x4healing-taken percentages x2native forced crit outcomes x4native absorb capacities;actual aura,cast,effect,health,AfterHit64gain and pre-admission DamageInfo/HealInfo,one-use/repeated-hit guards. Additional7exact identity casts preserve low bits,plus native wide record/BG counters. Observer returns false before proc admission and does not grant a retail proc.",
+    "native_backend": "144DealHeal cases;56physical absorb/undo;25native heal-absorb;18shared-heal;3actualNiuzao callbacks;physical capped-positive-then-undo and constructor domains;280retained signed health/prediction cases plus actual damage endpoints;24Mending contexts across all four native profiles.",
+    "asan": "912arithmetic cases against independent333bit oracle;178actual current DealHeal/AddHealth/Notify64prefix/dispatcher matrices and lifetime/exception/order guards. Retained bounded historical hosts:160notification,99Grash,97Taran,8535Sheilun companion contexts,1152Sharasdal damage contexts plus healing matrices,and Tuure24variants/20denials/boundary/retry/owner cases.",
+    "legacy_fixture_scope": "Explicit bounded test-only ABI bridges retain pinned32AI/health services for historical quest hosts. They assert before narrowing and keep actual current64AI overload dispatch;these hosts do not prove the full64core. The independent native64 probes and actual current178ASAN prefix tests provide that proof. Historical whole-file certificates compose with a separate exact64amendment;no check removed.",
+    "linked": "Focused64PE;full retained Mending/target-profile/Cordana/46group chain;standalone81slot comparison against pre-task8b102Release;Scepter VerifyReleaseBinary. Game/scripts built at original CMake final-link inputs;worldserver Main/header dependents recompiled;no globalOutDir.",
+    "counterfactuals": "Pinned4d61TimeLoop script on actual native pipeline reproduces4bmax/500HP staying500,paired with repaired256matrix. An intermediate64migration physical undo counterfactual reproduces4294967296after capped positive modification;physical domain guard repaired and current native/legendary checks pass. Expected-broken controls are not ordinary passing gameplay."
+  },
+  "diagnostics": "Final owned worldserver PID4052 reached fresh ready,server shutdown0,exit0,gone and empty stderr. Every test/build/PE wrapped with before/after canonical+own crash/log inventory. No new canonical crash,DBErrors append or unexplained server warnings/errors/assertions. MixedDBErrors remains7111bytes/SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1. Existing compiler/controlled fixture warnings remain visible;failed setup compilations are retained and paired with repaired runs.",
+  "resolved_test_setup": "DK min type deduction follows widened record amount;native counterfactual builder preserves test-only AI argument ABI. Historical scope here-string CRLF normalization repaired in two strict comparisons. Regenerated obsolete worldserver PCH afterC1853;fresh Main compile passes. No runtime crash was produced by these compilation failures.",
+  "evidence": {
+    "domain-heal-native": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/domain-heal-native.log",
+      "sha256": "c13a8a8ea8717ff9d0ba4822100cf2aae5b3378da00c497f0e967d06df3d6f67",
+      "pass_lines": [
+        "PASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+        "PASS actual Niuzao after-absorb rejection callback:3native boundaries throughUINT32_MAX",
+        "PASS native absorption=56 heal-absorb=25 shared-heal=18 and actualUINT32_MAXHealBySpell exact gain",
+        "PASS 144 native DealHeal cases:fulluint64amounts,unsigned64health,exact positive gain,zero/overheal and real final AI callback;not full spell pipeline/client proof"
+      ]
+    },
+    "domain-loop-native": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/domain-loop-native.log",
+      "sha256": "fbd78ac3b56149774ae97b4a336d4f788802ff9d6b5150406aab9803344000d2",
+      "pass_lines": [
+        "PASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+        "PASS 256 actual TimeLoop heal contexts:unsigned64 health,healing-taken modifiers,forced native crit/noncrit,partial/full absorb,AfterHit gain,pre-admission proc records and once-only consumption;7 exact identity casts and wide BG counters"
+      ]
+    },
+    "math-final": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/math-final.log",
+      "sha256": "ff8973234886105192ae126abd6beb5cf2dd23bddb10b1b18a2e38328764352a",
+      "pass_lines": [
+        "PASS 912 exact healing arithmetic cases: independent333bit floating oracle,legacy ordinary rounding,full64integer/flat/factor boundaries and protocol-only projection"
+      ]
+    },
+    "callback-final": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/callback-final.log",
+      "sha256": "e002956aa0294061beaedd230ac462983a579f7fffba3cfdcea05d8db7518f4c",
+      "pass_lines": [
+        "PASS 178 final-heal matrices plus nested/exception/default/player/negative cases: native DealHeal prefix, notification, AIM_Destroy and Initialize lock guard. Final amount/health observed after HealDone and one bounded AddHealth; positive overheal, cancelled/zero, enabled/current/suspended/alias/missing AI, preserved lock. Controlled health/instance services; no client proof."
+      ]
+    },
+    "health-native": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/health-native.log",
+      "sha256": "78248e551dc075e392f09c3df255bad8749eff5366711f703d331d81c57b95d9",
+      "pass_lines": [
+        "PASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+        "PASS actual native280ModifyHealth/GetHealthGain matrices:zero,ordinary,32/40/63/64bit current/max,INT64_MIN/MAX signed delta,exact prediction/application and original alive-zero semantics;four real normalized DealDamage boundaries throughUINT32_MAX;three native ordinary/overheal/highhealth DealHeal gains;no player/character writes"
+      ]
+    },
+    "mending-native": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/mending-native.log",
+      "sha256": "7553380f059eb20bc748c3fe06d6bbd5d02d3f75433152a4db90f8d60fe59393",
+      "pass_lines": [
+        "PASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+        "PASS native target-hook profiles:6real difficulty/fallback cases,startup union,runtime effect/target stream,ALL/FIRST_FOUND and pinned base-only rejection",
+        "PASS Mending SQL missing/existing/repeat/unrelated and two explicit custom-binding1644refusals;TEMP only",
+        "PASS native24Mending contexts:real2500ms122193->122147,all four raid profiles,one actual recipient and matching live squad25/35pct,interruption,rejected dead caster,dead peer,overheal,phase/unrelated controls and no repeated sharing;no client/full-combat claim"
+      ]
+    },
+    "domain-physical": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/domain-physical.log",
+      "sha256": "d5c6b69ac4c4ffd384cd99752165e845492ab6fdbd9687038216d57ba0d274a7",
+      "pass_lines": [
+        "PASS: Norgannon six-second charge, four-second movement lifetime, all three classes, movement resets, long updates, cleanup/re-equip; Prydaz 25%/15% health calculation.",
+        "PASS: Archimonde production handlers/core loop cap the shield at 30% health and reflect 75% of actual absorption once.",
+        "PASS: production school-absorb loop consumes Prydaz capacity across all schools, caps absorption to damage, removes depleted shield, preserves overflow and handles bypass."
+      ]
+    },
+    "retained-callback-final": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/retained-callback-final.log",
+      "sha256": "333b703277772ac5b65d4e111e98c68dbba70f186b2a6fd2739ddc11ef6fab22",
+      "pass_lines": [
+        "PASS exact native heal API scope: 13 files;gain signatures only in existing quest consumers;no spell amount/target/proc policy or quest progression rewrite",
+        "PASS 160 final-heal matrices plus nested/exception/default/player/negative cases: native DealHeal prefix, notification, AIM_Destroy and Initialize lock guard. Final amount/health observed after HealDone and one ModifyHealth; positive overheal, cancelled/zero, enabled/current/suspended/alias/missing AI, preserved lock. Controlled health/instance services; no client proof."
+      ]
+    },
+    "retained-grash-final": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/retained-grash-final.log",
+      "sha256": "206af1764e506658bbec22c36e863a85caa695ce20109882ca6c4c5b1f4708aa",
+      "pass_lines": [
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only same-Creature Adelee0/5s1 current-or-original-suspended AI guards; native Unit-owned clock/lifetime, other waypoint/ascent/nearest-player and all other actors/progression retained",
+        "PASS only exact upper Erunak original caller/native ascent/acknowledged approach+conversation and native original-player re-entry; lower entry/header/waypoints/wounds/other actors/deaths/progress retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only same-Creature Adelee0/5s1 current-or-original-suspended AI guards; native Unit-owned clock/lifetime, other waypoint/ascent/nearest-player and all other actors/progression retained",
+        "PASS only exact upper Erunak original caller/native ascent/acknowledged approach+conversation and native original-player re-entry; lower entry/header/waypoints/wounds/other actors/deaths/progress retained",
+        "PASS only exact lower Erunak entry/acknowledged per-player105805 and owned opening; upper intro/waypoints/wounds/combat/other actors retained",
+        "PASS only Erunak3s/5s AI-owned queue and once-per-native-lifecycle clock; no admission/path/credit/reset/wound/other-actor changes",
+        "PASS only exact illusion362091 gauntlet arrival/native receipt and upper362092 presentation/re-entry; other Lady combat/death/waves payload, Grash walls, native loot and acquisition retained",
+        "PASS only upper Grash issued point/real final wall/original recipient/re-entry; all lower routes, other actors, acquisition, deaths and earlier instance field order retained",
+        "PASS only old GO pickup replaced by scoped acquisition header and two matching loaders; all other actor content retained",
+        "PASS only real Lady instance victory/upper recipient/original quest/native receipt and empty death callback; illusion/gauntlet/combat/Kraliss/roar/all other actors retained. No premature1923 or pickup grant",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only same-Creature Adelee0/5s1 current-or-original-suspended AI guards; native Unit-owned clock/lifetime, other waypoint/ascent/nearest-player and all other actors/progression retained",
+        "PASS only exact upper Erunak original caller/native ascent/acknowledged approach+conversation and native original-player re-entry; lower entry/header/waypoints/wounds/other actors/deaths/progress retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only same-Creature Adelee0/5s1 current-or-original-suspended AI guards; native Unit-owned clock/lifetime, other waypoint/ascent/nearest-player and all other actors/progression retained",
+        "PASS only exact upper Erunak original caller/native ascent/acknowledged approach+conversation and native original-player re-entry; lower entry/header/waypoints/wounds/other actors/deaths/progress retained",
+        "PASS only exact lower Erunak entry/acknowledged per-player105805 and owned opening; upper intro/waypoints/wounds/combat/other actors retained",
+        "PASS only Erunak3s/5s AI-owned queue and once-per-native-lifecycle clock; no admission/path/credit/reset/wound/other-actor changes",
+        "PASS only exact illusion362091 gauntlet arrival/native receipt and upper362092 presentation/re-entry; other Lady combat/death/waves payload, Grash walls, native loot and acquisition retained",
+        "PASS only upper Grash issued point/real final wall/original recipient/re-entry; all lower routes, other actors, acquisition, deaths and earlier instance field order retained",
+        "PASS only old GO pickup replaced by scoped acquisition header and two matching loaders; all other actor content retained",
+        "PASS only real Lady instance victory/upper recipient/original quest/native receipt and empty death callback; illusion/gauntlet/combat/Kraliss/roar/all other actors retained. No premature1923 or pickup grant",
+        "PASS only Kraliss1s roar queue changes from Unit raw-AI capture to existing AI EventMap3; native18s/20s/target/reset/death/other actors retained",
+        "PASS exact real Kraliss instance death/owner/quest/native credit/retry and removal of proximity credit; prior wall/Brute/guard/actors/boss combat/Lady/outro/pickup retained",
+        "PASS exact Grash issued-path/native-wall arrival and original-recipient49817 scope; prior actions/reset/heals/gossip receipts/point boss/other actors retained",
+        "PASS exact two post-applied wound markers; previous whole actor lifecycle/reset/damage/rescue/routes/criteria and other actors retained",
+        "PASS exact two-Brute native death/owner/quest/presentation scope, two real-kill recruitment gate and removal of evade victory; deployed guard/other actor/routes/wounds/rescue/pickup retained",
+        "PASS exact guard death/recipient/lifecycle scope; only waypoint49957 removed; all other actors/initial Brutes/pickup unchanged",
+        "PASS exact Adelee rescue lifecycle/native cast guard scope; initial Grash/other actors/damage/healing/movement/pickup retained",
+        "PASS 99 Grash heal/gossip context matrices plus boundary/retry/reentry/lifetime cases: full production actor, native owner/quest lease/DealHeal/ModifyHealth/Notify/current+suspended lifecycle/FunctionProcessor. Actual90pct owner heal gives49815+49900 once;50161 only validated gossip, original1s routes/3s reply and other flags retained. Criteria/registry/geometry/motion services controlled; no client/full scenario proof."
+      ]
+    },
+    "retained-sheilun-final": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/retained-sheilun-final.log",
+      "sha256": "1c05c292cdd94ea821caa0ebaf7867be980231c9601b422790d08a343016ede0",
+      "pass_lines": [
+        "PASS exact872b3da2a retained plan header delta after explicit acquisition observer certificate: only selected native tactic acknowledgement before role criteria; native admission/receipts/start commands retained",
+        "PASS exact04e5ba3b5 retained plan delta after explicit ab99b2d2d acquisition/factory certificate: two native menu/index delegates, inert legacy sender/action handlers, receipt-based readiness and lifecycle recovery; independent acquisition wiring is tested separately",
+        "PASS exact872b3da2a retained plan header delta after explicit acquisition observer certificate: only selected native tactic acknowledgement before role criteria; native admission/receipts/start commands retained",
+        "PASS exact04e5ba3b5 retained plan delta after explicit ab99b2d2d acquisition/factory certificate: two native menu/index delegates, inert legacy sender/action handlers, receipt-based readiness and lifecycle recovery; independent acquisition wiring is tested separately",
+        "PASS exact whole-file d52af1bc7 certificate: only two4s/5s capture owners, appended AI processor and one lifecycle clock; original reset, rescue/combat queue, events, paths, spells, casts, gossip, wounds, credits and other actors retained",
+        "PASS exact872b3da2a retained plan header delta after explicit acquisition observer certificate: only selected native tactic acknowledgement before role criteria; native admission/receipts/start commands retained",
+        "PASS exact04e5ba3b5 retained plan delta after explicit ab99b2d2d acquisition/factory certificate: two native menu/index delegates, inert legacy sender/action handlers, receipt-based readiness and lifecycle recovery; independent acquisition wiring is tested separately",
+        "PASS exact872b3da2a retained plan header delta after explicit acquisition observer certificate: only selected native tactic acknowledgement before role criteria; native admission/receipts/start commands retained",
+        "PASS exact04e5ba3b5 retained plan delta after explicit ab99b2d2d acquisition/factory certificate: two native menu/index delegates, inert legacy sender/action handlers, receipt-based readiness and lifecycle recovery; independent acquisition wiring is tested separately",
+        "PASS exact whole-file d52af1bc7 certificate: only two4s/5s capture owners, appended AI processor and one lifecycle clock; original reset, rescue/combat queue, events, paths, spells, casts, gossip, wounds, credits and other actors retained",
+        "PASS exact two-class Sheilun companion wound/final-damage/reset-only delta; whole opening/routes/gossip/boss/pickup unchanged",
+        "PASS exact native heal API scope: 13 files;gain signatures only in existing quest consumers;no spell amount/target/proc policy or quest progression rewrite",
+        "PASS pinned original post-heal notification delta plus independently certified current native heal API amendment;existing virtual order/data members retained",
+        "PASS entry101881 1707 native target-relative GetHealth/scale/retained damage modifier/uint32 clamp/current+suspended/death-boundary and final DealHeal/Notify/lifecycle cases under ASAN: Player/pet/guardian/NPC, one-hit and nonlethal/no premature hold, repeated latch/failed aura/reentrant Reset+AI handoff, cancelled/zero/negative/overheal/cross40, missing AI/actor, reset and new wound. No health/progression/item grant; remaining combat/health/cast/movement services controlled, no client proof.",
+        "PASS entry101882 1707 native target-relative GetHealth/scale/retained damage modifier/uint32 clamp/current+suspended/death-boundary and final DealHeal/Notify/lifecycle cases under ASAN: Player/pet/guardian/NPC, one-hit and nonlethal/no premature hold, repeated latch/failed aura/reentrant Reset+AI handoff, cancelled/zero/negative/overheal/cross40, missing AI/actor, reset and new wound. No health/progression/item grant; remaining combat/health/cast/movement services controlled, no client proof.",
+        "PASS entry101883 1707 native target-relative GetHealth/scale/retained damage modifier/uint32 clamp/current+suspended/death-boundary and final DealHeal/Notify/lifecycle cases under ASAN: Player/pet/guardian/NPC, one-hit and nonlethal/no premature hold, repeated latch/failed aura/reentrant Reset+AI handoff, cancelled/zero/negative/overheal/cross40, missing AI/actor, reset and new wound. No health/progression/item grant; remaining combat/health/cast/movement services controlled, no client proof.",
+        "PASS entry101885 1707 native target-relative GetHealth/scale/retained damage modifier/uint32 clamp/current+suspended/death-boundary and final DealHeal/Notify/lifecycle cases under ASAN: Player/pet/guardian/NPC, one-hit and nonlethal/no premature hold, repeated latch/failed aura/reentrant Reset+AI handoff, cancelled/zero/negative/overheal/cross40, missing AI/actor, reset and new wound. No health/progression/item grant; remaining combat/health/cast/movement services controlled, no client proof.",
+        "PASS entry102063 1707 native target-relative GetHealth/scale/retained damage modifier/uint32 clamp/current+suspended/death-boundary and final DealHeal/Notify/lifecycle cases under ASAN: Player/pet/guardian/NPC, one-hit and nonlethal/no premature hold, repeated latch/failed aura/reentrant Reset+AI handoff, cancelled/zero/negative/overheal/cross40, missing AI/actor, reset and new wound. No health/progression/item grant; remaining combat/health/cast/movement services controlled, no client proof.",
+        "PASS all five bound Sheilun companion entries: 8535 native contexts; two production AI classes, original per-role speech/damage modifier."
+      ]
+    },
+    "retained-sharasdal-final": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/retained-sharasdal-final.log",
+      "sha256": "0020f21bd2ba7c67aee877f75c5cc8e4462b81398761257fa1e4df5791174d63",
+      "pass_lines": [
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only same-Creature Adelee0/5s1 current-or-original-suspended AI guards; native Unit-owned clock/lifetime, other waypoint/ascent/nearest-player and all other actors/progression retained",
+        "PASS only exact upper Erunak original caller/native ascent/acknowledged approach+conversation and native original-player re-entry; lower entry/header/waypoints/wounds/other actors/deaths/progress retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only same-Creature Adelee0/5s1 current-or-original-suspended AI guards; native Unit-owned clock/lifetime, other waypoint/ascent/nearest-player and all other actors/progression retained",
+        "PASS only exact upper Erunak original caller/native ascent/acknowledged approach+conversation and native original-player re-entry; lower entry/header/waypoints/wounds/other actors/deaths/progress retained",
+        "PASS only exact lower Erunak entry/acknowledged per-player105805 and owned opening; upper intro/waypoints/wounds/combat/other actors retained",
+        "PASS only Erunak3s/5s AI-owned queue and once-per-native-lifecycle clock; no admission/path/credit/reset/wound/other-actor changes",
+        "PASS only exact illusion362091 gauntlet arrival/native receipt and upper362092 presentation/re-entry; other Lady combat/death/waves payload, Grash walls, native loot and acquisition retained",
+        "PASS only upper Grash issued point/real final wall/original recipient/re-entry; all lower routes, other actors, acquisition, deaths and earlier instance field order retained",
+        "PASS only old GO pickup replaced by scoped acquisition header and two matching loaders; all other actor content retained",
+        "PASS only real Lady instance victory/upper recipient/original quest/native receipt and empty death callback; illusion/gauntlet/combat/Kraliss/roar/all other actors retained. No premature1923 or pickup grant",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only same-Creature Adelee0/5s1 current-or-original-suspended AI guards; native Unit-owned clock/lifetime, other waypoint/ascent/nearest-player and all other actors/progression retained",
+        "PASS only exact upper Erunak original caller/native ascent/acknowledged approach+conversation and native original-player re-entry; lower entry/header/waypoints/wounds/other actors/deaths/progress retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only three optional Sharasdal combat AI messages select available original suspended/current content; casts/targets/periods/routes/instance/progression/loot and all other actors retained",
+        "PASS only original lower step2 caller/acknowledged installed10993810/real final arrival and instance-owned native3 scene retry; both Grash route speech AI guards. Other actors/native deaths/credit/loot/upper/lower entry/walls and earlier field order retained",
+        "PASS only same-Creature Adelee0/5s1 current-or-original-suspended AI guards; native Unit-owned clock/lifetime, other waypoint/ascent/nearest-player and all other actors/progression retained",
+        "PASS only exact upper Erunak original caller/native ascent/acknowledged approach+conversation and native original-player re-entry; lower entry/header/waypoints/wounds/other actors/deaths/progress retained",
+        "PASS only exact lower Erunak entry/acknowledged per-player105805 and owned opening; upper intro/waypoints/wounds/combat/other actors retained",
+        "PASS only Erunak3s/5s AI-owned queue and once-per-native-lifecycle clock; no admission/path/credit/reset/wound/other-actor changes",
+        "PASS only exact illusion362091 gauntlet arrival/native receipt and upper362092 presentation/re-entry; other Lady combat/death/waves payload, Grash walls, native loot and acquisition retained",
+        "PASS only upper Grash issued point/real final wall/original recipient/re-entry; all lower routes, other actors, acquisition, deaths and earlier instance field order retained",
+        "PASS only old GO pickup replaced by scoped acquisition header and two matching loaders; all other actor content retained",
+        "PASS only real Lady instance victory/upper recipient/original quest/native receipt and empty death callback; illusion/gauntlet/combat/Kraliss/roar/all other actors retained. No premature1923 or pickup grant",
+        "PASS only Kraliss1s roar queue changes from Unit raw-AI capture to existing AI EventMap3; native18s/20s/target/reset/death/other actors retained",
+        "PASS exact real Kraliss instance death/owner/quest/native credit/retry and removal of proximity credit; prior wall/Brute/guard/actors/boss combat/Lady/outro/pickup retained",
+        "PASS exact Grash issued-path/native-wall arrival and original-recipient49817 scope; prior actions/reset/heals/gossip receipts/point boss/other actors retained",
+        "PASS exact two post-applied wound markers; previous whole actor lifecycle/reset/damage/rescue/routes/criteria and other actors retained",
+        "PASS exact two-Brute native death/owner/quest/presentation scope, two real-kill recruitment gate and removal of evade victory; deployed guard/other actor/routes/wounds/rescue/pickup retained",
+        "PASS exact guard death/recipient/lifecycle scope; only waypoint49957 removed; all other actors/initial Brutes/pickup unchanged",
+        "PASS exact Adelee rescue lifecycle/native cast guard scope; initial Grash/other actors/damage/healing/movement/pickup retained",
+        "PASS exact Grash final-heal/lease/half-health reply/criteria receipts/raw gossip scope; original combat/damage/routes/actions/other actors retained",
+        "PASS 1152 retained damage contexts plus three actual native DealHeal/ModifyHealth/locked current+suspended lifecycle matrices: observed40pct after positive incoming heal clears original wound once; zero/cancel/subthreshold/stale reset/re-wound/lifetime boundaries retained. Grash50/90pct story tails explicitly outside this host; actual client/full heal pipeline separate"
+      ]
+    },
+    "tuure-retry": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/tuure-retry.log",
+      "sha256": "8520aeb97c9615428f9ded41489595438ed70184bf44e27f0fb583eb5886fa1b",
+      "pass_lines": [
+        "PASS full actual Boros HealReceived/Reset/Cancel/Complete/lifecycle and native DealHeal/ModifyHealth/owner/quest lease/FunctionProcessor/lifecycle dispatch: 24 status/player/pet/guardian/primary-disabled variants,20 revalidation denials,950 boundary/zero/cancelled/subthreshold/intervening damage, NPC/missing owner, abandon-reaccept with held old lease, Reset/retry/replaced-freed AI/recipient, fullGUID and reentrant exactly-once50563. Health/registry/motion/packet endpoints are adapters; actual first-heal/follow/client remains pending.",
+        "PASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True"
+      ]
+    },
+    "domain-width-linked": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/domain-width-linked.log",
+      "sha256": "af0d592fa0e1dc5d98705167dd0efb3bb8cfc94f18cc688b44bb2a03f6448a43",
+      "pass_lines": [
+        "PASS linked PE:11 retry/cleanup/GUID calls, actual SmartAI corpse vtable/Creature dispatch, strict512 LINK/SELF/once/creature loader, finite diagnostics",
+        "PASS linked unsigned64 heal:bounded native health application,full AI amount/gain,integer heal absorb,physical undo,Niuzao,shared manager,guarded exact cast channel and native32criterion saturation. Packet projections and full native matrices are independent checks.",
+        "PASS linked full-heal channel,unchanged ordinary modifier/critical paths,TimeLoop exact max-health payload and protocol-only signed32projection. Complete prior chain and real runtime tests remain separate.",
+        "PASS linked verifier returned through the complete check chain"
+      ]
+    },
+    "domain-slot-compare": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/domain-slot-compare.log",
+      "sha256": "2a21cb571b4f4e1f2897353a89902798c0e3245d0510fbc9a931a310adca56dd",
+      "pass_lines": [
+        "PASS linked PE:11 retry/cleanup/GUID calls, actual SmartAI corpse vtable/Creature dispatch, strict512 LINK/SELF/once/creature loader, finite diagnostics",
+        "PASS linked PE:11 retry/cleanup/GUID calls, actual SmartAI corpse vtable/Creature dispatch, strict512 LINK/SELF/once/creature loader, finite diagnostics",
+        "PASS all81 selected CreatureAI slots:79 identical function identities and exactly2 declared HealReceived/HealDone uint32-ref->uint64-ref ABI evolutions;default post-heal hook retains0x288. Full native/ASAN callback tests are separate.",
+        "PASS native HealReceived->HealDone->bounded positive health application->Creature-only64notification;zero/invalid-gain guard,current+suspended snapshots/alias check,prior AI lock restoration and empty default. Signed legacy wrapper is source/ASAN scope;client progression remains separate",
+        "PASS linked verifier returned through the complete check chain"
+      ]
+    },
+    "final-canonical-chain": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/final-canonical-chain.log",
+      "sha256": "3a04dbe90221970eaaaa23cd0da71d7ccd851b9878e0aad9dc97f7c5e62ac05f",
+      "pass_lines": [
+        "PASS linked PE:11 retry/cleanup/GUID calls, actual SmartAI corpse vtable/Creature dispatch, strict512 LINK/SELF/once/creature loader, finite diagnostics",
+        "PASS selected Release seven-feature paths:real registrations,owner Elune getter,both bounded timers,golem remove/provider check,chauffeur shared-attempt cancellation,origin/instance/life/pending-teleport guards in both actual queued callbacks,native pre-lookup dead-join abort;full behavior separately source-ASAN/native,client pending",
+        "PASS selected actual Release ten-feature callbacks:owner getters/native hook registrations,guarded Stonehide profession,periodic1000ms T21 before253331 with actual4P/Shield gates,500ms Undercurrent origin/life/pending-teleport refusal,selfie visual cleanup;retained seven linked paths. Native/source behavior and actual client checks remain distinct.",
+        "PASS actual Release ten repairs:3 owner hooks/gates;6 registered delayed closures with original map/instance/world guards before emission;Wailing1.0 guard before division/cooldown;Flask12-class table with Monk/DH paths. Prior17 spell paths retained. Behavior native/source-ASAN and client checks separate.",
+        "PASS actual Release third ten:7 registered owner hooks plus Shadow helper/2callers;Aspect native RestoreDisplayId;four guarded queued closures;Hammer owner-load/origin/world before teleport;Brewfest speed2.0 captured before dismount and used afterward. Prior27 spell paths retained. Source-ASAN/native/client scopes remain distinct.",
+        "PASS actual Release fourth ten:registered owner/guard/stack/calc/distance paths;five inlined Vantus callbacks/40typed pairs/1000ms rearm/native map+state+cleanup;prior37 spell paths retained. Source-ASAN/native/client evidence separate.",
+        "PASS actual Release fifth ten:XYZ overload/native Tirathon caller;four bounded encounter RNG paths;Cthun full-list RNG/caller;Spirit real miss/effect mask+double64bit redistribution;Barrier null guard;Rain destination guard before summon;Devotion prune/count/finite-empty paths. Prior47 spell fixes retained;source/native/client scopes remain distinct.",
+        "PASS actual Release sixth ten:64bit AP/Chain/regen/resurrection;Ancestral overflow-safe bound;Betrug accepted-pad gate;Orinoko deletion/owner credit and shared evade deferred event deletion;dump64bit collector/seed,pet parent mapping and escaped parser. Prior57 paths retained;unused memory importer source/library covered,not linked;native/model/client scopes distinct.",
+        "PASS actual Release seventh ten:8 owner/null-guard death callbacks,Talbot actual reward source,Netherweb real summon/Nerubar cast-OK before credit,Condition57 both64bit min/max branches,and saved transport64bit field/store/diagnostic. Prior67 paths retained;native/source/client scopes distinct.",
+        "PASS actual Release eighth ten:deferred BossAI death event abort,seven guarded owner callbacks,successful Webbed summon before credit and32outcome bound,per-GUID Hyjal map erase/5000ms/4accepted-slot mask/registered update+logout. Prior77 selected paths retained;source/native/client scopes distinct.",
+        "PASS actual Release ninth ten:positive Divine gap,Frost64cap,Decimate64destination,Alar64floor,three Garrosh64copies and independent60percent heal,Immerseus64checkpoint/before-subtraction floor,Miasma float amounts and pointer cast,ManaBarrier64heal/bounded signed mana,two native468comparisons/64bit diagnostic. Prior87 paths retained;native/source/client scopes distinct.",
+        "PASS actual Release tenth ten:11nonforce cleanup calls in6encounters;native Folnuna energytype before maxpower and bounded index advance;Dread registered GUID apply/resolve/null-safe tick/remove;Forge and actual8s Tectus closure empty-list guard and nativeKill boss rather than self-target117624. Prior97 selected paths retained;source/native/client scopes distinct.",
+        "PASS actual Release eleventh ten:13resource initialization branches/11named callbacks for9controller fixes(type3 before100max;Cenarius90/Phemos98/allies80-100-56),four explicit dragon zero-resets independent of cast success,and actual roster player lookup/prune/retry/one announcement/original8s schedule. Prior107 selected paths retained;source/native/client scopes distinct.",
+        "PASS actual Release twelfth ten:two signed64 heals,two full-width half-health checkpoints,post-scaling Firesworn/Nefarian callbacks with target-relative health,Delrissa64 running minimum,Finkle nonlethal guard,Council clamp,Reflection lethal branch,and Valithria summon guard before intro/timers. Prior117 selected paths retained;native/source/client scopes remain distinct.",
+        "PASS actual Release thirteenth ten:Pylon type/null admission;Quills GUID,Guldan owned Hellfire/Bounds lookups,nine greeting callbacks,two Hearthstation lookups plus initialized1000ms timer,Spider lookup,Seat/Style map-instance guards and successful-create commit,actual dragon two-stage generation/vehicle guards and control restore/original2s+3s/routes. Prior127 selected paths retained;payload/client scopes remain separate.",
+        "PASS actual Release fourteenth ten:Molten GUID/dead-boss guard;immutable faction route;Cathedral two actor lookups/release/cleanup;journal-free weak entry attempts and origin guards in three invasion,two Assault and two Nighthold stages;native quest rechecks,Nighthold late floor/create receipt;Telarn actor queue and alive gate;Dramock generation/current player quest/objective/native credit. Prior137 selected paths retained;native/source/client scopes distinct.",
+        "PASS actual Release fifteenth ten:Valsharah/Maw original entry attempts and late admission;Style actor queue/GUID/Reset with twenty source callsites;Inquisition source/attacker guards;Nightbane three actor lookups and successful one-shot summon;Avatar GUID/own nested queues and independent cleanup;Guldan figure lookup/death guard/four colors;Oso generation/helper cleanup;immutable Ray morph and actual modulo10 rotation. Prior147 selected paths retained;source/native/client scopes distinct.",
+        "PASS actual Release sixteenth ten:Moonkin1000/0;three native64 Mimiron halves;two uint64 bootstrap health conversions;Sinestra64 heal/bounded mana and64 drain/lethal comparison;bounded Twin compensation;Anub empty-list guard plus4s retry;Army/Eonar original live map-instance guards and payloads. Prior157 selected paths retained;native/source/client scopes distinct.",
+        "PASS actual Release seventeenth ten:12 missing reset state writes in10 independent controllers;prior167 selected paths retained. Source/native selected-state tests do not certify full encounter/client traversal.",
+        "PASS actual Release eighteenth ten:shared direction length/retry,correct action gates,four native-width health paths,unconditional takeoff timer,100-stack bracket and Master reset/roster/actor-owned report. Prior177 selected paths retained;models/native/client scopes separate.",
+        "PASS actual Release nineteenth ten:active Inferno timers,Hodir60000,Ymiron walking reset;three delayed actor lookups;Odyn/four Assault/three BrokenIntro original live instance guards;Vetir removal branch,seat guard and extraction origin. Prior187 selected paths retained;automated/native/client scopes distinct.",
+        "PASS actual Release twentieth ten:three phase timer guards;AnnHylde idle state;single troll return;all7 exact-summon balloon guards;four once-only prison releases/unconditional GUID retirement/late-bind rejection;Medivh successful activation/abort/idle clocks;post-scaling exact-lethal affecting-player/group credit without latch-resetting evade. Prior197 selected paths retained;50 repairs across five batches,client traversal remains separate.",
+        "PASS actual Release twentyfirst ten:instance-owned Antorus entry/attempt queues,fresh live Player and EO retry of both affected sets,authored actors/ordered effects;gossip-bound actual Valiant challenger,post-scaling exact lethal/owner/group credit and bounded helper survival;initialized Tsulong evade;Cheng summoner-owner match;four Celestial native owner loot and unique threat-participant credit. Prior207 selected checks retained,total217;source/native/full-client scopes remain distinct.",
+        "PASS actual Release twentysecond ten:all13 normalized-damage hooks in ten independently bound problems;phoenix idle/sleep/wake;Artruis accepted paired release and shielded poll retry;Ko raghs exact-lethal unsilenced explosion;actual Broken Shore challenger/owner/liveness/abandon;Neptulon failure;Blaze egg;heroic Siamat charge;Durand/Whitemane resurrection;all three Snowdrift surrender counters/retired guards;Felmyst flight. Prior217 selected paths retained,total227;actual client traversal remains pending.",
+        "PASS actual Release twentythird ten:ten final target-relative lethal guards;Aggramar remnants,Argus once pulse and pre-cast radius snapshot/unit-owned100ms immutable callback,Eonar wipe,Worldbreaker both weapons,Hyrja enabled creature owner/restored spirit,Ichor explosion,Desolate actor-owned5s cleanup,Festerface retry,Crusader fake death,star pending/summoner protection. Prior227 selected paths retained,total237;client/full encounter checks remain separate.",
+        "PASS actual Release twentyfourth ten:11 final-damage handlers in10 independently bound encounter lifecycles;Muru exact lethal,Harbinger pre-notification latch,particle four-fragment/rift,Elisande pending rewind,plasma explosion,both Argent surrenders,Black Knight pending resurrection,Ingvar ritual,Keleseth skeleton andamber. Prior237 selected paths retained,total247;actual client/full encounters remain separate.",
+        "PASS actual Release twentyfifth ten:11 final target-relative handlers;native stack/soul/ritual gates,channeler transfer,instance controller,charge/focus once,Living Sand damage rejection and target-before-effect-removal,blue-fog-only freeze and one crackling flare. Prior247 selected paths retained,total257;client/full encounter checks remain separate.",
+        "PASS actual Release twentysixth ten:all30 final target-relative unsigned guard bodies/no raw hooks;Aysa zero-damage admission and training cap,Felfire native death burst/contact self-kill,paired Kalecgos one-health banish,self-death exceptions,all Norushen/Durumu/Ji Kun/Jinrokh/Paragon/Megaera support policies. Prior257 selected paths retained,total267;ten independent problems,client/full encounter traversal separate.",
+        "PASS actual Release twentyseventh ten:eleven actor-owned closures directly load their captured Creature without dereferencing retired AI;all ten live-bound controllers and original timing/payload source scopes retained. Prior267 selected checks retained,total277;ASAN/native/client scopes remain separate.",
+        "PASS actual Release twentyeighth ten:eleven actor-owned closures directly load their captured Creature without dereferencing retired AI;all ten live-bound controllers and original timing/payload source scopes retained. Prior277 selected checks retained,total287;ASAN/native/client scopes remain separate.",
+        "PASS actual Release twentyninth ten:twenty-six actor-owned closures directly load their captured Creature without dereferencing retired AI;all ten live-bound controllers and original timing/payload source scopes retained. Prior287 selected checks retained,total297;ASAN/native/client scopes remain separate.",
+        "PASS uncounted Hasabel Felcrush follow-up closure;original delay argument and captured Position retained",
+        "PASS actual Release thirtieth ten:twenty-four actor-owned closures directly load their captured Creature without dereferencing retired AI;all ten live-bound controllers and original timing/payload source scopes retained. Prior297 selected checks retained,total307;ASAN/native/client scopes remain separate.",
+        "PASS actual Release thirtyfirst ten:twenty-two actor-owned closures directly load their captured Creature without dereferencing retired AI;all ten live-bound controllers and original timing/payload source scopes retained. Prior307 selected checks retained,total317;ASAN/native/client scopes remain separate.",
+        "PASS actual Release thirtysecond ten:twenty-six repaired plus five retained actor-owned closures directly load their captured Creature without dereferencing retired AI;all ten live-bound controllers and original timing/payload source scopes retained. Prior317 selected checks retained,total327;ASAN/native/client scopes remain separate.",
+        "PASS actual Release thirtythird ten:30 weak-admission gates reject absent/expired source AI before payload calls;ten live-bound problems. Source bytes preserve authored payloads/timers;projected ASAN/native admission and full client scopes remain separate. Prior327 selected checks retained,total337.",
+        "PASS actual Release thirtyfourth ten:22 production weak-admission gates before payload access;ten independent live-bound problems. Payload logic and original delays preserved;ASAN/native admission projections and full encounters/client scopes remain separate. Prior337 selected checks retained,total347.",
+        "PASS actual Release thirtyfifth ten:63 emitted production weak-admission gates before payload access;ten independent live-bound problems. Payload logic and original delays preserved;ASAN/native admission projections and full encounters/client scopes remain separate. Prior347 selected checks retained,total357.",
+        "PASS actual Release thirtysixth ten:49 production weak-admission gates before payload access;ten independent live-bound problems. Payload logic and original delays preserved;ASAN/native admission projections and full encounters/client scopes remain separate. Prior357 selected checks retained,total367.",
+        "PASS linked Karazhan rook: reachable acknowledged jump, spline identity/completion/XYZ, map-committed pose before native500ms cast, self-hit-only triggered distinct bounded fields. Prior367 checks retained; controlled native/source tests and actual client combat remain separate.",
+        "PASS linked Tsulong:two current native64 health/maxhealth field pairs,64bit subtraction/SetHealth arguments,same phase member gates reject replay before inversion,and reset clears phase. Complete prior Rook+367 checks retained;actual native phase body tested separately,full encounter/client remains pending.",
+        "PASS linked native loot counter: actual Creature member14776, full64 native maxhealth input at Freya, UINT32_MAX-current remaining room, unsigned64 comparison/clamp before32bit addition at both raid and core min(health,damage) paths. Complete Tsulong/Rook/prior367 checks retained; native API cases and client traversal are separate evidence.",
+        "PASS linked Freya: actual native64 health,zero-elder bypass,unsigned fifth decomposition,remaining-room division gate before multiplication,exact remainder fifth,clamped bonus and native64 SetMaxHealth. Complete counter/Tsulong/Rook/prior367 chain retained;67actual full-AI native inputs and client raid are distinct scopes.",
+        "PASS linked native health deltas:unsigned64 current/max comparisons,remaining-room clamp before addition,bounded negative magnitude before subtraction,prediction with native38/40fields and real nonlethal damage64negation. Complete Freya/counter/Tsulong/Rook/prior367 chain retained;native280API and four normalized damage boundaries separate from client/full spell-healing scope.",
+        "PASS linked Twin Emperors:both real vtables after-scaling,128bit proportional operations/native64 fields,GetAffectingPlayer and native tap/saturation,two native Kill endpoints plus replay/reset/fallback,alive/opposite/self guards,and three core post-callback life checks returning actual damage. Complete prior health/Freya/counter/Tsulong/Rook/367 chain retained;native source/data/gameplay scopes remain distinct.",
+        "PASS linked Meljarak real after-scaling/death vtable,full-width bounded shared damage,native ownership/Kill/fallback,actor and boss-generation one-use gates,live/same-type instance lookup and reset. Complete Twin/health/Freya/counter/Tsulong/Rook/prior367 chain retained;native/client scopes separate.",
+        "PASS linked ThirtySeventh ten:11 real production closure lifetime gates before payload;complete prior Meljarak/Twin/health/367 chain retained. Native/source/ASAN projections and client/full encounters remain distinct.",
+        "PASS linked ThirtyEighth ten:15 real production closure lifetime gates before payload;complete prior Meljarak/Twin/health/367 chain retained. Native/source/ASAN projections and client/full encounters remain distinct.",
+        "PASS linked ThirtyNinth ten:17 real production closure lifetime gates before payload;complete prior Meljarak/Twin/health/367 chain retained. Native/source/ASAN projections and client/full encounters remain distinct.",
+        "PASS linked Fortieth active cases:8 real production closure lifetime gates before payload;complete prior Meljarak/Twin/health/367 chain retained. Native/source/ASAN projections and client/full encounters remain distinct.",
+        "PASS linked FortyFirst active cases:10 real production closure lifetime gates before payload;complete prior Meljarak/Twin/health/367 chain retained. Native/source/ASAN projections and client/full encounters remain distinct.",
+        "PASS linked FortySecond ten:53 real production closure lifetime gates before payload;complete prior Meljarak/Twin/health/367 chain retained. Native/source/ASAN projections and client/full encounters remain distinct.",
+        "PASS linked FortyThird ten:48 real production closure lifetime gates before payload;complete prior Meljarak/Twin/health/367 chain retained. Native/source/ASAN projections and client/full encounters remain distinct.",
+        "PASS linked FortyFourth ten:52 real production closure lifetime gates before payload;complete prior Meljarak/Twin/health/367 chain retained. Native/source/ASAN projections and client/full encounters remain distinct.",
+        "PASS linked FortyFifth ten:49 real production closure lifetime gates before payload;complete prior Meljarak/Twin/health/367 chain retained. Native/source/ASAN projections and client/full encounters remain distinct.",
+        "PASS linked final ten:nine real death hooks resolve nullable killers through native GetAffectingPlayer with result admission;Magmus uses victim instance and null-result guard. Original achievement IDs/native bind endpoints and the complete prior corrected ownership/45-group chain retained. Full source/model/native/client scopes remain distinct.",
+        "PASS linked Cordana horizontal wall:real endX comparison uses the advancing native X spawn argument,authored minus2.5spacing,100336and18000ms retained;complete prior46groups and lifetime guards retained. Full NPC/client traversal separate.",
+        "PASS linked target profiles:real area/single dispatch passes current difficulty;runtime uses native GetEffect/target matching;startup profile validation present. Unreferenced jump dispatcher is source/native-predicate scope,not a linked runtime claim. Complete prior46groups and Cordana retained.",
+        "PASS linked Mending:native current-profile amount,unsigned64 ratio/room,real instance swarm filter and script factory/registration;complete prior target-profile/Cordana/46group chain retained. SQL binding/native cast tests and actual client combat remain separate scopes.",
+        "PASS linked unsigned64 heal:bounded native health application,full AI amount/gain,integer heal absorb,physical undo,Niuzao,shared manager,guarded exact cast channel and native32criterion saturation. Packet projections and full native matrices are independent checks.",
+        "PASS linked PE:11 retry/cleanup/GUID calls, actual SmartAI corpse vtable/Creature dispatch, strict512 LINK/SELF/once/creature loader, finite diagnostics",
+        "PASS native HealReceived->HealDone->bounded positive health application->Creature-only64notification;zero/invalid-gain guard,current+suspended snapshots/alias check,prior AI lock restoration and empty default. Signed legacy wrapper is source/ASAN scope;client progression remains separate",
+        "PASS complete native heal/prior Mending/target-profile/Cordana/46group PE chain plus preserved post-heal lock/selected layout slots;full81slot comparison requires standalone --previous check. Native and client scopes remain separate",
+        "PASS linked TimeLoop unsigned lethal comparison,exact64max-health payload and retained105992cast/one-use cleanup. Complete native-heal/prior chain retained;actual client encounter remains pending.",
+        "PASS linked verifier returned through the complete check chain"
+      ]
+    },
+    "final-scepter": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/final-scepter.log",
+      "sha256": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be",
+      "pass_lines": [
+        "PASS: production Scepter login restores selector before map creation; constructor consumes it before access; fresh entrance, live stage/position, one quest load, map/class/status/wrong-scenario and destination gates",
+        "PASS: canonical Release executable contains the production Scepter login recovery"
+      ]
+    },
+    "final-owned-start": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/final-owned-start.log",
+      "sha256": "8ec430bb7240e967acee7dc640db59b226a1fa7c104209bdfc8667beabcec8af",
+      "pass_lines": [
+        "PASS owned PID=4052 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged"
+      ]
+    },
+    "final-heal-baseline": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/final-heal-baseline.log",
+      "sha256": "f5e3606c16f8c83d7103b77aff9025a9648be640b36ba8bbf4b221bd763274ae",
+      "pass_lines": [
+        "PASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+        "COUNTERFACTUAL full-heal maximum=4000000000 after=500",
+        "PASS expected-broken pinned4d61 TimeLoop payload:4billion maximum remains500HP;other contexts inspected,not certified successful healing"
+      ]
+    },
+    "physical-width-counter": {
+      "path": ".codex/time-loop-full-heal-2026-11-11/physical-width-counter.log",
+      "sha256": "e294908cc8b6036888e320780fcf041e01eebfd9a7248463938cd3c8a166b8aa",
+      "pass_lines": [
+        "PASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+        "COUNTERFACTUAL physical undo crosses native32domain after capped positive modification",
+        "PASS actual Niuzao after-absorb rejection callback:3native boundaries throughUINT32_MAX",
+        "PASS native absorption=56 heal-absorb=25 shared-heal=18 and actualUINT32_MAXHealBySpell exact gain",
+        "PASS 144 native DealHeal cases:fulluint64amounts,unsigned64health,exact positive gain,zero/overheal and real final AI callback;not full spell pipeline/client proof"
+      ]
+    }
+  },
+  "cleanup": "PENDING_HASH_VERIFIED_ARCHIVE_AND_REMOVAL;follow-up audit records final result",
+  "remaining": [
+    "Actual TimeLoop raid/client visuals,combat-log presentation and full encounter traversal are pending;native proof does not establish these.",
+    "Other legacy spells still use signed32/float effect amounts;this repair adds an exact fixed-heal channel and does not claim all spells are64correct.",
+    "Sharasdal living Lady authentic activation/surrender/conversation1906/Grash finisher/cleanup remains OPEN;no invented HP threshold or kill timer.",
+    "Shared101430/103151LINK2 original action payloads remain OPEN;Slaghammer cache/original evidence preserved.",
+    "Intermittent actual client handshake cause and all36whole artifact chains remain unverified. User MariaDB remains running;no user/unknown server stopped."
+  ]
+}

@@ -8,4 +8,6 @@ while depth:depth+=(text[end]=='{')-(text[end]=='}');end+=1
 text=subprocess.check_output(['git','-C',str(repo),'show','cbd047ef4:src/server/game/Entities/Unit/Unit.cpp']).decode()
 start=text.index('int32 Unit::DealHeal(');end=text.index('{',start)+1;depth=1
 while depth:depth+=(text[end]=='{')-(text[end]=='}');end+=1
-(out/'NativeHealApiBefore.inc').write_text(text[start:end].replace('Unit::DealHeal(','BeforeDealHeal(',1)+'\n',encoding='utf8')
+# Test-only AI argument ABI bridge; selected baseline has no shared manager or modifying AI.
+# Original signed cast/health mutation/return and negative-gain counterfactual stay intact.
+(out/'NativeHealApiBefore.inc').write_text(text[start:end].replace('Unit::DealHeal(','BeforeDealHeal(',1).replace('uint32 addhealth','uint64 addhealth')+'\n',encoding='utf8')

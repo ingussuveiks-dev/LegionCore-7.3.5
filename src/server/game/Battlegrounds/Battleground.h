@@ -427,7 +427,7 @@ public:
     void SetBgRaid(uint32 TeamID, Group* bg_raid);
 
     void BuildPvPLogDataPacket(WorldPackets::Battleground::PVPLogData& pvpLogData);
-    virtual bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true);
+    virtual bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true);
 
     uint32 GetPlayersCountByTeam(uint32 Team) const;
     uint32 GetPlayerScoreByType(Player* player, uint32 type) const;

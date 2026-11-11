@@ -49,6 +49,7 @@
 #include "SharedDefines.h"
 #include "SpectatorAddon.h"
 #include "Spell.h"
+#include "HealingAmount.h"
 #include "SpellAuraEffects.h"
 #include "SpellInfo.h"
 #include "SpellMgr.h"
@@ -2570,6 +2571,7 @@ void Spell::DoAllEffectOnTarget(TargetInfoPtr target)
     // Reset damage/healing counter
     m_damage = target->damage;
     m_healing = -target->damage;
+    m_exactHealing = target->exactHealing;
 
     Unit* unit = m_caster->GetGUID() == target->targetGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster, target->targetGUID);
     if (!unit)
@@ -2703,14 +2705,14 @@ void Spell::DoAllEffectOnTarget(TargetInfoPtr target)
             m_spellInfo->ClassOptions.SpellClassMask[2] & 0x00024000)) // Explosive and Immolation Trap
             procAttacker |= PROC_FLAG_DONE_TRAP_ACTIVATION;
 
-        bool dmgSpell = m_damage || m_healing;
+        bool dmgSpell = m_damage || m_healing || (m_exactHealing && *m_exactHealing);
 
         if (m_damage > 0)
         {
             positive = false;
             m_isDamageSpell = true;
         }
-        else if (!m_healing)
+        else if (!m_healing && !(m_exactHealing && *m_exactHealing))
         {
             for (uint8 i = 0; i< MAX_SPELL_EFFECTS; ++i)
             {
@@ -2842,21 +2844,23 @@ void Spell::DoAllEffectOnTarget(TargetInfoPtr target)
 
     // All calculated do it!
     // Do healing and triggers
-    if (m_healing > 0)
+    if (m_healing > 0 || (m_exactHealing && *m_exactHealing))
     {
-        uint32 addhealth = m_healing;
+        uint64 addhealth = GetHealingAmount64();
         if (target->HasMask(TARGET_INFO_CRIT))
         {
             procEx |= PROC_EX_CRITICAL_HIT;
-            addhealth = caster->SpellCriticalHealingBonus(m_spellInfo, addhealth);
+            addhealth = m_exactHealing ? caster->SpellCriticalHealingBonus64(m_spellInfo, addhealth) :
+                caster->SpellCriticalHealingBonus(m_spellInfo, uint32(addhealth));
         }
         else
             procEx |= PROC_EX_NORMAL_HIT;
 
-        int64 gain = caster->HealBySpell(unitTarget, m_spellInfo, addhealth, target->HasMask(TARGET_INFO_CRIT));
+        uint64 gain = caster->HealBySpell(unitTarget, m_spellInfo, addhealth, target->HasMask(TARGET_INFO_CRIT));
         unitTarget->getHostileRefManager().threatAssist(caster, float(gain) * 0.5f, m_spellInfo);
-        uint32 overHeal = addhealth - gain;
-        m_healing = gain;
+        uint64 overHeal = addhealth - gain;
+        if (m_exactHealing) { m_exactHealing = gain; m_healing = 0; }
+        else m_healing = int32(gain); // Retain the legacy script API for ordinary effects.
 
         //TC_LOG_DEBUG("spells", "DoAllEffectOnTarget: m_spellInfo->Id %i, mask %i, addhealth %i, m_healing %i, canEffectTrigger %i, m_damage %i, m_addpower %i, procEx %i",
         //m_spellInfo->Id, mask, addhealth, m_healing, canEffectTrigger, m_damage, m_addpower, procEx);
@@ -2864,7 +2868,7 @@ void Spell::DoAllEffectOnTarget(TargetInfoPtr target)
         // Do triggers for unit (reflect triggers passed on hit phase for correct drop charge)
         if (canEffectTrigger && missInfo != SPELL_MISS_REFLECT)
         {
-            DamageInfo dmgInfoProc = DamageInfo(m_caster, unitTarget, addhealth, m_spellInfo, SpellSchoolMask(m_spellInfo->GetMisc(m_diffMode)->MiscData.SchoolMask), SPELL_DIRECT_DAMAGE, target->damageBeforeHit);
+            DamageInfo dmgInfoProc = DamageInfo(m_caster, unitTarget, addhealth, m_spellInfo, SpellSchoolMask(m_spellInfo->GetMisc(m_diffMode)->MiscData.SchoolMask), SPELL_DIRECT_DAMAGE, target->damageBeforeHit, true);
             dmgInfoProc.SetStartCast(m_castedTime);
             dmgInfoProc.SetCastTime(m_casttime);
             dmgInfoProc.SetOverHeal(overHeal);
@@ -9398,6 +9402,7 @@ void Spell::DoAllEffectOnLaunchTarget(TargetInfoPtr targetInfo, float* multiplie
         {
             m_damage = 0;
             m_healing = 0;
+            m_exactHealing.reset();
 
             HandleEffects(unit, nullptr, nullptr, i, SPELL_EFFECT_HANDLE_LAUNCH_TARGET);
 
@@ -9437,6 +9442,13 @@ void Spell::DoAllEffectOnLaunchTarget(TargetInfoPtr targetInfo, float* multiplie
                 m_damage = int32(m_damage * multiplier[i]);
 
             targetInfo->damage += m_damage;
+            if (m_exactHealing)
+            {
+                uint64 amount = *m_exactHealing;
+                if (m_applyMultiplierMask & (1 << i))
+                    amount = HealingAmount::Apply(amount, 0, multiplier[i]);
+                targetInfo->exactHealing = HealingAmount::Add(targetInfo->exactHealing.value_or(0), amount);
+            }
 
             if (m_spellInfo->Effects[i]->Effect == SPELL_EFFECT_HEALTH_LEECH) // Effect not have damage on launce phase
                 canCritTo = true;
@@ -9445,7 +9457,7 @@ void Spell::DoAllEffectOnLaunchTarget(TargetInfoPtr targetInfo, float* multiplie
 
     float critChance = 0.0f;
 
-    if (targetInfo->damage || canCritTo)
+    if (targetInfo->damage || (targetInfo->exactHealing && *targetInfo->exactHealing) || canCritTo)
     {
         if ((m_originalCaster ? m_originalCaster : m_caster)->isSpellCrit(unit, m_spellInfo, m_spellSchoolMask, m_attackType, critChance, this))
             targetInfo->AddMask(TARGET_INFO_CRIT);
@@ -9567,6 +9579,25 @@ SpellCastResult Spell::CanOpenLock(uint32 effIndex, uint32 lockId, SkillType& sk
         return SPELL_FAILED_BAD_TARGETS;
 
     return SPELL_CAST_OK;
+}
+
+uint64 Spell::GetHealingAmount64() const
+{
+    return HealingAmount::Add(m_exactHealing.value_or(0), m_healing > 0 ? uint64(m_healing) : 0);
+}
+
+bool Spell::SetHealingValue(SpellEffIndex effect, uint64 amount)
+{
+    if (uint32(effect) >= MAX_SPELL_EFFECTS ||
+        m_spellInfo->GetEffect(effect, m_diffMode)->Effect != SPELL_EFFECT_HEAL ||
+        (!m_spellInfo->HasAttribute(SPELL_ATTR3_NO_DONE_BONUS) &&
+         !m_spellInfo->HasAttribute(SPELL_ATTR6_NO_DONE_PCT_DAMAGE_MODS)))
+    {
+        TC_LOG_ERROR("spells", "Exact healing value requires a fixed native HEAL effect: spell %u effect %u", m_spellInfo->Id, uint32(effect));
+        return false;
+    }
+    m_spellValue->HealingBasePoints[uint8(effect)] = amount;
+    return true;
 }
 
 void Spell::SetSpellValue(SpellValueMod mod, float value, bool lockValue)

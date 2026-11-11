@@ -802,7 +802,7 @@ struct npc_hasabel_guards : public ScriptedAI
             events.RescheduleEvent(EVENT_2, urandms(6, 8));
     }
 
-    void HealReceived(Unit* /*healer*/, uint32& heal) override
+    void HealReceived(Unit* /*healer*/, uint64& heal) override
     {
         if (me->HasAura(SPELL_HUNGERING_GLOOM))
         {

@@ -17,6 +17,7 @@
  */
 
 #include "Player.h"
+#include "HealingAmount.h"
 #include "AcquisitionScenarioRoute.h"
 #include "QuestRewardDisplay.h"
 #include "AccountMgr.h"
@@ -28117,7 +28118,10 @@ void Player::ApplySpellMod(uint32 spellId, SpellModOp op, T& basevalue, Spell* s
         DropModCharge(modCost, spell);
     }
 
-    basevalue = T(float(basevalue + totalflat) * totalmul);
+    if constexpr (std::is_same<T, uint64>::value)
+        basevalue = HealingAmount::ApplySpellMod(basevalue, totalflat, totalmul);
+    else
+        basevalue = T(float(basevalue + totalflat) * totalmul);
 }
 
 template TC_GAME_API void Player::ApplySpellMod(uint32 spellId, SpellModOp op, int32& basevalue, Spell* spell) const;
@@ -28125,6 +28129,7 @@ template TC_GAME_API void Player::ApplySpellMod(uint32 spellId, SpellModOp op, u
 template TC_GAME_API void Player::ApplySpellMod(uint32 spellId, SpellModOp op, float& basevalue, Spell* spell) const;
 template TC_GAME_API void Player::ApplySpellMod(uint32 spellId, SpellModOp op, double& basevalue, Spell* spell) const;
 template TC_GAME_API void Player::ApplySpellMod(uint32 spellId, SpellModOp op, int16& basevalue, Spell* spell) const;
+template TC_GAME_API void Player::ApplySpellMod(uint32 spellId, SpellModOp op, uint64& basevalue, Spell* spell) const;
 
 void Player::AddSpellMod(SpellModifier* mod, bool apply)
 {

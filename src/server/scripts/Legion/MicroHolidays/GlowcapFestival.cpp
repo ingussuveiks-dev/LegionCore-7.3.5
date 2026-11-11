@@ -145,7 +145,7 @@ struct npc_fshoo : ScriptedAI
         }
     }
 
-    void HealReceived(Unit* who, uint32& /*addhealth*/) override
+    void HealReceived(Unit* who, uint64& /*addhealth*/) override
     {
         if (who && who->IsPlayer())
             listPlayers.insert(who->GetGUID());

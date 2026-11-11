@@ -93,7 +93,7 @@ class boss_baron_ashbury : public CreatureScript
                 return !bHeal && IsHeroic();
             }
 
-            void HealReceived(Unit* healer, uint32 &heal)
+            void HealReceived(Unit* healer, uint64&heal)
             {
                 if (healer->GetGUID() == me->GetGUID())
                     bHeal = true;

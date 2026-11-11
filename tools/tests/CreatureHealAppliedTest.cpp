@@ -11,8 +11,8 @@ struct Unit;struct Creature;
 struct CreatureAI
 {
     virtual ~CreatureAI()=default;
-    virtual void HealReceived(Unit*,uint32&){}
-    virtual void HealDone(Unit*,uint32&){}
+    virtual void HealReceived(Unit*,uint32&){}/*Bounded pinned-fixture ABI bridge;full64 native tests are separate.*/virtual void HealReceived(Unit* who,uint64& amount){assert(amount<=UINT32_MAX);uint32 legacy=uint32(amount);HealReceived(who,legacy);amount=legacy;}
+    virtual void HealDone(Unit*,uint32&){}/*Bounded pinned-fixture ABI bridge;full64 native tests are separate.*/virtual void HealDone(Unit* who,uint64& amount){assert(amount<=UINT32_MAX);uint32 legacy=uint32(amount);HealDone(who,legacy);amount=legacy;}
 #include "Default.inc"
 };
 struct InstanceScript {bool CheckDamageManager()const{return false;}void UpdateDamageManager(uint64,int32,bool){assert(false);}};
@@ -37,7 +37,7 @@ struct Creature:Unit
     Creature* ToCreature()override{return this;}
     CreatureAI* AI(){return i_AI;}
     CreatureAI* GetAI()override{return AI();}
-    void NotifyHealApplied(Unit*,uint32,int64);
+    void NotifyHealApplied(Unit*,uint32,int64);void NotifyHealApplied64(Unit*,uint64,uint64);
     bool AIM_Destroy();bool AIM_Initialize(CreatureAI*);
 };
 #define ASSERT(condition,...) assert(condition)
@@ -48,10 +48,10 @@ struct Creature:Unit
 #include "DealHeal.inc"
 struct Observer:CreatureAI
 {
-    Creature* actor;Unit* expectedHealer;int32 calls=0;uint32 amount=0;int64 gain=0;
+    Creature* actor;Unit* expectedHealer;int32 calls=0;uint64 amount=0,gain=0;
     std::function<void()> callback;
     Observer(Creature* c,Unit* u):actor(c),expectedHealer(u){}
-    void OnHealApplied(Unit* healer,uint32 finalAmount,int64 actualGain)override
+    void OnHealApplied(Unit* healer,uint64 finalAmount,uint64 actualGain)override
     {
         assert(healer==expectedHealer&&actor->m_AI_locked);
         ++calls;amount=finalAmount;gain=actualGain;

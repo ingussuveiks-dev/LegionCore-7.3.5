@@ -227,7 +227,7 @@ public:
     // Final positive heal after HealDone and ModifyHealth. Gain can be zero
     // for overhealing; cancelled heals and negative health changes are excluded.
     // Append after existing virtuals so their slots remain unchanged.
-    virtual void OnHealApplied(Unit* /*healer*/, uint32 /*amount*/, int64 /*gain*/) {}
+    virtual void OnHealApplied(Unit* /*healer*/, uint64 /*amount*/, uint64 /*gain*/) {}
 
 private:
     bool m_MoveInLineOfSight_locked;

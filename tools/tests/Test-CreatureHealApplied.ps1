@@ -27,7 +27,7 @@ $new=@'
 '@
 $normalized=$unit.Replace($new.Replace("`r",''),$old)
 if($normalized.TrimEnd("`n") -cne $bases[$paths[0]].TrimEnd("`n")){throw 'Unit changed beyond post-ModifyHealth notification'}
-$notify=Block $creature 'void Creature::NotifyHealApplied('
+$notify=Get-HealApiNotifyBlock $creature
 if($creature.Replace($notify+"`n`n",'').TrimEnd("`n") -cne $bases[$paths[1]].TrimEnd("`n")){throw 'Creature changed beyond notification'}
 $declaration="        void NotifyHealApplied(Unit* healer, uint32 amount, int32 gain);`n`n"
 if($sources[$paths[2]].Replace($declaration,'').TrimEnd("`n") -cne $bases[$paths[2]].TrimEnd("`n")){throw 'Creature header changed beyond nonvirtual declaration'}
@@ -41,7 +41,7 @@ public:
 '@
 if($sources[$paths[3]].Replace($virtual.Replace("`r",'')+"`n",'').TrimEnd("`n") -cne $bases[$paths[3]].TrimEnd("`n")){throw 'CreatureAI changed beyond appended default hook'}
 if($ScopeOnly){'PASS pinned original post-heal notification delta plus independently certified current native heal API amendment;existing virtual order/data members retained';return}
-$unit=$liveSources[$paths[0]];$creature=$liveSources[$paths[1]];$notify=Block $creature 'void Creature::NotifyHealApplied('
+$unit=$liveSources[$paths[0]];$creature=$liveSources[$paths[1]];$notify=Get-HealApiNotifyBlock $creature
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/creature-heal-applied"}
 $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $selected=if($Baseline){$bases[$paths[0]]}else{$unit}

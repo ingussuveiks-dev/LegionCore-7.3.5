@@ -108,7 +108,7 @@ class BattlegroundTPScore final : public BattlegroundScore
 protected:
     BattlegroundTPScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), FlagCaptures(0), FlagReturns(0) { }
 
-    void UpdateScore(uint32 type, uint32 value) override;
+    void UpdateScore(uint32 type, uint64 value) override;
 
     void BuildObjectivesBlock(std::vector<int32>& stats) override;
 
@@ -147,7 +147,7 @@ public:
 
     void _CheckPositions(uint32 diff) override;
 
-    bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
+    bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;
     void SetDroppedFlagGUID(ObjectGuid guid, uint32 TeamID) { _droppedFlagGUID[TeamID] = guid; }
 
     uint32 GetTeamScore(TeamId teamId) const override { return m_TeamScores[teamId]; }

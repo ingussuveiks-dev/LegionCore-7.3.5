@@ -328,7 +328,7 @@ struct BattlegroundEYScore final : BattlegroundScore
     protected:
         BattlegroundEYScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), FlagCaptures(0) { }
 
-        void UpdateScore(uint32 type, uint32 value) override
+        void UpdateScore(uint32 type, uint64 value) override
         {
             switch (type)
             {
@@ -374,7 +374,7 @@ class BattlegroundEyeOfTheStorm : public Battleground
         void Reset() override;
         void UpdateTeamScore(TeamId teamID);
         void EndBattleground(uint32 winner) override;
-        bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
+        bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;
         void FillInitialWorldStates(WorldPackets::WorldState::InitWorldStates& packet) override;
         void SetDroppedFlagGUID(ObjectGuid guid) { _droppedFlagGUID = guid; }
         ObjectGuid GetDroppedFlagGUID() const { return _droppedFlagGUID; }

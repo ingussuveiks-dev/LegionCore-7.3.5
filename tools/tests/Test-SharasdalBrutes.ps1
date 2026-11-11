@@ -57,7 +57,7 @@ foreach($entry in @(@('Owner','Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItse
 $heal=Get-HealApiBlock $core;$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal boundary missing'}
 [IO.File]::WriteAllText("$out/DealHeal.inc",$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}")
 $creatureSource=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
-[IO.File]::WriteAllText("$out/Notify.inc",(Block $creatureSource 'void Creature::NotifyHealApplied('))
+[IO.File]::WriteAllText("$out/Notify.inc",(Get-HealApiNotifyBlock $creatureSource))
 [IO.File]::WriteAllText("$out/Lifecycle.inc",(Block $creatureSource 'if (i_AI || i_disabledAI)'))
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))

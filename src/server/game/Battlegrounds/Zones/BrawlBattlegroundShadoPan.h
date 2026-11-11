@@ -96,7 +96,7 @@ struct BrawlBattlegroundShadoPanScore final : BattlegroundScore
 protected:
     BrawlBattlegroundShadoPanScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team) { }
 
-    void UpdateScore(uint32 type, uint32 value) override
+    void UpdateScore(uint32 type, uint64 value) override
     {
         BattlegroundScore::UpdateScore(type, value);
     }

@@ -536,7 +536,7 @@ class player_overlord_brandAI : public PlayerAI
                 me->CastCustomSpell(SPELL_OVERLORD_BRAND_DAMAGE, SPELLVALUE_BASE_POINT0, damage, tyrannus->getVictim(), true, NULL, NULL, tyrannus->GetGUID());
         }
 
-        void HealDone(Unit* /*target*/, uint32& addHealth) override
+        void HealDone(Unit* /*target*/, uint64& addHealth) override
         {
             if (Creature* tyrannus = getTyrannus())
                 me->CastCustomSpell(SPELL_OVERLORD_BRAND_HEAL, SPELLVALUE_BASE_POINT0, int32(addHealth*5.5f), tyrannus, true, NULL, NULL, tyrannus->GetGUID());

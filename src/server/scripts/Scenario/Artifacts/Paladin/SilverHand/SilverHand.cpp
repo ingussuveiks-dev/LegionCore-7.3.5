@@ -302,7 +302,7 @@ public:
             }
         }
 
-        void HealReceived(Unit*, uint32& addhealth) override
+        void HealReceived(Unit*, uint64& addhealth) override
         {
             if (wait_heal && addhealth)
                 _pendingHealRecovery = true;
@@ -673,7 +673,7 @@ public:
             events.RescheduleEvent(EVENT_2, 8000); // 210371
         }
 
-        void HealReceived(Unit*, uint32& addhealth) override
+        void HealReceived(Unit*, uint64& addhealth) override
         {
             if (wait_heal && addhealth)
                 _pendingHealRecovery = true;
@@ -845,7 +845,7 @@ public:
                 me->GetMotionMaster()->MovePoint(1, 1914.39f, 2335.43f, 75.56f);
             }, _functions.CalculateTime(1000));
         }
-        void HealReceived(Unit*, uint32& addhealth) override
+        void HealReceived(Unit*, uint64& addhealth) override
         {
             if (wait_heal && addhealth)
                 _pendingHealRecovery = true;
@@ -1249,7 +1249,7 @@ public:
             events.RescheduleEvent(EVENT_3, 7000); // 210371
         }
 
-        void HealReceived(Unit*, uint32& addhealth) override
+        void HealReceived(Unit*, uint64& addhealth) override
         {
             if (wait_heal && addhealth)
                 _pendingHealRecovery = true;
@@ -1379,7 +1379,7 @@ public:
             _healFunctions.Update(diff);
         }
 
-        void HealReceived(Unit* who, uint32& addhealth) override
+        void HealReceived(Unit* who, uint64& addhealth) override
         {
             if (wait_heal || !addhealth || !who || !who->IsInWorld() || who->GetMap() != me->GetMap())
                 return;

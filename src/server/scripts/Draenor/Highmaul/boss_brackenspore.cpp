@@ -902,7 +902,7 @@ struct npc_highmaul_living_mushroom : public MS::AI::CosmeticAI
         AddDelayedEvent(30 * IN_MILLISECONDS, [this]() -> void { me->DespawnOrUnsummon(); });
     }
 
-    void HealReceived(Unit* /*healer*/, uint32& heal) override
+    void HealReceived(Unit* /*healer*/, uint64& heal) override
     {
         if ((me->GetHealth() + heal) >= me->GetMaxHealth() && !me->HasAura(LivingSpores))
             me->CastSpell(me, LivingSpores, true);
@@ -969,7 +969,7 @@ struct npc_highmaul_rejuvenating_mushroom : public MS::AI::CosmeticAI
         AddDelayedEvent(30 * IN_MILLISECONDS, [this]() -> void { me->DespawnOrUnsummon(); });
     }
 
-    void HealReceived(Unit* /*healer*/, uint32& heal) override
+    void HealReceived(Unit* /*healer*/, uint64& heal) override
     {
         if ((me->GetHealth() + heal) >= me->GetMaxHealth() && !me->HasAura(RejuvenatingSpores))
             me->CastSpell(me, RejuvenatingSpores, true);

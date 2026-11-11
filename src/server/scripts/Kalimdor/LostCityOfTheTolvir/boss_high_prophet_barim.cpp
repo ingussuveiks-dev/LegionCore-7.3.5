@@ -399,7 +399,7 @@ struct npc_blaze_of_the_heavens : public ScriptedAI
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     }
 
-    void HealReceived(Unit* /*healer*/, uint32& heal) override
+    void HealReceived(Unit* /*healer*/, uint64& heal) override
     {
         if (me->GetHealth() + heal >= me->GetMaxHealth())
         {

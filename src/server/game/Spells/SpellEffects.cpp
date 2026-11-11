@@ -66,6 +66,7 @@
 #include "SkillExtraItems.h"
 #include "SocialMgr.h"
 #include "Spell.h"
+#include "HealingAmount.h"
 #include "SpellAuraEffects.h"
 #include "SpellAuras.h"
 #include "SpellMgr.h"
@@ -2492,6 +2493,24 @@ void Spell::EffectHeal(SpellEffIndex effIndex)
         // Skip if m_originalCaster not available
         if (!caster)
             return;
+
+        auto exact = m_spellValue->HealingBasePoints.find(uint8(effIndex));
+        if (exact != m_spellValue->HealingBasePoints.end())
+        {
+            uint64 amount = exact->second;
+            if (m_spellInfo->AttributesCu[0] & SPELL_ATTR0_CU_SHARE_DAMAGE)
+            {
+                uint32 count = 0;
+                for (auto const& target : m_UniqueTargetInfo)
+                    if (target->effectMask & (1 << effIndex)) ++count;
+                if (!count) return;
+                amount /= count;
+            }
+            amount = HealingAmount::Apply(amount, 0, caster->GetProcStatsMultiplier(m_spellInfo->Id));
+            amount = unitTarget->SpellHealingBonusTaken64(caster, m_spellInfo, amount, HEAL, effIndex);
+            m_exactHealing = HealingAmount::Add(m_exactHealing.value_or(0), amount);
+            return;
+        }
 
         if (m_spellInfo->AttributesCu[0] & SPELL_ATTR0_CU_SHARE_DAMAGE)
         {

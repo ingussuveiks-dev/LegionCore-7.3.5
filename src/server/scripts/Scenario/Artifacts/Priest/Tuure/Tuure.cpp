@@ -156,7 +156,7 @@ public:
             // death receipt, native criteria delivery and timed continuation.
         }
 
-        void HealReceived(Unit* who, uint32& addhealth) override
+        void HealReceived(Unit* who, uint64& addhealth) override
         {
             if (!_introHealDone && addhealth)
             {
@@ -344,7 +344,7 @@ public:
         }
 
 
-        void HealReceived(Unit* who, uint32& addhealth) override
+        void HealReceived(Unit* who, uint64& addhealth) override
         {
             if (wait_heal && addhealth)
                 _pendingHealRecovery = true;

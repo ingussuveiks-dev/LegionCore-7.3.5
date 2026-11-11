@@ -185,6 +185,11 @@ class CustomSpellValues : public std::vector<CustomSpellValueMod>
         {
             push_back(std::make_pair(mod, value));
         }
+        // Exact amounts for fixed HEAL effects (native NO_DONE_BONUS).
+        void AddHealingMod(SpellEffIndex effect, uint64 amount) { _healing.emplace_back(effect, amount); }
+        std::vector<std::pair<SpellEffIndex, uint64>> const& GetHealingMods() const { return _healing; }
+    private:
+        std::vector<std::pair<SpellEffIndex, uint64>> _healing;
 };
 
 enum SpellFacingFlags
@@ -759,13 +764,13 @@ class TC_GAME_API DamageInfo
 private:
     Unit* const m_attacker;
     Unit* const m_victim;
-    uint32 m_damage;
-    uint32 m_overHeal;
+    uint64 m_damage;
+    uint64 m_overHeal;
     SpellInfo const* const m_spellInfo;
     SpellSchoolMask const m_schoolMask;
     DamageEffectType const m_damageType;
     WeaponAttackType m_attackType;
-    uint32 m_absorb;
+    uint64 m_absorb;
     uint32 m_resist;
     uint32 m_block;
     uint32 m_cleanDamage;
@@ -777,13 +782,15 @@ private:
     ObjectGuid m_magnetGuid;
     uint32 targetInfoMask;
     bool isAoe = false;
+    bool m_isHealing = false;
 
 public:
-    explicit DamageInfo(Unit* _attacker, Unit* _victim, uint32 _damage, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask, DamageEffectType _damageType, uint32 m_damageBeforeHit);
+    explicit DamageInfo(Unit* _attacker, Unit* _victim, uint64 _damage, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask, DamageEffectType _damageType, uint32 m_damageBeforeHit, bool healing = false);
     explicit DamageInfo(CalcDamageInfo& dmgInfo);
     explicit DamageInfo(SpellNonMeleeDamage& dmgInfo, SpellInfo const* _spellInfo);
 
-    void ModifyDamage(int32 amount);
+    void ModifyDamage(int64 amount);
+    void AbsorbHealing(uint64 amount);
     void AbsorbDamage(int64 amount);
     void ResistDamage(uint32 amount);
     void BlockDamage(uint32 amount);
@@ -791,7 +798,7 @@ public:
     void SetAddPType(int32 amount) { m_addptype = amount; }
     void SetStartCast(int32 amount) { m_startTime = amount; }
     void SetCastTime(int32 amount) { m_castTime = amount; }
-    void SetOverHeal(uint32 amount) { m_overHeal = amount; }
+    void SetOverHeal(uint64 amount) { m_overHeal = amount; }
     void SetMagnet(ObjectGuid magnet) { m_magnetGuid = magnet; }
     void SetTargetInfoMask(uint32 Mask);
 
@@ -801,8 +808,8 @@ public:
     SpellSchoolMask GetSchoolMask() const { return m_schoolMask; };
     DamageEffectType GetDamageType() const { return m_damageType; };
     WeaponAttackType GetAttackType() const { return m_attackType; };
-    uint32 GetDamage() const { return m_damage; };
-    uint32 GetAbsorb() const { return m_absorb; };
+    uint64 GetDamage() const { return m_damage; };
+    uint64 GetAbsorb() const { return m_absorb; };
     uint32 GetResist() const { return m_resist; };
     uint32 GetBlock() const { return m_block; };
     uint32 GetCleanDamage() const { return m_cleanDamage; };
@@ -811,7 +818,7 @@ public:
     int32 GetAddPType() const { return m_addptype; };
     int32 GetStartCast() const { return m_startTime; };
     int32 GetCastTime() const { return m_castTime; };
-    uint32 GetOverHeal() const { return m_overHeal; };
+    uint64 GetOverHeal() const { return m_overHeal; };
     ObjectGuid GetMagnet() const { return m_magnetGuid; };
     bool HasTargetInfoMask(uint32 Mask);
 };
@@ -820,24 +827,24 @@ class HealInfo
 {
     Unit* const m_healer;
     Unit* const m_target;
-    uint32 m_heal;
-    uint32 m_absorb;
+    uint64 m_heal;
+    uint64 m_absorb;
     SpellInfo const* const m_spellInfo;
     SpellSchoolMask const m_schoolMask;
 public:
-    explicit HealInfo(Unit* _healer, Unit* _target, uint32 _heal, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask)
+    explicit HealInfo(Unit* _healer, Unit* _target, uint64 _heal, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask)
         : m_healer(_healer), m_target(_target), m_heal(_heal), m_spellInfo(_spellInfo), m_schoolMask(_schoolMask)
     {
         m_absorb = 0;
     }
-    void AbsorbHeal(uint32 amount)
+    void AbsorbHeal(uint64 amount)
     {
         amount = std::min(amount, GetHeal());
         m_absorb += amount;
         m_heal -= amount;
     }
 
-    uint32 GetHeal() const { return m_heal; };
+    uint64 GetHeal() const { return m_heal; };
 };
 
 class ProcEventInfo
@@ -1378,7 +1385,7 @@ class TC_GAME_API Unit : public WorldObject
         uint32 DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDamage = nullptr, DamageEffectType damagetype = DIRECT_DAMAGE, SpellSchoolMask damageSchoolMask = SPELL_SCHOOL_MASK_NORMAL, SpellInfo const* spellProto = nullptr, bool durabilityLoss = true);
         uint32 CalcStaggerDamage(uint32 damage, SpellSchoolMask damageSchoolMask, SpellInfo const* spellInfo = nullptr, bool full = false);
         void Kill(Unit* victim, bool durabilityLoss = true, SpellInfo const* spellProto = nullptr);
-        int64 DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto = nullptr);
+        uint64 DealHeal(Unit* victim, uint64 addhealth, SpellInfo const* spellProto = nullptr);
         int32 InterceptionOfDamage(Unit* victim, uint32 damage, SpellSchoolMask damageSchoolMask);
 
         void ProcDamageAndSpell(Unit* victim, uint32 procAttacker, uint32 procVictim, uint32 procEx, DamageInfo* dmgInfoProc, WeaponAttackType attType = BASE_ATTACK, SpellInfo const* procSpell = nullptr, SpellInfo const* procAura = nullptr, Uint32Set* AppliedProcMods = nullptr, Spell* spell = nullptr);
@@ -1480,8 +1487,8 @@ class TC_GAME_API Unit : public WorldObject
         virtual void UpdateUnderwaterState(Map* m, float x, float y, float z);
         bool isInAccessiblePlaceFor(Creature const* c) const;
 
-        void SendHealSpellLog(Unit* victim, uint32 SpellID, uint32 Damage, uint32 OverHeal, uint32 Absorb, bool critical = false);
-        int64 HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical = false);
+        void SendHealSpellLog(Unit* victim, uint32 SpellID, uint64 Damage, uint64 OverHeal, uint64 Absorb, bool critical = false);
+        uint64 HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint64 addHealth, bool critical = false);
         void SendEnergizeSpellLog(Unit* victim, uint32 spellID, int32 damage, int32 overEnergize, Powers powertype);
         void EnergizeBySpell(Unit* victim, uint32 SpellID, int32 Damage, Powers powertype);
 
@@ -2145,6 +2152,10 @@ class TC_GAME_API Unit : public WorldObject
         bool isBlockCritical();
         bool isSpellCrit(Unit* victim, SpellInfo const* spellProto, SpellSchoolMask schoolMask, WeaponAttackType attackType, float &critChance, Spell* spell = nullptr) const;
         uint32 SpellCriticalHealingBonus(SpellInfo const* spellProto, uint32 damage);
+        uint64 SpellCriticalHealingBonus64(SpellInfo const* spellProto, uint64 amount);
+        uint64 SpellHealingBonusTaken64(Unit* caster, SpellInfo const* spellProto, uint64 amount, DamageEffectType type, SpellEffIndex effect, uint32 stack = 1);
+        template<class Amount> Amount SpellHealingBonusTakenImpl(Unit* caster, SpellInfo const* spellProto, Amount amount, DamageEffectType type, SpellEffIndex effect, uint32 stack);
+        uint64 AddHealth(uint64 amount, Unit* healer = nullptr, uint32 spellId = 0);
         float SpellCriticalDamageBonus(SpellInfo const* spellProto, Unit* victim);
 
         void SetContestedPvP(Player* attackedPlayer = nullptr, bool forceByAura = false);
@@ -2170,7 +2181,7 @@ class TC_GAME_API Unit : public WorldObject
         static bool IsDamageReducedByArmor(SpellSchoolMask damageSchoolMask, SpellInfo const* spellInfo = nullptr, uint32 effectMask = 0);
         uint32 CalcArmorReducedDamage(Unit* attacker, Unit* victim, uint32 const damage, SpellInfo const* spellInfo);
         void CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffectType damagetype, const uint32 damage, uint32 *absorb, uint32 *resist, SpellInfo const* spellInfo = nullptr);
-        void CalcHealAbsorb(Unit* victim, const SpellInfo* spellProto, uint32 &healAmount, uint32 &absorb);
+        void CalcHealAbsorb(Unit* victim, const SpellInfo* spellProto, uint64 &healAmount, uint64 &absorb);
         float CalcAbsorb(Unit* victim, SpellInfo const* spellProto, float amount);
 
         void  UpdateSpeed(UnitMoveType mtype, bool forced);

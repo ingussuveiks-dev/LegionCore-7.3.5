@@ -274,7 +274,7 @@ public:
         {
             SheilunPlan::Select(player, me, menu, option);
         }
-        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int64 /*gain*/) override { ObserveWoundHeal(); }
+        void OnHealApplied(Unit* /*who*/, uint64 /*amount*/, uint64 /*gain*/) override { ObserveWoundHeal(); }
         void UpdateLifecycle(uint32 /*diff*/) override { RecoverWound(); }
 
         void Reset() override

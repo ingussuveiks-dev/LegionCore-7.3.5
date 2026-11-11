@@ -2150,7 +2150,7 @@ class npc_madness_of_deathwing_deathwing : public CreatureScript
                 }
             }
 
-            void HealReceived(Unit* /*who*/, uint32& heal)
+            void HealReceived(Unit* /*who*/, uint64& heal)
             {
                 if (!isDead)
                 {

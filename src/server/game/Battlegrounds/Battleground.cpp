@@ -17,6 +17,7 @@
  */
 
 #include "Battleground.h"
+#include "HealingAmount.h"
 #include "Arena.h"
 #include "BattlegroundMgr.h"
 #include "BattlegroundPackets.h"
@@ -1711,7 +1712,7 @@ void Battleground::BuildPvPLogDataPacket(WorldPackets::Battleground::PVPLogData&
         }
 
         playerData.DamageDone = score.second->DamageDone;
-        playerData.HealingDone = score.second->HealingDone;
+        playerData.HealingDone = uint32(std::min<uint64>(score.second->HealingDone, UINT32_MAX));
         score.second->BuildObjectivesBlock(playerData.Stats);
 
         if (Player* player = ObjectAccessor::FindPlayer(playerData.PlayerGUID))
@@ -1759,7 +1760,7 @@ void Battleground::BuildPvPLogDataPacket(WorldPackets::Battleground::PVPLogData&
     packet.PlayerCount[1] = int8(GetPlayersCountByTeam(ALLIANCE));
 }
 
-bool Battleground::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)
+bool Battleground::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)
 {
     std::map<ObjectGuid, BattlegroundScore*>::const_iterator itr = PlayerScores.find(player->GetGUID());
     if (itr == PlayerScores.end())

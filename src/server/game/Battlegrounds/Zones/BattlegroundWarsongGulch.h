@@ -134,7 +134,7 @@ struct BattlegroundWGScore final : BattlegroundScore
 protected:
     BattlegroundWGScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), FlagCaptures(0), FlagReturns(0) { }
 
-    void UpdateScore(uint32 type, uint32 value) override;
+    void UpdateScore(uint32 type, uint64 value) override;
 
     void BuildObjectivesBlock(std::vector<int32>& stats) override;
 
@@ -171,7 +171,7 @@ public:
     bool IsAllianceFlagPickedup(uint8 j) const { return !_flagKeepers[TEAM_ALLIANCE][j].IsEmpty(); }
     bool IsHordeFlagPickedup(uint8 j) const { return !_flagKeepers[TEAM_HORDE][j].IsEmpty(); }
     void _CheckPositions(uint32 diff) override;
-    bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
+    bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;
     void SetDroppedFlagGUID(ObjectGuid guid, uint32 TeamID, ObjectGuid playerguid);
     uint8 GetFlagState(uint32 team) { return _flagState[MS::Battlegrounds::GetTeamIdByTeam(team)][0]; }
 

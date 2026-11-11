@@ -202,7 +202,7 @@ struct BattleGroundSSMScore final : BattlegroundScore
 protected:
     BattleGroundSSMScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), CartsTaken(0) { }
 
-    void UpdateScore(uint32 type, uint32 value) override;
+    void UpdateScore(uint32 type, uint64 value) override;
 
     void BuildObjectivesBlock(std::vector<int32>& stats) override;
 

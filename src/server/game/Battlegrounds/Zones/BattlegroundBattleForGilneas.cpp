@@ -363,7 +363,7 @@ void BattlegroundBattleForGilneas::Reset()
             DelCreature(i);
 }
 
-bool BattlegroundBattleForGilneas::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)
+bool BattlegroundBattleForGilneas::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)
 {
     if (!Battleground::UpdatePlayerScore(player, type, value, doAddHonor))
         return false;

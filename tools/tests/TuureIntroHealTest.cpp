@@ -13,7 +13,7 @@ enum {CLASS_PRIEST=5,QUEST_STATUS_NONE=0,QUEST_STATUS_COMPLETE=1,QUEST_STATUS_IN
 struct Creature;struct Player;struct Unit;
 struct ObjectGuid {uint64 high=0,low=0;bool IsPlayer()const{return high==1;}bool IsEmpty()const{return !high&&!low;}void Clear(){high=low=0;}bool operator==(ObjectGuid v)const{return high==v.high&&low==v.low;}explicit operator bool()const{return !IsEmpty();}operator uint64()const{return low;}};
 struct Map {};
-struct CreatureAI {virtual ~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){};virtual void HealDone(Unit*,uint32&){};virtual void Reset(){};virtual void UpdateLifecycle(uint32){};virtual void MoveInLineOfSight(Unit*){};};
+struct CreatureAI {virtual ~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}/*Bounded pinned-fixture ABI bridge;full64 native tests are separate.*/virtual void HealReceived(Unit* who,uint64& amount){assert(amount<=UINT32_MAX);uint32 legacy=uint32(amount);HealReceived(who,legacy);amount=legacy;};virtual void HealDone(Unit*,uint32&){}/*Bounded pinned-fixture ABI bridge;full64 native tests are separate.*/virtual void HealDone(Unit* who,uint64& amount){assert(amount<=UINT32_MAX);uint32 legacy=uint32(amount);HealDone(who,legacy);amount=legacy;};virtual void Reset(){};virtual void UpdateLifecycle(uint32){};virtual void MoveInLineOfSight(Unit*){};};
 struct InstanceScript {bool CheckDamageManager()const{return false;}void UpdateDamageManager(ObjectGuid,int32,bool){};};
 namespace WorldPackets::Combat {struct HealthUpdate {ObjectGuid Guid;uint64 Health=0;int Write(){return 0;}};}
 struct Unit {
@@ -89,7 +89,7 @@ int main(){
  uint32 variants=0;
  for(uint32 status:{3u,1u})for(int source=0;source<3;++source)for(int mode=0;mode<4;++mode){Run r;r.player.quest.Status=status;Unit* healer[]={&r.player,&r.pet,&r.guardian};assert(healer[source]->DealHeal(&r.actor,450)==450&&r.actor.health==950&&!r.ai->_introHealDone&&!r.player.credits);
   CreatureAI temporary;if(mode==1){r.actor.primary=&temporary;r.actor.i_disabledAI=r.ai.get();}if(mode==2)r.actor.i_disabledAI=r.ai.get();if(mode==3){r.actor.primary=nullptr;r.actor.i_disabledAI=r.ai.get();}
-  r.player.onCredit=[&]{assert(r.ai->_introHealDone&&r.ai->_introHealer.IsEmpty()&&r.actor.m_AI_locked);uint32 amount=1;r.ai->HealReceived(&r.player,amount);};
+  r.player.onCredit=[&]{assert(r.ai->_introHealDone&&r.ai->_introHealer.IsEmpty()&&r.actor.m_AI_locked);uint64 amount=1;static_cast<CreatureAI*>(r.ai.get())->HealReceived(&r.player,amount);};
   r.actor.Tick();assert(r.player.credits==1&&!r.stranger.credits&&r.ai->talks==1&&r.actor.moves==1&&r.actor.poses==1&&r.actor.animations==1);r.actor.Tick();assert(r.player.credits==1&&r.actor.moves==1);++variants;
  }
  for(int invalid=0;invalid<20;++invalid){Run r;r.player.DealHeal(&r.actor,450);switch(invalid){case 0:r.player.contact=false;break;case 1:r.player.alive=false;break;case 2:r.player.world=false;break;case 3:r.player.pending=true;break;case 4:r.player.classId=4;break;case 5:r.player.quest.Status=0;break;case 6:r.player.rewarded=true;break;case 7:r.player.phase=false;break;case 8:r.player.near=false;break;case 9:r.player.map=&r.other;break;case 10:r.actor.mapId=1220;break;case 11:r.actor.entry=106137;break;case 12:r.actor.alive=false;break;case 13:r.actor.world=false;break;case 14:r.actor.preDelete=true;break;case 15:scenario.id=972;break;case 16:scenario.step=1;break;case 17:manager.active=nullptr;break;case 18:r.player.record=false;break;case 19:r.player.gm=true;break;}
@@ -105,7 +105,7 @@ int main(){
  {Run r;r.player.DealHeal(&r.actor,450);Player replacement;replacement.map=&r.map;ObjectAccessor::players={&replacement};r.actor.Tick();assert(!r.actor.moves&&!replacement.credits);}
  for(bool cancel:{false,true}){Run r;HealerAI ai;ai.cancel=cancel;r.player.IsAIEnabled=true;r.player.healAI=&ai;r.player.DealHeal(&r.actor,cancel?450:0);r.actor.Tick();assert(r.actor.health==500&&!r.player.credits&&!r.ai->_introHealDone);}
  {Run r;r.player.DealHeal(&r.actor,450);r.actor.health=940;r.actor.Tick();assert(!r.player.credits);r.player.DealHeal(&r.actor,10);r.actor.Tick();assert(r.player.credits==1);}
- {Run r;uint32 amount=450;r.ai->HealReceived(nullptr,amount);r.actor.health=950;r.actor.Tick();assert(!r.actor.moves&&!r.player.credits);}
+ {Run r;uint64 amount=450;static_cast<CreatureAI*>(r.ai.get())->HealReceived(nullptr,amount);r.actor.health=950;r.actor.Tick();assert(!r.actor.moves&&!r.player.credits);}
  {Run r;r.pet.owner={1,99};r.pet.DealHeal(&r.actor,450);r.actor.Tick();assert(!r.actor.moves);r.pet.owner=r.player.guid;r.pet.DealHeal(&r.actor,1);r.actor.Tick();assert(r.player.credits==1);}
  std::cout<<"PASS full actual Boros HealReceived/Reset/Cancel/Complete/lifecycle and native DealHeal/ModifyHealth/owner/quest lease/FunctionProcessor/lifecycle dispatch: "<<variants<<" status/player/pet/guardian/primary-disabled variants,20 revalidation denials,950 boundary/zero/cancelled/subthreshold/intervening damage, NPC/missing owner, abandon-reaccept with held old lease, Reset/retry/replaced-freed AI/recipient, fullGUID and reentrant exactly-once50563. Health/registry/motion/packet endpoints are adapters; actual first-heal/follow/client remains pending.\n";
 #endif

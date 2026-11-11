@@ -330,7 +330,7 @@ class TC_GAME_API InstanceScript : public ZoneScript
         void setScenarioStep(uint32 step);
         uint32 getScenarionStep() const;
 
-        void UpdateDamageManager(ObjectGuid caller, int64 damage, bool heal = false);
+        void UpdateDamageManager(ObjectGuid caller, uint64 damage, bool heal = false);
         void AddToDamageManager(Creature* creature, uint8 pullNum = 0);
         bool CheckDamageManager();
         void SetPullDamageManager(ObjectGuid guid, uint8 pullId);

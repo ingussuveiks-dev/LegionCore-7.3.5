@@ -110,7 +110,7 @@ class TC_GAME_API SmartAI : public CreatureAI
         void DamageTaken(Unit* doneBy, uint32& damage, DamageEffectType dmgType) override;
 
         // Called when the creature receives heal
-        void HealReceived(Unit* doneBy, uint32& addhealth) override;
+        void HealReceived(Unit* doneBy, uint64& addhealth) override;
 
         // Called at World update tick
         void UpdateAI(uint32 diff) override;

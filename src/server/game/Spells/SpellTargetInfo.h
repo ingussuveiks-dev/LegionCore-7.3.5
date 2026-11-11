@@ -22,6 +22,7 @@
 #include "SharedDefines.h"
 #include "ObjectMgr.h"
 #include "SpellInfo.h"
+#include "Optional.h"
 
 class Unit;
 class Player;
@@ -81,6 +82,7 @@ struct TC_GAME_API TargetInfo
     uint32 effectMask : 32;
     int32 damage;
     int32 damageBeforeHit;
+    Optional<uint64> exactHealing;
     bool processed : 1;
     bool scaleAura : 1;
 

@@ -65,12 +65,12 @@ enum ScoreType
 struct BattlegroundScore
 {
     friend class Battleground;
-    virtual uint32 GetScore(uint32 type) const;
+    virtual uint64 GetScore(uint32 type) const;
 
 protected:
     BattlegroundScore(ObjectGuid playerGuid, TeamId team);
     virtual ~BattlegroundScore() = default;
-    virtual void UpdateScore(uint32 type, uint32 value);
+    virtual void UpdateScore(uint32 type, uint64 value);
     virtual void BuildObjectivesBlock(std::vector<int32>& /*stats*/) = 0;
 
     ObjectGuid PlayerGuid;
@@ -80,7 +80,7 @@ protected:
     uint32 HonorableKills;
     uint32 BonusHonor;
     uint32 DamageDone;
-    uint32 HealingDone;
+    uint64 HealingDone;
 };
 
 #endif // TRINITY_BATTLEGROUND_SCORE_H

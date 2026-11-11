@@ -6,6 +6,7 @@
 #include <limits>
 #include <functional>
 #include <vector>
+#include "HealingAmount.h"
 using uint32 = uint32_t;
 using int32 = int32_t;
 using int64 = int64_t;
@@ -18,9 +19,11 @@ constexpr int SPELL_AURA_SCHOOL_ABSORB = 69, SPELL_ATTR6_NOT_LIMIT_ABSORB = 1;
 constexpr int SPELL_AURA_MANA_SHIELD = 97, POWER_MANA = 0;
 constexpr int SCORE_HEALING_DONE = 0, CRITERIA_TYPE_HEALING_DONE = 0, CRITERIA_TYPE_HIGHEST_HEAL_CASTED = 0, AURA_REMOVE_BY_ENEMY_SPELL = 0;
 struct DamageInfo {
-    uint32 m_damage, m_absorb = 0;
-    uint32 GetDamage() const { return m_damage; }
-    void ModifyDamage(int32 amount);
+    uint64 m_damage, m_absorb = 0;
+    bool m_isHealing = false;
+    uint64 GetDamage() const { return m_damage; }
+    void ModifyDamage(int64 amount);
+    void AbsorbHealing(uint64 amount);
     void AbsorbDamage(int64 amount);
 };
 #include "DamageAbsorb.inc"

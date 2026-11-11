@@ -60,8 +60,8 @@ struct InstanceScript
 struct UnitAI
 {
     virtual ~UnitAI()=default;
-    virtual void HealReceived(Unit*,uint32&){}
-    virtual void HealDone(Unit*,uint32&){}
+    virtual void HealReceived(Unit*,uint32&){}/*Bounded pinned-fixture ABI bridge;full64 native tests are separate.*/virtual void HealReceived(Unit* who,uint64& amount){assert(amount<=UINT32_MAX);uint32 legacy=uint32(amount);HealReceived(who,legacy);amount=legacy;}
+    virtual void HealDone(Unit*,uint32&){}/*Bounded pinned-fixture ABI bridge;full64 native tests are separate.*/virtual void HealDone(Unit* who,uint64& amount){assert(amount<=UINT32_MAX);uint32 legacy=uint32(amount);HealDone(who,legacy);amount=legacy;}
     virtual void Reset(){}
     virtual void UpdateLifecycle(uint32){}
 };

@@ -19,7 +19,10 @@ struct Progress{uint64 Counter=0;};struct Achievements{std::map<uint32,Progress>
 struct Scenario{uint32 id=1007,step=0;Achievements achievements;uint32 GetScenarioId()const{return id;}uint32 GetCurrentStep()const{return step;}Achievements&GetAchievementMgr(){return achievements;}};
 struct Manager{Scenario* current=nullptr;Scenario*GetScenario(uint32){return current;}}manager;auto*sScenarioMgr=&manager;
 struct Unit;struct Creature;struct Player;
-struct CreatureAI{virtual~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}virtual void HealDone(Unit*,uint32&){}virtual void OnHealApplied(Unit*,uint32,int64){}virtual void UpdateLifecycle(uint32){}virtual void Reset(){}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}};
+struct CreatureAI{
+ // Test-only bridge for pinned ordinary32 actors;real64callbacks run independently.
+ virtual void OnHealApplied(Unit* who,uint64 amount,uint64 gain){assert(amount<=UINT32_MAX&&gain<=INT64_MAX);OnHealApplied(who,uint32(amount),int64(gain));}
+virtual~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}/*Bounded pinned-fixture ABI bridge;full64 native tests are separate.*/virtual void HealReceived(Unit* who,uint64& amount){assert(amount<=UINT32_MAX);uint32 legacy=uint32(amount);HealReceived(who,legacy);amount=legacy;}virtual void HealDone(Unit*,uint32&){}/*Bounded pinned-fixture ABI bridge;full64 native tests are separate.*/virtual void HealDone(Unit* who,uint64& amount){assert(amount<=UINT32_MAX);uint32 legacy=uint32(amount);HealDone(who,legacy);amount=legacy;}virtual void OnHealApplied(Unit*,uint32,int64){}virtual void UpdateLifecycle(uint32){}virtual void Reset(){}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}};
 struct InstanceScript{bool CheckDamageManager()const{return false;}void UpdateDamageManager(uint64,int32,bool){assert(false);}void OnCreatureDamageTaken(Creature*,Unit*,uint32&){}};
 struct WorldObject{virtual~WorldObject()=default;};
 struct Unit:WorldObject{
@@ -57,7 +60,7 @@ struct Creature:Unit{
  void SetAnimKitId(uint32 value){assert(!value);++kits;}Motion*GetMotionMaster(){return &motion;}void SetWalk(bool value){assert(!value);}
  bool AddAura(uint32 id,Creature*target){assert(id==204237&&target==this);++auraCalls;if(onAura)onAura();return auraAccepted;}void AddUnitState(uint32 state){assert(state==1);states|=state;}
  void ClearUnitState(uint32 state){assert(state==1);++cleared;states&=~state;}void RemoveAura(uint32 id){assert(id==204237);++removed;}
- void NotifyHealApplied(Unit*,uint32,int64);void Update(uint32);
+ void NotifyHealApplied(Unit*,uint32,int64);void NotifyHealApplied64(Unit*,uint64,uint64);void Update(uint32);
 };
 #define TC_LOG_WARN(...) (++warnings)
 using CreatureLevelStat=Creature::ScaleStat;

@@ -28,7 +28,7 @@ if(Test-Path "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_
 $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw;$heal=Get-HealApiBlock $unit;$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal boundary changed'}
 [IO.File]::WriteAllText("$out/DealHeal.inc",$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}")
 $creature=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
-[IO.File]::WriteAllText("$out/Notify.inc",(Block $creature 'void Creature::NotifyHealApplied('))
+[IO.File]::WriteAllText("$out/Notify.inc",(Get-HealApiNotifyBlock $creature))
 [IO.File]::WriteAllText("$out/Health.inc",(Block $unit 'uint64 Unit::GetHealth(Unit* victim) const'))
 [IO.File]::WriteAllText("$out/Multiplier.inc",(Block $creature 'float Creature::GetHealthMultiplierForTarget('))
 $update=Block $creature 'void Creature::Update(uint32 diff)';$last=$update.IndexOf('    volatile uint32 creatureEntry');if($last -lt 0){throw 'Native lifecycle boundary changed'}

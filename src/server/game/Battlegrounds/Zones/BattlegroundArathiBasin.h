@@ -171,7 +171,7 @@ struct BattlegroundABScore final : BattlegroundScore
 protected:
     BattlegroundABScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), BasesAssaulted(0), BasesDefended(0) { }
 
-    void UpdateScore(uint32 type, uint32 value) override;
+    void UpdateScore(uint32 type, uint64 value) override;
     void BuildObjectivesBlock(std::vector<int32>& stats) override;
 
     uint32 BasesAssaulted;
@@ -213,7 +213,7 @@ public:
     void Reset() override;
     void EndBattleground(uint32 winner) override;
     WorldSafeLocsEntry const* GetClosestGraveYard(Player* player) override;
-    bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
+    bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;
     void FillInitialWorldStates(WorldPackets::WorldState::InitWorldStates& packet) override;
     void EventPlayerClickedOnFlag(Player* source, GameObject* object, bool& canRemove) override;
     bool IsAllNodesConrolledByTeam(uint32 team) const override;

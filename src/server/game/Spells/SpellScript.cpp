@@ -738,6 +738,27 @@ void SpellScript::SetHitHeal(int32 heal)
         return;
     }
     m_spell->m_healing = heal;
+    m_spell->m_exactHealing.reset();
+}
+
+uint64 SpellScript::GetHitHeal64()
+{
+    if (!IsInTargetHook())
+    {
+        TC_LOG_ERROR("scripts", "Script: `%s` Spell: `%u`: GetHitHeal64 outside target hook", m_scriptName->c_str(), m_scriptSpellId);
+        return 0;
+    }
+    return m_spell->GetHealingAmount64();
+}
+
+void SpellScript::SetHitHeal64(uint64 heal)
+{
+    if (!IsInTargetHook())
+    {
+        TC_LOG_ERROR("scripts", "Script: `%s` Spell: `%u`: SetHitHeal64 outside target hook", m_scriptName->c_str(), m_scriptSpellId);
+        return;
+    }
+    m_spell->SetHealingAmount64(heal);
 }
 
 Aura* SpellScript::GetHitAura()

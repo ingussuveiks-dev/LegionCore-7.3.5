@@ -136,7 +136,7 @@ struct BattlegroundDGScore final : public BattlegroundScore
     protected:
         BattlegroundDGScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), cartsCaptured(0), cartsDefended(0), pointsCaptured(0), pointsDefended(0) { }
 
-        void UpdateScore(uint32 type, uint32 value) override
+        void UpdateScore(uint32 type, uint64 value) override
         {
             switch (type)
             {
@@ -186,7 +186,7 @@ public:
     void StartingEventCloseDoors() override;
     void StartingEventOpenDoors() override;
 
-    bool UpdatePlayerScore(Player* player, uint32 type, uint32 addvalue, bool doAddHonor) override;
+    bool UpdatePlayerScore(Player* player, uint32 type, uint64 addvalue, bool doAddHonor) override;
 
     WorldSafeLocsEntry const* GetClosestGraveYard(Player* player) override;
 

@@ -16,8 +16,9 @@
 */
 
 #include "BattlegroundScore.h"
+#include "HealingAmount.h"
 
-uint32 BattlegroundScore::GetScore(uint32 type) const
+uint64 BattlegroundScore::GetScore(uint32 type) const
 {
     switch (type)
     {
@@ -41,7 +42,7 @@ BattlegroundScore::BattlegroundScore(ObjectGuid playerGuid, TeamId team) : Playe
 {
 }
 
-void BattlegroundScore::UpdateScore(uint32 type, uint32 value)
+void BattlegroundScore::UpdateScore(uint32 type, uint64 value)
 {
     switch (type)
     {
@@ -61,7 +62,7 @@ void BattlegroundScore::UpdateScore(uint32 type, uint32 value)
             DamageDone += value;
             break;
         case SCORE_HEALING_DONE:
-            HealingDone += value;
+            HealingDone = HealingAmount::Add(HealingDone, value);
             break;
         default:
             ASSERT(false && "Not implemented Battleground score type!");

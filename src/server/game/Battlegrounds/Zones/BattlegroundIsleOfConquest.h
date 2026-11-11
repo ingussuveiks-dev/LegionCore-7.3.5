@@ -851,7 +851,7 @@ struct BattlegroundICScore final : public BattlegroundScore
     protected:
         BattlegroundICScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), BasesAssaulted(0), BasesDefended(0) { }
 
-        void UpdateScore(uint32 type, uint32 value) override
+        void UpdateScore(uint32 type, uint64 value) override
         {
             switch (type)
             {
@@ -899,7 +899,7 @@ class BattlegroundIsleOfConquest : public Battleground
         void DestroyGate(Player* player, GameObject* go) override;
 
         WorldSafeLocsEntry const* GetClosestGraveYard(Player* player) override;
-        bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
+        bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;
         void FillInitialWorldStates(WorldPackets::WorldState::InitWorldStates& packet) override;
         void DoAction(uint32 action, ObjectGuid guid) override;
         void HandlePlayerResurrect(Player* player) override;

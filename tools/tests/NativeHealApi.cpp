@@ -6,8 +6,8 @@
 struct HealAuraScriptsTag{using Type=std::vector<AuraScript*> Aura::*;friend Type Access(HealAuraScriptsTag);};
 template struct FixtureAccess<HealAuraScriptsTag,&Aura::m_loadedScripts>;
 struct HealObserver:NullCreatureAI{
- using NullCreatureAI::NullCreatureAI;uint32 calls=0,amount=0;int64 gain=0;
- void OnHealApplied(Unit*,uint32 finalAmount,int64 actualGain)override{++calls;amount=finalAmount;gain=actualGain;}
+ using NullCreatureAI::NullCreatureAI;uint32 calls=0;uint64 amount=0,gain=0;
+ void OnHealApplied(Unit*,uint64 finalAmount,uint64 actualGain)override{++calls;amount=finalAmount;gain=actualGain;}
 };
 struct HealInstanceTag{using Type=InstanceScript* InstanceMap::*;friend Type Access(HealInstanceTag);};
 template struct FixtureAccess<HealInstanceTag,&InstanceMap::i_data>;
@@ -24,7 +24,7 @@ int main(int argc,char**argv){try{
  MapInstanced parent(1600,300);InstanceMap map(1600,300,9999772,DIFFICULTY_N_SCENARIO,&parent);
  HealBeforeActor healer(&map,299,25001,{50,803,805,0});Actor target(&map,299,25002,{51,803,805,0});Require(map.AddToMap(static_cast<Creature*>(&healer))&&map.AddToMap(static_cast<Creature*>(&target)),"Heal actors not admitted");
  Require(target.AIM_Initialize(new HealObserver(&target)),"Native heal observer absent");auto observer=static_cast<HealObserver*>(target.AI());uint32 cases=0;
- for(uint64 maximum:{1000ull,4294967295ull,1099511627793ull,18446744073709551615ull})for(uint64 start:{1ull,500ull,maximum-1,maximum})for(uint32 request:{0u,1u,100u,2147483647u,2147483648u,4294967295u}){
+ for(uint64 maximum:{1000ull,4294967295ull,1099511627793ull,18446744073709551615ull})for(uint64 start:{1ull,500ull,maximum-1,maximum})for(uint64 request:{0ull,1ull,100ull,2147483647ull,2147483648ull,4294967295ull,1099511627793ull,9223372036854775808ull,18446744073709551615ull}){
   target.SetMaxHealth(maximum);target.SetHealth(start);observer->calls=0;observer->amount=0;observer->gain=0;
   auto expected=std::min<uint64>(request,maximum-start);
 #ifdef NATIVE_HEAL_BASELINE
@@ -41,6 +41,20 @@ int main(int argc,char**argv){try{
   ++cases;
  }
 #ifndef NATIVE_HEAL_BASELINE
+ {
+  DamageInfo physical(&healer,&target,1,nullptr,SPELL_SCHOOL_MASK_NORMAL,DIRECT_DAMAGE,0);
+  physical.AbsorbDamage(1);physical.ModifyDamage(UINT32_MAX);physical.AbsorbDamage(-1);
+#ifdef HEALING_PHYSICAL_UNDO_BASELINE
+  Require(physical.GetDamage()==4294967296ull,"Expected unsigned64migration physical undo counterfactual absent");
+  std::cout<<"COUNTERFACTUAL physical undo crosses native32domain after capped positive modification\n";
+#else
+  Require(physical.GetDamage()==UINT32_MAX&&physical.GetAbsorb()==1,"Physical undo crossed native32domain");
+  DamageInfo bounded(&healer,&target,UINT64_MAX,nullptr,SPELL_SCHOOL_MASK_NORMAL,DIRECT_DAMAGE,0);
+  Require(bounded.GetDamage()==UINT32_MAX,"Default physical constructor crossed native32domain");
+  DamageInfo healing(&healer,&target,UINT64_MAX,nullptr,SPELL_SCHOOL_MASK_HOLY,SPELL_DIRECT_DAMAGE,0,true);
+  Require(healing.GetDamage()==UINT64_MAX,"Healing record lost full64domain");
+#endif
+ }
  uint32 absorbs=0;
  for(uint32 incoming:{0u,1u,2147483647u,2147483648u,4294967295u})for(int64 shield:{INT64_MIN,int64(-1),int64(0),int64(1),int64(2147483647),int64(2147483648),int64(4294967295),INT64_MAX}){
   DamageInfo info(&healer,&target,incoming,nullptr,SPELL_SCHOOL_MASK_NORMAL,DIRECT_DAMAGE,0);info.AbsorbDamage(shield);
@@ -68,7 +82,7 @@ int main(int argc,char**argv){try{
  auto spell=sSpellMgr->GetSpellInfo(105992);Require(spell,"Actual healing spell absent");uint32 healAbsorbs=0;
  for(uint32 amount:{1u,100u,2147483647u,2147483648u,4294967295u})for(float capacity:{0.f,1.f,100.f,2147483648.f,4294967296.f}){
   target.RemoveAllAuras();auto aura=healer.AddAura(shieldId,&target);Require(aura&&aura->GetEffect(EFFECT_0),"Actual heal-absorb application failed");aura->GetEffect(EFFECT_0)->SetAmount(capacity);
-  uint32 available=amount,absorbed=0;healer.CalcHealAbsorb(&target,spell,available,absorbed);
+  uint64 available=amount,absorbed=0;healer.CalcHealAbsorb(&target,spell,available,absorbed);
   uint32 expected=uint32(std::min<double>(amount,capacity));Require(available==amount-expected&&absorbed==expected,"Native heal absorption lost signed/float remaining amount");++healAbsorbs;
  }
  target.RemoveAllAuras();target.SetMaxHealth(1099511627793ull);target.SetHealth(500);observer->calls=0;
@@ -76,7 +90,7 @@ int main(int argc,char**argv){try{
  auto state=new InstanceScript(&map);map.*Access(HealInstanceTag{})=state;
  Actor peer(&map,299,25003,{52,803,805,0});Require(map.AddToMap(static_cast<Creature*>(&peer)),"Shared peer admission failed");state->AddToDamageManager(&target);state->AddToDamageManager(&peer);
  uint32 shared=0;
- for(uint64 maximum:{1000ull,1099511627793ull,18446744073709551615ull})for(uint32 request:{1u,100u,2147483648u,4294967295u}){
+ for(uint64 maximum:{1000ull,1099511627793ull,18446744073709551615ull})for(uint64 request:{1ull,100ull,2147483648ull,4294967295ull,1099511627793ull,18446744073709551615ull}){
   target.SetMaxHealth(maximum);target.SetHealth(500);peer.SetMaxHealth(maximum);peer.SetHealth(maximum-1);auto expected=std::min<uint64>(request,maximum-500);
   Require(healer.DealHeal(&target,request)==expected&&target.GetHealth()==500+expected&&peer.GetHealth()==maximum,"Actual shared heal changed sign/overflowed or lost caller skip");++shared;
  }
@@ -86,7 +100,7 @@ int main(int argc,char**argv){try{
 #ifdef NATIVE_HEAL_BASELINE
  " expected-broken native heal inspections,explicitUINT32_MAXbecomesnegative control;not successful repaired healing\n";
 #else
- " native DealHeal cases:fulluint32amounts,unsigned64health,exact positive gain,zero/overheal and real final AI callback;not full spell pipeline/client proof\n";
+ " native DealHeal cases:fulluint64amounts,unsigned64health,exact positive gain,zero/overheal and real final AI callback;not full spell pipeline/client proof\n";
 #endif
  return 0;
 }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}

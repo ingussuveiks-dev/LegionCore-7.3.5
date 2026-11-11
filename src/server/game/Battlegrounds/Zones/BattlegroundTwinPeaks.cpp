@@ -23,7 +23,7 @@
 #include "World.h"
 #include "WorldStatePackets.h"
 
-void BattlegroundTPScore::UpdateScore(uint32 type, uint32 value)
+void BattlegroundTPScore::UpdateScore(uint32 type, uint64 value)
 {
     switch (type)
     {
@@ -377,7 +377,7 @@ void BattlegroundTwinPeaks::_CheckPositions(uint32 diff)
     Battleground::_CheckPositions(diff);
 }
 
-bool BattlegroundTwinPeaks::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)
+bool BattlegroundTwinPeaks::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)
 {
     if (!Battleground::UpdatePlayerScore(player, type, value, doAddHonor))
         return false;

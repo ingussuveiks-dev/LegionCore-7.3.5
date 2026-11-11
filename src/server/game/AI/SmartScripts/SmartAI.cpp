@@ -763,9 +763,12 @@ void SmartAI::DamageTaken(Unit* doneBy, uint32& damage, DamageEffectType dmgType
     }
 }
 
-void SmartAI::HealReceived(Unit* doneBy, uint32& addhealth)
+void SmartAI::HealReceived(Unit* doneBy, uint64& addhealth)
 {
-    GetScript()->ProcessEventsFor(SMART_EVENT_RECEIVE_HEAL, doneBy, addhealth);
+    // The authored event range has uint32 endpoints. A larger heal cannot
+    // match it; narrowing would incorrectly select a small-heal event.
+    if (addhealth <= UINT32_MAX)
+        GetScript()->ProcessEventsFor(SMART_EVENT_RECEIVE_HEAL, doneBy, uint32(addhealth));
 }
 
 void SmartAI::ReceiveEmote(Player* player, uint32 textEmote)

@@ -1285,7 +1285,13 @@ bool Creature::AIM_Destroy()
 
 void Creature::NotifyHealApplied(Unit* healer, uint32 amount, int64 gain)
 {
-    if (!amount || gain < 0)
+    if (gain >= 0)
+        NotifyHealApplied64(healer, amount, uint64(gain));
+}
+
+void Creature::NotifyHealApplied64(Unit* healer, uint64 amount, uint64 gain)
+{
+    if (!amount || gain > amount)
         return;
 
     struct RestoreAILock

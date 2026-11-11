@@ -25,7 +25,7 @@
 #include "CreatureAIImpl.h"
 #include "WorldStatePackets.h"
 
-void BattleGroundSSMScore::UpdateScore(uint32 type, uint32 value)
+void BattleGroundSSMScore::UpdateScore(uint32 type, uint64 value)
 {
     switch (type)
     {

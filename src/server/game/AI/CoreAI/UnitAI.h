@@ -229,10 +229,10 @@ class TC_GAME_API UnitAI
         virtual void DamageTakenAfterScaling(Unit* /*attacker*/, uint32& /*damage*/, DamageEffectType /*damageType*/) { }
 
         // Called when the creature receives heal
-        virtual void HealReceived(Unit* /*done_by*/, uint32& /*addhealth*/) {}
+        virtual void HealReceived(Unit* /*done_by*/, uint64& /*addhealth*/) {}
 
         // Called when the unit heals
-        virtual void HealDone(Unit* /*done_to*/, uint32& /*addhealth*/) {}
+        virtual void HealDone(Unit* /*done_to*/, uint64& /*addhealth*/) {}
 
         void AttackStartCaster(Unit* victim, float dist);
 

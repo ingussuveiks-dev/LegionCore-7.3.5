@@ -31,7 +31,7 @@ namespace
     uint32 const SpellFogOfWar = 231275;
 }
 
-void BattlegroundABScore::UpdateScore(uint32 type, uint32 value)
+void BattlegroundABScore::UpdateScore(uint32 type, uint64 value)
 {
     switch (type)
     {
@@ -466,7 +466,7 @@ WorldSafeLocsEntry const* BattlegroundArathiBasin::GetClosestGraveYard(Player* p
     return safeLockEntry;
 }
 
-bool BattlegroundArathiBasin::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)
+bool BattlegroundArathiBasin::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)
 {
     if (!Battleground::UpdatePlayerScore(player, type, value, doAddHonor))
         return false;

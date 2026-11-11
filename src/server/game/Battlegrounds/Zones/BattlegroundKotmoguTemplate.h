@@ -106,7 +106,7 @@ struct BattleGroundKTScore final : BattlegroundScore
 protected:
     BattleGroundKTScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), OrbHandles(0), Score(0) { }
 
-    void UpdateScore(uint32 type, uint32 value) override
+    void UpdateScore(uint32 type, uint64 value) override
     {
         switch (type)
         {

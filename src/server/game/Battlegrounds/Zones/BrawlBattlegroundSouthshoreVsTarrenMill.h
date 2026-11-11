@@ -18,7 +18,7 @@ public:
     void OnPlayerEnter(Player* player) override;
     WorldSafeLocsEntry const* GetClosestGraveYard(Player* player) override;
     void HandleKillPlayer(Player* player, Player* killer) override;
-    bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
+    bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;
     void FillInitialWorldStates(WorldPackets::WorldState::InitWorldStates& packet) override;
 };
 

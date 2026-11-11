@@ -27,7 +27,7 @@
 #include "SpellScript.h"
 #include "ScriptMgr.h"
 
-void BattlegroundWGScore::UpdateScore(uint32 type, uint32 value)
+void BattlegroundWGScore::UpdateScore(uint32 type, uint64 value)
 {
     switch (type)
     {
@@ -514,7 +514,7 @@ void BattlegroundWarsongGulch::_CheckPositions(uint32 diff)
     Battleground::_CheckPositions(diff);
 }
 
-bool BattlegroundWarsongGulch::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)
+bool BattlegroundWarsongGulch::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)
 {
     if (!Battleground::UpdatePlayerScore(player, type, value, doAddHonor))
         return false;

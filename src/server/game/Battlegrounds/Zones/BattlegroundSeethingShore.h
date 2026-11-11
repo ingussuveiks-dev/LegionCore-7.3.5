@@ -11,7 +11,7 @@ struct BattlegoundSeethingShoreScore final : BattlegroundScore
 protected:
     BattlegoundSeethingShoreScore(ObjectGuid playerGuid, TeamId team);
 
-    void UpdateScore(uint32 type, uint32 value) override;
+    void UpdateScore(uint32 type, uint64 value) override;
     void BuildObjectivesBlock(std::vector<int32>& stats) override;
 
     uint32 Captures = 0;
@@ -36,7 +36,7 @@ public:
     bool SetupBattleground() override;
     void Reset() override;
     void RelocateDeadPlayers(ObjectGuid guideGuid) override;
-    bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
+    bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;
     void ActivateRandomAzeriteFissure();
     void OnGameObjectCreate(GameObject* object) override;
     void OnCreatureRemove(Creature* creature) override;

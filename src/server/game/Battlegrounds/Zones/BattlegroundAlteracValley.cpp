@@ -454,7 +454,7 @@ void BattlegroundAlteracValley::RemovePlayer(Player* player, ObjectGuid /*guid*/
     player->RemoveAurasDueToSpell(AV_BUFF_H_CAPTAIN);
 }
 
-bool BattlegroundAlteracValley::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor /*= true*/)
+bool BattlegroundAlteracValley::UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor /*= true*/)
 {
     if (!Battleground::UpdatePlayerScore(player, type, value, doAddHonor))
         return false;

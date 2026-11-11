@@ -22,6 +22,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "HealingAmount.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "AreaTrigger.h"
@@ -419,7 +420,8 @@ class spell_dk_anti_magic_shell_self : public SpellScriptLoader
 
             void Absorb(AuraEffect* aurEff, DamageInfo & dmgInfo, float & absorbAmount)
             {
-                absorbAmount = std::min(CalculatePct(dmgInfo.GetDamage(), absorbPct), uint32(aurEff->GetAmount()));
+                absorbAmount = std::min<uint64>(CalculatePct(dmgInfo.GetDamage(), absorbPct),
+                    HealingAmount::FromFloat(aurEff->GetAmount()));
                 _damage += absorbAmount;
             }
 

@@ -1383,7 +1383,7 @@ struct BattlegroundAVScore final : public BattlegroundScore
     protected:
         BattlegroundAVScore(ObjectGuid playerGuid, TeamId team) : BattlegroundScore(playerGuid, team), GraveyardsAssaulted(0), GraveyardsDefended(0), TowersAssaulted(0), TowersDefended(0), MinesCaptured(0), LeadersKilled(0), SecondaryObjectives(0) { }
 
-        void UpdateScore(uint32 type, uint32 value) override
+        void UpdateScore(uint32 type, uint64 value) override
         {
             switch (type)
             {
@@ -1449,7 +1449,7 @@ class TC_GAME_API BattlegroundAlteracValley : public Battleground
         void ResetBGSubclass() override;
 
         void UpdateScore(uint16 team, int16 points);
-        bool UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor = true) override;
+        bool UpdatePlayerScore(Player* player, uint32 type, uint64 value, bool doAddHonor = true) override;
 
         void EventPlayerClickedOnFlag(Player* source, GameObject* target_obj, bool& canRemove) override;
         void HandleKillPlayer(Player* player, Player* killer) override;

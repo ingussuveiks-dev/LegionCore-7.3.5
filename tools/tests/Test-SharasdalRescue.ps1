@@ -23,7 +23,7 @@ $fields=@'
         bool _rescueNotifyDone = false, _rescueNotifyQueued = false, _rescueNotifyExhausted = false;
         uint32 _rescueDelay = 0, _rescueNotifyTries = 0;
 '@
-$normalized=$normalized.Replace($fields,'')
+$normalized= $normalized.Replace($fields.Replace("`r",''),'')
 # Restore the removed pre-cast click handler at its exact original class location.
 $oldClick=Block $old 'void OnSpellClick('; $oldUpdate=Block $old 'void UpdateAI('
 $normalized=$normalized.Replace($oldUpdate,$oldClick+"`n`n"+$oldUpdate)
@@ -46,7 +46,7 @@ foreach($entry in @(@('Owner','Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItse
 $heal=Get-HealApiBlock $core;$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal boundary missing'}
 [IO.File]::WriteAllText("$out/DealHeal.inc",$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}")
 $creature=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
-[IO.File]::WriteAllText("$out/Notify.inc",(Block $creature 'void Creature::NotifyHealApplied('))
+[IO.File]::WriteAllText("$out/Notify.inc",(Get-HealApiNotifyBlock $creature))
 [IO.File]::WriteAllText("$out/Lifecycle.inc",(Block $creature 'if (i_AI || i_disabledAI)'))
 $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
