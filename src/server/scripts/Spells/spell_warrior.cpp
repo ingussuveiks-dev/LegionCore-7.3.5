@@ -1874,10 +1874,11 @@ class spell_warr_ravager_t20 : public SpellScriptLoader
                             if (tickNum != 1)
                                 return;
 
+                            if (targets.empty())
+                                return;
+
                             if (WorldObject* object = Trinity::Containers::SelectRandomContainerElement(targets))
                             {
-                                if (targets.empty())
-                                    return;
 
                                 if (Unit* unit = object->ToUnit())
                                     owner->CastSpell(unit, 12294, true, nullptr, eff);
