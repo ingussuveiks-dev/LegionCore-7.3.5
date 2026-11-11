@@ -160,7 +160,7 @@ public:
             switch (param)
             {
                 case ACTION_WATER_ELEMENT_HIT:
-                    me->ModifyHealth(int32(me->CountPctFromMaxHealth(1)));
+                    me->ModifyHealth(int64(me->CountPctFromMaxHealth(1)));
 
                     if (bIsExploded)
                         DoExplodeCompleted();
@@ -168,8 +168,8 @@ public:
                     dehydration = false;
                     break;
                 case ACTION_WATER_ELEMENT_KILLED:
-                    uint32 damage = me->CountPctFromMaxHealth(3);
-                    me->ModifyHealth(-int32(damage));
+                    uint64 damage = me->CountPctFromMaxHealth(3);
+                    me->ModifyHealth(-int64(damage));
                     me->LowerPlayerDamageReq(damage);
                     break;
             }
