@@ -1457,8 +1457,8 @@ struct npc_highmaul_fire_pillar : public ScriptedAI
 
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
                 me->PlayOneShotAnimKit(AnimKit1);
-                AddDelayedEvent(3 * IN_MILLISECONDS, [this]() -> void { me->SetAnimKitId(AnimKit2); });
-                AddDelayedEvent(3 * IN_MILLISECONDS, [this]() -> void { me->CastSpell(me, FlameJet, true); });
+                AddDelayedEvent(3 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetAnimKitId(AnimKit2); });
+                AddDelayedEvent(3 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->CastSpell(me, FlameJet, true); });
 
                 if (me->GetMap()->IsMythicRaid())
                     me->CastSpell(me, FlameGoutPeriodic, true);
@@ -1494,8 +1494,9 @@ struct npc_highmaul_fire_pillar : public ScriptedAI
                 break;
             case DeactivatePillarOther:
             {
-                AddDelayedEvent(3 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(3 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     DeactivatePillars();
 
                     if (Creature* kargath = me->FindNearestCreature(KargathBladefist, 15.0f))
@@ -1525,6 +1526,9 @@ struct npc_highmaul_fire_pillar : public ScriptedAI
     void UpdateAI(uint32 diff) override
     {
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Ravenous Bloodmaw - 79296
