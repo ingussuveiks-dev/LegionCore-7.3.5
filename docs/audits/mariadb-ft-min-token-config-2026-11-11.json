@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-11",
+  "status": "CONFIGURATION_FIXED_NATIVE_PARSER_AND_EXISTING_RUNTIME_VERIFIED",
+  "cause": "Historic innodb_ft_min_token_size=0 was outside matching MariaDB11.4.9 range1..16. Logs show the same warning since2026-10-21;the server always enforced1.",
+  "repair": {
+    "path": "C:\\wamp64\\bin\\mariadb\\mariadb11.4.9\\my.ini",
+    "before_sha256": "ce8ebfc575b983971be55346f59811285ccc9720765bfc90fc1dd405fdf69a08",
+    "after_sha256": "07f7bf86b8a7ca252cfc112c7f8e4e441e21dc61e2d17f3ff2ab8ae652acb0b2",
+    "change": "One exact setting:innodb_ft_min_token_size=0 ->1 in the wampmariadb64 section. All other bytes preserved.",
+    "source": "Pinned matching11.4.9 ha_innodb.cc:MYSQL_SYSVAR_ULONG(ft_min_token_size),READONLY,default3,min1,max16.",
+    "cause": "Configuration was below native minimum1. Startup logs show the same auto-adjust warning since2026-10-21,including current PID16996;unrelated to CAST DLL replacement.",
+    "runtime": "Live readonly SQL confirms current effective1. No service restart or runtime variable/FT index change;file now matches the value the server already enforced. Warning absence at the next actual Wamp restart remains a separate observational check.",
+    "private_backup": ".codex\\mariadb-live-verification-2026-11-11\\my.ini.before"
+  },
+  "checks": "Live readonly SQL reports1;installed mysqld --no-defaults --innodb-ft-min-token-size=1 --verbose --help exits0,retains1 and emits no stderr. Exact one-value config diff and all remaining bytes/backup hashes verified;post-test diagnostics clean.",
+  "limits": "No user service restart or FTS index rebuild. Runtime behavior remains at its already enforced1. Native parser accepts the corrected option;next actual Wamp restart is still needed to observe the old warning absent.",
+  "evidence_archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\mariadb-live-verification-2026-11-11",
+    "manifest_sha256": "603cb96621d0f992ae8d45912910a817fb2e53550b6173d48a969e5fa563b2bb",
+    "files": 69,
+    "deletion_manifest_sha256": "038f7713b6295c47e2a41ba11f0a2885d1415d41ba3ce92a77b4d65baeaf4810"
+  }
+}
