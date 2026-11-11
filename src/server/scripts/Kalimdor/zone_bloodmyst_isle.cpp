@@ -384,10 +384,11 @@ public:
             if (Creature* legoso = me->FindNearestCreature(NPC_LEGOSO, SIZE_OF_GRIDS))
             {
                 Group* group = me->GetLootRecipientGroup();
+                Player* player = killer ? killer->GetAffectingPlayer() : nullptr;
 
-                if (killer->GetGUID() == legoso->GetGUID() ||
-                    (group && group->IsMember(killer->GetGUID())) ||
-                    killer->GetGUID().GetCounter() == legoso->AI()->GetData(DATA_EVENT_STARTER_GUID))
+                if ((killer && killer->GetGUID() == legoso->GetGUID()) ||
+                    (player && ((group && group->IsMember(player->GetGUID())) ||
+                    player->GetGUID().GetCounter() == legoso->AI()->GetData(DATA_EVENT_STARTER_GUID))))
                     legoso->AI()->DoAction(ACTION_LEGOSO_SIRONAS_KILLED);
             }
         }
