@@ -286,8 +286,9 @@ struct boss_imperator_margok : public BossAI
 
         _Reset();
 
-        AddDelayedEvent(200, [this]() -> void
+        AddDelayedEvent(200, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->CastSpell(me, CosmeticSitThrone, true);
 
             for (uint8 i = 0; i < MaxVisualPoint; ++i)
@@ -314,13 +315,15 @@ struct boss_imperator_margok : public BossAI
         switch (action)
         {
             case ActionIntro:
-                AddDelayedEvent(7 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(7 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(Intro1);
                 });
 
-                AddDelayedEvent(20 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(20 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(Intro2);
                 });
 
@@ -345,8 +348,9 @@ struct boss_imperator_margok : public BossAI
                     rune->CastSpell(rune, TransitionVisualPeriodic, true);
                 break;
             case MoveDown:
-                AddDelayedEvent(200, [this]() -> void
+                AddDelayedEvent(200, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_TURN);
 
                     me->SetAnimKitId(0);
@@ -577,8 +581,9 @@ struct boss_imperator_margok : public BossAI
 
                 /// Force Nova has a radius of 100 yards and moves with a speed of 7 yards per second
                 uint32 time = uint32(float(100.0f / 7.0f) * float(IN_MILLISECONDS));
-                AddDelayedEvent(time, [this]() -> void
+                AddDelayedEvent(time, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     m_IsInNova = false;
                     m_NovaTime = 0;
                     m_NovaPos = Position();
@@ -624,8 +629,9 @@ struct boss_imperator_margok : public BossAI
 
                 /// Force Nova has a radius of 100 yards and moves with a speed of 7 yards per second
                 uint32 time = uint32(float(100.0f / 7.0f) * float(IN_MILLISECONDS));
-                AddDelayedEvent(time, [this]() -> void
+                AddDelayedEvent(time, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     m_IsInNova = false;
                     m_NovaTime = 0;
                     m_NovaPos = Position();
@@ -693,8 +699,9 @@ struct boss_imperator_margok : public BossAI
                 uint32 time = uint32(float(100.0f / 7.0f) * float(IN_MILLISECONDS));
                 /// Must save the current value
                 uint8 count = m_NovaCount;
-                AddDelayedEvent(time, [this, count]() -> void
+                AddDelayedEvent(time, [this, count, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     m_IsInNovaPhase3[count] = false;
                     m_NovaTimePhase3[count] = 0;
                     m_NovaPosPhase3[count] = Position();
@@ -726,8 +733,9 @@ struct boss_imperator_margok : public BossAI
 
                 /// Force Nova has a radius of 100 yards and moves with a speed of 7 yards per second
                 uint32 time = uint32(float(100.0f / 7.0f) * float(IN_MILLISECONDS));
-                AddDelayedEvent(time, [this]() -> void
+                AddDelayedEvent(time, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     m_IsInNova = false;
                     m_NovaTime = 0;
                     m_NovaPos = Position();
@@ -783,8 +791,9 @@ struct boss_imperator_margok : public BossAI
                 m_InCombat = true;
 
                 ObjectGuid guid = player->GetGUID();
-                AddDelayedEvent(50, [this, guid]() -> void
+                AddDelayedEvent(50, [this, guid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Player* player = Player::GetPlayer(*me, guid))
                         AttackStart(player);
                 });
@@ -1098,8 +1107,9 @@ struct boss_imperator_margok : public BossAI
         me->CastSpell(me, EncounterEvent, true);
         me->CastSpell(me, TeleportToDisplacement, true);
 
-        AddDelayedEvent(3 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(3 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->CastSpell(me, TransitionVisualPhase2, true);
             me->SetAnimKitId(AnimKitFlyingRune);
 
@@ -1111,8 +1121,9 @@ struct boss_imperator_margok : public BossAI
             me->GetMotionMaster()->MovePoint(MoveUp, pos);
         });
 
-        AddDelayedEvent(11 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(11 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->CastSpell(me, PowerOfDisplacement, true);
             me->CastSpell(me, DisplacementTransform, true);
 
@@ -1148,8 +1159,9 @@ struct boss_imperator_margok : public BossAI
 
         Talk(TalkRuneOfFortification1);
 
-        AddDelayedEvent(7 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(7 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->CastSpell(me, ArcaneProtection, true);
             me->CastSpell(me, TransitionVisualPhase3, true);
 
@@ -1163,8 +1175,9 @@ struct boss_imperator_margok : public BossAI
             me->GetMotionMaster()->MovePoint(MoveUp, pos);
         });
 
-        AddDelayedEvent(10 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(10 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             Talk(TalkRuneOfFortification2);
 
             me->CastSpell(me, AwakenRunestone, false);
@@ -1178,18 +1191,21 @@ struct boss_imperator_margok : public BossAI
             m_CosmeticEvents.RescheduleEvent(EventSummonWarmages, 1 * IN_MILLISECONDS);
         });
 
-        AddDelayedEvent(25 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(25 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             Talk(TalkRuneOfFortification3);
         });
 
-        AddDelayedEvent(56 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(56 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             Talk(TalkRuneOfFortification4);
         });
 
-        AddDelayedEvent(70 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(70 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->RemoveAura(AwakenRunestone);
 
             me->RemoveAura(DisplacementTransform);
@@ -1203,8 +1219,9 @@ struct boss_imperator_margok : public BossAI
             me->GetMotionMaster()->MovePoint(MoveDown, pos);
         });
 
-        AddDelayedEvent(75 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(75 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             Talk(TalkRuneOfFortification5);
 
             ++m_Phase;
@@ -1239,8 +1256,9 @@ struct boss_imperator_margok : public BossAI
 
         Talk(TalkRuneOfReplication1);
 
-        AddDelayedEvent(7 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(7 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->CastSpell(me, ArcaneProtection, true);
             me->CastSpell(me, TransitionVisualPhase4, true);
 
@@ -1254,8 +1272,9 @@ struct boss_imperator_margok : public BossAI
             me->GetMotionMaster()->MovePoint(MoveUp, pos);
         });
 
-        AddDelayedEvent(10 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(10 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             Talk(TalkRuneOfReplication2);
 
             me->CastSpell(me, AwakenRunestone, false);
@@ -1271,13 +1290,15 @@ struct boss_imperator_margok : public BossAI
             me->SummonCreature(GorianReaver, gorianReaverPo);
         });
 
-        AddDelayedEvent(41 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(41 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             Talk(TalkRuneOfReplication3);
         });
 
-        AddDelayedEvent(70 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(70 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->RemoveAura(AwakenRunestone);
 
             me->RemoveAura(FortificationTransform);
@@ -1292,8 +1313,9 @@ struct boss_imperator_margok : public BossAI
             me->GetMotionMaster()->MovePoint(MoveDown, pos);
         });
 
-        AddDelayedEvent(75 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(75 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             Talk(TalkRuneOfReplication4);
 
             ++m_Phase;
@@ -1360,6 +1382,9 @@ struct boss_imperator_margok : public BossAI
         for (Creature* itr : creatureList)
             itr->DespawnOrUnsummon();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Rune of Displacement - 77429
