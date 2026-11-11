@@ -855,7 +855,8 @@ public:
             /// Adds Blackrock Mortar to the player.
             if (p_Killer)
             {
-                p_Killer->AddAura(eGromkarGrenadierSpells::SpellBlackrockGrenadeAura, p_Killer);
+                if (Player* player = p_Killer->GetAffectingPlayer())
+                    player->AddAura(eGromkarGrenadierSpells::SpellBlackrockGrenadeAura, player);
                 me->DespawnOrUnsummon(2 * TimeConstants::IN_MILLISECONDS);
             }
         }
