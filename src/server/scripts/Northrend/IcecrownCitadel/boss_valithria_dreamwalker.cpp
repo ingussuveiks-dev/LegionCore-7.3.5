@@ -18,6 +18,7 @@
 
 #include "icecrown_citadel.h"
 #include "ObjectVisitors.hpp"
+#include <boost/multiprecision/cpp_int.hpp>
 
 enum Texts
 {
@@ -264,9 +265,9 @@ class boss_valithria_dreamwalker : public CreatureScript
                 summons.DespawnAll();
             }
 
-            bool HealthAbovePct(int32 pct) const { return me->GetHealth() * (uint64)100 > me->GetMaxHealth() * (uint64)pct; }
+            bool HealthAbovePct(int32 pct) const { return boost::multiprecision::uint128_t(me->GetHealth()) * 100 > boost::multiprecision::uint128_t(me->GetMaxHealth()) * uint64(pct); }
 
-            bool HealthBelowPct(int32 pct) const { return me->GetHealth() * (uint64)100 < me->GetMaxHealth() * (uint64)pct; }
+            bool HealthBelowPct(int32 pct) const { return boost::multiprecision::uint128_t(me->GetHealth()) * 100 < boost::multiprecision::uint128_t(me->GetMaxHealth()) * uint64(pct); }
 
             void MoveInLineOfSight(Unit* who) override
             {
