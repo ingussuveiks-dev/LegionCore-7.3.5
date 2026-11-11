@@ -791,7 +791,7 @@ struct go_cheer_speaker : public GameObjectAI
                 if (it != pos.end())
                 {
                     Position const& rndpos = Trinity::Containers::SelectRandomContainerElement(it->second);
-                    go->SummonGameObject(FireworksPicker[urand(0, 23)], rndpos, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1);
+                    go->SummonGameObject(FireworksPicker[urand(0, 22)], rndpos, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1);
                 }
 
                 if (started && !sGameEventMgr->IsActiveEvent(4))
