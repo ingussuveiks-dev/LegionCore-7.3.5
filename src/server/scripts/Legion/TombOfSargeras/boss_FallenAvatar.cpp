@@ -306,8 +306,9 @@ struct boss_fallen_avatar : BossAI
             events.RescheduleEvent(EVENT_SELECT_PILONE_FEL, 1100);
 
         if (who)
-            me->AddDelayedCombat(500, [&]() -> void
+            me->AddDelayedCombat(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (Creature* maiden = summons.GetCreature(NPC_AVATARA_MAIDEN))
                 {
                     if (!maiden->isInCombat())
