@@ -2659,8 +2659,9 @@ struct boss_new_year_2019_atray : public ScriptedAI
         me->StopAttack(true);
         SetFlyMode(true);
         me->SetAnimTier(AnimTier::Fly);
-        me->AddDelayedEvent(2000, [this]() -> void
+        me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->GetMotionMaster()->MovePoint(1, AtrayFlyPhasePos[urand(0, 7)], false);
         });
     }
@@ -2701,8 +2702,9 @@ struct boss_new_year_2019_atray : public ScriptedAI
                 {
                     khadgar->CastSpell(khadgar, SPELL_ATRAY_KHADGAR_BARIER);
                 });
-                me->AddDelayedCombat(2000, [this]() -> void
+                me->AddDelayedCombat(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(1);
                     DoCast(me, SPELL_ATRAY_FURY);
                 });
@@ -2735,18 +2737,21 @@ struct boss_new_year_2019_atray : public ScriptedAI
     {
         if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 50.0f, true))
             me->SetFacingTo(target);
-        me->AddDelayedCombat(1000, [this]() -> void
+        me->AddDelayedCombat(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->CastSpell(me, SPELL_ATRAY_FROST_BARRAGE);
         });
-        me->AddDelayedCombat(3000, [this, adds, addcount]() -> void
+        me->AddDelayedCombat(3000, [this, adds, addcount, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->CastSpell(me, SPELL_ATRAY_FROST_BARRAGE);
             if (adds)
                 Adds(addcount);
         });
-        me->AddDelayedCombat(6000, [this, point]() -> void
+        me->AddDelayedCombat(6000, [this, point, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->GetMotionMaster()->MovePoint(point, AtrayFlyPhasePos[urand(0, 7)], false);
         });
     }
@@ -2793,16 +2798,19 @@ struct boss_new_year_2019_atray : public ScriptedAI
         case 19:
             if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 50.0f, true))
                 me->SetFacingTo(target);
-            me->AddDelayedCombat(1000, [this]() -> void
+            me->AddDelayedCombat(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->CastSpell(me, SPELL_ATRAY_FROST_BARRAGE);
             });
-            me->AddDelayedCombat(3000, [this]() -> void
+            me->AddDelayedCombat(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->CastSpell(me, SPELL_ATRAY_FROST_BARRAGE);
             });
-            me->AddDelayedCombat(6000, [this]() -> void
+            me->AddDelayedCombat(6000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->GetMotionMaster()->MovePoint(20, AtrayFlyEndPos, false);
             });
             break;
@@ -2837,8 +2845,9 @@ struct boss_new_year_2019_atray : public ScriptedAI
         me->SetHomePosition(AtrayHomePos);
         me->NearTeleportTo(AtrayHomePos);
         me->SetVisible(false);
-        me->AddDelayedEvent(8000, [this]() -> void
+        me->AddDelayedEvent(8000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->SetVisible(true);
         });
     }
@@ -3002,6 +3011,9 @@ struct boss_new_year_2019_atray : public ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 // 542188
