@@ -1,11 +1,11 @@
 {
   "latest_second_five_ten_repairs_2026_11_11": {
     "status": "IN_PROGRESS",
-    "completed_fixes": 20,
+    "completed_fixes": 30,
     "authorized_fixes": 50,
     "audit": "docs\\audits\\second-five-ten-repairs-2026-11-11.json",
-    "latest_batch_audit": "docs\\audits\\fortythird-ten-repairs-2026-11-11.json",
-    "last_fix_commit": "cb2b81769042618db953991c0ecff14c0e2684fd",
+    "latest_batch_audit": "docs\\audits\\fortyfourth-ten-repairs-2026-11-11.json",
+    "last_fix_commit": "8fa2d861e81e08c1a0316724d0a7fbc1f3459977",
     "MariaDB": "INSTALLED_LIVE_VERIFIED_USER_SERVICE_UNTOUCHED",
     "pending": [
       "MariaDB DLL is installed and live-verified;user MariaDB service remains running. FT minimum1 config warning absence awaits a future user restart;no service stop needed for these source fixes.",
