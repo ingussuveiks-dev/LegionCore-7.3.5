@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-11",
+  "status": "DEPLOYED_AI_LIFETIME_REPAIR_AUTOMATED_CLIENT_PENDING",
+  "key": "BossBrawguildMasterLifetime",
+  "title": "Cancel boss_brawguild_master callbacks after source AI retirement",
+  "paths": [
+    "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp"
+  ],
+  "classes": [
+    "boss_brawguild_masterAI"
+  ],
+  "binding": {
+    "ScriptName": "boss_brawguild_master",
+    "actual_entries": [
+      115637,
+      115645
+    ]
+  },
+  "cause": "CreatureAI delegate queues are Unit-owned;AIM_Destroy/default/SmartAI/BossAI destructors do not cancel those Unit queues. Explicit or implicit raw this capture could enter the old actor body after original AI deletion,including replacement by Null/Possessed AI. Existing non-null me/alive/generation checks dereference this too late.",
+  "repair": "Capture a weak per-AI token at scheduling;first statement rejects expired original AI before any payload/member access. Token lifetime follows that exact AI,not current AI identity. Surviving suspended AI and corpse outro semantics remain admitted;normal original predicates/credit remain.",
+  "callback_count": 3,
+  "registrations": [
+    {
+      "method": "Reset",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "3000",
+      "original_payload_sha256": "668c6a9ea12db6b10850894aa146b0b3bec0f5dc26ef6f45123de2f31f82ac57"
+    },
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "20000",
+      "original_payload_sha256": "303ea732251c4cbc4c13904277cf9cd989dc1df398c618e42dd0ef4cded6daae"
+    },
+    {
+      "method": "SummonedCreatureDies",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "700",
+      "original_payload_sha256": "968766be3e26fb3bbdba191162ca58e6f78bc0fe7e492d1947535538bfdbb901"
+    }
+  ],
+  "checks": {
+    "source": "Exact complete-file reversal to 308d97ee2d3a966936bf5c7621e0eee91b6516d7;only capture/first-statement weak expiry/private per-AI anchor added. Original gates,casts,IDs,delays,credit,Reset/death/cleanup and owner/group rules retained.",
+    "asan": "Every listed old callback admission projection intentionally produces heap-use-after-free/ABORTING after frame destruction;repaired projection passes live/retired/cancelled/same-address replacement. Expected counterfactuals paired,not ordinary successful runs.",
+    "native": "Actual Creature::AIM_Initialize/destruction and Unit event/combat queues:live,retired,cancelled,surviving inactive AI and corpse lifecycle admission;controlled123ms and observed payload. Exact original live creature ScriptName inventory checked. Bare controlled actors/no character writes;original encounter payload not executed by this projection.",
+    "release": "Original main libraries/staged final link inputs and source snapshots;complete prior Meljarak/Twin/native-health/Freya/counter/Tsulong/Rook/367 linked checks return,plus every new actual production weak gate before payload. Canonical EXE/MAP hashes match tested immutable outputs;Scepter passes.",
+    "runtime": "Owned worldserver PID=13584\nPASS owned PID=13584 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;stderr empty,configuration/cert/DLL protected hashes unchanged. No user/unknown process stopped or hidden task server left running. Ready banner still prior generated revision metadata;source/library/EXE identities establish actual implementation.",
+    "diagnostics": "Before/after canonical+own crashes/log lengths/timestamps,exit/stdout/stderr/appended DBErrors and server warnings/errors/assertions reviewed. Final checks no new/unexplained diagnostic. Compiler warnings all mapped to unchanged baseline expressions;Scepter generated signedness warning inherited. Expected ASAN controls archived only after repaired matching binary/native checks. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged;no log truncation."
+  },
+  "sources": "Matching local core Creature::AIM_Destroy,CreatureAI/SmartAI/BossAI destructors,CreatureAI::AddDelayedEvent/Combat delegates,Unit native queues and matching live ScriptName records. Local Trinity eaa32415b0f93f6d26294e1e9e4083be3dba0745 is a newer reference;no incompatible code/data copied.",
+  "batch": {
+    "number": 2,
+    "authorized_total": 50,
+    "audit": "docs/audits/fortythird-ten-repairs-2026-11-11.json",
+    "base": "308d97ee2d3a966936bf5c7621e0eee91b6516d7"
+  },
+  "pending": [
+    "MariaDB DLL is installed and live-verified;user MariaDB service remains running. FT minimum1 config warning absence awaits a future user restart;no service stop needed for these source fixes.",
+    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ]
+}

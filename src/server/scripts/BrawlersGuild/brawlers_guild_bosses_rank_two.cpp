@@ -467,8 +467,9 @@ public:
                 }
                 phase_of_sphere = 1;
 
-                me->AddDelayedEvent(3000, [this] () -> void
+                me->AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (me->GetAnyOwner() && me->GetAnyOwner()->IsPlayer())
                     {
                         if (Player* player = me->GetAnyOwner()->ToPlayer())
@@ -508,8 +509,9 @@ public:
                 EntryCheckPredicate pred(115637);
                 summons.DoAction(true, pred);
                 
-                me->AddDelayedEvent(20000, [this] () -> void
+                me->AddDelayedEvent(20000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (me->GetAnyOwner() && me->GetAnyOwner()->IsPlayer())
                     {
                         if (Player* player = me->GetAnyOwner()->ToPlayer())
@@ -618,8 +620,9 @@ public:
                 {
                     me->KillAllDelayedEvents();
                     Player* player = me->GetAnyOwner()->ToPlayer();
-                    me->AddDelayedEvent(700, [this, playerGuid = player->GetGUID()] () -> void
+                    me->AddDelayedEvent(700, [this, playerGuid = player->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))
                             if (player->IsAlive() && me->GetAnyOwner() == player)
                                 if (BrawlersGuild* brawlerGuild = player->GetBrawlerGuild())
@@ -647,6 +650,9 @@ public:
                     timer_check -= diff;
             }
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
