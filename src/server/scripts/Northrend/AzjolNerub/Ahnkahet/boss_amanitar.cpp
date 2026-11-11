@@ -187,10 +187,11 @@ public:
             if (!killer)
                 return;
 
-            if (me->GetEntry() == NPC_HEALTHY_MUSHROOM && killer->GetTypeId() == TYPEID_PLAYER)
+            Player* player = killer->GetAffectingPlayer();
+            if (me->GetEntry() == NPC_HEALTHY_MUSHROOM && player)
             {
                 me->InterruptNonMeleeSpells(false);
-                DoCast(killer, SPELL_HEALTHY_MUSHROOM_POTENT_FUNGUS, false);
+                DoCast(player, SPELL_HEALTHY_MUSHROOM_POTENT_FUNGUS, false);
             }
         }
 

@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-11",
+  "status": "TECHNICAL_SOURCE_ASAN_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
+  "key": "mob_amanitar_mushroomsDeath",
+  "batch": 2,
+  "index": 4,
+  "title": "Repair mob_amanitar_mushrooms death attribution and preserve its cleanup",
+  "baseline": "240ef9eed620b397dde0a405c0c8f8ce4980137b",
+  "paths": [
+    "src/server/scripts/Northrend/AzjolNerub/Ahnkahet/boss_amanitar.cpp"
+  ],
+  "class_name": "mob_amanitar_mushroomsAI",
+  "native_creature_bindings": [
+    {
+      "entry": 30391,
+      "script": "mob_amanitar_mushrooms"
+    },
+    {
+      "entry": 30435,
+      "script": "mob_amanitar_mushrooms"
+    }
+  ],
+  "binding_scope": "exact affected class binding",
+  "implementation": "Exact declared delta in tools/tests/FiveTen20261111Repairs.json;original IDs/native credit/spell/cleanup endpoints retained except the explicit repair.",
+  "regression_command": "tools/tests/Test-FiveTen20261111.ps1 -Case mob_amanitar_mushroomsDeath",
+  "baseline_command": "tools/tests/Test-FiveTen20261111.ps1 -Case mob_amanitar_mushroomsDeath -Baseline",
+  "shared_evidence": {
+    "source": "Exact whole-file reversal of50 declared repairs to240ef9eed;no undeclared production delta.",
+    "methods": "29 complete extracted production death/admission methods under ASAN:actual body,controlled external quest/instance/spatial/spell endpoints;player/pet/two-level guardian/charmer/null/unowned,original admission and independent cleanup;selected failure/retry variants.",
+    "mechanics": "21 ASAN scopes:10 actual numeric expressions/full survival/Ichoron methods,2 latch lifecycle methods,3 complete Brawler event cases,2 real array declarations/index expressions,3 foreign-actor/object callbacks and1Meatball admission projection. Full-class/payload source reversal and linked guard proof are independent.",
+    "baseline": "All50 corresponding pinned240ef9eed methods/expressions fail the repaired expectations or trigger expected ASAN null/UAF/OOB faults;deliberate counterfactuals,not ordinary passing runs. Nonzero baseline process status is retained and paired with fixed tests.",
+    "native": "Actual26972 reader+113exact creature bindings,GO180749/elevator/eight torment records,8spell bindings andmap1712instance registration;real GetAffectingPlayer/player/pet/two-level guardian/charmer/null/unowned,real victim-instance identity,actual Unit queues/AIM destruction and native64health/heal backend. Projection clocks/endpoints are explicit;no character saves.",
+    "linked": "Selected new50PE consumers/weak gate dominance,full retained TimeLoop/native-heal/Mending/target-profile/Cordana/46group PE chain on the same3f1965binary;focused canonical PE and canonical Scepter VerifyReleaseBinary. Original game/scripts final-link libraries plus Main dependency compile;no globalOutDir.",
+    "runtime": "Task-owned canonical worldserver PID5356 fresh ready,graceful server shutdown0,exit0/gone,stderr empty;no new crashes,DBErrors append or unexplained server warning/error/assertion. bnet.text unchanged;only PE/link metadata hash differs."
+  },
+  "canonical_worldserver_sha256": "3f19651576141a79dfb9e7e043b05bca6a9944d40534af96d3b934a7694909d9",
+  "client_pending": true,
+  "scope": "Only this selected technical failure is repaired;controlled regression/native projections do not certify full encounters or client traversal.",
+  "archive": "build-extractors/bin/Release/fixed/third-five-ten-2026-11-11;final manifest in bundle audit"
+}
