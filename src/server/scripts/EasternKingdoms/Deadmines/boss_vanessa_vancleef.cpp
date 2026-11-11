@@ -1,6 +1,7 @@
 #include "deadmines.h"
 #include "LFGMgr.h"
 #include "Group.h"
+#include <boost/multiprecision/cpp_int.hpp>
 
 enum ScriptedTexts
 {
@@ -208,7 +209,7 @@ class boss_vanessa_vancleef : public CreatureScript
                             me->GetMotionMaster()->MoveChase(me->getVictim());
                             break;
                         case EVENT_ADDS_1:
-                            if ((me->GetHealth() * 100) / me->GetMaxHealth() > 50)
+                            if ((boost::multiprecision::uint128_t(me->GetHealth()) * 100) / me->GetMaxHealth() > 50)
                             {
                                 Talk(SAY_ADDS);
                                 me->SummonCreature(NPC_DEFIAS_ENFORCER, addsPos[1], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
@@ -216,14 +217,14 @@ class boss_vanessa_vancleef : public CreatureScript
                             }
                             break;
                         case EVENT_ADDS_2:
-                            if ((me->GetHealth() * 100) / me->GetMaxHealth() > 50)
+                            if ((boost::multiprecision::uint128_t(me->GetHealth()) * 100) / me->GetMaxHealth() > 50)
                             {
                                 me->SummonCreature(NPC_DEFIAS_SHADOWGUARD, addsPos[0], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
                                 events.RescheduleEvent(EVENT_ADDS_3, 15000);
                             }
                             break;
                         case EVENT_ADDS_3:
-                            if ((me->GetHealth() * 100) / me->GetMaxHealth() > 50)
+                            if ((boost::multiprecision::uint128_t(me->GetHealth()) * 100) / me->GetMaxHealth() > 50)
                             {
                                 me->SummonCreature(NPC_DEFIAS_BLOOD_WIZARD, addsPos[2], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
                                 events.RescheduleEvent(EVENT_ADDS_1, 15000);
