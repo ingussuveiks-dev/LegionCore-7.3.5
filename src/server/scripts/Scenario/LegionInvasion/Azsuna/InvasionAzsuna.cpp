@@ -72,8 +72,11 @@ public:
         void OnSpellClick(Unit* clicker) override
         {
             if (me->GetEntry() == 119459)
-                clicker->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 56885);
-            else
+            {
+                if (Player* player = clicker ? clicker->ToPlayer() : nullptr)
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 56885);
+            }
+            else if (clicker)
                 clicker->CastSpell(me, 52391, true); //Ride Veh
         }
         
