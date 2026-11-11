@@ -1,0 +1,94 @@
+{
+  "status": "IN_PROGRESS",
+  "authorized_total": 100,
+  "completed": 10,
+  "remaining": 90,
+  "completed_batches": 1,
+  "support_commit": "9c811f3728a29d3fad974a65692f830a8d3e3670",
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "batches": [
+    {
+      "batch": 1,
+      "historical_group": 52,
+      "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+      "commits": [
+        {
+          "key": "SinestraIndomitableIsolation",
+          "commit": "03a6bee374fab18c961247456194270df74c0e3f",
+          "audit": "docs/audits/ten-ten-2026-11-11/SinestraIndomitableIsolation.json"
+        },
+        {
+          "key": "BGStartCommandConsoleContext",
+          "commit": "cd15f7f3f99dc8e68f05496fbc7a6603e54a0d75",
+          "audit": "docs/audits/ten-ten-2026-11-11/BGStartCommandConsoleContext.json"
+        },
+        {
+          "key": "BGFinishCommandConsoleContext",
+          "commit": "3191fe6340769dbd17b6e0c9474e8cb68dd6a461",
+          "audit": "docs/audits/ten-ten-2026-11-11/BGFinishCommandConsoleContext.json"
+        },
+        {
+          "key": "BGSetArenaCommandConsoleContext",
+          "commit": "3da11da5f2afe77789ba6d2c335d91e6ed2b313d",
+          "audit": "docs/audits/ten-ten-2026-11-11/BGSetArenaCommandConsoleContext.json"
+        },
+        {
+          "key": "BGSetSkirmishCommandConsoleContext",
+          "commit": "53f2ae54be3533f309b28f379a7c7261ed899cc0",
+          "audit": "docs/audits/ten-ten-2026-11-11/BGSetSkirmishCommandConsoleContext.json"
+        },
+        {
+          "key": "BGSetRBGCommandConsoleContext",
+          "commit": "6edf244d9fc8b3549f968d5987345edd1557bd0f",
+          "audit": "docs/audits/ten-ten-2026-11-11/BGSetRBGCommandConsoleContext.json"
+        },
+        {
+          "key": "BGSetBGCommandConsoleContext",
+          "commit": "f69d4da2c90999d6685541120d0745ce7e1aa274",
+          "audit": "docs/audits/ten-ten-2026-11-11/BGSetBGCommandConsoleContext.json"
+        },
+        {
+          "key": "CastActionCommandConsoleContext",
+          "commit": "5f56a651cbe9124680faaab764654cc410843b23",
+          "audit": "docs/audits/ten-ten-2026-11-11/CastActionCommandConsoleContext.json"
+        },
+        {
+          "key": "AreaTriggerCommandConsoleContext",
+          "commit": "387e1c6583a00af81dbe291c88afe4dc1f20cce5",
+          "audit": "docs/audits/ten-ten-2026-11-11/AreaTriggerCommandConsoleContext.json"
+        },
+        {
+          "key": "ListAttackerConsoleContext",
+          "commit": "37e4b008ab928a062ce16a0188311aec704abeb8",
+          "audit": "docs/audits/ten-ten-2026-11-11/ListAttackerConsoleContext.json"
+        }
+      ],
+      "checks": {
+        "asan": "10 complete extracted production classes/methods;300sustained plus interleaved/reapply/free/missing-caster Indomitable cases and nine command no-session/no-player/valid-context/argument/native-effect endpoint matrices.",
+        "baseline": "All10pinned64c2counterfactuals fail repaired expectations or expected ASAN null-session access;not ordinary passing gameplay.",
+        "native": "Actual registered command tables through native CliHandler ExecuteCommandInTable for9commands,including false parent/true leaf dispatch behavior;localized error exactly once. Real AuraScript instances,GetCaster/CanFreeMove and periodic dispatcher for90044 with observed original90045child cast;interleaved instances,free/recontrolled state,300saturation and reapplication.",
+        "linked": "Actual nine command context gates/custom error and actual per-instance+initialized/bounded Indomitable field;staged PE hash equals deployed canonical.",
+        "retained": "Exact previous50scope and independent65file unsigned64healing amendment compose through a separately verified new10amendment. Canonical Scepter VerifyReleaseBinary passed.",
+        "runtime": "Owned canonicalPID20208 fresh ready,graceful shutdown0,exit0/gone,empty stderr;no new crash/DBErrors/server warnings/errors/assertions. No user server stopped."
+      }
+    }
+  ],
+  "canonical": {
+    "worldserver.exe": "c177ed368ee915a49fa06c59fd64e5fb4ef17f0a35d89aa451d30b644b9038ee",
+    "worldserver.map": "c1bbe923ad9b234f7c1b7c5598c8f7cbfb22651f74b4b5b8328d739e8929c265",
+    "bnetserver.exe": "1b1ff818a1817259e85c049a8526f1dce4a8ea43cadd0bdf372861a6bb6e2cc9",
+    "bnetserver.map": "85cf816e36566aa0be4d11b9e8607182a1ae740d9f50be8141228e3dc4888b5c"
+  },
+  "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
+  "pending": "Continue batches2..10 to reach100genuine repairs. Actual client/full chains and Lady/LINK2/Slaghammer/handshake remain pending. Preserve original evidence;never invent Lady threshold/timer.",
+  "cleanup": {
+    "status": "COMPLETE_BATCH01",
+    "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch01",
+    "manifest_sha256": "24dce342996cdf1c73793b51c4878222629a979353e2765609045cfe50d342ef",
+    "archived_files": 251,
+    "removed_files": 27,
+    "logical_removed_bytes": 591830985,
+    "deletion_manifest": ".codex/ten-ten-2026-11-11/deletions.json",
+    "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+  }
+}
