@@ -970,7 +970,11 @@ class spell_star_augur_void_ejection_aura : public AuraScript
         if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
             return;
 
-        if (InstanceScript* instance = GetCaster()->GetInstanceScript())
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        if (InstanceScript* instance = caster->GetInstanceScript())
         {
             if (instance->GetBossState(DATA_ETRAEUS) != IN_PROGRESS)
                 return;
