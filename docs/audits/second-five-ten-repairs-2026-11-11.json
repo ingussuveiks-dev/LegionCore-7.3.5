@@ -1,0 +1,122 @@
+{
+  "date": "2026-11-11",
+  "request": "Five successive groups of ten new fixes,then stop. MariaDB DLL already installed/live-verified;do not stop the user service.",
+  "authorized_fixes": 50,
+  "completed_fixes": 10,
+  "status": "IN_PROGRESS",
+  "batches": [
+    {
+      "number": 1,
+      "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+      "audit": "docs\\audits\\fortysecond-ten-repairs-2026-11-11.json",
+      "fixes": [
+        {
+          "key": "BossBrawguildOsoLifetime",
+          "title": "Cancel boss_brawguild_oso callbacks after source AI retirement",
+          "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_one.cpp",
+          "audit": "docs\\audits\\boss-brawguild-oso-ai-lifetime-2026-11-11.json",
+          "callback_count": 3,
+          "commit": "904cfb4eb3befd4590c2cff04593ceceda542355"
+        },
+        {
+          "key": "NpcEmblazonedFireTamerLifetime",
+          "title": "Cancel npc_emblazoned_fire_tamer callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/invasion_point_argus.cpp",
+          "audit": "docs\\audits\\npc-emblazoned-fire-tamer-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "615e83681907d9f89a0bae76145f3014b951849e"
+        },
+        {
+          "key": "NpcRevilKostDarkRiderLifetime",
+          "title": "Cancel npc_revil_kost_dark_rider callbacks after source AI retirement",
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "audit": "docs\\audits\\npc-revil-kost-dark-rider-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "4bfcaf1df8e43896675f571b3f4fbf5f1c4a770b"
+        },
+        {
+          "key": "NpcInstantStatuePedestalLifetime",
+          "title": "Cancel npc_instant_statue_pedestal callbacks after source AI retirement",
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "audit": "docs\\audits\\npc-instant-statue-pedestal-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "20e1b498b9c962b308e2aa5f5a1cc365d5707151"
+        },
+        {
+          "key": "BossImperatorMargokLifetime",
+          "title": "Cancel boss_imperator_margok callbacks after source AI retirement",
+          "path": "src/server/scripts/Draenor/Highmaul/boss_imperator_margok.cpp",
+          "audit": "docs\\audits\\boss-imperator-margok-ai-lifetime-2026-11-11.json",
+          "callback_count": 22,
+          "commit": "ee64c6aade8139e61847d46bc9a32bed03be2366"
+        },
+        {
+          "key": "NpcHighmaulRavenousBloodmawLifetime",
+          "title": "Cancel npc_highmaul_ravenous_bloodmaw callbacks after source AI retirement",
+          "path": "src/server/scripts/Draenor/Highmaul/boss_kargath_bladefist.cpp",
+          "audit": "docs\\audits\\npc-highmaul-ravenous-bloodmaw-ai-lifetime-2026-11-11.json",
+          "callback_count": 2,
+          "commit": "b0c05982f11c0a7332d40c805a5dfefc0c055a2d"
+        },
+        {
+          "key": "BossTheButcherLifetime",
+          "title": "Cancel boss_the_butcher callbacks after source AI retirement",
+          "path": "src/server/scripts/Draenor/Highmaul/boss_the_butcher.cpp",
+          "audit": "docs\\audits\\boss-the-butcher-ai-lifetime-2026-11-11.json",
+          "callback_count": 4,
+          "commit": "f1f322b66b62c1166e119fc8aa1901a664bf78b6"
+        },
+        {
+          "key": "NpcKarazhanNighbaneStarterLifetime",
+          "title": "Cancel npc_karazhan_nighbane_starter callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/ReturnToKarazhan/boss_nightbane.cpp",
+          "audit": "docs\\audits\\npc-karazhan-nighbane-starter-ai-lifetime-2026-11-11.json",
+          "callback_count": 8,
+          "commit": "a6e1186a53b3c611db880ce2d03e6235622eefe6"
+        },
+        {
+          "key": "NpcSisterYathaeLifetime",
+          "title": "Cancel npc_sister_yathae callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TombOfSargeras/boss_SistersoftheMoon.cpp",
+          "audit": "docs\\audits\\npc-sister-yathae-ai-lifetime-2026-11-11.json",
+          "callback_count": 2,
+          "commit": "bccc1fe86692fa6bc75d54745234f0fdbcb84f16"
+        },
+        {
+          "key": "ScenarionBiHeroeslLifetime",
+          "title": "Cancel scenarion_bi_heroes callbacks after source AI retirement",
+          "path": "src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp",
+          "audit": "docs\\audits\\scenarion-bi-heroes-ai-lifetime-2026-11-11.json",
+          "callback_count": 9,
+          "commit": "540cc89b5058be10fba77eeb58f74d584a09f484"
+        }
+      ],
+      "canonical": {
+        "bnetserver.exe": "5026d1b0bba410d13de7b768cf80e81f942fdf3c187997ae8d9e12664f6334ff",
+        "bnetserver.map": "f1d55ffb0ff21af67338623c731f9223f0affd143fba60c85a1cf4cdaa316552",
+        "worldserver.exe": "41a0030ed01a943f04345a78fed3b82ab7b1561701c5595f177fd6fe1156d3a1",
+        "worldserver.map": "990886298f8df7c750468672f4a5cdb6e91c4d72054f3b18fb674291cd827bf6"
+      },
+      "cleanup": {
+        "archive": "build-extractors\\bin\\Release\\fixed\\fortysecond-ten-repairs-2026-11-11",
+        "manifest_sha256": "a51c9c45564831c4e57280bf137d8f9a7d976e66593057c3a14534f0b0ffcf0c",
+        "archived_files": 530,
+        "removed_files": 169,
+        "logical_removed_bytes": 438299797,
+        "deletion_manifest": ".codex\\fortysecond-ten-fixes-2026-11-11\\cleanup-deleted.json",
+        "deletion_manifest_sha256": "7ab70155b712523f8adb4706c856bc4c91165344a8c1505a5c4d7303f7934667",
+        "removed_superseded_recoveries": [],
+        "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and installed/live-verified MariaDB recovery evidence.",
+        "closeout_manifest_sha256": "230ae2fb24177c3d7511269583a4a94258fa711d753be1be883fe108a6b800b0",
+        "resolution_sha256": "63fbc47d920949de59f7ea74a5105073f9755696b8387acd41201d2972b10454",
+        "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
+      }
+    }
+  ],
+  "pending": [
+    "MariaDB DLL is installed and live-verified;user MariaDB service remains running. FT minimum1 config warning absence awaits a future user restart;no service stop needed for these source fixes.",
+    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ]
+}
