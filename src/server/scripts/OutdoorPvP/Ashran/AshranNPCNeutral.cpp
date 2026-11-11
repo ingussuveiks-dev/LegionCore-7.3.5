@@ -209,10 +209,13 @@ public:
                 l_Player->RewardHonor(l_Player, 1, 50 * 100);
 
             /// Trigger strongboxes loot for near players
-            if (me->GetEntry() == GrandMarshalTremblade)
-                killer->CastSpell(killer, SpellAllianceReward, true);
-            else
-                killer->CastSpell(killer, SpellHordeReward, true);
+            if (killer)
+            {
+                if (me->GetEntry() == GrandMarshalTremblade)
+                    killer->CastSpell(killer, SpellAllianceReward, true);
+                else
+                    killer->CastSpell(killer, SpellHordeReward, true);
+            }
         }
 
         void DoAction(int32 const p_Action) override
