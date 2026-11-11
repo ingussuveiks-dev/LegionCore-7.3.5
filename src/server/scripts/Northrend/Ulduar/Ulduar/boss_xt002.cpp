@@ -822,8 +822,12 @@ class spell_xt002_searing_light_spawn_life_spark : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
+                Unit* caster = GetCaster();
+                if (!caster)
+                    return;
+
                 if (Player* player = GetOwner()->ToPlayer())
-                    if (Creature* xt002c = GetCaster()->ToCreature())
+                    if (Creature* xt002c = caster->ToCreature())
                         if (boss_xt002::boss_xt002_AI* xt002cAI = CAST_AI(boss_xt002::boss_xt002_AI, xt002c->AI()))
                             if (xt002cAI->ishm())
                                 player->CastSpell(player, SPELL_SUMMON_LIFE_SPARK, true);
