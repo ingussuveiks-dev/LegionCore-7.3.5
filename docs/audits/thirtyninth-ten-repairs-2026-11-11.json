@@ -1,0 +1,132 @@
+{
+  "date": "2026-11-11",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "batch": 3,
+  "authorized_total": 50,
+  "base": "337ff59aaa339c4910aba48f750a94b71f73c37e",
+  "fixes": [
+    {
+      "key": "NpcTemporalAnomalyLifetime",
+      "title": "Cancel npc_temporal_anomaly callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/invasion_point_argus.cpp",
+      "audit": "docs\\audits\\npc-temporal-anomaly-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "b14a59ff7e6d9aa000d1f9e837f0db4e23c0776f"
+    },
+    {
+      "key": "NpcYmironSeacursedSlaverLifetime",
+      "title": "Cancel npc_ymiron_seacursed_slaver callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/MawofSouls/boss_ymiron_the_fallen_king.cpp",
+      "audit": "docs\\audits\\npc-ymiron-seacursed-slaver-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "49b3d73a887e21a801bdf6afc6c78c49a618f020"
+    },
+    {
+      "key": "NpcDevlynnStyxLifetime",
+      "title": "Cancel npc_devlynn_styx callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/MicroHolidays/DarkMoonConcertBlightBoar.cpp",
+      "audit": "docs\\audits\\npc-devlynn-styx-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "f2adc7cb44b1b06a08712e800138c850d0e32b24"
+    },
+    {
+      "key": "NpcDramockLifetime",
+      "title": "Cancel npc_dramock callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp",
+      "audit": "docs\\audits\\npc-dramock-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "547a1e5f0c635c05ed60548ec5e5e8828ef30a1f"
+    },
+    {
+      "key": "NpcAlurielEnchantmentLifetime",
+      "title": "Cancel npc_aluriel_enchantment callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TheNighthold/boss_spellblade_aluriel.cpp",
+      "audit": "docs\\audits\\npc-aluriel-enchantment-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "def4e047bc8684725c3fb89f952bab6d55b6315a"
+    },
+    {
+      "key": "NpcTichonriusPhantasmalBloodfangLifetime",
+      "title": "Cancel npc_tichonrius_phantasmal_bloodfang callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TheNighthold/boss_tichondrius.cpp",
+      "audit": "docs\\audits\\npc-tichonrius-phantasmal-bloodfang-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "44b0c8e64041d01874d9cadcb01a4408a7c579cb"
+    },
+    {
+      "key": "NpcSisterKasparianLifetime",
+      "title": "Cancel npc_sister_kasparian callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TombOfSargeras/boss_SistersoftheMoon.cpp",
+      "audit": "docs\\audits\\npc-sister-kasparian-ai-lifetime-2026-11-11.json",
+      "callback_count": 2,
+      "commit": "b14ffe54096d80586dc064b063519a1b1a7ea0a9"
+    },
+    {
+      "key": "NpcTosSoulQueenDejahnaLifetime",
+      "title": "Cancel npc_tos_soul_queen_dejahna callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TombOfSargeras/boss_TheDesolateHost.cpp",
+      "audit": "docs\\audits\\npc-tos-soul-queen-dejahna-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "454724afd95ed91871757fa44e3b607a96c09a7f"
+    },
+    {
+      "key": "BossGarmLifetime",
+      "title": "Cancel boss_garm callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TrialOfValor/boss_tov_garm.cpp",
+      "audit": "docs\\audits\\boss-garm-ai-lifetime-2026-11-11.json",
+      "callback_count": 5,
+      "commit": "fa5d34dad9591f041bfe49a58dbbf27aa618b12f"
+    },
+    {
+      "key": "BossTovOdynLifetime",
+      "title": "Cancel boss_tov_odyn callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TrialOfValor/boss_tov_odyn.cpp",
+      "audit": "docs\\audits\\boss-tov-odyn-ai-lifetime-2026-11-11.json",
+      "callback_count": 3,
+      "commit": "aafdeb5be40efff709b59373e1bf1e70da1ad47b"
+    }
+  ],
+  "checks": {
+    "source": "Exact complete-file reversal to 337ff59aaa339c4910aba48f750a94b71f73c37e;only capture/first-statement weak expiry/private per-AI anchor added. Original gates,casts,IDs,delays,credit,Reset/death/cleanup and owner/group rules retained.",
+    "asan": "Every listed old callback admission projection intentionally produces heap-use-after-free/ABORTING after frame destruction;repaired projection passes live/retired/cancelled/same-address replacement. Expected counterfactuals paired,not ordinary successful runs.",
+    "native": "Actual Creature::AIM_Initialize/destruction and Unit event/combat queues:live,retired,cancelled,surviving inactive AI and corpse lifecycle admission;controlled123ms and observed payload. Exact original live creature ScriptName inventory checked. Bare controlled actors/no character writes;original encounter payload not executed by this projection.",
+    "release": "Original main libraries/staged final link inputs and source snapshots;complete prior Meljarak/Twin/native-health/Freya/counter/Tsulong/Rook/367 linked checks return,plus every new actual production weak gate before payload. Canonical EXE/MAP hashes match tested immutable outputs;Scepter passes.",
+    "runtime": "Owned worldserver PID=30780\nPASS owned PID=30780 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;stderr empty,configuration/cert/DLL protected hashes unchanged. No user/unknown process stopped or hidden task server left running. Ready banner still prior generated revision metadata;source/library/EXE identities establish actual implementation.",
+    "diagnostics": "Before/after canonical+own crashes/log lengths/timestamps,exit/stdout/stderr/appended DBErrors and server warnings/errors/assertions reviewed. Final checks no new/unexplained diagnostic. Compiler warnings all mapped to unchanged baseline expressions;Scepter generated signedness warning inherited. Expected ASAN controls archived only after repaired matching binary/native checks. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged;no log truncation. Initial Garm proof found4of5gates because an outlined lambda call used an incremental thunk. Normalize both the actual call target and lambda symbol address;all original guards/body checks remain required. Initial failed log and inspection preserved. Actual delegated body is a std::invoke lambda specialization,not only an operator();follow that exact resolved target. Strengthened pre-gate pointer proof covers all capture layouts;two positive/four unsafe certificate controls pass."
+  },
+  "retained_verifier_updates": [
+    "tools/tests/verify_thirteenth_ten_release.py",
+    "tools/tests/verify_ai_lifetime_guard.py",
+    "tools/tests/Test-LifetimeGuardCertificate.py"
+  ],
+  "compiler_warning_count": 2,
+  "canonical": {
+    "bnetserver.exe": "c1ac769dd83cd3db658c2c622d1cd462b8027237ae197e08834340b0139a0ad0",
+    "bnetserver.map": "20844ad881a4770186d622d2e7e8ae19f5e245ed9111d042aa4671c9709076e8",
+    "worldserver.exe": "771cb088418092b4a9264446528d28181701a344669aca538c31705da8b327cf",
+    "worldserver.map": "5a6e1e06503a28a7938eb31e9a7c591f54f30ad3745d920338ccbb2509b90633"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\thirtyninth-ten-repairs-2026-11-11",
+    "manifest_sha256": "4ffcf05a5e3b73ab93732f2343a44ec5c1ba6453e8081a51ad4fb62755e33292",
+    "archived_files": 494,
+    "removed_files": 174,
+    "logical_removed_bytes": 610621170,
+    "deletion_manifest": ".codex\\thirtyninth-ten-fixes-2026-11-11\\cleanup-deleted.json",
+    "deletion_manifest_sha256": "9bfd5faf8d2dbb20f764ca164b369803352f9028afdd623f055982d5bbc28244",
+    "removed_superseded_recoveries": [
+      ".codex\\release-before-thirtyeighth-ten-fixes-2026-11-11"
+    ],
+    "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and deferred MariaDB candidate evidence.",
+    "closeout_manifest_sha256": "407262b2e88c165a929c86c400e5c71ea86a89439e5462937470cf3f3fb17cb9",
+    "resolution_sha256": "dd5169caf357dc669f779fb56f8a310e78435184cb3e9f1319f28e7d5a3aee38",
+    "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
+  },
+  "pending": [
+    "MariaDB server.dll replacement explicitly deferred by the user;service and candidate untouched.",
+    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ],
+  "support_commit": "357b53a3dfe10c8c53fa6c3457f64ea9bb040b52"
+}
