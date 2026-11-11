@@ -647,7 +647,7 @@ struct npc_tichonrius_phantasmal_bloodfang : ScriptedAI
     {
         DoCast(me, SPELL_BAT_GHOST_VISUAL, true);
         DoZoneInCombat(me, 80.0f);
-        AddDelayedEvent(1000, [this]() -> void { me->SetReactState(REACT_AGGRESSIVE); });
+        AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetReactState(REACT_AGGRESSIVE); });
     }
 
     void JustDied(Unit* /*killer*/) override
@@ -663,6 +663,9 @@ struct npc_tichonrius_phantasmal_bloodfang : ScriptedAI
 
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //108591
