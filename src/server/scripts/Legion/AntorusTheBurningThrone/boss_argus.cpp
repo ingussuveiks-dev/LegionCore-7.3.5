@@ -1331,10 +1331,11 @@ struct npc_argus_gift_of_the_lifebinder : ScriptedAI
     {
         if (spell->Id == SPELL_GIFT_OF_THE_LIFEBINDER_SCRIPT)
         {
-            if (!target->IsAlive())
+            Player* player = target ? target->ToPlayer() : nullptr;
+            if (player && !player->IsAlive())
             {
-                target->ToPlayer()->ResurrectPlayer(1.0f);
-                target->ToPlayer()->SpawnCorpseBones();
+                player->ResurrectPlayer(1.0f);
+                player->SpawnCorpseBones();
 
                 if (powerCount)
                 {
