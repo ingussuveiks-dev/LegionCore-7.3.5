@@ -278,8 +278,9 @@ public:
             me->SetSpeed(MOVE_WALK, 1.2f, true);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
 
-            AddDelayedEvent(4 * IN_MILLISECONDS, [this]() -> void
+            AddDelayedEvent(4 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->GetMotionMaster()->MovePoint(MovementInformTuulani01, g_PositionTuulaniMovements[0]);
             });
         }
@@ -333,6 +334,9 @@ public:
                         break;
                 }
             }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
