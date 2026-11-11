@@ -695,15 +695,17 @@ public:
             me->SetReactState(REACT_PASSIVE);
             DoCast(213628);
 
-            me->AddDelayedEvent(500, [=]()-> void
+            me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()-> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 float x, y, z;
                 me->GetClosePoint(x, y, z, me->GetObjectSize() / 3, 55.0f);
                 me->GetMotionMaster()->MovePoint(1, x, y, z);
             });
             
-            me->AddDelayedEvent(600, [=]()-> void
+            me->AddDelayedEvent(600, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()-> void
             { 
+                if (aiLifetimeGuard.expired()) return;
                 DoCast(197415);
             });
         }
@@ -728,6 +730,9 @@ public:
         }
 
         void UpdateAI(uint32 diff) {}
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const
