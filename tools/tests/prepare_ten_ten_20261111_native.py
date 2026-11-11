@@ -5,3 +5,13 @@ out=Path(sys.argv[1]);require_fixed();e=next(e for e in PLAN['changes']if e['key
 source=source.replace('GetCaster()->CastSpell(GetTarget(), SPELL_INDOMITABLE_DMG, true);','Observe::CastSpell(GetCaster()->ToCreature(), GetTarget(), SPELL_INDOMITABLE_DMG, true);')
 (out/'TenTenFirstNative.inc').write_text('namespace TenTenFirst{enum{SPELL_INDOMITABLE_DMG=90045};'+source+';}\n',encoding='utf8')
 print('Prepared actual AuraScript class with a controlled child-cast endpoint;all state/native getters/periodic registration retained')
+second=[e for e in PLAN['changes']if e['batch']==2]
+if second:
+ assert len(second)==10
+ protection=next(e for e in second if e['case']=='absorb')['edits'][0]['new']
+ assert protection.count('target->CastSpell(target,')==2
+ protection=protection.replace('target->CastSpell(target,','ObserveProtection(target, target,')
+ metadata='struct SecondBinding{uint32 spell;char const*name;bool scaling;};static SecondBinding secondBindings[]={'+','.join('{'+str(spell)+',"'+e['binding']+'",'+('true'if e['case']=='scaling'else'false')+'}'for e in second if 'binding'in e for spell in e['spells'])+'};\n'
+ commands='static char const*secondCommands[]={'+','.join('"'+command[0]+' 123"'for command in second[0]['commands'])+'};\n'
+ (out/'TenTenSecondNative.inc').write_text(protection+';\n'+metadata+commands,encoding='utf8')
+ print('Prepared actual protection AuraScript with observed child casts and native binding/command metadata for batch2')

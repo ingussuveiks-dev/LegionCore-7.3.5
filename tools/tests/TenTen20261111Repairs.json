@@ -242,6 +242,389 @@
         "attacker"
       ],
       "allow_console": true
+    },
+    {
+      "key": "CharDisplayConsoleContext",
+      "title": "Reject character display slot commands without an in-game player",
+      "kind": "second",
+      "batch": 2,
+      "index": 1,
+      "paths": [
+        "src/server/scripts/Commands/cs_misc.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayHeadCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId); \n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_HEAD))\n        {\n            pl->m_vis->m_visHead = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayHeadCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId); \n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_HEAD))\n        {\n            pl->m_vis->m_visHead = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayShouldersCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_SHOULDERS))\n        {\n            pl->m_vis->m_visShoulders = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayShouldersCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_SHOULDERS))\n        {\n            pl->m_vis->m_visShoulders = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayChestCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_CHEST))\n        {\n            pl->m_vis->m_visChest = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayChestCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_CHEST))\n        {\n            pl->m_vis->m_visChest = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayWaistCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 5))\n        {\n            pl->m_vis->m_visWaist = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayWaistCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 5))\n        {\n            pl->m_vis->m_visWaist = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayLegsCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 6))\n        {\n            pl->m_vis->m_visLegs = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayLegsCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 6))\n        {\n            pl->m_vis->m_visLegs = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayFeetCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 7))\n        {\n            pl->m_vis->m_visFeet = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayFeetCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 7))\n        {\n            pl->m_vis->m_visFeet = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayWristsCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 8))\n        {\n            pl->m_vis->m_visWrists = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayWristsCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 8))\n        {\n            pl->m_vis->m_visWrists = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayHandsCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 9))\n        {\n            pl->m_vis->m_visHands = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayHandsCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 9))\n        {\n            pl->m_vis->m_visHands = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayBackCommand(ChatHandler* handler,const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 14))\n        {\n            pl->m_vis->m_visBack = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayBackCommand(ChatHandler* handler,const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 14))\n        {\n            pl->m_vis->m_visBack = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayMainhandCommand(ChatHandler* handler, const char* args)\n    {\n        if (!*args)\n            return false;\n\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_MAINHAND))\n        {\n            pl->m_vis->m_visMainhand = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayMainhandCommand(ChatHandler* handler, const char* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_MAINHAND))\n        {\n            pl->m_vis->m_visMainhand = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayOffhandCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 16))\n        {\n            pl->m_vis->m_visOffhand = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayOffhandCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 16))\n        {\n            pl->m_vis->m_visOffhand = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayRangedCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 17))\n        {\n            pl->m_vis->m_visRanged = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayRangedCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*) args, \"Hitem\");\n        if (!cId)\n            return false;\n\n        uint32 newItem = (uint32) atol(cId);\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if (!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, 17))\n        {\n            pl->m_vis->m_visRanged = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayTabardCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if(!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*)args,\"Hitem\");\n        if(!cId)\n            return false;\n\n        uint32 newItem = (uint32)atol(cId);\n\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if(!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_TABARD))\n        {\n            pl->m_vis->m_visTabard = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayTabardCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if(!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*)args,\"Hitem\");\n        if(!cId)\n            return false;\n\n        uint32 newItem = (uint32)atol(cId);\n\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if(!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_TABARD))\n        {\n            pl->m_vis->m_visTabard = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCharDisplayShirtCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if(!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*)args,\"Hitem\");\n        if(!cId)\n            return false;\n\n        uint32 newItem = (uint32)atol(cId);\n\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if(!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_BODY))\n        {\n            pl->m_vis->m_visShirt = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "new": "static bool HandleCharDisplayShirtCommand(ChatHandler* handler, const char* args) //\u0420\u040e\u0421\u0453\u0420\u0454\u0420\u0451, \u0420\u0457\u0420\u0455\u0420\u0454\u0420\u00b0\u0420\u00b6\u0420\u0451\u0421\u201a\u0420\u00b5 \u0421\u0403\u0420\u0406\u0420\u0455\u0420\u0451 \u0421\u0402\u0421\u0453\u0420\u0454\u0420\u0451!\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if(!*args)\n            return false;\n        char* cId = handler->extractKeyFromLink((char*)args,\"Hitem\");\n        if(!cId)\n            return false;\n\n        uint32 newItem = (uint32)atol(cId);\n\n        Player* pl = handler->GetSession()->GetPlayer();\n\n        if(!pl->m_vis)\n            pl->m_vis = new Visuals;\n\n        if (pl->HandleChangeSlotModel(newItem, EQUIPMENT_SLOT_BODY))\n        {\n            pl->m_vis->m_visShirt = newItem;\n            return true;\n        }\n        return false;\n    }",
+          "count": 1
+        }
+      ],
+      "methods": [
+        "HandleCharDisplayHeadCommand",
+        "HandleCharDisplayShouldersCommand",
+        "HandleCharDisplayChestCommand",
+        "HandleCharDisplayWaistCommand",
+        "HandleCharDisplayLegsCommand",
+        "HandleCharDisplayFeetCommand",
+        "HandleCharDisplayWristsCommand",
+        "HandleCharDisplayHandsCommand",
+        "HandleCharDisplayBackCommand",
+        "HandleCharDisplayMainhandCommand",
+        "HandleCharDisplayOffhandCommand",
+        "HandleCharDisplayRangedCommand",
+        "HandleCharDisplayTabardCommand",
+        "HandleCharDisplayShirtCommand"
+      ],
+      "commands": [
+        [
+          "head"
+        ],
+        [
+          "shoulders"
+        ],
+        [
+          "chest"
+        ],
+        [
+          "waist"
+        ],
+        [
+          "legs"
+        ],
+        [
+          "feet"
+        ],
+        [
+          "wrists"
+        ],
+        [
+          "hands"
+        ],
+        [
+          "back"
+        ],
+        [
+          "mainhand"
+        ],
+        [
+          "offhand"
+        ],
+        [
+          "ranged"
+        ],
+        [
+          "tabard"
+        ],
+        [
+          "shirt"
+        ]
+      ],
+      "case": "char_display"
+    },
+    {
+      "key": "VehicleGearScalingCasterLoss",
+      "title": "Keep vehicle gear recalculation safe after its player caster leaves",
+      "kind": "second",
+      "batch": 2,
+      "index": 2,
+      "paths": [
+        "src/server/scripts/Spells/spell_generic.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "old": "class spell_gen_vehicle_scaling_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_gen_vehicle_scaling_AuraScript);\n\n            bool Load() override\n            {\n                return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER;\n            }\n\n            void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)\n            {\n                Unit* caster = GetCaster();\n                float factor;\n                uint16 baseItemLevel;\n\n                // TODO: Reserach coeffs for different vehicles\n                switch (GetId())\n                {\n                    case SPELL_GEAR_SCALING:\n                        factor = 1.0f;\n                        baseItemLevel = 405;\n                        break;\n                    default:\n                        factor = 1.0f;\n                        baseItemLevel = 405;\n                        break;\n                }\n\n                float avgILvl = caster->ToPlayer()->GetAverageItemLevelTotal();\n                if (avgILvl < baseItemLevel)\n                    return;                     // TODO: Research possibility of scaling down\n\n                amount = uint16((avgILvl - baseItemLevel) * factor);\n            }\n\n            void Register() override\n            {\n                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_vehicle_scaling_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_HEALING_PCT);\n                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_vehicle_scaling_AuraScript::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE);\n                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_vehicle_scaling_AuraScript::CalculateAmount, EFFECT_2, SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT);\n            }\n        }",
+          "new": "class spell_gen_vehicle_scaling_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_gen_vehicle_scaling_AuraScript);\n\n            bool Load() override\n            {\n                return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER;\n            }\n\n            void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)\n            {\n                Unit* caster = GetCaster();\n                if (!caster || !caster->ToPlayer())\n                    return;\n                float factor;\n                uint16 baseItemLevel;\n\n                // TODO: Reserach coeffs for different vehicles\n                switch (GetId())\n                {\n                    case SPELL_GEAR_SCALING:\n                        factor = 1.0f;\n                        baseItemLevel = 405;\n                        break;\n                    default:\n                        factor = 1.0f;\n                        baseItemLevel = 405;\n                        break;\n                }\n\n                float avgILvl = caster->ToPlayer()->GetAverageItemLevelTotal();\n                if (avgILvl < baseItemLevel)\n                    return;                     // TODO: Research possibility of scaling down\n\n                amount = uint16((avgILvl - baseItemLevel) * factor);\n            }\n\n            void Register() override\n            {\n                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_vehicle_scaling_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_HEALING_PCT);\n                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_vehicle_scaling_AuraScript::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE);\n                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_vehicle_scaling_AuraScript::CalculateAmount, EFFECT_2, SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "cls": "spell_gen_vehicle_scaling_AuraScript",
+      "binding": "spell_gen_vehicle_scaling",
+      "spells": [
+        65266,
+        65635,
+        65636,
+        66666,
+        66667,
+        66668
+      ],
+      "case": "scaling"
+    },
+    {
+      "key": "KrickPursuitCasterLoss",
+      "title": "Keep Pursuit threat cleanup safe when Ick or its active AI is missing",
+      "kind": "second",
+      "batch": 2,
+      "index": 3,
+      "paths": [
+        "src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_krickandick.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_krickandick.cpp",
+          "old": "class spell_krick_pursuit_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_krick_pursuit_AuraScript);\n\n            void HandleExtraEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n            {\n                if (Creature* caster = GetCaster()->ToCreature())\n                    CAST_AI(boss_ick::boss_ickAI, caster->AI())->_ResetThreat(GetTarget());\n            }\n\n            void Register() override\n            {\n                OnEffectRemove += AuraEffectRemoveFn(spell_krick_pursuit_AuraScript::HandleExtraEffect, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);\n            }\n        }",
+          "new": "class spell_krick_pursuit_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_krick_pursuit_AuraScript);\n\n            void HandleExtraEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n            {\n                if (Unit* caster = GetCaster())\n                    if (Creature* creature = caster->ToCreature())\n                        if (auto ai = CAST_AI(boss_ick::boss_ickAI, creature->AI()))\n                            ai->_ResetThreat(GetTarget());\n            }\n\n            void Register() override\n            {\n                OnEffectRemove += AuraEffectRemoveFn(spell_krick_pursuit_AuraScript::HandleExtraEffect, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "cls": "spell_krick_pursuit_AuraScript",
+      "binding": "spell_krick_pursuit",
+      "spells": [
+        68987
+      ],
+      "case": "pursuit"
+    },
+    {
+      "key": "XT002SearingLightCasterLoss",
+      "title": "Keep searing light spawn life spark cleanup safe after its boss leaves",
+      "kind": "second",
+      "batch": 2,
+      "index": 4,
+      "paths": [
+        "src/server/scripts/Northrend/Ulduar/Ulduar/boss_xt002.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_xt002.cpp",
+          "old": "class spell_xt002_searing_light_spawn_life_spark_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_xt002_searing_light_spawn_life_spark_AuraScript);\n\n            bool Validate(SpellInfo const* /*spell*/) override\n            {\n                if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_LIFE_SPARK))\n                    return false;\n                return true;\n            }\n\n            void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)\n            {\n                if (Player* player = GetOwner()->ToPlayer())\n                    if (Creature* xt002c = GetCaster()->ToCreature())\n                        if (boss_xt002::boss_xt002_AI* xt002cAI = CAST_AI(boss_xt002::boss_xt002_AI, xt002c->AI()))\n                            if (xt002cAI->ishm())\n                                player->CastSpell(player, SPELL_SUMMON_LIFE_SPARK, true);\n            }\n\n            void Register() override\n            {\n                AfterEffectRemove += AuraEffectRemoveFn(spell_xt002_searing_light_spawn_life_spark_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);\n            }\n        }",
+          "new": "class spell_xt002_searing_light_spawn_life_spark_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_xt002_searing_light_spawn_life_spark_AuraScript);\n\n            bool Validate(SpellInfo const* /*spell*/) override\n            {\n                if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_LIFE_SPARK))\n                    return false;\n                return true;\n            }\n\n            void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)\n            {\n                Unit* caster = GetCaster();\n                if (!caster)\n                    return;\n\n                if (Player* player = GetOwner()->ToPlayer())\n                    if (Creature* xt002c = caster->ToCreature())\n                        if (boss_xt002::boss_xt002_AI* xt002cAI = CAST_AI(boss_xt002::boss_xt002_AI, xt002c->AI()))\n                            if (xt002cAI->ishm())\n                                player->CastSpell(player, SPELL_SUMMON_LIFE_SPARK, true);\n            }\n\n            void Register() override\n            {\n                AfterEffectRemove += AuraEffectRemoveFn(spell_xt002_searing_light_spawn_life_spark_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "cls": "spell_xt002_searing_light_spawn_life_spark_AuraScript",
+      "binding": "spell_xt002_searing_light_spawn_life_spark",
+      "spells": [
+        63018,
+        65121
+      ],
+      "case": "xt002"
+    },
+    {
+      "key": "XT002GravityBombCasterLoss",
+      "title": "Keep gravity bomb aura cleanup safe after its boss leaves",
+      "kind": "second",
+      "batch": 2,
+      "index": 5,
+      "paths": [
+        "src/server/scripts/Northrend/Ulduar/Ulduar/boss_xt002.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_xt002.cpp",
+          "old": "class spell_xt002_gravity_bomb_aura_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_xt002_gravity_bomb_aura_AuraScript);\n\n            bool Validate(SpellInfo const* /*spell*/) override\n            {\n                if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_VOID_ZONE))\n                    return false;\n                return true;\n            }\n\n            void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)\n            {\n                if (Player* player = GetOwner()->ToPlayer())\n                    if (Creature* xt002c = GetCaster()->ToCreature())\n                        if (boss_xt002::boss_xt002_AI* xt002cAI = CAST_AI(boss_xt002::boss_xt002_AI, xt002c->AI()))\n                            if (xt002cAI->ishm())\n                                player->CastSpell(player, SPELL_SUMMON_VOID_ZONE, true);\n            }\n\n            void OnPeriodic(AuraEffect const* aurEff)\n            {\n                Unit* xt002 = GetCaster();\n                if (!xt002)\n                    return;\n\n                Unit* owner = GetOwner()->ToUnit();\n                if (!owner)\n                    return;\n\n                Creature * xt002c = xt002->ToCreature();\n\n                if (!xt002c)\n                    return;\n\n                if (aurEff->GetAmount() >= 0.0f && HealingAmount::FromFloat(aurEff->GetAmount()) >= owner->GetHealth())\n                    if (boss_xt002::boss_xt002_AI* xt002cAI = CAST_AI(boss_xt002::boss_xt002_AI, xt002c->AI()))\n                        xt002cAI->setgbfail(true);\n            }\n\n            void Register() override\n            {\n                OnEffectPeriodic += AuraEffectPeriodicFn(spell_xt002_gravity_bomb_aura_AuraScript::OnPeriodic, EFFECT_2, SPELL_AURA_PERIODIC_DAMAGE);\n                AfterEffectRemove += AuraEffectRemoveFn(spell_xt002_gravity_bomb_aura_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);\n            }\n        }",
+          "new": "class spell_xt002_gravity_bomb_aura_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_xt002_gravity_bomb_aura_AuraScript);\n\n            bool Validate(SpellInfo const* /*spell*/) override\n            {\n                if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_VOID_ZONE))\n                    return false;\n                return true;\n            }\n\n            void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)\n            {\n                Unit* caster = GetCaster();\n                if (!caster)\n                    return;\n\n                if (Player* player = GetOwner()->ToPlayer())\n                    if (Creature* xt002c = caster->ToCreature())\n                        if (boss_xt002::boss_xt002_AI* xt002cAI = CAST_AI(boss_xt002::boss_xt002_AI, xt002c->AI()))\n                            if (xt002cAI->ishm())\n                                player->CastSpell(player, SPELL_SUMMON_VOID_ZONE, true);\n            }\n\n            void OnPeriodic(AuraEffect const* aurEff)\n            {\n                Unit* xt002 = GetCaster();\n                if (!xt002)\n                    return;\n\n                Unit* owner = GetOwner()->ToUnit();\n                if (!owner)\n                    return;\n\n                Creature * xt002c = xt002->ToCreature();\n\n                if (!xt002c)\n                    return;\n\n                if (aurEff->GetAmount() >= 0.0f && HealingAmount::FromFloat(aurEff->GetAmount()) >= owner->GetHealth())\n                    if (boss_xt002::boss_xt002_AI* xt002cAI = CAST_AI(boss_xt002::boss_xt002_AI, xt002c->AI()))\n                        xt002cAI->setgbfail(true);\n            }\n\n            void Register() override\n            {\n                OnEffectPeriodic += AuraEffectPeriodicFn(spell_xt002_gravity_bomb_aura_AuraScript::OnPeriodic, EFFECT_2, SPELL_AURA_PERIODIC_DAMAGE);\n                AfterEffectRemove += AuraEffectRemoveFn(spell_xt002_gravity_bomb_aura_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "cls": "spell_xt002_gravity_bomb_aura_AuraScript",
+      "binding": "spell_xt002_gravity_bomb_aura",
+      "spells": [
+        63024,
+        64234
+      ],
+      "case": "xt002"
+    },
+    {
+      "key": "StarAugurIcyEjectionCasterLoss",
+      "title": "Keep icy ejection safe after Etraeus leaves",
+      "kind": "second",
+      "batch": 2,
+      "index": 6,
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp",
+          "old": "class spell_star_augur_icy_ejection : public AuraScript\n{\n    PrepareAuraScript(spell_star_augur_icy_ejection);\n\n    float amount = 0;\n\n    void OnTick(AuraEffect const* /*aurEff*/)\n    {\n        if (auto aurEff = GetAura()->GetEffect(EFFECT_2))\n        {\n            amount = aurEff->GetAmount() + aurEff->GetBaseAmount();\n            aurEff->ChangeAmount(amount);\n        }\n    }\n\n    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n    {\n        if (!GetTarget() || GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)\n            return;\n\n        if (InstanceScript* instance = GetCaster()->GetInstanceScript())\n        {\n            if (instance->GetBossState(DATA_ETRAEUS) != IN_PROGRESS)\n                return;\n\n            if (Creature* etraeus = Creature::GetCreature(*GetTarget(), instance->GetGuidData(DATA_ETRAEUS)))\n            {\n                GetTarget()->CastSpell(GetTarget(), SpellShatter, true);\n\n                if (GetTarget()->GetMap()->IsMythicRaid())\n                    if (auto crystal = etraeus->SummonCreature(NPC_ICE_CRYSTAL, GetTarget()->GetPosition()))\n                        crystal->CastSpell(crystal, SPELL_ICE_CRYSTAL_AURA, true);\n            }\n        }\n        \n    }\n\n    void Register() override\n    {\n        OnEffectPeriodic += AuraEffectPeriodicFn(spell_star_augur_icy_ejection::OnTick, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE);\n        OnEffectRemove += AuraEffectRemoveFn(spell_star_augur_icy_ejection::OnRemove, EFFECT_2, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL);\n    }\n}",
+          "new": "class spell_star_augur_icy_ejection : public AuraScript\n{\n    PrepareAuraScript(spell_star_augur_icy_ejection);\n\n    float amount = 0;\n\n    void OnTick(AuraEffect const* /*aurEff*/)\n    {\n        if (auto aurEff = GetAura()->GetEffect(EFFECT_2))\n        {\n            amount = aurEff->GetAmount() + aurEff->GetBaseAmount();\n            aurEff->ChangeAmount(amount);\n        }\n    }\n\n    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n    {\n        if (!GetTarget() || GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)\n            return;\n\n        Unit* caster = GetCaster();\n        if (!caster)\n            return;\n\n        if (InstanceScript* instance = caster->GetInstanceScript())\n        {\n            if (instance->GetBossState(DATA_ETRAEUS) != IN_PROGRESS)\n                return;\n\n            if (Creature* etraeus = Creature::GetCreature(*GetTarget(), instance->GetGuidData(DATA_ETRAEUS)))\n            {\n                GetTarget()->CastSpell(GetTarget(), SpellShatter, true);\n\n                if (GetTarget()->GetMap()->IsMythicRaid())\n                    if (auto crystal = etraeus->SummonCreature(NPC_ICE_CRYSTAL, GetTarget()->GetPosition()))\n                        crystal->CastSpell(crystal, SPELL_ICE_CRYSTAL_AURA, true);\n            }\n        }\n        \n    }\n\n    void Register() override\n    {\n        OnEffectPeriodic += AuraEffectPeriodicFn(spell_star_augur_icy_ejection::OnTick, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE);\n        OnEffectRemove += AuraEffectRemoveFn(spell_star_augur_icy_ejection::OnRemove, EFFECT_2, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL);\n    }\n}",
+          "count": 1
+        }
+      ],
+      "cls": "spell_star_augur_icy_ejection",
+      "binding": "spell_star_augur_icy_ejection",
+      "spells": [
+        206936
+      ],
+      "case": "augur"
+    },
+    {
+      "key": "StarAugurFelEjectionCasterLoss",
+      "title": "Keep fel ejection safe after Etraeus leaves",
+      "kind": "second",
+      "batch": 2,
+      "index": 7,
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp",
+          "old": "class spell_star_augur_fel_ejection : public AuraScript\n{\n    PrepareAuraScript(spell_star_augur_fel_ejection);\n\n    void OnTick(AuraEffect const* /*aurEff*/)\n    {\n        if (InstanceScript* instance = GetCaster()->GetInstanceScript())\n        {\n            if (instance->GetBossState(DATA_ETRAEUS) != IN_PROGRESS)\n                return;\n\n            if (auto target = GetTarget())\n                if (Creature* etraeus = Creature::GetCreature(*target, instance->GetGuidData(DATA_ETRAEUS)))\n                    etraeus->CastSpell(target, SpellFelFlameAtSpawn, true);\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectPeriodic += AuraEffectPeriodicFn(spell_star_augur_fel_ejection::OnTick, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE);\n    }\n}",
+          "new": "class spell_star_augur_fel_ejection : public AuraScript\n{\n    PrepareAuraScript(spell_star_augur_fel_ejection);\n\n    void OnTick(AuraEffect const* /*aurEff*/)\n    {\n        Unit* caster = GetCaster();\n        if (!caster)\n            return;\n\n        if (InstanceScript* instance = caster->GetInstanceScript())\n        {\n            if (instance->GetBossState(DATA_ETRAEUS) != IN_PROGRESS)\n                return;\n\n            if (auto target = GetTarget())\n                if (Creature* etraeus = Creature::GetCreature(*target, instance->GetGuidData(DATA_ETRAEUS)))\n                    etraeus->CastSpell(target, SpellFelFlameAtSpawn, true);\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectPeriodic += AuraEffectPeriodicFn(spell_star_augur_fel_ejection::OnTick, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE);\n    }\n}",
+          "count": 1
+        }
+      ],
+      "cls": "spell_star_augur_fel_ejection",
+      "binding": "spell_star_augur_fel_ejection_filter",
+      "spells": [
+        205649
+      ],
+      "case": "augur"
+    },
+    {
+      "key": "StarAugurVoidEjectionCasterLoss",
+      "title": "Keep void ejection safe after Etraeus leaves",
+      "kind": "second",
+      "batch": 2,
+      "index": 8,
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/TheNighthold/boss_star_augur_etraeus.cpp",
+          "old": "class spell_star_augur_void_ejection_aura : public AuraScript\n{\n    PrepareAuraScript(spell_star_augur_void_ejection_aura);\n\n    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n    {\n        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)\n            return;\n\n        if (InstanceScript* instance = GetCaster()->GetInstanceScript())\n        {\n            if (instance->GetBossState(DATA_ETRAEUS) != IN_PROGRESS)\n                return;\n\n            if (auto target = GetTarget())\n                if (Creature* etraeus = Creature::GetCreature(*target, instance->GetGuidData(DATA_ETRAEUS)))\n                    target->CastSpell(target, SpellVoidEruption, true, nullptr, nullptr, etraeus->GetGUID());\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectRemove += AuraEffectRemoveFn(spell_star_augur_void_ejection_aura::OnRemove, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);\n    }\n}",
+          "new": "class spell_star_augur_void_ejection_aura : public AuraScript\n{\n    PrepareAuraScript(spell_star_augur_void_ejection_aura);\n\n    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n    {\n        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)\n            return;\n\n        Unit* caster = GetCaster();\n        if (!caster)\n            return;\n\n        if (InstanceScript* instance = caster->GetInstanceScript())\n        {\n            if (instance->GetBossState(DATA_ETRAEUS) != IN_PROGRESS)\n                return;\n\n            if (auto target = GetTarget())\n                if (Creature* etraeus = Creature::GetCreature(*target, instance->GetGuidData(DATA_ETRAEUS)))\n                    target->CastSpell(target, SpellVoidEruption, true, nullptr, nullptr, etraeus->GetGUID());\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectRemove += AuraEffectRemoveFn(spell_star_augur_void_ejection_aura::OnRemove, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);\n    }\n}",
+          "count": 1
+        }
+      ],
+      "cls": "spell_star_augur_void_ejection_aura",
+      "binding": "spell_star_augur_void_ejection_aura",
+      "spells": [
+        207143
+      ],
+      "case": "augur"
+    },
+    {
+      "key": "FelhoundsMoltenTouchCasterLoss",
+      "title": "Settle Molten Touch timers safely after its caster leaves",
+      "kind": "second",
+      "batch": 2,
+      "index": 9,
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_felhounds.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_felhounds.cpp",
+          "old": "class spell_felhounds_molten_touch : public AuraScript\n{\n    PrepareAuraScript(spell_felhounds_molten_touch);\n\n    uint32 updateTeleportTimer = 0;\n    uint32 updateTimer = 0;\n\n    void OnApply(AuraEffect const* /*auraEffect*/, AuraEffectHandleModes /*mode*/)\n    {\n        if (!GetCaster() || !GetTarget())\n            return;\n\n        updateTeleportTimer = 1600;\n        updateTimer = 2000;\n\n        if (auto player = GetTarget()->ToPlayer())\n        {\n            player->SetControlled(true, UNIT_STATE_STUNNED);\n            player->GetMotionMaster()->MoveSmoothFlyPath(1, Position(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ() + 10.0f), 5.0f);\n            player->SetDisableGravity(true);\n        }\n    }\n\n    void OnRemove(AuraEffect const* /*auraEffect*/, AuraEffectHandleModes /*mode*/)\n    {\n        if (GetTarget())\n        {\n            GetTarget()->SetControlled(false, UNIT_STATE_STUNNED);\n            GetTarget()->SetDisableGravity(false);\n        }\n    }\n\n    void OnUpdate(uint32 diff, AuraEffect* auraEffect)\n    {\n        if (updateTeleportTimer)\n        {\n            if (updateTeleportTimer <= diff)\n            {\n                if (auto target = GetUnitOwner())\n                {\n                    if (auto instance = GetCaster()->GetInstanceScript())\n                        if (auto trig = instance->instance->GetCreature(instance->GetGuidData(NPC_MOLTEN_TOUCH)))\n                        {\n                            target->CastSpell(trig->GetPositionX() + frand(-1.5f, 1.5f), trig->GetPositionY() + frand(-1.5f, 1.5f), trig->GetPositionZ(), SPELL_MOLTEN_TOUCH_TELEPORT, true);\n                        }\n                }\n                updateTeleportTimer = 0;\n            }\n            else\n                updateTeleportTimer -= diff;\n        }\n\n        if (updateTimer)\n        {\n            if (updateTimer <= diff)\n            {\n                if (auto target = GetUnitOwner())\n                {\n                    target->CastSpell(target, SPELL_MOLTEN_TOUCH_STUN, true, nullptr, nullptr, GetCaster()->GetGUID());\n                    GetCaster()->CastSpell(target, SPELL_MOLTEN_TOUCH_PERIODIC_DUMMY, true);\n                    GetCaster()->CastSpell(target, SPELL_MOLTEN_TOUCH_MARK, true);\n                }\n                updateTimer = 0;\n            }\n            else\n                updateTimer -= diff;\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectApply += AuraEffectApplyFn(spell_felhounds_molten_touch::OnApply, EFFECT_0, SPELL_AURA_MOD_PACIFY_SILENCE, AURA_EFFECT_HANDLE_REAL);\n        OnEffectRemove += AuraEffectRemoveFn(spell_felhounds_molten_touch::OnRemove, EFFECT_0, SPELL_AURA_MOD_PACIFY_SILENCE, AURA_EFFECT_HANDLE_REAL);\n        OnEffectUpdate += AuraEffectUpdateFn(spell_felhounds_molten_touch::OnUpdate, EFFECT_0, SPELL_AURA_MOD_PACIFY_SILENCE);\n    }\n}",
+          "new": "class spell_felhounds_molten_touch : public AuraScript\n{\n    PrepareAuraScript(spell_felhounds_molten_touch);\n\n    uint32 updateTeleportTimer = 0;\n    uint32 updateTimer = 0;\n\n    void OnApply(AuraEffect const* /*auraEffect*/, AuraEffectHandleModes /*mode*/)\n    {\n        if (!GetCaster() || !GetTarget())\n            return;\n\n        updateTeleportTimer = 1600;\n        updateTimer = 2000;\n\n        if (auto player = GetTarget()->ToPlayer())\n        {\n            player->SetControlled(true, UNIT_STATE_STUNNED);\n            player->GetMotionMaster()->MoveSmoothFlyPath(1, Position(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ() + 10.0f), 5.0f);\n            player->SetDisableGravity(true);\n        }\n    }\n\n    void OnRemove(AuraEffect const* /*auraEffect*/, AuraEffectHandleModes /*mode*/)\n    {\n        if (GetTarget())\n        {\n            GetTarget()->SetControlled(false, UNIT_STATE_STUNNED);\n            GetTarget()->SetDisableGravity(false);\n        }\n    }\n\n    void OnUpdate(uint32 diff, AuraEffect* auraEffect)\n    {\n        if (updateTeleportTimer)\n        {\n            if (updateTeleportTimer <= diff)\n            {\n                if (auto target = GetUnitOwner())\n                {\n                    if (auto caster = GetCaster())\n                        if (auto instance = caster->GetInstanceScript())\n                            if (auto trig = instance->instance->GetCreature(instance->GetGuidData(NPC_MOLTEN_TOUCH)))\n                            {\n                                target->CastSpell(trig->GetPositionX() + frand(-1.5f, 1.5f), trig->GetPositionY() + frand(-1.5f, 1.5f), trig->GetPositionZ(), SPELL_MOLTEN_TOUCH_TELEPORT, true);\n                            }\n                }\n                updateTeleportTimer = 0;\n            }\n            else\n                updateTeleportTimer -= diff;\n        }\n\n        if (updateTimer)\n        {\n            if (updateTimer <= diff)\n            {\n                if (auto target = GetUnitOwner())\n                {\n                    if (auto caster = GetCaster())\n                    {\n                        target->CastSpell(target, SPELL_MOLTEN_TOUCH_STUN, true, nullptr, nullptr, caster->GetGUID());\n                        caster->CastSpell(target, SPELL_MOLTEN_TOUCH_PERIODIC_DUMMY, true);\n                        caster->CastSpell(target, SPELL_MOLTEN_TOUCH_MARK, true);\n                    }\n                }\n                updateTimer = 0;\n            }\n            else\n                updateTimer -= diff;\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectApply += AuraEffectApplyFn(spell_felhounds_molten_touch::OnApply, EFFECT_0, SPELL_AURA_MOD_PACIFY_SILENCE, AURA_EFFECT_HANDLE_REAL);\n        OnEffectRemove += AuraEffectRemoveFn(spell_felhounds_molten_touch::OnRemove, EFFECT_0, SPELL_AURA_MOD_PACIFY_SILENCE, AURA_EFFECT_HANDLE_REAL);\n        OnEffectUpdate += AuraEffectUpdateFn(spell_felhounds_molten_touch::OnUpdate, EFFECT_0, SPELL_AURA_MOD_PACIFY_SILENCE);\n    }\n}",
+          "count": 1
+        }
+      ],
+      "cls": "spell_felhounds_molten_touch",
+      "binding": "spell_felhounds_molten_touch",
+      "spells": [
+        244072
+      ],
+      "case": "molten"
+    },
+    {
+      "key": "LightsWatchProtectedTarget",
+      "title": "Resolve lethal protection on the Light's Watch aura recipient",
+      "kind": "second",
+      "batch": 2,
+      "index": 10,
+      "paths": [
+        "src/server/scripts/Spells/spell_generic.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "old": "class spell_gen_absorb_if_health_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_gen_absorb_if_health_AuraScript);\n\n            void CalculateAmount(AuraEffect const* /*AuraEffect**/, float& amount, bool& /*canBeRecalculated*/)\n            {\n                amount = -1;\n            }\n\n            void Absorb(AuraEffect* /*aurEff*/, DamageInfo & dmgInfo, float & absorbAmount)\n            {\n                Unit* target = GetCaster();\n\n                if (dmgInfo.GetDamage() < target->GetHealth())\n                    return;\n                int32 health = GetSpellInfo()->Id == 220110 ? 220113 : 220073;\n                int32 knock = GetSpellInfo()->Id == 220110 ? 220111 : 220103;\n\n                target->CastSpell(target, health, true);\n                target->CastSpell(target, knock, true);\n                absorbAmount = dmgInfo.GetDamage();\n                GetAura()->SetDuration(250);\n            }\n\n            void Register() override\n            {\n                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_absorb_if_health_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n                OnEffectAbsorb += AuraEffectAbsorbFn(spell_gen_absorb_if_health_AuraScript::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n            }\n        }",
+          "new": "class spell_gen_absorb_if_health_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_gen_absorb_if_health_AuraScript);\n\n            void CalculateAmount(AuraEffect const* /*AuraEffect**/, float& amount, bool& /*canBeRecalculated*/)\n            {\n                amount = -1;\n            }\n\n            void Absorb(AuraEffect* /*aurEff*/, DamageInfo & dmgInfo, float & absorbAmount)\n            {\n                Unit* target = GetTarget();\n\n                if (dmgInfo.GetDamage() < target->GetHealth())\n                    return;\n                int32 health = GetSpellInfo()->Id == 220110 ? 220113 : 220073;\n                int32 knock = GetSpellInfo()->Id == 220110 ? 220111 : 220103;\n\n                target->CastSpell(target, health, true);\n                target->CastSpell(target, knock, true);\n                absorbAmount = dmgInfo.GetDamage();\n                GetAura()->SetDuration(250);\n            }\n\n            void Register() override\n            {\n                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_absorb_if_health_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n                OnEffectAbsorb += AuraEffectAbsorbFn(spell_gen_absorb_if_health_AuraScript::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "cls": "spell_gen_absorb_if_health_AuraScript",
+      "binding": "spell_gen_absorb_if_health",
+      "spells": [
+        220058,
+        220110,
+        220792,
+        220887
+      ],
+      "case": "absorb"
     }
   ]
 }
