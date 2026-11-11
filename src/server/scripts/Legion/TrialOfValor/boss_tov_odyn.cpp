@@ -514,8 +514,9 @@ struct boss_tov_odyn : BossAI
             break;
         }
         case SpellUnneringBlast:
-            me->AddDelayedEvent(1000, [=]() -> void
+            me->AddDelayedEvent(1000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 for (uint8 i = 0; i < 5; ++i)
                 {
                     instance->SetData(Data::DataMisc::OdynRunesDeactivated, i);
@@ -524,8 +525,8 @@ struct boss_tov_odyn : BossAI
                 }
             });
             RemoveInCorrectAuras = 0;
-            me->AddDelayedEvent(8000, [=]() -> void { DoCast(SpellDrawPowerMythicCleanUp); });
-            me->AddDelayedEvent(4000, [=]() -> void { DoCast(SpellRunicBrandCleanUp); });
+            me->AddDelayedEvent(8000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; DoCast(SpellDrawPowerMythicCleanUp); });
+            me->AddDelayedEvent(4000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; DoCast(SpellRunicBrandCleanUp); });
             me->RemoveAllAreaObjects();
             DespawnAllSummons();
             break;
@@ -856,6 +857,9 @@ struct boss_tov_odyn : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 struct npc_tov_hymdall : ScriptedAI
