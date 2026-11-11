@@ -1225,8 +1225,9 @@ struct npc_tov_hyrja : ScriptedAI
                 me->RemoveAura(SpellHoverModeAnimState);
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
                 me->GetMotionMaster()->MoveJump(2414.0634f, 552.47f, 748.9953f, 20, 10, 2, 4.82082f);
-                me->AddDelayedEvent(2000, [=]() -> void
+                me->AddDelayedEvent(2000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (auto player = me->FindNearestPlayer(300.0f, true))
                         AttackStart(player);
                 });
@@ -1378,6 +1379,9 @@ struct npc_tov_hyrja : ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //114560
