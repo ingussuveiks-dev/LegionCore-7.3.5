@@ -1580,11 +1580,8 @@ class npc_vashjelan_siren : public CreatureScript
 
         void JustDied(Unit* killer) override
         {
-            if (!killer->HasAura(SPELL_PONNY_AURA))
-                return;
-
-            Player *player = killer->ToPlayer();
-            if (!player)
+            Player* player = killer ? killer->GetAffectingPlayer() : nullptr;
+            if (!player || !player->HasAura(SPELL_PONNY_AURA))
                 return;
 
             if (player->GetQuestStatus(QUEST_IRRESTIBLE_POOL_PONY) != QUEST_STATUS_INCOMPLETE)
@@ -1592,13 +1589,13 @@ class npc_vashjelan_siren : public CreatureScript
 
             std::list<Creature*> creatureList;
             me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING, 25.0f);
-            Hatchiling(creatureList, killer);
+            Hatchiling(creatureList, player);
             me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING2, 25.0f);
-            Hatchiling(creatureList, killer);
+            Hatchiling(creatureList, player);
             me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING3, 25.0f);
-            Hatchiling(creatureList, killer);
+            Hatchiling(creatureList, player);
             me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING4, 25.0f);
-            Hatchiling(creatureList, killer);
+            Hatchiling(creatureList, player);
         }
 
         void EnterCombat(Unit* /*victim*/) override
