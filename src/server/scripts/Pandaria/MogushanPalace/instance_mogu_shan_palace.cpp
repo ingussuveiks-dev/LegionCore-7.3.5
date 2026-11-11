@@ -209,6 +209,8 @@ public:
             switch (type)
             {
                 case TYPE_ACTIVATE_ANIMATED_STAFF:
+                    if (animated_staffs.empty())
+                        break;
                     if (auto creature = instance->GetCreature(Trinity::Containers::SelectRandomContainerElement(animated_staffs)))
                         creature->GetAI()->DoAction(0);
                     break;
