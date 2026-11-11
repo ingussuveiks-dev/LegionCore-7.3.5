@@ -759,6 +759,13 @@ public:
 
     static bool HandleListAttacker(ChatHandler* handler, char const* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (Unit* unit = handler->getSelectedUnit())
         {
             for (UnitSet::iterator itr = unit->getAttackers()->begin(); itr != unit->getAttackers()->end(); ++itr)
