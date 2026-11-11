@@ -12,7 +12,15 @@
   "diagnostics": "Before/after canonical and own-runtime snapshots for each declared test/build/link/deployment/start;no new crashes,DBErrors or unexplained runtime warnings/errors/assertions. Mixed7111byteDBErrors and original Slaghammer cache preserved.",
   "build": "Original game.lib rebuilt with installed MSVC19.44.35230 after stale19.44.35228PCH C1853;original scripts.lib rebuilt and final-link original dependency paths used,no global OutDir.332 compiler warnings reviewed against exact unchanged9a source expressions;none from these repairs. Scepter fixture C4244/C4389 remain unchanged baseline diagnostics.",
   "local_evidence": ".codex/meljarak-mend-2026-11-11",
-  "cleanup": "Final verified archive/deletion manifest and commit mapping follow in open-issues-closeout-2026-11-11.json;no unresolved evidence may be classified fixed.",
+  "cleanup": {
+    "archive": "build-extractors/bin/Release/fixed/meljarak-mending-target-profiles-2026-11-11",
+    "manifest_sha256": "aa7f385d12e23f5f5138a3e55b5b4613307d088262ece189d50e391e2817f647",
+    "resolution_sha256": "f424d5fcdaa555740586c072ef46814dec242c5c660c3de8dcb467913fc46dc1",
+    "removed_files": 84,
+    "logical_removed_bytes": 3805587587.0,
+    "scope": "Combined core/Mending cleanup,shared count once;latest rollback retained.",
+    "deletion_manifest_sha256": "7c034996861ce02bad81bf53544c5b3039a652bff48b8fd03f388c5cfb2a7d00"
+  },
   "cause": "TargetHook startup/runtime checked base Effects rather than the cast difficulty.122147heroic source-area-entry7 handler was rejected/skipped because normal uses explicit25.",
   "repair": "Startup validates any authored profile;runtime checks only native GetEffect(effect,current difficulty) with native fallback,and actual area target stream. Preserve specific/ALL/FIRST_FOUND semantics,area classification and missing-effect rejection. No object layout,virtual slot or packet field change.",
   "verification": {
@@ -22,5 +30,7 @@
   },
   "pending": [
     "Actual client raid/full encounter traversal;other spell-script content remains outside these selected regression scopes."
-  ]
+  ],
+  "verification_closeout": "docs/audits/open-issues-closeout-2026-11-11.json",
+  "canonical_complete_chain": "PASS:actual canonical EXE/MAP and full target-profile/Cordana/prior46group chain"
 }

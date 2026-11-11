@@ -581,5 +581,6 @@
       "resolution_sha256": "75ddd99dcf457f2b72f03a9e1f6880594b05fcea44d65a47eb66e557a71697e7",
       "correction_commit": "bf4b28a50c994062cb1faf3203ea4d1d40058c2f"
     }
-  }
+  },
+  "later_open_issues_followup": "docs/audits/open-issues-closeout-2026-11-11.json"
 }

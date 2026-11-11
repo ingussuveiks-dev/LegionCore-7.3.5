@@ -1,0 +1,98 @@
+{
+  "date": "2026-11-11",
+  "request": "Pabeidz open jautājumus",
+  "status": "PARTIAL_OPEN_REPAIRS_DEPLOYED_OTHER_ISSUES_EXPLICITLY_UNRESOLVED",
+  "previous_handoff_commit": "2494239c1e62513dd355b358959eb45b4d78f1a3",
+  "closed_code_items": [
+    {
+      "key": "CordanaHorizontalWalls",
+      "commit": "9a0af931787458f15f4a11b2c56306d03b7e44fc",
+      "audit": "docs/audits/cordana-horizontal-walls-2026-11-11.json"
+    },
+    {
+      "key": "SpellTargetDifficultyProfiles",
+      "commit": "79e954abe58fc792e1a950a2dac5d33e2a757013",
+      "audit": "docs/audits/spell-target-difficulty-profiles-2026-11-11.json"
+    },
+    {
+      "key": "MeljarakMending",
+      "commit": "a26482e3a3b83b956482c2527860768045635145",
+      "audit": "docs/audits/meljarak-mending-native-profiles-2026-11-11.json"
+    }
+  ],
+  "classification_correction": "docs/audits/slaghammer-cache-classification-review-2026-11-11.json",
+  "canonical": {
+    "bnetserver.exe": "0b861b46507eeff561197371fd5f66fa6580ca40a6b81187cdb8793bb9365805",
+    "bnetserver.map": "d5131a63a29507a7a8bf44f053991ef6188bd14a0de1effdef5ddd1302f7a141",
+    "worldserver.exe": "363ec56f8d670c43609a969e98fc5866d5e9ef6b6c22f757ddbc0db9ba86be64",
+    "worldserver.map": "d08a69e54d65b4e5d0d834e685f7ab4d8471cb789aa1680b7f0951706e763850"
+  },
+  "diagnostics": "Clean owned PID10732 startup/shutdown0/exit0/gone,canonical complete PE chain,Scepter,live SQL SHA1 readback and post-cleanup diagnostics. Mixed7111byteDBErrors unchanged;canonical Crashes empty.",
+  "cleanup": {
+    "cordana": {
+      "archive": "build-extractors\\bin\\Release\\fixed\\cordana-horizontal-walls-2026-11-11",
+      "manifest_sha256": "b8e165d38f66de5e4b14d6ba3de9a2e42f926e06403b7cb901d5467ace3fa1c5",
+      "archived_files": 260,
+      "removed_files": 74,
+      "logical_removed_bytes": 910426996,
+      "deletion_manifest": ".codex\\cordana-walls-2026-11-11\\deletions.json",
+      "deletion_manifest_sha256": "a9ec64c51d58647bb9e6524be5ba97594d394ec7f276a96274484bd189383f24",
+      "retained": "Canonical runtime/config/certificates/DLLs/shared data/main libraries,reusable source,latest pre-Cordana rollback,all unresolved Lady/LINK2/Slaghammer/TimeLoop/Mend/handshake evidence and personal backups. No active mixed log truncated."
+    },
+    "mending_and_core": {
+      "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/meljarak-mending-target-profiles-2026-11-11",
+      "LogicalDeletedBytes": 3805587587.0,
+      "ManifestSHA256": "AA7F385D12E23F5F5138A3E55B5B4613307D088262ECE189D50E391E2817F647",
+      "Retained": "Canonical/shared assets/main game+script libraries,reusable sources,latest pre-Mending rollback,all unresolved evidence and personal backups. No active log truncated.",
+      "ArchivedFiles": 845,
+      "DeletedFiles": 84
+    },
+    "mending_resolution_sha256": "f424d5fcdaa555740586c072ef46814dec242c5c660c3de8dcb467913fc46dc1",
+    "cordana_resolution_sha256": "0d1edead27ce184b757ab15fb182076ec2010f0bffc2cbdb2da60fa75c720ed5",
+    "archive_records_rehashed": 1105,
+    "total_logical_removed_bytes": 4716014583.0,
+    "no_active_log_rotated": true,
+    "first_cleanup_guard": "Stopped before archive/deletion because mixed slash dictionary key lookup returned null;direct original hash check confirmed unchanged protected files. Fixed lookup and full cleanup passed. Final outer diagnostics copied after completion as additional closeout evidence.",
+    "closeout_fixture_correction": "Initial closeout reader assumed every archive manifest was an object;Cordana uses a list. Reader corrected to validate both exact existing schemas;all1105record hashes and final diagnostics pass. Failed and passing logs preserved,not a runtime crash.",
+    "final_post_cleanup_diagnostics_sha256": "e2b4f83c872c5f215cfb12f80f418a2e7a1364c63d3b298434ba8d85befd4623"
+  },
+  "remaining": [
+    {
+      "key": "SharasdalLivingLady",
+      "status": "OPEN_AUTHENTIC_SEQUENCE_NOT_ESTABLISHED",
+      "missing": "Actual activation/surrender producer,accepted living conversation1906,real Grash209457boarding/carry,finisher attribution and cleanup. Native209487dummy effect is not proof of a kill producer;no authored HPthreshold or timer established.",
+      "review": "Current local realLady362095 vsillusion362091 code and prior matching26972data/assets/DB/video notes re-read. Newer Trinity scripts and bounded GitHub searches yielded no matching implementation. No new video watched;prior1029s/5s and880..959/1s sampling is not continuous/audio proof.",
+      "audit": "docs/audits/sharasdal-living-lady-research-2026-10-31.json",
+      "next": "Find original behavior/producer evidence,then whole living sequence with native boarding acknowledgements,owner/pet/guardian/one-hit,failed actors/casts,abandon/retry/reentry and actual-death credit."
+    },
+    {
+      "key": "SharedCryptLINK2",
+      "status": "OPEN_ORIGINAL_ACTIONS_UNKNOWN",
+      "missing": "101430event1->2 after200165/conversation1031,and103151DATA chain202014->2. Later credit/barrier paths and shared Zakajz use are distinct.",
+      "audit": "docs/audits/shared-crypt-link2-followup-2026-11-01.json",
+      "next": "Establish each original action2payload from matching data/original sequence. No no-op/link-zero/despawn/log-suppression substitute. Current owner/group credit already repaired;do not reintroduce old player-only code."
+    },
+    {
+      "key": "TimeLoopHealthWidth",
+      "status": "OPEN_NATIVE_HEAL_PIPELINE_NOT_FIXED",
+      "evidence_manifest": ".codex/open-diagnostics/time-loop-health-width-2026-11-09/manifest.json",
+      "evidence_manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "matching_native_data": "26972:105984absorb effect1aura69;105992effect0flat HEAL10,targetself1,base100. Read-only native catalog completed;no native lethal/full-heal run or deployed repair claimed.",
+      "root_trace": "TimeLoop script narrows health difference/maxhealth to int32. Spell::EffectHeal uses int32 addhealth/negative m_damage;TargetInfo.damage,m_damage,m_healing are signed32. Unit::HealBySpell/DealHeal use uint32 amounts,int32 gains;DealHeal casts addhealth to int32 before native64ModifyHealth. CalcHealAbsorb uses signed32remaining and HealInfo/combat log fields are32bit. Widening only aura code,forcing health or splitting into extra heal events would not prove native absorb/proc/credit semantics.",
+      "next": "Implement and test one coherent width-correct heal path,including real105984absorb and105992cast,lethal/nonlethal/exactlethal,heal absorbs/procs/one-use/removal and wide boundaries. Existing counterfactual EXE/symbols retained;no guessed cap/direct fullhealth workaround."
+    },
+    {
+      "key": "IntermittentClientHandshake",
+      "status": "OPEN_NO_FRESH_CLIENT_INCIDENT",
+      "evidence": "Existing upstream network-thread regression and socket probes pass;historical incident/root cause remains unproven. No WoW client was running this review;Client.log/Connection.log last modified2026-11-06,not fresh client evidence.",
+      "tool": "tools/research/Save-WorldHandshakeIncident.ps1",
+      "next": "On actual failure preserve client logs,server network records and pre-abort OS/socket samples before retry/restart overwrites evidence."
+    },
+    {
+      "key": "ClientAndWholeChainTraversal",
+      "status": "PENDING_USER_CLIENT",
+      "scope": "All36whole artifact chains,actual visuals/audio/equipment/camera/pet/reconnect/encounter traversal. Native/ASAN/linked checks certify only declared scopes. New Cordana and Mending actual client checks remain pending. Sentinel default amount0 custom criterion semantics and SilverHand17915indirect progression/group eligibility remain unestablished;no speculative grants. MariaDB FT config restart-warning absence awaits a future user-owned service restart;installed DLL/liveCAST already verified,no service stopped."
+    }
+  ],
+  "authorization": "No arbitrary new5x10batch. No hidden task server left running;user/unknown services never stopped. Optional client availability question received no reply at closeout. No all-open/all36completion claim."
+}

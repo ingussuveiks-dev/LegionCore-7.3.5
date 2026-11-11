@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-11",
+  "status": "CLASSIFICATION_CORRECTED_LINK2_REMAINS_OPEN",
+  "cache": {
+    "path": "build-extractors/runtime-test/legion-legendary-catalog/SlaghammerHandoffNative.exe",
+    "sha256": "b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c",
+    "pe_link_utc": "2026-11-06T10:17:25+00:00",
+    "embedded_pdb_run": "20261106-121715-172",
+    "executed_this_review": false
+  },
+  "associated_run": {
+    "path": "build-extractors/runtime-test/slaghammer-handoff-native/20261106-121715-172",
+    "diagnostics_after_sha256": "9599dcd974f1686744dd74e65cf5661687564a7135039053059fb3f47719e9d2",
+    "native_tsv_sha256": "392bbd36b845c233aeb98b06849796976be8c47d411b72a95be0421f09acb271",
+    "catalog_log_sha256": "796e7c1d1e9386287d482bac0ff5d52dc4571d55bee49f79e97f3fd523481094",
+    "completed": true,
+    "exit_evidence": "Read-LegionLegendaryCatalog.ps1 throws on nonzero native exit;its surrounding diagnostics report Completed=true. The outer wrapper rejects two appended101430LINK2errors. Native output explicitly marks both admission paths OPEN and closes DB pools.",
+    "changed_crashes": [],
+    "failure": "Two missing101430event1->LINK2diagnostics;this is not a clean ordinary quest run."
+  },
+  "broader_retained_review": {
+    "native_and_catalog_files": 41,
+    "crash_signature_hits": [],
+    "scope": "Read-only retained native/catalog text review;absence of a signature is not proof that no historical crash occurred."
+  },
+  "correction": "This specific cache/run is evidence of unresolved LINK2,not an established OS crash. No separate historical crash artifact was identified by this review. No crash repair is claimed. Prior generic crash/cache wording is superseded only for this identified cache;all original evidence remains outside fixed.",
+  "pending": "Establish authentic missing LINK2 action for101430and103151. Never replace by no-op/despawn/zero-link or suppress diagnostics to hide it.",
+  "diagnostics": "No cached executable run,no process/server/SQL/character mutation. Original cache and mixed DBErrors hashes unchanged."
+}

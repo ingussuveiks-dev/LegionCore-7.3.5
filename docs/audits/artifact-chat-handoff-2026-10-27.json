@@ -1,4 +1,29 @@
 {
+  "latest_open_issues_followup_2026_11_11": {
+    "status": "PARTIAL_OPEN_REPAIRS_DEPLOYED_OTHER_ISSUES_EXPLICITLY_UNRESOLVED",
+    "audit": "docs/audits/open-issues-closeout-2026-11-11.json",
+    "latest_fix_commit": "a26482e3a3b83b956482c2527860768045635145",
+    "closed_code": [
+      "Cordana horizontal walls",
+      "difficulty-aware native target hook dispatch",
+      "Meljarak normal25/heroic35Mending and actual swarm-only recipients"
+    ],
+    "canonical": {
+      "bnetserver.exe": "0b861b46507eeff561197371fd5f66fa6580ca40a6b81187cdb8793bb9365805",
+      "bnetserver.map": "d5131a63a29507a7a8bf44f053991ef6188bd14a0de1effdef5ddd1302f7a141",
+      "worldserver.exe": "363ec56f8d670c43609a969e98fc5866d5e9ef6b6c22f757ddbc0db9ba86be64",
+      "worldserver.map": "d08a69e54d65b4e5d0d834e685f7ab4d8471cb789aa1680b7f0951706e763850"
+    },
+    "remaining": [
+      "SharasdalLivingLady:OPEN_AUTHENTIC_SEQUENCE_NOT_ESTABLISHED",
+      "SharedCryptLINK2:OPEN_ORIGINAL_ACTIONS_UNKNOWN",
+      "TimeLoopHealthWidth:OPEN_NATIVE_HEAL_PIPELINE_NOT_FIXED",
+      "IntermittentClientHandshake:OPEN_NO_FRESH_CLIENT_INCIDENT",
+      "ClientAndWholeChainTraversal:PENDING_USER_CLIENT"
+    ],
+    "protected": "Mixed7111byteDBErrors,original Slaghammer cache,all unresolved Lady/LINK2/TimeLoop/handshake evidence retained. Slaghammer identified cache is OPEN LINK2 reproduction,not established OS crash.",
+    "history": "Earlier latest_* entries are historical snapshots;this followup supersedes only Cordana/Mending OPEN status and identified cache classification."
+  },
   "latest_second_five_ten_repairs_2026_11_11": {
     "status": "COMPLETE_50_AUTOMATED_CLIENT_PENDING",
     "completed_fixes": 50,
