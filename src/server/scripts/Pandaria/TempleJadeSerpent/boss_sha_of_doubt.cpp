@@ -1,5 +1,6 @@
 /*==============
 ==============*/
+#include "HealingAmount.h"
 
 enum eBosses
 {
@@ -259,7 +260,7 @@ class mob_figment_of_doubt : public CreatureScript
                                     if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(SPELL_RELEASE_DOUBT))
                                     {
                                         DoCast(creature, SPELL_CHI_WAVE, true);
-                                        me->HealBySpell(creature, spellInfo, uint32(float(creature->GetMaxHealth()) * 0.1f));
+                                        me->HealBySpell(creature, spellInfo, HealingAmount::Apply(creature->GetMaxHealth(), 0, 0.1f));
                                     }
                                 }
                             }
