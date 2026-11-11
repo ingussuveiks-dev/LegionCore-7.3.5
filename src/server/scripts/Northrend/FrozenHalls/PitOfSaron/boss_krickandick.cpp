@@ -602,8 +602,10 @@ class spell_krick_pursuit : public SpellScriptLoader
 
             void HandleExtraEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                if (Creature* caster = GetCaster()->ToCreature())
-                    CAST_AI(boss_ick::boss_ickAI, caster->AI())->_ResetThreat(GetTarget());
+                if (Unit* caster = GetCaster())
+                    if (Creature* creature = caster->ToCreature())
+                        if (auto ai = CAST_AI(boss_ick::boss_ickAI, creature->AI()))
+                            ai->_ResetThreat(GetTarget());
             }
 
             void Register() override
