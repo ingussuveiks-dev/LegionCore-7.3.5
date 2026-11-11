@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-11",
+  "status": "LIVE_CAST_REPAIR_AND_CANONICAL_START_VERIFIED",
+  "service": {
+    "name": "wampmariadb64",
+    "user_owned_pid": 16996,
+    "port": 3307,
+    "state": "Running;never stopped or restarted by Codex",
+    "installed_dll_sha256": "4945c988f7356eadb38844e915eb5a09778be06cb03e98c2f19ee3fa9de0752e",
+    "identity": "Service ImagePath points to installed stock mysqld.exe;service PID matches actual SQL pid_file and port3307;process began after DLL replacement and live protocol now returns repaired64bit values. Direct elevated-process module enumeration was unavailable;actual installed module path/hash was independently verified in the preceding owned isolated test."
+  },
+  "checks": {
+    "SQL": "14 integer boundaries,bare/server-prepared text,HEX/comparison/string/negative controls,and session-only TEMP CTAS bigint storage pass against actual project connection. No permanent or character/account writes.",
+    "native": "Actual LegionCore Field64 plus MySQL binary prepared unsigned64 metadata/value4294967296 pass;native probe sessions readonly.",
+    "canonical": "Task-owned canonical worldserver PID16120 fresh ready,server shutdown0,exit0,gone;stderr empty,protected config/cert/DLL hashes unchanged. No bnet/user game process stopped.",
+    "diagnostics": "Canonical/own crash and log snapshots reviewed for every test;no new crashes,DBErrors,warnings,errors or assertions from tests. User MariaDB appended no bytes during tests. Its startup contained only the separately diagnosed pre-existing option0->1 warning,not a CAST regression. Mixed7111byteDBErrors and service log not rotated/truncated.",
+    "limits": "Actual gameplay/client chains and complete database workloads remain unverified. Invalid FT minimum repaired in a separate configuration audit;absence of its old warning at the next actual Wamp restart remains observationally pending."
+  },
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\mariadb-live-verification-2026-11-11",
+    "manifest_sha256": "603cb96621d0f992ae8d45912910a817fb2e53550b6173d48a969e5fa563b2bb",
+    "files": 69,
+    "deletion_manifest_sha256": "038f7713b6295c47e2a41ba11f0a2885d1415d41ba3ce92a77b4d65baeaf4810"
+  },
+  "cleanup": {
+    "removed_roots": [
+      ".codex\\mariadb-cast-fix-2026-11-10\\build-wolfssl",
+      ".codex\\mariadb-cast-fix-2026-11-10\\runtime\\bin",
+      ".codex\\mariadb-cast-fix-2026-11-10\\runtime\\bin-stock",
+      ".codex\\mariadb-cast-fix-2026-11-10\\runtime\\bin-hybrid",
+      ".codex\\mariadb-cast-fix-2026-11-10\\runtime\\data",
+      ".codex\\mariadb-cast-fix-2026-11-10\\runtime\\share"
+    ],
+    "removed_files": 4044,
+    "logical_removed_bytes": 1196342077,
+    "retained": "Installed DLL,verified original rollback pair,candidate DLL/PDB/manifest,pinned source archives/extracted source and regression tools;private SQL logs/crash directories and historical mixed/OPEN protocol/TLS records retained. Real Wamp datadir/config except separately audited one option,canonical game runtime/shared libraries/character backups and protected Slaghammer untouched."
+  },
+  "original_diagnostics": "The unsigned-CAST component of historical82+94raw records is resolved by the source fix and live regression. Raw snapshots can contain mixed historical diagnostics and remain outside fixed for separate review;no blanket log clearance or reclassification of unrelated failures.",
+  "pending": "Living Lady,LINK2/Slaghammer,TimeLoop32bit healing,heroic Mend,intermittent client handshake,original passwordless-TLS client warning and all36whole-chain client checks remain separate OPEN work.",
+  "archive_classification": {
+    "reason": "Full shared MariaDB log snapshot contains unrelated historical diagnostics. Keep it outside fixed and leave the live log untouched. Only the reviewed current startup excerpt and empty appended-test tail belong to this scoped fixed archive.",
+    "snapshot_retained": ".codex\\mariadb-live-verification-2026-11-11\\mariadb-current.log",
+    "snapshot_sha256": "807e5a3314ea41912ca03e63f54a5d2347a8eedcfe381eb3e47e93bbb230e22a",
+    "new_or_changed_production_crash_reports": 0,
+    "live_service": "wampmariadb64 user PID16996 remains Running"
+  }
+}

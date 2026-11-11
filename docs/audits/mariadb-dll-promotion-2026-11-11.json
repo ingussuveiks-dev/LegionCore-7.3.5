@@ -1,6 +1,6 @@
 {
   "date": "2026-11-11",
-  "status": "INSTALLED_VERIFIED_ISOLATED_USER_WAMP_START_PENDING",
+  "status": "LIVE_CAST_REPAIR_AND_CANONICAL_START_VERIFIED",
   "authorization": "User confirmed Wampserver stopped and explicitly requested completion of the DLL installation. Service confirmed Stopped with no SQL/game process before replacement. No user process stopped or service started.",
   "source_fix_commit": "5cc72f2301eaa97b5a63c5b274c0f54c9e416c27",
   "previous_project_head": "afca5ebcc058b381979131dd606899c6937e4afc",
@@ -32,10 +32,10 @@
     "files": 45,
     "verified": "All copied evidence hashes match original bytes. Only completed installation/isolated-regression evidence archived here;earlier OPEN production counterfactual evidence remains outside fixed."
   },
-  "retained": "Original DLL rollback pair,candidate DLL/PDB and pinned source/build provenance,empty isolated recovery runtime and native regression sources retained until real Wamp/project startup verification. No existing test binaries/data/build trees removed in this installation-only task.",
+  "retained": "Installed DLL,verified original rollback pair,candidate DLL/PDB/manifest,pinned source archives/extracted source and regression tools;private SQL logs/crash directories and historical mixed/OPEN protocol/TLS records retained. Real Wamp datadir/config except separately audited one option,canonical game runtime/shared libraries/character backups and protected Slaghammer untouched.",
   "pending": [
-    "User may start Wampserver. Verify fresh wampmariadb64 startup,live unsigned-CAST regression and canonical game startup before closing production diagnostic evidence.",
-    "Original82+94 raw CAST records remain outside fixed until actual live verification. Mixed DBErrors stays untouched.",
-    "Living Lady/LINK2/Slaghammer historical finding,TimeLoop healing,heroic Mend,handshake and full client chains remain separate OPEN work."
-  ]
+    "Living Lady,LINK2/Slaghammer,TimeLoop32bit healing,heroic Mend,intermittent client handshake,original passwordless-TLS client warning and all36whole-chain client checks remain separate OPEN work.",
+    "Observe FT option warning absent after the next user-initiated Wamp restart."
+  ],
+  "latest_live_audit": "docs/audits/mariadb-live-verification-2026-11-11.json"
 }

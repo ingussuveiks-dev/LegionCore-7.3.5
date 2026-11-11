@@ -1,6 +1,6 @@
 {
   "date": "2026-11-09",
-  "status": "OPEN_EXTERNAL_SQL_EXPRESSION",
+  "status": "LIVE_CAST_REPAIR_AND_CANONICAL_START_VERIFIED",
   "observed": "MariaDB11.4.9 unquoted numeric CAST discrepancy remains OPEN_EXTERNAL_SQL_EXPRESSION:CAST(4294967296 AS UNSIGNED)->0,CAST(4294967297 AS UNSIGNED)->1;bare number and quoted-decimal CAST retain4294967296. Reproduced through native core and direct CLI. Cause not established;no DB-server/production-query workaround. Raw evidence hash-verified outside fixed at .codex/open-diagnostics/mariadb-unsigned-cast-2026-11-09.",
   "evidence": {
     "Files": 82,
@@ -13,10 +13,12 @@
     }
   },
   "scope": "No production database/server/query change. Native regression now explicitly constructs high-only value from quoted decimal and validates actual Field64;unquoted numeric-literal cast issue stays visible and outside fixed.",
-  "next": "Investigate expression/type handling against MariaDB source/version independently;not counted among these10fixes.",
+  "next": "CAST root cause and live repair verified;preserve mixed raw evidence for separate historical diagnostics. See latest_live_audit.",
   "archive_classification_correction": {
     "Files": 94,
     "Manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\mariadb-unsigned-cast-2026-11-09\\classification-correction-manifest.json",
     "ManifestSHA256": "8483210fad6a0fe25b34c0428ba5855429913ed38e31042e01e65384340ecd9d"
-  }
+  },
+  "latest_live_audit": "docs/audits/mariadb-live-verification-2026-11-11.json",
+  "observed_is_historical": true
 }

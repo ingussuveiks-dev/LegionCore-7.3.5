@@ -6,9 +6,9 @@
     "audit": "docs\\audits\\five-ten-repairs-2026-11-11.json",
     "latest_batch_audit": "docs\\audits\\fortyfirst-ten-repairs-2026-11-11.json",
     "last_fix_commit": "41c2aa7acb516ab7ea218925c5cfa948eee6f1e6",
-    "MariaDB": "INSTALLED_VERIFIED_ISOLATED_USER_WAMP_START_PENDING;see docs\\audits\\mariadb-dll-promotion-2026-11-11.json",
+    "MariaDB": "LIVE_CAST_REPAIR_AND_CANONICAL_START_VERIFIED",
     "pending": [
-      "User may start Wampserver. Verify fresh wampmariadb64 startup,live unsigned-CAST regression and canonical game startup before closing production diagnostic evidence.",
+      "MariaDB CAST DLL now installed and live verified. Observe repaired FT option warning absent on a future user restart.",
       "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
       "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
       "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
@@ -9772,14 +9772,32 @@
     "status": "Actual Belphiar109397/373405 admission and raw/final damage gate until native1137/2. Final96 native/live including player/pet/Guardian, real3 rescue deaths AND Ox Kick door both orders, scaled one-hit, group recipient, AI recreation/suspended fallback and six native maiden waypoint/text/49356/follow continuations; SQL TEMP9/28refusals/live equality, retained18intro/46door/25ASANdefense, actual canonical11boss/20intro/8door/base-instance/damage clamp/retry PE/Scepter pass. World05 RELEASED55acd243, own27688 ready+graceful0/gone, no new diagnostics. Full client/42765/all36, legitimate early guard access/party rescue counts/later King path/missing actor recovery/mixed LINK2 remain OPEN. No character reset."
   },
   "latest_mariadb_dll_promotion_2026_11_11": {
-    "status": "INSTALLED_VERIFIED_ISOLATED_USER_WAMP_START_PENDING",
+    "status": "LIVE_CAST_REPAIR_AND_CANONICAL_START_VERIFIED",
     "audit": "docs\\audits\\mariadb-dll-promotion-2026-11-11.json",
     "sha256": "4945c988f7356eadb38844e915eb5a09778be06cb03e98c2f19ee3fa9de0752e",
-    "service": "wampmariadb64 STOPPED;user may start Wampserver",
+    "service": "wampmariadb64 Running PID16996;live CAST and canonical startup verified",
     "pending": [
-      "User may start Wampserver. Verify fresh wampmariadb64 startup,live unsigned-CAST regression and canonical game startup before closing production diagnostic evidence.",
-      "Original82+94 raw CAST records remain outside fixed until actual live verification. Mixed DBErrors stays untouched.",
-      "Living Lady/LINK2/Slaghammer historical finding,TimeLoop healing,heroic Mend,handshake and full client chains remain separate OPEN work."
+      "Living Lady,LINK2/Slaghammer,TimeLoop32bit healing,heroic Mend,intermittent client handshake,original passwordless-TLS client warning and all36whole-chain client checks remain separate OPEN work."
     ]
+  },
+  "latest_mariadb_live_verification_2026_11_11": {
+    "status": "LIVE_CAST_REPAIR_AND_CANONICAL_START_VERIFIED",
+    "audit": "docs/audits/mariadb-live-verification-2026-11-11.json",
+    "service": "User MariaDB16996 left Running;task worldserver16120 stopped cleanly",
+    "configuration_audit": "docs/audits/mariadb-ft-min-token-config-2026-11-11.json",
+    "cleanup": {
+      "removed_roots": [
+        ".codex\\mariadb-cast-fix-2026-11-10\\build-wolfssl",
+        ".codex\\mariadb-cast-fix-2026-11-10\\runtime\\bin",
+        ".codex\\mariadb-cast-fix-2026-11-10\\runtime\\bin-stock",
+        ".codex\\mariadb-cast-fix-2026-11-10\\runtime\\bin-hybrid",
+        ".codex\\mariadb-cast-fix-2026-11-10\\runtime\\data",
+        ".codex\\mariadb-cast-fix-2026-11-10\\runtime\\share"
+      ],
+      "removed_files": 4044,
+      "logical_removed_bytes": 1196342077,
+      "retained": "Installed DLL,verified original rollback pair,candidate DLL/PDB/manifest,pinned source archives/extracted source and regression tools;private SQL logs/crash directories and historical mixed/OPEN protocol/TLS records retained. Real Wamp datadir/config except separately audited one option,canonical game runtime/shared libraries/character backups and protected Slaghammer untouched."
+    },
+    "pending": "Living Lady,LINK2/Slaghammer,TimeLoop32bit healing,heroic Mend,intermittent client handshake,original passwordless-TLS client warning and all36whole-chain client checks remain separate OPEN work."
   }
 }
