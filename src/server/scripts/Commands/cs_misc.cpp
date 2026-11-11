@@ -3835,6 +3835,13 @@ public:
 
     static bool HandleBGStartCommand(ChatHandler* handler, char const* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         bool sourceWin;
 
         if (!*args)
