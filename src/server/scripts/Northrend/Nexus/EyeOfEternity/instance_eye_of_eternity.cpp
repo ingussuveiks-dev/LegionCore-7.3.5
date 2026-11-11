@@ -217,6 +217,9 @@ public:
 
         void PowerSparksHandling()
         {
+            if (portalTriggers.empty())
+                return;
+
             bool next = (lastPortalGUID == portalTriggers.back() || !lastPortalGUID ? true : false);
 
             for (GuidList::const_iterator itr_trigger = portalTriggers.begin(); itr_trigger != portalTriggers.end(); ++itr_trigger)
