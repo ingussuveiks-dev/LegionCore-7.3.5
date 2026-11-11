@@ -529,8 +529,9 @@ struct boss_twin_ogron_phemos : public BossAI
         me->CastSpell(me, AggressiveDisposition, true);
         me->CastSpell(me, Disposition, true);
 
-        AddDelayedEvent(2 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(2 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (m_TrashsMobs.empty() && !m_Init)
             {
                 std::list<Creature*> trashList;
@@ -621,8 +622,9 @@ struct boss_twin_ogron_phemos : public BossAI
                 m_SecondBlazePos = pos;
                 m_CosmeticEvents.RescheduleEvent(EventSpawnSecondBlaze, 1500);
 
-                AddDelayedEvent(1500, [this, pos]() -> void
+                AddDelayedEvent(1500, [this, pos, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->CastSpell(pos, BlazeWeaponVisual, true);
                     me->SendPlaySpellVisualKit(QuakeVisualID, 0, 0);
                 });
@@ -640,8 +642,9 @@ struct boss_twin_ogron_phemos : public BossAI
                 m_EnfeeblingRoarScheduled = true;
 
                 /// Cast time of Enfeebling roar + 100ms timer
-                AddDelayedEvent(3100, [this]() -> void
+                AddDelayedEvent(3100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     for (ObjectGuid guid : m_EnfeeblingRoarTargets)
                     {
                         if (Unit* target = Unit::GetUnit(*me, guid))
@@ -739,15 +742,17 @@ struct boss_twin_ogron_phemos : public BossAI
                 me->SetHomePosition(*me);
                 m_HomeChanged = true;
 
-                AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->SetFacingTo(phemosMovePos[2].GetOrientation());
                 });
 
                 if (m_TrashsMobs.empty())
                 {
-                    AddDelayedEvent(2 * IN_MILLISECONDS, [this]() -> void
+                    AddDelayedEvent(2 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         DoMoveHome();
                     });
                 }
@@ -858,8 +863,9 @@ struct boss_twin_ogron_phemos : public BossAI
                     me->CastSpell(target, DoubleSlashMainHand, false);
 
                     ObjectGuid guid = target->GetGUID();
-                    AddDelayedEvent(1 * IN_MILLISECONDS, [this, guid]() -> void
+                    AddDelayedEvent(1 * IN_MILLISECONDS, [this, guid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         if (Unit* target = Unit::GetUnit(*me, guid))
                             me->CastSpell(target, DoubleSlashOffHand, true);
                     });
@@ -893,8 +899,9 @@ struct boss_twin_ogron_phemos : public BossAI
             pos->GetMotionMaster()->MovePoint(MoveFirst, polMovePos[0]);
 
             ObjectGuid guid = pos->GetGUID();
-            AddDelayedEvent(5 * IN_MILLISECONDS, [this, guid]() -> void
+            AddDelayedEvent(5 * IN_MILLISECONDS, [this, guid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (Creature* boss = Creature::GetCreature(*me, guid))
                 {
                     if (boss->IsAIEnabled)
@@ -939,8 +946,9 @@ struct boss_twin_ogron_phemos : public BossAI
 
                     if (timer)
                     {
-                        AddDelayedEvent(timer, [this, pos, dest]() -> void
+                        AddDelayedEvent(timer, [this, pos, dest, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(BlazeFirstSpawn))
                             {
                                 AreaTrigger* areaTrigger = new AreaTrigger;
@@ -966,6 +974,9 @@ struct boss_twin_ogron_phemos : public BossAI
             }
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Warming Up - 173425
