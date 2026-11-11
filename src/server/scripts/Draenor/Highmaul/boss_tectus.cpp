@@ -279,8 +279,9 @@ struct boss_tectus : public BossAI
                 me->SetAnimKitId(0);
                 me->PlayOneShotAnimKit(AnimRise);
 
-                AddDelayedEvent(4500, [this]() -> void
+                AddDelayedEvent(4500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->SetReactState(REACT_AGGRESSIVE);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC);
                 });
@@ -315,14 +316,16 @@ struct boss_tectus : public BossAI
                     me->SetAnimKitId(0);
                     me->PlayOneShotAnimKit(AnimRise);
 
-                    AddDelayedEvent(4 * IN_MILLISECONDS, [this]() -> void
+                    AddDelayedEvent(4 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->SetAnimKitId(AnimWounded);
                         Talk(Death);
                     });
 
-                    AddDelayedEvent(8 * IN_MILLISECONDS, [this]() -> void
+                    AddDelayedEvent(8 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC);
                         Map::PlayerList const& players = me->GetMap()->GetPlayers();
                         if (!players.isEmpty())
@@ -479,14 +482,16 @@ struct boss_tectus : public BossAI
                 target->RestoreDisplayId();
 
                 ObjectGuid guid = target->GetGUID();
-                AddDelayedEvent(4 * IN_MILLISECONDS, [this, guid]() -> void
+                AddDelayedEvent(4 * IN_MILLISECONDS, [this, guid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Unit* target = Unit::GetUnit(*me, guid))
                         target->CastSpell(target, EarthFurySpawnDustCloud, true);
                 });
 
-                AddDelayedEvent(6 * IN_MILLISECONDS, [this, guid]() -> void
+                AddDelayedEvent(6 * IN_MILLISECONDS, [this, guid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Unit* target = Unit::GetUnit(*me, guid))
                         target->ClearUnitState(UNIT_STATE_STUNNED);
                 });
@@ -619,8 +624,9 @@ struct boss_tectus : public BossAI
                     me->CastSpell(target, SpellCrystallineBarrage, true);
                     m_CrystallineBarrageTarget = target->GetGUID();
 
-                    AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
+                    AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         float range = 7.0f;
                         float o = me->GetOrientation();
                         float originX = me->GetPositionX();
@@ -806,6 +812,9 @@ struct boss_tectus : public BossAI
                     add->AI()->AttackStart(target);
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Night-Twisted Supplicant - 86185
