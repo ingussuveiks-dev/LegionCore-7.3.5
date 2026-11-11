@@ -755,7 +755,7 @@ struct npc_tichonrius_sightless_watcher : ScriptedAI
     {
         DoZoneInCombat(me, 80.0f);
         DoCast(me, SPELL_FEL_DISSOLVE_IN, true);
-        AddDelayedEvent(3000, [this]() -> void { me->SetReactState(REACT_AGGRESSIVE); });
+        AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetReactState(REACT_AGGRESSIVE); });
 
         events.RescheduleEvent(EVENT_1, 9000);
 
@@ -796,6 +796,9 @@ struct npc_tichonrius_sightless_watcher : ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //212997
