@@ -594,8 +594,9 @@ public:
                 me->KillAllDelayedEvents();
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
                 me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
-                AddDelayedEvent(12000, [this] () -> void
+                AddDelayedEvent(12000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (me && me->IsAlive() && me->isInCombat())
                     {
                         me->SetReactState(REACT_AGGRESSIVE);
@@ -640,6 +641,9 @@ public:
             if (me->GetEntry() == NPC_ICY_ENCHANTMENT || !IsHeroicPlusRaid())
                 DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
