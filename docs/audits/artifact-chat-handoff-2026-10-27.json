@@ -1,4 +1,32 @@
 {
+  "latest_ten_ten_repairs_2026_11_11": {
+    "status": "IN_PROGRESS_20_OF_100_TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+    "request": "Turpini 10×10",
+    "completed": 20,
+    "remaining": 80,
+    "completed_batches": 2,
+    "audit": "docs/audits/ten-ten-repairs-2026-11-11.json",
+    "last_implementation_commit": "06cd6473f62ed486d23c02050e9cd88979892541",
+    "canonical": {
+      "worldserver.exe": "b6bf89f3d39a9c12d48e5199b3a11329aa5226e89b0a764be29102d9962f19a6",
+      "worldserver.map": "e339de100a73a967f694e38829c49b5b3d5ec55b40d3d02c6daca9c1b4f20809",
+      "bnetserver.exe": "4b98fbac0a47f36a9fc4f6a7614a262daca33d150f6f35b598ba6b5d2537d523",
+      "bnetserver.map": "c5e83d039cbf07139b9ad1a23110be478dfdb45cfb326666fe71b11e2a535863"
+    },
+    "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
+    "cleanup_batch02": {
+      "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+      "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch02",
+      "manifest_sha256": "fd487ffe60974151b7bdec2b0e89233e5142c07fb506ee92187c2a478c06f3e1",
+      "archived_files": 540,
+      "removed_files": 36,
+      "logical_removed_bytes": 1089534679,
+      "deletion_manifest": ".codex/ten-ten-2026-11-11/batch02-deletions.json",
+      "deletion_manifest_sha256": "a38a4630ad2574998375f6fab21ac269d846967de7fabe587711fd59193fe621",
+      "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+    },
+    "pending": "Continue batches3..10 to reach100genuine repairs;actualclient/fullchainsandLady/LINK2/Slaghammer/handshake remainOPEN."
+  },
   "latest_third_five_ten_repairs_2026_11_11": {
     "status": "TECHNICAL_50_SOURCE_ASAN_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
     "request": "Turpini 5×10",

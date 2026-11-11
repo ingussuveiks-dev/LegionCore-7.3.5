@@ -1,9 +1,9 @@
 {
   "status": "IN_PROGRESS",
   "authorized_total": 100,
-  "completed": 10,
-  "remaining": 90,
-  "completed_batches": 1,
+  "completed": 20,
+  "remaining": 80,
+  "completed_batches": 2,
   "support_commit": "9c811f3728a29d3fad974a65692f830a8d3e3670",
   "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
   "batches": [
@@ -71,16 +71,83 @@
         "retained": "Exact previous50scope and independent65file unsigned64healing amendment compose through a separately verified new10amendment. Canonical Scepter VerifyReleaseBinary passed.",
         "runtime": "Owned canonicalPID20208 fresh ready,graceful shutdown0,exit0/gone,empty stderr;no new crash/DBErrors/server warnings/errors/assertions. No user server stopped."
       }
+    },
+    {
+      "batch": 2,
+      "historical_group": 53,
+      "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+      "commits": [
+        {
+          "key": "CharDisplayConsoleContext",
+          "commit": "7175e5f871c80f4d8f462bb7a22021c293690915",
+          "audit": "docs/audits/ten-ten-2026-11-11/CharDisplayConsoleContext.json"
+        },
+        {
+          "key": "VehicleGearScalingCasterLoss",
+          "commit": "a23b1dd5b9129bb8fb3ec196ef2ece8c8711cf5c",
+          "audit": "docs/audits/ten-ten-2026-11-11/VehicleGearScalingCasterLoss.json"
+        },
+        {
+          "key": "KrickPursuitCasterLoss",
+          "commit": "fed7ff3a97c80ca17fa6c061a51e674731c886bd",
+          "audit": "docs/audits/ten-ten-2026-11-11/KrickPursuitCasterLoss.json"
+        },
+        {
+          "key": "XT002SearingLightCasterLoss",
+          "commit": "473b0a81ec112c854c1c5e93e165b0d6d758e423",
+          "audit": "docs/audits/ten-ten-2026-11-11/XT002SearingLightCasterLoss.json"
+        },
+        {
+          "key": "XT002GravityBombCasterLoss",
+          "commit": "f263f6212947c68b411e208a55b43c89cc224040",
+          "audit": "docs/audits/ten-ten-2026-11-11/XT002GravityBombCasterLoss.json"
+        },
+        {
+          "key": "StarAugurIcyEjectionCasterLoss",
+          "commit": "8d73b523e4b90aa1d72c84c6affe25de664c7c3f",
+          "audit": "docs/audits/ten-ten-2026-11-11/StarAugurIcyEjectionCasterLoss.json"
+        },
+        {
+          "key": "StarAugurFelEjectionCasterLoss",
+          "commit": "dbf1e55df5fa28bb754615398f9ba16ce2b82b82",
+          "audit": "docs/audits/ten-ten-2026-11-11/StarAugurFelEjectionCasterLoss.json"
+        },
+        {
+          "key": "StarAugurVoidEjectionCasterLoss",
+          "commit": "1634baec6614a8f2ff252816bc483c73f21d59e9",
+          "audit": "docs/audits/ten-ten-2026-11-11/StarAugurVoidEjectionCasterLoss.json"
+        },
+        {
+          "key": "FelhoundsMoltenTouchCasterLoss",
+          "commit": "3fd0ca3566c6c55b87f2438fde8fa80f0a7a7309",
+          "audit": "docs/audits/ten-ten-2026-11-11/FelhoundsMoltenTouchCasterLoss.json"
+        },
+        {
+          "key": "LightsWatchProtectedTarget",
+          "commit": "06cd6473f62ed486d23c02050e9cd88979892541",
+          "audit": "docs/audits/ten-ten-2026-11-11/LightsWatchProtectedTarget.json"
+        }
+      ],
+      "checks": {
+        "asan": "Ten complete production class/method scopes;14display slot handlers count as one repair. Missing caster/non-player/current AI/mode/instance/target,failed optional spawn,all original child identities/delays/cleanup,teleport invalidating caster between timers;protection compares recipient health,self-cast equivalence andforeign caster loss.",
+        "baseline": "All10pinned64c2counterfactuals fail repaired expectations or expected ASAN access;not ordinary successful gameplay. Initial fixture compilation missed3slot labels;corrected andpairedpass.",
+        "native": "Actual23registered CLI leaves including14display commands through CliHandler;19exact native26972bindings andreal foreign-owned unit auras. ActualCreature removal leaves recipient aura live with nullGetCaster;actual four protection AuraScript absorb hooks use recipient health/child IDs/250ms duration,including vanished caster. Gear loss is fixture-controlled,not aPlayerlogout test. Full raid/gear/client endpoints remain separate.",
+        "linked": "Same b6bf89Release:actual14display context gates plus8foreign-caster method gates includingtwoindependentMolten payloads,andactualrecipientgetter/no castergetter+all4protectionchildIDs/250ms. First10linkedchecksretained.",
+        "retained": "Independent exact65file unsigned64healing andprevious50sourceamendments pass throughnew20normalization;canonicalScepter VerifyReleaseBinary passed.",
+        "runtime": "Owned canonicalPID23816 freshready,gracefulshutdown0,exit0/gone,empty stderr;no new crash,DBErrors or unexplainedserverwarnings/errors/assertions. No user server stopped.",
+        "setup_failure_resolution": "Native fixture initially re-admitted actors without SetMap after actualMap::RemoveFromMap reset,andinitialbootstrap omittedLoadSpellBonusess before realperiodicdamageaura creation. Bothfixture prerequisites corrected. Captured c0000005SpellMgr::GetSpellBonusData/CalculateAmount stack retained with finalnativepassingregression;not a production repair orordinarypass. No crashreports emitted into canonical/ownedCrashes."
+      },
+      "support_commit": "f5eb313fa872fc7f16cd80cc8e4c4e2df5345545"
     }
   ],
   "canonical": {
-    "worldserver.exe": "c177ed368ee915a49fa06c59fd64e5fb4ef17f0a35d89aa451d30b644b9038ee",
-    "worldserver.map": "c1bbe923ad9b234f7c1b7c5598c8f7cbfb22651f74b4b5b8328d739e8929c265",
-    "bnetserver.exe": "1b1ff818a1817259e85c049a8526f1dce4a8ea43cadd0bdf372861a6bb6e2cc9",
-    "bnetserver.map": "85cf816e36566aa0be4d11b9e8607182a1ae740d9f50be8141228e3dc4888b5c"
+    "worldserver.exe": "b6bf89f3d39a9c12d48e5199b3a11329aa5226e89b0a764be29102d9962f19a6",
+    "worldserver.map": "e339de100a73a967f694e38829c49b5b3d5ec55b40d3d02c6daca9c1b4f20809",
+    "bnetserver.exe": "4b98fbac0a47f36a9fc4f6a7614a262daca33d150f6f35b598ba6b5d2537d523",
+    "bnetserver.map": "c5e83d039cbf07139b9ad1a23110be478dfdb45cfb326666fe71b11e2a535863"
   },
   "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
-  "pending": "Continue batches2..10 to reach100genuine repairs. Actual client/full chains and Lady/LINK2/Slaghammer/handshake remain pending. Preserve original evidence;never invent Lady threshold/timer.",
+  "pending": "Continue batches3..10 to reach100genuine repairs;actualclient/fullchainsandLady/LINK2/Slaghammer/handshake remainOPEN.",
   "cleanup": {
     "status": "COMPLETE_BATCH01",
     "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch01",
@@ -89,6 +156,17 @@
     "removed_files": 27,
     "logical_removed_bytes": 591830985,
     "deletion_manifest": ".codex/ten-ten-2026-11-11/deletions.json",
+    "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+  },
+  "cleanup_batch02": {
+    "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+    "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch02",
+    "manifest_sha256": "fd487ffe60974151b7bdec2b0e89233e5142c07fb506ee92187c2a478c06f3e1",
+    "archived_files": 540,
+    "removed_files": 36,
+    "logical_removed_bytes": 1089534679,
+    "deletion_manifest": ".codex/ten-ten-2026-11-11/batch02-deletions.json",
+    "deletion_manifest_sha256": "a38a4630ad2574998375f6fab21ac269d846967de7fabe587711fd59193fe621",
     "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
   }
 }
