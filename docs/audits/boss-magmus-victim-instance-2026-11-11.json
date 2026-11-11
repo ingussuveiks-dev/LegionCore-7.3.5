@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-11",
+  "status": "DEPLOYED_DEATH_OWNER_OR_INSTANCE_REPAIR_AUTOMATED_CLIENT_PENDING",
+  "key": "MagmusVictimInstance",
+  "title": "Open Magmus door from the victim instance with a null killer",
+  "paths": [
+    "src/server/scripts/EasternKingdoms/BlackrockDepths/boss_magmus.cpp"
+  ],
+  "classes": [
+    "boss_magmusAI"
+  ],
+  "binding": {
+    "ScriptName": "boss_magmus",
+    "actual_entries": [
+      9938
+    ]
+  },
+  "cause": "Magmus dereferenced a nullable killer to find the instance for his own death door. The victim owns the correct instance independently of killer.",
+  "repair": "Resolve the unchanged door action from me->GetInstanceScript;missing victim instance remains a safe no-op.",
+  "checks": {
+    "source": "Full-file reversal to ca5c31f164c11fe90470098b7df6b42b4e568969 after only ten explicit JustDied owner/victim-instance edits. Existing IDs,quest/aura flags,local counters,phase selection,casts,cleanup and native credit/bind/group/faction APIs retained;no new SQL/schema/packet/character edits.",
+    "asan": "Full extracted production JustDied methods compiled under ASAN. Nine pinned guardian endpoint counterfactuals demonstrate missing eligible-owner endpoints;Magmus pinned null-killer dereference is an expected ASAN failure. Sentinel and Silver Hand also have expected failing pinned null-killer ASAN controls paired with a passing state-cleanup/null regression. Repaired methods pass player/pet/two-level guardian/charmer/unowned/null,both factions and original admission/context/earlier-phase/final-cleanup paths. External instance/quest endpoints and enum labels are controlled;not a full core ASAN/client run.",
+    "native": "Actual core GetAffectingPlayer behind each exact source selector resolves real Player/Creature owner,guardian and charmer fields;null/unowned return null. Magmus actual source getter resolves the real victim map InstanceScript independently of killer. Exact live ScriptName inventory checked. Getter projections only;no progression/character writes.",
+    "release": "Original library build and immutable staged final link inputs;entire prior45/scope-corrected46lifetime chain plus new real production death-hook getter/admission proofs pass in staged and canonical EXE. Canonical EXE/MAP hashes match tested outputs;Scepter passes.",
+    "runtime": "Owned worldserver PID=22620\nPASS owned PID=22620 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;stderr empty and config/cert/DLL hashes unchanged. User MariaDB service never stopped.",
+    "diagnostics": "Before/after canonical+own crash/log snapshots,exit/stdout/stderr,appended DBErrors and server warnings/errors/assertions inspected. No new unexplained diagnostic. Expected failing control paired with repaired full-method regression;mixed7111byteDBErrors and protected original Slaghammer cache unchanged. All compiler warnings reviewed against unchanged baseline expressions. Initial full-method fixture incorrectly required a missing instance to block the outdoor Siren. Production source has no instance requirement. Original failure/log/evidence and fixture bytes preserved;corrected assertion explicitly verifies that the outdoor quest still works without an instance. No production behavior or gate changed to satisfy the fixture. First native assertions passed but teardown logged FATAL Unit299 has charmer guid when removed. This was the fixture-only direct charmer field not being cleared. Restored the test relation before teardown,retaining the real safety diagnostic and source selector checks;original runtime log/evidence retained and paired with the clean rerun. No production check/log suppressed. A read-only Silver Hand query initially used KillCredit columns on creature_template;the matching core uses creature_template_wdb. Original query/error retained;corrected query passes and shows no direct quest_objectives ObjectID17915 and no kill-credit aliases on17910..17915. Therefore Silver Hand is counted as nullable-killer safety,not a verified active quest/group repair. An additional pinned null-killer ASAN control fails as expected;the repaired method retains instance state cleanup even for null/unowned killers. Asani indentation corrected before final rebuild;no semantic edit. Final owner-path review traced Sentinel special UpdateAchievementCriteria(KILL_CREATURE,53085):the unchanged default miscValue2 is0,which the native accumulate branch does not turn into an additional kill. Ordinary KillRewarder -> Player::KilledMonster -> KilledMonsterCredit supplies count1 separately,with existing native group eligibility. No amount1 was added to the custom call and no extra grant introduced. Sentinel is counted as null-killer safety,not newly verified achievement progression;added expected old null-ASAN failure plus passing repaired nullable/state tests. Earlier fixture call counters represent endpoint invocation only,not real achievement progress. Matching native criterion/tree catalog readback is recorded separately."
+  },
+  "sources": "Matching local full death hooks,Unit::GetAffectingPlayer/charmer/owner accessors,WorldObject::GetInstanceScript,native APIs and actual live ScriptNames. Fixture enum labels do not substitute production IDs:full exact source reversal and actual compiled production hooks retain original IDs.",
+  "batch": {
+    "number": 5,
+    "authorized_total": 50,
+    "audit": "docs/audits/fortysixth-ten-repairs-2026-11-11.json",
+    "base": "ca5c31f164c11fe90470098b7df6b42b4e568969"
+  },
+  "pending": [
+    "Sentinel custom kill-criterion call retains its original default amount0. Ordinary native kill/group credit remains separate;actual achievement/client behavior is not established by counting this controlled endpoint invocation.",
+    "Silver Hand legacy17915 has no direct quest objective or kill-credit alias in the reviewed live data. Null-killer safety is verified;indirect progression/group entitlement is not established and no new group grant is introduced.",
+    "MariaDB DLL is installed/live-verified;user service remains running. FT minimum1 config warning absence awaits a future user restart.",
+    "Actual gameplay/full encounters/client chains remain pending. ASAN runs full extracted death methods with controlled instance/quest endpoints and fixture enum labels;native runs actual core getter projections only,not the complete registered death payloads.",
+    "Living Lady/conversation1906/Grash,LINK2/Slaghammer,TimeLoop32bit healing,heroic Mend,intermittent handshake and unchanged Cordana horizontal-wall source finding remain OPEN. No guessed threshold,timer,grant or unrelated SQL change.",
+    "Previous four CosmeticAI UAF claims were withdrawn after actual queue ownership proof;previous request has46confirmed lifetime fixes. This request contains40real Unit-queue families plus10death owner/instance repairs."
+  ]
+}

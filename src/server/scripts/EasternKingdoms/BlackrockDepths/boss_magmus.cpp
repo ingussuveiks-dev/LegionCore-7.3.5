@@ -83,7 +83,7 @@ public:
         // When he die open door to last chamber
         void JustDied(Unit* killer)
         {
-            if (InstanceScript* instance = killer->GetInstanceScript())
+            if (InstanceScript* instance = me->GetInstanceScript())
                 instance->HandleGameObject(instance->GetGuidData(DATA_THRONE_DOOR), true);
         }
     };
