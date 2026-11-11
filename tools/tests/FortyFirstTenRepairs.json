@@ -1,0 +1,584 @@
+[
+  {
+    "key": "NpcFelflameInvaderLifetime",
+    "title": "Cancel npc_felflame_invader callbacks after source AI retirement",
+    "slug": "npc-felflame-invader-ai-lifetime",
+    "paths": [
+      "src/server/scripts/Legion/invasion_point_argus.cpp"
+    ],
+    "cls": "npc_felflame_invader",
+    "classes": [
+      "npc_felflame_invader"
+    ],
+    "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n",
+    "member": "std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);",
+    "guard": "if (aiLifetimeGuard.expired()) return;",
+    "guard_init": "aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)",
+    "callbacks": [
+      {
+        "start": 202,
+        "end": 789,
+        "body": 250,
+        "capstart": 228,
+        "capend": 231,
+        "cls": "npc_felflame_invader",
+        "method": "Reset",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": false,
+        "authored_delay": "5000",
+        "old": "me->AddDelayedEvent(5000, [=]() -> void\n        {\n            if (me->GetCurrentZoneID() == 9100)\n            {\n                if (auto c = me->FindNearestCreature(125856, 5.0f))\n                    if (!c->isInCombat())\n                        me->CastSpell(c, 249995, false);\n            }\n            else if (me->GetCurrentZoneID() == 9128 || me->GetCurrentZoneID() == 9299)\n            {\n                if (auto c = me->FindNearestCreature(125874, 10.0f))\n                    if (!c->isInCombat())\n                        me->CastSpell(c, 252327, false);\n            }\n        });",
+        "capture": "=",
+        "implicit_this": true,
+        "payload_sha256": "09825950fd0ce68a3cdd25bb64d7ad2c888ffb308c57e70bc1f81e1181488d65",
+        "new": "me->AddDelayedEvent(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n        {\n            if (aiLifetimeGuard.expired()) return;\n            if (me->GetCurrentZoneID() == 9100)\n            {\n                if (auto c = me->FindNearestCreature(125856, 5.0f))\n                    if (!c->isInCombat())\n                        me->CastSpell(c, 249995, false);\n            }\n            else if (me->GetCurrentZoneID() == 9128 || me->GetCurrentZoneID() == 9299)\n            {\n                if (auto c = me->FindNearestCreature(125874, 10.0f))\n                    if (!c->isInCombat())\n                        me->CastSpell(c, 252327, false);\n            }\n        });"
+      }
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/invasion_point_argus.cpp",
+        "old": "struct npc_felflame_invader : ScriptedAI\n{\n    npc_felflame_invader(Creature* creature) : ScriptedAI(creature) {}\n\n    EventMap events;\n\n    void Reset() override\n    {\n        events.Reset();\n\n        me->AddDelayedEvent(5000, [=]() -> void\n        {\n            if (me->GetCurrentZoneID() == 9100)\n            {\n                if (auto c = me->FindNearestCreature(125856, 5.0f))\n                    if (!c->isInCombat())\n                        me->CastSpell(c, 249995, false);\n            }\n            else if (me->GetCurrentZoneID() == 9128 || me->GetCurrentZoneID() == 9299)\n            {\n                if (auto c = me->FindNearestCreature(125874, 10.0f))\n                    if (!c->isInCombat())\n                        me->CastSpell(c, 252327, false);\n            }\n        });\n    }\n\n    void JustReachedHome() override\n    {\n        if (me->GetCurrentZoneID() == 9100)\n        {\n            if (auto c = me->FindNearestCreature(125856, 5.0f))\n                me->CastSpell(c, 249995, false);\n        }\n        else if (me->GetCurrentZoneID() == 9128 || me->GetCurrentZoneID() == 9299)\n            if (auto c = me->FindNearestCreature(125856, 10.0f))\n                me->CastSpell(c, 252327, false);\n    }\n\n    void EnterCombat(Unit* /*who*/) override\n    {\n        Talk(0);\n        events.RescheduleEvent(EVENT_1, 2000);\n    }\n\n    void EnterEvadeMode() override\n    {\n        ScriptedAI::EnterEvadeMode();\n    }\n\n    void JustDied(Unit* /*who*/) override\n    {\n        me->RemoveAllAreaObjects();\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n            case EVENT_1:\n                DoCast(253609);\n                events.RescheduleEvent(EVENT_1, 7000);\n                break;\n            }\n        }\n        DoMeleeAttackIfReady();\n    }\n}",
+        "new": "struct npc_felflame_invader : ScriptedAI\n{\n    npc_felflame_invader(Creature* creature) : ScriptedAI(creature) {}\n\n    EventMap events;\n\n    void Reset() override\n    {\n        events.Reset();\n\n        me->AddDelayedEvent(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n        {\n            if (aiLifetimeGuard.expired()) return;\n            if (me->GetCurrentZoneID() == 9100)\n            {\n                if (auto c = me->FindNearestCreature(125856, 5.0f))\n                    if (!c->isInCombat())\n                        me->CastSpell(c, 249995, false);\n            }\n            else if (me->GetCurrentZoneID() == 9128 || me->GetCurrentZoneID() == 9299)\n            {\n                if (auto c = me->FindNearestCreature(125874, 10.0f))\n                    if (!c->isInCombat())\n                        me->CastSpell(c, 252327, false);\n            }\n        });\n    }\n\n    void JustReachedHome() override\n    {\n        if (me->GetCurrentZoneID() == 9100)\n        {\n            if (auto c = me->FindNearestCreature(125856, 5.0f))\n                me->CastSpell(c, 249995, false);\n        }\n        else if (me->GetCurrentZoneID() == 9128 || me->GetCurrentZoneID() == 9299)\n            if (auto c = me->FindNearestCreature(125856, 10.0f))\n                me->CastSpell(c, 252327, false);\n    }\n\n    void EnterCombat(Unit* /*who*/) override\n    {\n        Talk(0);\n        events.RescheduleEvent(EVENT_1, 2000);\n    }\n\n    void EnterEvadeMode() override\n    {\n        ScriptedAI::EnterEvadeMode();\n    }\n\n    void JustDied(Unit* /*who*/) override\n    {\n        me->RemoveAllAreaObjects();\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n            case EVENT_1:\n                DoCast(253609);\n                events.RescheduleEvent(EVENT_1, 7000);\n                break;\n            }\n        }\n        DoMeleeAttackIfReady();\n    }\nprivate:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n}",
+        "count": 1,
+        "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n"
+      }
+    ],
+    "binding": "npc_felflame_invader",
+    "entries": [
+      125755
+    ]
+  },
+  {
+    "key": "NpcClookleLifetime",
+    "title": "Cancel npc_clookle callbacks after source AI retirement",
+    "slug": "npc-clookle-ai-lifetime",
+    "paths": [
+      "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp"
+    ],
+    "cls": "npc_clookle",
+    "classes": [
+      "npc_clookle"
+    ],
+    "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n",
+    "member": "std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);",
+    "guard": "if (aiLifetimeGuard.expired()) return;",
+    "guard_init": "aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)",
+    "callbacks": [
+      {
+        "start": 310,
+        "end": 372,
+        "body": 350,
+        "capstart": 336,
+        "capend": 339,
+        "cls": "npc_clookle",
+        "method": "sGossipSelect",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": false,
+        "authored_delay": "3000",
+        "old": "me->AddDelayedEvent(3000, [=]() -> void {  DoCast(244526); });",
+        "capture": "=",
+        "implicit_this": true,
+        "payload_sha256": "176320379a9069605eef0ea5ab89602c558994c183429200963e316a6dcb3d4c",
+        "new": "me->AddDelayedEvent(3000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return;  DoCast(244526); });"
+      }
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp",
+        "old": "struct npc_clookle : ScriptedAI\n{\n    explicit npc_clookle(Creature* creature) : ScriptedAI(creature)\n    {\n        DoCast(244526);\n    }\n\n    void sGossipSelect(Player* player, uint32 /*sender*/, uint32 action) override\n    {\n        if (action == 0)\n        {\n            me->RemoveAura(244526);\n            me->AddDelayedEvent(3000, [=]() -> void {  DoCast(244526); });\n\n            player->DestroyItemCount(150750, 1, true);\n            player->CastSpell(player, 244157, false);\n            player->CLOSE_GOSSIP_MENU();\n        }\n    }\n}",
+        "new": "struct npc_clookle : ScriptedAI\n{\n    explicit npc_clookle(Creature* creature) : ScriptedAI(creature)\n    {\n        DoCast(244526);\n    }\n\n    void sGossipSelect(Player* player, uint32 /*sender*/, uint32 action) override\n    {\n        if (action == 0)\n        {\n            me->RemoveAura(244526);\n            me->AddDelayedEvent(3000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return;  DoCast(244526); });\n\n            player->DestroyItemCount(150750, 1, true);\n            player->CastSpell(player, 244157, false);\n            player->CLOSE_GOSSIP_MENU();\n        }\n    }\nprivate:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n}",
+        "count": 1,
+        "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n"
+      }
+    ],
+    "binding": "npc_clookle",
+    "entries": [
+      122660
+    ]
+  },
+  {
+    "key": "NpcTichonriusSightlessWatcherLifetime",
+    "title": "Cancel npc_tichonrius_sightless_watcher callbacks after source AI retirement",
+    "slug": "npc-tichonrius-sightless-watcher-ai-lifetime",
+    "paths": [
+      "src/server/scripts/Legion/TheNighthold/boss_tichondrius.cpp"
+    ],
+    "cls": "npc_tichonrius_sightless_watcher",
+    "classes": [
+      "npc_tichonrius_sightless_watcher"
+    ],
+    "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n",
+    "member": "std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);",
+    "guard": "if (aiLifetimeGuard.expired()) return;",
+    "guard_init": "aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)",
+    "callbacks": [
+      {
+        "start": 1123,
+        "end": 1204,
+        "body": 1162,
+        "capstart": 1145,
+        "capend": 1151,
+        "cls": "npc_tichonrius_sightless_watcher",
+        "method": "IsSummonedBy",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": true,
+        "authored_delay": "3000",
+        "old": "AddDelayedEvent(3000, [this]() -> void { me->SetReactState(REACT_AGGRESSIVE); });",
+        "capture": "this",
+        "implicit_this": false,
+        "payload_sha256": "ecd1e9b4110f2288cd32059eeb419fc68c6b5ca2270efc4edf54872dc3a93502",
+        "new": "AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetReactState(REACT_AGGRESSIVE); });"
+      }
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TheNighthold/boss_tichondrius.cpp",
+        "old": "struct npc_tichonrius_sightless_watcher : ScriptedAI\n{\n    explicit npc_tichonrius_sightless_watcher(Creature* creature) : ScriptedAI(creature)\n    {\n        me->SetReactState(REACT_PASSIVE);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_FEAR, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_ROOT, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_POLYMORPH, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_HORROR, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_SAPPED, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_CHARM, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_DISORIENTED, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_DISTRACT, true);\n        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_CONFUSE, true);\n    }\n\n    EventMap events;\n\n    void IsSummonedBy(Unit* summoner) override\n    {\n        DoZoneInCombat(me, 80.0f);\n        DoCast(me, SPELL_FEL_DISSOLVE_IN, true);\n        AddDelayedEvent(3000, [this]() -> void { me->SetReactState(REACT_AGGRESSIVE); });\n\n        events.RescheduleEvent(EVENT_1, 9000);\n\n        if (IsHeroicPlusRaid())\n            events.RescheduleEvent(EVENT_2, 11000);\n    }\n\n    void SpellFinishCast(const SpellInfo* spell) override\n    {\n        if (spell->Id == SPELL_RING_OF_SHADOWS_AT)\n            DoCast(me, SPELL_RING_OF_SHADOWS_VISUAL, true);\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n                case EVENT_1:\n                    DoCast(SPELL_BURNING_SOUL);\n                    events.RescheduleEvent(EVENT_1, 14000);\n                    break;\n                case EVENT_2:\n                    DoCast(SPELL_RING_OF_SHADOWS_AT);\n                    events.RescheduleEvent(EVENT_2, 24000);\n                    break;\n            }\n            \n        }\n        DoMeleeAttackIfReady();\n    }\n}",
+        "new": "struct npc_tichonrius_sightless_watcher : ScriptedAI\n{\n    explicit npc_tichonrius_sightless_watcher(Creature* creature) : ScriptedAI(creature)\n    {\n        me->SetReactState(REACT_PASSIVE);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_FEAR, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_ROOT, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_POLYMORPH, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_HORROR, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_SAPPED, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_CHARM, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_DISORIENTED, true);\n        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_DISTRACT, true);\n        me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_CONFUSE, true);\n    }\n\n    EventMap events;\n\n    void IsSummonedBy(Unit* summoner) override\n    {\n        DoZoneInCombat(me, 80.0f);\n        DoCast(me, SPELL_FEL_DISSOLVE_IN, true);\n        AddDelayedEvent(3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetReactState(REACT_AGGRESSIVE); });\n\n        events.RescheduleEvent(EVENT_1, 9000);\n\n        if (IsHeroicPlusRaid())\n            events.RescheduleEvent(EVENT_2, 11000);\n    }\n\n    void SpellFinishCast(const SpellInfo* spell) override\n    {\n        if (spell->Id == SPELL_RING_OF_SHADOWS_AT)\n            DoCast(me, SPELL_RING_OF_SHADOWS_VISUAL, true);\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n                case EVENT_1:\n                    DoCast(SPELL_BURNING_SOUL);\n                    events.RescheduleEvent(EVENT_1, 14000);\n                    break;\n                case EVENT_2:\n                    DoCast(SPELL_RING_OF_SHADOWS_AT);\n                    events.RescheduleEvent(EVENT_2, 24000);\n                    break;\n            }\n            \n        }\n        DoMeleeAttackIfReady();\n    }\nprivate:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n}",
+        "count": 1,
+        "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n"
+      }
+    ],
+    "binding": "npc_tichonrius_sightless_watcher",
+    "entries": [
+      108593
+    ]
+  },
+  {
+    "key": "NpcSisterLunaspyreLifetime",
+    "title": "Cancel npc_sister_lunaspyre callbacks after source AI retirement",
+    "slug": "npc-sister-lunaspyre-ai-lifetime",
+    "paths": [
+      "src/server/scripts/Legion/TombOfSargeras/boss_SistersoftheMoon.cpp"
+    ],
+    "cls": "npc_sister_lunaspyre",
+    "classes": [
+      "npc_sister_lunaspyre"
+    ],
+    "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n",
+    "member": "std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);",
+    "guard": "if (aiLifetimeGuard.expired()) return;",
+    "guard_init": "aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)",
+    "callbacks": [
+      {
+        "start": 2823,
+        "end": 2917,
+        "body": 2865,
+        "capstart": 2850,
+        "capend": 2853,
+        "cls": "npc_sister_lunaspyre",
+        "method": "SpellFinishCast",
+        "queue": "combat",
+        "queue_owner": "me",
+        "delegated": false,
+        "authored_delay": "1000",
+        "old": "me->AddDelayedCombat(1000, [=] () -> void { me->SetFacingTo(centrPos.GetAngle(me) - M_PI); });",
+        "capture": "=",
+        "implicit_this": true,
+        "payload_sha256": "7aaa0a4457f8852496b25f3145023903b14d5f8582b774b528d98446d95a7ec6",
+        "new": "me->AddDelayedCombat(1000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; me->SetFacingTo(centrPos.GetAngle(me) - M_PI); });"
+      }
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TombOfSargeras/boss_SistersoftheMoon.cpp",
+        "old": "struct npc_sister_lunaspyre : ScriptedAI\n{\n    explicit npc_sister_lunaspyre(Creature* creature) : ScriptedAI(creature)\n    {\n        instance = me->GetInstanceScript();\n        me->SetReactState(REACT_PASSIVE);\n    }\n\n    InstanceScript* instance;\n    EventMap events;\n    uint8 phase = 0;\n\n    void IsSummonedBy(Unit* summoner) override\n    {\n        DoCast(me, SPELL_LUNAR_GHOST, true);\n    }\n\n    void Reset()\n    {\n        events.Reset();\n    }\n\n    void EnterCombat(Unit* who) override\n    {\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);\n        me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_READY2HL);\n        DefaultEvents(++phase);\n    }\n\n    void DefaultEvents(uint8 phase)\n    {\n        events.Reset();\n\n        switch (phase)\n        {\n            case 1:\n                events.RescheduleEvent(EVENT_MOON_BURN, 10000);\n                events.RescheduleEvent(EVENT_LUNAR_STRIKE, 500);\n                events.RescheduleEvent(EVENT_TP_LUNASPERE, 16000);\n                break;\n            case 3:\n                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);\n                me->SetReactState(REACT_AGGRESSIVE, 2000);\n                events.RescheduleEvent(EVENT_LUNAR_BEACON, 18000);\n                events.RescheduleEvent(EVENT_MOON_BURN, 10000);\n                events.RescheduleEvent(EVENT_LUNAR_FIRE, 7000);\n                break;\n        }\n    }\n\n    void EnterEvadeMode() override\n    {\n        ScriptedAI::EnterEvadeMode();\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n        if (auto summoner = me->GetAnyOwner())\n            summoner->GetAI()->DoAction(ACTION_2);\n    }\n\n    void JustDied(Unit* killer) override\n    {\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n        me->RemoveAllAreaObjects();\n    }\n\n    bool IsDisableGenerateLoot() override\n    {\n        return true;\n    }\n\n    void DoAction(int32 const actionID) override\n    {\n        switch (actionID)\n        {\n            case ACTION_1:\n                ++phase;\n                break;\n            case ACTION_2:\n                me->RemoveAllAreaObjects();\n                break;\n            case ACTION_3:\n                DefaultEvents(++phase);\n                DoCast(me, SPELL_CORPOREAL_GHOST, true);\n                me->CastSpell(centrPos, SPELL_INCORPOREAL_TELEPORT, true);\n                break;\n            case ACTION_4:\n                if ((phase == 1 && IsHeroicPlusRaid()) || phase == 2)\n                    events.RescheduleEvent(EVENT_EMBRACE_ECLIPSE, 500);\n                break;\n        }\n    }\n\n    void SpellFinishCast(const SpellInfo* spell) override\n    {\n        switch (spell->Id)\n        {\n            case SPELL_INCORPOREAL_TELEPORT:\n                me->AddDelayedCombat(1000, [=] () -> void { me->SetFacingTo(centrPos.GetAngle(me) - M_PI); });\n                break;\n        }\n    }\n\n    void SpellHitTarget(Unit* target, SpellInfo const* spell) override\n    {\n        switch (spell->Id)\n        {\n            case SPELL_MOON_BURN_FILTER:\n                me->CastSpell(target, SPELL_MOON_BURN_DMG, true);\n                break;\n        }\n    }\n\n    void OnRemoveAuraTarget(Unit* target, uint32 spellId, AuraRemoveMode mode) override\n    {\n        if (me->isInCombat() && target && mode == AURA_REMOVE_BY_EXPIRE)\n        {\n            switch (spellId)\n            {\n                case SPELL_LUNAR_BEACON:\n                    target->CastSpell(target, SPELL_LUNAR_BARRAGE_MARK, true);\n                    break;\n            }\n        }\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        if (CheckHomeDistToEvade(diff, 22.0f, 6190.06f, -1020.03f, 2899.5f))\n            return;\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n                case EVENT_MOON_BURN:\n                    Talk(SAY_MOON_BURN);\n                    DoCast(SPELL_MOON_BURN_FILTER);\n                    events.RescheduleEvent(EVENT_MOON_BURN, 24000);\n                    break;\n                case EVENT_LUNAR_STRIKE:\n                    if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 60.0f, true))\n                    {\n                        me->SetFacingTo(target);\n                        DoCast(target, SPELL_LUNAR_STRIKE);\n                    }\n                    events.RescheduleEvent(EVENT_LUNAR_STRIKE, 5500);\n                    break;\n                case EVENT_TP_LUNASPERE:\n                {\n                    Position pos;\n                    centrPos.SimplePosXYRelocationByAngle(pos, 23.0f, centrPos.GetAngle(me) + frand(1.5f, 3.14f));\n                    me->GetMotionMaster()->Clear();\n                    me->CastSpell(pos, SPELL_INCORPOREAL_TELEPORT, false);\n                    events.DelayEvents(1500);\n                    events.RescheduleEvent(EVENT_TP_LUNASPERE, urand(20, 40) * IN_MILLISECONDS);\n                    break;\n                }\n                case EVENT_LUNAR_BEACON:\n                    if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 1, 60.0f, true))\n                        DoCast(target, SPELL_LUNAR_BEACON);\n                    events.RescheduleEvent(EVENT_LUNAR_BEACON, 22000);\n                    break;\n                case EVENT_LUNAR_FIRE:\n                    DoCastTopAggro(SPELL_LUNAR_FIRE);\n                    events.RescheduleEvent(EVENT_LUNAR_FIRE, 11000);\n                    break;\n                case EVENT_EMBRACE_ECLIPSE:\n                    Talk(SAY_EMBRACE_ECLIPSE_WARN);\n                    Talk(SAY_EMBRACE_ECLIPSE);\n                    DoCast(me, SPELL_EMBRACE_ECLIPSE, true);\n                    break;\n            }\n        }\n        if (phase == 3)\n            DoMeleeAttackIfReady();\n    }\n}",
+        "new": "struct npc_sister_lunaspyre : ScriptedAI\n{\n    explicit npc_sister_lunaspyre(Creature* creature) : ScriptedAI(creature)\n    {\n        instance = me->GetInstanceScript();\n        me->SetReactState(REACT_PASSIVE);\n    }\n\n    InstanceScript* instance;\n    EventMap events;\n    uint8 phase = 0;\n\n    void IsSummonedBy(Unit* summoner) override\n    {\n        DoCast(me, SPELL_LUNAR_GHOST, true);\n    }\n\n    void Reset()\n    {\n        events.Reset();\n    }\n\n    void EnterCombat(Unit* who) override\n    {\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);\n        me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_READY2HL);\n        DefaultEvents(++phase);\n    }\n\n    void DefaultEvents(uint8 phase)\n    {\n        events.Reset();\n\n        switch (phase)\n        {\n            case 1:\n                events.RescheduleEvent(EVENT_MOON_BURN, 10000);\n                events.RescheduleEvent(EVENT_LUNAR_STRIKE, 500);\n                events.RescheduleEvent(EVENT_TP_LUNASPERE, 16000);\n                break;\n            case 3:\n                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);\n                me->SetReactState(REACT_AGGRESSIVE, 2000);\n                events.RescheduleEvent(EVENT_LUNAR_BEACON, 18000);\n                events.RescheduleEvent(EVENT_MOON_BURN, 10000);\n                events.RescheduleEvent(EVENT_LUNAR_FIRE, 7000);\n                break;\n        }\n    }\n\n    void EnterEvadeMode() override\n    {\n        ScriptedAI::EnterEvadeMode();\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n        if (auto summoner = me->GetAnyOwner())\n            summoner->GetAI()->DoAction(ACTION_2);\n    }\n\n    void JustDied(Unit* killer) override\n    {\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n        me->RemoveAllAreaObjects();\n    }\n\n    bool IsDisableGenerateLoot() override\n    {\n        return true;\n    }\n\n    void DoAction(int32 const actionID) override\n    {\n        switch (actionID)\n        {\n            case ACTION_1:\n                ++phase;\n                break;\n            case ACTION_2:\n                me->RemoveAllAreaObjects();\n                break;\n            case ACTION_3:\n                DefaultEvents(++phase);\n                DoCast(me, SPELL_CORPOREAL_GHOST, true);\n                me->CastSpell(centrPos, SPELL_INCORPOREAL_TELEPORT, true);\n                break;\n            case ACTION_4:\n                if ((phase == 1 && IsHeroicPlusRaid()) || phase == 2)\n                    events.RescheduleEvent(EVENT_EMBRACE_ECLIPSE, 500);\n                break;\n        }\n    }\n\n    void SpellFinishCast(const SpellInfo* spell) override\n    {\n        switch (spell->Id)\n        {\n            case SPELL_INCORPOREAL_TELEPORT:\n                me->AddDelayedCombat(1000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; me->SetFacingTo(centrPos.GetAngle(me) - M_PI); });\n                break;\n        }\n    }\n\n    void SpellHitTarget(Unit* target, SpellInfo const* spell) override\n    {\n        switch (spell->Id)\n        {\n            case SPELL_MOON_BURN_FILTER:\n                me->CastSpell(target, SPELL_MOON_BURN_DMG, true);\n                break;\n        }\n    }\n\n    void OnRemoveAuraTarget(Unit* target, uint32 spellId, AuraRemoveMode mode) override\n    {\n        if (me->isInCombat() && target && mode == AURA_REMOVE_BY_EXPIRE)\n        {\n            switch (spellId)\n            {\n                case SPELL_LUNAR_BEACON:\n                    target->CastSpell(target, SPELL_LUNAR_BARRAGE_MARK, true);\n                    break;\n            }\n        }\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        if (CheckHomeDistToEvade(diff, 22.0f, 6190.06f, -1020.03f, 2899.5f))\n            return;\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n                case EVENT_MOON_BURN:\n                    Talk(SAY_MOON_BURN);\n                    DoCast(SPELL_MOON_BURN_FILTER);\n                    events.RescheduleEvent(EVENT_MOON_BURN, 24000);\n                    break;\n                case EVENT_LUNAR_STRIKE:\n                    if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 60.0f, true))\n                    {\n                        me->SetFacingTo(target);\n                        DoCast(target, SPELL_LUNAR_STRIKE);\n                    }\n                    events.RescheduleEvent(EVENT_LUNAR_STRIKE, 5500);\n                    break;\n                case EVENT_TP_LUNASPERE:\n                {\n                    Position pos;\n                    centrPos.SimplePosXYRelocationByAngle(pos, 23.0f, centrPos.GetAngle(me) + frand(1.5f, 3.14f));\n                    me->GetMotionMaster()->Clear();\n                    me->CastSpell(pos, SPELL_INCORPOREAL_TELEPORT, false);\n                    events.DelayEvents(1500);\n                    events.RescheduleEvent(EVENT_TP_LUNASPERE, urand(20, 40) * IN_MILLISECONDS);\n                    break;\n                }\n                case EVENT_LUNAR_BEACON:\n                    if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 1, 60.0f, true))\n                        DoCast(target, SPELL_LUNAR_BEACON);\n                    events.RescheduleEvent(EVENT_LUNAR_BEACON, 22000);\n                    break;\n                case EVENT_LUNAR_FIRE:\n                    DoCastTopAggro(SPELL_LUNAR_FIRE);\n                    events.RescheduleEvent(EVENT_LUNAR_FIRE, 11000);\n                    break;\n                case EVENT_EMBRACE_ECLIPSE:\n                    Talk(SAY_EMBRACE_ECLIPSE_WARN);\n                    Talk(SAY_EMBRACE_ECLIPSE);\n                    DoCast(me, SPELL_EMBRACE_ECLIPSE, true);\n                    break;\n            }\n        }\n        if (phase == 3)\n            DoMeleeAttackIfReady();\n    }\nprivate:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n}",
+        "count": 1,
+        "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n"
+      }
+    ],
+    "binding": "npc_sister_lunaspyre",
+    "entries": [
+      118518
+    ]
+  },
+  {
+    "key": "NpcTovHyrjaLifetime",
+    "title": "Cancel npc_tov_hyrja callbacks after source AI retirement",
+    "slug": "npc-tov-hyrja-ai-lifetime",
+    "paths": [
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_odyn.cpp"
+    ],
+    "cls": "npc_tov_hyrja",
+    "classes": [
+      "npc_tov_hyrja"
+    ],
+    "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n",
+    "member": "std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);",
+    "guard": "if (aiLifetimeGuard.expired()) return;",
+    "guard_init": "aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)",
+    "callbacks": [
+      {
+        "start": 3151,
+        "end": 3348,
+        "body": 3207,
+        "capstart": 3177,
+        "capend": 3180,
+        "cls": "npc_tov_hyrja",
+        "method": "DoAction",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": false,
+        "authored_delay": "2000",
+        "old": "me->AddDelayedEvent(2000, [=]() -> void\n                {\n                    if (auto player = me->FindNearestPlayer(300.0f, true))\n                        AttackStart(player);\n                });",
+        "capture": "=",
+        "implicit_this": true,
+        "payload_sha256": "c5262c3590c141ae7765da8ec35654cf806cde0c4740183db645672f1a239e69",
+        "new": "me->AddDelayedEvent(2000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n                {\n                    if (aiLifetimeGuard.expired()) return;\n                    if (auto player = me->FindNearestPlayer(300.0f, true))\n                        AttackStart(player);\n                });"
+      }
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/TrialOfValor/boss_tov_odyn.cpp",
+        "old": "struct npc_tov_hyrja : ScriptedAI\n{\n    explicit npc_tov_hyrja(Creature* creature) : ScriptedAI(creature)\n    {\n        instance = me->GetInstanceScript();\n        event1 = false;\n        event2 = false;\n    }\n\n    EventMap events;\n    InstanceScript* instance;\n    bool event1;\n    bool event2;\n\n    void Reset() override\n    {\n        events.Reset();\n\n        DoCast(SpellHeal);\n        event1 = false;\n        event2 = false;\n\n        if ((instance->GetData(Data::DataMisc::OdynIntroEvent) == DONE) && (instance->GetData(Data::DataMisc::OdynEventComplete2) != DONE))\n            me->setFaction(16);\n        if (instance->GetData(Data::DataMisc::OdynEventComplete2) != DONE)\n            DoCast(SpellValarjarsBond);\n    }\n\n    void JustReachedHome() override\n    {\n        if (instance->GetData(Data::DataMisc::OdynEventComplete2) == DONE)\n        {\n            me->setActive(false);\n            me->NearTeleportTo(2404.92f, 578.45605f, 772.8941f, 5.05401f);\n            DoCast(SpellHoverModeAnimState);\n        }\n    }\n\n    void EnterCombat(Unit* /*who*/) override\n    {\n        DoZoneInCombat();\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);\n\n        if (IsMythicRaid())\n        {\n            events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT, 20000);\n            events.RescheduleEvent(EVENT_EXPEL_LIGHT, 25000);\n        }\n        else if (IsHeroicRaid())\n        {\n            events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT, 23000);\n            events.RescheduleEvent(EVENT_EXPEL_LIGHT, 32000);\n        }\n        else if (IsNormalRaid() || IsLfrRaid())\n        {\n            events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT, 30000);\n            events.RescheduleEvent(EVENT_EXPEL_LIGHT, 40000);\n        }\n\n        if (instance->GetData(Data::DataMisc::OdynTestOfAges) != DONE)\n        {\n            DoCast(SpellHyrjaConversation);\n\n            if (auto hymdall = instance->instance->GetCreature(instance->GetGuidData(Data::Creatures::Hymdall)))\n                if (auto player = me->FindNearestPlayer(300.0f, true))\n                    hymdall->AI()->AttackStart(player);\n        }\n\n        if (IsHeroicPlusRaid())\n        {\n            if (instance->GetData(Data::DataMisc::OdynTestOfAges) == DONE)\n            {\n                Talk(SAY_AGGRO_MYTHIC);\n                ZoneTalk(SAY_ANN_AGGRO_MYTHIC);\n                DoCast(me, SpellValarjarsBondProc, true);\n            }\n        }\n    }\n\n    void SpellHit(Unit* /*owner*/, SpellInfo const* spell) override\n    {\n        if (spell->Id == SpellValarjarsBondDummy)\n            DoCast(me, SpellValarjarsBondHeroic, true);\n    }\n\n    void DoAction(int32 const action) override\n    {\n        switch (action)\n        {\n            case ACTION_1:\n                me->setFaction(16);\n                DoCast(SpellValarjarsBond);\n                break;\n            case ACTION_2:\n                event2 = false;\n                me->setFaction(16);\n                me->RemoveAura(SpellHoverModeAnimState);\n                instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);\n                me->GetMotionMaster()->MoveJump(2414.0634f, 552.47f, 748.9953f, 20, 10, 2, 4.82082f);\n                me->AddDelayedEvent(2000, [=]() -> void\n                {\n                    if (auto player = me->FindNearestPlayer(300.0f, true))\n                        AttackStart(player);\n                });\n                break;\n            case ACTION_3:\n                me->CastStop();\n                me->setFaction(35);\n                me->RemoveAllAuras();\n                me->SetHomePosition(2404.92f, 578.45605f, 772.8941f, 5.05401f);\n                me->NearTeleportTo(2404.92f, 578.45605f, 772.8941f, 5.05401f);\n                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n                events.CancelEvent(EVENT_EXPEL_LIGHT);\n                events.CancelEvent(EVENT_SHIELD_OF_LIGHT);\n                break;\n            default:\n                break;\n        }\n    }\n\n    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override\n    {\n        if (event2)\n        {\n            damage = 0;\n            return;\n        }\n\n        if (!damage || me->getFaction() != 16 || instance->GetBossState(Data::BossIDs::OdynID) == DONE)\n            return;\n\n        if (instance->GetData(Data::DataMisc::OdynTestOfAges) != DONE)\n        {\n            if (event1)\n            {\n                damage = 0;\n                return;\n            }\n\n            if (!ClampTrialOfValorDamage(me, attacker, damage, 25))\n                return;\n\n            event1 = true;\n            DoCast(SpellRevivify);\n            me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER | UNIT_FLAG2_DISABLE_TURN | UNIT_FLAG2_UNK6);\n\n            if (instance->GetData(Data::DataMisc::OdynEventComplete2) != DONE)\n            {\n                instance->SetData(Data::DataMisc::OdynEventComplete2, DONE);\n\n                if (auto owner = me->GetAnyOwner())\n                    owner->GetAI()->DoAction(ACTION_1);\n            }\n        }\n        else if (IsHeroicPlusRaid())\n        {\n            if (!ClampTrialOfValorDamage(me, attacker, damage, 85))\n                return;\n\n            event2 = true;\n            me->CastStop();\n            me->setFaction(35);\n            me->RemoveAllAuras();\n            me->NearTeleportTo(2404.92f, 578.45605f, 772.8941f, 5.05401f);\n            instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n        }\n    }\n\n    void SpellFinishCast(SpellInfo const* spell) override\n    {\n        switch (spell->Id)\n        {\n        case SpellRevivify:\n            event1 = false;\n            me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER | UNIT_FLAG2_DISABLE_TURN | UNIT_FLAG2_UNK6);\n\n            if ((instance->GetData(Data::DataMisc::OdynEventComplete2) == DONE) && (instance->GetData(Data::DataMisc::OdynEventComplete1) != DONE))\n                instance->SetData(Data::DataMisc::OdynEventComplete2, FAIL);\n        default:\n            break;\n        }\n    }\n\n    void EnterEvadeMode() override\n    {\n        if ((instance->GetData(Data::DataMisc::OdynIntroEvent) == DONE) && (instance->GetData(Data::DataMisc::OdynEventComplete2) != DONE))\n        {\n            if (auto owner = me->GetAnyOwner())\n                owner->GetAI()->DoAction(ACTION_3);\n        }\n\n        ScriptedAI::EnterEvadeMode();\n    }\n    \n    void KilledUnit(Unit* victim) override\n    {\n        if (!victim->IsPlayer())\n            return;\n\n        Talk(SAY_DIE_TANK);\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n            case EVENT_EXPEL_LIGHT:\n                if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 300.0f, true))\n                    DoCast(target, SpellExpelLight, false);\n\n                if (IsMythicRaid())\n                    events.RescheduleEvent(EVENT_EXPEL_LIGHT, 20000);\n                else if (IsHeroicRaid())\n                    events.RescheduleEvent(EVENT_EXPEL_LIGHT, 32000);\n                else if (IsLfrRaid() || IsNormalRaid())\n                    events.RescheduleEvent(EVENT_EXPEL_LIGHT, 19500);\n                break;\n            case EVENT_SHIELD_OF_LIGHT:\n                if (auto target = MS::ScriptUtils::SelectRandomPlayerExcludedTank(me, 60.0f))\n                {\n                    me->SetReactState(REACT_PASSIVE);\n                    events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT_REACT, 5500);\n                    DoCast(target, SpellShieldOfLight2, false);\n                    DoCast(target, SpellShieldOfLight, false);\n                    DoCast(target, SpellShieldOfLight3, false);\n                    ZoneTalk(SAY_RAID_CAST, target->GetGUID());\n                }\n\n                Talk(SAY_CAST_SPELL);\n\n                if (IsMythicRaid())\n                    events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT, 20000);\n                else\n                    events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT, 32000);\n                break;\n            case EVENT_SHIELD_OF_LIGHT_REACT:\n                me->SetReactState(REACT_AGGRESSIVE);\n                break;\n            }\n        }\n        DoMeleeAttackIfReady();\n    }\n}",
+        "new": "struct npc_tov_hyrja : ScriptedAI\n{\n    explicit npc_tov_hyrja(Creature* creature) : ScriptedAI(creature)\n    {\n        instance = me->GetInstanceScript();\n        event1 = false;\n        event2 = false;\n    }\n\n    EventMap events;\n    InstanceScript* instance;\n    bool event1;\n    bool event2;\n\n    void Reset() override\n    {\n        events.Reset();\n\n        DoCast(SpellHeal);\n        event1 = false;\n        event2 = false;\n\n        if ((instance->GetData(Data::DataMisc::OdynIntroEvent) == DONE) && (instance->GetData(Data::DataMisc::OdynEventComplete2) != DONE))\n            me->setFaction(16);\n        if (instance->GetData(Data::DataMisc::OdynEventComplete2) != DONE)\n            DoCast(SpellValarjarsBond);\n    }\n\n    void JustReachedHome() override\n    {\n        if (instance->GetData(Data::DataMisc::OdynEventComplete2) == DONE)\n        {\n            me->setActive(false);\n            me->NearTeleportTo(2404.92f, 578.45605f, 772.8941f, 5.05401f);\n            DoCast(SpellHoverModeAnimState);\n        }\n    }\n\n    void EnterCombat(Unit* /*who*/) override\n    {\n        DoZoneInCombat();\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);\n\n        if (IsMythicRaid())\n        {\n            events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT, 20000);\n            events.RescheduleEvent(EVENT_EXPEL_LIGHT, 25000);\n        }\n        else if (IsHeroicRaid())\n        {\n            events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT, 23000);\n            events.RescheduleEvent(EVENT_EXPEL_LIGHT, 32000);\n        }\n        else if (IsNormalRaid() || IsLfrRaid())\n        {\n            events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT, 30000);\n            events.RescheduleEvent(EVENT_EXPEL_LIGHT, 40000);\n        }\n\n        if (instance->GetData(Data::DataMisc::OdynTestOfAges) != DONE)\n        {\n            DoCast(SpellHyrjaConversation);\n\n            if (auto hymdall = instance->instance->GetCreature(instance->GetGuidData(Data::Creatures::Hymdall)))\n                if (auto player = me->FindNearestPlayer(300.0f, true))\n                    hymdall->AI()->AttackStart(player);\n        }\n\n        if (IsHeroicPlusRaid())\n        {\n            if (instance->GetData(Data::DataMisc::OdynTestOfAges) == DONE)\n            {\n                Talk(SAY_AGGRO_MYTHIC);\n                ZoneTalk(SAY_ANN_AGGRO_MYTHIC);\n                DoCast(me, SpellValarjarsBondProc, true);\n            }\n        }\n    }\n\n    void SpellHit(Unit* /*owner*/, SpellInfo const* spell) override\n    {\n        if (spell->Id == SpellValarjarsBondDummy)\n            DoCast(me, SpellValarjarsBondHeroic, true);\n    }\n\n    void DoAction(int32 const action) override\n    {\n        switch (action)\n        {\n            case ACTION_1:\n                me->setFaction(16);\n                DoCast(SpellValarjarsBond);\n                break;\n            case ACTION_2:\n                event2 = false;\n                me->setFaction(16);\n                me->RemoveAura(SpellHoverModeAnimState);\n                instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);\n                me->GetMotionMaster()->MoveJump(2414.0634f, 552.47f, 748.9953f, 20, 10, 2, 4.82082f);\n                me->AddDelayedEvent(2000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n                {\n                    if (aiLifetimeGuard.expired()) return;\n                    if (auto player = me->FindNearestPlayer(300.0f, true))\n                        AttackStart(player);\n                });\n                break;\n            case ACTION_3:\n                me->CastStop();\n                me->setFaction(35);\n                me->RemoveAllAuras();\n                me->SetHomePosition(2404.92f, 578.45605f, 772.8941f, 5.05401f);\n                me->NearTeleportTo(2404.92f, 578.45605f, 772.8941f, 5.05401f);\n                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n                events.CancelEvent(EVENT_EXPEL_LIGHT);\n                events.CancelEvent(EVENT_SHIELD_OF_LIGHT);\n                break;\n            default:\n                break;\n        }\n    }\n\n    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override\n    {\n        if (event2)\n        {\n            damage = 0;\n            return;\n        }\n\n        if (!damage || me->getFaction() != 16 || instance->GetBossState(Data::BossIDs::OdynID) == DONE)\n            return;\n\n        if (instance->GetData(Data::DataMisc::OdynTestOfAges) != DONE)\n        {\n            if (event1)\n            {\n                damage = 0;\n                return;\n            }\n\n            if (!ClampTrialOfValorDamage(me, attacker, damage, 25))\n                return;\n\n            event1 = true;\n            DoCast(SpellRevivify);\n            me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER | UNIT_FLAG2_DISABLE_TURN | UNIT_FLAG2_UNK6);\n\n            if (instance->GetData(Data::DataMisc::OdynEventComplete2) != DONE)\n            {\n                instance->SetData(Data::DataMisc::OdynEventComplete2, DONE);\n\n                if (auto owner = me->GetAnyOwner())\n                    owner->GetAI()->DoAction(ACTION_1);\n            }\n        }\n        else if (IsHeroicPlusRaid())\n        {\n            if (!ClampTrialOfValorDamage(me, attacker, damage, 85))\n                return;\n\n            event2 = true;\n            me->CastStop();\n            me->setFaction(35);\n            me->RemoveAllAuras();\n            me->NearTeleportTo(2404.92f, 578.45605f, 772.8941f, 5.05401f);\n            instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n        }\n    }\n\n    void SpellFinishCast(SpellInfo const* spell) override\n    {\n        switch (spell->Id)\n        {\n        case SpellRevivify:\n            event1 = false;\n            me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER | UNIT_FLAG2_DISABLE_TURN | UNIT_FLAG2_UNK6);\n\n            if ((instance->GetData(Data::DataMisc::OdynEventComplete2) == DONE) && (instance->GetData(Data::DataMisc::OdynEventComplete1) != DONE))\n                instance->SetData(Data::DataMisc::OdynEventComplete2, FAIL);\n        default:\n            break;\n        }\n    }\n\n    void EnterEvadeMode() override\n    {\n        if ((instance->GetData(Data::DataMisc::OdynIntroEvent) == DONE) && (instance->GetData(Data::DataMisc::OdynEventComplete2) != DONE))\n        {\n            if (auto owner = me->GetAnyOwner())\n                owner->GetAI()->DoAction(ACTION_3);\n        }\n\n        ScriptedAI::EnterEvadeMode();\n    }\n    \n    void KilledUnit(Unit* victim) override\n    {\n        if (!victim->IsPlayer())\n            return;\n\n        Talk(SAY_DIE_TANK);\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n            case EVENT_EXPEL_LIGHT:\n                if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 300.0f, true))\n                    DoCast(target, SpellExpelLight, false);\n\n                if (IsMythicRaid())\n                    events.RescheduleEvent(EVENT_EXPEL_LIGHT, 20000);\n                else if (IsHeroicRaid())\n                    events.RescheduleEvent(EVENT_EXPEL_LIGHT, 32000);\n                else if (IsLfrRaid() || IsNormalRaid())\n                    events.RescheduleEvent(EVENT_EXPEL_LIGHT, 19500);\n                break;\n            case EVENT_SHIELD_OF_LIGHT:\n                if (auto target = MS::ScriptUtils::SelectRandomPlayerExcludedTank(me, 60.0f))\n                {\n                    me->SetReactState(REACT_PASSIVE);\n                    events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT_REACT, 5500);\n                    DoCast(target, SpellShieldOfLight2, false);\n                    DoCast(target, SpellShieldOfLight, false);\n                    DoCast(target, SpellShieldOfLight3, false);\n                    ZoneTalk(SAY_RAID_CAST, target->GetGUID());\n                }\n\n                Talk(SAY_CAST_SPELL);\n\n                if (IsMythicRaid())\n                    events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT, 20000);\n                else\n                    events.RescheduleEvent(EVENT_SHIELD_OF_LIGHT, 32000);\n                break;\n            case EVENT_SHIELD_OF_LIGHT_REACT:\n                me->SetReactState(REACT_AGGRESSIVE);\n                break;\n            }\n        }\n        DoMeleeAttackIfReady();\n    }\nprivate:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n}",
+        "count": 1,
+        "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n"
+      }
+    ],
+    "binding": "npc_tov_hyrja",
+    "entries": [
+      114360
+    ]
+  },
+  {
+    "key": "NpcCordanaCreepingLifetime",
+    "title": "Cancel npc_cordana_creeping callbacks after source AI retirement",
+    "slug": "npc-cordana-creeping-ai-lifetime",
+    "paths": [
+      "src/server/scripts/Legion/VaultoftheWardens/boss_cordana.cpp"
+    ],
+    "cls": "npc_cordana_creepingAI",
+    "classes": [
+      "npc_cordana_creepingAI"
+    ],
+    "anchor_addition": "    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n",
+    "member": "std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);",
+    "guard": "if (aiLifetimeGuard.expired()) return;",
+    "guard_init": "aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)",
+    "callbacks": [
+      {
+        "start": 254,
+        "end": 490,
+        "body": 304,
+        "capstart": 279,
+        "capend": 282,
+        "cls": "npc_cordana_creepingAI",
+        "method": "Reset",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": false,
+        "authored_delay": "500",
+        "old": "me->AddDelayedEvent(500, [=]()-> void\n            {\n                float x, y, z;\n                me->GetClosePoint(x, y, z, me->GetObjectSize() / 3, 55.0f);\n                me->GetMotionMaster()->MovePoint(1, x, y, z);\n            });",
+        "capture": "=",
+        "implicit_this": true,
+        "payload_sha256": "8eb40020bd99e2bcb87a25264ba57962022e4f370e8486d09cd8cb4882bb4499",
+        "new": "me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()-> void\n            {\n                if (aiLifetimeGuard.expired()) return;\n                float x, y, z;\n                me->GetClosePoint(x, y, z, me->GetObjectSize() / 3, 55.0f);\n                me->GetMotionMaster()->MovePoint(1, x, y, z);\n            });"
+      },
+      {
+        "start": 516,
+        "end": 616,
+        "body": 566,
+        "capstart": 541,
+        "capend": 544,
+        "cls": "npc_cordana_creepingAI",
+        "method": "Reset",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": false,
+        "authored_delay": "600",
+        "old": "me->AddDelayedEvent(600, [=]()-> void\n            { \n                DoCast(197415);\n            });",
+        "capture": "=",
+        "implicit_this": true,
+        "payload_sha256": "9069d10c47b61a924cec1afe758a7f971b35f1d5f6543cf39ff8617c981e775a",
+        "new": "me->AddDelayedEvent(600, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()-> void\n            { if (aiLifetimeGuard.expired()) return; \n                DoCast(197415);\n            });"
+      }
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Legion/VaultoftheWardens/boss_cordana.cpp",
+        "old": "struct npc_cordana_creepingAI : public ScriptedAI\n    {\n        npc_cordana_creepingAI(Creature* creature) : ScriptedAI(creature) {}\n\n\n        void Reset() \n        {\n            me->SetReactState(REACT_PASSIVE);\n            DoCast(213628);\n\n            me->AddDelayedEvent(500, [=]()-> void\n            {\n                float x, y, z;\n                me->GetClosePoint(x, y, z, me->GetObjectSize() / 3, 55.0f);\n                me->GetMotionMaster()->MovePoint(1, x, y, z);\n            });\n            \n            me->AddDelayedEvent(600, [=]()-> void\n            { \n                DoCast(197415);\n            });\n        }\n        \n        void SpellHitTarget(Unit* target, const SpellInfo* spell) override\n        {\n            if (spell->Id == 197506)\n            {\n                if (auto owner = me->GetAnyOwner())\n                    if (owner && owner->IsAIEnabled)\n                        if (auto cordana = owner->ToCreature())\n                            cordana->AI()->DoAction(ACTION_1);\n            }\n        }\n        \n         void MovementInform(uint32 type, uint32 id) override\n        {\n            if (type != POINT_MOTION_TYPE || id != 1)\n                return;\n            \n            me->DespawnOrUnsummon();\n        }\n\n        void UpdateAI(uint32 diff) {}\n    }",
+        "new": "struct npc_cordana_creepingAI : public ScriptedAI\n    {\n        npc_cordana_creepingAI(Creature* creature) : ScriptedAI(creature) {}\n\n\n        void Reset() \n        {\n            me->SetReactState(REACT_PASSIVE);\n            DoCast(213628);\n\n            me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()-> void\n            {\n                if (aiLifetimeGuard.expired()) return;\n                float x, y, z;\n                me->GetClosePoint(x, y, z, me->GetObjectSize() / 3, 55.0f);\n                me->GetMotionMaster()->MovePoint(1, x, y, z);\n            });\n            \n            me->AddDelayedEvent(600, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()-> void\n            { if (aiLifetimeGuard.expired()) return; \n                DoCast(197415);\n            });\n        }\n        \n        void SpellHitTarget(Unit* target, const SpellInfo* spell) override\n        {\n            if (spell->Id == 197506)\n            {\n                if (auto owner = me->GetAnyOwner())\n                    if (owner && owner->IsAIEnabled)\n                        if (auto cordana = owner->ToCreature())\n                            cordana->AI()->DoAction(ACTION_1);\n            }\n        }\n        \n         void MovementInform(uint32 type, uint32 id) override\n        {\n            if (type != POINT_MOTION_TYPE || id != 1)\n                return;\n            \n            me->DespawnOrUnsummon();\n        }\n\n        void UpdateAI(uint32 diff) {}\n    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n    }",
+        "count": 1,
+        "anchor_addition": "    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n"
+      }
+    ],
+    "binding": "npc_cordana_creeping",
+    "entries": [
+      100336
+    ]
+  },
+  {
+    "key": "NpcHighmaulRejuvenatingMushroomLifetime",
+    "title": "Cancel npc_highmaul_rejuvenating_mushroom callbacks after source AI retirement",
+    "slug": "npc-highmaul-rejuvenating-mushroom-ai-lifetime",
+    "paths": [
+      "src/server/scripts/Draenor/Highmaul/boss_brackenspore.cpp"
+    ],
+    "cls": "npc_highmaul_rejuvenating_mushroom",
+    "classes": [
+      "npc_highmaul_rejuvenating_mushroom"
+    ],
+    "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n",
+    "member": "std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);",
+    "guard": "if (aiLifetimeGuard.expired()) return;",
+    "guard_init": "aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)",
+    "callbacks": [
+      {
+        "start": 863,
+        "end": 966,
+        "body": 917,
+        "capstart": 900,
+        "capend": 906,
+        "cls": "npc_highmaul_rejuvenating_mushroom",
+        "method": "Reset",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": true,
+        "authored_delay": "6 * IN_MILLISECONDS",
+        "old": "AddDelayedEvent(6 * IN_MILLISECONDS, [this]() -> void { me->CastSpell(me, Withering3Percent, true); });",
+        "capture": "this",
+        "implicit_this": false,
+        "payload_sha256": "44c2fd31801201e0679f39225a4f877e7e2200c427e0afc3737997705b9ae648",
+        "new": "AddDelayedEvent(6 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->CastSpell(me, Withering3Percent, true); });"
+      },
+      {
+        "start": 976,
+        "end": 1155,
+        "body": 1039,
+        "capstart": 1014,
+        "capend": 1020,
+        "cls": "npc_highmaul_rejuvenating_mushroom",
+        "method": "Reset",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": true,
+        "authored_delay": "11 * IN_MILLISECONDS",
+        "old": "AddDelayedEvent(11 * IN_MILLISECONDS, [this]() -> void\n        {\n            me->RemoveAura(Withering3Percent);\n            me->CastSpell(me, Withering5Percent, true);\n        });",
+        "capture": "this",
+        "implicit_this": false,
+        "payload_sha256": "eead014bbab19459e53eea2c6bc60d2a519ac9d6909aee87512f78c1558d6cbd",
+        "new": "AddDelayedEvent(11 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n        {\n            if (aiLifetimeGuard.expired()) return;\n            me->RemoveAura(Withering3Percent);\n            me->CastSpell(me, Withering5Percent, true);\n        });"
+      },
+      {
+        "start": 1165,
+        "end": 1353,
+        "body": 1228,
+        "capstart": 1203,
+        "capend": 1209,
+        "cls": "npc_highmaul_rejuvenating_mushroom",
+        "method": "Reset",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": true,
+        "authored_delay": "16 * IN_MILLISECONDS",
+        "old": "AddDelayedEvent(16 * IN_MILLISECONDS, [this]() -> void\n        {\n            me->CastSpell(me, Withering3Percent, true);\n            me->CastSpell(me, Withering5Percent, true);\n        });",
+        "capture": "this",
+        "implicit_this": false,
+        "payload_sha256": "a915e74dcf12160975acbc9c2c5a69c3e6c1e8912e7bcaecffbafb18d8a229fc",
+        "new": "AddDelayedEvent(16 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n        {\n            if (aiLifetimeGuard.expired()) return;\n            me->CastSpell(me, Withering3Percent, true);\n            me->CastSpell(me, Withering5Percent, true);\n        });"
+      },
+      {
+        "start": 1363,
+        "end": 1448,
+        "body": 1418,
+        "capstart": 1401,
+        "capend": 1407,
+        "cls": "npc_highmaul_rejuvenating_mushroom",
+        "method": "Reset",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": true,
+        "authored_delay": "30 * IN_MILLISECONDS",
+        "old": "AddDelayedEvent(30 * IN_MILLISECONDS, [this]() -> void { me->DespawnOrUnsummon(); });",
+        "capture": "this",
+        "implicit_this": false,
+        "payload_sha256": "0032beb6644402297bea13114eb8b6c51774be05233d678b71250f24e9482fcb",
+        "new": "AddDelayedEvent(30 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->DespawnOrUnsummon(); });"
+      }
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Draenor/Highmaul/boss_brackenspore.cpp",
+        "old": "struct npc_highmaul_rejuvenating_mushroom : public MS::AI::CosmeticAI\n{\n    enum eSpells\n    {\n        RejuvenatingMushroomVisual = 159253,\n        RejuvenatingMushroomL1Visual = 164246,\n        Withering3Percent = 163122,\n        Withering5Percent = 163124,\n        RejuvenatingSpores = 159292\n    };\n\n    npc_highmaul_rejuvenating_mushroom(Creature* creature) : MS::AI::CosmeticAI(creature)\n    {\n        m_Instance = creature->GetInstanceScript();\n    }\n\n    InstanceScript* m_Instance;\n\n    void Reset() override\n    {\n        me->setRegeneratingHealth(false);\n        me->SetHealth(me->GetMaxHealth() / 2);\n        me->AddUnitState(UNIT_STATE_STUNNED);\n\n        me->CastSpell(me, RejuvenatingMushroomVisual, true);\n        me->CastSpell(me, RejuvenatingMushroomL1Visual, true);\n\n        m_Instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me, 4);\n\n        AddDelayedEvent(6 * IN_MILLISECONDS, [this]() -> void { me->CastSpell(me, Withering3Percent, true); });\n\n        AddDelayedEvent(11 * IN_MILLISECONDS, [this]() -> void\n        {\n            me->RemoveAura(Withering3Percent);\n            me->CastSpell(me, Withering5Percent, true);\n        });\n\n        AddDelayedEvent(16 * IN_MILLISECONDS, [this]() -> void\n        {\n            me->CastSpell(me, Withering3Percent, true);\n            me->CastSpell(me, Withering5Percent, true);\n        });\n\n        AddDelayedEvent(30 * IN_MILLISECONDS, [this]() -> void { me->DespawnOrUnsummon(); });\n    }\n\n    void HealReceived(Unit* /*healer*/, uint32& heal) override\n    {\n        if ((me->GetHealth() + heal) >= me->GetMaxHealth() && !me->HasAura(RejuvenatingSpores))\n            me->CastSpell(me, RejuvenatingSpores, true);\n    }\n\n    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override\n    {\n        if (attacker != me)\n            damage = 0;\n    }\n\n    void JustDied(Unit* /*killer*/) override\n    {\n        m_Instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n        me->DespawnOrUnsummon(20 * IN_MILLISECONDS);\n    }\n}",
+        "new": "struct npc_highmaul_rejuvenating_mushroom : public MS::AI::CosmeticAI\n{\n    enum eSpells\n    {\n        RejuvenatingMushroomVisual = 159253,\n        RejuvenatingMushroomL1Visual = 164246,\n        Withering3Percent = 163122,\n        Withering5Percent = 163124,\n        RejuvenatingSpores = 159292\n    };\n\n    npc_highmaul_rejuvenating_mushroom(Creature* creature) : MS::AI::CosmeticAI(creature)\n    {\n        m_Instance = creature->GetInstanceScript();\n    }\n\n    InstanceScript* m_Instance;\n\n    void Reset() override\n    {\n        me->setRegeneratingHealth(false);\n        me->SetHealth(me->GetMaxHealth() / 2);\n        me->AddUnitState(UNIT_STATE_STUNNED);\n\n        me->CastSpell(me, RejuvenatingMushroomVisual, true);\n        me->CastSpell(me, RejuvenatingMushroomL1Visual, true);\n\n        m_Instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me, 4);\n\n        AddDelayedEvent(6 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->CastSpell(me, Withering3Percent, true); });\n\n        AddDelayedEvent(11 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n        {\n            if (aiLifetimeGuard.expired()) return;\n            me->RemoveAura(Withering3Percent);\n            me->CastSpell(me, Withering5Percent, true);\n        });\n\n        AddDelayedEvent(16 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n        {\n            if (aiLifetimeGuard.expired()) return;\n            me->CastSpell(me, Withering3Percent, true);\n            me->CastSpell(me, Withering5Percent, true);\n        });\n\n        AddDelayedEvent(30 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->DespawnOrUnsummon(); });\n    }\n\n    void HealReceived(Unit* /*healer*/, uint32& heal) override\n    {\n        if ((me->GetHealth() + heal) >= me->GetMaxHealth() && !me->HasAura(RejuvenatingSpores))\n            me->CastSpell(me, RejuvenatingSpores, true);\n    }\n\n    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override\n    {\n        if (attacker != me)\n            damage = 0;\n    }\n\n    void JustDied(Unit* /*killer*/) override\n    {\n        m_Instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n        me->DespawnOrUnsummon(20 * IN_MILLISECONDS);\n    }\nprivate:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n}",
+        "count": 1,
+        "anchor_addition": "private:\n    // Unit-owned queues may outlive this AI object.\n    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n"
+      }
+    ],
+    "binding": "npc_highmaul_rejuvenating_mushroom",
+    "entries": [
+      78868
+    ]
+  },
+  {
+    "key": "NpcAshranOfficerIronoreLifetime",
+    "title": "Cancel npc_ashran_officer_ironore callbacks after source AI retirement",
+    "slug": "npc-ashran-officer-ironore-ai-lifetime",
+    "paths": [
+      "src/server/scripts/OutdoorPvP/Ashran/AshranNPCAlliance.cpp"
+    ],
+    "cls": "npc_ashran_officer_ironoreAI",
+    "classes": [
+      "npc_ashran_officer_ironoreAI"
+    ],
+    "anchor_addition": "    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n",
+    "member": "std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);",
+    "guard": "if (aiLifetimeGuard.expired()) return;",
+    "guard_init": "aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)",
+    "callbacks": [
+      {
+        "start": 207,
+        "end": 276,
+        "body": 262,
+        "capstart": 245,
+        "capend": 251,
+        "cls": "npc_ashran_officer_ironoreAI",
+        "method": "Reset",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": true,
+        "authored_delay": "30 * IN_MILLISECONDS",
+        "old": "AddDelayedEvent(30 * IN_MILLISECONDS, [this]() -> void { Talk(0); });",
+        "capture": "this",
+        "implicit_this": false,
+        "payload_sha256": "bc7d7c415e2b751f94987280ed6220d256b13e61bc030ba69be8b8fcc3938ad0",
+        "new": "AddDelayedEvent(30 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(0); });"
+      }
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/OutdoorPvP/Ashran/AshranNPCAlliance.cpp",
+        "old": "struct npc_ashran_officer_ironoreAI : public MS::AI::CosmeticAI\n    {\n        npc_ashran_officer_ironoreAI(Creature* creature) : CosmeticAI(creature) { }\n\n        void Reset() override\n        {\n            AddDelayedEvent(30 * IN_MILLISECONDS, [this]() -> void { Talk(0); });\n        }\n\n        void LastOperationCalled() override\n        {\n            Reset();\n        }\n    }",
+        "new": "struct npc_ashran_officer_ironoreAI : public MS::AI::CosmeticAI\n    {\n        npc_ashran_officer_ironoreAI(Creature* creature) : CosmeticAI(creature) { }\n\n        void Reset() override\n        {\n            AddDelayedEvent(30 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(0); });\n        }\n\n        void LastOperationCalled() override\n        {\n            Reset();\n        }\n    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n    }",
+        "count": 1,
+        "anchor_addition": "    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n"
+      }
+    ],
+    "binding": "npc_ashran_officer_ironore",
+    "entries": [
+      88697
+    ]
+  },
+  {
+    "key": "NpcInvasionStormheimDragonsLifetime",
+    "title": "Cancel npc_invasion_stormheim_dragons callbacks after source AI retirement",
+    "slug": "npc-invasion-stormheim-dragons-ai-lifetime",
+    "paths": [
+      "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp"
+    ],
+    "cls": "npc_invasion_stormheim_dragonsAI",
+    "classes": [
+      "npc_invasion_stormheim_dragonsAI"
+    ],
+    "anchor_addition": "    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n",
+    "member": "std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);",
+    "guard": "if (aiLifetimeGuard.expired()) return;",
+    "guard_init": "aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)",
+    "callbacks": [
+      {
+        "start": 1468,
+        "end": 2567,
+        "body": 1567,
+        "capstart": 1494,
+        "capend": 1544,
+        "cls": "npc_invasion_stormheim_dragonsAI",
+        "method": "PassengerBoarded",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": false,
+        "authored_delay": "2000",
+        "old": "me->AddDelayedEvent(2000, [this, playerGuid = boardedPlayerGuid, generation]() -> void\n            {\n                if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                    return;\n                Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                    return;\n\n                player->SetClientControl(me, false);\n                scriptedControl = true;\n                me->AddDelayedEvent(3000, [this, playerGuid, generation]() -> void\n                {\n                    if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                        return;\n                    Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                    if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                        return;\n\n                    me->GetMotionMaster()->MovePath((urand(1, 2) == 1 ? 10993814 : 10993815), true, irand(-20, 20), irand(-20, 20));\n                });\n            });",
+        "capture": "this, playerGuid = boardedPlayerGuid, generation",
+        "implicit_this": false,
+        "payload_sha256": "3c97930cdc296c97943578e3ab8d503b5feeccb6fa17b2b9441fb140f0835a19",
+        "new": "me->AddDelayedEvent(2000, [this, playerGuid = boardedPlayerGuid, generation, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n            {\n                if (aiLifetimeGuard.expired()) return;\n                if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                    return;\n                Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                    return;\n\n                player->SetClientControl(me, false);\n                scriptedControl = true;\n                me->AddDelayedEvent(3000, [this, playerGuid, generation, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n                {\n                    if (aiLifetimeGuard.expired()) return;\n                    if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                        return;\n                    Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                    if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                        return;\n\n                    me->GetMotionMaster()->MovePath((urand(1, 2) == 1 ? 10993814 : 10993815), true, irand(-20, 20), irand(-20, 20));\n                });\n            });"
+      },
+      {
+        "start": 1986,
+        "end": 2551,
+        "body": 2069,
+        "capstart": 2012,
+        "capend": 2042,
+        "cls": "npc_invasion_stormheim_dragonsAI",
+        "method": "PassengerBoarded",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": false,
+        "authored_delay": "3000",
+        "old": "me->AddDelayedEvent(3000, [this, playerGuid, generation]() -> void\n                {\n                    if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                        return;\n                    Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                    if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                        return;\n\n                    me->GetMotionMaster()->MovePath((urand(1, 2) == 1 ? 10993814 : 10993815), true, irand(-20, 20), irand(-20, 20));\n                });",
+        "capture": "this, playerGuid, generation",
+        "implicit_this": false,
+        "payload_sha256": "a79514b367878fb466d0332892c2d862cfea20c053b2dc2802da4733a4e0e992",
+        "new": "me->AddDelayedEvent(3000, [this, playerGuid, generation, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n                {\n                    if (aiLifetimeGuard.expired()) return;\n                    if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                        return;\n                    Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                    if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                        return;\n\n                    me->GetMotionMaster()->MovePath((urand(1, 2) == 1 ? 10993814 : 10993815), true, irand(-20, 20), irand(-20, 20));\n                });"
+      }
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp",
+        "old": "struct npc_invasion_stormheim_dragonsAI : ScriptedAI\n    {\n        npc_invasion_stormheim_dragonsAI(Creature* creature) : ScriptedAI(creature)\n        {\n            timerforcheck  = 1000;\n            check = false;\n            me->SetReactState(REACT_PASSIVE);\n        }\n\n        uint32 timerforcheck;\n        bool check;\n        \n        void IsSummonedBy(Unit* summoner) override\n        {\n            SetFlyMode(true);\n            summoner->CastSpell(me, 52391, true); //Ride Veh\n        }\n        \n        void OnCharmed(bool /*apply*/) override\n        {\n\n        }\n        \n        uint64 boardingGeneration = 0;\n        ObjectGuid boardedPlayerGuid;\n        bool scriptedControl = false;\n\n        void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override\n        {\n            if (!who || !who->IsPlayer())\n                return;\n\n            if (!apply)\n            {\n                if (who->GetGUID() != boardedPlayerGuid)\n                    return;\n                ++boardingGeneration;\n                if (scriptedControl)\n                    who->ToPlayer()->SetClientControl(who, true);\n                scriptedControl = false;\n                boardedPlayerGuid.Clear();\n                return;\n            }\n\n            if (who->GetVehicleBase() != me || boardedPlayerGuid == who->GetGUID())\n                return;\n\n            boardedPlayerGuid = who->GetGUID();\n            uint64 const generation = ++boardingGeneration;\n            me->AddDelayedEvent(2000, [this, playerGuid = boardedPlayerGuid, generation]() -> void\n            {\n                if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                    return;\n                Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                    return;\n\n                player->SetClientControl(me, false);\n                scriptedControl = true;\n                me->AddDelayedEvent(3000, [this, playerGuid, generation]() -> void\n                {\n                    if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                        return;\n                    Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                    if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                        return;\n\n                    me->GetMotionMaster()->MovePath((urand(1, 2) == 1 ? 10993814 : 10993815), true, irand(-20, 20), irand(-20, 20));\n                });\n            });\n        }\n        \n        void MovementInform(uint32 moveType, uint32 pointId) override\n        {\n            if (moveType != WAYPOINT_MOTION_TYPE)\n                return;\n            \n            if (!check)\n                return;\n\n            if (me->GetVehicleKit() && pointId == 12)\n            {\n                if (Unit* passenger = me->GetVehicleKit()->GetPassenger(0))\n                {\n                    passenger->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 56604);\n                    passenger->AddAura(55001, passenger);\n                    me->GetVehicleKit()->RemoveAllPassengers();\n                    me->DespawnOrUnsummon(500);\n                }\n            }\n        }\n        \n        void UpdateAI(uint32 diff) override\n        {\n            if (!check)\n            {\n                if (timerforcheck <= diff)\n                {\n                    if (me->GetAnyOwner())\n                        if (InstanceScript* instance = me->GetInstanceScript())\n                            if (instance->getScenarionStep() == 2)\n                            {\n                                check = true;\n                                me->GetMotionMaster()->MovePath(10993816, false);\n                            }\n                           \n                    timerforcheck = 1000;\n                }\n                else\n                    timerforcheck -= diff;\n            }\n        }\n    }",
+        "new": "struct npc_invasion_stormheim_dragonsAI : ScriptedAI\n    {\n        npc_invasion_stormheim_dragonsAI(Creature* creature) : ScriptedAI(creature)\n        {\n            timerforcheck  = 1000;\n            check = false;\n            me->SetReactState(REACT_PASSIVE);\n        }\n\n        uint32 timerforcheck;\n        bool check;\n        \n        void IsSummonedBy(Unit* summoner) override\n        {\n            SetFlyMode(true);\n            summoner->CastSpell(me, 52391, true); //Ride Veh\n        }\n        \n        void OnCharmed(bool /*apply*/) override\n        {\n\n        }\n        \n        uint64 boardingGeneration = 0;\n        ObjectGuid boardedPlayerGuid;\n        bool scriptedControl = false;\n\n        void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override\n        {\n            if (!who || !who->IsPlayer())\n                return;\n\n            if (!apply)\n            {\n                if (who->GetGUID() != boardedPlayerGuid)\n                    return;\n                ++boardingGeneration;\n                if (scriptedControl)\n                    who->ToPlayer()->SetClientControl(who, true);\n                scriptedControl = false;\n                boardedPlayerGuid.Clear();\n                return;\n            }\n\n            if (who->GetVehicleBase() != me || boardedPlayerGuid == who->GetGUID())\n                return;\n\n            boardedPlayerGuid = who->GetGUID();\n            uint64 const generation = ++boardingGeneration;\n            me->AddDelayedEvent(2000, [this, playerGuid = boardedPlayerGuid, generation, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n            {\n                if (aiLifetimeGuard.expired()) return;\n                if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                    return;\n                Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                    return;\n\n                player->SetClientControl(me, false);\n                scriptedControl = true;\n                me->AddDelayedEvent(3000, [this, playerGuid, generation, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n                {\n                    if (aiLifetimeGuard.expired()) return;\n                    if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)\n                        return;\n                    Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);\n                    if (!player || !player->IsAlive() || player->GetVehicleBase() != me)\n                        return;\n\n                    me->GetMotionMaster()->MovePath((urand(1, 2) == 1 ? 10993814 : 10993815), true, irand(-20, 20), irand(-20, 20));\n                });\n            });\n        }\n        \n        void MovementInform(uint32 moveType, uint32 pointId) override\n        {\n            if (moveType != WAYPOINT_MOTION_TYPE)\n                return;\n            \n            if (!check)\n                return;\n\n            if (me->GetVehicleKit() && pointId == 12)\n            {\n                if (Unit* passenger = me->GetVehicleKit()->GetPassenger(0))\n                {\n                    passenger->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 56604);\n                    passenger->AddAura(55001, passenger);\n                    me->GetVehicleKit()->RemoveAllPassengers();\n                    me->DespawnOrUnsummon(500);\n                }\n            }\n        }\n        \n        void UpdateAI(uint32 diff) override\n        {\n            if (!check)\n            {\n                if (timerforcheck <= diff)\n                {\n                    if (me->GetAnyOwner())\n                        if (InstanceScript* instance = me->GetInstanceScript())\n                            if (instance->getScenarionStep() == 2)\n                            {\n                                check = true;\n                                me->GetMotionMaster()->MovePath(10993816, false);\n                            }\n                           \n                    timerforcheck = 1000;\n                }\n                else\n                    timerforcheck -= diff;\n            }\n        }\n    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n    }",
+        "count": 1,
+        "anchor_addition": "    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n"
+      }
+    ],
+    "binding": "npc_invasion_stormheim_dragons",
+    "entries": [
+      119196,
+      119197,
+      119198
+    ]
+  },
+  {
+    "key": "NpcArcaneRavenLifetime",
+    "title": "Cancel npc_arcane_raven callbacks after source AI retirement",
+    "slug": "npc-arcane-raven-ai-lifetime",
+    "paths": [
+      "src/server/scripts/Scenario/AssaultBrokenShore/AssaultBrokenShore.cpp"
+    ],
+    "cls": "npc_arcane_ravenAI",
+    "classes": [
+      "npc_arcane_ravenAI"
+    ],
+    "anchor_addition": "    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n",
+    "member": "std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);",
+    "guard": "if (aiLifetimeGuard.expired()) return;",
+    "guard_init": "aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)",
+    "callbacks": [
+      {
+        "start": 470,
+        "end": 775,
+        "body": 535,
+        "capstart": 496,
+        "capend": 512,
+        "cls": "npc_arcane_ravenAI",
+        "method": "PassengerBoarded",
+        "queue": "event",
+        "queue_owner": "me",
+        "delegated": false,
+        "authored_delay": "4000",
+        "old": "me->AddDelayedEvent(4000, [this, isPlayer]() -> void\n            {\n                if (isPlayer)\n                    me->GetMotionMaster()->MovePath(11322708, false);\n                else\n                    me->GetMotionMaster()->MovePath(11322708, false, irand(-15, 15), irand(-15, 15));\n            });",
+        "capture": "this, isPlayer",
+        "implicit_this": false,
+        "payload_sha256": "cf733770a01aae82e7fcdc46ebc35f802eb00b14f4ddebcb8a9b5b89ca51e97c",
+        "new": "me->AddDelayedEvent(4000, [this, isPlayer, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n            {\n                if (aiLifetimeGuard.expired()) return;\n                if (isPlayer)\n                    me->GetMotionMaster()->MovePath(11322708, false);\n                else\n                    me->GetMotionMaster()->MovePath(11322708, false, irand(-15, 15), irand(-15, 15));\n            });"
+      }
+    ],
+    "edits": [
+      {
+        "path": "src/server/scripts/Scenario/AssaultBrokenShore/AssaultBrokenShore.cpp",
+        "old": "struct npc_arcane_ravenAI : ScriptedAI\n    {\n        npc_arcane_ravenAI(Creature* creature) : ScriptedAI(creature) {}\n\n        void Reset() override {}\n\n        void IsSummonedBy(Unit* summoner) override\n        {\n            SetFlyMode(true);\n            summoner->CastSpell(me, 52391, true); //Ride Veh\n        }\n        \n        void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override\n        {\n            bool isPlayer = who->IsPlayer();\n            me->AddDelayedEvent(4000, [this, isPlayer]() -> void\n            {\n                if (isPlayer)\n                    me->GetMotionMaster()->MovePath(11322708, false);\n                else\n                    me->GetMotionMaster()->MovePath(11322708, false, irand(-15, 15), irand(-15, 15));\n            });\n        }\n        \n        void MovementInform(uint32 moveType, uint32 pointId) override\n        {\n            if (moveType != WAYPOINT_MOTION_TYPE)\n                return;\n\n            if (pointId == 20 && me->GetAnyOwner())\n            {\n                if (me->GetAnyOwner()->IsPlayer())\n                {\n                    me->GetAnyOwner()->CreateConversation(4828);\n                    me->GetAnyOwner()->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 56460);\n                    if (Creature* infernal = me->SummonCreature(118416, me->GetPositionX() + 5, me->GetPositionY() + 5, me->GetPositionZ()))\n                    {\n                        infernal->CastSpell(infernal, 205266);\n                        if (Creature* mag = infernal->FindNearestCreature(118412, 30.0f, true))\n                        {\n                            mag->CastSpell(mag, 46604);\n                            mag->AI()->Talk(0);\n                        }\n                        infernal->CastSpell(infernal, 239649);\n                    }\n                }\n                me->DespawnOrUnsummon(500);\n            }\n        }\n    }",
+        "new": "struct npc_arcane_ravenAI : ScriptedAI\n    {\n        npc_arcane_ravenAI(Creature* creature) : ScriptedAI(creature) {}\n\n        void Reset() override {}\n\n        void IsSummonedBy(Unit* summoner) override\n        {\n            SetFlyMode(true);\n            summoner->CastSpell(me, 52391, true); //Ride Veh\n        }\n        \n        void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override\n        {\n            bool isPlayer = who->IsPlayer();\n            me->AddDelayedEvent(4000, [this, isPlayer, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n            {\n                if (aiLifetimeGuard.expired()) return;\n                if (isPlayer)\n                    me->GetMotionMaster()->MovePath(11322708, false);\n                else\n                    me->GetMotionMaster()->MovePath(11322708, false, irand(-15, 15), irand(-15, 15));\n            });\n        }\n        \n        void MovementInform(uint32 moveType, uint32 pointId) override\n        {\n            if (moveType != WAYPOINT_MOTION_TYPE)\n                return;\n\n            if (pointId == 20 && me->GetAnyOwner())\n            {\n                if (me->GetAnyOwner()->IsPlayer())\n                {\n                    me->GetAnyOwner()->CreateConversation(4828);\n                    me->GetAnyOwner()->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 56460);\n                    if (Creature* infernal = me->SummonCreature(118416, me->GetPositionX() + 5, me->GetPositionY() + 5, me->GetPositionZ()))\n                    {\n                        infernal->CastSpell(infernal, 205266);\n                        if (Creature* mag = infernal->FindNearestCreature(118412, 30.0f, true))\n                        {\n                            mag->CastSpell(mag, 46604);\n                            mag->AI()->Talk(0);\n                        }\n                        infernal->CastSpell(infernal, 239649);\n                    }\n                }\n                me->DespawnOrUnsummon(500);\n            }\n        }\n    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n    }",
+        "count": 1,
+        "anchor_addition": "    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n"
+      }
+    ],
+    "binding": "npc_arcane_raven",
+    "entries": [
+      118517
+    ]
+  }
+]

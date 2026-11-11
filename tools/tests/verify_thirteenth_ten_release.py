@@ -39,8 +39,25 @@ def map_guards(rows):
 seat,=callback_names('instance_seat_of_the_triumvirate_InstanceMapScript','OnPlayerEnter');r=expanded(seat);map_guards(r);create,=sites(r,'?CreateConversation@Conversation@@');assert r[create+1].mnemonic=='test'and r[create+2].mnemonic=='je';assert 6054 in values(r)
 timer=[expanded(s)for s in callback_names('instance_trial_of_style_InstanceMapScript','onScenarionNextStep')];timer=[r for r in timer if sites(r,'?IsInWorld@Object@@')];assert len(timer)==1;map_guards(timer[0]);assert 57838 in values(timer[0])
 dragon=lookup_callbacks('npc_invasion_stormheim_dragonsAI','PassengerBoarded','?GetPlayer@ObjectAccessor@@',2)
-for r in dragon:assert sites(r,'?GetVehicleBase@Unit@@')and op(r,'mov','rax, qword ptr [rdx + 0x40]')and op(r,'cmp','qword ptr [rcx + 0x20], rax'),'generation guard in both stages'
+def dragon_generation_guard(rows):
+ # _Do_call receives std::function's +8 payload; an outlined lambda operator
+ # receives that payload directly. Follow the captured AI and the generation
+ # immediately after its 16-byte player GUID in either actual entry layout.
+ for i,x in enumerate(rows[:-3]):
+  for base in [0,8]:
+   captured_ai='rdx, qword ptr [rcx'+(' + 8'if base else'')+']'
+   if x.mnemonic!='mov'or x.op_str!=captured_ai:continue
+   load,compare,reject=rows[i+1:i+4]
+   if load.mnemonic=='mov'and load.op_str=='rax, qword ptr [rdx + 0x40]'and compare.mnemonic=='cmp'and compare.op_str=='qword ptr [rcx + '+hex(base+0x18)+'], rax'and reject.mnemonic=='jne':
+    return i+3<min(sites(rows,'?GetPlayer@ObjectAccessor@@'))
+ return False
+for r in dragon:assert sites(r,'?GetVehicleBase@Unit@@')and dragon_generation_guard(r),'generation guard in both stages'
 assert any(3000 in values(r)and sites(r,'?SetClientControl@Player@@')for r in dragon)
 assert any(10993814 in values(r)and op(r,'setne','dl')and sites(r,'?MovePath@MotionMaster@@')for r in dragon),'original route variants'
-r=ins('?PassengerBoarded@npc_invasion_stormheim_dragonsAI@');assert op(r,'test','r9b, r9b')and sites(r,'?SetClientControl@Player@@')and 2000 in values(r);assert op(r,'mov','r8b, 1')and sum(x.mnemonic=='inc'and x.op_str=='qword ptr [rbx + 0x40]'for x in r)==2,'remove restores control and invalidates generation'
+r=ins('?PassengerBoarded@npc_invasion_stormheim_dragonsAI@');assert op(r,'test','r9b, r9b')and sites(r,'?SetClientControl@Player@@')and 2000 in values(r)
+increments=sum(x.mnemonic=='inc'and x.op_str=='qword ptr [rbx + 0x40]'for x in r)
+# A larger captured closure keeps the boarding increment in r8 for its later
+# capture. Count its exact load/increment/writeback as the same generation write.
+increments+=sum(x.mnemonic=='mov'and x.op_str=='r8, qword ptr [rbx + 0x40]'and r[i+1].mnemonic=='inc'and r[i+1].op_str=='r8'and r[i+2].mnemonic=='mov'and r[i+2].op_str=='qword ptr [rbx + 0x40], r8'for i,x in enumerate(r[:-2]))
+assert op(r,'mov','r8b, 1')and increments==2,'remove restores control and invalidates generation'
 print('PASS actual Release thirteenth ten:Pylon type/null admission;Quills GUID,Guldan owned Hellfire/Bounds lookups,nine greeting callbacks,two Hearthstation lookups plus initialized1000ms timer,Spider lookup,Seat/Style map-instance guards and successful-create commit,actual dragon two-stage generation/vehicle guards and control restore/original2s+3s/routes. Prior127 selected paths retained;payload/client scopes remain separate.')
