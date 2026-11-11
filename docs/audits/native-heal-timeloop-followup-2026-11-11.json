@@ -1,0 +1,84 @@
+{
+  "date": "2026-11-11",
+  "request": "Labi turpini",
+  "status": "TWO_FOCUSED_REPAIRS_DEPLOYED_TIMELOOP_FULL_HEAL_AND_OTHER_OPEN_REMAIN",
+  "commits": {
+    "native_api": "12b3793c3e452108ac1f83a542ef02996f730ae8",
+    "time_loop_decision": "0fb98c6b69128b88304037b02b25278f2a7b3633"
+  },
+  "audits": [
+    "docs/audits/native-positive-heal-width-2026-11-11.json",
+    "docs/audits/time-loop-nonlethal-admission-2026-11-11.json"
+  ],
+  "canonical": {
+    "bnetserver.exe": "437c32106ff43c76cd05a647ded157497c1759020f41d21ca0290b689c24942c",
+    "bnetserver.map": "1977b06f20e160440e600d8e2eeaaef9c509cc66e976250afcf7de66cf3d480b",
+    "worldserver.exe": "8b102c590803c21bed2299aaae4e0d0970c2eca9075140dedae27a6d8b6e99d8",
+    "worldserver.map": "e173b2d2f9614415d0c14ddea40713338d4a14500b9f01bb1729b2c92089c555"
+  },
+  "verification": "Native96heal+56absorb/undo+25heal-absorb+12shared+3actualNiuzao;TimeLoop24nonlethal/repeat plus five actual aura/cast observations and pinned counterfactual;ASAN160notification+8535Sheilun+960Sharasdal controlled contexts;retained280nativehealth plus four damage/threeheal boundaries;legendary/Prydazchecks;staged/canonical full previous PE chain;standalone81slot identities;Scepter;owned startup/exit0. These scopes do not imply full client/raid/36chain traversal.",
+  "diagnostics": "Clean owned PID19332ready/shutdown0/exit0/gone,full canonical PE chain,Scepter,81slot comparison and post-cleanup hashes. Native Niuzao fixture missing startup data was corrected and passed;original exception stack preserved. No canonical crash or DBErrors append.",
+  "cleanup": {
+    "Open": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/open-diagnostics/time-loop-native-width-2026-11-11",
+    "OpenRecords": 132,
+    "OpenManifestSHA256": "1166CA748FACBF0579E221D526A2ECFDE37DE7D0730630CCE37A953BC90F4178",
+    "ManifestSHA256": "F83C3B2D87EFB0E7913FD6F9FEAA68C5DBEDAA213D416832EC04432C7DF3B70C",
+    "RetainedTimeLoopRuntime": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\timeloopnative\\20261111-192723-495",
+    "Retained": "Canonical configs/certs/DLLs/data/main libraries,latest pre-task rollback,one matching OPEN TimeLoop EXE/runtime/PDB/MAP/config,original ninth-batch TimeLoop and Slaghammer/LINK2/Lady/handshake evidence,character backups. No log truncated.",
+    "ArchivedFiles": 614,
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/native-heal-and-time-loop-decision-2026-11-11",
+    "LogicalRemovedBytes": 2987638273.0,
+    "RemovedFiles": 77
+  },
+  "archive_resolution_sha256": "02b51e0acab2fa644006417a5109373e2808f59378814d64bfe6ffaeaf31228d",
+  "rehash_records": 746,
+  "remaining": [
+    {
+      "key": "SharasdalLivingLady",
+      "status": "OPEN_AUTHENTIC_SEQUENCE_NOT_ESTABLISHED",
+      "missing": "Actual activation/surrender producer,accepted living conversation1906,real Grash209457boarding/carry,finisher attribution and cleanup. Native209487dummy effect is not proof of a kill producer;no authored HPthreshold or timer established.",
+      "review": "Current local realLady362095 vsillusion362091 code and prior matching26972data/assets/DB/video notes re-read. Newer Trinity scripts and bounded GitHub searches yielded no matching implementation. No new video watched;prior1029s/5s and880..959/1s sampling is not continuous/audio proof.",
+      "audit": "docs/audits/sharasdal-living-lady-research-2026-10-31.json",
+      "next": "Find original behavior/producer evidence,then whole living sequence with native boarding acknowledgements,owner/pet/guardian/one-hit,failed actors/casts,abandon/retry/reentry and actual-death credit."
+    },
+    {
+      "key": "SharedCryptLINK2",
+      "status": "OPEN_ORIGINAL_ACTIONS_UNKNOWN",
+      "missing": "101430event1->2 after200165/conversation1031,and103151DATA chain202014->2. Later credit/barrier paths and shared Zakajz use are distinct.",
+      "audit": "docs/audits/shared-crypt-link2-followup-2026-11-01.json",
+      "next": "Establish each original action2payload from matching data/original sequence. No no-op/link-zero/despawn/log-suppression substitute. Current owner/group credit already repaired;do not reintroduce old player-only code."
+    },
+    {
+      "key": "TimeLoopHealthWidth",
+      "status": "PARTIAL_DECISION_AND_NATIVE_UINT32_API_FIXED_SPELL105992_WIDE_HEAL_OPEN",
+      "evidence_manifest": ".codex/open-diagnostics/time-loop-health-width-2026-11-09/manifest.json",
+      "evidence_manifest_sha256": "90193fb56c38e3cdc9901f69b1955d3be5d990d226d1f3cddedd806d87d3e5b9",
+      "matching_native_data": "26972:105984absorb effect1aura69;105992effect0flat HEAL10,targetself1,base100. Read-only native catalog completed;no native lethal/full-heal run or deployed repair claimed.",
+      "root_trace": "105984still narrows maximum health into int32/float custom payload.105992EffectHeal int32addhealth,negative m_damage,TargetInfo.damage,m_healing and spell/proc records remain width constraints. Native32heal API gain/remaining absorption are now repaired;that does not fix full64spell healing.",
+      "next": "Implement one width-correct actual105992cast/effect/target/absorb/proc path without arbitrary cap,direct fullhealth or extra heal-event workaround;repeat lethal/absorbs/one-use/reentry/client controls.",
+      "completed": "Unsigned nonlethal admission and native32amount/int64gain/absorption/manager repair;see focused audits.",
+      "latest_native_evidence": {
+        "manifest": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\open-diagnostics\\time-loop-native-width-2026-11-11\\manifest.json",
+        "manifest_sha256": "1166ca748facbf0579e221d526a2ecfde37de7d0730630cce37a953bc90f4178",
+        "executable_sha256": "f03f4377c8a0bd6f256b8f1145d38a0d07d0da97413c00dc061dc8a05342fbe8",
+        "runtime": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\timeloopnative\\20261111-192723-495",
+        "actual_current_output": "4bmax/500HP/lethal500stays500;1TiB+17max/500HPheals17to517. Both remain OPEN."
+      }
+    },
+    {
+      "key": "IntermittentClientHandshake",
+      "status": "OPEN_NO_FRESH_CLIENT_INCIDENT",
+      "evidence": "Existing upstream network-thread regression and socket probes pass;historical incident/root cause remains unproven. No WoW client was running this review;Client.log/Connection.log last modified2026-11-06,not fresh client evidence.",
+      "tool": "tools/research/Save-WorldHandshakeIncident.ps1",
+      "next": "On actual failure preserve client logs,server network records and pre-abort OS/socket samples before retry/restart overwrites evidence."
+    },
+    {
+      "key": "ClientAndWholeChainTraversal",
+      "status": "PENDING_USER_CLIENT",
+      "scope": "All36whole artifact chains,actual visuals/audio/equipment/camera/pet/reconnect/encounter traversal. Native/ASAN/linked checks certify only declared scopes. New Cordana and Mending actual client checks remain pending. Sentinel default amount0 custom criterion semantics and SilverHand17915indirect progression/group eligibility remain unestablished;no speculative grants. MariaDB FT config restart-warning absence awaits a future user-owned service restart;installed DLL/liveCAST already verified,no service stopped."
+    }
+  ],
+  "protected": "OriginalSlaghammercache,oldninth-batchTimeLoopevidence,Lady/LINK2/handshake originals,mixed7111byteDBErrors and user MariaDB service unchanged. One latest OPEN TimeLoop native EXE/runtime/PDB/MAP/private config retained for concrete wide-heal investigation;all private data stays ignored.",
+  "authorization": "Standing focused commits/push/deployment/cleanup followed. No arbitrary new5x10batch or user/unknown process stopped.",
+  "post_cleanup_diagnostics_sha256": "368bf23ea97246d4961a5bb6cf03b73ec84b13c0d86e9ff597a8a651a7e398d6"
+}

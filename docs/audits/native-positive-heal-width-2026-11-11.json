@@ -11,7 +11,15 @@
   "diagnostics": "Every declared build/native/ASAN/PE/runtime test has before/after canonical+own crash/log evidence. Final no changed crash reports,appended DBErrors or unexplained server warnings/errors/assertions. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged.",
   "build": "Original game/scripts library paths rebuilt and staged link inputs verified;no OutDir override. Matching EXE/MAP promoted to canonical Release.304 compiler warning contexts reviewed against matching per-build source snapshots;no diagnostic disabled. Native/ASAN fixtures retain their ordinary float/integer/shadow warnings explicitly;full spell-record width remains OPEN.",
   "local_evidence": ".codex/time-loop-2026-11-11",
-  "cleanup": "Final archive/deletion manifest and commit mapping will be recorded in native-heal-timeloop-followup-2026-11-11.json;unresolved wide-heal evidence stays outside fixed.",
+  "cleanup": {
+    "audit": "docs/audits/native-heal-timeloop-followup-2026-11-11.json",
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\native-heal-and-time-loop-decision-2026-11-11",
+    "manifest_sha256": "f83c3b2d87efb0e7913fd6f9feaa68c5dbedaa213d416832ec04432c7df3b70c",
+    "resolution_sha256": "02b51e0acab2fa644006417a5109373e2808f59378814d64bfe6ffaeaf31228d",
+    "removed_files_shared_count_once": 77,
+    "logical_removed_bytes_shared_count_once": 2987638273.0,
+    "open_manifest_sha256": "1166ca748facbf0579e221d526a2ecfde37de7d0730630cce37a953bc90f4178"
+  },
   "status": "NATIVE_UINT32_HEAL_API_FIXED_DEPLOYED_FULL_SPELL_WIDTH_OPEN",
   "causes": [
     "DealHeal converted uint32positive amount to int32 before native64ModifyHealth,and returned int32gain. UINT32_MAXbecame minus1health and no final-heal callback.",
@@ -41,5 +49,6 @@
   "remaining": [
     "Spell::EffectHeal int32addhealth,negative m_damage/TargetInfo.damage,m_healing and downstream spell/proc record widths are not repaired by this native uint32API work. No full105992wide-health heal claim.",
     "Actual client healing/combat/visuals and complete quest/raid chains remain pending. Owner/pet/guardian eligibility and existing progression methods are unchanged;controlled companion ASAN includes those actors."
-  ]
+  ],
+  "fix_commit": "12b3793c3e452108ac1f83a542ef02996f730ae8"
 }

@@ -11,7 +11,15 @@
   "diagnostics": "Every declared build/native/ASAN/PE/runtime test has before/after canonical+own crash/log evidence. Final no changed crash reports,appended DBErrors or unexplained server warnings/errors/assertions. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged.",
   "build": "Original game/scripts library paths rebuilt and staged link inputs verified;no OutDir override. Matching EXE/MAP promoted to canonical Release.304 compiler warning contexts reviewed against matching per-build source snapshots;no diagnostic disabled. Native/ASAN fixtures retain their ordinary float/integer/shadow warnings explicitly;full spell-record width remains OPEN.",
   "local_evidence": ".codex/time-loop-2026-11-11",
-  "cleanup": "Final archive/deletion manifest and commit mapping will be recorded in native-heal-timeloop-followup-2026-11-11.json;unresolved wide-heal evidence stays outside fixed.",
+  "cleanup": {
+    "audit": "docs/audits/native-heal-timeloop-followup-2026-11-11.json",
+    "archive": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\fixed\\native-heal-and-time-loop-decision-2026-11-11",
+    "manifest_sha256": "f83c3b2d87efb0e7913fd6f9feaa68c5dbedaa213d416832ec04432c7df3b70c",
+    "resolution_sha256": "02b51e0acab2fa644006417a5109373e2808f59378814d64bfe6ffaeaf31228d",
+    "removed_files_shared_count_once": 77,
+    "logical_removed_bytes_shared_count_once": 2987638273.0,
+    "open_manifest_sha256": "1166ca748facbf0579e221d526a2ecfde37de7d0730630cce37a953bc90f4178"
+  },
   "status": "FALSE_NONLETHAL_CONSUMPTION_FIXED_DEPLOYED_WIDE_HEAL_STILL_OPEN",
   "path": "src/server/scripts/Kalimdor/CavernsOfTime/DragonSoul/boss_ultraxion.cpp",
   "cause": "Subtracting uint32incoming damage from uint64health and storing in int32could turn a nonlethal hit negative. Actual native4bHP/incoming1consumed aura105984.",
@@ -22,5 +30,6 @@
     "remaining_observed": "Native4bmaximum/500current/lethal500stillfails full healing;1TiB+17maximum produces only17heal in the old signed32effect path. Core API repair does not remove the script int32maxhealth/float payload or signed32SpellEffect/target record limitations. Latest native reproduction remains outside fixed for the next repair."
   },
   "scope": "This closes only erroneous nonlethal consumption. Entire TimeLoop105984/105992wide-heal issue remains OPEN;no whole encounter/client verification claimed.",
-  "next": "Carry one width-correct heal amount through actual105992SpellEffect/target/absorb/proc pipeline and verify exact lethal/full-health/absorbs/one-use semantics before calling TimeLoop complete."
+  "next": "Carry one width-correct heal amount through actual105992SpellEffect/target/absorb/proc pipeline and verify exact lethal/full-health/absorbs/one-use semantics before calling TimeLoop complete.",
+  "fix_commit": "0fb98c6b69128b88304037b02b25278f2a7b3633"
 }
