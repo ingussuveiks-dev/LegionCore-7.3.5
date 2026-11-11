@@ -2,7 +2,7 @@
   "date": "2026-11-11",
   "request": "Five successive groups of ten new fixes,then stop. MariaDB DLL already installed/live-verified;do not stop the user service.",
   "authorized_fixes": 50,
-  "completed_fixes": 30,
+  "completed_fixes": 40,
   "status": "IN_PROGRESS",
   "batches": [
     {
@@ -325,6 +325,115 @@
         "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and installed/live-verified MariaDB recovery evidence.",
         "closeout_manifest_sha256": "ed668966d8067d28658a0e9e7c10daeb945d4dba2533a2d174218ef10cd1f0fb",
         "resolution_sha256": "62ff330ec148ea13886cda1a8e424357f94a87351b6bb1f8a14d48caab6a7af4",
+        "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
+      }
+    },
+    {
+      "number": 4,
+      "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+      "audit": "docs\\audits\\fortyfifth-ten-repairs-2026-11-11.json",
+      "fixes": [
+        {
+          "key": "NpcMagmaGiantLifetime",
+          "title": "Cancel npc_magma_giant callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/invasion_point_argus.cpp",
+          "audit": "docs\\audits\\npc-magma-giant-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "73792690cbcd5ef11ef5d7da6ec0e47e12db9908"
+        },
+        {
+          "key": "NpcRevilKostFollowingTheCurseLifetime",
+          "title": "Cancel npc_revil_kost_following_the_curse callbacks after source AI retirement",
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "audit": "docs\\audits\\npc-revil-kost-following-the-curse-ai-lifetime-2026-11-11.json",
+          "callback_count": 19,
+          "commit": "daebb475f733469b8db3cbd0e94d348f622782f9"
+        },
+        {
+          "key": "NpcHearthstationLifetime",
+          "title": "Cancel npc_hearthstation callbacks after source AI retirement",
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "audit": "docs\\audits\\npc-hearthstation-ai-lifetime-2026-11-11.json",
+          "callback_count": 2,
+          "commit": "555ade67350fa3ddef7f78fb3b3dc95de7e26145"
+        },
+        {
+          "key": "BossBrackensporeLifetime",
+          "title": "Cancel boss_brackenspore callbacks after source AI retirement",
+          "path": "src/server/scripts/Draenor/Highmaul/boss_brackenspore.cpp",
+          "audit": "docs\\audits\\boss-brackenspore-ai-lifetime-2026-11-11.json",
+          "callback_count": 3,
+          "commit": "d27eeded77a1b46b5fc1b2f12c889c80ae737365"
+        },
+        {
+          "key": "NpcHighmaulFirePillarLifetime",
+          "title": "Cancel npc_highmaul_fire_pillar callbacks after source AI retirement",
+          "path": "src/server/scripts/Draenor/Highmaul/boss_kargath_bladefist.cpp",
+          "audit": "docs\\audits\\npc-highmaul-fire-pillar-ai-lifetime-2026-11-11.json",
+          "callback_count": 3,
+          "commit": "319b37789d4bc37a2d44b8dad09a6473dd3f50ec"
+        },
+        {
+          "key": "BossTectusLifetime",
+          "title": "Cancel boss_tectus callbacks after source AI retirement",
+          "path": "src/server/scripts/Draenor/Highmaul/boss_tectus.cpp",
+          "audit": "docs\\audits\\boss-tectus-ai-lifetime-2026-11-11.json",
+          "callback_count": 6,
+          "commit": "f49e04a7ef425c93a1e38e5a6b0eb71ffc0a3af4"
+        },
+        {
+          "key": "NpcAtherisVoguesongLifetime",
+          "title": "Cancel npc_atheris_voguesong callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/MicroHolidays/TrialofStyle.cpp",
+          "audit": "docs\\audits\\npc-atheris-voguesong-ai-lifetime-2026-11-11.json",
+          "callback_count": 11,
+          "commit": "ecab8326dd2fbf6dd132025375cfc8a5560535d6"
+        },
+        {
+          "key": "NpcNhNaturalistTelarnLifetime",
+          "title": "Cancel npc_nh_naturalist_telarn callbacks after source AI retirement",
+          "path": "src/server/scripts/Legion/TheNighthold/boss_high_botanist_telarn.cpp",
+          "audit": "docs\\audits\\npc-nh-naturalist-telarn-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "ce1dc2836d0f8140f9c8b5277adbf845990c9ca0"
+        },
+        {
+          "key": "BossLorewalkerStonestepLifetime",
+          "title": "Cancel boss_lorewalker_stonestep callbacks after source AI retirement",
+          "path": "src/server/scripts/Pandaria/TempleJadeSerpent/boss_lorewalker_stonestep.cpp",
+          "audit": "docs\\audits\\boss-lorewalker-stonestep-ai-lifetime-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "378c0d2ccb697248b16363a43da75c64f302f506"
+        },
+        {
+          "key": "NpcInvasionStormheimAleksisLifetime",
+          "title": "Cancel npc_invasion_stormheim_aleksis callbacks after source AI retirement",
+          "path": "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp",
+          "audit": "docs\\audits\\npc-invasion-stormheim-aleksis-ai-lifetime-2026-11-11.json",
+          "callback_count": 2,
+          "commit": "17c6e677e6307b6adb3bf24b1ad83b65f7f7e0b9"
+        }
+      ],
+      "canonical": {
+        "bnetserver.exe": "8d769a837693c3599d4e399542fc0dcd147f5164ff78296413239b139a15fcb4",
+        "bnetserver.map": "bdc7e33218d1f0a8f2e4df7fb222379466dbea5f9b658710ed4671acaffc69d2",
+        "worldserver.exe": "3585e914ccf65077f935030e6eba44edff7c6f56be46e8eb1b83460f900f1eeb",
+        "worldserver.map": "0dfb3fbed2e75f35b51b10a9405de3f59589a084ceb8b57c6f01f320da657fd1"
+      },
+      "cleanup": {
+        "archive": "build-extractors\\bin\\Release\\fixed\\fortyfifth-ten-repairs-2026-11-11",
+        "manifest_sha256": "ccc5d31558fef6056aefba5098d68198f28ff28f203d9706b3a94bd885f642b3",
+        "archived_files": 539,
+        "removed_files": 175,
+        "logical_removed_bytes": 815188955,
+        "deletion_manifest": ".codex\\fortyfifth-ten-fixes-2026-11-11\\cleanup-deleted.json",
+        "deletion_manifest_sha256": "7b0556247251f014982c7da734831f4526b7cde16ab4cd379250f891abca8a6e",
+        "removed_superseded_recoveries": [
+          ".codex\\release-before-fortyfourth-ten-fixes-2026-11-11"
+        ],
+        "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and installed/live-verified MariaDB recovery evidence.",
+        "closeout_manifest_sha256": "266751c85203c41039a45b0511e092b2b2eba6a1ca6dcfb4d3f3ce2da8085785",
+        "resolution_sha256": "03d6f58a011035d1a841c30d363cf045fd55de03320948fee8af0b750fd85758",
         "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
       }
     }
