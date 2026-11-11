@@ -5543,17 +5543,21 @@ public:
         {
             if (summon->GetEntry() == 105733)
             {
-                me->AddDelayedEvent(1000, [this] {
+                me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(3);
                     me->SetStandState(UNIT_STAND_STATE_STAND);
                 });
-                me->AddDelayedEvent(2000, [this] {
+                me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     me->GetMotionMaster()->MovePoint(0, wpoints[0]);
                 });
-                me->AddDelayedEvent(7000, [this] {
+                me->AddDelayedEvent(7000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(4);
                 });
-                me->AddDelayedEvent(9000, [this] {
+                me->AddDelayedEvent(9000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     me->GetMotionMaster()->MovePoint(1, wpoints[1]);
                 });
             }
@@ -5581,12 +5585,14 @@ public:
                 switch (id)
                 {
                 case 1:
-                    me->AddDelayedEvent(50, [this] {
+                    me->AddDelayedEvent(50, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(2, wpoints[2]);
                     });
                     break;
                 case 2:
-                    me->AddDelayedEvent(50, [this] {
+                    me->AddDelayedEvent(50, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(3, wpoints[3]);
                     });
                     break;
@@ -5600,7 +5606,8 @@ public:
                                 if (Creature* boros = me->FindNearestCreature(105602, 8.0f, true))
                                 {
                                     boros->AI()->Talk(2);
-                                    me->AddDelayedEvent(5500, [this, player] {
+                                    me->AddDelayedEvent(5500, [this, player, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                                        if (aiLifetimeGuard.expired()) return;
                                         Complete();
                                     });
                                 }
@@ -5615,6 +5622,9 @@ public:
             }
         }
 
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const
