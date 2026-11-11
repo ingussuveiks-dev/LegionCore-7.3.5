@@ -218,17 +218,16 @@ class npc_gizmo : public CreatureScript
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (who->HasAura(SPELL_NEAR_DEATH))
+            Player* player = who ? who->ToPlayer() : nullptr;
+            if (player && player->HasAura(SPELL_NEAR_DEATH))
             {
-                // always player. don't warry
                 // waiting then plr finish movie.
-                if (who->ToPlayer()->isWatchingMovie())
+                if (player->isWatchingMovie())
                     return;
 
                 GuidSet::iterator itr = m_player_for_event.find(who->GetGUID());
                 if (itr == m_player_for_event.end())
                 {
-                    m_player_for_event.insert(who->GetGUID());
                     //me->CastSpell(537.135f, 3272.25f, 0.18f, SPELL_SUMMON_DOC_ZAPNOZZLE, true);
                     Position pos;
                     pos.Relocate(537.135f, 3272.25f, 0.18f, 2.46f);
@@ -237,6 +236,7 @@ class npc_gizmo : public CreatureScript
                         summon->AddPlayerInPersonnalVisibilityList(who->GetGUID());
                         summon->AI()->SetGUID(who->GetGUID(), 0);
                         summon->AI()->SetGUID(me->GetGUID(), 1);
+                        m_player_for_event.insert(who->GetGUID());
                     }
                 }
             }
