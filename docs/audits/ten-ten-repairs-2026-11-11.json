@@ -1,9 +1,9 @@
 {
   "status": "IN_PROGRESS",
   "authorized_total": 100,
-  "completed": 20,
-  "remaining": 80,
-  "completed_batches": 2,
+  "completed": 30,
+  "remaining": 70,
+  "completed_batches": 3,
   "support_commit": "9c811f3728a29d3fad974a65692f830a8d3e3670",
   "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
   "batches": [
@@ -138,16 +138,82 @@
         "setup_failure_resolution": "Native fixture initially re-admitted actors without SetMap after actualMap::RemoveFromMap reset,andinitialbootstrap omittedLoadSpellBonusess before realperiodicdamageaura creation. Bothfixture prerequisites corrected. Captured c0000005SpellMgr::GetSpellBonusData/CalculateAmount stack retained with finalnativepassingregression;not a production repair orordinarypass. No crashreports emitted into canonical/ownedCrashes."
       },
       "support_commit": "f5eb313fa872fc7f16cd80cc8e4c4e2df5345545"
+    },
+    {
+      "batch": 3,
+      "historical_group": 54,
+      "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+      "commits": [
+        {
+          "key": "RavagerT20EmptyTargets",
+          "commit": "0a13e9587ef5b53ded9e33fd12cba0879956d393",
+          "audit": "docs/audits/ten-ten-2026-11-11/RavagerT20EmptyTargets.json"
+        },
+        {
+          "key": "AntoranWitheringFireMissingShips",
+          "commit": "003544e0bdc899526f106b7290d36e1654574005",
+          "audit": "docs/audits/ten-ten-2026-11-11/AntoranWitheringFireMissingShips.json"
+        },
+        {
+          "key": "ArnathShieldEmptyTargets",
+          "commit": "5889c1d3fff0af02c2642b9d7ab30991e88ee8f8",
+          "audit": "docs/audits/ten-ten-2026-11-11/ArnathShieldEmptyTargets.json"
+        },
+        {
+          "key": "MalygosMissingSparkPortals",
+          "commit": "82be46cb56233b01cecebd021fb3b2e48869ff9c",
+          "audit": "docs/audits/ten-ten-2026-11-11/MalygosMissingSparkPortals.json"
+        },
+        {
+          "key": "XinMissingAnimatedStaffs",
+          "commit": "a242e480ef20686a8e05fd3c96b50b1cc59ff9ab",
+          "audit": "docs/audits/ten-ten-2026-11-11/XinMissingAnimatedStaffs.json"
+        },
+        {
+          "key": "ZulFarrakWaveSummonFailure",
+          "commit": "e4dcacd0109de3ee6ea88939a368607b1e521399",
+          "audit": "docs/audits/ten-ten-2026-11-11/ZulFarrakWaveSummonFailure.json"
+        },
+        {
+          "key": "WindStoneSummonFailure",
+          "commit": "e44534687bc41c1d652b68444d05a6e26ae19476",
+          "audit": "docs/audits/ten-ten-2026-11-11/WindStoneSummonFailure.json"
+        },
+        {
+          "key": "EleretheIntroSummonFailure",
+          "commit": "f407af4e4abd60ecad3509ecbed702e93d921805",
+          "audit": "docs/audits/ten-ten-2026-11-11/EleretheIntroSummonFailure.json"
+        },
+        {
+          "key": "FrostwornCloneSummonFailure",
+          "commit": "f6cb8d7ff4a08060484fab958fbd4561cd9550df",
+          "audit": "docs/audits/ten-ten-2026-11-11/FrostwornCloneSummonFailure.json"
+        },
+        {
+          "key": "EonarShatterCasterLoss",
+          "commit": "23b0457ae1c8dcebeb8e8d8bb4bd7669d0962153",
+          "audit": "docs/audits/ten-ten-2026-11-11/EonarShatterCasterLoss.json"
+        }
+      ],
+      "checks": {
+        "asan": "Ten complete production method scopes underASAN+checked STL iterators. Empty/nonempty lists,missingvisualships with all16realmissiles preserved,missingoptionalactors,individual/allfailedsummons,continuedlaterclones/waves,all3WindStoneofferingtiers withfailure retention/successonce,all4Eonarcrystal childIDs andindependentcleanup includingcasterlostduringAIaction.",
+        "baseline": "All10pinned64c2counterfactuals fail repaired expectations or expected ASAN/STL empty-list faults;notordinarysuccessfulgameplay.",
+        "native": "Exactmatching26972runtime/DBbindingsforall10scripts,including3instance maps,actualcreature/GOregistrations andselectedspells. ActualEonar250081AuraScriptclass/periodicdispatcher/nativeforeigncasterdisappearance retainsindependentcurrentcrystalAIactionandoriginal249016childattribution;childcastendpoint observed. Allfirst20nativescopesretained. Spatial/summon/clock/AIcleanupendpointsarecontrolledfixtures,notfullclienttraversal.",
+        "linked": "Same05793eRelease:actualemptylistgatesinRavager/Arnath/Xin/inlinedMalygos,guardedvisualshipfront/back,actualsummonresultgatesandsharedWindStoneconsumptionafterboolsuccess,EonarindependentAI/castergates. First20linkedchecksretained.",
+        "retained": "Independentexact65fileunsigned64healingandprevious50sourceamendmentspassthroughnew30normalization;canonicalScepterVerifyReleaseBinarypassed.",
+        "runtime": "Task-ownedcanonicalfreshready,gracefulshutdown0,exit0/gone,emptystderr;nonewcrash,DBErrorsorunexplainedserverwarnings/errors/assertions. Nouserprocessstopped."
+      },
+      "support_commit": "b52cb80017c459f8e3591368b0560f5344b2a456"
     }
   ],
   "canonical": {
-    "worldserver.exe": "b6bf89f3d39a9c12d48e5199b3a11329aa5226e89b0a764be29102d9962f19a6",
-    "worldserver.map": "e339de100a73a967f694e38829c49b5b3d5ec55b40d3d02c6daca9c1b4f20809",
-    "bnetserver.exe": "4b98fbac0a47f36a9fc4f6a7614a262daca33d150f6f35b598ba6b5d2537d523",
-    "bnetserver.map": "c5e83d039cbf07139b9ad1a23110be478dfdb45cfb326666fe71b11e2a535863"
+    "worldserver.exe": "05793ea5f39f0feb1e86430c66ea1cb65a950c77b0d6b30ac934eb72b1bb17f0",
+    "worldserver.map": "e70c1f07f2438225f5e1e5f1f3bfad28f92e0740870c9f56ffa63b30dd9ae742",
+    "bnetserver.exe": "3b42bbbfdf11ffe33b3c83bb3e04e95954408684f81954e93196bddac18869d4",
+    "bnetserver.map": "49a6d29a1ef8fb3efadf1a61df29b929886c46704fe5e95916644344073a26ab"
   },
   "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
-  "pending": "Continue batches3..10 to reach100genuine repairs;actualclient/fullchainsandLady/LINK2/Slaghammer/handshake remainOPEN.",
+  "pending": "Continue batches4..10 to reach100genuine repairs;actualclient/fullchainsandLady/LINK2/Slaghammer/handshake remainOPEN.",
   "cleanup": {
     "status": "COMPLETE_BATCH01",
     "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch01",
@@ -167,6 +233,17 @@
     "logical_removed_bytes": 1089534679,
     "deletion_manifest": ".codex/ten-ten-2026-11-11/batch02-deletions.json",
     "deletion_manifest_sha256": "a38a4630ad2574998375f6fab21ac269d846967de7fabe587711fd59193fe621",
+    "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+  },
+  "cleanup_batch03": {
+    "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+    "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch03",
+    "manifest_sha256": "9721396168a5e2414c1fe8a2abefbfb507f2628e1439fb90206fc39fa376d660",
+    "archived_files": 746,
+    "removed_files": 21,
+    "logical_removed_bytes": 592173646,
+    "deletion_manifest": ".codex/ten-ten-2026-11-11/batch03-deletions.json",
+    "deletion_manifest_sha256": "3360e8e4d3ff7f7351d5e4c26dde643f2ec4932c0726942f6a6f7fa012c21ef6",
     "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
   }
 }
