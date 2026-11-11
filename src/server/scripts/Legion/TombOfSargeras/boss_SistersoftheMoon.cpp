@@ -641,7 +641,7 @@ struct npc_sister_lunaspyre : ScriptedAI
         switch (spell->Id)
         {
             case SPELL_INCORPOREAL_TELEPORT:
-                me->AddDelayedCombat(1000, [=] () -> void { me->SetFacingTo(centrPos.GetAngle(me) - M_PI); });
+                me->AddDelayedCombat(1000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; me->SetFacingTo(centrPos.GetAngle(me) - M_PI); });
                 break;
         }
     }
@@ -728,6 +728,9 @@ struct npc_sister_lunaspyre : ScriptedAI
         if (phase == 3)
             DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //118374
