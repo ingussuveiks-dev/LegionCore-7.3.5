@@ -311,8 +311,9 @@ public:
             {
                 nightbane->AI()->SetFlyMode(true);
                 nightbane->AI()->Talk(0);
-                me->AddDelayedEvent(10000, [this] () -> void
+                me->AddDelayedEvent(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(1);
                 });
                 
@@ -321,8 +322,9 @@ public:
                     nightbane->AI()->Talk(1);
                 });
                 
-                me->AddDelayedEvent(33000, [this] () -> void
+                me->AddDelayedEvent(33000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(2);
                 });
                 
@@ -331,8 +333,9 @@ public:
                     nightbane->AI()->Talk(2);
                 });
                 
-                me->AddDelayedEvent(59000, [this] () -> void
+                me->AddDelayedEvent(59000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(3);
                 });
                 
@@ -341,15 +344,17 @@ public:
                     nightbane->AI()->Talk(3);
                 });
                 
-                me->AddDelayedEvent(75000, [this, nightbaneGuid = nightbane->GetGUID()] () -> void
+                me->AddDelayedEvent(75000, [this, nightbaneGuid = nightbane->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Creature* nightbane = ObjectAccessor::GetCreature(*me, nightbaneGuid);
                     if (!nightbane)
                         return;
                     me->CastSpell(nightbane, 30971);
                     nightbane->CastSpell(nightbane, 30969);
-                    me->AddDelayedEvent(1000, [this, nightbaneGuid] () -> void
+                    me->AddDelayedEvent(1000, [this, nightbaneGuid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         Creature* nightbane = ObjectAccessor::GetCreature(*me, nightbaneGuid);
                         if (!nightbane)
                             return;
@@ -360,14 +365,16 @@ public:
                     });
                 });
                 
-                me->AddDelayedEvent(79000, [this] () -> void
+                me->AddDelayedEvent(79000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->CastSpell(me, 30972);
                     Talk(4);
                 });
                 
-                me->AddDelayedEvent(81000, [this, nightbaneGuid = nightbane->GetGUID()] () -> void
+                me->AddDelayedEvent(81000, [this, nightbaneGuid = nightbane->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->RemoveAura(30972);
                     if (Creature* nightbane = ObjectAccessor::GetCreature(*me, nightbaneGuid))
                     {
@@ -375,8 +382,9 @@ public:
                         nightbane->AI()->Talk(4);
                         nightbane->GetMotionMaster()->MovePoint(0, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
                     }
-                    me->AddDelayedEvent(4000, [this] () -> void
+                    me->AddDelayedEvent(4000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->SetWalk(true);
                         me->GetMotionMaster()->MovePoint(0, -11115.24f, -1885.48f, 91.47f); 
                     });
@@ -401,6 +409,9 @@ public:
                 });
             }
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
