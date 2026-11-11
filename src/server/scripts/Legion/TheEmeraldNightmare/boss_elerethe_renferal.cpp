@@ -179,7 +179,7 @@ struct boss_elerethe_renferal : public BossAI
         for (uint8 i = 0; i < 7; ++i)
         {
             auto shadows = me->SummonCreature(NPC_TWISTING_SHADOWS, eventTwistBridgePos[i]);
-            if (i == 0)
+            if (shadows && i == 0)
                 shadows->GetMotionMaster()->MovePath(10635000, true);
         }
         if (auto fakeBoss = me->SummonCreature(113609, me->GetPosition()))
