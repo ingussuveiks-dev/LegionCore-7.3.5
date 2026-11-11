@@ -274,8 +274,9 @@ public:
             me->SetReactState(REACT_PASSIVE);
             if (morozec && me->GetAnyOwner())
                 morozec->AI()->Talk(0, me->GetAnyOwner()->GetGUID());
-            me->AddDelayedEvent(6000, [this, morozecGuid = morozec ? morozec->GetGUID() : ObjectGuid::Empty, generation = introGeneration]() -> void
+            me->AddDelayedEvent(6000, [this, morozecGuid = morozec ? morozec->GetGUID() : ObjectGuid::Empty, generation = introGeneration, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (generation != introGeneration || !me->IsAlive())
                     return;
                 if (Creature* morozec = ObjectAccessor::GetCreature(*me, morozecGuid))
@@ -330,13 +331,15 @@ public:
                         Position pos;
                         me->GetNearPoint2D(pos, 20.0f, frand(float(- M_PI / 3), float(M_PI / 3)));
                         me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_JUMP_GRIZZLY);
-                        me->AddDelayedEvent(2200, [this]() -> void
+                        me->AddDelayedEvent(2200, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             Position pos;
                             me->GetNearPoint2D(pos, 20.0f, frand(float(- M_PI / 3), float(M_PI / 3)));
                             me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_JUMP_GRIZZLY);
-                            me->AddDelayedEvent(2200, [this]() -> void
+                            me->AddDelayedEvent(2200, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                             {
+                                if (aiLifetimeGuard.expired()) return;
                                 Position pos;
                                 me->GetNearPoint2D(pos, 20.0f, frand(float(- M_PI / 3), float(M_PI / 3)));
                                 me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_JUMP_GRIZZLY);
@@ -350,6 +353,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
