@@ -4409,7 +4409,7 @@ class spell_gen_absorb_if_health : public SpellScriptLoader
 
             void Absorb(AuraEffect* /*aurEff*/, DamageInfo & dmgInfo, float & absorbAmount)
             {
-                Unit* target = GetCaster();
+                Unit* target = GetTarget();
 
                 if (dmgInfo.GetDamage() < target->GetHealth())
                     return;
