@@ -6,9 +6,9 @@
     "audit": "docs\\audits\\five-ten-repairs-2026-11-11.json",
     "latest_batch_audit": "docs\\audits\\fortyfirst-ten-repairs-2026-11-11.json",
     "last_fix_commit": "41c2aa7acb516ab7ea218925c5cfa948eee6f1e6",
-    "MariaDB": "USER_DEFERRED_NO_SERVICE_STOP_OR_DLL_REPLACEMENT",
+    "MariaDB": "INSTALLED_VERIFIED_ISOLATED_USER_WAMP_START_PENDING;see docs\\audits\\mariadb-dll-promotion-2026-11-11.json",
     "pending": [
-      "MariaDB server.dll replacement explicitly deferred by the user;service and candidate untouched.",
+      "User may start Wampserver. Verify fresh wampmariadb64 startup,live unsigned-CAST regression and canonical game startup before closing production diagnostic evidence.",
       "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
       "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
       "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
@@ -9770,5 +9770,16 @@
     "archive": "docs/audits/fuzan-belphiar-admission-archive-2026-11-01.json",
     "audit": "docs/audits/fuzan-belphiar-admission-2026-11-01.json",
     "status": "Actual Belphiar109397/373405 admission and raw/final damage gate until native1137/2. Final96 native/live including player/pet/Guardian, real3 rescue deaths AND Ox Kick door both orders, scaled one-hit, group recipient, AI recreation/suspended fallback and six native maiden waypoint/text/49356/follow continuations; SQL TEMP9/28refusals/live equality, retained18intro/46door/25ASANdefense, actual canonical11boss/20intro/8door/base-instance/damage clamp/retry PE/Scepter pass. World05 RELEASED55acd243, own27688 ready+graceful0/gone, no new diagnostics. Full client/42765/all36, legitimate early guard access/party rescue counts/later King path/missing actor recovery/mixed LINK2 remain OPEN. No character reset."
+  },
+  "latest_mariadb_dll_promotion_2026_11_11": {
+    "status": "INSTALLED_VERIFIED_ISOLATED_USER_WAMP_START_PENDING",
+    "audit": "docs\\audits\\mariadb-dll-promotion-2026-11-11.json",
+    "sha256": "4945c988f7356eadb38844e915eb5a09778be06cb03e98c2f19ee3fa9de0752e",
+    "service": "wampmariadb64 STOPPED;user may start Wampserver",
+    "pending": [
+      "User may start Wampserver. Verify fresh wampmariadb64 startup,live unsigned-CAST regression and canonical game startup before closing production diagnostic evidence.",
+      "Original82+94 raw CAST records remain outside fixed until actual live verification. Mixed DBErrors stays untouched.",
+      "Living Lady/LINK2/Slaghammer historical finding,TimeLoop healing,heroic Mend,handshake and full client chains remain separate OPEN work."
+    ]
   }
 }

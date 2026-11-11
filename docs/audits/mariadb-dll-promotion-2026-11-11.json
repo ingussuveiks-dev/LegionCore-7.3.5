@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-11",
+  "status": "INSTALLED_VERIFIED_ISOLATED_USER_WAMP_START_PENDING",
+  "authorization": "User confirmed Wampserver stopped and explicitly requested completion of the DLL installation. Service confirmed Stopped with no SQL/game process before replacement. No user process stopped or service started.",
+  "source_fix_commit": "5cc72f2301eaa97b5a63c5b274c0f54c9e416c27",
+  "previous_project_head": "afca5ebcc058b381979131dd606899c6937e4afc",
+  "installed": {
+    "path": "C:\\wamp64\\bin\\mariadb\\mariadb11.4.9\\bin\\server.dll",
+    "sha256": "4945c988f7356eadb38844e915eb5a09778be06cb03e98c2f19ee3fa9de0752e",
+    "bytes": 20467712,
+    "unchanged_stock_wrapper_sha256": "e43122a9efcd1d17ca640e42db4db7c1b62d3535fa7969b34aad59982da4e776",
+    "rollback": ".codex\\mariadb-cast-fix-2026-11-10\\installed-before",
+    "both_original_rollback_hashes": "7dfbf31dca61abf7da544b10dd493ce392628729ea6c3ecfac1f3e0fc06f5336",
+    "replacement": "Verified adjacent staging and atomic File.Replace. Only server.dll replaced;original wrapper,configuration,plugins and production datadir retained."
+  },
+  "checks": {
+    "loaded_module": {
+      "Module": "C:\\wamp64\\bin\\mariadb\\mariadb11.4.9\\bin\\server.dll",
+      "IsolatedDataDirectory": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\mariadb-cast-fix-2026-11-10/runtime/data",
+      "SHA256": "4945C988F7356EADB38844E915EB5A09778BE06CB03E98C2F19EE3FA9DE0752E",
+      "Port": 13316,
+      "PID": 15472
+    },
+    "SQL": "Actual installed stock mariadbd.exe loaded the installed server.dll at its real path.14 numeric boundaries,HEX/comparison/string and negative controls,server-prepared text,TEMP CTAS bigint storage,and real LegionCore Field64/native MySQL binary prepared unsigned64 metadata/value4294967296 all pass.",
+    "isolation": "Existing empty task-owned datadir only;loopback13316 and CodexCast20261110 pipe. No production database or character/account queries. Task-owned PID15472 reached fresh ready,SQL SHUTDOWN,exit0,gone;stdout/stderr captured,stderr empty. Wamp MariaDB remains Stopped.",
+    "diagnostics": "Canonical and private crash/log before/after evidence,exit/output,recursive SQL dumps and newly appended errors/warnings/assertions checked:no new unexplained diagnostic. Mixed7111byteDBErrors and protected Slaghammer cache unchanged. Canonical world/bnet EXE/MAP still match the completed50-repair batch.",
+    "scope": "Installed DLL regression verified against an isolated database. Wamp service startup with the real project data and canonical game-server startup after this DLL change remain pending the user restart. No claim of whole workload/client verification."
+  },
+  "archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\mariadb-dll-promotion-2026-11-11",
+    "manifest_sha256": "9f4d5db4da937dd0df27abdf5baec45acafdf1c71a8581e4505535dfaa088f17",
+    "files": 45,
+    "verified": "All copied evidence hashes match original bytes. Only completed installation/isolated-regression evidence archived here;earlier OPEN production counterfactual evidence remains outside fixed."
+  },
+  "retained": "Original DLL rollback pair,candidate DLL/PDB and pinned source/build provenance,empty isolated recovery runtime and native regression sources retained until real Wamp/project startup verification. No existing test binaries/data/build trees removed in this installation-only task.",
+  "pending": [
+    "User may start Wampserver. Verify fresh wampmariadb64 startup,live unsigned-CAST regression and canonical game startup before closing production diagnostic evidence.",
+    "Original82+94 raw CAST records remain outside fixed until actual live verification. Mixed DBErrors stays untouched.",
+    "Living Lady/LINK2/Slaghammer historical finding,TimeLoop healing,heroic Mend,handshake and full client chains remain separate OPEN work."
+  ]
+}

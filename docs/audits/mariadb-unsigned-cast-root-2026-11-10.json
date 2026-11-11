@@ -1,6 +1,6 @@
 {
   "date": "2026-11-10",
-  "status": "STAGED_ROOT_REPAIR_USER_SERVICE_STOP_REQUIRED",
+  "status": "INSTALLED_VERIFIED_ISOLATED_USER_WAMP_START_PENDING",
   "repository_head": "196bc6867acca4987c8a32202c771617ac25cd41",
   "cause": "MariaDB11.4.9 Item_func_unsigned::type_handler treats any result with max_char_length<=10 as ulong. MY_INT32_NUM_DECIMAL_DIGITS is11. Ten decimal digits include values above UINT32_MAX. Numeric evaluation stays64bit,while the unsigned32 result metadata/serialization narrows bare and binary prepared results;4294967296 becomes0. This is a server defect,not LegionCore Field parsing.",
   "fix": "One-character boundary change selects unsigned32 only for fewer than10 digits;all ten-digit results use unsigned64. Existing9-digit-and-smaller behavior and20-digit string/negative conversion retained. No query workaround or check/log removal.",
@@ -25,7 +25,7 @@
   },
   "source_patch": "tools/patches/mariadb-11.4.9-unsigned-cast-result.patch",
   "candidate": {
-    "status": "TESTED_STAGED_NOT_INSTALLED",
+    "status": "INSTALLED_ISOLATED_REGRESSION_PASSED",
     "installed_target": "C:/wamp64/bin/mariadb/mariadb11.4.9/bin/server.dll",
     "installed_before_sha256": "7dfbf31dca61abf7da544b10dd493ce392628729ea6c3ecfac1f3e0fc06f5336",
     "candidate_sha256": "4945c988f7356eadb38844e915eb5a09778be06cb03e98c2f19ee3fa9de0752e",
@@ -45,7 +45,7 @@
       "wolfssl_commit": "b077c81eb635392e694ccedbab8b644297ec0285",
       "server_commit": "aa6a2e6bf05d43c3bb44db50566937a5f97a6580"
     },
-    "deployment": "Requires confirmed stop of user-owned wampmariadb64;keep original exe/config/data and hash-verified DLL rollback. Only server.dll needs replacement;stock wrapper+new DLL passed."
+    "deployment": "Installed2026-11-11 after explicit user stop confirmation;original DLL rollback hash verified. Wamp real-data startup pending."
   },
   "validation": {
     "counterfactual": "Installed11.4.9 and its exact copied stock exe/DLL on the isolated empty datadir both reproduce bare/server-prepared0 versus true numeric equality/HEX100000000. Actual LegionCore Field64 and native MySQL5.7 binary prepared result reproduce unsigned32 metadata/value0. These are explicitly expected-broken controls.",
@@ -53,12 +53,13 @@
     "drop_in": "Exact stock executable plus candidate server.dll also passes the full focused matrix/core Field64/binary prepared tests. All24048 original DLL exports retained;5additional compiler-emitted lexical helper exports. All77 active plugin/engine rows equal stock;WolfSSL5.8.0,MyISAM default,UTF8MB4/unicode_ci,SQL mode,page size,case folding and performance-schema setting match. Source-distribution comment and private plugin path differ. These checks do not certify every project workload or replace post-promotion canonical startup.",
     "isolation": "Only empty task-owned datadir,loopback13316 and named pipeCodexCast20261110. All launched SQL PIDs recorded;stock6640,candidate29212,hybrid4024 and earlier declared probes reach fresh ready and SQL SHUTDOWN/exit0/gone. User MariaDB28572 and MySQL14060 services never stopped. Canonical world/bnet remain the separately tested Tsulong Release.",
     "diagnostics": "Before/after canonical+own crash/log snapshots for configure/build/init/version/SQL/native/runtime/export checks;extra recursive SQL dump checks. No new crashes or appended DBErrors/server warnings/errors/assertions. Expected CMake platform-capability probes distinguished from configure errors. Initial systemSSL search lacked correct CMakeLIB_EAY_RELEASE/SSL_EAY_RELEASE paths;fixed then final bundledWolfSSL build passes. Both final source builds have0MSVC warning lines. Native fixture initially omitted mysql.h,paired corrected build. TEMP CTAS initially ran inREADONLY and was correctly refused1792;fixture now explicitly entersREADWRITE solely for its named TEMP table and restoresREADONLY. Parser initially treated metadata column value as uppercase VALUE;case-sensitive tags corrected. Originals retained outside fixed.",
-    "limits": "Not installed. Production Wamp service must be stopped by user/explicitly authorized before DLL replacement;existing data/config/wrappers are retained. Original82+94 unsigned-CAST records stay hash-verified outside fixed until actual promotion and live regression. A client parser fixture exposed a passwordless-TLS client warning;its context remains separately outside fixed and no authentication or SSL checks were disabled by this repair."
+    "limits": "Installed DLL passes the actual-stock-wrapper isolated text/native binary protocol regression. Wamp remains stopped for user restart;real production datadir/project startup not yet exercised. Original raw production diagnostics remain OPEN outside fixed. The earlier client parser fixture's passwordless-TLS warning and its context remain separately outside fixed;no logs,authentication or SSL checks disabled."
   },
   "retention": {
     "workspace": ".codex\\mariadb-cast-fix-2026-11-10",
     "candidate_manifest_sha256": "330bf764c71a1f5993f6b0d0f1ba556cd0945530473fd216d30c7f0c90b4990e",
-    "purpose": "Candidate DLL/symbols,original stock rollback pair,matching source archives/build provenance and all OPEN raw protocol evidence retained for pending deployment. Redundant OpenSSL/build outputs will be removed after promotion or explicit deferral;none is a running server."
+    "purpose": "Installed candidate DLL/symbols,verified original rollback,matching source archives/build provenance and OPEN raw protocol evidence retained until actual Wamp/project startup validation and recovery review. Superseded OpenSSL build was already removed in the2026-11-10 cleanup audit;final bundledWolfSSL build and isolated runtime remain for that outstanding check. No task SQL/game server remains running."
   },
-  "other_open": "Authentic living Sharasdal finale,LINK2/Slaghammer,intermittent client handshake,mixedDBErrors and all36 client chains remain separate. No guessed HP threshold/kill timer or broad client-verification claim."
+  "other_open": "Authentic living Sharasdal finale,LINK2/Slaghammer,intermittent client handshake,mixedDBErrors and all36 client chains remain separate. No guessed HP threshold/kill timer or broad client-verification claim.",
+  "latest_deployment_audit": "docs\\audits\\mariadb-dll-promotion-2026-11-11.json"
 }
