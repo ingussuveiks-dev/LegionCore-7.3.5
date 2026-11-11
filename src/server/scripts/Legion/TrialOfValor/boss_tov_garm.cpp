@@ -128,8 +128,9 @@ struct boss_garm : BossAI
         me->SetReactState(REACT_AGGRESSIVE);
         me->SetControlled(0, UNIT_STATE_ROOT);
         me->RemoveAllAuras();
-        me->AddDelayedEvent(2000, [=]() -> void
+        me->AddDelayedEvent(2000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             for (auto x = 0; x < std::extent<decltype(passengerData)>::value; x++)
             {
                 if (auto passenger = me->SummonCreature(passengerData[x][0], me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()))
@@ -210,7 +211,7 @@ struct boss_garm : BossAI
             countTarget = 0;
             ZoneTalk(SAY_RAID_CAST);
             me->RemoveAura(SpellHelyatosis);
-            me->AddDelayedEvent(1000, [=]() -> void { me->SetPower(POWER_ENERGY, 0); });
+            me->AddDelayedEvent(1000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetPower(POWER_ENERGY, 0); });
             DoCast(RandSpellGuardiansBreath[urand(0, 2)]);
             me->SetFacingTo(me->getVictim());
         }
@@ -238,8 +239,9 @@ struct boss_garm : BossAI
         {
             frothingRage = true;
             countTarget++;
-            me->AddDelayedEvent(500, [=]() -> void
+            me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (countTarget == 0)
                     return;
 
@@ -269,8 +271,9 @@ struct boss_garm : BossAI
         }
         case ACTION_3:
         {
-            me->AddDelayedEvent(700, [=]() -> void
+            me->AddDelayedEvent(700, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (!frothingRage)
                 {
                     uint32 targets = 0;
@@ -301,8 +304,9 @@ struct boss_garm : BossAI
         case SpellGuardiansBreath_1:
         case SpellGuardiansBreath_2:
         case SpellGuardiansBreath_3:
-            me->AddDelayedEvent(500, [=]() -> void
+            me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 DoCast(me, SpellFieryPhlegmAOE, true);
                 DoCast(me, SpellDarkDischargeAOE, true);
                 DoCast(me, SpellSaltySpittleAOE, true);
@@ -501,6 +505,9 @@ struct boss_garm : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //227512
