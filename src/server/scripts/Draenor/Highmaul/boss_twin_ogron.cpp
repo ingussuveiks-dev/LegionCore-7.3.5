@@ -182,24 +182,28 @@ struct boss_twin_ogron_pol : public BossAI
 
                 me->CastSpell(me, PulverizeAura, true);
 
-                AddDelayedEvent(2 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(2 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->CastSpell(me, PulverizeFirstAoE, false);
                 });
 
-                AddDelayedEvent(5 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(5 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->CastSpell(me, PulverizeSecondAoE, false);
                 });
 
-                AddDelayedEvent(9 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(9 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->SendPlaySpellVisualKit(PulverizeLast, 0, 0);
                     me->CastSpell(me, PulverizeThirdAoE, false);
                 });
 
-                AddDelayedEvent(15 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(15 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Position pos;
                     pos = me->GetRandomNearPosition(30.0f);
                     me->CastSpell(pos, PulverizeThirdAoEDmg, true);
@@ -302,7 +306,7 @@ struct boss_twin_ogron_pol : public BossAI
                 break;
             case MoveThird:
                 me->SetHomePosition(*me);
-                AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void { me->SetFacingTo(polMovePos[2].GetOrientation()); });
+                AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetFacingTo(polMovePos[2].GetOrientation()); });
                 break;
             case MoveJump:
                 me->SetHomePosition(*me);
@@ -336,8 +340,9 @@ struct boss_twin_ogron_pol : public BossAI
             case PulverizeSecondAoE:
             {
                 Position pos = *target;
-                AddDelayedEvent(3 * IN_MILLISECONDS, [this, pos]() -> void
+                AddDelayedEvent(3 * IN_MILLISECONDS, [this, pos, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->CastSpell(pos, PulverizeSecondAoEDmg, true);
                 });
 
@@ -392,6 +397,9 @@ struct boss_twin_ogron_pol : public BossAI
 
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Phemos - 78237

@@ -1,0 +1,86 @@
+{
+  "date": "2026-11-11",
+  "status": "DEPLOYED_AI_LIFETIME_REPAIR_AUTOMATED_CLIENT_PENDING",
+  "key": "BossTwinOgronPolLifetime",
+  "title": "Cancel boss_twin_ogron_pol callbacks after source AI retirement",
+  "paths": [
+    "src/server/scripts/Draenor/Highmaul/boss_twin_ogron.cpp"
+  ],
+  "classes": [
+    "boss_twin_ogron_pol"
+  ],
+  "binding": {
+    "ScriptName": "boss_twin_ogron_pol",
+    "actual_entries": [
+      78238
+    ]
+  },
+  "cause": "CreatureAI delegate queues are Unit-owned;AIM_Destroy/default/SmartAI/BossAI destructors do not cancel those Unit queues. Explicit or implicit raw this capture could enter the old actor body after original AI deletion,including replacement by Null/Possessed AI. Existing non-null me/alive/generation checks dereference this too late.",
+  "repair": "Capture a weak per-AI token at scheduling;first statement rejects expired original AI before any payload/member access. Token lifetime follows that exact AI,not current AI identity. Surviving suspended AI and corpse outro semantics remain admitted;normal original predicates/credit remain.",
+  "callback_count": 6,
+  "registrations": [
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": true,
+      "original_delay": "2 * IN_MILLISECONDS",
+      "original_payload_sha256": "1712e4f34ce6ab4b3f7ee0b4602d587bfc3272b5777f7fd63379469c03a66a46"
+    },
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": true,
+      "original_delay": "5 * IN_MILLISECONDS",
+      "original_payload_sha256": "c6e50b08913ffda204ab3653ef7a5aea0ca9257e07851d364a49be5cc839781a"
+    },
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": true,
+      "original_delay": "9 * IN_MILLISECONDS",
+      "original_payload_sha256": "d7e2a1177e4da6b128523255181af03f617ffe9a3a9fb29810ba5b5dc3675815"
+    },
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": true,
+      "original_delay": "15 * IN_MILLISECONDS",
+      "original_payload_sha256": "44d03693709ec5484e324073a62bd6fda3e8d5c7f80b195222e2fb2a139eecf4"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": true,
+      "original_delay": "1 * IN_MILLISECONDS",
+      "original_payload_sha256": "cfd0f8f9ca63d4a03688dac7739bde3234e9e20c02a010158aa9aa2a11c1059f"
+    },
+    {
+      "method": "SpellHitTarget",
+      "queue": "event",
+      "delegate": true,
+      "original_delay": "3 * IN_MILLISECONDS",
+      "original_payload_sha256": "4c66b6eb199b79d698d7672168e3b447658c751539f36c4739f6a751f57490db"
+    }
+  ],
+  "checks": {
+    "source": "Exact complete-file reversal to 308d97ee2d3a966936bf5c7621e0eee91b6516d7;only capture/first-statement weak expiry/private per-AI anchor added. Original gates,casts,IDs,delays,credit,Reset/death/cleanup and owner/group rules retained.",
+    "asan": "Every listed old callback admission projection intentionally produces heap-use-after-free/ABORTING after frame destruction;repaired projection passes live/retired/cancelled/same-address replacement. Expected counterfactuals paired,not ordinary successful runs.",
+    "native": "Actual Creature::AIM_Initialize/destruction and Unit event/combat queues:live,retired,cancelled,surviving inactive AI and corpse lifecycle admission;controlled123ms and observed payload. Exact original live creature ScriptName inventory checked. Bare controlled actors/no character writes;original encounter payload not executed by this projection.",
+    "release": "Original main libraries/staged final link inputs and source snapshots;complete prior Meljarak/Twin/native-health/Freya/counter/Tsulong/Rook/367 linked checks return,plus every new actual production weak gate before payload. Canonical EXE/MAP hashes match tested immutable outputs;Scepter passes.",
+    "runtime": "Owned worldserver PID=13584\nPASS owned PID=13584 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;stderr empty,configuration/cert/DLL protected hashes unchanged. No user/unknown process stopped or hidden task server left running. Ready banner still prior generated revision metadata;source/library/EXE identities establish actual implementation.",
+    "diagnostics": "Before/after canonical+own crashes/log lengths/timestamps,exit/stdout/stderr/appended DBErrors and server warnings/errors/assertions reviewed. Final checks no new/unexplained diagnostic. Compiler warnings all mapped to unchanged baseline expressions;Scepter generated signedness warning inherited. Expected ASAN controls archived only after repaired matching binary/native checks. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged;no log truncation."
+  },
+  "sources": "Matching local core Creature::AIM_Destroy,CreatureAI/SmartAI/BossAI destructors,CreatureAI::AddDelayedEvent/Combat delegates,Unit native queues and matching live ScriptName records. Local Trinity eaa32415b0f93f6d26294e1e9e4083be3dba0745 is a newer reference;no incompatible code/data copied.",
+  "batch": {
+    "number": 2,
+    "authorized_total": 50,
+    "audit": "docs/audits/fortythird-ten-repairs-2026-11-11.json",
+    "base": "308d97ee2d3a966936bf5c7621e0eee91b6516d7"
+  },
+  "pending": [
+    "MariaDB DLL is installed and live-verified;user MariaDB service remains running. FT minimum1 config warning absence awaits a future user restart;no service stop needed for these source fixes.",
+    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ]
+}
