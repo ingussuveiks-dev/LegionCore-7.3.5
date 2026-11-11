@@ -53,7 +53,7 @@ class instance_ruins_of_ahnqiraj : public InstanceMapScript
                 AllianceScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_ALLINCE);
                 HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);
                 CurrectAllianceScore = AllianceScore;
-                CurrectHordeScore = CurrectHordeScore;
+                CurrectHordeScore = HordeScore;
             }
 
             void OnCreatureCreate(Creature* creature) override
@@ -101,25 +101,23 @@ class instance_ruins_of_ahnqiraj : public InstanceMapScript
                 {
                     update_worldstate = 2000;
 
-                    if (sGameEventMgr->IsActiveEvent(78))
+                    if (sGameEventMgr->IsActiveEvent(78) || CurrectAllianceScore || CurrectHordeScore)
                     {
+                        AllianceScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_ALLINCE);
+                        HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);
+                        bool allianceChanged = AllianceScore != CurrectAllianceScore;
+                        bool hordeChanged = HordeScore != CurrectHordeScore;
+
                         instance->ApplyOnEveryPlayer([=](Player* player) -> void
                         {
-                            AllianceScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_ALLINCE);
-                            HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);
-
-                            if (AllianceScore > CurrectAllianceScore)
-                            {
-                                CurrectAllianceScore = AllianceScore;
+                            if (allianceChanged)
                                 player->SendUpdateWorldState(static_cast<WorldStates>(12953), AllianceScore);
-                            }
-
-                            if (HordeScore > CurrectHordeScore)
-                            {
-                                CurrectHordeScore = AllianceScore;
+                            if (hordeChanged)
                                 player->SendUpdateWorldState(static_cast<WorldStates>(12952), HordeScore);
-                            }
                         });
+
+                        CurrectAllianceScore = AllianceScore;
+                        CurrectHordeScore = HordeScore;
                     }
                 }
                 else
