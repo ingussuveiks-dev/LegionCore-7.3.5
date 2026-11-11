@@ -6735,8 +6735,9 @@ struct npc_hearthstation : public ScriptedAI
     {
         if (!owner)
             return;
-        me->AddDelayedEvent(100, [this, ownerGuid = owner->GetGUID()]() -> void
+        me->AddDelayedEvent(100, [this, ownerGuid = owner->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
             if (Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid))
                 DoCast(owner, 46598, true);
@@ -6779,8 +6780,9 @@ struct npc_hearthstation : public ScriptedAI
         {
             if (auto owner = me->GetAnyOwner())
             {
-                me->AddDelayedEvent(1500, [this, ownerGuid = owner->GetGUID()]() -> void
+                me->AddDelayedEvent(1500, [this, ownerGuid = owner->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid))
                     {
                         owner->RemoveAurasDueToSpell(246289);
@@ -6830,6 +6832,9 @@ struct npc_hearthstation : public ScriptedAI
                 despawn_timer -= diff;
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //40246
