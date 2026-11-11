@@ -190,7 +190,7 @@ class spell_dh_disable_absorb : public SpellScriptLoader
                     target->CastSpell(target, 209261, true);
                     target->CastSpell(target, 187827, true);
 
-                    uint32 health30 = target->CountPctFromMaxHealth(30);
+                    uint64 health30 = target->CountPctFromMaxHealth(30);
 
                     // hp > 10% - absorb hp till 10%
                     if (target->GetHealth() > health30)
