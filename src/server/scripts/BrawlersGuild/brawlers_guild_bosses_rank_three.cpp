@@ -228,8 +228,9 @@ public:
                         events.RescheduleEvent(EVENT_1, 6000);
                         break;
                     case EVENT_2:
-                        if (Creature* last_torch = ObjectAccessor::FindCreature(summons.back()))
-                            me->CastSpell(last_torch, SPELL_SHADOW_BLAST);
+                        if (!summons.empty())
+                            if (Creature* last_torch = ObjectAccessor::FindCreature(summons.back()))
+                                me->CastSpell(last_torch, SPELL_SHADOW_BLAST);
                         events.RescheduleEvent(EVENT_2, 6000);
                         break;
                 }
