@@ -272,7 +272,7 @@ class boss_blood_council_controller : public CreatureScript
                         // make sure looting is allowed
                         if (me->IsDamageEnoughForLootingAndReward())
                             prince->LowerPlayerDamageReq(prince->GetMaxHealth());
-                        killer->Kill(prince);
+                        (killer ? killer : me)->Kill(prince);
                     }
                 }
             }
