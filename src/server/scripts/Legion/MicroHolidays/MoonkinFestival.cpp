@@ -399,13 +399,16 @@ struct npc_clookle : ScriptedAI
         if (action == 0)
         {
             me->RemoveAura(244526);
-            me->AddDelayedEvent(3000, [=]() -> void {  DoCast(244526); });
+            me->AddDelayedEvent(3000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return;  DoCast(244526); });
 
             player->DestroyItemCount(150750, 1, true);
             player->CastSpell(player, 244157, false);
             player->CLOSE_GOSSIP_MENU();
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //122859,121946
