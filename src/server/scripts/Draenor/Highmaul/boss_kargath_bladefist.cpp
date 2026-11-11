@@ -2010,7 +2010,7 @@ struct npc_highmaul_iron_grunt : public ScriptedAI
     {
         me->SetReactState(REACT_PASSIVE);
 
-        AddDelayedEvent(3 * IN_MILLISECONDS, [this]() -> void { me->HandleEmoteCommand(crowdEmotes[urand(0, 7)]); });
+        AddDelayedEvent(3 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->HandleEmoteCommand(crowdEmotes[urand(0, 7)]); });
     }
 
     //void LastOperationCalled() override
@@ -2021,6 +2021,9 @@ struct npc_highmaul_iron_grunt : public ScriptedAI
     void UpdateAI(uint32 diff) override
     {
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Iron Grunt - 79068
