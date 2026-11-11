@@ -531,7 +531,7 @@ struct npc_devlynn_styx : public ScriptedAI
                 DoCast(SPELL_STAGE_DIVE);
                 events.RescheduleEvent(EVENT_WHOOOOOOAH, 13000);
                 Talk(SAY_DEVLYNN_STYX_SCREAM);
-                me->AddDelayedEvent(1000, [=]() -> void { DoCast(SPELL_IN_THE_CROWD); });
+                me->AddDelayedEvent(1000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; DoCast(SPELL_IN_THE_CROWD); });
                 break;
             }
             case EVENT_WHOOOOOOAH:
@@ -553,6 +553,9 @@ struct npc_devlynn_styx : public ScriptedAI
             }
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //245162
