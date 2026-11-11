@@ -10,7 +10,7 @@ def expanded(name):
  rows=ins(name);result=list(rows)
  for x in rows:
   if x.mnemonic not in ('jmp','call')or not x.op_str.startswith('0x'):continue
-  target=n['resolve'](int(x.op_str,16));matches=[s for s,a in n['symbols'].items()if a==target and s.startswith('??R<lambda')]
+  target=n['resolve'](int(x.op_str,16));matches=[s for s,a in n['symbols'].items()if (s.startswith('??R<lambda')or(s.startswith('??$invoke@')and'<lambda_'in s))and n['resolve'](a)==target]
   if matches:result+=ins(matches[0])
  return result
 def has_guard(rows,at):return any(x.mnemonic=='test'and x.op_str=='rax, rax' and rows[i+1].mnemonic in ('je','jne')for i,x in enumerate(rows)if at<i<min(at+5,len(rows)-1))

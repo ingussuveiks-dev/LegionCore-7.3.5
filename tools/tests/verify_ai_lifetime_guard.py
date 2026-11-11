@@ -50,16 +50,20 @@ def has_lifetime_gate(p,rows):
   # Loading a dangling pointer value is harmless;dereferencing it is not.
   # These explicit-this captures put this first;delegated lambda operators
   # receive the closure payload directly instead of std::function's +8 slot.
-  state={'rcx':'closure'};thisOffset=0 if start else 8
+  # Explicit/default captures have different MSVC field order. Treat every
+  # pointer-sized captured field as potentially dangling;only the captured
+  # weak control block's final use-count read is admissible before the gate.
+  control_reg=re.fullmatch(r'dword ptr \[(r\w+) \+ 8\], 0',rows[i].op_str)[1]
+  state={'rcx':'closure'}
   def canon(reg):return {'eax':'rax','ebx':'rbx','ecx':'rcx','edx':'rdx','edi':'rdi','esi':'rsi','ebp':'rbp','esp':'rsp'}.get(reg,re.sub(r'(r\d+)[dwb]$',r'\1',reg))
   for y in rows[start:i+1]:
    before=dict(state)
    for base,offset in re.findall(r'\[(r\w+)(?: \+ (0x[0-9a-f]+|\d+))?\]',y.op_str):
-    if y.mnemonic!='lea'and before.get(base)=='ai':raise AssertionError('source AI accessed before lifetime admission')
+    if y.mnemonic!='lea'and before.get(base)=='capture'and not(y.address==rows[i].address and base==control_reg and int(offset or'0',0)==8):raise AssertionError('captured pointer accessed before lifetime admission')
    for regId in y.regs_access()[1]:state.pop(canon(y.reg_name(regId)),None)
    if y.mnemonic=='mov':
     m=re.fullmatch(r'(r\w+), qword ptr \[(r\w+)(?: \+ (0x[0-9a-f]+|\d+))?\]',y.op_str)
-    if m and before.get(m[2])=='closure'and int(m[3]or'0',0)==thisOffset:state[m[1]]='ai'
+    if m and before.get(m[2])=='closure':state[m[1]]='capture'
     else:
      m=re.fullmatch(r'(r\w+), (r\w+)',y.op_str)
      if m and m[2]in before:state[m[1]]=before[m[2]]
