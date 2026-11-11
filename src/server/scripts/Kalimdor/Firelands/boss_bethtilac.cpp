@@ -808,9 +808,9 @@ class npc_bethtilac_engorged_broodling : public CreatureScript
                 me->SetSpeed(MOVE_RUN, 2.0f);
             }
 
-            bool bBurst;
+            bool bBurst = false;
 
-            void EnterCombat(Unit* who)
+            void Reset() override
             {
                 bBurst = false;
             }
