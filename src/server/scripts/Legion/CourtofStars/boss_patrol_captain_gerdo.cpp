@@ -330,15 +330,16 @@ public:
     {
         npc_lilet_lunarhAI(Creature* creature) : ScriptedAI(creature) {}
         
-        uint32 timer;
-        uint8 talk;
-        bool event;
-        Player* owner = nullptr;
+        uint32 timer = 0;
+        uint8 talk = 0;
+        bool event = false;
+        ObjectGuid ownerGuid;
         
         void IsSummonedBy(Unit* summoner) override
         {
-            if (summoner->GetTypeId() == TYPEID_PLAYER)
-                owner = summoner->ToPlayer();
+            ownerGuid.Clear();
+            if (summoner && summoner->GetTypeId() == TYPEID_PLAYER)
+                ownerGuid = summoner->GetGUID();
             timer = 13000;
             event = true;
             talk = 0;
@@ -350,7 +351,7 @@ public:
                 if (talk < 4)
                     if (timer <= diff)
                     {
-                        if (owner)
+                        if (Player* owner = ObjectAccessor::GetPlayer(*me, ownerGuid))
                             Talk(talk, owner->GetGUID());
                         talk++;
                         timer = 16000;
