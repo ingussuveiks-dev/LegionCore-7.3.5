@@ -172,8 +172,9 @@ struct boss_brackenspore : public BossAI
         {
             me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, 438);
 
-            AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
+            AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 for (uint8 i = 0; i < MaxCreepingMoss; ++i)
                     me->CastSpell(creepingMossPo[i], CreepingMossAreaTrigger, true);
             });
@@ -242,8 +243,9 @@ struct boss_brackenspore : public BossAI
                     warmasters.remove(ironWar);
                 }
 
-                AddDelayedEvent(5 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(5 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     for (ObjectGuid guid : m_Flamethrowers)
                         if (Creature* creature = Creature::GetCreature(*me, guid))
                             creature->CastSpell(creature, BFC9000, true);
@@ -280,8 +282,9 @@ struct boss_brackenspore : public BossAI
                 for (Creature* itr : warmasters)
                     warMasterGuids.push_back(itr->GetGUID());
 
-                AddDelayedEvent(8 * IN_MILLISECONDS, [this, warMasterGuids]() -> void
+                AddDelayedEvent(8 * IN_MILLISECONDS, [this, warMasterGuids, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (warMasterGuids.empty())
                         return;
 
@@ -654,6 +657,9 @@ struct boss_brackenspore : public BossAI
         if (urand(0, 1))
             me->CastSpell(me, SpellCallOfTheTides, true);
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Mind Fungus (Cosmetic) - 86611
