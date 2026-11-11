@@ -208,8 +208,9 @@ struct npc_dramock: ScriptedAI
                 useEvent = true;
                 credit = 0;
 
-                me->AddDelayedEvent(500, [this, generation = ++observationGeneration]() -> void
+                me->AddDelayedEvent(500, [this, generation = ++observationGeneration, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (generation != observationGeneration || !useEvent)
                         return;
                     playerGUIDs.clear();
@@ -275,6 +276,9 @@ struct npc_dramock: ScriptedAI
             }
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //122256
