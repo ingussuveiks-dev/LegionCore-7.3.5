@@ -329,7 +329,7 @@ public:
                 return;
 
             if (Unit* target = GetCaster()->FindNearestPlayer(30.0f, true))
-                GetCaster()->CastSpell(target, RandomSpells[urand(0, 7)]);
+                GetCaster()->CastSpell(target, RandomSpells[urand(0, 6)]);
         }
 
         void Register() override
