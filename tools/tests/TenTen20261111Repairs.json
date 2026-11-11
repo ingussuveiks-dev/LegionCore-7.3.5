@@ -1,0 +1,247 @@
+{
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "authorized_batches": 10,
+  "repairs_per_batch": 10,
+  "authorized_total": 100,
+  "changes": [
+    {
+      "key": "SinestraIndomitableIsolation",
+      "title": "Keep each Indomitable control timer in its own aura instance",
+      "kind": "aura_state",
+      "batch": 1,
+      "index": 1,
+      "paths": [
+        "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_sinestra.cpp",
+          "old": "class spell_sinestra_indomitable_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_sinestra_indomitable_AuraScript);\n\n            void HandleScript(AuraEffect const* /*aurEff*/)\n            {\n                if (!GetCaster())\n                    return;\n\n                static uint8 controlTimer;\n\n                if (GetCaster()->CanFreeMove())\n                {\n                    controlTimer = 0;\n                    return;\n                }\n\n                controlTimer++;\n\n                if (controlTimer >= 5)\n                {\n                    GetCaster()->CastSpell(GetTarget(), SPELL_INDOMITABLE_DMG, true);\n                    return;\n                }\n            }\n\n            void Register()\n            {\n                OnEffectPeriodic += AuraEffectPeriodicFn(spell_sinestra_indomitable_AuraScript::HandleScript, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n            }\n        }",
+          "new": "class spell_sinestra_indomitable_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_sinestra_indomitable_AuraScript);\n\n            uint8 controlTimer = 0;\n\n            void HandleScript(AuraEffect const* /*aurEff*/)\n            {\n                if (!GetCaster())\n                    return;\n\n                if (GetCaster()->CanFreeMove())\n                {\n                    controlTimer = 0;\n                    return;\n                }\n\n                if (controlTimer < 5)\n                    ++controlTimer;\n\n                if (controlTimer >= 5)\n                {\n                    GetCaster()->CastSpell(GetTarget(), SPELL_INDOMITABLE_DMG, true);\n                    return;\n                }\n            }\n\n            void Register()\n            {\n                OnEffectPeriodic += AuraEffectPeriodicFn(spell_sinestra_indomitable_AuraScript::HandleScript, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "cls": "spell_sinestra_indomitable_AuraScript",
+      "binding": "spell_sinestra_indomitable",
+      "spell": 90044,
+      "child": 90045
+    },
+    {
+      "key": "BGStartCommandConsoleContext",
+      "title": "Reject HandleBGStartCommand without an in-game player context",
+      "kind": "console",
+      "batch": 1,
+      "index": 2,
+      "paths": [
+        "src/server/scripts/Commands/cs_misc.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleBGStartCommand(ChatHandler* handler, char const* args)\n    {\n        bool sourceWin;\n\n        if (!*args)\n            sourceWin = 0;\n        else\n            sourceWin = 1;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n        {\n            bg->StartingEventOpenDoors();\n            bg->SetStatus(STATUS_IN_PROGRESS);\n            bg->SetStartDelayTime(m_messageTimer[BG_STARTING_EVENT_FOURTH]);\n\n            // Add Spectator Data\n            Map::PlayerList const& playerList = player->GetMap()->GetPlayers();\n\n            if (!playerList.isEmpty())\n                for (Map::PlayerList::const_iterator itr = playerList.begin(); itr != playerList.end(); ++itr)\n                    if (Player* _player = itr->getSource())\n                    {\n                        if (auto group = _player->GetGroup())\n                            if (group->GetLeaderGUID() == _player->GetGUID())\n                                sBattlegroundMgr->AddSpectatorData(_player->GetInstanceId(), _player->GetGUID());\n                    }\n        }\n        else\n            handler->PSendSysMessage(\"HandleBGStartCommand: You not in BG\");\n\n        return true;\n    }",
+          "new": "static bool HandleBGStartCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        bool sourceWin;\n\n        if (!*args)\n            sourceWin = 0;\n        else\n            sourceWin = 1;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n        {\n            bg->StartingEventOpenDoors();\n            bg->SetStatus(STATUS_IN_PROGRESS);\n            bg->SetStartDelayTime(m_messageTimer[BG_STARTING_EVENT_FOURTH]);\n\n            // Add Spectator Data\n            Map::PlayerList const& playerList = player->GetMap()->GetPlayers();\n\n            if (!playerList.isEmpty())\n                for (Map::PlayerList::const_iterator itr = playerList.begin(); itr != playerList.end(); ++itr)\n                    if (Player* _player = itr->getSource())\n                    {\n                        if (auto group = _player->GetGroup())\n                            if (group->GetLeaderGUID() == _player->GetGUID())\n                                sBattlegroundMgr->AddSpectatorData(_player->GetInstanceId(), _player->GetGUID());\n                    }\n        }\n        else\n            handler->PSendSysMessage(\"HandleBGStartCommand: You not in BG\");\n\n        return true;\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "misc_commandscript",
+      "method": "HandleBGStartCommand",
+      "commands": [
+        "start"
+      ],
+      "allow_console": true
+    },
+    {
+      "key": "BGFinishCommandConsoleContext",
+      "title": "Reject HandleBGFinishCommand without an in-game player context",
+      "kind": "console",
+      "batch": 1,
+      "index": 3,
+      "paths": [
+        "src/server/scripts/Commands/cs_misc.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleBGFinishCommand(ChatHandler* handler, char const* args)\n    {\n        bool sourceWin;\n\n        if (!*args)\n            sourceWin = 0;\n        else\n            sourceWin = 1;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n        {\n            bg->SetStatus(STATUS_IN_PROGRESS);\n\n            if (!sourceWin)\n                bg->EndBattleground(player->GetBGTeam());\n            else\n                bg->EndBattleground(bg->GetOtherTeam(player->GetBGTeam()));\n        }\n        else\n            handler->PSendSysMessage(\"HandleBGFinishCommand: You not in BG\");\n\n        return true;\n    }",
+          "new": "static bool HandleBGFinishCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        bool sourceWin;\n\n        if (!*args)\n            sourceWin = 0;\n        else\n            sourceWin = 1;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n        {\n            bg->SetStatus(STATUS_IN_PROGRESS);\n\n            if (!sourceWin)\n                bg->EndBattleground(player->GetBGTeam());\n            else\n                bg->EndBattleground(bg->GetOtherTeam(player->GetBGTeam()));\n        }\n        else\n            handler->PSendSysMessage(\"HandleBGFinishCommand: You not in BG\");\n\n        return true;\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "misc_commandscript",
+      "method": "HandleBGFinishCommand",
+      "commands": [
+        "finishwin"
+      ],
+      "allow_console": true
+    },
+    {
+      "key": "BGSetArenaCommandConsoleContext",
+      "title": "Reject HandleBGSetArenaCommand without an in-game player context",
+      "kind": "console",
+      "batch": 1,
+      "index": 4,
+      "paths": [
+        "src/server/scripts/Commands/cs_misc.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleBGSetArenaCommand(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n        {\n            bg->SetSkirmish(false);\n            bg->SetArena(true);\n            bg->SetRated(true);\n        }\n        else\n            handler->PSendSysMessage(\"HandleBGSetArenaCommand: You not in BG\");\n\n        return true;\n    }",
+          "new": "static bool HandleBGSetArenaCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n        {\n            bg->SetSkirmish(false);\n            bg->SetArena(true);\n            bg->SetRated(true);\n        }\n        else\n            handler->PSendSysMessage(\"HandleBGSetArenaCommand: You not in BG\");\n\n        return true;\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "misc_commandscript",
+      "method": "HandleBGSetArenaCommand",
+      "commands": [
+        "setarena"
+      ],
+      "allow_console": true
+    },
+    {
+      "key": "BGSetSkirmishCommandConsoleContext",
+      "title": "Reject HandleBGSetSkirmishCommand without an in-game player context",
+      "kind": "console",
+      "batch": 1,
+      "index": 5,
+      "paths": [
+        "src/server/scripts/Commands/cs_misc.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleBGSetSkirmishCommand(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n            bg->SetSkirmish(true);\n        else\n            handler->PSendSysMessage(\"HandleBGSetSkirmishCommand: You not in BG\");\n\n        return true;\n    }",
+          "new": "static bool HandleBGSetSkirmishCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n            bg->SetSkirmish(true);\n        else\n            handler->PSendSysMessage(\"HandleBGSetSkirmishCommand: You not in BG\");\n\n        return true;\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "misc_commandscript",
+      "method": "HandleBGSetSkirmishCommand",
+      "commands": [
+        "setskirmish"
+      ],
+      "allow_console": true
+    },
+    {
+      "key": "BGSetRBGCommandConsoleContext",
+      "title": "Reject HandleBGSetRBGCommand without an in-game player context",
+      "kind": "console",
+      "batch": 1,
+      "index": 6,
+      "paths": [
+        "src/server/scripts/Commands/cs_misc.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleBGSetRBGCommand(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n            bg->SetRBG(true);\n        else\n            handler->PSendSysMessage(\"HandleBGSetRBGCommand: You not in BG\");\n\n        return true;\n    }",
+          "new": "static bool HandleBGSetRBGCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n            bg->SetRBG(true);\n        else\n            handler->PSendSysMessage(\"HandleBGSetRBGCommand: You not in BG\");\n\n        return true;\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "misc_commandscript",
+      "method": "HandleBGSetRBGCommand",
+      "commands": [
+        "setrbg"
+      ],
+      "allow_console": true
+    },
+    {
+      "key": "BGSetBGCommandConsoleContext",
+      "title": "Reject HandleBGSetBGCommand without an in-game player context",
+      "kind": "console",
+      "batch": 1,
+      "index": 7,
+      "paths": [
+        "src/server/scripts/Commands/cs_misc.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleBGSetBGCommand(ChatHandler* handler, char const* args)\n    {\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n            bg->SetBG(true);\n        else\n            handler->PSendSysMessage(\"HandleBGSetBGCommand: You not in BG\");\n\n        return true;\n    }",
+          "new": "static bool HandleBGSetBGCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        Player* player = handler->GetSession()->GetPlayer();\n        if (Battleground* bg = player->GetBattleground())\n            bg->SetBG(true);\n        else\n            handler->PSendSysMessage(\"HandleBGSetBGCommand: You not in BG\");\n\n        return true;\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "misc_commandscript",
+      "method": "HandleBGSetBGCommand",
+      "commands": [
+        "setbg"
+      ],
+      "allow_console": true
+    },
+    {
+      "key": "CastActionCommandConsoleContext",
+      "title": "Reject HandleCastActionCommand without an in-game player context",
+      "kind": "console",
+      "batch": 1,
+      "index": 8,
+      "paths": [
+        "src/server/scripts/Commands/cs_misc.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleCastActionCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 spellID = atoi((char*)args);\n\n        std::list<AreaTrigger*> list;\n        player->GetAreaObjectList(list, spellID);\n        if(!list.empty())\n        {\n            for (std::list<AreaTrigger*>::iterator itr = list.begin(); itr != list.end(); ++itr)\n            {\n                if(AreaTrigger* areaObj = (*itr))\n                    areaObj->CastAction();\n            }\n        }\n\n        handler->PSendSysMessage(\"HandleCastActionCommand spellID %u\", spellID);\n        return true;\n    }",
+          "new": "static bool HandleCastActionCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 spellID = atoi((char*)args);\n\n        std::list<AreaTrigger*> list;\n        player->GetAreaObjectList(list, spellID);\n        if(!list.empty())\n        {\n            for (std::list<AreaTrigger*>::iterator itr = list.begin(); itr != list.end(); ++itr)\n            {\n                if(AreaTrigger* areaObj = (*itr))\n                    areaObj->CastAction();\n            }\n        }\n\n        handler->PSendSysMessage(\"HandleCastActionCommand spellID %u\", spellID);\n        return true;\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "misc_commandscript",
+      "method": "HandleCastActionCommand",
+      "commands": [
+        "castaction"
+      ],
+      "allow_console": true
+    },
+    {
+      "key": "AreaTriggerCommandConsoleContext",
+      "title": "Reject HandleAreaTriggerCommand without an in-game player context",
+      "kind": "console",
+      "batch": 1,
+      "index": 9,
+      "paths": [
+        "src/server/scripts/Commands/cs_misc.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Commands/cs_misc.cpp",
+          "old": "static bool HandleAreaTriggerCommand(ChatHandler* handler, char const* args)\n    {\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 AreaTriggerID = atoi((char*)args);\n\n        AreaTrigger* areaTrigger = new AreaTrigger;\n        if (!areaTrigger->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(), AreaTriggerID, (Unit*)player, NULL, (player->GetPosition()), (player->GetPosition()), NULL, ObjectGuid::Empty, 0))\n        {\n            handler->PSendSysMessage(\"HandleAreaTriggerCommand AreaTrigger %u Error\", AreaTriggerID);\n            delete areaTrigger;\n        }\n        else\n            handler->PSendSysMessage(\"HandleAreaTriggerCommand AreaTrigger %u Spawn\", AreaTriggerID);\n\n        return true;\n    }",
+          "new": "static bool HandleAreaTriggerCommand(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (!*args)\n            return false;\n\n        Player* player = handler->GetSession()->GetPlayer();\n        uint32 AreaTriggerID = atoi((char*)args);\n\n        AreaTrigger* areaTrigger = new AreaTrigger;\n        if (!areaTrigger->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(), AreaTriggerID, (Unit*)player, NULL, (player->GetPosition()), (player->GetPosition()), NULL, ObjectGuid::Empty, 0))\n        {\n            handler->PSendSysMessage(\"HandleAreaTriggerCommand AreaTrigger %u Error\", AreaTriggerID);\n            delete areaTrigger;\n        }\n        else\n            handler->PSendSysMessage(\"HandleAreaTriggerCommand AreaTrigger %u Spawn\", AreaTriggerID);\n\n        return true;\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "misc_commandscript",
+      "method": "HandleAreaTriggerCommand",
+      "commands": [
+        "add",
+        ""
+      ],
+      "allow_console": true
+    },
+    {
+      "key": "ListAttackerConsoleContext",
+      "title": "Reject attacker listing without an in-game player context",
+      "kind": "console",
+      "batch": 1,
+      "index": 10,
+      "paths": [
+        "src/server/scripts/Commands/cs_list.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Commands/cs_list.cpp",
+          "old": "static bool HandleListAttacker(ChatHandler* handler, char const* args)\n    {\n        if (Unit* unit = handler->getSelectedUnit())\n        {\n            for (UnitSet::iterator itr = unit->getAttackers()->begin(); itr != unit->getAttackers()->end(); ++itr)\n                handler->PSendSysMessage(\"Attacker targets %s\", (*itr)->GetGUID().ToString().c_str());\n        }\n        else for (UnitSet::iterator itr = handler->GetSession()->GetPlayer()->getAttackers()->begin(); itr != handler->GetSession()->GetPlayer()->getAttackers()->end(); ++itr)\n            handler->PSendSysMessage(\"Attacker my %s\", (*itr)->GetGUID().ToString().c_str());\n\n        return true;\n    }",
+          "new": "static bool HandleListAttacker(ChatHandler* handler, char const* args)\n    {\n        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())\n        {\n            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);\n            handler->SetSentErrorMessage(true);\n            return false;\n        }\n\n        if (Unit* unit = handler->getSelectedUnit())\n        {\n            for (UnitSet::iterator itr = unit->getAttackers()->begin(); itr != unit->getAttackers()->end(); ++itr)\n                handler->PSendSysMessage(\"Attacker targets %s\", (*itr)->GetGUID().ToString().c_str());\n        }\n        else for (UnitSet::iterator itr = handler->GetSession()->GetPlayer()->getAttackers()->begin(); itr != handler->GetSession()->GetPlayer()->getAttackers()->end(); ++itr)\n            handler->PSendSysMessage(\"Attacker my %s\", (*itr)->GetGUID().ToString().c_str());\n\n        return true;\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "list_commandscript",
+      "method": "HandleListAttacker",
+      "commands": [
+        "attacker"
+      ],
+      "allow_console": true
+    }
+  ]
+}

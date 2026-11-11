@@ -5,6 +5,7 @@ fixtures read the repaired sources directly and never use this retained view.
 """
 from pathlib import Path
 import json,subprocess,functools
+from ten_ten_20261111_scope import retained_source as before_ten_ten
 ROOT=Path(__file__).resolve().parents[2]
 PLAN=json.loads((ROOT/'tools/tests/FiveTen20261111Repairs.json').read_text(encoding='utf8'))
 
@@ -24,14 +25,14 @@ def verify():
     paths=sorted({p for row in PLAN['changes'] for p in row['paths']})
     assert len(PLAN['changes'])==50 and len({row['key']for row in PLAN['changes']})==50
     for path in paths:
-        actual=(ROOT/path).read_text(encoding='utf-8-sig')
+        actual=before_ten_ten(path)
         old=subprocess.check_output(['git','-C',str(ROOT),'show',PLAN['baseline']+':'+path]).decode('utf-8-sig').replace('\r\n','\n')
         assert normalize(path,actual)==old,'Undeclared amendment: '+path
     return True
 
 def retained_source(path,source=None):
     verify()
-    return normalize(path,source if source is not None else (ROOT/path).read_text(encoding='utf-8-sig'))
+    return normalize(path,before_ten_ten(path,source))
 
 def require_fixed(keys=None):
     verify()
