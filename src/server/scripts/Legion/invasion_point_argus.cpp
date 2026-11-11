@@ -3380,8 +3380,11 @@ struct npc_emblazoned_fire_tamer : ScriptedAI
 
     void Reset() override
     {
-        me->AddDelayedEvent(5000, [=]() -> void { DoCast(252778); });
+        me->AddDelayedEvent(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; DoCast(252778); });
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 struct npc_future_image : ScriptedAI
