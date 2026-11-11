@@ -185,7 +185,7 @@ public:
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
         }
 
-        bool active;
+        bool active = false;
 
         void Reset() override {}
 
