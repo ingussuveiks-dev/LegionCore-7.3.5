@@ -388,6 +388,7 @@ public:
             if (!killer || !instance)
                 return;
 
+            Player* player = killer->GetAffectingPlayer();
             if (bWalking)
             {
                 if (Creature* boss = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_JEDOGA_SHADOWSEEKER)))
@@ -395,7 +396,7 @@ public:
                     if (!CAST_AI(boss_jedoga_shadowseeker::boss_jedoga_shadowseekerAI, boss->AI())->bOpFerok)
                         CAST_AI(boss_jedoga_shadowseeker::boss_jedoga_shadowseekerAI, boss->AI())->bOpFerokFail = true;
 
-                    if (killer->GetTypeId() == TYPEID_PLAYER)
+                    if (player)
                         boss->AI()->DoAction(ACTION_INITIAND_KILLED);
                 }
 
@@ -403,8 +404,8 @@ public:
 
                 bWalking = false;
             }
-            if (killer->GetTypeId() == TYPEID_PLAYER)
-                instance->SetGuidData(DATA_PL_JEDOGA_TARGET, killer->GetGUID());
+            if (player)
+                instance->SetGuidData(DATA_PL_JEDOGA_TARGET, player->GetGUID());
         }
 
         void EnterCombat(Unit* who) override
