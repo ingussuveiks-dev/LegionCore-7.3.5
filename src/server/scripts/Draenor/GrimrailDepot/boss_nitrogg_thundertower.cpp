@@ -617,7 +617,8 @@ class grimrail_depot_nitrogg_thundertower_mob_gromkar_boomer : public CreatureSc
             /// Adds Blackrock Mortar to the player.
             if (p_Killer)
             {
-                p_Killer->AddAura(eGromkarboomerSpells::SpellBlackrockMortarShellsAura, p_Killer);
+                if (Player* player = p_Killer->GetAffectingPlayer())
+                    player->AddAura(eGromkarboomerSpells::SpellBlackrockMortarShellsAura, player);
                 me->DespawnOrUnsummon(2 * TimeConstants::IN_MILLISECONDS);
             }
         }
