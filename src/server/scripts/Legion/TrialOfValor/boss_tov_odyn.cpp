@@ -972,8 +972,9 @@ struct npc_tov_hymdall : ScriptedAI
                 me->setFaction(16);
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
                 me->GetMotionMaster()->MoveJump(2410.51f, 508.8186f, 748.9946f, 20, 10, 2, 0.91346f);
-                me->AddDelayedEvent(2000, [=]() -> void
+                me->AddDelayedEvent(2000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (auto player = me->FindNearestPlayer(300.0f, true))
                         AttackStart(player);
                 });
@@ -1120,6 +1121,9 @@ struct npc_tov_hymdall : ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 struct npc_tov_hyrja : ScriptedAI
