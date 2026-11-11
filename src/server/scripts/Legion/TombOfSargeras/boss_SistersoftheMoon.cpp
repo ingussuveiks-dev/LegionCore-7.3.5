@@ -797,8 +797,9 @@ struct npc_sister_yathae : ScriptedAI
                 {
                     summoner->GetAI()->DoAction(ACTION_5); //Phase 3
                 }
-                me->AddDelayedCombat(2000, [=] () -> void
+                me->AddDelayedCombat(2000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->CastSpell(me->GetHomePosition(), SPELL_INCORPOREAL_TELEPORT, true);
                 });
                 events.RescheduleEvent(EVENT_TWILIGHT_VOLLEY, 28000);
@@ -868,7 +869,7 @@ struct npc_sister_yathae : ScriptedAI
         switch (spell->Id)
         {
             case SPELL_INCORPOREAL_TELEPORT:
-                me->AddDelayedCombat(1000, [=] () -> void { me->SetFacingTo(centrPos.GetAngle(me) - M_PI); });
+                me->AddDelayedCombat(1000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; me->SetFacingTo(centrPos.GetAngle(me) - M_PI); });
                 break;
         }
     }
@@ -971,6 +972,9 @@ struct npc_sister_yathae : ScriptedAI
         if (phase == 2)
             DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //119205
