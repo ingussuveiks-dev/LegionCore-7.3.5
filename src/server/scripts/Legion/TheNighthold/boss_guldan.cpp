@@ -1597,7 +1597,7 @@ public:
             Talk(7);
             DoCast(SPELL_DEAD_1);
             if (me->GetAnyOwner() && me->GetAnyOwner()->IsCreature())
-                who->Kill(me->GetAnyOwner());
+                (who ? who : me)->Kill(me->GetAnyOwner());
 
             if (instance)
             {
