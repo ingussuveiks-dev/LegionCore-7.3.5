@@ -407,7 +407,7 @@ class boss_theralion : public CreatureScript
                 Talk(SAY_THERALION_DEATH);
                 instance->SetData(DATA_HEALTH_VALIONA_THERALION, 0);
                 if (Creature* pValiona = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_VALIONA)))
-                    Killer->Kill(pValiona);
+                    (Killer ? Killer : me)->Kill(pValiona);
             }
             
             void MovementInform(uint32 type, uint32 id)
