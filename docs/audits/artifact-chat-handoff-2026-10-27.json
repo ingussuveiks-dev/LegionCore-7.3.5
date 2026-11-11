@@ -1,4 +1,48 @@
 {
+  "latest_third_five_ten_repairs_2026_11_11": {
+    "status": "TECHNICAL_50_SOURCE_ASAN_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
+    "request": "Turpini 5×10",
+    "completed": 50,
+    "batches": 5,
+    "focused_commits": 50,
+    "support_commit": "8424d0049deb63de767ed5eee72bf5091feec35a",
+    "last_implementation_commit": "2ed8c36976c4d18f9ce3e62300ec7a28e5972050",
+    "audit": "docs/audits/third-five-ten-repairs-2026-11-11.json",
+    "canonical": {
+      "worldserver.exe": "3f19651576141a79dfb9e7e043b05bca6a9944d40534af96d3b934a7694909d9",
+      "worldserver.map": "1302a31401f435e82a42c2dc76b751d132b7872f00f9a6e4d9c738425c7700aa",
+      "bnetserver.exe": "042b7febdf385ddbe411c7733946025e82f7b2e2952a3504afff01a8c803d5a6",
+      "bnetserver.map": "515d35eedfd9479260ae10e682fd43c4e215a51c20c74a5d5a949ee026b0e167"
+    },
+    "diagnostics": {
+      "crashes": "No new or unresolved active canonical crashes",
+      "mixed_DBErrors_bytes": 7111,
+      "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+      "no_user_server_stopped": true,
+      "task_owned_server_gone": true,
+      "logs_truncated": false,
+      "post_cleanup": "Canonical EXE/map/config/certificate/DLLs,required original libraries,two concrete rollback copies,Slaghammer cache and mixedDBErrors hashes rechecked;active Crashes empty;no process stopped during cleanup;no log truncated."
+    },
+    "cleanup": {
+      "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_TASK_ARTIFACT_REMOVAL",
+      "archive": "build-extractors/bin/Release/fixed/third-five-ten-2026-11-11",
+      "manifest_sha256": "788378349c89938a2776113f10511601938e5b179dab6810cec3fc5c803fce9d",
+      "archived_files": 989,
+      "removed_files": 78,
+      "logical_removed_bytes": 983197210,
+      "local_deletion_manifest": ".codex/third-five-ten-2026-11-11/deletions.json",
+      "deletion_manifest_sha256": "5bb10f2383fd7ef94e133aa3e3e03027da8187aae4a9680344a0943f127369e6",
+      "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;latest pre-task d102rollback and prior8b102TimeLoop ABI rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated.",
+      "deferred": "No task-owned deployment,diagnostic archive or redundant test binary cleanup remains deferred. Actual client checks and unrelated OPEN evidence remain pending."
+    },
+    "pending": [
+      "Actual client combat/quest/encounter traversal,visual/audio/camera/transport interaction for the affected scripts.",
+      "Sharasdal living Lady authentic finale/activation/surrender/conversation1906/Grash/cleanup remain OPEN;no guessedHP threshold orkill timer.",
+      "OPEN LINK2/Slaghammer evidence,original intermittent client handshake and mixedDBErrors retained. All36artifact whole chains remain incompletely client verified."
+    ],
+    "server": "Task-owned PID5356 was shut down gracefully after ready,exit0/gone. No user server was stopped. Canonical server is available for visible user launch.",
+    "stop": "Exactly the requested five groups of ten technical repairs completed;stopping here. No claim that client/36chains/retail fidelity are fully verified."
+  },
   "latest_time_loop_full_heal_2026_11_11": {
     "status": "TECHNICAL_SOURCE_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
     "audit": "docs/audits/time-loop-full-healing-2026-11-11.json",

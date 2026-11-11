@@ -1,0 +1,738 @@
+{
+  "date": "2026-11-11",
+  "request": "Turpini 5×10",
+  "status": "TECHNICAL_50_SOURCE_ASAN_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
+  "baseline": "240ef9eed620b397dde0a405c0c8f8ce4980137b",
+  "authorized_batches": 5,
+  "repairs_per_batch": 10,
+  "completed_repairs": 50,
+  "canonical": {
+    "worldserver.exe": "3f19651576141a79dfb9e7e043b05bca6a9944d40534af96d3b934a7694909d9",
+    "worldserver.map": "1302a31401f435e82a42c2dc76b751d132b7872f00f9a6e4d9c738425c7700aa",
+    "bnetserver.exe": "042b7febdf385ddbe411c7733946025e82f7b2e2952a3504afff01a8c803d5a6",
+    "bnetserver.map": "515d35eedfd9479260ae10e682fd43c4e215a51c20c74a5d5a949ee026b0e167"
+  },
+  "bnet_text_sha256": "429ed1bbebe6c6932fb5ebc20e7cc705db8150ff13746f037e40bfeedefe0d2a",
+  "tests": {
+    "source": "Exact whole-file reversal of50 declared repairs to240ef9eed;no undeclared production delta.",
+    "methods": "29 complete extracted production death/admission methods under ASAN:actual body,controlled external quest/instance/spatial/spell endpoints;player/pet/two-level guardian/charmer/null/unowned,original admission and independent cleanup;selected failure/retry variants.",
+    "mechanics": "21 ASAN scopes:10 actual numeric expressions/full survival/Ichoron methods,2 latch lifecycle methods,3 complete Brawler event cases,2 real array declarations/index expressions,3 foreign-actor/object callbacks and1Meatball admission projection. Full-class/payload source reversal and linked guard proof are independent.",
+    "baseline": "All50 corresponding pinned240ef9eed methods/expressions fail the repaired expectations or trigger expected ASAN null/UAF/OOB faults;deliberate counterfactuals,not ordinary passing runs. Nonzero baseline process status is retained and paired with fixed tests.",
+    "native": "Actual26972 reader+113exact creature bindings,GO180749/elevator/eight torment records,8spell bindings andmap1712instance registration;real GetAffectingPlayer/player/pet/two-level guardian/charmer/null/unowned,real victim-instance identity,actual Unit queues/AIM destruction and native64health/heal backend. Projection clocks/endpoints are explicit;no character saves.",
+    "linked": "Selected new50PE consumers/weak gate dominance,full retained TimeLoop/native-heal/Mending/target-profile/Cordana/46group PE chain on the same3f1965binary;focused canonical PE and canonical Scepter VerifyReleaseBinary. Original game/scripts final-link libraries plus Main dependency compile;no globalOutDir.",
+    "runtime": "Task-owned canonical worldserver PID5356 fresh ready,graceful server shutdown0,exit0/gone,stderr empty;no new crashes,DBErrors append or unexplained server warning/error/assertion. bnet.text unchanged;only PE/link metadata hash differs."
+  },
+  "diagnostics": {
+    "crashes": "No new or unresolved active canonical crashes",
+    "mixed_DBErrors_bytes": 7111,
+    "mixed_DBErrors_sha256": "fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1",
+    "no_user_server_stopped": true,
+    "task_owned_server_gone": true,
+    "logs_truncated": false,
+    "post_cleanup": "Canonical EXE/map/config/certificate/DLLs,required original libraries,two concrete rollback copies,Slaghammer cache and mixedDBErrors hashes rechecked;active Crashes empty;no process stopped during cleanup;no log truncated."
+  },
+  "pending": [
+    "Actual client combat/quest/encounter traversal,visual/audio/camera/transport interaction for the affected scripts.",
+    "Sharasdal living Lady authentic finale/activation/surrender/conversation1906/Grash/cleanup remain OPEN;no guessedHP threshold orkill timer.",
+    "OPEN LINK2/Slaghammer evidence,original intermittent client handshake and mixedDBErrors retained. All36artifact whole chains remain incompletely client verified."
+  ],
+  "cleanup": {
+    "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_TASK_ARTIFACT_REMOVAL",
+    "archive": "build-extractors/bin/Release/fixed/third-five-ten-2026-11-11",
+    "manifest_sha256": "788378349c89938a2776113f10511601938e5b179dab6810cec3fc5c803fce9d",
+    "archived_files": 989,
+    "removed_files": 78,
+    "logical_removed_bytes": 983197210,
+    "local_deletion_manifest": ".codex/third-five-ten-2026-11-11/deletions.json",
+    "deletion_manifest_sha256": "5bb10f2383fd7ef94e133aa3e3e03027da8187aae4a9680344a0943f127369e6",
+    "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;latest pre-task d102rollback and prior8b102TimeLoop ABI rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated.",
+    "deferred": "No task-owned deployment,diagnostic archive or redundant test binary cleanup remains deferred. Actual client checks and unrelated OPEN evidence remain pending."
+  },
+  "batches": [
+    {
+      "batch": 1,
+      "historical_group": 47,
+      "fixes": [
+        {
+          "key": "MeatballDeathQueueLifetime",
+          "title": "Retire Meatball callbacks with their source AI",
+          "audit": "docs/audits/third-five-ten-2026-11-11/01-meatball-death-queue-lifetime.json",
+          "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_four.cpp",
+          "commit": "7633d6eeb1efae6175a3df5a96fe96f84956eeb1"
+        },
+        {
+          "key": "npc_sironasDeath",
+          "title": "Repair npc_sironas death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/02-npc_sironas-death.json",
+          "path": "src/server/scripts/Kalimdor/zone_bloodmyst_isle.cpp",
+          "commit": "ed0899351e4c9b17226bb145f49fadeca910f278"
+        },
+        {
+          "key": "grimrail_depot_nitrogg_thundertower_mob_gromkar_boomerDeath",
+          "title": "Repair grimrail_depot_nitrogg_thundertower_mob_gromkar_boomer death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/03-grimrail_depot_nitrogg_thundertower_mob_gromkar_boomer-death.json",
+          "path": "src/server/scripts/Draenor/GrimrailDepot/boss_nitrogg_thundertower.cpp",
+          "commit": "1fb8df97bcb46d0b48d344f75604b637db6207a0"
+        },
+        {
+          "key": "grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadierDeath",
+          "title": "Repair grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadier death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/04-grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadier-death.json",
+          "path": "src/server/scripts/Draenor/GrimrailDepot/boss_nitrogg_thundertower.cpp",
+          "commit": "9be158026ef570f09e65767c957b487ca2a6b20a"
+        },
+        {
+          "key": "boss_theralionDeath",
+          "title": "Repair boss_theralion death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/05-boss_theralion-death.json",
+          "path": "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_theralion_and_valiona.cpp",
+          "commit": "3bb0f0739bb06f7c365ae184e3dbdb3a0fc74df0"
+        },
+        {
+          "key": "boss_valionaDeath",
+          "title": "Repair boss_valiona death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/06-boss_valiona-death.json",
+          "path": "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_theralion_and_valiona.cpp",
+          "commit": "7df10dab112662bae2043350afea8c86114e33c4"
+        },
+        {
+          "key": "mob_pure_energyDeath",
+          "title": "Repair mob_pure_energy death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/07-mob_pure_energy-death.json",
+          "path": "src/server/scripts/EasternKingdoms/MagistersTerrace/boss_vexallus.cpp",
+          "commit": "f1c918f27fa78d4eab405ff70b156b9b6cd3e39e"
+        },
+        {
+          "key": "npc_ros_dark_riderDeath",
+          "title": "Repair npc_ros_dark_rider death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/08-npc_ros_dark_rider-death.json",
+          "path": "src/server/scripts/EasternKingdoms/ScarletEnclave/chapter1.cpp",
+          "commit": "159b6b0ccf7340f0c1ad70d8f6566eb37e15480d"
+        },
+        {
+          "key": "mob_high_inquisitor_valrothDeath",
+          "title": "Repair mob_high_inquisitor_valroth death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/09-mob_high_inquisitor_valroth-death.json",
+          "path": "src/server/scripts/EasternKingdoms/ScarletEnclave/chapter2.cpp",
+          "commit": "326f61d84e3145a911030651f40040d6f619be40"
+        },
+        {
+          "key": "npc_medivh_bmDeath",
+          "title": "Repair npc_medivh_bm death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/10-npc_medivh_bm-death.json",
+          "path": "src/server/scripts/Kalimdor/CavernsOfTime/DarkPortal/dark_portal.cpp",
+          "commit": "3c556f322c76fc276a837072cd7d583ce83fe6ed"
+        }
+      ]
+    },
+    {
+      "batch": 2,
+      "historical_group": 48,
+      "fixes": [
+        {
+          "key": "npc_eonar_the_paraxisDeath",
+          "title": "Repair npc_eonar_the_paraxis death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/11-npc_eonar_the_paraxis-death.json",
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp",
+          "commit": "9f2c6b0b98041a348dc9e53cfbd995812b62013c"
+        },
+        {
+          "key": "npc_demon_withinDeath",
+          "title": "Repair npc_demon_within death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/12-npc_demon_within-death.json",
+          "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+          "commit": "f77078fd83e0b32ad8bb7080b6328e658eba8316"
+        },
+        {
+          "key": "boss_blood_council_controllerDeath",
+          "title": "Repair boss_blood_council_controller death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/13-boss_blood_council_controller-death.json",
+          "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_blood_prince_council.cpp",
+          "commit": "dfc194a7a1b767598a633d832cc92bf3c446b610"
+        },
+        {
+          "key": "mob_amanitar_mushroomsDeath",
+          "title": "Repair mob_amanitar_mushrooms death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/14-mob_amanitar_mushrooms-death.json",
+          "path": "src/server/scripts/Northrend/AzjolNerub/Ahnkahet/boss_amanitar.cpp",
+          "commit": "f5da46c65532c17b83b213be42a1867cf52930ad"
+        },
+        {
+          "key": "mob_jedoga_initiandDeath",
+          "title": "Repair mob_jedoga_initiand death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/15-mob_jedoga_initiand-death.json",
+          "path": "src/server/scripts/Northrend/AzjolNerub/Ahnkahet/boss_jedoga_shadowseeker.cpp",
+          "commit": "fe652f81526d06d283b4aefab8c1ae0e52ccfcfa"
+        },
+        {
+          "key": "npc_baltharus_the_warborn_cloneDeath",
+          "title": "Repair npc_baltharus_the_warborn_clone death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/16-npc_baltharus_the_warborn_clone-death.json",
+          "path": "src/server/scripts/Northrend/ChamberOfAspects/RubySanctum/boss_baltharus_the_warborn.cpp",
+          "commit": "aa5f0f1bd75fd0579e88dea1486aaaa17c07ff36"
+        },
+        {
+          "key": "boss_twilight_halionDeath",
+          "title": "Repair boss_twilight_halion death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/17-boss_twilight_halion-death.json",
+          "path": "src/server/scripts/Northrend/ChamberOfAspects/RubySanctum/boss_halion.cpp",
+          "commit": "908f377732dabbc5469306d7dc4118bad924b02f"
+        },
+        {
+          "key": "npc_fizzlebang_tocDeath",
+          "title": "Repair npc_fizzlebang_toc death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/18-npc_fizzlebang_toc-death.json",
+          "path": "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp",
+          "commit": "9c79958cb195cf22638b5434208cca8f88113d81"
+        },
+        {
+          "key": "npc_mechanoliftDeath",
+          "title": "Repair npc_mechanolift death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/19-npc_mechanolift-death.json",
+          "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_flame_leviathan.cpp",
+          "commit": "09419af3d161c5779fe00cc8a788d87b63a2782f"
+        },
+        {
+          "key": "npc_faction_bossDeath",
+          "title": "Repair npc_faction_boss death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/20-npc_faction_boss-death.json",
+          "path": "src/server/scripts/OutdoorPvP/Ashran/AshranNPCNeutral.cpp",
+          "commit": "5abd052ae885b0d3d0a1df2fa5321241dae17c6f"
+        }
+      ]
+    },
+    {
+      "batch": 3,
+      "historical_group": 49,
+      "fixes": [
+        {
+          "key": "npc_beast_of_nightmareDeath",
+          "title": "Repair npc_beast_of_nightmare death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/21-npc_beast_of_nightmare-death.json",
+          "path": "src/server/scripts/Pandaria/ThroneOfThunder/boss_twin_consorts.cpp",
+          "commit": "bcfb17a388b8d32b82ecc3cf7cd2c4e37980c3e2"
+        },
+        {
+          "key": "sceneTrigger_part8Death",
+          "title": "Repair sceneTrigger_part8 death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/22-scene-trigger_part8-death.json",
+          "path": "src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp",
+          "commit": "daf7933c8fdf9f8e3ed252b916a27424508018d0"
+        },
+        {
+          "key": "npc_saera_and_taraarDeath",
+          "title": "Repair npc_saera_and_taraar death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/23-npc_saera_and_taraar-death.json",
+          "path": "src/server/scripts/Scenario/Artifacts/DemonHunter/Vengeance/DH_vengeance_art_scenario.cpp",
+          "commit": "b81dfd4384deace3d35d9c28be8be9b5f59fe40b"
+        },
+        {
+          "key": "npc_gorgonnashDeath",
+          "title": "Repair npc_gorgonnash death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/24-npc_gorgonnash-death.json",
+          "path": "src/server/scripts/Scenario/Artifacts/DemonHunter/Vengeance/DH_vengeance_art_scenario.cpp",
+          "commit": "7d3678d56788f6f130c3a42c69ce4a3e240b0d6f"
+        },
+        {
+          "key": "npc_caria_felsoulDeath",
+          "title": "Repair npc_caria_felsoul death attribution and preserve its cleanup",
+          "audit": "docs/audits/third-five-ten-2026-11-11/25-npc_caria_felsoul-death.json",
+          "path": "src/server/scripts/Scenario/Artifacts/DemonHunter/Vengeance/DH_vengeance_art_scenario.cpp",
+          "commit": "9e7eb3382ea4f1729772e7889b4c0eea0fb7b1a9"
+        },
+        {
+          "key": "npc_q39685Admission",
+          "title": "Validate the actual player in npc_q39685AI",
+          "audit": "docs/audits/third-five-ten-2026-11-11/26-npc_q39685-admission.json",
+          "path": "src/server/scripts/Legion/warden_prison.cpp",
+          "commit": "b23e6f2c1d7ee4fffd3ef033cdd54785617e3c5c"
+        },
+        {
+          "key": "npc_drakuru_shacklesAdmission",
+          "title": "Validate the actual player in npc_drakuru_shacklesAI",
+          "audit": "docs/audits/third-five-ten-2026-11-11/27-npc_drakuru_shackles-admission.json",
+          "path": "src/server/scripts/Northrend/zone_zuldrak.cpp",
+          "commit": "d89519a2f50f693a0ec92bcc83e2efb125a710f1"
+        },
+        {
+          "key": "npc_argus_gift_of_the_lifebinderAdmission",
+          "title": "Validate the actual player in npc_argus_gift_of_the_lifebinder",
+          "audit": "docs/audits/third-five-ten-2026-11-11/28-npc_argus_gift_of_the_lifebinder-admission.json",
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_argus.cpp",
+          "commit": "7145c6c32e00a4f8c9878cdf68a3949bbe116114"
+        },
+        {
+          "key": "npc_gizmoAdmission",
+          "title": "Validate the actual player in npc_gizmoAI",
+          "audit": "docs/audits/third-five-ten-2026-11-11/29-npc_gizmo-admission.json",
+          "path": "src/server/scripts/Maelstrom/LostIsles/lost_isles.cpp",
+          "commit": "8148d339deb5526222a8562b5d510331e08a630f"
+        },
+        {
+          "key": "npc_invasion_azsuna_dragonsAdmission",
+          "title": "Validate the actual player in npc_invasion_azsuna_dragonsAI",
+          "audit": "docs/audits/third-five-ten-2026-11-11/30-npc_invasion_azsuna_dragons-admission.json",
+          "path": "src/server/scripts/Scenario/LegionInvasion/Azsuna/InvasionAzsuna.cpp",
+          "commit": "3da8323370b0a6781df33790293e91529edf947a"
+        }
+      ]
+    },
+    {
+      "batch": 4,
+      "historical_group": 50,
+      "fixes": [
+        {
+          "key": "ShadowmasterMissingTorch",
+          "title": "Keep Shadowmaster attacks safe when no torch was summoned",
+          "audit": "docs/audits/third-five-ten-2026-11-11/31-shadowmaster-missing-torch.json",
+          "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_three.cpp",
+          "commit": "b8fd5b52fb0406ba35fd30752b2e5d51d704256a"
+        },
+        {
+          "key": "JohnnyPetRecovery",
+          "title": "Recover a missing Brawler pet through the existing summon branch",
+          "audit": "docs/audits/third-five-ten-2026-11-11/32-johnny-pet-recovery.json",
+          "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_three.cpp",
+          "commit": "4709edff145435809770cc543f7e0205764a165d"
+        },
+        {
+          "key": "ThwackMissingDancer",
+          "title": "Keep the Thwack phase timer when no dancer was summoned",
+          "audit": "docs/audits/third-five-ten-2026-11-11/33-thwack-missing-dancer.json",
+          "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_five.cpp",
+          "commit": "c873bc90be7964fb5da416422ca881b3a38908fc"
+        },
+        {
+          "key": "FireworkPickerBounds",
+          "title": "Select only the 23 authored fireworks",
+          "audit": "docs/audits/third-five-ten-2026-11-11/34-firework-picker-bounds.json",
+          "path": "src/server/scripts/World/fireworks_spectacular.cpp",
+          "commit": "bf603507056014731f251ed723fd35319666c0b4"
+        },
+        {
+          "key": "ThrowStaffBounds",
+          "title": "Select only the seven authored Throw Staff spells",
+          "audit": "docs/audits/third-five-ten-2026-11-11/35-throw-staff-bounds.json",
+          "path": "src/server/scripts/Legion/TheArcway/boss_general_xakal.cpp",
+          "commit": "c8da078ba2c23df9e3c0b8068059f4500a757aef"
+        },
+        {
+          "key": "RhyolithPhaseHealth",
+          "title": "Preserve full health when Rhyolith changes phase",
+          "audit": "docs/audits/third-five-ten-2026-11-11/36-rhyolith-phase-health.json",
+          "path": "src/server/scripts/Kalimdor/Firelands/boss_lord_rhyolith.cpp",
+          "commit": "23fbf1a97bbebb9d76e54c9be6b2c26c8d5e2704"
+        },
+        {
+          "key": "ValithriaHealthComparisons",
+          "title": "Compare Valithria health percentages without overflowing",
+          "audit": "docs/audits/third-five-ten-2026-11-11/37-valithria-health-comparisons.json",
+          "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp",
+          "commit": "a50057e41d22290483775229e59ecf8b883f3d6a"
+        },
+        {
+          "key": "VanessaPhaseHealth",
+          "title": "Preserve Vanessa integer-percent transitions at wide health",
+          "audit": "docs/audits/third-five-ten-2026-11-11/38-vanessa-phase-health.json",
+          "path": "src/server/scripts/EasternKingdoms/Deadmines/boss_vanessa_vancleef.cpp",
+          "commit": "e4c9e4d86af590c0292950c16ed33a23b7b87a09"
+        },
+        {
+          "key": "IchoronWaterHealth",
+          "title": "Apply Ichoron water healing and loss with the correct sign",
+          "audit": "docs/audits/third-five-ten-2026-11-11/39-ichoron-water-health.json",
+          "path": "src/server/scripts/Northrend/VioletHold/boss_ichoron.cpp",
+          "commit": "b4f2d1c440be327b84ecbaacc59fa59b5bc6bd26"
+        },
+        {
+          "key": "ShaDoubtHealAmount",
+          "title": "Preserve the native ten-percent Sha heal above uint32 health",
+          "audit": "docs/audits/third-five-ten-2026-11-11/40-sha-doubt-heal-amount.json",
+          "path": "src/server/scripts/Pandaria/TempleJadeSerpent/boss_sha_of_doubt.cpp",
+          "commit": "1aab1785c2ba7ebef12accac855d18bfc139eeec"
+        }
+      ]
+    },
+    {
+      "batch": 5,
+      "historical_group": 51,
+      "fixes": [
+        {
+          "key": "MurmurResetHealth",
+          "title": "Preserve Murmur forty-percent reset health without narrowing",
+          "audit": "docs/audits/third-five-ten-2026-11-11/41-murmur-reset-health.json",
+          "path": "src/server/scripts/Outland/Auchindoun/ShadowLabyrinth/boss_murmur.cpp",
+          "commit": "236c56af18720de9bd09879589a684797529d78a"
+        },
+        {
+          "key": "GravityBombFatalHealth",
+          "title": "Compare Gravity Bomb fatal hits against full target health",
+          "audit": "docs/audits/third-five-ten-2026-11-11/42-gravity-bomb-fatal-health.json",
+          "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_xt002.cpp",
+          "commit": "fc30c0b9429ce931082642846bf56f3b2204d370"
+        },
+        {
+          "key": "RogueCheatDeathHealth",
+          "title": "Keep Cheat Death seven-percent threshold at full width",
+          "audit": "docs/audits/third-five-ten-2026-11-11/43-rogue-cheat-death-health.json",
+          "path": "src/server/scripts/Spells/spell_rogue.cpp",
+          "commit": "6b11d9afaf9c882246c609ed7548795fbbe2917a"
+        },
+        {
+          "key": "DemonHunterResortHealth",
+          "title": "Keep Last Resort thirty-percent threshold at full width",
+          "audit": "docs/audits/third-five-ten-2026-11-11/44-demon-hunter-resort-health.json",
+          "path": "src/server/scripts/Spells/spell_dh.cpp",
+          "commit": "8ab9f86be17e233d12dc8a9d6acf0b4a51e6e524"
+        },
+        {
+          "key": "HodirGazeHealth",
+          "title": "Keep Protective Gaze ten-percent threshold at full width",
+          "audit": "docs/audits/third-five-ten-2026-11-11/45-hodir-gaze-health.json",
+          "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_yoggsaron.cpp",
+          "commit": "4ed92ea1b81652bf18f97bc92c40bf7e58610d71"
+        },
+        {
+          "key": "XakalFissureInitialState",
+          "title": "Initialize each Xakal fissure before its first area-trigger callback",
+          "audit": "docs/audits/third-five-ten-2026-11-11/46-xakal-fissure-initial-state.json",
+          "path": "src/server/scripts/Legion/TheArcway/boss_general_xakal.cpp",
+          "commit": "c9c677fa9d4648e6b5d7351edf3448164779f4e3"
+        },
+        {
+          "key": "RohnahDialogueOwnership",
+          "title": "Retire Rohnah delayed dialogue with the speaking actor",
+          "audit": "docs/audits/third-five-ten-2026-11-11/47-rohnah-dialogue-ownership.json",
+          "path": "src/server/scripts/Scenario/FallOfTheramoreAlliance/fall_of_theramore_alliance.cpp",
+          "commit": "2aa2378ea4790c74bca7027c088f9d91a1b0493b"
+        },
+        {
+          "key": "AntorusElevatorLifetime",
+          "title": "Resolve the actual Antorus elevator when its delayed phase change runs",
+          "audit": "docs/audits/third-five-ten-2026-11-11/48-antorus-elevator-lifetime.json",
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/instance_antorus.cpp",
+          "commit": "a2ee02c368253d618b99ca49253cd1b575987575"
+        },
+        {
+          "key": "VarimathrasTormentObjectLifetime",
+          "title": "Resolve Varimathras torment doors by GUID after the original delay",
+          "audit": "docs/audits/third-five-ten-2026-11-11/49-varimathras-torment-object-lifetime.json",
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/instance_antorus.cpp",
+          "commit": "71256eb7671dbff62c8155ff41cbab62abdec46e"
+        },
+        {
+          "key": "BroodlingBurstLifecycle",
+          "title": "Initialize Broodling burst before passive updates and rearm only on reset",
+          "audit": "docs/audits/third-five-ten-2026-11-11/50-broodling-burst-lifecycle.json",
+          "path": "src/server/scripts/Kalimdor/Firelands/boss_bethtilac.cpp",
+          "commit": "2ed8c36976c4d18f9ce3e62300ec7a28e5972050"
+        }
+      ]
+    }
+  ],
+  "rejected_candidates": "AI-owned Cosmetic queues were excluded;47scoutedclasses were not counted as fixes. Illidari uint32/4damage and Phoenix authored4500..5500burn width edits were withdrawn before verified counting. Final50 includes actual actor-owned Rohnah queue,Antorus objects and Broodling reset lifecycle instead.",
+  "resolved_test_setup": "Initial fixture compile missing labels corrected;null Kill/current-AI fixture endpoints now read real controlled state to make invalid access observable. PE assertions follow actual saved-this registers,inlined event scheduling and by-value128GUID copy. Final test/build/runtime passes are paired with retained failed setup diagnostics;no log suppression. Two rejected candidates had only working-tree EOL/stat cache differences;their unchanged Git blobs were verified and restored/refreshed before cleanup. Initial cleanup refusals performed no deletion and are retained.",
+  "support_commit": "8424d0049deb63de767ed5eee72bf5091feec35a",
+  "focused_commits": [
+    {
+      "key": "MeatballDeathQueueLifetime",
+      "commit": "7633d6eeb1efae6175a3df5a96fe96f84956eeb1",
+      "audit": "docs/audits/third-five-ten-2026-11-11/01-meatball-death-queue-lifetime.json",
+      "batch": 1
+    },
+    {
+      "key": "npc_sironasDeath",
+      "commit": "ed0899351e4c9b17226bb145f49fadeca910f278",
+      "audit": "docs/audits/third-five-ten-2026-11-11/02-npc_sironas-death.json",
+      "batch": 1
+    },
+    {
+      "key": "grimrail_depot_nitrogg_thundertower_mob_gromkar_boomerDeath",
+      "commit": "1fb8df97bcb46d0b48d344f75604b637db6207a0",
+      "audit": "docs/audits/third-five-ten-2026-11-11/03-grimrail_depot_nitrogg_thundertower_mob_gromkar_boomer-death.json",
+      "batch": 1
+    },
+    {
+      "key": "grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadierDeath",
+      "commit": "9be158026ef570f09e65767c957b487ca2a6b20a",
+      "audit": "docs/audits/third-five-ten-2026-11-11/04-grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadier-death.json",
+      "batch": 1
+    },
+    {
+      "key": "boss_theralionDeath",
+      "commit": "3bb0f0739bb06f7c365ae184e3dbdb3a0fc74df0",
+      "audit": "docs/audits/third-five-ten-2026-11-11/05-boss_theralion-death.json",
+      "batch": 1
+    },
+    {
+      "key": "boss_valionaDeath",
+      "commit": "7df10dab112662bae2043350afea8c86114e33c4",
+      "audit": "docs/audits/third-five-ten-2026-11-11/06-boss_valiona-death.json",
+      "batch": 1
+    },
+    {
+      "key": "mob_pure_energyDeath",
+      "commit": "f1c918f27fa78d4eab405ff70b156b9b6cd3e39e",
+      "audit": "docs/audits/third-five-ten-2026-11-11/07-mob_pure_energy-death.json",
+      "batch": 1
+    },
+    {
+      "key": "npc_ros_dark_riderDeath",
+      "commit": "159b6b0ccf7340f0c1ad70d8f6566eb37e15480d",
+      "audit": "docs/audits/third-five-ten-2026-11-11/08-npc_ros_dark_rider-death.json",
+      "batch": 1
+    },
+    {
+      "key": "mob_high_inquisitor_valrothDeath",
+      "commit": "326f61d84e3145a911030651f40040d6f619be40",
+      "audit": "docs/audits/third-five-ten-2026-11-11/09-mob_high_inquisitor_valroth-death.json",
+      "batch": 1
+    },
+    {
+      "key": "npc_medivh_bmDeath",
+      "commit": "3c556f322c76fc276a837072cd7d583ce83fe6ed",
+      "audit": "docs/audits/third-five-ten-2026-11-11/10-npc_medivh_bm-death.json",
+      "batch": 1
+    },
+    {
+      "key": "npc_eonar_the_paraxisDeath",
+      "commit": "9f2c6b0b98041a348dc9e53cfbd995812b62013c",
+      "audit": "docs/audits/third-five-ten-2026-11-11/11-npc_eonar_the_paraxis-death.json",
+      "batch": 2
+    },
+    {
+      "key": "npc_demon_withinDeath",
+      "commit": "f77078fd83e0b32ad8bb7080b6328e658eba8316",
+      "audit": "docs/audits/third-five-ten-2026-11-11/12-npc_demon_within-death.json",
+      "batch": 2
+    },
+    {
+      "key": "boss_blood_council_controllerDeath",
+      "commit": "dfc194a7a1b767598a633d832cc92bf3c446b610",
+      "audit": "docs/audits/third-five-ten-2026-11-11/13-boss_blood_council_controller-death.json",
+      "batch": 2
+    },
+    {
+      "key": "mob_amanitar_mushroomsDeath",
+      "commit": "f5da46c65532c17b83b213be42a1867cf52930ad",
+      "audit": "docs/audits/third-five-ten-2026-11-11/14-mob_amanitar_mushrooms-death.json",
+      "batch": 2
+    },
+    {
+      "key": "mob_jedoga_initiandDeath",
+      "commit": "fe652f81526d06d283b4aefab8c1ae0e52ccfcfa",
+      "audit": "docs/audits/third-five-ten-2026-11-11/15-mob_jedoga_initiand-death.json",
+      "batch": 2
+    },
+    {
+      "key": "npc_baltharus_the_warborn_cloneDeath",
+      "commit": "aa5f0f1bd75fd0579e88dea1486aaaa17c07ff36",
+      "audit": "docs/audits/third-five-ten-2026-11-11/16-npc_baltharus_the_warborn_clone-death.json",
+      "batch": 2
+    },
+    {
+      "key": "boss_twilight_halionDeath",
+      "commit": "908f377732dabbc5469306d7dc4118bad924b02f",
+      "audit": "docs/audits/third-five-ten-2026-11-11/17-boss_twilight_halion-death.json",
+      "batch": 2
+    },
+    {
+      "key": "npc_fizzlebang_tocDeath",
+      "commit": "9c79958cb195cf22638b5434208cca8f88113d81",
+      "audit": "docs/audits/third-five-ten-2026-11-11/18-npc_fizzlebang_toc-death.json",
+      "batch": 2
+    },
+    {
+      "key": "npc_mechanoliftDeath",
+      "commit": "09419af3d161c5779fe00cc8a788d87b63a2782f",
+      "audit": "docs/audits/third-five-ten-2026-11-11/19-npc_mechanolift-death.json",
+      "batch": 2
+    },
+    {
+      "key": "npc_faction_bossDeath",
+      "commit": "5abd052ae885b0d3d0a1df2fa5321241dae17c6f",
+      "audit": "docs/audits/third-five-ten-2026-11-11/20-npc_faction_boss-death.json",
+      "batch": 2
+    },
+    {
+      "key": "npc_beast_of_nightmareDeath",
+      "commit": "bcfb17a388b8d32b82ecc3cf7cd2c4e37980c3e2",
+      "audit": "docs/audits/third-five-ten-2026-11-11/21-npc_beast_of_nightmare-death.json",
+      "batch": 3
+    },
+    {
+      "key": "sceneTrigger_part8Death",
+      "commit": "daf7933c8fdf9f8e3ed252b916a27424508018d0",
+      "audit": "docs/audits/third-five-ten-2026-11-11/22-scene-trigger_part8-death.json",
+      "batch": 3
+    },
+    {
+      "key": "npc_saera_and_taraarDeath",
+      "commit": "b81dfd4384deace3d35d9c28be8be9b5f59fe40b",
+      "audit": "docs/audits/third-five-ten-2026-11-11/23-npc_saera_and_taraar-death.json",
+      "batch": 3
+    },
+    {
+      "key": "npc_gorgonnashDeath",
+      "commit": "7d3678d56788f6f130c3a42c69ce4a3e240b0d6f",
+      "audit": "docs/audits/third-five-ten-2026-11-11/24-npc_gorgonnash-death.json",
+      "batch": 3
+    },
+    {
+      "key": "npc_caria_felsoulDeath",
+      "commit": "9e7eb3382ea4f1729772e7889b4c0eea0fb7b1a9",
+      "audit": "docs/audits/third-five-ten-2026-11-11/25-npc_caria_felsoul-death.json",
+      "batch": 3
+    },
+    {
+      "key": "npc_q39685Admission",
+      "commit": "b23e6f2c1d7ee4fffd3ef033cdd54785617e3c5c",
+      "audit": "docs/audits/third-five-ten-2026-11-11/26-npc_q39685-admission.json",
+      "batch": 3
+    },
+    {
+      "key": "npc_drakuru_shacklesAdmission",
+      "commit": "d89519a2f50f693a0ec92bcc83e2efb125a710f1",
+      "audit": "docs/audits/third-five-ten-2026-11-11/27-npc_drakuru_shackles-admission.json",
+      "batch": 3
+    },
+    {
+      "key": "npc_argus_gift_of_the_lifebinderAdmission",
+      "commit": "7145c6c32e00a4f8c9878cdf68a3949bbe116114",
+      "audit": "docs/audits/third-five-ten-2026-11-11/28-npc_argus_gift_of_the_lifebinder-admission.json",
+      "batch": 3
+    },
+    {
+      "key": "npc_gizmoAdmission",
+      "commit": "8148d339deb5526222a8562b5d510331e08a630f",
+      "audit": "docs/audits/third-five-ten-2026-11-11/29-npc_gizmo-admission.json",
+      "batch": 3
+    },
+    {
+      "key": "npc_invasion_azsuna_dragonsAdmission",
+      "commit": "3da8323370b0a6781df33790293e91529edf947a",
+      "audit": "docs/audits/third-five-ten-2026-11-11/30-npc_invasion_azsuna_dragons-admission.json",
+      "batch": 3
+    },
+    {
+      "key": "ShadowmasterMissingTorch",
+      "commit": "b8fd5b52fb0406ba35fd30752b2e5d51d704256a",
+      "audit": "docs/audits/third-five-ten-2026-11-11/31-shadowmaster-missing-torch.json",
+      "batch": 4
+    },
+    {
+      "key": "JohnnyPetRecovery",
+      "commit": "4709edff145435809770cc543f7e0205764a165d",
+      "audit": "docs/audits/third-five-ten-2026-11-11/32-johnny-pet-recovery.json",
+      "batch": 4
+    },
+    {
+      "key": "ThwackMissingDancer",
+      "commit": "c873bc90be7964fb5da416422ca881b3a38908fc",
+      "audit": "docs/audits/third-five-ten-2026-11-11/33-thwack-missing-dancer.json",
+      "batch": 4
+    },
+    {
+      "key": "FireworkPickerBounds",
+      "commit": "bf603507056014731f251ed723fd35319666c0b4",
+      "audit": "docs/audits/third-five-ten-2026-11-11/34-firework-picker-bounds.json",
+      "batch": 4
+    },
+    {
+      "key": "ThrowStaffBounds",
+      "commit": "c8da078ba2c23df9e3c0b8068059f4500a757aef",
+      "audit": "docs/audits/third-five-ten-2026-11-11/35-throw-staff-bounds.json",
+      "batch": 4
+    },
+    {
+      "key": "RhyolithPhaseHealth",
+      "commit": "23fbf1a97bbebb9d76e54c9be6b2c26c8d5e2704",
+      "audit": "docs/audits/third-five-ten-2026-11-11/36-rhyolith-phase-health.json",
+      "batch": 4
+    },
+    {
+      "key": "ValithriaHealthComparisons",
+      "commit": "a50057e41d22290483775229e59ecf8b883f3d6a",
+      "audit": "docs/audits/third-five-ten-2026-11-11/37-valithria-health-comparisons.json",
+      "batch": 4
+    },
+    {
+      "key": "VanessaPhaseHealth",
+      "commit": "e4c9e4d86af590c0292950c16ed33a23b7b87a09",
+      "audit": "docs/audits/third-five-ten-2026-11-11/38-vanessa-phase-health.json",
+      "batch": 4
+    },
+    {
+      "key": "IchoronWaterHealth",
+      "commit": "b4f2d1c440be327b84ecbaacc59fa59b5bc6bd26",
+      "audit": "docs/audits/third-five-ten-2026-11-11/39-ichoron-water-health.json",
+      "batch": 4
+    },
+    {
+      "key": "ShaDoubtHealAmount",
+      "commit": "1aab1785c2ba7ebef12accac855d18bfc139eeec",
+      "audit": "docs/audits/third-five-ten-2026-11-11/40-sha-doubt-heal-amount.json",
+      "batch": 4
+    },
+    {
+      "key": "MurmurResetHealth",
+      "commit": "236c56af18720de9bd09879589a684797529d78a",
+      "audit": "docs/audits/third-five-ten-2026-11-11/41-murmur-reset-health.json",
+      "batch": 5
+    },
+    {
+      "key": "GravityBombFatalHealth",
+      "commit": "fc30c0b9429ce931082642846bf56f3b2204d370",
+      "audit": "docs/audits/third-five-ten-2026-11-11/42-gravity-bomb-fatal-health.json",
+      "batch": 5
+    },
+    {
+      "key": "RogueCheatDeathHealth",
+      "commit": "6b11d9afaf9c882246c609ed7548795fbbe2917a",
+      "audit": "docs/audits/third-five-ten-2026-11-11/43-rogue-cheat-death-health.json",
+      "batch": 5
+    },
+    {
+      "key": "DemonHunterResortHealth",
+      "commit": "8ab9f86be17e233d12dc8a9d6acf0b4a51e6e524",
+      "audit": "docs/audits/third-five-ten-2026-11-11/44-demon-hunter-resort-health.json",
+      "batch": 5
+    },
+    {
+      "key": "HodirGazeHealth",
+      "commit": "4ed92ea1b81652bf18f97bc92c40bf7e58610d71",
+      "audit": "docs/audits/third-five-ten-2026-11-11/45-hodir-gaze-health.json",
+      "batch": 5
+    },
+    {
+      "key": "XakalFissureInitialState",
+      "commit": "c9c677fa9d4648e6b5d7351edf3448164779f4e3",
+      "audit": "docs/audits/third-five-ten-2026-11-11/46-xakal-fissure-initial-state.json",
+      "batch": 5
+    },
+    {
+      "key": "RohnahDialogueOwnership",
+      "commit": "2aa2378ea4790c74bca7027c088f9d91a1b0493b",
+      "audit": "docs/audits/third-five-ten-2026-11-11/47-rohnah-dialogue-ownership.json",
+      "batch": 5
+    },
+    {
+      "key": "AntorusElevatorLifetime",
+      "commit": "a2ee02c368253d618b99ca49253cd1b575987575",
+      "audit": "docs/audits/third-five-ten-2026-11-11/48-antorus-elevator-lifetime.json",
+      "batch": 5
+    },
+    {
+      "key": "VarimathrasTormentObjectLifetime",
+      "commit": "71256eb7671dbff62c8155ff41cbab62abdec46e",
+      "audit": "docs/audits/third-five-ten-2026-11-11/49-varimathras-torment-object-lifetime.json",
+      "batch": 5
+    },
+    {
+      "key": "BroodlingBurstLifecycle",
+      "commit": "2ed8c36976c4d18f9ce3e62300ec7a28e5972050",
+      "audit": "docs/audits/third-five-ten-2026-11-11/50-broodling-burst-lifecycle.json",
+      "batch": 5
+    }
+  ]
+}
