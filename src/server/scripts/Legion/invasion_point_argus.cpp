@@ -3288,7 +3288,7 @@ struct npc_magma_giant : ScriptedAI
 
         introDone = true;
         me->SetHomePosition(663.905f, 623.85f, 40.26792f, 0.0f);
-        me->AddDelayedEvent(2000, [=]() -> void { me->GetMotionMaster()->MovePoint(1, 663.905f, 623.85f, 40.26792f); });
+        me->AddDelayedEvent(2000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->GetMotionMaster()->MovePoint(1, 663.905f, 623.85f, 40.26792f); });
     }
 
     void MovementInform(uint32 type, uint32 data) override
@@ -3375,6 +3375,9 @@ struct npc_magma_giant : ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //127378
