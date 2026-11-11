@@ -1062,44 +1062,51 @@ public:
                     events.RescheduleEvent(EVENT_MOVE_PATH_2, 3000);
                 }
                 if (id == 3)
-                    me->AddDelayedCombat(100, [=]() -> void
+                    me->AddDelayedCombat(100, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->StopAttack(true);
                         me->GetMotionMaster()->MovePoint(4, niuzaoWP[1]);
                     });
                 if (id == 4)
-                    me->AddDelayedCombat(100, [=]() -> void
+                    me->AddDelayedCombat(100, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->StopAttack(true);
                         me->GetMotionMaster()->MovePoint(5, niuzaoWP[2]);
                     });
                 if (id == 5)
-                    me->AddDelayedCombat(100, [=]() -> void
+                    me->AddDelayedCombat(100, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->StopAttack(true);
                         me->GetMotionMaster()->MovePoint(6, niuzaoWP[3]);
                     });
                 if (id == 6)
-                    me->AddDelayedCombat(100, [=]() -> void
+                    me->AddDelayedCombat(100, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->StopAttack(true);
                         me->GetMotionMaster()->MovePoint(7, niuzaoWP[4]);
                     });
                 if (id == 7)
-                    me->AddDelayedCombat(100, [=]() -> void
+                    me->AddDelayedCombat(100, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->StopAttack(true);
                         me->GetMotionMaster()->MovePoint(8, niuzaoWP[5]);
                     });
                 if (id == 8)
-                    me->AddDelayedCombat(100, [=]() -> void
+                    me->AddDelayedCombat(100, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->StopAttack(true);
                         me->GetMotionMaster()->MovePoint(9, niuzaoWP[6]);
                     });
                 if (id == 9)
-                    me->AddDelayedCombat(100, [=]() -> void
+                    me->AddDelayedCombat(100, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->StopAttack(true);
                         me->GetMotionMaster()->MovePoint(10, niuzaoWP[7]);
                     });
@@ -1165,6 +1172,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const
