@@ -391,7 +391,7 @@ public:
                         break;
                     case EVENT_3:
                         me->SetReactState(REACT_PASSIVE);
-                        if (Creature* pet = me->GetMap()->GetCreature(summons.back()))
+                        if (Creature* pet = summons.empty() ? nullptr : me->GetMap()->GetCreature(summons.back()))
                         {
                             me->CastSpell(me, 229143);
                             me->CastSpell(pet, SPELL_REVIVE_PET);
