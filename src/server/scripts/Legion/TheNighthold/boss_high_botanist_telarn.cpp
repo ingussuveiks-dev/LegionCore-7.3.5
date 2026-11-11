@@ -771,8 +771,9 @@ struct npc_nh_arcanist_telarn : ScriptedAI
         DoCast(me, SPELL_ARCANE_DISSOLVE_IN, true);
         //DoCast(me, SPELL_SHARE_HEALTH, true);
 
-        AddDelayedEvent(3000, [=] () -> void
+        AddDelayedEvent(3000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (me)
                 me->SetReactState(REACT_AGGRESSIVE);
         });
@@ -944,6 +945,9 @@ struct npc_nh_arcanist_telarn : ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //109041
