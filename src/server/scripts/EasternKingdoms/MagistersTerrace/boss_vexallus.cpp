@@ -212,7 +212,7 @@ public:
         {
             if (Unit* temp = me->GetOwner())
             {
-                if (temp && temp->IsAlive())
+                if (slayer && temp->IsAlive())
                     slayer->CastSpell(slayer, SPELL_ENERGY_FEEDBACK, true, 0, NULL, temp->GetGUID());
             }
         }
