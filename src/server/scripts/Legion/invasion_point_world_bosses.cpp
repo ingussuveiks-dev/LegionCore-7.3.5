@@ -97,12 +97,14 @@ struct boss_mistress_alluradel : public ScriptedAI
     boss_mistress_alluradel(Creature* creature) : ScriptedAI(creature) {}
 
     EventMap events;
-    uint32 checktimer;
+    uint32 checktimer = 0;
     ObjectGuid tankGUID;
 
     void Reset() override
     {
         events.Reset();
+        checktimer = 0;
+        tankGUID.Clear();
         me->RemoveAllAuras();
         me->SetPower(POWER_ENERGY, 0);
         DoCast(SPELL_SADIST);
@@ -158,7 +160,6 @@ struct boss_mistress_alluradel : public ScriptedAI
 
         if (me->HasAura(SPELL_SADIST))
         {
-            checktimer = 0;
             if (checktimer <= diff)
             {
                 if (Unit* victim = me->getVictim())
@@ -167,9 +168,9 @@ struct boss_mistress_alluradel : public ScriptedAI
                     {
                         tankGUID = victim->GetGUID();
                         me->RemoveAura(SPELL_SADIST_PROC);
-                        checktimer = 500;
                     }
                 }
+                checktimer = 500;
             }
             else checktimer -= diff;
         }
