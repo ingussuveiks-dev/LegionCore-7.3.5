@@ -1,4 +1,5 @@
 param([switch]$Baseline,[switch]$ScopeOnly,[switch]$PrepareHost,[switch]$VerifyNativeCatalog,[switch]$VerifyReleaseBinary,[string]$OutputDirectory='')
+. "$PSScriptRoot/HealApiFixture.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 $path='src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/Sheylun.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "3ba6d8c6f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Taran source missing'}
@@ -24,7 +25,7 @@ $actor=Block $selected 'class npc_tazhan_chu :'
 [IO.File]::WriteAllText("$out/Reset.inc",(Block $actor 'void Reset('))
 Copy-Item -LiteralPath "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_taran_intro.h" -Destination "$out/Intro.inc"
 if(Test-Path "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_companion_wounds.h"){Copy-Item -LiteralPath "$repo/src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_companion_wounds.h" -Destination "$out/Wounds.inc"}else{[IO.File]::WriteAllText("$out/Wounds.inc",'')}
-$unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw;$heal=Block $unit 'int32 Unit::DealHeal(';$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal boundary changed'}
+$unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw;$heal=Get-HealApiBlock $unit;$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal boundary changed'}
 [IO.File]::WriteAllText("$out/DealHeal.inc",$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}")
 $creature=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
 [IO.File]::WriteAllText("$out/Notify.inc",(Block $creature 'void Creature::NotifyHealApplied('))

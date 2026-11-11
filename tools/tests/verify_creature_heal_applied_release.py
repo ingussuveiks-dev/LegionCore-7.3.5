@@ -29,8 +29,11 @@ done=[i for i,x in enumerate(body) if x.mnemonic=='call' and x.operands[0].type=
 applied,=sites('?ModifyHealth@Unit@@')
 notified,=sites('?NotifyHealApplied@Creature@@')
 assert len(received)==len(done)==1 and received[0]<done[0]<applied<notified
+gain_move=body[notified-3].op_str
+assert gain_move in ('r9d, eax','r9, rax')
+wide_gain=gain_move=='r9, rax'
 assert [(x.mnemonic,x.op_str) for x in body[notified-3:notified]]==[
-    ('mov','r9d, eax'),('mov','r8d, dword ptr [rbp - 0x59]'),('mov','rdx, rdi')]
+    ('mov',gain_move),('mov','r8d, dword ptr [rbp - 0x59]'),('mov','rdx, rdi')]
 assert body[applied-5].mnemonic=='je' and body[applied-5].operands[0].imm==body[notified+1].address
 assert any(x.mnemonic=='cmp' and x.op_str=='byte ptr [rsi + 0x16], 3' for x in body[applied:notified])
 assert body[notified-4].mnemonic=='je' and body[notified-4].operands[0].imm==body[notified+1].address
@@ -43,7 +46,7 @@ def index(mnemonic,operands):
     assert len(values)==1,(mnemonic,operands,values)
     return values[0]
 assert body[0].mnemonic=='test' and body[0].op_str=='r8d, r8d' and body[1].mnemonic=='je'
-negative=index('test','r9d, r9d');assert body[negative+1].mnemonic=='js'
+negative=index('test','r9, r9' if wide_gain else 'r9d, r9d');assert body[negative+1].mnemonic=='js'
 lock=index('lea','rbx, [rcx + 0x3a9d]')
 prior=index('movzx','r14d, byte ptr [rbx]')
 claimed=index('mov','byte ptr [rbx], 1')

@@ -16,11 +16,11 @@ foreach($role in @('npc_tazhan_chu','npc_sheylun_small_events')){
  $actor=Block $source "class $role :";$prior=Block $old "class $role :"
  $restored=$actor.Replace((Block $actor 'bool OnGossipSelect('),(Block $prior 'bool OnGossipSelect(')).Replace((Block $actor 'void sGossipSelect('),'')
  if($role -eq 'npc_tazhan_chu'){$restored=$restored.Replace((Block $restored 'void DoAction('),(Block $prior 'void DoAction('))}
- if(($restored -replace '\s','') -cne ($prior -replace '\s','')){throw "Unrelated plan actor delta: $role"}
+ if(((Get-HealApiScopeSource $restored) -replace '\s','') -cne ((Get-HealApiScopeSource $prior) -replace '\s','')){throw "Unrelated plan actor delta: $role"}
  $normal=$normal.Replace($actor,$restored)
 }
-if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Sheilun plan changed other actors/story/combat/loot/registrations'}
-if(($intro.Replace('    SheilunPlan::Refresh(me);','') -replace '\s','') -cne ($oldIntro -replace '\s','')){throw 'Plan changed opening beyond independent readiness refresh'}
+if(((Get-HealApiScopeSource $normal) -replace '\s','') -cne ($old -replace '\s','')){throw 'Sheilun plan changed other actors/story/combat/loot/registrations'}
+if(((Get-HealApiScopeSource $intro.Replace('    SheilunPlan::Refresh(me);','')) -replace '\s','') -cne ($oldIntro -replace '\s','')){throw 'Plan changed opening beyond independent readiness refresh'}
 if($ScopeOnly){'PASS exact04e5ba3b5 retained plan delta after explicit ab99b2d2d acquisition/factory certificate: two native menu/index delegates, inert legacy sender/action handlers, receipt-based readiness and lifecycle recovery; independent acquisition wiring is tested separately';return}
 if($Baseline -and $VerifyReleaseBinary){throw 'Counterfactual cannot certify Release'}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/sheilun-plan$(if($Baseline){'-baseline'})"};$out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null

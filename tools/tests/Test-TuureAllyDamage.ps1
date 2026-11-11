@@ -1,4 +1,5 @@
 param([switch]$Baseline,[switch]$HealBaseline,[switch]$AddressSanitizer)
+. "$PSScriptRoot/HealApiFixture.ps1"
 $ErrorActionPreference='Stop'
 if($Baseline -and $HealBaseline){throw 'Select one counterfactual'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
@@ -34,7 +35,7 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  $a=$fixture.IndexOf('uint32 Unit::Deal(');$b=$fixture.IndexOf('int main()', $a)
  [IO.File]::WriteAllText("$out/NativeCases.inc",$fixture.Substring($a,$b-$a).Replace('SILVER_HAND','TUURE_ALLY'))
  $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
- $heal=Block $core 'int32 Unit::DealHeal(';$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native DealHeal boundary missing'}
+ $heal=Get-HealApiBlock $core;$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native DealHeal boundary missing'}
  [IO.File]::WriteAllText("$out/DealHealPrefix.inc",$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}")
  foreach($pair in @(@('ModifyHealth','int64 Unit::ModifyHealth('),@('Health','uint64 Unit::GetHealth(Unit* victim) const'))){[IO.File]::WriteAllText("$out/$($pair[0]).inc",(Block $core $pair[1]))}
  $a=$core.IndexOf('    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));');if($a -lt 0){throw 'Native damage scaling missing'}

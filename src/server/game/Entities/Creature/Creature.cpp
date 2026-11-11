@@ -1283,7 +1283,7 @@ bool Creature::AIM_Destroy()
     return true;
 }
 
-void Creature::NotifyHealApplied(Unit* healer, uint32 amount, int32 gain)
+void Creature::NotifyHealApplied(Unit* healer, uint32 amount, int64 gain)
 {
     if (!amount || gain < 0)
         return;

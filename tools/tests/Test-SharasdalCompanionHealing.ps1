@@ -1,4 +1,5 @@
 param([switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$OutputDirectory='')
+. "$PSScriptRoot/HealApiFixture.ps1"
 $ErrorActionPreference='Stop'
 if($VerifyReleaseBinary -and ($Baseline -or $ScopeOnly)){throw 'Only repaired healing certifies Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
@@ -53,7 +54,7 @@ $fixture=Get-Content "$PSScriptRoot/SilverHandAllyDamageTest.cpp" -Raw
 $first=$fixture.IndexOf('uint32 Unit::Deal(');$last=$fixture.IndexOf('int main()',$first)
 [IO.File]::WriteAllText("$out/NativeCases.inc",$fixture.Substring($first,$last-$first).Replace('SILVER_HAND','SHARASDAL'))
 $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
-$heal=Block $core 'int32 Unit::DealHeal(';$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal boundary missing'}
+$heal=Get-HealApiBlock $core;$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal boundary missing'}
 [IO.File]::WriteAllText("$out/DealHealPrefix.inc",$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}")
 foreach($method in @(@('ModifyHealth','int64 Unit::ModifyHealth('),@('Health','uint64 Unit::GetHealth(Unit* victim) const'))){[IO.File]::WriteAllText("$out/$($method[0]).inc",(Block $core $method[1]))}
 $prefix='    damage = uint32(std::min<double>(damage / victim->GetHealthMultiplierForTarget(this), std::numeric_limits<uint32>::max()));';$first=$core.IndexOf($prefix);if($first -lt 0){throw 'Native bounded scaling missing'}

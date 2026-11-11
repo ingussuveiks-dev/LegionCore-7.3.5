@@ -1,4 +1,5 @@
 param([switch]$Baseline,[switch]$ScopeOnly,[switch]$VerifyReleaseBinary,[string]$PreviousRelease='',[string]$OutputDirectory='')
+. "$PSScriptRoot/HealApiFixture.ps1"
 $ErrorActionPreference='Stop'
 if($VerifyReleaseBinary -and ($Baseline -or $ScopeOnly)){throw 'Only repaired regression can certify Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
@@ -6,6 +7,14 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 $paths=@('src/server/game/Entities/Unit/Unit.cpp','src/server/game/Entities/Creature/Creature.cpp','src/server/game/Entities/Creature/Creature.h','src/server/game/AI/CreatureAI.h')
 $sources=@{};$bases=@{}
 foreach($path in $paths){$sources[$path]=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$bases[$path]=(& git -C $repo show "5a4a13649:$path") -join "`n";if($LASTEXITCODE){throw "Missing pinned $path"}}
+$liveSources=$sources.Clone()
+if($sources[$paths[0]].Contains('int64 Unit::DealHeal(')){
+ & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_native_heal_scope.py"
+ if($LASTEXITCODE){throw 'Separately declared native heal API scope differs'}
+ # Historical whole-file proof predates later core repairs. Keep its original
+ # post-heal delta pinned;execute the actual current methods below.
+ foreach($path in $paths){$sources[$path]=(& git -C $repo show "48c05ad6c:$path") -join "`n";if($LASTEXITCODE){throw 'Original post-heal source absent'}}
+}
 $unit=$sources[$paths[0]];$creature=$sources[$paths[1]]
 $old="    if (addhealth)`n        gain = victim->ModifyHealth(int32(addhealth), this);"
 $new=@'
@@ -16,7 +25,7 @@ $new=@'
             creature->NotifyHealApplied(this, addhealth, gain);
     }
 '@
-$normalized=$unit.Replace($new,$old)
+$normalized=$unit.Replace($new.Replace("`r",''),$old)
 if($normalized.TrimEnd("`n") -cne $bases[$paths[0]].TrimEnd("`n")){throw 'Unit changed beyond post-ModifyHealth notification'}
 $notify=Block $creature 'void Creature::NotifyHealApplied('
 if($creature.Replace($notify+"`n`n",'').TrimEnd("`n") -cne $bases[$paths[1]].TrimEnd("`n")){throw 'Creature changed beyond notification'}
@@ -30,15 +39,16 @@ public:
     virtual void OnHealApplied(Unit* /*healer*/, uint32 /*amount*/, int32 /*gain*/) {}
 
 '@
-if($sources[$paths[3]].Replace($virtual+"`n",'').TrimEnd("`n") -cne $bases[$paths[3]].TrimEnd("`n")){throw 'CreatureAI changed beyond appended default hook'}
-if($ScopeOnly){'PASS exact post-heal notification scope; existing virtual order, data members and all other core methods unchanged';return}
+if($sources[$paths[3]].Replace($virtual.Replace("`r",'')+"`n",'').TrimEnd("`n") -cne $bases[$paths[3]].TrimEnd("`n")){throw 'CreatureAI changed beyond appended default hook'}
+if($ScopeOnly){'PASS pinned original post-heal notification delta plus independently certified current native heal API amendment;existing virtual order/data members retained';return}
+$unit=$liveSources[$paths[0]];$creature=$liveSources[$paths[1]];$notify=Block $creature 'void Creature::NotifyHealApplied('
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/creature-heal-applied"}
 $out=[IO.Path]::GetFullPath($OutputDirectory);New-Item -ItemType Directory -Force $out|Out-Null
 $selected=if($Baseline){$bases[$paths[0]]}else{$unit}
-$heal=Block $selected 'int32 Unit::DealHeal(';$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal prefix boundary missing'}
+$heal=Get-HealApiBlock $selected;$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal prefix boundary missing'}
 [IO.File]::WriteAllText("$out/DealHeal.inc",$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}")
 [IO.File]::WriteAllText("$out/Notify.inc",$notify)
-[IO.File]::WriteAllText("$out/Default.inc",(Block $sources[$paths[3]] 'virtual void OnHealApplied('))
+[IO.File]::WriteAllText("$out/Default.inc",(Block $liveSources[$paths[3]] 'virtual void OnHealApplied('))
 [IO.File]::WriteAllText("$out/Destroy.inc",(Block $creature 'bool Creature::AIM_Destroy('))
 $initialize=Block $creature 'bool Creature::AIM_Initialize('
 [IO.File]::WriteAllText("$out/Initialize.inc",$initialize.Substring(0,$initialize.IndexOf('    AIM_Destroy();'))+"    (void)ai;`n    return true;`n}")

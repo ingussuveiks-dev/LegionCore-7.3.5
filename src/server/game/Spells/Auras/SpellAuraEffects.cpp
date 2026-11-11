@@ -8195,7 +8195,7 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster, S
         auto heal = uint32(damage * gainMultiplier);
         heal = uint32(caster->SpellHealingBonusTaken(caster, GetSpellInfo(), heal, DOT, effIndex, GetBase()->GetStackAmount()));
 
-        int32 gain = caster->HealBySpell(caster, GetSpellInfo(), heal);
+        int64 gain = caster->HealBySpell(caster, GetSpellInfo(), heal);
         caster->getHostileRefManager().threatAssist(caster, gain * 0.5f, GetSpellInfo());
     }
 }
@@ -8310,7 +8310,7 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster, SpellEf
                                         uint32 _heal = damage;
                                         uint32 _absorb = 0;
                                         caster->CalcHealAbsorb(unit, GetSpellInfo(), _heal, _absorb);
-                                        int32 _gain = caster->DealHeal(unit, _heal, GetSpellInfo());
+                                        int64 _gain = caster->DealHeal(unit, _heal, GetSpellInfo());
                                         SpellPeriodicAuraLogInfo _pInfo(this, _heal, _heal - _gain, _absorb, 0, 0.0f, crit);
                                         unit->SendPeriodicAuraLog(&_pInfo);
                                     }
@@ -8448,7 +8448,7 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster, SpellEf
         return;
 
     caster->CalcHealAbsorb(target, GetSpellInfo(), heal, absorb);
-    int32 gain = caster->DealHeal(target, heal, GetSpellInfo());
+    int64 gain = caster->DealHeal(target, heal, GetSpellInfo());
 
     DamageInfo dmgInfoProc = DamageInfo(caster, target, damage, GetSpellInfo(), GetSpellInfo() ? SpellSchoolMask(GetSpellInfo()->GetMisc(m_diffMode)->MiscData.SchoolMask) : SPELL_SCHOOL_MASK_NORMAL, SPELL_DIRECT_DAMAGE, damage);
     dmgInfoProc.AbsorbDamage(absorb);

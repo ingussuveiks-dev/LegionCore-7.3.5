@@ -2853,7 +2853,7 @@ void Spell::DoAllEffectOnTarget(TargetInfoPtr target)
         else
             procEx |= PROC_EX_NORMAL_HIT;
 
-        int32 gain = caster->HealBySpell(unitTarget, m_spellInfo, addhealth, target->HasMask(TARGET_INFO_CRIT));
+        int64 gain = caster->HealBySpell(unitTarget, m_spellInfo, addhealth, target->HasMask(TARGET_INFO_CRIT));
         unitTarget->getHostileRefManager().threatAssist(caster, float(gain) * 0.5f, m_spellInfo);
         uint32 overHeal = addhealth - gain;
         m_healing = gain;

@@ -2,6 +2,7 @@
 # Their production companion handlers still compile from current source. This
 # removes only separately native-tested acquisition wiring from old whole-file
 # comparisons; it never replaces or skips a functional regression.
+. "$PSScriptRoot/HealApiFixture.ps1"
 function Get-SheilunScopeBlock([string]$source,[string]$start){
  $at=$source.IndexOf($start);if($at -lt 0){throw "Missing acquisition scope boundary: $start"}
  $end=$source.IndexOf('{',$at)+1;$depth=1
@@ -9,6 +10,7 @@ function Get-SheilunScopeBlock([string]$source,[string]$start){
  if($depth){throw "Unclosed acquisition scope boundary: $start"};$source.Substring($at,$end-$at)
 }
 function Assert-SheilunScopeEqual([string]$actual,[string]$expected,[string]$label){
+ $actual=Get-HealApiScopeSource $actual;$expected=Get-HealApiScopeSource $expected
  if(($actual -replace '\s','') -cne ($expected -replace '\s','')){throw "Unexpected acquisition delta: $label"}
 }
 function Get-SheilunAcquisitionRetainedMap([string]$Source){
@@ -97,6 +99,13 @@ public:
  $oldShared=(& git -C $repo show "ab99b2d2d:$shared") -join "`n"
  if($LASTEXITCODE){throw 'Pinned shared factory source unavailable'}
  $currentShared=Get-Content "$repo/$shared" -Raw
+ # Later Dreadblades/Monk-intro repairs are independent of this factory move.
+ # Certify their entire current file against the task baseline,then inspect
+ # the original acquisition commit for this historical delta only.
+ $taskShared=(& git -C $repo show "cbd047ef4:$shared") -join "`n"
+ if($LASTEXITCODE -or (($currentShared -replace '\s','') -cne ($taskShared -replace '\s',''))){throw 'Shared scenario file changed beyond independently retained task baseline'}
+ $currentShared=(& git -C $repo show "44d3f5701:$shared") -join "`n"
+ if($LASTEXITCODE){throw 'Original acquisition factory delta unavailable'}
  $oldFactory=Get-SheilunScopeBlock $oldShared 'struct instance_sheylun :'
  $expectedShared=$oldShared.Replace('// Sheilun artifact acquisition - map 1541, scenario 1007','').Replace($oldFactory+';','').Replace('    RegisterInstanceScript(instance_sheylun, 1541);','')
  Assert-SheilunScopeEqual $currentShared $expectedShared 'shared scenario factories changed only by moving the former empty Sheilun factory'

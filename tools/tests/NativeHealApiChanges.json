@@ -1,0 +1,226 @@
+{
+  "baseline": "cbd047ef4",
+  "scope": "Positive native uint32 healing/gains/absorb and bounded shared manager;TimeLoop threshold is separate",
+  "changes": [
+    {
+      "path": "src/server/game/AI/CreatureAI.h",
+      "edits": [
+        {
+          "line": 229,
+          "old": "    virtual void OnHealApplied(Unit* /*healer*/, uint32 /*amount*/, int32 /*gain*/) {}\n",
+          "new": "    virtual void OnHealApplied(Unit* /*healer*/, uint32 /*amount*/, int64 /*gain*/) {}\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Entities/Creature/Creature.cpp",
+      "edits": [
+        {
+          "line": 1285,
+          "old": "void Creature::NotifyHealApplied(Unit* healer, uint32 amount, int32 gain)\n",
+          "new": "void Creature::NotifyHealApplied(Unit* healer, uint32 amount, int64 gain)\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Entities/Creature/Creature.h",
+      "edits": [
+        {
+          "line": 624,
+          "old": "        void NotifyHealApplied(Unit* healer, uint32 amount, int32 gain);\n",
+          "new": "        void NotifyHealApplied(Unit* healer, uint32 amount, int64 gain);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Entities/Unit/Unit.cpp",
+      "edits": [
+        {
+          "line": 195,
+          "old": "void DamageInfo::AbsorbDamage(int32 amount)\n",
+          "new": "void DamageInfo::AbsorbDamage(int64 amount)\n"
+        },
+        {
+          "line": 197,
+          "old": "    amount = std::min(amount, int32(GetDamage()));\n    m_absorb += amount;\n    m_damage -= amount;\n",
+          "new": "    // Endurance of Niuzao restores a rejected absorption through this API.\n    if (amount < 0)\n    {\n        uint64 const requested = uint64(-(amount + 1)) + 1;\n        uint32 const restored = uint32(std::min<uint64>(requested,\n            std::min<uint64>(m_absorb, std::numeric_limits<uint32>::max() - m_damage)));\n        m_absorb -= restored;\n        m_damage += restored;\n        return;\n    }\n    uint32 const absorbed = uint32(std::max<int64>(0, std::min<int64>(amount, GetDamage())));\n    m_absorb += absorbed;\n    m_damage -= absorbed;\n"
+        },
+        {
+          "line": 2995,
+          "old": "    int32 RemainingHeal = healAmount;\n",
+          "new": "    uint32 RemainingHeal = healAmount;\n"
+        },
+        {
+          "line": 3024,
+          "old": "        if (RemainingHeal < currentAbsorb)\n            currentAbsorb = RemainingHeal;\n",
+          "new": "        uint32 const absorbed = uint32(std::min<double>(RemainingHeal, std::max(0.0, double(currentAbsorb))));\n        currentAbsorb = float(absorbed);\n        RemainingHeal -= absorbed;\n"
+        },
+        {
+          "line": 3027,
+          "old": "        RemainingHeal -= currentAbsorb;\n\n        dmgInfo.AbsorbDamage(currentAbsorb);\n",
+          "new": "        dmgInfo.AbsorbDamage(absorbed);\n"
+        },
+        {
+          "line": 12262,
+          "old": "int32 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto)\n",
+          "new": "int64 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto)\n"
+        },
+        {
+          "line": 12264,
+          "old": "    int32 gain = 0;\n",
+          "new": "    int64 gain = 0;\n"
+        },
+        {
+          "line": 12271,
+          "old": "                instance->UpdateDamageManager(victim->GetGUID(), -int32(addhealth), true);\n",
+          "new": "                instance->UpdateDamageManager(victim->GetGUID(), -int64(addhealth), true);\n"
+        },
+        {
+          "line": 12279,
+          "old": "        gain = victim->ModifyHealth(int32(addhealth), this);\n",
+          "new": "        gain = victim->ModifyHealth(int64(addhealth), this);\n"
+        },
+        {
+          "line": 12622,
+          "old": "int32 Unit::HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical)\n",
+          "new": "int64 Unit::HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical)\n"
+        },
+        {
+          "line": 12625,
+          "old": "    int32 gain = 0;\n",
+          "new": "    int64 gain = 0;\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Entities/Unit/Unit.h",
+      "edits": [
+        {
+          "line": 786,
+          "old": "    void AbsorbDamage(int32 amount);\n",
+          "new": "    void AbsorbDamage(int64 amount);\n"
+        },
+        {
+          "line": 1380,
+          "old": "        int32 DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto = nullptr);\n",
+          "new": "        int64 DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto = nullptr);\n"
+        },
+        {
+          "line": 1483,
+          "old": "        int32 HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical = false);\n",
+          "new": "        int64 HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical = false);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Instances/InstanceScript.cpp",
+      "edits": [
+        {
+          "line": 1161,
+          "old": "void InstanceScript::UpdateDamageManager(ObjectGuid caller, int32 damage, bool heal)\n",
+          "new": "void InstanceScript::UpdateDamageManager(ObjectGuid caller, int64 damage, bool heal)\n"
+        },
+        {
+          "line": 1188,
+          "old": "",
+          "new": "            else if (damage < 0)\n            {\n                uint64 const current = pull->GetHealth();\n                uint64 const maximum = pull->GetMaxHealth();\n                uint64 const amount = uint64(-(damage + 1)) + 1;\n                pull->SetHealth(current + std::min(amount, maximum > current ? maximum - current : 0));\n            }\n"
+        },
+        {
+          "line": 1189,
+          "old": "                pull->SetHealth(pull->GetHealth() - damage);\n",
+          "new": "                pull->SetHealth(pull->GetHealth() - uint64(damage));\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Instances/InstanceScript.h",
+      "edits": [
+        {
+          "line": 332,
+          "old": "        void UpdateDamageManager(ObjectGuid caller, int32 damage, bool heal = false);\n",
+          "new": "        void UpdateDamageManager(ObjectGuid caller, int64 damage, bool heal = false);\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Spells/Auras/SpellAuraEffects.cpp",
+      "edits": [
+        {
+          "line": 8197,
+          "old": "        int32 gain = caster->HealBySpell(caster, GetSpellInfo(), heal);\n",
+          "new": "        int64 gain = caster->HealBySpell(caster, GetSpellInfo(), heal);\n"
+        },
+        {
+          "line": 8312,
+          "old": "                                        int32 _gain = caster->DealHeal(unit, _heal, GetSpellInfo());\n",
+          "new": "                                        int64 _gain = caster->DealHeal(unit, _heal, GetSpellInfo());\n"
+        },
+        {
+          "line": 8450,
+          "old": "    int32 gain = caster->DealHeal(target, heal, GetSpellInfo());\n",
+          "new": "    int64 gain = caster->DealHeal(target, heal, GetSpellInfo());\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/game/Spells/Spell.cpp",
+      "edits": [
+        {
+          "line": 2855,
+          "old": "        int32 gain = caster->HealBySpell(unitTarget, m_spellInfo, addhealth, target->HasMask(TARGET_INFO_CRIT));\n",
+          "new": "        int64 gain = caster->HealBySpell(unitTarget, m_spellInfo, addhealth, target->HasMask(TARGET_INFO_CRIT));\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/Sheylun.cpp",
+      "edits": [
+        {
+          "line": 276,
+          "old": "        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int32 /*gain*/) override { ObserveWoundHeal(); }\n",
+          "new": "        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int64 /*gain*/) override { ObserveWoundHeal(); }\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Monk/Shey-lun/sheilun_taran_intro.h",
+      "edits": [
+        {
+          "line": 42,
+          "old": "void OnHealApplied(Unit* who, uint32 /*amount*/, int32 /*gain*/) override\n",
+          "new": "void OnHealApplied(Unit* who, uint32 /*amount*/, int64 /*gain*/) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp",
+      "edits": [
+        {
+          "line": 191,
+          "old": "        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int32 /*gain*/) override\n",
+          "new": "        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int64 /*gain*/) override\n"
+        },
+        {
+          "line": 608,
+          "old": "        void OnHealApplied(Unit* who, uint32 /*amount*/, int32 /*gain*/) override\n",
+          "new": "        void OnHealApplied(Unit* who, uint32 /*amount*/, int64 /*gain*/) override\n"
+        },
+        {
+          "line": 867,
+          "old": "        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int32 /*gain*/) override\n",
+          "new": "        void OnHealApplied(Unit* /*who*/, uint32 /*amount*/, int64 /*gain*/) override\n"
+        }
+      ]
+    },
+    {
+      "path": "src/server/scripts/Spells/spell_generic.cpp",
+      "edits": [
+        {
+          "line": 106,
+          "old": "                            dmgInfo.AbsorbDamage(-(int32(absorbAmount)));\n",
+          "new": "                            dmgInfo.AbsorbDamage(-(int64(absorbAmount)));\n"
+        }
+      ]
+    }
+  ]
+}

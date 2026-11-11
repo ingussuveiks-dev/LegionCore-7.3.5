@@ -1,4 +1,5 @@
 param([switch]$Baseline,[switch]$HealBaseline,[switch]$VerifyReleaseBinary)
+. "$PSScriptRoot/HealApiFixture.ps1"
 $ErrorActionPreference='Stop'
 if(($Baseline -and $HealBaseline) -or (($Baseline -or $HealBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baseline modes are mutually exclusive and cannot verify current Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
@@ -113,7 +114,7 @@ foreach($pair in @(@('First','npc_travar_firstAI'),@('Second','npc_travar_second
  [IO.File]::WriteAllText("$out/$($pair[0])Reset.inc",(Block $actor 'void Reset('))
 }
 $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
-$heal=Block $core 'int32 Unit::DealHeal('
+$heal=Get-HealApiBlock $core
 $last=$heal.IndexOf('    Unit* unit = this;')
 if($last -lt 0){throw 'Native heal suffix boundary missing'}
 $prefix=$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}"

@@ -193,11 +193,21 @@ void DamageInfo::ModifyDamage(int32 amount)
         int64(m_damage) + amount, std::numeric_limits<uint32>::max())));
 }
 
-void DamageInfo::AbsorbDamage(int32 amount)
+void DamageInfo::AbsorbDamage(int64 amount)
 {
-    amount = std::min(amount, int32(GetDamage()));
-    m_absorb += amount;
-    m_damage -= amount;
+    // Endurance of Niuzao restores a rejected absorption through this API.
+    if (amount < 0)
+    {
+        uint64 const requested = uint64(-(amount + 1)) + 1;
+        uint32 const restored = uint32(std::min<uint64>(requested,
+            std::min<uint64>(m_absorb, std::numeric_limits<uint32>::max() - m_damage)));
+        m_absorb -= restored;
+        m_damage += restored;
+        return;
+    }
+    uint32 const absorbed = uint32(std::max<int64>(0, std::min<int64>(amount, GetDamage())));
+    m_absorb += absorbed;
+    m_damage -= absorbed;
 }
 
 void DamageInfo::ResistDamage(uint32 amount)
@@ -2993,7 +3003,7 @@ void Unit::CalcHealAbsorb(Unit* victim, const SpellInfo* healSpell, uint32 &heal
     if (!healAmount)
         return;
 
-    int32 RemainingHeal = healAmount;
+    uint32 RemainingHeal = healAmount;
 
     // Need remove expired auras after
     bool existExpired = false;
@@ -3022,12 +3032,11 @@ void Unit::CalcHealAbsorb(Unit* victim, const SpellInfo* healSpell, uint32 &heal
 
         // currentAbsorb - damage can be absorbed by shield
         // If need absorb less damage
-        if (RemainingHeal < currentAbsorb)
-            currentAbsorb = RemainingHeal;
+        uint32 const absorbed = uint32(std::min<double>(RemainingHeal, std::max(0.0, double(currentAbsorb))));
+        currentAbsorb = float(absorbed);
+        RemainingHeal -= absorbed;
 
-        RemainingHeal -= currentAbsorb;
-
-        dmgInfo.AbsorbDamage(currentAbsorb);
+        dmgInfo.AbsorbDamage(absorbed);
 
         tempAbsorb = currentAbsorb;
         absorbAurEff->GetBase()->CallScriptEffectAfterAbsorbHandlers(absorbAurEff, aurApp, dmgInfo, tempAbsorb);
@@ -12260,16 +12269,16 @@ void Unit::SetCharm(Unit* charm, bool apply)
     }
 }
 
-int32 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto)
+int64 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto)
 {
-    int32 gain = 0;
+    int64 gain = 0;
 
     if (victim->IsAIEnabled)
     {
         victim->GetAI()->HealReceived(this, addhealth);
         if (InstanceScript* instance = GetInstanceScript())
             if (instance->CheckDamageManager())
-                instance->UpdateDamageManager(victim->GetGUID(), -int32(addhealth), true);
+                instance->UpdateDamageManager(victim->GetGUID(), -int64(addhealth), true);
     }
 
     if (IsAIEnabled)
@@ -12277,7 +12286,7 @@ int32 Unit::DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto
 
     if (addhealth)
     {
-        gain = victim->ModifyHealth(int32(addhealth), this);
+        gain = victim->ModifyHealth(int64(addhealth), this);
         if (Creature* creature = victim->ToCreature())
             creature->NotifyHealApplied(this, addhealth, gain);
     }
@@ -12620,10 +12629,10 @@ void Unit::SendHealSpellLog(Unit* victim, uint32 spellID, uint32 health, uint32 
     SendCombatLogMessage(&spellHealLog);
 }
 
-int32 Unit::HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical)
+int64 Unit::HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical)
 {
     uint32 absorb = 0;
-    int32 gain = 0;
+    int64 gain = 0;
     // calculate heal absorb and reduce healing
     CalcHealAbsorb(victim, spellInfo, addHealth, absorb);
 

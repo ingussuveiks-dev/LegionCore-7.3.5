@@ -9,6 +9,7 @@
 using uint32 = uint32_t;
 using int32 = int32_t;
 using int64 = int64_t;
+using uint64 = uint64_t;
 using uint8 = uint8_t;
 using AuraEffectHandleModes = int;
 constexpr int EFFECT_0 = 0, EFFECT_1 = 1;
@@ -20,7 +21,7 @@ struct DamageInfo {
     uint32 m_damage, m_absorb = 0;
     uint32 GetDamage() const { return m_damage; }
     void ModifyDamage(int32 amount);
-    void AbsorbDamage(int32 amount);
+    void AbsorbDamage(int64 amount);
 };
 #include "DamageAbsorb.inc"
 struct AuraApplication {};

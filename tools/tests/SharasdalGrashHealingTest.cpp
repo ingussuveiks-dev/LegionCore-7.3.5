@@ -18,7 +18,7 @@ struct ObjectGuid{uint64 high=0,low=0;bool IsPlayer()const{return high==1;}bool 
 struct Map{}liveMap,otherMap;
 struct CreatureAI{
  virtual uint32 GetData(uint32)const{return 0;}
- virtual ~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}virtual void HealDone(Unit*,uint32&){}virtual void OnHealApplied(Unit*,uint32,int32){}virtual void UpdateLifecycle(uint32){}virtual void Reset(){}virtual void EnterCombat(Unit*){}virtual void DoAction(int32){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}virtual void MovementInform(uint32,uint32){}virtual void UpdateAI(uint32){}virtual void sGossipSelect(Player*,uint32,uint32){}
+ virtual ~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}virtual void HealDone(Unit*,uint32&){}virtual void OnHealApplied(Unit*,uint32,int32){}/*Pinned ordinary-health actors retain their legacy unused gain declaration. Current64actors override directly;real wide ABI is tested in NativeHealApi.*/virtual void OnHealApplied(Unit* who,uint32 amount,int64 gain){assert(gain>=INT32_MIN&&gain<=INT32_MAX);OnHealApplied(who,amount,int32(gain));}virtual void UpdateLifecycle(uint32){}virtual void Reset(){}virtual void EnterCombat(Unit*){}virtual void DoAction(int32){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}virtual void MovementInform(uint32,uint32){}virtual void UpdateAI(uint32){}virtual void sGossipSelect(Player*,uint32,uint32){}
  std::vector<uint32> speech;void Talk(uint32 line){speech.push_back(line);}void AttackStart(Unit*){}
 };
 struct InstanceScript{bool CheckDamageManager()const{return false;}void UpdateDamageManager(ObjectGuid,int32,bool){}void HandleGameObject(ObjectGuid,bool){}uint32 getScenarionStep()const;};
@@ -36,7 +36,7 @@ struct Unit{
  void SetHealth(uint64 value,uint32){health=value;}void SetHealthScal(uint64 value,Unit*,uint32){health=value;}
  InstanceScript* GetInstanceScript(){static InstanceScript instance;return &instance;}
  void AddDelayedEvent(uint64 delay,std::function<void()>&& callback){functions.AddDelayedEvent(delay,std::move(callback));}
- int64 ModifyHealth(int64,Unit* =nullptr,uint32=0);int32 DealHeal(Unit*,uint32);
+ int64 ModifyHealth(int64,Unit* =nullptr,uint32=0);int64 DealHeal(Unit*,uint32);
 };
 enum class GossipOptionNpc:uint8{None,Other};
 struct GossipMenuItem{GossipOptionNpc OptionNpc=GossipOptionNpc::None;bool IsCoded=false;uint32 Sender=1,Action=1001;};
@@ -68,7 +68,7 @@ struct Creature:Unit{
  float GetPositionX()const{return 0;}float GetPositionY()const{return 0;}float GetPositionZ()const{return z;}float GetOrientation()const{return 0;}void SetHomePosition(float,float,float,float){}
  Creature* FindNearestCreature(uint32 id,float,bool=true){return id==102826?erunak:id==104853?adel:nullptr;}
  Player* FindNearestPlayer(float){return nearest;}struct GO{ObjectGuid GetGUID()const{return {};}};GO* FindNearestGameObject(uint32,float){return nullptr;}
- Motion* GetMotionMaster(){return &motion;}void NotifyHealApplied(Unit*,uint32,int32);
+ Motion* GetMotionMaster(){return &motion;}void NotifyHealApplied(Unit*,uint32,int64);
  void Tick(uint32 diff=0){CreatureAI* i_AI=primary;
 #include "Lifecycle.inc"
  }

@@ -1,12 +1,13 @@
 param([switch]$ScopeOnly,[switch]$Baseline,[switch]$VerifyReleaseBinary,[string]$OutputDirectory='')
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+. "$PSScriptRoot/HealApiFixture.ps1"
 function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){throw "Missing $start"};$b=$s.IndexOf('{',$a)+1;$depth=1;while($depth -and $b -lt $s.Length){$depth+=([int]($s[$b] -eq '{'))-([int]($s[$b] -eq '}'));++$b};if($depth){throw "Unclosed $start"};$s.Substring($a,$b-$a)}
 function Adapt([string]$s,[string]$a,[string]$b){if(!$s.Contains($a)){throw "Combat host boundary changed: $a"};$s.Replace($a,$b)}
 $path='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/Sharasdal.cpp';$source=(Get-Content "$repo/$path" -Raw).Replace("`r",'');$old=(& git -C $repo show "585592236:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned combat actor missing'}
 . "$PSScriptRoot/SharasdalWaveScope.ps1"
 $normal=Remove-SharasdalWaveScope $source
 foreach($pair in @(@('erunak','AttackStart(lady)'),@('adel','AttackStart(lady)'),@('garsh','Talk(9)'))){$name=$pair[0];$action=$pair[1];$prefix=' '*28;$added="${prefix}if (CreatureAI* content = $name"+'->GetDisabledAI() ? static_cast<CreatureAI*>('+$name+'->GetDisabledAI()) : '+$name+"->AI())`n"+$prefix+'    content->'+$action+';';$normal=Adapt $normal $added ($prefix+$name+'->AI()->'+$action+';')}
-if(($normal -replace '\s','') -cne ($old -replace '\s','')){throw 'Other actors/progression/spell/target/cast ordering/timers changed'}
+if(((Get-HealApiScopeSource $normal) -replace '\s','') -cne ($old -replace '\s','')){throw 'Other actors/progression/spell/target/cast ordering/timers changed'}
 . "$PSScriptRoot/SharasdalGraveyardScope.ps1"
 foreach($name in @('instance_sharasdal.cpp','sharasdal_lower_ascent.h','sharasdal_gauntlet_arrival.h','sharasdal_upper_wall.h','sharasdal_erunak_entry.h','sharasdal_erunak_upper.h')){
  $relative='src/server/scripts/Scenario/Artifacts/Shaman/Sharasdal/'+$name;$prior=(& git -C $repo show "585592236:$relative") -join "`n";if($LASTEXITCODE){throw 'Pinned combat instance/member missing'}

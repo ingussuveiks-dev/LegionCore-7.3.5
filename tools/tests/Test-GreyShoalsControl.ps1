@@ -8,7 +8,7 @@ function Export([string]$file,[string]$start,[string]$end,[string]$name){
  [IO.File]::WriteAllText("$out/$name.inc",$source.Substring($a,$b-$a))
 }
 Export 'src/server/game/Entities/Unit/Unit.cpp' 'bool Unit::SetCharmedBy(' 'void Unit::RestoreFaction()' 'ControlCharm'
-Export 'src/server/game/Entities/Unit/Unit.cpp' 'void Unit::SetCharm(' 'int32 Unit::DealHeal(' 'ControlRelations'
+Export 'src/server/game/Entities/Unit/Unit.cpp' 'void Unit::SetCharm(' 'int64 Unit::DealHeal(' 'ControlRelations'
 Export 'src/server/game/Entities/Unit/Unit.cpp' 'void Unit::RemoveCharmAuras()' 'void Unit::UnsummonAllTotems()' 'ControlAuras'
 Export 'src/server/game/Entities/Unit/Unit.cpp' 'Unit* Unit::GetFirstControlled() const' 'void Unit::RemoveAllControlled()' 'ControlFirst'
 Export 'src/server/game/AI/SmartScripts/SmartAI.cpp' 'void SmartAI::OnCharmed(' 'void SmartAI::DoAction(' 'ControlSmartHook'

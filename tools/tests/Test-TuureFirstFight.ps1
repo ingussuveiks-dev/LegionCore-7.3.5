@@ -1,4 +1,5 @@
 param([switch]$Baseline,[switch]$AddressSanitizer,[switch]$VerifyNativeCatalog,[switch]$RouteBaseline,[switch]$Cage,[switch]$CageBaseline,[switch]$Captain,[switch]$CaptainBaseline)
+. "$PSScriptRoot/HealApiFixture.ps1"
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..");$out="$repo/build-extractors/runtime-test/tuure-first-fight"
 if($CageBaseline){$Cage=$true};if($Cage){$out="$repo/build-extractors/runtime-test/tuure-cage";New-Item -ItemType Directory -Force $out|Out-Null}
 if($CaptainBaseline){$Captain=$true};if($Captain){$out="$repo/build-extractors/runtime-test/tuure-captain";New-Item -ItemType Directory -Force $out|Out-Null}
@@ -47,7 +48,7 @@ struct InstanceScript{
  $nativeFixture=Replace-Fixture $nativeFixture 'bool operator==(ObjectGuid v)const{return high==v.high&&low==v.low;}' 'bool operator==(ObjectGuid v)const{return high==v.high&&low==v.low;}bool operator!=(ObjectGuid v)const{return !(*this==v);}'
  $nativeFixture=Replace-Fixture $nativeFixture 'struct Unit {' 'struct Transport{float GetOrientation()const{return 0;}void CalculatePassengerPosition(float&,float&,float&,float*){}};struct NativeSpline{bool done=true;bool Finalized()const{return done;}};struct Unit {float x=0,y=0,z=0,objectSize=0;bool combat=false;Unit* victim=nullptr;NativeSpline spline;NativeSpline* movespline=&spline;float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}float GetObjectSize()const{return objectSize;}float GetOrientation()const{return 0;}Transport* GetTransport(){return nullptr;}void SetHomePosition(float,float,float,float){}void SetTransportHomePosition(float,float,float,float){}bool IsWithinDist3d(float a,float b,float c,float r,bool size=true)const{float dx=x-a,dy=y-b,dz=z-c;if(size)r+=objectSize;return dx*dx+dy*dy+dz*dz<=r*r;}bool isInCombat()const{return combat;}Unit* getVictim()const{return victim;}void Engage(Unit*);'
  $nativeFixture=Replace-Fixture $nativeFixture 'InstanceScript* GetInstanceScript(){return nullptr;}' 'InstanceScript* GetInstanceScript(){return map?map->script:nullptr;}'
- $nativeFixture=Replace-Fixture $nativeFixture 'int32 DealHeal(Unit*,uint32);' 'int32 DealHeal(Unit*,uint32);void Kill(Creature*);Creature* FindNearestCreature(uint32,float,bool=true);'
+ $nativeFixture=Replace-Fixture $nativeFixture 'int64 DealHeal(Unit*,uint32);' 'int64 DealHeal(Unit*,uint32);void Kill(Creature*);Creature* FindNearestCreature(uint32,float,bool=true);'
  $nativeFixture=Replace-Fixture $nativeFixture 'Player* GetCharmerOrOwnerPlayerOrPlayerItself()const;' 'virtual bool IsPreDelete()const{return false;}virtual uint32 GetEntry()const{return 0;}virtual uint32 GetMapId()const{return 1489;}virtual uint32 GetInstanceId()const{return 7;}Player* GetCharmerOrOwnerPlayerOrPlayerItself()const;'
  $nativeFixture=Replace-Fixture $nativeFixture 'uint32 classId=5,credits=0;' 'uint32 classId=5,credits=0,firstCredits=0,healCredits=0,captainCredits=0,attempts=0;bool rejectCredit=false;'
  $nativeFixture=Replace-Fixture $nativeFixture 'void UpdateAchievementCriteria(uint32 type,uint32 asset){assert(type==92&&asset==50563);++credits;if(onCredit)onCredit();}' 'void UpdateAchievementCriteria(uint32 type,uint32 asset);'
@@ -121,7 +122,7 @@ auto sCreatureTextMgr=&textMgr;
  [IO.File]::WriteAllText("$out/Owner.inc",(Block $core 'Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const'))
  [IO.File]::WriteAllText("$out/OwnerGuid.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'ObjectGuid GetCharmerOrOwnerGUID() const'))
  [IO.File]::WriteAllText("$out/Quest.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw) 'void Player::AddQuestDelayedEvent('))
- $heal=Block $core 'int32 Unit::DealHeal(';$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal boundary missing'}
+ $heal=Get-HealApiBlock $core;$last=$heal.IndexOf('    Unit* unit = this;');if($last -lt 0){throw 'Native heal boundary missing'}
  [IO.File]::WriteAllText("$out/DealHeal.inc",$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}")
  [IO.File]::WriteAllText("$out/ModifyHealth.inc",(Block $core 'int64 Unit::ModifyHealth('))
  [IO.File]::WriteAllText("$out/Lifecycle.inc",(Block (Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw) 'if (i_AI || i_disabledAI)'))

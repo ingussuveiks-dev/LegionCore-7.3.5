@@ -1,4 +1,5 @@
 param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+. "$PSScriptRoot/HealApiFixture.ps1"
 $ErrorActionPreference='Stop'
 if($Baseline -and $VerifyReleaseBinary){throw 'Pinned baseline cannot certify fixed Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
@@ -12,7 +13,7 @@ if($Baseline){$source=(& git -C $repo show "0a643f8a:$path") -join "`n";if($LAST
 [IO.File]::WriteAllText("$out/RescueAI.inc",(Block $source 'struct npc_silverhand_eventsAI : ScriptedAI')+';')
 $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 [IO.File]::WriteAllText("$out/UnitState.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'enum UnitState')+';')
-$heal=Block $unit 'int32 Unit::DealHeal('
+$heal=Get-HealApiBlock $unit
 $last=$heal.IndexOf('    Unit* unit = this;')
 if($last -lt 0){throw 'Native heal suffix boundary missing'}
 $prefix=$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}"

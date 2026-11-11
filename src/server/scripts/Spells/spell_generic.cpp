@@ -104,7 +104,7 @@ class spell_endurance_of_niuzao : public SpellScriptLoader
                     if (Player* plr = owner->ToPlayer())
                         if (dmgInfo.GetAbsorb() < owner->GetHealth() || owner->HasAura(148010) || !plr->isInTankSpec())
                         {
-                            dmgInfo.AbsorbDamage(-(int32(absorbAmount)));
+                            dmgInfo.AbsorbDamage(-(int64(absorbAmount)));
                             if (SpellInfo const* info = aurEff->GetSpellInfo())
                                 if (aurEff->GetAmount() != info->Effects[EFFECT_0]->BasePoints)
                                     aurEff->SetAmount(info->Effects[EFFECT_0]->BasePoints);

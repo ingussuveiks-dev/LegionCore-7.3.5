@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+using int64=int64_t;
 #include <functional>
 #include <iostream>
 #include <stdexcept>
@@ -19,15 +20,15 @@ struct Unit
 {
     virtual ~Unit()=default;
     bool IsAIEnabled=false;
-    int32 health=100,maximum=1000,modifications=0;
+    int64 health=100,maximum=1000;int32 modifications=0;
     CreatureAI* healerAI=nullptr;
     virtual Creature* ToCreature(){return nullptr;}
     virtual CreatureAI* GetAI(){return healerAI;}
     InstanceScript* GetInstanceScript(){return nullptr;}
     uint64 GetGUID()const{return 1;}
     // Controlled health service. Existing native ModifyHealth/scaling suites run separately.
-    int32 ModifyHealth(int32 amount,Unit*){++modifications;int32 gain=std::min(maximum-health,amount);health+=gain;return gain;}
-    int32 DealHeal(Unit*,uint32);
+    int64 ModifyHealth(int64 amount,Unit*){++modifications;int64 gain=std::min(maximum-health,amount);health+=gain;return gain;}
+    int64 DealHeal(Unit*,uint32);
 };
 struct Creature:Unit
 {
@@ -36,7 +37,7 @@ struct Creature:Unit
     Creature* ToCreature()override{return this;}
     CreatureAI* AI(){return i_AI;}
     CreatureAI* GetAI()override{return AI();}
-    void NotifyHealApplied(Unit*,uint32,int32);
+    void NotifyHealApplied(Unit*,uint32,int64);
     bool AIM_Destroy();bool AIM_Initialize(CreatureAI*);
 };
 #define ASSERT(condition,...) assert(condition)
@@ -47,10 +48,10 @@ struct Creature:Unit
 #include "DealHeal.inc"
 struct Observer:CreatureAI
 {
-    Creature* actor;Unit* expectedHealer;int32 calls=0;uint32 amount=0;int32 gain=0;
+    Creature* actor;Unit* expectedHealer;int32 calls=0;uint32 amount=0;int64 gain=0;
     std::function<void()> callback;
     Observer(Creature* c,Unit* u):actor(c),expectedHealer(u){}
-    void OnHealApplied(Unit* healer,uint32 finalAmount,int32 actualGain)override
+    void OnHealApplied(Unit* healer,uint32 finalAmount,int64 actualGain)override
     {
         assert(healer==expectedHealer&&actor->m_AI_locked);
         ++calls;amount=finalAmount;gain=actualGain;

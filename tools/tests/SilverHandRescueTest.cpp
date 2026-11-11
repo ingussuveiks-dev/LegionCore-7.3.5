@@ -89,7 +89,7 @@ struct Unit : WorldObject
     void SetHealthScal(uint64 value,Unit*,uint32){health=value;}
     int64 ModifyHealth(int64 dVal,Unit* victim=nullptr,uint32 spellId=0);
     void AddDelayedEvent(uint64 offset,std::function<void()>&& function){assert(offset==0);functions.AddDelayedEvent(offset,std::move(function));}
-    int32 DealHeal(Unit* victim,uint32 addhealth);
+    int64 DealHeal(Unit* victim,uint32 addhealth);
 };
 struct Scenario
 {
@@ -160,7 +160,7 @@ struct Creature : Unit
 {
     Creature* ToCreature() override{return this;}
     // Existing rescue fixture isolates lifecycle behavior; dispatch is tested separately.
-    void NotifyHealApplied(Unit*,uint32,int32){}
+    void NotifyHealApplied(Unit*,uint32,int64){}
     uint32 entry=106933,mapId=1539,instance=42,states=UNIT_STATE_STUNNED,despawns=0;
     std::vector<uint32> removals;
     Motion motion;

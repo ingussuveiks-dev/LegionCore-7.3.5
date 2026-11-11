@@ -1159,7 +1159,7 @@ bool InstanceScript::CheckDamageManager()
     return initDamageManager;
 }
 
-void InstanceScript::UpdateDamageManager(ObjectGuid caller, int32 damage, bool heal)
+void InstanceScript::UpdateDamageManager(ObjectGuid caller, int64 damage, bool heal)
 {
     if (!damage)
         return;
@@ -1186,8 +1186,15 @@ void InstanceScript::UpdateDamageManager(ObjectGuid caller, int32 damage, bool h
 
             if (!heal && damage >= pull->GetHealth())
                 pull->Kill(pull, true);
+            else if (damage < 0)
+            {
+                uint64 const current = pull->GetHealth();
+                uint64 const maximum = pull->GetMaxHealth();
+                uint64 const amount = uint64(-(damage + 1)) + 1;
+                pull->SetHealth(current + std::min(amount, maximum > current ? maximum - current : 0));
+            }
             else
-                pull->SetHealth(pull->GetHealth() - damage);
+                pull->SetHealth(pull->GetHealth() - uint64(damage));
         }
     }
 }

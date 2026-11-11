@@ -51,7 +51,7 @@ struct Unit : WorldObject
     CreatureAI* GetAI();
     InstanceScript* GetInstanceScript(){return nullptr;}
     int64 ModifyHealth(int64,Unit* =nullptr,uint32=0);
-    int32 DealHeal(Unit*,uint32);
+    int64 DealHeal(Unit*,uint32);
     uint8 GetLevelForTarget(WorldObject const*) const {return 100;}
     float GetModifierValue(uint32 unitMod,uint32 modifier) const {assert(unitMod==UNIT_MOD_HEALTH && modifier==TOTAL_PCT);return 1.0f;}
     uint32 Deal(Creature*,uint32);
@@ -78,7 +78,7 @@ struct Creature : Unit
     Creature const* ToCreature() const override {return this;}
     Creature* ToCreature() override {return this;}
     // This fixture certifies wound/lifecycle behavior; dispatch has its own native regression.
-    void NotifyHealApplied(Unit*,uint32,int32) {}
+    void NotifyHealApplied(Unit*,uint32,int64) {}
     CreatureAI* AI(){return primary;}
     InstanceScript* GetInstanceScript(){return nullptr;}
     bool HasScalableLevels() const {return scalable;}

@@ -31,7 +31,7 @@ struct Unit {
  void SetHealth(uint64 v,uint32){health=v;}void SetHealthScal(uint64 v,Unit*,uint32){health=v;}
  virtual CreatureAI* GetAI(){return healAI;}InstanceScript* GetInstanceScript(){return nullptr;}
  void AddDelayedEvent(uint64 ms,std::function<void()>&& f){functions.AddDelayedEvent(ms,std::move(f));}
- int64 ModifyHealth(int64,Unit* =nullptr,uint32=0);int32 DealHeal(Unit*,uint32);
+ int64 ModifyHealth(int64,Unit* =nullptr,uint32=0);int64 DealHeal(Unit*,uint32);
 };
 struct QuestStatusData {uint32 Status=3;std::shared_ptr<uint8> ScriptLifetime;};
 struct Player:Unit {
@@ -53,7 +53,7 @@ struct Creature:Unit {
  bool IsWithinDistInMap(Unit* u,float d)const{assert(d==20);auto p=u?u->ToPlayer():nullptr;return p&&p->map==map&&p->entryNear;}
  Creature const* ToCreature()const override{return this;}Creature* ToCreature()override{return this;}CreatureAI* GetAI()override{return primary;}CreatureAI* AI(){return primary;}
  // Existing actor fixtures isolate lifecycle behavior; native dispatch is tested separately.
- void NotifyHealApplied(Unit*,uint32,int32){}
+ void NotifyHealApplied(Unit*,uint32,int64){}
  void ClearUnitState(uint32){}void RemoveAura(uint32 id){assert(id==204237);++removals;}
  void SetByteValue(uint32 field,uint32 offset,uint32 value){assert(field==1&&!offset&&!value);++poses;}void SetAnimKitId(uint32 id){assert(!id);++animations;}
  Creature* GetMotionMaster(){return this;}void MovePoint(uint32 id,float x,float y,float z){assert(id==1&&x==-13.92f&&y==1175.70f&&z==-66.31f);++moves;}

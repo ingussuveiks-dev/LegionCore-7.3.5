@@ -784,7 +784,7 @@ public:
     explicit DamageInfo(SpellNonMeleeDamage& dmgInfo, SpellInfo const* _spellInfo);
 
     void ModifyDamage(int32 amount);
-    void AbsorbDamage(int32 amount);
+    void AbsorbDamage(int64 amount);
     void ResistDamage(uint32 amount);
     void BlockDamage(uint32 amount);
     void SetAddPower(int32 amount) { m_addpower = amount; }
@@ -1378,7 +1378,7 @@ class TC_GAME_API Unit : public WorldObject
         uint32 DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDamage = nullptr, DamageEffectType damagetype = DIRECT_DAMAGE, SpellSchoolMask damageSchoolMask = SPELL_SCHOOL_MASK_NORMAL, SpellInfo const* spellProto = nullptr, bool durabilityLoss = true);
         uint32 CalcStaggerDamage(uint32 damage, SpellSchoolMask damageSchoolMask, SpellInfo const* spellInfo = nullptr, bool full = false);
         void Kill(Unit* victim, bool durabilityLoss = true, SpellInfo const* spellProto = nullptr);
-        int32 DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto = nullptr);
+        int64 DealHeal(Unit* victim, uint32 addhealth, SpellInfo const* spellProto = nullptr);
         int32 InterceptionOfDamage(Unit* victim, uint32 damage, SpellSchoolMask damageSchoolMask);
 
         void ProcDamageAndSpell(Unit* victim, uint32 procAttacker, uint32 procVictim, uint32 procEx, DamageInfo* dmgInfoProc, WeaponAttackType attType = BASE_ATTACK, SpellInfo const* procSpell = nullptr, SpellInfo const* procAura = nullptr, Uint32Set* AppliedProcMods = nullptr, Spell* spell = nullptr);
@@ -1481,7 +1481,7 @@ class TC_GAME_API Unit : public WorldObject
         bool isInAccessiblePlaceFor(Creature const* c) const;
 
         void SendHealSpellLog(Unit* victim, uint32 SpellID, uint32 Damage, uint32 OverHeal, uint32 Absorb, bool critical = false);
-        int32 HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical = false);
+        int64 HealBySpell(Unit* victim, SpellInfo const* spellInfo, uint32 addHealth, bool critical = false);
         void SendEnergizeSpellLog(Unit* victim, uint32 spellID, int32 damage, int32 overEnergize, Powers powertype);
         void EnergizeBySpell(Unit* victim, uint32 SpellID, int32 Damage, Powers powertype);
 

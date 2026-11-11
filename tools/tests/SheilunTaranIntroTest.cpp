@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+using int64=int64_t;
 #include <functional>
 #include <iostream>
 #include <map>
@@ -18,7 +19,7 @@ struct Progress{uint64 Counter=0;};struct Achievements{std::map<uint32,Progress>
 struct Scenario{uint32 id=1007,step=0;Achievements achievements;uint32 GetScenarioId()const{return id;}uint32 GetCurrentStep()const{return step;}Achievements&GetAchievementMgr(){return achievements;}};
 struct Manager{Scenario* current=nullptr;Scenario*GetScenario(uint32){return current;}}manager;auto*sScenarioMgr=&manager;
 struct Unit;struct Creature;struct Player;
-struct CreatureAI{virtual~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}virtual void HealDone(Unit*,uint32&){}virtual void OnHealApplied(Unit*,uint32,int32){}virtual void UpdateLifecycle(uint32){}virtual void Reset(){}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}};
+struct CreatureAI{virtual~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){}virtual void HealDone(Unit*,uint32&){}virtual void OnHealApplied(Unit*,uint32,int64){}virtual void UpdateLifecycle(uint32){}virtual void Reset(){}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}};
 struct InstanceScript{bool CheckDamageManager()const{return false;}void UpdateDamageManager(uint64,int32,bool){assert(false);}void OnCreatureDamageTaken(Creature*,Unit*,uint32&){}};
 struct WorldObject{virtual~WorldObject()=default;};
 struct Unit:WorldObject{
@@ -26,7 +27,7 @@ struct Unit:WorldObject{
  virtual Creature*ToCreature(){return nullptr;}virtual Creature const*ToCreature()const{return nullptr;}virtual Player*ToPlayer(){return nullptr;}virtual CreatureAI*GetAI(){return healerAI;}
  Player*GetCharmerOrOwnerPlayerOrPlayerItself();InstanceScript*GetInstanceScript(){return nullptr;}uint64 GetGUID()const{return 99;}
  int32 ModifyHealth(int32 amount,Unit*){int32 gain=std::min(maximum-health,amount);health+=gain;return gain;}
- int32 DealHeal(Unit*,uint32);
+ int64 DealHeal(Unit*,uint32);
  uint64 GetHealth()const{return health;}uint64 GetHealth(Unit*)const;float GetHealthPct()const{return 100.f*health/maximum;}
  uint8 GetLevelForTarget(WorldObject const*)const{return 100;}float GetModifierValue(uint32,uint32)const{return 1;}
  uint32 Deal(Creature*,uint32);
@@ -56,7 +57,7 @@ struct Creature:Unit{
  void SetAnimKitId(uint32 value){assert(!value);++kits;}Motion*GetMotionMaster(){return &motion;}void SetWalk(bool value){assert(!value);}
  bool AddAura(uint32 id,Creature*target){assert(id==204237&&target==this);++auraCalls;if(onAura)onAura();return auraAccepted;}void AddUnitState(uint32 state){assert(state==1);states|=state;}
  void ClearUnitState(uint32 state){assert(state==1);++cleared;states&=~state;}void RemoveAura(uint32 id){assert(id==204237);++removed;}
- void NotifyHealApplied(Unit*,uint32,int32);void Update(uint32);
+ void NotifyHealApplied(Unit*,uint32,int64);void Update(uint32);
 };
 #define TC_LOG_WARN(...) (++warnings)
 using CreatureLevelStat=Creature::ScaleStat;

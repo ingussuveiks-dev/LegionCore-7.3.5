@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstdint>
+using int64=int64_t;
 #include <map>
 #include <vector>
 #include <functional>
@@ -34,7 +35,7 @@ struct Creature:Unit{
 };
 struct CreatureAI{
  Creature* me;bool m_MoveInLineOfSight_locked=false;explicit CreatureAI(Creature* actor):me(actor){}virtual ~CreatureAI()=default;
- virtual void Reset(){}virtual void EnterCombat(Unit*){}virtual void EnterEvadeMode(){}virtual void OnHealApplied(Unit*,uint32,int32){}virtual void UpdateLifecycle(uint32){}
+ virtual void Reset(){}virtual void EnterCombat(Unit*){}virtual void EnterEvadeMode(){}virtual void OnHealApplied(Unit*,uint32,int64){}virtual void UpdateLifecycle(uint32){}
  virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}virtual void MovementInform(uint32,uint32){}virtual void MoveInLineOfSight(Unit*){}virtual void UpdateAI(uint32){}
  virtual void Talk(uint32 id){me->talks.push_back(id);if(me->onPresentation)me->onPresentation();}virtual void AttackStart(Unit*){++me->attacks;me->victim=true;}
  void MoveInLineOfSight_Safe(Unit*);
