@@ -325,8 +325,9 @@ public:
             ObjectGuid guid = ObjectGuid::Empty;
             if (Unit* owner = me->GetAnyOwner())
                 guid = owner->GetGUID();
-            me->AddDelayedEvent(1000, [this, guid] () -> void
+            me->AddDelayedEvent(1000, [this, guid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (Creature* gnome = me->FindNearestCreature(68475, 10.0f, true))
                 {
                     gnome->AddDelayedEvent(1000, [gnome, this, guid] () -> void
@@ -347,8 +348,9 @@ public:
                 }
             });
 
-            me->AddDelayedEvent(10000, [this] () -> void
+            me->AddDelayedEvent(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 _WinRound();
             });
         }
@@ -422,6 +424,9 @@ public:
             }
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
