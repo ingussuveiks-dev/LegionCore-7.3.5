@@ -1,17 +1,19 @@
 {
   "latest_second_five_ten_repairs_2026_11_11": {
-    "status": "IN_PROGRESS",
-    "completed_fixes": 40,
+    "status": "COMPLETE_50_AUTOMATED_CLIENT_PENDING",
+    "completed_fixes": 50,
     "authorized_fixes": 50,
     "audit": "docs\\audits\\second-five-ten-repairs-2026-11-11.json",
-    "latest_batch_audit": "docs\\audits\\fortyfifth-ten-repairs-2026-11-11.json",
-    "last_fix_commit": "17c6e677e6307b6adb3bf24b1ad83b65f7f7e0b9",
+    "latest_batch_audit": "docs\\audits\\fortysixth-ten-repairs-2026-11-11.json",
+    "last_fix_commit": "fc3e4c4315b56ff0b7185bb42eca3db3b0102837",
     "MariaDB": "INSTALLED_LIVE_VERIFIED_USER_SERVICE_UNTOUCHED",
     "pending": [
-      "MariaDB DLL is installed and live-verified;user MariaDB service remains running. FT minimum1 config warning absence awaits a future user restart;no service stop needed for these source fixes.",
-      "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
-      "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
-      "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+      "Sentinel custom kill-criterion call retains its original default amount0. Ordinary native kill/group credit remains separate;actual achievement/client behavior is not established by counting this controlled endpoint invocation.",
+      "Silver Hand legacy17915 has no direct quest objective or kill-credit alias in the reviewed live data. Null-killer safety is verified;indirect progression/group entitlement is not established and no new group grant is introduced.",
+      "MariaDB DLL is installed/live-verified;user service remains running. FT minimum1 config warning absence awaits a future user restart.",
+      "Actual gameplay/full encounters/client traversal and all36whole artifact chains remain pending. ASAN runs full extracted death methods with controlled instance/quest endpoints and fixture enum labels;native runs actual core getter projections only,not the complete registered death payloads.",
+      "Living Lady/conversation1906/Grash,LINK2/Slaghammer,TimeLoop32bit healing,heroic Mend,intermittent handshake and unchanged Cordana horizontal-wall source finding remain OPEN. No guessed threshold,timer,grant or unrelated SQL change.",
+      "Previous four CosmeticAI UAF claims were withdrawn after actual queue ownership proof;previous request has46confirmed lifetime fixes. This request contains40real Unit-queue families plus10death owner/instance repairs."
     ]
   },
   "latest_five_ten_repairs_2026_11_11": {

@@ -2,8 +2,8 @@
   "date": "2026-11-11",
   "request": "Five successive groups of ten new fixes,then stop. MariaDB DLL already installed/live-verified;do not stop the user service.",
   "authorized_fixes": 50,
-  "completed_fixes": 40,
-  "status": "IN_PROGRESS",
+  "completed_fixes": 50,
+  "status": "COMPLETE_50_AUTOMATED_CLIENT_PENDING",
   "batches": [
     {
       "number": 1,
@@ -436,12 +436,150 @@
         "resolution_sha256": "03d6f58a011035d1a841c30d363cf045fd55de03320948fee8af0b750fd85758",
         "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
       }
+    },
+    {
+      "number": 5,
+      "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+      "audit": "docs\\audits\\fortysixth-ten-repairs-2026-11-11.json",
+      "fixes": [
+        {
+          "key": "MoltenBehemothDeathCredit",
+          "title": "Resolve npc_molten_behemoth progression to the eligible killer owner",
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "audit": "docs\\audits\\npc-molten-behemoth-death-owner-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "00f34ddf35e73068923e9c067f65824d67c5692e"
+        },
+        {
+          "key": "FlamewakerSentinelDeathCredit",
+          "title": "fix: guard Flamewaker Sentinel death against null killers",
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "audit": "docs\\audits\\npc-flamewaker-sentinel-death-owner-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "5aa293d356d9d8b02ebd9e20f91f48b1e578cad3"
+        },
+        {
+          "key": "FlamewakerShamanDeathCredit",
+          "title": "Resolve npc_flamewaker_shaman progression to the eligible killer owner",
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "audit": "docs\\audits\\npc-flamewaker-shaman-death-owner-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "eb7fb4b101a3e2b8116f127d546e6941915b4c89"
+        },
+        {
+          "key": "SilverHandDeathCredit",
+          "title": "fix: guard Silver Hand death credit against null killers",
+          "path": "src/server/scripts/EasternKingdoms/Stratholme/boss_order_of_silver_hand.cpp",
+          "audit": "docs\\audits\\boss-silver-hand-bosses-death-owner-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "e416350f7fee88e842f24e6278bf5326fd7ba482"
+        },
+        {
+          "key": "VashjelanSirenDeathCredit",
+          "title": "Resolve npc_vashjelan_siren progression to the eligible killer owner",
+          "path": "src/server/scripts/Maelstrom/LostIsles/lost_isles.cpp",
+          "audit": "docs\\audits\\npc-vashjelan-siren-death-owner-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "962fe8ca91e625306874112e235e82c8f57e7f0f"
+        },
+        {
+          "key": "AshranChampionDeathRecruit",
+          "title": "Resolve npc_ashran_faction_champions progression to the eligible killer owner",
+          "path": "src/server/scripts/OutdoorPvP/Ashran/AshranNPCNeutral.cpp",
+          "audit": "docs\\audits\\npc-ashran-faction-champions-death-owner-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "59120bbf4e78014c49fc9ce28db1eb3bc50d3b1c"
+        },
+        {
+          "key": "AncientRegailDeathBind",
+          "title": "Resolve boss_ancient_regail progression to the eligible killer owner",
+          "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_protectors.cpp",
+          "audit": "docs\\audits\\boss-ancient-regail-death-owner-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "0db5b52d5c90b842fe7ba27830bc96bdd213e9ca"
+        },
+        {
+          "key": "AncientAsaniDeathBind",
+          "title": "Resolve boss_ancient_asani progression to the eligible killer owner",
+          "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_protectors.cpp",
+          "audit": "docs\\audits\\boss-ancient-asani-death-owner-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "330e55c968af76fcf5df80a5efdda46e0ac6e4a6"
+        },
+        {
+          "key": "ProtectorKaolanDeathBind",
+          "title": "Resolve boss_protector_kaolan progression to the eligible killer owner",
+          "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_protectors.cpp",
+          "audit": "docs\\audits\\boss-protector-kaolan-death-owner-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "440ec295791e2e8c20377670b469f46a2ad7f2c1"
+        },
+        {
+          "key": "MagmusVictimInstance",
+          "title": "Open Magmus door from the victim instance with a null killer",
+          "path": "src/server/scripts/EasternKingdoms/BlackrockDepths/boss_magmus.cpp",
+          "audit": "docs\\audits\\boss-magmus-victim-instance-2026-11-11.json",
+          "callback_count": 1,
+          "commit": "fc3e4c4315b56ff0b7185bb42eca3db3b0102837"
+        }
+      ],
+      "canonical": {
+        "bnetserver.exe": "d5c715e3fc158d8de09285958844bebddf3bbc68f61df59c6b041f3edd23e961",
+        "bnetserver.map": "df944a4d2d243653309c6a499399651832bd7c31f4d97a3b033777264ca80cce",
+        "worldserver.exe": "7f895beae6a6fda69ea1bfba9dd4d0468f9189f03678e49d2178c353f9aa650c",
+        "worldserver.map": "83e62549efc5dc0fc025bf8d4681de13480e022796273e6ae0ab47d43968b57c"
+      },
+      "cleanup": {
+        "archive": "build-extractors\\bin\\Release\\fixed\\fortysixth-ten-repairs-2026-11-11",
+        "manifest_sha256": "bab7b1e3f53f04ef07d7fef1306fac659f6b365df51e9b52372e17c011f39532",
+        "archived_files": 831,
+        "removed_files": 310,
+        "logical_removed_bytes": 1173510610,
+        "deletion_manifest": ".codex\\fortysixth-ten-fixes-2026-11-11\\cleanup-deleted.json",
+        "deletion_manifest_sha256": "5898da08a99cbd7291dbe671d24ac6b5fd8257bdacd8eab690a6e3d06eb82a5e",
+        "removed_superseded_recoveries": [
+          ".codex\\release-before-fortyfifth-ten-fixes-2026-11-11"
+        ],
+        "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and installed/live-verified MariaDB recovery evidence.",
+        "closeout_manifest_sha256": "e3c5fa6bb5e6bfb51c7ffb76e86fa224d62d8335f6cc6da2859a6751a636394a",
+        "resolution_sha256": "b3703ebdb6dff0b729987769a592a22d4cc5ab7669563defd15329d0347f5372",
+        "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
+      }
     }
   ],
   "pending": [
-    "MariaDB DLL is installed and live-verified;user MariaDB service remains running. FT minimum1 config warning absence awaits a future user restart;no service stop needed for these source fixes.",
-    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
-    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
-    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
-  ]
+    "Sentinel custom kill-criterion call retains its original default amount0. Ordinary native kill/group credit remains separate;actual achievement/client behavior is not established by counting this controlled endpoint invocation.",
+    "Silver Hand legacy17915 has no direct quest objective or kill-credit alias in the reviewed live data. Null-killer safety is verified;indirect progression/group entitlement is not established and no new group grant is introduced.",
+    "MariaDB DLL is installed/live-verified;user service remains running. FT minimum1 config warning absence awaits a future user restart.",
+    "Actual gameplay/full encounters/client chains remain pending. ASAN runs full extracted death methods with controlled instance/quest endpoints and fixture enum labels;native runs actual core getter projections only,not the complete registered death payloads.",
+    "Living Lady/conversation1906/Grash,LINK2/Slaghammer,TimeLoop32bit healing,heroic Mend,intermittent handshake and unchanged Cordana horizontal-wall source finding remain OPEN. No guessed threshold,timer,grant or unrelated SQL change.",
+    "Previous four CosmeticAI UAF claims were withdrawn after actual queue ownership proof;previous request has46confirmed lifetime fixes. This request contains40real Unit-queue families plus10death owner/instance repairs."
+  ],
+  "composition": {
+    "unit_queue_lifetime_families": 40,
+    "unit_queue_registrations": 202,
+    "death_owner_or_victim_instance_repairs": 10,
+    "client_traversal": "PENDING"
+  },
+  "verification_scope": "First40:extracted callback-admission ASAN/native actual queue lifecycle projections,not complete encounter payloads. Last10:full extracted death methods under ASAN with controlled endpoints plus native actual getter projections. Every actual deployed production gate/getter and complete prior linked regression chain checked in both staged and canonical EXE. Canonical owned ready/shutdown0/exit0 with post-test diagnostic review. All36whole artifact chains and actual client traversal remain unverified.",
+  "prior_request_correction": {
+    "audit": "docs/audits/cosmetic-queue-ownership-correction-2026-11-11.json",
+    "confirmed_fixes": 46,
+    "withdrawn_classifications": 4,
+    "counted_in_new_request": false
+  },
+  "supplemental_cleanup": {
+    "removed_files": 95,
+    "logical_removed_bytes": 2033630153,
+    "manifest": ".codex\\second-five-ten-2026-11-11\\supplemental-deletions.json",
+    "manifest_sha256": "e2b6454f2e7cbca1527f7e0d78e18c401669aa363cc1dddbd21ec63c8624ef69",
+    "reason": "Completed own native linker/debug caches and withdrawn exploratory projection binaries are regenerable;actual regression source and all logs retained. No source/client claim is inferred from this cleanup.",
+    "retained": "Invalid-projection source/log evidence remains explicitly outside fixed;new actual ownership proof archived separately. Main binaries/config/data/required libraries,original Slaghammer cache,OPEN crash/TimeLoop/heroic-Mend/Lady/LINK2 evidence,character backups and MariaDB rollback/source provenance untouched.",
+    "fixed_archive": {
+      "path": "build-extractors\\bin\\Release\\fixed\\cosmetic-queue-ownership-correction-2026-11-11",
+      "manifest_sha256": "ec270654d65def23fcdfd0230d2118552dd2d1a48eee5a585e85053ab5d03738",
+      "resolution_sha256": "75ddd99dcf457f2b72f03a9e1f6880594b05fcea44d65a47eb66e557a71697e7",
+      "correction_commit": "bf4b28a50c994062cb1faf3203ea4d1d40058c2f"
+    }
+  }
 }

@@ -39,7 +39,7 @@
   ],
   "cause": "CosmeticAI declares its own nonvirtual AddDelayedEvent(uint32,...) and stores callbacks in its _timedDelayedOperations vector. Its destructor destroys that vector. Explicit me->AddDelayedEvent would use Unit,but these four actors call the AI-owned overload. The previous generic NullCreatureAI/Unit projection did not reproduce their queue ownership.",
   "correction": "Removed four redundant guards without changing original payloads/delays. Four previous fix classifications withdrawn,not silently replaced. Native probe exercises real CosmeticAI queue dispatch/destruction and separation from a surviving Unit queue. Existing native/PE suites omit withdrawn cases;source/audit history remains visible.",
-  "new_request": "Next5x10 request remains50genuine new fixes. This correction is not counted among them. No current batch source repair is deployed yet.",
+  "new_request": "Subsequent5x10request completed50new repairs:40real Unit-queue AI families/202registrations plus10death-owner/victim-instance repairs. This ownership correction and its four withdrawals are not counted among the new50. See docs/audits/second-five-ten-repairs-2026-11-11.json;client traversal remains pending.",
   "limits": "Legacy archived fixture outputs remain historical evidence of an invalid projection,not proof of a production CosmeticAI UAF. Full content/client traversal remains pending.",
   "native_evidence": {
     "source": "tools/tests/CosmeticQueueOwnershipNative.cpp",
@@ -49,5 +49,11 @@
   "canonical_promotion": {
     "audit": "docs/audits/fortysecond-ten-repairs-2026-11-11.json",
     "result": "Restored CosmeticAI source compiled into original scripts library,new matching Release promoted and started ready/shutdown0/exit0/gone. Retained PE chain checks61 confirmed prior lifetime gates plus53current ones;withdrawn cases are not credited."
+  },
+  "fixed_archive": {
+    "path": "build-extractors\\bin\\Release\\fixed\\cosmetic-queue-ownership-correction-2026-11-11",
+    "manifest_sha256": "ec270654d65def23fcdfd0230d2118552dd2d1a48eee5a585e85053ab5d03738",
+    "resolution_sha256": "75ddd99dcf457f2b72f03a9e1f6880594b05fcea44d65a47eb66e557a71697e7",
+    "correction_commit": "bf4b28a50c994062cb1faf3203ea4d1d40058c2f"
   }
 }
