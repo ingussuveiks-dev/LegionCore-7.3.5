@@ -388,8 +388,9 @@ struct npc_sister_kasparian : ScriptedAI
                 {
                     summoner->GetAI()->DoAction(ACTION_4); //Phase 2
                 }
-                me->AddDelayedCombat(2000, [=] () -> void
+                me->AddDelayedCombat(2000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->CastSpell(me->GetHomePosition(), SPELL_SABERLEAP, true);
                 });
                 events.RescheduleEvent(EVENT_JUMP_KASPARIAN, 20000);
@@ -446,7 +447,7 @@ struct npc_sister_kasparian : ScriptedAI
             switch (id)
             {
                 case SPELL_SABERLEAP:
-                    me->AddDelayedCombat(500, [=] () -> void { me->SetFacingTo(centrPos.GetAngle(me) - M_PI); });
+                    me->AddDelayedCombat(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void { if (aiLifetimeGuard.expired()) return; me->SetFacingTo(centrPos.GetAngle(me) - M_PI); });
                     break;
             }
         }
@@ -537,6 +538,9 @@ struct npc_sister_kasparian : ScriptedAI
         if (phase == 1)
             DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //118518
