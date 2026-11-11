@@ -654,7 +654,7 @@ class boss_valiona : public CreatureScript
                 Talk(SAY_VALIONA_DEATH);
                 instance->SetData(DATA_HEALTH_VALIONA_THERALION, 0);
                 if (Creature* pTheralion = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_THERALION)))
-                    Killer->Kill(pTheralion);
+                    (Killer ? Killer : me)->Kill(pTheralion);
             }
             
             void JustSummoned(Creature* summon)
