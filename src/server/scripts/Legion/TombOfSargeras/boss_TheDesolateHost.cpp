@@ -605,8 +605,9 @@ struct npc_tos_soul_queen_dejahna : ScriptedAI
                     auto guidA = soulsList.front();
                     auto guidB = soulsList.back();
 
-                    me->AddDelayedCombat(100, [this, guidA, guidB] () -> void
+                    me->AddDelayedCombat(100, [this, guidA, guidB, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         if (me)
                         {
                             if (auto playerA = Player::GetPlayer(*me, guidA))
@@ -691,6 +692,9 @@ struct npc_tos_soul_queen_dejahna : ScriptedAI
         }
         DoSpellAttackIfReady(SPELL_CRUSH_MIND);
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //119072
