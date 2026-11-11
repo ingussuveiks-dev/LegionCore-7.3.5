@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-11",
+  "status": "CODE_FIXED_DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "base": "2494239c1e62513dd355b358959eb45b4d78f1a3",
+  "path": "src/server/scripts/Legion/VaultoftheWardens/boss_cordana.cpp",
+  "cause": "The horizontal wall advanced X but compared the fixed negative Y against a positive endX,so both horizontal sides emitted no100336spawn requests.",
+  "repair": "Compare the advancing X with endX. All authored four endpoints,2.5spacing,five-slot passage,13passage positions,100336entry,18000ms lifetime,wave counts,delays and rotation remain unchanged. No combat/credit/quest/SQL change.",
+  "verification": {
+    "native": "Full extracted SummonCreepings executes actual Position and Unit queue with controlled random draws and observed spawn boundary.416cases cover all four walls,phases1/2,heroic/mythic,13passages,both rotations and exact wave deadlines. Native cancellation,expired owner and unknown phase tested. This does not instantiate100336or run its NPC combat.",
+    "controls": "Pinned original method reproduces empty horizontal requests;vertical cases pass. The original canonical binary is rejected by the advancing-X PE proof. Both original raw-this ASAN lifetime controls still fail as expected;both repaired callback admission projections pass.",
+    "linked": "Entire corrected prior46groups plus actual horizontal loop endX/counter/X-spawn argument,negative2.5and actual native summon entry/lifetime verified in staged and canonical EXE. All previous AI lifetime gates retained. Old capture-only scope recognizes only this exact separately tested payload amendment;historical baseline plans were not rewritten.",
+    "runtime": "Owned worldserver PID=13452\nPASS owned PID=13452 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;canonical Scepter passed.",
+    "diagnostics": "All declared tests/builds/links/deployment/start/PE/cleanup wrapped with before/after canonical+own crash/log snapshots and exit/stdout/stderr review. Final no new crashes,DBErrors,warnings/errors/assertions. Main compiler emitted zero warnings. Mixed7111byteDBErrors and original Slaghammer cache hash unchanged. User MariaDB never stopped.",
+    "fixture_correction": "Initial control incorrectly scheduled new work before settling native KillAllFunctions deferred clean flag;Update0 then discarded that newly queued work. Fixed fixture settles cancellation before scheduling. Original source and failed assertion/logs retained and paired with both clean416case control/fixed runs;no production queue check changed.",
+    "source_formatting": {
+      "tested_sha256": "f3454c28399f515baf1e200699f485da721f1065b197094ec7c2de03799d67bc",
+      "committed_sha256": "a2b4695a49f29a1fb7edb2a1a8f71a25add3e69beebeb545432c3b1f98581d0d",
+      "scope": "Removed only apply_patch-added final LF to preserve original EOF;all compiled C++ tokens and lines otherwise byte-identical. Whole final source equals pinned source with only the X-condition character changed;actual deployed loop was checked in PE."
+    }
+  },
+  "canonical": {
+    "worldserver.exe": "19daac5e218198d09803be8ede713953a6c8cf0120e71d5faa030cc4d55d5595",
+    "worldserver.map": "d024366171297901e762ee95d7372e397623155ba2cd071d9dee703f8f46ab15",
+    "bnetserver.exe": "8e7e751ea7daa6d822410c300274910734f0cf5e9bcaa4290922330a95778b25",
+    "bnetserver.map": "ba614308e40097df9470b4f0cfd78a600f10a38e717952205495b360e4a8e92f"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\cordana-horizontal-walls-2026-11-11",
+    "manifest_sha256": "b8e165d38f66de5e4b14d6ba3de9a2e42f926e06403b7cb901d5467ace3fa1c5",
+    "archived_files": 260,
+    "removed_files": 74,
+    "logical_removed_bytes": 910426996,
+    "deletion_manifest": ".codex\\cordana-walls-2026-11-11\\deletions.json",
+    "deletion_manifest_sha256": "a9ec64c51d58647bb9e6524be5ba97594d394ec7f276a96274484bd189383f24",
+    "retained": "Canonical runtime/config/certificates/DLLs/shared data/main libraries,reusable source,latest pre-Cordana rollback,all unresolved Lady/LINK2/Slaghammer/TimeLoop/Mend/handshake evidence and personal backups. No active mixed log truncated."
+  },
+  "pending": [
+    "Actual heroic/mythic encounter/NPC100336movement,wall visuals,passage traversal and client combat remain unverified.",
+    "Other OPEN issues remain separate;no claim to have completed all36whole artifact chains."
+  ]
+}

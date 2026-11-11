@@ -1,6 +1,7 @@
 """Exact independent actor-class changes; original callbacks remain byte-pinned."""
 from pathlib import Path
 import json,re,subprocess
+from lifetime_source_amendments import lifetime_baseline_view
 def verify(plan_path,base):
  r=Path(__file__).resolve().parents[2];plan=json.loads(Path(plan_path).read_text(encoding='utf8'));assert len(plan)==10
  for e in plan:
@@ -12,7 +13,7 @@ def verify(plan_path,base):
   for cb in e['callbacks']:
    capture='['+cb['capture']+', '+e['guard_init']+']';at=cb['new'].index('{',cb['new'].index(capture)+len(capture))+1
    assert cb['new'][at:].lstrip().startswith(e['guard']),(e['key'],'first statement')
- texts={p:(r/p).read_text(encoding='utf-8-sig')for e in plan for p in e['paths']}
+ texts={p:lifetime_baseline_view(p,(r/p).read_text(encoding='utf-8-sig'))for e in plan for p in e['paths']}
  for e in reversed(plan):
   for ed in reversed(e['edits']):
    p=ed['path'];assert texts[p].count(ed['new'])==1,(e['key'],p);texts[p]=texts[p].replace(ed['new'],ed['old'],1)

@@ -538,7 +538,7 @@ public:
                     }
                     else
                     {
-                        for(x = creeping_walls[current_wall].first.GetPositionX(); y > creeping_walls[current_wall].second.GetPositionX(); x -= 2.5f)
+                        for(x = creeping_walls[current_wall].first.GetPositionX(); x > creeping_walls[current_wall].second.GetPositionX(); x -= 2.5f)
                         {
                             if (++number_of_npc >= position_of_passage-2 && number_of_npc <= position_of_passage+2)
                                 continue;
