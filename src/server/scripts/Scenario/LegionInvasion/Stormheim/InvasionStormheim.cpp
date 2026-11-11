@@ -238,8 +238,9 @@ public:
 
             boardedPlayerGuid = who->GetGUID();
             uint64 const generation = ++boardingGeneration;
-            me->AddDelayedEvent(2000, [this, playerGuid = boardedPlayerGuid, generation]() -> void
+            me->AddDelayedEvent(2000, [this, playerGuid = boardedPlayerGuid, generation, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)
                     return;
                 Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
@@ -248,8 +249,9 @@ public:
 
                 player->SetClientControl(me, false);
                 scriptedControl = true;
-                me->AddDelayedEvent(3000, [this, playerGuid, generation]() -> void
+                me->AddDelayedEvent(3000, [this, playerGuid, generation, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (generation != boardingGeneration || playerGuid != boardedPlayerGuid)
                         return;
                     Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
@@ -301,6 +303,9 @@ public:
                     timerforcheck -= diff;
             }
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
