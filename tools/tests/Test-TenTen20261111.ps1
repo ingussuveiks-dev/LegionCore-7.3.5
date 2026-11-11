@@ -8,8 +8,9 @@ $out="$repo/build-extractors/runtime-test/ten-ten-20261111/$(Get-Date -Format yy
  if($LASTEXITCODE){throw 'Selected production extraction failed'}
  $keys=@(Get-Content "$out/cases.json" -Raw|ConvertFrom-Json);$indices=if($Case){$index=[Array]::IndexOf($keys,$Case);if($index -lt 0){throw 'Unknown case'};@($index)}else{@(0..9)}
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
- $source=if($Batch -eq 1){'TenTen20261111FirstTest.cpp'}elseif($Batch -eq 2){'TenTen20261111SecondTest.cpp'}else{throw 'Batch fixture is not implemented'}
- [IO.File]::WriteAllText("$out/build.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /MD /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/$source`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/compiler.pdb`"`nexit /b %errorlevel%`n")
+ $compileExtra=if($Batch -eq 3){'/D_ITERATOR_DEBUG_LEVEL=1'}else{''}
+ $source=if($Batch -eq 1){'TenTen20261111FirstTest.cpp'}elseif($Batch -eq 2){'TenTen20261111SecondTest.cpp'}elseif($Batch -eq 3){'TenTen20261111ThirdTest.cpp'}else{throw 'Batch fixture is not implemented'}
+ [IO.File]::WriteAllText("$out/build.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /MD $compileExtra /fsanitize=address /Zi /I`"$out`" `"$PSScriptRoot/$source`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/compiler.pdb`"`nexit /b %errorlevel%`n")
  & cmd.exe /d /c "`"$out/build.cmd`" > `"$out/build.log`" 2>&1";if($LASTEXITCODE){Get-Content "$out/build.log" -Tail 20;throw 'Full-method fixture compilation failed'}
  foreach($index in $indices){
   [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`n`"$out/test.exe`" $index`nexit /b %errorlevel%`n")
