@@ -452,7 +452,7 @@ struct npc_eonar_the_paraxis : public ScriptedAI
 
         if (auto owner = me->GetAnyOwner())
         {
-            if (killer->GetGUID() == me->GetGUID())
+            if (!killer || killer->GetGUID() == me->GetGUID())
             {
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, me);
                 owner->GetAI()->DoAction(ACTION_RESTART);
