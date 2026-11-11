@@ -331,8 +331,9 @@ public:
         void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
         {
             bool isPlayer = who->IsPlayer();
-            me->AddDelayedEvent(4000, [this, isPlayer]() -> void
+            me->AddDelayedEvent(4000, [this, isPlayer, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (isPlayer)
                     me->GetMotionMaster()->MovePath(11322708, false);
                 else
@@ -365,6 +366,9 @@ public:
                 me->DespawnOrUnsummon(500);
             }
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
