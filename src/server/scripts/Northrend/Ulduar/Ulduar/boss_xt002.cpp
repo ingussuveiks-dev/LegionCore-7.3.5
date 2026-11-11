@@ -17,6 +17,7 @@
 
 #include "ulduar.h"
 #include "Vehicle.h"
+#include "HealingAmount.h"
 
 enum Spells
 {
@@ -880,7 +881,7 @@ class spell_xt002_gravity_bomb_aura : public SpellScriptLoader
                 if (!xt002c)
                     return;
 
-                if (aurEff->GetAmount() >= int32(owner->GetHealth()))
+                if (aurEff->GetAmount() >= 0.0f && HealingAmount::FromFloat(aurEff->GetAmount()) >= owner->GetHealth())
                     if (boss_xt002::boss_xt002_AI* xt002cAI = CAST_AI(boss_xt002::boss_xt002_AI, xt002c->AI()))
                         xt002cAI->setgbfail(true);
             }
@@ -918,7 +919,7 @@ class spell_xt002_gravity_bomb_damage : public SpellScriptLoader
                 if (!xt002c)
                     return;
 
-                if (GetHitDamage() >= int32(GetHitUnit()->GetHealth()))
+                if (GetHitDamage() >= 0 && uint64(GetHitDamage()) >= GetHitUnit()->GetHealth())
                     if (boss_xt002::boss_xt002_AI* xt002cAI = CAST_AI(boss_xt002::boss_xt002_AI, xt002c->AI()))
                         xt002cAI->setgbfail(true);
             }
