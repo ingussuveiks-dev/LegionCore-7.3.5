@@ -1090,12 +1090,12 @@ class spell_generic_clone : public SpellScriptLoader
 
 enum CloneWeaponSpells
 {
-    SPELL_COPY_WEAPON_AURA       = 41055,
-    SPELL_COPY_WEAPON_2_AURA     = 63416,
-    SPELL_COPY_WEAPON_3_AURA     = 69891,
+    SPELL_COPY_WEAPON_AURA       = 41054,
+    SPELL_COPY_WEAPON_2_AURA     = 63418,
+    SPELL_COPY_WEAPON_3_AURA     = 69893,
 
-    SPELL_COPY_OFFHAND_AURA      = 45206,
-    SPELL_COPY_OFFHAND_2_AURA    = 69892,
+    SPELL_COPY_OFFHAND_AURA      = 45205,
+    SPELL_COPY_OFFHAND_2_AURA    = 69896,
 
     SPELL_COPY_RANGED_AURA       = 57594
 };
@@ -1144,107 +1144,99 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
             {
                 PrepareAuraScript(spell_gen_clone_weapon_auraScript);
 
-                uint32 prevItem;
+                uint32 prevItem = 0;
+                uint16 prevAppearance = 0;
+                uint16 prevVisual = 0;
+                bool hasOriginal = false;
 
-                bool Validate(SpellInfo const* /*SpellInfo*/) override
+                bool Validate(SpellInfo const* /*spellInfo*/) override
                 {
-                    if (!sSpellMgr->GetSpellInfo(SPELL_COPY_WEAPON_AURA) || !sSpellMgr->GetSpellInfo(SPELL_COPY_WEAPON_2_AURA) || !sSpellMgr->GetSpellInfo(SPELL_COPY_WEAPON_3_AURA)
-                        || !sSpellMgr->GetSpellInfo(SPELL_COPY_OFFHAND_AURA) || !sSpellMgr->GetSpellInfo(SPELL_COPY_OFFHAND_2_AURA) || !sSpellMgr->GetSpellInfo(SPELL_COPY_RANGED_AURA))
-                        return false;
-                    return true;
+                    return ValidateSpellInfo({SPELL_COPY_WEAPON_AURA, SPELL_COPY_WEAPON_2_AURA, SPELL_COPY_WEAPON_3_AURA,
+                        SPELL_COPY_OFFHAND_AURA, SPELL_COPY_OFFHAND_2_AURA, SPELL_COPY_RANGED_AURA});
                 }
 
-                void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+                bool GetWeaponSlot(uint32& slot, uint8& itemSlot) const
                 {
-                    Unit* caster = GetCaster();
-                    Unit* target = GetTarget();
-
-                    if (!caster)
-                        return;
-
                     switch (GetSpellInfo()->Id)
                     {
                         case SPELL_COPY_WEAPON_AURA:
                         case SPELL_COPY_WEAPON_2_AURA:
                         case SPELL_COPY_WEAPON_3_AURA:
-                        {
-
-                        prevItem = target->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS);
-                        if (Player* player = caster->ToPlayer())
-
-                        {
-                            if (Item* mainItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
-                                target->SetVirtualItem(0, mainItem->GetEntry());
-
-                        }
-                        else
-                            target->SetVirtualItem(0, caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS));
-                        break;
+                            slot = 0;
+                            itemSlot = EQUIPMENT_SLOT_MAINHAND;
+                            return true;
+                        case SPELL_COPY_OFFHAND_AURA:
+                        case SPELL_COPY_OFFHAND_2_AURA:
+                            slot = 1;
+                            itemSlot = EQUIPMENT_SLOT_OFFHAND;
+                            return true;
+                        case SPELL_COPY_RANGED_AURA:
+                            slot = 2;
+                            itemSlot = EQUIPMENT_SLOT_RANGED;
+                            return true;
+                        default:
+                            return false;
                     }
-                    case SPELL_COPY_OFFHAND_AURA:
-                    case SPELL_COPY_OFFHAND_2_AURA:
-                    {
-                        prevItem = target->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS) + 1;
-
-                        if (Player* player = caster->ToPlayer())
-                        {
-                            if (Item* offItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
-                                target->SetVirtualItem(1, offItem->GetEntry());
-                        }
-                        else
-                            target->SetVirtualItem(1, caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + 1));
-                        break;
-                    }
-                    case SPELL_COPY_RANGED_AURA:
-                    {
-                        prevItem = target->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS) + 2;
-
-                        if (Player* player = caster->ToPlayer())
-                        {
-                            if (Item* rangedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED))
-                                target->SetVirtualItem(2, rangedItem->GetEntry());
-                        }
-                        else 
-                            target->SetVirtualItem(2, caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + 2));
-                        break;
-                    }
-                    default:
-                        break;
                 }
-            }
 
-            void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-            { 
-                Unit* target = GetTarget();
+                void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+                {
+                    Unit* caster = GetCaster();
+                    if (!caster)
+                        return;
 
-                switch (GetSpellInfo()->Id)
-                { 
-                    case SPELL_COPY_WEAPON_AURA:
-                    case SPELL_COPY_WEAPON_2_AURA:
-                    case SPELL_COPY_WEAPON_3_AURA:
-                       target->SetVirtualItem(0, prevItem);
-                       break;
-                    case SPELL_COPY_OFFHAND_AURA:
-                    case SPELL_COPY_OFFHAND_2_AURA:
-                        target->SetVirtualItem(1, prevItem);
-                        break;
-                    case SPELL_COPY_RANGED_AURA:
-                        target->SetVirtualItem(2, prevItem);
-                        break;
-                    default:
-                        break;
+                    uint32 slot;
+                    uint8 itemSlot;
+                    if (!GetWeaponSlot(slot, itemSlot))
+                        return;
+
+                    uint32 item;
+                    uint16 appearance = 0;
+                    uint16 visual = 0;
+                    if (Player* player = caster->ToPlayer())
+                    {
+                        Item* equipped = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot);
+                        if (!equipped)
+                            return;
+                        item = equipped->GetEntry();
+                    }
+                    else
+                    {
+                        item = caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2);
+                        appearance = caster->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2 + 1, 0);
+                        visual = caster->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2 + 1, 1);
+                    }
+
+                    Unit* target = GetTarget();
+                    if (!hasOriginal)
+                    {
+                        prevItem = target->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2);
+                        prevAppearance = target->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2 + 1, 0);
+                        prevVisual = target->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2 + 1, 1);
+                        hasOriginal = true;
+                    }
+                    target->SetVirtualItem(slot, item, appearance, visual);
                 }
-            }
 
-            void Register() override
-            {
-                // Clone-weapon spells use more than one effect-0 aura type in
-                // this client build; the equipment-copy lifecycle is shared.
-                OnEffectApply += AuraEffectApplyFn(spell_gen_clone_weapon_auraScript::OnApply, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-                OnEffectRemove += AuraEffectRemoveFn(spell_gen_clone_weapon_auraScript::OnRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-            }
+                void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes mode)
+                {
+                    uint32 slot;
+                    uint8 itemSlot;
+                    if (!hasOriginal || !GetWeaponSlot(slot, itemSlot))
+                        return;
 
-        };
+                    GetTarget()->SetVirtualItem(slot, prevItem, prevAppearance, prevVisual);
+                    if (mode & AURA_EFFECT_HANDLE_REAL)
+                        hasOriginal = false;
+                }
+
+                void Register() override
+                {
+                    // Keep the original snapshot across a native reapply pair.
+                    OnEffectApply += AuraEffectApplyFn(spell_gen_clone_weapon_auraScript::OnApply, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                    OnEffectRemove += AuraEffectRemoveFn(spell_gen_clone_weapon_auraScript::OnRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                }
+            };
 
         AuraScript* GetAuraScript() const override
         {
