@@ -6802,8 +6802,11 @@ struct npc_instant_statue_pedestal : public ScriptedAI
     void IsSummonedBy(Unit* owner) override
     {
         DoCast(owner, 75731, true);
-        me->AddDelayedEvent(500, [=]() -> void { me->AddAura(52844, me); });
+        me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->AddAura(52844, me); });
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //56194
