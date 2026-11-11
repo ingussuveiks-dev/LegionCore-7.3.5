@@ -2987,8 +2987,9 @@ struct npc_felflame_invader : ScriptedAI
     {
         events.Reset();
 
-        me->AddDelayedEvent(5000, [=]() -> void
+        me->AddDelayedEvent(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (me->GetCurrentZoneID() == 9100)
             {
                 if (auto c = me->FindNearestCreature(125856, 5.0f))
@@ -3051,6 +3052,9 @@ struct npc_felflame_invader : ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //125197
