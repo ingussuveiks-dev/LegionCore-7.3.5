@@ -2151,7 +2151,7 @@ class spell_hodir_protective_gaze : public SpellScriptLoader
                 target->CastSpell(target, 64175, true);
                 target->AddSpellCooldown(64174, 0, GameTime::GetGameTime() + urand(20,25));
 
-                uint32 health10 = target->CountPctFromMaxHealth(10);
+                uint64 health10 = target->CountPctFromMaxHealth(10);
 
                 // hp > 10% - absorb hp till 10%
                 if (target->GetHealth() > health10)
