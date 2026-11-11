@@ -1,7 +1,9 @@
 from pathlib import Path
 import subprocess
+from meljarak_mend_source import without_mending,FORMULA
 r=Path(__file__).resolve().parents[2];p='src/server/scripts/Pandaria/HeartFear/boss_lord_meljarak.cpp'
 old=subprocess.check_output(['git','-C',str(r),'show','d83751688:'+p]).decode('utf8').replace('\r\n','\n');new=(r/p).read_text(encoding='utf8')
+if FORMULA in new:new=without_mending(new)
 def block(s,marker):
  a=s.index(marker);b=s.index('{',a)+1;depth=1
  while depth:depth+=(s[b]=='{')-(s[b]=='}');b+=1
@@ -24,4 +26,4 @@ new=new.replace('SendHealSoldiers(pInstance, modhealth);','SendHealSoldiers(pIns
 new=new.replace('if (action == ACTION_1 && me->IsAlive())','if (action == ACTION_1)')
 normalize=lambda s:'\n'.join(x.rstrip() for x in s.splitlines() if x.strip())
 assert normalize(old)==normalize(new),'Unrelated boss/soldier CC,abilities,45s events,poses,prerequisites or registrations changed'
-print('PASS Meljarak scope:shared damage/death/heal helpers,post-scaling/death hooks,per-actor and per-generation reset;all other original combat,CC,timing,casts,45s respawn,poses and bindings pinned. No core/packet/API changes.')
+print('PASS original Meljarak repair scope:shared damage/death/heal helpers,post-scaling/death hooks,per-actor and per-generation reset;other original combat,CC,timing,casts,45s respawn and poses pinned. The separately verified later Mending amendment is normalized explicitly;this check makes no claim about repository-wide core/API changes.')

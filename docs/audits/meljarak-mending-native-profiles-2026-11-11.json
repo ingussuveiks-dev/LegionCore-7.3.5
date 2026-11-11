@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-11",
+  "base": "9a0af931787458f15f4a11b2c56306d03b7e44fc",
+  "status": "FIXED_DEPLOYED_AUTOMATED_CLIENT_PENDING",
+  "canonical": {
+    "bnetserver.exe": "0b861b46507eeff561197371fd5f66fa6580ca40a6b81187cdb8793bb9365805",
+    "bnetserver.map": "d5131a63a29507a7a8bf44f053991ef6188bd14a0de1effdef5ddd1302f7a141",
+    "worldserver.exe": "363ec56f8d670c43609a969e98fc5866d5e9ef6b6c22f757ddbc0db9ba86be64",
+    "worldserver.map": "d08a69e54d65b4e5d0d834e685f7ab4d8471cb789aa1680b7f0951706e763850"
+  },
+  "runtime": "Owned canonical worldserver PID10732 reached fresh ready,graceful shutdown0,exit0,gone;stderr empty. Configuration/certificates/DLL hashes unchanged. User MariaDB never stopped. Scepter -VerifyReleaseBinary passed.",
+  "diagnostics": "Before/after canonical and own-runtime snapshots for each declared test/build/link/deployment/start;no new crashes,DBErrors or unexplained runtime warnings/errors/assertions. Mixed7111byteDBErrors and original Slaghammer cache preserved.",
+  "build": "Original game.lib rebuilt with installed MSVC19.44.35230 after stale19.44.35228PCH C1853;original scripts.lib rebuilt and final-link original dependency paths used,no global OutDir.332 compiler warnings reviewed against exact unchanged9a source expressions;none from these repairs. Scepter fixture C4244/C4389 remain unchanged baseline diagnostics.",
+  "local_evidence": ".codex/meljarak-mend-2026-11-11",
+  "cleanup": "Final verified archive/deletion manifest and commit mapping follow in open-issues-closeout-2026-11-11.json;no unresolved evidence may be classified fixed.",
+  "causes": [
+    "Peer sharing hardcoded25pct while native26972heroic122147effect0HEAL_PCT uses35pct.",
+    "Native heroic area selection had no encounter filter and could heal boss,foreign NPC or player instead of the nine swarm members. Target-hook difficulty repair is a separate prerequisite."
+  ],
+  "repair": "Read bounded native current-profile effect0percentage;unsigned64 quotient/remainder percentage and bounded remaining-room addition preserve wide health. New122147SpellScript retains native area mode/radius/single-recipient selection and filters only alive actual instance slots10..18 with their real65499/62408/65500entries;caster must be an actual member. Normal explicit target and all existing casts/timers/CC/scaling/damage/owner/pet/guardian credit/respawn behavior retained.",
+  "evidence": "Matching26972Spell.db2 description122193 names one group of Meljarak swarm;real DB2 profiles:122193dummy triggers122147,2500ms cast;122147normal25pct explicit25,heroic35pct source-area-entry7 with MaxAffectedTargets1. Existing actual9slot target-selector and instance registrations confirm encounter scope. No secondary guide needed.",
+  "sql": {
+    "path": "sql/updates/world/2026_11_11_01_meljarak_mending_target.sql",
+    "sha256": "307ef15a37a741f57497adaca8f71afb9ed23362907589190b9c35675ccdaa85",
+    "live": "Exactly122147/spell_meljarak_mending_target;updater RELEASED SHA1=95629C8B329CE6B8D98CA75561023969B3AF2573,matches file. No122193binding. EXE promoted before SQL entered live updater.",
+    "guards": "TEMP verified missing/existing/repeat/unrelated states and two explicit SIGNAL1644 refusals for custom/duplicate bindings;no overwrite of custom data."
+  },
+  "verification": {
+    "counterfactual": "Pinned9a source reproduces native heroic peers25instead of35pct and records actual wrong boss healing450;normal/interruption/dead controls retained.",
+    "native": "24actual122193->122147contexts:all four raid difficulties x ordinary/interrupted/overheal/dead-peer/dead-caster/phase controls. Real2500ms cast,exactly one recipient and matching live squad25/35pct,no unrelated boss/NPC/player heals,no repeated sharing. Native6target-hook cases and SQL guards pass.",
+    "retained": "162full native Meljarak squad contexts,54native scaled/wide damage+heal contexts,6retry45s generation contexts and36wrong/self/duplicate/destroyed/disabled/suspended/NPC-final controls passed sequentially.",
+    "linked": "Staged complete preceding46groups/Cordana/core profiles plus actual SpellHit profile getter,unsigned64 math,instance filter and factory/Register passed;canonical final result at closeout.",
+    "scope": "Exact later Mending amendment normalized only for pinned older Meljarak proof;original combat/CC/timing/poses remain independently pinned. Native standalone/core behavior is distinguished from actual client combat.",
+    "fixture_corrections": "Early inspection ticked only spell events,not full Unit::Update;corrected actual cast clock. Initial counterfactual branch placement corrected and old source/log preserved;paired baseline and repaired runs pass. Initial parallel native build outputs invalid;clean sequential reruns retained. Initial PE authoring used wrong inherited GetDifficultyID class prefix;actual linked ScriptedAI symbol inspected and verified."
+  },
+  "pending": [
+    "Actual client combat,visual/audio and complete raid encounter not traversed. Native24casts do not certify full combat AI.",
+    "TimeLoop105992wide-heal pipeline,Lady authentic living finale,LINK2 and intermittent client handshake remain independent OPEN issues."
+  ]
+}

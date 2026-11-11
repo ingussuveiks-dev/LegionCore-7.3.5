@@ -544,7 +544,11 @@ class npc_generic_soldier : public CreatureScript
             {
                 if (spell->Id == SPELL_HEAL_TR_EF)
                 {
-                    uint64 modhealth = me->GetMaxHealth()/4;
+                    uint32 const percentage = uint32(std::min(100.0f, std::max(0.0f,
+                        spell->GetEffect(EFFECT_0, GetDifficultyID())->BasePoints)));
+                    uint64 const maximum = me->GetMaxHealth();
+                    uint64 const modhealth = (maximum / 100) * percentage +
+                        ((maximum % 100) * percentage) / 100;
                     SendHealSoldiers(pInstance, modhealth);
                 }
             }
@@ -612,6 +616,54 @@ class npc_generic_soldier : public CreatureScript
         {
             return new npc_generic_soldierAI(creature);
         }
+};
+
+// Heroic122147 retains its native source-area-entry selection. Only the
+// nine actual encounter soldiers belong to the swarm named by122193.
+class spell_meljarak_mending_target : public SpellScriptLoader
+{
+public:
+    spell_meljarak_mending_target() : SpellScriptLoader("spell_meljarak_mending_target") { }
+
+    class spell_meljarak_mending_target_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_meljarak_mending_target_SpellScript);
+
+        bool Load() override
+        {
+            return GetCaster()->GetMapId() == 1009 && GetCaster()->GetEntry() == NPC_ZARTHIK;
+        }
+
+        void FilterTargets(std::list<WorldObject*>& targets)
+        {
+            Unit* caster = GetCaster();
+            InstanceScript* instance = caster->GetInstanceScript();
+            std::set<ObjectGuid> swarm;
+            if (instance)
+                for (uint32 slot = NPC_SRATHIK_1; slot <= NPC_KORTHIK_3; ++slot)
+                {
+                    uint32 expected = slot <= NPC_SRATHIK_3 ? NPC_SRATHIK :
+                        slot <= NPC_ZARTHIK_3 ? NPC_ZARTHIK : NPC_KORTHIK;
+                    if (Creature* soldier = ObjectAccessor::GetCreature(*caster, instance->GetGuidData(slot)))
+                        if (soldier->IsAlive() && soldier->GetEntry() == expected)
+                            swarm.insert(soldier->GetGUID());
+                }
+
+            if (!swarm.count(caster->GetGUID()))
+                swarm.clear();
+            targets.remove_if([&](WorldObject* object)
+            {
+                return !object || object->GetMap() != caster->GetMap() || !swarm.count(object->GetGUID());
+            });
+        }
+
+        void Register() override
+        {
+            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_meljarak_mending_target_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override { return new spell_meljarak_mending_target_SpellScript(); }
 };
 
 //67053
@@ -1007,4 +1059,5 @@ void AddSC_boss_lord_meljarak()
     new spell_meljarak_whirling_blade();
     new spell_meljarak_whirling_blade_visual();
     new spell_meljarak_corrosive_resin();
+    new spell_meljarak_mending_target();
 }
