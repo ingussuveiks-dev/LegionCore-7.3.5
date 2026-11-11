@@ -359,7 +359,11 @@ public:
 
         void PeriodicTick(AuraEffect const* aurEff)
         {
-            Creature* caster = GetCaster()->ToCreature();
+            Unit* casterUnit = GetCaster();
+            if (!casterUnit)
+                return;
+
+            Creature* caster = casterUnit->ToCreature();
             Player* player = GetTarget()->ToPlayer();
 
             if (!caster || !player)
