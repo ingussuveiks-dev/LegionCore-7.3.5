@@ -879,21 +879,23 @@ struct npc_highmaul_living_mushroom : public MS::AI::CosmeticAI
 
         m_Instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me, 3);
 
-        AddDelayedEvent(6 * IN_MILLISECONDS, [this]() -> void { me->CastSpell(me, Withering3Percent, true); });
+        AddDelayedEvent(6 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->CastSpell(me, Withering3Percent, true); });
 
-        AddDelayedEvent(11 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(11 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->RemoveAura(Withering3Percent);
             me->CastSpell(me, Withering5Percent, true);
         });
 
-        AddDelayedEvent(16 * IN_MILLISECONDS, [this]() -> void
+        AddDelayedEvent(16 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->CastSpell(me, Withering3Percent, true);
             me->CastSpell(me, Withering5Percent, true);
         });
 
-        AddDelayedEvent(30 * IN_MILLISECONDS, [this]() -> void { me->DespawnOrUnsummon(); });
+        AddDelayedEvent(30 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->DespawnOrUnsummon(); });
     }
 
     void HealReceived(Unit* /*healer*/, uint32& heal) override
@@ -914,6 +916,9 @@ struct npc_highmaul_living_mushroom : public MS::AI::CosmeticAI
 
         me->DespawnOrUnsummon(20 * IN_MILLISECONDS);
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Rejuvenating Mushroom - 78868
