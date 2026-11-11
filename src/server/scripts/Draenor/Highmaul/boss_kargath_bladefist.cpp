@@ -287,8 +287,9 @@ struct boss_kargath_bladefist : public BossAI
 
         if (m_BeginningAdds.empty())
         {
-            AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
+            AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 std::list<Creature*> addList;
 
                 me->GetCreatureListWithEntryInGridAppend(addList, RavenousBloodmaw, 150.0f);
@@ -304,8 +305,9 @@ struct boss_kargath_bladefist : public BossAI
 
         if (m_ArenaSweepers.empty())
         {
-            AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
+            AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 std::list<Creature*> sweeperList;
                 me->GetCreatureListWithEntryInGrid(sweeperList, HighmaulSweeper, 150.0f);
 
@@ -316,8 +318,9 @@ struct boss_kargath_bladefist : public BossAI
 
         if (m_IronGruntsInArena.empty())
         {
-            AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
+            AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 std::list<Creature*> ironGrunts;
                 me->GetCreatureListWithEntryInGrid(ironGrunts, IronGrunt1, 150.0f);
 
@@ -460,8 +463,9 @@ struct boss_kargath_bladefist : public BossAI
                 me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_TURN);
                 me->AddUnitState(UNIT_STATE_CANNOT_TURN);
 
-                AddDelayedEvent(100, [this]() -> void
+                AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Creature* pillar = me->FindNearestCreature(FirePillar, 10.0f))
                     {
                         me->SetFacingTo(me->GetAngle(pillar));
@@ -472,15 +476,17 @@ struct boss_kargath_bladefist : public BossAI
                     me->SetControlled(true, UNIT_STATE_ROOT);
                 });
 
-                AddDelayedEvent(200, [this]() -> void
+                AddDelayedEvent(200, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->PlayOneShotAnimKit(AnimInterrupt);
                 });
 
                 m_Instance->SetData(KargathAchievement, 1);
 
-                AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (Unit* newTarget = me->getThreatManager().getHostilTarget())
                         AttackStart(newTarget);
                 });
@@ -738,8 +744,9 @@ struct boss_kargath_bladefist : public BossAI
                             ironGrunt->Respawn();
 
                             ObjectGuid guid = ironGrunt->GetGUID();
-                            AddDelayedEvent(50, [this, guid]() -> void
+                            AddDelayedEvent(50, [this, guid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                             {
+                                if (aiLifetimeGuard.expired()) return;
                                 if (Creature* creature = Creature::GetCreature(*me, guid))
                                     creature->GetMotionMaster()->MoveTargetedHome();
                             });
@@ -918,8 +925,9 @@ struct boss_kargath_bladefist : public BossAI
                     itr->Respawn();
 
                     ObjectGuid guid = itr->GetGUID();
-                    AddDelayedEvent(100, [this, guid]() -> void
+                    AddDelayedEvent(100, [this, guid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         if (Creature* creature = Creature::GetCreature(*me, guid))
                             creature->GetMotionMaster()->MoveTargetedHome();
                     });
@@ -951,6 +959,9 @@ struct boss_kargath_bladefist : public BossAI
             if (Unit* newTarget = me->getThreatManager().getHostilTarget())
                 AttackStart(newTarget);
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Vul'gor <The Shadow of Highmaul> - 80048
