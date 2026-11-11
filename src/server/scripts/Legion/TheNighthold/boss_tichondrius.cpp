@@ -693,7 +693,7 @@ struct npc_tichonrius_felsworn_spellguard : ScriptedAI
         DoCast(me, SPELL_MOD_SCALE, true);
         DoCast(me, SPELL_TELEPORT_OUT, true); //Visual
         DoZoneInCombat(me, 80.0f);
-        AddDelayedEvent(2000, [this]() -> void { me->SetReactState(REACT_AGGRESSIVE); });
+        AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetReactState(REACT_AGGRESSIVE); });
 
         events.RescheduleEvent(EVENT_1, 4000);
         events.RescheduleEvent(EVENT_2, 4500);
@@ -726,6 +726,9 @@ struct npc_tichonrius_felsworn_spellguard : ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //108593
