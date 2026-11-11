@@ -1193,12 +1193,12 @@ class spell_sinestra_indomitable : public SpellScriptLoader
         {
             PrepareAuraScript(spell_sinestra_indomitable_AuraScript);
 
+            uint8 controlTimer = 0;
+
             void HandleScript(AuraEffect const* /*aurEff*/)
             {
                 if (!GetCaster())
                     return;
-
-                static uint8 controlTimer;
 
                 if (GetCaster()->CanFreeMove())
                 {
@@ -1206,7 +1206,8 @@ class spell_sinestra_indomitable : public SpellScriptLoader
                     return;
                 }
 
-                controlTimer++;
+                if (controlTimer < 5)
+                    ++controlTimer;
 
                 if (controlTimer >= 5)
                 {
