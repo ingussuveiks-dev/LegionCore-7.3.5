@@ -78,7 +78,7 @@ class boss_murmur : public CreatureScript
                 }
 
                 // database should have `RegenHealth`=0 to prevent regen
-                uint32 hp = me->CountPctFromMaxHealth(40);
+                uint64 hp = me->CountPctFromMaxHealth(40);
                 if (hp)
                     me->SetHealth(hp);
                 me->ResetPlayerDamageReq();
