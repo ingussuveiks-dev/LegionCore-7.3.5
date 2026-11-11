@@ -861,6 +861,287 @@
       "binding_kind": "spell",
       "binding": "spell_eonar_shatter",
       "case": "shatter"
+    },
+    {
+      "key": "BonechillerCombatLifecycle",
+      "title": "Initialize the Bonechiller elemental phase and admit player-owned attackers",
+      "kind": "fourth",
+      "batch": 4,
+      "index": 1,
+      "paths": [
+        "src/server/scripts/Scenario/BloodInTheSnow/blood_in_the_snow.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/BloodInTheSnow/blood_in_the_snow.cpp",
+          "old": "struct npc_bloodsnow_frostmane_bonechiller : public BloodSnowCreatureAI\n{\n    npc_bloodsnow_frostmane_bonechiller(Creature* creature) : BloodSnowCreatureAI(creature)\n    {\n        scoutGUID = ObjectGuid::Empty;\n    }\n\n    bool hasElementalTriggered;\n    ObjectGuid scoutGUID;\n\n    void Reset() override\n    {\n        events.Reset();\n    }\n\n    void EnterCombat(Unit* /*who*/) override\n    {\n        events.ScheduleEvent(EVENT_FROSTBOLT, 1 * IN_MILLISECONDS);\n        events.ScheduleEvent(EVENT_FREEZING_CIRCLE, 8.5 * IN_MILLISECONDS);\n        events.ScheduleEvent(EVENT_BLIZZARD, 16 * IN_MILLISECONDS);\n    }\n\n    void SetGUID(ObjectGuid const& guid, int32 /*type*/) override\n    {\n        scoutGUID = guid;\n    }\n\n    void JustDied(Unit* /*killer*/) override\n    {\n        if (!scoutGUID)\n            return;\n\n        if (Creature* scout = ObjectAccessor::GetCreature(*me, scoutGUID))\n            scout->AI()->DoAction(ACTION_START_INTRO);\n    }\n\n    void JustSummoned(Creature* summon) override\n    {\n        summon->SetInCombatWithZone();\n    }\n\n    void AttackStart(Unit* target) override\n    {\n        if (!target)\n            return;\n\n        if (me->Attack(target, false))\n            DoStartNoMovement(target);\n    }\n\n    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType /*damageType*/) override\n    {\n        if (HealthBelowPct(65) && attacker && attacker->GetTypeId() != TYPEID_PLAYER)\n            damage = 0;\n\n        if (HealthBelowPct(50) && !hasElementalTriggered)\n        {\n            hasElementalTriggered = true;\n            events.ScheduleEvent(EVENT_WATER_ELEMENTAL, 1 * IN_MILLISECONDS);\n        }\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        while (uint32 eventId = events.ExecuteEvent())\n        {\n            if (eventId == EVENT_FROSTBOLT)\n            {\n                if (Unit* vict = me->getVictim())\n                {\n                    if (me->GetExactDist2d(vict) > 35.5f)\n                        DoStartMovement(vict);\n                    else\n                        DoStartNoMovement(vict);\n\n                    DoCast(vict, me->GetEntry() == NPC_BONECHILLER_BARAFU ? SPELL_FROSTBOLT_VOLLEY : SPELL_FROSTBOLT);\n                }\n\n                events.ScheduleEvent(EVENT_FROSTBOLT, me->GetEntry() == NPC_BONECHILLER_BARAFU ? 3.1 * IN_MILLISECONDS : 2.1 * IN_MILLISECONDS);\n            }\n\n            ExecuteTargetEvent(SPELL_BLIZZARD, 20 * IN_MILLISECONDS, EVENT_BLIZZARD, eventId, PRIORITY_NOT_VICTIM);\n            ExecuteTargetEvent(SPELL_FREEZiNG_CIRCLE, 12.5 * IN_MILLISECONDS, EVENT_FREEZING_CIRCLE, eventId, PRIORITY_NOT_VICTIM);\n            ExecuteTargetEvent(SPELL_SUMMON_WATER_ELEMENTAL, 0, EVENT_WATER_ELEMENTAL, eventId, PRIORITY_SELF);\n            break;\n        }\n\n        DoMeleeAttackIfReady();\n    }\n}",
+          "new": "struct npc_bloodsnow_frostmane_bonechiller : public BloodSnowCreatureAI\n{\n    npc_bloodsnow_frostmane_bonechiller(Creature* creature) : BloodSnowCreatureAI(creature)\n    {\n        scoutGUID = ObjectGuid::Empty;\n    }\n\n    bool hasElementalTriggered = false;\n    ObjectGuid scoutGUID;\n\n    void Reset() override\n    {\n        events.Reset();\n        hasElementalTriggered = false;\n    }\n\n    void EnterCombat(Unit* /*who*/) override\n    {\n        events.ScheduleEvent(EVENT_FROSTBOLT, 1 * IN_MILLISECONDS);\n        events.ScheduleEvent(EVENT_FREEZING_CIRCLE, 8.5 * IN_MILLISECONDS);\n        events.ScheduleEvent(EVENT_BLIZZARD, 16 * IN_MILLISECONDS);\n    }\n\n    void SetGUID(ObjectGuid const& guid, int32 /*type*/) override\n    {\n        scoutGUID = guid;\n    }\n\n    void JustDied(Unit* /*killer*/) override\n    {\n        if (!scoutGUID)\n            return;\n\n        if (Creature* scout = ObjectAccessor::GetCreature(*me, scoutGUID))\n            scout->AI()->DoAction(ACTION_START_INTRO);\n    }\n\n    void JustSummoned(Creature* summon) override\n    {\n        summon->SetInCombatWithZone();\n    }\n\n    void AttackStart(Unit* target) override\n    {\n        if (!target)\n            return;\n\n        if (me->Attack(target, false))\n            DoStartNoMovement(target);\n    }\n\n    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType /*damageType*/) override\n    {\n        if (HealthBelowPct(65) && attacker && !attacker->GetAffectingPlayer())\n            damage = 0;\n\n        if (HealthBelowPct(50) && !hasElementalTriggered)\n        {\n            hasElementalTriggered = true;\n            events.ScheduleEvent(EVENT_WATER_ELEMENTAL, 1 * IN_MILLISECONDS);\n        }\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        while (uint32 eventId = events.ExecuteEvent())\n        {\n            if (eventId == EVENT_FROSTBOLT)\n            {\n                if (Unit* vict = me->getVictim())\n                {\n                    if (me->GetExactDist2d(vict) > 35.5f)\n                        DoStartMovement(vict);\n                    else\n                        DoStartNoMovement(vict);\n\n                    DoCast(vict, me->GetEntry() == NPC_BONECHILLER_BARAFU ? SPELL_FROSTBOLT_VOLLEY : SPELL_FROSTBOLT);\n                }\n\n                events.ScheduleEvent(EVENT_FROSTBOLT, me->GetEntry() == NPC_BONECHILLER_BARAFU ? 3.1 * IN_MILLISECONDS : 2.1 * IN_MILLISECONDS);\n            }\n\n            ExecuteTargetEvent(SPELL_BLIZZARD, 20 * IN_MILLISECONDS, EVENT_BLIZZARD, eventId, PRIORITY_NOT_VICTIM);\n            ExecuteTargetEvent(SPELL_FREEZiNG_CIRCLE, 12.5 * IN_MILLISECONDS, EVENT_FREEZING_CIRCLE, eventId, PRIORITY_NOT_VICTIM);\n            ExecuteTargetEvent(SPELL_SUMMON_WATER_ELEMENTAL, 0, EVENT_WATER_ELEMENTAL, eventId, PRIORITY_SELF);\n            break;\n        }\n\n        DoMeleeAttackIfReady();\n    }\n}",
+          "count": 1
+        }
+      ],
+      "cls": "npc_bloodsnow_frostmane_bonechiller",
+      "case": "bonechiller",
+      "binding_kind": "creature",
+      "binding": "npc_bloodsnow_frostmane_bonechiller"
+    },
+    {
+      "key": "ViletonguePoisonLifecycle",
+      "title": "Initialize and retry the Viletongue poison request without losing its one-shot latch",
+      "kind": "fourth",
+      "batch": 4,
+      "index": 2,
+      "paths": [
+        "src/server/scripts/Scenario/ABrewingStorm/a_brewing_storm.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/ABrewingStorm/a_brewing_storm.cpp",
+          "old": "struct npc_viletongue_sauroks : public ScriptedAI\n{\n    npc_viletongue_sauroks(Creature* creature) : ScriptedAI(creature) { }\n\n    EventMap events, nonCombatEvents;\n    bool poisoned;\n\n    void Reset() override\n    {\n        events.Reset();\n    }\n\n    void EnterCombat(Unit* who) override\n    {\n        if (who)\n            DoCast(who, SPELL_LEAPING_CLEAVE);\n    }\n\n    void MovementInform(uint32 type, uint32 pointId) override\n    {\n        if (pointId == EVENT_JUMP)\n        {\n            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_PACIFIED);\n            me->SetInCombatWithZone();\n\n            events.ScheduleEvent(EVENT_TORCH_TOSS, urand(5000, 15000));\n        }\n    }\n\n    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType /*damageType*/) override\n    {\n        if (me->GetEntry() == NPC_VILETONGUE_SKIRMISHER && !poisoned && HealthBelowPct(50))\n        {\n            poisoned = true;\n\n            if (attacker)\n                me->CastSpell(attacker, SPELL_VILETONGUE_STING, false);\n        }\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        while (uint32 eventId = events.ExecuteEvent())\n        {\n            if (eventId == EVENT_TORCH_TOSS)\n            {\n                if (Unit* vict = me->getVictim())\n                    DoCast(vict, SPELL_TORCH_TOSS);\n\n                events.ScheduleEvent(EVENT_TORCH_TOSS, urand(5000, 15000));\n            }\n            break;\n        }\n\n        DoMeleeAttackIfReady();\n    }\n}",
+          "new": "struct npc_viletongue_sauroks : public ScriptedAI\n{\n    npc_viletongue_sauroks(Creature* creature) : ScriptedAI(creature) { }\n\n    EventMap events, nonCombatEvents;\n    bool poisoned = false;\n\n    void Reset() override\n    {\n        events.Reset();\n        poisoned = false;\n    }\n\n    void EnterCombat(Unit* who) override\n    {\n        if (who)\n            DoCast(who, SPELL_LEAPING_CLEAVE);\n    }\n\n    void MovementInform(uint32 type, uint32 pointId) override\n    {\n        if (pointId == EVENT_JUMP)\n        {\n            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_PACIFIED);\n            me->SetInCombatWithZone();\n\n            events.ScheduleEvent(EVENT_TORCH_TOSS, urand(5000, 15000));\n        }\n    }\n\n    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType /*damageType*/) override\n    {\n        if (me->GetEntry() == NPC_VILETONGUE_SKIRMISHER && !poisoned && HealthBelowPct(50))\n        {\n            if (attacker)\n            {\n                poisoned = true;\n                if (me->CastSpell(attacker, SPELL_VILETONGUE_STING, false) != SPELL_CAST_OK)\n                    poisoned = false;\n            }\n        }\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim())\n            return;\n\n        events.Update(diff);\n\n        if (me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        while (uint32 eventId = events.ExecuteEvent())\n        {\n            if (eventId == EVENT_TORCH_TOSS)\n            {\n                if (Unit* vict = me->getVictim())\n                    DoCast(vict, SPELL_TORCH_TOSS);\n\n                events.ScheduleEvent(EVENT_TORCH_TOSS, urand(5000, 15000));\n            }\n            break;\n        }\n\n        DoMeleeAttackIfReady();\n    }\n}",
+          "count": 1
+        }
+      ],
+      "cls": "npc_viletongue_sauroks",
+      "case": "viletongue",
+      "binding_kind": "creature",
+      "binding": "npc_viletongue_sauroks"
+    },
+    {
+      "key": "GargoyleTimerInitialization",
+      "title": "Initialize Gargoyle dismissal and target-check clocks before owner admission",
+      "kind": "fourth",
+      "batch": 4,
+      "index": 3,
+      "paths": [
+        "src/server/scripts/World/npcs_special.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/World/npcs_special.cpp",
+          "old": "struct npc_ebon_gargoyleAI : CasterAI\n        {\n            npc_ebon_gargoyleAI(Creature* creature) : CasterAI(creature) {}\n\n            uint32 despawnTimer;\n            bool checkTarget;\n            ObjectGuid ownerGuid;\n            ObjectGuid mainTargetGUID;\n            uint32 targetCheckTime;\n\n            void InitializeAI() override\n            {\n                checkTarget = false;\n                mainTargetGUID.Clear();\n                CasterAI::InitializeAI();\n                ownerGuid = me->GetOwnerGUID();\n                if (!ownerGuid)\n                    return;\n                // Not needed to be despawned now\n                despawnTimer = 0;\n            }\n\n            // Fly away when dismissed\n            void SpellHit(Unit* source, SpellInfo const* spell) override\n            {\n                if (spell->Id != 50515 || !me->IsAlive())\n                    return;\n\n                Unit* owner = me->GetOwner();\n                if (!owner || owner != source)\n                    return;\n\n                // Stop Fighting\n                me->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE, true);\n                // Sanctuary\n                me->CastSpell(me, 54661, true);\n                me->SetReactState(REACT_PASSIVE);\n\n                //! HACK: Creature's can't have MOVEMENTFLAG_FLYING\n                // Fly Away\n                me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY|MOVEMENTFLAG_ASCENDING|MOVEMENTFLAG_FLYING);\n                me->SetSpeed(MOVE_FLIGHT, 0.75f, true);\n                me->SetSpeed(MOVE_RUN, 0.75f, true);\n                float x = me->GetPositionX() + 20 * std::cos(me->GetOrientation());\n                float y = me->GetPositionY() + 20 * std::sin(me->GetOrientation());\n                float z = me->GetPositionZ() + 40;\n                me->GetMotionMaster()->Clear(false);\n                me->GetMotionMaster()->MovePoint(0, x, y, z);\n\n                // Despawn as soon as possible\n                despawnTimer = 4 * IN_MILLISECONDS;\n            }\n\n            void UpdateAI(uint32 diff) override\n            {\n                if (despawnTimer > 0)\n                {\n                    if (despawnTimer > diff)\n                        despawnTimer -= diff;\n                    else\n                        me->DespawnOrUnsummon();\n                    return;\n                }\n                CasterAI::UpdateAI(diff);\n\n                targetCheckTime += diff;\n                if (targetCheckTime > 2000)\n                {\n                    if (mainTargetGUID)\n                        if (me->getVictim() && me->getVictim()->GetGUID() != mainTargetGUID)\n                            checkTarget = false;\n\n                    targetCheckTime = 0;\n                }\n\n                if (!checkTarget)\n                {\n                    std::list<Unit*> targets;\n                    Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(me, me, 30);\n                    Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(me, targets, u_check);\n                    Trinity::VisitNearbyObject(me, 30, searcher);\n                    for (std::list<Unit*>::const_iterator iter = targets.begin(); iter != targets.end(); ++iter)\n                        if (Unit* unit = (*iter)->ToUnit())\n                            if (unit->HasAura(49206, ownerGuid))\n                            {\n                                if (!mainTargetGUID)\n                                    mainTargetGUID = unit->GetGUID();\n\n                                if (me->IsValidAttackTarget(unit))\n                                    me->Attack((unit), false);\n                                break;\n                            }\n\n                    checkTarget = true;\n                }\n            }\n        }",
+          "new": "struct npc_ebon_gargoyleAI : CasterAI\n        {\n            npc_ebon_gargoyleAI(Creature* creature) : CasterAI(creature) {}\n\n            uint32 despawnTimer = 0;\n            bool checkTarget;\n            ObjectGuid ownerGuid;\n            ObjectGuid mainTargetGUID;\n            uint32 targetCheckTime = 0;\n\n            void InitializeAI() override\n            {\n                checkTarget = false;\n                despawnTimer = 0;\n                targetCheckTime = 0;\n                mainTargetGUID.Clear();\n                CasterAI::InitializeAI();\n                ownerGuid = me->GetOwnerGUID();\n                if (!ownerGuid)\n                    return;\n\n            }\n\n            // Fly away when dismissed\n            void SpellHit(Unit* source, SpellInfo const* spell) override\n            {\n                if (spell->Id != 50515 || !me->IsAlive())\n                    return;\n\n                Unit* owner = me->GetOwner();\n                if (!owner || owner != source)\n                    return;\n\n                // Stop Fighting\n                me->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE, true);\n                // Sanctuary\n                me->CastSpell(me, 54661, true);\n                me->SetReactState(REACT_PASSIVE);\n\n                //! HACK: Creature's can't have MOVEMENTFLAG_FLYING\n                // Fly Away\n                me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY|MOVEMENTFLAG_ASCENDING|MOVEMENTFLAG_FLYING);\n                me->SetSpeed(MOVE_FLIGHT, 0.75f, true);\n                me->SetSpeed(MOVE_RUN, 0.75f, true);\n                float x = me->GetPositionX() + 20 * std::cos(me->GetOrientation());\n                float y = me->GetPositionY() + 20 * std::sin(me->GetOrientation());\n                float z = me->GetPositionZ() + 40;\n                me->GetMotionMaster()->Clear(false);\n                me->GetMotionMaster()->MovePoint(0, x, y, z);\n\n                // Despawn as soon as possible\n                despawnTimer = 4 * IN_MILLISECONDS;\n            }\n\n            void UpdateAI(uint32 diff) override\n            {\n                if (despawnTimer > 0)\n                {\n                    if (despawnTimer > diff)\n                        despawnTimer -= diff;\n                    else\n                        me->DespawnOrUnsummon();\n                    return;\n                }\n                CasterAI::UpdateAI(diff);\n\n                targetCheckTime += diff;\n                if (targetCheckTime > 2000)\n                {\n                    if (mainTargetGUID)\n                        if (me->getVictim() && me->getVictim()->GetGUID() != mainTargetGUID)\n                            checkTarget = false;\n\n                    targetCheckTime = 0;\n                }\n\n                if (!checkTarget)\n                {\n                    std::list<Unit*> targets;\n                    Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(me, me, 30);\n                    Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(me, targets, u_check);\n                    Trinity::VisitNearbyObject(me, 30, searcher);\n                    for (std::list<Unit*>::const_iterator iter = targets.begin(); iter != targets.end(); ++iter)\n                        if (Unit* unit = (*iter)->ToUnit())\n                            if (unit->HasAura(49206, ownerGuid))\n                            {\n                                if (!mainTargetGUID)\n                                    mainTargetGUID = unit->GetGUID();\n\n                                if (me->IsValidAttackTarget(unit))\n                                    me->Attack((unit), false);\n                                break;\n                            }\n\n                    checkTarget = true;\n                }\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "cls": "npc_ebon_gargoyleAI",
+      "case": "gargoyle",
+      "binding_kind": "creature",
+      "binding": "npc_ebon_gargoyle"
+    },
+    {
+      "key": "AvatarMaidenAILifetime",
+      "title": "Retire the delayed Maiden combat request with its source Avatar AI",
+      "kind": "fourth",
+      "batch": 4,
+      "index": 4,
+      "paths": [
+        "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/TombOfSargeras/boss_FallenAvatar.cpp",
+          "old": "me->AddDelayedCombat(500, [&]() -> void\n            {\n                if (Creature* maiden = summons.GetCreature(NPC_AVATARA_MAIDEN))\n                {\n                    if (!maiden->isInCombat())\n                        DoZoneInCombat(maiden);\n                    instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, maiden);\n                }\n            });",
+          "new": "me->AddDelayedCombat(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void\n            {\n                if (aiLifetimeGuard.expired()) return;\n                if (Creature* maiden = summons.GetCreature(NPC_AVATARA_MAIDEN))\n                {\n                    if (!maiden->isInCombat())\n                        DoZoneInCombat(maiden);\n                    instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, maiden);\n                }\n            });",
+          "count": 1
+        }
+      ],
+      "cls": "boss_fallen_avatar",
+      "case": "avatar",
+      "binding_kind": "creature",
+      "binding": "boss_fallen_avatar"
+    },
+    {
+      "key": "AhuneSummoningRhymeCasterLoss",
+      "title": "Keep Ahune summoning dialogue safe after its creature caster leaves",
+      "kind": "fourth",
+      "batch": 4,
+      "index": 5,
+      "paths": [
+        "src/server/scripts/Outland/CoilfangReservoir/TheSlavePens/boss_ahune_frost_lord.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Outland/CoilfangReservoir/TheSlavePens/boss_ahune_frost_lord.cpp",
+          "old": "class spell_summoning_rhyme_aura_AuraScript : public AuraScript\n    {\n        PrepareAuraScript(spell_summoning_rhyme_aura_AuraScript);\n\n        bool Validate(SpellInfo const* /*spellInfo*/) override\n        {\n            return ValidateSpellInfo({ 45930 });\n        }\n\n        ObjectGuid LumaGUID;\n\n        void PeriodicTick(AuraEffect const* aurEff)\n        {\n            Creature* caster = GetCaster()->ToCreature();\n            Player* player = GetTarget()->ToPlayer();\n\n            if (!caster || !player)\n                return;\n\n            switch (aurEff->GetTickNumber())\n            {\n            case 1:\n                sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_1, LumaGUID, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);\n                player->CastSpell(player, 45930, true);\n                break;\n            case 2:\n                sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_2, LumaGUID, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);\n                break;\n            case 3:\n                sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_3, LumaGUID, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);\n                Remove();\n                break;\n            }\n        }\n\n        void Register() override\n        {\n            OnEffectPeriodic += AuraEffectPeriodicFn(spell_summoning_rhyme_aura_AuraScript::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n        }\n    }",
+          "new": "class spell_summoning_rhyme_aura_AuraScript : public AuraScript\n    {\n        PrepareAuraScript(spell_summoning_rhyme_aura_AuraScript);\n\n        bool Validate(SpellInfo const* /*spellInfo*/) override\n        {\n            return ValidateSpellInfo({ 45930 });\n        }\n\n        ObjectGuid LumaGUID;\n\n        void PeriodicTick(AuraEffect const* aurEff)\n        {\n            Unit* casterUnit = GetCaster();\n            if (!casterUnit)\n                return;\n\n            Creature* caster = casterUnit->ToCreature();\n            Player* player = GetTarget()->ToPlayer();\n\n            if (!caster || !player)\n                return;\n\n            switch (aurEff->GetTickNumber())\n            {\n            case 1:\n                sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_1, LumaGUID, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);\n                player->CastSpell(player, 45930, true);\n                break;\n            case 2:\n                sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_2, LumaGUID, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);\n                break;\n            case 3:\n                sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_3, LumaGUID, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);\n                Remove();\n                break;\n            }\n        }\n\n        void Register() override\n        {\n            OnEffectPeriodic += AuraEffectPeriodicFn(spell_summoning_rhyme_aura_AuraScript::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n        }\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "spell_summoning_rhyme_aura_AuraScript",
+      "case": "rhyme",
+      "binding_kind": "spell",
+      "binding": "spell_summoning_rhyme_aura"
+    },
+    {
+      "key": "DrainFelEnergyCasterLoss",
+      "title": "Keep Drain Fel Energy removal safe when its player caster is unavailable",
+      "kind": "fourth",
+      "batch": 4,
+      "index": 6,
+      "paths": [
+        "src/server/scripts/Scenario/PursuingTheBlackHarvest/pursuing_the_black_harvest.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/PursuingTheBlackHarvest/pursuing_the_black_harvest.cpp",
+          "old": "class spell_drain_fel_enegry_AuraScript : public AuraScript\n    {\n        PrepareAuraScript(spell_drain_fel_enegry_AuraScript);\n\n        void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n        {\n            if (Player* target = GetCaster()->ToPlayer())\n            {\n                //if (Creature* veh = target->SummonCreature(70504, 660.1176f, 313.6469f, 355.0672f, 3.764802f))\n                //    veh->EnterVehicle(target);\n\n                //target->CastSpell(target, SPELL_FEL_ENERGY_DUMMY, true);\n\n                target->CastSpell(target, SPELL_THE_CODEX_OF_XERRATH);\n\n                if (Creature* caster = GetTarget()->ToCreature())\n                    caster->DespawnOrUnsummon(3 * IN_MILLISECONDS);\n            }\n        }\n\n        void Register() override\n        {\n            OnEffectRemove += AuraEffectRemoveFn(spell_drain_fel_enegry_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);\n        }\n    }",
+          "new": "class spell_drain_fel_enegry_AuraScript : public AuraScript\n    {\n        PrepareAuraScript(spell_drain_fel_enegry_AuraScript);\n\n        void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n        {\n            Unit* caster = GetCaster();\n            if (!caster)\n                return;\n\n            if (Player* target = caster->ToPlayer())\n            {\n                //if (Creature* veh = target->SummonCreature(70504, 660.1176f, 313.6469f, 355.0672f, 3.764802f))\n                //    veh->EnterVehicle(target);\n\n                //target->CastSpell(target, SPELL_FEL_ENERGY_DUMMY, true);\n\n                target->CastSpell(target, SPELL_THE_CODEX_OF_XERRATH);\n\n                if (Creature* caster = GetTarget()->ToCreature())\n                    caster->DespawnOrUnsummon(3 * IN_MILLISECONDS);\n            }\n        }\n\n        void Register() override\n        {\n            OnEffectRemove += AuraEffectRemoveFn(spell_drain_fel_enegry_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);\n        }\n    }",
+          "count": 1
+        }
+      ],
+      "cls": "spell_drain_fel_enegry_AuraScript",
+      "case": "drain",
+      "binding_kind": "spell",
+      "binding": "spell_drain_fel_enegry"
+    },
+    {
+      "key": "LiletDialogueOwnerLifetime",
+      "title": "Resolve the actual connected Lilet dialogue recipient at each delayed speech",
+      "kind": "fourth",
+      "batch": 4,
+      "index": 7,
+      "paths": [
+        "src/server/scripts/Legion/CourtofStars/boss_patrol_captain_gerdo.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/CourtofStars/boss_patrol_captain_gerdo.cpp",
+          "old": "struct npc_lilet_lunarhAI : public ScriptedAI\n    {\n        npc_lilet_lunarhAI(Creature* creature) : ScriptedAI(creature) {}\n        \n        uint32 timer;\n        uint8 talk;\n        bool event;\n        Player* owner = nullptr;\n        \n        void IsSummonedBy(Unit* summoner) override\n        {\n            if (summoner->GetTypeId() == TYPEID_PLAYER)\n                owner = summoner->ToPlayer();\n            timer = 13000;\n            event = true;\n            talk = 0;\n        }\n        \n        void UpdateAI(uint32 diff) override\n        {\n            if (event)\n                if (talk < 4)\n                    if (timer <= diff)\n                    {\n                        if (owner)\n                            Talk(talk, owner->GetGUID());\n                        talk++;\n                        timer = 16000;\n                    } else timer -= diff;\n        }\n        \n    }",
+          "new": "struct npc_lilet_lunarhAI : public ScriptedAI\n    {\n        npc_lilet_lunarhAI(Creature* creature) : ScriptedAI(creature) {}\n        \n        uint32 timer = 0;\n        uint8 talk = 0;\n        bool event = false;\n        ObjectGuid ownerGuid;\n        \n        void IsSummonedBy(Unit* summoner) override\n        {\n            ownerGuid.Clear();\n            if (summoner && summoner->GetTypeId() == TYPEID_PLAYER)\n                ownerGuid = summoner->GetGUID();\n            timer = 13000;\n            event = true;\n            talk = 0;\n        }\n        \n        void UpdateAI(uint32 diff) override\n        {\n            if (event)\n                if (talk < 4)\n                    if (timer <= diff)\n                    {\n                        if (Player* owner = ObjectAccessor::GetPlayer(*me, ownerGuid))\n                            Talk(talk, owner->GetGUID());\n                        talk++;\n                        timer = 16000;\n                    } else timer -= diff;\n        }\n        \n    }",
+          "count": 1
+        }
+      ],
+      "cls": "npc_lilet_lunarhAI",
+      "case": "lilet",
+      "binding_kind": "creature",
+      "binding": "npc_lilet_lunarh"
+    },
+    {
+      "key": "AlluradelSadistTimer",
+      "title": "Honor the existing Sadist check interval and reset its target checkpoint",
+      "kind": "fourth",
+      "batch": 4,
+      "index": 8,
+      "paths": [
+        "src/server/scripts/Legion/invasion_point_world_bosses.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/invasion_point_world_bosses.cpp",
+          "old": "struct boss_mistress_alluradel : public ScriptedAI\n{\n    boss_mistress_alluradel(Creature* creature) : ScriptedAI(creature) {}\n\n    EventMap events;\n    uint32 checktimer;\n    ObjectGuid tankGUID;\n\n    void Reset() override\n    {\n        events.Reset();\n        me->RemoveAllAuras();\n        me->SetPower(POWER_ENERGY, 0);\n        DoCast(SPELL_SADIST);\n    }\n\n    void EnterCombat(Unit* /*unit*/) override\n    {\n        Talk(SAY_AGGRO);\n        events.RescheduleEvent(EVENT_HEART_BREAKER, 4000);\n        events.RescheduleEvent(EVENT_FEL_LASH, 15000);\n        events.RescheduleEvent(EVENT_BEGUILING_CHARM, 29000);\n        events.RescheduleEvent(EVENT_PHANTASM, 33000);\n    }\n\n    void EnterEvadeMode() override\n    {\n        ScriptedAI::EnterEvadeMode();\n    }\n\n    void JustDied(Unit* /*who*/) override\n    {\n        Talk(2);\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim() || me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        events.Update(diff);\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n            case EVENT_HEART_BREAKER:\n                DoCast(SPELL_HEART_BREAKER);\n                events.RescheduleEvent(EVENT_HEART_BREAKER, 22000);\n                break;\n            case EVENT_FEL_LASH:\n                DoCast(SPELL_FEL_LASH);\n                events.RescheduleEvent(EVENT_FEL_LASH, 32000);\n                break;\n            case EVENT_BEGUILING_CHARM:\n                ZoneTalk(1);\n                DoCast(SPELL_BEGUILING_CHARM);\n                events.RescheduleEvent(EVENT_BEGUILING_CHARM, 40000);\n                break;\n            default:\n                break;\n            }\n        }\n\n        if (me->HasAura(SPELL_SADIST))\n        {\n            checktimer = 0;\n            if (checktimer <= diff)\n            {\n                if (Unit* victim = me->getVictim())\n                {\n                    if (victim->GetGUID() != tankGUID)\n                    {\n                        tankGUID = victim->GetGUID();\n                        me->RemoveAura(SPELL_SADIST_PROC);\n                        checktimer = 500;\n                    }\n                }\n            }\n            else checktimer -= diff;\n        }\n        DoMeleeAttackIfReady();\n    }\n}",
+          "new": "struct boss_mistress_alluradel : public ScriptedAI\n{\n    boss_mistress_alluradel(Creature* creature) : ScriptedAI(creature) {}\n\n    EventMap events;\n    uint32 checktimer = 0;\n    ObjectGuid tankGUID;\n\n    void Reset() override\n    {\n        events.Reset();\n        checktimer = 0;\n        tankGUID.Clear();\n        me->RemoveAllAuras();\n        me->SetPower(POWER_ENERGY, 0);\n        DoCast(SPELL_SADIST);\n    }\n\n    void EnterCombat(Unit* /*unit*/) override\n    {\n        Talk(SAY_AGGRO);\n        events.RescheduleEvent(EVENT_HEART_BREAKER, 4000);\n        events.RescheduleEvent(EVENT_FEL_LASH, 15000);\n        events.RescheduleEvent(EVENT_BEGUILING_CHARM, 29000);\n        events.RescheduleEvent(EVENT_PHANTASM, 33000);\n    }\n\n    void EnterEvadeMode() override\n    {\n        ScriptedAI::EnterEvadeMode();\n    }\n\n    void JustDied(Unit* /*who*/) override\n    {\n        Talk(2);\n    }\n\n    void UpdateAI(uint32 diff) override\n    {\n        if (!UpdateVictim() || me->HasUnitState(UNIT_STATE_CASTING))\n            return;\n\n        events.Update(diff);\n\n        if (uint32 eventId = events.ExecuteEvent())\n        {\n            switch (eventId)\n            {\n            case EVENT_HEART_BREAKER:\n                DoCast(SPELL_HEART_BREAKER);\n                events.RescheduleEvent(EVENT_HEART_BREAKER, 22000);\n                break;\n            case EVENT_FEL_LASH:\n                DoCast(SPELL_FEL_LASH);\n                events.RescheduleEvent(EVENT_FEL_LASH, 32000);\n                break;\n            case EVENT_BEGUILING_CHARM:\n                ZoneTalk(1);\n                DoCast(SPELL_BEGUILING_CHARM);\n                events.RescheduleEvent(EVENT_BEGUILING_CHARM, 40000);\n                break;\n            default:\n                break;\n            }\n        }\n\n        if (me->HasAura(SPELL_SADIST))\n        {\n            if (checktimer <= diff)\n            {\n                if (Unit* victim = me->getVictim())\n                {\n                    if (victim->GetGUID() != tankGUID)\n                    {\n                        tankGUID = victim->GetGUID();\n                        me->RemoveAura(SPELL_SADIST_PROC);\n                    }\n                }\n                checktimer = 500;\n            }\n            else checktimer -= diff;\n        }\n        DoMeleeAttackIfReady();\n    }\n}",
+          "count": 1
+        }
+      ],
+      "cls": "boss_mistress_alluradel",
+      "case": "alluradel",
+      "binding_kind": "creature",
+      "binding": "boss_mistress_alluradel"
+    },
+    {
+      "key": "ScarabScoreBroadcast",
+      "title": "Broadcast one native Scarab score snapshot to every participant before advancing its faction cache",
+      "kind": "fourth",
+      "batch": 4,
+      "index": 9,
+      "paths": [
+        "src/server/scripts/Kalimdor/RuinsOfAhnQiraj/instance_ruins_of_ahnqiraj.cpp",
+        "src/server/scripts/Kalimdor/TempleOfAhnQiraj/instance_temple_of_ahnqiraj.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Kalimdor/TempleOfAhnQiraj/instance_temple_of_ahnqiraj.cpp",
+          "old": "HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);\n            CurrectAllianceScore = AllianceScore;\n            CurrectHordeScore = CurrectHordeScore;",
+          "new": "HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);\n            CurrectAllianceScore = AllianceScore;\n            CurrectHordeScore = HordeScore;",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Kalimdor/TempleOfAhnQiraj/instance_temple_of_ahnqiraj.cpp",
+          "old": "                    instance->ApplyOnEveryPlayer([=](Player* player) -> void\n                    {\n                        AllianceScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_ALLINCE);\n                        HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);\n\n                        if (AllianceScore > CurrectAllianceScore)\n                        {\n                            CurrectAllianceScore = AllianceScore;\n                            player->SendUpdateWorldState(static_cast<WorldStates>(12953), AllianceScore);\n                        }\n\n                        if (HordeScore > CurrectHordeScore)\n                        {\n                            CurrectHordeScore = AllianceScore;\n                            player->SendUpdateWorldState(static_cast<WorldStates>(12952), HordeScore);\n                        }\n                    });",
+          "new": "                    AllianceScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_ALLINCE);\n                    HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);\n                    bool allianceChanged = AllianceScore != CurrectAllianceScore;\n                    bool hordeChanged = HordeScore != CurrectHordeScore;\n\n                    instance->ApplyOnEveryPlayer([=](Player* player) -> void\n                    {\n                        if (allianceChanged)\n                            player->SendUpdateWorldState(static_cast<WorldStates>(12953), AllianceScore);\n                        if (hordeChanged)\n                            player->SendUpdateWorldState(static_cast<WorldStates>(12952), HordeScore);\n                    });\n\n                    CurrectAllianceScore = AllianceScore;\n                    CurrectHordeScore = HordeScore;",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Kalimdor/TempleOfAhnQiraj/instance_temple_of_ahnqiraj.cpp",
+          "old": "if (sGameEventMgr->IsActiveEvent(78))",
+          "new": "if (sGameEventMgr->IsActiveEvent(78) || CurrectAllianceScore || CurrectHordeScore)",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Kalimdor/RuinsOfAhnQiraj/instance_ruins_of_ahnqiraj.cpp",
+          "old": "HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);\n                CurrectAllianceScore = AllianceScore;\n                CurrectHordeScore = CurrectHordeScore;",
+          "new": "HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);\n                CurrectAllianceScore = AllianceScore;\n                CurrectHordeScore = HordeScore;",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Kalimdor/RuinsOfAhnQiraj/instance_ruins_of_ahnqiraj.cpp",
+          "old": "                        instance->ApplyOnEveryPlayer([=](Player* player) -> void\n                        {\n                            AllianceScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_ALLINCE);\n                            HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);\n\n                            if (AllianceScore > CurrectAllianceScore)\n                            {\n                                CurrectAllianceScore = AllianceScore;\n                                player->SendUpdateWorldState(static_cast<WorldStates>(12953), AllianceScore);\n                            }\n\n                            if (HordeScore > CurrectHordeScore)\n                            {\n                                CurrectHordeScore = AllianceScore;\n                                player->SendUpdateWorldState(static_cast<WorldStates>(12952), HordeScore);\n                            }\n                        });",
+          "new": "                        AllianceScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_ALLINCE);\n                        HordeScore = sWorld->getWorldState(WS_SCORE_CALL_OF_THE_SCARAB_HORDE);\n                        bool allianceChanged = AllianceScore != CurrectAllianceScore;\n                        bool hordeChanged = HordeScore != CurrectHordeScore;\n\n                        instance->ApplyOnEveryPlayer([=](Player* player) -> void\n                        {\n                            if (allianceChanged)\n                                player->SendUpdateWorldState(static_cast<WorldStates>(12953), AllianceScore);\n                            if (hordeChanged)\n                                player->SendUpdateWorldState(static_cast<WorldStates>(12952), HordeScore);\n                        });\n\n                        CurrectAllianceScore = AllianceScore;\n                        CurrectHordeScore = HordeScore;",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Kalimdor/RuinsOfAhnQiraj/instance_ruins_of_ahnqiraj.cpp",
+          "old": "if (sGameEventMgr->IsActiveEvent(78))",
+          "new": "if (sGameEventMgr->IsActiveEvent(78) || CurrectAllianceScore || CurrectHordeScore)",
+          "count": 1
+        }
+      ],
+      "cls": "OutdoorPvPSilithus",
+      "case": "scarab",
+      "binding_kind": "scarb_family",
+      "bindings": [
+        "instance_temple_of_ahnqiraj",
+        "instance_ruins_of_ahnqiraj"
+      ],
+      "reference_only_exclusion": "OutdoorPvPSilithus source has same pattern but no outdoorpvp_template binding;its candidate edits were withdrawn rather than claiming an active repair."
+    },
+    {
+      "key": "CloneWeaponVisualLayout",
+      "title": "Copy and restore the native Legion weapon slot and its appearance fields",
+      "kind": "fourth",
+      "batch": 4,
+      "index": 10,
+      "paths": [
+        "src/server/scripts/Spells/spell_generic.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "old": "enum CloneWeaponSpells\n{\n    SPELL_COPY_WEAPON_AURA       = 41055,\n    SPELL_COPY_WEAPON_2_AURA     = 63416,\n    SPELL_COPY_WEAPON_3_AURA     = 69891,\n\n    SPELL_COPY_OFFHAND_AURA      = 45206,\n    SPELL_COPY_OFFHAND_2_AURA    = 69892,\n\n    SPELL_COPY_RANGED_AURA       = 57594\n};",
+          "new": "enum CloneWeaponSpells\n{\n    SPELL_COPY_WEAPON_AURA       = 41054,\n    SPELL_COPY_WEAPON_2_AURA     = 63418,\n    SPELL_COPY_WEAPON_3_AURA     = 69893,\n\n    SPELL_COPY_OFFHAND_AURA      = 45205,\n    SPELL_COPY_OFFHAND_2_AURA    = 69896,\n\n    SPELL_COPY_RANGED_AURA       = 57594\n};",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_generic.cpp",
+          "old": "class spell_gen_clone_weapon_auraScript : public AuraScript\n            {\n                PrepareAuraScript(spell_gen_clone_weapon_auraScript);\n\n                uint32 prevItem;\n\n                bool Validate(SpellInfo const* /*SpellInfo*/) override\n                {\n                    if (!sSpellMgr->GetSpellInfo(SPELL_COPY_WEAPON_AURA) || !sSpellMgr->GetSpellInfo(SPELL_COPY_WEAPON_2_AURA) || !sSpellMgr->GetSpellInfo(SPELL_COPY_WEAPON_3_AURA)\n                        || !sSpellMgr->GetSpellInfo(SPELL_COPY_OFFHAND_AURA) || !sSpellMgr->GetSpellInfo(SPELL_COPY_OFFHAND_2_AURA) || !sSpellMgr->GetSpellInfo(SPELL_COPY_RANGED_AURA))\n                        return false;\n                    return true;\n                }\n\n                void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n                {\n                    Unit* caster = GetCaster();\n                    Unit* target = GetTarget();\n\n                    if (!caster)\n                        return;\n\n                    switch (GetSpellInfo()->Id)\n                    {\n                        case SPELL_COPY_WEAPON_AURA:\n                        case SPELL_COPY_WEAPON_2_AURA:\n                        case SPELL_COPY_WEAPON_3_AURA:\n                        {\n\n                        prevItem = target->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS);\n                        if (Player* player = caster->ToPlayer())\n\n                        {\n                            if (Item* mainItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))\n                                target->SetVirtualItem(0, mainItem->GetEntry());\n\n                        }\n                        else\n                            target->SetVirtualItem(0, caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS));\n                        break;\n                    }\n                    case SPELL_COPY_OFFHAND_AURA:\n                    case SPELL_COPY_OFFHAND_2_AURA:\n                    {\n                        prevItem = target->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS) + 1;\n\n                        if (Player* player = caster->ToPlayer())\n                        {\n                            if (Item* offItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))\n                                target->SetVirtualItem(1, offItem->GetEntry());\n                        }\n                        else\n                            target->SetVirtualItem(1, caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + 1));\n                        break;\n                    }\n                    case SPELL_COPY_RANGED_AURA:\n                    {\n                        prevItem = target->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS) + 2;\n\n                        if (Player* player = caster->ToPlayer())\n                        {\n                            if (Item* rangedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED))\n                                target->SetVirtualItem(2, rangedItem->GetEntry());\n                        }\n                        else \n                            target->SetVirtualItem(2, caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + 2));\n                        break;\n                    }\n                    default:\n                        break;\n                }\n            }\n\n            void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n            { \n                Unit* target = GetTarget();\n\n                switch (GetSpellInfo()->Id)\n                { \n                    case SPELL_COPY_WEAPON_AURA:\n                    case SPELL_COPY_WEAPON_2_AURA:\n                    case SPELL_COPY_WEAPON_3_AURA:\n                       target->SetVirtualItem(0, prevItem);\n                       break;\n                    case SPELL_COPY_OFFHAND_AURA:\n                    case SPELL_COPY_OFFHAND_2_AURA:\n                        target->SetVirtualItem(1, prevItem);\n                        break;\n                    case SPELL_COPY_RANGED_AURA:\n                        target->SetVirtualItem(2, prevItem);\n                        break;\n                    default:\n                        break;\n                }\n            }\n\n            void Register() override\n            {\n                // Clone-weapon spells use more than one effect-0 aura type in\n                // this client build; the equipment-copy lifecycle is shared.\n                OnEffectApply += AuraEffectApplyFn(spell_gen_clone_weapon_auraScript::OnApply, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);\n                OnEffectRemove += AuraEffectRemoveFn(spell_gen_clone_weapon_auraScript::OnRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);\n            }\n\n        }",
+          "new": "class spell_gen_clone_weapon_auraScript : public AuraScript\n            {\n                PrepareAuraScript(spell_gen_clone_weapon_auraScript);\n\n                uint32 prevItem = 0;\n                uint16 prevAppearance = 0;\n                uint16 prevVisual = 0;\n                bool hasOriginal = false;\n\n                bool Validate(SpellInfo const* /*spellInfo*/) override\n                {\n                    return ValidateSpellInfo({SPELL_COPY_WEAPON_AURA, SPELL_COPY_WEAPON_2_AURA, SPELL_COPY_WEAPON_3_AURA,\n                        SPELL_COPY_OFFHAND_AURA, SPELL_COPY_OFFHAND_2_AURA, SPELL_COPY_RANGED_AURA});\n                }\n\n                bool GetWeaponSlot(uint32& slot, uint8& itemSlot) const\n                {\n                    switch (GetSpellInfo()->Id)\n                    {\n                        case SPELL_COPY_WEAPON_AURA:\n                        case SPELL_COPY_WEAPON_2_AURA:\n                        case SPELL_COPY_WEAPON_3_AURA:\n                            slot = 0;\n                            itemSlot = EQUIPMENT_SLOT_MAINHAND;\n                            return true;\n                        case SPELL_COPY_OFFHAND_AURA:\n                        case SPELL_COPY_OFFHAND_2_AURA:\n                            slot = 1;\n                            itemSlot = EQUIPMENT_SLOT_OFFHAND;\n                            return true;\n                        case SPELL_COPY_RANGED_AURA:\n                            slot = 2;\n                            itemSlot = EQUIPMENT_SLOT_RANGED;\n                            return true;\n                        default:\n                            return false;\n                    }\n                }\n\n                void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n                {\n                    Unit* caster = GetCaster();\n                    if (!caster)\n                        return;\n\n                    uint32 slot;\n                    uint8 itemSlot;\n                    if (!GetWeaponSlot(slot, itemSlot))\n                        return;\n\n                    uint32 item;\n                    uint16 appearance = 0;\n                    uint16 visual = 0;\n                    if (Player* player = caster->ToPlayer())\n                    {\n                        Item* equipped = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot);\n                        if (!equipped)\n                            return;\n                        item = equipped->GetEntry();\n                    }\n                    else\n                    {\n                        item = caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2);\n                        appearance = caster->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2 + 1, 0);\n                        visual = caster->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2 + 1, 1);\n                    }\n\n                    Unit* target = GetTarget();\n                    if (!hasOriginal)\n                    {\n                        prevItem = target->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2);\n                        prevAppearance = target->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2 + 1, 0);\n                        prevVisual = target->GetUInt16Value(UNIT_FIELD_VIRTUAL_ITEMS + slot * 2 + 1, 1);\n                        hasOriginal = true;\n                    }\n                    target->SetVirtualItem(slot, item, appearance, visual);\n                }\n\n                void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes mode)\n                {\n                    uint32 slot;\n                    uint8 itemSlot;\n                    if (!hasOriginal || !GetWeaponSlot(slot, itemSlot))\n                        return;\n\n                    GetTarget()->SetVirtualItem(slot, prevItem, prevAppearance, prevVisual);\n                    if (mode & AURA_EFFECT_HANDLE_REAL)\n                        hasOriginal = false;\n                }\n\n                void Register() override\n                {\n                    // Keep the original snapshot across a native reapply pair.\n                    OnEffectApply += AuraEffectApplyFn(spell_gen_clone_weapon_auraScript::OnApply, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);\n                    OnEffectRemove += AuraEffectRemoveFn(spell_gen_clone_weapon_auraScript::OnRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);\n                }\n            }",
+          "count": 1
+        }
+      ],
+      "cls": "spell_gen_clone_weapon_auraScript",
+      "case": "clone_weapon",
+      "binding_kind": "spell",
+      "binding": "spell_gen_clone_weapon_aura",
+      "spells": [
+        41054,
+        63418,
+        69893,
+        45205,
+        69896,
+        57594
+      ],
+      "class_edit_index": 1,
+      "native_routing": "Core converts41055/63416/69891/45206/69892 toDummy;theirBasePoints andactual spell_script_names bind41054/63418/69893/45205/69896.57594isalreadyAura. Keep parent/core dummy route distinct;parent direction/stride investigation remains next independent repair."
+    }
+  ],
+  "excluded_candidates": [
+    {
+      "key": "ExecuteColdDamageBonus",
+      "reason": "Pinned baseline already passes cold optional-power regression. Native loader uses new spell_warr_execute_SpellScript() and non-user-provided derived default constructor,so C++ value-initialization zeros mod. PrepareSpellScript defines no constructor. Do not count explicitzeroasrepair."
+    },
+    {
+      "key": "OutdoorScarabController",
+      "reason": "Readonly native DB has no outdoorpvp_template ScriptName outdoorpvp_silithus;withdrew its edits andactiveclaim. Two live AhnQiraj instancecontrollers remain onefamily repair."
     }
   ]
 }

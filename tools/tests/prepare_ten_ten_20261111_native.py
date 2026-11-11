@@ -27,3 +27,21 @@ if third:
  enums='enum{ACTION_2=2,'+','.join(label+'='+re.search(r'\b'+label+r'\s*=\s*(\d+)',definitions)[1]for label in labels)+'};\n'
  (out/'TenTenThirdNative.inc').write_text(metadata+'namespace ThirdNative{'+enums+body+'}\n',encoding='utf8')
  print('Prepared third10 exact binding metadata and actual Eonar AuraScript/native constants;child cast endpoint observed')
+fourth=[e for e in PLAN['changes']if e['batch']==4]
+if fourth:
+ assert len(fourth)==10
+ bindings=[]
+ for e in fourth:
+  if e['case']=='scarab':bindings += [('instance','instance_temple_of_ahnqiraj'),('instance','instance_ruins_of_ahnqiraj')]
+  else:bindings.append((e['binding_kind'],e['binding']))
+ text='struct FourthBinding{char const*kind;char const*name;};static FourthBinding fourthBindings[]={'+','.join('{"'+kind+'","'+name+'"}'for kind,name in bindings)+'};\n'
+ generic=(ROOT/'src/server/scripts/Spells/spell_generic.cpp').read_text(encoding='utf-8-sig')
+ labels=['SPELL_COPY_WEAPON_AURA','SPELL_COPY_WEAPON_2_AURA','SPELL_COPY_WEAPON_3_AURA','SPELL_COPY_OFFHAND_AURA','SPELL_COPY_OFFHAND_2_AURA','SPELL_COPY_RANGED_AURA']
+ text+='namespace FourthNative{enum{NPC_AVATARA_MAIDEN=117264,'+','.join(label+'='+re.search(r'\b'+label+r'\s*=\s*(\d+)',generic)[1]for label in labels)+'};\n'
+ e=next(e for e in fourth if e['case']=='clone_weapon');text+=e['edits'][e.get('class_edit_index',0)]['new']+';\n'
+ e=next(e for e in fourth if e['case']=='lilet');body=e['edits'][0]['new'];assert body.count('Talk(talk, owner->GetGUID());')==1;text+=body.replace('Talk(talk, owner->GetGUID());','ObserveFourthSpeech(me, talk, owner->GetGUID());')+';\n'
+ e=next(e for e in fourth if e['case']=='avatar');registration=e['edits'][0]['new']
+ text+='struct MaidenEndpoint{Creature*actor;Creature*GetCreature(uint32){return Observe::queryPresent?actor:nullptr;}};struct InstanceEndpoint{void SendEncounterUnit(uint32,Creature*actor){Observe::Mark(actor,2);}};\n'
+ text+='struct AvatarFrame:ScriptedAI{explicit AvatarFrame(Creature*c):ScriptedAI(c),summons{c}{};std::shared_ptr<uint8> _delayedAILifetimeGuard=std::make_shared<uint8>(0);MaidenEndpoint summons;InstanceEndpoint endpoint;InstanceEndpoint*instance=&endpoint;void DoZoneInCombat(Creature*c){Observe::Mark(c,1);}void Queue(uint32){'+registration+'}};\n}\n'
+ (out/'TenTenFourthNative.inc').write_text(text,encoding='utf8')
+ print('Prepared actual native clone AuraScript/Lilet methods and full Avatar registration;spell/speech/instance endpoints are explicitly observed')

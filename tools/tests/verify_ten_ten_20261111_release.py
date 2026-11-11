@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 from ten_ten_20261111_scope import PLAN,ROOT,require_fixed
-from five_ten_20261111_pe import n,ins,values,sites
+from five_ten_20261111_pe import n,ins,values,sites,callbacks,expanded
 require_fixed()
 language=int(re.search(r'LANG_PLAYER_NOT_FOUND\s*=\s*(\d+)',(ROOT/'src/server/game/Miscellaneous/Language.h').read_text())[1])
 for e in PLAN['changes']:
@@ -45,6 +45,22 @@ if third:
  rows=rows_for('staffs');assert any(x.mnemonic=='mov'and x.op_str=='rdx, qword ptr [rcx + 0x3a8]'and rows[i+1].mnemonic=='test'and rows[i+1].op_str=='rdx, rdx'and rows[i+2].mnemonic=='je'for i,x in enumerate(rows[:-2])),'Actual animated-staff list size guard'
  rows=rows_for('shatter');calls=sites(rows,'?GetCaster@AuraScript@@');assert len(calls)==1 and null_gate(rows,calls[0]),'Actual Shatter caster guard'
  assert any(x.mnemonic=='test'and x.op_str=='rcx, rcx'and rows[i+1].mnemonic=='je'for i,x in enumerate(rows[:calls[0]-1])),'Independent crystal AI action has its own nullable current-AI guard before caster admission'
+fourth=[e for e in PLAN['changes']if e['batch']==4]
+if fourth:
+ for cls in ('npc_bloodsnow_frostmane_bonechiller','npc_viletongue_sauroks'):
+  reset=ins('?Reset@'+cls+'@');assert any(x.mnemonic=='mov'and x.op_str.startswith('byte ptr [')and x.op_str.endswith(', 0')for x in reset),(cls,'actual reset rearms its one-shot phase')
+ rows=ins('?DamageTaken@npc_bloodsnow_frostmane_bonechiller@');assert sites(rows,'?GetAffectingPlayer@Unit@@'),'Actual NPC floor admits legitimate player/owner chain'
+ rows=ins('?DamageTaken@npc_viletongue_sauroks@');cast,=sites(rows,'?CastSpell@Unit@@');tail=rows[cast+1:cast+6];assert tail[0].mnemonic=='test'and tail[0].op_str=='eax, eax'and any(x.mnemonic=='mov'and x.op_str.startswith('byte ptr [')and x.op_str.endswith(', 0')for x in tail),'Actual rejected poison request rearms its latch'
+ rows=ins('?InitializeAI@npc_ebon_gargoyleAI@');parent,=sites(rows,'?InitializeAI@CasterAI@@');assert {'dword ptr [rcx + 0x60], eax','dword ptr [rcx + 0x88], eax'}<={x.op_str for x in rows[:parent]if x.mnemonic=='mov'}and any(x.mnemonic=='xor'and x.op_str=='eax, eax'for x in rows[:parent]),'Both actual gargoyle clocks are zeroed before parent/owner early-return paths'
+ closures=[expanded(name)for name in callbacks('boss_fallen_avatar','EnterCombat')];assert len(closures)==1;rows=closures[0];assert any(x.mnemonic=='cmp'and x.op_str=='dword ptr [rax + 8], 0'and rows[i+1].mnemonic=='je'for i,x in enumerate(rows[:10]))and sites(rows,'?GetCreature@SummonList@@'),'Actual Avatar weak-owner gate precedes source summon-list access'
+ for method,cls in [('PeriodicTick','spell_summoning_rhyme_aura_AuraScript'),('OnRemove','spell_drain_fel_enegry_AuraScript')]:
+  rows=ins('?'+method+'@'+cls+'@');at,=sites(rows,'?GetCaster@AuraScript@@');assert null_gate(rows,at),(cls,'actual nullable caster gate')
+ rows=ins('?UpdateAI@npc_lilet_lunarhAI@');assert len(sites(rows,'?GetPlayer@ObjectAccessor@@'))==1 and 16000 in values(rows),'Actual dialogue resolves current player rather than a retained raw owner pointer'
+ reset=ins('?Reset@boss_mistress_alluradel@');rows=ins('?UpdateAI@boss_mistress_alluradel@');assert any(x.mnemonic=='mov'and x.op_str=='dword ptr [rbx + 0x58], 0'for x in reset)and any(x.mnemonic=='mov'and x.op_str=='dword ptr [rbx + 0x58], 0x1f4'for x in rows)and not any(x.mnemonic=='mov'and x.op_str=='dword ptr [rbx + 0x58], 0'for x in rows),'Actual Sadist poll resets only on Reset and honors its authored500ms interval'
+ for cls in ('instance_temple_of_ahnqiraj_InstanceMapScript','instance_ruins_of_ahnqiraj_InstanceMapScript'):
+  rows=ins('?Update@'+cls+'@');reads=sites(rows,'?getWorldState@World@@');apply,=sites(rows,'?ApplyOnEveryPlayer@Map@@');assert len(reads)==2 and max(reads)<apply,(cls,'one native score snapshot precedes every-player dispatch')
+ rows=ins('?OnApply@spell_gen_clone_weapon_auraScript@');at,=sites(rows,'?GetCaster@AuraScript@@');assert null_gate(rows,at)and len(sites(rows,'?GetUInt16Value@Object@@'))>=4 and len(sites(rows,'?SetVirtualItem@Unit@@'))==1,'Actual clone captures/copies both appearance halves with native item setter'
+ rows=ins('?OnRemove@spell_gen_clone_weapon_auraScript@');assert not sites(rows,'?GetCaster@AuraScript@@')and len(sites(rows,'?SetVirtualItem@Unit@@'))==1 and any(x.mnemonic=='test'and x.op_str.endswith(', 1')for x in rows),'Actual clone restore is caster-independent and keeps reapply snapshot until real removal'
 rows=ins('?HandleScript@spell_sinestra_indomitable_AuraScript@');assert sum(x.mnemonic=='cmp'and x.op_str=='al, 5'for x in rows)==2 and any(x.mnemonic=='inc'and x.op_str=='al'for x in rows)and any(x.mnemonic=='mov'and x.op_str=='byte ptr [rdi + 0x360], al'for x in rows),'Actual per-instance bounded control counter'
 factory=ins('?GetAuraScript@spell_sinestra_indomitable@@');assert any(x.mnemonic=='mov'and x.op_str=='byte ptr [rbx + 0x360], 0'for x in factory),'Each actual new AuraScript initializes its own counter'
 raw=(n['args'].release/'worldserver.map').read_text(errors='replace');assert not any('controlTimer@'in line and'spell_sinestra_indomitable_AuraScript'in line for line in raw.splitlines()),'Shared function-static control counter remains in linked data'
