@@ -467,8 +467,9 @@ public:
             
             me->SetWalk(true);
             me->NearTeleportTo(paths[point].first);
-            me->AddDelayedEvent(100, [=]()->void
+            me->AddDelayedEvent(100, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()->void
             {
+                if (aiLifetimeGuard.expired()) return;
                 me->GetMotionMaster()->MovePoint(2, paths[point].second);
             });
 
@@ -516,8 +517,9 @@ public:
             int8 current_wall = urand(0, 3);
             for (uint8 i = 0; i < waves; ++i)
             {
-                me->AddDelayedEvent((timer*i + 1), [=]()-> void
+                me->AddDelayedEvent((timer*i + 1), [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()-> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     float x = creeping_walls[current_wall].first.GetPositionX();
                     float y = creeping_walls[current_wall].first.GetPositionY();
                     float z = creeping_walls[current_wall].first.GetPositionZ();
@@ -551,6 +553,9 @@ public:
                     current_wall = ((current_wall - 1) < 0 ? 3 : current_wall-1);
             }
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
