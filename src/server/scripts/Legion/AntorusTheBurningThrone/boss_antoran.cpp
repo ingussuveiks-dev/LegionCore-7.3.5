@@ -1189,8 +1189,8 @@ class spell_command_withering_fire : public SpellScript
 
         std::list<Creature*> shipList;
         GetCreatureListWithEntryInGrid(shipList, GetCaster(), NPC_SCOUT_SHIP, 100.0f);
-        auto shipA = shipList.front();
-        auto shipB = shipList.back();
+        auto shipA = shipList.empty() ? nullptr : shipList.front();
+        auto shipB = shipList.empty() ? nullptr : shipList.back();
         uint32 delay = 0;
 
         Position pos[16];
