@@ -1954,21 +1954,26 @@ class spell_eonar_shatter : public AuraScript
         if (!target)
             return;
 
-        target->AI()->DoAction(ACTION_2);
+        if (auto ai = target->AI())
+            ai->DoAction(ACTION_2);
+
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
 
         switch (target->GetEntry())
         {
             case NPC_CRYSTAL_TARGETED: //Yellow
-                GetCaster()->CastSpell(GetCaster(), SPELL_TARGETED, true);
+                caster->CastSpell(caster, SPELL_TARGETED, true);
                 break;
             case NPC_CRYSTAL_BURNING: //Red
-                GetCaster()->CastSpell(GetCaster(), SPELL_BURNING_EMBERS, true);
+                caster->CastSpell(caster, SPELL_BURNING_EMBERS, true);
                 break;
             case NPC_CRYSTAL_FOUL_STEPS: //Green
-                GetCaster()->CastSpell(GetCaster(), SPELL_FOUL_STEPS, true);
+                caster->CastSpell(caster, SPELL_FOUL_STEPS, true);
                 break;
             case NPC_CRYSTAL_ARCANE_SINGULARITY: //Blue
-                GetCaster()->CastSpell(GetCaster(), SPELL_ARCANE_SINGULARITY, true);
+                caster->CastSpell(caster, SPELL_ARCANE_SINGULARITY, true);
                 break;
         }
     }
