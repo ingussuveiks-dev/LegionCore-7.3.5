@@ -1,0 +1,177 @@
+{
+  "date": "2026-11-11",
+  "status": "DEPLOYED_AI_LIFETIME_REPAIR_AUTOMATED_CLIENT_PENDING",
+  "key": "NpcRevilKostFollowingTheCurseLifetime",
+  "title": "Cancel npc_revil_kost_following_the_curse callbacks after source AI retirement",
+  "paths": [
+    "src/server/scripts/World/npcs_special.cpp"
+  ],
+  "classes": [
+    "npc_revil_kost_following_the_curseAI"
+  ],
+  "binding": {
+    "ScriptName": "npc_revil_kost_following_the_curse",
+    "actual_entries": [
+      100578
+    ]
+  },
+  "cause": "CreatureAI delegate queues are Unit-owned;AIM_Destroy/default/SmartAI/BossAI destructors do not cancel those Unit queues. Explicit or implicit raw this capture could enter the old actor body after original AI deletion,including replacement by Null/Possessed AI. Existing non-null me/alive/generation checks dereference this too late.",
+  "repair": "Capture a weak per-AI token at scheduling;first statement rejects expired original AI before any payload/member access. Token lifetime follows that exact AI,not current AI identity. Surviving suspended AI and corpse outro semantics remain admitted;normal original predicates/credit remain.",
+  "callback_count": 19,
+  "registrations": [
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "85be14c7f159709fb487b54532207491cd37f3f5f7fabf99f38d386a6ac457ac"
+    },
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "7e2d514dc673e03ce72539cec091bba462e973b89fb5744ff83d31b7aff7d178"
+    },
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "85be14c7f159709fb487b54532207491cd37f3f5f7fabf99f38d386a6ac457ac"
+    },
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "1d95a8d3eea662d991aa20eb1d5c354ae9763dcc414f5a1a56f80b9cb17d9bdb"
+    },
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "85be14c7f159709fb487b54532207491cd37f3f5f7fabf99f38d386a6ac457ac"
+    },
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "3392304972b65dd7ad3857e44f7b24aa39ec3b2be5681433b6e40d3d2fa24558"
+    },
+    {
+      "method": "IsSummonedBy",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "11bd370409951986be0c00772924ac692c822dcd34c06db89d3a0c463fd692f7"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "5000",
+      "original_payload_sha256": "9c0438056e493d1dacef5899bd2b877317ca6a830229485fc9682628e9d5ab04"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "100",
+      "original_payload_sha256": "a479638b0dc24dcc038bdf9cea94700c429796f50f0a70b3cf5b8aaffa73b6d2"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "1000",
+      "original_payload_sha256": "9882f8982dd168dbaac34c66b38b6664692c0fdf6fa064e947ee9bbcc24a8691"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "d7767da611a5bc342ddb64ccdcd7cfd915129cecadbe8b31c23129d397710463"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "100",
+      "original_payload_sha256": "40ede25e555ee25f7978a23d04b84176ce7ac4224f9e93a3a593b3948a3998e0"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "bced771583a94b5ed00f10d10590012aa92e83846e52ba0b268120406bb30fa7"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "500",
+      "original_payload_sha256": "7bbdcdac5818283335ec7138626a2eb302cace3d8df0b35a5d58623ec02a2455"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "b435f78c81ef4873a31a5805b0059809a7b60fe0f12b00efb21fed964c18f309"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "100",
+      "original_payload_sha256": "40ede25e555ee25f7978a23d04b84176ce7ac4224f9e93a3a593b3948a3998e0"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "100",
+      "original_payload_sha256": "40ede25e555ee25f7978a23d04b84176ce7ac4224f9e93a3a593b3948a3998e0"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "100",
+      "original_payload_sha256": "40ede25e555ee25f7978a23d04b84176ce7ac4224f9e93a3a593b3948a3998e0"
+    },
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "100",
+      "original_payload_sha256": "40ede25e555ee25f7978a23d04b84176ce7ac4224f9e93a3a593b3948a3998e0"
+    }
+  ],
+  "checks": {
+    "source": "Exact complete-file reversal to 2ea67fbc7e34c0fc76ef78d5ec217ce73ea16624;only capture/first-statement weak expiry/private per-AI anchor added. Original gates,casts,IDs,delays,credit,Reset/death/cleanup and owner/group rules retained.",
+    "asan": "Every listed old callback admission projection intentionally produces heap-use-after-free/ABORTING after frame destruction;repaired projection passes live/retired/cancelled/same-address replacement. Expected counterfactuals paired,not ordinary successful runs.",
+    "native": "Actual Creature::AIM_Initialize/destruction and Unit event/combat queues:live,retired,cancelled,surviving inactive AI and corpse lifecycle admission;controlled123ms and observed payload. Exact original live creature ScriptName inventory checked. Bare controlled actors/no character writes;original encounter payload not executed by this projection.",
+    "release": "Original main libraries/staged final link inputs and source snapshots;complete prior Meljarak/Twin/native-health/Freya/counter/Tsulong/Rook/367 linked checks return,plus every new actual production weak gate before payload. Canonical EXE/MAP hashes match tested immutable outputs;Scepter passes.",
+    "runtime": "Owned worldserver PID=17348\nPASS owned PID=17348 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;stderr empty,configuration/cert/DLL protected hashes unchanged. No user/unknown process stopped or hidden task server left running. Ready banner still prior generated revision metadata;source/library/EXE identities establish actual implementation.",
+    "diagnostics": "Before/after canonical+own crashes/log lengths/timestamps,exit/stdout/stderr/appended DBErrors and server warnings/errors/assertions reviewed. Final checks no new/unexplained diagnostic. Compiler warnings all mapped to unchanged baseline expressions;Scepter generated signedness warning inherited. Expected ASAN controls archived only after repaired matching binary/native checks. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged;no log truncation. Reusable extraction now resolves actual local inheritance/overload ownership before allowing a Unit projection. Source classifier confirms all202new registrations and rejects12withdrawn AI-owned ones;explicit Creature and combat calls remain distinct. Actual CosmeticAI native dispatch/destructor proof remains in the correction audit. No production payload changed by this validation-only addition."
+  },
+  "sources": "Matching local core Creature::AIM_Destroy,CreatureAI/SmartAI/BossAI destructors,CreatureAI::AddDelayedEvent/Combat delegates,Unit native queues and matching live ScriptName records. Local Trinity eaa32415b0f93f6d26294e1e9e4083be3dba0745 is a newer reference;no incompatible code/data copied.",
+  "batch": {
+    "number": 4,
+    "authorized_total": 50,
+    "audit": "docs/audits/fortyfifth-ten-repairs-2026-11-11.json",
+    "base": "2ea67fbc7e34c0fc76ef78d5ec217ce73ea16624"
+  },
+  "pending": [
+    "MariaDB DLL is installed and live-verified;user MariaDB service remains running. FT minimum1 config warning absence awaits a future user restart;no service stop needed for these source fixes.",
+    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ]
+}

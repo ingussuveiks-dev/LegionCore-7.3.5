@@ -5201,10 +5201,12 @@ public:
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_PACIFIED);
                     me->SetReactState(REACT_ATTACK_OFF);
                     me->GetMotionMaster()->Clear();
-                    me->AddDelayedEvent(2000, [this] {
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->AddAura(66090, me);
                     });
-                    me->AddDelayedEvent(2000, [this] {
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(1, revilWP[1]);
                     });
 
@@ -5218,10 +5220,12 @@ public:
                     Talk(4);
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_PACIFIED);
                     me->SetReactState(REACT_ATTACK_OFF);
-                    me->AddDelayedEvent(2000, [this] {
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->AddAura(66090, me);
                     });
-                    me->AddDelayedEvent(2000, [this] {
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(26, revilWP[26]);
                     });
                 }
@@ -5234,10 +5238,12 @@ public:
                     Talk(7);
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_PACIFIED);
                     me->SetReactState(REACT_ATTACK_OFF);
-                    me->AddDelayedEvent(2000, [this] {
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->AddAura(66090, me);
                     });
-                    me->AddDelayedEvent(2000, [this] {
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(56, revilWP[56]);
                     });
                 }
@@ -5248,7 +5254,8 @@ public:
         void IsSummonedBy(Unit* who) override
         {
             who->AddPlayerInPersonnalVisibilityList(who->GetGUID());
-            me->AddDelayedEvent(2000, [this] {
+            me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                if (aiLifetimeGuard.expired()) return;
                 Talk(0);
                 me->GetMotionMaster()->MovePoint(0, revilWP[0]);
             });
@@ -5261,7 +5268,8 @@ public:
                 switch (id)
                 {
                 case 0:
-                    me->AddDelayedEvent(5000, [this] {
+                    me->AddDelayedEvent(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         if (Unit* Owner = me->ToTempSummon()->GetSummoner())
                             if (Player* player = Owner->ToPlayer())
                             {
@@ -5277,7 +5285,8 @@ public:
                     break;
                 case 1:
                     ++pointid;
-                    me->AddDelayedEvent(100, [this] {
+                    me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(2, revilWP[2]);
                     });
                     break;
@@ -5286,11 +5295,13 @@ public:
                     break;
                 case 25:
                     me->RemoveAurasDueToSpell(66090);
-                    me->AddDelayedEvent(1000, [this] {
+                    me->AddDelayedEvent(1000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->StopMoving();
                         Talk(3);
                     });
-                    me->AddDelayedEvent(2000, [this] {
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         if (Unit* Owner = me->ToTempSummon()->GetSummoner())
                             if (Player* player = Owner->ToPlayer())
                                 if (Creature* add3 = player->SummonCreature(100704, -10476.8f, -1429.74f, 66.1f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000))
@@ -5302,14 +5313,16 @@ public:
                     break;
                 case 26:
                     pointid = 26;
-                    me->AddDelayedEvent(100, [this] {
+                    me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(pointid + 1, revilWP[pointid + 1]);
                     });
                     break;
                 case 55:
                     Talk(6);
                     me->RemoveAurasDueToSpell(66090);
-                    me->AddDelayedEvent(2000, [this] {
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         if (Unit* Owner = me->ToTempSummon()->GetSummoner())
                             if (Player* player = Owner->ToPlayer())
                             {
@@ -5325,10 +5338,12 @@ public:
                     break;
                 case 73:
                     Talk(8);
-                    me->AddDelayedEvent(500, [this] {
+                    me->AddDelayedEvent(500, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->StopMoving();
                     });
-                    me->AddDelayedEvent(2000, [this] {
+                    me->AddDelayedEvent(2000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         pointid = 73;
                         me->GetMotionMaster()->MovePoint(pointid + 1, revilWP[pointid + 1]);
                     });
@@ -5351,28 +5366,32 @@ public:
                 if (id >= 2 && id < 25)
                 {
                     ++pointid;
-                    me->AddDelayedEvent(100, [this] {
+                    me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(pointid + 1, revilWP[pointid + 1]);
                     });
                 }
                 if (id >= 26 && id < 55)
                 {
                     ++pointid;
-                    me->AddDelayedEvent(100, [this] {
+                    me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(pointid + 1, revilWP[pointid + 1]);
                     });
                 }
                 if (id >= 56 && id < 73)
                 {
                     ++pointid;
-                    me->AddDelayedEvent(100, [this] {
+                    me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(pointid + 1, revilWP[pointid + 1]);
                     });
                 }
                 if (id >= 74 && id < 82)
                 {
                     ++pointid;
-                    me->AddDelayedEvent(100, [this] {
+                    me->AddDelayedEvent(100, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                        if (aiLifetimeGuard.expired()) return;
                         me->GetMotionMaster()->MovePoint(pointid + 1, revilWP[pointid + 1]);
                     });
                 }
@@ -5406,6 +5425,9 @@ public:
 
             DoMeleeAttackIfReady();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const
