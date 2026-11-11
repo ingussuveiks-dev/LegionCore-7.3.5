@@ -322,10 +322,11 @@ public:
                 case GO_ELEVATOR:
                     if (GetBossState(DATA_ANTORAN) != DONE)
                     {
-                        AddDelayedEvent(5000, [this, go] () -> void
+                        AddDelayedEvent(5000, [this, goGuid = go->GetGUID()] () -> void
                         {
                             if (!mobsForElevator.empty())
-                                go->SetPhaseMask(2, true);
+                                if (GameObject* elevator = instance->GetGameObject(goGuid))
+                                    elevator->SetPhaseMask(2, true);
                         });
                     }
                     break;
