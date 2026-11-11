@@ -194,7 +194,7 @@ public:
                         break;
                     case EVENT_3:
                         {
-                            if (Creature* dancer = me->GetMap()->GetCreature(special_summons.front()))
+                            if (Creature* dancer = special_summons.empty() ? nullptr : me->GetMap()->GetCreature(special_summons.front()))
                             {
                                 special_summons.remove(dancer->GetGUID());
                                 dancer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE);
