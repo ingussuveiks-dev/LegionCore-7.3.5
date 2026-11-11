@@ -1,0 +1,1889 @@
+{
+  "baseline": "240ef9eed620b397dde0a405c0c8f8ce4980137b",
+  "changes": [
+    {
+      "key": "MeatballDeathQueueLifetime",
+      "title": "Retire Meatball callbacks with their source AI",
+      "kind": "lifetime",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_four.cpp"
+      ],
+      "cls": "boss_brawguild_meatballAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_four.cpp",
+          "old": "struct boss_brawguild_meatballAI : public BrawlersBossAI\n    {\n        boss_brawguild_meatballAI(Creature* creature) : BrawlersBossAI(creature) {}\n\n        bool outro, outro1;\n        \n        void Reset() override\n        {           \n            outro = false;\n            outro1 = false;\n            events.Reset();\n            me->ApplySpellImmune(0, IMMUNITY_ID, 134851, true);\n        }\n\n        void EnterCombat(Unit* /*who*/) override\n        {\n            events.RescheduleEvent(EVENT_1, 60000);\n            events.RescheduleEvent(EVENT_2, 10000);\n            events.RescheduleEvent(EVENT_3, 20000);\n            Talk(0);\n        }\n                       \n        void JustDied(Unit* who) override\n        {\n            _Reset();\n            \n            if (!who)\n                return;\n            \n            Talk(5);\n\n            DoCast(SPELL_OUTRO_1);\n            ObjectGuid guid = ObjectGuid::Empty;\n            if (Unit* owner = me->GetAnyOwner())\n                guid = owner->GetGUID();\n            me->AddDelayedEvent(1000, [this, guid] () -> void\n            {\n                if (Creature* gnome = me->FindNearestCreature(68475, 10.0f, true))\n                {\n                    gnome->AddDelayedEvent(1000, [gnome, this, guid] () -> void\n                    {\n                        gnome->AI()->Talk(0, guid);\n                    });\n\n                    gnome->AddDelayedEvent(5000, [gnome] () -> void\n                    {\n                        gnome->AI()->Talk(1);\n                    });\n\n                    gnome->AddDelayedEvent(5000, [gnome] () -> void\n                    {\n                        gnome->CastSpell(gnome, 134917);\n                        gnome->DespawnOrUnsummon(4000);\n                    });\n                }\n            });\n\n            me->AddDelayedEvent(10000, [this] () -> void\n            {\n                _WinRound();\n            });\n        }\n\n        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override\n        {\n            if (me->HealthBelowPct(10) && !outro)\n            {\n                outro = true;\n                DoCast(SPELL_OUTRO);\n                Talk(4);\n            }\n            \n            if (me->HealthBelowPct(20) && !outro1)\n            {\n                outro1 = true;\n                Talk(3);\n            }\n        }\n        \n        void EnterEvadeMode() override\n        {          \n            if (outro)\n                return;\n\n            _Reset();\n            _LoseRound();\n        }\n        \n        void KilledUnit(Unit* who) override\n        {\n            if (outro)\n                return;\n\n            if (Unit* owner = me->GetAnyOwner())\n                if (who->GetGUID() == owner->GetGUID())\n                {\n\t\t\t\t\t_Reset();\n                    _LoseRound();\n                }  \n        }\n        \n        void UpdateAI(uint32 diff) override\n        {            \n            if (!UpdateVictim())\n                return;\n\n            events.Update(diff);\n\n            // if (me->HasUnitState(UNIT_STATE_CASTING))\n                // return;\n            \n            if (uint32 eventId = events.ExecuteEvent())\n            {\n                switch (eventId)\n                {\n                    case EVENT_1:\n                        DoCast(SPELL_MEATBALL_MAD);\n                        break;\n                    case EVENT_2:\n                        Talk(1);\n                        break;\n                    case EVENT_3:\n                        Talk(2);\n                        break;\n                    case EVENT_4:\n                        me->RemoveAurasDueToSpell(134851);\n                        events.RescheduleEvent(EVENT_4, 500);\n                        break;\n                }\n            }\n            DoMeleeAttackIfReady();\n        }\n    }",
+          "new": "struct boss_brawguild_meatballAI : public BrawlersBossAI\n    {\n        boss_brawguild_meatballAI(Creature* creature) : BrawlersBossAI(creature) {}\n\n        bool outro, outro1;\n        \n        void Reset() override\n        {           \n            outro = false;\n            outro1 = false;\n            events.Reset();\n            me->ApplySpellImmune(0, IMMUNITY_ID, 134851, true);\n        }\n\n        void EnterCombat(Unit* /*who*/) override\n        {\n            events.RescheduleEvent(EVENT_1, 60000);\n            events.RescheduleEvent(EVENT_2, 10000);\n            events.RescheduleEvent(EVENT_3, 20000);\n            Talk(0);\n        }\n                       \n        void JustDied(Unit* who) override\n        {\n            _Reset();\n            \n            if (!who)\n                return;\n            \n            Talk(5);\n\n            DoCast(SPELL_OUTRO_1);\n            ObjectGuid guid = ObjectGuid::Empty;\n            if (Unit* owner = me->GetAnyOwner())\n                guid = owner->GetGUID();\n            me->AddDelayedEvent(1000, [this, guid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void\n            {\n                if (aiLifetimeGuard.expired()) return;\n                if (Creature* gnome = me->FindNearestCreature(68475, 10.0f, true))\n                {\n                    gnome->AddDelayedEvent(1000, [gnome, this, guid] () -> void\n                    {\n                        gnome->AI()->Talk(0, guid);\n                    });\n\n                    gnome->AddDelayedEvent(5000, [gnome] () -> void\n                    {\n                        gnome->AI()->Talk(1);\n                    });\n\n                    gnome->AddDelayedEvent(5000, [gnome] () -> void\n                    {\n                        gnome->CastSpell(gnome, 134917);\n                        gnome->DespawnOrUnsummon(4000);\n                    });\n                }\n            });\n\n            me->AddDelayedEvent(10000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void\n            {\n                if (aiLifetimeGuard.expired()) return;\n                _WinRound();\n            });\n        }\n\n        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override\n        {\n            if (me->HealthBelowPct(10) && !outro)\n            {\n                outro = true;\n                DoCast(SPELL_OUTRO);\n                Talk(4);\n            }\n            \n            if (me->HealthBelowPct(20) && !outro1)\n            {\n                outro1 = true;\n                Talk(3);\n            }\n        }\n        \n        void EnterEvadeMode() override\n        {          \n            if (outro)\n                return;\n\n            _Reset();\n            _LoseRound();\n        }\n        \n        void KilledUnit(Unit* who) override\n        {\n            if (outro)\n                return;\n\n            if (Unit* owner = me->GetAnyOwner())\n                if (who->GetGUID() == owner->GetGUID())\n                {\n\t\t\t\t\t_Reset();\n                    _LoseRound();\n                }  \n        }\n        \n        void UpdateAI(uint32 diff) override\n        {            \n            if (!UpdateVictim())\n                return;\n\n            events.Update(diff);\n\n            // if (me->HasUnitState(UNIT_STATE_CASTING))\n                // return;\n            \n            if (uint32 eventId = events.ExecuteEvent())\n            {\n                switch (eventId)\n                {\n                    case EVENT_1:\n                        DoCast(SPELL_MEATBALL_MAD);\n                        break;\n                    case EVENT_2:\n                        Talk(1);\n                        break;\n                    case EVENT_3:\n                        Talk(2);\n                        break;\n                    case EVENT_4:\n                        me->RemoveAurasDueToSpell(134851);\n                        events.RescheduleEvent(EVENT_4, 500);\n                        break;\n                }\n            }\n            DoMeleeAttackIfReady();\n        }\n    private:\n        // Unit-owned queues may outlive this AI object.\n        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);\n    }",
+          "count": 1
+        }
+      ],
+      "batch": 1,
+      "index": 1,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 67573,
+          "script": "boss_brawguild_meatball"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_sironasDeath",
+      "title": "Repair npc_sironas death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Kalimdor/zone_bloodmyst_isle.cpp"
+      ],
+      "cls": "npc_sironasAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Kalimdor/zone_bloodmyst_isle.cpp",
+          "old": "void JustDied(Unit* killer)\n        {\n            me->SetObjectScale(1.0f);\n            _events.Reset();\n            if (Creature* legoso = me->FindNearestCreature(NPC_LEGOSO, SIZE_OF_GRIDS))\n            {\n                Group* group = me->GetLootRecipientGroup();\n\n                if (killer->GetGUID() == legoso->GetGUID() ||\n                    (group && group->IsMember(killer->GetGUID())) ||\n                    killer->GetGUID().GetCounter() == legoso->AI()->GetData(DATA_EVENT_STARTER_GUID))\n                    legoso->AI()->DoAction(ACTION_LEGOSO_SIRONAS_KILLED);\n            }\n        }",
+          "new": "void JustDied(Unit* killer)\n        {\n            me->SetObjectScale(1.0f);\n            _events.Reset();\n            if (Creature* legoso = me->FindNearestCreature(NPC_LEGOSO, SIZE_OF_GRIDS))\n            {\n                Group* group = me->GetLootRecipientGroup();\n                Player* player = killer ? killer->GetAffectingPlayer() : nullptr;\n\n                if ((killer && killer->GetGUID() == legoso->GetGUID()) ||\n                    (player && ((group && group->IsMember(player->GetGUID())) ||\n                    player->GetGUID().GetCounter() == legoso->AI()->GetData(DATA_EVENT_STARTER_GUID))))\n                    legoso->AI()->DoAction(ACTION_LEGOSO_SIRONAS_KILLED);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_sironas",
+      "entries": [
+        17678
+      ],
+      "death_index": 0,
+      "batch": 1,
+      "index": 2,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 17678,
+          "script": "npc_sironas"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "grimrail_depot_nitrogg_thundertower_mob_gromkar_boomerDeath",
+      "title": "Repair grimrail_depot_nitrogg_thundertower_mob_gromkar_boomer death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Draenor/GrimrailDepot/boss_nitrogg_thundertower.cpp"
+      ],
+      "cls": "grimrail_depot_nitrogg_thundertower_mob_gromkar_boomerAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Draenor/GrimrailDepot/boss_nitrogg_thundertower.cpp",
+          "old": "void JustDied(Unit* p_Killer) override\n        {\n            /// Adds Blackrock Mortar to the player.\n            if (p_Killer)\n            {\n                p_Killer->AddAura(eGromkarboomerSpells::SpellBlackrockMortarShellsAura, p_Killer);\n                me->DespawnOrUnsummon(2 * TimeConstants::IN_MILLISECONDS);\n            }\n        }",
+          "new": "void JustDied(Unit* p_Killer) override\n        {\n            /// Adds Blackrock Mortar to the player.\n            if (p_Killer)\n            {\n                if (Player* player = p_Killer->GetAffectingPlayer())\n                    player->AddAura(eGromkarboomerSpells::SpellBlackrockMortarShellsAura, player);\n                me->DespawnOrUnsummon(2 * TimeConstants::IN_MILLISECONDS);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "grimrail_depot_nitrogg_thundertower_mob_gromkar_boomer",
+      "entries": [
+        79720,
+        79878,
+        80935
+      ],
+      "death_index": 1,
+      "batch": 1,
+      "index": 3,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 79720,
+          "script": "grimrail_depot_nitrogg_thundertower_mob_gromkar_boomer"
+        },
+        {
+          "entry": 79878,
+          "script": "grimrail_depot_nitrogg_thundertower_mob_gromkar_boomer"
+        },
+        {
+          "entry": 80935,
+          "script": "grimrail_depot_nitrogg_thundertower_mob_gromkar_boomer"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadierDeath",
+      "title": "Repair grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadier death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Draenor/GrimrailDepot/boss_nitrogg_thundertower.cpp"
+      ],
+      "cls": "grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadierAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Draenor/GrimrailDepot/boss_nitrogg_thundertower.cpp",
+          "old": "void JustDied(Unit* p_Killer) override\n        {\n            /// Adds Blackrock Mortar to the player.\n            if (p_Killer)\n            {\n                p_Killer->AddAura(eGromkarGrenadierSpells::SpellBlackrockGrenadeAura, p_Killer);\n                me->DespawnOrUnsummon(2 * TimeConstants::IN_MILLISECONDS);\n            }\n        }",
+          "new": "void JustDied(Unit* p_Killer) override\n        {\n            /// Adds Blackrock Mortar to the player.\n            if (p_Killer)\n            {\n                if (Player* player = p_Killer->GetAffectingPlayer())\n                    player->AddAura(eGromkarGrenadierSpells::SpellBlackrockGrenadeAura, player);\n                me->DespawnOrUnsummon(2 * TimeConstants::IN_MILLISECONDS);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadier",
+      "entries": [
+        79739,
+        79877,
+        80936,
+        84630,
+        89064
+      ],
+      "death_index": 2,
+      "batch": 1,
+      "index": 4,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 79739,
+          "script": "grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadier"
+        },
+        {
+          "entry": 79877,
+          "script": "grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadier"
+        },
+        {
+          "entry": 80936,
+          "script": "grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadier"
+        },
+        {
+          "entry": 84630,
+          "script": "grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadier"
+        },
+        {
+          "entry": 89064,
+          "script": "grimrail_depot_nitrogg_thundertower_mob_gromkar_grenadier"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "boss_theralionDeath",
+      "title": "Repair boss_theralion death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_theralion_and_valiona.cpp"
+      ],
+      "cls": "boss_theralionAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_theralion_and_valiona.cpp",
+          "old": "void JustDied(Unit* Killer)\n            {\n                _JustDied();\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_PROTECTION_BUFF);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_SHIFT_AURA_1);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_SHIFT_AURA_2);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_ZONE_DMG);\n                me->SetCanFly(false);\n                me->RemoveUnitMovementFlag(MOVEMENTFLAG_FLYING);\n                summons.DespawnAll();\n                Talk(SAY_THERALION_DEATH);\n                instance->SetData(DATA_HEALTH_VALIONA_THERALION, 0);\n                if (Creature* pValiona = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_VALIONA)))\n                    Killer->Kill(pValiona);\n            }",
+          "new": "void JustDied(Unit* Killer)\n            {\n                _JustDied();\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_PROTECTION_BUFF);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_SHIFT_AURA_1);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_SHIFT_AURA_2);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_ZONE_DMG);\n                me->SetCanFly(false);\n                me->RemoveUnitMovementFlag(MOVEMENTFLAG_FLYING);\n                summons.DespawnAll();\n                Talk(SAY_THERALION_DEATH);\n                instance->SetData(DATA_HEALTH_VALIONA_THERALION, 0);\n                if (Creature* pValiona = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_VALIONA)))\n                    (Killer ? Killer : me)->Kill(pValiona);\n            }",
+          "count": 1
+        }
+      ],
+      "binding": "boss_theralion",
+      "entries": [
+        45993
+      ],
+      "death_index": 3,
+      "batch": 1,
+      "index": 5,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 45993,
+          "script": "boss_theralion"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "boss_valionaDeath",
+      "title": "Repair boss_valiona death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_theralion_and_valiona.cpp"
+      ],
+      "cls": "boss_valionaAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/EasternKingdoms/BastionOfTwilight/boss_theralion_and_valiona.cpp",
+          "old": "void JustDied(Unit* Killer)\n            {\n                _JustDied();\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_PROTECTION_BUFF);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_SHIFT_AURA_1);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_SHIFT_AURA_2);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_ZONE_DMG);\n                me->SetCanFly(false);\n                me->RemoveUnitMovementFlag(MOVEMENTFLAG_FLYING);\n                summons.DespawnAll();\n                Talk(SAY_VALIONA_DEATH);\n                instance->SetData(DATA_HEALTH_VALIONA_THERALION, 0);\n                if (Creature* pTheralion = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_THERALION)))\n                    Killer->Kill(pTheralion);\n            }",
+          "new": "void JustDied(Unit* Killer)\n            {\n                _JustDied();\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_PROTECTION_BUFF);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_SHIFT_AURA_1);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_SHIFT_AURA_2);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TWILIGHT_ZONE_DMG);\n                me->SetCanFly(false);\n                me->RemoveUnitMovementFlag(MOVEMENTFLAG_FLYING);\n                summons.DespawnAll();\n                Talk(SAY_VALIONA_DEATH);\n                instance->SetData(DATA_HEALTH_VALIONA_THERALION, 0);\n                if (Creature* pTheralion = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_THERALION)))\n                    (Killer ? Killer : me)->Kill(pTheralion);\n            }",
+          "count": 1
+        }
+      ],
+      "binding": "boss_valiona",
+      "entries": [
+        45992
+      ],
+      "death_index": 4,
+      "batch": 1,
+      "index": 6,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 45992,
+          "script": "boss_valiona"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "mob_pure_energyDeath",
+      "title": "Repair mob_pure_energy death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/MagistersTerrace/boss_vexallus.cpp"
+      ],
+      "cls": "mob_pure_energyAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/EasternKingdoms/MagistersTerrace/boss_vexallus.cpp",
+          "old": "void JustDied(Unit* slayer)\n        {\n            if (Unit* temp = me->GetOwner())\n            {\n                if (temp && temp->IsAlive())\n                    slayer->CastSpell(slayer, SPELL_ENERGY_FEEDBACK, true, 0, NULL, temp->GetGUID());\n            }\n        }",
+          "new": "void JustDied(Unit* slayer)\n        {\n            if (Unit* temp = me->GetOwner())\n            {\n                if (slayer && temp->IsAlive())\n                    slayer->CastSpell(slayer, SPELL_ENERGY_FEEDBACK, true, 0, NULL, temp->GetGUID());\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "mob_pure_energy",
+      "entries": [
+        24745
+      ],
+      "death_index": 5,
+      "batch": 1,
+      "index": 7,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 24745,
+          "script": "mob_pure_energy"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_ros_dark_riderDeath",
+      "title": "Repair npc_ros_dark_rider death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/ScarletEnclave/chapter1.cpp"
+      ],
+      "cls": "npc_ros_dark_riderAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/EasternKingdoms/ScarletEnclave/chapter1.cpp",
+          "old": "void JustDied(Unit* killer)\n        {\n            Creature* deathcharger = me->FindNearestCreature(28782, 30);\n            if (!deathcharger)\n                return;\n\n            if (killer->GetTypeId() == TYPEID_PLAYER && deathcharger->GetTypeId() == TYPEID_UNIT && deathcharger->IsVehicle())\n            {\n                deathcharger->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);\n                deathcharger->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);\n                deathcharger->setFaction(2096);\n            }\n        }",
+          "new": "void JustDied(Unit* killer)\n        {\n            Creature* deathcharger = me->FindNearestCreature(28782, 30);\n            if (!deathcharger)\n                return;\n\n            if (killer && killer->GetAffectingPlayer() && deathcharger->GetTypeId() == TYPEID_UNIT && deathcharger->IsVehicle())\n            {\n                deathcharger->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);\n                deathcharger->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);\n                deathcharger->setFaction(2096);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_ros_dark_rider",
+      "entries": [
+        28768
+      ],
+      "death_index": 6,
+      "batch": 1,
+      "index": 8,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 28768,
+          "script": "npc_ros_dark_rider"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "mob_high_inquisitor_valrothDeath",
+      "title": "Repair mob_high_inquisitor_valroth death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/ScarletEnclave/chapter2.cpp"
+      ],
+      "cls": "mob_high_inquisitor_valrothAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/EasternKingdoms/ScarletEnclave/chapter2.cpp",
+          "old": "void JustDied(Unit* killer) override\n        {\n            Talk(SAY_VALROTH6);\n            killer->CastSpell(me, SPELL_SUMMON_VALROTH_REMAINS, true);\n        }",
+          "new": "void JustDied(Unit* killer) override\n        {\n            Talk(SAY_VALROTH6);\n            (killer ? killer : me)->CastSpell(me, SPELL_SUMMON_VALROTH_REMAINS, true);\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "mob_high_inquisitor_valroth",
+      "entries": [
+        29001
+      ],
+      "death_index": 7,
+      "batch": 1,
+      "index": 9,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 29001,
+          "script": "mob_high_inquisitor_valroth"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_medivh_bmDeath",
+      "title": "Repair npc_medivh_bm death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Kalimdor/CavernsOfTime/DarkPortal/dark_portal.cpp"
+      ],
+      "cls": "npc_medivh_bmAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Kalimdor/CavernsOfTime/DarkPortal/dark_portal.cpp",
+          "old": "void JustDied(Unit* killer)\n        {\n            if (killer->GetEntry() == me->GetEntry())\n                return;\n\n            Talk(SAY_DEATH);\n        }",
+          "new": "void JustDied(Unit* killer)\n        {\n            if (killer && killer->GetEntry() == me->GetEntry())\n                return;\n\n            Talk(SAY_DEATH);\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_medivh_bm",
+      "entries": [
+        15608
+      ],
+      "death_index": 10,
+      "batch": 1,
+      "index": 10,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 15608,
+          "script": "npc_medivh_bm"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_eonar_the_paraxisDeath",
+      "title": "Repair npc_eonar_the_paraxis death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp"
+      ],
+      "cls": "npc_eonar_the_paraxis",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_eonar.cpp",
+          "old": "void JustDied(Unit* killer) override\n    {\n        events.Reset();\n        summons.DespawnAll();\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n        if (auto owner = me->GetAnyOwner())\n        {\n            if (killer->GetGUID() == me->GetGUID())\n            {\n                instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, me);\n                owner->GetAI()->DoAction(ACTION_RESTART);\n            }\n            else\n            {\n                instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, me, 0, 1);\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_DUNGEON_ENCOUNTER, 2075);\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE, me->GetEntry(), 1, 0, me);\n\n                if (auto player = MS::ScriptUtils::SelectRandomPlayerIncludedTank(me))\n                    me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_KILL_CREATURE, me->GetEntry(), me, player);\n                else\n                    me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_KILL_CREATURE, me->GetEntry(), me, me);\n\n                owner->GetAI()->DoAction(ACTION_ENCOUNTER_COMPLETE);\n            }\n        }\n    }",
+          "new": "void JustDied(Unit* killer) override\n    {\n        events.Reset();\n        summons.DespawnAll();\n        instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n        if (auto owner = me->GetAnyOwner())\n        {\n            if (!killer || killer->GetGUID() == me->GetGUID())\n            {\n                instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, me);\n                owner->GetAI()->DoAction(ACTION_RESTART);\n            }\n            else\n            {\n                instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, me, 0, 1);\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_DUNGEON_ENCOUNTER, 2075);\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE, me->GetEntry(), 1, 0, me);\n\n                if (auto player = MS::ScriptUtils::SelectRandomPlayerIncludedTank(me))\n                    me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_KILL_CREATURE, me->GetEntry(), me, player);\n                else\n                    me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_KILL_CREATURE, me->GetEntry(), me, me);\n\n                owner->GetAI()->DoAction(ACTION_ENCOUNTER_COMPLETE);\n            }\n        }\n    }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_eonar_the_paraxis",
+      "entries": [
+        124445
+      ],
+      "death_index": 11,
+      "batch": 2,
+      "index": 1,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 124445,
+          "script": "npc_eonar_the_paraxis"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_demon_withinDeath",
+      "title": "Repair npc_demon_within death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp"
+      ],
+      "cls": "npc_demon_withinAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/TheNighthold/boss_guldan.cpp",
+          "old": "void JustDied(Unit* who) override\n        {\n            _JustDied();\n            Talk(7);\n            DoCast(SPELL_DEAD_1);\n            if (me->GetAnyOwner() && me->GetAnyOwner()->IsCreature())\n                who->Kill(me->GetAnyOwner());\n\n            if (instance)\n            {\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_SHARED_SOUL);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_SHIELD_OF_AZZINOTH);\n                instance->SetBossState(DATA_GULDAN, DONE);\n                instance->SaveToDB();\n            }\n        }",
+          "new": "void JustDied(Unit* who) override\n        {\n            _JustDied();\n            Talk(7);\n            DoCast(SPELL_DEAD_1);\n            if (me->GetAnyOwner() && me->GetAnyOwner()->IsCreature())\n                (who ? who : me)->Kill(me->GetAnyOwner());\n\n            if (instance)\n            {\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_SHARED_SOUL);\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_SHIELD_OF_AZZINOTH);\n                instance->SetBossState(DATA_GULDAN, DONE);\n                instance->SaveToDB();\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_demon_within",
+      "entries": [
+        111022
+      ],
+      "death_index": 12,
+      "batch": 2,
+      "index": 2,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 111022,
+          "script": "npc_demon_within"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "boss_blood_council_controllerDeath",
+      "title": "Repair boss_blood_council_controller death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Northrend/IcecrownCitadel/boss_blood_prince_council.cpp"
+      ],
+      "cls": "boss_blood_council_controllerAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_blood_prince_council.cpp",
+          "old": "void JustDied(Unit* killer) override\n            {\n                _JustDied();\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_SHADOW_RESONANCE_RESIST);\n                // kill all prices\n                for (uint8 i = 0; i < 3; ++i)\n                {\n                    if (++_invocationStage == 3)\n                        _invocationStage = 0;\n\n                    if (Creature* prince = ObjectAccessor::GetCreature(*me, _invocationOrder[_invocationStage].guid))\n                    {\n                        // make sure looting is allowed\n                        if (me->IsDamageEnoughForLootingAndReward())\n                            prince->LowerPlayerDamageReq(prince->GetMaxHealth());\n                        killer->Kill(prince);\n                    }\n                }\n            }",
+          "new": "void JustDied(Unit* killer) override\n            {\n                _JustDied();\n                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_SHADOW_RESONANCE_RESIST);\n                // kill all prices\n                for (uint8 i = 0; i < 3; ++i)\n                {\n                    if (++_invocationStage == 3)\n                        _invocationStage = 0;\n\n                    if (Creature* prince = ObjectAccessor::GetCreature(*me, _invocationOrder[_invocationStage].guid))\n                    {\n                        // make sure looting is allowed\n                        if (me->IsDamageEnoughForLootingAndReward())\n                            prince->LowerPlayerDamageReq(prince->GetMaxHealth());\n                        (killer ? killer : me)->Kill(prince);\n                    }\n                }\n            }",
+          "count": 1
+        }
+      ],
+      "binding": "boss_blood_council_controller",
+      "entries": [
+        38008
+      ],
+      "death_index": 13,
+      "batch": 2,
+      "index": 3,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 38008,
+          "script": "boss_blood_council_controller"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "mob_amanitar_mushroomsDeath",
+      "title": "Repair mob_amanitar_mushrooms death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Northrend/AzjolNerub/Ahnkahet/boss_amanitar.cpp"
+      ],
+      "cls": "mob_amanitar_mushroomsAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/AzjolNerub/Ahnkahet/boss_amanitar.cpp",
+          "old": "void JustDied(Unit* killer) override\n        {\n            if (!killer)\n                return;\n\n            if (me->GetEntry() == NPC_HEALTHY_MUSHROOM && killer->GetTypeId() == TYPEID_PLAYER)\n            {\n                me->InterruptNonMeleeSpells(false);\n                DoCast(killer, SPELL_HEALTHY_MUSHROOM_POTENT_FUNGUS, false);\n            }\n        }",
+          "new": "void JustDied(Unit* killer) override\n        {\n            if (!killer)\n                return;\n\n            Player* player = killer->GetAffectingPlayer();\n            if (me->GetEntry() == NPC_HEALTHY_MUSHROOM && player)\n            {\n                me->InterruptNonMeleeSpells(false);\n                DoCast(player, SPELL_HEALTHY_MUSHROOM_POTENT_FUNGUS, false);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "mob_amanitar_mushrooms",
+      "entries": [
+        30391,
+        30435
+      ],
+      "death_index": 14,
+      "batch": 2,
+      "index": 4,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 30391,
+          "script": "mob_amanitar_mushrooms"
+        },
+        {
+          "entry": 30435,
+          "script": "mob_amanitar_mushrooms"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "mob_jedoga_initiandDeath",
+      "title": "Repair mob_jedoga_initiand death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Northrend/AzjolNerub/Ahnkahet/boss_jedoga_shadowseeker.cpp"
+      ],
+      "cls": "mob_jedoga_initiandAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/AzjolNerub/Ahnkahet/boss_jedoga_shadowseeker.cpp",
+          "old": "void JustDied(Unit* killer) override\n        {\n            if (!killer || !instance)\n                return;\n\n            if (bWalking)\n            {\n                if (Creature* boss = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_JEDOGA_SHADOWSEEKER)))\n                {\n                    if (!CAST_AI(boss_jedoga_shadowseeker::boss_jedoga_shadowseekerAI, boss->AI())->bOpFerok)\n                        CAST_AI(boss_jedoga_shadowseeker::boss_jedoga_shadowseekerAI, boss->AI())->bOpFerokFail = true;\n\n                    if (killer->GetTypeId() == TYPEID_PLAYER)\n                        boss->AI()->DoAction(ACTION_INITIAND_KILLED);\n                }\n\n                instance->SetGuidData(DATA_ADD_JEDOGA_OPFER, ObjectGuid::Empty);\n\n                bWalking = false;\n            }\n            if (killer->GetTypeId() == TYPEID_PLAYER)\n                instance->SetGuidData(DATA_PL_JEDOGA_TARGET, killer->GetGUID());\n        }",
+          "new": "void JustDied(Unit* killer) override\n        {\n            if (!killer || !instance)\n                return;\n\n            Player* player = killer->GetAffectingPlayer();\n            if (bWalking)\n            {\n                if (Creature* boss = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_JEDOGA_SHADOWSEEKER)))\n                {\n                    if (!CAST_AI(boss_jedoga_shadowseeker::boss_jedoga_shadowseekerAI, boss->AI())->bOpFerok)\n                        CAST_AI(boss_jedoga_shadowseeker::boss_jedoga_shadowseekerAI, boss->AI())->bOpFerokFail = true;\n\n                    if (player)\n                        boss->AI()->DoAction(ACTION_INITIAND_KILLED);\n                }\n\n                instance->SetGuidData(DATA_ADD_JEDOGA_OPFER, ObjectGuid::Empty);\n\n                bWalking = false;\n            }\n            if (player)\n                instance->SetGuidData(DATA_PL_JEDOGA_TARGET, player->GetGUID());\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "mob_jedoga_initiand",
+      "entries": [
+        30114
+      ],
+      "death_index": 15,
+      "batch": 2,
+      "index": 5,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 30114,
+          "script": "mob_jedoga_initiand"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_baltharus_the_warborn_cloneDeath",
+      "title": "Repair npc_baltharus_the_warborn_clone death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Northrend/ChamberOfAspects/RubySanctum/boss_baltharus_the_warborn.cpp"
+      ],
+      "cls": "npc_baltharus_the_warborn_cloneAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/ChamberOfAspects/RubySanctum/boss_baltharus_the_warborn.cpp",
+          "old": "void JustDied(Unit* killer) override\n            {\n                // This is here because DamageTaken wont trigger if the damage is deadly.\n                if (_instance)\n                    if (Creature* baltharus = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_BALTHARUS_THE_WARBORN)))\n                        killer->Kill(baltharus);\n            }",
+          "new": "void JustDied(Unit* killer) override\n            {\n                // This is here because DamageTaken wont trigger if the damage is deadly.\n                if (_instance)\n                    if (Creature* baltharus = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_BALTHARUS_THE_WARBORN)))\n                        (killer ? killer : me)->Kill(baltharus);\n            }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_baltharus_the_warborn_clone",
+      "entries": [
+        39899
+      ],
+      "death_index": 16,
+      "batch": 2,
+      "index": 6,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 39899,
+          "script": "npc_baltharus_the_warborn_clone"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "boss_twilight_halionDeath",
+      "title": "Repair boss_twilight_halion death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Northrend/ChamberOfAspects/RubySanctum/boss_halion.cpp"
+      ],
+      "cls": "boss_twilight_halionAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/ChamberOfAspects/RubySanctum/boss_halion.cpp",
+          "old": "void JustDied(Unit* killer) override\n            {\n                if (Creature* halion = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_HALION)))\n                {\n                    // Ensure looting\n                    if (me->IsDamageEnoughForLootingAndReward())\n                        halion->LowerPlayerDamageReq(halion->GetMaxHealth());\n\n                    if (halion->IsAlive())\n                        killer->Kill(halion);\n                }\n\n                if (Creature* controller = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_HALION_CONTROLLER)))\n                    if (controller->IsAlive())\n                        controller->Kill(controller);\n\n                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n            }",
+          "new": "void JustDied(Unit* killer) override\n            {\n                if (Creature* halion = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_HALION)))\n                {\n                    // Ensure looting\n                    if (me->IsDamageEnoughForLootingAndReward())\n                        halion->LowerPlayerDamageReq(halion->GetMaxHealth());\n\n                    if (halion->IsAlive())\n                        (killer ? killer : me)->Kill(halion);\n                }\n\n                if (Creature* controller = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_HALION_CONTROLLER)))\n                    if (controller->IsAlive())\n                        controller->Kill(controller);\n\n                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n            }",
+          "count": 1
+        }
+      ],
+      "binding": "boss_twilight_halion",
+      "entries": [
+        40142
+      ],
+      "death_index": 17,
+      "batch": 2,
+      "index": 7,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 40142,
+          "script": "boss_twilight_halion"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_fizzlebang_tocDeath",
+      "title": "Repair npc_fizzlebang_toc death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp"
+      ],
+      "cls": "npc_fizzlebang_tocAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp",
+          "old": "void JustDied(Unit* killer) override\n            {\n                Talk(SAY_STAGE_1_06, killer->GetGUID());\n                _instance->SetData(TYPE_EVENT, 1180);\n                if (Creature* temp = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(NPC_JARAXXUS)))\n                {\n                    temp->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);\n                    temp->SetReactState(REACT_AGGRESSIVE);\n                    temp->SetInCombatWithZone();\n                }\n            }",
+          "new": "void JustDied(Unit* killer) override\n            {\n                Talk(SAY_STAGE_1_06, killer ? killer->GetGUID() : ObjectGuid::Empty);\n                _instance->SetData(TYPE_EVENT, 1180);\n                if (Creature* temp = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(NPC_JARAXXUS)))\n                {\n                    temp->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);\n                    temp->SetReactState(REACT_AGGRESSIVE);\n                    temp->SetInCombatWithZone();\n                }\n            }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_fizzlebang_toc",
+      "entries": [
+        35458
+      ],
+      "death_index": 18,
+      "batch": 2,
+      "index": 8,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 35458,
+          "script": "npc_fizzlebang_toc"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_mechanoliftDeath",
+      "title": "Repair npc_mechanolift death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Northrend/Ulduar/Ulduar/boss_flame_leviathan.cpp"
+      ],
+      "cls": "npc_mechanoliftAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_flame_leviathan.cpp",
+          "old": "void JustDied(Unit* pKiller) override\n        {\n            me->GetMotionMaster()->MoveTargetedHome();\n            Creature* pLiquid = DoSummon(NPC_LIQUID, me, 0);\n            if (pLiquid)\n            {\n                pLiquid->CastSpell(pLiquid, SPELL_LIQUID_PYRITE, true);\n                pLiquid->GetMotionMaster()->MoveFall(pKiller->GetPositionZ());\n            }\n        }",
+          "new": "void JustDied(Unit* pKiller) override\n        {\n            me->GetMotionMaster()->MoveTargetedHome();\n            Creature* pLiquid = DoSummon(NPC_LIQUID, me, 0);\n            if (pLiquid)\n            {\n                pLiquid->CastSpell(pLiquid, SPELL_LIQUID_PYRITE, true);\n                pLiquid->GetMotionMaster()->MoveFall();\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_mechanolift",
+      "entries": [
+        33214
+      ],
+      "death_index": 19,
+      "batch": 2,
+      "index": 9,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 33214,
+          "script": "npc_mechanolift"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_faction_bossDeath",
+      "title": "Repair npc_faction_boss death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/OutdoorPvP/Ashran/AshranNPCNeutral.cpp"
+      ],
+      "cls": "npc_faction_bossAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/OutdoorPvP/Ashran/AshranNPCNeutral.cpp",
+          "old": "void JustDied(Unit* killer) override\n        {\n            Talk(TalkDeath);\n\n            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(m_ZoneScript))\n            {\n                auto l_GenericGuid = l_Ashran->GetFactionGenericMoP(me->GetEntry() == GrandMarshalTremblade ? TEAM_ALLIANCE : TEAM_HORDE);\n                if (Creature* l_GenericMoP = sObjectAccessor->FindCreature(l_GenericGuid))\n                    l_GenericMoP->AI()->DoAction(me->GetEntry() == GrandMarshalTremblade ? AnnounceHordeKillBoss : AnnounceAllianceKillBoss);\n\n                l_Ashran->HandleFactionBossDeath(me->GetEntry() == GrandMarshalTremblade ? TEAM_HORDE : TEAM_ALLIANCE);\n            }\n\n            /// Upon successfully defeating the enemy leader, those present receive 50 Honor and 250 Conquest\n            std::list<Player*> l_PlayerList;\n            me->GetPlayerListInGrid(l_PlayerList, 100.0f);\n\n            l_PlayerList.remove_if([this](Player* player) -> bool\n            {\n                if (player == nullptr)\n                    return true;\n\n                if (!me->IsValidAttackTarget(player))\n                    return true;\n\n                return false;\n            });\n\n            for (Player* l_Player : l_PlayerList)\n                l_Player->RewardHonor(l_Player, 1, 50 * 100);\n\n            /// Trigger strongboxes loot for near players\n            if (me->GetEntry() == GrandMarshalTremblade)\n                killer->CastSpell(killer, SpellAllianceReward, true);\n            else\n                killer->CastSpell(killer, SpellHordeReward, true);\n        }",
+          "new": "void JustDied(Unit* killer) override\n        {\n            Talk(TalkDeath);\n\n            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(m_ZoneScript))\n            {\n                auto l_GenericGuid = l_Ashran->GetFactionGenericMoP(me->GetEntry() == GrandMarshalTremblade ? TEAM_ALLIANCE : TEAM_HORDE);\n                if (Creature* l_GenericMoP = sObjectAccessor->FindCreature(l_GenericGuid))\n                    l_GenericMoP->AI()->DoAction(me->GetEntry() == GrandMarshalTremblade ? AnnounceHordeKillBoss : AnnounceAllianceKillBoss);\n\n                l_Ashran->HandleFactionBossDeath(me->GetEntry() == GrandMarshalTremblade ? TEAM_HORDE : TEAM_ALLIANCE);\n            }\n\n            /// Upon successfully defeating the enemy leader, those present receive 50 Honor and 250 Conquest\n            std::list<Player*> l_PlayerList;\n            me->GetPlayerListInGrid(l_PlayerList, 100.0f);\n\n            l_PlayerList.remove_if([this](Player* player) -> bool\n            {\n                if (player == nullptr)\n                    return true;\n\n                if (!me->IsValidAttackTarget(player))\n                    return true;\n\n                return false;\n            });\n\n            for (Player* l_Player : l_PlayerList)\n                l_Player->RewardHonor(l_Player, 1, 50 * 100);\n\n            /// Trigger strongboxes loot for near players\n            if (killer)\n            {\n                if (me->GetEntry() == GrandMarshalTremblade)\n                    killer->CastSpell(killer, SpellAllianceReward, true);\n                else\n                    killer->CastSpell(killer, SpellHordeReward, true);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_faction_boss",
+      "entries": [
+        82876,
+        82877
+      ],
+      "death_index": 21,
+      "batch": 2,
+      "index": 10,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 82876,
+          "script": "npc_faction_boss"
+        },
+        {
+          "entry": 82877,
+          "script": "npc_faction_boss"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_beast_of_nightmareDeath",
+      "title": "Repair npc_beast_of_nightmare death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Pandaria/ThroneOfThunder/boss_twin_consorts.cpp"
+      ],
+      "cls": "npc_beast_of_nightmareAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Pandaria/ThroneOfThunder/boss_twin_consorts.cpp",
+          "old": "void JustDied(Unit* killer)\n            {\n                killer->RemoveAurasDueToSpell(SPELL_BEAST_OF_NIGHTMARE_T_A);\n                me->DespawnOrUnsummon(1000);\n            }",
+          "new": "void JustDied(Unit* killer)\n            {\n                if (killer)\n                    killer->RemoveAurasDueToSpell(SPELL_BEAST_OF_NIGHTMARE_T_A);\n                me->DespawnOrUnsummon(1000);\n            }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_beast_of_nightmare",
+      "entries": [
+        69479
+      ],
+      "death_index": 22,
+      "batch": 3,
+      "index": 1,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 69479,
+          "script": "npc_beast_of_nightmare"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "sceneTrigger_part8Death",
+      "title": "Repair sceneTrigger_part8 death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp"
+      ],
+      "cls": "sceneTrigger_part8AI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp",
+          "old": "void JustDied(Unit* attacker) override\n        {\n            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2);\n\n            attacker->CastSpell(attacker, 225106, true); //conv 3583\n\n            if (auto script = me->GetInstanceScript())\n                script->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 44669);\n        }",
+          "new": "void JustDied(Unit* attacker) override\n        {\n            sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2);\n\n            if (Player* player = attacker ? attacker->GetAffectingPlayer() : nullptr)\n                player->CastSpell(player, 225106, true); //conv 3583\n\n            if (auto script = me->GetInstanceScript())\n                script->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 44669);\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "sceneTrigger_part8",
+      "entries": [
+        90544
+      ],
+      "death_index": 23,
+      "batch": 3,
+      "index": 2,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 90544,
+          "script": "sceneTrigger_part8"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_saera_and_taraarDeath",
+      "title": "Repair npc_saera_and_taraar death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Scenario/Artifacts/DemonHunter/Vengeance/DH_vengeance_art_scenario.cpp"
+      ],
+      "cls": "npc_saera_and_taraarAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/Artifacts/DemonHunter/Vengeance/DH_vengeance_art_scenario.cpp",
+          "old": "void JustDied(Unit* who) override\n        {\n            Talk(0);\n            if (InstanceScript* instance = who->GetInstanceScript())\n            {\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49959);\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49960);\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49961);\n            }\n        }",
+          "new": "void JustDied(Unit* who) override\n        {\n            Talk(0);\n            if (InstanceScript* instance = me->GetInstanceScript())\n            {\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49959);\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49960);\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 49961);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_saera_and_taraar",
+      "entries": [
+        105094,
+        105095
+      ],
+      "death_index": 24,
+      "batch": 3,
+      "index": 3,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 105094,
+          "script": "npc_saera_and_taraar"
+        },
+        {
+          "entry": 105095,
+          "script": "npc_saera_and_taraar"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_gorgonnashDeath",
+      "title": "Repair npc_gorgonnash death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Scenario/Artifacts/DemonHunter/Vengeance/DH_vengeance_art_scenario.cpp"
+      ],
+      "cls": "npc_gorgonnashAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/Artifacts/DemonHunter/Vengeance/DH_vengeance_art_scenario.cpp",
+          "old": "void JustDied(Unit* who) override\n        {\n            DoCast(208395); // convers\n            if (InstanceScript* instance = who->GetInstanceScript())\n            {\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47079);\n            }\n        }",
+          "new": "void JustDied(Unit* who) override\n        {\n            DoCast(208395); // convers\n            if (InstanceScript* instance = me->GetInstanceScript())\n            {\n                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47079);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_gorgonnash",
+      "entries": [
+        99046
+      ],
+      "death_index": 25,
+      "batch": 3,
+      "index": 4,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 99046,
+          "script": "npc_gorgonnash"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_caria_felsoulDeath",
+      "title": "Repair npc_caria_felsoul death attribution and preserve its cleanup",
+      "kind": "death",
+      "paths": [
+        "src/server/scripts/Scenario/Artifacts/DemonHunter/Vengeance/DH_vengeance_art_scenario.cpp"
+      ],
+      "cls": "npc_caria_felsoulAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/Artifacts/DemonHunter/Vengeance/DH_vengeance_art_scenario.cpp",
+          "old": "void JustDied(Unit* who) override\n        {\n            DoCast(208475); // convers\n            // me->SummonGameObject(248785, -2748.406f, -328.1875f, 38.34308f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, DAY);\n        //    me->SummonCreature(105155, -2748.406f, -328.1875f, 38.34308f, 1.93f);\n            if (InstanceScript* instance = who->GetInstanceScript())\n                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47080); //Step last - complete\n        }",
+          "new": "void JustDied(Unit* who) override\n        {\n            DoCast(208475); // convers\n            // me->SummonGameObject(248785, -2748.406f, -328.1875f, 38.34308f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, DAY);\n        //    me->SummonCreature(105155, -2748.406f, -328.1875f, 38.34308f, 1.93f);\n            if (InstanceScript* instance = me->GetInstanceScript())\n                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47080); //Step last - complete\n        }",
+          "count": 1
+        }
+      ],
+      "binding": "npc_caria_felsoul",
+      "entries": [
+        99184
+      ],
+      "death_index": 26,
+      "batch": 3,
+      "index": 5,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 99184,
+          "script": "npc_caria_felsoul"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_q39685Admission",
+      "title": "Validate the actual player in npc_q39685AI",
+      "kind": "admission",
+      "paths": [
+        "src/server/scripts/Legion/warden_prison.cpp"
+      ],
+      "cls": "npc_q39685AI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/warden_prison.cpp",
+          "old": "void OnSpellClick(Unit* Clicker) override\n        {\n            if (cooldown)\n                return;\n\n            Clicker->ToPlayer()->KilledMonsterCredit(me->GetEntry());\n            //Clicker->CastSpell(me, SPELL_ID, false);\n                \n\n            cooldown = 5000;\n            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);\n        }",
+          "new": "void OnSpellClick(Unit* Clicker) override\n        {\n            Player* player = Clicker ? Clicker->ToPlayer() : nullptr;\n            if (!player || cooldown)\n                return;\n\n            player->KilledMonsterCredit(me->GetEntry());\n            //Clicker->CastSpell(me, SPELL_ID, false);\n                \n\n            cooldown = 5000;\n            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);\n        }",
+          "count": 1
+        }
+      ],
+      "admission_index": 0,
+      "batch": 3,
+      "index": 6,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 99709,
+          "script": "npc_q39685"
+        },
+        {
+          "entry": 99731,
+          "script": "npc_q39685"
+        },
+        {
+          "entry": 99732,
+          "script": "npc_q39685"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_drakuru_shacklesAdmission",
+      "title": "Validate the actual player in npc_drakuru_shacklesAI",
+      "kind": "admission",
+      "paths": [
+        "src/server/scripts/Northrend/zone_zuldrak.cpp"
+      ],
+      "cls": "npc_drakuru_shacklesAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/zone_zuldrak.cpp",
+          "old": "void SpellHit(Unit* pCaster, const SpellInfo* pSpell) override\n        {\n            if (pSpell->Id == SPELL_UNLOCK_SHACKLE)\n            {\n                if (pCaster->ToPlayer()->GetQuestStatus(QUEST_TROLLS_IS_GONE_CRAZY) == QUEST_STATUS_INCOMPLETE)\n                {\n                    if (Creature* pRageclaw = Unit::GetCreature(*me, RageclawGUID))\n                    {\n                        UnlockRageclaw(pCaster);\n                        pCaster->ToPlayer()->KilledMonster(pRageclaw->GetCreatureTemplate(), RageclawGUID);\n                        me->DisappearAndDie();\n                    }\n                    else\n                        me->setDeathState(JUST_DIED);\n                }\n            }\n        }",
+          "new": "void SpellHit(Unit* pCaster, const SpellInfo* pSpell) override\n        {\n            if (pSpell->Id == SPELL_UNLOCK_SHACKLE)\n            {\n                Player* player = pCaster ? pCaster->ToPlayer() : nullptr;\n                if (player && player->GetQuestStatus(QUEST_TROLLS_IS_GONE_CRAZY) == QUEST_STATUS_INCOMPLETE)\n                {\n                    if (Creature* pRageclaw = Unit::GetCreature(*me, RageclawGUID))\n                    {\n                        UnlockRageclaw(pCaster);\n                        player->KilledMonster(pRageclaw->GetCreatureTemplate(), RageclawGUID);\n                        me->DisappearAndDie();\n                    }\n                    else\n                        me->setDeathState(JUST_DIED);\n                }\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "admission_index": 1,
+      "batch": 3,
+      "index": 7,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 29700,
+          "script": "npc_drakuru_shackles"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_argus_gift_of_the_lifebinderAdmission",
+      "title": "Validate the actual player in npc_argus_gift_of_the_lifebinder",
+      "kind": "admission",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/boss_argus.cpp"
+      ],
+      "cls": "npc_argus_gift_of_the_lifebinder",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/boss_argus.cpp",
+          "old": "void SpellHitTarget(Unit* target, SpellInfo const* spell) override\n    {\n        if (spell->Id == SPELL_GIFT_OF_THE_LIFEBINDER_SCRIPT)\n        {\n            if (!target->IsAlive())\n            {\n                target->ToPlayer()->ResurrectPlayer(1.0f);\n                target->ToPlayer()->SpawnCorpseBones();\n\n                if (powerCount)\n                {\n                    tickCount = (100.0f / playersCount) - 0.5f;\n                    powerCount -= tickCount;\n\n                    if (powerCount <= 0)\n                        powerCount = 0;\n\n                    me->SetPower(me->GetPowerType(), powerCount);\n                }\n                else\n                    me->CastSpell(me, SPELL_WITHERING_ROOTS, true);\n            }\n        }\n    }",
+          "new": "void SpellHitTarget(Unit* target, SpellInfo const* spell) override\n    {\n        if (spell->Id == SPELL_GIFT_OF_THE_LIFEBINDER_SCRIPT)\n        {\n            Player* player = target ? target->ToPlayer() : nullptr;\n            if (player && !player->IsAlive())\n            {\n                player->ResurrectPlayer(1.0f);\n                player->SpawnCorpseBones();\n\n                if (powerCount)\n                {\n                    tickCount = (100.0f / playersCount) - 0.5f;\n                    powerCount -= tickCount;\n\n                    if (powerCount <= 0)\n                        powerCount = 0;\n\n                    me->SetPower(me->GetPowerType(), powerCount);\n                }\n                else\n                    me->CastSpell(me, SPELL_WITHERING_ROOTS, true);\n            }\n        }\n    }",
+          "count": 1
+        }
+      ],
+      "admission_index": 2,
+      "batch": 3,
+      "index": 8,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 129386,
+          "script": "npc_argus_gift_of_the_lifebinder"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_gizmoAdmission",
+      "title": "Validate the actual player in npc_gizmoAI",
+      "kind": "admission",
+      "paths": [
+        "src/server/scripts/Maelstrom/LostIsles/lost_isles.cpp"
+      ],
+      "cls": "npc_gizmoAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Maelstrom/LostIsles/lost_isles.cpp",
+          "old": "void MoveInLineOfSight(Unit* who) override\n        {\n            if (who->HasAura(SPELL_NEAR_DEATH))\n            {\n                // always player. don't warry\n                // waiting then plr finish movie.\n                if (who->ToPlayer()->isWatchingMovie())\n                    return;\n\n                GuidSet::iterator itr = m_player_for_event.find(who->GetGUID());\n                if (itr == m_player_for_event.end())\n                {\n                    m_player_for_event.insert(who->GetGUID());\n                    //me->CastSpell(537.135f, 3272.25f, 0.18f, SPELL_SUMMON_DOC_ZAPNOZZLE, true);\n                    Position pos;\n                    pos.Relocate(537.135f, 3272.25f, 0.18f, 2.46f);\n                    if (TempSummon* summon = me->GetMap()->SummonCreature(NPC_DOC_ZAPNNOZZLE, pos))\n                    {\n                        summon->AddPlayerInPersonnalVisibilityList(who->GetGUID());\n                        summon->AI()->SetGUID(who->GetGUID(), 0);\n                        summon->AI()->SetGUID(me->GetGUID(), 1);\n                    }\n                }\n            }\n        }",
+          "new": "void MoveInLineOfSight(Unit* who) override\n        {\n            Player* player = who ? who->ToPlayer() : nullptr;\n            if (player && player->HasAura(SPELL_NEAR_DEATH))\n            {\n                // waiting then plr finish movie.\n                if (player->isWatchingMovie())\n                    return;\n\n                GuidSet::iterator itr = m_player_for_event.find(who->GetGUID());\n                if (itr == m_player_for_event.end())\n                {\n                    //me->CastSpell(537.135f, 3272.25f, 0.18f, SPELL_SUMMON_DOC_ZAPNOZZLE, true);\n                    Position pos;\n                    pos.Relocate(537.135f, 3272.25f, 0.18f, 2.46f);\n                    if (TempSummon* summon = me->GetMap()->SummonCreature(NPC_DOC_ZAPNNOZZLE, pos))\n                    {\n                        summon->AddPlayerInPersonnalVisibilityList(who->GetGUID());\n                        summon->AI()->SetGUID(who->GetGUID(), 0);\n                        summon->AI()->SetGUID(me->GetGUID(), 1);\n                        m_player_for_event.insert(who->GetGUID());\n                    }\n                }\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "admission_index": 4,
+      "batch": 3,
+      "index": 9,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 36600,
+          "script": "npc_gizmo"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "npc_invasion_azsuna_dragonsAdmission",
+      "title": "Validate the actual player in npc_invasion_azsuna_dragonsAI",
+      "kind": "admission",
+      "paths": [
+        "src/server/scripts/Scenario/LegionInvasion/Azsuna/InvasionAzsuna.cpp"
+      ],
+      "cls": "npc_invasion_azsuna_dragonsAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/LegionInvasion/Azsuna/InvasionAzsuna.cpp",
+          "old": "void OnSpellClick(Unit* clicker) override\n        {\n            if (me->GetEntry() == 119459)\n                clicker->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 56885);\n            else\n                clicker->CastSpell(me, 52391, true); //Ride Veh\n        }",
+          "new": "void OnSpellClick(Unit* clicker) override\n        {\n            if (me->GetEntry() == 119459)\n            {\n                if (Player* player = clicker ? clicker->ToPlayer() : nullptr)\n                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 56885);\n            }\n            else if (clicker)\n                clicker->CastSpell(me, 52391, true); //Ride Veh\n        }",
+          "count": 1
+        }
+      ],
+      "admission_index": 6,
+      "batch": 3,
+      "index": 10,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 119456,
+          "script": "npc_invasion_azsuna_dragons"
+        },
+        {
+          "entry": 119459,
+          "script": "npc_invasion_azsuna_dragons"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "ShadowmasterMissingTorch",
+      "title": "Keep Shadowmaster attacks safe when no torch was summoned",
+      "kind": "container",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_three.cpp"
+      ],
+      "cls": "boss_brawguild_shadowmasterAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_three.cpp",
+          "old": "if (Creature* last_torch = ObjectAccessor::FindCreature(summons.back()))\n                            me->CastSpell(last_torch, SPELL_SHADOW_BLAST);",
+          "new": "if (!summons.empty())\n                            if (Creature* last_torch = ObjectAccessor::FindCreature(summons.back()))\n                                me->CastSpell(last_torch, SPELL_SHADOW_BLAST);",
+          "count": 1
+        }
+      ],
+      "batch": 4,
+      "index": 1,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 116743,
+          "script": "boss_brawguild_shadowmaster"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "JohnnyPetRecovery",
+      "title": "Recover a missing Brawler pet through the existing summon branch",
+      "kind": "container",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_three.cpp"
+      ],
+      "cls": "boss_brawguild_johnnyAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_three.cpp",
+          "old": "if (Creature* pet = me->GetMap()->GetCreature(summons.back()))",
+          "new": "if (Creature* pet = summons.empty() ? nullptr : me->GetMap()->GetCreature(summons.back()))",
+          "count": 1
+        }
+      ],
+      "batch": 4,
+      "index": 2,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 115058,
+          "script": "boss_brawguild_johnny"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "ThwackMissingDancer",
+      "title": "Keep the Thwack phase timer when no dancer was summoned",
+      "kind": "container",
+      "paths": [
+        "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_five.cpp"
+      ],
+      "cls": "npc_brawguild_thwack_u_controllerAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_five.cpp",
+          "old": "if (Creature* dancer = me->GetMap()->GetCreature(special_summons.front()))",
+          "new": "if (Creature* dancer = special_summons.empty() ? nullptr : me->GetMap()->GetCreature(special_summons.front()))",
+          "count": 1
+        }
+      ],
+      "batch": 4,
+      "index": 3,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 115432,
+          "script": "npc_brawguild_thwack_u_controller"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "FireworkPickerBounds",
+      "title": "Select only the 23 authored fireworks",
+      "kind": "array",
+      "paths": [
+        "src/server/scripts/World/fireworks_spectacular.cpp"
+      ],
+      "cls": "",
+      "edits": [
+        {
+          "path": "src/server/scripts/World/fireworks_spectacular.cpp",
+          "old": "FireworksPicker[urand(0, 23)]",
+          "new": "FireworksPicker[urand(0, 22)]",
+          "count": 1
+        }
+      ],
+      "batch": 4,
+      "index": 4,
+      "native_binding_scope": "registered creature bindings in affected translation unit;not additional counted fixes",
+      "native_bindings": [],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "ThrowStaffBounds",
+      "title": "Select only the seven authored Throw Staff spells",
+      "kind": "array",
+      "paths": [
+        "src/server/scripts/Legion/TheArcway/boss_general_xakal.cpp"
+      ],
+      "cls": "spell_throw_staff_SpellScript",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/TheArcway/boss_general_xakal.cpp",
+          "old": "RandomSpells[urand(0, 7)]",
+          "new": "RandomSpells[urand(0, 6)]",
+          "count": 1
+        }
+      ],
+      "batch": 4,
+      "index": 5,
+      "native_binding_scope": "registered creature bindings in affected translation unit;not additional counted fixes",
+      "native_bindings": [
+        {
+          "entry": 98206,
+          "script": "boss_general_xakal"
+        },
+        {
+          "entry": 100393,
+          "script": "npc_xakal_dread_felbat"
+        },
+        {
+          "entry": 100342,
+          "script": "npc_xakal_fissure"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "RhyolithPhaseHealth",
+      "title": "Preserve full health when Rhyolith changes phase",
+      "kind": "numeric",
+      "paths": [
+        "src/server/scripts/Kalimdor/Firelands/boss_lord_rhyolith.cpp"
+      ],
+      "cls": "boss_lord_rhyolithAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Kalimdor/Firelands/boss_lord_rhyolith.cpp",
+          "old": "uint32 _health = me->GetHealth();",
+          "new": "uint64 _health = me->GetHealth();",
+          "count": 1
+        }
+      ],
+      "batch": 4,
+      "index": 6,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 52558,
+          "script": "boss_lord_rhyolith"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "ValithriaHealthComparisons",
+      "title": "Compare Valithria health percentages without overflowing",
+      "kind": "numeric",
+      "paths": [
+        "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp"
+      ],
+      "cls": "boss_valithria_dreamwalkerAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp",
+          "old": "bool HealthAbovePct(int32 pct) const { return me->GetHealth() * (uint64)100 > me->GetMaxHealth() * (uint64)pct; }\n\n            bool HealthBelowPct(int32 pct) const { return me->GetHealth() * (uint64)100 < me->GetMaxHealth() * (uint64)pct; }",
+          "new": "bool HealthAbovePct(int32 pct) const { return boost::multiprecision::uint128_t(me->GetHealth()) * 100 > boost::multiprecision::uint128_t(me->GetMaxHealth()) * uint64(pct); }\n\n            bool HealthBelowPct(int32 pct) const { return boost::multiprecision::uint128_t(me->GetHealth()) * 100 < boost::multiprecision::uint128_t(me->GetMaxHealth()) * uint64(pct); }",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp",
+          "old": "#include \"ObjectVisitors.hpp\"",
+          "new": "#include \"ObjectVisitors.hpp\"\n#include <boost/multiprecision/cpp_int.hpp>",
+          "count": 1
+        }
+      ],
+      "batch": 4,
+      "index": 7,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 36789,
+          "script": "boss_valithria_dreamwalker"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "VanessaPhaseHealth",
+      "title": "Preserve Vanessa integer-percent transitions at wide health",
+      "kind": "numeric",
+      "paths": [
+        "src/server/scripts/EasternKingdoms/Deadmines/boss_vanessa_vancleef.cpp"
+      ],
+      "cls": "boss_vanessa_vancleefAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/EasternKingdoms/Deadmines/boss_vanessa_vancleef.cpp",
+          "old": "(me->GetHealth() * 100) / me->GetMaxHealth() > 50",
+          "new": "(boost::multiprecision::uint128_t(me->GetHealth()) * 100) / me->GetMaxHealth() > 50",
+          "count": 3
+        },
+        {
+          "path": "src/server/scripts/EasternKingdoms/Deadmines/boss_vanessa_vancleef.cpp",
+          "old": "#include \"Group.h\"",
+          "new": "#include \"Group.h\"\n#include <boost/multiprecision/cpp_int.hpp>",
+          "count": 1
+        }
+      ],
+      "batch": 4,
+      "index": 8,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 49541,
+          "script": "boss_vanessa_vancleef"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "IchoronWaterHealth",
+      "title": "Apply Ichoron water healing and loss with the correct sign",
+      "kind": "numeric",
+      "paths": [
+        "src/server/scripts/Northrend/VioletHold/boss_ichoron.cpp"
+      ],
+      "cls": "boss_ichoronAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/VioletHold/boss_ichoron.cpp",
+          "old": "me->ModifyHealth(int32(me->CountPctFromMaxHealth(1)));",
+          "new": "me->ModifyHealth(int64(me->CountPctFromMaxHealth(1)));",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Northrend/VioletHold/boss_ichoron.cpp",
+          "old": "uint32 damage = me->CountPctFromMaxHealth(3);\n                    me->ModifyHealth(-int32(damage));",
+          "new": "uint64 damage = me->CountPctFromMaxHealth(3);\n                    me->ModifyHealth(-int64(damage));",
+          "count": 1
+        }
+      ],
+      "batch": 4,
+      "index": 9,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 29313,
+          "script": "boss_ichoron"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "ShaDoubtHealAmount",
+      "title": "Preserve the native ten-percent Sha heal above uint32 health",
+      "kind": "numeric",
+      "paths": [
+        "src/server/scripts/Pandaria/TempleJadeSerpent/boss_sha_of_doubt.cpp"
+      ],
+      "cls": "",
+      "edits": [
+        {
+          "path": "src/server/scripts/Pandaria/TempleJadeSerpent/boss_sha_of_doubt.cpp",
+          "old": "me->HealBySpell(creature, spellInfo, uint32(float(creature->GetMaxHealth()) * 0.1f));",
+          "new": "me->HealBySpell(creature, spellInfo, HealingAmount::Apply(creature->GetMaxHealth(), 0, 0.1f));",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Pandaria/TempleJadeSerpent/boss_sha_of_doubt.cpp",
+          "old": "/*==============\n==============*/",
+          "new": "/*==============\n==============*/\n#include \"HealingAmount.h\"",
+          "count": 1
+        }
+      ],
+      "batch": 4,
+      "index": 10,
+      "native_binding_scope": "registered creature bindings in affected translation unit;not additional counted fixes",
+      "native_bindings": [
+        {
+          "entry": 56792,
+          "script": "mob_figment_of_doubt"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "MurmurResetHealth",
+      "title": "Preserve Murmur forty-percent reset health without narrowing",
+      "kind": "numeric",
+      "paths": [
+        "src/server/scripts/Outland/Auchindoun/ShadowLabyrinth/boss_murmur.cpp"
+      ],
+      "cls": "boss_murmurAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Outland/Auchindoun/ShadowLabyrinth/boss_murmur.cpp",
+          "old": "uint32 hp = me->CountPctFromMaxHealth(40);",
+          "new": "uint64 hp = me->CountPctFromMaxHealth(40);",
+          "count": 1
+        }
+      ],
+      "batch": 5,
+      "index": 1,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 18708,
+          "script": "boss_murmur"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "GravityBombFatalHealth",
+      "title": "Compare Gravity Bomb fatal hits against full target health",
+      "kind": "numeric",
+      "paths": [
+        "src/server/scripts/Northrend/Ulduar/Ulduar/boss_xt002.cpp"
+      ],
+      "cls": "",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_xt002.cpp",
+          "old": "if (aurEff->GetAmount() >= int32(owner->GetHealth()))",
+          "new": "if (aurEff->GetAmount() >= 0.0f && HealingAmount::FromFloat(aurEff->GetAmount()) >= owner->GetHealth())",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_xt002.cpp",
+          "old": "if (GetHitDamage() >= int32(GetHitUnit()->GetHealth()))",
+          "new": "if (GetHitDamage() >= 0 && uint64(GetHitDamage()) >= GetHitUnit()->GetHealth())",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_xt002.cpp",
+          "old": "#include \"Vehicle.h\"",
+          "new": "#include \"Vehicle.h\"\n#include \"HealingAmount.h\"",
+          "count": 1
+        }
+      ],
+      "batch": 5,
+      "index": 2,
+      "native_binding_scope": "registered creature bindings in affected translation unit;not additional counted fixes",
+      "native_bindings": [
+        {
+          "entry": 33293,
+          "script": "boss_xt002"
+        },
+        {
+          "entry": 33346,
+          "script": "mob_boombot"
+        },
+        {
+          "entry": 34004,
+          "script": "mob_life_spark"
+        },
+        {
+          "entry": 33344,
+          "script": "mob_pummeller"
+        },
+        {
+          "entry": 33343,
+          "script": "mob_scrapbot"
+        },
+        {
+          "entry": 34001,
+          "script": "mob_void_zone"
+        },
+        {
+          "entry": 33329,
+          "script": "mob_xt002_heart"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "RogueCheatDeathHealth",
+      "title": "Keep Cheat Death seven-percent threshold at full width",
+      "kind": "numeric",
+      "paths": [
+        "src/server/scripts/Spells/spell_rogue.cpp"
+      ],
+      "cls": "spell_rog_cheat_death_AuraScript",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_rogue.cpp",
+          "old": "uint32 health7 = target->CountPctFromMaxHealth(7);",
+          "new": "uint64 health7 = target->CountPctFromMaxHealth(7);",
+          "count": 1
+        }
+      ],
+      "batch": 5,
+      "index": 3,
+      "native_binding_scope": "registered creature bindings in affected translation unit;not additional counted fixes",
+      "native_bindings": [],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "DemonHunterResortHealth",
+      "title": "Keep Last Resort thirty-percent threshold at full width",
+      "kind": "numeric",
+      "paths": [
+        "src/server/scripts/Spells/spell_dh.cpp"
+      ],
+      "cls": "spell_dh_disable_absorb_AuraScript",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_dh.cpp",
+          "old": "uint32 health30 = target->CountPctFromMaxHealth(30);",
+          "new": "uint64 health30 = target->CountPctFromMaxHealth(30);",
+          "count": 1
+        }
+      ],
+      "batch": 5,
+      "index": 4,
+      "native_binding_scope": "registered creature bindings in affected translation unit;not additional counted fixes",
+      "native_bindings": [],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "HodirGazeHealth",
+      "title": "Keep Protective Gaze ten-percent threshold at full width",
+      "kind": "numeric",
+      "paths": [
+        "src/server/scripts/Northrend/Ulduar/Ulduar/boss_yoggsaron.cpp"
+      ],
+      "cls": "",
+      "edits": [
+        {
+          "path": "src/server/scripts/Northrend/Ulduar/Ulduar/boss_yoggsaron.cpp",
+          "old": "uint32 health10 = target->CountPctFromMaxHealth(10);",
+          "new": "uint64 health10 = target->CountPctFromMaxHealth(10);",
+          "count": 1
+        }
+      ],
+      "batch": 5,
+      "index": 5,
+      "native_binding_scope": "registered creature bindings in affected translation unit;not additional counted fixes",
+      "native_bindings": [
+        {
+          "entry": 33890,
+          "script": "boss_brain_yoggsaron"
+        },
+        {
+          "entry": 33134,
+          "script": "boss_sara"
+        },
+        {
+          "entry": 33288,
+          "script": "boss_yoggsaron"
+        },
+        {
+          "entry": 33213,
+          "script": "keeper_image"
+        },
+        {
+          "entry": 33241,
+          "script": "keeper_image"
+        },
+        {
+          "entry": 33242,
+          "script": "keeper_image"
+        },
+        {
+          "entry": 33244,
+          "script": "keeper_image"
+        },
+        {
+          "entry": 33983,
+          "script": "npc_constrictor_tentacle"
+        },
+        {
+          "entry": 33985,
+          "script": "npc_corruptor_tentacle"
+        },
+        {
+          "entry": 33966,
+          "script": "npc_crusher_tentacle"
+        },
+        {
+          "entry": 33882,
+          "script": "npc_death_orb"
+        },
+        {
+          "entry": 34072,
+          "script": "npc_descend_into_madness"
+        },
+        {
+          "entry": 33136,
+          "script": "npc_guardian_yoggsaron"
+        },
+        {
+          "entry": 59220,
+          "script": "npc_illusion"
+        },
+        {
+          "entry": 33988,
+          "script": "npc_immortal_guardian"
+        },
+        {
+          "entry": 33990,
+          "script": "npc_laughing_skull"
+        },
+        {
+          "entry": 32406,
+          "script": "npc_ominous_cloud"
+        },
+        {
+          "entry": 33292,
+          "script": "npc_ominous_cloud"
+        },
+        {
+          "entry": 33436,
+          "script": "npc_passive_illusions"
+        },
+        {
+          "entry": 33437,
+          "script": "npc_passive_illusions"
+        },
+        {
+          "entry": 33441,
+          "script": "npc_passive_illusions"
+        },
+        {
+          "entry": 33442,
+          "script": "npc_passive_illusions"
+        },
+        {
+          "entry": 33495,
+          "script": "npc_passive_illusions"
+        },
+        {
+          "entry": 33523,
+          "script": "npc_passive_illusions"
+        },
+        {
+          "entry": 33535,
+          "script": "npc_passive_illusions"
+        },
+        {
+          "entry": 33536,
+          "script": "npc_passive_illusions"
+        },
+        {
+          "entry": 33991,
+          "script": "npc_sanity_well"
+        },
+        {
+          "entry": 33410,
+          "script": "npc_ys_freya"
+        },
+        {
+          "entry": 33411,
+          "script": "npc_ys_hodir"
+        },
+        {
+          "entry": 33412,
+          "script": "npc_ys_mimiron"
+        },
+        {
+          "entry": 33413,
+          "script": "npc_ys_thorim"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "XakalFissureInitialState",
+      "title": "Initialize each Xakal fissure before its first area-trigger callback",
+      "kind": "initialization",
+      "paths": [
+        "src/server/scripts/Legion/TheArcway/boss_general_xakal.cpp"
+      ],
+      "cls": "npc_xakal_fissureAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/TheArcway/boss_general_xakal.cpp",
+          "old": "bool active;",
+          "new": "bool active = false;",
+          "count": 1
+        }
+      ],
+      "batch": 5,
+      "index": 6,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 100342,
+          "script": "npc_xakal_fissure"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "RohnahDialogueOwnership",
+      "title": "Retire Rohnah delayed dialogue with the speaking actor",
+      "kind": "foreign_lifetime",
+      "paths": [
+        "src/server/scripts/Scenario/FallOfTheramoreAlliance/fall_of_theramore_alliance.cpp"
+      ],
+      "cls": "theramore_invader_typeAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/FallOfTheramoreAlliance/fall_of_theramore_alliance.cpp",
+          "old": "me->AddDelayedEvent(delay += 3000, [Warlord]()\n                    {\n                        Warlord->AI()->Talk(TALK_INTRO);\n                    });",
+          "new": "Warlord->AddDelayedEvent(delay += 3000, [Warlord]()\n                    {\n                        if (Warlord->IsAIEnabled && Warlord->AI())\n                            Warlord->AI()->Talk(TALK_INTRO);\n                    });",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Scenario/FallOfTheramoreAlliance/fall_of_theramore_alliance.cpp",
+          "old": "me->AddDelayedEvent(delay += 2500, [Warlord]()\n                    {\n                        Warlord->AI()->Talk(TALK_SPECIAL_1);\n                    });",
+          "new": "Warlord->AddDelayedEvent(delay += 2500, [Warlord]()\n                    {\n                        if (Warlord->IsAIEnabled && Warlord->AI())\n                            Warlord->AI()->Talk(TALK_SPECIAL_1);\n                    });",
+          "count": 1
+        }
+      ],
+      "batch": 5,
+      "index": 7,
+      "native_binding_scope": "registered creature bindings in affected translation unit;not additional counted fixes",
+      "native_bindings": [
+        {
+          "entry": 65610,
+          "script": "npc_theramore_airship_crewman"
+        },
+        {
+          "entry": 65152,
+          "script": "npc_theramore_captain_korthok"
+        },
+        {
+          "entry": 65444,
+          "script": "npc_theramore_captain_mousson"
+        },
+        {
+          "entry": 64900,
+          "script": "npc_theramore_gashnul"
+        },
+        {
+          "entry": 64479,
+          "script": "npc_theramore_gatecrusher"
+        },
+        {
+          "entry": 65442,
+          "script": "npc_theramore_invader_base"
+        },
+        {
+          "entry": 65494,
+          "script": "npc_theramore_invader_base"
+        },
+        {
+          "entry": 65571,
+          "script": "npc_theramore_invader_base"
+        },
+        {
+          "entry": 65611,
+          "script": "npc_theramore_invader_base"
+        },
+        {
+          "entry": 64727,
+          "script": "npc_theramore_jaina_proudmoore"
+        },
+        {
+          "entry": 65507,
+          "script": "npc_theramore_roknah_felcaster"
+        },
+        {
+          "entry": 64732,
+          "script": "npc_theramore_roknah_grunt"
+        },
+        {
+          "entry": 64735,
+          "script": "npc_theramore_roknah_headhunter"
+        },
+        {
+          "entry": 64733,
+          "script": "npc_theramore_roknah_loa_singer"
+        },
+        {
+          "entry": 64729,
+          "script": "npc_theramore_roknah_rider"
+        },
+        {
+          "entry": 65510,
+          "script": "npc_theramore_roknah_wave_caller"
+        },
+        {
+          "entry": 65786,
+          "script": "npc_theramore_roknah_wave_caller"
+        },
+        {
+          "entry": 65785,
+          "script": "npc_theramore_sergeant_grud"
+        },
+        {
+          "entry": 65609,
+          "script": "npc_theramore_sky_captain_dazrip"
+        },
+        {
+          "entry": 64957,
+          "script": "npc_theramore_vicious_wyvern"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal",
+      "affected_actors": [
+        {
+          "entry": 64727,
+          "script": "npc_theramore_jaina_proudmoore"
+        },
+        {
+          "entry": 65442,
+          "script": "npc_theramore_invader_base"
+        }
+      ]
+    },
+    {
+      "key": "AntorusElevatorLifetime",
+      "title": "Resolve the actual Antorus elevator when its delayed phase change runs",
+      "kind": "foreign_lifetime",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/instance_antorus.cpp"
+      ],
+      "cls": "",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/instance_antorus.cpp",
+          "old": "AddDelayedEvent(5000, [this, go] () -> void\n                        {\n                            if (!mobsForElevator.empty())\n                                go->SetPhaseMask(2, true);\n                        });",
+          "new": "AddDelayedEvent(5000, [this, goGuid = go->GetGUID()] () -> void\n                        {\n                            if (!mobsForElevator.empty())\n                                if (GameObject* elevator = instance->GetGameObject(goGuid))\n                                    elevator->SetPhaseMask(2, true);\n                        });",
+          "count": 1
+        }
+      ],
+      "batch": 5,
+      "index": 8,
+      "native_binding_scope": "registered creature bindings in affected translation unit;not additional counted fixes",
+      "native_bindings": [],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "VarimathrasTormentObjectLifetime",
+      "title": "Resolve Varimathras torment doors by GUID after the original delay",
+      "kind": "foreign_lifetime",
+      "paths": [
+        "src/server/scripts/Legion/AntorusTheBurningThrone/instance_antorus.cpp"
+      ],
+      "cls": "",
+      "edits": [
+        {
+          "path": "src/server/scripts/Legion/AntorusTheBurningThrone/instance_antorus.cpp",
+          "old": "varimathras->AddDelayedCombat(10000, [this, go] () -> void\n                            {\n                                if (go)\n                                    HandleGameObject(go->GetGUID(), false);\n                            });",
+          "new": "varimathras->AddDelayedCombat(10000, [this, goGuid = go->GetGUID()] () -> void\n                            {\n                                HandleGameObject(goGuid, false);\n                            });",
+          "count": 1
+        }
+      ],
+      "batch": 5,
+      "index": 9,
+      "native_binding_scope": "registered creature bindings in affected translation unit;not additional counted fixes",
+      "native_bindings": [],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    },
+    {
+      "key": "BroodlingBurstLifecycle",
+      "title": "Initialize Broodling burst before passive updates and rearm only on reset",
+      "kind": "initialization",
+      "paths": [
+        "src/server/scripts/Kalimdor/Firelands/boss_bethtilac.cpp"
+      ],
+      "cls": "npc_bethtilac_engorged_broodlingAI",
+      "edits": [
+        {
+          "path": "src/server/scripts/Kalimdor/Firelands/boss_bethtilac.cpp",
+          "old": "bool bBurst;\n\n            void EnterCombat(Unit* who)\n            {\n                bBurst = false;\n            }",
+          "new": "bool bBurst = false;\n\n            void Reset() override\n            {\n                bBurst = false;\n            }",
+          "count": 1
+        }
+      ],
+      "batch": 5,
+      "index": 10,
+      "native_binding_scope": "exact affected class binding",
+      "native_bindings": [
+        {
+          "entry": 53745,
+          "script": "npc_bethtilac_engorged_broodling"
+        }
+      ],
+      "client_verification": "PENDING actual client affected sequence,visuals,movement and full encounter/chain traversal"
+    }
+  ],
+  "data_bindings": [
+    {
+      "kind": "gameobject",
+      "entry": 180749,
+      "script": "go_cheer_speaker"
+    },
+    {
+      "kind": "gameobject",
+      "entry": 272716,
+      "script": ""
+    },
+    {
+      "kind": "gameobject",
+      "entry": 272717,
+      "script": ""
+    },
+    {
+      "kind": "gameobject",
+      "entry": 272718,
+      "script": ""
+    },
+    {
+      "kind": "gameobject",
+      "entry": 272719,
+      "script": ""
+    },
+    {
+      "kind": "gameobject",
+      "entry": 272720,
+      "script": ""
+    },
+    {
+      "kind": "gameobject",
+      "entry": 272721,
+      "script": ""
+    },
+    {
+      "kind": "gameobject",
+      "entry": 272722,
+      "script": ""
+    },
+    {
+      "kind": "gameobject",
+      "entry": 272723,
+      "script": ""
+    },
+    {
+      "kind": "gameobject",
+      "entry": 278815,
+      "script": ""
+    },
+    {
+      "kind": "spell",
+      "entry": 209258,
+      "script": "spell_dh_disable_absorb"
+    },
+    {
+      "kind": "spell",
+      "entry": 64174,
+      "script": "spell_hodir_protective_gaze"
+    },
+    {
+      "kind": "spell",
+      "entry": 31230,
+      "script": "spell_rog_cheat_death"
+    },
+    {
+      "kind": "spell",
+      "entry": 211950,
+      "script": "spell_throw_staff"
+    },
+    {
+      "kind": "spell",
+      "entry": 63024,
+      "script": "spell_xt002_gravity_bomb_aura"
+    },
+    {
+      "kind": "spell",
+      "entry": 64234,
+      "script": "spell_xt002_gravity_bomb_aura"
+    },
+    {
+      "kind": "spell",
+      "entry": 63025,
+      "script": "spell_xt002_gravity_bomb_damage"
+    },
+    {
+      "kind": "spell",
+      "entry": 64233,
+      "script": "spell_xt002_gravity_bomb_damage"
+    },
+    {
+      "kind": "instance",
+      "entry": 1712,
+      "script": "instance_antorus"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 """Exact new amendment, independent of historical quest scope certificates."""
 from pathlib import Path
 import io,json,subprocess
+from five_ten_20261111_scope import retained_source as before_five_ten
 REPO=Path(__file__).resolve().parents[2]
 PLAN=json.loads((REPO/'tools/tests/HealingWidthChanges.json').read_text())
 _retained={}
@@ -26,12 +27,12 @@ def verify():
             at=edit['line'];before=edit['old'].splitlines(True)
             assert lines[at:at+len(before)]==before,(row['path'],at)
             lines[at:at+len(before)]=edit['new'].splitlines(True)
-        actual=(REPO/row['path']).read_bytes().decode(row['encoding']).replace('\r\n','\n')
+        actual=before_five_ten(row['path'],(REPO/row['path']).read_bytes().decode(row['encoding']).replace('\r\n','\n'))
         assert ''.join(lines)==actual,'Undeclared healing-width amendment:'+row['path']
         _retained[row['path']]=old
 def retained_source(path):
     verify()
-    return _retained[path] if path in _retained else (REPO/path).read_text(encoding='utf-8-sig')
+    return _retained[path] if path in _retained else before_five_ten(path)
 if __name__=='__main__':
     verify()
     print('PASS exact unsigned64 healing amendment:',len(_retained),'files; historical scope is checked against pinned4d61 sources separately from actual native/ASAN tests')

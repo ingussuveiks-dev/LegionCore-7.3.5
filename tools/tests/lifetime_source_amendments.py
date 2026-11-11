@@ -9,6 +9,8 @@ CORDANA_OLD='for(x = creeping_walls[current_wall].first.GetPositionX(); y > cree
 CORDANA_NEW=CORDANA_OLD.replace('; y >','; x >')
 
 def lifetime_baseline_view(path,source):
+    from five_ten_20261111_scope import retained_source
+    source=retained_source(path,source)
     if path.replace('\\','/')==CORDANA_PATH:
         assert source.count(CORDANA_NEW)<=1
         source=source.replace(CORDANA_NEW,CORDANA_OLD)

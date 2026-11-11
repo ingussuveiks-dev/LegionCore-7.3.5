@@ -1,0 +1,71 @@
+// Extracted production expressions/methods; spatial/spell/event endpoints are
+// controlled. This is not a claim to execute a full raid/client sequence.
+#include "HealingAmount.h"
+#include <functional>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <new>
+#include <stdexcept>
+#include <string>
+#include <vector>
+struct Creature;using Unit=Creature;using Player=Creature;
+static bool maximumRandom=false;static uint32 forcedRandom=UINT32_MAX;
+uint32 urand(uint32 lo,uint32 hi){if(forcedRandom!=UINT32_MAX)return std::min(hi,lo+forcedRandom);return maximumRandom?hi:lo;}
+namespace GameTime{uint32 GetGameTime(){return 1234;}}
+enum Labels{TYPEID_PLAYER=4,TYPEID_UNIT=3,ACTION_WATER_ELEMENT_HIT=1,ACTION_WATER_ELEMENT_KILLED=2,EVENT_2=2,EVENT_3=3,EVENT_1=1,EVENT_4=4,SPELL_SHADOW_BLAST=100,SPELL_REVIVE_PET=101,SPELL_SUMMON_PET=102,SPELL_FEL_FISSURE_GO=103,SPELL_VOLATILE_BURST=104,SPELL_VOLATILE_POISON=105,TALK_INTRO=0,TALK_SPECIAL_1=1,REACT_AGGRESSIVE=2,REACT_PASSIVE=0,UNIT_FIELD_FLAGS=1,UNIT_FLAG_IMMUNE_TO_PC=2,UNIT_FLAG_IMMUNE_TO_NPC=4,UNIT_FLAG_NOT_ATTACKABLE_1=8,UNIT_FLAG_NOT_SELECTABLE=16};
+struct ObjectGuid{uint64 value=0;static ObjectGuid Empty;bool operator==(ObjectGuid const&x)const{return value==x.value;}bool operator<(ObjectGuid const&x)const{return value<x.value;}};ObjectGuid ObjectGuid::Empty;
+struct Record{uint32 casts=0,talks=0,events=0,actions=0,flags=0,despawns=0,phase=0,touches=0,explosions=0;uint64 amount=0,damage=0;int64 delta=0;uint32 lastDelay=0,lastSpell=0;Creature*target=nullptr;}rec;
+struct Queue{std::vector<std::pair<uint32,std::function<void()>>>items;void Add(uint32 d,std::function<void()>f){items.emplace_back(d,std::move(f));}void Update(uint32 d){std::vector<std::function<void()>>ready;for(auto i=items.begin();i!=items.end();)if(i->first<=d){ready.push_back(std::move(i->second));i=items.erase(i);}else{i->first-=d;++i;}for(auto&f:ready)f();}};
+struct Motion{void MovementExpired(bool){}}motion;
+struct Endpoint{void AttackStart(Unit*){++rec.actions;}void Talk(uint32){++rec.talks;}}endpoint;
+struct Vehicle{Unit*passenger=nullptr;Unit*GetPassenger(uint8 seat){return seat==0?passenger:nullptr;}};
+struct Creature{uint64 hp=100,max=1000;bool aura=false,cooldown=false,isPlayer=true,IsAIEnabled=true;ObjectGuid guid{1};Queue events,combats;Vehicle*vehicle=nullptr;Creature*owner=nullptr;Endpoint*ai=&endpoint;
+ uint64 GetHealth(){return hp;}uint64 GetMaxHealth(){return max;}uint64 CountPctFromMaxHealth(int32 pct){return uint64(boost::multiprecision::uint128_t(max)*uint64(pct)/100);}bool IsAlive(){return hp!=0;}void ModifyHealth(int64 d){rec.delta=d;if(d<0)hp-=std::min(hp,uint64(-d));else hp+=std::min(max-hp,uint64(d));}void LowerPlayerDamageReq(uint64 d){rec.damage=d;}void HealBySpell(Creature*,void*,uint64 amount){rec.amount=amount;}
+ Player*ToPlayer(){return isPlayer?this:nullptr;}Creature*ToCreature(){return this;}uint32 GetTypeId(){return isPlayer?TYPEID_PLAYER:TYPEID_UNIT;}bool HasAura(uint32){return aura;}bool HasSpellCooldown(uint32){return cooldown;}void AddSpellCooldown(uint32,uint32,uint32){cooldown=true;}void CastSpell(Creature*target,uint32 spell,bool=false){++rec.casts;rec.target=target;rec.lastSpell=spell;}Endpoint*AI(){return ai;}ObjectGuid GetGUID(){return guid;}void SetReactState(uint32){}void RemoveFlag(uint32,uint32){++rec.flags;}Unit*GetAnyOwner(){return owner;}Vehicle*GetVehicleKit(){return vehicle;}void StopMoving(){}Motion*GetMotionMaster(){return &motion;}Player*SelectNearestPlayer(float);void DespawnOrUnsummon(uint32){++rec.despawns;}void AddDelayedEvent(uint32 d,std::function<void()>f){events.Add(d,std::move(f));}void AddDelayedCombat(uint32 d,std::function<void()>f){combats.Add(d,std::move(f));}void Touch(){++rec.touches;}
+ struct Map*GetMap();
+};
+Creature*nearby=nullptr;Creature*Creature::SelectNearestPlayer(float){return nearby;}
+struct GameObject{ObjectGuid guid{2};uint32 phaseApplications=0;ObjectGuid GetGUID(){return guid;}void SetPhaseMask(uint32,bool){++phaseApplications;++rec.phase;}};
+struct Map{Creature*actor=nullptr;std::map<ObjectGuid,GameObject*>objects;GameObject*GetGameObject(ObjectGuid guid){auto i=objects.find(guid);return i==objects.end()?nullptr:i->second;}Creature*GetCreature(ObjectGuid){return actor;}}fixtureMap;
+Map*Creature::GetMap(){return &fixtureMap;}
+struct Accessor{static Creature*FindCreature(ObjectGuid){return fixtureMap.actor;}};using ObjectAccessor=Accessor;
+struct Events{void RescheduleEvent(uint32,uint32 d){++rec.events;rec.lastDelay=d;}};
+struct AuraEffect{float amount=0;float GetAmount()const{return amount;}};
+struct DamageInfo{uint32 amount;uint32 GetDamage(){return amount;}};
+struct Base{Creature*me;Map*instance=&fixtureMap;Queue queue;Events events;std::list<ObjectGuid>summons,special_summons;uint32 phase=0,timer_for_summon[5]={100,200,300,400,500};bool bIsExploded=true,dehydration=true;int32 hit=0;
+ explicit Base(Creature*c):me(c){}virtual~Base()=default;virtual void DoAction(int32){}virtual void Reset(){}virtual void OnAreaTriggerCast(Unit*,Unit*,uint32,uint32){}virtual void UpdateAI(uint32){}Creature*GetTarget(){return me;}Creature*GetHitUnit(){return me;}int32 GetHitDamage(){return hit;}void DoExplodeCompleted(){++rec.explosions;}void DoCast(uint32){++rec.casts;}void DoCast(Creature*u,uint32,bool){++rec.casts;rec.target=u;}void DoCastAOE(uint32){++rec.casts;}void AddDelayedEvent(uint32 d,std::function<void()>f){queue.Add(d,std::move(f));}void HandleGameObject(ObjectGuid g,bool){if(instance->GetGameObject(g))++rec.actions;}
+};
+#include "Mechanics.inc"
+static void Require(bool ok,char const*why){if(!ok)throw std::runtime_error(why);}
+template<class F>static void AbsorbChecks(uint32 pct){Creature player;F frame(&player);for(uint64 max:{1000ull,100000000000ull,UINT64_MAX})for(uint64 hp:{100ull,4000000000ull}){
+ player.max=max;player.hp=std::min(hp,max);player.cooldown=false;player.aura=false;rec={};DamageInfo damage{uint32(player.hp)};float absorb=0;frame.Absorb(nullptr,damage,absorb);uint64 cutoff=player.CountPctFromMaxHealth(pct);uint64 expected=player.hp>cutoff?cutoff:player.hp;Require(absorb==float(expected),"Lethal absorb must retain the authored full-width percentage");Require(rec.casts==(pct==10?1u:2u),"Original survival/cooldown spells remain once");
+ rec={};player.cooldown=false;damage.amount=uint32(player.hp-1);absorb=0;frame.Absorb(nullptr,damage,absorb);Require(!rec.casts&&!absorb,"Non-lethal hit cannot consume survival cooldown");
+ }player.hp=100;player.max=1000;player.aura=true;player.cooldown=true;rec={};DamageInfo fatal{100};float amount=0;frame.Absorb(nullptr,fatal,amount);Require(!rec.casts&&!amount,"Existing cooldown/aura still blocks repeat survival");}
+static void Run(uint32 which){Creature actor,peer,passenger;actor.owner=&peer;fixtureMap.actor=&peer;nearby=&peer;rec={};
+switch(which){
+case 0:{RhyolithPhaseHealth f(&actor);for(uint64 h:{100ull,4294967296ull,UINT64_MAX}){actor.hp=h;Require(f.Amount()==h,"Rhyolith phase source keeps full health");}break;}
+case 1:{MurmurResetHealth f(&actor);for(uint64 h:{1000ull,100000000000ull,UINT64_MAX}){actor.max=h;Require(f.Amount()==actor.CountPctFromMaxHealth(40),"Murmur reset amount remains the native40percent");}break;}
+case 2:{Valithria f(&actor);for(uint64 max:{1000ull,UINT64_MAX})for(uint64 hp:{0ull,max/4,max/2,max})for(int32 pct:{0,25,50,75,100}){actor.max=max;actor.hp=hp;auto l=boost::multiprecision::uint128_t(hp)*100,r=boost::multiprecision::uint128_t(max)*pct;Require(f.HealthAbovePct(pct)==(l>r)&&f.HealthBelowPct(pct)==(l<r),"Valithria strict percentage endpoints remain exact");}break;}
+case 3:{Vanessa f(&actor);for(uint64 max:{1000ull,UINT64_MAX})for(uint32 pct:{49u,50u,51u,52u,100u}){actor.max=max;actor.hp=uint64(boost::multiprecision::uint128_t(max)*pct/100);bool expected=(boost::multiprecision::uint128_t(actor.hp)*100/max)>50;Require(f.Above()==expected,"Vanessa retains original integer division threshold");}actor.max=1000;actor.hp=509;Require(!f.Above(),"50.9percent does not silently become a >50 threshold");break;}
+case 4:{Ichoron f(&actor);actor.max=UINT64_MAX;actor.hp=actor.max/2;f.DoAction(ACTION_WATER_ELEMENT_HIT);Require(rec.delta>0&&uint64(rec.delta)==actor.CountPctFromMaxHealth(1)&&rec.explosions==1&&!f.dehydration,"Water contact heals instead of signed32loss and retains explosion/achievement state");rec={};f.DoAction(ACTION_WATER_ELEMENT_KILLED);Require(rec.delta<0&&uint64(-rec.delta)==actor.CountPctFromMaxHealth(3)&&rec.damage==uint64(-rec.delta),"Destroyed water deals loss and native loot damage with one full-width amount");break;}
+case 5:{Sha f(&actor);actor.max=100000000000ull;f.Heal();Require(rec.amount==HealingAmount::Apply(actor.max,0,0.1f)&&rec.amount>UINT32_MAX,"Sha native heal backend receives full ten-percent amount");break;}
+case 6:AbsorbChecks<RogueCheatDeathHealth>(7);break;
+case 7:AbsorbChecks<DemonHunterResortHealth>(30);break;
+case 8:AbsorbChecks<HodirGazeHealth>(10);break;
+case 9:{Gravity f(&actor);actor.hp=4294967300ull;Require(!f.Periodic(10)&&!f.Direct(10),"Gravity Bomb cannot treat wide health as signed32fatal");actor.hp=100;Require(f.Periodic(100)&&f.Direct(100)&&!f.Periodic(-1)&&!f.Direct(-1),"Gravity Bomb keeps exact lethal/nonlethal damage admission");break;}
+case 10:{alignas(XakalFissureInitialState)unsigned char slot[sizeof(XakalFissureInitialState)];std::fill(std::begin(slot),std::end(slot),0x01);auto f=new(slot)XakalFissureInitialState(&actor);f->OnAreaTriggerCast(nullptr,nullptr,0,0);f->OnAreaTriggerCast(nullptr,nullptr,0,0);Require(rec.casts==1,"Fresh fissure admits first callback exactly once");f->Reset();f->OnAreaTriggerCast(nullptr,nullptr,0,0);Require(rec.casts==1,"Ordinary reset does not invent a second fissure GO");f->~XakalFissureInitialState();break;}
+case 11:{alignas(BroodlingBurstLifecycle)unsigned char slot[sizeof(BroodlingBurstLifecycle)];std::fill(std::begin(slot),std::end(slot),0x01);auto f=new(slot)BroodlingBurstLifecycle(&actor);f->UpdateAI(1);f->UpdateAI(1);Require(rec.casts==2&&rec.despawns==1,"Passive Broodling burst initializes before combat and executes once");f->Reset();f->UpdateAI(1);Require(rec.casts==4&&rec.despawns==2,"Real reset rearms the next Broodling lifecycle");f->~BroodlingBurstLifecycle();break;}
+case 12:{ShadowmasterMissingTorch f(&actor);f.Dispatch();Require(!rec.casts&&rec.events==1,"Missing torch preserves next attack timer");f.summons.push_back({1});f.Dispatch();Require(rec.casts==1&&rec.events==2&&rec.target==&peer,"Present torch preserves original blast target/timer");break;}
+case 13:{JohnnyPetRecovery f(&actor);f.Dispatch();Require(rec.casts==1&&rec.events==3,"Empty pet list goes through original summon/recovery timers");rec={};f.summons.push_back({1});f.Dispatch();Require(rec.casts==2&&!rec.events,"Existing pet gets original revive pair");fixtureMap.actor=nullptr;rec={};f.Dispatch();Require(rec.casts==1&&rec.events==3,"Stale pet GUID uses same original recovery branch");break;}
+case 14:{ThwackMissingDancer f(&actor);f.Dispatch();Require(!rec.casts&&!rec.actions&&!rec.flags&&!rec.talks&&rec.events==1&&f.phase==1,"Missing dancer preserves finite phase/timer");f.special_summons.push_back({1});Vehicle vehicle;vehicle.passenger=&passenger;peer.vehicle=&vehicle;rec={};f.Dispatch();Require(f.special_summons.empty()&&rec.flags==2&&rec.actions==2&&rec.events==1,"Real dancer and native passenger unprotection/attack remain");break;}
+case 15:case 16:{maximumRandom=true;auto id=which==15?FireworkPickerBounds():ThrowStaffBounds();Require(id!=0,"Maximum inclusive RNG endpoint must select a real entry");for(uint32 i=0;i<(which==15?23u:7u);++i){forcedRandom=i;Require((which==15?FireworkPickerBounds():ThrowStaffBounds())!=0,"Every authored array entry remains selectable");}break;}
+case 17:{Rohnah f(&actor);auto warlord=std::make_unique<Creature>();f.Queue(warlord.get());warlord->events.Update(2999);actor.events.Update(2999);Require(!rec.talks,"Original Rohnah first delay remains3000");warlord->events.Update(1);actor.events.Update(1);Require(rec.talks==1,"Original Rohnah first line");warlord->events.Update(3000);actor.events.Update(3000);Require(rec.talks==2,"Original Rohnah second delay remains6000");rec={};f.Queue(warlord.get());warlord->IsAIEnabled=false;warlord->ai=nullptr;warlord->events.Update(6000);Require(!rec.talks,"Disabled/missing current speaker AI skips only optional dialogue");warlord->IsAIEnabled=true;warlord->ai=&endpoint;f.Queue(warlord.get());warlord.reset();actor.events.Update(6000);Require(!rec.talks,"Destroyed speaker cannot leave a foreign raw-pointer callback");break;}
+case 18:{Elevator f(&actor);auto go=std::make_unique<GameObject>();fixtureMap.objects[go->guid]=go.get();f.Queue(go.get());f.queue.Update(4999);Require(!rec.phase,"Elevator native delay retained");f.queue.Update(1);Require(rec.phase==1,"Live actual elevator changes phase");rec={};f.Queue(go.get());fixtureMap.objects.erase(go->guid);go.reset();f.queue.Update(5000);Require(!rec.phase,"Removed elevator is never dereferenced");break;}
+case 19:{Torment f(&actor);auto go=std::make_unique<GameObject>();fixtureMap.objects[go->guid]=go.get();f.Queue(go.get(),&peer);peer.combats.Update(9999);Require(!rec.actions,"Torment original combat delay retained");peer.combats.Update(1);Require(rec.actions==1,"Live native torment object closes");rec={};f.Queue(go.get(),&peer);fixtureMap.objects.erase(go->guid);go.reset();peer.combats.Update(10000);Require(!rec.actions,"Removed torment object is resolved safely through native handler");break;}
+case 20:{for(uint32 index:{0u,1u}){rec={};auto live=std::make_unique<Meatball>(&actor);live->Queue(index);actor.events.Update(10000);Require(rec.touches==1,"Live source AI retains callback admission");rec={};live->Queue(index);live.reset();actor.events.Update(10000);Require(!rec.touches,"Retired Meatball source AI cannot enter captured payload");}break;}
+default:throw std::runtime_error("unknown mechanics case");}
+std::cout<<"PASS extracted mechanics case "<<which<<"; controlled endpoints,actual source expressions;client traversal separate\n";
+}
+int main(int argc,char**argv){try{if(argc!=2)throw std::runtime_error("case required");Run(uint32(std::stoul(argv[1])));return 0;}catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}
