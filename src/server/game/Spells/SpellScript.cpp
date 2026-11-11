@@ -317,10 +317,39 @@ std::string SpellScript::TargetHook::ToString()
 
 bool SpellScript::TargetHook::CheckEffect(SpellInfo const* spellEntry, uint8 effIndex)
 {
+    if (effIndex >= MAX_SPELL_EFFECTS)
+        return false;
+    if (CheckTarget(spellEntry->Effects[effIndex]))
+        return true;
+    // Startup validation has no cast difficulty: admit a handler present in
+    // any authored profile. Runtime dispatch below checks only the real one.
+    for (auto const& effect : spellEntry->EffectsMap)
+        if (effect.second.EffectIndex == effIndex && effect.second.Effect && CheckTarget(&effect.second))
+            return true;
+    return false;
+}
+
+bool SpellScript::TargetHook::IsEffectAffectedForDifficulty(SpellInfo const* spellEntry, uint8 effectIndex, uint8 difficulty, uint16 actualTarget) const
+{
+    if (effectIndex >= MAX_SPELL_EFFECTS || !(spellEntry->EffectMask & (uint32(1) << effectIndex)) ||
+        (actualTarget && actualTarget != targetType))
+        return false;
+    if (effIndex == EFFECT_FIRST_FOUND)
+    {
+        for (uint8 index = 0; index < MAX_SPELL_EFFECTS; ++index)
+            if ((spellEntry->EffectMask & (uint32(1) << index)) && CheckTarget(spellEntry->GetEffect(index, difficulty)))
+                return index == effectIndex;
+        return false;
+    }
+    return (effIndex == EFFECT_ALL || effIndex == effectIndex) && CheckTarget(spellEntry->GetEffect(effectIndex, difficulty));
+}
+
+bool SpellScript::TargetHook::CheckTarget(SpellEffectInfo const* effect) const
+{
     if (!targetType)
         return false;
 
-    if (spellEntry->Effects[effIndex]->TargetA.GetTarget() != targetType && spellEntry->Effects[effIndex]->TargetB.GetTarget() != targetType)
+    if (!effect || (effect->TargetA.GetTarget() != targetType && effect->TargetB.GetTarget() != targetType))
         return false;
 
     SpellImplicitTargetInfo targetInfo(targetType);

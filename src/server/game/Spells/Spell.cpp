@@ -9918,7 +9918,7 @@ void Spell::CallScriptObjectAreaTargetSelectHandlers(std::list<WorldObject*>& ta
         m_loadedScript->_PrepareScriptCall(SPELL_SCRIPT_HOOK_OBJECT_AREA_TARGET_SELECT);
         auto hookItrEnd = m_loadedScript->OnObjectAreaTargetSelect.end(), hookItr = m_loadedScript->OnObjectAreaTargetSelect.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            if ((*hookItr).IsEffectAffected(m_spellInfo, effIndex))
+            if ((*hookItr).IsEffectAffectedForDifficulty(m_spellInfo, effIndex, m_diffMode, targetId))
                 (*hookItr).Call(m_loadedScript, targets);
 
         m_loadedScript->_FinishScriptCall();
@@ -10390,7 +10390,7 @@ void Spell::CallScriptObjectTargetSelectHandlers(WorldObject*& target, SpellEffI
         m_loadedScript->_PrepareScriptCall(SPELL_SCRIPT_HOOK_OBJECT_TARGET_SELECT);
         auto hookItrEnd = m_loadedScript->OnObjectTargetSelect.end(), hookItr = m_loadedScript->OnObjectTargetSelect.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            if ((*hookItr).IsEffectAffected(m_spellInfo, effIndex))
+            if ((*hookItr).IsEffectAffectedForDifficulty(m_spellInfo, effIndex, m_diffMode))
                 (*hookItr).Call(m_loadedScript, target);
 
         m_loadedScript->_FinishScriptCall();
@@ -10404,7 +10404,7 @@ void Spell::CallScriptObjectJumpTargetHandlers(int32& AdditionalTarget, SpellEff
         m_loadedScript->_PrepareScriptCall(SPELL_SCRIPT_HOOK_OBJECT_JUMP_TARGET);
         auto hookItrEnd = m_loadedScript->OnObjectJumpTarget.end(), hookItr = m_loadedScript->OnObjectJumpTarget.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            if ((*hookItr).IsEffectAffected(m_spellInfo, effIndex))
+            if ((*hookItr).IsEffectAffectedForDifficulty(m_spellInfo, effIndex, m_diffMode))
                 (*hookItr).Call(m_loadedScript, AdditionalTarget);
 
         m_loadedScript->_FinishScriptCall();

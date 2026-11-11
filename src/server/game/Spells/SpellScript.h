@@ -239,8 +239,10 @@ class TC_GAME_API SpellScript : public _SpellScript
             public:
                 TargetHook(uint8 _effectIndex, uint16 _targetType, bool _area);
                 bool CheckEffect(SpellInfo const* spellEntry, uint8 effIndex) override;
+                bool IsEffectAffectedForDifficulty(SpellInfo const* spellEntry, uint8 effectIndex, uint8 difficulty, uint16 actualTarget = 0) const;
                 std::string ToString();
             protected:
+                bool CheckTarget(SpellEffectInfo const* effect) const;
                 uint16 targetType;
                 bool area;
         };
