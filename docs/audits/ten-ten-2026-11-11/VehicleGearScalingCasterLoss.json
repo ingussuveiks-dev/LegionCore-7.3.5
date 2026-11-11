@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-12",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "key": "VehicleGearScalingCasterLoss",
+  "batch": 2,
+  "authorized_total": 100,
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "title": "Keep vehicle gear recalculation safe after its player caster leaves",
+  "paths": [
+    "src/server/scripts/Spells/spell_generic.cpp"
+  ],
+  "binding": "spell_gen_vehicle_scaling",
+  "spells": [
+    65266,
+    65635,
+    65636,
+    66666,
+    66667,
+    66668
+  ],
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 2 -Case VehicleGearScalingCasterLoss",
+  "counterfactual": "Add -Baseline;expected-broken control",
+  "checks": {
+    "asan": "Ten complete production class/method scopes;14display slot handlers count as one repair. Missing caster/non-player/current AI/mode/instance/target,failed optional spawn,all original child identities/delays/cleanup,teleport invalidating caster between timers;protection compares recipient health,self-cast equivalence andforeign caster loss.",
+    "baseline": "All10pinned64c2counterfactuals fail repaired expectations or expected ASAN access;not ordinary successful gameplay. Initial fixture compilation missed3slot labels;corrected andpairedpass.",
+    "native": "Actual23registered CLI leaves including14display commands through CliHandler;19exact native26972bindings andreal foreign-owned unit auras. ActualCreature removal leaves recipient aura live with nullGetCaster;actual four protection AuraScript absorb hooks use recipient health/child IDs/250ms duration,including vanished caster. Gear loss is fixture-controlled,not aPlayerlogout test. Full raid/gear/client endpoints remain separate.",
+    "linked": "Same b6bf89Release:actual14display context gates plus8foreign-caster method gates includingtwoindependentMolten payloads,andactualrecipientgetter/no castergetter+all4protectionchildIDs/250ms. First10linkedchecksretained.",
+    "retained": "Independent exact65file unsigned64healing andprevious50sourceamendments pass throughnew20normalization;canonicalScepter VerifyReleaseBinary passed.",
+    "runtime": "Owned canonicalPID23816 freshready,gracefulshutdown0,exit0/gone,empty stderr;no new crash,DBErrors or unexplainedserverwarnings/errors/assertions. No user server stopped.",
+    "setup_failure_resolution": "Native fixture initially re-admitted actors without SetMap after actualMap::RemoveFromMap reset,andinitialbootstrap omittedLoadSpellBonusess before realperiodicdamageaura creation. Bothfixture prerequisites corrected. Captured c0000005SpellMgr::GetSpellBonusData/CalculateAmount stack retained with finalnativepassingregression;not a production repair orordinarypass. No crashreports emitted into canonical/ownedCrashes."
+  },
+  "canonical_worldserver_sha256": "b6bf89f3d39a9c12d48e5199b3a11329aa5226e89b0a764be29102d9962f19a6",
+  "scope": "Original native spell IDs,encounter/mode gates,threat/add attribution,independent target cleanup,gear factor/base405,andvaliddisplay item/slot/cache semantics preserved. No SQL/schema/packet/character changes. Nine aura mechanics plusone14commandfamily are ten repairs.",
+  "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch02;archive afterfocusedcommits",
+  "pending": "Actual client display/vehicle/raid combat andfullencounter traversal;all unrelated Lady/LINK2/Slaghammer/handshake/36chain evidence andmixedDBErrors remain OPEN."
+}

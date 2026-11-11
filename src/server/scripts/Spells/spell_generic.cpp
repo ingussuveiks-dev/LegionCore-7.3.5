@@ -1433,6 +1433,8 @@ class spell_gen_vehicle_scaling : public SpellScriptLoader
             void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)
             {
                 Unit* caster = GetCaster();
+                if (!caster || !caster->ToPlayer())
+                    return;
                 float factor;
                 uint16 baseItemLevel;
 
