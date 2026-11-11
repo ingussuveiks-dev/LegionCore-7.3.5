@@ -493,10 +493,11 @@ public:
 
         void OnSpellClick(Unit* Clicker) override
         {
-            if (cooldown)
+            Player* player = Clicker ? Clicker->ToPlayer() : nullptr;
+            if (!player || cooldown)
                 return;
 
-            Clicker->ToPlayer()->KilledMonsterCredit(me->GetEntry());
+            player->KilledMonsterCredit(me->GetEntry());
             //Clicker->CastSpell(me, SPELL_ID, false);
                 
 
