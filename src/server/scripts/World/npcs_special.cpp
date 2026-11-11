@@ -6216,7 +6216,7 @@ struct npc_flamewaker_shaman : public ScriptedAI
     void JustDied(Unit* killer) override
     {
         if (damaged >= 3)
-            if (auto player = killer->ToPlayer())
+            if (auto player = killer ? killer->GetAffectingPlayer() : nullptr)
                 player->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 100992);
     }
 
