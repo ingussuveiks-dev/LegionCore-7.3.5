@@ -1,0 +1,141 @@
+{
+  "date": "2026-11-11",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "batch": 5,
+  "authorized_total": 50,
+  "base": "64baeac4cbc954db653b20790f5f4780e57d0369",
+  "fixes": [
+    {
+      "key": "NpcFelflameInvaderLifetime",
+      "title": "Cancel npc_felflame_invader callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/invasion_point_argus.cpp",
+      "audit": "docs\\audits\\npc-felflame-invader-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "c93c8ab5524cd5063c703210604cda84ed3d5d1f"
+    },
+    {
+      "key": "NpcClookleLifetime",
+      "title": "Cancel npc_clookle callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/MicroHolidays/MoonkinFestival.cpp",
+      "audit": "docs\\audits\\npc-clookle-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "b0032e7dd6273bb3845162b75461fb0187e5ce9f"
+    },
+    {
+      "key": "NpcTichonriusSightlessWatcherLifetime",
+      "title": "Cancel npc_tichonrius_sightless_watcher callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TheNighthold/boss_tichondrius.cpp",
+      "audit": "docs\\audits\\npc-tichonrius-sightless-watcher-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "331c4e9fa53fd99572f9e2af22e60c4df9132657"
+    },
+    {
+      "key": "NpcSisterLunaspyreLifetime",
+      "title": "Cancel npc_sister_lunaspyre callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TombOfSargeras/boss_SistersoftheMoon.cpp",
+      "audit": "docs\\audits\\npc-sister-lunaspyre-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "1c3e0b9cc539e4a328ab9f447addf01e11892726"
+    },
+    {
+      "key": "NpcTovHyrjaLifetime",
+      "title": "Cancel npc_tov_hyrja callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TrialOfValor/boss_tov_odyn.cpp",
+      "audit": "docs\\audits\\npc-tov-hyrja-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "cc489be42ddc2c0c8500f06e9939667599bed102"
+    },
+    {
+      "key": "NpcCordanaCreepingLifetime",
+      "title": "Cancel npc_cordana_creeping callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/VaultoftheWardens/boss_cordana.cpp",
+      "audit": "docs\\audits\\npc-cordana-creeping-ai-lifetime-2026-11-11.json",
+      "callback_count": 2,
+      "commit": "a4cea91e3203c9785a1a1564ffc1aca2cde6711a"
+    },
+    {
+      "key": "NpcHighmaulRejuvenatingMushroomLifetime",
+      "title": "Cancel npc_highmaul_rejuvenating_mushroom callbacks after source AI retirement",
+      "path": "src/server/scripts/Draenor/Highmaul/boss_brackenspore.cpp",
+      "audit": "docs\\audits\\npc-highmaul-rejuvenating-mushroom-ai-lifetime-2026-11-11.json",
+      "callback_count": 4,
+      "commit": "2e1b5ace7967553b9757b040c7d42d26206e9ceb"
+    },
+    {
+      "key": "NpcAshranOfficerIronoreLifetime",
+      "title": "Cancel npc_ashran_officer_ironore callbacks after source AI retirement",
+      "path": "src/server/scripts/OutdoorPvP/Ashran/AshranNPCAlliance.cpp",
+      "audit": "docs\\audits\\npc-ashran-officer-ironore-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "b692c9dfbd52a3c769046d92e7c014b1478a87df"
+    },
+    {
+      "key": "NpcInvasionStormheimDragonsLifetime",
+      "title": "Cancel npc_invasion_stormheim_dragons callbacks after source AI retirement",
+      "path": "src/server/scripts/Scenario/LegionInvasion/Stormheim/InvasionStormheim.cpp",
+      "audit": "docs\\audits\\npc-invasion-stormheim-dragons-ai-lifetime-2026-11-11.json",
+      "callback_count": 2,
+      "commit": "3cc11d1b8c042094e23f0247b203ce2768f246fc"
+    },
+    {
+      "key": "NpcArcaneRavenLifetime",
+      "title": "Cancel npc_arcane_raven callbacks after source AI retirement",
+      "path": "src/server/scripts/Scenario/AssaultBrokenShore/AssaultBrokenShore.cpp",
+      "audit": "docs\\audits\\npc-arcane-raven-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "41c2aa7acb516ab7ea218925c5cfa948eee6f1e6"
+    }
+  ],
+  "checks": {
+    "source": "Exact complete-file reversal to 64baeac4cbc954db653b20790f5f4780e57d0369;only capture/first-statement weak expiry/private per-AI anchor added. Original gates,casts,IDs,delays,credit,Reset/death/cleanup and owner/group rules retained.",
+    "asan": "Every listed old callback admission projection intentionally produces heap-use-after-free/ABORTING after frame destruction;repaired projection passes live/retired/cancelled/same-address replacement. Expected counterfactuals paired,not ordinary successful runs.",
+    "native": "Actual Creature::AIM_Initialize/destruction and Unit event/combat queues:live,retired,cancelled,surviving inactive AI and corpse lifecycle admission;controlled123ms and observed payload. Exact original live creature ScriptName inventory checked. Bare controlled actors/no character writes;original encounter payload not executed by this projection.",
+    "release": "Original main libraries/staged final link inputs and source snapshots;complete prior Meljarak/Twin/native-health/Freya/counter/Tsulong/Rook/367 linked checks return,plus every new actual production weak gate before payload. Canonical EXE/MAP hashes match tested immutable outputs;Scepter passes.",
+    "runtime": "Owned worldserver PID=5724\nPASS owned PID=5724 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;stderr empty,configuration/cert/DLL protected hashes unchanged. No user/unknown process stopped or hidden task server left running. Ready banner still prior generated revision metadata;source/library/EXE identities establish actual implementation.",
+    "diagnostics": "Before/after canonical+own crashes/log lengths/timestamps,exit/stdout/stderr/appended DBErrors and server warnings/errors/assertions reviewed. Final checks no new/unexplained diagnostic. Compiler warnings all mapped to unchanged baseline expressions;Scepter generated signedness warning inherited. Expected ASAN controls archived only after repaired matching binary/native checks. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged;no log truncation. Initial retained dragon PE assertion required a std::function header at rcx+8. Added weak capture outlined outer lambda through an actual add rcx,8 tail jump; its captured AI is at rcx and generation at rcx+0x18 rather than +0x20. Disassembly confirms unchanged generation,GUID,alive,vehicle,2s/3s and route payload. Verifier now follows the consecutive captured-AI/native-generation-load/captured-generation-compare/reject branch before player lookup in both exact entry layouts;two stages and all prior expectations retained. Original failed log/evidence and full inspect-dragon disassembly preserved;no runtime diagnostic or production workaround. The next retained assertion exposed a second codegen change:boarding increments via exact mov r8,[rbx+0x40]/inc r8/mov [rbx+0x40],r8 while removal still uses memory inc. The proof now counts both exact writes and still requires exactly two plus restore control and original delays. Second failure and complete inspect-boarding disassembly preserved.",
+    "formatting": {
+      "source": "src\\server\\scripts\\Legion\\VaultoftheWardens\\boss_cordana.cpp",
+      "tested_source_sha256": "6e412d578c2f1d345c0669076c0327c2894b6146eb4b6aabe3aa3d1948b60c00",
+      "formatted_source_sha256": "c995ce18819918fded58f5a4ba9b3e4c2391d833b3bf68b21e9c5453d9742768",
+      "exact_only_replacement": {
+        "old": "{ if (aiLifetimeGuard.expired()) return; \n",
+        "new": "{ \n                if (aiLifetimeGuard.expired()) return;\n"
+      },
+      "result": "Only whitespace separates unchanged C++ tokens;source reverses exactly to the tested bytes. Original callback payload bytes retained by the independent scope check. Deployed Release implementation/PE gates and native/ASAN results still apply;no compiled behavior changed.",
+      "reason": "Original brace had a trailing space. Inserting the guard on that line made inherited whitespace part of a newly added line;git diff --check correctly refused it. Place the guard on its own line,retaining the unchanged original brace context. No whitespace check disabled."
+    }
+  },
+  "retained_verifier_updates": [
+    "tools/tests/verify_thirteenth_ten_release.py"
+  ],
+  "compiler_warning_count": 2,
+  "canonical": {
+    "bnetserver.exe": "5141b9019839577383296226eb988970b44eb8d8ebbd42d5678e2e008d1bd60e",
+    "bnetserver.map": "3ac9f4203a2895a4c8371a6a80cfa297d199b7e9e6739a7e6ae6a89cd72030e0",
+    "worldserver.exe": "f0e7b7bf941267c12b794c7b2d73adad04f8d8e6206627c788bda547c7f6f8c6",
+    "worldserver.map": "5ef9bf8e54e6ca47ed653cb24056a83d3d8cf185dfef25ed35e517dbe4ee7a3f"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\fortyfirst-ten-repairs-2026-11-11",
+    "manifest_sha256": "9f55b57065a31eebe635bfd98543d87ae71d72f3e29148ad397d55ae3c0cc336",
+    "archived_files": 505,
+    "removed_files": 174,
+    "logical_removed_bytes": 610355039,
+    "deletion_manifest": ".codex\\fortyfirst-ten-fixes-2026-11-11\\cleanup-deleted.json",
+    "deletion_manifest_sha256": "44ed7a8741f881365682aae58afd1b7a90f728d3ca1bcab7acde06d573bfa37b",
+    "removed_superseded_recoveries": [
+      ".codex\\release-before-fortieth-ten-fixes-2026-11-11"
+    ],
+    "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and deferred MariaDB candidate evidence.",
+    "closeout_manifest_sha256": "abe483605ea05f9b449af17137af0fb00ad908f1f2b974dbd78989c00b7f381c",
+    "resolution_sha256": "047d7e023425cf183ee99c5c9a6316b347e773d6d20e99022e3d8ebb947bcb03",
+    "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
+  },
+  "pending": [
+    "MariaDB server.dll replacement explicitly deferred by the user;service and candidate untouched.",
+    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ],
+  "support_commit": "8b3ae1edcd73fa41338ddbdf97107f842387c60f"
+}

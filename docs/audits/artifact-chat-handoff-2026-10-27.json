@@ -1,11 +1,11 @@
 {
   "latest_five_ten_repairs_2026_11_11": {
-    "status": "IN_PROGRESS",
-    "completed_fixes": 40,
+    "status": "COMPLETE_50_AUTOMATED_CLIENT_PENDING",
+    "completed_fixes": 50,
     "authorized_fixes": 50,
     "audit": "docs\\audits\\five-ten-repairs-2026-11-11.json",
-    "latest_batch_audit": "docs\\audits\\fortieth-ten-repairs-2026-11-11.json",
-    "last_fix_commit": "f92a594c79384770d3d8ba6cb8d0a7730257cda1",
+    "latest_batch_audit": "docs\\audits\\fortyfirst-ten-repairs-2026-11-11.json",
+    "last_fix_commit": "41c2aa7acb516ab7ea218925c5cfa948eee6f1e6",
     "MariaDB": "USER_DEFERRED_NO_SERVICE_STOP_OR_DLL_REPLACEMENT",
     "pending": [
       "MariaDB server.dll replacement explicitly deferred by the user;service and candidate untouched.",
