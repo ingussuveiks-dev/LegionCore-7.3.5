@@ -382,7 +382,7 @@ class npc_fizzlebang_toc : public CreatureScript
 
             void JustDied(Unit* killer) override
             {
-                Talk(SAY_STAGE_1_06, killer->GetGUID());
+                Talk(SAY_STAGE_1_06, killer ? killer->GetGUID() : ObjectGuid::Empty);
                 _instance->SetData(TYPE_EVENT, 1180);
                 if (Creature* temp = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(NPC_JARAXXUS)))
                 {
