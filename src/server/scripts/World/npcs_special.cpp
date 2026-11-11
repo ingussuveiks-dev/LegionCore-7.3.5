@@ -5999,8 +5999,9 @@ struct npc_flightmasters_whistle_mount : public ScriptedAI
     void IsSummonedBy(Unit* summoner) override
     {
         ObjectGuid summonerGUID = summoner->GetGUID();
-        me->AddDelayedEvent(1500, [this, summonerGUID]() -> void
+        me->AddDelayedEvent(1500, [this, summonerGUID, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if(Unit* unit = ObjectAccessor::GetUnit(*me, summonerGUID))
                 unit->CastSpell(me, 46598, true);
         });
@@ -6018,8 +6019,9 @@ struct npc_flightmasters_whistle_mount : public ScriptedAI
         me->GetMotionMaster()->MovePoint(0, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 5);
 
         ObjectGuid playerGUID = player->GetGUID();
-        me->AddDelayedEvent(3500, [this, playerGUID]() -> void
+        me->AddDelayedEvent(3500, [this, playerGUID, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (Player* player = ObjectAccessor::GetPlayer(*me, playerGUID))
             {
                 player->CastSpell(me, 89092);
@@ -6030,8 +6032,9 @@ struct npc_flightmasters_whistle_mount : public ScriptedAI
                     if (!to)
                         return;
 
-                    me->AddDelayedEvent(1500, [playerGUID, to, this]() -> void
+                    me->AddDelayedEvent(1500, [playerGUID, to, this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         if (Player* player = ObjectAccessor::GetPlayer(*me, playerGUID))
                             player->NearTeleportTo(to->Pos.X, to->Pos.Y, to->Pos.Z, 0.0f);
                         me->DespawnOrUnsummon();
@@ -6041,6 +6044,9 @@ struct npc_flightmasters_whistle_mount : public ScriptedAI
         });
     }
 
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 // 52552
