@@ -322,8 +322,9 @@ struct npc_pewkew : ScriptedAI
                 useEvent = true;
                 credit = 0;
 
-                me->AddDelayedEvent(500, [=]() -> void
+                me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     Talk(0);
                     events.RescheduleEvent(EVENT_1, 4000);
                 });
@@ -380,6 +381,9 @@ struct npc_pewkew : ScriptedAI
             }
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //122139
