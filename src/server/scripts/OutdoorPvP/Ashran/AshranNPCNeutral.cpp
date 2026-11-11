@@ -719,23 +719,8 @@ public:
             if (l_Korlok == nullptr || !l_Korlok->IsAIEnabled)    ///< Shouldn't happens
                 return;
 
-            if (killer->GetTypeId() == TYPEID_PLAYER)
-            {
-                if (killer->ToPlayer()->GetTeamId() == TEAM_ALLIANCE)
-                    l_Korlok->AI()->DoAction(ActionAllianceRecruit);
-                else
-                    l_Korlok->AI()->DoAction(ActionHordeRecruit);
-            }
-            else if (killer->GetOwner() && killer->GetOwner()->GetTypeId() == TYPEID_PLAYER)
-            {
-                if (Player* l_Owner = killer->GetOwner()->ToPlayer())
-                {
-                    if (l_Owner->ToPlayer()->GetTeamId() == TEAM_ALLIANCE)
-                        l_Korlok->AI()->DoAction(ActionAllianceRecruit);
-                    else
-                        l_Korlok->AI()->DoAction(ActionHordeRecruit);
-                }
-            }
+            if (Player* player = killer ? killer->GetAffectingPlayer() : nullptr)
+                l_Korlok->AI()->DoAction(player->GetTeamId() == TEAM_ALLIANCE ? ActionAllianceRecruit : ActionHordeRecruit);
         }
 
         void DamageTaken(Unit* /*who*/, uint32& p_Damage, DamageEffectType dmgType) override
