@@ -2875,8 +2875,9 @@ struct npc_temporal_anomaly : ScriptedAI
     void Reset() override
     {
         use = false;
-        me->AddDelayedEvent(5000, [=]() -> void
+        me->AddDelayedEvent(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
             DoCast(me, 252456, true);
         });
@@ -2913,6 +2914,9 @@ struct npc_temporal_anomaly : ScriptedAI
             break;
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 struct npc_demon_hunter_val : ScriptedAI
