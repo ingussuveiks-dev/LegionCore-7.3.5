@@ -1,0 +1,72 @@
+{
+  "date": "2026-11-11",
+  "status": "DEPLOYED_AI_LIFETIME_REPAIR_AUTOMATED_CLIENT_PENDING",
+  "key": "BossTheButcherLifetime",
+  "title": "Cancel boss_the_butcher callbacks after source AI retirement",
+  "paths": [
+    "src/server/scripts/Draenor/Highmaul/boss_the_butcher.cpp"
+  ],
+  "classes": [
+    "boss_the_butcher"
+  ],
+  "binding": {
+    "ScriptName": "boss_the_butcher",
+    "actual_entries": [
+      77404
+    ]
+  },
+  "cause": "CreatureAI delegate queues are Unit-owned;AIM_Destroy/default/SmartAI/BossAI destructors do not cancel those Unit queues. Explicit or implicit raw this capture could enter the old actor body after original AI deletion,including replacement by Null/Possessed AI. Existing non-null me/alive/generation checks dereference this too late.",
+  "repair": "Capture a weak per-AI token at scheduling;first statement rejects expired original AI before any payload/member access. Token lifetime follows that exact AI,not current AI identity. Surviving suspended AI and corpse outro semantics remain admitted;normal original predicates/credit remain.",
+  "callback_count": 4,
+  "registrations": [
+    {
+      "method": "MovementInform",
+      "queue": "event",
+      "delegate": true,
+      "original_delay": "50",
+      "original_payload_sha256": "7c54ae0ad928a212c15afff81ad853cff5e4ffed4478d79e60e5d5b7696f1a56"
+    },
+    {
+      "method": "SpellFinishCast",
+      "queue": "event",
+      "delegate": true,
+      "original_delay": "2 * IN_MILLISECONDS",
+      "original_payload_sha256": "e7e2517aa8db738ec5dda87023273f7333ce832cffc5a568e8cc6caf25210a65"
+    },
+    {
+      "method": "UpdateAI",
+      "queue": "event",
+      "delegate": true,
+      "original_delay": "1 * IN_MILLISECONDS",
+      "original_payload_sha256": "6764206fddb9a5950551aa50f3c4c893bc992385b1065e507ccaeaf48e298f33"
+    },
+    {
+      "method": "UpdateAI",
+      "queue": "event",
+      "delegate": true,
+      "original_delay": "8 * IN_MILLISECONDS",
+      "original_payload_sha256": "28d89638ad817d18f7c19f6d75b4365b95febcc7ff39c35c687fc1378bd34b8c"
+    }
+  ],
+  "checks": {
+    "source": "Exact complete-file reversal to bf4b28a50c994062cb1faf3203ea4d1d40058c2f;only capture/first-statement weak expiry/private per-AI anchor added. Original gates,casts,IDs,delays,credit,Reset/death/cleanup and owner/group rules retained.",
+    "asan": "Every listed old callback admission projection intentionally produces heap-use-after-free/ABORTING after frame destruction;repaired projection passes live/retired/cancelled/same-address replacement. Expected counterfactuals paired,not ordinary successful runs.",
+    "native": "Actual Creature::AIM_Initialize/destruction and Unit event/combat queues:live,retired,cancelled,surviving inactive AI and corpse lifecycle admission;controlled123ms and observed payload. Exact original live creature ScriptName inventory checked. Bare controlled actors/no character writes;original encounter payload not executed by this projection.",
+    "release": "Original main libraries/staged final link inputs and source snapshots;complete prior Meljarak/Twin/native-health/Freya/counter/Tsulong/Rook/367 linked checks return,plus every new actual production weak gate before payload. Canonical EXE/MAP hashes match tested immutable outputs;Scepter passes.",
+    "runtime": "Owned worldserver PID=14760\nPASS owned PID=14760 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;stderr empty,configuration/cert/DLL protected hashes unchanged. No user/unknown process stopped or hidden task server left running. Ready banner still prior generated revision metadata;source/library/EXE identities establish actual implementation.",
+    "diagnostics": "Before/after canonical+own crashes/log lengths/timestamps,exit/stdout/stderr/appended DBErrors and server warnings/errors/assertions reviewed. Final checks no new/unexplained diagnostic. Compiler warnings all mapped to unchanged baseline expressions;Scepter generated signedness warning inherited. Expected ASAN controls archived only after repaired matching binary/native checks. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged;no log truncation. Initial exploratory selection was withdrawn after real CosmeticAI ownership verification. Those invalid Unit-queue projection fixtures and original C1853 compiler-cache evidence remain under the explicitly withdrawn workspace outside fixed. Current ten cases use actual Unit queues and all53 registrations are source/ASAN/native/PE checked. The installed MSVC servicing changed19.44.35228 to35230;full original scripts Rebuild refreshed PCH before current original-library build and final link. No header/version check disabled or source timestamp backdated."
+  },
+  "sources": "Matching local core Creature::AIM_Destroy,CreatureAI/SmartAI/BossAI destructors,CreatureAI::AddDelayedEvent/Combat delegates,Unit native queues and matching live ScriptName records. Local Trinity eaa32415b0f93f6d26294e1e9e4083be3dba0745 is a newer reference;no incompatible code/data copied.",
+  "batch": {
+    "number": 1,
+    "authorized_total": 50,
+    "audit": "docs/audits/fortysecond-ten-repairs-2026-11-11.json",
+    "base": "bf4b28a50c994062cb1faf3203ea4d1d40058c2f"
+  },
+  "pending": [
+    "MariaDB DLL is installed and live-verified;user MariaDB service remains running. FT minimum1 config warning absence awaits a future user restart;no service stop needed for these source fixes.",
+    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ]
+}

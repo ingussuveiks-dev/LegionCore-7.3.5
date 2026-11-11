@@ -319,8 +319,9 @@ struct boss_the_butcher : public BossAI
 
             me->RemoveAura(BoundingCleaveDummy);
 
-            AddDelayedEvent(50, [this]() -> void
+            AddDelayedEvent(50, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (Unit* target = me->getVictim())
                 {
                     me->GetMotionMaster()->Clear();
@@ -373,8 +374,9 @@ struct boss_the_butcher : public BossAI
     {
         if (spellInfo->Id == BoundingCleaveCharg)
         {
-            AddDelayedEvent(2 * IN_MILLISECONDS, [this]() -> void
+            AddDelayedEvent(2 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (Unit* target = SelectTarget(SELECT_TARGET_TOPAGGRO))
                     AttackStart(target);
 
@@ -412,8 +414,8 @@ struct boss_the_butcher : public BossAI
             if (Player* player = me->FindNearestPlayer(130.0f))
             {
                 m_IntroDone = true;
-                AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void { Talk(Intro1); });
-                AddDelayedEvent(8 * IN_MILLISECONDS, [this]() -> void { Talk(Intro2); });
+                AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(Intro1); });
+                AddDelayedEvent(8 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(Intro2); });
             }
         }
 
@@ -516,6 +518,9 @@ struct boss_the_butcher : public BossAI
         if (me->GetPower(POWER_ENERGY) >= 100)
             m_Events.RescheduleEvent(EventBoundingCleave, 50);
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Night-Twisted Cadaver - 82505
