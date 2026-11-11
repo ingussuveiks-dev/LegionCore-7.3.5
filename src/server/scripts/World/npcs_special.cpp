@@ -6084,7 +6084,7 @@ struct npc_molten_behemoth : public ScriptedAI
     void JustDied(Unit* killer) override
     {
         if (notSpellHited)
-            if (auto player = killer->ToPlayer())
+            if (auto player = killer ? killer->GetAffectingPlayer() : nullptr)
                 player->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 101167);
     }
 
