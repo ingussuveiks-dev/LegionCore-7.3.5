@@ -1059,11 +1059,12 @@ class spell_felhounds_molten_touch : public AuraScript
             {
                 if (auto target = GetUnitOwner())
                 {
-                    if (auto instance = GetCaster()->GetInstanceScript())
-                        if (auto trig = instance->instance->GetCreature(instance->GetGuidData(NPC_MOLTEN_TOUCH)))
-                        {
-                            target->CastSpell(trig->GetPositionX() + frand(-1.5f, 1.5f), trig->GetPositionY() + frand(-1.5f, 1.5f), trig->GetPositionZ(), SPELL_MOLTEN_TOUCH_TELEPORT, true);
-                        }
+                    if (auto caster = GetCaster())
+                        if (auto instance = caster->GetInstanceScript())
+                            if (auto trig = instance->instance->GetCreature(instance->GetGuidData(NPC_MOLTEN_TOUCH)))
+                            {
+                                target->CastSpell(trig->GetPositionX() + frand(-1.5f, 1.5f), trig->GetPositionY() + frand(-1.5f, 1.5f), trig->GetPositionZ(), SPELL_MOLTEN_TOUCH_TELEPORT, true);
+                            }
                 }
                 updateTeleportTimer = 0;
             }
@@ -1077,9 +1078,12 @@ class spell_felhounds_molten_touch : public AuraScript
             {
                 if (auto target = GetUnitOwner())
                 {
-                    target->CastSpell(target, SPELL_MOLTEN_TOUCH_STUN, true, nullptr, nullptr, GetCaster()->GetGUID());
-                    GetCaster()->CastSpell(target, SPELL_MOLTEN_TOUCH_PERIODIC_DUMMY, true);
-                    GetCaster()->CastSpell(target, SPELL_MOLTEN_TOUCH_MARK, true);
+                    if (auto caster = GetCaster())
+                    {
+                        target->CastSpell(target, SPELL_MOLTEN_TOUCH_STUN, true, nullptr, nullptr, caster->GetGUID());
+                        caster->CastSpell(target, SPELL_MOLTEN_TOUCH_PERIODIC_DUMMY, true);
+                        caster->CastSpell(target, SPELL_MOLTEN_TOUCH_MARK, true);
+                    }
                 }
                 updateTimer = 0;
             }
