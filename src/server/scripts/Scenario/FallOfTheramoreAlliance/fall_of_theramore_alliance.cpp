@@ -103,9 +103,10 @@ struct theramore_invader_typeAI : public ScriptedAI
                     Warlord->AI()->Talk(TALK_INTRO);
 
                     delay = 0;
-                    me->AddDelayedEvent(delay += 3000, [Warlord]()
+                    Warlord->AddDelayedEvent(delay += 3000, [Warlord]()
                     {
-                        Warlord->AI()->Talk(TALK_INTRO);
+                        if (Warlord->IsAIEnabled && Warlord->AI())
+                            Warlord->AI()->Talk(TALK_INTRO);
                     });
 
                     delay = 0;
@@ -115,9 +116,10 @@ struct theramore_invader_typeAI : public ScriptedAI
                         Talk(TALK_SPECIAL_2);
                     });
 
-                    me->AddDelayedEvent(delay += 2500, [Warlord]()
+                    Warlord->AddDelayedEvent(delay += 2500, [Warlord]()
                     {
-                        Warlord->AI()->Talk(TALK_SPECIAL_1);
+                        if (Warlord->IsAIEnabled && Warlord->AI())
+                            Warlord->AI()->Talk(TALK_SPECIAL_1);
                     });
 
                     me->AddDelayedEvent(delay += 3000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()
