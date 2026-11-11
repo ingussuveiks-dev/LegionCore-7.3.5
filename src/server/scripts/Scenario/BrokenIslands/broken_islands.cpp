@@ -2209,7 +2209,8 @@ public:
         {
             sCreatureTextMgr->SendChat(me, TEXT_GENERIC_2);
 
-            attacker->CastSpell(attacker, 225106, true); //conv 3583
+            if (Player* player = attacker ? attacker->GetAffectingPlayer() : nullptr)
+                player->CastSpell(player, 225106, true); //conv 3583
 
             if (auto script = me->GetInstanceScript())
                 script->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 44669);
