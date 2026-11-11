@@ -429,7 +429,8 @@ public:
             case 1:
             case 2:
             case 3:
-                me->AddDelayedEvent(100, [this, id] {
+                me->AddDelayedEvent(100, [this, id, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] {
+                    if (aiLifetimeGuard.expired()) return;
                     me->GetMotionMaster()->MovePoint(id + 1, FreedDrakeWaypoints[id + 1]);
                 });
                 break;
@@ -477,6 +478,9 @@ public:
                     CheckTimer -= diff;
             }
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
