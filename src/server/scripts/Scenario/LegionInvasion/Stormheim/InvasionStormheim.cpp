@@ -147,8 +147,9 @@ public:
                         DoCast(235784);
                         Talk(2);
                         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                        me->AddDelayedEvent(5000, [this] () -> void
+                        me->AddDelayedEvent(5000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             Talk(3);
                             const std::list<HostileReference*>& threatlist = me->getThreatManager().getThreatList();
                             for (std::list<HostileReference*>::const_iterator itr = threatlist.begin(); itr != threatlist.end(); ++itr)
@@ -163,8 +164,9 @@ public:
                                 }
                         });
                         
-                        me->AddDelayedEvent(9000, [this] () -> void
+                        me->AddDelayedEvent(9000, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             Talk(3);
                         });
                         
@@ -175,6 +177,9 @@ public:
             DoMeleeAttackIfReady();
         }
 
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
     
     CreatureAI* GetAI(Creature* creature) const override
