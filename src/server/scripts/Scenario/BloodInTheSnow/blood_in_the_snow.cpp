@@ -733,12 +733,13 @@ struct npc_bloodsnow_frostmane_bonechiller : public BloodSnowCreatureAI
         scoutGUID = ObjectGuid::Empty;
     }
 
-    bool hasElementalTriggered;
+    bool hasElementalTriggered = false;
     ObjectGuid scoutGUID;
 
     void Reset() override
     {
         events.Reset();
+        hasElementalTriggered = false;
     }
 
     void EnterCombat(Unit* /*who*/) override
@@ -778,7 +779,7 @@ struct npc_bloodsnow_frostmane_bonechiller : public BloodSnowCreatureAI
 
     void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType /*damageType*/) override
     {
-        if (HealthBelowPct(65) && attacker && attacker->GetTypeId() != TYPEID_PLAYER)
+        if (HealthBelowPct(65) && attacker && !attacker->GetAffectingPlayer())
             damage = 0;
 
         if (HealthBelowPct(50) && !hasElementalTriggered)
