@@ -1,0 +1,135 @@
+{
+  "date": "2026-11-11",
+  "status": "DEPLOYED_AI_LIFETIME_REPAIR_AUTOMATED_CLIENT_PENDING",
+  "key": "BossHelyaTovLifetime",
+  "title": "Cancel boss_helya_tov callbacks after source AI retirement",
+  "paths": [
+    "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp"
+  ],
+  "classes": [
+    "boss_helya_tov"
+  ],
+  "binding": {
+    "ScriptName": "boss_helya_tov",
+    "actual_entries": [
+      114537
+    ]
+  },
+  "cause": "CreatureAI delegate queues are Unit-owned;AIM_Destroy/default/SmartAI/BossAI destructors do not cancel those Unit queues. Explicit or implicit raw this capture could enter the old actor body after original AI deletion,including replacement by Null/Possessed AI. Existing non-null me/alive/generation checks dereference this too late.",
+  "repair": "Capture a weak per-AI token at scheduling;first statement rejects expired original AI before any payload/member access. Token lifetime follows that exact AI,not current AI identity. Surviving suspended AI and corpse outro semantics remain admitted;normal original predicates/credit remain.",
+  "callback_count": 13,
+  "registrations": [
+    {
+      "method": "SetPower",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "500",
+      "original_payload_sha256": "b61fd63191275b8a0b990b25b60c048294572e4c3a36c51edc42a8719e7eaa8c"
+    },
+    {
+      "method": "SetPower",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "500",
+      "original_payload_sha256": "b61fd63191275b8a0b990b25b60c048294572e4c3a36c51edc42a8719e7eaa8c"
+    },
+    {
+      "method": "SetPower",
+      "queue": "combat",
+      "delegate": false,
+      "original_delay": "5000",
+      "original_payload_sha256": "a0820a90baf0b571af438e06a14ed9194d3be7c4c0cdca1aa82d7803038ce110"
+    },
+    {
+      "method": "SetPower",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "500",
+      "original_payload_sha256": "83dd479a61699962c9ab3ef293cfcfa1e5ea74c85e60ca7835a7f992294c64a9"
+    },
+    {
+      "method": "SetPower",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "500",
+      "original_payload_sha256": "83dd479a61699962c9ab3ef293cfcfa1e5ea74c85e60ca7835a7f992294c64a9"
+    },
+    {
+      "method": "StartEvents",
+      "queue": "combat",
+      "delegate": false,
+      "original_delay": "5000",
+      "original_payload_sha256": "e5ee2a58bbff61a3114bbd632fa11ed1a602e8afdaa8e5568aed58d1541d368a"
+    },
+    {
+      "method": "StartEvents",
+      "queue": "combat",
+      "delegate": false,
+      "original_delay": "5000",
+      "original_payload_sha256": "bb3d6f0aa2f9a811a96e1627c7303aac91bc9c1b52df0325830c620840e98f9f"
+    },
+    {
+      "method": "StartEvents",
+      "queue": "combat",
+      "delegate": false,
+      "original_delay": "1500",
+      "original_payload_sha256": "1ba50222af9f00091b3ee7d758340b38c25f046248a00e468c6f3e3addee3990"
+    },
+    {
+      "method": "SpellHit",
+      "queue": "combat",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "84515b1a74466622f48d7cc1d61527d3db821c3b3941aeb9e2a022cd85b56fb7"
+    },
+    {
+      "method": "SpellHit",
+      "queue": "combat",
+      "delegate": false,
+      "original_delay": "2000",
+      "original_payload_sha256": "dfffde46dbb4a75b7b85f670a187217cfa897eb2991d372e7325608df484ef5c"
+    },
+    {
+      "method": "DoAction",
+      "queue": "event",
+      "delegate": false,
+      "original_delay": "13000",
+      "original_payload_sha256": "3186a5b4bbaa68b2b4193c708248882ef73bc5a9a7dc8b02a4394784c9af95bc"
+    },
+    {
+      "method": "UpdateAI",
+      "queue": "combat",
+      "delegate": false,
+      "original_delay": "4000",
+      "original_payload_sha256": "611c972247ca169c737fd0f918ffa14f86a3c0af1f0608ec72ba539c751c3c24"
+    },
+    {
+      "method": "UpdateAI",
+      "queue": "combat",
+      "delegate": false,
+      "original_delay": "4000",
+      "original_payload_sha256": "8ebd29d312316b9cc81e9a9f5c4396650d739afd455da4ed1a260a39e68ca506"
+    }
+  ],
+  "checks": {
+    "source": "Exact complete-file reversal to 308d97ee2d3a966936bf5c7621e0eee91b6516d7;only capture/first-statement weak expiry/private per-AI anchor added. Original gates,casts,IDs,delays,credit,Reset/death/cleanup and owner/group rules retained.",
+    "asan": "Every listed old callback admission projection intentionally produces heap-use-after-free/ABORTING after frame destruction;repaired projection passes live/retired/cancelled/same-address replacement. Expected counterfactuals paired,not ordinary successful runs.",
+    "native": "Actual Creature::AIM_Initialize/destruction and Unit event/combat queues:live,retired,cancelled,surviving inactive AI and corpse lifecycle admission;controlled123ms and observed payload. Exact original live creature ScriptName inventory checked. Bare controlled actors/no character writes;original encounter payload not executed by this projection.",
+    "release": "Original main libraries/staged final link inputs and source snapshots;complete prior Meljarak/Twin/native-health/Freya/counter/Tsulong/Rook/367 linked checks return,plus every new actual production weak gate before payload. Canonical EXE/MAP hashes match tested immutable outputs;Scepter passes.",
+    "runtime": "Owned worldserver PID=13584\nPASS owned PID=13584 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;stderr empty,configuration/cert/DLL protected hashes unchanged. No user/unknown process stopped or hidden task server left running. Ready banner still prior generated revision metadata;source/library/EXE identities establish actual implementation.",
+    "diagnostics": "Before/after canonical+own crashes/log lengths/timestamps,exit/stdout/stderr/appended DBErrors and server warnings/errors/assertions reviewed. Final checks no new/unexplained diagnostic. Compiler warnings all mapped to unchanged baseline expressions;Scepter generated signedness warning inherited. Expected ASAN controls archived only after repaired matching binary/native checks. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged;no log truncation."
+  },
+  "sources": "Matching local core Creature::AIM_Destroy,CreatureAI/SmartAI/BossAI destructors,CreatureAI::AddDelayedEvent/Combat delegates,Unit native queues and matching live ScriptName records. Local Trinity eaa32415b0f93f6d26294e1e9e4083be3dba0745 is a newer reference;no incompatible code/data copied.",
+  "batch": {
+    "number": 2,
+    "authorized_total": 50,
+    "audit": "docs/audits/fortythird-ten-repairs-2026-11-11.json",
+    "base": "308d97ee2d3a966936bf5c7621e0eee91b6516d7"
+  },
+  "pending": [
+    "MariaDB DLL is installed and live-verified;user MariaDB service remains running. FT minimum1 config warning absence awaits a future user restart;no service stop needed for these source fixes.",
+    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ]
+}

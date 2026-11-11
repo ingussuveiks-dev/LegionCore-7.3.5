@@ -366,7 +366,7 @@ struct boss_helya_tov : BossAI
                 {
                     DoCast(SpellBilewaterBreath);
                     Talk(SAY_BILEWATER_BREATH);
-                    me->AddDelayedEvent(500, [=]() -> void { me->SetPower(POWER_ENERGY, 0); });
+                    me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetPower(POWER_ENERGY, 0); });
                 }
             }
 
@@ -376,7 +376,7 @@ struct boss_helya_tov : BossAI
                 {
                     DoCast(SpellCorruptedBreath);
                     Talk(SAY_CORRUPTED_BREATH);
-                    me->AddDelayedEvent(500, [=]() -> void { me->SetPower(POWER_ENERGY, 0); });
+                    me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetPower(POWER_ENERGY, 0); });
                 }
             }
         }
@@ -390,8 +390,9 @@ struct boss_helya_tov : BossAI
                     if (IsHeroicPlusRaid() && eventPhase == PHASE_2 && !FuryOfTheMaw)
                     {
                         FuryOfTheMaw = true;
-                        me->AddDelayedCombat(5000, [=]() -> void
+                        me->AddDelayedCombat(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (eventPhase != PHASE_2 || !me->isInCombat())
                                 return;
 
@@ -407,7 +408,7 @@ struct boss_helya_tov : BossAI
                         {
                             DoCast(SpellFuryoftheMaw);
                             events.RescheduleEvent(EVENT_FURY_OF_THE_MAW_CLEAN_AT, 4000);
-                            me->AddDelayedEvent(500, [=]() -> void { me->SetPower(POWER_ALTERNATE, 0); });
+                            me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetPower(POWER_ALTERNATE, 0); });
                         }
                     }
 
@@ -416,7 +417,7 @@ struct boss_helya_tov : BossAI
                         FuryOfTheMawTrash = false;
                         DoCast(SpellFuryoftheMaw);
                         events.RescheduleEvent(EVENT_FURY_OF_THE_MAW_CLEAN_AT, 4000);
-                        me->AddDelayedEvent(500, [=]() -> void { me->SetPower(POWER_ALTERNATE, 0); });
+                        me->AddDelayedEvent(500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; me->SetPower(POWER_ALTERNATE, 0); });
                     }
                 }
             }
@@ -472,8 +473,9 @@ struct boss_helya_tov : BossAI
             me->RemoveAura(SpellHelyaBluePower);
             me->RemoveAura(SpellCorrosiveNova);
             me->SummonCreatureGroup(3);
-            me->AddDelayedCombat(5000, [=]() -> void
+            me->AddDelayedCombat(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (eventPhase != PHASE_2)
                     return;
 
@@ -498,8 +500,9 @@ struct boss_helya_tov : BossAI
             me->RemoveAura(SpellHelyaImmunityDamage);
             me->RemoveAura(SpellHelyaAltPowerRegen);
             me->RemoveAura(SpellTorrent);
-            me->AddDelayedCombat(5000, [=]() -> void
+            me->AddDelayedCombat(5000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (eventPhase != PHASE_3)
                     return;
 
@@ -509,8 +512,9 @@ struct boss_helya_tov : BossAI
                 me->SetReactState(REACT_AGGRESSIVE);
                 me->RemoveAura(SpellBuildingStorm);
                 me->RemoveAura(SpellCorrosiveNova);
-                me->AddDelayedCombat(1500, [=]() -> void
+                me->AddDelayedCombat(1500, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (eventPhase != PHASE_3)
                         return;
 
@@ -611,8 +615,9 @@ struct boss_helya_tov : BossAI
                 Position pos = player->GetPosition();
                 pos.m_positionX -= 6.0f;
                 pos.m_positionY -= 6.0f;
-                me->AddDelayedCombat(2000, [this, pos, targetGuid]()
+                me->AddDelayedCombat(2000, [this, pos, targetGuid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (eventPhase == PHASE_1 && me->isInCombat() && me->IsAlive())
                         me->SummonCreature(Data::Creatures::OrbOfCorruption, pos, targetGuid, TEMPSUMMON_TIMED_DESPAWN, 9000);
                 });
@@ -642,8 +647,9 @@ struct boss_helya_tov : BossAI
                 Position pos = player->GetPosition();
                 pos.m_positionX -= 6.0f;
                 pos.m_positionY -= 6.0f;
-                me->AddDelayedCombat(2000, [this, pos, targetGuid]()
+                me->AddDelayedCombat(2000, [this, pos, targetGuid, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]()
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     if (eventPhase == PHASE_3 && me->isInCombat() && me->IsAlive())
                         me->SummonCreature(Data::Creatures::OrbOfCorrosion, pos, targetGuid, TEMPSUMMON_TIMED_DESPAWN, 9000);
                 });
@@ -766,7 +772,7 @@ struct boss_helya_tov : BossAI
             if (instance->GetBossState(Data::BossIDs::GarmID) == DONE)
             {
                 Talk(SAY_INTRO_1);
-                me->AddDelayedEvent(13000, [=]() -> void { Talk(SAY_INTRO_2); });
+                me->AddDelayedEvent(13000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(SAY_INTRO_2); });
             }
             break;
         default:
@@ -951,8 +957,9 @@ struct boss_helya_tov : BossAI
                 {
                     me->SummonCreature(Data::Creatures::KvaldirLongboat, 569.39f, 857.6201f, 0.00213f, 4.433769f, TEMPSUMMON_TIMED_DESPAWN, 5000);
                     me->SummonCreature(Data::Creatures::KvaldirLongboat, 638.672f, 817.6201f, 0.00213f, 3.943812f, TEMPSUMMON_TIMED_DESPAWN, 5000);
-                    me->AddDelayedCombat(4000, [=]() -> void
+                    me->AddDelayedCombat(4000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->SummonCreature(Data::Creatures::Grimelord, 458.674f, 639.483f, 7.53757f, 4.433769f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
                         me->SummonCreature(Data::Creatures::NightWatchMariner, 516.007f, 614.179f, 5.5823f, 3.943812f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
                     });
@@ -964,8 +971,9 @@ struct boss_helya_tov : BossAI
                 }
                 else if (eventPhase == PHASE_3)
                 {
-                    me->AddDelayedCombat(4000, [=]() -> void
+                    me->AddDelayedCombat(4000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         me->SummonCreature(Data::Creatures::NightWatchMariner, 516.007f, 614.179f, 5.5823f, 3.943812f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
                     });
                     me->SummonCreature(Data::Creatures::KvaldirLongboat, 638.672f, 817.6201f, 0.00213f, 3.943812f, TEMPSUMMON_TIMED_DESPAWN, 5000);
@@ -1004,6 +1012,9 @@ struct boss_helya_tov : BossAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //232229
