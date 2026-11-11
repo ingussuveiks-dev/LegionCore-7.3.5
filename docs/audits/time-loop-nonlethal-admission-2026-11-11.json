@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-11",
+  "base": "cbd047ef48e49aa673adabeb07e07509a1b1ce2b",
+  "canonical": {
+    "bnetserver.exe": "437c32106ff43c76cd05a647ded157497c1759020f41d21ca0290b689c24942c",
+    "bnetserver.map": "1977b06f20e160440e600d8e2eeaaef9c509cc66e976250afcf7de66cf3d480b",
+    "worldserver.exe": "8b102c590803c21bed2299aaae4e0d0970c2eca9075140dedae27a6d8b6e99d8",
+    "worldserver.map": "e173b2d2f9614415d0c14ddea40713338d4a14500b9f01bb1729b2c92089c555"
+  },
+  "runtime": "Owned canonical worldserver PID19332 reached fresh ready;graceful shutdown0/exit0/gone;stderr empty. Configuration/certificates/DLL hashes preserved. User Wamp MariaDB never stopped. Canonical Scepter and full previous Mending/target-profile/Cordana/46group PE chain pass.",
+  "diagnostics": "Every declared build/native/ASAN/PE/runtime test has before/after canonical+own crash/log evidence. Final no changed crash reports,appended DBErrors or unexplained server warnings/errors/assertions. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged.",
+  "build": "Original game/scripts library paths rebuilt and staged link inputs verified;no OutDir override. Matching EXE/MAP promoted to canonical Release.304 compiler warning contexts reviewed against matching per-build source snapshots;no diagnostic disabled. Native/ASAN fixtures retain their ordinary float/integer/shadow warnings explicitly;full spell-record width remains OPEN.",
+  "local_evidence": ".codex/time-loop-2026-11-11",
+  "cleanup": "Final archive/deletion manifest and commit mapping will be recorded in native-heal-timeloop-followup-2026-11-11.json;unresolved wide-heal evidence stays outside fixed.",
+  "status": "FALSE_NONLETHAL_CONSUMPTION_FIXED_DEPLOYED_WIDE_HEAL_STILL_OPEN",
+  "path": "src/server/scripts/Kalimdor/CavernsOfTime/DragonSoul/boss_ultraxion.cpp",
+  "cause": "Subtracting uint32incoming damage from uint64health and storing in int32could turn a nonlethal hit negative. Actual native4bHP/incoming1consumed aura105984.",
+  "repair": "Compare unsigned incoming damage directly against full native health before consuming. Original105992cast,absorb amount,one-use removal and Player admission retained. No invented HPthreshold,kill timer or direct full-health grant.",
+  "verification": {
+    "native": "Pinned whole original AuraScript repeats false consumption. Current full AuraScript runs real aura calc/absorb dispatcher and actual105992cast.24wide nonlethal/zero/repeat cases throughUINT64_MAXretain the aura. Original five observed contexts verify decision/ordinary lethal heal while wide lethal output remains explicitly OPEN.",
+    "linked": "Actual zero-extended32incoming versus native64health comparison and unsigned nonlethal branch plus original105992call confirmed in staged/canonical EXE. Full native-heal/prior PE chain retained.",
+    "remaining_observed": "Native4bmaximum/500current/lethal500stillfails full healing;1TiB+17maximum produces only17heal in the old signed32effect path. Core API repair does not remove the script int32maxhealth/float payload or signed32SpellEffect/target record limitations. Latest native reproduction remains outside fixed for the next repair."
+  },
+  "scope": "This closes only erroneous nonlethal consumption. Entire TimeLoop105984/105992wide-heal issue remains OPEN;no whole encounter/client verification claimed.",
+  "next": "Carry one width-correct heal amount through actual105992SpellEffect/target/absorb/proc pipeline and verify exact lethal/full-health/absorbs/one-use semantics before calling TimeLoop complete."
+}
