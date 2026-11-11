@@ -6150,7 +6150,7 @@ struct npc_flamewaker_sentinel : public ScriptedAI
     void JustDied(Unit* killer) override
     {
         if (passengerIn)
-            if (auto player = killer->ToPlayer())
+            if (auto player = killer ? killer->GetAffectingPlayer() : nullptr)
                 player->UpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE, 53085);
     }
 
