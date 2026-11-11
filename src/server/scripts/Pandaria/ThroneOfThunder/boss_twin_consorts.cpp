@@ -335,7 +335,8 @@ class npc_beast_of_nightmare : public CreatureScript
 
             void JustDied(Unit* killer)
             {
-                killer->RemoveAurasDueToSpell(SPELL_BEAST_OF_NIGHTMARE_T_A);
+                if (killer)
+                    killer->RemoveAurasDueToSpell(SPELL_BEAST_OF_NIGHTMARE_T_A);
                 me->DespawnOrUnsummon(1000);
             }
 
