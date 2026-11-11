@@ -256,7 +256,7 @@ class spell_rog_cheat_death : public SpellScriptLoader
                     target->CastSpell(target, 45182, true);
                     target->CastSpell(target, 45181, true);
 
-                    uint32 health7 = target->CountPctFromMaxHealth(7);
+                    uint64 health7 = target->CountPctFromMaxHealth(7);
 
                     // hp > 7% - absorb hp till 7%
                     if (target->GetHealth() > health7)
