@@ -1690,6 +1690,9 @@ public:
             {
                 Unit* temp = (*itr);
                 Creature* reflection = me->SummonCreature(NPC_REFLECTION, temp->GetPositionX(), temp->GetPositionY(), temp->GetPositionZ(), temp->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 3000);
+                if (!reflection)
+                    continue;
+
                 reflection->SetName(temp->GetName());
                 temp->CastSpell(reflection, SPELL_CLONE_NAME, true);
                 temp->CastSpell(reflection, SPELL_CLONE_MODEL, true);
