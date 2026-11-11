@@ -1506,7 +1506,11 @@ public:
 
         void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
-            if (Player* target = GetCaster()->ToPlayer())
+            Unit* caster = GetCaster();
+            if (!caster)
+                return;
+
+            if (Player* target = caster->ToPlayer())
             {
                 //if (Creature* veh = target->SummonCreature(70504, 660.1176f, 313.6469f, 355.0672f, 3.764802f))
                 //    veh->EnterVehicle(target);
