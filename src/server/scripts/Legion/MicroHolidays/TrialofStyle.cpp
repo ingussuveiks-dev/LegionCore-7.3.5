@@ -118,8 +118,9 @@ struct npc_atheris_voguesong : ScriptedAI
 
     void QueueStageEffect(Player* target)
     {
-        me->AddDelayedEvent(500, [this, targetGuid = target->GetGUID(), generation = stageEffectGeneration]() -> void
+        me->AddDelayedEvent(500, [this, targetGuid = target->GetGUID(), generation = stageEffectGeneration, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (generation != stageEffectGeneration)
                 return;
             if (Player* target = ObjectAccessor::GetPlayer(*me, targetGuid))
@@ -171,8 +172,9 @@ struct npc_atheris_voguesong : ScriptedAI
 
         if (action == ACTION_2)
         {
-            me->AddDelayedEvent(1000, [=]() -> void
+            me->AddDelayedEvent(1000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (auto target = ObjectAccessor::GetPlayer(*me, ThirdPlace))
                 {
                     if (auto nastasia = instance->instance->GetCreature(instance->GetGuidData(121325)))
@@ -265,8 +267,9 @@ struct npc_atheris_voguesong : ScriptedAI
                     target->RemoveAura(SPELL_VOTE);
                     target->RemoveAura(SPELL_MORPH);
                     target->CastSpell(target, 241865, false);
-                    me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID()]() -> void
+                    me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
@@ -448,8 +451,9 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241865, false);
-                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID()]() -> void
+                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
@@ -505,8 +509,9 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241865, false);
-                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID()]() -> void
+                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
@@ -562,8 +567,9 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241865, false);
-                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID()]() -> void
+                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
@@ -619,8 +625,9 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241865, false);
-                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID()]() -> void
+                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
@@ -676,8 +683,9 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241865, false);
-                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID()]() -> void
+                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
@@ -733,8 +741,9 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241865, false);
-                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID()]() -> void
+                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
@@ -790,8 +799,9 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241865, false);
-                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID()]() -> void
+                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
@@ -847,8 +857,9 @@ struct npc_atheris_voguesong : ScriptedAI
                         target->RemoveAura(SPELL_MORPH);
                         target->RemoveAura(SPELL_VOTE);
                         target->CastSpell(target, 241865, false);
-                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID()]() -> void
+                        me->AddDelayedEvent(2000, [this, targetGuid = target->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                         {
+                            if (aiLifetimeGuard.expired()) return;
                             if (ObjectAccessor::GetPlayer(*me, targetGuid))
                                 Talk(SAY_HELLO_RIGHT, targetGuid);
                         });
@@ -979,6 +990,9 @@ struct npc_atheris_voguesong : ScriptedAI
             }
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 struct npc_nastasia_flairwatcher : ScriptedAI
