@@ -1,0 +1,126 @@
+{
+  "date": "2026-11-11",
+  "status": "COMPLETE_EXACTLY_10_AUTOMATED_CLIENT_PENDING",
+  "batch": 2,
+  "authorized_total": 50,
+  "base": "308d97ee2d3a966936bf5c7621e0eee91b6516d7",
+  "fixes": [
+    {
+      "key": "BossBrawguildMasterLifetime",
+      "title": "Cancel boss_brawguild_master callbacks after source AI retirement",
+      "path": "src/server/scripts/BrawlersGuild/brawlers_guild_bosses_rank_two.cpp",
+      "audit": "docs\\audits\\boss-brawguild-master-ai-lifetime-2026-11-11.json",
+      "callback_count": 3,
+      "commit": "c68b5369e8043ce71b3fe3a012b6f3b22fde36ca"
+    },
+    {
+      "key": "BossNiuzaoLifetime",
+      "title": "Cancel boss_niuzao callbacks after source AI retirement",
+      "path": "src/server/scripts/Pandaria/zone_timeless_isle.cpp",
+      "audit": "docs\\audits\\boss-niuzao-ai-lifetime-2026-11-11.json",
+      "callback_count": 7,
+      "commit": "007a4b359acbd12a0c0f1c27d33b756fa42da0a0"
+    },
+    {
+      "key": "NpcDalaranDefenderBarremLifetime",
+      "title": "Cancel npc_dalaran_defender_barrem callbacks after source AI retirement",
+      "path": "src/server/scripts/World/npcs_special.cpp",
+      "audit": "docs\\audits\\npc-dalaran-defender-barrem-ai-lifetime-2026-11-11.json",
+      "callback_count": 7,
+      "commit": "c680582be18bf17dbe4f71b956cc55582e26d4a2"
+    },
+    {
+      "key": "NpcInfantSpiderLifetime",
+      "title": "Cancel npc_infant_spider callbacks after source AI retirement",
+      "path": "src/server/scripts/World/npcs_special.cpp",
+      "audit": "docs\\audits\\npc-infant-spider-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "5073bf078c0e81a0d6eeb4afd8cff8d4bd924ae7"
+    },
+    {
+      "key": "BossKargathBladefistLifetime",
+      "title": "Cancel boss_kargath_bladefist callbacks after source AI retirement",
+      "path": "src/server/scripts/Draenor/Highmaul/boss_kargath_bladefist.cpp",
+      "audit": "docs\\audits\\boss-kargath-bladefist-ai-lifetime-2026-11-11.json",
+      "callback_count": 8,
+      "commit": "e2c28107d106f991d1f7a459034822bbc3bff69f"
+    },
+    {
+      "key": "NpcHighmaulIronGruntLifetime",
+      "title": "Cancel npc_highmaul_iron_grunt callbacks after source AI retirement",
+      "path": "src/server/scripts/Draenor/Highmaul/boss_kargath_bladefist.cpp",
+      "audit": "docs\\audits\\npc-highmaul-iron-grunt-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "b6fcf0ac0425f5fc4368f37b9d21c4dcb4e43701"
+    },
+    {
+      "key": "BossTwinOgronPolLifetime",
+      "title": "Cancel boss_twin_ogron_pol callbacks after source AI retirement",
+      "path": "src/server/scripts/Draenor/Highmaul/boss_twin_ogron.cpp",
+      "audit": "docs\\audits\\boss-twin-ogron-pol-ai-lifetime-2026-11-11.json",
+      "callback_count": 6,
+      "commit": "dee56ad39a73f7ce3efebcb167352d2278622369"
+    },
+    {
+      "key": "NpcNhSolaristTelarnLifetime",
+      "title": "Cancel npc_nh_solarist_telarn callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TheNighthold/boss_high_botanist_telarn.cpp",
+      "audit": "docs\\audits\\npc-nh-solarist-telarn-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "1b5e6e8c408de6ab4fc1132ab5078b6c0d3b7344"
+    },
+    {
+      "key": "BossHelyaTovLifetime",
+      "title": "Cancel boss_helya_tov callbacks after source AI retirement",
+      "path": "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp",
+      "audit": "docs\\audits\\boss-helya-tov-ai-lifetime-2026-11-11.json",
+      "callback_count": 13,
+      "commit": "e9a524d130b4dc13c36d45f6c7e25b733d651829"
+    },
+    {
+      "key": "SceneTriggerPart8Lifetime",
+      "title": "Cancel sceneTrigger_part8 callbacks after source AI retirement",
+      "path": "src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp",
+      "audit": "docs\\audits\\sceneTrigger-part8-ai-lifetime-2026-11-11.json",
+      "callback_count": 1,
+      "commit": "cb2b81769042618db953991c0ecff14c0e2684fd"
+    }
+  ],
+  "checks": {
+    "source": "Exact complete-file reversal to 308d97ee2d3a966936bf5c7621e0eee91b6516d7;only capture/first-statement weak expiry/private per-AI anchor added. Original gates,casts,IDs,delays,credit,Reset/death/cleanup and owner/group rules retained.",
+    "asan": "Every listed old callback admission projection intentionally produces heap-use-after-free/ABORTING after frame destruction;repaired projection passes live/retired/cancelled/same-address replacement. Expected counterfactuals paired,not ordinary successful runs.",
+    "native": "Actual Creature::AIM_Initialize/destruction and Unit event/combat queues:live,retired,cancelled,surviving inactive AI and corpse lifecycle admission;controlled123ms and observed payload. Exact original live creature ScriptName inventory checked. Bare controlled actors/no character writes;original encounter payload not executed by this projection.",
+    "release": "Original main libraries/staged final link inputs and source snapshots;complete prior Meljarak/Twin/native-health/Freya/counter/Tsulong/Rook/367 linked checks return,plus every new actual production weak gate before payload. Canonical EXE/MAP hashes match tested immutable outputs;Scepter passes.",
+    "runtime": "Owned worldserver PID=13584\nPASS owned PID=13584 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;stderr empty,configuration/cert/DLL protected hashes unchanged. No user/unknown process stopped or hidden task server left running. Ready banner still prior generated revision metadata;source/library/EXE identities establish actual implementation.",
+    "diagnostics": "Before/after canonical+own crashes/log lengths/timestamps,exit/stdout/stderr/appended DBErrors and server warnings/errors/assertions reviewed. Final checks no new/unexplained diagnostic. Compiler warnings all mapped to unchanged baseline expressions;Scepter generated signedness warning inherited. Expected ASAN controls archived only after repaired matching binary/native checks. Mixed7111byteDBErrors and protected original Slaghammer cache unchanged;no log truncation."
+  },
+  "retained_verifier_updates": [],
+  "compiler_warning_count": 2,
+  "canonical": {
+    "bnetserver.exe": "723e1f2085ad622c7bcde629421a7b88867ba36d915d8eecf6d6f1569da7c02a",
+    "bnetserver.map": "c8496a82a31e0d0325d80c6eb362c83718d9b00cdf08b5f9b9205309794993e7",
+    "worldserver.exe": "9e1962b522464f20c7e21298d35b7484f797f95abf76bd541ad6b66b7535c6e4",
+    "worldserver.map": "b5dac0cc9aed95ec73078ec7013a2c45048f6ee32bf736cb94257bd2f56f0bc8"
+  },
+  "cleanup": {
+    "archive": "build-extractors\\bin\\Release\\fixed\\fortythird-ten-repairs-2026-11-11",
+    "manifest_sha256": "f3c79b2da197f4f68b68e3f51e928b7616bba65cf9a3a2bb0713112810f5191a",
+    "archived_files": 519,
+    "removed_files": 169,
+    "logical_removed_bytes": 437530874,
+    "deletion_manifest": ".codex\\fortythird-ten-fixes-2026-11-11\\cleanup-deleted.json",
+    "deletion_manifest_sha256": "8679372aaa0a2dcc885d89e0f0d2b3aee17c365875b32c6d98573b8ee8ee6ea0",
+    "removed_superseded_recoveries": [],
+    "retained": "Canonical runtime/data/config/certs/DLLs and required main libraries;request baseline and latest recovery plus prior concrete pre-Meljarak/pre-health/pre-Rook recovery;all OPEN Lady/LINK2/Slaghammer/TimeLoop/heroic Mend/handshake and installed/live-verified MariaDB recovery evidence.",
+    "closeout_manifest_sha256": "f1cb914092e953f10afb2005028f367b236e857f839eec6d62c3b47e73aa007d",
+    "resolution_sha256": "9d228e6eba94707fdfb1241a05239ad55113fe2a59d02e86715f06faceba219b",
+    "final_review": "All archive hashes,canonical binaries and mixed log rechecked;all10 focused commits are origin/main ancestors,no task servers/crashes remain. Source attachments/user data preserved."
+  },
+  "pending": [
+    "MariaDB DLL is installed and live-verified;user MariaDB service remains running. FT minimum1 config warning absence awaits a future user restart;no service stop needed for these source fixes.",
+    "Actual client/full encounter traversal and all36whole artifact chains remain unverified. Native/ASAN tests here are capture/weak-admission projections,not registered payload execution/full-core ASAN.",
+    "Authentic living Lady surrender/conversation1906/Grash/cleanup,missing LINK2/Slaghammer historical crash/cache,intermittent handshake,TimeLoop32bit healing and heroic Mend profile remain OPEN;no guessed action,threshold,timer or healing target rewrite.",
+    "Unmodified Cordana boss horizontal wall loop source condition compares y to the X endpoint while decrementing x;separate source finding from this scoped AI lifetime repair. Preserve evidence and investigate before claiming that full encounter verified."
+  ],
+  "support_commit": "7ce6feb02114a97aede6ceec81cc627194eba23c"
+}
