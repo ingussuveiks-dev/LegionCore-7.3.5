@@ -25,8 +25,9 @@ struct npc_tos_breach : ScriptedAI
         case 1:
             for (uint8 i = 0; i < 3; ++i)
             {
-                me->AddDelayedEvent(100 + 600 * i, [this, i]() -> void
+                me->AddDelayedEvent(100 + 600 * i, [this, i, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->CastSpell(InfernalsPos[i], 242915, false);
                 });
             }
@@ -35,6 +36,9 @@ struct npc_tos_breach : ScriptedAI
             break;
         }
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 uint32 const introEntries[4]
