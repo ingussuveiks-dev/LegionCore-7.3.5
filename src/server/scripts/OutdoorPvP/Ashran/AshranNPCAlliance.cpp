@@ -497,13 +497,16 @@ public:
 
         void Reset() override
         {
-            AddDelayedEvent(30 * IN_MILLISECONDS, [this]() -> void { Talk(0); });
+            AddDelayedEvent(30 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void { if (aiLifetimeGuard.expired()) return; Talk(0); });
         }
 
         void LastOperationCalled() override
         {
             Reset();
         }
+    private:
+        // Unit-owned queues may outlive this AI object.
+        std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
     };
 
     CreatureAI* GetAI(Creature* creature) const override
