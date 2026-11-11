@@ -542,7 +542,7 @@ public:
             DoCast(208475); // convers
             // me->SummonGameObject(248785, -2748.406f, -328.1875f, 38.34308f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, DAY);
         //    me->SummonCreature(105155, -2748.406f, -328.1875f, 38.34308f, 1.93f);
-            if (InstanceScript* instance = who->GetInstanceScript())
+            if (InstanceScript* instance = me->GetInstanceScript())
                     instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47080); //Step last - complete
         }
         
