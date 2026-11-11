@@ -2,7 +2,7 @@
   "date": "2026-11-11",
   "request": "Labi turpini",
   "status": "TECHNICAL_SOURCE_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
-  "fix_commit": "THIS_COMMIT",
+  "fix_commit": "ad8f15d598d90e4c99f80cec9139b7fbd5bd0986",
   "baseline": "4d61d0dfb1696950c55bbff2ff56ccd30ce1862a",
   "issue": "TimeLoop105984 lethal self-heal105992 lost max health through signed32/float payload and signed effect/target/heal/proc amounts",
   "canonical": {
@@ -376,12 +376,34 @@
       ]
     }
   },
-  "cleanup": "PENDING_HASH_VERIFIED_ARCHIVE_AND_REMOVAL;follow-up audit records final result",
+  "cleanup": {
+    "RemovedFiles": 142,
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/time-loop-full-heal-2026-11-11",
+    "Retained": "Canonical binaries/configuration/DLLs/certs/data/log history and required main libraries;latest8b102rollback;all unrelated Lady/LINK2/Slaghammer/handshake evidence and character backups. Mixed DBErrors unchanged;no active log truncated.",
+    "LogicalRemovedBytes": 4216558309.0,
+    "ArchivedFiles": 1921,
+    "ManifestSHA256": "F5355E9858B0DABBC30A86B9D9E6FC246A9B9502EA477BAA80E552EB4E65E3A1",
+    "SupplementalManifestSHA256": "ceab898eb60fd19e5a278a1c49197f4cc54ffb89f2a0be1d28f2c48cebcb2c3c",
+    "RehashedArchiveRecords": 1955
+  },
   "remaining": [
     "Actual TimeLoop raid/client visuals,combat-log presentation and full encounter traversal are pending;native proof does not establish these.",
     "Other legacy spells still use signed32/float effect amounts;this repair adds an exact fixed-heal channel and does not claim all spells are64correct.",
     "Sharasdal living Lady authentic activation/surrender/conversation1906/Grash finisher/cleanup remains OPEN;no invented HP threshold or kill timer.",
     "Shared101430/103151LINK2 original action payloads remain OPEN;Slaghammer cache/original evidence preserved.",
     "Intermittent actual client handshake cause and all36whole artifact chains remain unverified. User MariaDB remains running;no user/unknown server stopped."
-  ]
+  ],
+  "final_source_review": {
+    "log": ".codex/time-loop-full-heal-2026-11-11/final-source-review.log",
+    "sha256": "ba6d3024846c77dfd8244e37fc974ff0aae8cbcefbf0841bd551827dc26b65db",
+    "bnet_text_sha256": "429ed1bbebe6c6932fb5ebc20e7cc705db8150ff13746f037e40bfeedefe0d2a",
+    "result": "All historical Unicode audit content preserved;canonical/evidence/source hashes verified;relinked bnet code section is byte-identical to pre-task binary."
+  },
+  "archive_resolution": "Original TimeLoop manifests remain byte-identical with adjacent technical-resolution records;resolved raw logs and original native counterfactual EXE are preserved in fixed with hashes. Removed redundant stage/probe executables,symbols,private runtime config copies and obsolete older rollback. Latest pre-task8b102rollback and required original build libraries retained. No actual client/full-raid or all36chain claim.",
+  "post_cleanup": {
+    "status": "PASS",
+    "diagnostics": "No new/changed crash or appended DBErrors/warnings/errors/assertions;canonical/source/evidence hashes and protected Slaghammer cache unchanged;no worldserver/bnetserver process left running",
+    "manifest_sha256": "6c9b89b22b1233493d121a50b47af8bdf23ea9ac77cee56eaf0f86b12f2e7652",
+    "records": 7
+  }
 }

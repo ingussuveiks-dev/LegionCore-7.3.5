@@ -2,7 +2,7 @@
   "latest_time_loop_full_heal_2026_11_11": {
     "status": "TECHNICAL_SOURCE_NATIVE_DEPLOYED_FIXED_CLIENT_PENDING",
     "audit": "docs/audits/time-loop-full-healing-2026-11-11.json",
-    "fix_commit": "THIS_COMMIT",
+    "fix_commit": "ad8f15d598d90e4c99f80cec9139b7fbd5bd0986",
     "completed": "Actual native105992full-heal path now preserves unsigned64amounts through native modifiers,crit,absorb,proc,health and AI;preexisting nonlethal guard retained",
     "canonical": {
       "worldserver.exe": "d10242d6019f2fa1021897408fb043dc2434d40b0bdd3d767eaf8138dcb35eb1",
@@ -19,7 +19,23 @@
       "Intermittent actual client handshake cause and all36whole artifact chains remain unverified. User MariaDB remains running;no user/unknown server stopped."
     ],
     "next": "Seek original living-Lady producer/continuous behavior evidence and native LINK2actions. Actual client TimeLoop/handshake/36chains remain separate. Preserve mixedDBErrors and unrelated OPEN evidence.",
-    "history": "Earlier latest_* and old TimeLoop OPEN manifests are historical;see new resolution record after archive. Do not count these tests as new independent ten-fix batches."
+    "history": "Earlier latest_* and old TimeLoop OPEN manifests are historical;see new resolution record after archive. Do not count these tests as new independent ten-fix batches.",
+    "cleanup": {
+      "RemovedFiles": 142,
+      "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/time-loop-full-heal-2026-11-11",
+      "Retained": "Canonical binaries/configuration/DLLs/certs/data/log history and required main libraries;latest8b102rollback;all unrelated Lady/LINK2/Slaghammer/handshake evidence and character backups. Mixed DBErrors unchanged;no active log truncated.",
+      "LogicalRemovedBytes": 4216558309.0,
+      "ArchivedFiles": 1921,
+      "ManifestSHA256": "F5355E9858B0DABBC30A86B9D9E6FC246A9B9502EA477BAA80E552EB4E65E3A1",
+      "SupplementalManifestSHA256": "ceab898eb60fd19e5a278a1c49197f4cc54ffb89f2a0be1d28f2c48cebcb2c3c",
+      "RehashedArchiveRecords": 1955
+    },
+    "post_cleanup": {
+      "status": "PASS",
+      "diagnostics": "No new/changed crash or appended DBErrors/warnings/errors/assertions;canonical/source/evidence hashes and protected Slaghammer cache unchanged;no worldserver/bnetserver process left running",
+      "manifest_sha256": "6c9b89b22b1233493d121a50b47af8bdf23ea9ac77cee56eaf0f86b12f2e7652",
+      "records": 7
+    }
   },
   "latest_native_heal_timeloop_followup_2026_11_11": {
     "status": "TWO_FOCUSED_REPAIRS_DEPLOYED_TIMELOOP_FULL_HEAL_AND_OTHER_OPEN_REMAIN",
