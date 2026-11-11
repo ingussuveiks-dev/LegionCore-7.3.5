@@ -466,10 +466,9 @@ public:
 
                         if (auto varimathras = instance->GetCreature(GetGuidData(NPC_VARIMATHRAS)))
                         {
-                            varimathras->AddDelayedCombat(10000, [this, go] () -> void
+                            varimathras->AddDelayedCombat(10000, [this, goGuid = go->GetGUID()] () -> void
                             {
-                                if (go)
-                                    HandleGameObject(go->GetGUID(), false);
+                                HandleGameObject(goGuid, false);
                             });
                         }
                     }
