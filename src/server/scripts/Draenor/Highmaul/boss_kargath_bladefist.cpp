@@ -1108,8 +1108,9 @@ struct npc_highmaul_vulgor : public ScriptedAI
 
                 me->HandleEmoteCommand(EMOTE_ONESHOT_BATTLE_ROAR);
 
-                AddDelayedEvent(4 * IN_MILLISECONDS, [this]() -> void
+                AddDelayedEvent(4 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
                 {
+                    if (aiLifetimeGuard.expired()) return;
                     me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, 0);
                     me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_READY1H);
                 });
@@ -1139,16 +1140,18 @@ struct npc_highmaul_vulgor : public ScriptedAI
             if (GameObject* innerGate = GameObject::GetGameObject(*me, m_Instance->GetGuidData(GateArenaInner)))
                 innerGate->SetGoState(GO_STATE_ACTIVE);
 
-            AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
+            AddDelayedEvent(1 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 /// Spawn new trash mobs
                 for (uint8 i = 0; i < 2; ++i)
                     if (Creature* sorcerer = me->SummonCreature(BladespireSorcerer, trashsSpawnPos))
                         sorcerer->GetMotionMaster()->MovePoint(MoveInArena, sorcererSecondPos[i]);
             });
 
-            AddDelayedEvent(5 * IN_MILLISECONDS, [this]() -> void
+            AddDelayedEvent(5 * IN_MILLISECONDS, [this, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)]() -> void
             {
+                if (aiLifetimeGuard.expired()) return;
                 if (GameObject* innerGate = GameObject::GetGameObject(*me, m_Instance->GetGuidData(GateArenaInner)))
                     innerGate->SetGoState(GO_STATE_READY);
             });
@@ -1205,6 +1208,9 @@ struct npc_highmaul_vulgor : public ScriptedAI
 
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 /// Bladespire Sorcerer - 80071
