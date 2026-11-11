@@ -3316,6 +3316,13 @@ public:
     }
     static bool HandleCharDisplayMainhandCommand(ChatHandler* handler, const char* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
 
@@ -3340,6 +3347,13 @@ public:
 
     static bool HandleCharDisplayHeadCommand(ChatHandler* handler, const char* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3362,6 +3376,13 @@ public:
 
     static bool HandleCharDisplayShouldersCommand(ChatHandler* handler, const char* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3384,6 +3405,13 @@ public:
 
     static bool HandleCharDisplayChestCommand(ChatHandler* handler, const char* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3406,6 +3434,13 @@ public:
 
     static bool HandleCharDisplayWaistCommand(ChatHandler* handler, const char* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3428,6 +3463,13 @@ public:
 
     static bool HandleCharDisplayLegsCommand(ChatHandler* handler, const char* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3450,6 +3492,13 @@ public:
 
     static bool HandleCharDisplayFeetCommand(ChatHandler* handler, const char* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3472,6 +3521,13 @@ public:
 
     static bool HandleCharDisplayWristsCommand(ChatHandler* handler, const char* args)
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3494,6 +3550,13 @@ public:
 
     static bool HandleCharDisplayHandsCommand(ChatHandler* handler, const char* args) //РЎСѓРєРё, РїРѕРєР°Р¶РёС‚Рµ СЃРІРѕРё СЂСѓРєРё!
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3516,6 +3579,13 @@ public:
 
     static bool HandleCharDisplayBackCommand(ChatHandler* handler,const char* args) //РЎСѓРєРё, РїРѕРєР°Р¶РёС‚Рµ СЃРІРѕРё СЂСѓРєРё!
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3538,6 +3608,13 @@ public:
 
     static bool HandleCharDisplayOffhandCommand(ChatHandler* handler, const char* args) //РЎСѓРєРё, РїРѕРєР°Р¶РёС‚Рµ СЃРІРѕРё СЂСѓРєРё!
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3560,6 +3637,13 @@ public:
 
     static bool HandleCharDisplayRangedCommand(ChatHandler* handler, const char* args) //РЎСѓРєРё, РїРѕРєР°Р¶РёС‚Рµ СЃРІРѕРё СЂСѓРєРё!
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*) args, "Hitem");
@@ -3582,6 +3666,13 @@ public:
 
     static bool HandleCharDisplayTabardCommand(ChatHandler* handler, const char* args) //РЎСѓРєРё, РїРѕРєР°Р¶РёС‚Рµ СЃРІРѕРё СЂСѓРєРё!
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if(!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*)args,"Hitem");
@@ -3605,6 +3696,13 @@ public:
 
     static bool HandleCharDisplayShirtCommand(ChatHandler* handler, const char* args) //РЎСѓРєРё, РїРѕРєР°Р¶РёС‚Рµ СЃРІРѕРё СЂСѓРєРё!
     {
+        if (!handler->GetSession() || !handler->GetSession()->GetPlayer())
+        {
+            handler->SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if(!*args)
             return false;
         char* cId = handler->extractKeyFromLink((char*)args,"Hitem");
