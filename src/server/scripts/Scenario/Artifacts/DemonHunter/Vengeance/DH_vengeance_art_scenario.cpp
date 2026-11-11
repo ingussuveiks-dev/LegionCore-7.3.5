@@ -308,7 +308,7 @@ public:
         void JustDied(Unit* who) override
         {
             DoCast(208395); // convers
-            if (InstanceScript* instance = who->GetInstanceScript())
+            if (InstanceScript* instance = me->GetInstanceScript())
             {
                 instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47079);
             }
