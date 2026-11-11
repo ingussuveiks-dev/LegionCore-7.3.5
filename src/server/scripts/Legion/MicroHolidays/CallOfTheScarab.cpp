@@ -224,15 +224,19 @@ class go_wind_stone : public GameObjectScript
 public:
     go_wind_stone() : GameObjectScript("go_wind_stone") {}
 
-    void SummonNPC(GameObject* go, Player* player, uint32 npc/*, uint32 spell*/)
+    bool SummonNPC(GameObject* go, Player* player, uint32 npc/*, uint32 spell*/)
     {
         //go->CastSpell(player, spell);
         TempSummon* summons = go->SummonCreature(npc, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), player->GetOrientation() - M_PI, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 10 * 60 * 1000);
+        if (!summons)
+            return false;
+
         summons->CastSpell(summons, 25035, false);
         summons->AI()->Talk(0, player->GetGUID());
         summons->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         summons->SendMeleeAttackStart(player);
         summons->CombatStart(player);
+        return true;
     }
 
 public:
@@ -251,6 +255,9 @@ public:
         uint32 c_duke[4] = { 117663, 117665, 117662, 117664 };
         uint32 c_royal[4] = { 117666, 117667, 117670, 117672 };
 
+        uint32 auraToRemove = 0;
+        bool summoned = false;
+
         switch (go->GetEntry())
         {
         case 180529:
@@ -259,24 +266,27 @@ public:
         case 180544:
         case 180549:
         case 180564:
-            player->RemoveAura(c_aura[urand(0, 2)]);
-            SummonNPC(go, player, c_templar[urand(0, 3)]/*, 24745*/);
+            auraToRemove = c_aura[urand(0, 2)];
+            summoned = SummonNPC(go, player, c_templar[urand(0, 3)]/*, 24745*/);
             break;
         case 180534:
         case 180461:
         case 180554:
-            player->RemoveAura(c_aura[urand(0, 2)]);
-            SummonNPC(go, player, c_duke[urand(0, 3)]/*, 24762*/);
+            auraToRemove = c_aura[urand(0, 2)];
+            summoned = SummonNPC(go, player, c_duke[urand(0, 3)]/*, 24762*/);
             break;
         case 180466:
         case 180539:
         case 180559:
-            player->RemoveAura(c_aura[urand(0, 2)]);
-            SummonNPC(go, player, c_royal[urand(0, 3)]/*, 24785*/);
+            auraToRemove = c_aura[urand(0, 2)];
+            summoned = SummonNPC(go, player, c_royal[urand(0, 3)]/*, 24785*/);
             break;
         default:
             break;
         }
+
+        if (summoned)
+            player->RemoveAura(auraToRemove);
 
         player->CLOSE_GOSSIP_MENU();
         return true;

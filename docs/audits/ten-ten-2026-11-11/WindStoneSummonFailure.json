@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-12",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "key": "WindStoneSummonFailure",
+  "batch": 3,
+  "authorized_total": 100,
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "title": "Retain the Wind Stone offering when its selected enemy cannot be summoned",
+  "paths": [
+    "src/server/scripts/Legion/MicroHolidays/CallOfTheScarab.cpp"
+  ],
+  "binding": "go_wind_stone",
+  "spells": null,
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 3 -Case WindStoneSummonFailure",
+  "counterfactual": "Add -Baseline;expected-broken control",
+  "checks": {
+    "asan": "Ten complete production method scopes underASAN+checked STL iterators. Empty/nonempty lists,missingvisualships with all16realmissiles preserved,missingoptionalactors,individual/allfailedsummons,continuedlaterclones/waves,all3WindStoneofferingtiers withfailure retention/successonce,all4Eonarcrystal childIDs andindependentcleanup includingcasterlostduringAIaction.",
+    "baseline": "All10pinned64c2counterfactuals fail repaired expectations or expected ASAN/STL empty-list faults;notordinarysuccessfulgameplay.",
+    "native": "Exactmatching26972runtime/DBbindingsforall10scripts,including3instance maps,actualcreature/GOregistrations andselectedspells. ActualEonar250081AuraScriptclass/periodicdispatcher/nativeforeigncasterdisappearance retainsindependentcurrentcrystalAIactionandoriginal249016childattribution;childcastendpoint observed. Allfirst20nativescopesretained. Spatial/summon/clock/AIcleanupendpointsarecontrolledfixtures,notfullclienttraversal.",
+    "linked": "Same05793eRelease:actualemptylistgatesinRavager/Arnath/Xin/inlinedMalygos,guardedvisualshipfront/back,actualsummonresultgatesandsharedWindStoneconsumptionafterboolsuccess,EonarindependentAI/castergates. First20linkedchecksretained.",
+    "retained": "Independentexact65fileunsigned64healingandprevious50sourceamendmentspassthroughnew30normalization;canonicalScepterVerifyReleaseBinarypassed.",
+    "runtime": "Task-ownedcanonicalfreshready,gracefulshutdown0,exit0/gone,emptystderr;nonewcrash,DBErrorsorunexplainedserverwarnings/errors/assertions. Nouserprocessstopped."
+  },
+  "canonical_worldserver_sha256": "05793ea5f39f0feb1e86430c66ea1cb65a950c77b0d6b30ac934eb72b1bb17f0",
+  "scope": "Original nativeIDs,missiles,waves/cloneprogression,spell/visual/delay/schedulingandindependentcleanup preserved;WindStoneofferingremovedonlyaftersuccessfulrealspawn. No SQL/schema/packet/character changes. Five empty-collection/visual cases,four summon failure families andonecaster/cleanupcase aretenrepairs.",
+  "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch03;archive afterfocusedcommits",
+  "pending": "Actual client T20/raid/dungeon/WindStoneinteraction andfullencounter traversal;all unrelated Lady/LINK2/Slaghammer/handshake/36chain evidence andmixedDBErrors remain OPEN."
+}
