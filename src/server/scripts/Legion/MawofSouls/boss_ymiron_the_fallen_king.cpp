@@ -561,8 +561,9 @@ struct npc_ymiron_seacursed_slaver : public ScriptedAI
                     me->SetFacingTo(prisoner);
                     DoCast(prisoner, SPELL_BREAK_CHAINS, true);
 
-                    AddDelayedEvent(2000, [this, prisonerGuid = prisoner->GetGUID()] () -> void
+                    AddDelayedEvent(2000, [this, prisonerGuid = prisoner->GetGUID(), aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
                     {
+                        if (aiLifetimeGuard.expired()) return;
                         if (me && me->IsAlive())
                         {
                             me->SetReactState(REACT_AGGRESSIVE);
@@ -672,6 +673,9 @@ struct npc_ymiron_seacursed_slaver : public ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //97200
