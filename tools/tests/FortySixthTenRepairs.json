@@ -1,0 +1,287 @@
+[
+  {
+    "key": "MoltenBehemothDeathCredit",
+    "index": 0,
+    "title": "Resolve npc_molten_behemoth progression to the eligible killer owner",
+    "slug": "npc-molten-behemoth-death-owner",
+    "paths": [
+      "src/server/scripts/World/npcs_special.cpp"
+    ],
+    "cls": "npc_molten_behemoth",
+    "classes": [
+      "npc_molten_behemoth"
+    ],
+    "binding": "npc_molten_behemoth",
+    "entries": [
+      52552
+    ],
+    "kind": "owner_progression",
+    "selector": "killer ? killer->GetAffectingPlayer() : nullptr",
+    "callback_count": 1,
+    "edits": [
+      {
+        "path": "src/server/scripts/World/npcs_special.cpp",
+        "old": "void JustDied(Unit* killer) override\n    {\n        if (notSpellHited)\n            if (auto player = killer->ToPlayer())\n                player->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 101167);\n    }",
+        "new": "void JustDied(Unit* killer) override\n    {\n        if (notSpellHited)\n            if (auto player = killer ? killer->GetAffectingPlayer() : nullptr)\n                player->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 101167);\n    }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "FlamewakerSentinelDeathCredit",
+    "index": 1,
+    "title": "fix: guard Flamewaker Sentinel death against null killers",
+    "slug": "npc-flamewaker-sentinel-death-owner",
+    "paths": [
+      "src/server/scripts/World/npcs_special.cpp"
+    ],
+    "cls": "npc_flamewaker_sentinel",
+    "classes": [
+      "npc_flamewaker_sentinel"
+    ],
+    "binding": "npc_flamewaker_sentinel",
+    "entries": [
+      53085
+    ],
+    "kind": "owner_progression",
+    "selector": "killer ? killer->GetAffectingPlayer() : nullptr",
+    "callback_count": 1,
+    "edits": [
+      {
+        "path": "src/server/scripts/World/npcs_special.cpp",
+        "old": "void JustDied(Unit* killer) override\n    {\n        if (passengerIn)\n            if (auto player = killer->ToPlayer())\n                player->UpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE, 53085);\n    }",
+        "new": "void JustDied(Unit* killer) override\n    {\n        if (passengerIn)\n            if (auto player = killer ? killer->GetAffectingPlayer() : nullptr)\n                player->UpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE, 53085);\n    }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "FlamewakerShamanDeathCredit",
+    "index": 2,
+    "title": "Resolve npc_flamewaker_shaman progression to the eligible killer owner",
+    "slug": "npc-flamewaker-shaman-death-owner",
+    "paths": [
+      "src/server/scripts/World/npcs_special.cpp"
+    ],
+    "cls": "npc_flamewaker_shaman",
+    "classes": [
+      "npc_flamewaker_shaman"
+    ],
+    "binding": "npc_flamewaker_shaman",
+    "entries": [
+      53093
+    ],
+    "kind": "owner_progression",
+    "selector": "killer ? killer->GetAffectingPlayer() : nullptr",
+    "callback_count": 1,
+    "edits": [
+      {
+        "path": "src/server/scripts/World/npcs_special.cpp",
+        "old": "void JustDied(Unit* killer) override\n    {\n        if (damaged >= 3)\n            if (auto player = killer->ToPlayer())\n                player->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 100992);\n    }",
+        "new": "void JustDied(Unit* killer) override\n    {\n        if (damaged >= 3)\n            if (auto player = killer ? killer->GetAffectingPlayer() : nullptr)\n                player->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 100992);\n    }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "SilverHandDeathCredit",
+    "index": 3,
+    "title": "fix: guard Silver Hand death credit against null killers",
+    "slug": "boss-silver-hand-bosses-death-owner",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/Stratholme/boss_order_of_silver_hand.cpp"
+    ],
+    "cls": "boss_silver_hand_bossesAI",
+    "classes": [
+      "boss_silver_hand_bossesAI"
+    ],
+    "binding": "boss_silver_hand_bosses",
+    "entries": [
+      17910,
+      17911,
+      17912,
+      17913,
+      17914
+    ],
+    "kind": "owner_progression",
+    "selector": "killer ? killer->GetAffectingPlayer() : nullptr",
+    "callback_count": 1,
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/Stratholme/boss_order_of_silver_hand.cpp",
+        "old": "void JustDied(Unit* killer)\n        {\n            if (!instance)\n                return;\n\n            switch (me->GetEntry())\n            {\n                case SH_AELMAR:\n                    instance->SetData(TYPE_SH_AELMAR, 2);\n                    break;\n                case SH_CATHELA:\n                    instance->SetData(TYPE_SH_CATHELA, 2);\n                    break;\n                case SH_GREGOR:\n                    instance->SetData(TYPE_SH_GREGOR, 2);\n                    break;\n                case SH_NEMAS:\n                    instance->SetData(TYPE_SH_NEMAS, 2);\n                    break;\n                case SH_VICAR:\n                    instance->SetData(TYPE_SH_VICAR, 2);\n                    break;\n            }\n\n            if (instance->GetData(TYPE_SH_QUEST))\n            {\n                if (Player* player = killer->ToPlayer())\n                    player->KilledMonsterCredit(SH_QUEST_CREDIT, ObjectGuid::Empty);\n            }\n        }",
+        "new": "void JustDied(Unit* killer)\n        {\n            if (!instance)\n                return;\n\n            switch (me->GetEntry())\n            {\n                case SH_AELMAR:\n                    instance->SetData(TYPE_SH_AELMAR, 2);\n                    break;\n                case SH_CATHELA:\n                    instance->SetData(TYPE_SH_CATHELA, 2);\n                    break;\n                case SH_GREGOR:\n                    instance->SetData(TYPE_SH_GREGOR, 2);\n                    break;\n                case SH_NEMAS:\n                    instance->SetData(TYPE_SH_NEMAS, 2);\n                    break;\n                case SH_VICAR:\n                    instance->SetData(TYPE_SH_VICAR, 2);\n                    break;\n            }\n\n            if (instance->GetData(TYPE_SH_QUEST))\n            {\n                if (Player* player = killer ? killer->GetAffectingPlayer() : nullptr)\n                    player->KilledMonsterCredit(SH_QUEST_CREDIT, ObjectGuid::Empty);\n            }\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "VashjelanSirenDeathCredit",
+    "index": 4,
+    "title": "Resolve npc_vashjelan_siren progression to the eligible killer owner",
+    "slug": "npc-vashjelan-siren-death-owner",
+    "paths": [
+      "src/server/scripts/Maelstrom/LostIsles/lost_isles.cpp"
+    ],
+    "cls": "npc_vashjelan_sirenAI",
+    "classes": [
+      "npc_vashjelan_sirenAI"
+    ],
+    "binding": "npc_vashjelan_siren",
+    "entries": [
+      38360
+    ],
+    "kind": "owner_progression",
+    "selector": "killer ? killer->GetAffectingPlayer() : nullptr",
+    "callback_count": 1,
+    "edits": [
+      {
+        "path": "src/server/scripts/Maelstrom/LostIsles/lost_isles.cpp",
+        "old": "void JustDied(Unit* killer) override\n        {\n            if (!killer->HasAura(SPELL_PONNY_AURA))\n                return;\n\n            Player *player = killer->ToPlayer();\n            if (!player)\n                return;\n\n            if (player->GetQuestStatus(QUEST_IRRESTIBLE_POOL_PONY) != QUEST_STATUS_INCOMPLETE)\n                return;\n\n            std::list<Creature*> creatureList;\n            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING, 25.0f);\n            Hatchiling(creatureList, killer);\n            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING2, 25.0f);\n            Hatchiling(creatureList, killer);\n            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING3, 25.0f);\n            Hatchiling(creatureList, killer);\n            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING4, 25.0f);\n            Hatchiling(creatureList, killer);\n        }",
+        "new": "void JustDied(Unit* killer) override\n        {\n            Player* player = killer ? killer->GetAffectingPlayer() : nullptr;\n            if (!player || !player->HasAura(SPELL_PONNY_AURA))\n                return;\n\n            if (player->GetQuestStatus(QUEST_IRRESTIBLE_POOL_PONY) != QUEST_STATUS_INCOMPLETE)\n                return;\n\n            std::list<Creature*> creatureList;\n            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING, 25.0f);\n            Hatchiling(creatureList, player);\n            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING2, 25.0f);\n            Hatchiling(creatureList, player);\n            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING3, 25.0f);\n            Hatchiling(creatureList, player);\n            me->GetCreatureListWithEntryInGrid(creatureList, NPC_NAGA_HATCHLING4, 25.0f);\n            Hatchiling(creatureList, player);\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "AshranChampionDeathRecruit",
+    "index": 5,
+    "title": "Resolve npc_ashran_faction_champions progression to the eligible killer owner",
+    "slug": "npc-ashran-faction-champions-death-owner",
+    "paths": [
+      "src/server/scripts/OutdoorPvP/Ashran/AshranNPCNeutral.cpp"
+    ],
+    "cls": "npc_ashran_faction_championsAI",
+    "classes": [
+      "npc_ashran_faction_championsAI"
+    ],
+    "binding": "npc_ashran_faction_champions",
+    "entries": [
+      81725,
+      81726
+    ],
+    "kind": "owner_progression",
+    "selector": "killer ? killer->GetAffectingPlayer() : nullptr",
+    "callback_count": 1,
+    "edits": [
+      {
+        "path": "src/server/scripts/OutdoorPvP/Ashran/AshranNPCNeutral.cpp",
+        "old": "void JustDied(Unit* killer) override\n        {\n            if (m_OutdoorPvP == nullptr)\n                return;\n\n            Creature* l_Korlok = sObjectAccessor->FindCreature(m_OutdoorPvP->GetCreature(NeutralKorlokTheOgreKing));\n            if (l_Korlok == nullptr || !l_Korlok->IsAIEnabled)    ///< Shouldn't happens\n                return;\n\n            if (killer->GetTypeId() == TYPEID_PLAYER)\n            {\n                if (killer->ToPlayer()->GetTeamId() == TEAM_ALLIANCE)\n                    l_Korlok->AI()->DoAction(ActionAllianceRecruit);\n                else\n                    l_Korlok->AI()->DoAction(ActionHordeRecruit);\n            }\n            else if (killer->GetOwner() && killer->GetOwner()->GetTypeId() == TYPEID_PLAYER)\n            {\n                if (Player* l_Owner = killer->GetOwner()->ToPlayer())\n                {\n                    if (l_Owner->ToPlayer()->GetTeamId() == TEAM_ALLIANCE)\n                        l_Korlok->AI()->DoAction(ActionAllianceRecruit);\n                    else\n                        l_Korlok->AI()->DoAction(ActionHordeRecruit);\n                }\n            }\n        }",
+        "new": "void JustDied(Unit* killer) override\n        {\n            if (m_OutdoorPvP == nullptr)\n                return;\n\n            Creature* l_Korlok = sObjectAccessor->FindCreature(m_OutdoorPvP->GetCreature(NeutralKorlokTheOgreKing));\n            if (l_Korlok == nullptr || !l_Korlok->IsAIEnabled)    ///< Shouldn't happens\n                return;\n\n            if (Player* player = killer ? killer->GetAffectingPlayer() : nullptr)\n                l_Korlok->AI()->DoAction(player->GetTeamId() == TEAM_ALLIANCE ? ActionAllianceRecruit : ActionHordeRecruit);\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "AncientRegailDeathBind",
+    "index": 6,
+    "title": "Resolve boss_ancient_regail progression to the eligible killer owner",
+    "slug": "boss-ancient-regail-death-owner",
+    "paths": [
+      "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_protectors.cpp"
+    ],
+    "cls": "boss_ancient_regailAI",
+    "classes": [
+      "boss_ancient_regailAI"
+    ],
+    "binding": "boss_ancient_regail",
+    "entries": [
+      60585
+    ],
+    "kind": "owner_progression",
+    "selector": "killer ? killer->GetAffectingPlayer() : nullptr",
+    "callback_count": 1,
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_protectors.cpp",
+        "old": "void JustDied(Unit* killer)\n        {\n            Talk(TALK_REGAIL_DEATH);\n\n            if (pInstance)\n            {\n                pInstance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n                Creature* asani = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_ANCIENT_ASANI));\n                Creature* kaolan = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_PROTECTOR_KAOLAN));\n\n                switch (ProtectorsAlive(pInstance, me))\n                {\n                case 2:\n                {\n                    if (asani && asani->IsAlive())\n                    {\n                        asani->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                        me->CastSpell(asani, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    if (kaolan && kaolan->IsAlive())\n                    {\n                        kaolan->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                        me->CastSpell(kaolan, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    me->SetLootRecipient(NULL);\n                    break;\n                }\n                case 1:\n                {\n                    if (asani && asani->IsAlive())\n                    {\n                        asani->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n                        asani->AI()->Talk(TALK_REGAIL_DIES_SECOND_ASANI);\n\n                        if (auto shaCorruption = asani->GetAura(SPELL_SHA_CORRUPTION))\n                            if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                corruptionCaster->CastSpell(asani, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    if (kaolan && kaolan->IsAlive())\n                    {\n                        kaolan->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n                        kaolan->AI()->Talk(TALK_REGAIL_DIES_SECOND_KAOLAN);\n\n                        if (auto shaCorruption = kaolan->GetAura(SPELL_SHA_CORRUPTION))\n                            if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                corruptionCaster->CastSpell(kaolan, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    me->SetLootRecipient(NULL);\n                    break;\n                }\n                case 0:\n                {\n                    pInstance->SetBossState(DATA_PROTECTORS, DONE);\n                    if (killer && killer->GetTypeId() == TYPEID_PLAYER)\n                        me->GetMap()->ToInstanceMap()->PermBindAllPlayers(killer->ToPlayer());\n                    else if (killer && killer->GetTypeId() == TYPEID_UNIT && killer->GetOwner() && killer->GetOwner()->ToPlayer())\n                        me->GetMap()->ToInstanceMap()->PermBindAllPlayers(killer->GetOwner()->ToPlayer());\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TOUCH_OF_SHA);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_DEFILED_GROUND_STACKS);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_OVERWHELMING_CORRUPTION_STACK);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_LIGHTNING_PRISON_STUN);\n                    _JustDied();\n\n                    if (Creature* minionController = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_MINION_OF_FEAR_CONTROLLER)))\n                        minionController->AI()->DoAction(ACTION_RESET_MINION_CONTROLLER);\n\n                    if (kaolan)\n                        kaolan->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n                    if (asani)\n                        asani->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n\n                    break;\n                }\n                default:\n                    break;\n                }\n            }\n        }",
+        "new": "void JustDied(Unit* killer)\n        {\n            Talk(TALK_REGAIL_DEATH);\n\n            if (pInstance)\n            {\n                pInstance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n                Creature* asani = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_ANCIENT_ASANI));\n                Creature* kaolan = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_PROTECTOR_KAOLAN));\n\n                switch (ProtectorsAlive(pInstance, me))\n                {\n                case 2:\n                {\n                    if (asani && asani->IsAlive())\n                    {\n                        asani->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                        me->CastSpell(asani, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    if (kaolan && kaolan->IsAlive())\n                    {\n                        kaolan->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                        me->CastSpell(kaolan, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    me->SetLootRecipient(NULL);\n                    break;\n                }\n                case 1:\n                {\n                    if (asani && asani->IsAlive())\n                    {\n                        asani->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n                        asani->AI()->Talk(TALK_REGAIL_DIES_SECOND_ASANI);\n\n                        if (auto shaCorruption = asani->GetAura(SPELL_SHA_CORRUPTION))\n                            if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                corruptionCaster->CastSpell(asani, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    if (kaolan && kaolan->IsAlive())\n                    {\n                        kaolan->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n                        kaolan->AI()->Talk(TALK_REGAIL_DIES_SECOND_KAOLAN);\n\n                        if (auto shaCorruption = kaolan->GetAura(SPELL_SHA_CORRUPTION))\n                            if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                corruptionCaster->CastSpell(kaolan, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    me->SetLootRecipient(NULL);\n                    break;\n                }\n                case 0:\n                {\n                    pInstance->SetBossState(DATA_PROTECTORS, DONE);\n                    if (Player* player = killer ? killer->GetAffectingPlayer() : nullptr)\n                        me->GetMap()->ToInstanceMap()->PermBindAllPlayers(player);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TOUCH_OF_SHA);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_DEFILED_GROUND_STACKS);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_OVERWHELMING_CORRUPTION_STACK);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_LIGHTNING_PRISON_STUN);\n                    _JustDied();\n\n                    if (Creature* minionController = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_MINION_OF_FEAR_CONTROLLER)))\n                        minionController->AI()->DoAction(ACTION_RESET_MINION_CONTROLLER);\n\n                    if (kaolan)\n                        kaolan->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n                    if (asani)\n                        asani->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n\n                    break;\n                }\n                default:\n                    break;\n                }\n            }\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "AncientAsaniDeathBind",
+    "index": 7,
+    "title": "Resolve boss_ancient_asani progression to the eligible killer owner",
+    "slug": "boss-ancient-asani-death-owner",
+    "paths": [
+      "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_protectors.cpp"
+    ],
+    "cls": "boss_ancient_asaniAI",
+    "classes": [
+      "boss_ancient_asaniAI"
+    ],
+    "binding": "boss_ancient_asani",
+    "entries": [
+      60586
+    ],
+    "kind": "owner_progression",
+    "selector": "killer ? killer->GetAffectingPlayer() : nullptr",
+    "callback_count": 1,
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_protectors.cpp",
+        "old": "void JustDied(Unit* killer)\n        {\n            Talk(TALK_ASANI_DEATH);\n\n            if (pInstance)\n            {\n                pInstance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n                Creature* regail = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_ANCIENT_REGAIL));\n                Creature* kaolan = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_PROTECTOR_KAOLAN));\n\n                switch (ProtectorsAlive(pInstance, me))\n                {\n                    case 2:\n                    {\n                        if (regail && regail->IsAlive())\n                        {\n                            regail->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                            regail->AI()->Talk(TALK_ASANI_DIES_FIRST_REGAIL);\n                            me->CastSpell(regail, SPELL_SHA_CORRUPTION, true);\n                        }\n\n                        if (kaolan && kaolan->IsAlive())\n                        {\n                            kaolan->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                            kaolan->AI()->Talk(TALK_ASANI_DIES_FIRST_KAOLAN);\n                            me->CastSpell(kaolan, SPELL_SHA_CORRUPTION, true);\n                        }\n\n                        me->SetLootRecipient(NULL);\n                        break;\n                    }\n                    case 1:\n                    {\n                        if (regail && regail->IsAlive())\n                        {\n                            regail->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n                            regail->AI()->Talk(TALK_ASANI_DIES_SECOND_REGAIL);\n\n                            if (auto shaCorruption = regail->GetAura(SPELL_SHA_CORRUPTION))\n                                if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                    corruptionCaster->CastSpell(regail, SPELL_SHA_CORRUPTION, true);\n                        }\n\n                        if (kaolan && kaolan->IsAlive())\n                        {\n                            kaolan->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n                            kaolan->AI()->Talk(TALK_ASANI_DIES_SECOND_KAOLAN);\n\n                            if (auto shaCorruption = kaolan->GetAura(SPELL_SHA_CORRUPTION))\n                                if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                    corruptionCaster->CastSpell(kaolan, SPELL_SHA_CORRUPTION, true);\n                        }\n\n                        me->SetLootRecipient(NULL);\n                        break;\n                    }\n                    case 0:\n                    {\n                        pInstance->SetBossState(DATA_PROTECTORS, DONE);\n                        if (killer && killer->GetTypeId() == TYPEID_PLAYER)\n                            me->GetMap()->ToInstanceMap()->PermBindAllPlayers(killer->ToPlayer());\n                        else if (killer && killer->GetTypeId() == TYPEID_UNIT && killer->GetOwner() && killer->GetOwner()->ToPlayer())\n                            me->GetMap()->ToInstanceMap()->PermBindAllPlayers(killer->GetOwner()->ToPlayer());\n                        pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TOUCH_OF_SHA);\n                        pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_DEFILED_GROUND_STACKS);\n                        pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_OVERWHELMING_CORRUPTION_STACK);\n                        pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_LIGHTNING_PRISON_STUN);\n                        _JustDied();\n\n                        if (Creature* minionController = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_MINION_OF_FEAR_CONTROLLER)))\n                            minionController->AI()->DoAction(ACTION_RESET_MINION_CONTROLLER);\n\n                        if (kaolan)\n                            kaolan->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n                        if (regail)\n                            regail->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n\n\n\n                        break;\n                    }\n                    default:\n                        break;\n                }\n            }\n        }",
+        "new": "void JustDied(Unit* killer)\n        {\n            Talk(TALK_ASANI_DEATH);\n\n            if (pInstance)\n            {\n                pInstance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n                Creature* regail = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_ANCIENT_REGAIL));\n                Creature* kaolan = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_PROTECTOR_KAOLAN));\n\n                switch (ProtectorsAlive(pInstance, me))\n                {\n                    case 2:\n                    {\n                        if (regail && regail->IsAlive())\n                        {\n                            regail->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                            regail->AI()->Talk(TALK_ASANI_DIES_FIRST_REGAIL);\n                            me->CastSpell(regail, SPELL_SHA_CORRUPTION, true);\n                        }\n\n                        if (kaolan && kaolan->IsAlive())\n                        {\n                            kaolan->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                            kaolan->AI()->Talk(TALK_ASANI_DIES_FIRST_KAOLAN);\n                            me->CastSpell(kaolan, SPELL_SHA_CORRUPTION, true);\n                        }\n\n                        me->SetLootRecipient(NULL);\n                        break;\n                    }\n                    case 1:\n                    {\n                        if (regail && regail->IsAlive())\n                        {\n                            regail->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n                            regail->AI()->Talk(TALK_ASANI_DIES_SECOND_REGAIL);\n\n                            if (auto shaCorruption = regail->GetAura(SPELL_SHA_CORRUPTION))\n                                if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                    corruptionCaster->CastSpell(regail, SPELL_SHA_CORRUPTION, true);\n                        }\n\n                        if (kaolan && kaolan->IsAlive())\n                        {\n                            kaolan->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n                            kaolan->AI()->Talk(TALK_ASANI_DIES_SECOND_KAOLAN);\n\n                            if (auto shaCorruption = kaolan->GetAura(SPELL_SHA_CORRUPTION))\n                                if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                    corruptionCaster->CastSpell(kaolan, SPELL_SHA_CORRUPTION, true);\n                        }\n\n                        me->SetLootRecipient(NULL);\n                        break;\n                    }\n                    case 0:\n                    {\n                        pInstance->SetBossState(DATA_PROTECTORS, DONE);\n                        if (Player* player = killer ? killer->GetAffectingPlayer() : nullptr)\n                            me->GetMap()->ToInstanceMap()->PermBindAllPlayers(player);\n                        pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TOUCH_OF_SHA);\n                        pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_DEFILED_GROUND_STACKS);\n                        pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_OVERWHELMING_CORRUPTION_STACK);\n                        pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_LIGHTNING_PRISON_STUN);\n                        _JustDied();\n\n                        if (Creature* minionController = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_MINION_OF_FEAR_CONTROLLER)))\n                            minionController->AI()->DoAction(ACTION_RESET_MINION_CONTROLLER);\n\n                        if (kaolan)\n                            kaolan->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n                        if (regail)\n                            regail->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n\n\n\n                        break;\n                    }\n                    default:\n                        break;\n                }\n            }\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "ProtectorKaolanDeathBind",
+    "index": 8,
+    "title": "Resolve boss_protector_kaolan progression to the eligible killer owner",
+    "slug": "boss-protector-kaolan-death-owner",
+    "paths": [
+      "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_protectors.cpp"
+    ],
+    "cls": "boss_protector_kaolanAI",
+    "classes": [
+      "boss_protector_kaolanAI"
+    ],
+    "binding": "boss_protector_kaolan",
+    "entries": [
+      60583
+    ],
+    "kind": "owner_progression",
+    "selector": "killer ? killer->GetAffectingPlayer() : nullptr",
+    "callback_count": 1,
+    "edits": [
+      {
+        "path": "src/server/scripts/Pandaria/TerraceEndlessSpring/boss_protectors.cpp",
+        "old": "void JustDied(Unit* killer)\n        {\n            Talk(TALK_KAOLAN_DEATH);\n\n            if (pInstance)\n            {\n                pInstance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n                Creature* regail = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_ANCIENT_REGAIL));\n                Creature* asani = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_ANCIENT_ASANI));\n\n                switch (ProtectorsAlive(pInstance, me))\n                {\n                case 2:\n                {\n                    if (regail && regail->IsAlive())\n                    {\n                        regail->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                        regail->AI()->Talk(TALK_KAOLAN_DIES_FIRST_REGAIL);\n                        me->CastSpell(regail, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    if (asani && asani->IsAlive())\n                    {\n                        asani->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                        asani->AI()->Talk(TALK_KAOLAN_DIES_FIRST_ASANI);\n                        me->CastSpell(asani, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    me->SetLootRecipient(NULL);\n                    break;\n                }\n                case 1:\n                {\n                    if (regail && regail->IsAlive())\n                    {\n                        regail->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n\n                        if (auto shaCorruption = regail->GetAura(SPELL_SHA_CORRUPTION))\n                            if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                corruptionCaster->CastSpell(regail, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    if (asani && asani->IsAlive())\n                    {\n                        asani->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n\n                        if (auto shaCorruption = asani->GetAura(SPELL_SHA_CORRUPTION))\n                            if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                corruptionCaster->CastSpell(asani, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    me->SetLootRecipient(NULL);\n                    break;\n                }\n                case 0:\n                {\n                    pInstance->SetBossState(DATA_PROTECTORS, DONE);\n                    if (killer && killer->GetTypeId() == TYPEID_PLAYER)\n                        me->GetMap()->ToInstanceMap()->PermBindAllPlayers(killer->ToPlayer());\n                    else if (killer && killer->GetTypeId() == TYPEID_UNIT && killer->GetOwner() && killer->GetOwner()->ToPlayer())\n                        me->GetMap()->ToInstanceMap()->PermBindAllPlayers(killer->GetOwner()->ToPlayer());\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TOUCH_OF_SHA);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_DEFILED_GROUND_STACKS);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_OVERWHELMING_CORRUPTION_STACK);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_LIGHTNING_PRISON_STUN);\n                    _JustDied();\n\n                    if (Creature* minionController = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_MINION_OF_FEAR_CONTROLLER)))\n                        minionController->AI()->DoAction(ACTION_RESET_MINION_CONTROLLER);\n\n                    if (asani)\n                        asani->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n                    if (regail)\n                        regail->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n\n                    break;\n                }\n                default:\n                    break;\n                }\n            }\n        }",
+        "new": "void JustDied(Unit* killer)\n        {\n            Talk(TALK_KAOLAN_DEATH);\n\n            if (pInstance)\n            {\n                pInstance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);\n\n                Creature* regail = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_ANCIENT_REGAIL));\n                Creature* asani = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_ANCIENT_ASANI));\n\n                switch (ProtectorsAlive(pInstance, me))\n                {\n                case 2:\n                {\n                    if (regail && regail->IsAlive())\n                    {\n                        regail->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                        regail->AI()->Talk(TALK_KAOLAN_DIES_FIRST_REGAIL);\n                        me->CastSpell(regail, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    if (asani && asani->IsAlive())\n                    {\n                        asani->AI()->DoAction(ACTION_FIRST_PROTECTOR_DIED);\n                        asani->AI()->Talk(TALK_KAOLAN_DIES_FIRST_ASANI);\n                        me->CastSpell(asani, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    me->SetLootRecipient(NULL);\n                    break;\n                }\n                case 1:\n                {\n                    if (regail && regail->IsAlive())\n                    {\n                        regail->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n\n                        if (auto shaCorruption = regail->GetAura(SPELL_SHA_CORRUPTION))\n                            if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                corruptionCaster->CastSpell(regail, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    if (asani && asani->IsAlive())\n                    {\n                        asani->AI()->DoAction(ACTION_SECOND_PROTECTOR_DIED);\n\n                        if (auto shaCorruption = asani->GetAura(SPELL_SHA_CORRUPTION))\n                            if (Creature* corruptionCaster = me->GetMap()->GetCreature(shaCorruption->GetCasterGUID()))\n                                corruptionCaster->CastSpell(asani, SPELL_SHA_CORRUPTION, true);\n                    }\n\n                    me->SetLootRecipient(NULL);\n                    break;\n                }\n                case 0:\n                {\n                    pInstance->SetBossState(DATA_PROTECTORS, DONE);\n                    if (Player* player = killer ? killer->GetAffectingPlayer() : nullptr)\n                        me->GetMap()->ToInstanceMap()->PermBindAllPlayers(player);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_TOUCH_OF_SHA);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_DEFILED_GROUND_STACKS);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_OVERWHELMING_CORRUPTION_STACK);\n                    pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_LIGHTNING_PRISON_STUN);\n                    _JustDied();\n\n                    if (Creature* minionController = pInstance->instance->GetCreature(pInstance->GetGuidData(NPC_MINION_OF_FEAR_CONTROLLER)))\n                        minionController->AI()->DoAction(ACTION_RESET_MINION_CONTROLLER);\n\n                    if (asani)\n                        asani->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n                    if (regail)\n                        regail->AI()->DoAction(ACTION_DESPAWN_SUMMONS);\n\n                    break;\n                }\n                default:\n                    break;\n                }\n            }\n        }",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "key": "MagmusVictimInstance",
+    "index": 9,
+    "title": "Open Magmus door from the victim instance with a null killer",
+    "slug": "boss-magmus-victim-instance",
+    "paths": [
+      "src/server/scripts/EasternKingdoms/BlackrockDepths/boss_magmus.cpp"
+    ],
+    "cls": "boss_magmusAI",
+    "classes": [
+      "boss_magmusAI"
+    ],
+    "binding": "boss_magmus",
+    "entries": [
+      9938
+    ],
+    "kind": "victim_instance",
+    "selector": "me->GetInstanceScript()",
+    "callback_count": 1,
+    "edits": [
+      {
+        "path": "src/server/scripts/EasternKingdoms/BlackrockDepths/boss_magmus.cpp",
+        "old": "void JustDied(Unit* killer)\n        {\n            if (InstanceScript* instance = killer->GetInstanceScript())\n                instance->HandleGameObject(instance->GetGuidData(DATA_THRONE_DOOR), true);\n        }",
+        "new": "void JustDied(Unit* killer)\n        {\n            if (InstanceScript* instance = me->GetInstanceScript())\n                instance->HandleGameObject(instance->GetGuidData(DATA_THRONE_DOOR), true);\n        }",
+        "count": 1
+      }
+    ]
+  }
+]
