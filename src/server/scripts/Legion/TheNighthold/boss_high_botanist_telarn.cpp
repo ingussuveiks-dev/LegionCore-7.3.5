@@ -529,8 +529,9 @@ struct npc_nh_solarist_telarn : ScriptedAI
 
         DefaultEvents(0);
 
-        AddDelayedEvent(3000, [=] () -> void
+        AddDelayedEvent(3000, [=, aiLifetimeGuard = std::weak_ptr<uint8>(_delayedAILifetimeGuard)] () -> void
         {
+            if (aiLifetimeGuard.expired()) return;
             if (me)
                 me->SetReactState(REACT_AGGRESSIVE);
         });
@@ -738,6 +739,9 @@ struct npc_nh_solarist_telarn : ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
+private:
+    // Unit-owned queues may outlive this AI object.
+    std::shared_ptr<uint8> _delayedAILifetimeGuard = std::make_shared<uint8>(0);
 };
 
 //109040
