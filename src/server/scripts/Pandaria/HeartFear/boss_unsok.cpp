@@ -266,9 +266,9 @@ class npc_amber_monster : public CreatureScript
 
             InstanceScript* pInstance;
             EventMap events;
-            Player* plrRide;
+            ObjectGuid riderGuid;
 
-            void Reset() {}
+            void Reset() { events.Reset(); riderGuid.Clear(); }
             
             void EnterCombat(Unit* attacker)
             {
@@ -310,29 +310,31 @@ class npc_amber_monster : public CreatureScript
                 }
                 if (spell->Id == SPELL_FLING)
                 {
-                    if (!plrRide || target == plrRide)
-                    {
-                        if (me->GetVehicleKit())
-                            me->GetVehicleKit()->RemoveAllPassengers();
-
-                        return;
-                    }
-
+                    ObjectGuid passengerGuid = riderGuid;
+                    riderGuid.Clear();
                     if (me->GetVehicleKit())
                         me->GetVehicleKit()->RemoveAllPassengers();
-
-                    plrRide->CastSpell(target, 122420, true); //jump
-                    plrRide = NULL;
+                    if (Player* rider = ObjectAccessor::GetPlayer(*me, passengerGuid))
+                        if (rider != target)
+                            rider->CastSpell(target, 122420, true); //jump
                 }
             }
 
             void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply)
             {
-                if (!apply || !who->ToPlayer())
+                if (!who || !who->ToPlayer())
                     return;
-
-                plrRide = who->ToPlayer();
-                events.ScheduleEvent(EVENT_FLING, 100);
+                if (!apply)
+                {
+                    if (riderGuid == who->GetGUID())
+                    {
+                        riderGuid.Clear();
+                        events.CancelEvent(EVENT_FLING);
+                    }
+                    return;
+                }
+                riderGuid = who->GetGUID();
+                events.RescheduleEvent(EVENT_FLING, 100);
             }
 
             void UpdateAI(uint32 diff)
@@ -369,7 +371,8 @@ class npc_amber_monster : public CreatureScript
                             events.ScheduleEvent(EVENT_DESTROY_WILL, 2000);
                             break;
                         case EVENT_FLING:
-                            DoCast(SPELL_FLING);
+                            if (ObjectAccessor::GetPlayer(*me, riderGuid))
+                                DoCast(SPELL_FLING);
                             break;
                     }
                 }
