@@ -1,0 +1,17 @@
+{
+  "baseline": "35c59cab0",
+  "scope": "Apply Stench527/526 and Inebriate1010/1009 native three odd-order property50 debuffs to fixed enemy roster slots, reusing native AddTarget/hit/duration/refresh/cleanup. Retain321 and shared159 selection placeholders; no generic159 semantics or other root behavior inferred.",
+  "files": {
+    "src/server/game/PetBattle/PetBattleAbilityEffect.cpp": {
+      "before_sha256": "0064a23c02670f3f4250c9a1f0c97cc02511eafde42e77141f8666191caf26aa",
+      "after_sha256": "b2ee3c92b757e2d456f287f3f3f2908eb9c48bf9e6b9db6269a39896d88193e6"
+    }
+  },
+  "edits": [
+    {
+      "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+      "old": "            AddTarget(PetBattleInstance->Teams[PetBattleInstance->Pets[AuraOwnerPetID]->TeamID]->ActivePetID);\n        return;\n    }\n    if (EffectInfo->BattlePetEffectPropertiesID == 68 && (AbilityID == 282 || AbilityID == 663 || AbilityID == 836))\n    {\n        AddTarget(GetActiveOpponent());\n        return;\n    }\n    // Unholy Ascension authors its three enemy auras at orders1/3/5.\n    // The intervening native selection rows do not merge those recipients.\n    if (AbilityID == 321 && EffectInfo->BattlePetEffectPropertiesID == 50)\n    {\n        uint32 slot = (uint32(EffectInfo->OrderIndex) - 1) / 2;\n        auto team = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];\n        if (slot < team->TeamPetCount && team->TeamPets[slot])\n            AddTarget(team->TeamPets[slot]->ID);\n        return;\n    }\n    // Armageddon authors one property24 row for each enemy roster slot.\n",
+      "new": "            AddTarget(PetBattleInstance->Teams[PetBattleInstance->Pets[AuraOwnerPetID]->TeamID]->ActivePetID);\n        return;\n    }\n    if (EffectInfo->BattlePetEffectPropertiesID == 68 && (AbilityID == 282 || AbilityID == 663 || AbilityID == 836))\n    {\n        AddTarget(GetActiveOpponent());\n        return;\n    }\n    // These native team debuffs author enemy auras at orders1/3/5.\n    // The intervening native selection rows do not merge those recipients.\n    if ((AbilityID == 321 || AbilityID == 527 || AbilityID == 1010) && EffectInfo->BattlePetEffectPropertiesID == 50)\n    {\n        uint32 slot = (uint32(EffectInfo->OrderIndex) - 1) / 2;\n        auto team = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];\n        if (slot < team->TeamPetCount && team->TeamPets[slot])\n            AddTarget(team->TeamPets[slot]->ID);\n        return;\n    }\n    // Armageddon authors one property24 row for each enemy roster slot.\n"
+    }
+  ]
+}

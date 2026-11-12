@@ -2,10 +2,12 @@
 from verify_pet_battle_self_sacrifice_release import ins,sites,values,pairs,reaches,n
 import hashlib,json
 selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
-gate=next(i for i,x in enumerate(selector)if(x.mnemonic,x.op_str)==('cmp','ecx, 0x141'))
-assert ('mov','ecx, dword ptr [rbx + 0x18]')in pairs(selector[:gate])
-assert (selector[gate+2].mnemonic,selector[gate+2].op_str)==('cmp','ax, 0x32')
-addresses=reaches(selector,selector[gate+4].address)
+gate=next(i for i,x in enumerate(selector)if(x.mnemonic,x.op_str)==('cmp','eax, 0x141'))
+assert ('mov','eax, dword ptr [rbx + 0x18]')in pairs(selector[:gate])
+branch=selector[gate+1];assert branch.mnemonic=='je'
+prop=next(i for i,x in enumerate(selector)if x.address==branch.operands[0].imm)
+assert (selector[prop].mnemonic,selector[prop].op_str)==('cmp','word ptr [r8 + 6], 0x32')and selector[prop+1].mnemonic=='jne'
+addresses=reaches(selector,selector[prop+2].address)
 body=[x for x in selector if x.address in addresses]
 assert {('movzx','r8d, byte ptr [r8 + 0x14]'),('dec','r8d'),('shr','r8d, 1'),('cmp','r8d, dword ptr [rdx + 0x58]'),('test','rdx, rdx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(body))
 assert len(sites(body,'?AddTarget@PetBattleAbilityEffect@@'))==1

@@ -4,8 +4,8 @@ import hashlib,json
 selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
 assert {282,663,836,1025,68,24}<=values(selector)
 assert {('cmp','edi, 6'),('mov','edi, dword ptr [rax + 0x70]'),('test','rcx, rcx')}<=set(pairs(selector))
-slot=next(i for i,x in enumerate(selector)if(x.mnemonic,x.op_str)==('cmp','ecx, 0x401'))
-assert (selector[slot+2].mnemonic,selector[slot+2].op_str)==('cmp','ax, 0x18')
+slot=next(i for i,x in enumerate(selector)if(x.mnemonic,x.op_str)==('cmp','eax, 0x401'))
+assert (selector[slot+2].mnemonic,selector[slot+2].op_str)==('cmp','word ptr [r8 + 6], 0x18')
 # The compiler merges the two roster selectors' target-admission tail.
 addresses=reaches(selector,selector[slot+4].address)
 roster=[x for x in selector if x.address in addresses]

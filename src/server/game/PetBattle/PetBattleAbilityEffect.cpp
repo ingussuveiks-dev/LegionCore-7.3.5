@@ -832,9 +832,9 @@ void PetBattleAbilityEffect::SelectTargets()
         AddTarget(GetActiveOpponent());
         return;
     }
-    // Unholy Ascension authors its three enemy auras at orders1/3/5.
+    // These native team debuffs author enemy auras at orders1/3/5.
     // The intervening native selection rows do not merge those recipients.
-    if (AbilityID == 321 && EffectInfo->BattlePetEffectPropertiesID == 50)
+    if ((AbilityID == 321 || AbilityID == 527 || AbilityID == 1010) && EffectInfo->BattlePetEffectPropertiesID == 50)
     {
         uint32 slot = (uint32(EffectInfo->OrderIndex) - 1) / 2;
         auto team = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];

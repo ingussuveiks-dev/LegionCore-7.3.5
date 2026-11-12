@@ -1,0 +1,141 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "STENCH_INEBRIATE_NATIVE_ENEMY_ROSTER_DEBUFFS_FIXED_DEPLOYED_CLIENT_PENDING",
+  "baseline": "35c59cab0b9ea364f5d0f6f14d6366a587dffbee",
+  "problem": "All three native Stench527/526 and Inebriate1010/1009 debuff rows selected the active enemy, repeatedly replacing the same aura. The two reserves received no accuracy reduction. Four actual native observations reproduce this on both teams.",
+  "native_data": "Matching26972/read-only Hotfix:527 turn755 property50 effects812/2110/2215 at orders1/3/5, aura526 duration4 maxAllowed1 accuracy100.1010 turn1664 effects2287/2289/2291 at the same odd orders, aura1009 duration4 maxAllowed1 accuracy100. Both native aura state41 values are -25. Intervening159 selection placeholders remain unchanged; no generic159 payload is invented.",
+  "repair": "Extend the existing native Unholy321 odd-order property50 mapping to527 and1010. Select (OrderIndex-1)/2 from the actual fixed enemy roster, retaining count/non-null/ID and native living-target admission. Keep failed-hit/untargetable recipient, finite duration, maximum count, refresh and removal behavior native. No unrelated table handler, damage formula, class/member ABI, timer, quest/item grant, SQL or character data changed.",
+  "tests": {
+    "native": "48 actual linked native cases on both teams, seven groups: both roots produce three distinct enemy aura instances and preserve own team; every one of three dead/missing roster positions; failed native accuracy; one untargetable recipient without redirecting/suppressing the others; four native processing phases and idempotent expiry; refresh without stacking or deleting another native aura; four legitimate-ready full root/expiry round sequences. Memory-only teams, native stores/read-only Hotfix, no character/login/save or gameplay endpoint mocks.",
+    "counterfactual": "Complete pinned35c59cab0 PetBattle.cpp plus PetBattleAbilityEffect.cpp fails exact all-three-fixed-living-slots assertion with exit1. Repaired all48 pass. Earlier four observations are paired reproductions, not successful gameplay.",
+    "retained": "Current28 Cheat Death,34 Hourglass,26 Bend Time,13 racial,44 sacrifice,16 Unholy and both100 native suites pass on finalcdca. Both100 linked scopes, complete retained pet linked chain and unchanged native round-writer proof pass.",
+    "linked": "Actual527/1010 gates join the same native property50 check as321, then actual odd-order slot division, enemy team/count/non-null/real ID and native living admission. Armageddon and321 proofs follow the current shared compiler tail. Exact register lookup failures and one new verifier syntax typo are retained, corrected and paired with full passing proofs; handler-table CFG bounds remain checked.",
+    "certificate": "Fresh immutable106/106 canonical Release roots pass on cdca, with every root exit0/complete/log hash and unchanged source/tool/binary hashes checked.",
+    "scepter": "Canonical Test-ScepterLogin.ps1 -VerifyReleaseBinary passes. Existing fixture C4389 signed/unsigned compiler warning is retained; no new server/DB warning.",
+    "runtime": "Owned PID=10876 reached fresh ready\nPASS owned PID=10876 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "packet": "Current unchanged writer PE proof passes. Nine actual sender paths and18 cooldown packets with real7.3.5 writer/ByteBuffer extracted-sender ASAN passed on immediately prior7c86; sender/writer source unchanged. Full native-core ASAN/client traversal are not claimed."
+  },
+  "canonical": {
+    "worldserver.exe": "cdcaec31857f971cf53a6a63d1a2c1e6bc6a2fb7483900de14376e2a698a2983",
+    "worldserver.map": "6f1de14506b6856aa9c25acd3ce6b8f98436510226d4c81a3008c1115f4f1134",
+    "bnetserver.exe": "fdbbab09e6bd58d15d25f1e99cc6e0458f55ecff75dac06ecb1755f5cdd73798",
+    "bnetserver.map": "d8683a0574bb39ef642e61b77ff65dd9fc0c218e6de006183d68b4eda753b281"
+  },
+  "certificate": "docs/audits/pet-accuracy-roster-2026-11-12/certificate-results.json",
+  "evidence": [
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/fixed-driver.log",
+      "sha256": "d4e91e41cfd8efd0f367d9439a6133f1d2d04e87348f425edceb352c86c2713c"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/retained28-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/retained34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/retained26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/retained13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/retained44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/retained16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/retained100-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/retained-prior100-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/canonical-linked.log",
+      "sha256": "6d6e75cb0540129054748dee0e328f8f8e2960302a4118b7390312d6923f375e"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/first100-stage.log",
+      "sha256": "12fa5219759ba121afbbbb508277b43c024f7e0c78f3ea9ac7bcb41563af0322"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/second100-stage.log",
+      "sha256": "930d282782f760346312589b89e89b6b7cdba0cfd4de69bff7679bd335043fba"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/packet-stage.log",
+      "sha256": "92b7f26b1476139d7cf80bf568906acaeaf12158942280157e3fc8ed564666c1"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/scepter-driver.log",
+      "sha256": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/startup-driver.log",
+      "sha256": "f52c0afd8db5ee7e36e6b56dbeec38a8cd12f14366e63c5d592a2a30463fc270"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/baseline-roster-driver.log",
+      "sha256": "f98d6f7d80313fa5727540ba1159a4f65dd33661332a961440b18ce7870ca0ef"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/current-driver.log",
+      "sha256": "5d6681a30d1d6d81834df6b02e33a452f0372d2b7ef2b148b707c838becff92f"
+    },
+    {
+      "path": ".codex/pet-accuracy-roster-open-2026-11-12/canonical106/results.json",
+      "sha256": "348f2264ac19649614d43bc4e7880f052d5ef3bf2e02a4dc8fdc8721039674eb"
+    }
+  ],
+  "diagnostics": "Pre/post canonical and per-test crash/log inventories reviewed. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Owned PID10876 ready/shutdown0/exit0/gone, stderr empty. No user/unknown server stopped. Mixed7111byte DBErrors, Slaghammer, unresolved Dark Rebirth/type229 research and unique executables, configs/DLLs/certs and recent rollback hashes preserved.",
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-accuracy-roster-2026-11-12",
+    "ManifestSHA256": "167027B4C4A64F9EA7E08B77767CE8660F279F2D5805E9DF75689591C0B25DC9",
+    "Archived": 527,
+    "Removed": 45,
+    "ReclaimedBytes": 679410474.0,
+    "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent per-issue rollback copies for pending client comparisons,regression sources and reusable tools. Resolved Stench/Inebriate four observations and pinned control archived with48 current native cases and immutable106. Mixed Dark Rebirth795/state146 and type229 research, their unique executables and other shared-proc/Lady/LINK2 evidence remain outside fixed; Slaghammer cache/mixedDBErrors/LINK2/Lady/personal/security evidence untouched."
+  },
+  "final_verification": {
+    "status": "PASS",
+    "native_accuracy_roster_cases": 48,
+    "retained_native_cases": [
+      28,
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "current_linked_hundred_scopes": 2,
+    "release_certificate_passed": 106,
+    "canonical": {
+      "worldserver.exe": "cdcaec31857f971cf53a6a63d1a2c1e6bc6a2fb7483900de14376e2a698a2983",
+      "worldserver.map": "6f1de14506b6856aa9c25acd3ce6b8f98436510226d4c81a3008c1115f4f1134",
+      "bnetserver.exe": "fdbbab09e6bd58d15d25f1e99cc6e0458f55ecff75dac06ecb1755f5cdd73798",
+      "bnetserver.map": "d8683a0574bb39ef642e61b77ff65dd9fc0c218e6de006183d68b4eda753b281"
+    },
+    "archive_records": 527,
+    "removed": 45,
+    "removed_bytes": 679410474.0,
+    "protected_evidence_configuration_and_rollback_unchanged": true
+  },
+  "remaining": [
+    "Type229 roots/defensive-state124 damage/nonadditive aura/cleanup/proc pipeline remains OPEN. Fourteen current native observations show missing marks, ignored Critter Mark damage, additive type12 and unrelated enemy reset; research stays outside fixed.",
+    "Dark Rebirth794/795 protected window/state146/penalty796, Haunt/Apocalypse, other generic159 roots, clone122/123/124 and wider core health remain OPEN.",
+    "Actual learned-kit PvE/PvP UI, accuracy/duration display, animations and battle log; authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, missing LINK2/mixed DBErrors, original intermittent client handshake cause and all36 whole artifact chains remain OPEN."
+  ],
+  "next": "Continue actual native type229 full producer/owner/proc/defensive damage/overlap/expiry sequence without changing species or racial passives. Preserve unresolved Dark Rebirth and Lady timing evidence."
+}
