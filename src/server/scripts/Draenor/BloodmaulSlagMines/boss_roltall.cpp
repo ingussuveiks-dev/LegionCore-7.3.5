@@ -174,6 +174,7 @@ public:
 
         void Reset()
         {
+            events.Reset();
             _Reset();
             summons.DespawnAll();
 
