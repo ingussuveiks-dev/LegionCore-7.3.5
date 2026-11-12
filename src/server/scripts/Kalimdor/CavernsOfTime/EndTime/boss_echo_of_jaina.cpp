@@ -259,6 +259,7 @@ struct npc_echo_of_jaina_flarecore : public ScriptedAI
 
     void Reset() override
     {
+            events.Reset();
         if (!me->HasAura(SPELL_CHECK_PLAYER_DIST))
             me->AddAura(SPELL_CHECK_PLAYER_DIST, me);
     }
