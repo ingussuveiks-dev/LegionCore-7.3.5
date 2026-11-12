@@ -393,6 +393,14 @@ void WorldSession::HandlePetBattleRequestUpdate(WorldPackets::BattlePet::Request
 
     if (!packet.Canceled && battleRequest && opposant)
     {
+        auto admission = sPetBattleSystem->CanPlayerEnterInPetBattle(opposant, battleRequest);
+        if (admission != PETBATTLE_REQUEST_OK)
+        {
+            SendPetBattleRequestFailed(admission);
+            sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);
+            return;
+        }
+
         _player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC); // Immuned only to NPC
         opposant->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC); // Immuned only to NPC
 
@@ -744,6 +752,14 @@ void WorldSession::HandlePetBattleRequestPVP(WorldPackets::BattlePet::RequestPVP
     if (opposant->isInCombat())
     {
         SendPetBattleRequestFailed(PETBATTLE_REQUEST_NOT_WHILE_IN_COMBAT);
+        sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);
+        return;
+    }
+
+    auto admission = sPetBattleSystem->CanPlayerEnterInPetBattle(_player, battleRequest);
+    if (admission != PETBATTLE_REQUEST_OK)
+    {
+        SendPetBattleRequestFailed(admission);
         sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);
         return;
     }

@@ -579,10 +579,10 @@ eBattlePetRequests PetBattleSystem::CanPlayerEnterInPetBattle(Player* player, Pe
             if (player2->_petBattleId)
                 return PETBATTLE_REQUEST_IN_BATTLE;
 
-            if (!player2->IsWithinDist3d(player2, INTERACTION_DISTANCE))
+            if (!player->IsWithinDist3d(player2, INTERACTION_DISTANCE))
                 return PETBATTLE_REQUEST_TARGET_OUT_OF_RANGE;
 
-            if (!player2->IsWithinLOSInMap(player2))
+            if (!player->IsWithinLOSInMap(player2))
                 return PETBATTLE_REQUEST_NOT_HERE_OBSTRUCTED;
         }
     }
