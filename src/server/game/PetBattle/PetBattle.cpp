@@ -1580,7 +1580,13 @@ void PetBattle::PrepareCast(uint32 teamID, uint32 abilityID)
 
 PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32 p_Turn, uint32 p_Turn0ProcCondition, uint32 p_TriggerFlag, int32 auraOwnerPetID)
 {
-    if (auraOwnerPetID != PETBATTLE_NULL_SLOT &&
+    bool const racialTrigger = auraOwnerPetID == PETBATTLE_RACIAL_TRIGGER;
+    if (casterPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[casterPetID])
+        return PETBATTLE_CAST_INTERNAL_ERROR;
+    if (racialTrigger && ((abilityID != 723 && abilityID != 724) || p_Turn != 1 ||
+        p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_NONE || Pets[casterPetID]->IsAlive()))
+        return PETBATTLE_CAST_INTERNAL_ERROR;
+    if (auraOwnerPetID != PETBATTLE_NULL_SLOT && !racialTrigger &&
         (auraOwnerPetID < 0 || auraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[auraOwnerPetID] || p_Turn != 0 ||
             (p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY && p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED)))
         return PETBATTLE_CAST_INTERNAL_ERROR;
@@ -1626,12 +1632,13 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             abilityEffect.StopChain = false;
             abilityEffect.AbilityID = abilityID;
             abilityEffect.IsTriggered = abilityInfo->Flags & BATTLEPET_ABILITY_FLAG_TRIGGER;
+            abilityEffect.AllowDeadCaster = racialTrigger;
             abilityEffect.ReportFailAsImmune = false;
             abilityEffect.SelectTargets();
             // A proc's remove-aura row names the aura owner, which may differ
             // from the original hostile caster. Other effects keep their native
             // selectors (e.g. Clone/Murloc attacks still hit the opponent).
-            if (auraOwnerPetID != PETBATTLE_NULL_SLOT && abilityEffectInfo->BattlePetEffectPropertiesID == 49)
+            if (auraOwnerPetID >= 0 && abilityEffectInfo->BattlePetEffectPropertiesID == 49)
                 abilityEffect.Targets = {uint32(auraOwnerPetID)};
 
             if (!abilityEffect.Execute())

@@ -21,6 +21,8 @@ class Field;
 
 #define PETBATTLE_NULL_ID 0
 #define PETBATTLE_NULL_SLOT -1
+// Internal context for the two native immediate racial resurrection casts.
+#define PETBATTLE_RACIAL_TRIGGER -2
 
 #define PETBATTLE_TEAM_1 0
 #define PETBATTLE_TEAM_2 1

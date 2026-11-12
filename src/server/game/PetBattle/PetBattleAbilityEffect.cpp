@@ -611,8 +611,7 @@ bool PetBattleAbilityEffect::SetHealth(uint32 target, int32 value)
 {
     int32 maxHealth = GetMaxHealth(target);
 
-    if (value > maxHealth)
-        value = maxHealth;
+    value = std::max(0, std::min(value, maxHealth));
 
     if (!(Flags & FailFlags) && value == PetBattleInstance->Pets[target]->Health)
         Flags |= PETBATTLE_EVENT_FLAG_MISS;
@@ -645,13 +644,12 @@ bool PetBattleAbilityEffect::SetHealth(uint32 target, int32 value)
 
 void PetBattleAbilityEffect::Trigger(uint32 target, uint32 abilityID)
 {
-    PetBattleEvent battleEvent(PETBATTLE_EVENT_SET_HEALTH, Caster, Flags, EffectInfo->ID, PetBattleInstance->RoundTurn++, 0, 1);
-
+    PetBattleEvent battleEvent(PETBATTLE_EVENT_TRIGGER_ABILITY, target, Flags, EffectInfo->ID, PetBattleInstance->RoundTurn++, 0, 1);
     battleEvent.Trigger(target, abilityID);
 
     PetBattleInstance->RoundEvents.push_back(battleEvent);
 
-    PetBattleInstance->Cast(Caster, abilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_NONE, PETBATTLE_CAST_TRIGGER_NONE);
+    PetBattleInstance->Cast(target, abilityID, 1, PETBATTLE_ABILITY_TURN0_PROC_ON_NONE, PETBATTLE_CAST_TRIGGER_ALL, PETBATTLE_RACIAL_TRIGGER);
 }
 
 PetBattleAura* PetBattleAbilityEffect::GetAura(uint32 target, uint32 abilityID)
@@ -665,29 +663,27 @@ PetBattleAura* PetBattleAbilityEffect::GetAura(uint32 target, uint32 abilityID)
 
 void PetBattleAbilityEffect::Kill(uint32 target)
 {
-    if (Flags & FailFlags)
-    {
-        // TC_LOG_DEBUG("battlepet", "PetBattleAbilityEffect::Kill BATTLEPET_STATE_Is_Dead");
-        SetState(target, BATTLEPET_STATE_Is_Dead, 1);
+    if ((Flags & FailFlags) || GetState(target, BATTLEPET_STATE_Is_Dead))
         return;
-    }
-
-    PetBattleInstance->Kill(Caster, target, EffectInfo->ID, false, Flags);
 
     /// Passive: mechanical
     if (GetState(target, BATTLEPET_STATE_Passive_Mechanical))
     {
-        Trigger(target, 723);
         SetState(target, BATTLEPET_STATE_Passive_Mechanical, 0);
-        return;
+        SetState(target, BATTLEPET_STATE_Is_Dead, 1);
+        Trigger(target, 723);
+        if (!GetState(target, BATTLEPET_STATE_Is_Dead))
+            return;
     }
 
     /// Passive: undead
-    if (GetState(target, BATTLEPET_STATE_Passive_Undead))
+    else if (GetState(target, BATTLEPET_STATE_Passive_Undead))
     {
-        Trigger(target, 242);
         SetState(target, BATTLEPET_STATE_Passive_Undead, 0);
-        return;
+        SetState(target, BATTLEPET_STATE_Is_Dead, 1);
+        Trigger(target, 724);
+        if (!GetState(target, BATTLEPET_STATE_Is_Dead))
+            return;
     }
 
     // TC_LOG_DEBUG("battlepet", "PetBattleAbilityEffect::Kill BATTLEPET_STATE_Special_ConsumedCorpse");
@@ -695,7 +691,7 @@ void PetBattleAbilityEffect::Kill(uint32 target)
     // SetState(target, BATTLEPET_STATE_Special_ConsumedCorpse, 1);
 
     PetBattleInstance->PetXDied.push_back(target);
-    PetBattleInstance->Kill(Caster, target, EffectInfo->ID);
+    PetBattleInstance->Kill(Caster, target, EffectInfo->ID, false, Flags);
 
     StopChain = true;
 }
@@ -705,7 +701,7 @@ bool PetBattleAbilityEffect::AddTarget(uint32 target)
     if (!PetBattleInstance->Pets[target])
         return false;
 
-    if (!PetBattleInstance->Pets[target]->IsAlive())
+    if (!PetBattleInstance->Pets[target]->IsAlive() && !(AllowDeadCaster && target == Caster))
         return false;
 
     Targets.push_back(target);
@@ -1438,15 +1434,30 @@ bool PetBattleAbilityEffect::HandleInitialization()
 
 bool PetBattleAbilityEffect::HandleResurect()
 {
-    SetHealth(Target, CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]));
-    SetState(Target, BATTLEPET_STATE_Is_Dead, 0);
-    return true;
+    if ((Flags & FailFlags) || !GetState(Target, BATTLEPET_STATE_Is_Dead) || !EffectInfo->Param[0] || EffectInfo->Param[0] > 100)
+        return false;
+    int32 health = int32(std::max<int64>(1, int64(GetMaxHealth(Target)) * EffectInfo->Param[0] / 100));
+    if (GetHealth(Target) != health && !SetHealth(Target, health))
+        return false;
+    return SetState(Target, BATTLEPET_STATE_Is_Dead, 0);
 }
 
 bool PetBattleAbilityEffect::HandleKill()
 {
     /// @TODO Figure out what to do with Param[1] & Param[3]
     CalculateHit(EffectInfo->Param[0]);
+
+    // Native Undead242 expires on its owner. Its terminal effect must neither
+    // kill the opposing front pet nor invoke another resurrection passive.
+    if (AbilityID == 242)
+    {
+        if (Flags & FailFlags)
+            return false;
+        if (GetHealth(Target) > 0)
+            SetHealth(Target, 0);
+        Kill(Target);
+        return !(Flags & FailFlags);
+    }
 
     int32 immuneStateCondition = EffectInfo->Param[2];
 

@@ -56,6 +56,7 @@ struct PetBattleAbilityEffect
     uint32 Caster;
     std::vector<uint32> Targets;
     bool IsTriggered;
+    bool AllowDeadCaster = false;
 
     // Temporary effect execution values
     uint32 Target;

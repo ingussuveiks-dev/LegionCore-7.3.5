@@ -1,0 +1,430 @@
+{
+  "published_certificate_results": "docs/audits/pet-racial-lifecycle-2026-11-12/certificate-results.json",
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "RACIAL_PIPELINE_FIXED_DEPLOYED_NATIVE_AND_LINKED_PASS_CLIENT_PENDING",
+  "problem": "A native lethal hit expired the victim auras and closed its queued turn before trying resurrection. Trigger recorded the recipient but actually cast from the attacker at turn0. Mechanical723 and Damned724 author their effects at turn1, and the old Undead branch selected242 instead of724. Dead target filtering and the already-closed round prevented the native resurrection rows. Ordinary death dispatched twice; failed Kill could mark a live pet dead. Undead242 expiry killed both its owner and the opposing front pet.",
+  "repair": "Attempt the two native racial reactions on the actual victim before committing final death. Consume the matching passive once, use real723/724turn1 and native trigger event10, and admit only a bounded existing dead caster for this internal context. Allow that caster through native corpse filtering; preserve the ordinary final-death aura cleanup. Use native percentage health with64bit intermediate/minimum living health and success checks. Clamp real pet health to0..max. Failed/already-dead kills return without side effects; final death dispatch occurs once.242terminal effect addresses only its actual owner and cannot kill the opponent. Immediate resurrection retains the queued native action and current round.",
+  "native_data": "Matching26972 stores plus readonlyHotfix: initialization291 sets species family passives48/50;723turn1121 orders1/2/3 remove822,resurrect20percent,add244;724turn1122 removes822,resurrect1percent,add242duration1. Aura242 adds unkillable68 and damage-dealt23=-25 and has actual expiry5/property135. No invented resurrection health or timer.",
+  "tests": {
+    "actual_native": "13actual native cases in6groups: both teams and active/reserve slots, actual291species initialization, lethal overkill/resurrection, second lethal hit/exactly-once death, native trigger10recipient, failed kill, nonexpired aura retention during immediate revival and native cleanup, native242one-round processing/repeated lethal immunity/owner-only expiry/restored states/repeated expiry, fullProceedRound with the slower revived pet executing its queued native Bite, invalid internal contexts. No character/login/save; actual linked game functions, no gameplay endpoint mocks.",
+    "controls": "Five expected-failing controls compile the complete original PetBattle.cpp and PetBattleAbilityEffect.cpp from1768a2717 into the actual native probe, using matching current headers. The added execution-state bool occupies previously unused effect padding; no Unit/Creature/Player member change. Each fails its specific actual gameplay assertion with exit1; all repaired native cases exit0. This is native core counterfactual evidence, separate from the previous certificate-tool counterfactuals.",
+    "retained": "Both earlier hundred-repair native suites pass, including original lethal Poison cancellation, native matching pet effects, XP/forfeit/queue ownership and other selected scopes. The latest selected100PE roots also pass. Prior source fixtures retain independently declared original views only after exact four-file lifecycle normalization; actual current native and linked behavior is separately tested. The two hundred-repair native suites and selected100PE were run on the intermediate D6 candidate; the final candidate only adds the equal-HP resurrection correction, covered by all13 native cases and current linked proof. The full immutable106-root collection is repeated on the final candidate.",
+    "linked": "Actual selected native trigger/Cast/death/resurrection/health/expiry implementations prove recipient/turn/IDs, strict admission before construction, actual dead-caster flag, one final native death dispatch, zero..maxhealth clamp,64bit percentage and dead->alive ordering, original final-death cleanup and owner-only242. Actual battle receiver data flow is proved through its saved nonvolatile alias.",
+    "canonical106": "106/106 complete,immutable EXE/map/test-source inputs",
+    "scepter": "Test-ScepterLogin.ps1 -VerifyReleaseBinary passes canonical implementation.",
+    "startup": "Owned PID=11704 reached fresh ready\nPASS owned PID=11704 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True"
+  },
+  "canonical": {
+    "worldserver.exe": "0f947d5f7a46a2ef4704577b53e7230d60654898a130eca5102c272ebd25dbea",
+    "worldserver.map": "b7b489d0a14a88864634012e46fa152203f9cacf3c2cc738f4aefbe75c19af12",
+    "bnetserver.exe": "096c44adc1428fc0ed68c9a5e311bb0e8b84fbba01e1515d89df4f6793bc3ad1",
+    "bnetserver.map": "5d8bcd3d1bd6bf6691f26239bdf6dee298a09ae0982111d8ea450a13a29b1195"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/fixed-equal-health-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/round-packets-driver.log",
+      "sha256": "b1d9cccb796cc757ebb8fd3474610db2edc562028c3929ffd9bf3f9978abd4db"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/canonical-equal.log",
+      "sha256": "40faf8d33e231ee5b370757b2ddd46c477c17349c2ac5a631e15d8a2c698d33b"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/retained100-native-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/retained-prior100-driver.log",
+      "sha256": "f65f330163b36c21f94b64c73e2465dc05bbae82d280064ff05cc2f9a8b4a7fa"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/retained-selected100-stage.log",
+      "sha256": "ab6cbf733feca6a404ee40dc66b71a97ed3339071c759b33a52b17bdb96a6bcf"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/scepter-equal-driver.log",
+      "sha256": "71267b1942216489fb11280a9284eb3c120f397fedf6dbf3f7ae6eed7fe777fc"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/startup-equal-driver.log",
+      "sha256": "8444b897a1c165317f424f04b2b758d347e1c8760db3527cdfe5528b10172730"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/native-baseline-mechanical-driver.log",
+      "sha256": "35f838aa2361bd3b56d34e291b2742583ba094d0b3896e36033ffb83d6b1648f"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/native-baseline-undead-driver.log",
+      "sha256": "a7e7d4db39ee3a4eb5d6855f9b2817b7c902d32f6e91626c1194fbd06e821962"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/native-baseline-miss-driver.log",
+      "sha256": "20a5d8e948b45b4a9e82fa9e62a389ebf2c6c8fa04fb0f7201bed2ec2f403901"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/native-baseline-round-driver.log",
+      "sha256": "f56dcef32660d22f59cac7b8158a227c5da4098a6f2f7cac215e7ca8a1c10cb2"
+    },
+    {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/native-baseline-auras-final-driver.log",
+      "sha256": "7de684a5374f49517e4b6f6b45bf437d9453f341197c790c0be7aed6aeccc272"
+    }
+  ],
+  "production_scope": "Four pet-battle source/header files only; no SQL/configuration/DLL/character data change. Original game/scripts libraries and final link inputs used; canonical runtime promoted with verified rollback. Existing compiler warnings remain visible. Native Release linked proof is not a full native-core ASAN claim.",
+  "diagnostics": "All formal tests/build/native/PE/deployment/startup wrapped with canonical+own pre/post crash/log inventories. Setup compile failures from missing fixture includes/local visual-store declaration were repaired and retained alongside the passing compilation. Intermediate draft PE receiver/register assertion was corrected using actual disassembly. No new/changed crash,DBErrors append or unexplained server warning/error/assertion;task-owned startup PID11704 (final candidate; earlier PID21084 also passed) graceful shutdown0/exit0/gone,stderr empty. No user server stopped.",
+  "protected": "MixedDBErrors7111bytes/SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 and protected Slaghammer cache SHA256b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c retained unchanged. No active mixed log truncated.",
+  "cleanup": {
+    "focused": {
+      "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-racial-lifecycle-2026-11-12",
+      "Removed": 36,
+      "Status": "PASS",
+      "Deleted": [
+        {
+          "Bytes": 119451,
+          "SHA256": "0ED8799FB7EE58724111CB26E5CD7EC914A45987CEF3561F0D29F0932A4FAF7A",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-20261112-154932-727\\worldserver.conf"
+        },
+        {
+          "Bytes": 119451,
+          "SHA256": "2B84073F17F48FD10FEE0769D2D21972F559E0BDE5180A3ECC8B691968B0DA00",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-20261112-155157-646\\worldserver.conf"
+        },
+        {
+          "Bytes": 119451,
+          "SHA256": "1392ABA27DD66A4FCAC31BD2B838271AD53682E85934188BCF47AB637F22D91D",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-20261112-155312-812\\worldserver.conf"
+        },
+        {
+          "Bytes": 119451,
+          "SHA256": "7F6287C46F5292883432F44C5328B8D40297DE8E1412E6913942BB7BC8A35AAB",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-20261112-155323-889\\worldserver.conf"
+        },
+        {
+          "Bytes": 119451,
+          "SHA256": "7275E29E659921B75DBF6262C80FD0B0FF27C519AD3C970688471B56C7D228FB",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-20261112-155334-907\\worldserver.conf"
+        },
+        {
+          "Bytes": 119451,
+          "SHA256": "3572F567BAD0F6B4F1DBE9B06583839FF048A19FF5739C266ED40F17F2C8CDEB",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-20261112-160054-503\\worldserver.conf"
+        },
+        {
+          "Bytes": 8007680,
+          "SHA256": "3426251016339E900FAB7EFCFF9B54561939ACD9CC079E7D511CA035BF691569",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-binary\\Native.exe"
+        },
+        {
+          "Bytes": 119440,
+          "SHA256": "E977F869FAC2E81D294302F659866B3B382663E97EAC837ABB6B5CA91AD633B9",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-research\\worldserver.conf"
+        },
+        {
+          "Bytes": 119441,
+          "SHA256": "A5BB4A6485C34702B58D7756A2A1E94CF324FA85E2A83DCA81C8F8429F574B44",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-research2\\worldserver.conf"
+        },
+        {
+          "Bytes": 119441,
+          "SHA256": "1FDA04AB419D78AF5C2AF33B59240D3D3A73B1396B8755496F60FCF193EA6780",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-research3\\worldserver.conf"
+        },
+        {
+          "Bytes": 119441,
+          "SHA256": "CE3A8C850D9CB5A5BEFCF892103DB75C05BE2FE083B6FBB5282A879B18EDC3B4",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-research4\\worldserver.conf"
+        },
+        {
+          "Bytes": 119441,
+          "SHA256": "4674927FD3027AC49B3DE9EFD372086530F5D3D19A10EA0D6BBE7EADB3018CC9",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\baseline-research5\\worldserver.conf"
+        },
+        {
+          "Bytes": 119448,
+          "SHA256": "15FB6D46E02FBF346A55BD4B0424AABE3279FDCC8CBC1DB4A6BF77F64F0E9FD8",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\fixed-20261112-155053-581\\worldserver.conf"
+        },
+        {
+          "Bytes": 119448,
+          "SHA256": "A66A83E122BDA925177D1A78B2298563DCD10CDDE27CA6755C04DE90759FF53B",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\fixed-20261112-160309-028\\worldserver.conf"
+        },
+        {
+          "Bytes": 119448,
+          "SHA256": "D4D8E0AC47CF553CB0B97C2BE4F57A430916D155C720F1671324C2E7514202C6",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\fixed-20261112-163111-939\\worldserver.conf"
+        },
+        {
+          "Bytes": 119434,
+          "SHA256": "00E3DF0948D22DB636A8D712DADB98F57454C21F9E88E884FA4E50AC3279B496",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\fixed-first\\worldserver.conf"
+        },
+        {
+          "Bytes": 3594240,
+          "SHA256": "B99ED7ABDD3577DFA1C1E42DEBF36A061D4191863A4D6D9BE3FE5AFD4784E6DB",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-release\\bnetserver.exe"
+        },
+        {
+          "Bytes": 12575385,
+          "SHA256": "7F06E3734262C463AA426773EFC3897FF7A70593F1C4A92456E2FBC9E6A1F105",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-release\\bnetserver.map"
+        },
+        {
+          "Bytes": 42240512,
+          "SHA256": "D6C234D47A9E46088B10C96FACB3F353BBAE9ABADA36158132C076DDA3B7F1A2",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-release\\worldserver.exe"
+        },
+        {
+          "Bytes": 120837701,
+          "SHA256": "005F6BF0C612F1FC97CA5752DEE04C7E6DC81F319149E4E38DCA028A60FEA5AA",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-release\\worldserver.map"
+        },
+        {
+          "Bytes": 8282624,
+          "SHA256": "C9AC8B2C05D225AF5D6952BBC44883F8555B5C48D901E2EC35780CAA7803479F",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleLifecycleBaselineNative.exe"
+        },
+        {
+          "Bytes": 2221842,
+          "SHA256": "596AFA3745FCDCF94DE5D034454E448FDBF3A0FF4347552098CD04073A614539",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleLifecycleBaselineNative.obj"
+        },
+        {
+          "Bytes": 8088064,
+          "SHA256": "A99064BB4E86B7A362FA6B3E47BF8E89D60532D157FF6578DF009BC7B636E497",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleLifecycleNative.exe"
+        },
+        {
+          "Bytes": 371790,
+          "SHA256": "CFB6B9744AF224652932844C1F7E5180FB88067F919C3EEB47A1EAF6D70B2B31",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleLifecycleNative.obj"
+        },
+        {
+          "Bytes": 8086528,
+          "SHA256": "EA9469CEB4C748F7B44E4F10B7E703306AB259EC548854D73E33030E89A034E8",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleLifecycleOpenNative.exe"
+        },
+        {
+          "Bytes": 363361,
+          "SHA256": "69E4079B6AB1F91F0634056FA817C00F4C5A46495EFA5F0DDCB67CB465DFB5A9",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleLifecycleOpenNative.obj"
+        },
+        {
+          "Bytes": 32084480,
+          "SHA256": "3E95A81D4332AF2CA4FABA2F5FAD415C989E80A5BC5E650A21C5A18D9DD74F43",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\SecondTenTen20261112Native.exe"
+        },
+        {
+          "Bytes": 9651627,
+          "SHA256": "DEFA9A4345A7AFAA58138824CACA41C32947C81055A83AEF22B57D3B66218BD8",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\SecondTenTen20261112Native.obj"
+        },
+        {
+          "Bytes": 32431104,
+          "SHA256": "A78A65A029D731DA448AE0D0A037831DAAF11034A092C879498254C4C74C8575",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\TenTen20261111Native.exe"
+        },
+        {
+          "Bytes": 11109054,
+          "SHA256": "69D2C61A8CE07D4E02031E1F7F4344382D2C33EE7D2271E3A6CADD312E26081C",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\TenTen20261111Native.obj"
+        },
+        {
+          "Bytes": 9580544,
+          "SHA256": "89C4F374E8A7F938C44E35B8504F5D69745E80FBFFE43D1F9B9929BE80588404",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\pet-battle-round\\test-compiler.pdb"
+        },
+        {
+          "Bytes": 25586688,
+          "SHA256": "0D938E6CF48523BD265E9E11DFB9DD945D5D92CA2CC9CAAE125C1C80B3D63905",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\pet-battle-round\\test.exe"
+        },
+        {
+          "Bytes": 2969607,
+          "SHA256": "9CF3C592A78F1EC936F5C64B1A80C613AEF4AB1DB5EBF877B4F91207B964D2CF",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\pet-battle-round\\test.obj"
+        },
+        {
+          "Bytes": 35655680,
+          "SHA256": "DBA7CAEC60443035BD5CE6257C98F0ED52485051DF6AC178432F6860A9CDC4F2",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\pet-battle-round\\test.pdb"
+        },
+        {
+          "Bytes": 281600,
+          "SHA256": "71AE6169F44906CAF92A69BEA1C4576444EBC96B89A953E3CFC3A0693036E971",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\scepter-login\\test.exe"
+        },
+        {
+          "Bytes": 239007,
+          "SHA256": "A0DE6F32972C5CE8325E63AC6C6F57A0A7F950859487822443B20DE5107090B9",
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\scepter-login\\test.obj"
+        }
+      ],
+      "ManifestSHA256": "F1AE6E94B2635E21A52F3A0A257B31256AC5673D9665E3089F005432C2CE32D9",
+      "Archived": 547,
+      "Retained": "Canonical runtime/configuration/DLLs/certs/shared data/main build libraries,exact pre-fix f7fd rollback and all unrelated OPEN evidence/Slaghammer cache/personal backups/security quarantine. Regression source and reusable tools retained. No mixed log truncated. Current library/reusable stage scripts retained for the next OPEN repair; redundant promoted stage/probe binaries removed.",
+      "ReclaimedBytes": 376050806.0
+    },
+    "retained_suites": {
+      "Archived": 112,
+      "Status": "PASS",
+      "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-racial-lifecycle-2026-11-12/retained-suites",
+      "ManifestSHA256": "A964419D1D80AE5542039FBF6A4598EE77F9598BC9F4C018476FB27EF52B73EE",
+      "Retained": "Reusable source/includes and actual diagnostics retained. Only task-owned regenerable native symbols/maps/compiler outputs and isolated conf copies removed. Canonical/shared data/original build libraries/rollbacks/personal data/security quarantine/OPEN evidence untouched.",
+      "Removed": 8,
+      "ReclaimedBytes": 335009027.0,
+      "Deleted": [
+        {
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\secondtenten20261112native\\20261112-160318-663\\compiler.pdb",
+          "SHA256": "273509556A7B00797AF90C192D4D5C4B2BF564D9B7BFDDECBA44EBC6A2E9D9DC",
+          "Bytes": 18206720
+        },
+        {
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\secondtenten20261112native\\20261112-160318-663\\native.map",
+          "SHA256": "6C34F9B8931C2E08A69EFEE4D3D76344DEFF41A447928BCC48071E538A4ED1C2",
+          "Bytes": 97491764
+        },
+        {
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\secondtenten20261112native\\20261112-160318-663\\native.pdb",
+          "SHA256": "CC082EC3F7878CF363896998CB36D30E2D7D444A4352C2BB765A02EBBA9AD514",
+          "Bytes": 50073600
+        },
+        {
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\secondtenten20261112native\\20261112-160318-663\\worldserver.conf",
+          "SHA256": "E4C04B9A0940814468E03DF86877B6D16EF4CC2B95E8005359F2A4DF9F3F3E76",
+          "Bytes": 119462
+        },
+        {
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\tenten20261111native\\20261112-160622-917\\compiler.pdb",
+          "SHA256": "4117FDDC5941F44E1AADD351009A7689A7174994B2BE49BF728D4FF1D3668AF8",
+          "Bytes": 19181568
+        },
+        {
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\tenten20261111native\\20261112-160622-917\\native.map",
+          "SHA256": "2620EDF99A31A60F11B595CFD48B579C128C6CC11C6E156F6DD160D72BFA8B9C",
+          "Bytes": 98563209
+        },
+        {
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\tenten20261111native\\20261112-160622-917\\native.pdb",
+          "SHA256": "2FE58D5ADC6EA7E14672639981C489F5182BD1362B16039DA8E097EF118884C7",
+          "Bytes": 51253248
+        },
+        {
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\tenten20261111native\\20261112-160622-917\\worldserver.conf",
+          "SHA256": "7BD34E075D3A2A8A32C3953F41C30A791A1897848D7CD9CA490980A7C9251B5C",
+          "Bytes": 119456
+        }
+      ]
+    },
+    "equal_health_final": {
+      "Deleted": [
+        {
+          "Bytes": 119448,
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\fixed-20261112-164227-840\\worldserver.conf",
+          "SHA256": "AB8BE23D494600DC818C9DCB29157E7753931420AFCEC5BF2207048D0E66B41E"
+        },
+        {
+          "Bytes": 119448,
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\fixed-20261112-164423-791\\worldserver.conf",
+          "SHA256": "6B6FC40E3BB6F32E3DE263C7C2FD2DD152458101711D8069AE82B55A645EF841"
+        },
+        {
+          "Bytes": 3594240,
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-release\\bnetserver.exe",
+          "SHA256": "096C44ADC1428FC0ED68C9A5E311BB0E8B84FBBA01E1515D89DF4F6793BC3AD1"
+        },
+        {
+          "Bytes": 12575385,
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-release\\bnetserver.map",
+          "SHA256": "5D8BCD3D1BD6BF6691F26239BDF6DEE298A09AE0982111D8EA450A13A29B1195"
+        },
+        {
+          "Bytes": 42240512,
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-release\\worldserver.exe",
+          "SHA256": "0F947D5F7A46A2EF4704577B53E7230D60654898A130ECA5102C272EBD25DBEA"
+        },
+        {
+          "Bytes": 120837701,
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-release\\worldserver.map",
+          "SHA256": "B7B489D0A14A88864634012E46FA152203F9CACF3C2CC738F4AEFBE75C19AF12"
+        },
+        {
+          "Bytes": 8088576,
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleLifecycleNative.exe",
+          "SHA256": "74042AEB9D03E1EAFAF14697222F6C3767227F10DFB89A2FF9A1E2C5D325DBFC"
+        },
+        {
+          "Bytes": 373250,
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleLifecycleNative.obj",
+          "SHA256": "3E9B233BFC0FC7FC4B3817F6C8ACD34674CAD8122811C78341DE96CA393D5BD0"
+        },
+        {
+          "Bytes": 281600,
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\scepter-login\\test.exe",
+          "SHA256": "4613165CB2059E6577A91C2028B64D962EB87B4D78D5C1913E0DE3A909C6EE0E"
+        },
+        {
+          "Bytes": 239007,
+          "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\scepter-login\\test.obj",
+          "SHA256": "46C1D450BB9B6C73FB0AAB7606DCDD9FF326DA43C3199AF8DD60AFC745A3F1F4"
+        }
+      ],
+      "Removed": 10,
+      "Retained": "Canonical runtime/configuration/DLLs/certs/shared data/main build libraries,exact pre-fix f7fd rollback and all unrelated OPEN evidence/Slaghammer cache/personal backups/security quarantine. Regression source and reusable tools retained. No mixed log truncated. Current library/reusable stage scripts retained for the next OPEN repair; redundant promoted stage/probe binaries removed.",
+      "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-racial-lifecycle-2026-11-12/equal-health-final",
+      "Archived": 831,
+      "Status": "PASS",
+      "ManifestSHA256": "23546F5899BB3A3DB54AF504CE5422BC0FBA9E80066616AE9F73EFC78205461E",
+      "ReclaimedBytes": 188469167.0
+    }
+  },
+  "references": [
+    {
+      "source": "Matching local26972 DB2/read-onlyHotfix and actual native code",
+      "use": "Authoritative spell IDs,turns,health percentages,duration and state values."
+    },
+    {
+      "url": "https://legionbugs.com/post/ispravleniya-za-mart-2025",
+      "use": "Primary implementation-author notes confirm723/724,TriggerAbility,death-aura and HandleKill target defects in a related core. No implementation code copied; matching local data and actual regressions determine this repair."
+    }
+  ],
+  "remaining": [
+    "Actual client death/resurrection animation,pet battle UI/packets and full PvE/PvP traversal remain separate.",
+    "This repairs immediate Mechanical/Undead racial lifecycle only. Dark Rebirth,Cheat Death and Haunt remain OPEN. The non242 HandleKill branch is known to select both front pets rather than its authored target; this is an outstanding defect, not merely missing certification.",
+    "Native cooldown property246/Hourglass230,clone properties122/123/124,type controller229 and wider ordinary core healing/periodic widths remain OPEN.",
+    "Corrected research interpretation: native event7 is ROUND_END; event5 is AURA_REMOVED.1932Hourglass,795DarkRebirth and1907CheatDeath rows use7. Previous research that called these aura-removed procedures is superseded by the actual native enum and rows.",
+    "Authentic living Lady sequence,missing sharedLINK2payloads/mixedlog,original intermittent client handshake and all36whole client artifact chains remain OPEN. No HP threshold,kill timer,script no-op or progression grant invented."
+  ],
+  "next": "Complete the authored cooldown/owner/swap/round-end pipeline against matching native rows and actual whole ability execution, then continue the remaining independently verifiable OPEN fixes.",
+  "equal_health_regression": {
+    "problem": "An intermediate repair left the dead flag set when the requested resurrection HP already equalled existing HP, because SetHealth returned false for an unchanged value.",
+    "repair": "Skip the unnecessary HP mutation but still clear the actual native death state. The linked proof verifies the equality branch bypasses SetHealth and reaches SetState(dead,0).",
+    "counterfactual": {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/equal-health-broken-driver.log",
+      "sha256": "dde92fbb423b0e5d51fd4c2a9778f1e177be865090456364e9060db4248e6a13"
+    },
+    "passing": {
+      "path": ".codex/pet-lifecycle-open-2026-11-12/fixed-equal-health-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    "intermediate_world_sha256": "d6c234d47a9e46088b10c96facb3f353bbae9abada36158132c076dda3b7f1a2"
+  },
+  "final_verification": {
+    "status": "PASS",
+    "certificate_roots": 106,
+    "archive_records": 1490,
+    "removed": 54,
+    "removed_bytes": 899529000.0,
+    "protected_runtime_and_open_evidence_unchanged": true,
+    "source_scope_and_test_hashes": true
+  },
+  "certificate_manifest": {
+    "path": ".codex/pet-lifecycle-open-2026-11-12/canonical106-final/results.json",
+    "sha256": "cc26fd6ce8229580eabd9ab957386bb34cf9bdd8724d9dc81012ef22ebf0cc08"
+  }
+}
