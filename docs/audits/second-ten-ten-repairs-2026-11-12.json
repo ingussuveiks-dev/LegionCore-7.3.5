@@ -1,7 +1,7 @@
 {
-  "status": "IN_PROGRESS_80_OF_100",
+  "status": "IN_PROGRESS_90_OF_100",
   "authorized_total": 100,
-  "completed": 80,
+  "completed": 90,
   "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
   "batches": [
     {
@@ -593,6 +593,79 @@
         "Archived": 2800
       },
       "canonical_worldserver_sha256": "9ab1e508d721b12a8fa032aca13f3e76b6ae9202c0a10177d996c39c6379e4d4"
+    },
+    {
+      "batch": 9,
+      "historical_group": 70,
+      "commits": [
+        {
+          "key": "GogduhCombatQueueReset",
+          "commit": "4326e9f6bc189901a124bf5d883a75eda4c38aa6",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/GogduhCombatQueueReset.json"
+        },
+        {
+          "key": "MagmolatusCombatQueueReset",
+          "commit": "450a76ba909c49f6fe111dcf78a83839fc744a48",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/MagmolatusCombatQueueReset.json"
+        },
+        {
+          "key": "RoltallCombatQueueReset",
+          "commit": "920e5a095eddccaadfed2f4e60a3036e18b49e59",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/RoltallCombatQueueReset.json"
+        },
+        {
+          "key": "FelmystCombatQueueReset",
+          "commit": "bda0b31383afe8078e2f5fbebe9e0dc3839bed88",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/FelmystCombatQueueReset.json"
+        },
+        {
+          "key": "FieryVortexCombatQueueReset",
+          "commit": "f09bbf0299c9121bd88e2091d000929dba369c8b",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/FieryVortexCombatQueueReset.json"
+        },
+        {
+          "key": "LivingMeteorCombatQueueReset",
+          "commit": "edc194021b13e4be9fd085f335eb00042644808d",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/LivingMeteorCombatQueueReset.json"
+        },
+        {
+          "key": "FlarecoreCombatQueueReset",
+          "commit": "e2acfb0b6f161abe1aa304096e72b1757ce90803",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/FlarecoreCombatQueueReset.json"
+        },
+        {
+          "key": "RoyalSentinelCombatQueueReset",
+          "commit": "b9940e84ab460c821aa05599f347d81b3fe860fb",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/RoyalSentinelCombatQueueReset.json"
+        },
+        {
+          "key": "UngaKnifeFightRepeat",
+          "commit": "129339b87a0acbcc9d01e431593f92965a050a40",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/UngaKnifeFightRepeat.json"
+        },
+        {
+          "key": "NefarianShadowblazeRepeat",
+          "commit": "6f6643dc84513c70f63d72220d27d73095c28caa",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/NefarianShadowblazeRepeat.json"
+        }
+      ],
+      "support_commit": "0320ac12e1cca8328fe5a7374b57beb29dc36813",
+      "checks": {
+        "counterfactual": "All ten pinned controls fail their exact named assertion at exit1. Every paired repaired MSVC ASAN case passes. Complete Reset/EnterCombat methods are extracted for eight actors; Felmyst EnterPhase and Unga Reset/DoAction/UpdateAI are complete. Nefarian Shadowblaze and TailLash arms are explicit source projections; other phase controller behavior is not modeled as full NPC execution. Constructors and creature/instance/spatial endpoints are controlled.",
+        "native": "Actual linked native EventMap executes all ten source scopes. Four BossAI-derived actors have independent owned EventMaps: the new reset clears the actual owned queue before the existing parent reset. Old Gogduh phase, Magmolatus combat, Roltall boulder and Felmyst flight callbacks are discarded. Magmolatus still primes authored5/6/7 reset timers and all four preserve fresh combat roots; Felmyst preserves its native ground transition. Vortex old tornado, Meteor thaw/fixate, Flarecore expiry/proximity and both royal sentinel variants lose old schedules and reentry reconstructs one fresh root set. Actual Unga callback repeats KnifeFight without extra RustyShank; native EventMap with two explicit Nefarian arm projections repeats Shadowblaze without manufacturing TailLash. All actual DB script bindings and selected matching26972 authored spell IDs pass. Retained first30/sixth/seventh/eighth native and full previous100 native pass.",
+        "linked": "Selected90, retained previous100 and canonical Scepter pass. Each of eight actual Reset methods calls EventMap::Reset; first four keep the distinct existing BossAI::_Reset afterward. KnifeFight127510 schedules native event4 with original13s and Shadowblaze81031 schedules its own24 with original18-21s interval. Source snapshot hashes and original game/scripts/Main final-link inputs were checked.",
+        "startup": "Owned worldserver PID=21824\nPASS owned PID=21824 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged; stderr empty; no new/changed crash reports, appended DBErrors, unexplained warnings/errors/assertions.",
+        "limitations": "Reset/reentry scope uses complete callbacks with actual native EventMap and controlled creature/instance endpoints. Nefarian proof is explicitly two source event-arm projections plus actual linked native event IDs; full boss controller/encounter is not certified. Actual client raid/dungeon combat, timing, visuals and full36artifact chains remain separate. Authentic living Lady sequence, LINK2/Slaghammer, mixed DBErrors, original intermittent client handshake, unresolved pet246/clone/type-controller/resurrection and core healing/periodic scopes remain OPEN."
+      },
+      "cleanup": {
+        "Archived": 2983,
+        "Removed": 30,
+        "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch9",
+        "ReclaimedBytes": 772355386,
+        "ManifestSHA256": "F83B2293F444C08E55554556C3718AEEEAD81351C76CDFF305E4C0C004349430",
+        "Rollback": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-second-ten-ten-batch1-2026-11-12"
+      },
+      "canonical_worldserver_sha256": "ed5cb3b5d2d04c5692b58a482255b876ca33bd4a69953711448f05a6b553d1dd"
     }
   ],
   "selected_not_yet_verified": [],
@@ -605,6 +678,6 @@
     "legacy PE certificate failures",
     "native pet effect property 246"
   ],
-  "remaining": 20,
-  "completed_batches": 8
+  "remaining": 10,
+  "completed_batches": 9
 }
