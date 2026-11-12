@@ -1162,7 +1162,7 @@ class spell_pri_shadow_mend_aura : public AuraScript
 {
     PrepareAuraScript(spell_pri_shadow_mend_aura);
 
-    int32 tempdamageSM = 0;
+    uint64 tempdamageSM = 0;
 
     void OnProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
     {
@@ -1173,7 +1173,7 @@ class spell_pri_shadow_mend_aura : public AuraScript
         if (!eventInfo.GetDamageInfo())
             return;
 
-        tempdamageSM -= eventInfo.GetDamageInfo()->GetDamage(); // penalty damage
+        tempdamageSM -= std::min(tempdamageSM, eventInfo.GetDamageInfo()->GetDamage()); // penalty damage
 
         if (Aura* shadowMendAura = GetAura())
             if (tempdamageSM <= 0)
@@ -1196,7 +1196,7 @@ class spell_pri_shadow_mend_aura : public AuraScript
 
     void CalcDamage(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)
     {
-        tempdamageSM += amount; // Calculate penalty damage
+        tempdamageSM = HealingAmount::Add(tempdamageSM, HealingAmount::FromFloat(amount)); // Calculate penalty damage
         amount = tempdamageSM / 10;
     }
 
