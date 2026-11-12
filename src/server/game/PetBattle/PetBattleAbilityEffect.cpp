@@ -1469,7 +1469,7 @@ bool PetBattleAbilityEffect::HandleDamageToggleAura()
         return Damage(Target, CalculateDamage(EffectInfo->Param[0]));
     }
     // No aura, add it
-    return AddAura(Caster, EffectInfo->Param[2], 0);
+    return AddAura(Caster, EffectInfo->BattlePetEffectPropertiesID == 77 ? EffectInfo->Param[2] : -1, 0);
 }
 
 bool PetBattleAbilityEffect::HandleHealStateToggleAura()

@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-12",
+  "key": "PetChargedAttackLifetime",
+  "title": "Retain undated native charged attacks until their second activation",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "batch": 7,
+  "historical_group": 68,
+  "baseline": "071d9a65398e894a041e3319d64dd94594449f2e",
+  "paths": [
+    "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+  ],
+  "regression": "tools/tests/Test-SecondTenTen20261112.ps1 -Batch 7 -Case PetChargedAttackLifetime",
+  "counterfactual": "Same command with -Baseline; expected broken pinned control, paired with repaired pass.",
+  "checks": {
+    "counterfactual": "Ten exact pinned baseline assertions fail at exit1 and all paired complete-method MSVC ASAN cases pass. Selected core/effect/aura and full admission methods are extracted; external stores/session/geometry and unselected handler endpoints are controlled. Actual full linked core is separately exercised; no full-core ASAN claim.",
+    "native": "All eight actual native charged attacks retain their preparation and release exactly once. Actual Stockpile290/289 retains damage reduction and its authored20-percent maximum-health reserve, then restores the health fraction before healing. Native state289/2/20 is routed only for this reserve to percentage state99; Healthy577 hundredths-per-level scaling remains unchanged and its full prior regression passes. Plant303 accumulates three native12-point nutrient rounds, heals36 once, resets on restart and caps at10 across12 ticks. All six native walls survive a round and block exactly two real110 attacks; third hits land. Takedown419 conditions distinguish absent, present and stacked state. Four actual percentage-damage rows and both Vengeance/Reflective Shield rows retain identical results at power0/2000. Full Consume Corpse665 admission refuses a living roster, consumes one actual allied corpse and heals50percent once, rejects reuse. Charge1547 removes10000 priority from11000 back to1000. Actual self-duel admission rejects the same Player. Retained first30/sixth10 native and full previous100 native pass.",
+    "linked": "All selected70, retained previous100 and Scepter PE checks pass on the actual canonical binary. Indefinite activation/consumption paths, state gating, power-independent arguments, corpse-state admission/consumption, signed directional bounds and self-identity branch are linked. Existing CanCast dead/lockdown and ModState signed-argument proofs follow the actual compiler register allocation; functional conditions remain required. Original game/scripts/Main final-link inputs and source hashes were checked.",
+    "startup": "Owned worldserver PID=23168\nPASS owned PID=23168 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged; stderr empty; no new crashes, appended DBErrors, unexplained errors, warnings or assertions.",
+    "limitations": "Actual client aura icons/health displays, charged second-use presentation, timed combat, corpse-selection UI and PvP challenge UI remain separate. Living Lady Sharasdal sequence, LINK2/Slaghammer, mixed DBErrors, original client handshake silence and all36wholeclientchains remain OPEN. Pet property246, clone122/123/124, defensive type controller229, resurrection pipeline and wider core heal/periodic widths remain OPEN."
+  },
+  "fixture_setup_failures_resolved": [
+    "An apparent enemy-slot-zero defect was withdrawn before counting: PETBATTLE_TEAM_1 is already0 and the selector is unused by ordinary handlers. No equivalent spelling change is counted.",
+    "The first admission fixture build lacked two unrelated fixture enum declarations; the fixture setup was corrected and both pinned/repaired admission controls pass.",
+    "Initial native Stockpile validation exposed real legacy state2 scaling in addition to the expired reserve. Matching activation290 authors20percent while aura289 stores state2/value20; Healthy577 separately authors5points per level. The scoped reserve now uses percentage state99 and tracked normal removal; actual120/100 health symmetry, heal80 after consumption and unchanged native Healthy checks pass.",
+    "A metadata probe initially printed float EffectAmplitude instead of the actual periodic interval. It now prints ApplyAuraPeriod; native Neesa interval125ms and duration1000ms describe eight ticks, so no speculative array-overrun repair is counted.",
+    "The first selected PE check expected earlier CanCast/ModState registers. The final verifier follows actual r8 dead-state, rcx/rdi lockdown and r8 signed-param paths, retaining the same native branch requirements."
+  ],
+  "canonical_worldserver_sha256": "d8490d712ba46374e942e90e5f9debced93da37f584a0eb0e11200d8e2ee7b51",
+  "archive": "build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch7; archive manifest recorded in batch ledger after verified cleanup.",
+  "retained_open": [
+    "Authentic living Lady Sharasdal activation/surrender/conversation1906/Grash/cleanup",
+    "LINK2/Slaghammer evidence",
+    "Mixed DBErrors.log remains unchanged",
+    "Original intermittent client handshake silence",
+    "All36wholeclientchains",
+    "Legacy artifact PE certificates",
+    "Native pet effect property246",
+    "Native clone/type-controller/resurrection behavior",
+    "Ordinary coreheal/periodic width beyond explicit64 inputs"
+  ]
+}
