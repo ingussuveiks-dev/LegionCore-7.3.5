@@ -698,7 +698,7 @@ void PetBattleAbilityEffect::Kill(uint32 target)
 
 bool PetBattleAbilityEffect::AddTarget(uint32 target)
 {
-    if (!PetBattleInstance->Pets[target])
+    if (target >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !PetBattleInstance->Pets[target])
         return false;
 
     if (!PetBattleInstance->Pets[target]->IsAlive() && !(AllowDeadCaster && target == Caster))
@@ -788,6 +788,21 @@ bool PetBattleAbilityEffect::AddAura(uint32 target, int32 duration, int32 maxAll
 void PetBattleAbilityEffect::SelectTargets()
 {
     Targets.clear();
+    if (EffectInfo->BattlePetEffectPropertiesID == 68 && (AbilityID == 282 || AbilityID == 663 || AbilityID == 836))
+    {
+        AddTarget(GetActiveOpponent());
+        return;
+    }
+    // Armageddon authors one property24 row for each enemy roster slot.
+    // Preserve that slot even when an earlier enemy is already dead/missing.
+    if (AbilityID == 1025 && EffectInfo->BattlePetEffectPropertiesID == 24)
+    {
+        uint32 slot = EffectInfo->OrderIndex - 1;
+        auto team = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];
+        if (slot < team->TeamPetCount && team->TeamPets[slot])
+            AddTarget(team->TeamPets[slot]->ID);
+        return;
+    }
     if (EffectInfo->BattlePetEffectPropertiesID >= MAX_PETBATTLE_EFFECT_TYPES)
     {
         TC_LOG_ERROR("battlepet", "Function: %s; Line: %u EffectInfo->effect > MAX_PETBATTLE_EFFECT_TYPES; effect: %u", __FUNCTION__, __LINE__, EffectInfo->BattlePetEffectPropertiesID);
@@ -1377,12 +1392,13 @@ bool PetBattleAbilityEffect::HandleEqualizeLife()
 
 bool PetBattleAbilityEffect::HandleDamageCasterPercent()
 {
-    if (EffectInfo->Param[2])
-        Target = GetActiveOpponent();
-
+    // The native third parameter is IsPeriodic, not a recipient selector.
+    // These three hostile percentage rows use the user's maximum health;
+    // the other property68 rows are the clone abilities' own health cost.
+    bool const enemyDamage = AbilityID == 282 || AbilityID == 663 || AbilityID == 836;
     CalculateHit(EffectInfo->Param[1]);
 
-    int32 damage = CalculateDamage(CalculatePct(GetMaxHealth(Caster), EffectInfo->Param[0]));
+    int32 damage = CalculateDamage(CalculatePct(GetMaxHealth(Caster), EffectInfo->Param[0]), !enemyDamage);
     return Damage(Target, damage, true);
 }
 
@@ -1446,6 +1462,19 @@ bool PetBattleAbilityEffect::HandleKill()
 {
     /// @TODO Figure out what to do with Param[1] & Param[3]
     CalculateHit(EffectInfo->Param[0]);
+
+    // These authored sacrifices target the user, not both front pets. Keep
+    // the native caster immunity (clone context), and the explicit Failsafe
+    // prohibition on Explode282 and Armageddon1025 only.
+    if (AbilityID == 282 || AbilityID == 663 || AbilityID == 836 || AbilityID == 1025)
+    {
+        if ((Flags & FailFlags) || (EffectInfo->Param[1] && GetState(Caster, EffectInfo->Param[1])))
+            return false;
+        if ((AbilityID == 282 || AbilityID == 1025) && GetState(Caster, BATTLEPET_STATE_Passive_Mechanical))
+            SetState(Caster, BATTLEPET_STATE_Passive_Mechanical, 0);
+        Kill(Caster);
+        return !(Flags & FailFlags);
+    }
 
     // Native Undead242 expires on its owner. Its terminal effect must neither
     // kill the opposing front pet nor invoke another resurrection passive.

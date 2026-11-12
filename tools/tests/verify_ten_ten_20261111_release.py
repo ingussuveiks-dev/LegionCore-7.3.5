@@ -1,5 +1,6 @@
 from pathlib import Path
 import re
+from capstone import CS_OP_IMM
 from ten_ten_20261111_scope import PLAN,ROOT,require_fixed
 from five_ten_20261111_pe import n,ins,values,sites,callbacks,expanded
 require_fixed()
@@ -155,8 +156,32 @@ if ninth:
  assert any(x.mnemonic=='mov'and x.op_str.endswith(', 2')for x in rows),'Actual disabled-pet loop covers two teams'
  rows=pet_leaf('?CanSwap@PetBattleTeam@@');assert 5 in values(rows)and any(x.mnemonic=='cmp'and x.op_str=='dl, 0xff'for x in rows),'Actual incoming slot zero is distinguished from negative no-replacement sentinel'
  rows=ins('?SwapPet@PetBattle@@');assert 5 in values(rows)and sites(rows,'?CanSwap@PetBattleTeam@@'),'Actual bounded incoming replacement passes native owner/lock admission'
- for prefix in ('?Execute@PetBattleAbilityEffect@@','?SelectTargets@PetBattleAbilityEffect@@'):
-  rows=ins(prefix);assert 235 in values(rows[:25])and any(x.mnemonic in('jae','jb')for x in rows[:25]),'Native handler table boundary precedes indexing'
+ rows=ins('?Execute@PetBattleAbilityEffect@@')
+ assert 235 in values(rows[:25])and any(x.mnemonic in('jae','jb')for x in rows[:25]),'Native execution table boundary precedes indexing'
+ # Scoped native selectors can return without touching the handler table.
+ # Prove the fallback guard dominates its real indexed read, rather than
+ # assuming the guard has to remain among the first25 instructions.
+ rows=ins('?SelectTargets@PetBattleAbilityEffect@@')
+ guard=next(i for i,x in enumerate(rows)if(x.mnemonic,x.op_str)==('mov','ecx, 0xeb'))
+ assert [(x.mnemonic,x.op_str)for x in rows[guard+1:guard+2]]==[('cmp','ax, cx')]
+ branch=rows[guard+2];assert branch.mnemonic=='jb'
+ lookup=next(i for i,x in enumerate(rows)if x.address==branch.operands[0].imm)
+ assert [(x.mnemonic,x.op_str)for x in rows[lookup:lookup+2]]==[('mov','rdx, rax'),('add','rdx, rdx')]
+ assert rows[lookup+2].mnemonic=='lea'and rows[lookup+2].op_str.startswith('rax, [rip + ')
+ assert (rows[lookup+3].mnemonic,rows[lookup+3].op_str)==('mov','edx, dword ptr [rax + rdx*8]')
+ def native_reaches(start,blocked=None):
+  table={x.address:x for x in rows};pending=[start];seen=set()
+  while pending:
+   at=pending.pop()
+   if at==blocked or at in seen or at not in table:continue
+   seen.add(at);x=table[at]
+   if x.mnemonic in('ret','int3','ud2'):continue
+   if x.mnemonic.startswith('j')and x.operands[0].type==CS_OP_IMM:pending.append(x.operands[0].imm)
+   if x.mnemonic!='jmp':pending.append(x.address+x.size)
+  return seen
+ indexed=rows[lookup+3].address
+ assert indexed not in native_reaches(rows[0].address,rows[guard+1].address),'Every actual selector table read must pass the native235 comparison'
+ assert indexed not in native_reaches(branch.address+branch.size),'An out-of-range native effect cannot reach the table read'
  rows=ins('?Execute@PetBattleAbilityEffect@@');at=next(i for i,x in enumerate(rows)if x.mnemonic=='call'and x.op_str=='rdx');assert rows[at+1].mnemonic=='and'and rows[at+2].mnemonic=='add'and rows[at+3].mnemonic=='cmp'and rows[at+4].mnemonic=='jne','Actual effect loop advances by selected target rather than exiting on success'
  rows=ins('?HandleHealPercent@PetBattleAbilityEffect@@')
  from second_ten_ten_20261112_scope import PLAN as SECOND_PLAN

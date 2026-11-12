@@ -35,10 +35,10 @@ assert {('mov','edi, edx'),('mov','r8d, edx')}<=set(pairs(trigger[:event]))
 assert {('mov','dword ptr [rsp + 0x30], 0xfffffffe'),('mov','dword ptr [rsp + 0x28], 0xffffffff'),
         ('mov','dword ptr [rsp + 0x20], 0xff'),('mov','r9d, 1'),('mov','edx, edi')}<=set(pairs(trigger[native_cast-8:native_cast]))
 # Actual slot/racial/turn/proc/death admission precedes the effect construction.
-assert {('cmp','edx, 6'),('cmp','r10d, -2'),('lea','eax, [r8 - 0x2d3]'),('cmp','eax, 1'),
-        ('cmp','ebx, 1'),('cmp','r15d, 0xff'),('cmp','dword ptr [rcx + 0x150], 0')}<=set(pairs(cast[:55]))
+assert {('mov','r11d, r8d'),('cmp','edx, 6'),('cmp','r10d, -2'),('lea','eax, [r11 - 0x2d3]'),('cmp','eax, 1'),
+        ('cmp','ebx, 1'),('cmp','r12d, 0xff'),('cmp','dword ptr [r8 + 0x150], 0')}<=set(pairs(cast[:55]))
 select,=sites(cast,'?SelectTargets@PetBattleAbilityEffect@@');execute,=sites(cast,'?Execute@PetBattleAbilityEffect@@')
-assert select<execute and pairs(cast[select-5:select-2])==[('mov','byte ptr [rbp - 0x39], al'),('movzx','eax, byte ptr [rsp + 0x40]'),('mov','byte ptr [rbp - 0x38], al')]
+assert select<execute and pairs(cast[select-5:select-2])==[('mov','byte ptr [rbp - 0x39], al'),('movzx','eax, byte ptr [rsp + 0x41]'),('mov','byte ptr [rbp - 0x38], al')]
 revive=ins('?HandleResurect@PetBattleAbilityEffect@@')
 hp,=sites(revive,'?SetHealth@PetBattleAbilityEffect@@');alive,=sites(revive,'?SetState@PetBattleAbilityEffect@@')
 assert hp<alive and {('imul','r8, rax'),('cmp','dx, 0x63'),('cmovg','r8d, edx')}<=set(pairs(revive))
@@ -55,7 +55,7 @@ at,store=stores[0];assert len(stores)==1
 register=store.operands[0].mem.base;alias=store.reg_name(register)
 saved=next(i for i,x in enumerate(terminal[:16])if(x.mnemonic,x.op_str)==('mov',alias+', rcx'))
 assert not any(register in x.regs_access()[1]for x in terminal[saved+1:at]),'Final death result must be written through the preserved actual battle receiver'
-expiry=ins('?HandleKill@PetBattleAbilityEffect@@');gate=next(i for i,x in enumerate(expiry)if(x.mnemonic,x.op_str)==('cmp','dword ptr [rbx + 0x18], 0xf2'))
+expiry=ins('?HandleKill@PetBattleAbilityEffect@@');gate=next(i for i,x in enumerate(expiry)if(x.mnemonic,x.op_str)==('cmp','r8d, 0xf2'))
 branch=expiry[gate+1];assert branch.mnemonic=='jne'
 owner_path=expiry[gate+2:next(i for i,x in enumerate(expiry)if x.address==branch.operands[0].imm)]
 assert len(sites(owner_path,'?Kill@PetBattleAbilityEffect@@'))==1

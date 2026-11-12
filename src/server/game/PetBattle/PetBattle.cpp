@@ -1602,6 +1602,14 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
     if (!abilityInfo)
         return PETBATTLE_CAST_INVALID_ID;
 
+    // These native turn1 sequences end with the user's sacrifice. An enemy
+    // dying to an earlier damage row must not discard that terminal row (or
+    // Armageddon's remaining enemy slots). Other stop/chain rules still apply.
+    bool const selfSacrifice = p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE &&
+        (abilityID == 282 || abilityID == 663 || abilityID == 836 || abilityID == 1025);
+    if (selfSacrifice && !Pets[casterPetID]->IsAlive())
+        return PETBATTLE_CAST_INTERNAL_ERROR;
+
     // States
     if (!p_Turn && p_TriggerFlag == PETBATTLE_CAST_TRIGGER_NONE)
         for (auto abilityStateInfo : sBattlePetAbilityStateStore)
@@ -1644,10 +1652,12 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             if (!abilityEffect.Execute())
                 abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);
 
-            if (abilityEffect.StopChain)
+            bool const sacrificeDamage = selfSacrifice &&
+                (abilityEffectInfo->BattlePetEffectPropertiesID == 24 || abilityEffectInfo->BattlePetEffectPropertiesID == 68);
+            if (abilityEffect.StopChain && !sacrificeDamage)
                 break;
 
-            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT)
+            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT && !selfSacrifice)
                 return PETBATTLE_CAST_OK;
         }
     }

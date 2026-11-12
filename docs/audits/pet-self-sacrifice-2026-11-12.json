@@ -1,0 +1,446 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "FOUR_NATIVE_SACRIFICE_SEQUENCES_FIXED_DEPLOYED_AUTOMATED_PASS_CLIENT_PENDING",
+  "baseline": "82a0b865c",
+  "prior_racial_fix": "29547942525a25d73521747cdf3b4703bc6cbe9a",
+  "abilities": [
+    {
+      "id": 282,
+      "name": "Explode"
+    },
+    {
+      "id": 663,
+      "name": "Corpse Explosion"
+    },
+    {
+      "id": 836,
+      "name": "Baneling Burst"
+    },
+    {
+      "id": 1025,
+      "name": "Armageddon"
+    }
+  ],
+  "causes": [
+    "The shared non242instakill branch killed both fronts instead of the authored user.",
+    "Property68 confused native IsPeriodic with a recipient override:282/663damaged their own user. The percentage of existing maximum health was multiplied by Power again.",
+    "Three1025property24rows repeatedly addressed the active enemy rather than the three authored enemy slots.",
+    "A lethal early damage row set StopChain/CATCH_OR_KILL and discarded the remaining enemies and terminal self-sacrifice.",
+    "282/1025did not honor their native explicit Failsafe prohibition;the newly restored Mechanical pipeline exposed this inherited missing exclusion. Native caster-immunity state100 was also ignored."
+  ],
+  "repair": "Scope the four ordinary turn1 sequences explicitly. Select the actual admitted opponent for their three hostile percentage rows,retain clone health-cost recipients,and avoid a second Power multiplier. Select1025enemies by their authored row/roster slot without compacting dead/missing slots. Sacrifice only the user,retain failed/clone-immunity guards,and consume Mechanical48before282/1025terminal death. Continue only the authored damage rows after an enemy death;all other StopChain rules remain. Admit target bounds before array access and reject a dead caller for these ordinary sequences. Preserve the scoped242expiry repair and other native135branches as explicit remaining work.",
+  "native_data": "Matching26972/read-onlyHotfix:282effect499uses40percent/property68then500/property135;663uses15percent1128,enemy664infection1129andterminal1344;836uses40percent1721andterminal1722.1025hasthree20point2327/2328/2329damage rows then2330terminal. The135native field1isCasterImmuneState100for these rows;282/1025descriptions explicitly prohibitFailsafe. Property68field2isIsPeriodic. No invented health,kill timer,quest credit or item grants.",
+  "tests": {
+    "actual_native": "44actual native cases in7groups:both teams,neutral matching species,Power0/300,actual full Cast,exact hostile percentage,CorpseExplosion infection,once-only user death/closed-round replay,Mechanical prohibition,three1025enemy slots/allied reserves,lethal first enemy with later enemies/terminal retained,native caster immunity/failed terminal,bounded invalid slots,missing/dead target/roster holes,and8actual ProceedRound executions. All teams live only in memory;no character/login/save or gameplay endpoint mocks.",
+    "controls": "Seven expected-failing native controls compile the complete original82a0b865cPetBattle.cpp andPetBattleAbilityEffect.cpp into the actual fixture. Each fails its specific gameplay assertion with exit1;repaired all44exit0. No baseline compiler failure is treated as a reproduced gameplay failure.",
+    "retained": "Current13Mechanical/Undead native cases and both earlier100-repair native suites pass,including lethal Poison cancellation,matching pet effects/ownership and other selected scopes. The actual9packet senders plus7.3.5writer/ByteBuffer decode pass under extracted-sender ASAN;this is not full-native-core ASAN.",
+    "linked": "Actual current native selector/admission/percentage/terminal/Cast implementations prove actual enemy/roster slots,bounds,one user death,caster immunity,282/1025Mechanical48clear,no second percentage Power multiplier and scoped continuation after an enemy death. The retained actual racial proof is rerun after compiler-register changes. Both retained hundred-repair linked scopes pass.",
+    "canonical106": "106/106 complete on immutable current EXE/map/test-tool inputs. These are retained binary scopes,not106new gameplay fixes.",
+    "startup": "Owned PID=3960 reached fresh ready\nPASS owned PID=3960 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "scepter": "Canonical Test-ScepterLogin.ps1 -VerifyReleaseBinary passes."
+  },
+  "tool_repairs": {
+    "selector_boundary": "The initial complete collection was stopped after its old first25instructions assumption rejected SelectTargets. The new scoped selectors return before using the handler table. The repaired proof follows the actual235unsigned comparison and indexed read,proves every path to that read crosses the guard,and proves the invalid branch cannot reach it. The Execute guard remains checked independently. The failing raw output and controlled test termination/post-diagnostics remain paired with the passing selected proof and final full106collection.",
+    "utf8": "One retained-helper extraction failed before native execution because the fresh shell lacked PYTHONUTF8. The traceback remains;the explicitUTF8rerun with pre/post diagnostics passes. No production/logging check disabled.",
+    "normalization": "Exact independently declared two-file amendment restores82a0b865cwhole files before the earlier racial/100repair source fixtures. The current source and native/linked implementation are checked independently;historical fixtures are not substituted for current behavior."
+  },
+  "canonical": {
+    "worldserver.exe": "4c86e9306a497306d763a5c84a4edb2b6f845cb943cc9754e9fa0cabe3f057c6",
+    "worldserver.map": "6f6aee9d90795580fe7452fd43b18cd2be104528afd7a65d0a97ae9ae7a5ae1b",
+    "bnetserver.exe": "f0a92b490e6627ac248450ac2c15fd10dd61213cf1b576cf0d630803aa0bfec9",
+    "bnetserver.map": "33133b1b5b4e4025dd007dcfdcaf52a902c625bbb5a34fd609966cab3e8f9c09"
+  },
+  "published_certificate_results": "docs/audits/pet-self-sacrifice-2026-11-12/certificate-results.json",
+  "evidence": [
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/fixed-round-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/retained-racial-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/retained100-utf8-driver.log",
+      "sha256": "71f16005ac8c5c9385f3211ec7bedfffbc5ea3e2704e4eb2f7b03d929a2771e2"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/retained-prior100-driver.log",
+      "sha256": "cca247403741428426eebd5ab3ba6616075c482505d60f5a4172b83e5015563f"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/round-packets-driver.log",
+      "sha256": "b1d9cccb796cc757ebb8fd3474610db2edc562028c3929ffd9bf3f9978abd4db"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/canonical-linked.log",
+      "sha256": "3d16825473e482c285466a99821631efbbe38e48c1f09168d2440d8b094b9017"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/retained100-stage.log",
+      "sha256": "9bb7e496a9b3da3c4f3d2638195259a2828c2f04a5872e31ba70c032bd2c15b8"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/retained-prior100-canonical.log",
+      "sha256": "8392f683475ea3076f3c820bf44be49147cae05ba9b2f4f8786aaa25ade560e6"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/scepter-driver.log",
+      "sha256": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/startup-driver.log",
+      "sha256": "42f65d54e12d42afe7e9ce7a315a5d13fd656612dd96a3a9146fb8aa9f432736"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/canonical106-final/results.json",
+      "sha256": "61fe394b0b792e1b3ec267d4265fb31520cd46e8d1dc42916580db09401bc32f"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/old-tool-counterfactual-driver.log",
+      "sha256": "141f69d3500854d16f9846d882f3a0516b43f06028fc401c62c9f0725effde5c"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/pinned-old-tool.py",
+      "sha256": "e674dc565c369947470bae1b8f94be8cee0f718e73616ce3c79e4b9207fbd3b6"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/baseline-damage-driver.log",
+      "sha256": "97ac50769b3c23f26901ec503ca5568b3e2e86d3bae05995dea84253d3e1894f"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/baseline-terminal-driver.log",
+      "sha256": "f1dd0d8027efa00c841f59790b759c6c275e96b18b1069db5f5bf92fe2aaf26f"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/baseline-failsafe-driver.log",
+      "sha256": "fe62699540c175c7e2799986cb71febf706335e34c013452a2e4092634f9cf07"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/baseline-team-driver.log",
+      "sha256": "5b4e1e103866e41240db7ff9a0430716f8aa439fa431f474797610223d2f556d"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/baseline-lethal-driver.log",
+      "sha256": "d7725c3820668c0139fc7810afa5fc94a962d003955b4bcd92c54a56ed1a60fa"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/baseline-guards-driver.log",
+      "sha256": "0e854b1b0e6d2d3219be343d17150ad86c965094070628c61408c8d1c3d5d488"
+    },
+    {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/baseline-round-driver.log",
+      "sha256": "d8448c706057013e2d119190de2109e60d4763f641992224f5ab0c6bc41f0113"
+    }
+  ],
+  "diagnostics": "All native/ASAN/PE/build/runtime tests retain canonical and own before/after crash/log inventories. No new/changed crash,DBErrors append or unexplained server warning/error/assertion. Task-owned canonical PID3960 reached ready,graceful shutdown0,exit0,gone,stderr empty. No user/unknown process stopped. Only identified task-owned read-only Python certificate workers were stopped to repair the obsolete tool assumption.",
+  "cleanup": {
+    "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent0f947andf7fdrollback,regression sources and reusable tools. Original self-sacrifice research cache/observations retained outside fixed for unresolved321/shared-instakill work; Slaghammer cache/mixedDBErrors/LINK2/Lady/personal/security evidence untouched.",
+    "ManifestSHA256": "3FD057C02DD23969D42B87B65475AC8C0558701FCB4DC19FADDE96EB994FECDF",
+    "Status": "PASS",
+    "Removed": 41,
+    "ReclaimedBytes": 702840487.0,
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-self-sacrifice-2026-11-12",
+    "Archived": 645,
+    "Deleted": [
+      {
+        "SHA256": "BD06217707F1CB1A6BD8907033C50013B739B62E417D3AC8633A0AF74B3F916B",
+        "Bytes": 119448,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-lifecycle-open-2026-11-12\\fixed-20261112-171839-261\\worldserver.conf"
+      },
+      {
+        "SHA256": "BC560F048BE0BC413BFCF7305C11DAB96AB10D319230575F5532806DE80D0206",
+        "Bytes": 119456,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\baseline-20261112-171311-238\\worldserver.conf"
+      },
+      {
+        "SHA256": "6E786C7DA7E978217BD09E0CB013E370EB0979AF60D338A62B5547A1326F0B16",
+        "Bytes": 119456,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\baseline-20261112-171431-577\\worldserver.conf"
+      },
+      {
+        "SHA256": "D332CEAE2E359C4CC45F54910527DB2866C77A951BB033251F0E6F9B5BCC1853",
+        "Bytes": 119456,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\baseline-20261112-171442-441\\worldserver.conf"
+      },
+      {
+        "SHA256": "154571003936DFA99162EDFB14052308102473A7CAC36174C432B253D1BF1605",
+        "Bytes": 119456,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\baseline-20261112-171453-699\\worldserver.conf"
+      },
+      {
+        "SHA256": "48E0272B8E9F4B735E37C2C76D46E86AC18F321C1443FE4D962A1191E65338FF",
+        "Bytes": 119456,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\baseline-20261112-171504-855\\worldserver.conf"
+      },
+      {
+        "SHA256": "28895A9A2D19D0644FC2DC84A9844B090E67F055B0C455CF6ED87781BB4CC8CD",
+        "Bytes": 119456,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\baseline-20261112-171516-052\\worldserver.conf"
+      },
+      {
+        "SHA256": "21AC4E1DE3A891A1A7875EC0BA5020B36001D27C39B05A293E0F27DC08FE4C9D",
+        "Bytes": 119456,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\baseline-20261112-172401-199\\worldserver.conf"
+      },
+      {
+        "SHA256": "BED176F52023307292739741CAB72DB758170F8318B0B78FE28DEF7B417CEF9F",
+        "Bytes": 119448,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\current-observations\\worldserver.conf"
+      },
+      {
+        "SHA256": "D99CBB71DEC168625329F8FA2828A4D14B75CB6120F10A382CCB981CF8BBDA52",
+        "Bytes": 119448,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\current-valid-health\\worldserver.conf"
+      },
+      {
+        "SHA256": "A80D75205DC4FCC550CDFC8902B74F25CCEDE4ACC0E3D3B761F5FBF33EBEC40D",
+        "Bytes": 119453,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\fixed-20261112-171738-788\\worldserver.conf"
+      },
+      {
+        "SHA256": "1A70D307CF8B95F7B423011C6E344DF566BD001570E6D10529EACC5DD57F34BA",
+        "Bytes": 119453,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-2026-11-12\\fixed-20261112-172325-753\\worldserver.conf"
+      },
+      {
+        "SHA256": "F0A92B490E6627AC248450AC2C15FD10DD61213CF1B576CF0D630803AA0BFEC9",
+        "Bytes": 3594240,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-release\\bnetserver.exe"
+      },
+      {
+        "SHA256": "33133B1B5B4E4025DD007DCFDCAF52A902C625BBB5A34FD609966CAB3E8F9C09",
+        "Bytes": 12575385,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-release\\bnetserver.map"
+      },
+      {
+        "SHA256": "4C86E9306A497306D763A5C84A4EDB2B6F845CB943CC9754E9FA0CABE3F057C6",
+        "Bytes": 42241024,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-release\\worldserver.exe"
+      },
+      {
+        "SHA256": "6F6AEE9D90795580FE7452FD43B18CD2BE104528AFD7A65D0A97AE9AE7A5AE1B",
+        "Bytes": 120837959,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\pet-self-sacrifice-open-release\\worldserver.map"
+      },
+      {
+        "SHA256": "79667A1CF1341A369592547D505AB55A0D0CC230C4457E1B5AEA3B51471A329E",
+        "Bytes": 8089088,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleLifecycleNative.exe"
+      },
+      {
+        "SHA256": "62990671BF3C5C03FA344E76E9A0EC68F1979E0C5F698F6FD0F379CF3CF20F8A",
+        "Bytes": 373250,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleLifecycleNative.obj"
+      },
+      {
+        "SHA256": "56013643BA9F650AC37ADC8138ABDDD3E621B8C365C141B14C67130E0C3E38A8",
+        "Bytes": 8286720,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleSelfSacrificeBaselineNative.exe"
+      },
+      {
+        "SHA256": "26F99D68E2E8D77F2DC26019E0B3339D7B4EE0DA1E8FE791A5E54F7C6B95104F",
+        "Bytes": 2224507,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleSelfSacrificeBaselineNative.obj"
+      },
+      {
+        "SHA256": "C48AB402AEBF0B6F011F4A7822347DED506971C261EDE871ADA2FFE5FEFC4660",
+        "Bytes": 8091648,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleSelfSacrificeNative.exe"
+      },
+      {
+        "SHA256": "9505B0C456EC8CDABB39993BD2B83B0B34C3FBA9D66FBD3B6175477D4E6F40F7",
+        "Bytes": 372270,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\PetBattleSelfSacrificeNative.obj"
+      },
+      {
+        "SHA256": "4D18DCEA664EE425AC2C9F4AE8636F30AA91B5B2CC392DA14F2E90A4F752F48C",
+        "Bytes": 32085504,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\SecondTenTen20261112Native.exe"
+      },
+      {
+        "SHA256": "F9247272563FBB701F02060CE77853D55EA7C61322B8F7F9A7F0D5CD9DBC0CA0",
+        "Bytes": 9651627,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\SecondTenTen20261112Native.obj"
+      },
+      {
+        "SHA256": "BE58E8EAD188EAF14A801F8141FBE016DB6BA17192DF3ADC4045377C32407278",
+        "Bytes": 32432128,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\TenTen20261111Native.exe"
+      },
+      {
+        "SHA256": "38DA005DEB3207194DC2E527C732E9D63A3DDC1BF883A34A57D40F88F698373E",
+        "Bytes": 11109053,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\TenTen20261111Native.obj"
+      },
+      {
+        "SHA256": "66041A53BA19BFF2C07D352F4979E3F5618848F2AA2CC30AE89DB429ABF2DC9A",
+        "Bytes": 9580544,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\pet-battle-round\\test-compiler.pdb"
+      },
+      {
+        "SHA256": "E695B2CD358C39C6CBB3FC8D325055751CFDF3D2DA566DFBBA0413F4EB01E705",
+        "Bytes": 25587200,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\pet-battle-round\\test.exe"
+      },
+      {
+        "SHA256": "DCBB361F3CE8B28D02D98CA0FEEB991E4FFABE2A5A1670C509D2B4DD9C2FE057",
+        "Bytes": 2969607,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\pet-battle-round\\test.obj"
+      },
+      {
+        "SHA256": "B1B37712012C05691885F1B29E6CD22AC317AFA618D06EC786954C7C704DC83C",
+        "Bytes": 35655680,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\pet-battle-round\\test.pdb"
+      },
+      {
+        "SHA256": "469E65A0CA14927130600BB54E774C513AA15785FE660FB8E6FF0585F363A864",
+        "Bytes": 281600,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\scepter-login\\test.exe"
+      },
+      {
+        "SHA256": "91FF05B34FA2A95B414299610EC7C002594AD8430BBB8CE339111005504A856E",
+        "Bytes": 239007,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\scepter-login\\test.obj"
+      },
+      {
+        "SHA256": "B9010097E81369598E0AD23E15C5B33D14AA391264FB76F69BBF9FA7F6D2424B",
+        "Bytes": 119462,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\secondtenten20261112native\\20261112-171846-237\\worldserver.conf"
+      },
+      {
+        "SHA256": "06B6538CC03DAF7915592C15FB5120BFBE001B7B0F75CED3D7530EFA34B1D575",
+        "Bytes": 18206720,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\secondtenten20261112native\\20261112-171917-554\\compiler.pdb"
+      },
+      {
+        "SHA256": "4E23710908DFDACDC4F71BA76A6D183DBBB7486ADE254E0D28D2A858E1B6F7E4",
+        "Bytes": 97492022,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\secondtenten20261112native\\20261112-171917-554\\native.map"
+      },
+      {
+        "SHA256": "1A53C8D1DE13207D3F169D9E9339A0541BEA20DAD0136AF7CB3B0A6759A913E5",
+        "Bytes": 50073600,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\secondtenten20261112native\\20261112-171917-554\\native.pdb"
+      },
+      {
+        "SHA256": "190B9E23A7919DEE2EB35834D831C20136F6C0BD0316BA27318BF15BCFADDC31",
+        "Bytes": 119462,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\secondtenten20261112native\\20261112-171917-554\\worldserver.conf"
+      },
+      {
+        "SHA256": "01A31CC489564923B2FB1E98ECC49146F5B453EEBC17AC357319625166F5D300",
+        "Bytes": 19181568,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\tenten20261111native\\20261112-172146-637\\compiler.pdb"
+      },
+      {
+        "SHA256": "967946EC666B8FD2CB3091EBFC0ED555F50C453A712D98F603494CF1BE120F7A",
+        "Bytes": 98563466,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\tenten20261111native\\20261112-172146-637\\native.map"
+      },
+      {
+        "SHA256": "EE658A658A975EB06D97A98709275569D427D86A0397E1DF49C3636E0FE862EF",
+        "Bytes": 51253248,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\tenten20261111native\\20261112-172146-637\\native.pdb"
+      },
+      {
+        "SHA256": "44100D36522146DB3FAEC8EDFB5AAA4CFE4615444B1B410E7B2CFA97E545685E",
+        "Bytes": 119456,
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\tenten20261111native\\20261112-172146-637\\worldserver.conf"
+      }
+    ],
+    "Protected": [
+      {
+        "Algorithm": "SHA256",
+        "Hash": "4C86E9306A497306D763A5C84A4EDB2B6F845CB943CC9754E9FA0CABE3F057C6",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\worldserver.exe"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "6F6AEE9D90795580FE7452FD43B18CD2BE104528AFD7A65D0A97AE9AE7A5AE1B",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\worldserver.map"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "F0A92B490E6627AC248450AC2C15FD10DD61213CF1B576CF0D630803AA0BFEC9",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\bnetserver.exe"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "33133B1B5B4E4025DD007DCFDCAF52A902C625BBB5A34FD609966CAB3E8F9C09",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\bnetserver.map"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "FA3DB826C19367E4F2FAEC566C927E3442B07BB0BA305F3208F0F54C1A7433B1",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\logs\\DBErrors.log"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "B231E33DACD9127CD5FBFAC033A8B452547DAD6399C93E7E8A93F367652BA04C",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\legion-legendary-catalog\\SlaghammerHandoffNative.exe"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "DE9CCC09275EBE2A7C47997CCAB759D948174A17880A6C1B5AEB91779EACBF1F",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\bnetserver.cert.pem"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "69B612A03D27C9BF1E51BF4321F02C97B987B92CAFA3AC93615D482D3000617D",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\bnetserver.conf"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "26DB9D0D2E98DEAE87F8EB1850F28B49C258CDC729AA58B0905DE94A94DAC508",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\bnetserver.key.pem"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "F77C5CFA78ABDEAB380D6C1140DADC153F5D3E40310499AA98C6F66FAADB8BED",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\legacy.dll"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "891D723845D335D0ABAED5F2F98E783DDFCBF7F549704B2CD01DC0535FA1F988",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\libcrypto-3-x64.dll"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "F861EEC380C8D76E24DF6565981B24DB1845A732D60D4090EAF316A8AC4B72B4",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\libmysql.dll"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "DCFF831C7438DBDC24D10B2039ECFEC220E8840C086BA14268DD58E59A44C1EB",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\libssl-3-x64.dll"
+      },
+      {
+        "Algorithm": "SHA256",
+        "Hash": "9E18412F8763777C568957F93BEAD0F4FB0F9DD8641B0DC8405591E9FF17F184",
+        "Path": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\bin\\Release\\worldserver.conf"
+      }
+    ]
+  },
+  "final_verification": {
+    "status": "PASS",
+    "canonical_world_sha256": "4c86e9306a497306d763a5c84a4edb2b6f845cb943cc9754e9fa0cabe3f057c6",
+    "certificate_roots": 106,
+    "native_sacrifice_cases": 44,
+    "retained_native_racial_cases": 13,
+    "native_controls": 7,
+    "archive_records": 645,
+    "removed": 41,
+    "removed_bytes": 702840487.0,
+    "protected_evidence_and_runtime_unchanged": true
+  },
+  "protected": "MixedDBErrors7111bytes/SHA256fa3db826c19367e4f2faec566c927e3442b07bb0ba305f3208f0f54c1a7433b1 and original Slaghammer cache SHA256b231e33dacd9127cd5fbfac033a8b452547dad6399c93e7e8a93f367652ba04c unchanged. No SQL/configuration/DLL/character-data change;canonical Release and recent rollback verified.",
+  "remaining": [
+    "Actual pet battle PvE/PvP UI,animation,combat log and full client traversal remain separate.",
+    "Shared non242/non-four-ability135selection,UnholyAscension321/Haunt/Apocalypse and other authored death reactions remain OPEN. The four-ability scope is explicit. Clone health costs/122/123/124and native159selection are not certified by the clone-context immunity guard.",
+    "BendTime/Hourglass246/230andowner/swap/round-end pipeline,DarkRebirth/CheatDeath,type229andwider core health remain OPEN. Fresh read-only8case native observations show1905/1906zero accuracy currently fail without a100accuracy stat bonus;no cooldown fix is claimed here.",
+    "Authentic Lady1906/Grash activation/finish/cleanup,missingLINK2/mixedlog,original handshake cause and all36whole client artifact chains remain OPEN. No threshold,timer,no-op or progression grant invented."
+  ],
+  "next": "Continue independently verifiable native OPEN repairs. Preserve the mixed321research observations and new zero-accuracy observations outside fixed."
+}
