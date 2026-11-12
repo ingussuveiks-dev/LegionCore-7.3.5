@@ -256,8 +256,8 @@ static PetBattleAbilityEffectHandler Handlers[MAX_PETBATTLE_EFFECT_TYPES] =
     /* EFFECT 230 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 231 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 232 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
-    /* EFFECT 233 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
-    /* EFFECT 234 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE}
+    /* EFFECT 233 */{&PetBattleAbilityEffect::HandleExtraAttackIfMoreFaster,                       PETBATTLE_TARGET_TARGET},
+    /* EFFECT 234 */{&PetBattleAbilityEffect::HandleExtraAttackIfLessFaster,                       PETBATTLE_TARGET_TARGET}
 };
 
 uint32 PetBattleAbilityEffect::GetActiveOpponent()
