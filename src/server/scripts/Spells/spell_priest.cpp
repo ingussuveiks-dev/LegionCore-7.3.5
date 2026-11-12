@@ -2411,12 +2411,12 @@ class spell_pri_atonement_heal : public SpellScript
 
         if (AuraEffect const* barrierForTheDevoted = caster->GetAuraEffect(197815, EFFECT_0))
             if (target->HasAura(81782, caster->GetGUID()))
-                SetHitHeal(GetHitHeal() + CalculatePct(GetHitHeal(), barrierForTheDevoted->GetAmount()));
+                SetHitHeal64(HealingAmount::Add(GetHitHeal64(), HealingAmount::FromFloat(CalculatePct(float(GetHitHeal64()), barrierForTheDevoted->GetAmount()))));
 
         if (GetSpell()->IsCritForTarget(target))
         {
             float mod = caster->CanPvPScalar() ? 0.75f : 0.5f;
-            SetHitHeal(GetHitHeal() * mod);
+            SetHitHeal64(HealingAmount::Apply(GetHitHeal64(), 0, mod));
         }
     }
 
