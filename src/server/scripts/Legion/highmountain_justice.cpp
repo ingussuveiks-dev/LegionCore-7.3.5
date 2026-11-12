@@ -265,7 +265,7 @@ class spell_highmountain_justice_heal : public SpellScript
     {
         Unit* target = GetHitUnit();
         Unit* caster = GetCaster();
-        if (!wounded || GetHitHeal() <= 0 || !target || !target->IsAlive() ||
+        if (!wounded || GetHitHeal64() == 0 || !target || !target->IsAlive() ||
             (target->GetEntry() != 97498 && target->GetEntry() != 97506) ||
             !target->HasPhaseId(5165) || target->GetMapId() != 1220 || caster->GetEntry() != 97508)
             return;
