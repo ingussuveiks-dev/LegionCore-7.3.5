@@ -1,9 +1,9 @@
 {
   "status": "IN_PROGRESS",
   "authorized_total": 100,
-  "completed": 50,
-  "remaining": 50,
-  "completed_batches": 5,
+  "completed": 60,
+  "remaining": 40,
+  "completed_batches": 6,
   "support_commit": "9c811f3728a29d3fad974a65692f830a8d3e3670",
   "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
   "batches": [
@@ -338,16 +338,83 @@
         "investigation": "Live database and matching26972 data were checked first. Modern local TrinityCore reverse-copy helper was considered but is incompatible with existing local owner-to-image consumers; their forward direction is retained. Child Aura lifecycle was repaired separately in batch4. Illidan and ThunderForge scouts were false positives; Tushui trainee is unregistered/unbound and not counted. Native fixture initially lacked spell proc loaders and used SUMMONED_BY instead of native ownership CREATED_BY; those fixture prerequisites were corrected and final actual-core probes pass. ASAN fixture initially assigned a symbolic index-stride label instead of native MAX_MELEE_HOVER_DISK_SPAWNPOINTS=4; corrected, with failure evidence retained. No production error is claimed for these fixture failures."
       },
       "support_commit": "9efe8686b78e3f63b15e0e6fe2e14600b550e7bd"
+    },
+    {
+      "batch": 6,
+      "historical_group": 57,
+      "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+      "commits": [
+        {
+          "key": "ThunderForgeAnvilAdmission",
+          "commit": "843440bf7d6d780442320bdc92847f32016dbd62",
+          "audit": "docs/audits/ten-ten-2026-11-11/ThunderForgeAnvilAdmission.json"
+        },
+        {
+          "key": "ThunderForgeElectricAdmission",
+          "commit": "6d1f04a02870ad98758fe421bea9172694baf9b2",
+          "audit": "docs/audits/ten-ten-2026-11-11/ThunderForgeElectricAdmission.json"
+        },
+        {
+          "key": "SeethingShoreAzeriteInitialization",
+          "commit": "fcf0827a176b3a468e20e552b02ef916c90fb4a8",
+          "audit": "docs/audits/ten-ten-2026-11-11/SeethingShoreAzeriteInitialization.json"
+        },
+        {
+          "key": "GuardianSpiritHealWidth",
+          "commit": "bb6d57c1c136cf35890288b34cd0efd43de9d663",
+          "audit": "docs/audits/ten-ten-2026-11-11/GuardianSpiritHealWidth.json"
+        },
+        {
+          "key": "SpiritShellAbsorbCapWidth",
+          "commit": "a06969b8403bdac81894e03cab3bb4ce84121254",
+          "audit": "docs/audits/ten-ten-2026-11-11/SpiritShellAbsorbCapWidth.json"
+        },
+        {
+          "key": "HaloHealWidth",
+          "commit": "aef6a2c61cc89b1e41bb8743f8cfc743713bb03d",
+          "audit": "docs/audits/ten-ten-2026-11-11/HaloHealWidth.json"
+        },
+        {
+          "key": "PenanceHealWidth",
+          "commit": "fe9c8a38d7a5a1e105e449e1e4ba013d058975d5",
+          "audit": "docs/audits/ten-ten-2026-11-11/PenanceHealWidth.json"
+        },
+        {
+          "key": "ChainHealDelugeWidth",
+          "commit": "79349e63723cd572e9aa5d74530334ba9817dc80",
+          "audit": "docs/audits/ten-ten-2026-11-11/ChainHealDelugeWidth.json"
+        },
+        {
+          "key": "AncestralGuidanceProcWidth",
+          "commit": "af835868586053bb1e72fe8b40a27187a8534cc6",
+          "audit": "docs/audits/ten-ten-2026-11-11/AncestralGuidanceProcWidth.json"
+        },
+        {
+          "key": "DeathStrikeMinimumHealWidth",
+          "commit": "040b65c83012ee969d53b130986de4adcb48b9a6",
+          "audit": "docs/audits/ten-ten-2026-11-11/DeathStrikeMinimumHealWidth.json"
+        }
+      ],
+      "checks": {
+        "asan": "Ten complete production class/create-hook scopes pass. All seven anvil IDs, three sha IDs and unrelated/empty target lists; both Azerite variants and3s animation; lethal/nonlethal Guardian Spirit, Shell cap/conversion, Halo distance and ordinary rounding, Penance/Deluge native64 input andbounded addition, Ancestral heal/damage/nonrecursive proc, DeathStrike minimum/history/PvP branches. Cast/aura/spatial endpoints are controlled.",
+        "baseline": "All ten pinned pre-task counterfactuals fail their repaired expectations; paired with passing repaired runs. Initial float cap expectation was corrected to retain native binary32 percent rounding; no production rounding rule was changed.",
+        "native": "Ten actual database binding families and matching26972 effect/child data. Seven real anvil entries and three sha entries through native registered target handlers; typed native GameObject entry fields and actual FunctionProcessor3s queue, with capture/animation endpoints observed. Actual Guardian lethal absorb dispatcher and native maximum health; actual SpiritShell/Halo/Penance/ChainHeal GetHitHeal64/SetHitHeal64 roundtrip and own aura gates; real HealInfo proc and DeathStrike native maximum-health minimum. Child cast endpoints observed. First fifty native checks retained.",
+        "linked": "Canonical5edc7875 Release contains all authored anvil/sha/Azerite IDs, original3s node queue, unsigned64 Guardian conversion, four actual native64 SpellScript getter/setter pairs, wide Guidance input andDeathStrike choice/child. First fifty linked checks retained.",
+        "retained": "Prior50 focused-repair and65-file unsigned64 healing source certificates pass. Canonical Scepter Release verification passes.",
+        "runtime": "Task-owned canonical PID19936 fresh ready, graceful shutdown0,exit0/gone,empty stderr. No new/changed crash,appended DBErrors or unexplained server warnings/errors/assertions. No user server stopped;configuration/DLL/certificates preserved.",
+        "investigation": "Local live bindings, native26972 spells/effects/IDs and core APIs checked first. Named GetHitHeal64/SetHitHeal64 are required;changing only the variable type would still read the legacy32 channel. Native fixture initially lacked PageText/GameObjectTemplate loaders; added real loader prerequisites. First PE assertion expected an out-of-line GameObject wrapper; actual compiler inlines it and calls FunctionProcessor::AddDelayedEvent,now checked. Ordinary non-exact effect accumulation remains a separate discovered engine limitation to investigate in the remaining groups; these tests certify explicit native64 channel inputs and listed class calculations only."
+      },
+      "support_commit": "85ed1620551c587ff02b02c9761c9afc175fe69b"
     }
   ],
   "canonical": {
-    "worldserver.exe": "cc5346da6bfee47652fb3866facf9b04915123c2e17bfbc4b3fced207e2e6ce7",
-    "worldserver.map": "700e472a7b337f91c591b180680bfad12e245af04b8ca6cbb5114aeef1d7f8ce",
-    "bnetserver.exe": "de55d32f8609e3acbe168ff7ea89161a2d512ec8217091a8353f3e4c87ffd40e",
-    "bnetserver.map": "cd84887a4c587a0427c00c34e29a7ae802eeef8d432baab7907244651bc11e65"
+    "worldserver.exe": "5edc7875f6b265c6bb145d62d1130b61a0bd03bb0d93596c258bcfba8701b125",
+    "worldserver.map": "2640053e3834d6735b64ed199f29ca0329becc1e8c988bbf58c48206a3ecff7a",
+    "bnetserver.exe": "ada80f6fd739cf5cae33b3c5552a3257f636de7e6eb88ee216ef017aba7a9ee7",
+    "bnetserver.map": "cf4c6ac514c91158e0ead2dec97c6991f9a3928ecf6c9e8c2cdb3252b0cf40b8"
   },
   "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
-  "pending": "Continue batches6..10 to reach100 genuine repairs; actual client/full chains and Lady/LINK2/Slaghammer/handshake remain OPEN.",
+  "pending": "Continue batches7..10 to reach100 genuine repairs; investigate ordinary effect accumulation separately; actual client/full chains and Lady/LINK2/Slaghammer/handshake remain OPEN.",
   "cleanup": {
     "status": "COMPLETE_BATCH01",
     "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch01",
@@ -400,6 +467,17 @@
     "logical_removed_bytes": 1104519259,
     "deletion_manifest": ".codex/ten-ten-2026-11-11/batch05-deletions.json",
     "deletion_manifest_sha256": "4ff88979b043ebc6daef73612c9a1c7da1d6dd1e03a1d4759e0f43d4dd92504f",
+    "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+  },
+  "cleanup_batch06": {
+    "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+    "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch06",
+    "manifest_sha256": "022bb6eed83b78f21923f322e154e0d7c4497cd31d5cfcf145dfb7e53619a5b0",
+    "archived_files": 2433,
+    "removed_files": 31,
+    "logical_removed_bytes": 771475480,
+    "deletion_manifest": ".codex/ten-ten-2026-11-11/batch06-deletions.json",
+    "deletion_manifest_sha256": "24656238be7261f9550880cbc76dffc4401175422471169881c024e42e34b93e",
     "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
   }
 }

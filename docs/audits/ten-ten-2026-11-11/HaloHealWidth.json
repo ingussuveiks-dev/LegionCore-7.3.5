@@ -10,7 +10,7 @@
     "src/server/scripts/Spells/spell_priest.cpp"
   ],
   "binding": "spell_pri_halo_heal",
-  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 5 -Case HaloHealWidth",
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 6 -Case HaloHealWidth",
   "counterfactual": "Add -Baseline; expected-broken control, paired with repaired pass.",
   "checks": {
     "asan": "Ten complete production class/create-hook scopes pass. All seven anvil IDs, three sha IDs and unrelated/empty target lists; both Azerite variants and3s animation; lethal/nonlethal Guardian Spirit, Shell cap/conversion, Halo distance and ordinary rounding, Penance/Deluge native64 input andbounded addition, Ancestral heal/damage/nonrecursive proc, DeathStrike minimum/history/PvP branches. Cast/aura/spatial endpoints are controlled.",
