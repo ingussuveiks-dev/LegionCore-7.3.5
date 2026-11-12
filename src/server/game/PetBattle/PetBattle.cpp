@@ -1395,7 +1395,7 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
                 for (size_t i = 0; i < Teams[currentTeamID]->TeamPetCount; ++i)
                 {
                     auto currentPet = Teams[currentTeamID]->TeamPets[i];
-                    if (!currentPet || currentPet->OriginalCreature)
+                    if (!currentPet || !currentPet->OriginalCreature)
                         continue;
 
                     auto wildPet = ObjectAccessor::GetObjectInOrOutOfWorld(currentPet->OriginalCreature, static_cast<Creature*>(nullptr));
