@@ -572,7 +572,7 @@ struct npc_unga_bird_haver : public ScriptedAI
                     break;
                 case EVENT_KNIFE_FIGHT:
                     DoCast(me, SPELL_HOZEN_KNIFE_FIGHT);
-                    events.ScheduleEvent(EVENT_RUSTY_SHANK, 13 * IN_MILLISECONDS);
+                    events.ScheduleEvent(EVENT_KNIFE_FIGHT, 13 * IN_MILLISECONDS);
                     break;
             }
         }
