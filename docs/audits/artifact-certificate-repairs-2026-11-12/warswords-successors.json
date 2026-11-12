@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-12",
+  "status": "FOCUSED_CERTIFICATE_REPAIR_PASS_FINAL_COLLECTION_RECORDED_SEPARATELY",
+  "title": "Check selected Warswords arrival recovery and native weak timer ownership",
+  "cause_and_repair": "When the actual WarswordsArrivalRecovery State::Tick is linked, run the entire existing successor certificate; otherwise retain the original lambda certificate. Do not exit or skip downstream checks. Actual Unit-owned weak intro queues use the independent accessor-derived member; retain original full player/Helya GUIDs,24s/7s delays,195062 recipient/caster-aura acknowledgement and all rejection/cleanup paths.",
+  "production_changes": "None. No C++ or SQL change, no rebuilt/promoted binary. These repairs address stale test assumptions against the already deployed production implementation.",
+  "files": [
+    "tools/tests/verify_warswords_arrival_legacy_release.py",
+    "tools/tests/warswords_intro_lifetime_pe.py"
+  ],
+  "evidence": [
+    {
+      "path": ".codex/open-closeout-2026-11-12/targeted-second/verify_warswords_arrival_legacy_release.py.log",
+      "sha256": "3900aec32ac7fa2489f91dc1e507368b86fbdde841c381a3bca4e7feffb87de7"
+    },
+    {
+      "path": ".codex/open-closeout-2026-11-12/six-repaired2/verify_warswords_helya_channel_release.py.log",
+      "sha256": "8199e3ccba6e584959386b7a6fb31407534145b95cf1170a8ab9b76a1b36bb50"
+    },
+    {
+      "path": ".codex/open-closeout-2026-11-12/six-repaired2/verify_warswords_intro_bubble_release.py.log",
+      "sha256": "18c51c0feaccca0421c1dda104047166c6985ee72729e424f34ab032168b4d0a"
+    }
+  ],
+  "worldserver_sha256": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165",
+  "post_test_diagnostics": "Every formal run wrapped with canonical and own crash/log before/after inventories. No new/changed crash, appended DBErrors, or unexplained server warning/error/assertion. Failed intermediate certificate assertions were retained and paired with the focused passing root; they are not ordinary passing runs.",
+  "counterfactual": "Pinned32f7dc012 tool controls inspect this same current EXE. These reproduce stale certificate failures; they are not broken gameplay binary controls. See final closeout for the complete immutable-source collection and counterfactual results.",
+  "limitations": "Selected linked code and controlled native/source fixtures do not establish actual client traversal, rendering, whole36chains, authentic living Lady finale, missing LINK2 actions, intermittent handshake cause, remaining native pet effects or ordinary core-wide healing/periodic widths.",
+  "final_closeout": "docs/audits/open-issues-closeout-2026-11-12.json"
+}

@@ -3,6 +3,7 @@ import hashlib
 import json
 import re
 import struct
+from linked_player_abi import unit_queue_operand
 from capstone import CS_OP_IMM,CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 
@@ -35,8 +36,8 @@ def verify(p):
   assert any(initial[i-1].op_str=='rcx, '+register and initial[i+1].op_str==destination+', xmmword ptr [rax]' for i in sites(initial,'?GetGuidValue@Object@@'))
  assert {('movups','xmmword ptr [rax + 0x24], xmm7'),('movups','xmmword ptr [rax + 0x34], xmm8'),('mov','rbx, qword ptr [rdi + 0x120]'),('mov','r14, qword ptr [rdi + 0x118]')}<=set(pairs(initial))
  queued,=sites(initial,'?AddDelayedEvent@FunctionProcessor@@')
- assert ('lea','rcx, [r13 + 0x36a0]') in pairs(initial[queued-5:queued]) and ('mov','edx, 0x5dc0') in pairs(initial[queued-5:queued])
- assert ('lea','rcx, [r12 + 0x36a0]') in pairs(outer[timer-5:timer]) and ('mov','edx, 0x1b58') in pairs(outer[timer-5:timer])
+ assert ('lea',unit_queue_operand('rcx, [r13 + 0x36a0]')) in pairs(initial[queued-5:queued]) and ('mov','edx, 0x5dc0') in pairs(initial[queued-5:queued])
+ assert ('lea',unit_queue_operand('rcx, [r12 + 0x36a0]')) in pairs(outer[timer-5:timer]) and ('mov','edx, 0x1b58') in pairs(outer[timer-5:timer])
 
  def weak_guard(body,start,ctx,control,zero):
   window=body[start:start+45]
