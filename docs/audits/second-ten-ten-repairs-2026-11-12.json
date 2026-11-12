@@ -1,0 +1,93 @@
+{
+  "status": "IN_PROGRESS_10_OF_100",
+  "authorized_total": 100,
+  "completed": 10,
+  "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
+  "batches": [
+    {
+      "batch": 1,
+      "historical_group": 62,
+      "commits": [
+        {
+          "key": "PetBattleForfeitPenalty",
+          "commit": "37f2f13ae84dbf513e9381d70a2c71438dedeaf8",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetBattleForfeitPenalty.json"
+        },
+        {
+          "key": "WildPetBattleRelease",
+          "commit": "d0c5b3effb6f98bee55acc540920ea4c3baf61ce",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/WildPetBattleRelease.json"
+        },
+        {
+          "key": "PetBattleFinishOnce",
+          "commit": "bc693a2bd1cbd8cdc6eac97bc35b4accaf861976",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetBattleFinishOnce.json"
+        },
+        {
+          "key": "PetBattleExperienceEligibility",
+          "commit": "e0052f230b0f35e72e72fe3da7ce979d1e08c031",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetBattleExperienceEligibility.json"
+        },
+        {
+          "key": "PetBattleMultipleLevelRewards",
+          "commit": "7432cc02807a96a1dbf90785a34a27ada4782842",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetBattleMultipleLevelRewards.json"
+        },
+        {
+          "key": "PetBattleLeaveInput",
+          "commit": "2dd571d689d62a45998bdf28822fe3c26d758478",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetBattleLeaveInput.json"
+        },
+        {
+          "key": "PetBattleQueueStrictOrder",
+          "commit": "0e77aadd327b49fda68f210c5af60da7674e0598",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetBattleQueueStrictOrder.json"
+        },
+        {
+          "key": "PetBattleProposalFreshConsent",
+          "commit": "c36f1e1e7c02e22bcfde8efcb018ce8ed6333e07",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetBattleProposalFreshConsent.json"
+        },
+        {
+          "key": "PetBattleRequestReplacement",
+          "commit": "5589b522ac2a7f90c87cf50d3284789edaf0f11d",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetBattleRequestReplacement.json"
+        },
+        {
+          "key": "PetBattleOpponentGeometry",
+          "commit": "a41cdff40a3b7a3adcd2837444e519c9b4659169",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetBattleOpponentGeometry.json"
+        }
+      ],
+      "support_commit": "dc99bc386558ed1292b4f431de127a522f6f3c59",
+      "checks": {
+        "counterfactual": "All ten exact pinned pre-task expectations fail with their named assertion (exit1); paired fixed runs pass under MSVC ASAN. Whole Finish/input/admission/request methods; queue comparator/consent source projections are explicitly identified. Full native-core ASAN is not claimed.",
+        "native": "Actual linked WorldSession MoveType0 -> ForfeitBattle -> Finish; ordinary and ignored penalties; pending multi-turn swap lock with retained XP; native26972 XP50/110/120 thresholds, level4/remainder95 with controlled200-percent native420 aura; repeated completion; actual wild creature GUID/flags/root cleanup; owning request replacement; real separate-player distance rejection; actual full matchmaking Update resets both earlier answers. No character writes; session pools read-only with TEMP account cleanup.",
+        "linked": "Selected first10, retained prior100, full TimeLoop/native healing/Mending/target-profile/Cordana/core chain and canonical Scepter pass.",
+        "startup": "Owned canonical worldserver PID8344 fresh ready, graceful shutdown0, exit0, gone, stderr empty. No new crash reports, appended DBErrors, or unexplained server warnings/errors/assertions.",
+        "limitations": "Actual client pet journal, battle UI/visuals, matchmaking/forfeit/re-entry traversal and whole36artifact chains remain pending. Native wild fixture checks real actor cleanup; a real wild pool respawn cycle is not client-verified. Existing mixed log and legacy artifact PE OPEN findings remain retained."
+      },
+      "cleanup": {
+        "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch1",
+        "Rollback": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-second-ten-ten-batch1-2026-11-12",
+        "Archived": 338,
+        "Removed": 56,
+        "ManifestSHA256": "F03365C0D76409E604609B387C50D6D3F5ADB8C33D729A685A7A939C31AF7019",
+        "ReclaimedBytes": 1061061561
+      },
+      "canonical_worldserver_sha256": "cd784bfea9fac445b5ff27e78e42e4e9c0b300325cdcce400f28cfd90e2a3978"
+    }
+  ],
+  "selected_not_yet_verified": [],
+  "retained_open": [
+    "living Lady Sharasdal authentic finale",
+    "LINK2/Slaghammer evidence",
+    "mixed DBErrors.log",
+    "original client handshake silence",
+    "36 whole client chains",
+    "legacy PE certificate failures",
+    "native pet effect property 246"
+  ],
+  "remaining": 90,
+  "completed_batches": 1
+}
