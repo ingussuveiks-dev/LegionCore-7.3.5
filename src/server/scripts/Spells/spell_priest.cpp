@@ -245,7 +245,7 @@ class spell_pri_guardian_spirit : public SpellScriptLoader
                 if (dmgInfo.GetDamage() < target->GetHealth())
                     return;
 
-                float healAmount = int32(target->CountPctFromMaxHealth(healPct));
+                float healAmount = float(target->CountPctFromMaxHealth(healPct));
                 // remove the aura now, we don't want 40% healing bonus
                 Remove(AURA_REMOVE_BY_ENEMY_SPELL);
                 target->CastCustomSpell(target, 48153, &healAmount, NULL, NULL, true);
