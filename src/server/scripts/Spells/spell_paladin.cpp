@@ -1381,13 +1381,14 @@ class spell_pal_holy_wrath : public SpellScriptLoader
 
                 if (Unit* target = GetHitUnit())
                 {
-                    int32 bp = caster->GetMaxHealth() - caster->GetHealth();
+                    uint64 maximum = caster->GetMaxHealth();
+                    uint64 bp = maximum > caster->GetHealth() ? maximum - caster->GetHealth() : 0;
                     if (bp > 0)
                     {
                         if (target->GetTypeId() == TYPEID_PLAYER)
-                            SetHitDamage(CalculatePct(bp, GetSpellInfo()->Effects[EFFECT_3]->CalcValue(caster)));
+                            SetHitDamage(HealingAmount::CombatLogValue(HealingAmount::Apply(bp, 0, GetSpellInfo()->Effects[EFFECT_3]->CalcValue(caster) / 100.0f)));
                         else
-                            SetHitDamage(CalculatePct(bp, GetSpellInfo()->Effects[EFFECT_2]->CalcValue(caster)));
+                            SetHitDamage(HealingAmount::CombatLogValue(HealingAmount::Apply(bp, 0, GetSpellInfo()->Effects[EFFECT_2]->CalcValue(caster) / 100.0f)));
                     }
                 }
             }
