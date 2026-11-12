@@ -63,6 +63,7 @@ class boss_king_dred : public CreatureScript
             void Reset() override
             {
                 _Reset();
+                raptorsKilled = 0;
             }
 
             void EnterCombat(Unit* /*who*/) override
@@ -148,7 +149,7 @@ class boss_king_dred : public CreatureScript
             }
 
         private:
-            uint8 raptorsKilled;
+            uint32 raptorsKilled = 0;
         };
 
         CreatureAI* GetAI(Creature* creature) const override
