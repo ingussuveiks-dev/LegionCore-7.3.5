@@ -1192,7 +1192,7 @@ void WorldSession::SendPetBattleFinalRound(PetBattle* petBattle)
         petUpdate.Pboid = pet->ID;
         petUpdate.Captured = pet->Captured;
         petUpdate.Caged = pet->Caged;
-        petUpdate.AwardedXP = pet->OldXP != pet->XP;
+        petUpdate.AwardedXP = pet->OldXP != pet->XP || pet->OldLevel != pet->Level;
         petUpdate.SeenAction = false /*bool(petUpdate.Guid)*/;
         roundUpdate.MsgData.Pets.emplace_back(petUpdate);
     }
