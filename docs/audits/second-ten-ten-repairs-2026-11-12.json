@@ -1,7 +1,7 @@
 {
-  "status": "IN_PROGRESS_30_OF_100",
+  "status": "IN_PROGRESS_40_OF_100",
   "authorized_total": 100,
-  "completed": 30,
+  "completed": 40,
   "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
   "batches": [
     {
@@ -228,6 +228,79 @@
         "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch3"
       },
       "canonical_worldserver_sha256": "8183191ca899e40359ffca646208648e002bbb0f3ddb9375fc6bfadc3de2b763"
+    },
+    {
+      "batch": 4,
+      "historical_group": 65,
+      "commits": [
+        {
+          "key": "CorstilaxQuarantineOwnerLifetime",
+          "commit": "5cf33b150e9dee7284bae1ba5a8b67c649060882",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/CorstilaxQuarantineOwnerLifetime.json"
+        },
+        {
+          "key": "CorstilaxSuppressionTargetLifetime",
+          "commit": "4ab81391e9c83f521221ef6cde5ba04754c2c0b4",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/CorstilaxSuppressionTargetLifetime.json"
+        },
+        {
+          "key": "HatecoilMonsoonTargetLifetime",
+          "commit": "9f95aa922ee869f3d46f8992ea33793dd8e7e530",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/HatecoilMonsoonTargetLifetime.json"
+        },
+        {
+          "key": "SkovaldAncestorOwnerLifetime",
+          "commit": "86ce80a6bc93877f3e00e137c0186c0935a5d1b5",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/SkovaldAncestorOwnerLifetime.json"
+        },
+        {
+          "key": "StillpineCaptiveOwnerLifetime",
+          "commit": "e262e66066d1a283a606ed5b20a165077005e029",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/StillpineCaptiveOwnerLifetime.json"
+        },
+        {
+          "key": "CinderwebSpiderlingDroneLifetime",
+          "commit": "a322cacc4096e7f7e4d2319efab7a60e1e51c918",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/CinderwebSpiderlingDroneLifetime.json"
+        },
+        {
+          "key": "MaloriakMagmaJetOwnerLifetime",
+          "commit": "6d037174622434ed750a602ed4b16511ffed362c",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/MaloriakMagmaJetOwnerLifetime.json"
+        },
+        {
+          "key": "ChogallElementalOwnerLifetime",
+          "commit": "7753c053a1e9d96acd8e4bd63b3b06db74f44bbb",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/ChogallElementalOwnerLifetime.json"
+        },
+        {
+          "key": "WyrmrestSkytalonSummonerLifetime",
+          "commit": "d9a9a033eebd0cd15af33efe6f604eaf7dc28f24",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/WyrmrestSkytalonSummonerLifetime.json"
+        },
+        {
+          "key": "AmberPoolStalkerOwnerLifetime",
+          "commit": "0e2a9f66d021dba1f6f6eea8401ae65fb6f6a133",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/AmberPoolStalkerOwnerLifetime.json"
+        }
+      ],
+      "support_commit": "fa64aa92f10f1230c2c9b73ddd84c5da0e8f2029",
+      "checks": {
+        "counterfactual": "All ten pinned controls reproduce heap-use-after-free in their actual delayed production callbacks; paired fixed complete-class MSVC ASAN runs pass. Fixed positive/alternative controls cover live owners, map changes, dead actors, native reacquisition, repeat callbacks, original interactor identity, authored timers, reset, missing instance and independent damage events. World lookup, cast, motion, credit and instance endpoints are explicitly controlled; no full-core ASAN claim.",
+        "native": "Actual linked probe loads matching26972 runtime/catalogue and verifies all eleven script bindings and native creature IDs/vehicles; first30 pet native regressions pass. These catalogue bindings do not execute the eleven AIs against a full native dungeon or client.",
+        "linked": "All selected40 and retained previous100 PE checks pass. Each of eleven actual native AI callbacks contains its typed GUID lookup and null-result branch before owner use; both Cho gall elementals form one repair. Captive repeat guard precedes lookup/credit. Original game/scripts/Main library inputs and staged final link verified; canonical Scepter passes.",
+        "startup": "Owned worldserver PID=8220\nPASS owned PID=8220 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;no new crashes, appended DBErrors or unexplained server errors/warnings/assertions.",
+        "limitations": "Actual dungeon/raid/escort traversal, boarding camera, visual/timing, owner logout/reentry and whole36artifact chains remain client checks. No invented HP threshold, credit grant or kill timer. Existing LINK2/Slaghammer and mixed log evidence retained."
+      },
+      "cleanup": {
+        "Removed": 38,
+        "ReclaimedBytes": 563744058,
+        "Archived": 1403,
+        "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch4",
+        "Rollback": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-second-ten-ten-batch1-2026-11-12",
+        "ManifestSHA256": "D213F3710B3125454ABC9D42EECB398ADDB73A674CE8ACBC48EDF4ACB56600A4"
+      },
+      "canonical_worldserver_sha256": "6e89313d557947d2c97cf90e77c28393b845af5613d794bf39977d9433d42686"
     }
   ],
   "selected_not_yet_verified": [],
@@ -240,6 +313,6 @@
     "legacy PE certificate failures",
     "native pet effect property 246"
   ],
-  "remaining": 70,
-  "completed_batches": 3
+  "remaining": 60,
+  "completed_batches": 4
 }
