@@ -22,6 +22,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "HealingAmount.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "Battlefield.h"
@@ -1554,7 +1555,8 @@ class spell_dru_tranquility : public SpellScriptLoader
                             if (group->isRaidGroup())
                                 return;
 
-                SetHitHeal(GetHitHeal() * 2);
+                uint64 heal = GetHitHeal64();
+                SetHitHeal64(HealingAmount::Add(heal, heal));
             }
 
             void Register() override
