@@ -1732,7 +1732,10 @@ public:
         void UpdateAI(uint32 diff)
         {
             if (instance && instance->GetBossState(DATA_MAGMAW) != IN_PROGRESS)
+            {
                 me->DespawnOrUnsummon();
+                return;
+            }
 
             if (!UpdateVictim())
                 return;
@@ -1743,6 +1746,8 @@ public:
                 DoCast(me, SPELL_ARMAGEDDON);
                 return;
             }
+
+            events.Update(diff);
 
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
