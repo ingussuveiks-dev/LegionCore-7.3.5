@@ -1,5 +1,6 @@
 """Prove actual same-Creature reply ownership and live AI selection."""
 import struct
+from linked_player_abi import unit_queue_operand
 from capstone import CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 from sharasdal_erunak_entry_pe import method,sites,values
@@ -32,7 +33,7 @@ def verify(n):
  queued,=sites(n,movement,'?AddDelayedEvent@FunctionProcessor@@')
  frame=movement[queued-2].operands[1].mem.disp
  assert [(x.mnemonic,x.op_str) for x in movement[queued-3:queued]]==[
-  ('lea','rcx, [rbx + 0x36a0]'),('lea',f'r8, [rsp + {frame:#x}]'),('mov','edx, 0x1388')]
+  ('lea',unit_queue_operand('rcx, [rbx + 0x36a0]')),('lea',f'r8, [rsp + {frame:#x}]'),('mov','edx, 0x1388')]
  assert any(x.op_str==f'qword ptr [rsp + {frame+8:#x}], rbx' for x in movement[first_talk:queued])
  callbacks=[name for name in n['symbols'] if name.startswith('?_Do_call@') and '??MovementInform@npc_erunak_stonespeakerAI@' in name]
  name,=callbacks;reply=ins(name)
@@ -60,4 +61,4 @@ def verify(n):
  for body in (movement,reply):
   for prefix in ('?UpdateAchievementCriteria@Player@@','?KilledMonsterCredit@Player@@','?AddItem@Player@@','?CompleteQuest@Player@@'):
    assert not sites(n,body,prefix)
- print('PASS selected actual Erunak waypoint vtable/native zero-based dispatch; Adelee current-or-original-suspended AI checked before Talk0 and real same-Creature FunctionProcessor36a0/5000ms callback. Registered callback rechecks world/notdelete/alive and available AI before Talk1; no cached AI capture or new grant. Ascent follows the selected original or separately checked repaired bridge; actual client remains separate.')
+ print('PASS selected actual Erunak waypoint vtable/native zero-based dispatch; Adelee current-or-original-suspended AI checked before Talk0 and real same-Creature native Unit-owned FunctionProcessor/5000ms callback. Registered callback rechecks world/notdelete/alive and available AI before Talk1; no cached AI capture or new grant. Ascent follows the selected original or separately checked repaired bridge; actual client remains separate.')

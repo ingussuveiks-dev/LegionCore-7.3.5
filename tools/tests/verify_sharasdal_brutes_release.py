@@ -1,3 +1,4 @@
+from linked_player_abi import inherited_member_offset
 """Verify real two-Brute credit, native conversation and recruitment ordering."""
 from pathlib import Path
 import runpy
@@ -53,7 +54,7 @@ set_flag,=sites(presentation,'?SetFlag@Object@@')
 assert any(x.mnemonic=='mov' and x.op_str=='r8d, 1' for x in presentation[max(0,set_flag-10):set_flag])
 assert field(presentation,0x38d,'cmp') and field(presentation,0x38d,'mov')
 actor=instructions('?BruteActor'+suffix)
-assert sites(actor,'?GetCreature@Map@@') and field(actor,0x3a88)
+assert sites(actor,'?GetCreature@Map@@') and field(actor,inherited_member_offset(0x3a88))
 spawn=instructions('?OnCreatureCreate'+suffix)
 assert {105298,362066,102826,362063,38821}<=values(spawn)
 outer=instructions('?Update'+suffix)

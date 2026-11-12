@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-12",
+  "status": "FOCUSED_CERTIFICATE_REPAIR_PASS_FINAL_COLLECTION_RECORDED_SEPARATELY",
+  "title": "Bind Sharasdal queue and waypoint certificates to native inherited members",
+  "cause_and_repair": "Known Creature spawn GUID3a88, waypoint marker3b1c and Unit FunctionProcessor36a0 expectations use the actual independently verified inherited layout. Raw instructions are never rewritten. Preserve same-Creature reply, original participant GUID, selected vtables, native path/final-pose and camera-aura acknowledgement/retry. This does not implement or certify the living Lady finale.",
+  "production_changes": "None. No C++ or SQL change, no rebuilt/promoted binary. These repairs address stale test assumptions against the already deployed production implementation.",
+  "files": [
+    "tools/tests/verify_sharasdal_brutes_release.py",
+    "tools/tests/sharasdal_erunak_reply_pe.py",
+    "tools/tests/sharasdal_lower_ascent_pe.py"
+  ],
+  "evidence": [
+    {
+      "path": ".codex/open-closeout-2026-11-12/six-repaired2/verify_sharasdal_wave_contact_release.py.log",
+      "sha256": "8319c1cb4de319f6396b647a1e31a4261e964640a4563e687e3f78a362da48cc"
+    }
+  ],
+  "worldserver_sha256": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165",
+  "post_test_diagnostics": "Every formal run wrapped with canonical and own crash/log before/after inventories. No new/changed crash, appended DBErrors, or unexplained server warning/error/assertion. Failed intermediate certificate assertions were retained and paired with the focused passing root; they are not ordinary passing runs.",
+  "counterfactual": "Pinned32f7dc012 tool controls inspect this same current EXE. These reproduce stale certificate failures; they are not broken gameplay binary controls. See final closeout for the complete immutable-source collection and counterfactual results.",
+  "limitations": "Selected linked code and controlled native/source fixtures do not establish actual client traversal, rendering, whole36chains, authentic living Lady finale, missing LINK2 actions, intermittent handshake cause, remaining native pet effects or ordinary core-wide healing/periodic widths.",
+  "final_closeout": "docs/audits/open-issues-closeout-2026-11-12.json"
+}

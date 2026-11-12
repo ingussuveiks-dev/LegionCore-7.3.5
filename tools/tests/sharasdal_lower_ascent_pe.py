@@ -1,4 +1,4 @@
-from linked_player_abi import inherited_operand
+from linked_player_abi import inherited_operand,inherited_member_offset
 """Selected x64 proofs for the original lower-ascent route and recipient."""
 import re
 import struct
@@ -60,7 +60,7 @@ def verify(n):
  calls=[(i,name) for name in ('UpdateAscent','UpdateLady','UpdateKraliss','UpdateBrutePresentation','UpdateBrutes','UpdateGuard') for i in sites(n,tick,method(name))]
  assert [name for i,name in sorted(calls)]==['UpdateAscent','UpdateLady','UpdateKraliss','UpdateBrutePresentation','UpdateBrutes','UpdateGuard']
  assert {47131,2,3,5,40341,83810,208580,1000,30}<=values(update) and 100.0 in floats(n,update)
- assert {0x474,0x484,0x498,0x4a0,0x4a8,0x4a9,0x4aa,0x4ab,0x4ac,0x4ad,0x4ae,0x4af,0x4b1,0x4b2,0x4b4,0x4b8,0x3b1c}<=fields(update)
+ assert {0x474,0x484,0x498,0x4a0,0x4a8,0x4a9,0x4aa,0x4ab,0x4ac,0x4ad,0x4ae,0x4af,0x4b1,0x4b2,0x4b4,0x4b8,inherited_member_offset(0x3b1c)}<=fields(update)
  for target in (method('AscentCreature'),method('AscentPath'),method('AscentEndPose'),method('AscentQuest'),method('AscentSameAttempt'),method('AscentPlayer'),'?FindPlayer@ObjectAccessor@@','?AddQuestDelayedEvent@Player@@','?HasAura@Unit@@'):
   assert sites(n,update,target),target
  # The polled native Creature waypoint marker is checked after actual issue;
