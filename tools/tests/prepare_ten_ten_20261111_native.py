@@ -55,3 +55,22 @@ if fifth:
  e=fifth[9];body=e['edits'][0]['new'].replace('GetPlayerListInGrid(targets, me, 70.0f);','ObserveFifthPlayers(targets);').replace('me->GetMotionMaster()->MoveFollow((*itr), PET_FOLLOW_DIST, (*itr)->GetFollowAngle());','ObserveFifthFollow(me, *itr);').replace('me->CastSpell((*itr), 212943);','ObserveProtection(me, *itr, 212943, false);').replace('DoCast(target, 212948, true);','ObserveProtection(me, target, 212948, true);');text+='struct Orb:ScriptedAI{using ScriptedAI::ScriptedAI;ObjectGuid targetMove;bool moveComplete=true,CheckComplete=false;uint32 moveTimer=0,checkTimer=2000;'+body+'};\n}\n'
  (out/'TenTenFifthNative.inc').write_text(text,encoding='utf8')
  print('Prepared fifth actual native hook, paired fields, affecting-player andstun-state scopes;cast/group/movement/query endpoints observed')
+sixth=[e for e in PLAN['changes']if e['batch']==6]
+if sixth:
+ assert len(sixth)==10
+ text='struct SixthBinding{char const*kind;char const*name;};static SixthBinding sixthBindings[]={'+','.join('{"'+e['binding_kind']+'","'+e['binding']+'"}'for e in sixth)+'};\nnamespace SixthNative{\n'
+ definitions=(ROOT/'src/server/scripts/Scenario/ThunderForge/thunder_forge.h').read_text()+'\n'+(ROOT/'src/server/scripts/Spells/spell_dk.cpp').read_text()
+ labels=['NPC_ANVIL_STALKER','NPC_SHA_AMALGAMATION','NPC_SHA_FIEND','NPC_SHA_BEAST']+['GO_THUNDER_FORGE_AVNIL'+suffix for suffix in('','_2','_3','_4','_5','_6','_7')]
+ dk=sixth[-1]['edits'][0]['new'];labels+=sorted(set(re.findall(r'\bSPELL_DK_[A-Z_0-9]+',dk)))
+ text+='enum{'+','.join(label+'='+re.search(r'\b'+label+r'\s*=\s*(\d+)',definitions)[1]for label in labels)+'};\n'
+ text+='namespace GameObjects{enum{Azerite=281307,Azerite2=272471};}\n'
+ for e in sixth:
+  body=e['edits'][e.get('class_edit_index',0)]['new']
+  if e['case']=='azerite':body='struct AzeriteFrame{uint32 initialized=0;void UpdateCapturePoint(uint32,uint32,GameObject*,Player*,bool){++initialized;}'+body.replace('BattlegroundSeethingShore::','').replace('object->SendCustomAnim(1, false);','ObserveSixAnimation(object);')+'};'
+  if e['case']=='guardian':body=body.replace('target->CastCustomSpell(target, 48153, &healAmount, NULL, NULL, true);','ObserveSixHeal(target, target, 48153, healAmount);')
+  if e['case']=='shell':
+   body=body.replace('caster->CastCustomSpell(targetTrail, 234946, &heal_, NULL, NULL,  true);','ObserveSixHeal(caster, targetTrail, 234946, heal_);').replace('caster->CastCustomSpell(target, 114908, &bp, NULL, NULL,  true);','ObserveSixHeal(caster, target, 114908, bp);')
+  if e['case']=='ancestral':body=body.replace('eventInfo.GetActor()->CastCustomSpell(eventInfo.GetActor(), 114911, &heal, nullptr, nullptr, true);','ObserveSixHeal(eventInfo.GetActor(), eventInfo.GetActor(), 114911, heal);')
+  if e['case']=='deathstrike':body=body.replace('caster->CastCustomSpell(caster, SPELL_DK_DEATH_STRIKE_HEAL, &heal, nullptr, nullptr, true);','ObserveSixHeal(caster, caster, SPELL_DK_DEATH_STRIKE_HEAL, heal);')
+  text+=body+';\n'
+ text+='}\n';(out/'TenTenSixthNative.inc').write_text(text,encoding='utf8');print('Prepared sixth actual classes/native IDs and battleground create hook;only specified cast/animation/capture endpoints observed')

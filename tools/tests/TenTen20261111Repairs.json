@@ -1371,6 +1371,240 @@
           "count": 1
         }
       ]
+    },
+    {
+      "key": "ThunderForgeAnvilAdmission",
+      "title": "Retain all seven authored anvils in closest-anvil target selection",
+      "kind": "target_admission",
+      "batch": 6,
+      "index": 51,
+      "paths": [
+        "src/server/scripts/Scenario/ThunderForge/thunder_forge.cpp"
+      ],
+      "cls": "spell_activate_closes_anvil_SpellScript",
+      "case": "anvil",
+      "binding": "spell_activate_closes_anvil",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/ThunderForge/thunder_forge.cpp",
+          "old": "class spell_activate_closes_anvil_SpellScript : public SpellScript\n    {\n        PrepareSpellScript(spell_activate_closes_anvil_SpellScript);\n\n        void FilterTargets(std::list<WorldObject*>& objList)\n        {\n            objList.remove_if(ObjectCheck());\n        }\n\n        void FilterTargets2(std::list<WorldObject*>& unitList)\n        {\n            unitList.remove_if(CreatureTargetFilter());\n        }\n\n        void Register() override\n        {\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_activate_closes_anvil_SpellScript::FilterTargets, EFFECT_0, TARGET_SRC_CASTER);\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_activate_closes_anvil_SpellScript::FilterTargets, EFFECT_0, TARGET_GAMEOBJECT_SRC_AREA);\n\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_activate_closes_anvil_SpellScript::FilterTargets2, EFFECT_1, TARGET_SRC_CASTER);\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_activate_closes_anvil_SpellScript::FilterTargets2, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);\n        }\n\n    private:\n        class CreatureTargetFilter\n        {\n        public:\n            CreatureTargetFilter() { }\n\n            bool operator()(WorldObject* target)\n            {\n                return target->GetEntry() != NPC_ANVIL_STALKER;\n            }\n        };\n\n        class ObjectCheck\n        {\n        public:\n            ObjectCheck() { }\n\n            bool operator()(WorldObject* target)\n            {\n                return target->GetEntry() != GO_THUNDER_FORGE_AVNIL || target->GetEntry() != GO_THUNDER_FORGE_AVNIL_2 || target->GetEntry() != GO_THUNDER_FORGE_AVNIL_3 ||\n                    target->GetEntry() != GO_THUNDER_FORGE_AVNIL_4 || target->GetEntry() != GO_THUNDER_FORGE_AVNIL_5 || target->GetEntry() != GO_THUNDER_FORGE_AVNIL_6 ||\n                    target->GetEntry() != GO_THUNDER_FORGE_AVNIL_7;\n            }\n        };\n    }",
+          "new": "class spell_activate_closes_anvil_SpellScript : public SpellScript\n    {\n        PrepareSpellScript(spell_activate_closes_anvil_SpellScript);\n\n        void FilterTargets(std::list<WorldObject*>& objList)\n        {\n            objList.remove_if(ObjectCheck());\n        }\n\n        void FilterTargets2(std::list<WorldObject*>& unitList)\n        {\n            unitList.remove_if(CreatureTargetFilter());\n        }\n\n        void Register() override\n        {\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_activate_closes_anvil_SpellScript::FilterTargets, EFFECT_0, TARGET_SRC_CASTER);\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_activate_closes_anvil_SpellScript::FilterTargets, EFFECT_0, TARGET_GAMEOBJECT_SRC_AREA);\n\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_activate_closes_anvil_SpellScript::FilterTargets2, EFFECT_1, TARGET_SRC_CASTER);\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_activate_closes_anvil_SpellScript::FilterTargets2, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);\n        }\n\n    private:\n        class CreatureTargetFilter\n        {\n        public:\n            CreatureTargetFilter() { }\n\n            bool operator()(WorldObject* target)\n            {\n                return target->GetEntry() != NPC_ANVIL_STALKER;\n            }\n        };\n\n        class ObjectCheck\n        {\n        public:\n            ObjectCheck() { }\n\n            bool operator()(WorldObject* target)\n            {\n                return target->GetEntry() != GO_THUNDER_FORGE_AVNIL && target->GetEntry() != GO_THUNDER_FORGE_AVNIL_2 && target->GetEntry() != GO_THUNDER_FORGE_AVNIL_3 &&\n                    target->GetEntry() != GO_THUNDER_FORGE_AVNIL_4 && target->GetEntry() != GO_THUNDER_FORGE_AVNIL_5 && target->GetEntry() != GO_THUNDER_FORGE_AVNIL_6 &&\n                    target->GetEntry() != GO_THUNDER_FORGE_AVNIL_7;\n            }\n        };\n    }",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "ThunderForgeElectricAdmission",
+      "title": "Retain the three authored sha types in Electric Discharge selection",
+      "kind": "target_admission",
+      "batch": 6,
+      "index": 52,
+      "paths": [
+        "src/server/scripts/Scenario/ThunderForge/thunder_forge.cpp"
+      ],
+      "cls": "spell_electric_discharge_SpellScript",
+      "case": "electric",
+      "binding": "spell_electric_discharge",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Scenario/ThunderForge/thunder_forge.cpp",
+          "old": "class spell_electric_discharge_SpellScript : public SpellScript\n    {\n        PrepareSpellScript(spell_electric_discharge_SpellScript);\n\n        void FilterTargets(std::list<WorldObject*>& unitList)\n        {\n            unitList.remove_if(CreatureTargetFilter());\n        }\n\n        void Register() override\n        {\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_electric_discharge_SpellScript::FilterTargets, EFFECT_0, TARGET_SRC_CASTER);\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_electric_discharge_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);\n        }\n\n    private:\n        class CreatureTargetFilter\n        {\n        public:\n            CreatureTargetFilter() { }\n\n            bool operator()(WorldObject* target)\n            {\n                return target->GetEntry() != NPC_SHA_AMALGAMATION || target->GetEntry() != NPC_SHA_FIEND || target->GetEntry() != NPC_SHA_BEAST;\n            }\n        };\n    }",
+          "new": "class spell_electric_discharge_SpellScript : public SpellScript\n    {\n        PrepareSpellScript(spell_electric_discharge_SpellScript);\n\n        void FilterTargets(std::list<WorldObject*>& unitList)\n        {\n            unitList.remove_if(CreatureTargetFilter());\n        }\n\n        void Register() override\n        {\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_electric_discharge_SpellScript::FilterTargets, EFFECT_0, TARGET_SRC_CASTER);\n            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_electric_discharge_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);\n        }\n\n    private:\n        class CreatureTargetFilter\n        {\n        public:\n            CreatureTargetFilter() { }\n\n            bool operator()(WorldObject* target)\n            {\n                return target->GetEntry() != NPC_SHA_AMALGAMATION && target->GetEntry() != NPC_SHA_FIEND && target->GetEntry() != NPC_SHA_BEAST;\n            }\n        };\n    }",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "SeethingShoreAzeriteInitialization",
+      "title": "Initialize either native Seething Shore Azerite capture-node variant",
+      "kind": "target_admission",
+      "batch": 6,
+      "index": 53,
+      "paths": [
+        "src/server/game/Battlegrounds/Zones/BattlegroundSeethingShore.cpp"
+      ],
+      "cls": "BattlegroundSeethingShore",
+      "case": "azerite",
+      "binding": "120",
+      "binding_kind": "battleground",
+      "edits": [
+        {
+          "path": "src/server/game/Battlegrounds/Zones/BattlegroundSeethingShore.cpp",
+          "old": "void BattlegroundSeethingShore::OnGameObjectCreate(GameObject* object)\n{\n    if (object->GetEntry() != GameObjects::Azerite2 || object->GetEntry() != GameObjects::Azerite)\n        return;\n\n    UpdateCapturePoint(NODE_STATUS_NEUTRAL, TEAM_NONE, object, nullptr, true);\n\n    object->AddDelayedEvent(3000, [object]()\n    {\n        object->SendCustomAnim(1, false);\n    });\n}",
+          "new": "void BattlegroundSeethingShore::OnGameObjectCreate(GameObject* object)\n{\n    if (object->GetEntry() != GameObjects::Azerite2 && object->GetEntry() != GameObjects::Azerite)\n        return;\n\n    UpdateCapturePoint(NODE_STATUS_NEUTRAL, TEAM_NONE, object, nullptr, true);\n\n    object->AddDelayedEvent(3000, [object]()\n    {\n        object->SendCustomAnim(1, false);\n    });\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "GuardianSpiritHealWidth",
+      "title": "Preserve the full native maximum-health Guardian Spirit rescue heal",
+      "kind": "calculation",
+      "batch": 6,
+      "index": 54,
+      "paths": [
+        "src/server/scripts/Spells/spell_priest.cpp"
+      ],
+      "cls": "spell_pri_guardian_spirit_AuraScript",
+      "case": "guardian",
+      "binding": "spell_pri_guardian_spirit",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "old": "class spell_pri_guardian_spirit_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_pri_guardian_spirit_AuraScript);\n\n            uint32 healPct;\n\n            bool Validate(SpellInfo const* /*SpellInfo*/) override\n            {\n                if (!sSpellMgr->GetSpellInfo(48153))\n                    return false;\n                return true;\n            }\n\n            bool Load() override\n            {\n                healPct = GetSpellInfo()->Effects[EFFECT_1]->CalcValue();\n                return true;\n            }\n\n            void CalculateAmount(AuraEffect const* /*aurEff*/, float & amount, bool & /*canBeRecalculated*/)\n            {\n                // Set absorbtion amount to unlimited\n                amount = -1;\n            }\n\n            void Absorb(AuraEffect* /*aurEff*/, DamageInfo & dmgInfo, float & absorbAmount)\n            {\n                Unit* target = GetTarget();\n                if (dmgInfo.GetDamage() < target->GetHealth())\n                    return;\n\n                float healAmount = int32(target->CountPctFromMaxHealth(healPct));\n                // remove the aura now, we don't want 40% healing bonus\n                Remove(AURA_REMOVE_BY_ENEMY_SPELL);\n                target->CastCustomSpell(target, 48153, &healAmount, NULL, NULL, true);\n                if (target->HasAura(234689)) // Phyrix's Embrace\n                    target->CastSpell(target, 234693, true);\n                absorbAmount = dmgInfo.GetDamage();\n            }\n\n            void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n            {\n                Unit* target = GetTarget();\n                if (!target)\n                    return;\n\n                if (Unit* caster = GetCaster())\n                    if (caster->HasAura(196437)) // Guardians of the Light\n                        if (target->GetGUID() != caster->GetGUID())\n                            caster->CastSpell(caster, 47788, true);\n            }\n\n            void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n            {\n                if (Unit* caster = GetCaster())\n                {\n                    AuraRemoveMode removeMode = GetTargetApplication()->GetRemoveMode();\n                    if (removeMode == AURA_REMOVE_BY_EXPIRE)\n                    {\n                        if (Player* plr = caster->ToPlayer())\n                        {\n                            if (AuraEffect const* guardianAngel = plr->GetAuraEffect(200209, EFFECT_0))\n                            {\n                                int32 desiredRemaining = guardianAngel->GetAmount() * IN_MILLISECONDS;\n                                int32 currentRemaining = int32(plr->GetSpellCooldownDelay(47788) * IN_MILLISECONDS);\n                                if (currentRemaining > desiredRemaining)\n                                    plr->ModifySpellCooldown(47788, desiredRemaining - currentRemaining);\n                            }\n                        }\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_pri_guardian_spirit_AuraScript::CalculateAmount, EFFECT_2, SPELL_AURA_SCHOOL_ABSORB);\n                OnEffectAbsorb += AuraEffectAbsorbFn(spell_pri_guardian_spirit_AuraScript::Absorb, EFFECT_2, SPELL_AURA_SCHOOL_ABSORB);\n                AfterEffectApply += AuraEffectApplyFn(spell_pri_guardian_spirit_AuraScript::OnApply, EFFECT_2, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);\n                OnEffectRemove += AuraEffectApplyFn(spell_pri_guardian_spirit_AuraScript::OnRemove, EFFECT_2, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);\n            }\n        }",
+          "new": "class spell_pri_guardian_spirit_AuraScript : public AuraScript\n        {\n            PrepareAuraScript(spell_pri_guardian_spirit_AuraScript);\n\n            uint32 healPct;\n\n            bool Validate(SpellInfo const* /*SpellInfo*/) override\n            {\n                if (!sSpellMgr->GetSpellInfo(48153))\n                    return false;\n                return true;\n            }\n\n            bool Load() override\n            {\n                healPct = GetSpellInfo()->Effects[EFFECT_1]->CalcValue();\n                return true;\n            }\n\n            void CalculateAmount(AuraEffect const* /*aurEff*/, float & amount, bool & /*canBeRecalculated*/)\n            {\n                // Set absorbtion amount to unlimited\n                amount = -1;\n            }\n\n            void Absorb(AuraEffect* /*aurEff*/, DamageInfo & dmgInfo, float & absorbAmount)\n            {\n                Unit* target = GetTarget();\n                if (dmgInfo.GetDamage() < target->GetHealth())\n                    return;\n\n                float healAmount = float(target->CountPctFromMaxHealth(healPct));\n                // remove the aura now, we don't want 40% healing bonus\n                Remove(AURA_REMOVE_BY_ENEMY_SPELL);\n                target->CastCustomSpell(target, 48153, &healAmount, NULL, NULL, true);\n                if (target->HasAura(234689)) // Phyrix's Embrace\n                    target->CastSpell(target, 234693, true);\n                absorbAmount = dmgInfo.GetDamage();\n            }\n\n            void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n            {\n                Unit* target = GetTarget();\n                if (!target)\n                    return;\n\n                if (Unit* caster = GetCaster())\n                    if (caster->HasAura(196437)) // Guardians of the Light\n                        if (target->GetGUID() != caster->GetGUID())\n                            caster->CastSpell(caster, 47788, true);\n            }\n\n            void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)\n            {\n                if (Unit* caster = GetCaster())\n                {\n                    AuraRemoveMode removeMode = GetTargetApplication()->GetRemoveMode();\n                    if (removeMode == AURA_REMOVE_BY_EXPIRE)\n                    {\n                        if (Player* plr = caster->ToPlayer())\n                        {\n                            if (AuraEffect const* guardianAngel = plr->GetAuraEffect(200209, EFFECT_0))\n                            {\n                                int32 desiredRemaining = guardianAngel->GetAmount() * IN_MILLISECONDS;\n                                int32 currentRemaining = int32(plr->GetSpellCooldownDelay(47788) * IN_MILLISECONDS);\n                                if (currentRemaining > desiredRemaining)\n                                    plr->ModifySpellCooldown(47788, desiredRemaining - currentRemaining);\n                            }\n                        }\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_pri_guardian_spirit_AuraScript::CalculateAmount, EFFECT_2, SPELL_AURA_SCHOOL_ABSORB);\n                OnEffectAbsorb += AuraEffectAbsorbFn(spell_pri_guardian_spirit_AuraScript::Absorb, EFFECT_2, SPELL_AURA_SCHOOL_ABSORB);\n                AfterEffectApply += AuraEffectApplyFn(spell_pri_guardian_spirit_AuraScript::OnApply, EFFECT_2, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);\n                OnEffectRemove += AuraEffectApplyFn(spell_pri_guardian_spirit_AuraScript::OnRemove, EFFECT_2, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);\n            }\n        }",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "SpiritShellAbsorbCapWidth",
+      "title": "Keep the Spirit Shell absorb cap positive above signed32 health",
+      "kind": "calculation",
+      "batch": 6,
+      "index": 55,
+      "paths": [
+        "src/server/scripts/Spells/spell_priest.cpp"
+      ],
+      "cls": "spell_pri_spirit_shell_SpellScript",
+      "case": "shell",
+      "binding": "spell_pri_spirit_shell",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "old": "class spell_pri_spirit_shell_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pri_spirit_shell_SpellScript);\n\n            void HandleOnHit()\n            {\n                Unit* target = GetHitUnit();\n                Unit* caster = GetCaster();\n                if (!target || !caster)\n                    return;\n\n                float bp = GetHitHeal();\n                if (GetSpellInfo()->Id == 2061)\n                {\n                    if (AuraEffect* aurEff = caster->GetAuraEffect(200128, 0)) // Trail of Light\n                    {\n                        if (Aura* auraTrail = aurEff->GetBase())\n                        {\n                            GuidList saveTargets = auraTrail->GetEffectTargets();\n                            if (!saveTargets.empty())\n                            {\n                                ObjectGuid previousTarget = saveTargets.back();\n                                if (previousTarget != target->GetGUID())\n                                {\n                                    if (Unit* targetTrail = ObjectAccessor::GetUnit(*caster, previousTarget))\n                                    {\n                                        if (caster->GetDistance(targetTrail) <= 40.0f)\n                                        {\n                                            float heal_ = CalculatePct(bp, aurEff->GetAmount());\n                                            caster->CastCustomSpell(targetTrail, 234946, &heal_, NULL, NULL,  true);\n                                        }\n                                    }\n                                }\n\n                                for (ObjectGuid const& guid : saveTargets)\n                                    auraTrail->RemoveEffectTarget(guid);\n                            }\n\n                            auraTrail->AddEffectTarget(target->GetGUID());\n                        }\n                    }\n                }\n                if (caster->HasAura(109964))\n                {\n                    if (AuraEffect* aurEff = target->GetAuraEffect(114908, 0))\n                        bp += aurEff->GetAmount();\n                    if (bp > int32(CalculatePct(target->GetMaxHealth(), 60)))\n                        bp = int32(CalculatePct(target->GetMaxHealth(), 60));\n                    caster->CastCustomSpell(target, 114908, &bp, NULL, NULL,  true);\n                    SetHitHeal(0);\n                }\n            }\n\n            void Register() override\n            {\n                OnHit += SpellHitFn(spell_pri_spirit_shell_SpellScript::HandleOnHit);\n            }\n        }",
+          "new": "class spell_pri_spirit_shell_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pri_spirit_shell_SpellScript);\n\n            void HandleOnHit()\n            {\n                Unit* target = GetHitUnit();\n                Unit* caster = GetCaster();\n                if (!target || !caster)\n                    return;\n\n                float bp = GetHitHeal64();\n                if (GetSpellInfo()->Id == 2061)\n                {\n                    if (AuraEffect* aurEff = caster->GetAuraEffect(200128, 0)) // Trail of Light\n                    {\n                        if (Aura* auraTrail = aurEff->GetBase())\n                        {\n                            GuidList saveTargets = auraTrail->GetEffectTargets();\n                            if (!saveTargets.empty())\n                            {\n                                ObjectGuid previousTarget = saveTargets.back();\n                                if (previousTarget != target->GetGUID())\n                                {\n                                    if (Unit* targetTrail = ObjectAccessor::GetUnit(*caster, previousTarget))\n                                    {\n                                        if (caster->GetDistance(targetTrail) <= 40.0f)\n                                        {\n                                            float heal_ = CalculatePct(bp, aurEff->GetAmount());\n                                            caster->CastCustomSpell(targetTrail, 234946, &heal_, NULL, NULL,  true);\n                                        }\n                                    }\n                                }\n\n                                for (ObjectGuid const& guid : saveTargets)\n                                    auraTrail->RemoveEffectTarget(guid);\n                            }\n\n                            auraTrail->AddEffectTarget(target->GetGUID());\n                        }\n                    }\n                }\n                if (caster->HasAura(109964))\n                {\n                    if (AuraEffect* aurEff = target->GetAuraEffect(114908, 0))\n                        bp += aurEff->GetAmount();\n                    float maxAbsorb = float(CalculatePct(target->GetMaxHealth(), 60));\n                    if (bp > maxAbsorb)\n                        bp = maxAbsorb;\n                    caster->CastCustomSpell(target, 114908, &bp, NULL, NULL,  true);\n                    SetHitHeal64(0);\n                }\n            }\n\n            void Register() override\n            {\n                OnHit += SpellHitFn(spell_pri_spirit_shell_SpellScript::HandleOnHit);\n            }\n        }",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "HaloHealWidth",
+      "title": "Preserve unsigned64 Halo healing through its authored distance factor",
+      "kind": "calculation",
+      "batch": 6,
+      "index": 56,
+      "paths": [
+        "src/server/scripts/Spells/spell_priest.cpp"
+      ],
+      "cls": "spell_pri_halo_heal_SpellScript",
+      "case": "halo",
+      "binding": "spell_pri_halo_heal",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "old": "#include \"Group.h\"",
+          "new": "#include \"Group.h\"\n#include \"HealingAmount.h\"",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "old": "class spell_pri_halo_heal_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pri_halo_heal_SpellScript);\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                if (Unit* caster = GetCaster())\n                {\n                    if (Unit* target = GetHitUnit())\n                    {\n                        int32 _heal = GetHitHeal();\n                        float Distance = caster->GetDistance(target);\n                        float pct = (0.5f * pow((1.01f),(-1 * pow(((Distance - 25.0f) / 2), 4))) + 0.1f + 0.015f*Distance);\n                        _heal = int32(_heal * pct);\n                        SetHitHeal(_heal);\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_pri_halo_heal_SpellScript::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n            }\n        }",
+          "new": "class spell_pri_halo_heal_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_pri_halo_heal_SpellScript);\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                if (Unit* caster = GetCaster())\n                {\n                    if (Unit* target = GetHitUnit())\n                    {\n                        uint64 _heal = GetHitHeal64();\n                        float Distance = caster->GetDistance(target);\n                        float pct = (0.5f * pow((1.01f),(-1 * pow(((Distance - 25.0f) / 2), 4))) + 0.1f + 0.015f*Distance);\n                        _heal = HealingAmount::Apply(_heal, 0, pct);\n                        SetHitHeal64(_heal);\n                    }\n                }\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_pri_halo_heal_SpellScript::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n            }\n        }",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 1
+    },
+    {
+      "key": "PenanceHealWidth",
+      "title": "Preserve unsigned64 Penance healing through Power of the Dark Side",
+      "kind": "calculation",
+      "batch": 6,
+      "index": 57,
+      "paths": [
+        "src/server/scripts/Spells/spell_priest.cpp"
+      ],
+      "cls": "spell_pri_penance_heal",
+      "case": "penance",
+      "binding": "spell_pri_penance_heal",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_priest.cpp",
+          "old": "class spell_pri_penance_heal : public SpellScript\n{\n    PrepareSpellScript(spell_pri_penance_heal);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        if (AuraEffect const* powerOfTheDarkSide = GetCaster()->GetAuraEffect(198069, EFFECT_0))\n        {\n            int32 heal = GetHitHeal();\n            AddPct(heal, powerOfTheDarkSide->GetAmount());\n            SetHitHeal(heal);\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_pri_penance_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "new": "class spell_pri_penance_heal : public SpellScript\n{\n    PrepareSpellScript(spell_pri_penance_heal);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        if (AuraEffect const* powerOfTheDarkSide = GetCaster()->GetAuraEffect(198069, EFFECT_0))\n        {\n            uint64 heal = GetHitHeal64();\n            heal = HealingAmount::Add(heal, CalculatePct(heal, powerOfTheDarkSide->GetAmount()));\n            SetHitHeal64(heal);\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_pri_penance_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "ChainHealDelugeWidth",
+      "title": "Preserve unsigned64 Chain Heal and the native Deluge bonus",
+      "kind": "calculation",
+      "batch": 6,
+      "index": 58,
+      "paths": [
+        "src/server/scripts/Spells/spell_shaman.cpp"
+      ],
+      "cls": "spell_sha_chain_heal",
+      "case": "chain",
+      "binding": "spell_sha_chain_heal",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_shaman.cpp",
+          "old": "#include \"ScriptMgr.h\"",
+          "new": "#include \"ScriptMgr.h\"\n#include \"HealingAmount.h\"",
+          "count": 1
+        },
+        {
+          "path": "src/server/scripts/Spells/spell_shaman.cpp",
+          "old": "class spell_sha_chain_heal : public SpellScript\n{\n    PrepareSpellScript(spell_sha_chain_heal);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        Unit* caster = GetCaster();\n        if (!caster)\n            return;\n\n        if (Unit* target = GetHitUnit())\n        {\n            int32 _heal = GetHitHeal();\n            if (AuraEffect const* aurEff = caster->GetAuraEffect(200076, EFFECT_0)) // Deluge\n            {\n                if (target->HasAura(200075, caster->GetGUID()) || target->HasAura(61295, caster->GetGUID()))\n                    _heal += CalculatePct(_heal, aurEff->GetAmount());\n            }\n            SetHitHeal(_heal);\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_sha_chain_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "new": "class spell_sha_chain_heal : public SpellScript\n{\n    PrepareSpellScript(spell_sha_chain_heal);\n\n    void HandleHeal(SpellEffIndex /*effIndex*/)\n    {\n        Unit* caster = GetCaster();\n        if (!caster)\n            return;\n\n        if (Unit* target = GetHitUnit())\n        {\n            uint64 _heal = GetHitHeal64();\n            if (AuraEffect const* aurEff = caster->GetAuraEffect(200076, EFFECT_0)) // Deluge\n            {\n                if (target->HasAura(200075, caster->GetGUID()) || target->HasAura(61295, caster->GetGUID()))\n                    _heal = HealingAmount::Add(_heal, CalculatePct(_heal, aurEff->GetAmount()));\n            }\n            SetHitHeal64(_heal);\n        }\n    }\n\n    void Register() override\n    {\n        OnEffectHitTarget += SpellEffectFn(spell_sha_chain_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);\n    }\n}",
+          "count": 1
+        }
+      ],
+      "class_edit_index": 1
+    },
+    {
+      "key": "AncestralGuidanceProcWidth",
+      "title": "Retain the complete heal or damage amount for Ancestral Guidance",
+      "kind": "calculation",
+      "batch": 6,
+      "index": 59,
+      "paths": [
+        "src/server/scripts/Spells/spell_shaman.cpp"
+      ],
+      "cls": "spell_sha_ancestral_guidance",
+      "case": "ancestral",
+      "binding": "spell_sha_ancestral_guidance",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_shaman.cpp",
+          "old": "class spell_sha_ancestral_guidance : public AuraScript\n{\n    PrepareAuraScript(spell_sha_ancestral_guidance);\n\n    bool CheckProc(ProcEventInfo& eventInfo)\n    {\n        Spell* procSpell = eventInfo.GetSpell();\n        if (procSpell && procSpell->GetSpellInfo()->Id == 114911)\n            return false;\n\n        if (HealInfo* healInfo = eventInfo.GetHealInfo())\n            return healInfo->GetHeal() > 0;\n\n        return eventInfo.GetDamageInfo() && eventInfo.GetDamageInfo()->GetDamage() > 0;\n    }\n\n    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)\n    {\n        PreventDefaultAction();\n\n        uint32 amount = eventInfo.GetHealInfo() ? eventInfo.GetHealInfo()->GetHeal() : eventInfo.GetDamageInfo()->GetDamage();\n        float heal = CalculatePct(amount, aurEff->GetAmount());\n        if (heal > 0.0f)\n            eventInfo.GetActor()->CastCustomSpell(eventInfo.GetActor(), 114911, &heal, nullptr, nullptr, true);\n    }\n\n    void Register() override\n    {\n        DoCheckProc += AuraCheckProcFn(spell_sha_ancestral_guidance::CheckProc);\n        OnEffectProc += AuraEffectProcFn(spell_sha_ancestral_guidance::HandleProc, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n    }\n}",
+          "new": "class spell_sha_ancestral_guidance : public AuraScript\n{\n    PrepareAuraScript(spell_sha_ancestral_guidance);\n\n    bool CheckProc(ProcEventInfo& eventInfo)\n    {\n        Spell* procSpell = eventInfo.GetSpell();\n        if (procSpell && procSpell->GetSpellInfo()->Id == 114911)\n            return false;\n\n        if (HealInfo* healInfo = eventInfo.GetHealInfo())\n            return healInfo->GetHeal() > 0;\n\n        return eventInfo.GetDamageInfo() && eventInfo.GetDamageInfo()->GetDamage() > 0;\n    }\n\n    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)\n    {\n        PreventDefaultAction();\n\n        uint64 amount = eventInfo.GetHealInfo() ? eventInfo.GetHealInfo()->GetHeal() : eventInfo.GetDamageInfo()->GetDamage();\n        float heal = CalculatePct(amount, aurEff->GetAmount());\n        if (heal > 0.0f)\n            eventInfo.GetActor()->CastCustomSpell(eventInfo.GetActor(), 114911, &heal, nullptr, nullptr, true);\n    }\n\n    void Register() override\n    {\n        DoCheckProc += AuraCheckProcFn(spell_sha_ancestral_guidance::CheckProc);\n        OnEffectProc += AuraEffectProcFn(spell_sha_ancestral_guidance::HandleProc, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);\n    }\n}",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "DeathStrikeMinimumHealWidth",
+      "title": "Keep Death Strike minimum healing wide through its native child spell",
+      "kind": "calculation",
+      "batch": 6,
+      "index": 60,
+      "paths": [
+        "src/server/scripts/Spells/spell_dk.cpp"
+      ],
+      "cls": "spell_dk_death_strike_SpellScript",
+      "case": "deathstrike",
+      "binding": "spell_dk_death_strike",
+      "binding_kind": "spell",
+      "edits": [
+        {
+          "path": "src/server/scripts/Spells/spell_dk.cpp",
+          "old": "class spell_dk_death_strike_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_dk_death_strike_SpellScript);\n\n            bool Validate(SpellInfo const* /*spellInfo*/) override\n            {\n                return ValidateSpellInfo(\n                {\n                    SPELL_DK_DEATH_STRIKE_HEAL,\n                    SPELL_DK_BLOOD_SHIELD_MASTERY,\n                    SPELL_DK_BLOOD_SHIELD_ABSORB,\n                    SPELL_DK_RECENTLY_USED_DEATH_STRIKE,\n                    SPELL_DK_FROST,\n                    SPELL_DK_DEATH_STRIKE_OFFHAND\n                });\n            }\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                Unit* caster = GetCaster();\n\n                // max of 20% of dmg taken in past 5 sec, or 10% of health\n\n                float pctDamage = caster->CanPvPScalar() ? GetSpellInfo()->GetEffect(EFFECT_2)->CalcValue() / 2 : GetSpellInfo()->GetEffect(EFFECT_2)->CalcValue();\n                int32 lastTime = GetSpellInfo()->GetEffect(EFFECT_3)->CalcValue();\n                int32 pctHeal = GetSpellInfo()->GetEffect(EFFECT_4)->CalcValue();\n\n                int32 minHeal = CalculatePct(caster->GetMaxHealth(), pctHeal);\n                int32 dmg = CalculatePct(caster->GetDamageTakenInPastSecs(lastTime, true, true), pctDamage);\n                int32 heal = std::max(minHeal, dmg);\n\n                caster->CastCustomSpell(SPELL_DK_DEATH_STRIKE_HEAL, SPELLVALUE_BASE_POINT0, heal, caster, true);\n\n                if (caster->HasAura(SPELL_DK_FROST))\n                    caster->CastSpell(GetHitUnit(), SPELL_DK_DEATH_STRIKE_OFFHAND, true);\n\n                // Heart of Ice extends an already active Icebound Fortitude by\n                // 2 seconds (DBC stores the value in tenths of a second).\n                if (AuraEffect const* heartOfIce = caster->GetAuraEffect(SPELL_DK_HEART_OF_ICE, EFFECT_0))\n                    if (Aura* iceboundFortitude = caster->GetAura(SPELL_DK_ICEBOUND_FORTITUDE))\n                        iceboundFortitude->SetDuration(iceboundFortitude->GetDuration() + heartOfIce->GetAmount() * 100);\n            }\n\n            void TriggerRecentlyUsedDeathStrike()\n            {\n                GetCaster()->CastSpell(GetCaster(), SPELL_DK_RECENTLY_USED_DEATH_STRIKE, true);\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_dk_death_strike_SpellScript::HandleHeal, EFFECT_1, SPELL_EFFECT_WEAPON_PERCENT_DAMAGE);\n                AfterCast += SpellCastFn(spell_dk_death_strike_SpellScript::TriggerRecentlyUsedDeathStrike);\n            }\n        }",
+          "new": "class spell_dk_death_strike_SpellScript : public SpellScript\n        {\n            PrepareSpellScript(spell_dk_death_strike_SpellScript);\n\n            bool Validate(SpellInfo const* /*spellInfo*/) override\n            {\n                return ValidateSpellInfo(\n                {\n                    SPELL_DK_DEATH_STRIKE_HEAL,\n                    SPELL_DK_BLOOD_SHIELD_MASTERY,\n                    SPELL_DK_BLOOD_SHIELD_ABSORB,\n                    SPELL_DK_RECENTLY_USED_DEATH_STRIKE,\n                    SPELL_DK_FROST,\n                    SPELL_DK_DEATH_STRIKE_OFFHAND\n                });\n            }\n\n            void HandleHeal(SpellEffIndex /*effIndex*/)\n            {\n                Unit* caster = GetCaster();\n\n                // max of 20% of dmg taken in past 5 sec, or 10% of health\n\n                float pctDamage = caster->CanPvPScalar() ? GetSpellInfo()->GetEffect(EFFECT_2)->CalcValue() / 2 : GetSpellInfo()->GetEffect(EFFECT_2)->CalcValue();\n                int32 lastTime = GetSpellInfo()->GetEffect(EFFECT_3)->CalcValue();\n                int32 pctHeal = GetSpellInfo()->GetEffect(EFFECT_4)->CalcValue();\n\n                uint64 minHeal = CalculatePct(caster->GetMaxHealth(), pctHeal);\n                uint64 dmg = CalculatePct(caster->GetDamageTakenInPastSecs(lastTime, true, true), pctDamage);\n                float heal = float(std::max(minHeal, dmg));\n\n                caster->CastCustomSpell(caster, SPELL_DK_DEATH_STRIKE_HEAL, &heal, nullptr, nullptr, true);\n\n                if (caster->HasAura(SPELL_DK_FROST))\n                    caster->CastSpell(GetHitUnit(), SPELL_DK_DEATH_STRIKE_OFFHAND, true);\n\n                // Heart of Ice extends an already active Icebound Fortitude by\n                // 2 seconds (DBC stores the value in tenths of a second).\n                if (AuraEffect const* heartOfIce = caster->GetAuraEffect(SPELL_DK_HEART_OF_ICE, EFFECT_0))\n                    if (Aura* iceboundFortitude = caster->GetAura(SPELL_DK_ICEBOUND_FORTITUDE))\n                        iceboundFortitude->SetDuration(iceboundFortitude->GetDuration() + heartOfIce->GetAmount() * 100);\n            }\n\n            void TriggerRecentlyUsedDeathStrike()\n            {\n                GetCaster()->CastSpell(GetCaster(), SPELL_DK_RECENTLY_USED_DEATH_STRIKE, true);\n            }\n\n            void Register() override\n            {\n                OnEffectHitTarget += SpellEffectFn(spell_dk_death_strike_SpellScript::HandleHeal, EFFECT_1, SPELL_EFFECT_WEAPON_PERCENT_DAMAGE);\n                AfterCast += SpellCastFn(spell_dk_death_strike_SpellScript::TriggerRecentlyUsedDeathStrike);\n            }\n        }",
+          "count": 1
+        }
+      ]
     }
   ],
   "excluded_candidates": [
