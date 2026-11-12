@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-12",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "key": "PetCriticalStatSource",
+  "batch": 9,
+  "authorized_total": 100,
+  "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
+  "title": "Use the attacking pet critical chance for battle pet damage",
+  "paths": [
+    "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+  ],
+  "regression": "tools/tests/Test-TenTen20261111.ps1 -Batch 9 -Case PetCriticalStatSource",
+  "counterfactual": "Add -Baseline;expected-broken control paired with fixed pass.",
+  "checks": {
+    "asan": "All ten complete production method scopes pass with controlled DB2/cast/session endpoints. Fixed controls cover slot identity,team terminal/symmetry handling,negative/cross-team/locked/valid swaps,attacker critical chance,team/head/fixed-slot selection,all-target execution,table bounds,humanoid actual health change,infinite aura duration,andappended BuffTurn. Fixture uses actual native NULL_ID0 and NULL_SLOT-1 contract.",
+    "baseline": "All ten pinned controls fail their repaired expectations andpaired fixed runs pass. Original missing-slot crash hypothesis was withdrawn after its baseline passed;the unchanged two-pet source remains retained coverage andisnot counted.",
+    "native": "Actual linked PetBattle methods with native objects andmatching26972 BattlePetAbility/Turn/Effect/State stores pass all ten selected behaviors. Six valid relative slots,Player-free battles,real event updates,nojournal/character writes. Invalid effect-table cases use explicit paired ASAN controls andassert one retained diagnostic. Native data reveals unsupported property246 rows3449..3451 and3493..3498 (turns3268/3315):bounds fix prevents out-of-range dispatch,actual authored implementations remain OPEN.",
+    "linked": "All first90 source scopes andlinked checks pass;actual two-team terminal-result branches,slot0 andnegative-sentinel admission,bounded incoming indices,handler-table guards,all-target loop,humanoid native heal,infinite-duration guard andappended-event writes arepresent in promoted Release.",
+    "retained": "Previous50 and65-file healing source certificates andcanonical Scepter PE check pass. Source-only normalization nowvalidates sequential prefix states so two separate repairs to one method remain independently bounded.",
+    "runtime": "Task-owned canonical fresh ready,gracefulshutdown0,exit0/gone,empty stderr. No new/changed crash,DBErrors,unexplained warnings/errors/assertions. No user orunknown server stopped.",
+    "investigation": "Local matching26972 native stores andactual core implementation examined first;modern local Trinity has no equivalent battle engine tocopy. Native probe exposed NULL_ID0 conflict withvalid pet0:localized admission uses actual range/presence,CanSwap defaultuses existingNULL_SLOT-1;global wire/event sentinels remain unchanged. Initial fixture assumptions andoverstrong all-native-properties-supported assertion were corrected,withfailed evidence retained. Client PvP,pet journal,animations andwhole battles remain pending."
+  },
+  "canonical_worldserver_sha256": "f5dc27554d8e8ef40c46615e0f978c0c4c3595d65bed4ca05d930b1384c8dc4a",
+  "scope": "Each independent battle-engine defect counted once;all implicit targeting variants form onefamily,all swap admission guards form onefamily. Native target IDs,cooldown progression,damage coefficients,quest/journal authorization andauthored data retained. No schema/character/packet changes.",
+  "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch09;afterfocusedcommits.",
+  "pending": "Actualclient battle/PvP/animations/journal checks pending. Unsupportednative property246 remains OPEN beyond the bounded-dispatch repair. Ordinary corehealing andcumulative history investigation continues;Lady/LINK2/Slaghammer/handshake/all36 whole chains andmixedDBErrorsretain existingevidence."
+}

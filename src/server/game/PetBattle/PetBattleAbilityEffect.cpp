@@ -486,7 +486,7 @@ int32 PetBattleAbilityEffect::CalculateDamage(int32 damage)
         Flags |= PETBATTLE_EVENT_FLAG_WEAK;
 
     // Critical
-    if (roll_chance_i(GetState(Target, BATTLEPET_STATE_Stat_CritChance)))
+    if (roll_chance_i(GetState(Caster, BATTLEPET_STATE_Stat_CritChance)))
     {
         modPct += 100;
         Flags |= PETBATTLE_EVENT_FLAG_CRITICAL;
