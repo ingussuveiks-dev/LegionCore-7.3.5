@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-12",
+  "key": "MephistrothIllidanLifecycle",
+  "title": "Resolve the saved Illidan before assigning newly summoned shadows",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "batch": 5,
+  "historical_group": 66,
+  "baseline": "d1df9bc665e2b38729859d330c74dc323c81ac34",
+  "paths": [
+    "src/server/scripts/Legion/CathedralEternalNight/boss_mephistroth.cpp"
+  ],
+  "regression": "tools/tests/Test-SecondTenTen20261112.ps1 -Batch 5 -Case MephistrothIllidanLifecycle",
+  "counterfactual": "Same command with -Baseline; expected broken pinned control, paired with repaired pass.",
+  "checks": {
+    "counterfactual": "Nine pinned production callback controls reproduce heap-use-after-free; the tenth reproduces the exact missing-first-ally heal refusal. All ten paired repaired complete affected callback methods pass MSVC ASAN. Class scaffolding, unrelated encounter methods, cast/motion/instance/quest endpoints are explicitly controlled; no full-core ASAN or full dungeon traversal claim.",
+    "native": "Actual linked native probe verifies nine creature script bindings plus read-only native WorldDatabase mapping for personal GO245045/go_q39262, against the matching26972 runtime; first30 pet core-native regressions still pass. The native bootstrap loads creatures but not GO templates, so cage binding is queried directly rather than treating an unloaded container as missing data. The ten new AI callbacks themselves use complete extracted-method ASAN and actual Release PE checks.",
+    "linked": "All selected50 and retained previous100 checks pass. Each native affected method contains expected typed GUID lookup and before-use guard; Morchok explicitly retains lookup result in r14 and guards its first dereference. Wind spirit resolves and checks both actors. Amber Monster resolves saved passenger again after real removal callbacks and cancels/replaces pending fling. Elisande failed summon is guarded and retries within existing five-second dialogue cadence without consuming the pending line. Greater Heal searches all four authored types, retains50percent admission and one heal per event. Original script/game/Main builds and linked canonical Scepter pass.",
+    "startup": "Owned worldserver PID=13732\nPASS owned PID=13732 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;no new crashes, appended DBErrors or unexplained runtime errors/warnings/assertions.",
+    "limitations": "Actual raid/dungeon/escort/client dialogue, visual/boarding timing and whole36artifact chains remain client checks. Mephistroth phase actor summon failure recovery beyond safe new-shadow assignment is not certified. Existing authorial combat/credit rules are preserved; no invented HP threshold or killing timer."
+  },
+  "fixture_setup_failures_resolved": [
+    "Fixture driver initially lacked Batch5 dispatch and two external fixture declarations; fixed before paired runs. PowerShell interpolation in an editing command was replaced by a literal patch.",
+    "The initial native GO binding check examined an unloaded bootstrap container. A read-only actual WorldDatabase binding query resolves it; all nine creatures and the personal object are bound.",
+    "Retained PE reader also encountered a compiler switch table after a backward unconditional branch and alignment padding. It now proves image-base addressing, closed fallthrough and valid in-function table targets before separating data; unchanged retained assertions pass.",
+    "Final passenger review changed the100ms boarding event to RescheduleEvent so repeated apply callbacks retain one pending fling, preserving captured identity through actual removal callback. Tests cover a map change during removal and a legitimate surviving rider.",
+    "Existing discarded std::min result in Morchok remains outside this repair; native SetHealth already clamps each unit to its own maximum. It was not counted as a second issue."
+  ],
+  "canonical_worldserver_sha256": "201fd76e876abe6f01ccf0b480c1553f8bfc1c0063cfe03b8489d9912bd98b21",
+  "archive": "build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch5; archive manifest recorded in batch ledger after verified cleanup.",
+  "retained_open": [
+    "Authentic living Lady Sharasdal activation/surrender/conversation1906/Grash/cleanup",
+    "LINK2/Slaghammer evidence",
+    "Mixed DBErrors.log remains unchanged",
+    "Original intermittent client handshake silence",
+    "All36wholeclientchains",
+    "Legacy artifact PE certificates",
+    "Native pet effect property246",
+    "Ordinary coreheal/periodic width beyond explicit64 inputs"
+  ]
+}

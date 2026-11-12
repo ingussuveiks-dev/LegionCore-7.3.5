@@ -76,11 +76,11 @@ public:
         
         std::map<uint8, ObjectGuid> justUseIt{};
         
-        Creature* illidan_saved = nullptr;
+        ObjectGuid illidanGuid;
 
         void Reset() override
         {
-            illidan_saved = nullptr;
+            illidanGuid.Clear();
             me->RemoveAurasDueToSpell(SPELL_SHADOW_FADE);
             me->RemoveAurasDueToSpell(SPELL_CREEPING_SHADOWS);
             instance->DoRemoveAurasDueToSpellOnPlayers(234370);
@@ -136,7 +136,7 @@ public:
             summon->SetReactState(REACT_PASSIVE);
             
             if (summon->GetEntry() == NPC_SHADOW_OF_MEPHISTROTH)
-                if (illidan_saved)
+                if (Creature* illidan_saved = ObjectAccessor::GetCreature(*me, illidanGuid))
                 {
                     summon->AI()->AttackStart(illidan_saved);
                     summon->SetFacingTo(illidan_saved);
@@ -188,7 +188,7 @@ public:
                 
                 if (Creature* illidan = me->SummonCreature(NPC_ILLIDAN_MEPHISTROTH, -542.10f, 2526.12f, 533.94f, 0.0f))
                 {
-                    illidan_saved = illidan;
+                    illidanGuid = illidan->GetGUID();
                     instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, illidan);
                     instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_START, illidan);
                 }
@@ -202,7 +202,7 @@ public:
             else if (spell->Id == SPELL_INVIS_REMOVED)
             {
                 me->SetVisible(true);
-                illidan_saved = nullptr;
+                illidanGuid.Clear();
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC |UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                 me->SetReactState(REACT_DEFENSIVE);
                 DefaultEvents(1);
