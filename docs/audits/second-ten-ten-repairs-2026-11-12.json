@@ -1,7 +1,7 @@
 {
-  "status": "IN_PROGRESS_70_OF_100",
+  "status": "IN_PROGRESS_80_OF_100",
   "authorized_total": 100,
-  "completed": 70,
+  "completed": 80,
   "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
   "batches": [
     {
@@ -520,6 +520,79 @@
         "ManifestSHA256": "4CD5ED232F970F48047CB9B6B0CEFDF0E67A6ADBF3A4B89C948DB0FBA81FB870"
       },
       "canonical_worldserver_sha256": "d8490d712ba46374e942e90e5f9debced93da37f584a0eb0e11200d8e2ee7b51"
+    },
+    {
+      "batch": 8,
+      "historical_group": 69,
+      "commits": [
+        {
+          "key": "CorlaZealotCombatClock",
+          "commit": "5af1c19d5335a2acb88062ef6c22f1d83db38528",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/CorlaZealotCombatClock.json"
+        },
+        {
+          "key": "BlazingBoneCombatClock",
+          "commit": "0e4c0be063882fd5e756dd18f6baf03730080a09",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/BlazingBoneCombatClock.json"
+        },
+        {
+          "key": "JanalaiHatchlingCombatClock",
+          "commit": "66cf973f550d3f83cc3160e0bac1f48b1faa66b4",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/JanalaiHatchlingCombatClock.json"
+        },
+        {
+          "key": "StoneQuilenCombatClock",
+          "commit": "2ba03f55a9f22f802fa63c97d91517ee41994dc7",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/StoneQuilenCombatClock.json"
+        },
+        {
+          "key": "HighSeasCaptainCombatClock",
+          "commit": "59ce14bcb64b1cb130f50a40c9db055e2496f802",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/HighSeasCaptainCombatClock.json"
+        },
+        {
+          "key": "BlackHarvestFelhunterCombatClock",
+          "commit": "361702851eade81c8173b6a4f19203d7044d7f10",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/BlackHarvestFelhunterCombatClock.json"
+        },
+        {
+          "key": "VoonePummelRepeat",
+          "commit": "1fa0d0fb24e07d301a541aa26f4e04e69a6d191c",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/VoonePummelRepeat.json"
+        },
+        {
+          "key": "GyrokillShadowPowerRepeat",
+          "commit": "27142fa0d04336f7664f561ba189ddf0e6b33947",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/GyrokillShadowPowerRepeat.json"
+        },
+        {
+          "key": "NatureGuardianHealingWidth",
+          "commit": "6b2ed57bbd57ef9eedc62ddee19ae9d5406abfa5",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/NatureGuardianHealingWidth.json"
+        },
+        {
+          "key": "FelhoundsTouchedProcLifetime",
+          "commit": "2972ae287ae87f572f72d313eef1605d9e7374b8",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/FelhoundsTouchedProcLifetime.json"
+        }
+      ],
+      "support_commit": "4d76a6b0b4713e4aad1968ee8daac0a3f1658ea5",
+      "checks": {
+        "counterfactual": "Nine exact pinned named assertions fail at exit1 and the tenth pinned absent-caster case reproduces an MSVC ASAN access violation. Every paired repaired complete-callback/full-AuraScript case passes. Eight Reset/EnterCombat/UpdateAI sequences and complete HighSeas ExecuteTargetEvent are extracted; constructors, other hooks, creature/instance/spatial/dialogue endpoints and random minimum are controlled. Both AuraScript classes are extracted in full. This is not full-core ASAN or full NPC combat execution.",
+        "native": "All ten actual database script bindings and authored matching26972 spell IDs pass. Actual linked EventMap executes the eight complete combat callback sequences with controlled creature/instance endpoints: all four evolved zealot abilities repeat; first/repeated Fiery Slash obey cast deferral and encounter cleanup; hatchling authored first deadline and cleanup; all three Quilen attacks repeat and no-victim/Frenzy guards remain; captain first1500ms and repeat10600ms use the same native base queue, reset clears it and repeated combat notification does not duplicate; both felhunter5s/15s clocks survive cast deferral; native-clock Pummel and ShadowPower repeat under their own IDs without disturbing MortalStrike or adding SawBlade schedules. Actual Aura/AuraApplication proc dispatch accepts a legal five-billion HEALING DamageInfo record, retains nullable source spells and requests the expected NatureGuardian child amount. Actual foreign Flame imprint persists after its creator leaves the map; GetCaster is confirmed null and proc safely returns. Missing proc record/actor is rejected and the separate valid Shadow imprint keeps its child request. Child casts are observed endpoints; full engine damage/AI combat/client traversal are separate. Retained first30/sixth10/seventh10 native and full previous100 native pass.",
+        "linked": "Selected80, retained previous100 and canonical Scepter checks pass. Six actual clock increments precede ExecuteEvent; captain reset/dispatch/inlined repeat share EventMap offset0x38. Pummel15615 reschedules native event5 at16seconds and ShadowPower35322 reschedules event3 at25-35seconds. NatureGuardian reads qword healing before percentage math and retains source-null/self-heal gates. Felhounds proc checks its damage record, actor and actual GetCaster result before instance lookup. Original game/scripts/Main build inputs and source snapshot hashes were verified.",
+        "startup": "Owned worldserver PID=22024\nPASS owned PID=22024 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged; stderr empty; no new crashes, appended DBErrors or unexplained runtime warnings/errors/assertions.",
+        "limitations": "Creature/instance/spatial/cast endpoints in clock fixtures are controlled; native EventMap is actual. Aura source/owner/dispatcher are actual and child requests are observed. Full NPC encounter combat, client timing/animation, faction variants and imprint child damage remain pending. All36wholeclientchains, authentic living Lady sequence, LINK2/Slaghammer, mixed canonical DBErrors, original intermittent client handshake and remaining pet246/clone/type-controller/resurrection scopes remain OPEN."
+      },
+      "cleanup": {
+        "ManifestSHA256": "D4E38A97D50485BC48F8585E77EA72D7DFCE98ADB975C45F7FAA44BCADC3A462",
+        "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch8",
+        "Removed": 49,
+        "Rollback": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-second-ten-ten-batch1-2026-11-12",
+        "ReclaimedBytes": 1116488236,
+        "Archived": 2800
+      },
+      "canonical_worldserver_sha256": "9ab1e508d721b12a8fa032aca13f3e76b6ae9202c0a10177d996c39c6379e4d4"
     }
   ],
   "selected_not_yet_verified": [],
@@ -532,6 +605,6 @@
     "legacy PE certificate failures",
     "native pet effect property 246"
   ],
-  "remaining": 30,
-  "completed_batches": 7
+  "remaining": 20,
+  "completed_batches": 8
 }
