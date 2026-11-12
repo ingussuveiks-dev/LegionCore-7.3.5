@@ -188,7 +188,7 @@ public:
         }
 
         EventMap events;
-        Unit* plrTarget = nullptr;
+        ObjectGuid plrTargetGuid;
 
         void Reset() override {}
 
@@ -196,7 +196,7 @@ public:
         {
             if (spell->Id == SPELL_S_PROTOCOL_FIXATE)
             {
-                plrTarget = target;
+                plrTargetGuid = target ? target->GetGUID() : ObjectGuid::Empty;
                 events.RescheduleEvent(EVENT_1, 500);
             }
         }
@@ -214,7 +214,7 @@ public:
             {
                 if (eventId == EVENT_1)
                 {
-                    if (plrTarget)
+                    if (Unit* plrTarget = ObjectAccessor::GetUnit(*me, plrTargetGuid))
                         me->GetMotionMaster()->MovePoint(1, plrTarget->GetPositionX(), plrTarget->GetPositionY(), plrTarget->GetPositionZ());
                     events.RescheduleEvent(EVENT_1, 1000);
                 }
