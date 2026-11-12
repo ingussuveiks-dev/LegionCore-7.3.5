@@ -7,6 +7,7 @@
 //////
 
 #include "PetBattle.h"
+#include <limits>
 #include "PetBattleAbilityEffect.h"
 #include "WildBattlePet.h"
 #include "DB2Store.h"
@@ -343,7 +344,9 @@ bool BattlePetInstance::CanAttack()
 
 int32 BattlePetInstance::GetMaxHealth()
 {
-    return int32(floor((10000.0f + 5.0f * States[BATTLEPET_STATE_Stat_Stamina] + States[BATTLEPET_STATE_maxHealthBonus] * States[BATTLEPET_STATE_Internal_InitialLevel]) / 100.0f + 0.5));
+    int32 base = int32(floor((10000.0f + 5.0f * States[BATTLEPET_STATE_Stat_Stamina] + States[BATTLEPET_STATE_maxHealthBonus] * States[BATTLEPET_STATE_Internal_InitialLevel]) / 100.0f + 0.5));
+    int64 maximum = int64(base) + int64(base) * States[BATTLEPET_STATE_Mod_MaxHealthPercent] / 100;
+    return int32(std::max<int64>(1, std::min<int64>(maximum, std::numeric_limits<int32>::max())));
 }
 
 int32 BattlePetInstance::GetSpeed()
@@ -499,8 +502,26 @@ PetBattleEvent& PetBattleEvent::Trigger(int8 targetPetID, uint32 p_AbilityId)
     return *this;
 }
 
+static void UpdatePetBattleAuraMaxHealth(PetBattle* battle, PetBattleAura const* aura, int32 oldMaximum)
+{
+    auto pet = battle->Pets[aura->TargetPetID];
+    int32 maximum = pet->GetMaxHealth();
+    if (maximum == oldMaximum)
+        return;
+    int64 health = oldMaximum > 0 ? int64(pet->Health) * maximum / oldMaximum : pet->Health;
+    pet->Health = int32(std::max<int64>(pet->Health > 0 ? 1 : 0, std::min<int64>(health, maximum)));
+    pet->InfoMaxHealth = maximum;
+    PetBattleEvent maxEvent(PETBATTLE_EVENT_SET_MAX_HEALTH, aura->CasterPetID, 0, aura->TriggerId, battle->RoundTurn++, aura->Turn, 1);
+    maxEvent.UpdateMaxHealth(aura->TargetPetID, maximum);
+    battle->RoundEvents.push_back(maxEvent);
+    PetBattleEvent healthEvent(PETBATTLE_EVENT_SET_HEALTH, aura->CasterPetID, 0, aura->TriggerId, battle->RoundTurn++, aura->Turn, 1);
+    healthEvent.UpdateHealth(aura->TargetPetID, pet->Health);
+    battle->RoundEvents.push_back(healthEvent);
+}
+
 void PetBattleAura::Apply(PetBattle* petBattle)
 {
+    int32 oldMaximum = petBattle->Pets[TargetPetID]->GetMaxHealth();
     AppliedStates.clear();
     for (auto const& v : sBattlePetAbilityStateStore)
     {
@@ -543,27 +564,12 @@ void PetBattleAura::Apply(PetBattle* petBattle)
         petBattle->SetPetState(CasterPetID, TargetPetID, 0, v->BattlePetStateID, value, false, flags);
     }
 
-    if (AbilityID == 577)   ///< Healthy http://www.wowhead.com/petability=576/perk-up
-    {
-        auto pet = petBattle->Pets[TargetPetID];
-
-        float healthPct = float(pet->Health) / float(pet->GetMaxHealth() - 5 * pet->Level);
-
-        pet->InfoMaxHealth = pet->GetMaxHealth();
-        pet->Health = healthPct * float(pet->GetMaxHealth());
-
-        PetBattleEvent eventSetMaxHealth(PETBATTLE_EVENT_SET_MAX_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, 0, 1);
-        eventSetMaxHealth.UpdateMaxHealth(TargetPetID, pet->InfoMaxHealth);
-        petBattle->RoundEvents.push_back(eventSetMaxHealth);
-
-        PetBattleEvent eventSetHealth(PETBATTLE_EVENT_SET_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, 0, 1);
-        eventSetHealth.UpdateHealth(TargetPetID, pet->Health);
-        petBattle->RoundEvents.push_back(eventSetHealth);
-    }
+    UpdatePetBattleAuraMaxHealth(petBattle, this, oldMaximum);
 }
 
 void PetBattleAura::Remove(PetBattle* petBattle)
 {
+    int32 oldMaximum = petBattle->Pets[TargetPetID]->GetMaxHealth();
     if (AbilityID == petBattle->WeatherAbilityId &&
         std::none_of(petBattle->PetAuras.begin(), petBattle->PetAuras.end(), [this](PetBattleAura const* other)
         {
@@ -575,23 +581,7 @@ void PetBattleAura::Remove(PetBattle* petBattle)
         petBattle->SetPetState(CasterPetID, TargetPetID, 0, state.first, petBattle->Pets[TargetPetID]->States[state.first] - state.second);
     AppliedStates.clear();
 
-    if (AbilityID == 577)   ///< Healthy http://www.wowhead.com/petability=576/perk-up
-    {
-        auto pet = petBattle->Pets[TargetPetID];
-
-        float healthPct = float(pet->Health) / float(pet->GetMaxHealth() + 5 * pet->Level);
-
-        pet->InfoMaxHealth = pet->GetMaxHealth();
-        pet->Health = healthPct * float(pet->GetMaxHealth());
-
-        PetBattleEvent eventSetHealth(PETBATTLE_EVENT_SET_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, Turn, 1);
-        eventSetHealth.UpdateHealth(TargetPetID, pet->Health);
-        petBattle->RoundEvents.push_back(eventSetHealth);
-
-        PetBattleEvent eventSetMaxHealth(PETBATTLE_EVENT_SET_MAX_HEALTH, CasterPetID, 0, 577, petBattle->RoundTurn, Turn, 1);
-        eventSetMaxHealth.UpdateMaxHealth(TargetPetID, pet->InfoMaxHealth);
-        petBattle->RoundEvents.push_back(eventSetMaxHealth);
-    }
+    UpdatePetBattleAuraMaxHealth(petBattle, this, oldMaximum);
 }
 
 void PetBattleAura::Process(PetBattle* petBattle)
