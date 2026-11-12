@@ -432,14 +432,14 @@ void PetBattleAbilityEffect::ModState(uint32 target, uint32 stateID, int32 modVa
     SetState(target, stateID, PetBattleInstance->Pets[target]->States[stateID] + (isApply ? modValue : -modValue));
 }
 
-int32 PetBattleAbilityEffect::CalculateDamage(int32 damage)
+int32 PetBattleAbilityEffect::CalculateDamage(int32 damage, bool scaleWithPower)
 {
     /// Modifiers
     damage += GetState(Caster, BATTLEPET_STATE_Add_FlatDamageDealt);
     damage += GetState(Target, BATTLEPET_STATE_Add_FlatDamageTaken);
 
     /// Power
-    int32 modPct = CalculatePct(GetState(Caster, BATTLEPET_STATE_Stat_Power), 5);
+    int32 modPct = scaleWithPower ? CalculatePct(GetState(Caster, BATTLEPET_STATE_Stat_Power), 5) : 0;
 
     /// Mod Dealt / Taken
     modPct += GetState(Caster, BATTLEPET_STATE_Mod_DamageDealtPercent);
@@ -1331,7 +1331,7 @@ bool PetBattleAbilityEffect::HandleDamagePercent()
     if (EffectInfo->Param[2])
         Flags |= PETBATTLE_EVENT_FLAG_PERIODIC;
 
-    int32 damage = CalculateDamage(CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]));
+    int32 damage = CalculateDamage(CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]), false);
     return Damage(Target, damage);
 }
 
