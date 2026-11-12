@@ -1,4 +1,15 @@
 {
+  "latest_species183_producer_research_2026_11_12": {
+    "reader_commit": "19005266f9ff34b6700fb199cd002ee80c820cb4",
+    "audit": "docs/audits/pet-npc-passive-research-2026-11-12.json",
+    "status": "READONLY_READER_SCHEMA_ERROR_REPAIRED_NATIVE_NPC_PRODUCERS_STILL_OPEN",
+    "findings": {
+      "state183": "No matching BattlePetState183 metadata row. Thirteen actual BattlePetSpeciesState183 values name ability IDs:1259->251,1420->485,1479/1482->1377,1496->1387,1504->1389,1507/1880->1390,1811->1586,1815->1588,1881->1673,1883->1672,1882->1674. Most flags2 but1586/1672 flags0; this does not authorize globally treating every entry as an infinite aura.",
+      "roboflauge": "Actual species1504/state183 value1389. Live Knockoff Blingtron99505 team contains species1504 with active slots1079/455/1025. No1389 direct species learned row/effect-aura/parameter/ability-state producer found by this reader. Existing core AddPet retains species states, but no183 activation path was found. Actual passive admission/team recipient/proc/swap/expiry sequence remains to implement and verify.",
+      "ominitron": "NPC99878 is Ominitron Defense System with npc_PetBattleTrainer;99880 shares the name without a script. Current team query returns species1817 ability1597 and species1818 ability1670. No active1389/1595 trainer slot reference or1595 parameter/aura/species-state producer was found. These negative searches do not establish an authentic1595 activation/owner sequence."
+    },
+    "next": "Use the established1504/state183/1389 and live99505 link to build a scoped actual native Roboflauge regression before enabling any species-state producer."
+  },
   "latest_accuracy_roster_resolution_2026_11_12": {
     "status": "527_1010_THREE_ENEMY_RECIPIENTS_FIXED_CLIENT_PENDING",
     "fix_commit": "72e54ac8cce57458a1be91ad88619635d32f8c16",
