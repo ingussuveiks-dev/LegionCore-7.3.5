@@ -1214,7 +1214,7 @@ class spell_warl_health_funnel : public SpellScriptLoader
             {
                 if (GetHitUnit())
                     if (Unit* caster = GetCaster())
-                        SetHitHeal(caster->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->BasePoints));
+                        SetHitHeal64(caster->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->BasePoints));
             }
 
             void HandleCast()
