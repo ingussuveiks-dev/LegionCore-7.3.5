@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-12",
+  "status": "AUTHENTIC_OPEN_EVIDENCE_RETAINED_NO_GAMEPLAY_COMPLETION_CLAIM",
+  "sharasdal": {
+    "source": "https://www.youtube.com/watch?v=wmKA8X7QX0U",
+    "review": "Visually reviewed all80 one-second frames at880..959seconds in sheets00..13. This is sampled footage, not continuous playback or audio review, and not the entire video. No unseen prerequisites or server-side trigger is certified.",
+    "observations": [
+      "886seconds Lady is visibly held above Grash. The sampled target frame cannot establish a precise HP threshold.",
+      "890..899seconds the companions question Lady and she refuses.",
+      "900..903seconds Grash cries out and stomps. The XP popup at900seconds is ambiguous and does not identify a killer or prove a specific server death event.",
+      "904..907seconds the questioning dialogue finishes;908seconds stage completion is visible and909seconds the acquisition stage appears.",
+      "910..913seconds Grash says Dead now and Erunak invites the player to take the artifact.",
+      "914..933seconds the player interacts with the artifact and its acquisition presentation plays.",
+      "934..939seconds the screen transition and acquisition credit are visible.",
+      "940..956seconds post-acquisition companion dialogue and return spell play;957..959seconds arrival in the Maelstrom is visible."
+    ],
+    "native_text_read": {
+      "path": ".codex/sharasdal-open-2026-11-12/texts.tsv",
+      "bytes": 1842,
+      "sha256": "a8e8b2be497441f5c300a4fa9ef6987d13f84333d984ba648cc2e0bca47415b4"
+    },
+    "diagnostics": "Read-only World SELECT reached explicit EOF,exit0. No new crash or appended server/DB error. The known MariaDB passwordless-login certificate-policy warning is retained, not suppressed; no connection setting changed.",
+    "open": "The authentic activation/surrender producer,exact server transition to1906,Grash kill and cleanup remain unestablished.209487 is a native visual/DUMMY,not a damage/instakill effect. ControlThoughts209983 faction change/dispel is not proved as a finisher trigger. No HP threshold,kill timer or manual progression grant implemented."
+  },
+  "self_sacrifice": {
+    "native_observations": {
+      "path": ".codex/pet-self-sacrifice-open-2026-11-12/current-valid-health/native.tsv",
+      "bytes": 3147,
+      "sha256": "f53589bfbdd38f0048248965a669edf0a86ec830cf37c18a3cce2bbeb9fcf7da"
+    },
+    "scope": "20 actual complete Cast observations:282/663/836/321/1025,both teams,with and without Mechanical initialization291. Memory-only teams;read-only matching26972 hotfix;no character data changed.",
+    "finding": "Non242 HandleKill kills both fronts.282/663property68 also damages the user rather than the enemy. Armageddon repeats its three native damage rows on the active enemy instead of all three enemy members. Mechanical revival is currently triggered by self-sacrifice although282/1025 explicitly forbid Failsafe in native descriptions. These are retained known defects for a separate repair,not completed fixes.",
+    "discarded_setup": "The initial observation draft set Health/InfoMaxHealth above the real state-derived GetMaxHealth. It is not valid gameplay evidence. The named current-valid-health rerun uses the original fixture actual100/100 health and supersedes those observations.",
+    "diagnostics": "Both observations completed without crashes,new DBErrors or unexplained server warnings/errors/assertions. Research completion is not a passing repaired regression. Its evidence remains outside fixed."
+  },
+  "protected": "Original Slaghammer cache,missingLINK2payload evidence,mixed7111byteDBErrors and all client/whole-chain limits retained."
+}

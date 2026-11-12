@@ -1,4 +1,35 @@
 {
+  "latest_native_racial_repair_2026_11_12": {
+    "status": "IMMEDIATE_RACIAL_RESURRECTION_FIXED_OTHER_NATIVE_AND_CLIENT_OPENS_REMAIN",
+    "fix_commit": "29547942525a25d73521747cdf3b4703bc6cbe9a",
+    "audit": "docs/audits/pet-racial-lifecycle-2026-11-12.json",
+    "certificate_results": "docs/audits/pet-racial-lifecycle-2026-11-12/certificate-results.json",
+    "research_supplement": "docs/audits/open-native-research-supplement-2026-11-12.json",
+    "canonical": {
+      "worldserver.exe": "0f947d5f7a46a2ef4704577b53e7230d60654898a130eca5102c272ebd25dbea",
+      "worldserver.map": "b7b489d0a14a88864634012e46fa152203f9cacf3c2cc738f4aefbe75c19af12",
+      "bnetserver.exe": "096c44adc1428fc0ed68c9a5e311bb0e8b84fbba01e1515d89df4f6793bc3ad1",
+      "bnetserver.map": "5d8bcd3d1bd6bf6691f26239bdf6dee298a09ae0982111d8ea450a13a29b1195"
+    },
+    "verified": "13 native racial lifecycle cases including equal-health death-state recovery;5 complete original1768counterfactual groups;9 native packet senders with ASAN;retained two100-repair native suites;current linked racial proof;all106immutable binary roots;Scepter release check;owned canonical PID11704 ready/shutdown0/exit0/gone. No new crash or unexplained appended server/DB failure.",
+    "cleanup": {
+      "status": "PASS",
+      "certificate_roots": 106,
+      "archive_records": 1490,
+      "removed": 54,
+      "removed_bytes": 899529000.0,
+      "protected_runtime_and_open_evidence_unchanged": true,
+      "source_scope_and_test_hashes": true
+    },
+    "remaining": [
+      "Self-sacrifice terminal target selection,282/663 damage recipients,1025 per-pet damage and282/1025 Failsafe suppression remain actual known native defects. New20-case observations retained outside fixed.",
+      "246cooldown/230Hourglass,owner/swap/round-end pipeline,other authored resurrection/death reactions,clone122/123/124,type controller229 and wider core health paths remain OPEN.",
+      "LivingLady activation/surrender/1906/Grash finish/cleanup remains OPEN.80sampled frames880..959seconds reviewed,not continuous footage/audio or a proved server trigger.",
+      "Missing sharedLINK2payloads and mixedDBErrors7111bytes remain OPEN and preserved. Slaghammer cache unchanged.",
+      "Original intermittent client handshake cause,all36whole artifact chains and actual pet/quest/boost presentation remain client-pending."
+    ],
+    "next": "Continue actual native self-sacrifice target/terminal sequence repair,then cooldown/proc/other independently verifiable native OPEN scopes. Do not count certificate roots or research observations as new gameplay fixes."
+  },
   "date": "2026-11-12",
   "request": "Pabeidz open lietas",
   "status": "LEGACY_CERTIFICATE_OPEN_CLOSED_AUTHENTIC_GAMEPLAY_AND_CLIENT_OPENS_REMAIN",
