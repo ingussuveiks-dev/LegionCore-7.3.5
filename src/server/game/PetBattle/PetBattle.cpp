@@ -658,7 +658,8 @@ void PetBattleAura::Process(PetBattle* petBattle)
     petBattle->RoundEvents.push_back(eventBuffChange);
 
     Turn++;
-    Duration--;
+    if (Duration != -1)
+        Duration--;
 }
 
 void PetBattleAura::Expire(PetBattle* petBattle)
