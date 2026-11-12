@@ -838,55 +838,6 @@ class spell_repentance_player_summon_mirror : public SpellScript
 };
 
 
-class spell_copy_melee_weapon : public AuraScript
-{
-    PrepareAuraScript(spell_copy_melee_weapon)
-
-    uint32 uiTargetDefaultWeapon;
-
-    bool Load()
-    {
-        uiTargetDefaultWeapon = 0;
-        return true;
-    }
-
-    void ApplyEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-    {
-        PreventDefaultAction();
-        Unit* caster = GetCaster();
-        Unit* target = GetTarget();
-
-        if (!(caster && target))
-            return;
-
-        uiTargetDefaultWeapon = target->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS);
-
-        if (Player* player = caster->ToPlayer())
-        {
-            if (Item* main_weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
-                target->SetVirtualItem(0, main_weapon->GetEntry());
-        }
-        else
-            target->SetVirtualItem(0, caster->GetUInt32Value(UNIT_FIELD_VIRTUAL_ITEMS));
-    }
-
-    void RemoveEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-    {
-        PreventDefaultAction();
-        Unit* target = GetTarget();
-        if (!target)
-            return;
-
-        target->SetVirtualItem(0, uiTargetDefaultWeapon);
-    }
-
-    void Register() override
-    {
-        OnEffectApply += AuraEffectApplyFn(spell_copy_melee_weapon::ApplyEffect, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
-        OnEffectRemove += AuraEffectRemoveFn(spell_copy_melee_weapon::RemoveEffect, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
-    }
-};
-
 class spell_repentance_player_kneel : public AuraScript
 {
     PrepareAuraScript(spell_repentance_player_kneel)
@@ -912,6 +863,5 @@ void AddSC_boss_high_prophet_barim()
     RegisterSpellScript(spell_repentance_pull_player);
     RegisterSpellScript(spell_repentance_trigger_clone_spell);
     RegisterSpellScript(spell_repentance_player_summon_mirror);
-    RegisterAuraScript(spell_copy_melee_weapon);
     RegisterAuraScript(spell_repentance_player_kneel);
 }
