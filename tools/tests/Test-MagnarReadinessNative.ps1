@@ -470,6 +470,7 @@ if($AdditionalProbe -eq 'SecondTenTen20261112Native'){
  if($LASTEXITCODE){throw 'Second-hundred native helper extraction failed'}
  $inputs+=@("$repo/tools/tests/SecondTenTen20261112SpellCatalogue.h","$repo/tools/tests/SecondTenTen20261112SixthNative.h","$repo/tools/tests/SecondTenTen20261112ThirdNative.h","$repo/tools/tests/prepare_second_ten_ten_20261112_native.py","$out/SecondJournalRemovalNative.inc")
  $inputs+=@("$repo/tools/tests/SecondTenTen20261112SecondNative.h","$repo/tools/tests/SecondTenTen20261112SeventhNative.h","$repo/tools/tests/SecondTenTen20261112EighthNative.h","$repo/tools/tests/SecondTenTen20261112EighthClockFixture.h","$repo/tools/tests/prepare_second_ten_ten_20261112_eighth.py","$out/ClockLabels.inc","$out/HighSeasClockHelper.inc","$out/SelectedClock.inc","$out/EighthAuraNative.inc")
+ $inputs+=@("$repo/tools/tests/SecondTenTen20261112NinthNative.h","$repo/tools/tests/SecondTenTen20261112NinthFixture.h","$repo/tools/tests/SecondTenTen20261112NinthCases.inc","$repo/tools/tests/prepare_second_ten_ten_20261112_ninth.py","$out/NinthBindings.inc","$out/NinthClockLabels.inc","$out/NinthSelected.inc")
  $inputs+=@("$repo/tools/tests/SecondTenTen20261112Repairs.json","$repo/tools/tests/SecondTenTen20261112Native.cpp","$repo/tools/tests/second_ten_ten_20261112_scope.py")
  $inputs+=@((Get-Content "$repo/tools/tests/SecondTenTen20261112Repairs.json" -Raw|ConvertFrom-Json).changes.paths|Sort-Object -Unique|ForEach-Object {"$repo/$_"})
 }

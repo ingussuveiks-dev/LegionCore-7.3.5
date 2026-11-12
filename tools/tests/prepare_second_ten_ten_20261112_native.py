@@ -30,3 +30,22 @@ if any(row['batch']==8 for row in PLAN['changes']):
  aura+='static uint32 secondEighthSpells[]={'+','.join(map(str,sorted(spells)))+'};\n'
  (out/'EighthAuraNative.inc').write_text(aura)
  print('Prepared actual native EventMap callbacks, full AuraScripts with explicitly observed child-cast endpoints, matching source spell identifiers and database binding names.')
+
+if any(row['batch']==9 for row in PLAN['changes']):
+ import runpy,re
+ saved=sys.argv;sys.argv=[str(ROOT/'tools/tests/prepare_second_ten_ten_20261112_ninth.py'),str(out),'fixed']
+ try:runpy.run_path(sys.argv[0],run_name='__main__')
+ finally:sys.argv=saved
+ rows=[row for row in PLAN['changes']if row['batch']==9];native='static char const* secondNinthBindings[]={'+','.join('"'+r['binding']+'"'for r in rows)+'};\n';spells=set()
+ for row in rows:
+  full=(ROOT/row['paths'][0]).read_text();body=row['edits'][0]['new']
+  if row['kind']=='combat_repeat'and row['cls']=='boss_bd_nefarianAI':
+   body=''
+   for label in ['EVENT_SHADOWBLAZE','EVENT_TAIL_LASH']:
+    start=row['edits'][0]['new'].index('case '+label+':');end=row['edits'][0]['new'].index('break;',start)+6;body+=row['edits'][0]['new'][start:end]
+  else:body='\n'.join(block(body,r'void '+method+r'\(')for method in row['methods'])
+  for name in set(re.findall(r'\b(?:SPELL|AURA)_[A-Z_0-9]+\b',body)):
+   m=re.search(r'\b'+name+r'\s*=\s*(\d+)',full)
+   if m:spells.add(int(m[1]))
+ native+='static uint32 secondNinthSpells[]={'+','.join(map(str,sorted(spells)))+'};\n';(out/'NinthBindings.inc').write_text(native)
+ print('Prepared actual native reset/reentry EventMap sequences with explicit source projections and matching creature/spell data bindings.')

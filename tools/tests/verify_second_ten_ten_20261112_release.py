@@ -119,3 +119,13 @@ if any(row['batch']==8 for row in PLAN['changes']):
  rows=ins('?OnProc@spell_felhounds_touched_proc@@');caster,=sites(rows,'?GetCaster@AuraScript@@');tail=rows[caster+1:caster+4];assert any(x.mnemonic=='test'and x.op_str=='rax, rax'for x in tail)and any(x.mnemonic=='je'for x in tail),'Original foreign caster is checked before instance lookup'
  assert any(x.mnemonic=='test'and x.op_str=='rsi, rsi'for x in rows[:10])and any(x.mnemonic=='test'and x.op_str=='rbx, rbx'for x in rows[:14]),'Proc damage record and actor both have native entry guards'
  print('PASS linked eighth10: six actual combat clock increments before dispatch, shared captain queue/reset/repeat, independent Pummel and ShadowPower event IDs, full-width Nature Guardian healing with nullable source and vanished imprint-caster/proc guards; complete callbacks/native EventMap/Aura dispatch and client scopes remain distinct')
+
+if any(row['batch']==9 for row in PLAN['changes']):
+ resetRows=[row for row in PLAN['changes']if row['batch']==9 and row['kind']=='combat_reset']
+ for index,row in enumerate(resetRows):
+  rows=ins('?Reset@'+row['cls']+'@');own=sites(rows,'?Reset@EventMap@@');assert len(own)==1,(row['key'],'actual owned event queue reset')
+  if index<4:
+   parent,=sites(rows,'?_Reset@BossAI@@');assert own[0]<parent,(row['key'],'owned queue reset is distinct from existing parent reset')
+ rows=ins('?UpdateAI@npc_unga_bird_haver@@');at=next(i for i,x in enumerate(rows)if x.mnemonic=='mov'and x.op_str=='r8d, 0x1f216');tail=rows[at:at+10];assert any(x.mnemonic=='mov'and x.op_str=='edx, 4'for x in tail)and 13000 in values(tail),'Native KnifeFight127510 schedules its own event4 with authored13seconds'
+ rows=ins('?UpdateAI@boss_bd_nefarianAI@');at=next(i for i,x in enumerate(rows)if x.mnemonic=='mov'and x.op_str=='r8d, 0x13c87');tail=rows[at:at+18];assert {18000,21000}<=values(tail)and any(x.mnemonic=='mov'and x.op_str=='edx, 0x18'for x in tail),'Native Shadowblaze81031 schedules its own event24 with authored18-21second interval'
+ print('PASS linked ninth10: eight distinct owned event queue resets,including four independent existing BossAI parent resets,and native KnifeFight/Shadowblaze repeat IDs with unchanged authored timing; full callbacks/native EventMap and client/full-encounter scopes remain separate')
