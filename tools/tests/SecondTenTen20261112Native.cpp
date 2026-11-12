@@ -12,6 +12,7 @@ static void FillSecond(PetBattle&b,Player*player=nullptr){
  if(player){b.Teams[0]->PlayerGuid=player->GetGUID();b.Teams[0]->OwnerGuid=player->GetGUID();}
 }
 #include "SecondTenTen20261112SecondNative.h"
+#include "SecondTenTen20261112ThirdNative.h"
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);
  dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1600,{}}});MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1600,{}}});
@@ -32,6 +33,7 @@ int main(int argc,char**argv){try{
  {Actor wild(&map,299,28002,{53,803,805,0});Require(map.AddToMap(static_cast<Creature*>(&wild)),"Native wild cleanup actor admission");PetBattle b;FillSecond(b);b.PveBattleType=PVE_PETBATTLE_WILD;b.Pets[3]->OriginalCreature=wild.GetGUID();wild._petBattleId=ObjectGuid::Create<HighGuid::PetBattle>(999999);wild.SetFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_PACIFIED|UNIT_FLAG_IMMUNE_TO_PC);wild.SetControlled(true,UNIT_STATE_ROOT);b.Finish(0,false,false);Require(!wild._petBattleId&&!wild.HasFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_PACIFIED|UNIT_FLAG_IMMUNE_TO_PC)&&!wild.HasUnitState(UNIT_STATE_ROOT),"Actual native wild GUID flags/root/battle identity are released");}
  {auto guid=ObjectGuid::Create<HighGuid::Player>(28003);auto first=sPetBattleSystem->CreateRequest(guid);first->OpponentGuid=player.GetGUID();sPetBattleSystem->CreateRequest(guid);Require(!sPetBattleSystem->GetRequest(guid)->OpponentGuid,"Actual request replacement owns a fresh cleared request");sPetBattleSystem->RemoveRequest(guid);Require(!sPetBattleSystem->GetRequest(guid),"Native request removal leaves no pending entry");}
  RunSecondPetNative(map,player,session);
+ RunThirdPetNative(map,player,session);
  }
  session->SetPlayer(nullptr);delete session;
  CloseAltheaNative();std::cout<<"PASS actual linked Finish ordinary/ignored forfeits,swap-independent XP,multiple native thresholds,repeated finish,wild actor cleanup,and owning request replacement;queue/source ASAN and actual client checks separate\n";return 0;

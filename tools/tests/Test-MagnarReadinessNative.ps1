@@ -466,6 +466,9 @@ if($AdditionalProbe -eq 'CordanaWallsNative'){
  $inputs+=@("$out/CordanaWalls.inc","$repo/tools/tests/prepare_cordana_walls.py","$repo/tools/tests/ActorQueueLifetimeNative.h","$repo/src/server/scripts/Legion/VaultoftheWardens/boss_cordana.cpp")
 }
 if($AdditionalProbe -eq 'SecondTenTen20261112Native'){
+ & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$repo/tools/tests/prepare_second_ten_ten_20261112_native.py" $out
+ if($LASTEXITCODE){throw 'Second-hundred native helper extraction failed'}
+ $inputs+=@("$repo/tools/tests/SecondTenTen20261112ThirdNative.h","$repo/tools/tests/prepare_second_ten_ten_20261112_native.py","$out/SecondJournalRemovalNative.inc")
  $inputs+=@("$repo/tools/tests/SecondTenTen20261112SecondNative.h")
  $inputs+=@("$repo/tools/tests/SecondTenTen20261112Repairs.json","$repo/tools/tests/SecondTenTen20261112Native.cpp","$repo/tools/tests/second_ten_ten_20261112_scope.py")
  $inputs+=@((Get-Content "$repo/tools/tests/SecondTenTen20261112Repairs.json" -Raw|ConvertFrom-Json).changes.paths|Sort-Object -Unique|ForEach-Object {"$repo/$_"})

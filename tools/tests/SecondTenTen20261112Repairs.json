@@ -337,9 +337,239 @@
           "new": "bool PetBattleAbilityEffect::HandleSplittedDamage()\n{\n    CalculateHit(EffectInfo->Param[1]);\n    int32 points = EffectInfo->Param[0];\n    if (EffectInfo->Param[2] && GetState(Target, EffectInfo->Param[2]))\n        points += EffectInfo->Param[3];\n    int32 damage = CalculateDamage(points / Targets.size());\n    return Damage(Target, damage);\n}"
         }
       ]
+    },
+    {
+      "key": "BattlePetSummonToggle",
+      "title": "Toggle the same owned companion off and preserve it on invalid summon requests",
+      "batch": 3,
+      "test_baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+      "paths": [
+        "src/server/game/Handlers/BattlePetHandler.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "void WorldSession::HandleBattlePetSummon(WorldPackets::BattlePet::BattlePetGuidRead& packet)\n{\n    if (_player->IsOnVehicle() || _player->IsSitState())\n        return;\n\n    _player->UnsummonCurrentBattlePetIfAny(false);\n    if (!_player->GetSummonedBattlePet() || _player->GetSummonedBattlePet()->GetGuidValue(UNIT_FIELD_BATTLE_PET_COMPANION_GUID) != packet.BattlePetGUID)\n        _player->SummonBattlePet(packet.BattlePetGUID);\n}",
+          "new": "void WorldSession::HandleBattlePetSummon(WorldPackets::BattlePet::BattlePetGuidRead& packet)\n{\n    if (_player->IsOnVehicle() || _player->IsSitState() || _player->_petBattleId)\n        return;\n    auto battlePet = _player->GetBattlePet(packet.BattlePetGUID);\n    if (!battlePet || battlePet->Health <= 0)\n        return;\n\n    auto current = _player->GetSummonedBattlePet();\n    if (current && current->GetGuidValue(UNIT_FIELD_BATTLE_PET_COMPANION_GUID) == packet.BattlePetGUID)\n        _player->UnsummonCurrentBattlePetIfAny(false);\n    else\n        _player->SummonBattlePet(packet.BattlePetGUID);\n}"
+        }
+      ]
+    },
+    {
+      "key": "BattlePetFlagControl",
+      "title": "Apply or remove journal flags according to the native packet control operation",
+      "batch": 3,
+      "test_baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+      "paths": [
+        "src/server/game/Handlers/BattlePetHandler.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "void WorldSession::HandleBattlePetSetFlags(WorldPackets::BattlePet::SetFlags& packet)\n{\n    if (auto battlePet = _player->GetBattlePet(packet.BattlePetGUID))\n    {\n        if (battlePet->Flags & packet.Flags)\n            battlePet->Flags = battlePet->Flags & ~packet.Flags;\n        else\n            battlePet->Flags |= packet.Flags;\n        battlePet->needSave = true;\n    }\n}",
+          "new": "void WorldSession::HandleBattlePetSetFlags(WorldPackets::BattlePet::SetFlags& packet)\n{\n    if (auto battlePet = _player->GetBattlePet(packet.BattlePetGUID))\n    {\n        if (packet.ControlType == 1) // Native APPLY operation.\n            battlePet->Flags |= packet.Flags;\n        else if (packet.ControlType == 2) // Native REMOVE operation.\n            battlePet->Flags &= ~packet.Flags;\n        else\n            return;\n        battlePet->needSave = true;\n    }\n}"
+        }
+      ]
+    },
+    {
+      "key": "BattlePetCombatSlotAdmission",
+      "title": "Keep locked slots and native noncombat species out of the combat roster",
+      "batch": 3,
+      "test_baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+      "paths": [
+        "src/server/game/Entities/Player/Player.cpp",
+        "src/server/game/Handlers/BattlePetHandler.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "void WorldSession::HandleBattlePetSetSlot(WorldPackets::BattlePet::SetBattleSlot& packet)\n{\n    // TC_LOG_DEBUG(\"battlepet\", \"HandleBattlePetSetSlot m_IsPetBattleJournalLocked %u\", m_IsPetBattleJournalLocked);\n\n    if (m_IsPetBattleJournalLocked)\n        return;\n\n    if (packet.SlotIndex >= MAX_PETBATTLE_SLOTS)\n        return;\n\n    if (auto battlePet = _player->GetBattlePet(packet.BattlePetGUID))\n    {\n        auto petSlots = _player->GetBattlePetCombatTeam();\n\n        for (uint8 i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            auto& slot = petSlots[i];\n            if (slot && slot->Slot == packet.SlotIndex)\n            {\n                slot->Slot = battlePet->Slot;\n                slot->needSave = true;\n            }\n        }\n\n        battlePet->Slot = packet.SlotIndex;\n        battlePet->needSave = true;\n    }\n\n    _player->UpdateBattlePetCombatTeam();\n    // SendPetBattleSlotUpdates();\n}",
+          "new": "void WorldSession::HandleBattlePetSetSlot(WorldPackets::BattlePet::SetBattleSlot& packet)\n{\n    // TC_LOG_DEBUG(\"battlepet\", \"HandleBattlePetSetSlot m_IsPetBattleJournalLocked %u\", m_IsPetBattleJournalLocked);\n\n    if (m_IsPetBattleJournalLocked)\n        return;\n\n    if (packet.SlotIndex >= MAX_PETBATTLE_SLOTS || packet.SlotIndex >= _player->GetUnlockedPetBattleSlot())\n        return;\n\n    if (auto battlePet = _player->GetBattlePet(packet.BattlePetGUID))\n    {\n        if (!sBattlePetSpeciesStore.LookupEntry(battlePet->Species) ||\n            sDB2Manager.HasBattlePetSpeciesFlag(battlePet->Species, BATTLEPET_SPECIES_FLAG_COMPANION))\n            return; // Native0x80 species cannot participate in battles.\n        auto petSlots = _player->GetBattlePetCombatTeam();\n\n        for (uint8 i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            auto& slot = petSlots[i];\n            if (slot && slot->Slot == packet.SlotIndex)\n            {\n                slot->Slot = battlePet->Slot;\n                slot->needSave = true;\n            }\n        }\n\n        battlePet->Slot = packet.SlotIndex;\n        battlePet->needSave = true;\n    }\n\n    _player->UpdateBattlePetCombatTeam();\n    // SendPetBattleSlotUpdates();\n}"
+        },
+        {
+          "path": "src/server/game/Entities/Player/Player.cpp",
+          "old": "            if (battlePet->Slot >= 0 && battlePet->Slot < static_cast<int32>(unlockedSlotCount))",
+          "new": "            if (battlePet->Slot >= 0 && battlePet->Slot < static_cast<int32>(unlockedSlotCount) &&\n                sBattlePetSpeciesStore.LookupEntry(battlePet->Species) &&\n                !sDB2Manager.HasBattlePetSpeciesFlag(battlePet->Species, BATTLEPET_SPECIES_FLAG_COMPANION))"
+        }
+      ]
+    },
+    {
+      "key": "PetDuelBothRosters",
+      "title": "Validate both duel rosters before applying pacify or immunity",
+      "batch": 3,
+      "test_baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+      "paths": [
+        "src/server/game/Handlers/BattlePetHandler.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "void WorldSession::HandlePetBattleRequestUpdate(WorldPackets::BattlePet::RequestUpdate& packet)\n{\n    auto battleRequest = sPetBattleSystem->GetRequest(packet.TargetGUID);\n    auto opposant = ObjectAccessor::FindPlayer(packet.TargetGUID);\n    if (!battleRequest || battleRequest->OpponentGuid != _player->GetGUID() ||\n        battleRequest->RequestType != PETBATTLE_TYPE_PVP_DUEL)\n        return;\n\n    if (!packet.Canceled && battleRequest && opposant)\n    {\n        auto admission = sPetBattleSystem->CanPlayerEnterInPetBattle(opposant, battleRequest);\n        if (admission != PETBATTLE_REQUEST_OK)\n        {\n            SendPetBattleRequestFailed(admission);\n            sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);\n            return;\n        }\n\n        _player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC); // Immuned only to NPC\n        opposant->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC); // Immuned only to NPC\n\n        std::shared_ptr<BattlePetInstance> playerPets[MAX_PETBATTLE_SLOTS];\n        std::shared_ptr<BattlePetInstance> playerOpposantPets[MAX_PETBATTLE_SLOTS];\n        size_t playerPetCount = 0;\n        size_t playerOpposantPetCount = 0;\n\n        for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            playerPets[i] = nullptr;\n            playerOpposantPets[i] = nullptr;\n        }\n\n        _player->UpdateBattlePetCombatTeam();\n        auto petSlots = _player->GetBattlePetCombatTeam();\n\n        for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            if (!petSlots[i])\n                continue;\n\n            if (playerPetCount >= MAX_PETBATTLE_SLOTS || playerPetCount >= _player->GetUnlockedPetBattleSlot())\n                break;\n\n            playerPets[playerPetCount] = std::make_shared<BattlePetInstance>();\n            playerPets[playerPetCount]->CloneFrom(petSlots[i]);\n            playerPets[playerPetCount]->Slot = playerPetCount;\n            playerPets[playerPetCount]->OriginalBattlePet = petSlots[i];\n\n            ++playerPetCount;\n        }\n\n        opposant->UpdateBattlePetCombatTeam();\n        auto petOpposantSlots = opposant->GetBattlePetCombatTeam();\n\n        for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            if (!petOpposantSlots[i])\n                continue;\n\n            if (playerOpposantPetCount >= MAX_PETBATTLE_SLOTS || playerOpposantPetCount >= _player->GetUnlockedPetBattleSlot())\n                break;\n\n            playerOpposantPets[playerOpposantPetCount] = std::make_shared<BattlePetInstance>();\n            playerOpposantPets[playerOpposantPetCount]->CloneFrom(petOpposantSlots[i]);\n            playerOpposantPets[playerOpposantPetCount]->Slot = playerOpposantPetCount;\n            playerOpposantPets[playerOpposantPetCount]->OriginalBattlePet = petOpposantSlots[i];\n\n            ++playerOpposantPetCount;\n        }\n\n        if (!playerOpposantPetCount || !playerPetCount)\n        {\n            _player->GetSession()->SendPetBattleRequestFailed(PETBATTLE_REQUEST_NO_PETS_IN_SLOT);\n            opposant->GetSession()->SendPetBattleRequestFailed(PETBATTLE_REQUEST_NO_PETS_IN_SLOT);\n            sPetBattleSystem->RemoveRequest(packet.TargetGUID);\n            return;\n        }\n\n        _player->GetSession()->SendPetBattleFinalizeLocation(battleRequest);\n        opposant->GetSession()->SendPetBattleFinalizeLocation(battleRequest);\n\n        _player->SetFacingTo(_player->GetAngle(&battleRequest->TeamPosition[PETBATTLE_TEAM_1]));\n        opposant->SetFacingTo(_player->GetAngle(&battleRequest->TeamPosition[PETBATTLE_TEAM_2]));\n        _player->SetRooted(true);\n        opposant->SetRooted(true);\n\n        auto battle = sPetBattleSystem->CreateBattle();\n\n        battle->Teams[PETBATTLE_TEAM_1]->OwnerGuid = opposant->GetGUID();\n        battle->Teams[PETBATTLE_TEAM_1]->PlayerGuid = opposant->GetGUID();\n        battle->Teams[PETBATTLE_TEAM_2]->OwnerGuid = _player->GetGUID();\n        battle->Teams[PETBATTLE_TEAM_2]->PlayerGuid = _player->GetGUID();\n\n        for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            if (playerOpposantPets[i])\n                battle->AddPet(PETBATTLE_TEAM_1, playerOpposantPets[i]);\n\n            if (playerPets[i])\n                battle->AddPet(PETBATTLE_TEAM_2, playerPets[i]);\n        }\n\n        battle->BattleType = battleRequest->RequestType;\n\n        // Launch battle\n        _player->_petBattleId = battle->ID;\n        opposant->_petBattleId = battle->ID;\n        battle->Begin();\n\n        sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);\n\n        for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            if (playerPets[i])\n                playerPets[i] = std::shared_ptr<BattlePetInstance>();\n\n            if (playerOpposantPets[i])\n                playerOpposantPets[i] = std::shared_ptr<BattlePetInstance>();\n        }\n    }\n    else\n    {\n        if (opposant)\n            opposant->GetSession()->SendPetBattleRequestFailed(PETBATTLE_REQUEST_DECLINED);\n        sPetBattleSystem->RemoveRequest(packet.TargetGUID);\n    }\n}",
+          "new": "void WorldSession::HandlePetBattleRequestUpdate(WorldPackets::BattlePet::RequestUpdate& packet)\n{\n    auto battleRequest = sPetBattleSystem->GetRequest(packet.TargetGUID);\n    auto opposant = ObjectAccessor::FindPlayer(packet.TargetGUID);\n    if (!battleRequest || battleRequest->OpponentGuid != _player->GetGUID() ||\n        battleRequest->RequestType != PETBATTLE_TYPE_PVP_DUEL)\n        return;\n\n    if (!packet.Canceled && battleRequest && opposant)\n    {\n        auto admission = sPetBattleSystem->CanPlayerEnterInPetBattle(opposant, battleRequest);\n        if (admission != PETBATTLE_REQUEST_OK)\n        {\n            SendPetBattleRequestFailed(admission);\n            sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);\n            return;\n        }\n\n        PetBattleRequest recipientRequest = *battleRequest;\n        recipientRequest.OpponentGuid = opposant->GetGUID();\n        admission = sPetBattleSystem->CanPlayerEnterInPetBattle(_player, &recipientRequest);\n        if (admission != PETBATTLE_REQUEST_OK)\n        {\n            SendPetBattleRequestFailed(admission);\n            sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);\n            return;\n        }\n\n        _player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC); // Immuned only to NPC\n        opposant->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC); // Immuned only to NPC\n\n        std::shared_ptr<BattlePetInstance> playerPets[MAX_PETBATTLE_SLOTS];\n        std::shared_ptr<BattlePetInstance> playerOpposantPets[MAX_PETBATTLE_SLOTS];\n        size_t playerPetCount = 0;\n        size_t playerOpposantPetCount = 0;\n\n        for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            playerPets[i] = nullptr;\n            playerOpposantPets[i] = nullptr;\n        }\n\n        _player->UpdateBattlePetCombatTeam();\n        auto petSlots = _player->GetBattlePetCombatTeam();\n\n        for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            if (!petSlots[i])\n                continue;\n\n            if (playerPetCount >= MAX_PETBATTLE_SLOTS || playerPetCount >= _player->GetUnlockedPetBattleSlot())\n                break;\n\n            playerPets[playerPetCount] = std::make_shared<BattlePetInstance>();\n            playerPets[playerPetCount]->CloneFrom(petSlots[i]);\n            playerPets[playerPetCount]->Slot = playerPetCount;\n            playerPets[playerPetCount]->OriginalBattlePet = petSlots[i];\n\n            ++playerPetCount;\n        }\n\n        opposant->UpdateBattlePetCombatTeam();\n        auto petOpposantSlots = opposant->GetBattlePetCombatTeam();\n\n        for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            if (!petOpposantSlots[i])\n                continue;\n\n            if (playerOpposantPetCount >= MAX_PETBATTLE_SLOTS || playerOpposantPetCount >= _player->GetUnlockedPetBattleSlot())\n                break;\n\n            playerOpposantPets[playerOpposantPetCount] = std::make_shared<BattlePetInstance>();\n            playerOpposantPets[playerOpposantPetCount]->CloneFrom(petOpposantSlots[i]);\n            playerOpposantPets[playerOpposantPetCount]->Slot = playerOpposantPetCount;\n            playerOpposantPets[playerOpposantPetCount]->OriginalBattlePet = petOpposantSlots[i];\n\n            ++playerOpposantPetCount;\n        }\n\n        if (!playerOpposantPetCount || !playerPetCount)\n        {\n            _player->GetSession()->SendPetBattleRequestFailed(PETBATTLE_REQUEST_NO_PETS_IN_SLOT);\n            opposant->GetSession()->SendPetBattleRequestFailed(PETBATTLE_REQUEST_NO_PETS_IN_SLOT);\n            sPetBattleSystem->RemoveRequest(packet.TargetGUID);\n            return;\n        }\n\n        _player->GetSession()->SendPetBattleFinalizeLocation(battleRequest);\n        opposant->GetSession()->SendPetBattleFinalizeLocation(battleRequest);\n\n        _player->SetFacingTo(_player->GetAngle(&battleRequest->TeamPosition[PETBATTLE_TEAM_1]));\n        opposant->SetFacingTo(_player->GetAngle(&battleRequest->TeamPosition[PETBATTLE_TEAM_2]));\n        _player->SetRooted(true);\n        opposant->SetRooted(true);\n\n        auto battle = sPetBattleSystem->CreateBattle();\n\n        battle->Teams[PETBATTLE_TEAM_1]->OwnerGuid = opposant->GetGUID();\n        battle->Teams[PETBATTLE_TEAM_1]->PlayerGuid = opposant->GetGUID();\n        battle->Teams[PETBATTLE_TEAM_2]->OwnerGuid = _player->GetGUID();\n        battle->Teams[PETBATTLE_TEAM_2]->PlayerGuid = _player->GetGUID();\n\n        for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            if (playerOpposantPets[i])\n                battle->AddPet(PETBATTLE_TEAM_1, playerOpposantPets[i]);\n\n            if (playerPets[i])\n                battle->AddPet(PETBATTLE_TEAM_2, playerPets[i]);\n        }\n\n        battle->BattleType = battleRequest->RequestType;\n\n        // Launch battle\n        _player->_petBattleId = battle->ID;\n        opposant->_petBattleId = battle->ID;\n        battle->Begin();\n\n        sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);\n\n        for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)\n        {\n            if (playerPets[i])\n                playerPets[i] = std::shared_ptr<BattlePetInstance>();\n\n            if (playerOpposantPets[i])\n                playerOpposantPets[i] = std::shared_ptr<BattlePetInstance>();\n        }\n    }\n    else\n    {\n        if (opposant)\n            opposant->GetSession()->SendPetBattleRequestFailed(PETBATTLE_REQUEST_DECLINED);\n        sPetBattleSystem->RemoveRequest(packet.TargetGUID);\n    }\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetAbilityLockLifecycle",
+      "title": "Trigger Nevermore on its victim and retain its separate finite ability lock",
+      "batch": 3,
+      "test_baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp",
+        "src/server/game/PetBattle/PetBattle.h",
+        "src/server/game/PetBattle/PetBattleAbilityEffect.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "if (Pets[team->ActivePetID]->Abilities[i] == abilityID && Pets[team->ActivePetID]->Cooldowns[i] <= 0)",
+          "new": "if (Pets[team->ActivePetID]->Abilities[i] == abilityID && Pets[team->ActivePetID]->Cooldowns[i] <= 0 && Pets[team->ActivePetID]->Lockdowns[i] <= 0)"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "if (!aura->Expired && aura->CasterPetID == ActivePetID)",
+          "new": "if (!aura->Expired && aura->TargetPetID == ActivePetID)"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattleAbilityEffect.cpp",
+          "old": "target->Cooldowns[abilitySlot] = EffectInfo->Param[0];",
+          "new": "target->Lockdowns[abilitySlot] = std::max(target->Lockdowns[abilitySlot], int32(EffectInfo->Param[0]));"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "    for (auto& Pet : Pets)\n        for (auto& cooldown : Pet->Cooldowns)\n            if (Pet && cooldown != -1)\n                cooldown--;",
+          "new": "    for (auto& pet : Pets)\n        if (pet)\n        {\n            for (auto& cooldown : pet->Cooldowns)\n                if (cooldown != -1)\n                    --cooldown;\n            for (auto& lockdown : pet->Lockdowns)\n                if (lockdown > 0)\n                    --lockdown;\n        }"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32 p_Turn, uint32 p_Turn0ProcCondition, uint32 p_TriggerFlag)\n{\n    if (!Pets[casterPetID])\n        return PETBATTLE_CAST_INTERNAL_ERROR;\n\n    if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL)\n        return PETBATTLE_CAST_OK;\n\n    /// check if the ability exist\n    auto abilityInfo = sBattlePetAbilityStore.LookupEntry(abilityID);\n    if (!abilityInfo)\n        return PETBATTLE_CAST_INVALID_ID;\n\n    // States\n    if (!p_Turn && p_TriggerFlag == PETBATTLE_CAST_TRIGGER_NONE)\n        for (auto abilityStateInfo : sBattlePetAbilityStateStore)\n            if (abilityStateInfo->BattlePetAbilityID == abilityID)\n                SetPetState(casterPetID, casterPetID, 0, abilityStateInfo->BattlePetStateID, Pets[casterPetID]->States[abilityStateInfo->BattlePetStateID] + abilityStateInfo->Value);\n\n    PetBattleAbilityTurn abilityTurn;\n    memset(&abilityTurn, 0, sizeof abilityTurn);\n\n    for (auto abilityTurnInfo : sBattlePetAbilityTurnStore)\n    {\n        if (abilityTurnInfo->BattlePetAbilityID != abilityID || abilityTurnInfo->OrderIndex != p_Turn)\n            continue;\n\n        if (abilityTurnInfo->OrderIndex == 0 && abilityTurnInfo->EventTypeEnum != int8(p_Turn0ProcCondition))\n            continue;\n\n        for (auto abilityEffectInfo : sBattlePetAbilityEffectStore)\n        {\n            if (abilityEffectInfo->BattlePetAbilityTurnID != abilityTurnInfo->ID)\n                continue;\n\n            PetBattleAbilityEffect abilityEffect;\n            abilityEffect.EffectInfo = abilityEffectInfo;\n            abilityEffect.AbilityTurn = &abilityTurn;\n            abilityEffect.PetBattleInstance = this;\n            abilityEffect.Caster = casterPetID;\n            abilityEffect.StopChain = false;\n            abilityEffect.AbilityID = abilityID;\n            abilityEffect.IsTriggered = abilityInfo->Flags & BATTLEPET_ABILITY_FLAG_TRIGGER;\n            abilityEffect.ReportFailAsImmune = false;\n            abilityEffect.SelectTargets();\n\n            if (!abilityEffect.Execute())\n                abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);\n\n            if (abilityEffect.StopChain)\n                break;\n\n            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL)\n                return PETBATTLE_CAST_OK;\n        }\n    }\n\n    if (!(p_TriggerFlag & PETBATTLE_CAST_TRIGGER_IGNORE_COOLDOWN))\n    {\n        int32 abilitySlot = -1;\n\n        for (uint32 i = 0; i < MAX_PETBATTLE_ABILITIES; i++)\n        {\n            if (Pets[casterPetID]->Abilities[i] == abilityID)\n            {\n                abilitySlot = i;\n                break;\n            }\n        }\n\n        if (abilitySlot != -1)\n            Pets[casterPetID]->Cooldowns[abilitySlot] = abilityInfo->Cooldown;\n    }\n\n    return PETBATTLE_CAST_OK;\n}",
+          "new": "PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32 p_Turn, uint32 p_Turn0ProcCondition, uint32 p_TriggerFlag, int32 auraOwnerPetID)\n{\n    if (auraOwnerPetID != PETBATTLE_NULL_SLOT &&\n        (auraOwnerPetID < 0 || auraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[auraOwnerPetID] || p_Turn != 0 ||\n            (p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY && p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED)))\n        return PETBATTLE_CAST_INTERNAL_ERROR;\n\n    if (!Pets[casterPetID])\n        return PETBATTLE_CAST_INTERNAL_ERROR;\n\n    if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT)\n        return PETBATTLE_CAST_OK;\n\n    /// check if the ability exist\n    auto abilityInfo = sBattlePetAbilityStore.LookupEntry(abilityID);\n    if (!abilityInfo)\n        return PETBATTLE_CAST_INVALID_ID;\n\n    // States\n    if (!p_Turn && p_TriggerFlag == PETBATTLE_CAST_TRIGGER_NONE)\n        for (auto abilityStateInfo : sBattlePetAbilityStateStore)\n            if (abilityStateInfo->BattlePetAbilityID == abilityID)\n                SetPetState(casterPetID, casterPetID, 0, abilityStateInfo->BattlePetStateID, Pets[casterPetID]->States[abilityStateInfo->BattlePetStateID] + abilityStateInfo->Value);\n\n    PetBattleAbilityTurn abilityTurn;\n    memset(&abilityTurn, 0, sizeof abilityTurn);\n\n    for (auto abilityTurnInfo : sBattlePetAbilityTurnStore)\n    {\n        if (abilityTurnInfo->BattlePetAbilityID != abilityID || abilityTurnInfo->OrderIndex != p_Turn)\n            continue;\n\n        if (abilityTurnInfo->OrderIndex == 0 && abilityTurnInfo->EventTypeEnum != int8(p_Turn0ProcCondition))\n            continue;\n\n        for (auto abilityEffectInfo : sBattlePetAbilityEffectStore)\n        {\n            if (abilityEffectInfo->BattlePetAbilityTurnID != abilityTurnInfo->ID)\n                continue;\n\n            PetBattleAbilityEffect abilityEffect;\n            abilityEffect.EffectInfo = abilityEffectInfo;\n            abilityEffect.AbilityTurn = &abilityTurn;\n            abilityEffect.PetBattleInstance = this;\n            abilityEffect.Caster = casterPetID;\n            abilityEffect.StopChain = false;\n            abilityEffect.AbilityID = abilityID;\n            abilityEffect.IsTriggered = abilityInfo->Flags & BATTLEPET_ABILITY_FLAG_TRIGGER;\n            abilityEffect.ReportFailAsImmune = false;\n            abilityEffect.SelectTargets();\n            // A proc's remove-aura row names the aura owner, which may differ\n            // from the original hostile caster. Other effects keep their native\n            // selectors (e.g. Clone/Murloc attacks still hit the opponent).\n            if (auraOwnerPetID != PETBATTLE_NULL_SLOT && abilityEffectInfo->BattlePetEffectPropertiesID == 49)\n                abilityEffect.Targets = {uint32(auraOwnerPetID)};\n\n            if (!abilityEffect.Execute())\n                abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);\n\n            if (abilityEffect.StopChain)\n                break;\n\n            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT)\n                return PETBATTLE_CAST_OK;\n        }\n    }\n\n    if (!(p_TriggerFlag & PETBATTLE_CAST_TRIGGER_IGNORE_COOLDOWN))\n    {\n        int32 abilitySlot = -1;\n\n        for (uint32 i = 0; i < MAX_PETBATTLE_ABILITIES; i++)\n        {\n            if (Pets[casterPetID]->Abilities[i] == abilityID)\n            {\n                abilitySlot = i;\n                break;\n            }\n        }\n\n        if (abilitySlot != -1)\n            Pets[casterPetID]->Cooldowns[abilitySlot] = abilityInfo->Cooldown;\n    }\n\n    return PETBATTLE_CAST_OK;\n}"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.h",
+          "old": "PetBattleCastResult Cast(uint32 casterPetID, uint32 abilityID, uint32 turn, uint32 p_Turn0ProcCondition, uint32 triggerFlag);",
+          "new": "PetBattleCastResult Cast(uint32 casterPetID, uint32 abilityID, uint32 turn, uint32 p_Turn0ProcCondition, uint32 triggerFlag, int32 auraOwnerPetID = PETBATTLE_NULL_SLOT);"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "PetBattleInstance->Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY, PETBATTLE_CAST_TRIGGER_ALL);",
+          "new": "PetBattleInstance->Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY, PETBATTLE_CAST_TRIGGER_ALL, ActivePetID);"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "petBattle->Cast(CasterPetID, AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED, PETBATTLE_CAST_TRIGGER_ALL);",
+          "new": "petBattle->Cast(CasterPetID, AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED, PETBATTLE_CAST_TRIGGER_ALL, TargetPetID);"
+        }
+      ]
+    },
+    {
+      "key": "PetInitialHealthAdmission",
+      "title": "Retain dead journal pets as dead and choose an actually living starting pet",
+      "batch": 3,
+      "test_baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+      "paths": [
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "    if (pet->Health > pet->InfoMaxHealth)\n        pet->Health = pet->InfoMaxHealth;\n}",
+          "new": "    pet->Health = std::max<int32>(0, std::min(pet->Health, pet->InfoMaxHealth));\n    pet->States[BATTLEPET_STATE_Is_Dead] = pet->Health == 0;\n}"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "        Teams[i]->ActivePetID = i == PETBATTLE_TEAM_2 ? MAX_PETBATTLE_SLOTS : 0;",
+          "new": "        Teams[i]->ActivePetID = i == PETBATTLE_TEAM_2 ? MAX_PETBATTLE_SLOTS : 0;\n        for (auto const& pet : Teams[i]->TeamPets)\n            if (pet && pet->IsAlive())\n            {\n                Teams[i]->ActivePetID = pet->ID;\n                break;\n            }"
+        }
+      ]
+    },
+    {
+      "key": "PetStartingExperienceSnapshot",
+      "title": "Distinguish unchanged saved experience from an actual level or experience award",
+      "batch": 3,
+      "test_baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+      "paths": [
+        "src/server/game/Handlers/BattlePetHandler.cpp",
+        "src/server/game/PetBattle/PetBattle.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattle.cpp",
+          "old": "    pet->OldLevel = pet->Level;",
+          "new": "    pet->OldLevel = pet->Level;\n    pet->OldXP = pet->XP;"
+        },
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "petUpdate.AwardedXP = pet->OldXP != pet->XP;",
+          "new": "petUpdate.AwardedXP = pet->OldXP != pet->XP || pet->OldLevel != pet->Level;"
+        }
+      ]
+    },
+    {
+      "key": "PetQueueWaitMeanWidth",
+      "title": "Keep queue wait averaging exact beyond32bit products and avoid counter rollover division by zero",
+      "batch": 3,
+      "test_baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+      "paths": [
+        "src/server/game/PetBattle/PetBattleSystem.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/PetBattle/PetBattleSystem.cpp",
+          "old": "            auto queuedTime = uint32(GameTime::GetGameTime() - ticket->JoinTime);\n            auto oldNumber = _LFBNumWaitTimeAvg++;\n            _LFBAvgWaitTime = int32((_LFBAvgWaitTime * oldNumber + queuedTime) / _LFBNumWaitTimeAvg);",
+          "new": "            auto elapsed = GameTime::GetGameTime() - ticket->JoinTime;\n            uint32 queuedTime = elapsed > 0 ? uint32(std::min<uint64>(elapsed, std::numeric_limits<int32>::max())) : 0;\n            uint64 samples = uint64(_LFBNumWaitTimeAvg) + 1;\n            _LFBAvgWaitTime = int32((uint64(_LFBAvgWaitTime) * _LFBNumWaitTimeAvg + queuedTime) / samples);\n            _LFBNumWaitTimeAvg = uint32(std::min<uint64>(samples, std::numeric_limits<uint32>::max()));"
+        },
+        {
+          "path": "src/server/game/PetBattle/PetBattleSystem.cpp",
+          "old": "#include \"ObjectAccessor.h\"",
+          "new": "#include \"ObjectAccessor.h\"\n#include <limits>"
+        }
+      ]
+    },
+    {
+      "key": "PetJournalRemovalCleanup",
+      "title": "Dismiss the removed companion and clear retained combat-roster references after release or caging",
+      "batch": 3,
+      "test_baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+      "paths": [
+        "src/server/game/Handlers/BattlePetHandler.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "void WorldSession::HandleCageBattlePet(",
+          "new": "static void RemoveBattlePetJournalEntry(Player* player, ObjectGuid journalID)\n{\n    if (!player->GetBattlePet(journalID))\n        return;\n    if (auto companion = player->GetSummonedBattlePet())\n        if (companion->GetGuidValue(UNIT_FIELD_BATTLE_PET_COMPANION_GUID) == journalID)\n            player->UnsummonCurrentBattlePetIfAny(false);\n    player->GetBattlePets()->erase(journalID);\n    player->UpdateBattlePetCombatTeam();\n    player->GetSession()->SendPetBattleSlotUpdates();\n}\n\nvoid WorldSession::HandleCageBattlePet("
+        },
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "void WorldSession::HandleCageBattlePet(WorldPackets::BattlePet::BattlePetGuidRead& packet)\n{\n    // ReSharper disable once CppUnreachableCode\n    auto const& battlePet = _player->GetBattlePet(packet.BattlePetGUID);\n    if (!battlePet)\n        return;\n\n    if (sDB2Manager.HasBattlePetSpeciesFlag(battlePet->Species, BATTLEPET_SPECIES_FLAG_CAGEABLE))\n        return;\n\n    ItemPosCountVec dest;\n    if (_player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, BATTLE_PET_CAGE_ITEM_ID, 1) != EQUIP_ERR_OK)\n        return;\n\n    Item* item = _player->StoreNewItem(dest, BATTLE_PET_CAGE_ITEM_ID, true);\n    if (!item)\n        return;\n\n    item->SetModifier(ITEM_MODIFIER_BATTLE_PET_SPECIES_ID, battlePet->Species);\n    item->SetModifier(ITEM_MODIFIER_BATTLE_PET_BREED_DATA, battlePet->Breed | battlePet->Quality << 24);\n    item->SetModifier(ITEM_MODIFIER_BATTLE_PET_LEVEL, battlePet->Level);\n    item->SetModifier(ITEM_MODIFIER_BATTLE_PET_DISPLAY_ID, battlePet->DisplayModelID);\n\n    _player->SendNewItem(item, 1, true, true); // FIXME: \"You create: .\" - item name missing in chat\n\n    SendBattlePetDeleted(packet.BattlePetGUID);\n    battlePet->Remove(nullptr);\n    _player->_battlePets.erase(packet.BattlePetGUID);\n}",
+          "new": "void WorldSession::HandleCageBattlePet(WorldPackets::BattlePet::BattlePetGuidRead& packet)\n{\n    // ReSharper disable once CppUnreachableCode\n    auto const& battlePet = _player->GetBattlePet(packet.BattlePetGUID);\n    if (!battlePet)\n        return;\n\n    if (sDB2Manager.HasBattlePetSpeciesFlag(battlePet->Species, BATTLEPET_SPECIES_FLAG_CAGEABLE))\n        return;\n\n    ItemPosCountVec dest;\n    if (_player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, BATTLE_PET_CAGE_ITEM_ID, 1) != EQUIP_ERR_OK)\n        return;\n\n    Item* item = _player->StoreNewItem(dest, BATTLE_PET_CAGE_ITEM_ID, true);\n    if (!item)\n        return;\n\n    item->SetModifier(ITEM_MODIFIER_BATTLE_PET_SPECIES_ID, battlePet->Species);\n    item->SetModifier(ITEM_MODIFIER_BATTLE_PET_BREED_DATA, battlePet->Breed | battlePet->Quality << 24);\n    item->SetModifier(ITEM_MODIFIER_BATTLE_PET_LEVEL, battlePet->Level);\n    item->SetModifier(ITEM_MODIFIER_BATTLE_PET_DISPLAY_ID, battlePet->DisplayModelID);\n\n    _player->SendNewItem(item, 1, true, true); // FIXME: \"You create: .\" - item name missing in chat\n\n    SendBattlePetDeleted(packet.BattlePetGUID);\n    battlePet->Remove(nullptr);\n    RemoveBattlePetJournalEntry(_player, packet.BattlePetGUID);\n}"
+        },
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "void WorldSession::HandleBattlePetDelete(WorldPackets::BattlePet::BattlePetGuidRead& packet)\n{\n    auto battlePet = _player->GetBattlePet(packet.BattlePetGUID);\n    if (!battlePet)\n        return;\n\n    if (sDB2Manager.HasBattlePetSpeciesFlag(battlePet->Species, BATTLEPET_SPECIES_FLAG_RELEASABLE))\n        return;\n\n    SendBattlePetDeleted(packet.BattlePetGUID);\n    battlePet->Remove(nullptr);\n    _player->_battlePets.erase(packet.BattlePetGUID);\n}",
+          "new": "void WorldSession::HandleBattlePetDelete(WorldPackets::BattlePet::BattlePetGuidRead& packet)\n{\n    auto battlePet = _player->GetBattlePet(packet.BattlePetGUID);\n    if (!battlePet)\n        return;\n\n    if (sDB2Manager.HasBattlePetSpeciesFlag(battlePet->Species, BATTLEPET_SPECIES_FLAG_RELEASABLE))\n        return;\n\n    SendBattlePetDeleted(packet.BattlePetGUID);\n    battlePet->Remove(nullptr);\n    RemoveBattlePetJournalEntry(_player, packet.BattlePetGUID);\n}"
+        }
+      ]
+    },
+    {
+      "key": "PetNameQueryBinding",
+      "title": "Bind battle pet name queries to the actual summoned journal identity",
+      "batch": 3,
+      "test_baseline": "f12a3f413a58078e76f2df99c3913eccb917c225",
+      "paths": [
+        "src/server/game/Handlers/BattlePetHandler.cpp"
+      ],
+      "edits": [
+        {
+          "path": "src/server/game/Handlers/BattlePetHandler.cpp",
+          "old": "void WorldSession::HandleBattlePetNameQuery(WorldPackets::BattlePet::Query& packet)\n{\n    Creature* creature = Unit::GetCreature(*_player, packet.UnitGUID);\n    if (!creature)\n        return;\n\n    std::shared_ptr<BattlePet> battlePet = nullptr;\n    if (creature->GetOwner() && creature->GetOwner()->IsPlayer())\n        battlePet = creature->GetOwner()->ToPlayer()->GetBattlePet(packet.BattlePetID);\n\n    if (!battlePet)\n        return;\n\n    bool haveDeclinedNames = false;\n\n    for (auto const& name : battlePet->DeclinedNames)\n        if (!name.empty())\n        {\n            haveDeclinedNames = true;\n            break;\n        }\n\n    WorldPackets::BattlePet::QueryResponse response;\n    response.BattlePetID = packet.BattlePetID;\n    response.CreatureID = creature->GetEntry();\n    response.Timestamp = creature->GetUInt32Value(UNIT_FIELD_BATTLE_PET_COMPANION_NAME_TIMESTAMP);\n    if (creature->GetUInt32Value(UNIT_FIELD_BATTLE_PET_COMPANION_NAME_TIMESTAMP) != 0)\n    {\n        response.Allow = true;\n        response.Name = creature->GetName();\n        if (haveDeclinedNames)\n        {\n            response.HasDeclined = true;\n            for (uint32 i = 0; i < MAX_DECLINED_NAME_CASES; ++i)\n                response.DeclinedNames[i] = battlePet->DeclinedNames[i];\n        }\n    }\n\n    SendPacket(response.Write());\n}",
+          "new": "void WorldSession::HandleBattlePetNameQuery(WorldPackets::BattlePet::Query& packet)\n{\n    Creature* creature = Unit::GetCreature(*_player, packet.UnitGUID);\n    if (!creature || creature->GetGuidValue(UNIT_FIELD_BATTLE_PET_COMPANION_GUID) != packet.BattlePetID)\n        return;\n\n    std::shared_ptr<BattlePet> battlePet = nullptr;\n    if (creature->GetOwner() && creature->GetOwner()->IsPlayer())\n        battlePet = creature->GetOwner()->ToPlayer()->GetBattlePet(packet.BattlePetID);\n\n    if (!battlePet)\n        return;\n\n    bool haveDeclinedNames = false;\n\n    for (auto const& name : battlePet->DeclinedNames)\n        if (!name.empty())\n        {\n            haveDeclinedNames = true;\n            break;\n        }\n\n    WorldPackets::BattlePet::QueryResponse response;\n    response.BattlePetID = packet.BattlePetID;\n    response.CreatureID = creature->GetEntry();\n    response.Timestamp = creature->GetUInt32Value(UNIT_FIELD_BATTLE_PET_COMPANION_NAME_TIMESTAMP);\n    if (creature->GetUInt32Value(UNIT_FIELD_BATTLE_PET_COMPANION_NAME_TIMESTAMP) != 0)\n    {\n        response.Allow = true;\n        response.Name = creature->GetName();\n        if (haveDeclinedNames)\n        {\n            response.HasDeclined = true;\n            for (uint32 i = 0; i < MAX_DECLINED_NAME_CASES; ++i)\n                response.DeclinedNames[i] = battlePet->DeclinedNames[i];\n        }\n    }\n\n    SendPacket(response.Write());\n}"
+        }
+      ]
     }
   ],
   "batch_baselines": {
-    "2": "494378c7b9a0295ccdb848cddf148569c5e21730"
+    "2": "494378c7b9a0295ccdb848cddf148569c5e21730",
+    "3": "f12a3f413a58078e76f2df99c3913eccb917c225"
   }
 }
