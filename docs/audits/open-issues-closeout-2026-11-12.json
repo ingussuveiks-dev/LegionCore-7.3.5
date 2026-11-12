@@ -1,4 +1,48 @@
 {
+  "latest_native_ward_rot_repair_2026_11_12": {
+    "status": "WARD_ROT_NATIVE_TYPE229_STATE124_DAMAGE_AND_LIFECYCLE_FIXED_DEPLOYED_CLIENT_PENDING",
+    "fix_commit": "14555a17bce1458e8061f233286b2eef78449a6c",
+    "canonical": {
+      "worldserver.exe": "1124b108d1349be022fdd7cd5b2906d532b5bb80bdc350f9ac16cc8e81934488",
+      "worldserver.map": "9773234d7df06f6d50a206802e86b9d8aeaa5c6144f6acdb93e47a1d311c76cb",
+      "bnetserver.exe": "8ecc2cd191f484d42af2171443b2a6d83641cdd2aedd61c0dd26bd0836ac948b",
+      "bnetserver.map": "9d5dce17f7e17973148f9aee7dad7e97596932849de98b3262e3de58fdc72d6d"
+    },
+    "remaining": [
+      "Actual learned-kit battle UI, animation, family damage display and overlap priority require client confirmation.",
+      "NPC type229 producers1389 Roboflauge,1398 Feathered Frenzy,1595 Ominitron Swap and1717/1718 Discharge remain OPEN; they are not enabled by this scoped handler. Mixed14-observation research stays outside fixed.",
+      "Dark Rebirth794/795 state146/protected-window/penalty796, Haunt, Apocalypse, clone chains and generic159 roots remain OPEN.",
+      "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, LINK2/mixed DBErrors, original intermittent handshake cause and all36 whole artifact chains remain OPEN."
+    ],
+    "next": "Trace matching native NPC type229 producers through their actual owner/target/proc/expiry sequences; preserve Ward/Rot producer receipts and all unresolved evidence.",
+    "audit": "docs/audits/pet-ward-rot-2026-11-12.json",
+    "checks": "50 native, three complete expected-broken controls, retained48/28/34/26/13/44/16/two100 native and linked scopes, packet ASAN, Scepter and canonical owned PID13300 ready/graceful0/gone; no new diagnostics. Prior106 applies to cdca, not current1124.",
+    "cleanup": {
+      "status": "PASS",
+      "native_cases": 50,
+      "retained_native_cases": [
+        48,
+        28,
+        34,
+        26,
+        13,
+        44,
+        16,
+        100,
+        100
+      ],
+      "canonical": {
+        "worldserver.exe": "1124b108d1349be022fdd7cd5b2906d532b5bb80bdc350f9ac16cc8e81934488",
+        "worldserver.map": "9773234d7df06f6d50a206802e86b9d8aeaa5c6144f6acdb93e47a1d311c76cb",
+        "bnetserver.exe": "8ecc2cd191f484d42af2171443b2a6d83641cdd2aedd61c0dd26bd0836ac948b",
+        "bnetserver.map": "9d5dce17f7e17973148f9aee7dad7e97596932849de98b3262e3de58fdc72d6d"
+      },
+      "archive_records": 493,
+      "removed": 51,
+      "removed_bytes": 753647235.0,
+      "protected_evidence_configuration_and_rollback_unchanged": true
+    }
+  },
   "latest_native_accuracy_roster_repair_2026_11_12": {
     "status": "STENCH_INEBRIATE_AND_PRIOR_NATIVE_REPAIRS_FIXED_OTHER_NATIVE_AND_CLIENT_OPENS_REMAIN",
     "fix_commit": "72e54ac8cce57458a1be91ad88619635d32f8c16",
