@@ -125,6 +125,7 @@ public:
 
         void Reset()
         {
+            events.Reset();
             _Reset();
             me->SetReactState(REACT_DEFENSIVE);
             phase = PHASE_NONE;

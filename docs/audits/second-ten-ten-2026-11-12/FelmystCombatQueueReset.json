@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-12",
+  "key": "FelmystCombatQueueReset",
+  "title": "Discard Felmyst previous flight callbacks before a new ground-phase attempt",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "batch": 9,
+  "historical_group": 70,
+  "baseline": "bee7686dfa4acdd5906c66a495475776a259fe3d",
+  "paths": [
+    "src/server/scripts/EasternKingdoms/SunwellPlateau/boss_felmyst.cpp"
+  ],
+  "regression": "tools/tests/Test-SecondTenTen20261112.ps1 -Batch 9 -Case FelmystCombatQueueReset",
+  "counterfactual": "Same command with -Baseline; expected broken pinned control, paired with repaired pass.",
+  "checks": {
+    "counterfactual": "All ten pinned controls fail their exact named assertion at exit1. Every paired repaired MSVC ASAN case passes. Complete Reset/EnterCombat methods are extracted for eight actors; Felmyst EnterPhase and Unga Reset/DoAction/UpdateAI are complete. Nefarian Shadowblaze and TailLash arms are explicit source projections; other phase controller behavior is not modeled as full NPC execution. Constructors and creature/instance/spatial endpoints are controlled.",
+    "native": "Actual linked native EventMap executes all ten source scopes. Four BossAI-derived actors have independent owned EventMaps: the new reset clears the actual owned queue before the existing parent reset. Old Gogduh phase, Magmolatus combat, Roltall boulder and Felmyst flight callbacks are discarded. Magmolatus still primes authored5/6/7 reset timers and all four preserve fresh combat roots; Felmyst preserves its native ground transition. Vortex old tornado, Meteor thaw/fixate, Flarecore expiry/proximity and both royal sentinel variants lose old schedules and reentry reconstructs one fresh root set. Actual Unga callback repeats KnifeFight without extra RustyShank; native EventMap with two explicit Nefarian arm projections repeats Shadowblaze without manufacturing TailLash. All actual DB script bindings and selected matching26972 authored spell IDs pass. Retained first30/sixth/seventh/eighth native and full previous100 native pass.",
+    "linked": "Selected90, retained previous100 and canonical Scepter pass. Each of eight actual Reset methods calls EventMap::Reset; first four keep the distinct existing BossAI::_Reset afterward. KnifeFight127510 schedules native event4 with original13s and Shadowblaze81031 schedules its own24 with original18-21s interval. Source snapshot hashes and original game/scripts/Main final-link inputs were checked.",
+    "startup": "Owned worldserver PID=21824\nPASS owned PID=21824 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged; stderr empty; no new/changed crash reports, appended DBErrors, unexplained warnings/errors/assertions.",
+    "limitations": "Reset/reentry scope uses complete callbacks with actual native EventMap and controlled creature/instance endpoints. Nefarian proof is explicitly two source event-arm projections plus actual linked native event IDs; full boss controller/encounter is not certified. Actual client raid/dungeon combat, timing, visuals and full36artifact chains remain separate. Authentic living Lady sequence, LINK2/Slaghammer, mixed DBErrors, original intermittent client handshake, unresolved pet246/clone/type-controller/resurrection and core healing/periodic scopes remain OPEN."
+  },
+  "fixture_setup_failures_resolved": [
+    "Timeless Isle reset candidates were withdrawn before editing: their actual EnterEvadeMode already resets their event queues. No redundant Reset spelling changes are counted.",
+    "Keleseth ShadowFissure-to-Decrepify transition was inspected and retained because it deliberately resumes attacks after resurrection; it is not treated as a wrong-repeat repair.",
+    "The matching-data metadata scan additionally found finite periodic weapon-damage spells whose GetMaxTicks fallback remains6 despite native periods. This is an explicitly selected remaining investigation, not counted among these ten and not presented as resolved by the clean startup."
+  ],
+  "canonical_worldserver_sha256": "ed5cb3b5d2d04c5692b58a482255b876ca33bd4a69953711448f05a6b553d1dd",
+  "archive": "build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch9; archive manifest recorded in batch ledger after verified cleanup.",
+  "retained_open": [
+    "Authentic living Lady Sharasdal activation/surrender/conversation1906/Grash/cleanup",
+    "LINK2/Slaghammer evidence",
+    "Mixed DBErrors.log remains unchanged",
+    "Original intermittent client handshake silence",
+    "All36wholeclientchains",
+    "Legacy artifact PE certificates",
+    "Native pet effect property246",
+    "Native clone/type-controller/resurrection behavior",
+    "Ordinary coreheal/periodic width beyond explicit64 inputs"
+  ]
+}
