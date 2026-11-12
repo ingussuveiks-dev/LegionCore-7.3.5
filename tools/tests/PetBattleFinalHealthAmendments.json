@@ -1,0 +1,17 @@
+{
+  "baseline": "31af6b87f",
+  "scope": "Only final owned pet health normalization before penalty,journal update and final sender;no intermediate Kill/return or enemy/capture health rewrite.",
+  "files": {
+    "src/server/game/PetBattle/PetBattle.cpp": {
+      "before_sha256": "bb16563416a6491ab9cd7516667ff2944c9c82144efae01d2b030e0c8d79afcd",
+      "after_sha256": "73b9766e37413f3b32b747a61edfbf6792c341b7e128f927ebfe1aaefe065139"
+    }
+  },
+  "edits": [
+    {
+      "path": "src/server/game/PetBattle/PetBattle.cpp",
+      "old": "                if (currentPet->Health < 0)\n                    currentPet->Health = 0;",
+      "new": "                // Final death is authoritative even when an instant kill\n                // retained health for in-battle revival/return mechanics.\n                if (!currentPet->IsAlive() || currentPet->Health < 0)\n                    currentPet->Health = 0;"
+    }
+  ]
+}

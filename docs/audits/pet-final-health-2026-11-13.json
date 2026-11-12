@@ -1,0 +1,187 @@
+{
+  "date": "2026-11-13",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "RESOLVED_PLAYER_OWNED_FINAL_DEATH_JOURNAL_HEALTH_FIXED_DEPLOYED_CLIENT_PENDING",
+  "baseline": "31af6b87f",
+  "problem": "Twelve real native observations across both teams/all three slots: actual Explode282 leaves the sacrificed pet IsAlive=false but Health100. Ordinary Finish copied100 to its journal; ordinary forfeit copied90. Final packet and later journal admission therefore used a living health value for a final-dead owned pet.",
+  "repair": "In actual Finish,the resolved Player-owned pet health clamp now includes !IsAlive before the ordinary penalty,XP admission,journal update,combat roster update and final sender. Intermediate Kill,real revival/return state and all other methods remain unchanged. No SQL,extra save call,character data edit or C++ layout/API change.",
+  "tests": {
+    "native": "102 counted real linked native cases: six team/slot positions each exercise four final-dead Explode outcomes(win/loss/ordinary forfeit/ignored penalty),real owned journal needSave/Health,repeat Finish and actual CloneForBattle/AddPet re-entry;four living controls preserve80 or72 with ordinary10percent penalty;native lethal damage and pre-existing negative clamp;real291/723 Mechanical20HP;real291/724 still-alive Undead1HP;real1906/1907 delayed Cheat Death50HP;missing original journal;missing actual Player skip;NPC/unowned positive-health death remains unchanged;actual242 two-Process expiry already produces0 before Finish. All player/journal objects are memory-only;both database connections readonly and empty private TEMP login account prevents persistent destructor writes. Existing full native100 retains actual XP thresholds,wild cleanup,input/forfeit and terminal guard checks.",
+    "controls": "Two complete pinned31af6b87f PetBattle.cpp+PetBattleAbilityEffect.cpp controls fail sacrifice/forfeit assertions with expected exit1;fixed102 pass. Twelve observations are historical reproductions,not corrected behavior.",
+    "fixture_corrections": "Initial bootstrap builds lacked the established Legion include directory and generated Althea shared bootstrap includes;new reusable Prepare-PetBattleOwnedNative extracts the same complete source/pinned helper blocks and actual native quest query. An attempted Undead-expiry counterfactual failed a fixture assumption: actual242 already zeros HP;corrected to a passing unchanged-path control,never claimed a demonstrated expiry bug. First fixed fixture addressed re-entry by old roster ID;actual AddPet compacts the new one-pet roster to team*3,so the assertion now follows its native new ID. Initial inspection assumed an exported UpdateOriginalInstance symbol;the compiler inlines it in Finish,which the final proof checks directly. An initial writer verifier path was nonexistent;actual round_bits verifier passes. Failed evidence is retained and does not count as ordinary passing runs.",
+    "retained": "112 Pound,120 static,78 thresholds,48 Roboflauge,24 Frenzy,144 variance,28 Discharge,50 Ward/Rot,48 roster,28 Cheat,34 Hourglass,26 Bend,13 racial,44 sacrifice,16 Unholy and both full100 native suites pass. Complete retained pet PE chain,both100 PE checks,actual new Finish/journal/sender proof and original3-bit/alignment writer proof pass. No new106 or full native-core ASAN claim.",
+    "pe": "Canonical actual RDI pet dead-state0x150 selects the Health0x60 zero store,alive nonnegative health skips it;established R9D0 is preserved. The real dead-state guard skips XP level-up healing directly to actual inlined OriginalBattlePet0x480;that code copies normalized Health and marks needSave. Actual SendBattlePetUpdates and SendPetBattleFinalRound remain,with the latter reading actual pet Health. Shared leaf/handler CFG helpers unchanged.",
+    "runtime": "Owned canonical PID4560 fresh ready/shutdown0/exit0/gone,stderr empty;Scepter -VerifyReleaseBinary passes. Current bnet native .text equals preceding rollback byte-for-byte;no separate fresh bnet start claim.",
+    "diagnostics": "Canonical and own pre/post crash/log inventories,exit status/stdout/stderr reviewed. No new/changed crashes,appended DBErrors or unexplained runtime errors/warnings/assertions. Full game build warning set is a subset of preceding Pound build after line normalization. Resolved build/fixture/proof failures retained separately.",
+    "client": "Actual client journal,death presentation,forfeit/re-entry and network disconnect/reconnect remain pending. A socket-free session exercises real methods but does not capture client-rendered final packets or durable DB round-trip."
+  },
+  "scope_and_open_alternatives": "Only actual resolved Player-owned Finish was repaired. Six missing-Player controls retain the existing skip,no fabricated offline journal update;actual disconnect/logout completion,persistence ordering and abandoned battle cleanup remain OPEN and are not certified by this repair. Six unowned/NPC death controls retain native positive intermediate health,avoiding a global rewrite of capture-threshold/full-health capture reward semantics. Actual successful capture persistence is outside this readonly test. Actual currently-alive Undead revival remains alive;no new retail policy for premature battle-end immortality is asserted.",
+  "canonical": {
+    "worldserver.exe": "5fd55f9f83fae5b1074395b5c2e4c03c17d47f2c2bec483dbb888771edf072bc",
+    "worldserver.map": "6bebde87cd6f19338f61b6f032cf74dc5b7657edc1d948ac8f889d459c259aee",
+    "bnetserver.exe": "ce1a9bc9f9567b9a3a6b7c116c3ef076b6ada0e6dc75a7823abb4dd0fbf62fe1",
+    "bnetserver.map": "7f8c11d0faecd906d53e569fd6a2870fcb1b5a4ece6d37b38af0c0a6bc1b3d34"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/fixed2-driver.log",
+      "sha256": "7bd6295033df7f06a0081fe1115c272c02c741df2eac75eae96c8d92613fd324"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-pound112-driver.log",
+      "sha256": "503d2f71103d59e2acaab15b2f7751f3c7d559c7658905a823ef8ae2eb9c6f9c"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-static120-driver.log",
+      "sha256": "699ae182e121d24d6e2042bbcd9d7e2f0bd1c7ef771ea0bc7bde3fe7b4c9d125"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-threshold78-driver.log",
+      "sha256": "51da00049c36993b946d4f50e9868e8a24797146d435fd853f05fbb64dd4b07c"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-roboflauge48-driver.log",
+      "sha256": "7ac107b1dd2bed31e89004b91dc29a888b277e399e2216104c485b85323fb968"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-frenzy24-driver.log",
+      "sha256": "1aff6cad2bbe324871fbaaaf0758b3946617275de51a197dbfc0e6c359e24bc4"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-variance144-driver.log",
+      "sha256": "15891de7fd0b10f162ca92e75ac017050794d106a9ec8662659adf3242edf9cc"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-discharge28-driver.log",
+      "sha256": "c80423210329b0da06827bab77e3e218da2dfc68b1eded9a85167605ded3131c"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-ward50-driver.log",
+      "sha256": "4a3af469399873e0f754b6fc643171d4c74e0152256b7e6b3ce597b67ed5b058"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-roster48-driver.log",
+      "sha256": "d4e91e41cfd8efd0f367d9439a6133f1d2d04e87348f425edceb352c86c2713c"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-cheat28-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-hourglass34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-bend26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-racial13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-sacrifice44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/retained-unholy16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/full-SecondTenTen20261112Native-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/full-TenTen20261111Native-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/hundred-stage.log",
+      "sha256": "93b071337e31a4a85cab8a55da9b38c2775a858321379071f8342a22f8517f04"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/second-hundred-stage.log",
+      "sha256": "2de4f39e74e33f6a46d8921d980ed9bb76c7e079fb2316f899b642996ca49fd0"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/writer2-stage.log",
+      "sha256": "84bc5ebf83fccd5b5e48ffdb9d8430eaeb10c504f7448821f6a0eb2b51c6cc34"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/canonical-linked.log",
+      "sha256": "e5bb0a353232a37c2c6042ae0d07604b90fd0a79ad676aaa0f249c6e585a1906"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/startup-driver.log",
+      "sha256": "892200f02fa6241c5d9ee7fed720f25a07ae6984e282c350420cd93bc3ff5ad7"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/scepter-driver.log",
+      "sha256": "71267b1942216489fb11280a9284eb3c120f397fedf6dbf3f7ae6eed7fe777fc"
+    },
+    {
+      "path": ".codex/pet-final-health-open-2026-11-13/cleanup-driver.log",
+      "sha256": "822dc1fe10ffbd89ca2eb4e5ad9c34ec256219827e0974da75bcc3f426f43b60"
+    }
+  ],
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-final-health-2026-11-13",
+    "ManifestSHA256": "71DF2CA8920E7006674A0CC38DBB1FB562EDCD00BD6D86E78C654B050A9A9C3A",
+    "Archived": 647,
+    "Removed": 80,
+    "ReclaimedBytes": 961215889.0,
+    "Retained": "Canonical runtime/configuration/DLLs/certs/shared data/main libraries,regression sources and reusable tools;three newest pre-final-health/pre-Pound/pre-static recovery sets and exact cdca106-certified pre-Ward executable/maps. Redundant pre-threshold files superseded,original manifest retained. Resolved102 final-health cases,12 original observations,two expected failing controls,corrected fixture/bootstrap/PE-inlining assumptions and all retained native/two full100/linked/Scepter/start scopes archived. OPEN Haunt/Crumble/other183/native wild path research remains outside fixed with unique probes. Actual offline/missing-Player handling and NPC/capture health were not repaired or certified. Slaghammer/LINK2/Lady/mixedDBErrors/personal/character/database/security files untouched. No new106/full native ASAN/full client certification."
+  },
+  "superseded_rollback_copies": [
+    {
+      "rollback": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\release-before-pet-damage-threshold-2026-11-12",
+      "manifest_sha256": "2d7fa9a507fa7920dd9af536c8303b0779131fb882ec0c7cbc55785305e1bd9f",
+      "repair_commit": "c04fcef56"
+    }
+  ],
+  "rollback_cleanup_note": "One redundant pre-threshold owned EXE/map set removed after current deployment and regressions;original manifest remains hash-verified. Earlier Protected-path inventories are point-in-time records superseded for these files by this exact deletion manifest. Three newest recovery sets and exact cdca106 executable/maps retained. No mixed research,personal/character/database backup or security files removed.",
+  "final_verification": {
+    "status": "PASS",
+    "native_final_health_cases": 102,
+    "retained_native_cases": [
+      112,
+      120,
+      78,
+      48,
+      24,
+      144,
+      28,
+      50,
+      48,
+      28,
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "canonical": {
+      "worldserver.exe": "5fd55f9f83fae5b1074395b5c2e4c03c17d47f2c2bec483dbb888771edf072bc",
+      "worldserver.map": "6bebde87cd6f19338f61b6f032cf74dc5b7657edc1d948ac8f889d459c259aee",
+      "bnetserver.exe": "ce1a9bc9f9567b9a3a6b7c116c3ef076b6ada0e6dc75a7823abb4dd0fbf62fe1",
+      "bnetserver.map": "7f8c11d0faecd906d53e569fd6a2870fcb1b5a4ece6d37b38af0c0a6bc1b3d34"
+    },
+    "bnet_native_code_section_unchanged": true,
+    "archive_records": 647,
+    "removed": 80,
+    "removed_bytes": 961215889.0,
+    "older_owned_rollback_sets_removed": 1,
+    "recent_rollback_sets_retained": 3,
+    "historical106_binary_and_maps_retained": true,
+    "protected_evidence_configuration_and_rollback_unchanged": true,
+    "new_compiler_warnings": 0
+  },
+  "remaining": [
+    "Actual client and offline/logout/disconnect paths remain pending as scoped above.",
+    "Crumble1586/1739 timer/self-death and immunity ordering,Haunt652/653 ghost/return,remaining six species183/five abilities,DarkRebirth794/795,Ominitron1595 producer,Apocalypse,clone122/123/124 and generic159 remain OPEN. Raw trainer-team rows do not establish live wild kits;actual Rocko wild cache is1811. Mixed research and unique probes remain outside fixed.",
+    "Living Lady authentic activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer,mixed DBErrors,original intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or kill timer."
+  ],
+  "next": "Continue actual native Crumble1586/1739 full producer/timer/recipient/death/retry observations against matching data;keep actual offline lifecycle and other unproven alternatives explicitly open."
+}

@@ -1365,7 +1365,9 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
                 if (!currentPet)
                     continue;
 
-                if (currentPet->Health < 0)
+                // Final death is authoritative even when an instant kill
+                // retained health for in-battle revival/return mechanics.
+                if (!currentPet->IsAlive() || currentPet->Health < 0)
                     currentPet->Health = 0;
 
                 if (!ignoreAbandonPenalty && aborted && winnerTeamID != currentTeamID)
