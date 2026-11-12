@@ -273,7 +273,7 @@ void PetBattleSystem::Update(uint32 diff)
 
                         std::sort(possibleOpponent.begin(), possibleOpponent.end(), [](LFBTicket const* a, LFBTicket const* b)
                         {
-                            return a->Weight >= b->Weight;
+                            return a->Weight > b->Weight;
                         });
 
                         if (!possibleOpponent.empty())
