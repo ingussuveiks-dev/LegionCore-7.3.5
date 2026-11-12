@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "READONLY_READER_SCHEMA_ERROR_REPAIRED_NATIVE_NPC_PRODUCERS_STILL_OPEN",
+  "tool": "tools/tests/Test-PetBattleNpcPassiveCatalog.ps1",
+  "scope": "Matching26972 native DB2/Hotfix state/species/ability/effect reference reader and explicit read-only World NPC team queries. No gameplay/server executable/data/configuration/character change or client traversal.",
+  "reader_repair": {
+    "cause": "My initial private research SELECT joined creature_template c and requested c.name. This schema stores names in creature_template_wdb.Name1; core ObjectMgr actual loader confirms that split. Native SQL error1054 went through the existing fatal schema-error branch, aborting the two private probe runs with exit-1073741819. First probe did not initialize logging/buffered stdout; second retained exact SQL diagnostic233bytes in its private DBErrors. No dump file was generated; no canonical crash report or DBErrors entry changed. This was my reader query error, not evidence for a broken live schema or required migration.",
+    "fix": "Use real WDB Entry/Name1 join for team names and WDB+template join for actor ScriptName. Initialize native logging and unbuffered stdout so failures retain the actual query diagnostic. Preserve core SQL checks/abort behavior. A later probe incorrectly required state183 metadata; that assertion was removed in favor of explicitly reporting its absence. Its metadata-gap evidence remains outside fixed.",
+    "verification": "Corrected private reader reached WORLD_READ_EOF,exit0; then reusable public reader passed twice, final source and native output retained. Native Hotfix/World sessions explicitly TRANSACTION READ ONLY. Both pools close normally. Pre/post canonical/own diagnostics clean. Only the fully reviewed own233byte DBErrors file was cleared after original-byte/hash archive; canonical mixed7111byte log preserved."
+  },
+  "findings": {
+    "state183": "No matching BattlePetState183 metadata row. Thirteen actual BattlePetSpeciesState183 values name ability IDs:1259->251,1420->485,1479/1482->1377,1496->1387,1504->1389,1507/1880->1390,1811->1586,1815->1588,1881->1673,1883->1672,1882->1674. Most flags2 but1586/1672 flags0; this does not authorize globally treating every entry as an infinite aura.",
+    "roboflauge": "Actual species1504/state183 value1389. Live Knockoff Blingtron99505 team contains species1504 with active slots1079/455/1025. No1389 direct species learned row/effect-aura/parameter/ability-state producer found by this reader. Existing core AddPet retains species states, but no183 activation path was found. Actual passive admission/team recipient/proc/swap/expiry sequence remains to implement and verify.",
+    "ominitron": "NPC99878 is Ominitron Defense System with npc_PetBattleTrainer;99880 shares the name without a script. Current team query returns species1817 ability1597 and species1818 ability1670. No active1389/1595 trainer slot reference or1595 parameter/aura/species-state producer was found. These negative searches do not establish an authentic1595 activation/owner sequence."
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-npc-passive-catalog-2026-11-12/20261112-221205-628/native.tsv",
+      "sha256": "da344c91fea948f9c3c822867a1028214dce7a9ac9c1fe4ec67192c35e2f0bd9"
+    },
+    {
+      "path": ".codex/pet-npc-passive-catalog-2026-11-12/20261112-221205-628/evidence/diagnostics-after.json",
+      "sha256": "d97e967e712d162ebcd76701a1dc8ef618d17345352aa2303c1b6ee7c58c47c2"
+    },
+    {
+      "path": ".codex/pet-remaining-type-open-2026-11-12/final-public-reader-driver.log",
+      "sha256": "6e211a7f46dd1a9b6df5524e2e4ee0ddfa14eb86531623ee2fd37262e3e510ef"
+    },
+    {
+      "path": ".codex/pet-remaining-type-open-2026-11-12/references-complete/native.tsv",
+      "sha256": "0391b57336a39cf7ff6956ef02b5955f0473de449d87fcd0a99542a16d0dba57"
+    },
+    {
+      "path": "tools/research/PetBattleNpcPassiveCatalog.cpp",
+      "sha256": "04bcc8aec60a04a64d9c14aaac5639b5af24724c29c5e307aeca548e7838f9c1"
+    },
+    {
+      "path": "tools/tests/Test-PetBattleNpcPassiveCatalog.ps1",
+      "sha256": "9a622191c33ac8e9a2b984ba9c7e7240d0a758c021a4097aefd22cad3460fe26"
+    }
+  ],
+  "archive": {
+    "CanonicalMixedLogUnchanged": true,
+    "ManifestSHA256": "92A58E4D104CFBDA2E901655C13147ED631D58A1C82D9C3B70ECB02A4470619B",
+    "Status": "PASS",
+    "Retained": "Current remaining-type and public readonly catalogue evidence, unique research executables and configuration copies retain a concrete outstanding Roboflauge/Ominitron producer investigation purpose. Native183 absence/incorrect-require probe remains outside fixed. No server binary/data/configuration/character record changed.",
+    "Archived": 29,
+    "Removed": 0,
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-npc-passive-reader-2026-11-12",
+    "PrivateResolvedDBErrorsBytes": 233
+  },
+  "retained": "Roboflauge/Ominitron current metadata/observations and unique research caches retain a concrete outstanding producer investigation purpose outside fixed. All prior mixed type/Dark Rebirth/Lady/LINK2 evidence and Slaghammer preserved. Existing canonical4415 and recent rollback copies/configs/DLLs/certs/shared data unchanged.",
+  "remaining": [
+    "Roboflauge183 actual initialization, team scope, owner/proc/swap/death/expiry and real NPC client traversal.",
+    "Ominitron1595 actual activation/owner/control/cleanup, full99878 encounter and missing/variant team data.",
+    "All earlier Lady/LINK2/client/whole-chain and unrelated native pipeline OPEN items remain."
+  ],
+  "next": "Use the established1504/state183/1389 and live99505 link to build a scoped actual native Roboflauge regression before enabling any species-state producer."
+}
