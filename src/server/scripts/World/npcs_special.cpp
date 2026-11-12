@@ -157,19 +157,19 @@ public:
                 Item* offItem = plr->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
                 bool greenClone = entryId == 69792;
 
-                float finaldmg, offfinaldmg = 0;
-                float adddmg, adddmg2 = 0;
-                float mainattackspeed, offattackspeed = 2.0f;
+                float finaldmg = 0, offfinaldmg = 0;
+                float adddmg = 0, adddmg2 = 0;
+                float mainattackspeed = BASE_ATTACK_TIME / 1000.0f, offattackspeed = mainattackspeed;
 
                 if (mainItem)
                 {
                     mainItem->GetTemplate()->GetDamage(mainItem->GetItemLevel(), finaldmg, offfinaldmg);
                     mainattackspeed = mainItem->GetTemplate()->GetDelay() / 1000.0f;
                 }
-                if (offItem && mainItem)
+                if (offItem)
                 {
-                    mainItem->GetTemplate()->GetDamage(mainItem->GetItemLevel(), adddmg, adddmg2);
-                    offattackspeed = mainItem->GetTemplate()->GetDelay() / 1000.0f;
+                    offItem->GetTemplate()->GetDamage(offItem->GetItemLevel(), adddmg, adddmg2);
+                    offattackspeed = offItem->GetTemplate()->GetDelay() / 1000.0f;
                 }
 
                 finaldmg += urand(adddmg, adddmg2);
@@ -207,9 +207,6 @@ public:
             {
                 float amount = plr->GetRatingBonusValue(CR_HASTE_MELEE);
                 amount += me->GetTotalAuraModifier(SPELL_AURA_MOD_MELEE_ATTACK_SPEED);
-
-                if (amount == oldHast)
-                    return;
 
                 oldHast = amount;
 
