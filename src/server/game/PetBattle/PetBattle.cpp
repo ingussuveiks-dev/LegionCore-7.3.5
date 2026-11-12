@@ -1413,17 +1413,18 @@ void PetBattle::Update(uint32 diff)
     {
         m_UpdateTimer.Reset();
 
-        Teams[PETBATTLE_TEAM_1]->Update();
-        if (Teams[PETBATTLE_TEAM_2]->Update())
+        bool const firstFinished = Teams[PETBATTLE_TEAM_1]->Update();
+        bool const secondFinished = !firstFinished && Teams[PETBATTLE_TEAM_2]->Update();
+        if (firstFinished || secondFinished)
         {
             Teams[PETBATTLE_TEAM_1]->Ready = false;
             Teams[PETBATTLE_TEAM_2]->Ready = false;
             return;
         }
 
-        for (uint8 i = 0; i < PETBATTLE_TEAM_2; i++)
+        for (uint8 i = 0; i < MAX_PETBATTLE_TEAM; i++)
         {
-            if (!Teams[i]->Ready && Teams[i]->ActivePetID != PETBATTLE_NULL_ID && !Pets[Teams[i]->ActivePetID]->CanAttack())
+            if (!Teams[i]->Ready && Teams[i]->ActivePetID >= 0 && Teams[i]->ActivePetID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS && Pets[Teams[i]->ActivePetID] && !Pets[Teams[i]->ActivePetID]->CanAttack())
             {
                 if (Teams[i]->isRun)
                     Teams[i]->Ready = true;
