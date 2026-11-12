@@ -765,6 +765,8 @@ bool PetBattleAbilityEffect::AddTarget(PetBattleAbilityImplicitTarget target)
 
 bool PetBattleAbilityEffect::AddAura(uint32 target, int32 duration, int32 maxAllowed)
 {
+    if (duration == 0xFFFF)
+        duration = -1;
     return PetBattleInstance->AddAura(Caster, target, EffectInfo->AuraBattlePetAbilityID, duration, maxAllowed, EffectInfo->ID, Flags);
 }
 
