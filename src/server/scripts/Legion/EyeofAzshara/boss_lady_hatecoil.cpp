@@ -314,11 +314,16 @@ public:
             me->SetReactState(REACT_PASSIVE);
         }
 
-        bool spawn;
-        uint16 searchPlrTimer;
-        Unit* playerTarget = nullptr;
+        bool spawn = false;
+        uint16 searchPlrTimer = 2000;
+        ObjectGuid playerTargetGuid;
 
-        void Reset() override {}
+        void Reset() override
+        {
+            spawn = false;
+            searchPlrTimer = 2000;
+            playerTargetGuid.Clear();
+        }
 
         void IsSummonedBy(Unit* summoner) override
         {
@@ -334,7 +339,7 @@ public:
                 case SPELL_MONSOON_FIXATE:
                     me->AddThreat(target, 10000.0f);
                     AttackStart(target);
-                    playerTarget = target;
+                    playerTargetGuid = target ? target->GetGUID() : ObjectGuid::Empty;
                     break;
             }
         }
@@ -343,6 +348,7 @@ public:
         {
             if (searchPlrTimer <= diff)
             {
+                Unit* playerTarget = ObjectAccessor::GetUnit(*me, playerTargetGuid);
                 if (!playerTarget || !playerTarget->IsAlive())
                 {
                     if (!spawn)
@@ -350,7 +356,7 @@ public:
                         spawn = true;
                         DoCast(me, SPELL_MONSOON_VISUAL, true);
                     }
-                    playerTarget = nullptr;
+                    playerTargetGuid.Clear();
                     DoCast(me, SPELL_MONSOON_SEARCH_PLR, true);
                 }
                 searchPlrTimer = 2000;
