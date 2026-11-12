@@ -178,5 +178,6 @@
     "Crumble1586/1739 timer/self-death and immunity ordering,Haunt652/653 ghost/return,remaining six species183/five abilities,DarkRebirth794/795,Ominitron1595 producer,Apocalypse,clone122/123/124 and generic159 remain OPEN. New readonly native death/species/wild-path research remains outside fixed with unique probes.",
     "Living Lady authentic activation/surrender/conversation1906/Grash finish/cleanup,LINK2/Slaghammer,mixed DBErrors,original intermittent client handshake cause,wider core health and all36 whole artifact chains remain OPEN. No invented HP threshold or kill timer."
   ],
-  "next": "Reproduce owned final-dead positive health persistence through actual Finish/journal update,then repair only if demonstrated;continue complete native lifecycle investigations without guessed timers."
+  "next": "Reproduce owned final-dead positive health persistence through actual Finish/journal update,then repair only if demonstrated;continue complete native lifecycle investigations without guessed timers.",
+  "fix_commit": "31af6b87f4fdccca9bd3cb7ddf7a80dd0abef3d7"
 }
