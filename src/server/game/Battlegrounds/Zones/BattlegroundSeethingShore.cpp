@@ -468,7 +468,7 @@ bool BattlegroundSeethingShore::UpdatePlayerScore(Player* player, uint32 type, u
 
 void BattlegroundSeethingShore::OnGameObjectCreate(GameObject* object)
 {
-    if (object->GetEntry() != GameObjects::Azerite2 || object->GetEntry() != GameObjects::Azerite)
+    if (object->GetEntry() != GameObjects::Azerite2 && object->GetEntry() != GameObjects::Azerite)
         return;
 
     UpdateCapturePoint(NODE_STATUS_NEUTRAL, TEAM_NONE, object, nullptr, true);
