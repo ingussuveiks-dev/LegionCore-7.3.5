@@ -862,14 +862,15 @@ public:
                             {
                                 Creature* casterDiskSummon = me->SummonCreature(NPC_HOVER_DISK_CASTER, RangeHoverDisksSpawnPositions[rangeDisks]);
 
-                                if (casterDiskSummon->IsAIEnabled)
+                                if (casterDiskSummon && casterDiskSummon->IsAIEnabled)
                                     casterDiskSummon->AI()->DoAction(rangeDisks);
                             }
 
                             for (uint8 meleeDisks = 0; meleeDisks < 2; meleeDisks++)
                             {
                                 Creature* meleeDiskSummon = me->SummonCreature(NPC_HOVER_DISK_MELEE, MeleeHoverDisksSpawnPositions[meleeDisks]);
-                                meleeDiskSummon->GetMotionMaster()->MovePoint(meleeDisks * MAX_MELEE_HOVER_DISK_SPAWNPOINTS, MeleeHoverDisksWaypoints[meleeDisks * MAX_MELEE_HOVER_DISK_SPAWNPOINTS]);
+                                if (meleeDiskSummon)
+                                    meleeDiskSummon->GetMotionMaster()->MovePoint(meleeDisks * MAX_MELEE_HOVER_DISK_SPAWNPOINTS, MeleeHoverDisksWaypoints[meleeDisks * MAX_MELEE_HOVER_DISK_SPAWNPOINTS]);
                             }
 
                             _arcaneReinforcements = false;
@@ -883,14 +884,15 @@ public:
                         {
                             Creature* casterDiskSummon = me->SummonCreature(NPC_HOVER_DISK_CASTER, RangeHoverDisksSpawnPositions[rangeDisks]);
 
-                            if (casterDiskSummon->IsAIEnabled)
+                            if (casterDiskSummon && casterDiskSummon->IsAIEnabled)
                                 casterDiskSummon->AI()->DoAction(rangeDisks);
                         }
 
                         for (uint8 meleeDisks = 2; meleeDisks < 4; meleeDisks++)
                         {
                             Creature* meleeDiskSummon = me->SummonCreature(NPC_HOVER_DISK_MELEE, MeleeHoverDisksSpawnPositions[meleeDisks]);
-                            meleeDiskSummon->GetMotionMaster()->MovePoint(meleeDisks * MAX_MELEE_HOVER_DISK_SPAWNPOINTS, MeleeHoverDisksWaypoints[meleeDisks * MAX_MELEE_HOVER_DISK_SPAWNPOINTS]);
+                            if (meleeDiskSummon)
+                                meleeDiskSummon->GetMotionMaster()->MovePoint(meleeDisks * MAX_MELEE_HOVER_DISK_SPAWNPOINTS, MeleeHoverDisksWaypoints[meleeDisks * MAX_MELEE_HOVER_DISK_SPAWNPOINTS]);
                         }
                         break;
                     case EVENT_PATHING_AROUND_PLATFORM:
