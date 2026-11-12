@@ -658,15 +658,15 @@ public:
             me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_CONFUSE, true);
         }
 
-        Unit* owner = nullptr;
-        bool moveComplete;
-        uint16 moveTimer;
+        ObjectGuid ownerGuid;
+        bool moveComplete = false;
+        uint16 moveTimer = 1000;
 
         void Reset() override {}
 
         void IsSummonedBy(Unit* summoner) override
         {
-            owner = summoner;
+            ownerGuid = summoner ? summoner->GetGUID() : ObjectGuid::Empty;
             DoCast(me, 199745, true); //Visual
             DoCast(me, 199738, true); //Visual
             moveTimer = 1000;
@@ -679,6 +679,7 @@ public:
             {
                 if (moveTimer <= diff)
                 {
+                    Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid);
                     if (!owner || !owner->IsInWorld() || !owner->IsAlive())
                     {
                         me->DespawnOrUnsummon();
