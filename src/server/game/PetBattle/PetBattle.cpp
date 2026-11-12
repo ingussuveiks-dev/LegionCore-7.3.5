@@ -638,12 +638,14 @@ void PetBattleAura::Process(PetBattle* petBattle)
                 effect.ReportFailAsImmune = false;
                 effect.Targets.push_back(TargetPetID);
 
-                auto itr = petBattle->RoundEvents.end();
+                auto const previousEventCount = petBattle->RoundEvents.size();
 
                 if (!effect.Execute())
                     abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);
 
                 /// Update "buff turn" on all event triggered by the current ability effect
+                auto itr = petBattle->RoundEvents.begin();
+                std::advance(itr, previousEventCount);
                 for (; itr != petBattle->RoundEvents.end(); ++itr)
                     itr->BuffTurn = Turn;
 
