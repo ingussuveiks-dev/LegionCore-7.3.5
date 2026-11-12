@@ -30,20 +30,22 @@ public:
         boss_infinite_corruptorAI(Creature *creature) : ScriptedAI(creature)
         {
             instance = me->GetInstanceScript();
-            timeRift = NULL;
+            timeRiftGuid.Clear();
         }
 
         InstanceScript* instance;
         uint32 uiStrikeTimer;
         uint32 uiBlightTimer;
-        Creature* timeRift;
+        ObjectGuid timeRiftGuid;
 
         void JustReachedHome()
         {
             // Data for visual
-            if (timeRift)
+            if (Creature* timeRift = ObjectAccessor::GetCreature(*me, timeRiftGuid))
                 timeRift->DisappearAndDie();
-            timeRift = me->SummonCreature(NPC_TIME_RIFT, me->GetPositionX() - 10.0f, me->GetPositionY(), me->GetPositionZ());
+            Creature* timeRift = me->SummonCreature(NPC_TIME_RIFT, me->GetPositionX() - 10.0f, me->GetPositionY(), me->GetPositionZ());
+
+            timeRiftGuid = timeRift ? timeRift->GetGUID() : ObjectGuid::Empty;
 
             // Visual Channeling
             if(timeRift)
