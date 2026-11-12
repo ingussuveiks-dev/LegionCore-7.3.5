@@ -38683,7 +38683,9 @@ void Player::UpdateBattlePetCombatTeam()
     {
         if (auto battlePet = itr->second)
         {
-            if (battlePet->Slot >= 0 && battlePet->Slot < static_cast<int32>(unlockedSlotCount))
+            if (battlePet->Slot >= 0 && battlePet->Slot < static_cast<int32>(unlockedSlotCount) &&
+                sBattlePetSpeciesStore.LookupEntry(battlePet->Species) &&
+                !sDB2Manager.HasBattlePetSpeciesFlag(battlePet->Species, BATTLEPET_SPECIES_FLAG_COMPANION))
             {
                 battlePet->UpdateAbilities();
                 _battlePetCombatTeam[battlePet->Slot] = battlePet;

@@ -167,11 +167,14 @@ void WorldSession::HandleBattlePetSetSlot(WorldPackets::BattlePet::SetBattleSlot
     if (m_IsPetBattleJournalLocked)
         return;
 
-    if (packet.SlotIndex >= MAX_PETBATTLE_SLOTS)
+    if (packet.SlotIndex >= MAX_PETBATTLE_SLOTS || packet.SlotIndex >= _player->GetUnlockedPetBattleSlot())
         return;
 
     if (auto battlePet = _player->GetBattlePet(packet.BattlePetGUID))
     {
+        if (!sBattlePetSpeciesStore.LookupEntry(battlePet->Species) ||
+            sDB2Manager.HasBattlePetSpeciesFlag(battlePet->Species, BATTLEPET_SPECIES_FLAG_COMPANION))
+            return; // Native0x80 species cannot participate in battles.
         auto petSlots = _player->GetBattlePetCombatTeam();
 
         for (uint8 i = 0; i < MAX_PETBATTLE_SLOTS; ++i)
