@@ -168,11 +168,11 @@ public:
 
         void DamageTaken(Unit* done_by, uint32 &damage, DamageEffectType /*dmgType*/) override
         {
-            if (done_by->IsPlayer())
+            if (Player* player = done_by ? done_by->GetAffectingPlayer() : nullptr)
             {
                 if (me->HealthBelowPctDamaged(20, damage))
                 {
-                    CAST_PLR(done_by)->GroupEventHappens(QUEST_10004, me);
+                    player->GroupEventHappens(QUEST_10004, me);
                     damage = 0;
                     EnterEvadeMode();
                 }
