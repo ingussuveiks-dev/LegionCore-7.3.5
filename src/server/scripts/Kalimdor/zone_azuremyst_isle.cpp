@@ -524,16 +524,18 @@ class npc_stillpine_capitive : public CreatureScript
                     cage->SetGoState(GO_STATE_READY);
                 }
                 _events.Reset();
-                _player = NULL;
+                _playerGuid.Clear();
                 _movementComplete = false;
             }
 
             void StartMoving(Player* owner)
             {
+                if (_movementComplete || !_playerGuid.IsEmpty() || !owner)
+                    return;
                 if (owner)
                 {
                     DoScriptText(RAND(CAPITIVE_SAY_1, CAPITIVE_SAY_2, CAPITIVE_SAY_3), me, owner);
-                    _player = owner;
+                    _playerGuid = owner->GetGUID();
                 }
                 Position pos = me->GetNearPosition(3.0f, 0.0f);
                 me->GetMotionMaster()->MovePoint(POINT_INIT, pos);
@@ -541,10 +543,10 @@ class npc_stillpine_capitive : public CreatureScript
 
             void MovementInform(uint32 type, uint32 id)
             {
-                if (type != POINT_MOTION_TYPE || id != POINT_INIT)
+                if (type != POINT_MOTION_TYPE || id != POINT_INIT || _movementComplete)
                     return;
 
-                if (_player)
+                if (Player* _player = ObjectAccessor::GetPlayer(*me, _playerGuid))
                     _player->KilledMonsterCredit(me->GetEntry(), me->GetGUID());
 
                 _movementComplete = true;
@@ -563,9 +565,9 @@ class npc_stillpine_capitive : public CreatureScript
             }
 
         private:
-            Player* _player;
+            ObjectGuid _playerGuid;
             EventMap _events;
-            bool _movementComplete;
+            bool _movementComplete = false;
         };
 
         CreatureAI* GetAI(Creature* creature) const
