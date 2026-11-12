@@ -37,6 +37,7 @@
 #include "Packets/NPCPackets.h"
 #include "QuestData.h"
 #include "ScriptMgr.h"
+#include "HealingAmount.h"
 #include "SkillDiscovery.h"
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
@@ -6674,7 +6675,7 @@ class spell_gen_intangible_presence : public AuraScript
 
                     if (attacker->HasAura(230088, owner->GetGUID()))
                     {
-                        uint32 amount = eff->GetAmount();
+                        uint64 amount = HealingAmount::FromFloat(eff->GetAmount());
 
                         if (uint32 damage = dmgInfo.GetDamage())
                             absorbAmount = (amount < damage) ? amount : damage;
