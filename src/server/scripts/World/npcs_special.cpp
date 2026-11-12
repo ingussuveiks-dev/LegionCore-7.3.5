@@ -1836,17 +1836,19 @@ public:
     {
         npc_monk_wind_spiritAI(Creature* creature) : ScriptedAI(creature) {}
 
-        bool firstUpdate;
-        Unit* owner;
-        Unit* target;
+        bool firstUpdate = true;
+        ObjectGuid ownerGuid;
+        ObjectGuid targetGuid;
 
         void InitializeAI() override
         {
             firstUpdate = true;
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
             me->AddUnitState(UNIT_STATE_ROOT);
-            target = NULL;
-            owner = me->GetOwner();
+            targetGuid.Clear();
+            Unit* target = nullptr;
+            Unit* owner = me->GetOwner();
+            ownerGuid = owner ? owner->GetGUID() : ObjectGuid::Empty;
             if (owner)
             {
                 float dist = 40.f;
@@ -1864,6 +1866,7 @@ public:
                     {
                         dist = curDist;
                         target = itr;
+                        targetGuid = itr->GetGUID();
                     }
                 }
 
@@ -1877,20 +1880,21 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            if (firstUpdate && owner && owner->IsInWorld())
+            if (!firstUpdate)
+                return;
+            firstUpdate = false;
+            Unit* owner = ObjectAccessor::GetUnit(*me, ownerGuid);
+            Unit* target = ObjectAccessor::GetUnit(*me, targetGuid);
+            if (owner && target)
             {
-                if (target && target->IsInWorld())
-                {
                     me->ClearUnitState(UNIT_STATE_ROOT);
                     me->SetTargetGUID(target->GetGUID());
                     me->CastSpell(target, 196052, true);
-                }
-                else
-                {
-                    me->RemoveAurasDueToSpell(45204);
-                    me->RemoveAurasDueToSpell(196051);
-                }
-                firstUpdate = false;
+            }
+            else
+            {
+                me->RemoveAurasDueToSpell(45204);
+                me->RemoveAurasDueToSpell(196051);
             }
         }
     };
