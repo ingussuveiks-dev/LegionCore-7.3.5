@@ -25,6 +25,7 @@
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "Group.h"
+#include "HealingAmount.h"
 #include "ScriptedCreature.h"
 
 // Called by Heal - 2050, Flash Heal - 2061, Greater Heal - 2060 and Prayer of Healing - 596
@@ -116,11 +117,11 @@ class spell_pri_halo_heal : public SpellScriptLoader
                 {
                     if (Unit* target = GetHitUnit())
                     {
-                        int32 _heal = GetHitHeal();
+                        uint64 _heal = GetHitHeal64();
                         float Distance = caster->GetDistance(target);
                         float pct = (0.5f * pow((1.01f),(-1 * pow(((Distance - 25.0f) / 2), 4))) + 0.1f + 0.015f*Distance);
-                        _heal = int32(_heal * pct);
-                        SetHitHeal(_heal);
+                        _heal = HealingAmount::Apply(_heal, 0, pct);
+                        SetHitHeal64(_heal);
                     }
                 }
             }
