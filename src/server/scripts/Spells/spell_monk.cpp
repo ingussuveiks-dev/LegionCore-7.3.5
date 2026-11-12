@@ -1863,7 +1863,7 @@ class spell_monk_sheiluns_gift  : public SpellScriptLoader
                     std::list<AreaTrigger*> list;
                     caster->GetAreaObjectList(list, 214501);
                     uint32 cloudCount = std::min<uint32>(uint32(list.size()), 12);
-                    SetHitHeal(GetHitHeal() * cloudCount);
+                    SetHitHeal64(HealingAmount::Multiply(GetHitHeal64(), cloudCount));
                     if(!list.empty())
                     {
                         for (std::list<AreaTrigger*>::iterator itr = list.begin(); itr != list.end(); ++itr)
