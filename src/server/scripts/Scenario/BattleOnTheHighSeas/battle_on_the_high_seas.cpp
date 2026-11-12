@@ -558,7 +558,6 @@ struct npc_high_seas_horde_captain : public HighSeasCreatureAI
         yellEntry = TALK_SPECIAL_5;
     }
 
-    EventMap events;
     TaskScheduler scheduler;
     std::vector<ObjectGuid> allianceDogGUIDs;
     bool triggered;
@@ -566,11 +565,11 @@ struct npc_high_seas_horde_captain : public HighSeasCreatureAI
     uint32 calculationCount;
     uint32 yellEntry;
 
-    void Reset() override  { }
+    void Reset() override { events.Reset(); }
 
     void EnterCombat(Unit* /*who*/) override
     {
-        events.ScheduleEvent(EVENT_SHOT, 1.5 * IN_MILLISECONDS);
+        events.RescheduleEvent(EVENT_SHOT, 1.5 * IN_MILLISECONDS);
     }
 
     void EnterEvadeMode() override
@@ -658,6 +657,8 @@ struct npc_high_seas_horde_captain : public HighSeasCreatureAI
 
         if (!UpdateVictim())
             return;
+
+        events.Update(diff);
 
         while (uint32 eventId = events.ExecuteEvent())
         {
