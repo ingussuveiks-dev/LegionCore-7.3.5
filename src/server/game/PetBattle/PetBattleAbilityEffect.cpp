@@ -84,7 +84,7 @@ static PetBattleAbilityEffectHandler Handlers[MAX_PETBATTLE_EFFECT_TYPES] =
     /* EFFECT 58  */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 59  */{&PetBattleAbilityEffect::HandleWitchingDamage,             PETBATTLE_TARGET_TARGET},
     /* EFFECT 60  */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
-    /* EFFECT 61  */{&PetBattleAbilityEffect::HandleHealCasterPercentNotState,  PETBATTLE_TARGET_CASTER_TEAM_UNCONDITIONAL},
+    /* EFFECT 61 */{&PetBattleAbilityEffect::HandleHealCasterPercentNotState, PETBATTLE_TARGET_CASTER},
     /* EFFECT 62  */{&PetBattleAbilityEffect::HandleDamagePercent,              PETBATTLE_TARGET_TARGET},
     /* EFFECT 63  */{&PetBattleAbilityEffect::HandlePeriodicPositiveTrigger,    PETBATTLE_TARGET_CASTER},
     /* EFFECT 64  */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
@@ -167,7 +167,7 @@ static PetBattleAbilityEffectHandler Handlers[MAX_PETBATTLE_EFFECT_TYPES] =
     /* EFFECT 141 */{&PetBattleAbilityEffect::HandleSplittedDamage,             PETBATTLE_TARGET_TARGET_TEAM},
     /* EFFECT 142 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 143 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
-    /* EFFECT 144 */{nullptr,                                                         PETBATTLE_TARGET_NONE}, // Dummy select dead target
+    /* EFFECT 144 */{&PetBattleAbilityEffect::HandleDummy, PETBATTLE_TARGET_CASTER},
     /* EFFECT 145 */{&PetBattleAbilityEffect::HandleSwapHigh,                   PETBATTLE_TARGET_TARGET},
     /* EFFECT 146 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
     /* EFFECT 147 */{&PetBattleAbilityEffect::HandleNull,                       PETBATTLE_TARGET_NONE},
@@ -1311,17 +1311,22 @@ bool PetBattleAbilityEffect::HandleHealCasterPercentNotState()
 {
     if (EffectInfo->Param[2] && !GetState(Caster, EffectInfo->Param[2]))
         return false;
-
-    if (EffectInfo->Param[3] && !GetState(Target, EffectInfo->Param[3]))
-        return false;
-
-    // It's caster who need to be heal
-    Target = Caster;
-
-    CalculateHit(EffectInfo->Param[1]);
-
-    int32 heal = CalculateHeal(CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]));
-    return Heal(Target, heal);
+    auto team = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];
+    for (uint32 slot = 0; slot < team->TeamPetCount; ++slot)
+    {
+        auto corpse = team->TeamPets[slot];
+        if (!corpse || corpse->ID == Caster || corpse->IsAlive() || GetState(corpse->ID, EffectInfo->Param[3]))
+            continue;
+        Target = Caster;
+        CalculateHit(EffectInfo->Param[1]);
+        if (Flags & FailFlags)
+            return Heal(Caster, 0);
+        int32 heal = CalculatePct(GetMaxHealth(Caster), EffectInfo->Param[0]);
+        int32 modifier = GetState(Caster, BATTLEPET_STATE_Mod_HealingDealtPercent) + GetState(Caster, BATTLEPET_STATE_Mod_HealingTakenPercent);
+        Heal(Caster, heal + CalculatePct(heal, modifier));
+        return SetState(corpse->ID, EffectInfo->Param[3], 1);
+    }
+    return false;
 }
 
 bool PetBattleAbilityEffect::HandleDamagePercent()

@@ -1542,6 +1542,19 @@ bool PetBattle::CanCast(uint32 teamID, uint32 abilityID)
     if (!sBattlePetAbilityStore.LookupEntry(abilityID))
         return false;
 
+    if (abilityID == 665)
+    {
+        bool available = false;
+        for (uint32 slot = 0; slot < team->TeamPetCount; ++slot)
+        {
+            auto pet = team->TeamPets[slot];
+            if (pet && pet->ID != team->ActivePetID && !pet->IsAlive() && !pet->States[BATTLEPET_STATE_Special_ConsumedCorpse])
+                available = true;
+        }
+        if (!available)
+            return false;
+    }
+
     for (uint32 i = 0; i < MAX_PETBATTLE_ABILITIES; i++)
         if (Pets[team->ActivePetID]->Abilities[i] == abilityID && Pets[team->ActivePetID]->Cooldowns[i] <= 0 && Pets[team->ActivePetID]->Lockdowns[i] <= 0)
             return true;
