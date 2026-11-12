@@ -265,7 +265,9 @@ class mob_stone_quilen : public CreatureScript
                 if (!me->HasAura(SPELL_PROTECTIVE_FENZY) && me->HealthBelowPct(10))
                     me->CastSpell(me, SPELL_PROTECTIVE_FENZY, true);
 
-                if (uint32 eventId = events.ExecuteEvent())
+                events.Update(diff);
+
+            if (uint32 eventId = events.ExecuteEvent())
                 {
                     switch (eventId)
                     {
