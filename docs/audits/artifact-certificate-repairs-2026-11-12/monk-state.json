@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-12",
+  "status": "FOCUSED_CERTIFICATE_REPAIR_PASS_FINAL_COLLECTION_RECORDED_SEPARATELY",
+  "title": "Verify actual Monk epoch state and registered instance receiver flow",
+  "cause_and_repair": "Prove actual original-this aliases, field-address construction and preservation into both context/Jorvinax calls, allowing register restoration after the argument is formed. Require the real constructor zero width and real context epoch source/reset flow for Chen. The early variant retains State in R12/context in RCX and explicitly proves the epoch branch and both resets. Known inherited Player field4ff0 follows the independently checked Unit/Player layout delta. Native event IDs, deadlines, callback order, once/reentry and forbidden progression checks remain.",
+  "production_changes": "None. No C++ or SQL change, no rebuilt/promoted binary. These repairs address stale test assumptions against the already deployed production implementation.",
+  "files": [
+    "tools/tests/verify_monk_chen_presentation_release.py",
+    "tools/tests/verify_monk_chen_early_presentation_release.py",
+    "tools/tests/verify_monk_jorvinax_release.py",
+    "tools/tests/verify_monk_nine_arrival_release.py"
+  ],
+  "evidence": [
+    {
+      "path": ".codex/open-closeout-2026-11-12/jorvinax-repaired2.log",
+      "sha256": "76122ae7329a951ebf4d3db60c5df4d22a1270cbd10f3655296b6a2f1b3d604c"
+    },
+    {
+      "path": ".codex/open-closeout-2026-11-12/six-repaired2/verify_monk_chen_early_presentation_release.py.log",
+      "sha256": "5ff4ac19f89cbe92ec6d68b29fc90333ba34b1faab00ad55c17fe1ac39b1536e"
+    },
+    {
+      "path": ".codex/open-closeout-2026-11-12/six-repaired2/verify_monk_nine_arrival_release.py.log",
+      "sha256": "f5535b799f80c34f3902b0a27930b3a5819b108783802c251c96ca2cfcd33ef5"
+    }
+  ],
+  "worldserver_sha256": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165",
+  "post_test_diagnostics": "Every formal run wrapped with canonical and own crash/log before/after inventories. No new/changed crash, appended DBErrors, or unexplained server warning/error/assertion. Failed intermediate certificate assertions were retained and paired with the focused passing root; they are not ordinary passing runs.",
+  "counterfactual": "Pinned32f7dc012 tool controls inspect this same current EXE. These reproduce stale certificate failures; they are not broken gameplay binary controls. See final closeout for the complete immutable-source collection and counterfactual results.",
+  "limitations": "Selected linked code and controlled native/source fixtures do not establish actual client traversal, rendering, whole36chains, authentic living Lady finale, missing LINK2 actions, intermittent handshake cause, remaining native pet effects or ordinary core-wide healing/periodic widths.",
+  "final_closeout": "docs/audits/open-issues-closeout-2026-11-12.json"
+}

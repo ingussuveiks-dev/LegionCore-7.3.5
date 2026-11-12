@@ -1,4 +1,4 @@
-from linked_player_abi import inherited_operand
+from linked_player_abi import inherited_operand,inherited_member_offset
 from linked_player_abi import player_offset,player_operand
 """Selected registered real-death receipt and scoped Hait victory path in PE.
 
@@ -26,7 +26,10 @@ presentation_successor=0x430 in values(allocation) or nine_successor
 instance_size=n.get('monk_instance_size',0x498) if n.get('monk_initial_successor') else 0x490 if nine_successor else 0x430 if presentation_successor else 0x418
 assert vt in refs(factory) and instance_size in values(allocation)
 if presentation_successor:
-    assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),(('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx'))}<=set(pairs(factory))
+    presentation_zero = ('mov','qword ptr [rsi + 0x428], rbx')
+    if presentation_zero not in pairs(factory):
+        presentation_zero = ('mov','dword ptr [rsi + 0x428], ebx') if sites(n,ins('?Update@instance_monk_intro@@'),'?UpdateRescue@State@MonkChenPresentation@@') else ('mov','word ptr [rsi + 0x428], bx')
+    assert {('mov','qword ptr [rsi + 0x418], rdi'),('mov','qword ptr [rsi + 0x420], rbx'),presentation_zero}<=set(pairs(factory))
 registration,script=table('??_7?$GenericInstanceMapScript@Uinstance_monk_intro@@@@6BScriptObject@@@',2)
 assert registration in refs(ins('?AddSC_instance_class_art_scenarios@@'))
 assert n['symbol']('?GetInstanceScript@?$GenericInstanceMapScript@Uinstance_monk_intro@@')==resolved(script)[1]
@@ -38,9 +41,24 @@ assert {('lea','rdi, [rsi + 0x2e0]'),('mov','word ptr [rdi + 0xd4], bx'),
 for name,target in (('CreatureDies','Death'),('Update','Update')):
     body=ins(instance(name));assert n['symbol'](instance(name)) in resolved(raw)
     before,=sites(n,body,context(target));after,=sites(n,body,state(target))
-    context_argument=(('lea','rcx, [rdi + 0x2e0]') if name=='Update' else ('lea','rcx, [rbx + 0x2e0]')) if n.get('monk_initial_successor') else ('lea','rcx, [rbx + 0x2e0]') if presentation_successor and name=='Update' else ('add','rcx, 0x2e0')
-    assert before<after and context_argument in pairs(body[:before])
-    assert ('lea','rcx, [rdi + 0x3b8]' if n.get('monk_initial_successor') and name=='Update' else 'rcx, [rbx + 0x3b8]') in pairs(body[before:after])
+    if n.get('monk_initial_successor'):
+        assert before<after
+        for call,offset in [(before,0x2e0),(after,0x3b8)]:
+            arguments=[]
+            for index,op in enumerate(body[:16]):
+                if op.mnemonic!='mov' or len(op.operands)!=2 or op.op_str.split(', ')[-1]!='rcx' or op.op_str.split(', ')[0] not in ('rbx','rbp','rsi','rdi','r12','r13','r14','r15'):continue
+                register=op.operands[0].reg;alias=op.reg_name(register)
+                for at,argument in enumerate(body[max(0,call-20):call],max(0,call-20)):
+                    if (argument.mnemonic,argument.op_str)!=('lea',f'rcx, [{alias} + {offset:#x}]'):continue
+                    if any(register in other.regs_access()[1] for other in body[index+1:at]):continue
+                    rcx=argument.operands[0].reg
+                    if any(rcx in other.regs_access()[1] for other in body[at+1:call]):continue
+                    arguments.append(at)
+            assert len(arguments)==1,'Native state argument must retain the original instance receiver through the field-address instruction and call, including tail epilogues'
+    else:
+        context_argument=('lea','rcx, [rbx + 0x2e0]') if presentation_successor and name=='Update' else ('add','rcx, 0x2e0')
+        assert before<after and context_argument in pairs(body[:before])
+        assert ('lea','rcx, [rbx + 0x3b8]') in pairs(body[before:after])
 
 death=ins(state('Death'));update=ins(state('Update'));ready=ins(state('Ready'))
 leaf=ins(state('Leaf'));guide=ins(state('Guide'));bound=ins(state('BoundRoute'))
@@ -58,7 +76,7 @@ needs(leaf,context('Progress'),'?GetAchievementMgr@Scenario@@','?GetCriteriaProg
 assert 29071 in values(leaf) and ('cmp','qword ptr [rcx + 0x28], 0') in pairs(leaf)
 needs(ready,context('Retained'),'?IsInWorld@Object@@','?CanContact@Player@@','?GetCreature@Map@@',
       '?IsPreDelete@Object@@','?InSamePhase@WorldObject@@','?ShouldHideFor@WorldObject@@','?IsWithinDistInMap@WorldObject@@')
-assert 100.0 in floats(n,ready) and {0x4ff0,player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)}<=fields(ready)
+assert 100.0 in floats(n,ready) and {inherited_member_offset(0x4ff0),player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)}<=fields(ready)
 assert not sites(n,ready,context('Current')),'Victory/voice must not use distant Chen as its player anchor'
 assert {1014,97778,362271}<=values(guide)
 needs(guide,'?GetCreature@Map@@','?IsInWorld@Object@@','?IsPreDelete@Object@@')

@@ -27,7 +27,20 @@ assert {('cmp','byte ptr [rcx + 0x13], 0'),('mov','byte ptr [rsi], 1'),('mov','b
         ('mov','ebx, dword ptr [rbx + 0xc0]'),('lea','edi, [rcx - 1]'),('cmovbe','edi, ecx'),
         ('cmp','eax, 4'),('movups','xmm0, xmmword ptr [rbx + 8]'),
         ('movups','xmmword ptr [rdx], xmm0'),('add','qword ptr [rbp - 0x71], 0x10')}<=set(pairs(early))
-assert ({('mov','qword ptr [rcx + 8], rax'),('mov','byte ptr [rcx + 0x10], 0'),('mov','byte ptr [rcx + 0x12], 0'),
+if ('mov','r12, rcx') in pairs(early[:20]) and ('mov','qword ptr [r12 + 8], rax') in pairs(early[:30]):
+    # The current compiler keeps State in R12 and context in RCX. Prove the
+    # epoch's actual source and both resets before inspecting the phase bits.
+    start=pairs(early).index(('mov','r12, rcx'));prefix=early[start:start+11]
+    assert [pairs(prefix)[i] for i in (0,3,4,5,7,8,9)]==[
+        ('mov','r12, rcx'),('mov','rcx, qword ptr [rcx]'),('mov','rax, qword ptr [rcx + 0x60]'),
+        ('cmp','qword ptr [r12 + 8], rax'),('mov','qword ptr [r12 + 8], rax'),
+        ('mov','byte ptr [r12 + 0x10], 0'),('mov','byte ptr [r12 + 0x12], 0')]
+    assert prefix[2].mnemonic=='jne' and prefix[6].mnemonic=='je' and prefix[6].operands[0].imm==prefix[10].address
+    assert {('and','al, 3'),('cmp','al, 3'),('cmp','byte ptr [rcx + 0x71], 0'),
+            ('cmp','byte ptr [rcx + 0x93], 0'),('cmp','byte ptr [rcx + 0x95], 0'),
+            ('or','dl, 2'),('mov','byte ptr [r12 + 0x12], dl')}<=set(pairs(early))
+else:
+ assert ({('mov','qword ptr [rcx + 8], rax'),('mov','byte ptr [rcx + 0x10], 0'),('mov','byte ptr [rcx + 0x12], 0'),
          ('and','al, 3'),('cmp','al, 3'),('cmp','byte ptr [rdx + 0x71], 0'),('cmp','byte ptr [rdx + 0x93], 0'),
          ('cmp','byte ptr [rdx + 0x95], 0'),('or','r8b, 2'),('mov','byte ptr [rcx + 0x12], r8b')}
         if escort_speech else {('mov','qword ptr [r12 + 8], rdx'),('mov','byte ptr [r12 + 0x10], 0'),

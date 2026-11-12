@@ -53,10 +53,18 @@ needs(guide,'?GetCreature@Map@@','?IsInWorld@Object@@','?IsPreDelete@Object@@','
 assert {1014,97778,362271}<=values(guide) and 50.0 in floats(n,guide)
 assert {('lea','rdx, [rcx + 0x9d]'),('cmp','dword ptr [rbx + 0xa18], 0'),('cmp','rax, rbx')}<=set(pairs(guide))
 needs(update,context('Actor'),context('Progress'),context('EscortStage'),context('EscortLeaf'),context('Current'),presentation('Owner'),presentation('Guide'),'?getMSTime@@','?SendChat@CreatureTextMgr@@','?MovePoint@MotionMaster@@')
-assert {('cmp','byte ptr [rcx + 0x11], 0'),('mov','qword ptr [rsi + 8], rcx'),('mov','byte ptr [rsi + 0x10], 0'),
+assert {('cmp','byte ptr [rcx + 0x11], 0'),
         ('mov','byte ptr [rbx], 1'),('mov','byte ptr [rbx], 0'),('mov','edi, dword ptr [rdi + 0xc4]'),
         ('lea','r15d, [rcx - 1]'),('cmovbe','r15d, ecx'),('lock inc','dword ptr [rax + 0xc]'),
         ('movups','xmm0, xmmword ptr [rbx]'),('movups','xmmword ptr [rbp - 0x29], xmm0')}<=set(pairs(update))
+if ('mov','qword ptr [rsi + 8], rcx') in pairs(update):
+    assert ('mov','byte ptr [rsi + 0x10], 0') in pairs(update)
+else:
+    # RCX is still the original State at this entry; RSI is its saved alias.
+    # The copied epoch comes from the actual context, not another register.
+    assert {('mov','rsi, rcx'),('mov','rdi, qword ptr [rcx]'),('mov','rax, qword ptr [rdi + 0x60]'),
+            ('cmp','qword ptr [rcx + 8], rax'),('mov','qword ptr [rcx + 8], rax'),
+            ('mov','byte ptr [rcx + 0x10], 0')}<=set(pairs(update[:25]))
 assert {3000,7000,11000,16000}<=values(update)
 assert {3837.48,1729.83,946.42}<=floats(n,update)
 point,=sites(n,update,'?MovePoint@MotionMaster@@');chats=sites(n,update,'?SendChat@CreatureTextMgr@@')

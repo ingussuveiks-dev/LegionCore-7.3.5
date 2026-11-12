@@ -1,4 +1,4 @@
-from linked_player_abi import inherited_operand
+from linked_player_abi import inherited_operand,inherited_member_offset
 from linked_player_abi import player_offset,player_operand
 """Actual registered late Nine arrival, original visitor and native receipts.
 
@@ -38,7 +38,7 @@ assert {('lea','rdx, [rdi + 0x10]'),('cmp','qword ptr [rbx + 8], rcx'),('cmp','d
 needs(leaf,context('Progress'),'?GetAchievementMgr@Scenario@@','?GetCriteriaProgressMap@')
 assert 29069 in values(leaf) and ('cmp','qword ptr [rcx + 0x28], 0') in pairs(leaf)
 needs(current,context('Retained'),'?IsInWorld@Object@@','?CanContact@Player@@','?InSamePhase@WorldObject@@','?ShouldHideFor@WorldObject@@','?canSeeOrDetect@WorldObject@@')
-assert {0xa18,0x4ff0,player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)}<=fields(current)
+assert {0xa18,inherited_member_offset(0x4ff0),player_offset(0x6848),player_offset(0x6849),player_offset(0x6851)}<=fields(current)
 assert not sites(n,current,'?IsWithinDistInMap@WorldObject@@'),'Admission7yd must not truncate native later SAY range'
 capture=ins(state('Request'));update=ins(state('Update'))
 for body in (capture,update):
