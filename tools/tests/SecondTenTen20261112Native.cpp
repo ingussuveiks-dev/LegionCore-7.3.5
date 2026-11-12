@@ -15,6 +15,7 @@ static void FillSecond(PetBattle&b,Player*player=nullptr){
 #include "SecondTenTen20261112ThirdNative.h"
 #include "SecondTenTen20261112SixthNative.h"
 #include "SecondTenTen20261112SeventhNative.h"
+#include "SecondTenTen20261112EighthNative.h"
 #include "SecondTenTen20261112SpellCatalogue.h"
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);
@@ -46,6 +47,7 @@ int main(int argc,char**argv){try{
  RunThirdPetNative(map,player,session);
  RunSixthPetNative();
  RunSeventhPetNative(player);
+ RunSecondEighthNative(map);
  }
  session->SetPlayer(nullptr);delete session;
  CloseAltheaNative();std::cout<<"PASS actual linked Finish ordinary/ignored forfeits,swap-independent XP,multiple native thresholds,repeated finish,wild actor cleanup,and owning request replacement;queue/source ASAN and actual client checks separate\n";return 0;
