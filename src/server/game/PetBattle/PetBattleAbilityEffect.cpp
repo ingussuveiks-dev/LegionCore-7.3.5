@@ -1250,14 +1250,14 @@ bool PetBattleAbilityEffect::HandleHealPercent()
     /// Passive humanoid http://wowhead.com/petability=726
     if (AbilityID == 726)
     {
-        int32 modPct = 1;
+        int32 modPct = 0;
         int32 heal = CalculatePct(GetMaxHealth(Target), EffectInfo->Param[0]);
 
         /// Modifiers Dealt / Taken
         modPct += GetState(Caster, BATTLEPET_STATE_Mod_HealingDealtPercent);
         modPct += GetState(Target, BATTLEPET_STATE_Mod_HealingTakenPercent);
 
-        return heal + CalculatePct(heal, modPct);
+        return Heal(Target, heal + CalculatePct(heal, modPct));
     }
 
     // Recovery
