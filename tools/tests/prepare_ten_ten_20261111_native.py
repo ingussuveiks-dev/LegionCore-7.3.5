@@ -45,3 +45,13 @@ if fourth:
  text+='struct AvatarFrame:ScriptedAI{explicit AvatarFrame(Creature*c):ScriptedAI(c),summons{c}{};std::shared_ptr<uint8> _delayedAILifetimeGuard=std::make_shared<uint8>(0);MaidenEndpoint summons;InstanceEndpoint endpoint;InstanceEndpoint*instance=&endpoint;void DoZoneInCombat(Creature*c){Observe::Mark(c,1);}void Queue(uint32){'+registration+'}};\n}\n'
  (out/'TenTenFourthNative.inc').write_text(text,encoding='utf8')
  print('Prepared actual native clone AuraScript/Lilet methods and full Avatar registration;spell/speech/instance endpoints are explicitly observed')
+fifth=[e for e in PLAN['changes']if e['batch']==5]
+if fifth:
+ from prepare_ten_ten_20261111_fifth import block
+ text='struct FifthBinding{char const*kind;char const*name;};static FifthBinding fifthBindings[]={'+','.join('{"'+e['binding_kind']+'","'+e['binding']+'"}'for e in fifth)+'};\nnamespace FifthNative{\n'
+ e=fifth[0];body=e['edits'][1]['new'];assert body.count('caster->CastSpell(target, spellId, true);')==1;text+=body.replace('caster->CastSpell(target, spellId, true);','ObserveProtection(caster, target, spellId, true);')+';\n'
+ e=fifth[1];body=e['edits'][0]['new'];body=block(body,r'if \(auto player = summoner->ToPlayer\(\)\)');text+='void CopyFigment(Unit*summoner,Creature*creature){'+body+'}\n'
+ e=fifth[4];body=e['edits'][0]['new'].replace('player->GroupEventHappens(QUEST_10004, me);','ObserveFifthCredit(player, QUEST_10004, me);');text+='enum{QUEST_10004=10004};struct Salsa:ScriptedAI{using ScriptedAI::ScriptedAI;void EnterEvadeMode()override{++fifthEvades;}'+body+'};\n'
+ e=fifth[9];body=e['edits'][0]['new'].replace('GetPlayerListInGrid(targets, me, 70.0f);','ObserveFifthPlayers(targets);').replace('me->GetMotionMaster()->MoveFollow((*itr), PET_FOLLOW_DIST, (*itr)->GetFollowAngle());','ObserveFifthFollow(me, *itr);').replace('me->CastSpell((*itr), 212943);','ObserveProtection(me, *itr, 212943, false);').replace('DoCast(target, 212948, true);','ObserveProtection(me, target, 212948, true);');text+='struct Orb:ScriptedAI{using ScriptedAI::ScriptedAI;ObjectGuid targetMove;bool moveComplete=true,CheckComplete=false;uint32 moveTimer=0,checkTimer=2000;'+body+'};\n}\n'
+ (out/'TenTenFifthNative.inc').write_text(text,encoding='utf8')
+ print('Prepared fifth actual native hook, paired fields, affecting-player andstun-state scopes;cast/group/movement/query endpoints observed')

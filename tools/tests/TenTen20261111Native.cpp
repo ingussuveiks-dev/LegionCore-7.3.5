@@ -32,13 +32,14 @@ static void RunThirdNative(InstanceMap&map){
  std::cout<<"PASS third native scopes:all actual10script bindings/native spell records and actual Shatter AuraScript periodic dispatcher/foreign caster disappearance/independent crystal action;spatial/summon endpoints/full client remain separate\n";
 }
 #include "TenTen20261111FourthNative.h"
+#include "TenTen20261111FifthNative.h"
 struct IndomScriptsTag{using Type=std::vector<AuraScript*> Aura::*;friend Type Access(IndomScriptsTag);};template struct FixtureAccess<IndomScriptsTag,&Aura::m_loadedScripts>;
 static Aura*BindIndom(Actor&actor){static std::string name="spell_sinestra_indomitable";auto aura=actor.AddAura(90044,&actor);Require(aura&&aura->GetEffect(EFFECT_0),"Native Indomitable aura missing");auto script=new TenTenFirst::spell_sinestra_indomitable_AuraScript;script->_Init(&name,90044);Require(script->_Load(aura),"Native Indomitable Load");script->_Register();auto&loaded=aura->*Access(IndomScriptsTag{});Require(loaded.empty(),"Unexpected automatic native Indomitable script");loaded.push_back(script);return aura;}
 static void Tick(Aura*aura,Actor&actor){auto app=aura->GetApplicationOfTarget(actor.GetGUID());Require(app,"Real target application missing");Require(!aura->CallScriptEffectPeriodicHandlers(aura->GetEffect(EFFECT_0),app),"Original periodic handler does not prevent default action");}
 struct NativeCli:CliHandler{using CliHandler::CliHandler;bool Execute(std::vector<ChatCommand>const&table,std::string const&line){return ExecuteCommandInTable(table,line.c_str(),line);}};
 static void Print(void*context,char const*text){*static_cast<std::string*>(context)+=text;}
 int main(int argc,char**argv){try{
- InitializeAltheaGuardsNative(argc,argv);sSpellMgr->LoadSpellBonusess();sSpellMgr->LoadSpellThreats();Require(sObjectMgr->LoadTrinityStrings(),"Native localized strings missing");
+ InitializeAltheaGuardsNative(argc,argv);sSpellMgr->LoadSpellBonusess();sSpellMgr->LoadSpellThreats();sSpellMgr->LoadSpellProcEvents();sSpellMgr->LoadSpellProcs();Require(sObjectMgr->LoadTrinityStrings(),"Native localized strings missing");
  auto binding=WorldDatabase.Query("SELECT 1 FROM spell_script_names WHERE spell_id=90044 AND ScriptName='spell_sinestra_indomitable'");Require(bool(binding)&&sSpellMgr->GetSpellInfo(90045),"Native26972 Indomitable binding/child missing");
  sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());AddSC_misc_commandscript();AddSC_list_commandscript();sScriptMgr->SwapScriptContext(true);auto commands=sScriptMgr->GetChatCommands();
  for(std::string line:{"bg start 1","bg finishwin","bg setarena","bg setskirmish","bg setrbg","bg setbg","areatrigger castaction 123","areatrigger add 123","list attacker"}){std::string output;NativeCli cli(&output,&Print);Require(!cli.GetSession(),"Actual CLI has no player session");Require(cli.Execute(commands,line),"Actual registered CLI command was not handled");Require(cli.HasSentErrorMessage()&&output==std::string(cli.GetTrinityString(LANG_PLAYER_NOT_FOUND))+"\r\n","CLI must emit the localized context failure once,no default syntax duplicate");std::cout<<"PASS native CLI path "<<line<<" refused unavailable player context before side effects\n";}
@@ -48,5 +49,6 @@ int main(int argc,char**argv){try{
  RunSecondNative(map);
  RunThirdNative(map);
  RunFourthNative(map);
+ RunFifthNative(map);
  CloseAltheaNative();std::cout<<"PASS first20native scopes:23actual registered CLI command paths/localized refusal and real independent Indomitable AuraScript instances/periodic hooks/native control state plus second batch ownership/protection. Child cast endpoints/clocks controlled;in-game BG/visual/full encounter client traversal pending\n";return 0;
  }catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}
