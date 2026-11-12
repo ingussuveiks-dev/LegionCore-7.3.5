@@ -13,8 +13,11 @@ static void FillSecond(PetBattle&b,Player*player=nullptr){
 }
 #include "SecondTenTen20261112SecondNative.h"
 #include "SecondTenTen20261112ThirdNative.h"
+#include "SecondTenTen20261112SixthNative.h"
 int main(int argc,char**argv){try{
  InitializeAltheaGuardsNative(argc,argv);
+ for(auto row:sBattlePetAbilityStateStore)if(row->BattlePetStateID==BATTLEPET_STATE_Mod_MaxHealthPercent||row->BattlePetStateID==BATTLEPET_STATE_Special_TypeOverride)std::cout<<"PET_NATIVE_STATE "<<row->BattlePetAbilityID<<" state="<<uint32(row->BattlePetStateID)<<" value="<<row->Value<<"\n";
+ for(auto row:sBattlePetAbilityStateStore)if(row->BattlePetAbilityID==759||row->BattlePetStateID==BATTLEPET_STATE_Mechanic_IsWall)std::cout<<"PET_NATIVE_BARRIER "<<row->BattlePetAbilityID<<" state="<<uint32(row->BattlePetStateID)<<" value="<<row->Value<<"\n";
  for(char const*name:{"npc_corstilax_quarantine","npc_corstilax_suppression_protocol","npc_hatecoil_monsoon","npc_skovald_honored_ancestor","npc_stillpine_capitive","npc_bethtilac_cinderweb_spiderling","npc_magma_jet","npc_chogall_fire_elemental","npc_chogall_shadow_lord","npc_wyrmrest_skytalon","npc_amber_pool_stalker"}){auto script=sObjectMgr->GetScriptId(name);uint32 bound=0;std::cout<<"ACTOR_BINDING "<<name<<" script="<<script;for(auto const&row:*sObjectMgr->GetCreatureTemplates()){auto info=sObjectMgr->GetCreatureTemplate(row.first);if(script&&info&&info->ScriptID==script){++bound;std::cout<<" entry="<<row.first<<" vehicle="<<info->VehicleId;}}std::cout<<"\n";Require(bound>0,"Fourth-group script has no actual matching native creature binding");}
 
  for(char const*name:{"npc_anchorite_truuen","boss_infinite_corruptor","npc_monk_wind_spirit","npc_amber_monster","boss_mephistroth","boss_naltira","boss_advisor_melandrus","boss_morchok","npc_temple_adept"}){auto script=sObjectMgr->GetScriptId(name);uint32 bound=0;std::cout<<"ACTOR_BINDING "<<name<<" script="<<script;for(auto const&row:*sObjectMgr->GetCreatureTemplates()){auto info=sObjectMgr->GetCreatureTemplate(row.first);if(script&&info&&info->ScriptID==script){++bound;std::cout<<" entry="<<row.first<<" vehicle="<<info->VehicleId;}}std::cout<<"\n";Require(bound>0,"Fifth-group script has no actual matching native creature binding");}
@@ -38,6 +41,7 @@ int main(int argc,char**argv){try{
  {auto guid=ObjectGuid::Create<HighGuid::Player>(28003);auto first=sPetBattleSystem->CreateRequest(guid);first->OpponentGuid=player.GetGUID();sPetBattleSystem->CreateRequest(guid);Require(!sPetBattleSystem->GetRequest(guid)->OpponentGuid,"Actual request replacement owns a fresh cleared request");sPetBattleSystem->RemoveRequest(guid);Require(!sPetBattleSystem->GetRequest(guid),"Native request removal leaves no pending entry");}
  RunSecondPetNative(map,player,session);
  RunThirdPetNative(map,player,session);
+ RunSixthPetNative();
  }
  session->SetPlayer(nullptr);delete session;
  CloseAltheaNative();std::cout<<"PASS actual linked Finish ordinary/ignored forfeits,swap-independent XP,multiple native thresholds,repeated finish,wild actor cleanup,and owning request replacement;queue/source ASAN and actual client checks separate\n";return 0;

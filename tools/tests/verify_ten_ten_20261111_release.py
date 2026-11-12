@@ -141,7 +141,11 @@ if ninth:
  for prefix in ('?Execute@PetBattleAbilityEffect@@','?SelectTargets@PetBattleAbilityEffect@@'):
   rows=ins(prefix);assert 235 in values(rows[:25])and any(x.mnemonic in('jae','jb')for x in rows[:25]),'Native handler table boundary precedes indexing'
  rows=ins('?Execute@PetBattleAbilityEffect@@');at=next(i for i,x in enumerate(rows)if x.mnemonic=='call'and x.op_str=='rdx');assert rows[at+1].mnemonic=='and'and rows[at+2].mnemonic=='add'and rows[at+3].mnemonic=='cmp'and rows[at+4].mnemonic=='jne','Actual effect loop advances by selected target rather than exiting on success'
- rows=ins('?HandleHealPercent@PetBattleAbilityEffect@@');assert 726 in values(rows)and sites(rows,'?Heal@PetBattleAbilityEffect@@'),'Actual humanoid passive reaches native health/event update'
+ rows=ins('?HandleHealPercent@PetBattleAbilityEffect@@')
+ from second_ten_ten_20261112_scope import PLAN as SECOND_PLAN
+ if any(e['key']=='PetNativePercentHealing'for e in SECOND_PLAN['changes']):
+  assert not sites(rows,'?CalculateHeal@PetBattleAbilityEffect@@')and sites(rows,'?GetMaxHealth@BattlePetInstance@@')and sites(rows,'?Heal@PetBattleAbilityEffect@@'),'Unified native percentage path preserves the humanoid rule and excludes power scaling for every real percentage heal'
+ else:assert 726 in values(rows)and sites(rows,'?Heal@PetBattleAbilityEffect@@'),'Actual humanoid passive reaches native health/event update'
  rows=ins('?Process@PetBattleAura@@');assert any(x.mnemonic=='cmp'and x.op_str.endswith(', -1')and rows[i+1].mnemonic=='je'and rows[i+2].mnemonic=='dec'for i,x in enumerate(rows[:-2])),'Actual aura tick preserves infinite sentinel before decrement'
  assert sites(rows,'?Execute@PetBattleAbilityEffect@@')and any(x.mnemonic=='mov'and x.op_str=='dword ptr [rax + 0x20], ecx'for x in rows),'Actual periodic dispatch writes BuffTurn on appended event nodes'
  assert ins('?AddAura@PetBattle@@')and ins('?CalculateDamage@PetBattleAbilityEffect@@'),'Actual native slot/critical calculation paths linked; complete behavior separately exercised in the native probe'
@@ -165,8 +169,13 @@ if tenth:
  assert not any('spell_copy_melee_weapon@'in name for name in n['symbols']),'Obsolete duplicate clone class/registration is absent from linked Release'
  for prefix in ('?GetNpcDamageTakenInPastSecs@Unit@@','?GetPlayerDamageTakenInPastSecs@Unit@@','?GetDamageTakenInPastSecs@Unit@@'):
   names=[name for name in n['symbols']if name.startswith(prefix)];assert (len(names)==1 or prefix!='?GetDamageTakenInPastSecs@Unit@@'and not names)and all('@@QEBA_K'in name for name in names),(prefix,'referenced canonical history ABI returns unsigned64;unreferenced origin-only getters may be discarded by OPTREF andarenative-tested')
- rows=tenth_leaf('?GetSpeed@BattlePetInstance@@');assert any(x.mnemonic=='cmp'and x.op_str=='rax, rcx'for x in rows)and any(x.mnemonic=='jle'for x in rows),'Actual flying speed path checks current versus maximum health'
+ rows=tenth_leaf('?GetSpeed@BattlePetInstance@@')
+ if any(e['key']=='PetDynamicMaximumHealth'for e in SECOND_PLAN['changes']):
+  assert sites(rows,'?GetMaxHealth@BattlePetInstance@@')and any(x.mnemonic=='movsxd'and x.op_str=='rax, dword ptr [rbx + 0x60]'for x in rows)and any(x.mnemonic=='add'and x.op_str=='rax, rax'for x in rows)and any(x.mnemonic=='cmp'and x.op_str=='rax, rdx'for x in rows)and any(x.mnemonic=='jle'for x in rows),'Actual flying threshold compares widened doubled health with the new dynamic maximum'
+ else:assert any(x.mnemonic=='cmp'and x.op_str=='rax, rcx'for x in rows)and any(x.mnemonic=='jle'for x in rows),'Actual flying speed path checks current versus maximum health'
  rows=ins('?HandleWeatherAura@PetBattleAbilityEffect@@');assert (sites(rows,'?AddAura@PetBattleAbilityEffect@@')or sites(rows,'?AddAura@PetBattle@@'))and sites(rows,'?Expire@PetBattleAura@@'),'Actual weather replacement tracks application and expires previous auras'
  rows=ins('?Apply@PetBattleAura@@');assert sites(rows,'?SetPetState@PetBattle@@'),'Actual aura application still emits native state diagnostics'
- rows=ins('?Remove@PetBattleAura@@');assert sites(rows,'?SetPetState@PetBattle@@'),'Actual removal restores captured state deltas through native event handling'
+ removal=[name for name in n['symbols']if name.startswith('?Remove@PetBattleAura@@')]
+ rows=ins('?Remove@PetBattleAura@@')if removal else ins('?Expire@PetBattleAura@@')
+ assert sites(rows,'?SetPetState@PetBattle@@'),'Actual removal restores captured state deltas through native event handling, including the compiler-inlined removal body'
  print('PASS linked tenth10:unsigned64 history ABI,wide penalty/effect/health paths,obsolete clone registration removed,actual Smart dispatch andnative state/weather/flying methods;live migration andcomplete native behavior separately required')
