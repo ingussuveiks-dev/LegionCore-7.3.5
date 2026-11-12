@@ -594,6 +594,11 @@ void PetBattleAura::Process(PetBattle* petBattle)
     if (Expired)
         return;
 
+    // Native1907 has duration0 and a round-end death check. Its single
+    // processing opportunity must finish before that zero-duration expiry.
+    if (AbilityID == 1907 && MaxDuration == 0 && Duration == 0 && Turn == 1)
+        return;
+
     if (Duration != -1 && Turn > MaxDuration && !Expired)
     {
         Expire(petBattle);
@@ -1175,16 +1180,19 @@ void PetBattle::ProceedRound()
     Teams[firstTeam]->DoCasts(PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END);
     Teams[!firstTeam]->DoCasts(PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END);
 
-    // The native Hourglass controller clears the other living roster pets at
-    // round end, before their ordinary cooldown decrement. Snapshot issued
-    // instances so cleanup/new auras cannot replay this phase.
-    std::vector<PetBattleAura*> hourglassEnd;
+    // Dispatch only these authored owner-bound round-end controllers. Snapshot
+    // issued instances so cleanup/new auras cannot replay this phase.
+    std::vector<PetBattleAura*> roundEndAuras;
     for (auto aura : PetAuras)
-        if (!aura->Expired && aura->AbilityID == 1932)
-            hourglassEnd.push_back(aura);
-    for (auto aura : hourglassEnd)
+        if (!aura->Expired && (aura->AbilityID == 1932 || aura->AbilityID == 1907))
+            roundEndAuras.push_back(aura);
+    for (auto aura : roundEndAuras)
         if (!aura->Expired)
+        {
             Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END, PETBATTLE_CAST_TRIGGER_ALL, aura->TargetPetID);
+            if (!aura->Expired && aura->AbilityID == 1907 && aura->MaxDuration == 0 && aura->Duration == 0)
+                aura->Expire(this);
+        }
 
     // Passive: Humanoid
     for (uint8 i = 0; i < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS; ++i)
@@ -1602,7 +1610,8 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
     bool const racialTrigger = auraOwnerPetID == PETBATTLE_RACIAL_TRIGGER;
     bool const bendSwap = abilityID == 1904 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_SWAP_IN;
     bool const hourglassEnd = abilityID == 1932 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END;
-    bool const ownedCooldown = bendSwap || hourglassEnd;
+    bool const cheatDeathEnd = abilityID == 1907 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_ROUND_END;
+    bool const ownedController = bendSwap || hourglassEnd || cheatDeathEnd;
     if (casterPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[casterPetID])
         return PETBATTLE_CAST_INTERNAL_ERROR;
     if (racialTrigger && ((abilityID != 723 && abilityID != 724) || p_Turn != 1 ||
@@ -1610,10 +1619,10 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
         return PETBATTLE_CAST_INTERNAL_ERROR;
     if (auraOwnerPetID != PETBATTLE_NULL_SLOT && !racialTrigger &&
         (auraOwnerPetID < 0 || auraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[auraOwnerPetID] || p_Turn != 0 ||
-            (p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY && p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED && !ownedCooldown)))
+            (p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY && p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED && !ownedController)))
         return PETBATTLE_CAST_INTERNAL_ERROR;
 
-    if (ownedCooldown)
+    if (ownedController)
     {
         if (p_Turn != 0 || auraOwnerPetID < 0 || auraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[auraOwnerPetID] ||
             (bendSwap && Teams[Pets[auraOwnerPetID]->TeamID]->ActivePetID == auraOwnerPetID))
@@ -1623,6 +1632,8 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             if (!aura->Expired && aura->AbilityID == abilityID && aura->CasterPetID == casterPetID && aura->TargetPetID == auraOwnerPetID)
                 ownedAura = true;
         if (!ownedAura)
+            return PETBATTLE_CAST_INTERNAL_ERROR;
+        if (cheatDeathEnd && (Pets[auraOwnerPetID]->Captured || Pets[auraOwnerPetID]->Caged))
             return PETBATTLE_CAST_INTERNAL_ERROR;
     }
 
@@ -1683,7 +1694,7 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             // A proc's remove-aura row names the aura owner, which may differ
             // from the original hostile caster. Other effects keep their native
             // selectors (e.g. Clone/Murloc attacks still hit the opponent).
-            if (auraOwnerPetID >= 0 && abilityEffectInfo->BattlePetEffectPropertiesID == 49)
+            if (auraOwnerPetID >= 0 && (abilityEffectInfo->BattlePetEffectPropertiesID == 49 || cheatDeathEnd))
                 abilityEffect.Targets = {uint32(auraOwnerPetID)};
 
             if (!abilityEffect.Execute())
@@ -1799,10 +1810,10 @@ void PetBattle::Kill(int8 killer, int8 target, uint32 killerAbibilityEffectID, b
         Teams[Pets[target]->TeamID]->activeAbilityTurnMax = 0;
     }
 
-    // These issued cooldown controllers benefit the remaining living team,
-    // even after their holder dies. Other death cleanup stays native.
+    // These owner-bound cooldown and revival controllers finish their authored
+    // phases after holder death. Other death cleanup stays native.
     for (auto& aura : PetAuras)
-        if (aura->TargetPetID == target && aura->AbilityID != 1904 && aura->AbilityID != 1932)
+        if (aura->TargetPetID == target && aura->AbilityID != 1904 && aura->AbilityID != 1932 && aura->AbilityID != 1907)
             aura->Expire(this);
 
     // TC_LOG_DEBUG("battlepet", "PetBattle::Kill BATTLEPET_STATE_Special_ConsumedCorpse");

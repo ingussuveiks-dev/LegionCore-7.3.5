@@ -1,0 +1,132 @@
+{
+  "date": "2026-11-12",
+  "request": "Labi turpini l\u012bdz pabeidz",
+  "status": "CHEAT_DEATH_NATIVE_OWNER_ROUND_END_RESURRECTION_FIXED_DEPLOYED_CLIENT_PENDING",
+  "baseline": "94b0133fbda2b1e5dcb274b8a01ce13de74610a5",
+  "problem": "Native1906 applied1907 with duration0. Final death purged that controller; an unused one expired in periodic processing before its authored round-end7 rows. No owned end dispatch could check death, resurrect50percent and consume the aura.",
+  "native_data": "Matching26972/read-only Hotfix:1906 turn3267 effect3448 property26 accuracy0 duration0 ->1907. Controller1907 turn3269/event7:3452 property157 requires dead state1;3453 property111 Percentage50;3454 property49 removes1907 with Chance0. Native property111 labels its other fields unused. No Dark Rebirth duration or state146 interpretation is inferred.",
+  "repair": "Retain1907 through holder death and defer only its initial native duration0/MaxDuration0/Turn1 expiry until its issued owned end check. Validate bounded actual unexpired original-source/holder context and reject Captured/Caged holders. Keep original source metadata; bind known self rows to actual holder, including foreign or dead stored source, without hostile hit gating. Successful native50percent revival clears only that holder death receipt; normalize terminal result only when no other current death and no captured/caged pet remain. Preserve queued-action cancellation and unrelated auras. Consume successful1907 through its native row, and expire unused native0 after its one check. No new member/size ABI, timer, health threshold, item/quest grant or generic aura-end expansion.",
+  "tests": {
+    "native": "28 actual linked native cases, both teams,13 groups: pending lethal controller and exact death receipt, full legitimate-ready root/enemy lethal attack/round-end, unused finite expiry and later unprotected death, native Poison periodic killing blow, real capture refusal, another real death retained, foreign or dead original source/untargetable holder, invalid/unissued/turn owner contexts, two simultaneous actual holders, equal stored half-health/dead flag, ordinary immediate Mechanical survival without second revival, exact deferred0 processing and native living stop before remove, ordinary Poison death cleanup. Memory-only six pets, actual native stores and read-only Hotfix; no character/login/save or gameplay endpoint mocks.",
+    "counterfactual": "Complete pinned94b0133fb PetBattle.cpp plus PetBattleAbilityEffect.cpp fails exact controller-survives-holder-death assertion with exit1. Repaired all28 pass.",
+    "retained": "Current34 Hourglass,26 Bend Time,13 racial,44 sacrifices,16 Unholy and both100 native suites pass on final7c86. Current two100 linked scopes and full retained pet linked chain pass.",
+    "linked": "Actual1907 issued owner/source/captured guards, self-row holder binding, exact native0 deferral and post-check cleanup,50percent resurrection, actual native byte-vector removal using only revived holder ID, empty-current-death-vector and six-pet captured guards before result restoration, and selective death retention verified. Exact register checks were updated for the current compiler; earlier failed lookups remain paired with passing full proofs. Existing handler-table CFG bounds remain enforced.",
+    "packet": "Current nine first/round/replacement sender paths across PvE/PvP, actual7.3.5 writer and ByteBuffer decode with nine ready0/idle-1 pairs under extracted-sender ASAN pass, native child exit0. Current unchanged writer PE proof passes. This is not full native-core ASAN or client UI/animation verification.",
+    "runtime": "Owned PID=4884 reached fresh ready\nPASS owned PID=4884 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "scepter": "Canonical Test-ScepterLogin.ps1 -VerifyReleaseBinary passes.",
+    "historical106": "Prior immutable106/106 certificate belongs to9338 in docs/audits/pet-bend-time-2026-11-12/certificate-results.json. This focused change claims its current native/source/linked/runtime scopes separately, not a new full106 run."
+  },
+  "canonical": {
+    "worldserver.exe": "7c8683092fd2abde174f3a92bcff107504f6b7a94f2e2ab0e620984cbc6ab5a1",
+    "worldserver.map": "45bb01ae216ec561bbd7754474978d6faecab7b9df3fced23432e7172f90bcc9",
+    "bnetserver.exe": "4a58343b0d03178c997c1e145e0f139614085cc6c16b18ec73bdc33796edef73",
+    "bnetserver.map": "ad95841c200bde8f6aa4413588e8dbde2c79da0a17aa82c55a471c6271fbc559"
+  },
+  "evidence": [
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/fixed-driver.log",
+      "sha256": "104e7fe1350d738613430234c67afe0ea2807246ef80be5255bea3089a1d7167"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/retained34-driver.log",
+      "sha256": "70c98d53ff7455a0fad99d194343a57bb1616fc9c832bd4cd3709baddc953dba"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/retained26-driver.log",
+      "sha256": "72cd7c775b0afcc2e9319893752a316c2f227146e96fe49f4478f1e534d67779"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/retained13-driver.log",
+      "sha256": "190518c5bd364f2e1b2ec663dfdb688dd0c20ed4c23348f4a4dfff0e28eef41e"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/retained44-driver.log",
+      "sha256": "37212447ffa66af5f22c708c8ce53d5c6222184cc47919dc6874471ae3fcce5b"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/retained16-driver.log",
+      "sha256": "b8909977193a0a493d60ef9269ea17c70583ab218989f8aee6a06bebf626cf48"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/retained100-driver.log",
+      "sha256": "a0f201b9fcce69afa8388b5093fa644bc83eaa633952e7352bc4286a683be694"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/retained-prior100-driver.log",
+      "sha256": "78009ca8d90b7ad4b3501df82817bdc18d23e96d13a9542a8f5f94a406a4517f"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/canonical-linked.log",
+      "sha256": "a077c6b6efd97ca133556e58fefe60b7d6876d6f294bc7b57ba6af47149a7469"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/first100-stage.log",
+      "sha256": "464da30640801884a3b77981a1613247f50d914eecce98841ea37dcfb82622fd"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/second100-stage.log",
+      "sha256": "6c7614e25b2eeeca3533f6a6defb4cd28da42be2d5d392aab8f96cea057876ae"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/packet-stage.log",
+      "sha256": "69cedfcfb877f99bcc37e0c209c6458d530f6e61022f4eff431f8e057511a984"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/round-packets-driver.log",
+      "sha256": "8a1d961d6379b7d9832bce4e02648d5f9ded2392fd338c390047c9e4caa43b48"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/scepter-driver.log",
+      "sha256": "ec6e22b51409cea3047ecee27589a0a38266faa33c180177518ee3d0fe0e41be"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/startup-driver.log",
+      "sha256": "4aa7cdc66786c1b2951daa6f5833cc937ab8c85367da1afc654c2041ca41a059"
+    },
+    {
+      "path": ".codex/pet-cheat-death-open-2026-11-12/baseline-lethal-driver.log",
+      "sha256": "77029588b27cde675bda1e2edb4642230ac7fb305cb782240b5f9b833f9771d1"
+    }
+  ],
+  "diagnostics": "All tests retain pre/post canonical and own crash/log inventories. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Owned PID4884 ready/shutdown0/exit0/gone, stderr empty. No user/unknown server stopped. Mixed7111byte DBErrors, Slaghammer, unresolved Dark Rebirth research/cache, configs/DLLs/certs and recent rollback hashes preserved.",
+  "cleanup": {
+    "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/pet-cheat-death-2026-11-12",
+    "ManifestSHA256": "7400ADA1D0CF4D5779F6B65BBDA3B4233EE4C861C8D68DE7B5C5BF7EF1118EB0",
+    "Archived": 417,
+    "Removed": 42,
+    "ReclaimedBytes": 671097904.0,
+    "Retained": "Canonical configuration/DLLs/certs/shared data/main build libraries,recent f7fd/0f947/4c86/c6c5 rollback copies,regression sources and reusable tools. Resolved Cheat Death controller/control and current28 native cases archived. Mixed Dark Rebirth795/state146 research and its unique executable remain outside fixed, alongside other death/shared-proc/Lady/LINK2 evidence; Slaghammer cache/mixedDBErrors/LINK2/Lady/personal/security evidence untouched."
+  },
+  "final_verification": {
+    "status": "PASS",
+    "native_cheat_death_cases": 28,
+    "retained_native_cases": [
+      34,
+      26,
+      13,
+      44,
+      16,
+      100,
+      100
+    ],
+    "current_linked_hundred_scopes": 2,
+    "current_round_sender_paths": 9,
+    "current_ready_zero_idle_minus_one_pairs": 9,
+    "canonical": {
+      "worldserver.exe": "7c8683092fd2abde174f3a92bcff107504f6b7a94f2e2ab0e620984cbc6ab5a1",
+      "worldserver.map": "45bb01ae216ec561bbd7754474978d6faecab7b9df3fced23432e7172f90bcc9",
+      "bnetserver.exe": "4a58343b0d03178c997c1e145e0f139614085cc6c16b18ec73bdc33796edef73",
+      "bnetserver.map": "ad95841c200bde8f6aa4413588e8dbde2c79da0a17aa82c55a471c6271fbc559"
+    },
+    "archive_records": 417,
+    "removed": 42,
+    "removed_bytes": 671097904.0,
+    "protected_evidence_configuration_and_rollback_unchanged": true
+  },
+  "remaining": [
+    "Dark Rebirth794/795 has native infinite duration and a146 state change row, but state146 has no matching native metadata record. Full protected-window/penalty796 behavior remains OPEN; no duration or failure semantics guessed. Mixed eight research observations and corrected missing-state probe remain outside fixed.",
+    "Haunt/Apocalypse, generic159/clone122/123/124, type229 and wider core health remain OPEN.",
+    "Actual pet learned-kit PvE/PvP UI/cooldown/animation/battle log, authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, missing LINK2/mixed DBErrors, original client handshake cause and all36 complete artifact chains remain OPEN. Pet1906 is a different namespace."
+  ],
+  "next": "Continue independently verifiable native OPEN behavior while resolving Dark Rebirth protected-window evidence; do not infer missing native146 metadata or invent a timer."
+}

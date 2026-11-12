@@ -889,7 +889,8 @@ bool PetBattleAbilityEffect::Execute()
         Flags = 0;
 
         bool const bendCleanup = (AbilityID == 1904 || AbilityID == 1932) && EffectInfo->BattlePetEffectPropertiesID == 49 && AuraOwnerPetID == int32(Target);
-        if (!bendCleanup && PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])
+        bool const ownedRevival = AbilityID == 1907 && AuraOwnerPetID == int32(Target);
+        if (!bendCleanup && !ownedRevival && PetBattleInstance->Pets[Caster]->TeamID != PetBattleInstance->Pets[Target]->TeamID && PetBattleInstance->Pets[Target]->States[BATTLEPET_STATE_untargettable])
             Flags |= PETBATTLE_EVENT_FLAG_DODGE;
 
         auto _result = (this->*Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)();
@@ -1513,12 +1514,27 @@ bool PetBattleAbilityEffect::HandleInitialization()
 
 bool PetBattleAbilityEffect::HandleResurect()
 {
+    bool const cheatDeath = AbilityID == 1907 && AuraOwnerPetID == int32(Target);
+    if (cheatDeath && (PetBattleInstance->Pets[Target]->Captured || PetBattleInstance->Pets[Target]->Caged))
+        return false;
     if ((Flags & FailFlags) || !GetState(Target, BATTLEPET_STATE_Is_Dead) || !EffectInfo->Param[0] || EffectInfo->Param[0] > 100)
         return false;
     int32 health = int32(std::max<int64>(1, int64(GetMaxHealth(Target)) * EffectInfo->Param[0] / 100));
     if (GetHealth(Target) != health && !SetHealth(Target, health))
         return false;
-    return SetState(Target, BATTLEPET_STATE_Is_Dead, 0);
+    bool const revived = SetState(Target, BATTLEPET_STATE_Is_Dead, 0);
+    if (revived && cheatDeath)
+    {
+        auto& deaths = PetBattleInstance->PetXDied;
+        deaths.erase(std::remove(deaths.begin(), deaths.end(), Target), deaths.end());
+        if (deaths.empty() && PetBattleInstance->RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL &&
+            std::none_of(std::begin(PetBattleInstance->Pets), std::end(PetBattleInstance->Pets), [](std::shared_ptr<BattlePetInstance> const& pet)
+            {
+                return pet && (pet->Captured || pet->Caged);
+            }))
+            PetBattleInstance->RoundResult = PETBATTLE_ROUND_RESULT_NONE;
+    }
+    return revived;
 }
 
 bool PetBattleAbilityEffect::HandleKill()
