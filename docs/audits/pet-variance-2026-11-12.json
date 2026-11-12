@@ -151,5 +151,6 @@
     "Dark Rebirth794/795 missing state146/protected window/penalty796, Haunt, Apocalypse, clone122/123/124 and other generic159 remain OPEN.",
     "Authentic living Lady activation/surrender/conversation1906/Grash finish/cleanup, original LINK2/Slaghammer/mixed DBErrors, intermittent client handshake cause, wider core health and all36 whole artifact chains remain OPEN."
   ],
-  "next": "Continue Feathered Frenzy1398/1399/1420 full native hit/failure/type-duration/lethal continuation sequence using repaired222, without claiming an untested client traversal."
+  "next": "Continue Feathered Frenzy1398/1399/1420 full native hit/failure/type-duration/lethal continuation sequence using repaired222, without claiming an untested client traversal.",
+  "fix_commit": "92e783872ac544f94ca82c7513c1ddf95d99fd64"
 }
