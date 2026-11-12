@@ -786,6 +786,9 @@ bool PetBattleTeam::HasPendingMultiTurnCast()
 
 bool PetBattleTeam::CanCastAny()
 {
+    if (!PetBattleInstance->Pets[ActivePetID] || !PetBattleInstance->Pets[ActivePetID]->IsAlive())
+        return false;
+
     if (HasPendingMultiTurnCast())
         return false;
 
