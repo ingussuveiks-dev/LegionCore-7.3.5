@@ -211,6 +211,8 @@ public:
             if (!me->isInCombat() || me->HasAura(SPELL_TWILIGHT_EVOLUTION))
                 return;
 
+            events.Update(Diff);
+
             if (uint32 eventId = events.ExecuteEvent())
             {
                 switch (eventId)
