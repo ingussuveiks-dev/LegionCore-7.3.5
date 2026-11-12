@@ -178,12 +178,14 @@ public:
                             if (_teamInInstance == ALLIANCE)
                             {
                                 Creature* pMartin = summoner->SummonCreature(NPC_MARTIN_VICTUS_1, 695.46f, -156.31f, 528.061f, 4.77f, TEMPSUMMON_DEAD_DESPAWN, 0);
-                                pMartin->GetMotionMaster()->MovePoint(0, pMartin->GetPositionX() + 15, pMartin->GetPositionY() - 5, pMartin->GetPositionZ());
+                                if (pMartin)
+                                    pMartin->GetMotionMaster()->MovePoint(0, pMartin->GetPositionX() + 15, pMartin->GetPositionY() - 5, pMartin->GetPositionZ());
                             }
                             else
                             {
                                 Creature* pGorkun = summoner->SummonCreature(NPC_GORKUN_IRONSKULL_1, 695.46f, -156.31f, 528.061f, 4.77f, TEMPSUMMON_DEAD_DESPAWN, 0);
-                                pGorkun->GetMotionMaster()->MovePoint(0, pGorkun->GetPositionX() + 15, pGorkun->GetPositionY() - 5, pGorkun->GetPositionZ());
+                                if (pGorkun)
+                                    pGorkun->GetMotionMaster()->MovePoint(0, pGorkun->GetPositionX() + 15, pGorkun->GetPositionY() - 5, pGorkun->GetPositionZ());
                             }    
                         }
                     }
