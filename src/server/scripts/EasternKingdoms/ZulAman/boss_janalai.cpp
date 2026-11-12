@@ -493,7 +493,9 @@ class npc_janalai_hatchling : public CreatureScript
                 if (!UpdateVictim())
                     return;
 
-                if (uint32 eventId = events.ExecuteEvent())
+                events.Update(diff);
+
+            if (uint32 eventId = events.ExecuteEvent())
                 {
                      switch (eventId)
                      {
