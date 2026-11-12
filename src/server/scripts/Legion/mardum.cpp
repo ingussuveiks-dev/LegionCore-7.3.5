@@ -2103,7 +2103,7 @@ public:
 
     struct go_q39262AI : public GameObjectAI
     {
-        go_q39262AI(GameObject* go) : GameObjectAI(go), ow(nullptr)
+        go_q39262AI(GameObject* go) : GameObjectAI(go)
         {
             check = false;
             timer = 0;
@@ -2111,7 +2111,7 @@ public:
 
         bool check;
         uint32 timer;
-        Player* ow;
+        ObjectGuid ownerGuid;
         
         void UpdateAI(uint32 diff) override
         {
@@ -2131,7 +2131,7 @@ public:
                 if (timer <= diff)
                 {
                     check = false;
-                    if (ow)
+                    if (Player* ow = ObjectAccessor::GetPlayer(*go, ownerGuid))
                         go->DestroyForPlayer(ow);
                     go->SetLootState(GO_JUST_DEACTIVATED);
                 } else
@@ -2140,9 +2140,10 @@ public:
         
         void IsSummonedBy(Unit* summoner)
         {
-            if (summoner->GetTypeId() == TYPEID_PLAYER)
+            ownerGuid.Clear();
+            if (summoner && summoner->GetTypeId() == TYPEID_PLAYER)
             {
-                ow = summoner->ToPlayer();
+                ownerGuid = summoner->GetGUID();
                 check = true;
                 timer = 5500;
             }
