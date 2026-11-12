@@ -562,7 +562,7 @@ public:
 
     bool CanCast(uint32 teamID, uint32 abilityID);
     void PrepareCast(uint32 teamID, uint32 abilityID);
-    PetBattleCastResult Cast(uint32 casterPetID, uint32 abilityID, uint32 turn, uint32 p_Turn0ProcCondition, uint32 triggerFlag);
+    PetBattleCastResult Cast(uint32 casterPetID, uint32 abilityID, uint32 turn, uint32 p_Turn0ProcCondition, uint32 triggerFlag, int32 auraOwnerPetID = PETBATTLE_NULL_SLOT);
 
     bool AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID, int32 duration, int32 p_MaxAllowed, uint32 fromAbilityEffectID, uint32 flags);
     void SetPetState(uint32 sourcePetID, uint32 targetPetID, uint32 fromAbilityEffectID, uint32 stateID, int32 value, bool fromCapture = false, uint32 flags = 0);

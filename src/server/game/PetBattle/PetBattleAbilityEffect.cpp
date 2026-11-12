@@ -1543,7 +1543,7 @@ bool PetBattleAbilityEffect::HandleLockActiveAbility()
     if (abilitySlot == MAX_PETBATTLE_ABILITIES)
         return false;
 
-    target->Cooldowns[abilitySlot] = EffectInfo->Param[0];
+    target->Lockdowns[abilitySlot] = std::max(target->Lockdowns[abilitySlot], int32(EffectInfo->Param[0]));
     return true;
 }
 

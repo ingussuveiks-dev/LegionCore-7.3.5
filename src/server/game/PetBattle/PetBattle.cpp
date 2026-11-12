@@ -683,7 +683,7 @@ void PetBattleAura::Expire(PetBattle* petBattle)
 
     Expired = true;
 
-    petBattle->Cast(CasterPetID, AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED, PETBATTLE_CAST_TRIGGER_ALL);
+    petBattle->Cast(CasterPetID, AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED, PETBATTLE_CAST_TRIGGER_ALL, TargetPetID);
 
     Remove(petBattle);
 }
@@ -771,8 +771,8 @@ void PetBattleTeam::DoCasts(uint32 turn0ProcCond)
             PetBattleInstance->Cast(ActivePetID, ActiveAbilityId, 0, turn0ProcCond, PETBATTLE_CAST_TRIGGER_ALL);
 
         for (auto& aura : PetBattleInstance->PetAuras)
-            if (!aura->Expired && aura->CasterPetID == ActivePetID)
-                PetBattleInstance->Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY, PETBATTLE_CAST_TRIGGER_ALL);
+            if (!aura->Expired && aura->TargetPetID == ActivePetID)
+                PetBattleInstance->Cast(aura->CasterPetID, aura->AbilityID, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY, PETBATTLE_CAST_TRIGGER_ALL, ActivePetID);
     }
 }
 
@@ -1203,10 +1203,16 @@ void PetBattle::ProceedRound()
         }
     }
 
-    for (auto& Pet : Pets)
-        for (auto& cooldown : Pet->Cooldowns)
-            if (Pet && cooldown != -1)
-                cooldown--;
+    for (auto& pet : Pets)
+        if (pet)
+        {
+            for (auto& cooldown : pet->Cooldowns)
+                if (cooldown != -1)
+                    --cooldown;
+            for (auto& lockdown : pet->Lockdowns)
+                if (lockdown > 0)
+                    --lockdown;
+        }
 
     if (RoundResult == PETBATTLE_ROUND_RESULT_NONE)
         RoundResult = PETBATTLE_ROUND_RESULT_NORMAL;
@@ -1530,7 +1536,7 @@ bool PetBattle::CanCast(uint32 teamID, uint32 abilityID)
         return false;
 
     for (uint32 i = 0; i < MAX_PETBATTLE_ABILITIES; i++)
-        if (Pets[team->ActivePetID]->Abilities[i] == abilityID && Pets[team->ActivePetID]->Cooldowns[i] <= 0)
+        if (Pets[team->ActivePetID]->Abilities[i] == abilityID && Pets[team->ActivePetID]->Cooldowns[i] <= 0 && Pets[team->ActivePetID]->Lockdowns[i] <= 0)
             return true;
 
     return false;
@@ -1552,12 +1558,17 @@ void PetBattle::PrepareCast(uint32 teamID, uint32 abilityID)
     Teams[teamID]->Ready = true;
 }
 
-PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32 p_Turn, uint32 p_Turn0ProcCondition, uint32 p_TriggerFlag)
+PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32 p_Turn, uint32 p_Turn0ProcCondition, uint32 p_TriggerFlag, int32 auraOwnerPetID)
 {
+    if (auraOwnerPetID != PETBATTLE_NULL_SLOT &&
+        (auraOwnerPetID < 0 || auraOwnerPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[auraOwnerPetID] || p_Turn != 0 ||
+            (p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_ABILITY && p_Turn0ProcCondition != PETBATTLE_ABILITY_TURN0_PROC_ON_AURA_REMOVED)))
+        return PETBATTLE_CAST_INTERNAL_ERROR;
+
     if (!Pets[casterPetID])
         return PETBATTLE_CAST_INTERNAL_ERROR;
 
-    if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL)
+    if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT)
         return PETBATTLE_CAST_OK;
 
     /// check if the ability exist
@@ -1597,6 +1608,11 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             abilityEffect.IsTriggered = abilityInfo->Flags & BATTLEPET_ABILITY_FLAG_TRIGGER;
             abilityEffect.ReportFailAsImmune = false;
             abilityEffect.SelectTargets();
+            // A proc's remove-aura row names the aura owner, which may differ
+            // from the original hostile caster. Other effects keep their native
+            // selectors (e.g. Clone/Murloc attacks still hit the opponent).
+            if (auraOwnerPetID != PETBATTLE_NULL_SLOT && abilityEffectInfo->BattlePetEffectPropertiesID == 49)
+                abilityEffect.Targets = {uint32(auraOwnerPetID)};
 
             if (!abilityEffect.Execute())
                 abilityTurn.ChainFailure |= 1 << (abilityEffectInfo->OrderIndex - 1);
@@ -1604,7 +1620,7 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
             if (abilityEffect.StopChain)
                 break;
 
-            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL)
+            if (RoundResult == PETBATTLE_ROUND_RESULT_CATCH_OR_KILL && auraOwnerPetID == PETBATTLE_NULL_SLOT)
                 return PETBATTLE_CAST_OK;
         }
     }
