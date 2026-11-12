@@ -1017,39 +1017,35 @@ bool PetBattleAbilityEffect::HandlePositiveAura()
 
 bool PetBattleAbilityEffect::HandleHealPetType()
 {
-    /// Handle only first effect of this type
-    /// Don't know how to handle it properly
-    /// http://wowhead.com/petability=533
-    /// http://wowhead.com/petability=922
-    if (EffectInfo->OrderIndex != 2)
-        return true;
+    // The two native rows address the two OTHER team members. The separate
+    // preceding property23 row already heals the user at the full amount.
+    if (EffectInfo->OrderIndex < 2)
+        return false;
 
-    CalculateHit(EffectInfo->Param[1]);
+    auto casterSpecies = sBattlePetSpeciesStore.LookupEntry(PetBattleInstance->Pets[Caster]->Species);
+    if (EffectInfo->Param[2] && (!casterSpecies || casterSpecies->PetTypeEnum + 1 != EffectInfo->Param[2]))
+        return false;
 
-    int32 modPct = CalculatePct(GetState(Caster, BATTLEPET_STATE_Stat_Power), 5);
-    modPct += GetState(Caster, BATTLEPET_STATE_Mod_HealingDealtPercent);
-
-    BattlePetSpeciesEntry const* battlePetSpeciesEntry = sBattlePetSpeciesStore.LookupEntry(PetBattleInstance->Pets[Caster]->Species);
-    int32 casterType = 0;
-    if (battlePetSpeciesEntry)
-        casterType = battlePetSpeciesEntry->PetTypeEnum;
-
-    uint32 team = PetBattleInstance->Pets[Caster]->TeamID;
-
-    for (const auto& currentPet : PetBattleInstance->Pets)
+    uint32 otherSlot = EffectInfo->OrderIndex - 2;
+    auto team = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];
+    for (uint32 slot = 0; slot < team->TeamPetCount; ++slot)
     {
-        if (currentPet && currentPet->TeamID == team)
-        {
-            battlePetSpeciesEntry = sBattlePetSpeciesStore.LookupEntry(currentPet->Species);
-            if (battlePetSpeciesEntry && battlePetSpeciesEntry->PetTypeEnum == casterType)
-            {
-                auto heal = (EffectInfo->Param[0] / 2) + CalculatePct((EffectInfo->Param[0] / 2), modPct + GetState(currentPet->ID, BATTLEPET_STATE_Mod_HealingTakenPercent));
-                Heal(currentPet->ID, heal);
-            }
-        }
-    }
+        auto pet = team->TeamPets[slot];
+        if (!pet || pet->ID == Caster)
+            continue;
+        if (otherSlot--)
+            continue;
+        if (!pet->IsAlive())
+            return false;
+        auto species = sBattlePetSpeciesStore.LookupEntry(pet->Species);
+        if (EffectInfo->Param[3] && (!species || species->PetTypeEnum + 1 != EffectInfo->Param[3]))
+            return false;
 
-    return Heal(Target, CalculateHeal(EffectInfo->Param[0]));
+        Target = pet->ID;
+        CalculateHit(EffectInfo->Param[1]);
+        return Heal(Target, CalculateHeal(EffectInfo->Param[0]));
+    }
+    return false;
 }
 
 bool PetBattleAbilityEffect::HandleExtraAttackIfMoreFaster()
