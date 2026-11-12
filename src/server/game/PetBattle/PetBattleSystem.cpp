@@ -56,6 +56,7 @@ PetBattle* PetBattleSystem::CreateBattle()
 
 PetBattleRequest* PetBattleSystem::CreateRequest(ObjectGuid requesterGuid)
 {
+    RemoveRequest(requesterGuid);
     _battleRequests[requesterGuid] = new PetBattleRequest();
     _battleRequests[requesterGuid]->RequesterGuid = requesterGuid;
     return _battleRequests[requesterGuid];
