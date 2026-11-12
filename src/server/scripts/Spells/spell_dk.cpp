@@ -392,14 +392,13 @@ class spell_dk_anti_magic_shell_self : public SpellScriptLoader
         {
             PrepareAuraScript(spell_dk_anti_magic_shell_self_AuraScript);
 
-            uint32 absorbPct, container;
-            int32 _damage;
+            uint32 absorbPct;
+            uint64 container;
 
             bool Load() override
             {
                 absorbPct = GetSpellInfo()->Effects[EFFECT_0]->CalcValue(GetCaster());
                 container = 0;
-                _damage = 0;
                 return true;
             }
 
@@ -422,7 +421,6 @@ class spell_dk_anti_magic_shell_self : public SpellScriptLoader
             {
                 absorbAmount = std::min<uint64>(CalculatePct(dmgInfo.GetDamage(), absorbPct),
                     HealingAmount::FromFloat(aurEff->GetAmount()));
-                _damage += absorbAmount;
             }
 
             void Trigger(AuraEffect* aurEff, DamageInfo & /*dmgInfo*/, float & absorbAmount)
@@ -435,18 +433,18 @@ class spell_dk_anti_magic_shell_self : public SpellScriptLoader
                         target->CastCustomSpell(target, 210862, &bp, NULL, NULL, true);
                     }
 
-                    uint32 RPCap = target->CountPctFromMaxHealth(1);
+                    uint64 RPCap = target->CountPctFromMaxHealth(1);
                     if (RPCap > 0)
                     {
                         // Keep sub-percent absorption between hits. Runic Power
                         // is awarded for every complete 1% of maximum health.
-                        uint64 absorbed = uint64(container) + uint32(absorbAmount);
-                        uint32 absorbedPct = uint32(absorbed / RPCap);
-                        container = uint32(absorbed % RPCap);
+                        uint64 absorbed = HealingAmount::Add(container, HealingAmount::FromFloat(absorbAmount));
+                        uint64 absorbedPct = absorbed / RPCap;
+                        container = absorbed % RPCap;
 
                         // Runic-power amounts use tenths internally: 2 RP for
                         // each full 1% of maximum health absorbed is 20 here.
-                        float bp = absorbedPct * 20.0f;
+                        float bp = float(absorbedPct) * 20.0f;
                         if (target->HasAura(207188)) // Volatile Shielding
                             bp *= 2;
 
