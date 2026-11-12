@@ -364,7 +364,8 @@ class npc_generic_royal_sentinel : public CreatureScript
             InstanceScript* pInstance;
             EventMap events;
 
-            void Reset(){}
+            void Reset(){
+            events.Reset();}
             
             void EnterCombat(Unit* attacker)
             {
