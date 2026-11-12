@@ -239,6 +239,7 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::BattlePet::RoundResult co
 
     data.FlushBits();
     data.WriteBits(roundResult.PetXDied.size(), 3);
+    data.FlushBits();
 
     for (auto const& map : roundResult.EffectData)
         data << map;

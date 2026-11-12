@@ -29,5 +29,5 @@ function Block([string]$s,[string]$start){$a=$s.IndexOf($start);if($a -lt 0){thr
  $args+=($includes+@($out,"$repo/src/common/Collision/Management","$repo/src/common/Collision","$repo/dep/g3dlite/include","$repo/dep/recastnavigation/Detour/Include",'C:/local/boost_1_85_0','C:/wamp64/bin/mysql/mysql5.7.44/include','C:/Program Files/OpenSSL-Win64/include')|ForEach-Object {'/I"'+$_+'"'})
  $args+='"'+$PSScriptRoot+'/PetBattleRoundPacketsTest.cpp"';$args+='/Fe"'+$out+'/test.exe"';$args+='/Fo"'+$out+'/test.obj"';$args+='/Fd"'+$out+'/test-compiler.pdb"';$args+='/link';$args+=($libs|ForEach-Object {'"'+$_+'"'})
  [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl "+($args -join ' ')+"`nif errorlevel 1 exit /b 1`nset PATH=$repo/build-extractors/bin/Release;%PATH%`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
- & "$out/run.cmd";if($LASTEXITCODE){throw 'Pet battle native packet regression failed'}
+ & "$out/run.cmd";$nativeExit=$LASTEXITCODE;"Native packet compiler/run exit=$nativeExit";if($nativeExit){throw 'Pet battle native packet regression failed'}
 }

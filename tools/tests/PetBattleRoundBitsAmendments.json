@@ -1,0 +1,17 @@
+{
+  "baseline": "6fb37efdd",
+  "scope": "Flush the native three-bit death-count field even when an otherwise empty pet battle round has no following effects or dead-pet bytes; preserve all existing populated payloads.",
+  "files": {
+    "src/server/game/Server/Packets/BattlePetPackets.cpp": {
+      "before_sha256": "d6d4d800f268db82349e770fc65ac7be2d50708273fbffc30066bb39074fdfb1",
+      "after_sha256": "12332fd63d5bdc798b6119b560c590bad91c7cfdb4c2ad033d24155af753364b"
+    }
+  },
+  "edits": [
+    {
+      "path": "src/server/game/Server/Packets/BattlePetPackets.cpp",
+      "old": "    }\n\n    data << static_cast<uint32>(roundResult.Ability.size());\n    for (auto const& map : roundResult.Ability)\n        data << map;\n\n    data.FlushBits();\n    data.WriteBits(roundResult.PetXDied.size(), 3);\n\n    for (auto const& map : roundResult.EffectData)\n        data << map;\n\n    for (uint8 const& map : roundResult.PetXDied)\n        data << map;\n\n    return data;\n",
+      "new": "    }\n\n    data << static_cast<uint32>(roundResult.Ability.size());\n    for (auto const& map : roundResult.Ability)\n        data << map;\n\n    data.FlushBits();\n    data.WriteBits(roundResult.PetXDied.size(), 3);\n    data.FlushBits();\n\n    for (auto const& map : roundResult.EffectData)\n        data << map;\n\n    for (uint8 const& map : roundResult.PetXDied)\n        data << map;\n\n    return data;\n"
+    }
+  ]
+}

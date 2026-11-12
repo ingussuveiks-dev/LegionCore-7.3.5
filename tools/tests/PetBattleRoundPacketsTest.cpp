@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstring>
 #include <iostream>
+#include <stdexcept>
 #include <list>
 #include <vector>
 namespace Regression {
@@ -16,7 +17,7 @@ constexpr uint32 PETBATTLE_ROUND_RESULT_CATCH_OR_KILL=2,PETBATTLE_EVENT_SET_STAT
 struct Team{uint32 ActivePetID=3,ActiveAbilityId=99,activeAbilityTurn=1,activeAbilityTurnMax=2;uint8 GetTeamInputFlags(){return 3;}uint8 GetTeamTrapStatus(){return 4;}};
 struct Pet{int32 Cooldowns[3]={-1,-1,-1},Lockdowns[3]={},Abilities[3]={},States[NUM_BATTLEPET_STATES]={};uint8 ID=0,TeamID=1;};
 struct PetBattle;
-struct Aura{uint32 TargetPetID=3,expired=0;void Expire(PetBattle*){++expired;}};
+struct Aura{uint32 TargetPetID=3,expired=0,AbilityID=379;void Expire(PetBattle*){++expired;}};
 struct StateInfo{uint32 Flags=1;};struct StateStore{StateInfo entry;StateInfo*LookupEntry(uint32){return &entry;}}sBattlePetStateStore;
 struct PetBattle{uint32 BattleType=0,Turn=7,RoundResult=2,RoundTurn=6;Team team;Team*Teams[2]={&team,&team};Pet*Pets[6]={};std::list<Aura*>PetAuras;std::vector<uint8>PetXDied={3};std::list<PetBattleEvent>RoundEvents;
  void SetPetState(uint32,uint32,uint32,uint32,int32,bool=false,uint32=0);void Kill(int8,int8,uint32,bool=false,uint32=0);
@@ -36,10 +37,13 @@ struct WorldSession{
 #include "Baseline.inc"
 #undef SendPetBattleRoundResult
 struct Parsed{uint32 ability;uint16 flags,turn;uint8 type;std::vector<int32>values;};
-std::vector<Parsed> Parse(ByteBuffer bytes,uint8 time,uint16 expectedAura=9){
+std::vector<Parsed> Parse(ByteBuffer bytes,uint8 time,uint16 expectedAura=9,uint32 expectedAbilities=0,bool expectDeath=true){
  uint32 round,count,abilities;uint8 state;bytes>>round>>state>>count;assert(round==7&&state==2);
  for(int i=0;i<2;++i){uint8 input,trap;uint16 timer;bytes>>input>>trap>>timer;assert(input==3&&trap==4&&timer==time);}
- bytes>>abilities;assert(!abilities);auto deaths=bytes.ReadBits(3);assert(deaths==1);
+ bytes>>abilities;assert(abilities==expectedAbilities);
+ for(uint32 slot=0;slot<abilities;++slot){int32 ability;int16 cooldown,lockdown;uint8 index,pet;bytes>>ability>>cooldown>>lockdown>>index>>pet;assert(ability==110&&cooldown==0&&lockdown==0&&index==0&&pet==3);}
+ if(bytes.rpos()==bytes.size())throw std::runtime_error("Native empty round is missing the three-bit death count");
+ auto deaths=bytes.ReadBits(3);assert(deaths==(expectDeath?1u:0u));
  std::vector<Parsed> result;
  for(uint32 i=0;i<count;++i){Parsed p;uint16 aura,turn;uint8 effect,depth;int8 caster;uint32 targets;
   bytes>>p.ability>>p.flags>>aura>>turn>>effect>>caster>>depth>>targets;p.turn=turn;assert(aura==expectedAura&&caster==0&&depth==1);
@@ -48,7 +52,7 @@ std::vector<Parsed> Parse(ByteBuffer bytes,uint8 time,uint16 expectedAura=9){
    for(uint32 j=0;j<n;++j){int32 value;bytes>>value;p.values.push_back(value);}}
   result.push_back(p);
  }
- uint8 dead;bytes>>dead;assert(dead==3&&bytes.rpos()==bytes.size());return result;
+ if(expectDeath){uint8 dead;bytes>>dead;assert(dead==3);}assert(bytes.rpos()==bytes.size());return result;
 }
 PetBattleEvent Event(uint32 type,uint32 turn=5){return PetBattleEvent(type,0,0x1000,12345,turn,9,1);}
 int main(){
@@ -77,8 +81,11 @@ int main(){
   ++cases;
  }
  auto mixed=Event(6,16);mixed.UpdateState(3,1,1).UpdateHealth(3,1);auto mapped=BuildPetBattleRoundEffect(mixed);assert(mapped.Flags==0x1000&&mapped.TurnInstanceID==16&&mapped.EffectTargetData.front().Params.State.StateValue==1);
+ uint32 readyCases=0;Pet ready;ready.ID=3;ready.Abilities[0]=110;battle.Pets[3]=&ready;battle.PetXDied.clear();battle.RoundEvents.clear();
+ for(uint32 pvp:{0u,1u,2u})for(auto send:{&WorldSession::SendPetBattleFirstRound,&WorldSession::SendPetBattleRoundResult,&WorldSession::SendPetBattleReplacementMade}){battle.BattleType=pvp;ready.Cooldowns[0]=0;(session.*send)(&battle);assert(Parse(session.bytes,pvp?30:0,9,1,false).empty());ready.Cooldowns[0]=-1;(session.*send)(&battle);assert(Parse(session.bytes,pvp?30:0,9,0,false).empty());++readyCases;}
+ std::cout<<"PASS "<<readyCases<<" native ready-zero versus idle-minus-one cooldown wire pairs; ready110/slot0/pet3 is emitted with cooldown0 and an idle slot is omitted.\n";
  std::cout<<"PASS "<<cases<<" actual first/round/replacement senders and actual7.3.5 BattleRound::Write/ByteBuffer wire decode: death, revive, aura, signed state, 1HP, trigger, speed, emote, empty/ability-change payloads; native metadata/order/PetXDied/PvP clocks preserved. Client animation retest separate.\n";
  return 0;
 }
 } // Regression
-int main(){return Regression::main();}
+int main(){try{return Regression::main();}catch(std::exception const&e){std::cerr<<e.what()<<'\n';return 1;}}
