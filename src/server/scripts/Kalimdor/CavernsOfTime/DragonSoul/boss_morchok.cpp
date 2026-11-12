@@ -108,7 +108,7 @@ class boss_morchok: public CreatureScript
                 me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_DISORIENTED, true);
                 me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_CONFUSE, true);
                 me->setActive(true);
-                pKohcrom = NULL;
+                kohcromGuid.Clear();
             }
 
             void Reset()
@@ -130,7 +130,7 @@ class boss_morchok: public CreatureScript
                 bAchieve = true;
                 bFirstStomp = false;
                 bFirstCrystal = false;
-                pKohcrom = NULL;
+                kohcromGuid.Clear();
                 
                 me->SetObjectScale(1.0f);
             }
@@ -196,7 +196,7 @@ class boss_morchok: public CreatureScript
                 BossAI::JustSummoned(summon);
                 if (summon->GetEntry() == NPC_KOHCROM)
                 {
-                    pKohcrom = summon;
+                    kohcromGuid = summon->GetGUID();
                     summon->SetMaxHealth(me->GetMaxHealth());
                     summon->SetHealth(me->GetHealth());
                 }
@@ -222,6 +222,7 @@ class boss_morchok: public CreatureScript
 
             void UpdateAI(uint32 diff)
             {
+                Creature* pKohcrom = ObjectAccessor::GetCreature(*me, kohcromGuid);
                 if (!UpdateVictim())
                     return;
 
@@ -409,7 +410,7 @@ class boss_morchok: public CreatureScript
                 DoMeleeAttackIfReady();
             }
         private:
-            Creature* pKohcrom;
+            ObjectGuid kohcromGuid;
             ObjectGuid _stompguid1;
             ObjectGuid _stompguid2;
             bool bEnrage;
