@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-12",
+  "status": "FOCUSED_CERTIFICATE_REPAIR_PASS_FINAL_COLLECTION_RECORDED_SEPARATELY",
+  "title": "Prove the original Hruthnir receiver before each native timer queue",
+  "cause_and_repair": "Derive the unique saved nonvolatile original-this alias from entry and reject any overwrite before queue construction. Require that exact alias plus member c0 and every authored delay. Unit-owned queue expectations remain derived from the independent actual accessor.",
+  "production_changes": "None. No C++ or SQL change, no rebuilt/promoted binary. These repairs address stale test assumptions against the already deployed production implementation.",
+  "files": [
+    "tools/tests/verify_hruthnir_timers_release.py"
+  ],
+  "evidence": [
+    {
+      "path": ".codex/open-closeout-2026-11-12/targeted-second/verify_hruthnir_timers_release.py.log",
+      "sha256": "14ba0aec76d1d87e5e3b9c913562f066edb7ca0946f3c79f13528c14a81881fc"
+    }
+  ],
+  "worldserver_sha256": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165",
+  "post_test_diagnostics": "Every formal run wrapped with canonical and own crash/log before/after inventories. No new/changed crash, appended DBErrors, or unexplained server warning/error/assertion. Failed intermediate certificate assertions were retained and paired with the focused passing root; they are not ordinary passing runs.",
+  "counterfactual": "Pinned32f7dc012 tool controls inspect this same current EXE. These reproduce stale certificate failures; they are not broken gameplay binary controls. See final closeout for the complete immutable-source collection and counterfactual results.",
+  "limitations": "Selected linked code and controlled native/source fixtures do not establish actual client traversal, rendering, whole36chains, authentic living Lady finale, missing LINK2 actions, intermittent handshake cause, remaining native pet effects or ordinary core-wide healing/periodic widths.",
+  "final_closeout": "docs/audits/open-issues-closeout-2026-11-12.json"
+}

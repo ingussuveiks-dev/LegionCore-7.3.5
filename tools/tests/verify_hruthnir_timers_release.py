@@ -71,7 +71,15 @@ for body,expected in zip(parents,[[(0xc0,5000)],movement_queues,[(0xc0,5000)]]):
  queued=sites(n,body,'?AddDelayedEvent@FunctionProcessor@@');assert len(queued)==len(expected)
  for at,(member,delay) in zip(queued,expected):
   window=[(op.mnemonic,op.op_str) for op in body[max(0,at-12):at]]
-  owner=('lea','rcx, [rdi + 0xc0]' if current_cold_route and body is parents[1] else 'rcx, [rbx + 0xc0]') if member==0xc0 else ('add',unit_queue_operand('rcx, 0x36a0'))
+  if member==0xc0:
+   aliases=[]
+   for index,op in enumerate(body[:16]):
+    if op.mnemonic=='mov' and len(op.operands)==2 and op.op_str.split(', ')[-1]=='rcx' and op.op_str.split(', ')[0] in ('rbx','rsi','rdi','r12','r13','r14','r15'):
+     register=op.operands[0].reg
+     if not any(register in other.regs_access()[1] for other in body[index+1:at]):aliases.append(op.reg_name(register))
+   assert len(aliases)==1,'Queue owner must retain an actual nonvolatile original-this alias'
+   owner=('lea',f'rcx, [{aliases[0]} + 0xc0]')
+  else:owner=('add',unit_queue_operand('rcx, 0x36a0'))
   assert owner in window and ('mov',f'edx, {delay:#x}') in window,(member,delay,window)
 callbacks=[name for name in n['symbols'] if name.startswith('?_Do_call@') and 'npc_hrutnirAI@' in name]
 current_approach=any(name.startswith(method('ScheduleMagnarApproach')) for name in n['symbols'])
