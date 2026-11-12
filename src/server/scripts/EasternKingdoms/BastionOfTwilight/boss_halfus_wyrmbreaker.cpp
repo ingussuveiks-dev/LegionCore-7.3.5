@@ -168,8 +168,11 @@ class boss_halfus_wyrmbreaker : public CreatureScript
                     pGo->SetGoState(GO_STATE_READY);
                 }
                 for (uint8 i = 0; i < 8; i++)
+                {
+                    whelps[i].Clear();
                     if (Creature* creature = me->SummonCreature(NPC_ORPHANED_WHELP, halfusdrakePos[i]))
                         whelps[i] = creature->GetGUID();
+                }
 
                 Creature* proto = me->SummonCreature(NPC_PROTO_BEHEMOTH, halfusdrakePos[8]);
                 Creature* stormrider = me->SummonCreature(NPC_STORM_RIDER, halfusdrakePos[9]);
@@ -177,11 +180,11 @@ class boss_halfus_wyrmbreaker : public CreatureScript
                 Creature* timewarden = me->SummonCreature(NPC_TIME_WARDEN, halfusdrakePos[11]);
                 Creature* slatedrake = me->SummonCreature(NPC_SLATE_DRAKE, halfusdrakePos[12]);
 
-                protoGuid = proto->GetGUID();
-                stormriderGuid = stormrider->GetGUID();
-                netherscionGuid = netherscion->GetGUID();
-                timewardenGuid = timewarden->GetGUID();
-                slatedrakeGuid = slatedrake->GetGUID();
+                protoGuid = proto ? proto->GetGUID() : ObjectGuid::Empty;
+                stormriderGuid = stormrider ? stormrider->GetGUID() : ObjectGuid::Empty;
+                netherscionGuid = netherscion ? netherscion->GetGUID() : ObjectGuid::Empty;
+                timewardenGuid = timewarden ? timewarden->GetGUID() : ObjectGuid::Empty;
+                slatedrakeGuid = slatedrake ? slatedrake->GetGUID() : ObjectGuid::Empty;
 
                 whelpcount = 0;
                 if (IsHeroic())
@@ -190,8 +193,10 @@ class boss_halfus_wyrmbreaker : public CreatureScript
                     DoCast(me, SPELL_MALEVOLENT_STRIKES);
                     DoCast(me, SPELL_SHADOW_WARPED);
                     DoCast(me, SPELL_FRENZIED_ASSAULT);
-                    proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
-                    proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
+                    if (proto)
+                        proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
+                    if (proto)
+                        proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
                 }
                 else
                 {
@@ -202,7 +207,8 @@ class boss_halfus_wyrmbreaker : public CreatureScript
                         //���� ������ + ������ ���� �� ��������
                     case 0:
                         //��������� + ���������� + ������� �������
-                        timewarden->CastSpell(timewarden, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (timewarden)
+                            timewarden->CastSpell(timewarden, SPELL_UNRESPONSIVE_DRAKE, true);
                         for (uint8 i = 0; i < 8; i++)
                             if (Creature* _help = ObjectAccessor::GetCreature(*me, whelps[i]))
                                 _help->CastSpell(_help, SPELL_UNRESPONSIVE_WHELP, true);
@@ -212,87 +218,114 @@ class boss_halfus_wyrmbreaker : public CreatureScript
                         break;
                     case 1:
                         //����� ������� + ���������� + ������� �������
-                        slatedrake->CastSpell(slatedrake, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (slatedrake)
+                            slatedrake->CastSpell(slatedrake, SPELL_UNRESPONSIVE_DRAKE, true);
                         for (uint8 i = 0; i < 8; i++)
                             if (Creature* _help = ObjectAccessor::GetCreature(*me, whelps[i]))
                                 _help->CastSpell(_help, SPELL_UNRESPONSIVE_WHELP, true);
-                        proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
                         DoCast(me, SPELL_SHADOW_WARPED); 
                         DoCast(me, SPELL_FRENZIED_ASSAULT);
                         break;
                     case 2:
                         //��������� + ������� ������� + ����������
                         bWhelps = true;
-                        timewarden->CastSpell(timewarden, SPELL_UNRESPONSIVE_DRAKE, true);
-                        stormrider->CastSpell(stormrider, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (timewarden)
+                            timewarden->CastSpell(timewarden, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (stormrider)
+                            stormrider->CastSpell(stormrider, SPELL_UNRESPONSIVE_DRAKE, true);
                         DoCast(me, SPELL_MALEVOLENT_STRIKES); 
                         DoCast(me, SPELL_FRENZIED_ASSAULT);
-                        proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
                         break;
                     case 3:
                         //��������� + ���������� + ����� �������
-                        netherscion->CastSpell(netherscion, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (netherscion)
+                            netherscion->CastSpell(netherscion, SPELL_UNRESPONSIVE_DRAKE, true);
                         for (uint8 i = 0; i < 8; i++)
                             if (Creature* _help = ObjectAccessor::GetCreature(*me, whelps[i]))
                                 _help->CastSpell(_help, SPELL_UNRESPONSIVE_WHELP, true);
-                        proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
                         DoCast(me, SPELL_MALEVOLENT_STRIKES);
                         DoCast(me, SPELL_SHADOW_WARPED);
                         break;
                     case 4:
                         //������� ������� + ���������� + ����������
                         bWhelps = true;
-                        slatedrake->CastSpell(slatedrake, SPELL_UNRESPONSIVE_DRAKE, true);
-                        timewarden->CastSpell(timewarden, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (slatedrake)
+                            slatedrake->CastSpell(slatedrake, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (timewarden)
+                            timewarden->CastSpell(timewarden, SPELL_UNRESPONSIVE_DRAKE, true);
                         DoCast(me, SPELL_FRENZIED_ASSAULT);
                         DoCast(me, SPELL_SHADOW_WARPED);
-                        proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
                         break;
                     case 5:
                         //��������� + ����� ������� + ������� �������
-                        stormrider->CastSpell(stormrider, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (stormrider)
+                            stormrider->CastSpell(stormrider, SPELL_UNRESPONSIVE_DRAKE, true);
                         for (uint8 i = 0; i < 8; i++)
                             if (Creature* _help = ObjectAccessor::GetCreature(*me, whelps[i]))
                                 _help->CastSpell(_help, SPELL_UNRESPONSIVE_WHELP, true);
                         DoCast(me, SPELL_MALEVOLENT_STRIKES);
-                        proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
                         DoCast(me, SPELL_FRENZIED_ASSAULT);
                         break;
                     case 6:
                         //���������� + ����� ������� + ����������
                         bWhelps = true;
-                        slatedrake->CastSpell(slatedrake, SPELL_UNRESPONSIVE_DRAKE, true);
-                        netherscion->CastSpell(netherscion, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (slatedrake)
+                            slatedrake->CastSpell(slatedrake, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (netherscion)
+                            netherscion->CastSpell(netherscion, SPELL_UNRESPONSIVE_DRAKE, true);
                         DoCast(me, SPELL_SHADOW_WARPED);
-                        proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
-                        proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);                    
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
                         break;
                     case 7:
                         //��������� + ����� ������� + ����������
                         bWhelps = true;
-                        stormrider->CastSpell(stormrider, SPELL_UNRESPONSIVE_DRAKE, true);
-                        netherscion->CastSpell(netherscion, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (stormrider)
+                            stormrider->CastSpell(stormrider, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (netherscion)
+                            netherscion->CastSpell(netherscion, SPELL_UNRESPONSIVE_DRAKE, true);
                         DoCast(me, SPELL_MALEVOLENT_STRIKES);
-                        proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
-                        proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);                    
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
                         break;
                     case 8:
                         //������� ������� + ����� ������� + ����������
                         bWhelps = true;
-                        slatedrake->CastSpell(slatedrake, SPELL_UNRESPONSIVE_DRAKE, true);
-                        stormrider->CastSpell(stormrider, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (slatedrake)
+                            slatedrake->CastSpell(slatedrake, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (stormrider)
+                            stormrider->CastSpell(stormrider, SPELL_UNRESPONSIVE_DRAKE, true);
                         DoCast(me, SPELL_FRENZIED_ASSAULT);
-                        proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
-                        proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_DANCING_FLAMES, true);
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
                         break;
                     case 9:
                         //��������� + ���������� + ����������
                         bWhelps = true;
-                        netherscion->CastSpell(netherscion, SPELL_UNRESPONSIVE_DRAKE, true);
-                        timewarden->CastSpell(timewarden, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (netherscion)
+                            netherscion->CastSpell(netherscion, SPELL_UNRESPONSIVE_DRAKE, true);
+                        if (timewarden)
+                            timewarden->CastSpell(timewarden, SPELL_UNRESPONSIVE_DRAKE, true);
                         DoCast(me, SPELL_MALEVOLENT_STRIKES);
                         DoCast(me, SPELL_SHADOW_WARPED);
-                        proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
+                        if (proto)
+                            proto->CastSpell(proto, SPELL_SUPERHEATED_BREATH, true);
                         break;
                     }
                 }
