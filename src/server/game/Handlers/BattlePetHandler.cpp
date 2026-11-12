@@ -665,61 +665,12 @@ void WorldSession::HandleJoinPetBattleQueue(WorldPackets::BattlePet::NullCmsg& /
     if (!sWorld->getBoolConfig(CONFIG_PET_BATTLES))
         return;
 
-    if (_player->_petBattleId)
+    auto entry = sPetBattleSystem->CheckQueueEntry(_player);
+    if (entry != PETBATTLE_REQUEST_OK)
     {
-        SendPetBattleRequestFailed(PETBATTLE_REQUEST_IN_BATTLE);
+        SendPetBattleRequestFailed(entry);
         return;
     }
-
-    if (_player->isInCombat())
-    {
-        SendPetBattleRequestFailed(PETBATTLE_REQUEST_NOT_WHILE_IN_COMBAT);
-        return;
-    }
-
-    std::shared_ptr<BattlePetInstance> playerPets[MAX_PETBATTLE_SLOTS];
-    size_t playerPetCount = 0;
-
-    // Temporary pet buffer
-    for (auto& playerPet : playerPets)
-        playerPet = std::shared_ptr<BattlePetInstance>();
-
-    // Load player pets
-    _player->UpdateBattlePetCombatTeam();
-    auto petSlots = _player->GetBattlePetCombatTeam();
-    uint32 deadPetCount = 0;
-
-    for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)
-    {
-        if (!petSlots[i])
-            continue;
-
-        if (playerPetCount >= MAX_PETBATTLE_SLOTS || playerPetCount >= _player->GetUnlockedPetBattleSlot())
-            break;
-
-        if (petSlots[i]->Health == 0)
-            deadPetCount++;
-
-        playerPets[playerPetCount] = std::make_shared<BattlePetInstance>();
-        playerPets[playerPetCount]->CloneFrom(petSlots[i]);
-        playerPets[playerPetCount]->Slot = playerPetCount;
-        playerPets[playerPetCount]->OriginalBattlePet = petSlots[i];
-
-        ++playerPetCount;
-    }
-
-    if (deadPetCount && deadPetCount == playerPetCount)
-    {
-        SendPetBattleRequestFailed(PETBATTLE_REQUEST_ALL_PETS_DEAD);
-        return;
-    }
-
-    if (!playerPetCount)
-    {
-        SendPetBattleRequestFailed(PETBATTLE_REQUEST_NO_PETS_IN_SLOT);
-        return;
-    }
-
     sPetBattleSystem->JoinQueue(_player);
 }
 

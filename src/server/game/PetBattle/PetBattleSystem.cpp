@@ -95,6 +95,29 @@ void PetBattleSystem::RemoveRequest(ObjectGuid requesterGuid)
     }
 }
 
+eBattlePetRequests PetBattleSystem::CheckQueueEntry(Player* player)
+{
+    if (!player || !player->IsInWorld())
+        return PETBATTLE_REQUEST_CREATE_FAILED;
+    if (!player->IsAlive())
+        return PETBATTLE_REQUEST_NOT_WHILE_DEAD;
+    if (player->_petBattleId)
+        return PETBATTLE_REQUEST_IN_BATTLE;
+    if (player->isInCombat())
+        return PETBATTLE_REQUEST_NOT_WHILE_IN_COMBAT;
+    player->UpdateBattlePetCombatTeam();
+    auto pets = player->GetBattlePetCombatTeam();
+    bool populated = false;
+    for (uint32 i = 0; i < MAX_PETBATTLE_SLOTS && i < player->GetUnlockedPetBattleSlot(); ++i)
+        if (pets[i])
+        {
+            populated = true;
+            if (pets[i]->Health > 0)
+                return PETBATTLE_REQUEST_OK;
+        }
+    return populated ? PETBATTLE_REQUEST_ALL_PETS_DEAD : PETBATTLE_REQUEST_NO_PETS_IN_SLOT;
+}
+
 void PetBattleSystem::JoinQueue(Player* player)
 {
     /// Pandaren case
@@ -321,6 +344,32 @@ void PetBattleSystem::Update(uint32 diff)
                     /// Enter in combat
                     if (l_Left->ProposalAnswer == LFBAnswer::LFB_ANSWER_AGREE && l_Right->ProposalAnswer == LFBAnswer::LFB_ANSWER_AGREE)
                     {
+                        auto leftEntry = CheckQueueEntry(leftPlayer);
+                        auto rightEntry = CheckQueueEntry(rightPlayer);
+                        if (leftEntry != PETBATTLE_REQUEST_OK || rightEntry != PETBATTLE_REQUEST_OK)
+                        {
+                            l_Left->MatchingOpponent = nullptr;
+                            l_Right->MatchingOpponent = nullptr;
+                            auto finishAdmission = [&](LFBTicket* request, Player* participant, eBattlePetRequests entry)
+                            {
+                                if (entry == PETBATTLE_REQUEST_OK)
+                                {
+                                    request->State = LFB_STATE_QUEUED;
+                                    request->ProposalAnswer = LFB_ANSWER_PENDING;
+                                    participant->GetSession()->SendPetBattleQueueStatus(request->JoinTime, request->TicketID, LFBUpdateStatus::LFB_JOIN_QUEUE, _LFBAvgWaitTime);
+                                }
+                                else
+                                {
+                                    request->State = LFB_STATE_FINISHED;
+                                    ticketsToRemove.push_back(request->RequesterGUID);
+                                    if (participant && participant->GetSession())
+                                        participant->GetSession()->SendPetBattleRequestFailed(entry);
+                                }
+                            };
+                            finishAdmission(l_Left, leftPlayer, leftEntry);
+                            finishAdmission(l_Right, rightPlayer, rightEntry);
+                            break;
+                        }
                         if (leftPlayer && rightPlayer)
                         {
                             leftPlayer->GetSession()->SendPetBattleQueueStatus(l_Left->JoinTime, l_Left->TicketID, LFBUpdateStatus::LFB_PET_BATTLE_IS_STARTED, _LFBAvgWaitTime);

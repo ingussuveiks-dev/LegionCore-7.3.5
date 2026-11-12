@@ -84,6 +84,7 @@ public:
     void RemoveBattle(ObjectGuid battleID);
     void RemoveRequest(ObjectGuid requesterGuid);
 
+    eBattlePetRequests CheckQueueEntry(Player* player);
     void JoinQueue(Player* player);
     void ProposalResponse(Player* player, bool accept);
     void LeaveQueue(Player* player);
