@@ -1,9 +1,9 @@
 {
   "status": "IN_PROGRESS",
   "authorized_total": 100,
-  "completed": 60,
-  "remaining": 40,
-  "completed_batches": 6,
+  "completed": 70,
+  "remaining": 30,
+  "completed_batches": 7,
   "support_commit": "9c811f3728a29d3fad974a65692f830a8d3e3670",
   "baseline": "64c2ee42780013b3a4d1a0e10e92405ddbc19244",
   "batches": [
@@ -405,16 +405,83 @@
         "investigation": "Local live bindings, native26972 spells/effects/IDs and core APIs checked first. Named GetHitHeal64/SetHitHeal64 are required;changing only the variable type would still read the legacy32 channel. Native fixture initially lacked PageText/GameObjectTemplate loaders; added real loader prerequisites. First PE assertion expected an out-of-line GameObject wrapper; actual compiler inlines it and calls FunctionProcessor::AddDelayedEvent,now checked. Ordinary non-exact effect accumulation remains a separate discovered engine limitation to investigate in the remaining groups; these tests certify explicit native64 channel inputs and listed class calculations only."
       },
       "support_commit": "85ed1620551c587ff02b02c9761c9afc175fe69b"
+    },
+    {
+      "batch": 7,
+      "historical_group": 58,
+      "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+      "commits": [
+        {
+          "key": "CloudburstSplitHealWidth",
+          "commit": "2377c796e11e314d2d065a1da269697609f889cb",
+          "audit": "docs/audits/ten-ten-2026-11-11/CloudburstSplitHealWidth.json"
+        },
+        {
+          "key": "RestorativeMistsSplitWidth",
+          "commit": "473d9bdf38b0f74c0957d8d86b6671f905374410",
+          "audit": "docs/audits/ten-ten-2026-11-11/RestorativeMistsSplitWidth.json"
+        },
+        {
+          "key": "CumulativeUpkeepHealWidth",
+          "commit": "361e6f055fd5532530e7bad937651a6088fccae4",
+          "audit": "docs/audits/ten-ten-2026-11-11/CumulativeUpkeepHealWidth.json"
+        },
+        {
+          "key": "DivineHymnHealWidth",
+          "commit": "b1a84362f7d1ba84e55f2b899bb8f33cfdad586d",
+          "audit": "docs/audits/ten-ten-2026-11-11/DivineHymnHealWidth.json"
+        },
+        {
+          "key": "ShadowMendChildHealWidth",
+          "commit": "008fb834856bab52b4d0183dc9fa01b886be28ca",
+          "audit": "docs/audits/ten-ten-2026-11-11/ShadowMendChildHealWidth.json"
+        },
+        {
+          "key": "ShadowCovenantAbsorbWidth",
+          "commit": "9def1559d8d79a129903918608bba7192830812e",
+          "audit": "docs/audits/ten-ten-2026-11-11/ShadowCovenantAbsorbWidth.json"
+        },
+        {
+          "key": "AtonementHealWidth",
+          "commit": "6d64b1eef045823272440fff91091c02ef85cd41",
+          "audit": "docs/audits/ten-ten-2026-11-11/AtonementHealWidth.json"
+        },
+        {
+          "key": "HealingStormEchoHealWidth",
+          "commit": "d812284d8f22ce100b5a67184bdec6585d1aeb70",
+          "audit": "docs/audits/ten-ten-2026-11-11/HealingStormEchoHealWidth.json"
+        },
+        {
+          "key": "HolyShockSilverHandHealWidth",
+          "commit": "a7ed60c94bf6376a25f73473aafb5eb078e76374",
+          "audit": "docs/audits/ten-ten-2026-11-11/HolyShockSilverHandHealWidth.json"
+        },
+        {
+          "key": "TheLightSavesHealWidth",
+          "commit": "6d5e7dee4ac73d20337ffa8ae9bdbf034e9a2391",
+          "audit": "docs/audits/ten-ten-2026-11-11/TheLightSavesHealWidth.json"
+        }
+      ],
+      "checks": {
+        "asan": "Ten complete production classes pass with native64 and ordinary legacy inputs. Injured-only Cloudburst split and all-recipient Mists split, empty count guards; owner-only stacked Cumulative Upkeep; raid/nonraid Hymn andsaturated doubling; combat/Masochism ShadowMend children; Covenant absorb; owned Barrier/PvE/PvP critical Atonement; owned image Echo; one-use SilverHand andthree owned Beacon alternatives for LightSaves. Native64 limits andcontrolled aura/child/cast endpoints are explicit. Sixth-group regression passes after sharing the fixture header.",
+        "baseline": "All ten pinned pre-task controls fail repaired expectations using the legacy32 getter/setter. Each is paired with passing repaired ASAN. No production/setup failure was found in the seventh native run.",
+        "native": "Ten actual binding families andmatching26972 SpellInfo validation. Actual SpellScript target/OnHit/area dispatch with exact64 values, actual injured filtering/recipient counts, real totem/image owner resolution andowned stacks, real Player/Group raid reference without group persistence, combat/Barrier/Beacon conditions, andreal one-use aura removal. Optional refresh andchild casts observed. First sixty native scopes retained.",
+        "linked": "Current canonical Release contains actual native64 getter/setter calls andwide recipient division; owner/trait/raid gates; original ShadowMend alternatives, Covenant passive, Atonement critical branch, Highlord Echo andthree Beacon IDs. First sixty linked checks retained.",
+        "retained": "Previous50 source certificate and65-file unsigned64 healing certificate pass; sixth-group shared-fixture regression passes; canonical Scepter Release check passes.",
+        "runtime": "Task-owned canonical PID19792 fresh ready,graceful shutdown0,exit0/gone,empty stderr. No new/changed crash,appended DBErrors or unexplained warnings/errors/assertions. No user server stopped;protected runtime preserved.",
+        "investigation": "Native64 getter/setter are deliberately named separately from the legacy32 API; each affected class now uses the proper channel. Original coefficients, recipient selection, ownership,raid/crit/PvP gates andconsumption are retained. Ordinary non-exact core effect accumulation remains an explicit OPEN engine limitation to investigate before completing all100; these fixtures certify incoming exact64 values andthe listed class behavior."
+      },
+      "support_commit": "5372f3a790690c50a5f14a53aefcb6a92186b903"
     }
   ],
   "canonical": {
-    "worldserver.exe": "5edc7875f6b265c6bb145d62d1130b61a0bd03bb0d93596c258bcfba8701b125",
-    "worldserver.map": "2640053e3834d6735b64ed199f29ca0329becc1e8c988bbf58c48206a3ecff7a",
-    "bnetserver.exe": "ada80f6fd739cf5cae33b3c5552a3257f636de7e6eb88ee216ef017aba7a9ee7",
-    "bnetserver.map": "cf4c6ac514c91158e0ead2dec97c6991f9a3928ecf6c9e8c2cdb3252b0cf40b8"
+    "worldserver.exe": "5632417d072a4d270400355bc66ceeba9e96e6e887a0e7b812054816383eab27",
+    "worldserver.map": "079bab7afb448c5b1d4cea226b7cbf06a97fa8546deb4c6deaf73880103142ae",
+    "bnetserver.exe": "2b9fb4f520a92d15595d9049098c3c1313515322604cd9845ee525e24748a3fc",
+    "bnetserver.map": "396c4a2fa1be1724c5ce746a66dd09a60f08211db4b0bcd7684c74495b7069d9"
   },
   "diagnostics": "Mixed DBErrors7111bytes unchanged;no new crash/warning/error/assertion;owned server stopped;no user server stopped.",
-  "pending": "Continue batches7..10 to reach100 genuine repairs; investigate ordinary effect accumulation separately; actual client/full chains and Lady/LINK2/Slaghammer/handshake remain OPEN.",
+  "pending": "Continue batches8..10 to reach100 genuine repairs; investigate ordinary effect accumulation separately; actual client/full chains and Lady/LINK2/Slaghammer/handshake remain OPEN.",
   "cleanup": {
     "status": "COMPLETE_BATCH01",
     "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch01",
@@ -478,6 +545,17 @@
     "logical_removed_bytes": 771475480,
     "deletion_manifest": ".codex/ten-ten-2026-11-11/batch06-deletions.json",
     "deletion_manifest_sha256": "24656238be7261f9550880cbc76dffc4401175422471169881c024e42e34b93e",
+    "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
+  },
+  "cleanup_batch07": {
+    "status": "COMPLETE_HASH_VERIFIED_ARCHIVE_AND_REDUNDANT_ARTIFACT_REMOVAL",
+    "archive": "build-extractors/bin/Release/fixed/ten-ten-2026-11-11/batch07",
+    "manifest_sha256": "c771abf205e79594334c3560d940ba433223158b5649461bc8f1e07532edf8a2",
+    "archived_files": 2672,
+    "removed_files": 25,
+    "logical_removed_bytes": 606586489,
+    "deletion_manifest": ".codex/ten-ten-2026-11-11/batch07-deletions.json",
+    "deletion_manifest_sha256": "c65248bb82f0f25d654375803a2cc65571c00b0d46ed9f85ffe384ea6754b2d2",
     "retained": "Canonical runtime/config/DLL/certs/data/history and original build inputs;pre-task3f19rollback,prior d102and8b102TimeLoop rollback for pending actual client retest;all unrelated unresolved evidence and personal backups. MixedDBErrors remains7111bytes unchanged;no active log truncated."
   }
 }
