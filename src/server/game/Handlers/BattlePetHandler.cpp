@@ -539,9 +539,6 @@ void WorldSession::HandlePetBattleInput(WorldPackets::BattlePet::PetBattleInput&
         return;
     }
 
-    if (!packet.MoveType)
-        return;
-
     uint32 playerTeamID = 0;
     if (petBattle->Teams[PETBATTLE_TEAM_2]->PlayerGuid == _player->GetGUID())
         playerTeamID = PETBATTLE_TEAM_2;
