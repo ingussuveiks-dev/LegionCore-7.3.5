@@ -116,10 +116,10 @@ assert find(load, 'r8d, 6', route, 'mov') < early
 assert load[early + 1].op_str == 'byte ptr [rsp + 0x50], 1'
 status = find(load, 'eax, 3', early, 'cmp')
 assert status < lookup
-route_register = 'rdi' if earned_marksman else 'r15'
+route_register = 'rsi' if earned_marksman and load[status + 2].op_str == 'dword ptr [rsi + 4], 0x3cc' else 'rdi' if earned_marksman else 'r15'
 if earned_marksman:
     assert load[status + 1].mnemonic == 'je' and load[status + 1].operands[0].imm == load[status + 9].address
-    assert load[status + 2].op_str == 'dword ptr [rsi], 0x3cc'
+    assert load[status + 2].op_str == f'dword ptr [{route_register} + 4], 0x3cc', 'Native AcquisitionScenarioRoute scenario field, not its map field, admits the earned Marksman alternative'
     assert load[status + 3].mnemonic == 'jne' and load[status + 3].operands[0].imm == skip
     assert status + 6 in sites(load, '?GetQuestStatus@Player@@')
     assert load[status + 7].op_str == 'eax, 1'
@@ -135,7 +135,7 @@ zero = find(load, 'xmm0, xmm6', mapping, 'ucomiss')
 zero = find(load, 'xmm0, xmm6', zero + 1, 'ucomiss')
 assert load[zero + 2].mnemonic == 'je' and load[zero + 2].operands[0].imm > load[seed].address
 assert load[validate + 2].op_str == 'al, al' and load[validate + 3].mnemonic == 'je' and load[validate + 3].operands[0].imm > load[seed].address
-snapshots = ('dword ptr [rsp + 0x230], ebx', 'eax, dword ptr [rsi]', 'dword ptr [rsp + 0x238], r13d', 'qword ptr [rsp + 0x240], r13', inherited_operand('xmmword ptr [r12 + 0x6bb0], xmm0'), inherited_operand('xmmword ptr [r12 + 0x6bc0], xmm2'), inherited_operand('qword ptr [r12 + 0x6bd0], xmm4')) if earned_marksman else ('dword ptr [rsp + 0x260], ebx', 'eax, dword ptr [r15 + 4]', 'dword ptr [rsp + 0x268], r13d', 'qword ptr [rsp + 0x270], r13', 'rax, qword ptr [rsp + 0xb0]', 'xmmword ptr [rax], xmm0', 'xmmword ptr [rax + 0x10], xmm2', 'qword ptr [rax + 0x20], xmm4')
+snapshots = ('dword ptr [rsp + 0x230], ebx', ('eax, dword ptr [rsi + 4]' if route_register=='rsi' else 'eax, dword ptr [rsi]'), 'dword ptr [rsp + 0x238], r13d', 'qword ptr [rsp + 0x240], r13', inherited_operand('xmmword ptr [r12 + 0x6bb0], xmm0'), inherited_operand('xmmword ptr [r12 + 0x6bc0], xmm2'), inherited_operand('qword ptr [r12 + 0x6bd0], xmm4')) if earned_marksman else ('dword ptr [rsp + 0x260], ebx', 'eax, dword ptr [r15 + 4]', 'dword ptr [rsp + 0x268], r13d', 'qword ptr [rsp + 0x270], r13', 'rax, qword ptr [rsp + 0xb0]', 'xmmword ptr [rax], xmm0', 'xmmword ptr [rax + 0x10], xmm2', 'qword ptr [rax + 0x20], xmm4')
 for text in snapshots:
     assert validate < find(load, text, validate) < seed
 assert find(load, 'r13d, r13d', validate, 'xor') < find(load, snapshots[2], validate)
