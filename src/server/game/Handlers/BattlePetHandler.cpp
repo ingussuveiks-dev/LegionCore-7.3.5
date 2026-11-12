@@ -414,6 +414,16 @@ void WorldSession::HandlePetBattleRequestUpdate(WorldPackets::BattlePet::Request
             return;
         }
 
+        PetBattleRequest recipientRequest = *battleRequest;
+        recipientRequest.OpponentGuid = opposant->GetGUID();
+        admission = sPetBattleSystem->CanPlayerEnterInPetBattle(_player, &recipientRequest);
+        if (admission != PETBATTLE_REQUEST_OK)
+        {
+            SendPetBattleRequestFailed(admission);
+            sPetBattleSystem->RemoveRequest(battleRequest->RequesterGuid);
+            return;
+        }
+
         _player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC); // Immuned only to NPC
         opposant->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_IMMUNE_TO_NPC); // Immuned only to NPC
 
