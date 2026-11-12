@@ -564,7 +564,11 @@ void PetBattleAura::Apply(PetBattle* petBattle)
 
 void PetBattleAura::Remove(PetBattle* petBattle)
 {
-    if (AbilityID == petBattle->WeatherAbilityId)
+    if (AbilityID == petBattle->WeatherAbilityId &&
+        std::none_of(petBattle->PetAuras.begin(), petBattle->PetAuras.end(), [this](PetBattleAura const* other)
+        {
+            return other != this && !other->Expired && other->AbilityID == AbilityID;
+        }))
         petBattle->WeatherAbilityId = 0;
 
     for (auto const& state : AppliedStates)

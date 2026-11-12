@@ -1127,12 +1127,16 @@ bool PetBattleAbilityEffect::HandleWeatherAura()
 
     CalculateHit(EffectInfo->Param[1]);
 
-    if (!(Flags & FailFlags) && PetBattleInstance->WeatherAbilityId)
+    uint32 const previousWeather = PetBattleInstance->WeatherAbilityId;
+    if (!(Flags & FailFlags) && previousWeather && previousWeather != EffectInfo->AuraBattlePetAbilityID)
         for (auto& aura : PetBattleInstance->PetAuras)
-            if (!aura->Expired && aura->AbilityID == PetBattleInstance->WeatherAbilityId)
+            if (!aura->Expired && aura->AbilityID == previousWeather)
                 aura->Expire(PetBattleInstance);
 
-    return AddAura(Target, EffectInfo->Param[2], 0);
+    bool const applied = AddAura(Target, EffectInfo->Param[2], 0);
+    if (applied)
+        PetBattleInstance->WeatherAbilityId = EffectInfo->AuraBattlePetAbilityID;
+    return applied;
 }
 
 bool PetBattleAbilityEffect::HandleAuraCondAccuracyState()
