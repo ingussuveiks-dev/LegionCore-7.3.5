@@ -1200,8 +1200,10 @@ public:
             events.RescheduleEvent(EVENT_2, 15 * IN_MILLISECONDS);
         }
 
-        void UpdateAI(uint32 /*diff*/) override
+        void UpdateAI(uint32 diff) override
         {
+            events.Update(diff);
+
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
             
