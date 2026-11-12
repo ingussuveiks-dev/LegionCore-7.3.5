@@ -1,7 +1,7 @@
 {
-  "status": "IN_PROGRESS_90_OF_100",
+  "status": "TECHNICAL_COMPLETED_100_OF_100_CLIENT_PENDING",
   "authorized_total": 100,
-  "completed": 90,
+  "completed": 100,
   "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
   "batches": [
     {
@@ -666,6 +666,79 @@
         "Rollback": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-second-ten-ten-batch1-2026-11-12"
       },
       "canonical_worldserver_sha256": "ed5cb3b5d2d04c5692b58a482255b876ca33bd4a69953711448f05a6b553d1dd"
+    },
+    {
+      "batch": 10,
+      "historical_group": 71,
+      "commits": [
+        {
+          "key": "KurinnaxxThrashRepeat",
+          "commit": "d8b5f066532a1580393a90f183e0dfe9e90aaddd",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/KurinnaxxThrashRepeat.json"
+        },
+        {
+          "key": "ShadowReflectionAbsorbPoolWidth",
+          "commit": "a4ce3baaceb285dd0b78fc1a72217c772901d987",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/ShadowReflectionAbsorbPoolWidth.json"
+        },
+        {
+          "key": "MonkCloneWeaponRecalculation",
+          "commit": "23a4c714f937037aa6adf4c345e0895f16bcae75",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/MonkCloneWeaponRecalculation.json"
+        },
+        {
+          "key": "BlackHarvestTriggerAdmission",
+          "commit": "4a6ee6b78877cc8895efd8187c86d30db42eb3b8",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/BlackHarvestTriggerAdmission.json"
+        },
+        {
+          "key": "SpiritBombDelayedMapScope",
+          "commit": "c7c78a3ea777694ab00386de493822660b591a3e",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/SpiritBombDelayedMapScope.json"
+        },
+        {
+          "key": "PeriodicWeaponMaximumTicks",
+          "commit": "58473da8d57ba6ab1d54bed79b4b69e00ae3dbd7",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PeriodicWeaponMaximumTicks.json"
+        },
+        {
+          "key": "HolyWrathMissingHealthWidth",
+          "commit": "d66b5076bc4b21a19aaf016cab204d3771f93c19",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/HolyWrathMissingHealthWidth.json"
+        },
+        {
+          "key": "CorlaChannelActorLifecycle",
+          "commit": "6c8611dffa9d56c778a7bd6366c0766affc52ade",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/CorlaChannelActorLifecycle.json"
+        },
+        {
+          "key": "PetQueueAcceptedAdmission",
+          "commit": "29cedfe26ddda5576068efc3fbd84ced68335680",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetQueueAcceptedAdmission.json"
+        },
+        {
+          "key": "PetQueueDeclineRematchOwnership",
+          "commit": "0f3d34b81b8bbaea45d5a9452de44681a89ad398",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetQueueDeclineRematchOwnership.json"
+        }
+      ],
+      "support_commit": "22a346dd902ea7911434fc29b0dd2af5abd13d1d",
+      "checks": {
+        "counterfactual": "All ten pinned controls are paired with repaired MSVC ASAN passes. Nine fail their exact named exit1 assertion; Corla reproduces heap-use-after-free. Complete Kurinnaxx Reset/UpdateAI, full Shadow Reflection AuraScript, clone RecalcDamage/RecalcHast, BlackHarvest OnTrigger, Spirit Bomb SpellScript, SpellInfo GetMaxTicks, Holy Wrath SpellScript and full Corla AI are extracted. Queue uses complete packet/helper/LeaveQueue plus an explicitly projected complete decline branch. World/cast/item/factory/instance endpoints are controlled; actual linked queue Update is tested separately. ASAN does not diagnose uninitialized floats: the clone baseline deterministically detects duplicated main-hand use, while repaired unarmed/missing-gear cases verify defined fallback.",
+        "native": "Actual EventMap dispatch preserves independent Thrash and Wide Slash. Actual26972 finite weapon DoTs52117/148939/179021/186191/187191/193008/194243/196122 report5/10/8/3/3/1/4/4 ticks. Actual Aura dispatcher spends6b Shadow Reflection reserve across six legal2b ordinary damage records at native50percent and removes once. Native damage cap remains32bit. Actual Holy Wrath Spell dispatcher preserves wide missing-health input and clamps its existing signed output channel. Actual inventory-empty clone methods and unchanged-haste owner fields pass. Exact Spirit Bomb scheduling block uses actual Unit FunctionProcessor: same-world positive request, removed caster cancellation and live transfer to another actual instance cancellation; child explosion endpoint is observed. Actual full queue Update rejects accepted just-died/corpse players on either side, withdrawn roster and both invalid players; valid survivor is requeued with fresh pending consent and no battle/teleport. Actual dead client join packet cannot create a ticket. Actual three-player same-update rematching survives decline cleanup in either orientation. Native script bindings, Corla zealot/trigger templates and authored spell IDs match local data. Retained previous100 native plus earlier current-hundred scopes pass.",
+        "linked": "Canonical selected100, retained previous100 and Scepter pass. Actual linked code has Thrash event3/16s,64bit pool load/subtract/store,two actual weapon templates/equipment refresh,current BlackHarvest instance and separate DONE3/reserved5 guards,captured map/instance closure comparisons,weapon-percent70 tick switch,wide HolyWrath percentage and signed saturation,three Corla live lookups/guarded preparation,client and both accepted participant admissions before inlined PetBattle construction,and terminal declined/rejected tickets. Original game/scripts/Main link inputs and source snapshots verified. Existing Intangible PE proof now accepts the compiler-outlined exact64bit FromFloat helper: proven public symbol bounds,stackless leaf,internal branches,64bit conversion/saturation and full-width min; native Intangible retained check also passes.",
+        "startup": "Owned PID=17496 reached fresh ready\nPASS owned PID=17496 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+        "limitations": "Full actual client encounter/quest traversal,visuals,equipped clone balance/appearance,Spirit Bomb full fragment core dispatch,BlackHarvest scene cast acknowledgement/retry and Corla full native encounter remain separate. Corla factory and BlackHarvest admission use full source callbacks with controlled endpoints,not claimed as actual full native encounters. Native queue successful-match travel/client UI remains pending; invalid acceptance is genuinely executed through actual core Update. Holy Wrath output still uses native signed int32 damage channel; ordinary core-wide damage is not certified. Fractional absorb rounding is retained as a positive check,not counted as a separate pre-existing defect. Authentic living Lady sequence,LINK2/Slaghammer,mixed DBErrors,original intermittent handshake,all36wholeclientchains,legacy certificates,pet246/clone/type-controller/resurrection and broader ordinary healing/periodic remain OPEN."
+      },
+      "cleanup": {
+        "Removed": 66,
+        "Archived": 3590,
+        "ReclaimedBytes": 1488183487,
+        "Rollback": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-second-ten-ten-batch1-2026-11-12",
+        "ManifestSHA256": "B336A506F5A63868F1583A5827BE1AB79BCE21599BF3752A89AABA6F2C2D15E8",
+        "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch10"
+      },
+      "canonical_worldserver_sha256": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165"
     }
   ],
   "selected_not_yet_verified": [],
@@ -678,6 +751,6 @@
     "legacy PE certificate failures",
     "native pet effect property 246"
   ],
-  "remaining": 10,
-  "completed_batches": 9
+  "remaining": 0,
+  "completed_batches": 10
 }
