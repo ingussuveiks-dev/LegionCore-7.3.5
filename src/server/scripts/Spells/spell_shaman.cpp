@@ -526,7 +526,7 @@ class spell_sha_ancestral_guidance : public AuraScript
     {
         PreventDefaultAction();
 
-        uint32 amount = eventInfo.GetHealInfo() ? eventInfo.GetHealInfo()->GetHeal() : eventInfo.GetDamageInfo()->GetDamage();
+        uint64 amount = eventInfo.GetHealInfo() ? eventInfo.GetHealInfo()->GetHeal() : eventInfo.GetDamageInfo()->GetDamage();
         float heal = CalculatePct(amount, aurEff->GetAmount());
         if (heal > 0.0f)
             eventInfo.GetActor()->CastCustomSpell(eventInfo.GetActor(), 114911, &heal, nullptr, nullptr, true);
