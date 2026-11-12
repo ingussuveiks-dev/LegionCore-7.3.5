@@ -38,6 +38,7 @@
 #include "ScriptMgr.h"
 #include "Spell.h"
 #include "SpellAuraEffects.h"
+#include "HealingAmount.h"
 #include "SpellMgr.h"
 #include "SpellPackets.h"
 #include "Unit.h"
@@ -5308,7 +5309,8 @@ void AuraEffect::HandleAuraModIncreaseHealthOrPercent(AuraApplication const* aur
             return;
     }
     // Unit will keep hp% after MaxHealth being modified if unit is alive.
-    int32 amount = GetAmount();
+    int64 amount = GetAmount() >= float(INT64_MAX) ? INT64_MAX :
+        GetAmount() <= -float(INT64_MAX) ? -INT64_MAX : int64(GetAmount());
 
     if (amount > 100)
     {
@@ -5330,7 +5332,7 @@ void AuraEffect::HandleAuraModIncreaseHealthOrPercent(AuraApplication const* aur
     else
     {
         uint32 percentHeal = GetAmount() / GetBase()->GetStackAmount(); // Heal only per stack, not all stack every time
-        uint32 heal = target->CountPctFromMaxHealth(percentHeal);
+        uint64 heal = target->CountPctFromMaxHealth(percentHeal);
         float percent = target->GetHealthPct();
         target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_PCT, float(amount), apply);
 
@@ -5346,7 +5348,7 @@ void AuraEffect::HandleAuraModIncreaseHealthOrPercent(AuraApplication const* aur
         if (target->IsAlive())
         {
             if (apply && otherLogick)
-                target->ModifyHealth(heal, nullptr, GetId());
+                target->SetHealth(HealingAmount::Add(target->GetHealth(), heal), GetId());
             else
                 target->SetHealth(target->CountPctFromMaxHealth(int32(ceil(percent))), GetId());
         }
@@ -5369,7 +5371,7 @@ void AuraEffect::HandleAuraModIncreaseHealthPercent(AuraApplication const* aurAp
     // Unit will keep hp% after MaxHealth being modified if unit is alive.
     float percent = target->GetHealthPct();
     uint32 percentHeal = GetAmount() / GetBase()->GetStackAmount(); // Heal only per stack, not all stack every time
-    uint32 heal = target->CountPctFromMaxHealth(percentHeal);
+    uint64 heal = target->CountPctFromMaxHealth(percentHeal);
 
     bool otherLogick = false;
     switch (GetId())
@@ -5385,7 +5387,7 @@ void AuraEffect::HandleAuraModIncreaseHealthPercent(AuraApplication const* aurAp
     if (target->IsAlive())
     {
         if (apply && otherLogick)
-            target->ModifyHealth(heal, nullptr, GetId());
+            target->SetHealth(HealingAmount::Add(target->GetHealth(), heal), GetId());
         else
             target->SetHealth(target->CountPctFromMaxHealth(int32(ceil(percent))), GetId());
     }
