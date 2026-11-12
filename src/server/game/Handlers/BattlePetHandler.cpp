@@ -45,7 +45,7 @@ void WorldSession::HandleBattlePetSummon(WorldPackets::BattlePet::BattlePetGuidR
 void WorldSession::HandleBattlePetNameQuery(WorldPackets::BattlePet::Query& packet)
 {
     Creature* creature = Unit::GetCreature(*_player, packet.UnitGUID);
-    if (!creature)
+    if (!creature || creature->GetGuidValue(UNIT_FIELD_BATTLE_PET_COMPANION_GUID) != packet.BattlePetID)
         return;
 
     std::shared_ptr<BattlePet> battlePet = nullptr;
