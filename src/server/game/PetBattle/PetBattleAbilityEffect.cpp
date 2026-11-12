@@ -1739,7 +1739,7 @@ bool PetBattleAbilityEffect::HandleDamagePercentTaken()
 {
     CalculateHit(EffectInfo->Param[1]);
 
-    int32 damage = CalculateDamage(CalculatePct(GetState(Caster, BATTLEPET_STATE_Last_HitTaken), EffectInfo->Param[0]));
+    int32 damage = CalculateDamage(CalculatePct(GetState(Caster, BATTLEPET_STATE_Last_HitTaken), EffectInfo->Param[0]), false);
     return Damage(Target, damage);
 }
 
