@@ -770,16 +770,19 @@ bool PetBattleAbilityEffect::AddAura(uint32 target, int32 duration, int32 maxAll
 
 void PetBattleAbilityEffect::SelectTargets()
 {
-    if (EffectInfo->BattlePetEffectPropertiesID > MAX_PETBATTLE_EFFECT_TYPES)
-        TC_LOG_ERROR("battlepet", "Function: %s; Line: %u EffectInfo->effect > MAX_PETBATTLE_EFFECT_TYPES; effect: %u", __FUNCTION__, __LINE__, EffectInfo->BattlePetEffectPropertiesID);
-
     Targets.clear();
+    if (EffectInfo->BattlePetEffectPropertiesID >= MAX_PETBATTLE_EFFECT_TYPES)
+    {
+        TC_LOG_ERROR("battlepet", "Function: %s; Line: %u EffectInfo->effect > MAX_PETBATTLE_EFFECT_TYPES; effect: %u", __FUNCTION__, __LINE__, EffectInfo->BattlePetEffectPropertiesID);
+        return;
+    }
     AddTarget(Handlers[EffectInfo->BattlePetEffectPropertiesID].ImplicitTarget);
 }
 
 bool PetBattleAbilityEffect::Execute()
 {
-    if (!Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)
+    if (EffectInfo->BattlePetEffectPropertiesID >= MAX_PETBATTLE_EFFECT_TYPES ||
+        !Handlers[EffectInfo->BattlePetEffectPropertiesID].Handle)
         return false;
 
     if (Targets.empty())
