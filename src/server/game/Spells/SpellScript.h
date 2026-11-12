@@ -474,6 +474,7 @@ class TC_GAME_API SpellScript : public _SpellScript
         // method avalible only in EffectHandler method
         int32 GetEffectValue() const;
         void SetEffectValue(int32 val);
+        void SetEffectValueFloat(float val);
 
         // returns: cast item if present.
         Item* GetCastItem();

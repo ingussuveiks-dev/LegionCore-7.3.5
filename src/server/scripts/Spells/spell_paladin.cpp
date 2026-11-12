@@ -1421,14 +1421,14 @@ class spell_pal_light_of_the_protector : public SpellScriptLoader
                 if (!caster || !target)
                     return;
 
-                int32 bp = target->GetMaxHealth() - target->GetHealth();
+                uint64 bp = target->GetMaxHealth() - target->GetHealth();
                 if (bp > 0)
                 {
-                    int32 heal = CalculatePct(bp, GetSpellInfo()->Effects[EFFECT_0]->CalcValue(caster));
+                    float heal = CalculatePct(float(bp), GetSpellInfo()->Effects[EFFECT_0]->CalcValue(caster));
                     if (AuraEffect const* scatterTheShadows = caster->GetAuraEffect(ScatterTheShadows, EFFECT_0))
                         AddPct(heal, scatterTheShadows->GetAmount());
 
-                    SetEffectValue(heal);
+                    SetEffectValueFloat(heal);
                 }
             }
 

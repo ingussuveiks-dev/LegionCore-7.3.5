@@ -827,6 +827,16 @@ void SpellScript::SetEffectValue(int32 val)
     m_spell->damage = val;
 }
 
+void SpellScript::SetEffectValueFloat(float val)
+{
+    if (!IsInEffectHook())
+    {
+        TC_LOG_ERROR("scripts", "Script: `%s` Spell: `%u`: function SpellScript::SetEffectValueFloat was called, but function has no effect in current hook!", m_scriptName->c_str(), m_scriptSpellId);
+        return;
+    }
+    m_spell->damage = val;
+}
+
 Item* SpellScript::GetCastItem()
 {
     return m_spell->m_CastItem;
