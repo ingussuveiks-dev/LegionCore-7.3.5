@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-12",
+  "key": "ShadowReflectionAbsorbPoolWidth",
+  "title": "Retain the full Shadow Reflection pool and spend only the integral amount actually absorbed",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "batch": 10,
+  "historical_group": 71,
+  "baseline": "83c8f52b75d5be6b83a680637220f40ac7538ae3",
+  "paths": [
+    "src/server/scripts/Spells/spell_generic.cpp"
+  ],
+  "regression": "tools/tests/Test-SecondTenTen20261112.ps1 -Batch 10 -Case ShadowReflectionAbsorbPoolWidth",
+  "counterfactual": "Same command with -Baseline; expected broken pinned control, paired with repaired pass.",
+  "checks": {
+    "counterfactual": "All ten pinned controls are paired with repaired MSVC ASAN passes. Nine fail their exact named exit1 assertion; Corla reproduces heap-use-after-free. Complete Kurinnaxx Reset/UpdateAI, full Shadow Reflection AuraScript, clone RecalcDamage/RecalcHast, BlackHarvest OnTrigger, Spirit Bomb SpellScript, SpellInfo GetMaxTicks, Holy Wrath SpellScript and full Corla AI are extracted. Queue uses complete packet/helper/LeaveQueue plus an explicitly projected complete decline branch. World/cast/item/factory/instance endpoints are controlled; actual linked queue Update is tested separately. ASAN does not diagnose uninitialized floats: the clone baseline deterministically detects duplicated main-hand use, while repaired unarmed/missing-gear cases verify defined fallback.",
+    "native": "Actual EventMap dispatch preserves independent Thrash and Wide Slash. Actual26972 finite weapon DoTs52117/148939/179021/186191/187191/193008/194243/196122 report5/10/8/3/3/1/4/4 ticks. Actual Aura dispatcher spends6b Shadow Reflection reserve across six legal2b ordinary damage records at native50percent and removes once. Native damage cap remains32bit. Actual Holy Wrath Spell dispatcher preserves wide missing-health input and clamps its existing signed output channel. Actual inventory-empty clone methods and unchanged-haste owner fields pass. Exact Spirit Bomb scheduling block uses actual Unit FunctionProcessor: same-world positive request, removed caster cancellation and live transfer to another actual instance cancellation; child explosion endpoint is observed. Actual full queue Update rejects accepted just-died/corpse players on either side, withdrawn roster and both invalid players; valid survivor is requeued with fresh pending consent and no battle/teleport. Actual dead client join packet cannot create a ticket. Actual three-player same-update rematching survives decline cleanup in either orientation. Native script bindings, Corla zealot/trigger templates and authored spell IDs match local data. Retained previous100 native plus earlier current-hundred scopes pass.",
+    "linked": "Canonical selected100, retained previous100 and Scepter pass. Actual linked code has Thrash event3/16s,64bit pool load/subtract/store,two actual weapon templates/equipment refresh,current BlackHarvest instance and separate DONE3/reserved5 guards,captured map/instance closure comparisons,weapon-percent70 tick switch,wide HolyWrath percentage and signed saturation,three Corla live lookups/guarded preparation,client and both accepted participant admissions before inlined PetBattle construction,and terminal declined/rejected tickets. Original game/scripts/Main link inputs and source snapshots verified. Existing Intangible PE proof now accepts the compiler-outlined exact64bit FromFloat helper: proven public symbol bounds,stackless leaf,internal branches,64bit conversion/saturation and full-width min; native Intangible retained check also passes.",
+    "startup": "Owned PID=17496 reached fresh ready\nPASS owned PID=17496 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged\nPASS post-test diagnostics: no new/changed crashes, appended DBErrors or server warnings/errors/assertions; test completion=True",
+    "limitations": "Full actual client encounter/quest traversal,visuals,equipped clone balance/appearance,Spirit Bomb full fragment core dispatch,BlackHarvest scene cast acknowledgement/retry and Corla full native encounter remain separate. Corla factory and BlackHarvest admission use full source callbacks with controlled endpoints,not claimed as actual full native encounters. Native queue successful-match travel/client UI remains pending; invalid acceptance is genuinely executed through actual core Update. Holy Wrath output still uses native signed int32 damage channel; ordinary core-wide damage is not certified. Fractional absorb rounding is retained as a positive check,not counted as a separate pre-existing defect. Authentic living Lady sequence,LINK2/Slaghammer,mixed DBErrors,original intermittent handshake,all36wholeclientchains,legacy certificates,pet246/clone/type-controller/resurrection and broader ordinary healing/periodic remain OPEN."
+  },
+  "fixture_setup_failures_resolved": [
+    "Native test bootstrap initially omitted actual SpellMgr::LoadSpellBonusess. Actual absorb creation crashed in SpellMgr::GetSpellBonusData through Unit::CalcAbsorb/AuraEffect::CalculateAmount. Captured exception stack and original exit c0000005 are retained. Bootstrap now loads the real read-only bonus table; repaired actual aura regression passes with no new diagnostic errors. This was a test initialization failure,not a newly attributed production crash.",
+    "Test-only label macros and missing legacy baseline slot fields caused compilation failures; fixture macro push/pop and complete endpoint fields repaired. Existing native JUST_DIED semantics showed isDead excludes this transient state; queue now uses actual IsAlive. Rejected/declined tickets are marked FINISHED before later iterations. These refinements are part of the same two queue repairs and are not counted as extra fixes.",
+    "Compiler outlined shared FromFloat and inlined CreateBattle; linked checks prove the actual called helper/64bit minimum and real PetBattle constructor rather than requiring obsolete instruction placement.",
+    "Theralion raw-stalker candidate withdrawn: the actual first spawning/scheduling arm was commented out. No unreachable code spelling repair is counted. Native normal-damage width candidates were withdrawn because DamageInfo already caps ordinary damage atUINT32_MAX."
+  ],
+  "canonical_worldserver_sha256": "f7fdc0821d95cd5c6282adf9bcb5e74b7e2f6f08e827e1ad577384d92110e165",
+  "archive": "build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch10; archive manifest recorded in batch ledger after verified cleanup.",
+  "investigation_sources": "Matching local26972 DBC/DB2,actual creature/spell/area-trigger bindings and core/scripts first. Local newer TrinityCore Kurinnaxx reference confirms independent Thrash/WideSlash only;this project authored16s/11s schedules retained. No unseen client/video behavior claimed.",
+  "retained_open": [
+    "Authentic living Lady Sharasdal activation/surrender/conversation1906/Grash/cleanup",
+    "LINK2/Slaghammer evidence",
+    "Mixed DBErrors.log remains unchanged",
+    "Original intermittent client handshake silence",
+    "All36wholeclientchains",
+    "Legacy artifact PE certificates",
+    "Native pet effect property246",
+    "Native clone/type-controller/resurrection behavior",
+    "Ordinary coreheal/periodic width beyond explicit64 inputs"
+  ]
+}

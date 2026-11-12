@@ -7120,7 +7120,7 @@ class spell_gen_shadowy_reflection_absorb : public AuraScript
 {
     PrepareAuraScript(spell_gen_shadowy_reflection_absorb);
 
-    uint32 maxAbsorb = 0;
+    uint64 maxAbsorb = 0;
 
     void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)
     {
@@ -7129,7 +7129,7 @@ class spell_gen_shadowy_reflection_absorb : public AuraScript
             amount = -1;
 
             if (AuraEffect const* eff = owner->GetAuraEffect(222478, EFFECT_2))
-                maxAbsorb = eff->GetAmount();
+                maxAbsorb = HealingAmount::FromFloat(eff->GetAmount());
         }
     }
 
@@ -7137,17 +7137,12 @@ class spell_gen_shadowy_reflection_absorb : public AuraScript
     {
         if (uint32 damage = dmgInfo.GetDamage())
         {
-            absorbAmount = CalculatePct(damage, GetSpellInfo()->Effects[EFFECT_1]->BasePoints);
-            bool isRemove = false;
-
-            if (absorbAmount >= maxAbsorb)
-            {
-                isRemove = true;
-                absorbAmount = maxAbsorb;
+            uint64 absorbed = std::min(maxAbsorb, HealingAmount::FromFloat(CalculatePct(damage, GetSpellInfo()->Effects[EFFECT_1]->BasePoints)));
+            absorbAmount = float(absorbed);
+            maxAbsorb -= absorbed;
+            bool isRemove = maxAbsorb == 0;
+            if (isRemove)
                 Remove();
-            }
-            else
-                maxAbsorb -= absorbAmount;
 
             if (Unit* owner = GetUnitOwner())
             {
