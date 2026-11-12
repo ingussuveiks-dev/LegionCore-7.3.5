@@ -49,7 +49,13 @@ assert revive[hp].address not in reaches(revive,branch.operands[0].imm) and revi
 health=ins('?SetHealth@PetBattleAbilityEffect@@')
 assert {('cmovl','ebx, eax'),('xor','r15d, r15d'),('test','ebx, ebx'),('cmovg','r15d, ebx')}<=set(pairs(health[:30]))
 terminal=ins('?Kill@PetBattle@@');assert len(sites(terminal,'?Expire@PetBattleAura@@'))==1
-assert len(sites(terminal,'?SetPetState@PetBattle@@'))==1
+death_states=sites(terminal,'?SetPetState@PetBattle@@');expire,=sites(terminal,'?Expire@PetBattleAura@@')
+assert len(death_states)==2 and death_states[0]<expire<death_states[1]
+for identity in [('cmp','dword ptr [rcx + 0x44], 0x713'),('cmp','dword ptr [rcx + 0x428], 0x632')]:
+ guard=next(i for i,x in enumerate(terminal[:death_states[0]])if(x.mnemonic,x.op_str)==identity)
+ branch=terminal[guard+1]
+ assert branch.mnemonic=='jne'and branch.operands[0].imm==terminal[death_states[0]+1].address,'Only actual1811/183=1586 can precommit death before controller cleanup'
+assert {('cmp','byte ptr [rdx + 0x20], 0'),('cmp','dword ptr [rdx], 0x6cb'),('cmp','dword ptr [rdx + 8], esi'),('cmp','dword ptr [rdx + 0xc], esi')}<=set(pairs(terminal[:death_states[0]])),'Early state commit requires a live actual self-Crumbling receipt;ordinary final state dispatch remains after cleanup'
 stores=[(i,x)for i,x in enumerate(terminal)if x.mnemonic=='mov'and x.op_str.endswith(' + 0x84], 3')]
 at,store=stores[0];assert len(stores)==1
 register=store.operands[0].mem.base;alias=store.reg_name(register)
@@ -57,7 +63,8 @@ saved=next(i for i,x in enumerate(terminal[:16])if(x.mnemonic,x.op_str)==('mov',
 assert not any(register in x.regs_access()[1]for x in terminal[saved+1:at]),'Final death result must be written through the preserved actual battle receiver'
 expiry=ins('?HandleKill@PetBattleAbilityEffect@@');gate=next(i for i,x in enumerate(expiry)if(x.mnemonic,x.op_str)==('cmp','r8d, 0xf2'))
 branch=expiry[gate+1];assert branch.mnemonic=='jne'
-owner_path=expiry[gate+2:next(i for i,x in enumerate(expiry)if x.address==branch.operands[0].imm)]
+owner_addresses=reaches(expiry,expiry[gate+2].address)
+owner_path=[x for x in expiry if x.address in owner_addresses]
 assert len(sites(owner_path,'?Kill@PetBattleAbilityEffect@@'))==1
 assert ('mov','edx, dword ptr [rbx + 0x3c]') in pairs(owner_path)
 print('PASS actual native recipient/turn1/723+724 trigger10, strict death context, failed/dead guards, one final death dispatch,64bit bounded resurrection, retained final-death aura cleanup and owner-only242 expiry; full26972 native rounds and client checks remain separate')

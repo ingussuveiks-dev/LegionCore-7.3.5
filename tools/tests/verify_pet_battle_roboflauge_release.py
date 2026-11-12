@@ -27,7 +27,7 @@ assert source[1].mnemonic=='jae'and firstRead.address not in reaches(source,sour
 selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
 guard,=sites(selector,'?IsRoboflaugeSource@PetBattle@@')
 region=selector[guard:next(i for i,x in enumerate(selector)if i>guard and(x.mnemonic,x.op_str)==('cmp','eax, 0x1dc'))]
-assert {('mov','ecx, dword ptr [rax + 0x12c]'),('mov','r13, qword ptr [rdx + rcx*8 + 0xd0]'),('cmp','edi, dword ptr [r13 + 0x58]'),('test','r14, r14'),('mov','r14d, dword ptr [r14 + 0x130]'),('cmp','r14d, 6'),('test','rcx, rcx'),('cmp','edi, 3')}<=set(pairs(region))
+assert {('mov','ecx, dword ptr [rax + 0x12c]'),('mov','r13, qword ptr [rdx + rcx*8 + 0xd0]'),('cmp','edi, dword ptr [r13 + 0x58]'),('test','rsi, rsi'),('mov','esi, dword ptr [rsi + 0x130]'),('cmp','esi, 6'),('test','rcx, rcx'),('cmp','edi, 3')}<=set(pairs(region))
 assert len(sites(region,'?IsAlive@BattlePetInstance@@'))==1,'Real recipient alive admission remains in the bounded own roster loop'
 handler=ins('?HandleDefensiveTypeAura@PetBattleAbilityEffect@@');guard,=sites(handler,'?IsRoboflaugeSource@PetBattle@@');hit,=sites(handler,'?CalculateHit@PetBattleAbilityEffect@@')
 assert guard<hit and ('cmp','dword ptr [rdx + 0x12c], ecx')in pairs(handler[guard:hit]),'Direct execution retains actual source authority and same-team ownership'

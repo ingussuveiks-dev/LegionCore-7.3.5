@@ -17,7 +17,7 @@ table=table_load.address+table_load.size+table_load.operands[1].mem.disp
 handler,target=struct.unpack_from('<QI',n['binary'],n['offset'](table)+230*16)
 assert n['resolve'](handler)==producer[0].address and target==0,'Native230 is registered with NONE; only1927 explicit selection admits the scoped producer'
 selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
-assert {('cmp','eax, 0x78c'),('movsxd','r9, dword ptr [rbx + 0x4c]'),('cmp','r9d, 5'),('movzx','eax, byte ptr [rcx + 0x14]'),('dec','al'),('cmp','al, 5'),('cmp','dword ptr [rdx + 0x130], r9d'),('cmp','r8d, 3'),('mov','eax, 0xaaaaaaab'),('mul','ecx'),('shr','edx, 1'),('cmp','edi, r8d'),('dec','edx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(selector)),'Six authored rows map by order/3 to fixed roster slots excluding actual holder'
+assert {('cmp','eax, 0x78c'),('movsxd','r9, dword ptr [rbx + 0x4c]'),('cmp','r9d, 5'),('movzx','eax, byte ptr [r8 + 0x14]'),('dec','al'),('cmp','al, 5'),('cmp','dword ptr [rdx + 0x130], r9d'),('cmp','r8d, 3'),('mov','eax, 0xaaaaaaab'),('mul','ecx'),('shr','edx, 1'),('cmp','edi, r8d'),('dec','edx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(selector)),'Six authored rows map by order/3 to fixed roster slots excluding actual holder'
 assert sites(selector,'?AddTarget@PetBattleAbilityEffect@@'),'Actual native living-target admission remains in use'
 rounds=ins('?ProceedRound@PetBattle@@');casts=sites(rounds,'?Cast@PetBattle@@')
 issued=next(i for i in casts if ('mov','dword ptr [rsp + 0x20], 7')in pairs(rounds[i-9:i]))

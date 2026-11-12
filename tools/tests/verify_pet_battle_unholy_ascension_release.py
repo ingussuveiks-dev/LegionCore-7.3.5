@@ -3,13 +3,13 @@ from verify_pet_battle_self_sacrifice_release import ins,sites,values,pairs,reac
 import hashlib,json
 selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
 gate=next(i for i,x in enumerate(selector)if(x.mnemonic,x.op_str)==('cmp','eax, 0x141'))
-assert ('mov','eax, dword ptr [rbx + 0x18]')in pairs(selector[:gate])
+assert ('mov','eax, dword ptr [rcx + 0x18]')in pairs(selector[:gate])
 branch=selector[gate+1];assert branch.mnemonic=='je'
 prop=next(i for i,x in enumerate(selector)if x.address==branch.operands[0].imm)
-assert (selector[prop].mnemonic,selector[prop].op_str)==('cmp','word ptr [rcx + 6], 0x32')and selector[prop+1].mnemonic=='jne'
+assert (selector[prop].mnemonic,selector[prop].op_str)==('cmp','cx, 0x32')and selector[prop+1].mnemonic=='jne'
 addresses=reaches(selector,selector[prop+2].address)
 body=[x for x in selector if x.address in addresses]
-assert {('movzx','r8d, byte ptr [rcx + 0x14]'),('dec','r8d'),('shr','r8d, 1'),('cmp','r8d, dword ptr [rdx + 0x58]'),('test','rdx, rdx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(body))
+assert {('movzx','r9d, byte ptr [r8 + 0x14]'),('dec','r9d'),('shr','r9d, 1'),('cmp','r9d, dword ptr [rdx + 0x58]'),('test','rdx, rdx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(body))
 assert len(sites(body,'?AddTarget@PetBattleAbilityEffect@@'))==1
 terminal=ins('?HandleKill@PetBattleAbilityEffect@@')
 gate=next(i for i,x in enumerate(terminal)if(x.mnemonic,x.op_str)==('cmp','r8d, 0x141'))

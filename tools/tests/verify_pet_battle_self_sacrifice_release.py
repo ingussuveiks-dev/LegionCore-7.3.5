@@ -5,11 +5,12 @@ selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
 assert {282,663,836,1025,68,24}<=values(selector)
 assert {('mov','edx, dword ptr [rdx + 0x70]'),('mov','rcx, rbx')}<=set(pairs(selector))
 slot=next(i for i,x in enumerate(selector)if(x.mnemonic,x.op_str)==('cmp','eax, 0x401'))
-assert (selector[slot+2].mnemonic,selector[slot+2].op_str)==('cmp','word ptr [rcx + 6], 0x18')
+assert (selector[slot+2].mnemonic,selector[slot+2].op_str)==('cmp','cx, 0x18')
+assert [('mov','r8, qword ptr [rbx]'),('movzx','ecx, word ptr [r8 + 6]')]==pairs(selector[34:36]),'Actual effect metadata supplies the cached native property'
 # The compiler merges the two roster selectors' target-admission tail.
 addresses=reaches(selector,selector[slot+4].address)
 roster=[x for x in selector if x.address in addresses]
-assert {('movzx','r8d, byte ptr [rcx + 0x14]'),('dec','r8d'),('cmp','r8d, dword ptr [rdx + 0x58]'),('test','rdx, rdx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(roster))
+assert {('movzx','r9d, byte ptr [r8 + 0x14]'),('dec','r9d'),('cmp','r9d, dword ptr [rdx + 0x58]'),('test','rdx, rdx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(roster))
 assert len(sites(roster,'?AddTarget@PetBattleAbilityEffect@@'))==1
 admission=ins('?AddTarget@PetBattleAbilityEffect@@QEAA_NI@Z')
 assert {('cmp','edx, 6'),('test','rcx, rcx')}<=set(pairs(admission[:16]))

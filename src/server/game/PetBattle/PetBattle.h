@@ -572,6 +572,7 @@ public:
     void SetPetState(uint32 sourcePetID, uint32 targetPetID, uint32 fromAbilityEffectID, uint32 stateID, int32 value, bool fromCapture = false, uint32 flags = 0);
     bool RefreshPetTypeOverride(uint32 sourcePetID, uint32 targetPetID);
     bool IsRoboflaugeSource(uint32 petID) const;
+    bool IsCrumbleSource(uint32 petID) const;
     void Kill(int8 killer, int8 target, uint32 killerAbibilityEffectID, bool fromCapture = false, uint32 flags = 0);
     void Catch(int8 p_Catcher, int8 p_CatchedTarget, uint32 fromAbilityEffectID);
 

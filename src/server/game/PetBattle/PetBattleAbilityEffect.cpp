@@ -823,6 +823,12 @@ bool PetBattleAbilityEffect::AddAura(uint32 target, int32 duration, int32 maxAll
 void PetBattleAbilityEffect::SelectTargets()
 {
     Targets.clear();
+    if (AbilityID == 1586 && EffectInfo->BattlePetEffectPropertiesID == 50)
+    {
+        if (EffectInfo->ID == 3226 && PetBattleInstance->IsCrumbleSource(Caster))
+            AddTarget(Caster);
+        return;
+    }
     if (EffectInfo->BattlePetEffectPropertiesID == 229)
     {
         if (AbilityID == 1389)
@@ -1404,6 +1410,16 @@ bool PetBattleAbilityEffect::HandleWeatherDamage()
 
 bool PetBattleAbilityEffect::HandleNegativeAura()
 {
+    if (AbilityID == 1586)
+    {
+        if (EffectInfo->ID != 3226 || Target != Caster || !PetBattleInstance->IsCrumbleSource(Caster))
+            return false;
+        // This inherent producer is issued once per actual battle. A repeated
+        // apply must not refresh either a running or a finished countdown.
+        for (auto aura : PetBattleInstance->PetAuras)
+            if (aura->AbilityID == 1739 && aura->CasterPetID == Caster && aura->TargetPetID == Caster)
+                return true;
+    }
     // Chain Failure
     if (EffectInfo->Param[0] && AbilityTurn->ChainFailure)
         return false;
@@ -1641,6 +1657,23 @@ bool PetBattleAbilityEffect::HandleKill()
 {
     /// @TODO Figure out what to do with Param[1] & Param[3]
     CalculateHit(EffectInfo->Param[0]);
+
+    if (AbilityID == 1739)
+    {
+        if (EffectInfo->ID != 3227 || Target != Caster || AuraOwnerPetID != int32(Caster) ||
+            !PetBattleInstance->IsCrumbleSource(Caster) || (Flags & FailFlags))
+            return false;
+        bool issuedRemoval = false;
+        for (auto aura : PetBattleInstance->PetAuras)
+            if (aura->Expired && aura->AbilityID == 1739 && aura->CasterPetID == Caster && aura->TargetPetID == Caster &&
+                aura->TriggerId == 3226 && aura->MaxDuration == 9)
+                issuedRemoval = true;
+        if (!issuedRemoval || (EffectInfo->Param[1] && GetState(Caster, EffectInfo->Param[1])) ||
+            (EffectInfo->Param[2] && GetState(Target, EffectInfo->Param[2])))
+            return false;
+        Kill(Caster);
+        return !(Flags & FailFlags);
+    }
 
     // These authored sacrifices target the user, not both front pets. Keep
     // the native caster immunity (clone context), and the explicit Failsafe

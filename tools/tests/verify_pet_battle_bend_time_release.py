@@ -14,7 +14,7 @@ swap=ins('?SwapPet@PetBattle@@')
 assert {('cmp','dword ptr [r8 + 0x12c], r12d'),('mov','dword ptr [rsp + 0x30], ecx'),('mov','dword ptr [rsp + 0x20], 0xa'),('mov','r8d, 0x770'),('mov','edx, dword ptr [rdx + 8]')}<=set(pairs(swap))
 assert sites(swap,'?CanSwap@PetBattleTeam@@')and sites(swap,'?Cast@PetBattle@@')
 selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
-assert {('mov','edx, 0xf6'),('cmp','ax, dx'),('cmp','eax, 0x770'),('movsxd','rax, dword ptr [rbx + 0x4c]'),('cmp','eax, 5'),('mov','eax, dword ptr [rcx + 0x12c]'),('mov','edx, dword ptr [rdx + 0x70]')}<=set(pairs(selector))
+assert {('mov','edx, 0xf6'),('cmp','cx, dx'),('cmp','eax, 0x770'),('movsxd','rax, dword ptr [rbx + 0x4c]'),('cmp','eax, 5'),('mov','eax, dword ptr [rcx + 0x12c]'),('mov','edx, dword ptr [rdx + 0x70]')}<=set(pairs(selector))
 execute=ins('?Execute@PetBattleAbilityEffect@@');dispatch,=sites(execute,'?HandleBendTimeCooldown@PetBattleAbilityEffect@@')
 assert {('mov','eax, 0xf6'),('cmp','cx, ax'),('cmp','eax, 0x770'),('cmp','rax, 4'),('mov','dword ptr [rbx + 0x3c], eax')}<=set(pairs(execute[:dispatch]))
 assert {('cmp','ecx, 0x770'),('cmp','word ptr [r9 + 6], 0x31'),('cmp','dword ptr [rbx + 0x4c], r8d')}<=set(pairs(execute[dispatch:])),'The actual holder cleanup must bypass hostile-target hit gating'

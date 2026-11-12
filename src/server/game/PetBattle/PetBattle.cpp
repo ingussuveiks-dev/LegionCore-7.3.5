@@ -1124,6 +1124,12 @@ void PetBattle::Begin()
         if (IsRoboflaugeSource(petID))
             Cast(petID, 1389, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_APPLY, PETBATTLE_CAST_TRIGGER_ALL);
 
+    // Native Rocko183/1586 owns a D9 controller whose normal tenth processing
+    // phase expires. Issue the authored producer before the initial snapshot.
+    for (uint32 petID = 0; petID < MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS; ++petID)
+        if (IsCrumbleSource(petID))
+            Cast(petID, 1586, 0, PETBATTLE_ABILITY_TURN0_PROC_ON_APPLY, PETBATTLE_CAST_TRIGGER_ALL);
+
     /// In PVE battle the front pets (slot 0) are auto lock
     if (BattleType == PETBATTLE_TYPE_PVE)
     {
@@ -1926,6 +1932,22 @@ bool PetBattle::IsRoboflaugeSource(uint32 petID) const
     return false;
 }
 
+bool PetBattle::IsCrumbleSource(uint32 petID) const
+{
+    // Pin this supported producer to the matching26972 species/183/ability
+    // binding; other native species-state183 abilities have separate semantics.
+    if (petID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || !Pets[petID] || Pets[petID]->ID != petID ||
+        Pets[petID]->Species != 1811 || Pets[petID]->States[BATTLEPET_STATE_Internal_SpeciesAbility] != 1586 ||
+        !Pets[petID]->IsAlive() || Pets[petID]->Captured || Pets[petID]->Caged || Pets[petID]->TeamID >= MAX_PETBATTLE_TEAM)
+        return false;
+    auto team = Teams[Pets[petID]->TeamID];
+    if (team)
+        for (uint32 slot = 0; slot < MAX_PETBATTLE_SLOTS && slot < team->TeamPetCount; ++slot)
+            if (team->TeamPets[slot] == Pets[petID])
+                return true;
+    return false;
+}
+
 bool PetBattle::RefreshPetTypeOverride(uint32 sourcePetID, uint32 targetPetID)
 {
     if (sourcePetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS || targetPetID >= MAX_PETBATTLE_TEAM * MAX_PETBATTLE_SLOTS ||
@@ -1975,6 +1997,17 @@ void PetBattle::Kill(int8 killer, int8 target, uint32 killerAbibilityEffectID, b
         Teams[Pets[target]->TeamID]->activeAbilityTurn = 0;
         Teams[Pets[target]->TeamID]->activeAbilityTurnMax = 0;
     }
+
+    // Commit a Crumbling owner's real death before its removal callback.
+    // Otherwise its authored self-kill reenters this death while state1 is
+    // still clear, duplicating receipts (including the capture endpoint).
+    if (IsCrumbleSource(uint32(target)))
+        for (auto aura : PetAuras)
+            if (!aura->Expired && aura->AbilityID == 1739 && aura->CasterPetID == uint32(target) && aura->TargetPetID == uint32(target))
+            {
+                SetPetState(killer, target, killerAbibilityEffectID, BATTLEPET_STATE_Is_Dead, 1, fromCapture, flags);
+                break;
+            }
 
     // These owner-bound cooldown and revival controllers finish their authored
     // phases after holder death. Other death cleanup stays native.
