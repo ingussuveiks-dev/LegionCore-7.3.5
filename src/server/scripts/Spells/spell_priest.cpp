@@ -507,7 +507,8 @@ class spell_pri_divine_hymn : public SpellScriptLoader
                             if (group->isRaidGroup())
                                 return;
 
-                SetHitHeal(GetHitHeal() * 2);
+                uint64 heal = GetHitHeal64();
+                SetHitHeal64(HealingAmount::Add(heal, heal));
             }
 
             void Register() override
