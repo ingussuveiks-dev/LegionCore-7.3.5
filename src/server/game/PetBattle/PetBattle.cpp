@@ -1250,7 +1250,10 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
 
             sScriptMgr->OnPetBattleFinish(player);
 
-            uint32 availablePetCount = Teams[currentTeamID]->GetAvailablesPets().size();
+            uint32 availablePetCount = 0;
+            for (auto const& pet : Teams[currentTeamID]->TeamPets)
+                if (pet && pet->IsAlive())
+                    ++availablePetCount;
 
             for (size_t currentPetID = 0; currentPetID < Teams[currentTeamID]->TeamPetCount; ++currentPetID)
             {

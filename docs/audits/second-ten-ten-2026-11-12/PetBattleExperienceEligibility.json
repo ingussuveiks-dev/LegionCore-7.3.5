@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-12",
+  "key": "PetBattleExperienceEligibility",
+  "title": "Count living teammates independently of temporary swap admission",
+  "status": "TECHNICAL_CHECKED_DEPLOYED_CLIENT_PENDING",
+  "batch": 1,
+  "historical_group": 62,
+  "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
+  "paths": [
+    "src/server/game/PetBattle/PetBattle.cpp"
+  ],
+  "regression": "tools/tests/Test-SecondTenTen20261112.ps1 -Case PetBattleExperienceEligibility",
+  "counterfactual": "Same command with -Baseline; expected broken pinned control, paired with repaired pass.",
+  "checks": {
+    "counterfactual": "All ten exact pinned pre-task expectations fail with their named assertion (exit1); paired fixed runs pass under MSVC ASAN. Whole Finish/input/admission/request methods; queue comparator/consent source projections are explicitly identified. Full native-core ASAN is not claimed.",
+    "native": "Actual linked WorldSession MoveType0 -> ForfeitBattle -> Finish; ordinary and ignored penalties; pending multi-turn swap lock with retained XP; native26972 XP50/110/120 thresholds, level4/remainder95 with controlled200-percent native420 aura; repeated completion; actual wild creature GUID/flags/root cleanup; owning request replacement; real separate-player distance rejection; actual full matchmaking Update resets both earlier answers. No character writes; session pools read-only with TEMP account cleanup.",
+    "linked": "Selected first10, retained prior100, full TimeLoop/native healing/Mending/target-profile/Cordana/core chain and canonical Scepter pass.",
+    "startup": "Owned canonical worldserver PID8344 fresh ready, graceful shutdown0, exit0, gone, stderr empty. No new crash reports, appended DBErrors, or unexplained server warnings/errors/assertions.",
+    "limitations": "Actual client pet journal, battle UI/visuals, matchmaking/forfeit/re-entry traversal and whole36artifact chains remain pending. Native wild fixture checks real actor cleanup; a real wild pool respawn cycle is not client-verified. Existing mixed log and legacy artifact PE OPEN findings remain retained."
+  },
+  "fixture_setup_failures_resolved": [
+    "First source extractor used a nonunique short replacement; exact full input method now pins that amendment.",
+    "Fixture enum generation initially gave team indexes synthetic out-of-range values, causing a fixture ASAN access violation; fixed exact team0/1 constants and paired source runs pass.",
+    "Native packet fixture initially omitted CMSG_PET_BATTLE_INPUT, hitting ClientPacket opcode assertion; corrected actual opcode and native run passes.",
+    "Native memory-only players initially lacked race-derived team initialization, so queue admission correctly rejected neutral players and fixture map.at failed; setFactionForRace now supplies actual Alliance team and full queue test passes.",
+    "Missing fixture type aliases/header were compile setup failures, followed by passing complete fixtures/native tests."
+  ],
+  "canonical_worldserver_sha256": "cd784bfea9fac445b5ff27e78e42e4e9c0b300325cdcce400f28cfd90e2a3978",
+  "archive": "build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch1; archive manifest recorded in batch ledger after verified cleanup.",
+  "retained_open": [
+    "Authentic living Lady Sharasdal activation/surrender/conversation1906/Grash/cleanup",
+    "LINK2/Slaghammer evidence",
+    "Mixed DBErrors.log remains unchanged",
+    "Original intermittent client handshake silence",
+    "All36wholeclientchains",
+    "Legacy artifact PE certificates",
+    "Native pet effect property246",
+    "Ordinary coreheal/periodic width beyond explicit64 inputs"
+  ]
+}
