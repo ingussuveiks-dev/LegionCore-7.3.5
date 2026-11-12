@@ -1,7 +1,7 @@
 {
-  "status": "IN_PROGRESS_20_OF_100",
+  "status": "IN_PROGRESS_30_OF_100",
   "authorized_total": 100,
-  "completed": 20,
+  "completed": 30,
   "baseline": "9ed16c9186873bf6dec41246263add22f66eeda8",
   "batches": [
     {
@@ -155,6 +155,79 @@
         }
       },
       "canonical_worldserver_sha256": "3d27abc7cc8c83f3379fc229d6c039fa811b267ded4c03062a95ba11b8a59e82"
+    },
+    {
+      "batch": 3,
+      "historical_group": 64,
+      "commits": [
+        {
+          "key": "BattlePetSummonToggle",
+          "commit": "55049aa6265d29f73d0612b8dd07fa8f9bc4a3bd",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/BattlePetSummonToggle.json"
+        },
+        {
+          "key": "BattlePetFlagControl",
+          "commit": "78486fb1b6e05547d6cb13bd9f2fffe56cce3c08",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/BattlePetFlagControl.json"
+        },
+        {
+          "key": "BattlePetCombatSlotAdmission",
+          "commit": "ca92ed4eb87e97a4bb2a8e3227c318da0ee43e82",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/BattlePetCombatSlotAdmission.json"
+        },
+        {
+          "key": "PetDuelBothRosters",
+          "commit": "fc3a1a88cbb81e7248fb0178d065afc28aa66b90",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetDuelBothRosters.json"
+        },
+        {
+          "key": "PetAbilityLockLifecycle",
+          "commit": "dea84cdd5dc74ddff5b346cd556d2c84086c0a8b",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetAbilityLockLifecycle.json"
+        },
+        {
+          "key": "PetInitialHealthAdmission",
+          "commit": "880d7d8267fe18c8a3f9eb78c8ac6b1cd90e1247",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetInitialHealthAdmission.json"
+        },
+        {
+          "key": "PetStartingExperienceSnapshot",
+          "commit": "1910c0cf74d5fa32738b25d66eb6042b72a9db0b",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetStartingExperienceSnapshot.json"
+        },
+        {
+          "key": "PetQueueWaitMeanWidth",
+          "commit": "5c814282ae437b54bc2ac0e304e39d47dcf9042a",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetQueueWaitMeanWidth.json"
+        },
+        {
+          "key": "PetJournalRemovalCleanup",
+          "commit": "bd834e7d9b87b06240f4a0b22ed5845c678b0da5",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetJournalRemovalCleanup.json"
+        },
+        {
+          "key": "PetNameQueryBinding",
+          "commit": "54d0edc876696b26df221d23ab8fe797286bf2d2",
+          "audit": "docs/audits/second-ten-ten-2026-11-12/PetNameQueryBinding.json"
+        }
+      ],
+      "support_commit": "2aed773a2d0ec29e29cbd03953e1ff88af66803e",
+      "checks": {
+        "counterfactual": "All ten pinned prior-batch expectations fail their exact named assertion at exit1; repaired MSVC ASAN checks pass. Complete journal/slot/name-query/duel/lock methods; initial-health/front, starting-XP/award flag, queue arithmetic and pre-fix journal erase tail are explicitly identified source projections. Retained first20 source fixtures also pass.",
+        "native": "Actual native WorldSession APPLY/REMOVE repeat semantics, locked and noncombat slot admission/roster refresh, training/unlocked admission, real Minion summon/unowned request/same-pet dismiss/resummon and exact removal helper against real Player APIs, both-roster duel denial with no immunity/pacify leak, actual Nevermore victim casts and native separate lock/one-use aura removal, original hostile caster killed by the same attack, five real ProceedRound decrements/recast recovery; actual AddPet/Begin preserve dead slot0/select living slot1 and snapshot saved XP; full actual matchmaking Update retains999mean at1billion samples and avoids UINT32 counter rollover division by zero. Bound proc context rejects invalid pet IDs and ordinary-turn use. First20 native scopes pass; previous100 shared native regressions also pass. Memory-only player/session pools protected read-only/TEMP; no character writes.",
+        "linked": "All selected30 and retained previous100 focused PE checks pass; actual both-roster acceptance runs two distinct shared admissions before flags. New aura-owner context is a source-compatible defaulted sixth explicit C++ Cast argument; original game/scripts/Main rebuild and real native calls verify matching linkage. No object field or network packet layout change. Exact native Lockdowns0x140/deadstate0x150/OldXP0x47c and level0x478 checks, both caging/release shared cleanup calls, bound name-query field and native64 queue operations verified. Canonical Scepter passes; batch1 retained full core chain passed and no Unit/Player field ABI changes occur in group3.",
+        "startup": "Owned worldserver PID=2016\nPASS owned PID=2016 ready/shutdown0/exit0/gone, stderr empty, protected hashes unchanged;canonical diagnostics show no new crash reports, appended DBErrors, or unexplained server warnings/errors/assertions.",
+        "limitations": "Actual client pet journal/name-query response/UI, full matchmaking/caging/release persistence and whole36artifact chains remain separate. Native removal helper exercises memory/journal/companion cleanup; unchanged existing character-delete SQL is not executed against personal records. Native XP snapshot is real; XP-award packet boolean and name-query rejection use complete extracted/projection and linked checks. Other native on-ability Clone/Murloc/Trap full gameplay and native unsupported effect246 remain OPEN."
+      },
+      "cleanup": {
+        "ReclaimedBytes": 785197376,
+        "Removed": 48,
+        "Archived": 1115,
+        "ManifestSHA256": "45A500046A08C213C8FFEEFCC379CABE2ED6DA8D2D5771EC7BAAF41B23A4ED38",
+        "Rollback": "C:\\wamp64\\www\\LegionCore-7.3.5/.codex/release-before-second-ten-ten-batch1-2026-11-12",
+        "Archive": "C:\\wamp64\\www\\LegionCore-7.3.5/build-extractors/bin/Release/fixed/second-ten-ten-2026-11-12/batch3"
+      },
+      "canonical_worldserver_sha256": "8183191ca899e40359ffca646208648e002bbb0f3ddb9375fc6bfadc3de2b763"
     }
   ],
   "selected_not_yet_verified": [],
@@ -167,6 +240,6 @@
     "legacy PE certificate failures",
     "native pet effect property 246"
   ],
-  "remaining": 80,
-  "completed_batches": 2
+  "remaining": 70,
+  "completed_batches": 3
 }
