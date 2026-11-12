@@ -576,6 +576,12 @@ eBattlePetRequests PetBattleSystem::CanPlayerEnterInPetBattle(Player* player, Pe
     {
         if (auto player2 = ObjectAccessor::FindPlayer(petBattleRequest->OpponentGuid))
         {
+            if (!player2->IsInWorld())
+                return PETBATTLE_REQUEST_TARGET_INVALID;
+            if (player2->isDead())
+                return PETBATTLE_REQUEST_NOT_WHILE_DEAD;
+            if (player2->isInCombat())
+                return PETBATTLE_REQUEST_NOT_WHILE_IN_COMBAT;
             if (player2->_petBattleId)
                 return PETBATTLE_REQUEST_IN_BATTLE;
 
@@ -585,6 +591,8 @@ eBattlePetRequests PetBattleSystem::CanPlayerEnterInPetBattle(Player* player, Pe
             if (!player->IsWithinLOSInMap(player2))
                 return PETBATTLE_REQUEST_NOT_HERE_OBSTRUCTED;
         }
+        else
+            return PETBATTLE_REQUEST_TARGET_INVALID;
     }
     else if (petBattleRequest->OpponentGuid.IsCreature())
     {
