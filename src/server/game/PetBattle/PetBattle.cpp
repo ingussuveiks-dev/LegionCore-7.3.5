@@ -554,14 +554,19 @@ void PetBattleAura::Apply(PetBattle* petBattle)
             }
         }
 
-        int32 value = petBattle->Pets[TargetPetID]->States[v->BattlePetStateID];
+        // Stockpile290 authors a20-percent reserve. Its legacy aura289 uses
+        // state2 with value20, unlike Healthy577's hundredths-per-level value.
+        // Route only this reserve through the native percentage-health state.
+        uint32 stateID = AbilityID == 289 && v->BattlePetStateID == BATTLEPET_STATE_maxHealthBonus
+            ? BATTLEPET_STATE_Mod_MaxHealthPercent : v->BattlePetStateID;
+        int32 value = petBattle->Pets[TargetPetID]->States[stateID];
         if (!flags)
         {
             value += v->Value;
-            AppliedStates.emplace_back(v->BattlePetStateID, v->Value);
+            AppliedStates.emplace_back(stateID, v->Value);
         }
 
-        petBattle->SetPetState(CasterPetID, TargetPetID, 0, v->BattlePetStateID, value, false, flags);
+        petBattle->SetPetState(CasterPetID, TargetPetID, 0, stateID, value, false, flags);
     }
 
     UpdatePetBattleAuraMaxHealth(petBattle, this, oldMaximum);

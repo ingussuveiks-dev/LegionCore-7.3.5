@@ -1400,7 +1400,7 @@ bool PetBattleAbilityEffect::HandleHealToggleAura()
         return Heal(Target, CalculateHeal(EffectInfo->Param[0]));
     }
     // No aura, add it
-    return AddAura(Target, EffectInfo->Param[2], 0);
+    return AddAura(Target, EffectInfo->Param[2] ? EffectInfo->Param[2] : -1, 0);
 }
 
 bool PetBattleAbilityEffect::HandleInitialization()
