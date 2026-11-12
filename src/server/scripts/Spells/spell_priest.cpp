@@ -1127,8 +1127,8 @@ class spell_pri_shadow_mend: public SpellScript
         {
             if (Unit* target = GetHitUnit())
             {
-                float bp0 = GetHitHeal() / 20.f;
-                float bp1 = GetHitHeal() / 2.f;
+                float bp0 = GetHitHeal64() / 20.f;
+                float bp1 = GetHitHeal64() / 2.f;
 
                 if (caster->HasAura(81749) && !caster->HasAura(214205))
                     caster->CastSpell(target, 194384, true);
