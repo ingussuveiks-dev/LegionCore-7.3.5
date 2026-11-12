@@ -2504,7 +2504,7 @@ class spell_monk_revival : public SpellScript
 
         // 199668 ticks once per second for six seconds. Together its ticks
         // restore the artifact trait's percentage of the actual Revival heal.
-        float periodicHeal = CalculatePct(GetHitHeal(), blessings->GetAmount()) / 6.0f;
+        float periodicHeal = CalculatePct(GetHitHeal64(), blessings->GetAmount()) / 6.0f;
         if (periodicHeal > 0)
             caster->CastCustomSpell(target, 199668, &periodicHeal, nullptr, nullptr, true, nullptr, blessings);
     }
