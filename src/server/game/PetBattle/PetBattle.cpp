@@ -1606,7 +1606,7 @@ PetBattleCastResult PetBattle::Cast(uint32 casterPetID, uint32 abilityID, uint32
     // dying to an earlier damage row must not discard that terminal row (or
     // Armageddon's remaining enemy slots). Other stop/chain rules still apply.
     bool const selfSacrifice = p_Turn == 1 && p_Turn0ProcCondition == PETBATTLE_ABILITY_TURN0_PROC_ON_NONE &&
-        (abilityID == 282 || abilityID == 663 || abilityID == 836 || abilityID == 1025);
+        (abilityID == 282 || abilityID == 321 || abilityID == 663 || abilityID == 836 || abilityID == 1025);
     if (selfSacrifice && !Pets[casterPetID]->IsAlive())
         return PETBATTLE_CAST_INTERNAL_ERROR;
 

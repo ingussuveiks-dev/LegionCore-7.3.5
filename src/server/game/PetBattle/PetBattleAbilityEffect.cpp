@@ -793,6 +793,16 @@ void PetBattleAbilityEffect::SelectTargets()
         AddTarget(GetActiveOpponent());
         return;
     }
+    // Unholy Ascension authors its three enemy auras at orders1/3/5.
+    // The intervening native selection rows do not merge those recipients.
+    if (AbilityID == 321 && EffectInfo->BattlePetEffectPropertiesID == 50)
+    {
+        uint32 slot = (uint32(EffectInfo->OrderIndex) - 1) / 2;
+        auto team = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];
+        if (slot < team->TeamPetCount && team->TeamPets[slot])
+            AddTarget(team->TeamPets[slot]->ID);
+        return;
+    }
     // Armageddon authors one property24 row for each enemy roster slot.
     // Preserve that slot even when an earlier enemy is already dead/missing.
     if (AbilityID == 1025 && EffectInfo->BattlePetEffectPropertiesID == 24)
@@ -1466,7 +1476,7 @@ bool PetBattleAbilityEffect::HandleKill()
     // These authored sacrifices target the user, not both front pets. Keep
     // the native caster immunity (clone context), and the explicit Failsafe
     // prohibition on Explode282 and Armageddon1025 only.
-    if (AbilityID == 282 || AbilityID == 663 || AbilityID == 836 || AbilityID == 1025)
+    if (AbilityID == 282 || AbilityID == 321 || AbilityID == 663 || AbilityID == 836 || AbilityID == 1025)
     {
         if ((Flags & FailFlags) || (EffectInfo->Param[1] && GetState(Caster, EffectInfo->Param[1])))
             return false;

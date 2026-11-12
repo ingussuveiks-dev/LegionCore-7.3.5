@@ -4,9 +4,12 @@ import hashlib,json
 selector=ins('?SelectTargets@PetBattleAbilityEffect@@')
 assert {282,663,836,1025,68,24}<=values(selector)
 assert {('cmp','esi, 6'),('mov','esi, dword ptr [rax + 0x70]'),('test','rcx, rcx')}<=set(pairs(selector))
-slot=next(i for i,x in enumerate(selector)if(x.mnemonic,x.op_str)==('cmp','dword ptr [rbx + 0x18], 0x401'))
-roster=selector[slot:slot+30]
-assert {('cmp','eax, 0x18'),('movzx','ecx, byte ptr [rdx + 0x14]'),('dec','ecx'),('cmp','ecx, dword ptr [rdx + 0x58]'),('test','rdx, rdx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(roster))
+slot=next(i for i,x in enumerate(selector)if(x.mnemonic,x.op_str)==('cmp','ecx, 0x401'))
+assert (selector[slot+2].mnemonic,selector[slot+2].op_str)==('cmp','eax, 0x18')
+# The compiler merges the two roster selectors' target-admission tail.
+addresses=reaches(selector,selector[slot+4].address)
+roster=[x for x in selector if x.address in addresses]
+assert {('movzx','r8d, byte ptr [rdx + 0x14]'),('dec','r8d'),('cmp','r8d, dword ptr [rdx + 0x58]'),('test','rdx, rdx'),('mov','edx, dword ptr [rdx + 0x130]')}<=set(pairs(roster))
 assert len(sites(roster,'?AddTarget@PetBattleAbilityEffect@@'))==1
 admission=ins('?AddTarget@PetBattleAbilityEffect@@QEAA_NI@Z')
 assert {('cmp','edx, 6'),('test','rcx, rcx')}<=set(pairs(admission[:16]))
