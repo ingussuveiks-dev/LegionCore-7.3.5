@@ -973,24 +973,18 @@ bool PetBattleAbilityEffect::HandleHealLastHitTaken()
 
 bool PetBattleAbilityEffect::HandleRemoveAura()
 {
-    /// Data for this effect are unknown so we assume 100% unaura
-    ///CalculateHit(EffectInfo->Param[0]);
-    ///
-    ///if (!(Flags & FailFlags))
-    ///{
-    ///    for (auto itr = PetBattleInstance->PetAuras.begin(); itr != PetBattleInstance->PetAuras.end(); itr++)
-    ///    {
-    ///        if (!(*itr)->Expired && (*itr)->TargetPetID == Target && (*itr)->AbilityID == AbilityID)
-    ///        {
-    ///            /// Make aura expired
-    ///            (*itr)->Expire(PetBattleInstance);
-    ///        }
-    ///    }
-    ///}
-    ///
-    ///return !(Flags & FailFlags);
+    CalculateHit(EffectInfo->Param[0]);
+    if (Flags & FailFlags)
+        return false;
 
-    CalculateHit(100);
+    // Expiry callbacks may append auras. Remove only the originally selected
+    // matching instances, retaining new casts and unrelated aura recipients.
+    std::vector<PetBattleAura*> selected;
+    for (auto aura : PetBattleInstance->PetAuras)
+        if (!aura->Expired && aura->TargetPetID == Target && aura->AbilityID == EffectInfo->AuraBattlePetAbilityID)
+            selected.push_back(aura);
+    for (auto aura : selected)
+        aura->Expire(PetBattleInstance);
     return true;
 }
 
