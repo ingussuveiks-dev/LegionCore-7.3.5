@@ -242,18 +242,22 @@ public:
             me->setFaction(35);
         }
 
-        Unit* plrTarget = nullptr;
-        uint16 timerDespawn;
+        ObjectGuid plrTargetGuid;
+        uint16 timerDespawn = 21000;
 
         void Reset() override {}
 
         void IsSummonedBy(Unit* summoner) override
         {
-            if (summoner->GetTypeId() != TYPEID_PLAYER)
+            plrTargetGuid.Clear();
+            if (!summoner || summoner->GetTypeId() != TYPEID_PLAYER)
+            {
+                me->DespawnOrUnsummon();
                 return;
+            }
 
             timerDespawn = 21000;
-            plrTarget = summoner;
+            plrTargetGuid = summoner->GetGUID();
             summoner->CastSpell(me, 195820, true); //Ride Veh
             Talk(0, summoner->ToPlayer()->GetGUID());
         }
@@ -268,7 +272,7 @@ public:
         {
             if (spell->Id == 195846)
             {
-                if (plrTarget)
+                if (Player* plrTarget = ObjectAccessor::GetPlayer(*me, plrTargetGuid))
                     plrTarget->RemoveAurasDueToSpell(SPELL_QUARANTINE_STUN);
                 me->DespawnOrUnsummon();
             }
