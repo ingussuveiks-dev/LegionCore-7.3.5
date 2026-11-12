@@ -29,11 +29,16 @@
 
 void WorldSession::HandleBattlePetSummon(WorldPackets::BattlePet::BattlePetGuidRead& packet)
 {
-    if (_player->IsOnVehicle() || _player->IsSitState())
+    if (_player->IsOnVehicle() || _player->IsSitState() || _player->_petBattleId)
+        return;
+    auto battlePet = _player->GetBattlePet(packet.BattlePetGUID);
+    if (!battlePet || battlePet->Health <= 0)
         return;
 
-    _player->UnsummonCurrentBattlePetIfAny(false);
-    if (!_player->GetSummonedBattlePet() || _player->GetSummonedBattlePet()->GetGuidValue(UNIT_FIELD_BATTLE_PET_COMPANION_GUID) != packet.BattlePetGUID)
+    auto current = _player->GetSummonedBattlePet();
+    if (current && current->GetGuidValue(UNIT_FIELD_BATTLE_PET_COMPANION_GUID) == packet.BattlePetGUID)
+        _player->UnsummonCurrentBattlePetIfAny(false);
+    else
         _player->SummonBattlePet(packet.BattlePetGUID);
 }
 
