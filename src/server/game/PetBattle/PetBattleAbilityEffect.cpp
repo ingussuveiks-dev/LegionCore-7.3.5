@@ -693,10 +693,10 @@ bool PetBattleAbilityEffect::AddTarget(uint32 target)
     return true;
 }
 
-bool PetBattleAbilityEffect::AddTarget(PetBattleAbilityImplicitTarget /*target*/)
+bool PetBattleAbilityEffect::AddTarget(PetBattleAbilityImplicitTarget target)
 {
     PetBattleTeam* battleTeam;
-    switch (Handlers[EffectInfo->BattlePetEffectPropertiesID].ImplicitTarget)
+    switch (target)
     {
         case PETBATTLE_TARGET_CASTER:
             return AddTarget(Caster);
@@ -709,37 +709,37 @@ bool PetBattleAbilityEffect::AddTarget(PetBattleAbilityImplicitTarget /*target*/
             return true;
         case PETBATTLE_TARGET_CASTER_TEAM_0:
             battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];
-            if (battleTeam->TeamPetCount <= 1)
+            if (battleTeam->TeamPetCount > 0)
                 return AddTarget(battleTeam->TeamPets[0]->ID);
             return false;
         case PETBATTLE_TARGET_CASTER_TEAM_1:
             battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];
-            if (battleTeam->TeamPetCount <= 2)
+            if (battleTeam->TeamPetCount > 1)
                 return AddTarget(battleTeam->TeamPets[1]->ID);
             return false;
         case PETBATTLE_TARGET_CASTER_TEAM_2:
             battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];
-            if (battleTeam->TeamPetCount <= 3)
+            if (battleTeam->TeamPetCount > 2)
                 return AddTarget(battleTeam->TeamPets[2]->ID);
             return false;
         case PETBATTLE_TARGET_TARGET_TEAM:
             battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];
             for (auto slot = 0; slot < battleTeam->TeamPetCount; ++slot)
-                return AddTarget(battleTeam->TeamPets[slot]->ID);
+                AddTarget(battleTeam->TeamPets[slot]->ID);
             return true;
         case PETBATTLE_TARGET_TARGET_TEAM_0:
             battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];
-            if (battleTeam->TeamPetCount <= 1)
+            if (battleTeam->TeamPetCount > 0)
                 return AddTarget(battleTeam->TeamPets[PETBATTLE_TEAM_1]->ID);
             return false;
         case PETBATTLE_TARGET_TARGET_TEAM_1:
             battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];
-            if (battleTeam->TeamPetCount <= 2)
+            if (battleTeam->TeamPetCount > 1)
                 return AddTarget(battleTeam->TeamPets[1]->ID);
             return false;
         case PETBATTLE_TARGET_TARGET_TEAM_2:
             battleTeam = PetBattleInstance->Teams[!PetBattleInstance->Pets[Caster]->TeamID];
-            if (battleTeam->TeamPetCount <= 3)
+            if (battleTeam->TeamPetCount > 2)
                 return AddTarget(battleTeam->TeamPets[2]->ID);
             return false;
         case PETBATTLE_TARGET_ALL:
@@ -749,11 +749,15 @@ bool PetBattleAbilityEffect::AddTarget(PetBattleAbilityImplicitTarget /*target*/
         case PETBATTLE_TARGET_CASTER_TEAM_UNCONDITIONAL:
             battleTeam = PetBattleInstance->Teams[PetBattleInstance->Pets[Caster]->TeamID];
             for (size_t slot = 0; slot < battleTeam->TeamPetCount; ++slot)
-                if (PetBattleInstance->Pets[slot])
+                if (battleTeam->TeamPets[slot])
                     Targets.push_back(battleTeam->TeamPets[slot]->ID);
             return true;
         case PETBATTLE_TARGET_HEAD:
-            return AddTarget(Caster) || AddTarget(GetActiveOpponent());
+        {
+            bool const casterAdded = AddTarget(Caster);
+            bool const opponentAdded = AddTarget(GetActiveOpponent());
+            return casterAdded || opponentAdded;
+        }
         default:
             return false;
     }
